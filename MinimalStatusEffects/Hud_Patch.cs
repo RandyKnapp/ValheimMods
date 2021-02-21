@@ -7,7 +7,7 @@ using UnityEngine.UI;
 namespace MinimalStatusEffects
 {
     [HarmonyPatch(typeof(Hud), "UpdateStatusEffects", new Type[] {typeof(List<StatusEffect>) })]
-    public static class Hud_Patch
+    public static class Hud_UpdateStatusEffects_Patch
     {
         static void Postfix(List<StatusEffect> statusEffects, List<RectTransform> ___m_statusEffects, RectTransform ___m_statusEffectListRoot)
         {

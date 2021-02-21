@@ -14,7 +14,7 @@ namespace MinimalStatusEffects
         public static ConfigEntry<float> IconSize;
     }
 
-    [BepInPlugin("randyknapp.mods.minimalstatuseffects", "TestMod", "1.0.0")]
+    [BepInPlugin("randyknapp.mods.minimalstatuseffects", "Minimal Status Effects", "1.0.0")]
     [BepInProcess("valheim.exe")]
     public class MinimalStatusEffects : BaseUnityPlugin
     {
