@@ -5,9 +5,9 @@ using UnityEngine.UI;
 namespace ImprovedBuildHud
 {
     [HarmonyPatch(typeof(Hud), "SetupPieceInfo", new Type[] {typeof(Piece)})]
-    class Hud_Patch
+    public static class Hud_Patch
     {
-        static void Postfix(Piece piece, Text ___m_buildSelection)
+        private static void Postfix(Piece piece, Text ___m_buildSelection)
         {
             if (piece != null && !string.IsNullOrEmpty(ImprovedBuildHudConfig.CanBuildAmountFormat.Value))
             {
