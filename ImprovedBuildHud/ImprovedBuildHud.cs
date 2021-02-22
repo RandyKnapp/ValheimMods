@@ -2,6 +2,7 @@
 using BepInEx;
 using BepInEx.Configuration;
 using HarmonyLib;
+using UnityEngine;
 
 namespace ImprovedBuildHud
 {
@@ -15,9 +16,12 @@ namespace ImprovedBuildHud
 
     [BepInPlugin("randyknapp.mods.improvedbuildhud", "Improved Build HUD", "1.0.1")]
     [BepInProcess("valheim.exe")]
-    class ImprovedBuildHud : BaseUnityPlugin
+    [BepInDependency("aedenthorn.CraftFromContainers", BepInDependency.DependencyFlags.SoftDependency)]
+    public class ImprovedBuildHud : BaseUnityPlugin
     {
         private Harmony _harmony;
+
+        //public static bool CraftFromContainersInstalledAndActive;
 
         private void Awake()
         {
@@ -26,10 +30,22 @@ namespace ImprovedBuildHud
             ImprovedBuildHudConfig.CanBuildAmountFormat = Config.Bind("General", "Can Build Amount Color", "({0})", "Format for the amount of times you can build the currently selected item with your current inventory. Uses standard C# format rules. Leave empty to hide altogether.");
             ImprovedBuildHudConfig.CanBuildAmountColor = Config.Bind("General", "Can Build Amount Color", "white", "Color to set the can-build amount. Leave empty to set no color. You can use the #XXXXXX hex color format.");
             _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), null);
+
+            /*CraftFromContainersInstalledAndActive = false;
+            var bepInExManager = GameObject.Find("BepInEx_Manager");
+            var plugins = bepInExManager.GetComponentsInChildren<BaseUnityPlugin>();
+            foreach (var plugin in plugins)
+            {
+                if (plugin.Info.Metadata.GUID == "aedenthorn.CraftFromContainers")
+                {
+                    CraftFromContainersInstalledAndActive = CraftFromContainers.BepInExPlugin.modEnabled.Value;
+                }
+            }*/
         }
 
         private void OnDestroy()
         {
+            //CraftFromContainersInstalledAndActive = false;
             _harmony.UnpatchAll();
         }
     }

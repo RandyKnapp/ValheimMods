@@ -1,6 +1,5 @@
 ﻿using System;
 using HarmonyLib;
-using UnityEngine;
 using UnityEngine.UI;
 
 namespace ImprovedBuildHud
@@ -12,19 +11,17 @@ namespace ImprovedBuildHud
         {
             if (piece != null && !string.IsNullOrEmpty(ImprovedBuildHudConfig.CanBuildAmountFormat.Value))
             {
-                var player = Player.m_localPlayer;
                 var displayName = Localization.instance.Localize(piece.m_name);
                 if (piece.m_name == "$piece_repair")
                 {
                     return;
                 }
 
-                int fewestPossible = Int32.MaxValue;
-                for (int index = 0; index < piece.m_resources.Length; ++index)
+                var fewestPossible = int.MaxValue;
+                foreach (var requirement in piece.m_resources)
                 {
-                    Piece.Requirement requirement = piece.m_resources[index];
-                    int currentAmount = player.GetInventory().CountItems(requirement.m_resItem.m_itemData.m_shared.m_name);
-                    int canMake = currentAmount / requirement.m_amount;
+                    var currentAmount = GetAvailableResources(requirement);
+                    var canMake = currentAmount / requirement.m_amount;
                     if (canMake < fewestPossible)
                     {
                         fewestPossible = canMake;
@@ -39,5 +36,23 @@ namespace ImprovedBuildHud
                 ___m_buildSelection.text = $"{displayName} {canBuildDisplay}";
             }
         }
+
+        private static int GetAvailableResources(Piece.Requirement requirement)
+        {
+            var player = Player.m_localPlayer;
+            var requirementName = requirement.m_resItem.m_itemData.m_shared.m_name;
+
+            var count = player.GetInventory().CountItems(requirementName);
+            /*if (ImprovedBuildHud.CraftFromContainersInstalledAndActive)
+            {
+                var containers = CraftFromContainers.BepInExPlugin.GetNearbyContainers(player.transform.position);
+                foreach (var container in containers)
+                {
+                    count += container.GetInventory().CountItems(requirementName);
+                }
+            }*/
+            return count;
+        }
+        
     }
 }
