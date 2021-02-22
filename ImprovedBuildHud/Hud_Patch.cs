@@ -1,5 +1,6 @@
 ﻿using System;
 using HarmonyLib;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace ImprovedBuildHud
@@ -13,6 +14,10 @@ namespace ImprovedBuildHud
             {
                 var player = Player.m_localPlayer;
                 var displayName = Localization.instance.Localize(piece.m_name);
+                if (piece.m_name == "$piece_repair")
+                {
+                    return;
+                }
 
                 int fewestPossible = Int32.MaxValue;
                 for (int index = 0; index < piece.m_resources.Length; ++index)
