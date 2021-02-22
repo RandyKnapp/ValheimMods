@@ -1,5 +1,4 @@
-﻿using System;
-using HarmonyLib;
+﻿using HarmonyLib;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -53,6 +52,8 @@ namespace DvergerColor
             if (changedStep)
             {
                 ShowStatusMessage();
+                var zdo = Player.m_localPlayer.GetZDO();
+                zdo.Set(DvergerColor.StepDataKey, Step);
             }
 
             if (Step == _maxSteps)
@@ -77,6 +78,9 @@ namespace DvergerColor
             _light = light;
             _light.color = DvergerColor.Color.Value;
             ShowStatusMessage();
+            var zdo = Player.m_localPlayer.GetZDO();
+            var initialStep = zdo.GetInt(DvergerColor.StepDataKey, DvergerColor.MaxSteps.Value - 1);
+            Step = initialStep;
         }
 
         private void ShowStatusMessage()

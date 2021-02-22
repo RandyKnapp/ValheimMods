@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace DvergerColor
 {
-    [BepInPlugin("randyknapp.mods.dvergercolor", "Dverger Color", "1.0.0")]
+    [BepInPlugin("randyknapp.mods.dvergercolor", "Dverger Color", "1.0.1")]
     [BepInProcess("valheim.exe")]
     public class DvergerColor : BaseUnityPlugin
     {
@@ -22,6 +22,8 @@ namespace DvergerColor
         public static ConfigEntry<float> PointRange;
         public static ConfigEntry<string> NarrowBeamHotkey;
         public static ConfigEntry<string> WidenBeamHotkey;
+
+        public const string StepDataKey = "randyknapp.mods.dvergercolor.step";
 
         private Harmony _harmony;
 

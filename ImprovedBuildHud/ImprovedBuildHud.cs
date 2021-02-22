@@ -13,7 +13,7 @@ namespace ImprovedBuildHud
         public static ConfigEntry<string> CanBuildAmountColor;
     }
 
-    [BepInPlugin("randyknapp.mods.improvedbuildhud", "Improved Build HUD", "1.0.0")]
+    [BepInPlugin("randyknapp.mods.improvedbuildhud", "Improved Build HUD", "1.0.1")]
     [BepInProcess("valheim.exe")]
     class ImprovedBuildHud : BaseUnityPlugin
     {
