@@ -76,16 +76,31 @@ namespace DvergerColor
         public void SetLight(Light light)
         {
             _light = light;
-            _light.color = DvergerColor.Color.Value;
+            if (_light != null)
+            {
+                _light.color = DvergerColor.Color.Value;
+            }
+
             ShowStatusMessage();
-            var zdo = Player.m_localPlayer.GetZDO();
-            var initialStep = zdo.GetInt(DvergerColor.StepDataKey, DvergerColor.MaxSteps.Value - 1);
-            Step = initialStep;
+
+            if (Player.m_localPlayer != null)
+            {
+                var zdo = Player.m_localPlayer.GetZDO();
+                var initialStep = zdo.GetInt(DvergerColor.StepDataKey, DvergerColor.MaxSteps.Value - 1);
+                Step = initialStep;
+            }
+            else
+            {
+                Step = DvergerColor.MaxSteps.Value - 1;
+            }
         }
 
         private void ShowStatusMessage()
         {
-            MessageHud.instance.ShowMessage(MessageHud.MessageType.TopLeft, (Step == _maxSteps) ? "Dverger Circlet: Pool of Radiance" : $"Dverger Circlet: Luminous Beam {Step + 1}");
+            if (MessageHud.instance != null)
+            {
+                MessageHud.instance.ShowMessage(MessageHud.MessageType.TopLeft, (Step == _maxSteps) ? "Dverger Circlet: Pool of Radiance" : $"Dverger Circlet: Luminous Beam {Step + 1}");
+            }
         }
     }
 
