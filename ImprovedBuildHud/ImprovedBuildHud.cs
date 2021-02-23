@@ -15,7 +15,7 @@ namespace ImprovedBuildHud
         public static ConfigEntry<string> CanBuildAmountColor;
     }
 
-    [BepInPlugin("randyknapp.mods.improvedbuildhud", "Improved Build HUD", "1.0.1")]
+    [BepInPlugin("randyknapp.mods.improvedbuildhud", "Improved Build HUD", "1.0.3")]
     [BepInProcess("valheim.exe")]
     [BepInDependency("aedenthorn.CraftFromContainers", BepInDependency.DependencyFlags.SoftDependency)]
     public class ImprovedBuildHud : BaseUnityPlugin
@@ -33,7 +33,7 @@ namespace ImprovedBuildHud
             ImprovedBuildHudConfig.CanBuildAmountColor = Config.Bind("General", "Can Build Amount Color", "white", "Color to set the can-build amount. Leave empty to set no color. You can use the #XXXXXX hex color format.");
             _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), null);
 
-            CraftFromContainersInstalledAndActive = false;
+            /*CraftFromContainersInstalledAndActive = false;
             var bepInExManager = GameObject.Find("BepInEx_Manager");
             var plugins = bepInExManager.GetComponentsInChildren<BaseUnityPlugin>();
             foreach (var plugin in plugins)
@@ -43,21 +43,24 @@ namespace ImprovedBuildHud
                     CraftFromContainersInstalledAndActive = CraftFromContainers.BepInExPlugin.modEnabled.Value;
                     Debug.Log("Found CraftFromContainers");
                 }
-            }
+            }*/
         }
 
         private void OnDestroy()
         {
             CraftFromContainersInstalledAndActive = false;
-            _harmony.UnpatchAll();
+            _harmony?.UnpatchAll();
         }
 
         private void LateUpdate()
         {
-            if (_cachedContainers != null)
+            if (CraftFromContainersInstalledAndActive)
             {
-                _cachedContainers.Clear();
-                _cachedContainers = null;
+                if (_cachedContainers != null)
+                {
+                    _cachedContainers.Clear();
+                    _cachedContainers = null;
+                }
             }
         }
 
@@ -71,15 +74,19 @@ namespace ImprovedBuildHud
 
             var playerInventoryCount = player.GetInventory().CountItems(itemName);
             var containerCount = 0;
-            if (_cachedContainers == null)
-            {
-                _cachedContainers = CraftFromContainers.BepInExPlugin.GetNearbyContainers(player.transform.position);
-            }
 
-            foreach (var container in _cachedContainers)
+            /*if (CraftFromContainersInstalledAndActive)
             {
-                containerCount += container.GetInventory().CountItems(itemName);
-            }
+                if (_cachedContainers == null)
+                {
+                    _cachedContainers = CraftFromContainers.BepInExPlugin.GetNearbyContainers(player.transform.position);
+                }
+
+                foreach (var container in _cachedContainers)
+                {
+                    containerCount += container.GetInventory().CountItems(itemName);
+                }
+            }*/
 
             return playerInventoryCount + containerCount;
         }

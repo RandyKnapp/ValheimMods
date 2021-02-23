@@ -25,7 +25,7 @@ namespace EquipmentAndQuickSlots
     {
         public static bool Prefix(ItemDrop.ItemData item, Inventory ___m_inventory)
         {
-            if (item != null && EquipmentAndQuickSlots.IsSlotEquippable(item))
+            if (EquipmentAndQuickSlots.EquipmentSlotsEnabled.Value && item != null && EquipmentAndQuickSlots.IsSlotEquippable(item))
             {
                 var currentInventorySlot = item.m_gridPos;
                 var correctInventorySlot = EquipmentAndQuickSlots.GetEquipmentSlotForType(item.m_shared.m_itemType);
@@ -48,6 +48,11 @@ namespace EquipmentAndQuickSlots
 
         public static bool Prefix(ItemDrop.ItemData item, Inventory ___m_inventory)
         {
+            if (!EquipmentAndQuickSlots.EquipmentSlotsEnabled.Value)
+            {
+                return true;
+            }
+
             if (_dropping)
             {
                 return false;
@@ -72,6 +77,11 @@ namespace EquipmentAndQuickSlots
 
         public static void Postfix(Humanoid __instance, ItemDrop.ItemData item, Inventory ___m_inventory)
         {
+            if (!EquipmentAndQuickSlots.EquipmentSlotsEnabled.Value)
+            {
+                return;
+            }
+
             if (_shouldDrop)
             {
                 _dropping = true;

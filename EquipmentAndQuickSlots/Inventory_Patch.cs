@@ -25,6 +25,11 @@ namespace EquipmentAndQuickSlots
     {
         public static void Postfix(List<ItemDrop.ItemData> bound, List<ItemDrop.ItemData> ___m_inventory)
         {
+            if (!EquipmentAndQuickSlots.QuickSlotsEnabled.Value)
+            {
+                return;
+            }
+
             foreach (ItemDrop.ItemData itemData in ___m_inventory)
             {
                 if (EquipmentAndQuickSlots.IsQuickSlot(itemData.m_gridPos))
@@ -46,7 +51,22 @@ namespace EquipmentAndQuickSlots
                 return true;
             }
 
-            __result = __instance.m_inventory.Count < ((__instance.m_width * __instance.m_height) - EquipmentAndQuickSlots.EquipSlotCount);
+            var inventorySize = ((__instance.m_width * __instance.m_height) - EquipmentAndQuickSlots.EquipSlotCount);
+            var currentInventoryCount = __instance.m_inventory.Count;
+            // Don't count armor that is in armor slots
+            for (int index = 0; index < EquipmentAndQuickSlots.EquipSlotCount; index++)
+            {
+                var slot = EquipmentAndQuickSlots.GetEquipmentSlotForType(EquipmentAndQuickSlots.EquipSlotTypes[index]);
+                var item = __instance.GetItemAt(slot.x, slot.y);
+                currentInventoryCount -= (item != null) ? 1 : 0;
+            }
+
+            if (!EquipmentAndQuickSlots.QuickSlotsEnabled.Value)
+            {
+                inventorySize -= EquipmentAndQuickSlots.QuickUseSlotCount;
+            }
+
+            __result = currentInventoryCount < inventorySize;
             return false;
         }
     }
@@ -66,6 +86,11 @@ namespace EquipmentAndQuickSlots
             {
                 for (int index1 = 0; index1 < ___m_height; ++index1)
                 {
+                    if (!EquipmentAndQuickSlots.QuickSlotsEnabled.Value && index1 == ___m_height - 1)
+                    {
+                        continue;
+                    }
+
                     for (int index2 = 0; index2 < ___m_width; ++index2)
                     {
                         if (EquipmentAndQuickSlots.IsEquipmentSlot(index2, index1))
@@ -96,14 +121,17 @@ namespace EquipmentAndQuickSlots
                     }
                 }
 
-                // Then do the bonus quick slots last
-                for (int index = 0; index < EquipmentAndQuickSlots.QuickUseSlotCount; ++index)
+                if (EquipmentAndQuickSlots.QuickSlotsEnabled.Value)
                 {
-                    var slotPosition = EquipmentAndQuickSlots.GetQuickSlotPosition(index);
-                    if (__instance.GetItemAt(slotPosition.x, slotPosition.y) == null)
+                    // Then do the bonus quick slots last
+                    for (int index = 0; index < EquipmentAndQuickSlots.QuickUseSlotCount; ++index)
                     {
-                        __result = slotPosition;
-                        return false;
+                        var slotPosition = EquipmentAndQuickSlots.GetQuickSlotPosition(index);
+                        if (__instance.GetItemAt(slotPosition.x, slotPosition.y) == null)
+                        {
+                            __result = slotPosition;
+                            return false;
+                        }
                     }
                 }
             }

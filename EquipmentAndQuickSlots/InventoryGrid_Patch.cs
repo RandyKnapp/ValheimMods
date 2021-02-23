@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using HarmonyLib;
 using UnityEngine;
 using UnityEngine.UI;
@@ -20,15 +17,37 @@ namespace EquipmentAndQuickSlots
                 return;
             }
 
-            var quickSlotBkg = GetOrCreateBackground(__instance, "QuickSlotBkg");
-            quickSlotBkg.anchoredPosition = new Vector2(480, -173);
-            quickSlotBkg.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 240);
-            quickSlotBkg.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 90);
+            if (EquipmentAndQuickSlots.QuickSlotsEnabled.Value)
+            {
+                var quickSlotBkg = GetOrCreateBackground(__instance, "QuickSlotBkg");
+                quickSlotBkg.anchoredPosition = new Vector2(480, -173);
+                quickSlotBkg.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 240);
+                quickSlotBkg.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 90);
+            }
+            else
+            {
+                var existingBkg = __instance.transform.parent.Find("QuickSlotBkg");
+                if (existingBkg != null)
+                {
+                    GameObject.Destroy(existingBkg.gameObject);
+                }
+            }
 
-            var equipmentBkg = GetOrCreateBackground(__instance, "EquipmentBkg");
-            equipmentBkg.anchoredPosition = new Vector2(485, 10);
-            equipmentBkg.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 210);
-            equipmentBkg.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 260);
+            if (EquipmentAndQuickSlots.EquipmentSlotsEnabled.Value)
+            {
+                var equipmentBkg = GetOrCreateBackground(__instance, "EquipmentBkg");
+                equipmentBkg.anchoredPosition = new Vector2(485, 10);
+                equipmentBkg.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 210);
+                equipmentBkg.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 260);
+            }
+            else
+            {
+                var existingBkg = __instance.transform.parent.Find("EquipmentBkg");
+                if (existingBkg != null)
+                {
+                    GameObject.Destroy(existingBkg.gameObject);
+                }
+            }
 
             float horizontalSpacing = __instance.m_elementSpace + 10;
             float verticalSpacing = __instance.m_elementSpace + 10;
@@ -46,7 +65,16 @@ namespace EquipmentAndQuickSlots
             {
                 var x = i;
                 var element = GetElement(___m_elements, x, y);
-                element.m_go.SetActive(true);
+
+                if (!EquipmentAndQuickSlots.EquipmentSlotsEnabled.Value)
+                {
+                    element.m_go.SetActive(false);
+                    continue;
+                }
+                else
+                {
+                    element.m_go.SetActive(true);
+                }
 
                 var bindingText = element.m_go.transform.Find("binding").GetComponent<Text>();
                 bindingText.enabled = true;
@@ -57,18 +85,27 @@ namespace EquipmentAndQuickSlots
                 Vector2 offset = new Vector2(692, -20);
                 (element.m_go.transform as RectTransform).anchoredPosition = offset + equipPositions[i];
             }
-            
+
             for (int i = 0; i < EquipmentAndQuickSlots.QuickUseSlotCount; ++i)
             {
                 var x = EquipmentAndQuickSlots.QuickUseSlotIndexStart + i;
                 var element = GetElement(___m_elements, x, y);
-                var bindingText = element.m_go.transform.Find("binding").GetComponent<Text>();
-                bindingText.enabled = true;
-                bindingText.text = EquipmentAndQuickSlots.GetBindingKeycode(i).ToUpperInvariant();
+                if (EquipmentAndQuickSlots.QuickSlotsEnabled.Value)
+                {
+                    element.m_go.SetActive(true);
+                    var bindingText = element.m_go.transform.Find("binding").GetComponent<Text>();
+                    bindingText.enabled = true;
+                    bindingText.horizontalOverflow = HorizontalWrapMode.Overflow;
+                    bindingText.text = EquipmentAndQuickSlots.GetBindingLabel(i);
 
-                Vector2 offset = new Vector2(310, 0);
-                Vector2 position = (Vector2)new Vector3((float)x * __instance.m_elementSpace, (float)y * -__instance.m_elementSpace);
-                (element.m_go.transform as RectTransform).anchoredPosition = offset + position;
+                    Vector2 offset = new Vector2(310, 0);
+                    Vector2 position = (Vector2) new Vector3((float) x * __instance.m_elementSpace, (float) y * -__instance.m_elementSpace);
+                    (element.m_go.transform as RectTransform).anchoredPosition = offset + position;
+                }
+                else
+                {
+                    element.m_go.SetActive(false);
+                }
             }
         }
 

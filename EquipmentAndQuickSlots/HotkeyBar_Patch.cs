@@ -12,6 +12,11 @@ namespace EquipmentAndQuickSlots
     {
         public static bool Prefix(HotkeyBar __instance, Player player, List<HotkeyBar.ElementData> ___m_elements, List<ItemDrop.ItemData> ___m_items, int ___m_selected)
         {
+            if (!EquipmentAndQuickSlots.QuickSlotsEnabled.Value)
+            {
+                return true;
+            }
+
             if (player == null || player.IsDead())
             {
                 foreach (HotkeyBar.ElementData element in ___m_elements)
@@ -55,8 +60,10 @@ namespace EquipmentAndQuickSlots
                             var quickSlotIndex = index - 8;
                             elementData.m_go.transform.localPosition = new Vector3(offset.x, offset.y - quickSlotIndex * __instance.m_elementSpace, 0.0f);
                             elementData.m_go.transform.localEulerAngles = new Vector3(0, 0, -90);
-                            string label = EquipmentAndQuickSlots.GetBindingKeycode(quickSlotIndex).ToUpperInvariant();
-                            elementData.m_go.transform.Find("binding").GetComponent<Text>().text = label;
+                            string label = EquipmentAndQuickSlots.GetBindingLabel(quickSlotIndex);
+                            var bindingText = elementData.m_go.transform.Find("binding").GetComponent<Text>();
+                            bindingText.text = label;
+                            bindingText.horizontalOverflow = HorizontalWrapMode.Overflow;
                         }
                         elementData.m_icon = elementData.m_go.transform.transform.Find("icon").GetComponent<Image>();
                         elementData.m_durability = elementData.m_go.transform.Find("durability").GetComponent<GuiBar>();
