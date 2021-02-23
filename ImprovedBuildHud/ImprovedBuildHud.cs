@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Collections.Generic;
+using System.Reflection;
 using BepInEx;
 using BepInEx.Configuration;
 using HarmonyLib;
@@ -20,8 +21,9 @@ namespace ImprovedBuildHud
     public class ImprovedBuildHud : BaseUnityPlugin
     {
         private Harmony _harmony;
+        private static List<Container> _cachedContainers;
 
-        //public static bool CraftFromContainersInstalledAndActive;
+        public static bool CraftFromContainersInstalledAndActive;
 
         private void Awake()
         {
@@ -31,7 +33,7 @@ namespace ImprovedBuildHud
             ImprovedBuildHudConfig.CanBuildAmountColor = Config.Bind("General", "Can Build Amount Color", "white", "Color to set the can-build amount. Leave empty to set no color. You can use the #XXXXXX hex color format.");
             _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), null);
 
-            /*CraftFromContainersInstalledAndActive = false;
+            CraftFromContainersInstalledAndActive = false;
             var bepInExManager = GameObject.Find("BepInEx_Manager");
             var plugins = bepInExManager.GetComponentsInChildren<BaseUnityPlugin>();
             foreach (var plugin in plugins)
@@ -39,14 +41,47 @@ namespace ImprovedBuildHud
                 if (plugin.Info.Metadata.GUID == "aedenthorn.CraftFromContainers")
                 {
                     CraftFromContainersInstalledAndActive = CraftFromContainers.BepInExPlugin.modEnabled.Value;
+                    Debug.Log("Found CraftFromContainers");
                 }
-            }*/
+            }
         }
 
         private void OnDestroy()
         {
-            //CraftFromContainersInstalledAndActive = false;
+            CraftFromContainersInstalledAndActive = false;
             _harmony.UnpatchAll();
+        }
+
+        private void LateUpdate()
+        {
+            if (_cachedContainers != null)
+            {
+                _cachedContainers.Clear();
+                _cachedContainers = null;
+            }
+        }
+
+        public static int GetAvailableItems(string itemName)
+        {
+            var player = Player.m_localPlayer;
+            if (player == null)
+            {
+                return 0;
+            }
+
+            var playerInventoryCount = player.GetInventory().CountItems(itemName);
+            var containerCount = 0;
+            if (_cachedContainers == null)
+            {
+                _cachedContainers = CraftFromContainers.BepInExPlugin.GetNearbyContainers(player.transform.position);
+            }
+
+            foreach (var container in _cachedContainers)
+            {
+                containerCount += container.GetInventory().CountItems(itemName);
+            }
+
+            return playerInventoryCount + containerCount;
         }
     }
 }

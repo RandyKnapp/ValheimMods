@@ -5,7 +5,7 @@ using BepInEx.Configuration;
 using HarmonyLib;
 using UnityEngine;
 
-namespace QuickUseSlots
+namespace EquipmentAndQuickSlots
 {
     [BepInPlugin("randyknapp.mods.equipmentandquickslots", "Equipment and Quick Slots", "1.0.0")]
     [BepInProcess("valheim.exe")]

@@ -2,7 +2,7 @@
 using HarmonyLib;
 using UnityEngine;
 
-namespace QuickUseSlots
+namespace EquipmentAndQuickSlots
 {
     // private void OnSelectedItem(
     [HarmonyPatch(typeof(InventoryGui), "OnSelectedItem", new Type[] { typeof(InventoryGrid), typeof(ItemDrop.ItemData), typeof(Vector2i), typeof(InventoryGrid.Modifier) })]

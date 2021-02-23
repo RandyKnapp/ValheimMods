@@ -7,7 +7,7 @@ using HarmonyLib;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace QuickUseSlots
+namespace EquipmentAndQuickSlots
 {
     //private void UpdateGui(Player player, ItemDrop.ItemData dragItem)
     [HarmonyPatch(typeof(InventoryGrid), "UpdateGui", new Type[] {typeof(Player), typeof(ItemDrop.ItemData)})]

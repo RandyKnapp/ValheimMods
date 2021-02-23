@@ -4,7 +4,7 @@ using HarmonyLib;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace QuickUseSlots
+namespace EquipmentAndQuickSlots
 {
     //void UpdateIcons(Player player)
     [HarmonyPatch(typeof(HotkeyBar), "UpdateIcons", new Type[] { typeof(Player) })]

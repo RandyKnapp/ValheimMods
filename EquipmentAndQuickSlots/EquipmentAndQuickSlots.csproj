@@ -7,8 +7,8 @@
     <ProjectGuid>{08ED5BC9-9E0C-4343-90A5-92497BE6E216}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>QuickUseSlots</RootNamespace>
-    <AssemblyName>QuickUseSlots</AssemblyName>
+    <RootNamespace>EquipmentAndQuickSlots</RootNamespace>
+    <AssemblyName>EquipmentAndQuickSlots</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>

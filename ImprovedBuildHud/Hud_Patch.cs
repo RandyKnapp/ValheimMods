@@ -20,7 +20,7 @@ namespace ImprovedBuildHud
                 var fewestPossible = int.MaxValue;
                 foreach (var requirement in piece.m_resources)
                 {
-                    var currentAmount = GetAvailableResources(requirement);
+                    var currentAmount = ImprovedBuildHud.GetAvailableItems(requirement.m_resItem.m_itemData.m_shared.m_name);
                     var canMake = currentAmount / requirement.m_amount;
                     if (canMake < fewestPossible)
                     {
@@ -36,23 +36,5 @@ namespace ImprovedBuildHud
                 ___m_buildSelection.text = $"{displayName} {canBuildDisplay}";
             }
         }
-
-        private static int GetAvailableResources(Piece.Requirement requirement)
-        {
-            var player = Player.m_localPlayer;
-            var requirementName = requirement.m_resItem.m_itemData.m_shared.m_name;
-
-            var count = player.GetInventory().CountItems(requirementName);
-            /*if (ImprovedBuildHud.CraftFromContainersInstalledAndActive)
-            {
-                var containers = CraftFromContainers.BepInExPlugin.GetNearbyContainers(player.transform.position);
-                foreach (var container in containers)
-                {
-                    count += container.GetInventory().CountItems(requirementName);
-                }
-            }*/
-            return count;
-        }
-        
     }
 }

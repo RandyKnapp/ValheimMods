@@ -1,7 +1,7 @@
 ﻿using System;
 using HarmonyLib;
 
-namespace QuickUseSlots
+namespace EquipmentAndQuickSlots
 {
     public static class EquipUtil
     {
