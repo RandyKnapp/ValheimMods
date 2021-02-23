@@ -25,10 +25,10 @@ namespace QuickUseSlots
     {
         public static bool Prefix(ItemDrop.ItemData item, Inventory ___m_inventory)
         {
-            if (item != null && QuickUseSlots.IsSlotEquippable(item))
+            if (item != null && EquipmentAndQuickSlots.IsSlotEquippable(item))
             {
                 var currentInventorySlot = item.m_gridPos;
-                var correctInventorySlot = QuickUseSlots.GetEquipmentSlotForType(item.m_shared.m_itemType);
+                var correctInventorySlot = EquipmentAndQuickSlots.GetEquipmentSlotForType(item.m_shared.m_itemType);
                 if (currentInventorySlot != correctInventorySlot)
                 {
                     EquipUtil.MoveItemToSlot(___m_inventory, item, correctInventorySlot);
@@ -54,7 +54,7 @@ namespace QuickUseSlots
             }
 
             _shouldDrop = false;
-            if (item != null && QuickUseSlots.IsSlotEquippable(item) && QuickUseSlots.IsEquipmentSlot(item.m_gridPos))
+            if (item != null && EquipmentAndQuickSlots.IsSlotEquippable(item) && EquipmentAndQuickSlots.IsEquipmentSlot(item.m_gridPos))
             {
                 if (___m_inventory.HaveEmptySlot())
                 {

@@ -41,8 +41,8 @@ namespace QuickUseSlots
                 new Vector2(horizontalSpacing, -1.5f * verticalSpacing), // Utility
             };
 
-            var y = QuickUseSlots.GetBonusInventoryRowIndex();
-            for (int i = 0; i < QuickUseSlots.EquipSlotCount; ++i)
+            var y = EquipmentAndQuickSlots.GetBonusInventoryRowIndex();
+            for (int i = 0; i < EquipmentAndQuickSlots.EquipSlotCount; ++i)
             {
                 var x = i;
                 var element = GetElement(___m_elements, x, y);
@@ -52,19 +52,19 @@ namespace QuickUseSlots
                 bindingText.enabled = true;
                 bindingText.horizontalOverflow = HorizontalWrapMode.Overflow;
                 bindingText.text = equipNames[i];
-                bindingText.rectTransform.anchoredPosition = new Vector2(32, 0);
+                bindingText.rectTransform.anchoredPosition = new Vector2(32, 5);
 
                 Vector2 offset = new Vector2(692, -20);
                 (element.m_go.transform as RectTransform).anchoredPosition = offset + equipPositions[i];
             }
             
-            for (int i = 0; i < QuickUseSlots.QuickUseSlotCount; ++i)
+            for (int i = 0; i < EquipmentAndQuickSlots.QuickUseSlotCount; ++i)
             {
-                var x = QuickUseSlots.QuickUseSlotIndexStart + i;
+                var x = EquipmentAndQuickSlots.QuickUseSlotIndexStart + i;
                 var element = GetElement(___m_elements, x, y);
                 var bindingText = element.m_go.transform.Find("binding").GetComponent<Text>();
                 bindingText.enabled = true;
-                bindingText.text = QuickUseSlots.GetBindingKeycode(i).ToString();
+                bindingText.text = EquipmentAndQuickSlots.GetBindingKeycode(i).ToUpperInvariant();
 
                 Vector2 offset = new Vector2(310, 0);
                 Vector2 position = (Vector2)new Vector3((float)x * __instance.m_elementSpace, (float)y * -__instance.m_elementSpace);

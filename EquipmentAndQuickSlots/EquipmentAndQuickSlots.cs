@@ -1,21 +1,20 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Reflection;
 using BepInEx;
+using BepInEx.Configuration;
 using HarmonyLib;
 using UnityEngine;
 
 namespace QuickUseSlots
 {
-    [BepInPlugin("randyknapp.mods.quickuseslots", "Quick Use Slots", "1.0.0")]
+    [BepInPlugin("randyknapp.mods.equipmentandquickslots", "Equipment and Quick Slots", "1.0.0")]
     [BepInProcess("valheim.exe")]
-    public class QuickUseSlots : BaseUnityPlugin
+    public class EquipmentAndQuickSlots : BaseUnityPlugin
     {
         public const int QuickUseSlotCount = 3;
         public const int QuickUseSlotIndexStart = 5;
         public const int EquipSlotCount = 5;
-        public const string QuickUseAction = "QuickUse";
-        public static KeyCode[] KeyCodes = { KeyCode.Z, KeyCode.X, KeyCode.C };
+        public static ConfigEntry<string>[] KeyCodes = new ConfigEntry<string>[3];
         public static List<ItemDrop.ItemData.ItemType> EquipSlotTypes = new List<ItemDrop.ItemData.ItemType> {
             ItemDrop.ItemData.ItemType.Helmet,
             ItemDrop.ItemData.ItemType.Chest,
@@ -28,12 +27,10 @@ namespace QuickUseSlots
 
         private void Awake()
         {
+            KeyCodes[0] = Config.Bind("Hotkeys", "Quick slot hotkey 1", "z", "Hotkey for Quick Slot 1.");
+            KeyCodes[1] = Config.Bind("Hotkeys", "Quick slot hotkey 2", "v", "Hotkey for Quick Slot 2.");
+            KeyCodes[2] = Config.Bind("Hotkeys", "Quick slot hotkey 3", "b", "Hotkey for Quick Slot 3.");
             _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
-
-            for (int i = 0; i < QuickUseSlotCount; ++i)
-            {
-                SetBinding(i);
-            }
         }
 
         private void OnDestroy()
@@ -44,7 +41,7 @@ namespace QuickUseSlots
         private void Update()
         {
             var player = Player.m_localPlayer;
-            if (player != null)
+            if (player != null && !Console.IsVisible())
             {
                 for (int i = 0; i < QuickUseSlotCount; ++i)
                 {
@@ -53,34 +50,10 @@ namespace QuickUseSlots
             }
         }
 
-        public static string GetActionName(int index)
-        {
-            return $"{QuickUseAction}{index + 1}";
-        }
-
-        public static KeyCode GetBindingKeycode(int index)
+        public static string GetBindingKeycode(int index)
         {
             index = Mathf.Clamp(index, 0, QuickUseSlotCount - 1);
-            return KeyCodes[index];
-        }
-
-        public static void SetBinding(int index)
-        {
-            if (ZInput.instance == null)
-            {
-                return;
-            }
-
-            var action = GetActionName(index);
-            var key = GetBindingKeycode(index);
-            if (ZInput.instance.GetBoundKeyString(action).StartsWith("MISS"))
-            {
-                ZInput.instance.AddButton(action, key);
-            }
-            else
-            {
-                ZInput.instance.Setbutton(action, key);
-            }
+            return KeyCodes[index].Value.ToLowerInvariant();
         }
 
         public static int GetBonusInventoryRowIndex()
@@ -95,8 +68,8 @@ namespace QuickUseSlots
 
         public static void CheckQuickUseInput(Player player, int index)
         {
-            var action = GetActionName(index);
-            if (ZInput.GetButtonDown(action))
+            var keyCode = GetBindingKeycode(index);
+            if (Input.GetKeyDown(keyCode))
             {
                 var bonusInventoryRowIndex = GetBonusInventoryRowIndex();
                 var item = player.GetInventory().GetItemAt(QuickUseSlotIndexStart + index, bonusInventoryRowIndex);
@@ -110,15 +83,15 @@ namespace QuickUseSlots
         public static bool IsQuickSlot(Vector2i pos)
         {
             var bonusInventoryRowIndex = GetBonusInventoryRowIndex();
-            var startIndex = QuickUseSlots.QuickUseSlotIndexStart;
-            var endIndex = startIndex + QuickUseSlots.QuickUseSlotCount;
+            var startIndex = EquipmentAndQuickSlots.QuickUseSlotIndexStart;
+            var endIndex = startIndex + EquipmentAndQuickSlots.QuickUseSlotCount;
             return pos.y == bonusInventoryRowIndex && pos.x >= startIndex && pos.x < endIndex;
         }
 
         public static Vector2i GetQuickSlotPosition(int index)
         {
             var bonusInventoryRowIndex = GetBonusInventoryRowIndex();
-            var startIndex = QuickUseSlots.QuickUseSlotIndexStart;
+            var startIndex = EquipmentAndQuickSlots.QuickUseSlotIndexStart;
             return new Vector2i(startIndex + index, bonusInventoryRowIndex);
         }
 

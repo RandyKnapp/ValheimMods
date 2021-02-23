@@ -76,8 +76,12 @@
     <Compile Include="InventoryGrid_Patch.cs" />
     <Compile Include="InventoryGui_Patch.cs" />
     <Compile Include="Inventory_Patch.cs" />
-    <Compile Include="QuickUseSlots.cs" />
+    <Compile Include="EquipmentAndQuickSlots.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="manifest.json" />
+    <None Include="README.md" />
   </ItemGroup>
   <Import Project="..\Common\Common.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -10,9 +10,9 @@ namespace QuickUseSlots
     {
         public static bool Prefix(InventoryGui __instance, InventoryGrid grid, ItemDrop.ItemData item, Vector2i pos, InventoryGrid.Modifier mod, GameObject ___m_dragGo, ItemDrop.ItemData ___m_dragItem)
         {
-            if (QuickUseSlots.IsEquipmentSlot(pos))
+            if (EquipmentAndQuickSlots.IsEquipmentSlot(pos))
             {
-                if (___m_dragItem != null && QuickUseSlots.IsSlotEquippable(___m_dragItem) && QuickUseSlots.GetEquipmentTypeForSlot(pos) == ___m_dragItem.m_shared.m_itemType)
+                if (___m_dragItem != null && EquipmentAndQuickSlots.IsSlotEquippable(___m_dragItem) && EquipmentAndQuickSlots.GetEquipmentTypeForSlot(pos) == ___m_dragItem.m_shared.m_itemType)
                 {
                     var player = Player.m_localPlayer;
                     player.UseItem(player.GetInventory(), ___m_dragItem, true);

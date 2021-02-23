@@ -24,7 +24,7 @@ namespace QuickUseSlots
             {
                 player.GetInventory().GetBoundItems(___m_items);
                 ___m_items.Sort((Comparison<ItemDrop.ItemData>)((a, b) => a.m_gridPos.y == b.m_gridPos.y ? a.m_gridPos.x.CompareTo(b.m_gridPos.x) : a.m_gridPos.y.CompareTo(b.m_gridPos.y)));
-                int num = player.GetInventory().m_width + QuickUseSlots.QuickUseSlotCount;
+                int num = player.GetInventory().m_width + EquipmentAndQuickSlots.QuickUseSlotCount;
                 if (___m_elements.Count != num)
                 {
                     foreach (HotkeyBar.ElementData element in ___m_elements)
@@ -52,10 +52,10 @@ namespace QuickUseSlots
                         else
                         {
                             var offset = new Vector2(100, -150);
-                            elementData.m_go.transform.localPosition = new Vector3(offset.x, offset.y - (index - 8) * __instance.m_elementSpace, 0.0f);
+                            var quickSlotIndex = index - 8;
+                            elementData.m_go.transform.localPosition = new Vector3(offset.x, offset.y - quickSlotIndex * __instance.m_elementSpace, 0.0f);
                             elementData.m_go.transform.localEulerAngles = new Vector3(0, 0, -90);
-                            string[] bindingLabels = {"Z", "X", "C"};
-                            string label = bindingLabels[index - 8];
+                            string label = EquipmentAndQuickSlots.GetBindingKeycode(quickSlotIndex).ToUpperInvariant();
                             elementData.m_go.transform.Find("binding").GetComponent<Text>().text = label;
                         }
                         elementData.m_icon = elementData.m_go.transform.transform.Find("icon").GetComponent<Image>();
@@ -134,7 +134,7 @@ namespace QuickUseSlots
             }
             else
             {
-                return elements[Player.m_localPlayer.GetInventory().m_width + item.m_gridPos.x - QuickUseSlots.QuickUseSlotIndexStart];
+                return elements[Player.m_localPlayer.GetInventory().m_width + item.m_gridPos.x - EquipmentAndQuickSlots.QuickUseSlotIndexStart];
             }
         }
     }

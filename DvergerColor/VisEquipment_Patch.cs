@@ -38,12 +38,12 @@ namespace DvergerColor
         private void Update()
         {
             bool changedStep = false;
-            if (Input.GetKeyDown(DvergerColor.NarrowBeamHotkey.Value))
+            if (!Console.IsVisible() && Input.GetKeyDown(DvergerColor.NarrowBeamHotkey.Value))
             {
                 Step = Mathf.Clamp(Step - 1, 0, _maxSteps);
                 changedStep = true;
             }
-            else if (Input.GetKeyDown(DvergerColor.WidenBeamHotkey.Value))
+            else if (!Console.IsVisible() && Input.GetKeyDown(DvergerColor.WidenBeamHotkey.Value))
             {
                 Step = Mathf.Clamp(Step + 1, 0, _maxSteps);
                 changedStep = true;

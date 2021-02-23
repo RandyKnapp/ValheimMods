@@ -27,7 +27,7 @@ namespace QuickUseSlots
         {
             foreach (ItemDrop.ItemData itemData in ___m_inventory)
             {
-                if (QuickUseSlots.IsQuickSlot(itemData.m_gridPos))
+                if (EquipmentAndQuickSlots.IsQuickSlot(itemData.m_gridPos))
                 {
                     bound.Add(itemData);
                 }
@@ -46,7 +46,7 @@ namespace QuickUseSlots
                 return true;
             }
 
-            __result = __instance.m_inventory.Count < ((__instance.m_width * __instance.m_height) - QuickUseSlots.EquipSlotCount);
+            __result = __instance.m_inventory.Count < ((__instance.m_width * __instance.m_height) - EquipmentAndQuickSlots.EquipSlotCount);
             return false;
         }
     }
@@ -68,7 +68,7 @@ namespace QuickUseSlots
                 {
                     for (int index2 = 0; index2 < ___m_width; ++index2)
                     {
-                        if (QuickUseSlots.IsEquipmentSlot(index2, index1))
+                        if (EquipmentAndQuickSlots.IsEquipmentSlot(index2, index1))
                         {
                             continue;
                         }
@@ -97,9 +97,9 @@ namespace QuickUseSlots
                 }
 
                 // Then do the bonus quick slots last
-                for (int index = 0; index < QuickUseSlots.QuickUseSlotCount; ++index)
+                for (int index = 0; index < EquipmentAndQuickSlots.QuickUseSlotCount; ++index)
                 {
-                    var slotPosition = QuickUseSlots.GetQuickSlotPosition(index);
+                    var slotPosition = EquipmentAndQuickSlots.GetQuickSlotPosition(index);
                     if (__instance.GetItemAt(slotPosition.x, slotPosition.y) == null)
                     {
                         __result = slotPosition;
