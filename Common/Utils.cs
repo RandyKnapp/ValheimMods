@@ -37,6 +37,7 @@ namespace Common
 
         public static Sprite LoadSpriteFromFile(string spritePath)
         {
+            spritePath = Path.Combine(Paths.PluginPath, spritePath);
             if (File.Exists(spritePath))
             {
                 byte[] fileData = File.ReadAllBytes(spritePath);
@@ -52,7 +53,7 @@ namespace Common
 
         public static Sprite LoadSpriteFromFile(string modFolder, string iconName)
         {
-            var spritePath = Path.Combine(Paths.PluginPath, modFolder, iconName);
+            var spritePath = Path.Combine(modFolder, iconName);
             return LoadSpriteFromFile(spritePath);
         }
     }

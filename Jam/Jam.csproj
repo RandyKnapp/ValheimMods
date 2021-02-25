@@ -48,6 +48,10 @@
     <Reference Include="BepInEx">
       <HintPath>..\Libs\BepInEx.dll</HintPath>
     </Reference>
+    <Reference Include="LitJSON">
+      <HintPath>..\packages\LitJson.0.10.0\lib\net45\LitJSON.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="UnityEngine">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\unstripped_corlib\UnityEngine.dll</HintPath>
     </Reference>
@@ -75,6 +79,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Consumables.cs" />
     <Compile Include="InventoryGui_Patch.cs" />
     <Compile Include="Jam.cs" />
     <Compile Include="PrefabCreator.cs" />
@@ -87,6 +92,7 @@
   <Import Project="..\Common\Common.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy "$(TargetDir)\$(TargetFileName)" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\scripts\" /q /y /i</PostBuildEvent>
+    <PostBuildEvent>xcopy "$(TargetDir)\$(TargetFileName)" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\scripts\" /q /y /i
+xcopy "$(ProjectDir)\consumables.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)" /q /y /i</PostBuildEvent>
   </PropertyGroup>
 </Project>

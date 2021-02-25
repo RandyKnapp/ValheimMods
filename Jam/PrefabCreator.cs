@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.IO;
+using BepInEx;
 using UnityEngine;
 
 namespace Jam
@@ -23,7 +25,7 @@ namespace Jam
             CraftingStations = null;
         }
 
-        public static GameObject CreatePrefab()
+        public static GameObject CreatePrefab(ConsumableItem config)
         {
             if (CraftingStations == null)
             {
@@ -37,11 +39,10 @@ namespace Jam
                 }
             }
 
-            Debug.Log(ObjectDB.instance.m_items.Count);
-            var existingItemPrefab = ObjectDB.instance.GetItemPrefab("BlueberryJam");
+            var existingItemPrefab = ObjectDB.instance.GetItemPrefab(config.id);
             if (existingItemPrefab != null)
             {
-                Debug.Log($"Found {existingItemPrefab.name}");
+                Debug.Log($"[Jam] Found existing prefab for {existingItemPrefab.name}");
                 return existingItemPrefab;
                 /*var existingRecipe = ObjectDB.instance.GetRecipe(existingItemPrefab.GetComponent<ItemDrop>().m_itemData);
                 if (existingRecipe != null)
@@ -54,9 +55,15 @@ namespace Jam
                 Object.DestroyImmediate(existingItemPrefab);*/
             }
 
-            var basePrefab = ObjectDB.instance.GetItemPrefab("QueensJam");
+            var basePrefab = ObjectDB.instance.GetItemPrefab(config.basePrefab);
+            if (basePrefab == null)
+            {
+                Debug.LogError($"[Jam] Could not load basePrefab: {config.basePrefab}");
+                return null;
+            }
+
             var newPrefab = GameObject.Instantiate(basePrefab);
-            newPrefab.name = "BlueberryJam";
+            newPrefab.name = config.id;
             newPrefab.layer = 12;
 
             ZNetView zNetView = RequireComponent<ZNetView>(newPrefab);
@@ -80,34 +87,87 @@ namespace Jam
             itemDrop.m_itemData = new ItemDrop.ItemData();
             itemDrop.m_itemData.m_shared = new ItemDrop.ItemData.SharedData()
             {
-                m_name = "Blueberry jam",
-                m_icons = new[] { Common.Utils.LoadSpriteFromFile("Jam", "BlueberryJam.png") },
-                m_description = "Test Description",
+                m_name = config.displayName,
+                m_description = config.description,
                 m_itemType = ItemDrop.ItemData.ItemType.Consumable,
-                m_maxStackSize = 20,
-                m_food = 20,
-                m_foodStamina = 25,
-                m_foodRegen = 1,
-                m_foodBurnTime = 1200,
-                m_foodColor = new Color(0, 0, 1)
+                m_maxStackSize = config.maxStackSize,
+                m_food = config.food,
+                m_foodStamina = config.foodStamina,
+                m_foodRegen = config.foodRegen,
+                m_foodBurnTime = config.foodBurnTime
             };
+
+            if (!ColorUtility.TryParseHtmlString(config.foodColor, out itemDrop.m_itemData.m_shared.m_foodColor))
+            {
+                Debug.LogError($"[Jam] Could not parse foodColor ({config.id}): {config.foodColor}");
+            }
+
+            var icons = new List<Sprite>();
+            foreach (var icon in config.icons)
+            {
+                var sprite = Common.Utils.LoadSpriteFromFile(icon);
+                icons.Add(sprite);
+            }
+            itemDrop.m_itemData.m_shared.m_icons = icons.ToArray();
             ObjectDB.instance.m_items.Add(newPrefab);
 
-            var baseRecipe = ObjectDB.instance.m_recipes.Find(x => x.name == "Recipe_QueensJam");
-            var blueberryJamRecipe = ScriptableObject.CreateInstance<Recipe>();
-            blueberryJamRecipe.name = "Recipe_" + "BlueberryJam";
-            blueberryJamRecipe.m_amount = 4;
-            blueberryJamRecipe.m_craftingStation = CraftingStations["piece_cauldron"];
-            blueberryJamRecipe.m_minStationLevel = 1;
-            blueberryJamRecipe.m_item = ObjectDB.instance.GetItemPrefab("BlueberryJam").GetComponent<ItemDrop>();
-            blueberryJamRecipe.m_enabled = true;
-            blueberryJamRecipe.m_repairStation = null;
-            blueberryJamRecipe.m_resources = new[] { new Piece.Requirement()
+            var newRecipe = ScriptableObject.CreateInstance<Recipe>();
+            newRecipe.name = $"Recipe_{config.id}";
+            newRecipe.m_amount = config.recipe.amount;
+            newRecipe.m_minStationLevel = config.recipe.minStationLevel;
+            newRecipe.m_item = ObjectDB.instance.GetItemPrefab(config.id).GetComponent<ItemDrop>();
+            newRecipe.m_enabled = config.recipe.enabled;
+
+            if (!string.IsNullOrEmpty(config.recipe.craftingStation))
             {
-                m_amount = 8, m_resItem = baseRecipe.m_resources[1].m_resItem
-            } };
-            ObjectDB.instance.m_recipes.Add(blueberryJamRecipe);
-            Debug.Log($"Created {newPrefab.name}");
+                var craftingStationExists = CraftingStations.ContainsKey(config.recipe.craftingStation);
+                if (!craftingStationExists)
+                {
+                    Debug.LogWarning($"[Jam] Could not find crafting station ({config.id}): {config.recipe.craftingStation}");
+                    var stationList = string.Join(", ", CraftingStations.Keys);
+                    Debug.Log($"[Jam] Available Stations: {stationList}");
+                }
+                else
+                {
+                    newRecipe.m_craftingStation = CraftingStations[config.recipe.craftingStation];
+                }
+            }
+
+            if (!string.IsNullOrEmpty(config.recipe.repairStation))
+            {
+                var repairStationExists = CraftingStations.ContainsKey(config.recipe.repairStation);
+                if (!repairStationExists)
+                {
+                    Debug.LogWarning($"[Jam] Could not find repair station ({config.id}): {config.recipe.repairStation}");
+                    var stationList = string.Join(", ", CraftingStations.Keys);
+                    Debug.Log($"[Jam] Available Stations: {stationList}");
+                }
+                else
+                {
+                    newRecipe.m_repairStation = CraftingStations[config.recipe.repairStation];
+                }
+            }
+
+            var reqs = new List<Piece.Requirement>();
+            foreach (var requirement in config.recipe.resources)
+            {
+                var reqPrefab = ObjectDB.instance.GetItemPrefab(requirement.item);
+                if (reqPrefab == null)
+                {
+                    Debug.LogError($"[Jam] Could not load requirement item ({config.id}): {requirement.item}");
+                    continue;
+                }
+
+                reqs.Add(new Piece.Requirement()
+                {
+                    m_amount = requirement.amount,
+                    m_resItem = reqPrefab.GetComponent<ItemDrop>()
+                });
+            }
+            newRecipe.m_resources = reqs.ToArray();
+
+            ObjectDB.instance.m_recipes.Add(newRecipe);
+            Debug.Log($"[Jam] Created {newPrefab.name}");
 
             return newPrefab;
         }
