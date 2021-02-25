@@ -1,0 +1,29 @@
+{
+  "Consumables": {
+    "BlueberryJam": {
+      "base": "QueensJam",
+      "m_name": "Blueberry jam",
+      "m_icons": [ "Jam\\BlueberryJam.png" ],
+      "m_description": "A delicious pot of blueberry preserves.",
+      "m_maxStackSize": 20,
+      "m_food": 20,
+      "m_foodStamina": 25,
+      "m_foodRegen": 1,
+      "m_foodBurnTime": 1200,
+      "m_foodColor" : "#0000FF", 
+      "recipe": {
+        "m_amount": 4,
+        "m_craftingStation": "piece_cauldron",
+        "m_minStationLevel": 1,
+        "m_enabled": true,
+        "m_repairStation": "",
+        "m_resources": [
+          {
+            "m_resItem": "Blueberries",
+            "m_amount": 8
+          }
+        ]
+      }
+    }  
+  } 
+}

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Security.AccessControl;
 using BepInEx;
 using HarmonyLib;
 using UnityEngine;
@@ -80,16 +81,7 @@ namespace MinimalStatusEffects
 
                 if (_sprite == null)
                 {
-                    var spritePath = Path.Combine(Paths.PluginPath, "MinimalStatusEffects", "refresh_icon.png");
-                    if (File.Exists(spritePath))
-                    {
-                        byte[] fileData = File.ReadAllBytes(spritePath);
-                        Texture2D tex = new Texture2D(20, 20);
-                        if (tex.LoadImage(fileData))
-                        {
-                            _sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(), 100);
-                        }
-                    }
+                    _sprite = Common.Utils.LoadSpriteFromFile("MinimalStatusEffects", "refresh_icon.png");
                 }
 
                 if (_sprite != null)

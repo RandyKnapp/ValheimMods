@@ -140,4 +140,7 @@ namespace EquipmentAndQuickSlots
             return false;
         }
     }
+
+    //public void MoveInventoryToGrave(Inventory original)
+
 }
