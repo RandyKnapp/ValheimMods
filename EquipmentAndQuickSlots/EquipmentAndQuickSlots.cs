@@ -7,8 +7,8 @@ using UnityEngine;
 
 namespace EquipmentAndQuickSlots
 {
-    [BepInPlugin("randyknapp.mods.equipmentandquickslots", "Equipment and Quick Slots", "1.0.1")]
-    [BepInProcess("valheim.exe")]
+    [BepInPlugin("randyknapp.mods.equipmentandquickslots", "Equipment and Quick Slots", "1.0.2")]
+    [BepInDependency("moreslots", BepInDependency.DependencyFlags.SoftDependency)]
     public class EquipmentAndQuickSlots : BaseUnityPlugin
     {
         public const int QuickUseSlotCount = 3;

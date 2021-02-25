@@ -23,6 +23,7 @@ namespace EquipmentAndQuickSlots
                 quickSlotBkg.anchoredPosition = new Vector2(480, -173);
                 quickSlotBkg.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 240);
                 quickSlotBkg.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 90);
+                quickSlotBkg.localScale = new Vector3(1, 1, 1);
             }
             else
             {
@@ -39,6 +40,7 @@ namespace EquipmentAndQuickSlots
                 equipmentBkg.anchoredPosition = new Vector2(485, 10);
                 equipmentBkg.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 210);
                 equipmentBkg.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 260);
+                equipmentBkg.localScale = new Vector3(1, 1, 1);
             }
             else
             {
@@ -98,8 +100,8 @@ namespace EquipmentAndQuickSlots
                     bindingText.horizontalOverflow = HorizontalWrapMode.Overflow;
                     bindingText.text = EquipmentAndQuickSlots.GetBindingLabel(i);
 
-                    Vector2 offset = new Vector2(310, 0);
-                    Vector2 position = (Vector2) new Vector3((float) x * __instance.m_elementSpace, (float) y * -__instance.m_elementSpace);
+                    Vector2 offset = new Vector2(310, 1);
+                    Vector2 position = new Vector2(x * __instance.m_elementSpace, 4 * -__instance.m_elementSpace);
                     (element.m_go.transform as RectTransform).anchoredPosition = offset + position;
                 }
                 else
