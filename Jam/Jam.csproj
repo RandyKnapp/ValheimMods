@@ -93,6 +93,8 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy "$(TargetDir)\$(TargetFileName)" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\scripts\" /q /y /i
-xcopy "$(ProjectDir)\consumables.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)" /q /y /i</PostBuildEvent>
+xcopy "$(ProjectDir)\consumables.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)" /q /y /i
+xcopy "$(ProjectDir)\Images\" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)" /q /y /i
+xcopy "$(SolutionDir)\packages\LitJson.0.10.0\lib\net45\LitJSON.dll" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)" /q /y /i</PostBuildEvent>
   </PropertyGroup>
 </Project>
