@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Security.AccessControl;
-using BepInEx;
 using HarmonyLib;
 using UnityEngine;
 using UnityEngine.UI;
@@ -92,4 +89,19 @@ namespace MinimalStatusEffects
             }
         }
     }
+
+    //public void UpdateShipHud(Player player, float dt)
+    [HarmonyPatch(typeof(Hud), "UpdateShipHud")]
+    public static class Hud_UpdateShipHud_Patch
+    {
+        public static void Postfix(Hud __instance)
+        {
+            var scale = MinimalStatusEffectConfig.SailingPowerIndicatorScale.Value;
+            var powerIcon = __instance.m_rudder.transform.parent as RectTransform;
+            powerIcon.localScale = new Vector3(scale, scale, 1);
+            powerIcon.anchoredPosition = MinimalStatusEffectConfig.SailingPowerIndicatorPosition.Value;
+            __instance.m_shipWindIndicatorRoot.anchoredPosition = MinimalStatusEffectConfig.SailingWindIndicatorPosition.Value;
+        }
+    }
+
 }

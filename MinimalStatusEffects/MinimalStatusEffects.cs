@@ -13,10 +13,13 @@ namespace MinimalStatusEffects
         public static ConfigEntry<float> EntrySpacing;
         public static ConfigEntry<float> IconSize;
         public static ConfigEntry<int> FontSize;
+
+        public static ConfigEntry<Vector2> SailingWindIndicatorPosition;
+        public static ConfigEntry<Vector2> SailingPowerIndicatorPosition;
+        public static ConfigEntry<float> SailingPowerIndicatorScale;
     }
 
-    [BepInPlugin("randyknapp.mods.minimalstatuseffects", "Minimal Status Effects", "1.0.1")]
-    [BepInProcess("valheim.exe")]
+    [BepInPlugin("randyknapp.mods.minimalstatuseffects", "Minimal Status Effects", "1.0.3")]
     public class MinimalStatusEffects : BaseUnityPlugin
     {
         private Harmony _harmony;
@@ -31,6 +34,11 @@ namespace MinimalStatusEffects
                 "The number of units between the top of each entry in the status effects list.");
             MinimalStatusEffectConfig.IconSize = Config.Bind<float>("General", "IconSize", 32, "The size of the square icons.");
             MinimalStatusEffectConfig.FontSize = Config.Bind("General", "FontSize", 20, "The size of the text on the label.");
+
+            MinimalStatusEffectConfig.SailingWindIndicatorPosition = Config.Bind("SailingIndicator", "SailingWindIndicatorPosition", new Vector2(-350, -140), "Location of the sailing wind direction indicator on screen.");
+            MinimalStatusEffectConfig.SailingPowerIndicatorPosition = Config.Bind("SailingIndicator", "SailingPowerIndicatorPosition", new Vector2(-270, -215), "Location of the sailing power indicator on screen.");
+            MinimalStatusEffectConfig.SailingPowerIndicatorScale = Config.Bind("SailingIndicator", "SailingPowerIndicatorScale", 0.65f, "Scale of the sailing power indicator.");
+
             _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), null);
         }
 

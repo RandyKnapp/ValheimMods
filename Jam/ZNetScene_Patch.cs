@@ -8,7 +8,7 @@ namespace Jam
     {
         public static void Postfix(ZNetScene __instance)
         {
-            
+            Debug.LogWarning("[Jam] ZNetScene_Awake_Patch");
         }
     }
 }

@@ -9,7 +9,9 @@
     <Import_RootNamespace>Common</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Consumables.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlayerExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PrefabCreator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utils.cs" />
   </ItemGroup>
 </Project>
