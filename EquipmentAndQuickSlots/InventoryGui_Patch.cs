@@ -10,7 +10,7 @@ namespace EquipmentAndQuickSlots
     {
         public static bool Prefix(InventoryGui __instance, InventoryGrid grid, ItemDrop.ItemData item, Vector2i pos, InventoryGrid.Modifier mod, GameObject ___m_dragGo, ItemDrop.ItemData ___m_dragItem)
         {
-            if (EquipmentAndQuickSlots.EquipmentSlotsEnabled.Value && EquipmentAndQuickSlots.IsEquipmentSlot(pos))
+            if (grid.m_inventory.m_name.Equals("Inventory") && EquipmentAndQuickSlots.EquipmentSlotsEnabled.Value && EquipmentAndQuickSlots.IsEquipmentSlot(pos))
             {
                 if (___m_dragItem != null && EquipmentAndQuickSlots.IsSlotEquippable(___m_dragItem) && EquipmentAndQuickSlots.GetEquipmentTypeForSlot(pos) == ___m_dragItem.m_shared.m_itemType)
                 {
