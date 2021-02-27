@@ -72,6 +72,8 @@
     <Compile Include="ZNetScene_Patch.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="manifest.json" />
+    <None Include="README.md" />
     <None Include="recipes.json" />
   </ItemGroup>
   <Import Project="..\Common\Common.projitems" Label="Shared" />
