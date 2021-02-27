@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace DvergerColor
 {
-    [BepInPlugin("randyknapp.mods.dvergercolor", "Dverger Color", "1.0.1")]
+    [BepInPlugin("randyknapp.mods.dvergercolor", "Dverger Color", "1.0.2")]
     [BepInProcess("valheim.exe")]
     public class DvergerColor : BaseUnityPlugin
     {
@@ -22,8 +22,11 @@ namespace DvergerColor
         public static ConfigEntry<float> PointRange;
         public static ConfigEntry<string> NarrowBeamHotkey;
         public static ConfigEntry<string> WidenBeamHotkey;
+        public static ConfigEntry<string> ToggleHotkey;
+        public static ConfigEntry<bool> TurnOffInBed;
 
         public const string StepDataKey = "randyknapp.mods.dvergercolor.step";
+        public const string OnDataKey = "randyknapp.mods.dvergercolor.on";
 
         private Harmony _harmony;
 
@@ -41,6 +44,8 @@ namespace DvergerColor
             PointRange = Config.Bind("General", "Point Range", 10.0f, "The range of the Dverger light pool on the point light setting.");
             NarrowBeamHotkey = Config.Bind("Hotkeys", "Narrow Beam Hotkey", "[", "Press this button to narrow the Dverger light beam.");
             WidenBeamHotkey = Config.Bind("Hotkeys", "Widen Beam Hotkey", "]", "Press this button to widen the Dverger light beam.");
+            ToggleHotkey = Config.Bind("Hotkeys", "Toggle Light On/Off", "\\", "Press this button to turn the light beam on or off.");
+            TurnOffInBed = Config.Bind("General", "Turn Off In Bed", true, "Whether the circlet should be turned off when you get into bed.");
 
             _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), null);
         }

@@ -40,7 +40,7 @@ namespace Common
             var existingItemPrefab = ObjectDB.instance.GetItemPrefab(config.id);
             if (existingItemPrefab != null)
             {
-                Debug.Log($"[Jam] Found existing prefab for {existingItemPrefab.name}");
+                Debug.Log($"[PrefabCreator] Found existing prefab for {existingItemPrefab.name}");
                 return existingItemPrefab;
                 /*var existingRecipe = ObjectDB.instance.GetRecipe(existingItemPrefab.GetComponent<ItemDrop>().m_itemData);
                 if (existingRecipe != null)
@@ -56,7 +56,7 @@ namespace Common
             var basePrefab = ObjectDB.instance.GetItemPrefab(config.basePrefab);
             if (basePrefab == null)
             {
-                Debug.LogError($"[Jam] Could not load basePrefab: {config.basePrefab}");
+                Debug.LogError($"[PrefabCreator] Could not load basePrefab: {config.basePrefab}");
                 return null;
             }
 
@@ -97,7 +97,7 @@ namespace Common
 
             if (!ColorUtility.TryParseHtmlString(config.foodColor, out itemDrop.m_itemData.m_shared.m_foodColor))
             {
-                Debug.LogError($"[Jam] Could not parse foodColor ({config.id}): {config.foodColor}");
+                Debug.LogError($"[PrefabCreator] Could not parse foodColor ({config.id}): {config.foodColor}");
             }
 
             var icons = new List<Sprite>();
@@ -109,10 +109,9 @@ namespace Common
             itemDrop.m_itemData.m_shared.m_icons = icons.ToArray();
             ObjectDB.instance.m_items.Add(newPrefab);
 
-            var newRecipe = CreateRecipe($"Recipe_{config.id}", config.id, config.RecipeConfig);
+            AddNewRecipe($"Recipe_{config.id}", config.id, config.RecipeConfig);
 
-            ObjectDB.instance.m_recipes.Add(newRecipe);
-            Debug.Log($"[Jam] Created {newPrefab.name}");
+            Debug.Log($"[PrefabCreator] Created {newPrefab.name}");
 
             return newPrefab;
         }
@@ -131,9 +130,9 @@ namespace Common
                 var craftingStationExists = CraftingStations.ContainsKey(recipeConfig.craftingStation);
                 if (!craftingStationExists)
                 {
-                    Debug.LogWarning($"[Jam] Could not find crafting station ({itemId}): {recipeConfig.craftingStation}");
+                    Debug.LogWarning($"[PrefabCreator] Could not find crafting station ({itemId}): {recipeConfig.craftingStation}");
                     var stationList = string.Join(", ", CraftingStations.Keys);
-                    Debug.Log($"[Jam] Available Stations: {stationList}");
+                    Debug.Log($"[PrefabCreator] Available Stations: {stationList}");
                 }
                 else
                 {
@@ -146,9 +145,9 @@ namespace Common
                 var repairStationExists = CraftingStations.ContainsKey(recipeConfig.repairStation);
                 if (!repairStationExists)
                 {
-                    Debug.LogWarning($"[Jam] Could not find repair station ({itemId}): {recipeConfig.repairStation}");
+                    Debug.LogWarning($"[PrefabCreator] Could not find repair station ({itemId}): {recipeConfig.repairStation}");
                     var stationList = string.Join(", ", CraftingStations.Keys);
-                    Debug.Log($"[Jam] Available Stations: {stationList}");
+                    Debug.Log($"[PrefabCreator] Available Stations: {stationList}");
                 }
                 else
                 {
@@ -162,7 +161,7 @@ namespace Common
                 var reqPrefab = ObjectDB.instance.GetItemPrefab(requirement.item);
                 if (reqPrefab == null)
                 {
-                    Debug.LogError($"[Jam] Could not load requirement item ({itemId}): {requirement.item}");
+                    Debug.LogError($"[PrefabCreator] Could not load requirement item ({itemId}): {requirement.item}");
                     continue;
                 }
 
@@ -186,11 +185,14 @@ namespace Common
         public static Recipe AddNewRecipe(Recipe recipe)
         {
             var removed = ObjectDB.instance.m_recipes.RemoveAll(x => x.name == recipe.name);
-            Debug.Log($"Removed recipes: ({removed})");
-            ObjectDB.instance.m_recipes.Add(recipe);
+            if (removed > 0)
+            {
+                Debug.Log($"[PrefabCreator] Removed recipes ({recipe.name}): {removed}");
+            }
 
-            var found = ObjectDB.instance.m_recipes.Find(x => x.name == recipe.name);
-            Debug.Log($"Added recipe: ({found})");
+            ObjectDB.instance.m_recipes.Add(recipe);
+            Debug.Log($"[PrefabCreator] Added recipe: {recipe.name}");
+
             return recipe;
         }
     }

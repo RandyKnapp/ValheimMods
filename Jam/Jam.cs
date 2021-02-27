@@ -11,8 +11,7 @@ namespace Jam
     public class Jam : BaseUnityPlugin
     {
         private Harmony _harmony;
-        public ConsumablesConfig Consumables;
-        private bool _initialized;
+        public static ConsumablesConfig Consumables;
 
         private void Awake()
         {
@@ -21,24 +20,16 @@ namespace Jam
             Consumables = LitJson.JsonMapper.ToObject<ConsumablesConfig>(jsonFile);
 
             _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
-
-            _initialized = false;
         }
 
         private void OnDestroy()
         {
-            _initialized = false;
             _harmony?.UnpatchAll();
         }
 
-        private void Update()
+        public static void TryRegisterItems()
         {
-            if (_initialized)
-            {
-                return;
-            }
-
-            if (ZNetScene.instance == null || ObjectDB.instance == null)
+            if (Consumables == null || ZNetScene.instance == null || ObjectDB.instance == null || ObjectDB.instance.m_items.Count == 0)
             {
                 return;
             }
@@ -67,8 +58,6 @@ namespace Jam
             {
                 Debug.LogWarning($"Successfully initialized {success} prefabs in Jam.Update");
             }
-
-            _initialized = true;
         }
     }
 }

@@ -9,3 +9,7 @@ Source: [Github](https://github.com/RandyKnapp/ValheimMods/EquipmentAndQuickSlot
 Install with [BepInEx](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim/)
 
 Copy EquipmentAndQuickSlots.dll into the BepInEx/plugins folder
+
+### Changelist:
+- 1.0.3
+  - Integrated fix for larger containers (this mod was not allowing the same row to be used in containers as it uses in the Inventory)

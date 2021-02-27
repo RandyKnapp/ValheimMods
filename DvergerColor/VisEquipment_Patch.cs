@@ -19,6 +19,7 @@ namespace DvergerColor
         private Light _light;
 
         public int Step;
+        public bool On;
 
         private void Awake()
         {
@@ -33,27 +34,43 @@ namespace DvergerColor
             _pointRange = Mathf.Clamp(DvergerColor.PointRange.Value, 0, 1000);
 
             Step = _maxSteps - 1;
+            On = true;
         }
 
         private void Update()
         {
-            bool changedStep = false;
-            if (!Console.IsVisible() && Input.GetKeyDown(DvergerColor.NarrowBeamHotkey.Value))
+            var player = Player.m_localPlayer;
+            if (player == null)
             {
-                Step = Mathf.Clamp(Step - 1, 0, _maxSteps);
-                changedStep = true;
+                return;
             }
-            else if (!Console.IsVisible() && Input.GetKeyDown(DvergerColor.WidenBeamHotkey.Value))
+
+            var zdo = player.GetZDO();
+            bool changedStep = false;
+            if (player != null && player.TakeInput())
             {
-                Step = Mathf.Clamp(Step + 1, 0, _maxSteps);
-                changedStep = true;
+                if (On && Input.GetKeyDown(DvergerColor.NarrowBeamHotkey.Value))
+                {
+                    Step = Mathf.Clamp(Step - 1, 0, _maxSteps);
+                    changedStep = true;
+                }
+                else if (On && Input.GetKeyDown(DvergerColor.WidenBeamHotkey.Value))
+                {
+                    Step = Mathf.Clamp(Step + 1, 0, _maxSteps);
+                    changedStep = true;
+                }
+                else if (Input.GetKeyDown(DvergerColor.ToggleHotkey.Value))
+                {
+                    On = !On;
+                    changedStep = true;
+                }
             }
 
             if (changedStep)
             {
                 ShowStatusMessage();
-                var zdo = Player.m_localPlayer.GetZDO();
                 zdo.Set(DvergerColor.StepDataKey, Step);
+                zdo.Set(DvergerColor.OnDataKey, On);
             }
 
             if (Step == _maxSteps)
@@ -71,6 +88,17 @@ namespace DvergerColor
                 _light.intensity = Mathf.Lerp(_minIntensity, _maxIntensity, t);
                 _light.range = Mathf.Lerp(_minRange, _maxRange, t);
             }
+
+            var inBed = player.InBed();
+            var turnOffInBed = DvergerColor.TurnOffInBed.Value;
+            if (turnOffInBed && inBed)
+            {
+                _light.enabled = false;
+            }
+            else
+            {
+                _light.enabled = On;
+            }
         }
 
         public void SetLight(Light light)
@@ -86,12 +114,13 @@ namespace DvergerColor
             if (Player.m_localPlayer != null)
             {
                 var zdo = Player.m_localPlayer.GetZDO();
-                var initialStep = zdo.GetInt(DvergerColor.StepDataKey, DvergerColor.MaxSteps.Value - 1);
-                Step = initialStep;
+                Step = zdo.GetInt(DvergerColor.StepDataKey, DvergerColor.MaxSteps.Value - 1);
+                On = zdo.GetBool(DvergerColor.OnDataKey, true);
             }
             else
             {
                 Step = DvergerColor.MaxSteps.Value - 1;
+                On = true;
             }
         }
 
@@ -99,7 +128,14 @@ namespace DvergerColor
         {
             if (MessageHud.instance != null)
             {
-                MessageHud.instance.ShowMessage(MessageHud.MessageType.TopLeft, (Step == _maxSteps) ? "Dverger Circlet: Pool of Radiance" : $"Dverger Circlet: Luminous Beam {Step + 1}");
+                if (!On)
+                {
+                    MessageHud.instance.ShowMessage(MessageHud.MessageType.TopLeft, "Dverger Circlet: Off");
+                }
+                else
+                {
+                    MessageHud.instance.ShowMessage(MessageHud.MessageType.TopLeft, (Step == _maxSteps) ? "Dverger Circlet: Pool of Radiance" : $"Dverger Circlet: Luminous Beam {Step + 1}");
+                }
             }
         }
     }

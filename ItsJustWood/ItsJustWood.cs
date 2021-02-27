@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace ItsJustWood
 {
-    [BepInPlugin("randyknapp.mods.itsjustwood", "It's Just Wood", "1.0.0")]
+    [BepInPlugin("randyknapp.mods.itsjustwood", "It's Just Wood", "1.0.1")]
     public class ItsJustWood : BaseUnityPlugin
     {
         public static ConfigEntry<Vector2> FineWoodToWoodCount;

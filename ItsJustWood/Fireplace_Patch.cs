@@ -56,6 +56,11 @@ namespace ItsJustWood
 
         public static string GetAvailableFuelItem(Inventory inventory, string builtIn)
         {
+            if (inventory.HaveItem(builtIn))
+            {
+                return builtIn;
+            }
+
             var fineWood = ObjectDB.instance.GetItemPrefab("FineWood").GetComponent<ItemDrop>();
             var coreWood = ObjectDB.instance.GetItemPrefab("RoundLog").GetComponent<ItemDrop>();
             var ancientBark = ObjectDB.instance.GetItemPrefab("ElderBark").GetComponent<ItemDrop>();
@@ -72,7 +77,7 @@ namespace ItsJustWood
                 return ancientBark.m_itemData.m_shared.m_name;
             }
 
-            return inventory.HaveItem(builtIn) ? builtIn : string.Empty;
+            return string.Empty;
         }
     }
 }
