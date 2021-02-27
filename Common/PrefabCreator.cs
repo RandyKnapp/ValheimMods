@@ -23,7 +23,12 @@ namespace Common
             CraftingStations = null;
         }
 
-        public static GameObject CreatePrefab(ConsumableItemConfig config)
+        public static bool ReadyToCreatePrefabs()
+        {
+            return ZNetScene.instance != null && ObjectDB.instance != null && ObjectDB.instance.m_items.Count > 0;
+        }
+
+        private static void InitCraftingStations()
         {
             if (CraftingStations == null)
             {
@@ -36,21 +41,24 @@ namespace Common
                     }
                 }
             }
+        }
 
+        /*public static GameObject CreatePrefab(ConsumableItemConfig config)
+        {
             var existingItemPrefab = ObjectDB.instance.GetItemPrefab(config.id);
             if (existingItemPrefab != null)
             {
                 Debug.Log($"[PrefabCreator] Found existing prefab for {existingItemPrefab.name}");
                 return existingItemPrefab;
-                /*var existingRecipe = ObjectDB.instance.GetRecipe(existingItemPrefab.GetComponent<ItemDrop>().m_itemData);
-                if (existingRecipe != null)
-                {
-                    ObjectDB.instance.m_recipes.Remove(existingRecipe);
-                }
-
-                ZNetScene.instance.m_namedPrefabs.Remove(existingItemPrefab.name.GetStableHashCode());
-                ObjectDB.instance.m_items.Remove(existingItemPrefab);
-                Object.DestroyImmediate(existingItemPrefab);*/
+                //var existingRecipe = ObjectDB.instance.GetRecipe(existingItemPrefab.GetComponent<ItemDrop>().m_itemData);
+                //if (existingRecipe != null)
+                //{
+                //    ObjectDB.instance.m_recipes.Remove(existingRecipe);
+                //}
+                //
+                //ZNetScene.instance.m_namedPrefabs.Remove(existingItemPrefab.name.GetStableHashCode());
+                //ObjectDB.instance.m_items.Remove(existingItemPrefab);
+                //Object.DestroyImmediate(existingItemPrefab);
             }
 
             var basePrefab = ObjectDB.instance.GetItemPrefab(config.basePrefab);
@@ -72,7 +80,6 @@ namespace Common
             Object.DontDestroyOnLoad(newPrefab);
             ZNetScene.instance.m_instances.Remove(zNetView.GetZDO());
             ZNetScene.instance.m_namedPrefabs.Add(newPrefab.name.GetStableHashCode(), newPrefab);
-            //newPrefab.SetActive(false);
 
             var rigidBody = newPrefab.GetComponent<Rigidbody>();
             rigidBody.centerOfMass = Vector3.zero;
@@ -111,18 +118,27 @@ namespace Common
 
             AddNewRecipe($"Recipe_{config.id}", config.id, config.RecipeConfig);
 
-            Debug.Log($"[PrefabCreator] Created {newPrefab.name}");
+            Debug.Log($"[PrefabCreator] Added item:   {newPrefab.name}");
 
             return newPrefab;
-        }
+        }*/
 
         public static Recipe CreateRecipe(string name, string itemId, RecipeConfig recipeConfig)
         {
+            InitCraftingStations();
+
+            var itemPrefab = ObjectDB.instance.GetItemPrefab(itemId);
+            if (itemPrefab == null)
+            {
+                Debug.LogWarning($"[PrefabCreator] Could not find item prefab ({itemId})");
+                return null;
+            }
+
             var newRecipe = ScriptableObject.CreateInstance<Recipe>();
             newRecipe.name = name;
             newRecipe.m_amount = recipeConfig.amount;
             newRecipe.m_minStationLevel = recipeConfig.minStationLevel;
-            newRecipe.m_item = ObjectDB.instance.GetItemPrefab(itemId).GetComponent<ItemDrop>();
+            newRecipe.m_item = itemPrefab.GetComponent<ItemDrop>();
             newRecipe.m_enabled = recipeConfig.enabled;
 
             if (!string.IsNullOrEmpty(recipeConfig.craftingStation))
@@ -161,7 +177,7 @@ namespace Common
                 var reqPrefab = ObjectDB.instance.GetItemPrefab(requirement.item);
                 if (reqPrefab == null)
                 {
-                    Debug.LogError($"[PrefabCreator] Could not load requirement item ({itemId}): {requirement.item}");
+                    Debug.LogError($"[PrefabCreator] Could not find requirement item ({itemId}): {requirement.item}");
                     continue;
                 }
 
@@ -179,6 +195,11 @@ namespace Common
         public static Recipe AddNewRecipe(string name, string itemId, RecipeConfig recipeConfig)
         {
             var recipe = CreateRecipe(name, itemId, recipeConfig);
+            if (recipe == null)
+            {
+                Debug.LogError($"[PrefabCreator] Failed to create recipe ({name})");
+                return null;
+            }
             return AddNewRecipe(recipe);
         }
 
@@ -187,7 +208,7 @@ namespace Common
             var removed = ObjectDB.instance.m_recipes.RemoveAll(x => x.name == recipe.name);
             if (removed > 0)
             {
-                Debug.Log($"[PrefabCreator] Removed recipes ({recipe.name}): {removed}");
+                Debug.Log($"[PrefabCreator] Removed recipe ({recipe.name}): {removed}");
             }
 
             ObjectDB.instance.m_recipes.Add(recipe);

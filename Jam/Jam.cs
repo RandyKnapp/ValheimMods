@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 using BepInEx;
 using Common;
@@ -11,52 +12,89 @@ namespace Jam
     public class Jam : BaseUnityPlugin
     {
         private Harmony _harmony;
-        public static ConsumablesConfig Consumables;
+        public static RecipesConfig Recipes;
+        public static readonly Dictionary<string, GameObject> Prefabs = new Dictionary<string, GameObject>();
 
         private void Awake()
         {
-            var jsonFileName = Path.Combine(Paths.PluginPath, "Jam", "consumables.json");
+            var jsonFileName = Path.Combine(Paths.PluginPath, "Jam", "recipes.json");
             var jsonFile = File.ReadAllText(jsonFileName);
-            Consumables = LitJson.JsonMapper.ToObject<ConsumablesConfig>(jsonFile);
+            Recipes = LitJson.JsonMapper.ToObject<RecipesConfig>(jsonFile);
 
             _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
+
+            var assetBundlePath = Path.Combine(Paths.PluginPath, "Jam", "jamassets");
+            var assetBundle = AssetBundle.LoadFromFile(assetBundlePath);
+            
+            foreach (var recipe in Recipes.recipes)
+            {
+                if (assetBundle.Contains(recipe.item))
+                {
+                    var prefab = assetBundle.LoadAsset<GameObject>(recipe.item);
+                    Prefabs.Add(recipe.item, prefab);
+                }
+            }
+
+            assetBundle.Unload(false);
         }
 
         private void OnDestroy()
         {
             _harmony?.UnpatchAll();
+            foreach (var prefab in Prefabs.Values)
+            {
+                Destroy(prefab);
+            }
+            Prefabs.Clear();
+        }
+
+        public static void TryRegisterPrefabs(ZNetScene zNetScene)
+        {
+            if (zNetScene == null)
+            {
+                Debug.LogWarning($"[Jam] Did not register prefabs: ZNetScene.instance {ZNetScene.instance}");
+                return;
+            }
+
+            foreach (var prefab in Prefabs.Values)
+            {
+                zNetScene.m_prefabs.Add(prefab);
+            }
         }
 
         public static void TryRegisterItems()
         {
-            if (Consumables == null || ZNetScene.instance == null || ObjectDB.instance == null || ObjectDB.instance.m_items.Count == 0)
+            if (ZNetScene.instance == null || ObjectDB.instance == null || ObjectDB.instance.m_items.Count == 0)
             {
+                Debug.LogWarning($"[Jam] Did not register items: ZNetScene.instance {ZNetScene.instance}, ObjectDB.instance {ObjectDB.instance}, item count {ObjectDB.instance.m_items.Count}");
+                return;
+            }
+
+            foreach (var prefab in Prefabs.Values)
+            {
+                var itemDrop = prefab.GetComponent<ItemDrop>();
+                if (itemDrop != null)
+                {
+                    if (ObjectDB.instance.GetItemPrefab(prefab.name.GetStableHashCode()) == null)
+                    {
+                        ObjectDB.instance.m_items.Add(prefab);
+                    }
+                }
+            }
+        }
+
+        public static void TryRegisterRecipes()
+        {
+            if (ZNetScene.instance == null || ObjectDB.instance == null || ObjectDB.instance.m_items.Count == 0)
+            {
+                Debug.LogWarning($"[Jam] Did not register recipes: ZNetScene.instance {ZNetScene.instance}, ObjectDB.instance {ObjectDB.instance}, item count {ObjectDB.instance.m_items.Count}");
                 return;
             }
 
             PrefabCreator.Reset();
-            var success = 0;
-            var fail = 0;
-            foreach (var item in Consumables.items)
+            foreach (var recipe in Recipes.recipes)
             {
-                var newPrefab = PrefabCreator.CreatePrefab(item);
-                if (newPrefab == null)
-                {
-                    fail++;
-                }
-                else
-                {
-                    success++;
-                }
-            }
-
-            if (fail > 0)
-            {
-                Debug.LogError($"Failed to initialize {fail} prefabs!");
-            }
-            if (success > 0)
-            {
-                Debug.LogWarning($"Successfully initialized {success} prefabs in Jam.Update");
+                PrefabCreator.AddNewRecipe(recipe.name, recipe.item, recipe);
             }
         }
     }

@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using HarmonyLib;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace ImprovedBuildHud
@@ -12,7 +14,7 @@ namespace ImprovedBuildHud
             if (piece != null && !string.IsNullOrEmpty(ImprovedBuildHudConfig.CanBuildAmountFormat.Value))
             {
                 var displayName = Localization.instance.Localize(piece.m_name);
-                if (piece.m_name == "$piece_repair")
+                if (piece.m_resources.Length == 0)
                 {
                     return;
                 }

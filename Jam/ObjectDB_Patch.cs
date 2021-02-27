@@ -10,6 +10,7 @@ namespace Jam
         {
             Debug.LogWarning($"[Jam] ObjectDB_CopyOtherDB_Patch ({ObjectDB.instance.m_items.Count})");
             Jam.TryRegisterItems();
+            Jam.TryRegisterRecipes();
         }
     }
 
@@ -20,6 +21,7 @@ namespace Jam
         {
             Debug.LogWarning($"[Jam] ObjectDB_Awake_Patch ({ObjectDB.instance.m_items.Count})");
             Jam.TryRegisterItems();
+            Jam.TryRegisterRecipes();
         }
     }
 }

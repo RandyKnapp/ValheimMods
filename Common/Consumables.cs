@@ -13,6 +13,8 @@ namespace Common
     [Serializable]
     public class RecipeConfig
     {
+        public string name;
+        public string item;
         public int amount;
         public string craftingStation;
         public int minStationLevel;
@@ -22,25 +24,8 @@ namespace Common
     }
 
     [Serializable]
-    public class ConsumableItemConfig
+    public class RecipesConfig
     {
-        public string id;
-        public string basePrefab;
-        public string displayName;
-        public string[] icons;
-        public string description;
-        public int maxStackSize;
-        public int food;
-        public int foodStamina;
-        public int foodRegen;
-        public int foodBurnTime;
-        public string foodColor;
-        public RecipeConfig RecipeConfig = new RecipeConfig();
-    }
-
-    [Serializable]
-    public class ConsumablesConfig
-    {
-        public List<ConsumableItemConfig> items = new List<ConsumableItemConfig>();
+        public List<RecipeConfig> recipes = new List<RecipeConfig>();
     }
 }

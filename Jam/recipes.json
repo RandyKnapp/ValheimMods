@@ -1,0 +1,144 @@
+{
+  "recipes": [
+    {
+      "name": "Recipe_RaspberryJam",
+      "item": "RaspberryJam",
+      "amount": 4,
+      "craftingStation": "piece_cauldron",
+      "minStationLevel": 1,
+      "enabled": true,
+      "repairStation": "",
+      "resources": [
+        {
+          "item": "Raspberry",
+          "amount": 8
+        }
+      ]
+    },
+    {
+      "name": "Recipe_HoneyRaspberryJam",
+      "item": "HoneyRaspberryJam",
+      "amount": 4,
+      "craftingStation": "piece_cauldron",
+      "minStationLevel": 1,
+      "enabled": true,
+      "repairStation": "",
+      "resources": [
+        {
+          "item": "Raspberry",
+          "amount": 8
+        },
+        {
+          "item": "Honey",
+          "amount": 4
+        }
+      ]
+    },
+    {
+      "name": "Recipe_BlueberryJam",
+      "item": "BlueberryJam",
+      "amount": 4,
+      "craftingStation": "piece_cauldron",
+      "minStationLevel": 1,
+      "enabled": true,
+      "repairStation": "",
+      "resources": [
+        {
+          "item": "Blueberries",
+          "amount": 8
+        }
+      ]
+    },
+    {
+      "name": "Recipe_HoneyBlueberryJam",
+      "item": "HoneyBlueberryJam",
+      "amount": 4,
+      "craftingStation": "piece_cauldron",
+      "minStationLevel": 1,
+      "enabled": true,
+      "repairStation": "",
+      "resources": [
+        {
+          "item": "Blueberries",
+          "amount": 8
+        },
+        {
+          "item": "Honey",
+          "amount": 4
+        }
+      ]
+    },
+    {
+      "name": "Recipe_CloudberryJam",
+      "item": "CloudberryJam",
+      "amount": 4,
+      "craftingStation": "piece_cauldron",
+      "minStationLevel": 1,
+      "enabled": true,
+      "repairStation": "",
+      "resources": [
+        {
+          "item": "Cloudberry",
+          "amount": 8
+        }
+      ]
+    },
+    {
+      "name": "Recipe_HoneyCloudberryJam",
+      "item": "HoneyCloudberryJam",
+      "amount": 4,
+      "craftingStation": "piece_cauldron",
+      "minStationLevel": 1,
+      "enabled": true,
+      "repairStation": "",
+      "resources": [
+        {
+          "item": "Cloudberry",
+          "amount": 8
+        },
+        {
+          "item": "Honey",
+          "amount": 8
+        }
+      ]
+    },
+    {
+      "name": "Recipe_KingsJam",
+      "item": "KingsJam",
+      "amount": 4,
+      "craftingStation": "piece_cauldron",
+      "minStationLevel": 1,
+      "enabled": true,
+      "repairStation": "",
+      "resources": [
+        {
+          "item": "Raspberry",
+          "amount": 8
+        },
+        {
+          "item": "Cloudberry",
+          "amount": 8
+        }
+      ]
+    },
+    {
+      "name": "Recipe_NordicJam",
+      "item": "NordicJam",
+      "amount": 4,
+      "craftingStation": "piece_cauldron",
+      "minStationLevel": 1,
+      "enabled": true,
+      "repairStation": "",
+      "resources": [
+        {
+          "item": "Blueberries",
+          "amount": 8
+        },
+        {
+          "item": "Cloudberry",
+          "amount": 8
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,127 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &7334987479875218231
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 6585589531590257382, guid: 5aaf2636940aee346b4f966b92c03038,
+        type: 3}
+      propertyPath: m_Name
+      value: RaspberryJam
+      objectReference: {fileID: 0}
+    - target: {fileID: 6585589531590257383, guid: 5aaf2636940aee346b4f966b92c03038,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6585589531590257383, guid: 5aaf2636940aee346b4f966b92c03038,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6585589531590257383, guid: 5aaf2636940aee346b4f966b92c03038,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6585589531590257383, guid: 5aaf2636940aee346b4f966b92c03038,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6585589531590257383, guid: 5aaf2636940aee346b4f966b92c03038,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6585589531590257383, guid: 5aaf2636940aee346b4f966b92c03038,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6585589531590257383, guid: 5aaf2636940aee346b4f966b92c03038,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6585589531590257383, guid: 5aaf2636940aee346b4f966b92c03038,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6585589531590257383, guid: 5aaf2636940aee346b4f966b92c03038,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6585589531590257383, guid: 5aaf2636940aee346b4f966b92c03038,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6585589531590257383, guid: 5aaf2636940aee346b4f966b92c03038,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6585589531590257385, guid: 5aaf2636940aee346b4f966b92c03038,
+        type: 3}
+      propertyPath: m_itemData.m_shared.m_food
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 6585589531590257385, guid: 5aaf2636940aee346b4f966b92c03038,
+        type: 3}
+      propertyPath: m_itemData.m_shared.m_name
+      value: Raspberry jam
+      objectReference: {fileID: 0}
+    - target: {fileID: 6585589531590257385, guid: 5aaf2636940aee346b4f966b92c03038,
+        type: 3}
+      propertyPath: m_itemData.m_shared.m_foodRegen
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6585589531590257385, guid: 5aaf2636940aee346b4f966b92c03038,
+        type: 3}
+      propertyPath: m_itemData.m_shared.m_description
+      value: A delicious pot of raspberry preserves.
+      objectReference: {fileID: 0}
+    - target: {fileID: 6585589531590257385, guid: 5aaf2636940aee346b4f966b92c03038,
+        type: 3}
+      propertyPath: m_itemData.m_shared.m_foodColor.b
+      value: 0.15294118
+      objectReference: {fileID: 0}
+    - target: {fileID: 6585589531590257385, guid: 5aaf2636940aee346b4f966b92c03038,
+        type: 3}
+      propertyPath: m_itemData.m_shared.m_foodColor.g
+      value: 0.15294118
+      objectReference: {fileID: 0}
+    - target: {fileID: 6585589531590257385, guid: 5aaf2636940aee346b4f966b92c03038,
+        type: 3}
+      propertyPath: m_itemData.m_shared.m_foodColor.r
+      value: 0.99607843
+      objectReference: {fileID: 0}
+    - target: {fileID: 6585589531590257385, guid: 5aaf2636940aee346b4f966b92c03038,
+        type: 3}
+      propertyPath: m_itemData.m_shared.m_foodStamina
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 6585589531590257385, guid: 5aaf2636940aee346b4f966b92c03038,
+        type: 3}
+      propertyPath: m_itemData.m_shared.m_foodBurnTime
+      value: 1200
+      objectReference: {fileID: 0}
+    - target: {fileID: 6585589531590257385, guid: 5aaf2636940aee346b4f966b92c03038,
+        type: 3}
+      propertyPath: m_itemData.m_shared.m_maxStackSize
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 6585589531590257385, guid: 5aaf2636940aee346b4f966b92c03038,
+        type: 3}
+      propertyPath: m_itemData.m_shared.m_icons.Array.data[0]
+      value: 
+      objectReference: {fileID: 21300000, guid: 13aa718116bfea142b6aca1780d8be80,
+        type: 3}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 5aaf2636940aee346b4f966b92c03038, type: 3}
