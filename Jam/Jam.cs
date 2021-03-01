@@ -63,10 +63,12 @@ namespace Jam
         private static string GetAssetPath(string assetName)
         {
             var assetFileName = Path.Combine(Paths.PluginPath, "Jam", assetName);
+            Debug.LogWarning($"Looking for {assetName} in {assetFileName}");
             if (!File.Exists(assetFileName))
             {
                 Assembly assembly = typeof(Jam).Assembly;
-                assetFileName = Path.Combine(assembly.Location, assetName);
+                assetFileName = Path.Combine(Path.GetDirectoryName(assembly.Location), assetName);
+                Debug.LogWarning($"Looking for {assetName} in {assetFileName}");
                 if (!File.Exists(assetFileName))
                 {
                     Debug.LogError($"Could not find asset ({assetName})");
