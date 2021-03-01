@@ -18,4 +18,4 @@ Source: [Github](https://github.com/RandyKnapp/ValheimMods)
 
 Install with [BepInEx](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim/)
 
-Copy the Jam folder to your BepInEx plugins folder.
+Copy the files in the "files" folder to a new folder called "Jam" in your BepInEx plugins folder.

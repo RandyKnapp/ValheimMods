@@ -1,0 +1,17 @@
+{
+  "LootTables": [
+    {
+      "Character": "Greydwarf",
+      "Loot": [
+        {
+          "Item": "SwordBronze",
+          "PercentDrop": 1,
+          "PercentMagic": 1,
+          "PercentRare": 0,
+          "PercentEpic": 0,
+          "PercentLegendary" : 0 
+        }
+      ] 
+    }
+  ] 
+}

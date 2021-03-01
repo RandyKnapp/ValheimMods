@@ -23,11 +23,6 @@ namespace Common
             CraftingStations = null;
         }
 
-        public static bool ReadyToCreatePrefabs()
-        {
-            return ZNetScene.instance != null && ObjectDB.instance != null && ObjectDB.instance.m_items.Count > 0;
-        }
-
         private static void InitCraftingStations()
         {
             if (CraftingStations == null)
@@ -42,86 +37,6 @@ namespace Common
                 }
             }
         }
-
-        /*public static GameObject CreatePrefab(ConsumableItemConfig config)
-        {
-            var existingItemPrefab = ObjectDB.instance.GetItemPrefab(config.id);
-            if (existingItemPrefab != null)
-            {
-                Debug.Log($"[PrefabCreator] Found existing prefab for {existingItemPrefab.name}");
-                return existingItemPrefab;
-                //var existingRecipe = ObjectDB.instance.GetRecipe(existingItemPrefab.GetComponent<ItemDrop>().m_itemData);
-                //if (existingRecipe != null)
-                //{
-                //    ObjectDB.instance.m_recipes.Remove(existingRecipe);
-                //}
-                //
-                //ZNetScene.instance.m_namedPrefabs.Remove(existingItemPrefab.name.GetStableHashCode());
-                //ObjectDB.instance.m_items.Remove(existingItemPrefab);
-                //Object.DestroyImmediate(existingItemPrefab);
-            }
-
-            var basePrefab = ObjectDB.instance.GetItemPrefab(config.basePrefab);
-            if (basePrefab == null)
-            {
-                Debug.LogError($"[PrefabCreator] Could not load basePrefab: {config.basePrefab}");
-                return null;
-            }
-
-            var newPrefab = GameObject.Instantiate(basePrefab);
-            newPrefab.name = config.id;
-            newPrefab.layer = 12;
-
-            ZNetView zNetView = RequireComponent<ZNetView>(newPrefab);
-            zNetView.m_persistent = true;
-            zNetView.m_distant = false;
-
-            newPrefab.transform.SetParent(null);
-            Object.DontDestroyOnLoad(newPrefab);
-            ZNetScene.instance.m_instances.Remove(zNetView.GetZDO());
-            ZNetScene.instance.m_namedPrefabs.Add(newPrefab.name.GetStableHashCode(), newPrefab);
-
-            var rigidBody = newPrefab.GetComponent<Rigidbody>();
-            rigidBody.centerOfMass = Vector3.zero;
-            rigidBody.inertiaTensor = new Vector3(1, 1, 1);
-            rigidBody.useGravity = false;
-            rigidBody.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
-            rigidBody.isKinematic = true;
-
-            var itemDrop = RequireComponent<ItemDrop>(newPrefab);
-            itemDrop.m_itemData = new ItemDrop.ItemData();
-            itemDrop.m_itemData.m_shared = new ItemDrop.ItemData.SharedData()
-            {
-                m_name = config.displayName,
-                m_description = config.description,
-                m_itemType = ItemDrop.ItemData.ItemType.Consumable,
-                m_maxStackSize = config.maxStackSize,
-                m_food = config.food,
-                m_foodStamina = config.foodStamina,
-                m_foodRegen = config.foodRegen,
-                m_foodBurnTime = config.foodBurnTime
-            };
-
-            if (!ColorUtility.TryParseHtmlString(config.foodColor, out itemDrop.m_itemData.m_shared.m_foodColor))
-            {
-                Debug.LogError($"[PrefabCreator] Could not parse foodColor ({config.id}): {config.foodColor}");
-            }
-
-            var icons = new List<Sprite>();
-            foreach (var icon in config.icons)
-            {
-                var sprite = Common.Utils.LoadSpriteFromFile(icon);
-                icons.Add(sprite);
-            }
-            itemDrop.m_itemData.m_shared.m_icons = icons.ToArray();
-            ObjectDB.instance.m_items.Add(newPrefab);
-
-            AddNewRecipe($"Recipe_{config.id}", config.id, config.RecipeConfig);
-
-            Debug.Log($"[PrefabCreator] Added item:   {newPrefab.name}");
-
-            return newPrefab;
-        }*/
 
         public static Recipe CreateRecipe(string name, string itemId, RecipeConfig recipeConfig)
         {
