@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using UnityEngine;
 
@@ -62,12 +61,12 @@ namespace ExtendedItemDataFramework
 
             if (from is ExtendedItemData fromExtendedItemData)
             {
-                Debug.LogWarning($"Copying ExtendedItemData ({from.m_shared.m_name})");
+                ExtendedItemDataFramework.LogWarning($"Copying ExtendedItemData ({from.m_shared.m_name})");
                 Components.AddRange(fromExtendedItemData.Components);
             }
             else
             {
-                Debug.LogWarning($"Converting old ItemData to new ExtendedItemData ({from.m_shared.m_name})");
+                ExtendedItemDataFramework.LogWarning($"Converting old ItemData to new ExtendedItemData ({from.m_shared.m_name})");
                 var crafterNameData = new CrafterNameData(this) { CrafterName = from.m_crafterName };
                 Components.Add(crafterNameData);
             }
@@ -79,7 +78,7 @@ namespace ExtendedItemDataFramework
         // Load item from save data
         public ExtendedItemData(ItemDrop.ItemData prefab, int stack, float durability, Vector2i pos, bool equiped, int quality, int variant, long crafterID, string extendedData)
         {
-            Debug.LogWarning($"Loading ExtendedItemData from data ({prefab.m_shared.m_name}), data: {extendedData}");
+            ExtendedItemDataFramework.LogWarning($"Loading ExtendedItemData from data ({prefab.m_shared.m_name}), data: {extendedData}");
             m_stack = Mathf.Min(stack, prefab.m_shared.m_maxStackSize);
             m_durability = durability;
             m_quality = quality;
@@ -122,12 +121,35 @@ namespace ExtendedItemDataFramework
                 return newComponent;
             }
 
-            Debug.LogWarning($"Tried to add component ({typeof(T)}) to item ({m_shared.m_name}) but a component of that type already exists!");
+            ExtendedItemDataFramework.LogWarning($"Tried to add component ({typeof(T)}) to item ({m_shared.m_name}) but a component of that type already exists!");
             return null;
+        }
+
+        public void RemoveComponent<T>() where T : BaseExtendedItemComponent
+        {
+            var foundComponent = GetComponent<T>();
+            if (foundComponent != null)
+            {
+                Components.Remove(foundComponent);
+            }
+        }
+
+        public T ReplaceComponent<T>() where T : BaseExtendedItemComponent
+        {
+            RemoveComponent<T>();
+            return AddComponent<T>();
         }
 
         public void Save()
         {
+            if (!ExtendedItemDataFramework.Enabled)
+            {
+                var crafterNameComponent = GetComponent<CrafterNameData>();
+                m_crafterName = crafterNameComponent?.CrafterName ?? string.Empty;
+                ExtendedItemDataFramework.Log($"Reverted data to non-extended mode for item ({m_shared.m_name}). m_crafterName: ({m_crafterName})");
+                return;
+            }
+
             _sb.Clear();
             foreach (var component in Components)
             {
@@ -138,7 +160,7 @@ namespace ExtendedItemDataFramework
 
             m_crafterName = _sb.ToString();
 
-            Debug.LogWarning($"Saved Extended Item ({m_shared.m_name}). Data: {m_crafterName}");
+            ExtendedItemDataFramework.LogWarning($"Saved Extended Item ({m_shared.m_name}). Data: {m_crafterName}");
         }
 
         public void Load()
@@ -147,25 +169,25 @@ namespace ExtendedItemDataFramework
             {
                 Components.Clear();
                 var serializedComponents = m_crafterName.Split(new []{ "<|" }, StringSplitOptions.RemoveEmptyEntries);
-                Debug.Log($"(Found component save data: {serializedComponents.Length})");
+                ExtendedItemDataFramework.Log($"(Found component save data: {serializedComponents.Length})");
                 foreach (var component in serializedComponents)
                 {
                     var parts = component.Split(new[] { "|>" }, StringSplitOptions.None);
                     var typeString = parts[0];
                     var data = parts.Length == 2 ? parts[1] : string.Empty;
-                    Debug.Log($"  Component: type: {typeString}, data: {data}");
+                    ExtendedItemDataFramework.Log($"  Component: type: {typeString}, data: {data}");
 
                     var type = Type.GetType(typeString);
                     if (type == null)
                     {
-                        Debug.LogError($"Could not deserialize ExtendedItemComponent type ({parts[0]})");
+                        ExtendedItemDataFramework.LogError($"Could not deserialize ExtendedItemComponent type ({parts[0]})");
                         continue;
                     }
 
                     var newComponent = Activator.CreateInstance(type, this) as BaseExtendedItemComponent;
                     if (newComponent == null)
                     {
-                        Debug.LogError($"Could not instantiate extended item component type ({type}) while loading object ({m_shared.m_name})");
+                        ExtendedItemDataFramework.LogError($"Could not instantiate extended item component type ({type}) while loading object ({m_shared.m_name})");
                         continue;
                     }
                     newComponent.Deserialize(data);
@@ -174,15 +196,9 @@ namespace ExtendedItemDataFramework
             }
             else
             {
-                Debug.Log($"Loaded item from data, but it was not extended. Initializing now ({m_shared.m_name})");
+                ExtendedItemDataFramework.Log($"Loaded item from data, but it was not extended. Initializing now ({m_shared.m_name})");
                 Initialize();
             }
-        }
-
-        public BaseExtendedItemComponent DeserializeComponent(Type type, string json)
-        {
-            // TODO
-            return null;
         }
 
         public ExtendedItemData ExtendedClone()

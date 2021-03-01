@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ExtendedItemDataFramework
+﻿namespace ExtendedItemDataFramework
 {
     public class CrafterNameData : BaseExtendedItemComponent
     {

@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using HarmonyLib;
-using UnityEngine;
+﻿using HarmonyLib;
 
 namespace ExtendedItemDataFramework
 {
@@ -31,11 +29,11 @@ namespace ExtendedItemDataFramework
         {
             if (__instance.IsExtended())
             {
-                Debug.Log($"Cloning extended item {__instance.m_shared.m_name}");
+                ExtendedItemDataFramework.Log($"Cloning extended item {__instance.m_shared.m_name}");
                 __result = __instance.Extended().ExtendedClone();
                 return false;
             }
-            Debug.Log($"Cloning DEFAULT item {__instance.m_shared.m_name}");
+            ExtendedItemDataFramework.Log($"Cloning DEFAULT item {__instance.m_shared.m_name}");
             return true;
         }
     }
