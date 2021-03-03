@@ -63,12 +63,10 @@ namespace Jam
         private static string GetAssetPath(string assetName)
         {
             var assetFileName = Path.Combine(Paths.PluginPath, "Jam", assetName);
-            Debug.LogWarning($"Looking for {assetName} in {assetFileName}");
             if (!File.Exists(assetFileName))
             {
                 Assembly assembly = typeof(Jam).Assembly;
                 assetFileName = Path.Combine(Path.GetDirectoryName(assembly.Location), assetName);
-                Debug.LogWarning($"Looking for {assetName} in {assetFileName}");
                 if (!File.Exists(assetFileName))
                 {
                     Debug.LogError($"Could not find asset ({assetName})");
@@ -93,7 +91,6 @@ namespace Jam
         {
             if (zNetScene == null)
             {
-                Debug.LogWarning($"[Jam] Did not register prefabs: ZNetScene.instance {ZNetScene.instance}");
                 return;
             }
 
@@ -107,7 +104,6 @@ namespace Jam
         {
             if (ObjectDB.instance == null || ObjectDB.instance.m_items.Count == 0)
             {
-                Debug.LogWarning($"[Jam] Did not register items: ZNetScene.instance {ZNetScene.instance}, ObjectDB.instance {ObjectDB.instance}, item count {ObjectDB.instance.m_items.Count}");
                 return;
             }
 
@@ -128,7 +124,6 @@ namespace Jam
         {
             if (ObjectDB.instance == null || ObjectDB.instance.m_items.Count == 0)
             {
-                Debug.LogWarning($"[Jam] Did not register recipes: ZNetScene.instance {ZNetScene.instance}, ObjectDB.instance {ObjectDB.instance}, item count {ObjectDB.instance.m_items.Count}");
                 return;
             }
 

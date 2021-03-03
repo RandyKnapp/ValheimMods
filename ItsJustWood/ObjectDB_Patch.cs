@@ -8,7 +8,6 @@ namespace ItsJustWood
     {
         public static void Postfix()
         {
-            Debug.LogWarning($"ItsJustWood - ObjectDB_CopyOtherDB_Patch ({ObjectDB.instance.m_items.Count})");
             ItsJustWood.TryRegisterRecipes();
         }
     }
@@ -18,7 +17,6 @@ namespace ItsJustWood
     {
         public static void Postfix()
         {
-            Debug.LogWarning($"ItsJustWood - ObjectDB_Awake_Patch ({ObjectDB.instance.m_items.Count})");
             ItsJustWood.TryRegisterRecipes();
         }
     }

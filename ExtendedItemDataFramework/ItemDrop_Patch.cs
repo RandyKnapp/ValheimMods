@@ -37,4 +37,26 @@ namespace ExtendedItemDataFramework
             return true;
         }
     }
+
+    //public void Load() => ItemDrop.LoadFromZDO(this.m_itemData, this.m_nview.GetZDO());
+    [HarmonyPatch(typeof(ItemDrop), "Load")]
+    public static class ItemDrop_Load_Patch
+    {
+        public static void Postfix(ItemDrop __instance)
+        {
+            if (!__instance.m_itemData.IsExtended())
+            {
+                __instance.m_itemData = new ExtendedItemData(
+                    __instance.m_itemData,
+                    __instance.m_itemData.m_stack,
+                    __instance.m_itemData.m_durability,
+                    new Vector2i(),
+                    false,
+                    __instance.m_itemData.m_quality,
+                    __instance.m_itemData.m_variant,
+                    __instance.m_itemData.m_crafterID,
+                    __instance.m_itemData.m_crafterName);
+            }
+        }
+    }
 }

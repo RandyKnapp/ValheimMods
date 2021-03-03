@@ -1,17 +1,90 @@
 {
   "LootTables": [
+    ////////////////////////////////////////////////////////////////////////////////////
+    // CREATURES
+    ////////////////////////////////////////////////////////////////////////////////////
     {
-      "Character": "Greydwarf",
+      "Object": "Greyling",
+      "Drops": [ [0, 95], [1, 5] ],
+      "Loot": [
+        {
+          "Item": "Club",
+          "Weight": 1
+        },
+        {
+          "Item": "AxeStone",
+          "Weight": 1
+        },
+        {
+          "Item": "KnifeFlint",
+          "Weight": 1
+        }
+      ]
+    },
+    {
+      "Object": "Greydwarf",
+      "Drops": [ [0, 95], [1, 5] ],
+      "Loot": [
+        {
+          "Item": "Club",
+          "Weight": 1,
+          "Rarity": [ 99, 1, 0, 0 ]
+        },
+        {
+          "Item": "AxeStone",
+          "Weight": 1,
+          "Rarity": [ 99, 1, 0, 0 ]
+        },
+        {
+          "Item": "AxeFlint",
+          "Weight": 1,
+          "Rarity": [ 99, 1, 0, 0 ]
+        }
+      ]
+    },
+    ////////////////////////////////////////////////////////////////////////////////////
+    // TREASURE CHESTS
+    ////////////////////////////////////////////////////////////////////////////////////
+    {
+      "Object": "TreasureChest_forestcrypt",
+      "Drops": [ [0, 50], [1, 30], [2, 20] ],
       "Loot": [
         {
           "Item": "SwordBronze",
-          "PercentDrop": 1,
-          "PercentMagic": 1,
-          "PercentRare": 0,
-          "PercentEpic": 0,
-          "PercentLegendary" : 0 
+          "Weight": 1,
+          "Rarity": [ 95, 4, 1, 0 ]
+        },
+        {
+          "Item": "AxeBronze",
+          "Weight": 1,
+          "Rarity": [ 95, 4, 1, 0 ]
+        },
+        {
+          "Item": "MaceBronze",
+          "Weight": 1,
+          "Rarity": [ 95, 4, 1, 0 ]
+        },
+        {
+          "Item": "ShieldBronzeBuckler",
+          "Weight": 1,
+          "Rarity": [ 95, 4, 1, 0 ]
+        },
+        {
+          "Item": "HelmetLeather",
+          "Weight": 2,
+          "Rarity": [ 95, 4, 1, 0 ]
+        },
+        {
+          "Item": "HelmetLeather",
+          "Weight": 2,
+          "Rarity": [ 95, 4, 1, 0 ]
+        },
+        {
+          "Item": "ArmorLeatherChest",
+          "Weight": 2,
+          "Rarity": [ 95, 4, 1, 0 ]
         }
-      ] 
+      ]
     }
-  ] 
+  ]
 }

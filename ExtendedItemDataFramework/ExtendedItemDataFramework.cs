@@ -10,6 +10,7 @@ namespace ExtendedItemDataFramework
     {
         private static ConfigEntry<bool> _enabledConfig;
         private static ConfigEntry<bool> _loggingEnabled;
+        public static ConfigEntry<bool> DisplayUniqueItemIDInTooltip;
 
         public static bool Enabled => _enabledConfig != null && _enabledConfig.Value;
 
@@ -21,6 +22,7 @@ namespace ExtendedItemDataFramework
             _instance = this;
             _enabledConfig = Config.Bind("General", "Enabled", true, "Turn off to disable this mod. When uninstalling, load and quit a game once with this mod disabled.");
             _loggingEnabled = Config.Bind("General", "Logging Enabled", false, "Enables log output from the mod.");
+            DisplayUniqueItemIDInTooltip = Config.Bind("General", "Display UniqueItemID in Tooltip", false, "Displays the item's unique id in magenta text at the bottom of the tooltip.");
 
             ExtendedItemData.NewExtendedItemData += UniqueItemData.OnNewExtendedItemData;
             ExtendedItemData.LoadExtendedItemData += UniqueItemData.OnLoadExtendedItemData;

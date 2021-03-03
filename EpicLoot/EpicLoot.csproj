@@ -47,21 +47,17 @@
     <Reference Include="BepInEx">
       <HintPath>..\Libs\BepInEx.dll</HintPath>
     </Reference>
-    <Reference Include="LitJSON">
-      <HintPath>..\packages\LitJson.0.10.0\lib\net45\LitJSON.dll</HintPath>
+    <Reference Include="fastJSON, Version=2.4.0.0, Culture=neutral, PublicKeyToken=6b75a806b86095cd, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libs\fastJSON.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
     <Reference Include="UnityEngine">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\unstripped_corlib\UnityEngine.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine.AssetBundleModule">
+    <Reference Include="UnityEngine.AssetBundleModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\unstripped_corlib\UnityEngine.AssetBundleModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
@@ -70,38 +66,65 @@
     <Reference Include="UnityEngine.ImageConversionModule">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\unstripped_corlib\UnityEngine.ImageConversionModule.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine.JSONSerializeModule">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\unstripped_corlib\UnityEngine.JSONSerializeModule.dll</HintPath>
-    </Reference>
     <Reference Include="UnityEngine.PhysicsModule">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\unstripped_corlib\UnityEngine.PhysicsModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.TextRenderingModule">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\unstripped_corlib\UnityEngine.TextRenderingModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UI">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\unstripped_corlib\UnityEngine.UI.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine.UIModule">
+    <Reference Include="UnityEngine.UIModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\unstripped_corlib\UnityEngine.UIModule.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CharacterDrop_Patch.cs" />
+    <Compile Include="Container_Patch.cs" />
     <Compile Include="LootConfig.cs" />
     <Compile Include="EpicLoot.cs" />
-    <Compile Include="Game_Patch.cs" />
-    <Compile Include="ItemDrop_Patch.cs" />
     <Compile Include="MagicItem.cs" />
+    <Compile Include="MagicItemComponent.cs" />
+    <Compile Include="MagicItemEffectDefinition.cs" />
+    <Compile Include="MagicItemEffectDefinitions_Setup.cs" />
+    <Compile Include="ItemDrop_Patch_MagicItemTooltip.cs" />
+    <Compile Include="MagicItemEffects\AddCarryWeight.cs" />
+    <Compile Include="MagicItemEffects\IncreaseHealth.cs" />
+    <Compile Include="MagicItemEffects\IncreaseStamina.cs" />
+    <Compile Include="MagicItemEffects\Indestructible.cs" />
+    <Compile Include="MagicItemEffects\ModifyArmor.cs" />
+    <Compile Include="MagicItemEffects\ModifyAttackStamina.cs" />
+    <Compile Include="MagicItemEffects\ModifyBackstab.cs" />
+    <Compile Include="MagicItemEffects\ModifyBlockPower.cs" />
+    <Compile Include="MagicItemEffects\ModifyBlockStaminaUse.cs" />
+    <Compile Include="MagicItemEffects\ModifyDamage.cs" />
+    <Compile Include="MagicItemEffects\ModifyDurability.cs" />
+    <Compile Include="MagicItemEffects\ModifyHealthRegen.cs" />
+    <Compile Include="MagicItemEffects\ModifyJumpStaminaUsage.cs" />
+    <Compile Include="MagicItemEffects\ModifyParry.cs" />
+    <Compile Include="MagicItemEffects\ModifyResistance.cs" />
+    <Compile Include="MagicItemEffects\ModifyRunStaminaDrain.cs" />
+    <Compile Include="MagicItemEffects\ModifyStaminaRegen.cs" />
+    <Compile Include="MagicItemEffects\ReduceWeight.cs" />
+    <Compile Include="MagicItemEffects\ModifyMovementSpeed.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="loottables.json" />
+    <None Include="README.md" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ExtendedItemDataFramework\ExtendedItemDataFramework.csproj">
+      <Project>{2f61a8ab-bf4d-4e0c-9b90-4b2ba74438c5}</Project>
+      <Name>ExtendedItemDataFramework</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="..\Common\Common.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy "$(TargetDir)\$(TargetFileName)" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\scripts\" /q /y /i
-xcopy "$(ProjectDir)loottables.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i</PostBuildEvent>
+    <PostBuildEvent>xcopy "$(TargetDir)\$(TargetFileName)" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
+xcopy "$(ProjectDir)loottables.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
+xcopy "$(SolutionDir)Libs\fastJSON.dll" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
+xcopy "$(SolutionDir)ValheimUnity\AssetBundles\epicloot" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i</PostBuildEvent>
   </PropertyGroup>
 </Project>

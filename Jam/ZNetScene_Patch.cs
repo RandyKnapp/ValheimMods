@@ -8,7 +8,6 @@ namespace Jam
     {
         public static bool Prefix(ZNetScene __instance)
         {
-            Debug.LogWarning($"[Jam] ZNetScene_Awake_Patch");
             Jam.TryRegisterPrefabs(__instance);
             return true;
         }

@@ -5,7 +5,7 @@
         public string CrafterName;
 
         public CrafterNameData(ExtendedItemData parent) 
-            : base(typeof(CrafterNameData).FullName, parent)
+            : base(typeof(CrafterNameData).AssemblyQualifiedName, parent)
         {
         }
 

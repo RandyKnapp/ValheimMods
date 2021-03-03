@@ -24,7 +24,7 @@ namespace ExtendedItemDataFramework
         public string Guid;
 
         public UniqueItemData(ExtendedItemData parent) 
-            : base(typeof(UniqueItemData).FullName, parent)
+            : base(typeof(UniqueItemData).AssemblyQualifiedName, parent)
         {
         }
 
@@ -106,10 +106,13 @@ namespace ExtendedItemDataFramework
     {
         public static void Postfix(ItemDrop.ItemData item, ref string __result)
         {
-            var uniqueId = item.GetUniqueId();
-            if (!string.IsNullOrEmpty(uniqueId))
+            if (ExtendedItemDataFramework.DisplayUniqueItemIDInTooltip.Value)
             {
-                __result += $"\n<color=magenta>{uniqueId}</color>";
+                var uniqueId = item.GetUniqueId();
+                if (!string.IsNullOrEmpty(uniqueId))
+                {
+                    __result += $"\n<color=magenta>{uniqueId}</color>";
+                }
             }
         }
     }

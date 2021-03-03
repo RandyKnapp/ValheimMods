@@ -10,7 +10,7 @@ namespace EquipmentAndQuickSlots
     [HarmonyPatch(typeof(HotkeyBar), "UpdateIcons", new Type[] { typeof(Player) })]
     public static class HotkeyBar_UpdateIcons_Patch
     {
-        public static bool Prefix(HotkeyBar __instance, Player player, List<HotkeyBar.ElementData> ___m_elements, List<ItemDrop.ItemData> ___m_items, int ___m_selected)
+        public static bool Prefix(HotkeyBar __instance, Player player)
         {
             if (!EquipmentAndQuickSlots.QuickSlotsEnabled.Value)
             {
@@ -19,24 +19,24 @@ namespace EquipmentAndQuickSlots
 
             if (player == null || player.IsDead())
             {
-                foreach (HotkeyBar.ElementData element in ___m_elements)
+                foreach (HotkeyBar.ElementData element in __instance.m_elements)
                 {
-                    UnityEngine.Object.Destroy((UnityEngine.Object)element.m_go);
+                    UnityEngine.Object.Destroy(element.m_go);
                 }
-                ___m_elements.Clear();
+                __instance.m_elements.Clear();
             }
             else
             {
-                player.GetInventory().GetBoundItems(___m_items);
-                ___m_items.Sort((Comparison<ItemDrop.ItemData>)((a, b) => a.m_gridPos.y == b.m_gridPos.y ? a.m_gridPos.x.CompareTo(b.m_gridPos.x) : a.m_gridPos.y.CompareTo(b.m_gridPos.y)));
+                player.GetInventory().GetBoundItems(__instance.m_items);
+                __instance.m_items.Sort((a, b) => a.m_gridPos.y == b.m_gridPos.y ? a.m_gridPos.x.CompareTo(b.m_gridPos.x) : a.m_gridPos.y.CompareTo(b.m_gridPos.y));
                 int num = player.GetInventory().m_width + EquipmentAndQuickSlots.QuickUseSlotCount;
-                if (___m_elements.Count != num)
+                if (__instance.m_elements.Count != num)
                 {
-                    foreach (HotkeyBar.ElementData element in ___m_elements)
+                    foreach (HotkeyBar.ElementData element in __instance.m_elements)
                     {
-                        UnityEngine.Object.Destroy((UnityEngine.Object)element.m_go);
+                        UnityEngine.Object.Destroy(element.m_go);
                     }
-                    ___m_elements.Clear();
+                    __instance.m_elements.Clear();
                     for (int index = 0; index < num; ++index)
                     {
                         var parent = __instance.transform;
@@ -71,20 +71,20 @@ namespace EquipmentAndQuickSlots
                         elementData.m_equiped = elementData.m_go.transform.Find("equiped").gameObject;
                         elementData.m_queued = elementData.m_go.transform.Find("queued").gameObject;
                         elementData.m_selection = elementData.m_go.transform.Find("selected").gameObject;
-                        ___m_elements.Add(elementData);
+                        __instance.m_elements.Add(elementData);
                     }
                 }
 
-                foreach (HotkeyBar.ElementData element in ___m_elements)
+                foreach (HotkeyBar.ElementData element in __instance.m_elements)
                 {
                     element.m_used = false;
                 }
 
                 bool isGamepadActive = ZInput.IsGamepadActive();
-                for (int index = 0; index < ___m_items.Count; ++index)
+                for (int index = 0; index < __instance.m_items.Count; ++index)
                 {
-                    ItemDrop.ItemData itemData = ___m_items[index];
-                    HotkeyBar.ElementData element = GetElementForItem(___m_elements, itemData);
+                    ItemDrop.ItemData itemData = __instance.m_items[index];
+                    HotkeyBar.ElementData element = GetElementForItem(__instance.m_elements, itemData);
                     element.m_used = true;
                     element.m_icon.gameObject.SetActive(true);
                     element.m_icon.sprite = itemData.GetIcon();
@@ -115,10 +115,10 @@ namespace EquipmentAndQuickSlots
                     }
                 }
 
-                for (int index = 0; index < ___m_elements.Count; ++index)
+                for (int index = 0; index < __instance.m_elements.Count; ++index)
                 {
-                    HotkeyBar.ElementData element = ___m_elements[index];
-                    element.m_selection.SetActive(isGamepadActive && index == ___m_selected);
+                    HotkeyBar.ElementData element = __instance.m_elements[index];
+                    element.m_selection.SetActive(isGamepadActive && index == __instance.m_selected);
                     if (!element.m_used)
                     {
                         element.m_icon.gameObject.SetActive(false);

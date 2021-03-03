@@ -18,6 +18,11 @@ namespace ExtendedItemDataFramework
             ItemData = parent;
         }
 
+        public void Save()
+        {
+            ItemData?.Save();
+        }
+
         public abstract string Serialize();
         public abstract void Deserialize(string data);
         public abstract BaseExtendedItemComponent Clone();
@@ -69,9 +74,9 @@ namespace ExtendedItemDataFramework
                 ExtendedItemDataFramework.LogWarning($"Converting old ItemData to new ExtendedItemData ({from.m_shared.m_name})");
                 var crafterNameData = new CrafterNameData(this) { CrafterName = from.m_crafterName };
                 Components.Add(crafterNameData);
+                NewExtendedItemData?.Invoke(this);
             }
-
-            NewExtendedItemData?.Invoke(this);
+            
             Save();
         }
 
