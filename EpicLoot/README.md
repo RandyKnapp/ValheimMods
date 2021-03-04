@@ -51,6 +51,7 @@ Future
 - [ ] Consume runestones to learn effects?
 - [ ] New Runes skill (enchanting)
 - [ ] New Seidr skill (for what?)
+- [ ] Gamble for magic items from Merchant
 
 ## Magic Effects:
 

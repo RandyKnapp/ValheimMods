@@ -276,6 +276,11 @@ namespace EpicLoot
             {
                 var itemData = ___m_items[index];
                 var element = GetElementForItem(___m_elements, itemData);
+                if (element == null)
+                {
+                    Debug.LogWarning($"Tried to get element for {itemData.m_shared.m_name} at {itemData.m_gridPos}, but element was null (total elements = {___m_elements.Count})");
+                    continue;
+                }
 
                 var magicItem = ItemBackgroundHelper.CreateAndGetMagicItemBackgroundImage(element.m_go, element.m_equiped, false);
                 if (itemData.IsMagic())
@@ -288,14 +293,11 @@ namespace EpicLoot
 
         private static HotkeyBar.ElementData GetElementForItem(List<HotkeyBar.ElementData> elements, ItemDrop.ItemData item)
         {
-            if (item.m_gridPos.y == 0)
-            {
-                return elements[item.m_gridPos.x];
-            }
-            else
-            {
-                return elements[Player.m_localPlayer.GetInventory().m_width + item.m_gridPos.x - 5];
-            }
+            var index = item.m_gridPos.y == 0 
+                ? item.m_gridPos.x 
+                : Player.m_localPlayer.GetInventory().m_width + item.m_gridPos.x - 5;
+
+            return index >= 0 && index < elements.Count ? elements[index] : null;
         }
     }
 }

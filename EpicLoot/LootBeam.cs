@@ -5,6 +5,8 @@ namespace EpicLoot
     [RequireComponent(typeof(ItemDrop))]
     public class LootBeam : MonoBehaviour
     {
+        public static float HeightOffset = 0.01f;
+
         private ItemDrop _itemDrop;
         private GameObject _beam;
 
@@ -19,6 +21,7 @@ namespace EpicLoot
             {
                 var magicItem = _itemDrop.m_itemData.GetMagicItem();
                 _beam = Instantiate(EpicLoot.Assets.MagicItemLootBeamPrefabs[(int) magicItem.Rarity], transform);
+                _beam.transform.localPosition = Vector3.up * HeightOffset;
             }
 
             if (ShouldHideBeam())
@@ -31,8 +34,8 @@ namespace EpicLoot
             {
                 _beam.transform.rotation = Quaternion.identity;
 
-                float groundHeight = ZoneSystem.instance.GetGroundHeight(_beam.transform.position);
-                _beam.transform.position = new Vector3(_beam.transform.position.x, groundHeight, _beam.transform.position.z);
+                //float groundHeight = ZoneSystem.instance.GetGroundHeight(_beam.transform.position);
+                //_beam.transform.position = new Vector3(_beam.transform.position.x, groundHeight, _beam.transform.position.z);
             }
         }
 

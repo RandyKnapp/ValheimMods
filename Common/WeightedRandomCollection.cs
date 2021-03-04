@@ -6,14 +6,21 @@ namespace Common
 {
     public class WeightedRandomCollection<T>
     {
+        private readonly Random _random;
         private List<T> _list;
         private Func<T, float> _weightSelector;
         private bool _removeOnSelect;
 
         public float TotalWeight { get; private set; }
 
-        public WeightedRandomCollection(IEnumerable<T> collection, Func<T, float> weightSelector, bool removeOnSelect = false)
+        public WeightedRandomCollection(Random random)
         {
+            _random = random;
+        }
+
+        public WeightedRandomCollection(Random random, IEnumerable<T> collection, Func<T, float> weightSelector, bool removeOnSelect = false)
+        {
+            _random = random ?? new Random();
             Setup(collection, weightSelector, removeOnSelect);
         }
 
@@ -27,7 +34,12 @@ namespace Common
 
         public T Roll()
         {
-            float itemWeightIndex = (float)new Random().NextDouble() * TotalWeight;
+            if (_list == null)
+            {
+                return default(T);
+            }
+
+            float itemWeightIndex = (float)_random.NextDouble() * TotalWeight;
             float currentWeightIndex = 0;
 
             T result = default(T);
@@ -53,6 +65,10 @@ namespace Common
 
         public List<T> Roll(int numberOfRolls)
         {
+            if (_list == null)
+            {
+                return null;
+            }
             var results = new List<T>();
             for (int i = 0; i < numberOfRolls; i++)
             {

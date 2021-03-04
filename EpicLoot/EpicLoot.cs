@@ -61,8 +61,21 @@ namespace EpicLoot
 
         private Harmony _harmony;
 
+        private static WeightedRandomCollection<int[]> _weightedDropCountTable;
+        private static WeightedRandomCollection<LootDrop> _weightedLootTable;
+        private static WeightedRandomCollection<MagicItemEffectDefinition> _weightedEffectTable;
+        private static WeightedRandomCollection<KeyValuePair<int, float>> _weightedEffectCountTable;
+        private static WeightedRandomCollection<KeyValuePair<ItemRarity, int>> _weightedRarityTable;
+
         private void Awake()
         {
+            var random = new System.Random();
+            _weightedDropCountTable = new WeightedRandomCollection<int[]>(random);
+            _weightedLootTable = new WeightedRandomCollection<LootDrop>(random);
+            _weightedEffectTable = new WeightedRandomCollection<MagicItemEffectDefinition>(random);
+            _weightedEffectCountTable = new WeightedRandomCollection<KeyValuePair<int, float>>(random);
+            _weightedRarityTable = new WeightedRandomCollection<KeyValuePair<ItemRarity, int>>(random);
+
             MagicItemEffectDefinitions.SetupMagicItemEffectDefinitions();
 
             LootTables.Clear();
@@ -203,7 +216,24 @@ namespace EpicLoot
 
         public static bool CanBeMagicItem(ItemDrop.ItemData item)
         {
-            return item != null && AllowedMagicItemTypes.Contains(item.m_shared.m_itemType);
+            return item != null && IsPlayerItem(item) && Nonstackable(item) && IsNotTankard(item) && AllowedMagicItemTypes.Contains(item.m_shared.m_itemType);
+        }
+
+        private static bool IsNotTankard(ItemDrop.ItemData item)
+        {
+            // This is dumb, but it's the only way I can think of to do this
+            return item.m_shared.m_name != "$item_tankard" && item.m_shared.m_name != "$item_tankard_odin";
+        }
+
+        private static bool Nonstackable(ItemDrop.ItemData item)
+        {
+            return item.m_shared.m_maxStackSize == 1;
+        }
+
+        private static bool IsPlayerItem(ItemDrop.ItemData item)
+        {
+            // WTF, this is the only thing I found different between player usable items and items that are only for enemies
+            return item.m_shared.m_icons.Length > 0;
         }
 
         public static void OnCharacterDeath(CharacterDrop characterDrop)
@@ -216,7 +246,7 @@ namespace EpicLoot
                 Debug.Log($"CharacterDrop OnDeath: {characterName} (lvl {level})");
                 CharacterDied?.Invoke(characterName, characterDrop.m_character, lootTable);
                 List<GameObject> loot = RollLootTableAndSpawnObjects(lootTable, characterName);
-                DropItems(loot, characterDrop.m_character.GetCenterPoint() + characterDrop.transform.TransformVector(characterDrop.m_spawnOffset), 0.5f);
+                DropItems(loot, characterDrop.m_character.GetCenterPoint() + characterDrop.transform.TransformVector(characterDrop.m_spawnOffset));
             }
             else
             {
@@ -274,16 +304,16 @@ namespace EpicLoot
         {
             var results = new List<GameObject>();
 
-            var weightedDropCountTable = new WeightedRandomCollection<int[]>(lootTable.Drops, dropPair => dropPair.Length == 2 ? dropPair[1] : 1);
-            var dropCountRollResult = weightedDropCountTable.Roll();
+            _weightedDropCountTable.Setup(lootTable.Drops, dropPair => dropPair.Length == 2 ? dropPair[1] : 1);
+            var dropCountRollResult = _weightedDropCountTable.Roll();
             var dropCount = dropCountRollResult.Length >= 1 ? dropCountRollResult[0] : 0;
             if (dropCount == 0)
             {
                 return results;
             }
 
-            var weightedLootTable = new WeightedRandomCollection<LootDrop>(lootTable.Loot, x => x.Weight);
-            var selectedDrops = weightedLootTable.Roll(dropCount);
+            _weightedLootTable.Setup(lootTable.Loot, x => x.Weight);
+            var selectedDrops = _weightedLootTable.Roll(dropCount);
 
             foreach (var lootDrop in selectedDrops)
             {
@@ -323,10 +353,10 @@ namespace EpicLoot
 
             var effectCount = RollEffectCountPerRarity(magicItem.Rarity);
             var availableEffects = MagicItemEffectDefinitions.GetAvailableEffects(baseItem.m_shared.m_itemType, magicItem.Rarity);
-            var weightedEffectTable = new WeightedRandomCollection<MagicItemEffectDefinition>(availableEffects, x => x.SelectionWeight, true);
+            _weightedEffectTable.Setup(availableEffects, x => x.SelectionWeight, true);
             for (int i = 0; i < effectCount && i < availableEffects.Count; i++)
             {
-                var effectDef = weightedEffectTable.Roll();
+                var effectDef = _weightedEffectTable.Roll();
                 magicItem.Effects.Add(RollEffect(effectDef, magicItem.Rarity));
             }
 
@@ -336,8 +366,8 @@ namespace EpicLoot
         public static int RollEffectCountPerRarity(ItemRarity rarity)
         {
             Dictionary<int, float> countPercents = MagicEffectCountWeightsPerRarity[rarity];
-            var weightedEffectCountTable = new WeightedRandomCollection<KeyValuePair<int, float>>(countPercents, x => x.Value);
-            return weightedEffectCountTable.Roll().Key;
+            _weightedEffectCountTable.Setup(countPercents, x => x.Value);
+            return _weightedEffectCountTable.Roll().Key;
         }
 
         public static MagicItemEffect RollEffect(MagicItemEffectDefinition effectDef, ItemRarity itemRarity)
@@ -372,11 +402,11 @@ namespace EpicLoot
                 { ItemRarity.Legendary, lootDrop.Rarity.Length >= 4 ? lootDrop.Rarity[3] : 0 }
             };
 
-            var weightedRarityTable = new WeightedRandomCollection<KeyValuePair<ItemRarity, int>>(rarityWeights, x => x.Value);
-            return weightedRarityTable.Roll().Key;
+            _weightedRarityTable.Setup(rarityWeights, x => x.Value);
+            return _weightedRarityTable.Roll().Key;
         }
 
-        public static void DropItems(List<GameObject> loot, Vector3 centerPos, float dropHemisphereRadius)
+        public static void DropItems(List<GameObject> loot, Vector3 centerPos, float dropHemisphereRadius = 0.5f)
         {
             foreach (var item in loot)
             {
