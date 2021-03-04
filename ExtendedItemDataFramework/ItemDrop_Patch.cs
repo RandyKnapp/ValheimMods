@@ -59,4 +59,5 @@ namespace ExtendedItemDataFramework
             }
         }
     }
+
 }

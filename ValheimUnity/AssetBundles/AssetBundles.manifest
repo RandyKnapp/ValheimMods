@@ -1,7 +1,10 @@
 ManifestFileVersion: 0
-CRC: 2542350749
+CRC: 1523017427
 AssetBundleManifest:
   AssetBundleInfos:
     Info_0:
       Name: jamassets
+      Dependencies: {}
+    Info_1:
+      Name: epicloot
       Dependencies: {}

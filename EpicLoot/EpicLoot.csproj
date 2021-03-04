@@ -80,6 +80,8 @@
   <ItemGroup>
     <Compile Include="CharacterDrop_Patch.cs" />
     <Compile Include="Container_Patch.cs" />
+    <Compile Include="ItemDrop_Patch.cs" />
+    <Compile Include="LootBeam.cs" />
     <Compile Include="LootConfig.cs" />
     <Compile Include="EpicLoot.cs" />
     <Compile Include="MagicItem.cs" />

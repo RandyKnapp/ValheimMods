@@ -1,0 +1,54 @@
+ManifestFileVersion: 0
+CRC: 1228502512
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: e643499a1c502d80c06913d65aee1b42
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: aa1cb1906b05ca43c48a238e8acf33e8
+HashAppended: 0
+ClassTypes:
+- Class: 1
+  Script: {instanceID: 0}
+- Class: 4
+  Script: {instanceID: 0}
+- Class: 21
+  Script: {instanceID: 0}
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 43
+  Script: {instanceID: 0}
+- Class: 48
+  Script: {instanceID: 0}
+- Class: 74
+  Script: {instanceID: 0}
+- Class: 82
+  Script: {instanceID: 0}
+- Class: 83
+  Script: {instanceID: 0}
+- Class: 91
+  Script: {instanceID: 0}
+- Class: 95
+  Script: {instanceID: 0}
+- Class: 120
+  Script: {instanceID: 0}
+- Class: 198
+  Script: {instanceID: 0}
+- Class: 199
+  Script: {instanceID: 0}
+- Class: 213
+  Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers: []
+Assets:
+- Assets/EpicLoot/Sprites/SetItemMarker.png
+- Assets/EpicLoot/Prefabs/RareLootBeam.prefab
+- Assets/EpicLoot/Sprites/LegendaryItemBg.png
+- Assets/EpicLoot/Sprites/MagicItemBg.png
+- Assets/EpicLoot/Prefabs/EpicLootBeam.prefab
+- Assets/EpicLoot/Sprites/EpicItemBg.png
+- Assets/EpicLoot/Prefabs/MagicLootBeam.prefab
+- Assets/EpicLoot/Prefabs/LegendaryLootBeam.prefab
+- Assets/EpicLoot/Sprites/RareItemBg.png
+- Assets/EpicLoot/Sprites/Equipped.png
+Dependencies: []

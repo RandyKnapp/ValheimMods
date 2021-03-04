@@ -19,6 +19,7 @@ namespace EpicLoot
         public Sprite EquippedSprite;
         public Sprite SetItemSprite;
         public Sprite[] MagicItemBgSprites = new Sprite[4];
+        public GameObject[] MagicItemLootBeamPrefabs = new GameObject[4];
     }
 
     [BepInPlugin("randyknapp.mods.epicloot", "Epic Loot", Version)]
@@ -74,6 +75,10 @@ namespace EpicLoot
             Assets.MagicItemBgSprites[(int)ItemRarity.Legendary] = assetBundle.LoadAsset<Sprite>("LegendaryItemBg");
             Assets.EquippedSprite = assetBundle.LoadAsset<Sprite>("Equipped");
             Assets.SetItemSprite = assetBundle.LoadAsset<Sprite>("SetItemMarker");
+            Assets.MagicItemLootBeamPrefabs[(int)ItemRarity.Magic] = assetBundle.LoadAsset<GameObject>("MagicLootBeam");
+            Assets.MagicItemLootBeamPrefabs[(int)ItemRarity.Rare] = assetBundle.LoadAsset<GameObject>("RareLootBeam");
+            Assets.MagicItemLootBeamPrefabs[(int)ItemRarity.Epic] = assetBundle.LoadAsset<GameObject>("EpicLootBeam");
+            Assets.MagicItemLootBeamPrefabs[(int)ItemRarity.Legendary] = assetBundle.LoadAsset<GameObject>("LegendaryLootBeam");
 
             ExtendedItemData.LoadExtendedItemData += SetupTestMagicItem;
             ExtendedItemData.LoadExtendedItemData += MagicItemComponent.OnNewExtendedItemData;
