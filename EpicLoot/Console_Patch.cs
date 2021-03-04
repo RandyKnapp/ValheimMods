@@ -9,11 +9,6 @@ using UnityEngine;
 
 namespace EpicLoot
 {
-    /*public void InputText()
-      {
-        string text1 = this.m_input.text;
-        this.AddString(text1);
-        string[] strArray1 = text1.Split(' ');*/
     [HarmonyPatch(typeof(Console), "InputText")]
     public static class Console_Patch
     {
@@ -37,15 +32,12 @@ namespace EpicLoot
                 var count = args.Length >= 4 ? int.Parse(args[3]) : 1;
 
                 __instance.AddString($"magicitem - rarity:{rarityArg}, item:{itemArg}, count:{count}");
-                Debug.Log($"magicitem - rarity:{rarityArg}, item:{itemArg}, count:{count}");
 
                 var items = new List<GameObject>();
                 var allItemNames = ObjectDB.instance.m_items
                     .Where(x => EpicLoot.CanBeMagicItem(x.GetComponent<ItemDrop>().m_itemData))
                     .Select(x => x.name)
                     .ToList();
-
-                Debug.Log(string.Join("\n", allItemNames));
 
                 if (Player.m_localPlayer == null)
                 {
@@ -77,8 +69,7 @@ namespace EpicLoot
                         break;
                     }
 
-                    __instance.AddString($"  {i} - rarity:{rarityTable}, item:{item}");
-                    Debug.Log($"  {i} - rarity:{rarityTable}, item:{item}");
+                    __instance.AddString($"  {i + 1} - rarity: [{string.Join(", ", rarityTable)}], item: {item}");
 
                     var loot = new LootTable()
                     {

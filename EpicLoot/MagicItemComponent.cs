@@ -98,6 +98,11 @@ namespace EpicLoot
                 return itemData.m_shared.m_name;
             }
         }
+
+        public static bool IsPartOfSet(this ItemDrop.ItemData itemData, string setName)
+        {
+            return itemData.m_shared.m_setName == setName;
+        }
     }
 
     public static partial class PlayerExtensions
@@ -134,7 +139,7 @@ namespace EpicLoot
 
         public static List<ItemDrop.ItemData> GetEquippedSetPieces(this Player player, string setName)
         {
-            return player.GetEquipment().Where(x => x.m_shared.m_setName == setName).ToList();
+            return player.GetEquipment().Where(x => x.IsPartOfSet(setName)).ToList();
         }
 
         public static int GetEquippedSetItemCount(this Player player, string setName)
