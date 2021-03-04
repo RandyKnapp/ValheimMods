@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using UnityEngine;
 
@@ -30,6 +31,11 @@ namespace ExtendedItemDataFramework
 
     public class ExtendedItemData : ItemDrop.ItemData
     {
+        public const string StartDelimiter = "<|";
+        public const string EndDelimiter = "|>";
+        public const string StartDelimiterEscaped = "randyknapp.mods.extendeditemdataframework.startdelimiter";
+        public const string EndDelimiterEscaped = "randyknapp.mods.extendeditemdataframework.enddelimiter";
+
         public static event NewExtendedItemDataHandler NewExtendedItemData;
         public static event NewExtendedItemDataHandler LoadExtendedItemData;
 
@@ -103,16 +109,7 @@ namespace ExtendedItemDataFramework
 
         public T GetComponent<T>() where T : BaseExtendedItemComponent
         {
-            foreach (var component in Components)
-            {
-                var componentT = component as T;
-                if (componentT != null)
-                {
-                    return componentT;
-                }
-            }
-
-            return null;
+            return Components.OfType<T>().FirstOrDefault();
         }
 
         public T AddComponent<T>(/*params object[] constructorArgs*/) where T : BaseExtendedItemComponent
@@ -158,9 +155,10 @@ namespace ExtendedItemDataFramework
             _sb.Clear();
             foreach (var component in Components)
             {
+                _sb.Append($"{StartDelimiter}{EscapeDataText(component.TypeName)}{EndDelimiter}");
+
                 var serializedComponent = component.Serialize();
-                _sb.Append($"<|{component.TypeName}|>");
-                _sb.Append(serializedComponent);
+                _sb.Append(EscapeDataText(serializedComponent));
             }
 
             m_crafterName = _sb.ToString();
@@ -170,22 +168,22 @@ namespace ExtendedItemDataFramework
 
         public void Load()
         {
-            if (m_crafterName.StartsWith("<|"))
+            if (m_crafterName.StartsWith(StartDelimiter))
             {
                 Components.Clear();
-                var serializedComponents = m_crafterName.Split(new []{ "<|" }, StringSplitOptions.RemoveEmptyEntries);
+                var serializedComponents = m_crafterName.Split(new []{ StartDelimiter }, StringSplitOptions.RemoveEmptyEntries);
                 ExtendedItemDataFramework.Log($"(Found component save data: {serializedComponents.Length})");
                 foreach (var component in serializedComponents)
                 {
-                    var parts = component.Split(new[] { "|>" }, StringSplitOptions.None);
-                    var typeString = parts[0];
+                    var parts = component.Split(new[] { EndDelimiter }, StringSplitOptions.None);
+                    var typeString = RestoreDataText(parts[0]);
                     var data = parts.Length == 2 ? parts[1] : string.Empty;
                     ExtendedItemDataFramework.Log($"  Component: type: {typeString}, data: {data}");
 
                     var type = Type.GetType(typeString);
                     if (type == null)
                     {
-                        ExtendedItemDataFramework.LogError($"Could not deserialize ExtendedItemComponent type ({parts[0]})");
+                        ExtendedItemDataFramework.LogError($"Could not deserialize ExtendedItemComponent type ({typeString})");
                         continue;
                     }
 
@@ -195,7 +193,7 @@ namespace ExtendedItemDataFramework
                         ExtendedItemDataFramework.LogError($"Could not instantiate extended item component type ({type}) while loading object ({m_shared.m_name})");
                         continue;
                     }
-                    newComponent.Deserialize(data);
+                    newComponent.Deserialize(RestoreDataText(data));
                     Components.Add(newComponent);
                 }
             }
@@ -204,6 +202,16 @@ namespace ExtendedItemDataFramework
                 ExtendedItemDataFramework.Log($"Loaded item from data, but it was not extended. Initializing now ({m_shared.m_name})");
                 Initialize();
             }
+        }
+
+        public string EscapeDataText(string text)
+        {
+            return string.IsNullOrEmpty(text) ? text : text.Replace(StartDelimiter, StartDelimiterEscaped).Replace(EndDelimiter, EndDelimiterEscaped);
+        }
+
+        public string RestoreDataText(string text)
+        {
+            return string.IsNullOrEmpty(text) ? text : text.Replace(StartDelimiterEscaped, StartDelimiter).Replace(EndDelimiterEscaped, EndDelimiter);
         }
 
         public ExtendedItemData ExtendedClone()

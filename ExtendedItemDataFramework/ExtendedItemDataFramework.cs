@@ -5,9 +5,11 @@ using HarmonyLib;
 
 namespace ExtendedItemDataFramework
 {
-    [BepInPlugin("randyknapp.mods.extendeditemdataframework", "Extended Item Data Framework", "1.0.0")]
+    [BepInPlugin("randyknapp.mods.extendeditemdataframework", "Extended Item Data Framework", Version)]
     public class ExtendedItemDataFramework : BaseUnityPlugin
     {
+        private const string Version = "1.0.0";
+
         private static ConfigEntry<bool> _enabledConfig;
         private static ConfigEntry<bool> _loggingEnabled;
         public static ConfigEntry<bool> DisplayUniqueItemIDInTooltip;
@@ -20,7 +22,7 @@ namespace ExtendedItemDataFramework
         private void Awake()
         {
             _instance = this;
-            _enabledConfig = Config.Bind("General", "Enabled", true, "Turn off to disable this mod. When uninstalling, load and quit a game once with this mod disabled.");
+            _enabledConfig = Config.Bind("General", "Enabled", true, "Turn off to disable this mod. When uninstalling, load and quit a game once with this option set to false.");
             _loggingEnabled = Config.Bind("General", "Logging Enabled", false, "Enables log output from the mod.");
             DisplayUniqueItemIDInTooltip = Config.Bind("General", "Display UniqueItemID in Tooltip", false, "Displays the item's unique id in magenta text at the bottom of the tooltip.");
 

@@ -6,36 +6,6 @@ namespace ExtendedItemDataFramework
     //public void MoveAll(Inventory fromInventory)
     //public bool MoveItemToThis(Inventory fromInventory, ItemDrop.ItemData item, int amount, int x, int y)
 
-    //public bool AddItem(ItemDrop.ItemData item, int amount, int x, int y)
-    /*[HarmonyPatch(typeof(Inventory), "AddItem", new []{ typeof(ItemDrop.ItemData), typeof(int), typeof(int), typeof(int) })]
-    public static class Inventory_AddItem1_Patch
-    {
-        public static bool Prefix(ref ItemDrop.ItemData item)
-        {
-            if (item != null && !item.IsExtended())
-            {
-                item = new ExtendedItemData(item);
-            }
-
-            return true;
-        }
-    }
-
-    //public bool AddItem(ItemDrop.ItemData item)
-    [HarmonyPatch(typeof(Inventory), "AddItem", new[] { typeof(ItemDrop.ItemData) })]
-    public static class Inventory_AddItem2_Patch
-    {
-        public static bool Prefix(ref ItemDrop.ItemData item)
-        {
-            if (item != null && !item.IsExtended())
-            {
-                item = new ExtendedItemData(item);
-            }
-
-            return true;
-        }
-    }*/
-
     // Add from load:
     //public bool AddItem(string name, int stack, float durability, Vector2i pos, bool equiped, int quality, int variant, long crafterID, string crafterName)
     [HarmonyPatch(typeof(Inventory), "AddItem", new[] { typeof(string), typeof(int), typeof(float), typeof(Vector2i), typeof(bool), typeof(int), typeof(int), typeof(long), typeof(string) })]
