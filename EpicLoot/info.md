@@ -273,10 +273,10 @@ The int value of the type is displayed in parentheses after the name.
 > 
 > |Rarity|Min|Max|Increment|
 > |--|--|--|--|
-> |Magic|5|10|1|
-> |Rare|8|13|1|
-> |Epic|12|17|1|
-> |Legendary|16|21|1|
+> |Magic|1|4|1|
+> |Rare|3|8|1|
+> |Epic|7|15|1|
+> |Legendary|15|20|1|
 
 ## AddSlashingDamage (18)
 
@@ -288,10 +288,10 @@ The int value of the type is displayed in parentheses after the name.
 > 
 > |Rarity|Min|Max|Increment|
 > |--|--|--|--|
-> |Magic|5|10|1|
-> |Rare|8|13|1|
-> |Epic|12|17|1|
-> |Legendary|16|21|1|
+> |Magic|1|4|1|
+> |Rare|3|8|1|
+> |Epic|7|15|1|
+> |Legendary|15|20|1|
 
 ## AddPiercingDamage (19)
 
@@ -303,10 +303,10 @@ The int value of the type is displayed in parentheses after the name.
 > 
 > |Rarity|Min|Max|Increment|
 > |--|--|--|--|
-> |Magic|5|10|1|
-> |Rare|8|13|1|
-> |Epic|12|17|1|
-> |Legendary|16|21|1|
+> |Magic|1|4|1|
+> |Rare|3|8|1|
+> |Epic|7|15|1|
+> |Legendary|15|20|1|
 
 ## AddFireDamage (20)
 
@@ -318,10 +318,10 @@ The int value of the type is displayed in parentheses after the name.
 > 
 > |Rarity|Min|Max|Increment|
 > |--|--|--|--|
-> |Magic|5|10|1|
-> |Rare|8|13|1|
-> |Epic|12|17|1|
-> |Legendary|16|21|1|
+> |Magic|1|4|1|
+> |Rare|3|8|1|
+> |Epic|7|15|1|
+> |Legendary|15|20|1|
 
 ## AddFrostDamage (21)
 
@@ -333,10 +333,10 @@ The int value of the type is displayed in parentheses after the name.
 > 
 > |Rarity|Min|Max|Increment|
 > |--|--|--|--|
-> |Magic|5|10|1|
-> |Rare|8|13|1|
-> |Epic|12|17|1|
-> |Legendary|16|21|1|
+> |Magic|1|4|1|
+> |Rare|3|8|1|
+> |Epic|7|15|1|
+> |Legendary|15|20|1|
 
 ## AddLightningDamage (22)
 
@@ -348,10 +348,10 @@ The int value of the type is displayed in parentheses after the name.
 > 
 > |Rarity|Min|Max|Increment|
 > |--|--|--|--|
-> |Magic|5|10|1|
-> |Rare|8|13|1|
-> |Epic|12|17|1|
-> |Legendary|16|21|1|
+> |Magic|1|4|1|
+> |Rare|3|8|1|
+> |Epic|7|15|1|
+> |Legendary|15|20|1|
 
 ## AddPoisonDamage (23)
 
@@ -363,10 +363,10 @@ The int value of the type is displayed in parentheses after the name.
 > 
 > |Rarity|Min|Max|Increment|
 > |--|--|--|--|
-> |Magic|5|10|1|
-> |Rare|8|13|1|
-> |Epic|12|17|1|
-> |Legendary|16|21|1|
+> |Magic|1|4|1|
+> |Rare|3|8|1|
+> |Epic|7|15|1|
+> |Legendary|15|20|1|
 
 ## AddSpiritDamage (24)
 
@@ -378,10 +378,10 @@ The int value of the type is displayed in parentheses after the name.
 > 
 > |Rarity|Min|Max|Increment|
 > |--|--|--|--|
-> |Magic|5|10|1|
-> |Rare|8|13|1|
-> |Epic|12|17|1|
-> |Legendary|16|21|1|
+> |Magic|1|4|1|
+> |Rare|3|8|1|
+> |Epic|7|15|1|
+> |Legendary|15|20|1|
 
 ## AddFireResistance (25)
 
@@ -836,6 +836,28 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 > | 1 | 30 (15%) |
 > | 2 | 20 (10%) |
 > | 3 | 2 (1%) |
+>
+> | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | SwordBronze | 1 (9.1%) | 95 (95%) | 4 (4%) | 1 (1%) | 0 (0%) |
+> | AxeBronze | 1 (9.1%) | 95 (95%) | 4 (4%) | 1 (1%) | 0 (0%) |
+> | MaceBronze | 1 (9.1%) | 95 (95%) | 4 (4%) | 1 (1%) | 0 (0%) |
+> | AtgeirBronze | 1 (9.1%) | 95 (95%) | 4 (4%) | 1 (1%) | 0 (0%) |
+> | ShieldBronzeBuckler | 1 (9.1%) | 95 (95%) | 4 (4%) | 1 (1%) | 0 (0%) |
+> | HelmetLeather | 2 (18.2%) | 95 (95%) | 4 (4%) | 1 (1%) | 0 (0%) |
+> | HelmetLeather | 2 (18.2%) | 95 (95%) | 4 (4%) | 1 (1%) | 0 (0%) |
+> | ArmorLeatherChest | 2 (18.2%) | 95 (95%) | 4 (4%) | 1 (1%) | 0 (0%) |
+
+## TreasureChest_trollcave
+
+> **Levels:** All
+>
+> | Number of Items | Weight (Chance) |
+> | -- | -- |
+> | 0 | 60 (53.6%) |
+> | 1 | 30 (26.8%) |
+> | 2 | 20 (17.9%) |
+> | 3 | 2 (1.8%) |
 >
 > | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |

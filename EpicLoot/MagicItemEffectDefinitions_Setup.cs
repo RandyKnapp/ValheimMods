@@ -263,10 +263,10 @@ namespace EpicLoot
                 DisplayText = "Add +{0:0.#} blunt damage",
                 AllowedItemTypes = Weapons,
                 ValuesPerRarity = {
-                    { ItemRarity.Magic,     new MagicItemEffectDefinition.ValueDef() { MinValue = 5, MaxValue = 10, Increment = 1 } },
-                    { ItemRarity.Rare,      new MagicItemEffectDefinition.ValueDef() { MinValue = 8, MaxValue = 13, Increment = 1 } },
-                    { ItemRarity.Epic,      new MagicItemEffectDefinition.ValueDef() { MinValue = 12, MaxValue = 17, Increment = 1 } },
-                    { ItemRarity.Legendary, new MagicItemEffectDefinition.ValueDef() { MinValue = 16, MaxValue = 21, Increment = 1 } }
+                    { ItemRarity.Magic,     new MagicItemEffectDefinition.ValueDef() { MinValue = 1, MaxValue = 4, Increment = 1 } },
+                    { ItemRarity.Rare,      new MagicItemEffectDefinition.ValueDef() { MinValue = 3, MaxValue = 8, Increment = 1 } },
+                    { ItemRarity.Epic,      new MagicItemEffectDefinition.ValueDef() { MinValue = 7, MaxValue = 15, Increment = 1 } },
+                    { ItemRarity.Legendary, new MagicItemEffectDefinition.ValueDef() { MinValue = 15, MaxValue = 20, Increment = 1 } }
                 }
             });
 
@@ -276,10 +276,10 @@ namespace EpicLoot
                 DisplayText = "Add +{0:0.#} slashing damage",
                 AllowedItemTypes = Weapons,
                 ValuesPerRarity = {
-                    { ItemRarity.Magic,     new MagicItemEffectDefinition.ValueDef() { MinValue = 5, MaxValue = 10, Increment = 1 } },
-                    { ItemRarity.Rare,      new MagicItemEffectDefinition.ValueDef() { MinValue = 8, MaxValue = 13, Increment = 1 } },
-                    { ItemRarity.Epic,      new MagicItemEffectDefinition.ValueDef() { MinValue = 12, MaxValue = 17, Increment = 1 } },
-                    { ItemRarity.Legendary, new MagicItemEffectDefinition.ValueDef() { MinValue = 16, MaxValue = 21, Increment = 1 } }
+                    { ItemRarity.Magic,     new MagicItemEffectDefinition.ValueDef() { MinValue = 1, MaxValue = 4, Increment = 1 } },
+                    { ItemRarity.Rare,      new MagicItemEffectDefinition.ValueDef() { MinValue = 3, MaxValue = 8, Increment = 1 } },
+                    { ItemRarity.Epic,      new MagicItemEffectDefinition.ValueDef() { MinValue = 7, MaxValue = 15, Increment = 1 } },
+                    { ItemRarity.Legendary, new MagicItemEffectDefinition.ValueDef() { MinValue = 15, MaxValue = 20, Increment = 1 } }
                 }
             });
 
@@ -289,10 +289,10 @@ namespace EpicLoot
                 DisplayText = "Add +{0:0.#} piercing damage",
                 AllowedItemTypes = Weapons,
                 ValuesPerRarity = {
-                    { ItemRarity.Magic,     new MagicItemEffectDefinition.ValueDef() { MinValue = 5, MaxValue = 10, Increment = 1 } },
-                    { ItemRarity.Rare,      new MagicItemEffectDefinition.ValueDef() { MinValue = 8, MaxValue = 13, Increment = 1 } },
-                    { ItemRarity.Epic,      new MagicItemEffectDefinition.ValueDef() { MinValue = 12, MaxValue = 17, Increment = 1 } },
-                    { ItemRarity.Legendary, new MagicItemEffectDefinition.ValueDef() { MinValue = 16, MaxValue = 21, Increment = 1 } }
+                    { ItemRarity.Magic,     new MagicItemEffectDefinition.ValueDef() { MinValue = 1, MaxValue = 4, Increment = 1 } },
+                    { ItemRarity.Rare,      new MagicItemEffectDefinition.ValueDef() { MinValue = 3, MaxValue = 8, Increment = 1 } },
+                    { ItemRarity.Epic,      new MagicItemEffectDefinition.ValueDef() { MinValue = 7, MaxValue = 15, Increment = 1 } },
+                    { ItemRarity.Legendary, new MagicItemEffectDefinition.ValueDef() { MinValue = 15, MaxValue = 20, Increment = 1 } }
                 }
             });
 
@@ -302,10 +302,10 @@ namespace EpicLoot
                 DisplayText = "Add +{0:0.#} fire damage",
                 AllowedItemTypes = Weapons,
                 ValuesPerRarity = {
-                    { ItemRarity.Magic,     new MagicItemEffectDefinition.ValueDef() { MinValue = 5, MaxValue = 10, Increment = 1 } },
-                    { ItemRarity.Rare,      new MagicItemEffectDefinition.ValueDef() { MinValue = 8, MaxValue = 13, Increment = 1 } },
-                    { ItemRarity.Epic,      new MagicItemEffectDefinition.ValueDef() { MinValue = 12, MaxValue = 17, Increment = 1 } },
-                    { ItemRarity.Legendary, new MagicItemEffectDefinition.ValueDef() { MinValue = 16, MaxValue = 21, Increment = 1 } }
+                    { ItemRarity.Magic,     new MagicItemEffectDefinition.ValueDef() { MinValue = 1, MaxValue = 4, Increment = 1 } },
+                    { ItemRarity.Rare,      new MagicItemEffectDefinition.ValueDef() { MinValue = 3, MaxValue = 8, Increment = 1 } },
+                    { ItemRarity.Epic,      new MagicItemEffectDefinition.ValueDef() { MinValue = 7, MaxValue = 15, Increment = 1 } },
+                    { ItemRarity.Legendary, new MagicItemEffectDefinition.ValueDef() { MinValue = 15, MaxValue = 20, Increment = 1 } }
                 }
             });
 
@@ -315,10 +315,10 @@ namespace EpicLoot
                 DisplayText = "Add +{0:0.#} frost damage",
                 AllowedItemTypes = Weapons,
                 ValuesPerRarity = {
-                    { ItemRarity.Magic,     new MagicItemEffectDefinition.ValueDef() { MinValue = 5, MaxValue = 10, Increment = 1 } },
-                    { ItemRarity.Rare,      new MagicItemEffectDefinition.ValueDef() { MinValue = 8, MaxValue = 13, Increment = 1 } },
-                    { ItemRarity.Epic,      new MagicItemEffectDefinition.ValueDef() { MinValue = 12, MaxValue = 17, Increment = 1 } },
-                    { ItemRarity.Legendary, new MagicItemEffectDefinition.ValueDef() { MinValue = 16, MaxValue = 21, Increment = 1 } }
+                    { ItemRarity.Magic,     new MagicItemEffectDefinition.ValueDef() { MinValue = 1, MaxValue = 4, Increment = 1 } },
+                    { ItemRarity.Rare,      new MagicItemEffectDefinition.ValueDef() { MinValue = 3, MaxValue = 8, Increment = 1 } },
+                    { ItemRarity.Epic,      new MagicItemEffectDefinition.ValueDef() { MinValue = 7, MaxValue = 15, Increment = 1 } },
+                    { ItemRarity.Legendary, new MagicItemEffectDefinition.ValueDef() { MinValue = 15, MaxValue = 20, Increment = 1 } }
                 }
             });
 
@@ -328,10 +328,10 @@ namespace EpicLoot
                 DisplayText = "Add +{0:0.#} lightning damage",
                 AllowedItemTypes = Weapons,
                 ValuesPerRarity = {
-                    { ItemRarity.Magic,     new MagicItemEffectDefinition.ValueDef() { MinValue = 5, MaxValue = 10, Increment = 1 } },
-                    { ItemRarity.Rare,      new MagicItemEffectDefinition.ValueDef() { MinValue = 8, MaxValue = 13, Increment = 1 } },
-                    { ItemRarity.Epic,      new MagicItemEffectDefinition.ValueDef() { MinValue = 12, MaxValue = 17, Increment = 1 } },
-                    { ItemRarity.Legendary, new MagicItemEffectDefinition.ValueDef() { MinValue = 16, MaxValue = 21, Increment = 1 } }
+                    { ItemRarity.Magic,     new MagicItemEffectDefinition.ValueDef() { MinValue = 1, MaxValue = 4, Increment = 1 } },
+                    { ItemRarity.Rare,      new MagicItemEffectDefinition.ValueDef() { MinValue = 3, MaxValue = 8, Increment = 1 } },
+                    { ItemRarity.Epic,      new MagicItemEffectDefinition.ValueDef() { MinValue = 7, MaxValue = 15, Increment = 1 } },
+                    { ItemRarity.Legendary, new MagicItemEffectDefinition.ValueDef() { MinValue = 15, MaxValue = 20, Increment = 1 } }
                 }
             });
 
@@ -341,10 +341,10 @@ namespace EpicLoot
                 DisplayText = "Add +{0:0.#} poison damage",
                 AllowedItemTypes = Weapons,
                 ValuesPerRarity = {
-                    { ItemRarity.Magic,     new MagicItemEffectDefinition.ValueDef() { MinValue = 5, MaxValue = 10, Increment = 1 } },
-                    { ItemRarity.Rare,      new MagicItemEffectDefinition.ValueDef() { MinValue = 8, MaxValue = 13, Increment = 1 } },
-                    { ItemRarity.Epic,      new MagicItemEffectDefinition.ValueDef() { MinValue = 12, MaxValue = 17, Increment = 1 } },
-                    { ItemRarity.Legendary, new MagicItemEffectDefinition.ValueDef() { MinValue = 16, MaxValue = 21, Increment = 1 } }
+                    { ItemRarity.Magic,     new MagicItemEffectDefinition.ValueDef() { MinValue = 1, MaxValue = 4, Increment = 1 } },
+                    { ItemRarity.Rare,      new MagicItemEffectDefinition.ValueDef() { MinValue = 3, MaxValue = 8, Increment = 1 } },
+                    { ItemRarity.Epic,      new MagicItemEffectDefinition.ValueDef() { MinValue = 7, MaxValue = 15, Increment = 1 } },
+                    { ItemRarity.Legendary, new MagicItemEffectDefinition.ValueDef() { MinValue = 15, MaxValue = 20, Increment = 1 } }
                 }
             });
 
@@ -354,10 +354,10 @@ namespace EpicLoot
                 DisplayText = "Add +{0:0.#} spirit damage",
                 AllowedItemTypes = Weapons,
                 ValuesPerRarity = {
-                    { ItemRarity.Magic,     new MagicItemEffectDefinition.ValueDef() { MinValue = 5, MaxValue = 10, Increment = 1 } },
-                    { ItemRarity.Rare,      new MagicItemEffectDefinition.ValueDef() { MinValue = 8, MaxValue = 13, Increment = 1 } },
-                    { ItemRarity.Epic,      new MagicItemEffectDefinition.ValueDef() { MinValue = 12, MaxValue = 17, Increment = 1 } },
-                    { ItemRarity.Legendary, new MagicItemEffectDefinition.ValueDef() { MinValue = 16, MaxValue = 21, Increment = 1 } }
+                    { ItemRarity.Magic,     new MagicItemEffectDefinition.ValueDef() { MinValue = 1, MaxValue = 4, Increment = 1 } },
+                    { ItemRarity.Rare,      new MagicItemEffectDefinition.ValueDef() { MinValue = 3, MaxValue = 8, Increment = 1 } },
+                    { ItemRarity.Epic,      new MagicItemEffectDefinition.ValueDef() { MinValue = 7, MaxValue = 15, Increment = 1 } },
+                    { ItemRarity.Legendary, new MagicItemEffectDefinition.ValueDef() { MinValue = 15, MaxValue = 20, Increment = 1 } }
                 }
             });
 

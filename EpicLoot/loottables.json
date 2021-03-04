@@ -647,6 +647,55 @@
           "Rarity": [ 95, 4, 1, 0 ]
         }
       ]
+    },
+    //TreasureChest_trollcave
+    ////////////////////////////////////////////////////////////////////////////////////
+    {
+      "Object": "TreasureChest_trollcave",
+      "Drops": [ [0, 60], [1, 30], [2, 20], [3, 2] ],
+      "Loot": [
+        {
+          "Item": "SwordBronze",
+          "Weight": 1,
+          "Rarity": [ 95, 4, 1, 0 ]
+        },
+        {
+          "Item": "AxeBronze",
+          "Weight": 1,
+          "Rarity": [ 95, 4, 1, 0 ]
+        },
+        {
+          "Item": "MaceBronze",
+          "Weight": 1,
+          "Rarity": [ 95, 4, 1, 0 ]
+        },
+        {
+          "Item": "AtgeirBronze",
+          "Weight": 1,
+          "Rarity": [ 95, 4, 1, 0 ]
+        },
+        {
+          "Item": "ShieldBronzeBuckler",
+          "Weight": 1,
+          "Rarity": [ 95, 4, 1, 0 ]
+        },
+        {
+          "Item": "HelmetLeather",
+          "Weight": 2,
+          "Rarity": [ 95, 4, 1, 0 ]
+        },
+        {
+          "Item": "HelmetLeather",
+          "Weight": 2,
+          "Rarity": [ 95, 4, 1, 0 ]
+        },
+        {
+          "Item": "ArmorLeatherChest",
+          "Weight": 2,
+          "Rarity": [ 95, 4, 1, 0 ]
+        }
+      ]
     }
+    
   ]
 }
