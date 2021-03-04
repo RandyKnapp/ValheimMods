@@ -12,7 +12,7 @@ namespace EpicLoot
     [HarmonyPatch(typeof(InventoryGrid), "CreateItemTooltip", typeof(ItemDrop.ItemData), typeof(UITooltip))]
     public static class InventoryGrid_CreateItemTooltip_MagicItemComponent_Patch
     {
-        private static readonly Color NormalColor = new Color(1.0f, 0.7176471f, 0.3602941f);
+        //private static readonly Color NormalColor = new Color(1.0f, 0.7176471f, 0.3602941f);
 
         public static void Postfix(ItemDrop.ItemData item, UITooltip tooltip)
         {
