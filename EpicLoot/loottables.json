@@ -16,13 +16,26 @@
           "Weight": 1
         },
         {
-          "Item": "KnifeFlint",
+          "Item": "Torch",
+          "Weight": 1
+        },
+        {
+          "Item": "ArmorRagsLegs",
+          "Weight": 1
+        },
+        {
+          "Item": "ArmorRagsChest",
+          "Weight": 1
+        },
+        {
+          "Item": "ShieldWood",
           "Weight": 1
         }
       ]
     },
+    ////////////////////////////////////////////////////////////////////////////////////
     {
-      "Object": "Greydwarf",
+      "Object": "Greydwarf", "Level": [ 1, 2 ],
       "Drops": [ [0, 95], [1, 5] ],
       "Loot": [
         {
@@ -39,15 +52,559 @@
           "Item": "AxeFlint",
           "Weight": 1,
           "Rarity": [ 99, 1, 0, 0 ]
+        },
+        {
+          "Item": "SpearFlint",
+          "Weight": 1,
+          "Rarity": [ 99, 1, 0, 0 ]
+        },
+        {
+          "Item": "KnifeFlint",
+          "Weight": 1,
+          "Rarity": [ 99, 1, 0, 0 ]
+        },
+        {
+          "Item": "ShieldWood",
+          "Weight": 1,
+          "Rarity": [ 99, 1, 0, 0 ]
+        },
+        {
+          "Item": "ArmorLeatherLegs",
+          "Weight": 1,
+          "Rarity": [ 99, 1, 0, 0 ]
+        },
+        {
+          "Item": "ArmorLeatherChest",
+          "Weight": 1,
+          "Rarity": [ 99, 1, 0, 0 ]
+        },
+        {
+          "Item": "HelmetLeather",
+          "Weight": 1,
+          "Rarity": [ 99, 1, 0, 0 ]
+        },
+        {
+          "Item": "CapeDeerHide",
+          "Weight": 1,
+          "Rarity": [ 99, 1, 0, 0 ]
+        },
+        {
+          "Item": "Hammer",
+          "Weight": 1,
+          "Rarity": [ 1, 0, 0, 0 ]
+        },
+        {
+          "Item": "Bow",
+          "Weight": 1,
+          "Rarity": [ 99, 1, 0, 0 ]
+        }
+      ]
+    },
+    ////////////////////////////////////////////////////////////////////////////////////
+    {
+      "Object": "Greydwarf", "Level": [ 3 ],
+      "Drops": [ [0, 70], [1, 30] ],
+      "Loot": [
+        {
+          "Item": "Club",
+          "Weight": 1,
+          "Rarity": [ 99, 1, 0, 0 ]
+        },
+        {
+          "Item": "AxeStone",
+          "Weight": 1,
+          "Rarity": [ 99, 1, 0, 0 ]
+        },
+        {
+          "Item": "AxeFlint",
+          "Weight": 1,
+          "Rarity": [ 99, 1, 0, 0 ]
+        },
+        {
+          "Item": "SpearFlint",
+          "Weight": 1,
+          "Rarity": [ 99, 1, 0, 0 ]
+        },
+        {
+          "Item": "KnifeFlint",
+          "Weight": 1,
+          "Rarity": [ 99, 1, 0, 0 ]
+        },
+        {
+          "Item": "ShieldWood",
+          "Weight": 1,
+          "Rarity": [ 99, 1, 0, 0 ]
+        },
+        {
+          "Item": "ArmorLeatherLegs",
+          "Weight": 1,
+          "Rarity": [ 99, 1, 0, 0 ]
+        },
+        {
+          "Item": "ArmorLeatherChest",
+          "Weight": 1,
+          "Rarity": [ 99, 1, 0, 0 ]
+        },
+        {
+          "Item": "HelmetLeather",
+          "Weight": 1,
+          "Rarity": [ 99, 1, 0, 0 ]
+        },
+        {
+          "Item": "CapeDeerHide",
+          "Weight": 1,
+          "Rarity": [ 99, 1, 0, 0 ]
+        },
+        {
+          "Item": "Hammer",
+          "Weight": 1,
+          "Rarity": [ 1, 0, 0, 0 ]
+        },
+        {
+          "Item": "Bow",
+          "Weight": 1,
+          "Rarity": [ 99, 1, 0, 0 ]
+        }
+      ]
+    },
+    ////////////////////////////////////////////////////////////////////////////////////
+    {
+      "Object": "Greydwarf_Elite", "Level": [ 1, 2 ],
+      "Drops": [ [0, 70], [1, 30] ],
+      "Loot": [
+        {
+          "Item": "AxeFlint",
+          "Weight": 1,
+          "Rarity": [ 99, 1, 0, 0 ]
+        },
+        {
+          "Item": "KnifeFlint",
+          "Weight": 1,
+          "Rarity": [ 99, 1, 0, 0 ]
+        },
+        {
+          "Item": "ShieldWood",
+          "Weight": 1,
+          "Rarity": [ 99, 1, 0, 0 ]
+        },
+        {
+          "Item": "SpearFlint",
+          "Weight": 1,
+          "Rarity": [ 99, 1, 0, 0 ]
+        },
+        {
+          "Item": "Bow",
+          "Weight": 1,
+          "Rarity": [ 99, 1, 0, 0 ]
+        }
+      ]
+    },
+    ////////////////////////////////////////////////////////////////////////////////////
+    {
+      "Object": "Greydwarf_Elite", "Level": [ 3 ],
+      "Drops": [ [0, 70], [1, 30] ],
+      "Loot": [
+        {
+          "Item": "AxeStone",
+          "Weight": 5,
+          "Rarity": [ 60, 30, 10, 0 ]
+        },
+        {
+          "Item": "ArmorTrollLeatherLegs",
+          "Weight": 1,
+          "Rarity": [ 60, 30, 10, 0 ]
+        },
+        {
+          "Item": "ArmorTrollLeatherChest",
+          "Weight": 1,
+          "Rarity": [ 60, 30, 10, 0 ]
+        },
+        {
+          "Item": "HelmetTrollLeather",
+          "Weight": 1,
+          "Rarity": [ 60, 30, 10, 0 ]
+        },
+        {
+          "Item": "CapeTrollHide",
+          "Weight": 1,
+          "Rarity": [ 60, 30, 10, 0 ]
+        },
+        {
+          "Item": "Bow",
+          "Weight": 1,
+          "Rarity": [ 99, 1, 0, 0 ]
+        }
+      ]
+    },
+    ////////////////////////////////////////////////////////////////////////////////////
+    {
+      "Object": "Greydwarf_Shaman", "Level": [ 1, 2, 3 ],
+      "Drops": [ [0, 60], [1, 40] ],
+      "Loot": [
+        {
+          "Item": "ArmorLeatherLegs",
+          "Weight": 1,
+          "Rarity": [ 99, 1, 0, 0 ]
+        },
+        {
+          "Item": "ArmorLeatherChest",
+          "Weight": 1,
+          "Rarity": [ 99, 1, 0, 0 ]
+        },
+        {
+          "Item": "HelmetLeather",
+          "Weight": 1,
+          "Rarity": [ 99, 1, 0, 0 ]
+        },
+        {
+          "Item": "CapeDeerHide",
+          "Weight": 1,
+          "Rarity": [ 99, 1, 0, 0 ]
+        },
+        {
+          "Item": "AxeFlint",
+          "Weight": 1,
+          "Rarity": [ 99, 1, 0, 0 ]
+        },
+        {
+          "Item": "KnifeFlint",
+          "Weight": 1,
+          "Rarity": [ 99, 1, 0, 0 ]
+        },
+        {
+          "Item": "ShieldWood",
+          "Weight": 1,
+          "Rarity": [ 99, 1, 0, 0 ]
+        },
+        {
+          "Item": "SpearFlint",
+          "Weight": 1,
+          "Rarity": [ 99, 1, 0, 0 ]
+        },
+        {
+          "Item": "BowFineWood",
+          "Weight": 1,
+          "Rarity": [ 99, 1, 0, 0 ]
+        }
+      ]
+    },
+    ////////////////////////////////////////////////////////////////////////////////////
+    {
+      "Object": "Troll", "Level": [ 1, 2, 3 ],
+      "Drops": [ [0, 60], [1, 40] ],
+      "Loot": [
+        {
+          "Item": "ArmorLeatherLegs",
+          "Weight": 1,
+          "Rarity": [ 99, 1, 0, 0 ]
+        },
+        {
+          "Item": "ArmorLeatherChest",
+          "Weight": 1,
+          "Rarity": [ 99, 1, 0, 0 ]
+        },
+        {
+          "Item": "HelmetLeather",
+          "Weight": 1,
+          "Rarity": [ 99, 1, 0, 0 ]
+        },
+        {
+          "Item": "CapeDeerHide",
+          "Weight": 1,
+          "Rarity": [ 99, 1, 0, 0 ]
+        },
+        {
+          "Item": "AxeFlint",
+          "Weight": 1,
+          "Rarity": [ 99, 1, 0, 0 ]
+        },
+        {
+          "Item": "KnifeFlint",
+          "Weight": 1,
+          "Rarity": [ 99, 1, 0, 0 ]
+        },
+        {
+          "Item": "ShieldWood",
+          "Weight": 1,
+          "Rarity": [ 99, 1, 0, 0 ]
+        },
+        {
+          "Item": "SpearFlint",
+          "Weight": 1,
+          "Rarity": [ 99, 1, 0, 0 ]
+        },
+        {
+          "Item": "BowFineWood",
+          "Weight": 1,
+          "Rarity": [ 99, 1, 0, 0 ]
+        }
+      ]
+    },
+    //Skeleton
+    ////////////////////////////////////////////////////////////////////////////////////
+    {
+      "Object": "Skeleton", "Level": [ 1, 2, 3 ],
+      "Drops": [ [0, 95], [1, 5] ],
+      "Loot": [
+        {
+          "Item": "SwordBronze",
+          "Weight": 3,
+          "Rarity": [ 98, 2, 0, 0 ]
+        },
+        {
+          "Item": "AxeBronze",
+          "Weight": 1,
+          "Rarity": [ 98, 2, 0, 0 ]
+        },
+        {
+          "Item": "MaceBronze",
+          "Weight": 1,
+          "Rarity": [ 98, 2, 0, 0 ]
+        },
+        {
+          "Item": "AtgeirBronze",
+          "Weight": 1,
+          "Rarity": [ 98, 2, 0, 0 ]
+        },
+        {
+          "Item": "SpearBronze",
+          "Weight": 1,
+          "Rarity": [ 98, 2, 0, 0 ]
+        },
+        {
+          "Item": "ShieldWood",
+          "Weight": 2,
+          "Rarity": [ 98, 2, 0, 0 ]
+        },
+        {
+          "Item": "HelmetLeather",
+          "Weight": 1,
+          "Rarity": [ 98, 2, 0, 0 ]
+        },
+        {
+          "Item": "HelmetLeather",
+          "Weight": 1,
+          "Rarity": [ 98, 2, 0, 0 ]
+        },
+        {
+          "Item": "ArmorLeatherChest",
+          "Weight": 1,
+          "Rarity": [ 98, 2, 0, 0 ]
+        },
+        {
+          "Item": "Bow",
+          "Weight": 3,
+          "Rarity": [ 98, 2, 0, 0 ]
+        }
+      ]
+    },
+    //Ghost
+    ////////////////////////////////////////////////////////////////////////////////////
+    {
+      "Object": "Ghost", "Level": [ 1, 2, 3 ],
+      "Drops": [ [0, 70], [1, 3] ],
+      "Loot": [
+        {
+          "Item": "ArmorLeatherLegs",
+          "Weight": 1,
+          "Rarity": [ 90, 9, 1, 0 ]
+        },
+        {
+          "Item": "ArmorLeatherChest",
+          "Weight": 1,
+          "Rarity": [ 90, 9, 1, 0 ]
+        },
+        {
+          "Item": "HelmetLeather",
+          "Weight": 1,
+          "Rarity": [ 90, 9, 1, 0 ]
+        },
+        {
+          "Item": "CapeDeerHide",
+          "Weight": 1,
+          "Rarity": [ 90, 9, 1, 0 ]
+        },
+        {
+          "Item": "AxeFlint",
+          "Weight": 1,
+          "Rarity": [ 90, 9, 1, 0 ]
+        },
+        {
+          "Item": "KnifeFlint",
+          "Weight": 1,
+          "Rarity": [ 90, 9, 1, 0 ]
+        },
+        {
+          "Item": "ShieldWood",
+          "Weight": 1,
+          "Rarity": [ 90, 9, 1, 0 ]
+        },
+        {
+          "Item": "SpearFlint",
+          "Weight": 1,
+          "Rarity": [ 90, 9, 1, 0 ]
+        },
+        {
+          "Item": "Bow",
+          "Weight": 3,
+          "Rarity": [ 90, 9, 1, 0 ]
+        }
+      ]
+    },
+    ////////////////////////////////////////////////////////////////////////////////////
+    // BOSSES
+    ////////////////////////////////////////////////////////////////////////////////////
+    //Eikthyr
+    {
+      "Object": "Eikthyr",
+      "Drops": [ [1, 70], [2, 30] ],
+      "Loot": [
+        {
+          "Item": "SledgeStagbreaker",
+          "Weight": 2,
+          "Rarity": [ 90, 9, 1, 0 ]
+        },
+        {
+          "Item": "SpearFlint",
+          "Weight": 1,
+          "Rarity": [ 90, 9, 1, 0 ]
+        },
+        {
+          "Item": "Bow",
+          "Weight": 1,
+          "Rarity": [ 90, 9, 1, 0 ]
+        },
+        {
+          "Item": "PickaxeAntler",
+          "Weight": 2,
+          "Rarity": [ 90, 9, 1, 0 ]
         }
       ]
     },
     ////////////////////////////////////////////////////////////////////////////////////
     // TREASURE CHESTS
     ////////////////////////////////////////////////////////////////////////////////////
+    //TreasureChest_meadows
+    ////////////////////////////////////////////////////////////////////////////////////
+    {
+      "Object": "TreasureChest_meadows",
+      "Drops": [ [0, 80], [1, 18], [2, 2] ],
+      "Loot": [
+        {
+          "Item": "Club",
+          "Weight": 1,
+          "Rarity": [ 97, 2, 1, 0 ]
+        },
+        {
+          "Item": "AxeStone",
+          "Weight": 1,
+          "Rarity": [ 97, 2, 1, 0 ]
+        },
+        {
+          "Item": "Torch",
+          "Weight": 1,
+          "Rarity": [ 97, 2, 1, 0 ]
+        },
+        {
+          "Item": "ArmorRagsLegs",
+          "Weight": 1,
+          "Rarity": [ 97, 2, 1, 0 ]
+        },
+        {
+          "Item": "ArmorRagsChest",
+          "Weight": 1,
+          "Rarity": [ 97, 2, 1, 0 ]
+        },
+        {
+          "Item": "ShieldWood",
+          "Weight": 1,
+          "Rarity": [ 97, 2, 1, 0 ]
+        },
+        {
+          "Item": "Hammer",
+          "Weight": 1,
+          "Rarity": [ 97, 2, 1, 0 ]
+        },
+        {
+          "Item": "Hoe",
+          "Weight": 1,
+          "Rarity": [ 97, 2, 1, 0 ]
+        }
+      ]
+    },
+    //TreasureChest_blackforest
+    ////////////////////////////////////////////////////////////////////////////////////
+    {
+      "Object": "TreasureChest_blackforest",
+      "Drops": [ [0, 70], [1, 30] ],
+      "Loot": [
+        {
+          "Item": "Club",
+          "Weight": 1,
+          "Rarity": [ 96, 3, 1, 0 ]
+        },
+        {
+          "Item": "AxeStone",
+          "Weight": 1,
+          "Rarity": [ 96, 3, 1, 0 ]
+        },
+        {
+          "Item": "AxeFlint",
+          "Weight": 1,
+          "Rarity": [ 96, 3, 1, 0 ]
+        },
+        {
+          "Item": "SpearFlint",
+          "Weight": 1,
+          "Rarity": [ 96, 3, 1, 0 ]
+        },
+        {
+          "Item": "KnifeFlint",
+          "Weight": 1,
+          "Rarity": [ 96, 3, 1, 0 ]
+        },
+        {
+          "Item": "ShieldWood",
+          "Weight": 1,
+          "Rarity": [ 96, 3, 1, 0 ]
+        },
+        {
+          "Item": "ArmorLeatherLegs",
+          "Weight": 1,
+          "Rarity": [ 96, 3, 1, 0 ]
+        },
+        {
+          "Item": "ArmorLeatherChest",
+          "Weight": 1,
+          "Rarity": [ 96, 3, 1, 0 ]
+        },
+        {
+          "Item": "HelmetLeather",
+          "Weight": 1,
+          "Rarity": [ 96, 3, 1, 0 ]
+        },
+        {
+          "Item": "CapeDeerHide",
+          "Weight": 1,
+          "Rarity": [ 96, 3, 1, 0 ]
+        },
+        {
+          "Item": "Hammer",
+          "Weight": 1,
+          "Rarity": [ 96, 3, 1, 0 ]
+        },
+        {
+          "Item": "Bow",
+          "Weight": 1,
+          "Rarity": [ 96, 3, 1, 0 ]
+        }
+      ]
+    },
+    //TreasureChest_forestcrypt
+    ////////////////////////////////////////////////////////////////////////////////////
     {
       "Object": "TreasureChest_forestcrypt",
-      "Drops": [ [0, 50], [1, 30], [2, 20] ],
+      "Drops": [ [0, 148], [1, 30], [2, 20], [3, 2] ],
       "Loot": [
         {
           "Item": "SwordBronze",
@@ -61,6 +618,11 @@
         },
         {
           "Item": "MaceBronze",
+          "Weight": 1,
+          "Rarity": [ 95, 4, 1, 0 ]
+        },
+        {
+          "Item": "AtgeirBronze",
           "Weight": 1,
           "Rarity": [ 95, 4, 1, 0 ]
         },

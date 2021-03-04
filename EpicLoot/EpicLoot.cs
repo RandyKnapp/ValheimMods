@@ -40,6 +40,8 @@ namespace EpicLoot
             ItemDrop.ItemData.ItemType.OneHandedWeapon,
             ItemDrop.ItemData.ItemType.TwoHandedWeapon,
             ItemDrop.ItemData.ItemType.Shield,
+            ItemDrop.ItemData.ItemType.Tool,
+            ItemDrop.ItemData.ItemType.Torch,
         };
 
         public static Dictionary<ItemRarity, Dictionary<int, float>> MagicEffectCountWeightsPerRarity = new Dictionary<ItemRarity, Dictionary<int, float>>()
@@ -150,7 +152,8 @@ namespace EpicLoot
         public static void AddLootTable(LootTable lootTable)
         {
             var key = lootTable.Object;
-            Debug.LogWarning($"Added LootTable: {key}");
+            var levels = (lootTable.Level != null && lootTable.Level.Length > 0) ? string.Join(", ", lootTable.Level) : "all";
+            Debug.LogWarning($"Added LootTable: {key} ({levels})");
             if (!LootTables.ContainsKey(key))
             {
                 LootTables.Add(key, new List<LootTable>());

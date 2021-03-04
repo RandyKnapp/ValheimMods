@@ -222,7 +222,7 @@ namespace EpicLoot
             {
                 Type = MagicEffectType.IncreaseStamina,
                 DisplayText = "Stamina increased by +{0:0}",
-                AllowedItemTypes = Armor,
+                AllowedItemTypes = Armor.Concat(Tools).ToList(),
                 ValuesPerRarity = {
                     { ItemRarity.Magic,     new MagicItemEffectDefinition.ValueDef() { MinValue = 10, MaxValue = 25, Increment = 5 } },
                     { ItemRarity.Rare,      new MagicItemEffectDefinition.ValueDef() { MinValue = 15, MaxValue = 30, Increment = 5 } },
@@ -248,7 +248,7 @@ namespace EpicLoot
             {
                 Type = MagicEffectType.ModifyStaminaRegen,
                 DisplayText = "Stamina regen improved by +{0:0.#}%",
-                AllowedItemTypes = Armor,
+                AllowedItemTypes = Armor.Concat(Tools).ToList(),
                 ValuesPerRarity = {
                     { ItemRarity.Magic,     new MagicItemEffectDefinition.ValueDef() { MinValue = 10, MaxValue = 20, Increment = 1 } },
                     { ItemRarity.Rare,      new MagicItemEffectDefinition.ValueDef() { MinValue = 10, MaxValue = 20, Increment = 1 } },
@@ -469,7 +469,7 @@ namespace EpicLoot
             {
                 Type = MagicEffectType.ModifyAttackStaminaUse,
                 DisplayText = "Reduce attack stamina use by -{0:0.#}%",
-                AllowedItemTypes = Weapons,
+                AllowedItemTypes = Weapons.Concat(Tools).ToList(),
                 ValuesPerRarity = {
                     { ItemRarity.Magic,     new MagicItemEffectDefinition.ValueDef() { MinValue = 5, MaxValue = 10, Increment = 1 } },
                     { ItemRarity.Rare,      new MagicItemEffectDefinition.ValueDef() { MinValue = 8, MaxValue = 13, Increment = 1 } },

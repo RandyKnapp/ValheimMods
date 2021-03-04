@@ -40,7 +40,7 @@ namespace EpicLoot
         };
         private static readonly List<ItemDrop.ItemData.ItemType> Armor = new List<ItemDrop.ItemData.ItemType>()
         {
-            ItemDrop.ItemData.ItemType.Helmet, ItemDrop.ItemData.ItemType.Chest, ItemDrop.ItemData.ItemType.Legs, ItemDrop.ItemData.ItemType.Shoulder
+            ItemDrop.ItemData.ItemType.Helmet, ItemDrop.ItemData.ItemType.Chest, ItemDrop.ItemData.ItemType.Legs, ItemDrop.ItemData.ItemType.Shoulder, ItemDrop.ItemData.ItemType.Utility
         };
         private static readonly List<ItemDrop.ItemData.ItemType> Tools = new List<ItemDrop.ItemData.ItemType>()
         {

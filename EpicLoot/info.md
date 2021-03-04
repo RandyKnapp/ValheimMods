@@ -104,7 +104,7 @@ The int value of the type is displayed in parentheses after the name.
 
 > **Display Text:** Max durability increased by +{0:0.#}%
 > 
-> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Shield, Tool, Helmet, Chest, Legs, Shoulder
+> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Shield, Tool, Helmet, Chest, Legs, Shoulder, Utility
 > 
 > **Value Per Rarity:**
 > 
@@ -118,7 +118,7 @@ The int value of the type is displayed in parentheses after the name.
 
 > **Display Text:** Weight reduced by -{0:0.#}% 
 > 
-> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Shield, Tool, Helmet, Chest, Legs, Shoulder
+> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Shield, Tool, Helmet, Chest, Legs, Shoulder, Utility
 > 
 > **Value Per Rarity:**
 > 
@@ -132,7 +132,7 @@ The int value of the type is displayed in parentheses after the name.
 
 > **Display Text:** Movement speed penalty removed
 > 
-> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Shield, Tool, Helmet, Chest, Legs, Shoulder
+> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Shield, Tool, Helmet, Chest, Legs, Shoulder, Utility
 > 
 > **Value Per Rarity:**
 > 
@@ -177,7 +177,7 @@ The int value of the type is displayed in parentheses after the name.
 
 > **Display Text:** Armor increased by +{0:0.#}%
 > 
-> **Allowed Item Types:** Helmet, Chest, Legs, Shoulder
+> **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility
 > 
 > **Value Per Rarity:**
 > 
@@ -207,7 +207,7 @@ The int value of the type is displayed in parentheses after the name.
 
 > **Display Text:** Health increased by +{0:0}
 > 
-> **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Shield
+> **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility, Shield
 > 
 > **Value Per Rarity:**
 > 
@@ -222,7 +222,7 @@ The int value of the type is displayed in parentheses after the name.
 
 > **Display Text:** Stamina increased by +{0:0}
 > 
-> **Allowed Item Types:** Helmet, Chest, Legs, Shoulder
+> **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility, Tool
 > 
 > **Value Per Rarity:**
 > 
@@ -237,7 +237,7 @@ The int value of the type is displayed in parentheses after the name.
 
 > **Display Text:** Health regen improved by +{0:0.#}%
 > 
-> **Allowed Item Types:** Helmet, Chest, Legs, Shoulder
+> **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility
 > 
 > **Value Per Rarity:**
 > 
@@ -252,7 +252,7 @@ The int value of the type is displayed in parentheses after the name.
 
 > **Display Text:** Stamina regen improved by +{0:0.#}%
 > 
-> **Allowed Item Types:** Helmet, Chest, Legs, Shoulder
+> **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility, Tool
 > 
 > **Value Per Rarity:**
 > 
@@ -387,7 +387,7 @@ The int value of the type is displayed in parentheses after the name.
 
 > **Display Text:** Gain fire resistance
 > 
-> **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Shield
+> **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility, Shield
 > 
 > **Value Per Rarity:**
 > 
@@ -402,7 +402,7 @@ The int value of the type is displayed in parentheses after the name.
 
 > **Display Text:** Gain frost resistance
 > 
-> **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Shield
+> **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility, Shield
 > 
 > **Value Per Rarity:**
 > 
@@ -417,7 +417,7 @@ The int value of the type is displayed in parentheses after the name.
 
 > **Display Text:** Gain lightning resistance
 > 
-> **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Shield
+> **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility, Shield
 > 
 > **Value Per Rarity:**
 > 
@@ -432,7 +432,7 @@ The int value of the type is displayed in parentheses after the name.
 
 > **Display Text:** Gain poison resistance
 > 
-> **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Shield
+> **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility, Shield
 > 
 > **Value Per Rarity:**
 > 
@@ -447,7 +447,7 @@ The int value of the type is displayed in parentheses after the name.
 
 > **Display Text:** Gain spirit resistance
 > 
-> **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Shield
+> **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility, Shield
 > 
 > **Value Per Rarity:**
 > 
@@ -507,7 +507,7 @@ The int value of the type is displayed in parentheses after the name.
 
 > **Display Text:** Reduce attack stamina use by -{0:0.#}%
 > 
-> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch
+> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Tool
 > 
 > **Value Per Rarity:**
 > 
@@ -537,7 +537,7 @@ The int value of the type is displayed in parentheses after the name.
 
 > **Display Text:** Indestructible
 > 
-> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Tool, Shield, Helmet, Chest, Legs, Shoulder
+> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Tool, Shield, Helmet, Chest, Legs, Shoulder, Utility
 > 
 > **Value Per Rarity:**
 > 
@@ -550,7 +550,7 @@ The int value of the type is displayed in parentheses after the name.
 
 > **Display Text:** Weightless
 > 
-> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Tool, Shield, Helmet, Chest, Legs, Shoulder
+> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Tool, Shield, Helmet, Chest, Legs, Shoulder, Utility
 > 
 > **Value Per Rarity:**
 > 
@@ -565,7 +565,7 @@ The int value of the type is displayed in parentheses after the name.
 
 > **Display Text:** Increase carry weight by +{0}
 > 
-> **Allowed Item Types:** Helmet, Chest, Legs, Shoulder
+> **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility
 > 
 > **Value Per Rarity:**
 > 
@@ -590,13 +590,16 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 >
 > | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
-> | Club | 1 (33.3%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
-> | AxeStone | 1 (33.3%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
-> | KnifeFlint | 1 (33.3%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
+> | Club | 1 (16.7%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
+> | AxeStone | 1 (16.7%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
+> | Torch | 1 (16.7%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
+> | ArmorRagsLegs | 1 (16.7%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
+> | ArmorRagsChest | 1 (16.7%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
+> | ShieldWood | 1 (16.7%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
 
 ## Greydwarf
 
-> **Levels:** All
+> **Levels:** 1, 2
 >
 > | Number of Items | Weight (Chance) |
 > | -- | -- |
@@ -605,9 +608,223 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 >
 > | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
-> | Club | 1 (33.3%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
-> | AxeStone | 1 (33.3%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
-> | AxeFlint | 1 (33.3%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
+> | Club | 1 (8.3%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
+> | AxeStone | 1 (8.3%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
+> | AxeFlint | 1 (8.3%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
+> | SpearFlint | 1 (8.3%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
+> | KnifeFlint | 1 (8.3%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
+> | ShieldWood | 1 (8.3%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
+> | ArmorLeatherLegs | 1 (8.3%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
+> | ArmorLeatherChest | 1 (8.3%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
+> | HelmetLeather | 1 (8.3%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
+> | CapeDeerHide | 1 (8.3%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
+> | Hammer | 1 (8.3%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
+> | Bow | 1 (8.3%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
+
+## Greydwarf
+
+> **Levels:** 3
+>
+> | Number of Items | Weight (Chance) |
+> | -- | -- |
+> | 0 | 70 (70%) |
+> | 1 | 30 (30%) |
+>
+> | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Club | 1 (8.3%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
+> | AxeStone | 1 (8.3%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
+> | AxeFlint | 1 (8.3%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
+> | SpearFlint | 1 (8.3%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
+> | KnifeFlint | 1 (8.3%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
+> | ShieldWood | 1 (8.3%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
+> | ArmorLeatherLegs | 1 (8.3%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
+> | ArmorLeatherChest | 1 (8.3%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
+> | HelmetLeather | 1 (8.3%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
+> | CapeDeerHide | 1 (8.3%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
+> | Hammer | 1 (8.3%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
+> | Bow | 1 (8.3%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
+
+## Greydwarf_Elite
+
+> **Levels:** 1, 2
+>
+> | Number of Items | Weight (Chance) |
+> | -- | -- |
+> | 0 | 70 (70%) |
+> | 1 | 30 (30%) |
+>
+> | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | AxeFlint | 1 (20%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
+> | KnifeFlint | 1 (20%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
+> | ShieldWood | 1 (20%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
+> | SpearFlint | 1 (20%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
+> | Bow | 1 (20%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
+
+## Greydwarf_Elite
+
+> **Levels:** 3
+>
+> | Number of Items | Weight (Chance) |
+> | -- | -- |
+> | 0 | 70 (70%) |
+> | 1 | 30 (30%) |
+>
+> | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | AxeStone | 5 (50%) | 60 (60%) | 30 (30%) | 10 (10%) | 0 (0%) |
+> | ArmorTrollLeatherLegs | 1 (10%) | 60 (60%) | 30 (30%) | 10 (10%) | 0 (0%) |
+> | ArmorTrollLeatherChest | 1 (10%) | 60 (60%) | 30 (30%) | 10 (10%) | 0 (0%) |
+> | HelmetTrollLeather | 1 (10%) | 60 (60%) | 30 (30%) | 10 (10%) | 0 (0%) |
+> | CapeTrollHide | 1 (10%) | 60 (60%) | 30 (30%) | 10 (10%) | 0 (0%) |
+> | Bow | 1 (10%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
+
+## Greydwarf_Shaman
+
+> **Levels:** 1, 2, 3
+>
+> | Number of Items | Weight (Chance) |
+> | -- | -- |
+> | 0 | 60 (60%) |
+> | 1 | 40 (40%) |
+>
+> | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | ArmorLeatherLegs | 1 (11.1%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
+> | ArmorLeatherChest | 1 (11.1%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
+> | HelmetLeather | 1 (11.1%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
+> | CapeDeerHide | 1 (11.1%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
+> | AxeFlint | 1 (11.1%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
+> | KnifeFlint | 1 (11.1%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
+> | ShieldWood | 1 (11.1%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
+> | SpearFlint | 1 (11.1%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
+> | BowFineWood | 1 (11.1%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
+
+## Troll
+
+> **Levels:** 1, 2, 3
+>
+> | Number of Items | Weight (Chance) |
+> | -- | -- |
+> | 0 | 60 (60%) |
+> | 1 | 40 (40%) |
+>
+> | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | ArmorLeatherLegs | 1 (11.1%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
+> | ArmorLeatherChest | 1 (11.1%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
+> | HelmetLeather | 1 (11.1%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
+> | CapeDeerHide | 1 (11.1%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
+> | AxeFlint | 1 (11.1%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
+> | KnifeFlint | 1 (11.1%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
+> | ShieldWood | 1 (11.1%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
+> | SpearFlint | 1 (11.1%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
+> | BowFineWood | 1 (11.1%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
+
+## Skeleton
+
+> **Levels:** 1, 2, 3
+>
+> | Number of Items | Weight (Chance) |
+> | -- | -- |
+> | 0 | 95 (95%) |
+> | 1 | 5 (5%) |
+>
+> | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | SwordBronze | 3 (20%) | 98 (98%) | 2 (2%) | 0 (0%) | 0 (0%) |
+> | AxeBronze | 1 (6.7%) | 98 (98%) | 2 (2%) | 0 (0%) | 0 (0%) |
+> | MaceBronze | 1 (6.7%) | 98 (98%) | 2 (2%) | 0 (0%) | 0 (0%) |
+> | AtgeirBronze | 1 (6.7%) | 98 (98%) | 2 (2%) | 0 (0%) | 0 (0%) |
+> | SpearBronze | 1 (6.7%) | 98 (98%) | 2 (2%) | 0 (0%) | 0 (0%) |
+> | ShieldWood | 2 (13.3%) | 98 (98%) | 2 (2%) | 0 (0%) | 0 (0%) |
+> | HelmetLeather | 1 (6.7%) | 98 (98%) | 2 (2%) | 0 (0%) | 0 (0%) |
+> | HelmetLeather | 1 (6.7%) | 98 (98%) | 2 (2%) | 0 (0%) | 0 (0%) |
+> | ArmorLeatherChest | 1 (6.7%) | 98 (98%) | 2 (2%) | 0 (0%) | 0 (0%) |
+> | Bow | 3 (20%) | 98 (98%) | 2 (2%) | 0 (0%) | 0 (0%) |
+
+## Ghost
+
+> **Levels:** 1, 2, 3
+>
+> | Number of Items | Weight (Chance) |
+> | -- | -- |
+> | 0 | 70 (95.9%) |
+> | 1 | 3 (4.1%) |
+>
+> | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | ArmorLeatherLegs | 1 (9.1%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
+> | ArmorLeatherChest | 1 (9.1%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
+> | HelmetLeather | 1 (9.1%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
+> | CapeDeerHide | 1 (9.1%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
+> | AxeFlint | 1 (9.1%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
+> | KnifeFlint | 1 (9.1%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
+> | ShieldWood | 1 (9.1%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
+> | SpearFlint | 1 (9.1%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
+> | Bow | 3 (27.3%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
+
+## Eikthyr
+
+> **Levels:** All
+>
+> | Number of Items | Weight (Chance) |
+> | -- | -- |
+> | 1 | 70 (70%) |
+> | 2 | 30 (30%) |
+>
+> | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | SledgeStagbreaker | 2 (33.3%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
+> | SpearFlint | 1 (16.7%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
+> | Bow | 1 (16.7%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
+> | PickaxeAntler | 2 (33.3%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
+
+## TreasureChest_meadows
+
+> **Levels:** All
+>
+> | Number of Items | Weight (Chance) |
+> | -- | -- |
+> | 0 | 80 (80%) |
+> | 1 | 18 (18%) |
+> | 2 | 2 (2%) |
+>
+> | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Club | 1 (12.5%) | 97 (97%) | 2 (2%) | 1 (1%) | 0 (0%) |
+> | AxeStone | 1 (12.5%) | 97 (97%) | 2 (2%) | 1 (1%) | 0 (0%) |
+> | Torch | 1 (12.5%) | 97 (97%) | 2 (2%) | 1 (1%) | 0 (0%) |
+> | ArmorRagsLegs | 1 (12.5%) | 97 (97%) | 2 (2%) | 1 (1%) | 0 (0%) |
+> | ArmorRagsChest | 1 (12.5%) | 97 (97%) | 2 (2%) | 1 (1%) | 0 (0%) |
+> | ShieldWood | 1 (12.5%) | 97 (97%) | 2 (2%) | 1 (1%) | 0 (0%) |
+> | Hammer | 1 (12.5%) | 97 (97%) | 2 (2%) | 1 (1%) | 0 (0%) |
+> | Hoe | 1 (12.5%) | 97 (97%) | 2 (2%) | 1 (1%) | 0 (0%) |
+
+## TreasureChest_blackforest
+
+> **Levels:** All
+>
+> | Number of Items | Weight (Chance) |
+> | -- | -- |
+> | 0 | 70 (70%) |
+> | 1 | 30 (30%) |
+>
+> | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Club | 1 (8.3%) | 96 (96%) | 3 (3%) | 1 (1%) | 0 (0%) |
+> | AxeStone | 1 (8.3%) | 96 (96%) | 3 (3%) | 1 (1%) | 0 (0%) |
+> | AxeFlint | 1 (8.3%) | 96 (96%) | 3 (3%) | 1 (1%) | 0 (0%) |
+> | SpearFlint | 1 (8.3%) | 96 (96%) | 3 (3%) | 1 (1%) | 0 (0%) |
+> | KnifeFlint | 1 (8.3%) | 96 (96%) | 3 (3%) | 1 (1%) | 0 (0%) |
+> | ShieldWood | 1 (8.3%) | 96 (96%) | 3 (3%) | 1 (1%) | 0 (0%) |
+> | ArmorLeatherLegs | 1 (8.3%) | 96 (96%) | 3 (3%) | 1 (1%) | 0 (0%) |
+> | ArmorLeatherChest | 1 (8.3%) | 96 (96%) | 3 (3%) | 1 (1%) | 0 (0%) |
+> | HelmetLeather | 1 (8.3%) | 96 (96%) | 3 (3%) | 1 (1%) | 0 (0%) |
+> | CapeDeerHide | 1 (8.3%) | 96 (96%) | 3 (3%) | 1 (1%) | 0 (0%) |
+> | Hammer | 1 (8.3%) | 96 (96%) | 3 (3%) | 1 (1%) | 0 (0%) |
+> | Bow | 1 (8.3%) | 96 (96%) | 3 (3%) | 1 (1%) | 0 (0%) |
 
 ## TreasureChest_forestcrypt
 
@@ -615,17 +832,19 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 >
 > | Number of Items | Weight (Chance) |
 > | -- | -- |
-> | 0 | 50 (50%) |
-> | 1 | 30 (30%) |
-> | 2 | 20 (20%) |
+> | 0 | 148 (74%) |
+> | 1 | 30 (15%) |
+> | 2 | 20 (10%) |
+> | 3 | 2 (1%) |
 >
 > | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
-> | SwordBronze | 1 (10%) | 95 (95%) | 4 (4%) | 1 (1%) | 0 (0%) |
-> | AxeBronze | 1 (10%) | 95 (95%) | 4 (4%) | 1 (1%) | 0 (0%) |
-> | MaceBronze | 1 (10%) | 95 (95%) | 4 (4%) | 1 (1%) | 0 (0%) |
-> | ShieldBronzeBuckler | 1 (10%) | 95 (95%) | 4 (4%) | 1 (1%) | 0 (0%) |
-> | HelmetLeather | 2 (20%) | 95 (95%) | 4 (4%) | 1 (1%) | 0 (0%) |
-> | HelmetLeather | 2 (20%) | 95 (95%) | 4 (4%) | 1 (1%) | 0 (0%) |
-> | ArmorLeatherChest | 2 (20%) | 95 (95%) | 4 (4%) | 1 (1%) | 0 (0%) |
+> | SwordBronze | 1 (9.1%) | 95 (95%) | 4 (4%) | 1 (1%) | 0 (0%) |
+> | AxeBronze | 1 (9.1%) | 95 (95%) | 4 (4%) | 1 (1%) | 0 (0%) |
+> | MaceBronze | 1 (9.1%) | 95 (95%) | 4 (4%) | 1 (1%) | 0 (0%) |
+> | AtgeirBronze | 1 (9.1%) | 95 (95%) | 4 (4%) | 1 (1%) | 0 (0%) |
+> | ShieldBronzeBuckler | 1 (9.1%) | 95 (95%) | 4 (4%) | 1 (1%) | 0 (0%) |
+> | HelmetLeather | 2 (18.2%) | 95 (95%) | 4 (4%) | 1 (1%) | 0 (0%) |
+> | HelmetLeather | 2 (18.2%) | 95 (95%) | 4 (4%) | 1 (1%) | 0 (0%) |
+> | ArmorLeatherChest | 2 (18.2%) | 95 (95%) | 4 (4%) | 1 (1%) | 0 (0%) |
 

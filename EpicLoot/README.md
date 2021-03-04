@@ -20,13 +20,23 @@ Information about EVERY magic effect and loot drop table can be found in info.md
 - [X] Finish Magic Effects
 - [ ] Effect exclusivity
 - [ ] Effect specific items
-- [ ] Effect requirements (i.e. have movement penalty before removing it)
+- [ ] Effect requirements (i.e. must have movement penalty before removing it)
 - [ ] Custom item sets (replace troll too)
-- [ ] Rename item if magic
+- [ ] Rename item if magic (prefix/postfix? Legendary names?)
 - [ ] Dropped item particle effect
 - [ ] Loot tables
   - [ ] Monsters
+	- [X] Meadows
+	- [X] Black Forest
+	- [ ] Swamp
+	- [ ] Mountains
+	- [ ] Plains
   - [ ] World Chests
+  	- [X] Meadows
+	- [X] Black Forest
+	- [ ] Swamp
+	- [ ] Mountains
+	- [ ] Plains
 - [X] Set item UI treatment
 - [ ] Balance, balance, balance
 
@@ -72,11 +82,11 @@ Future
 
 ## Chests
 
-- [ ] TreasureChest_blackforest
-- [ ] TreasureChest_fCrypt
-- [ ] TreasureChest_forestcrypt
-- [ ] TreasureChest_heath
-- [ ] TreasureChest_meadows
+- [X] TreasureChest_blackforest
+- [ ] TreasureChest_fCrypt ???
+- [X] TreasureChest_forestcrypt
+- [ ] TreasureChest_heath ???
+- [X] TreasureChest_meadows
 - [ ] TreasureChest_meadows_buried
 - [ ] TreasureChest_mountains
 - [ ] TreasureChest_plains_stone
