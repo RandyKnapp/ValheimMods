@@ -19,9 +19,9 @@ Information about EVERY magic effect and loot drop table can be found in info.md
 - [X] Print Data
 - [X] Finish Magic Effects
 - [X] Prevent Repair
-- [ ] Effect exclusivity
-- [ ] Effect specific items
-- [ ] Effect requirements (i.e. must have movement penalty before removing it)
+- [X] Effect exclusivity
+- [X] Effect specific items
+- [X] Effect requirements (i.e. must have movement penalty before removing it)
 - [ ] Custom item sets (replace troll too)
 - [ ] Rename item if magic (prefix/postfix? Legendary names?)
 - [X] Dropped item particle effect

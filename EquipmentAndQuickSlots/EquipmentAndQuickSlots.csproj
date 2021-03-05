@@ -82,6 +82,7 @@
     <Compile Include="InventoryGui_Patch.cs" />
     <Compile Include="Inventory_Patch.cs" />
     <Compile Include="EquipmentAndQuickSlots.cs" />
+    <Compile Include="Player_Patch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

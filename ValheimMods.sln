@@ -13,8 +13,6 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Common", "Common\Common.shp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EquipmentAndQuickSlots", "EquipmentAndQuickSlots\EquipmentAndQuickSlots.csproj", "{08ED5BC9-9E0C-4343-90A5-92497BE6E216}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PreventItemLoss", "PreventItemLoss\PreventItemLoss.csproj", "{989AF111-3242-4276-BFB5-89EE22E2A9AE}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jam", "Jam\Jam.csproj", "{6C679B7E-9F39-4DF2-9F8A-717E68FBF0E3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ItsJustWood", "ItsJustWood\ItsJustWood.csproj", "{BB4DFA8B-72B0-4A9B-B9A0-5AF5595AA309}"
@@ -54,9 +52,6 @@ Global
 		{08ED5BC9-9E0C-4343-90A5-92497BE6E216}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{08ED5BC9-9E0C-4343-90A5-92497BE6E216}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{08ED5BC9-9E0C-4343-90A5-92497BE6E216}.Release|Any CPU.Build.0 = Release|Any CPU
-		{989AF111-3242-4276-BFB5-89EE22E2A9AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{989AF111-3242-4276-BFB5-89EE22E2A9AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{989AF111-3242-4276-BFB5-89EE22E2A9AE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6C679B7E-9F39-4DF2-9F8A-717E68FBF0E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6C679B7E-9F39-4DF2-9F8A-717E68FBF0E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6C679B7E-9F39-4DF2-9F8A-717E68FBF0E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
