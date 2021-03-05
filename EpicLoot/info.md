@@ -24,10 +24,16 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 The int value of the type is displayed in parentheses after the name.
 
-
   * **Display Text:** This text appears in the tooltip for the magic item, with {0:?} replaced with the rolled value for the effect, formatted using the shown C# string format.
   * **Allowed Item Types:** This effect may only be rolled on items of a the types in this list. When this list is empty, this is usually done because this is a special effect type added programatically or currently not allowed to roll.
+  * **Requirement:** A function called when attempting to add this effect to an item. The `Requirement` function must return true for this effect to be able to be added to this magic item.
   * **Value Per Rarity:** This effect may only be rolled on items of a rarity included in this table. The value is rolled using a linear distribution between Min and Max and divisble by the Increment.
+
+Some lists of effect types are used in requirements to consolidate code. They are: PhysicalDamageEffects, ElementalDamageEffects, and AllDamageEffects. Included here for your reference:
+
+  * **`PhysicalDamageEffects`:** AddBluntDamage, AddSlashingDamage, AddPiercingDamage
+  * **`ElementalDamageEffects`:** AddFireDamage, AddFrostDamage, AddLightningDamage
+  * **`AllDamageEffects`:** AddBluntDamage, AddSlashingDamage, AddPiercingDamage, AddFireDamage, AddFrostDamage, AddLightningDamage, AddPoisonDamage, AddSpiritDamage
 
 ## DvergerCirclet (0)
 
@@ -76,6 +82,12 @@ The int value of the type is displayed in parentheses after the name.
 > 
 > **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch
 > 
+> **Requirement:**
+> ```
+> (itemData, magicItem) => itemData.m_shared.m_damages.GetTotalPhysicalDamage() > 0 || magicItem.HasAnyEffect(PhysicalDamageEffects)
+> ```
+> 
+> 
 > **Value Per Rarity:**
 > 
 > |Rarity|Min|Max|Increment|
@@ -90,6 +102,12 @@ The int value of the type is displayed in parentheses after the name.
 > **Display Text:** Elemental damage increased by +{0:0.#}%
 > 
 > **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch
+> 
+> **Requirement:**
+> ```
+> (itemData, magicItem) => itemData.m_shared.m_damages.GetTotalElementalDamage() > 0 || magicItem.HasAnyEffect(ElementalDamageEffects)
+> ```
+> 
 > 
 > **Value Per Rarity:**
 > 
@@ -106,6 +124,12 @@ The int value of the type is displayed in parentheses after the name.
 > 
 > **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Shield, Tool, Helmet, Chest, Legs, Shoulder, Utility
 > 
+> **Requirement:**
+> ```
+> (itemData, magicItem) => !magicItem.HasEffect(MagicEffectType.Indestructible)
+> ```
+> 
+> 
 > **Value Per Rarity:**
 > 
 > |Rarity|Min|Max|Increment|
@@ -120,6 +144,12 @@ The int value of the type is displayed in parentheses after the name.
 > 
 > **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Shield, Tool, Helmet, Chest, Legs, Shoulder, Utility
 > 
+> **Requirement:**
+> ```
+> (itemData, magicItem) => !magicItem.HasEffect(MagicEffectType.Weightless)
+> ```
+> 
+> 
 > **Value Per Rarity:**
 > 
 > |Rarity|Min|Max|Increment|
@@ -133,6 +163,12 @@ The int value of the type is displayed in parentheses after the name.
 > **Display Text:** Movement speed penalty removed
 > 
 > **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Shield, Tool, Helmet, Chest, Legs, Shoulder, Utility
+> 
+> **Requirement:**
+> ```
+> (itemData, magicItem) => itemData.m_shared.m_movementModifier < 0
+> ```
+> 
 > 
 > **Value Per Rarity:**
 > 
@@ -149,6 +185,12 @@ The int value of the type is displayed in parentheses after the name.
 > 
 > **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Shield
 > 
+> **Requirement:**
+> ```
+> (itemData, magicItem) => itemData.m_shared.m_blockPower > 0
+> ```
+> 
+> 
 > **Value Per Rarity:**
 > 
 > |Rarity|Min|Max|Increment|
@@ -163,6 +205,12 @@ The int value of the type is displayed in parentheses after the name.
 > **Display Text:** Parry improved by +{0:0.#}%
 > 
 > **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Shield
+> 
+> **Requirement:**
+> ```
+> (itemData, magicItem) => itemData.m_shared.m_deflectionForce > 0
+> ```
+> 
 > 
 > **Value Per Rarity:**
 > 
@@ -179,6 +227,12 @@ The int value of the type is displayed in parentheses after the name.
 > 
 > **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility
 > 
+> **Requirement:**
+> ```
+> (itemData, magicItem) => itemData.m_shared.m_armor > 0
+> ```
+> 
+> 
 > **Value Per Rarity:**
 > 
 > |Rarity|Min|Max|Increment|
@@ -193,6 +247,12 @@ The int value of the type is displayed in parentheses after the name.
 > **Display Text:** Backstab improved by +{0:0.#}%
 > 
 > **Allowed Item Types:** OneHandedWeapon, Bow
+> 
+> **Requirement:**
+> ```
+> (itemData, magicItem) => itemData.m_shared.m_backstabBonus > 0
+> ```
+> 
 > 
 > **Value Per Rarity:**
 > 
@@ -269,6 +329,12 @@ The int value of the type is displayed in parentheses after the name.
 > 
 > **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch
 > 
+> **Requirement:**
+> ```
+> (itemData, magicItem) => !magicItem.HasAnyEffect(AllDamageEffects)
+> ```
+> 
+> 
 > **Value Per Rarity:**
 > 
 > |Rarity|Min|Max|Increment|
@@ -283,6 +349,12 @@ The int value of the type is displayed in parentheses after the name.
 > **Display Text:** Add +{0:0.#} slashing damage
 > 
 > **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch
+> 
+> **Requirement:**
+> ```
+> (itemData, magicItem) => !magicItem.HasAnyEffect(AllDamageEffects)
+> ```
+> 
 > 
 > **Value Per Rarity:**
 > 
@@ -299,6 +371,12 @@ The int value of the type is displayed in parentheses after the name.
 > 
 > **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch
 > 
+> **Requirement:**
+> ```
+> (itemData, magicItem) => !magicItem.HasAnyEffect(AllDamageEffects)
+> ```
+> 
+> 
 > **Value Per Rarity:**
 > 
 > |Rarity|Min|Max|Increment|
@@ -313,6 +391,12 @@ The int value of the type is displayed in parentheses after the name.
 > **Display Text:** Add +{0:0.#} fire damage
 > 
 > **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch
+> 
+> **Requirement:**
+> ```
+> (itemData, magicItem) => !magicItem.HasAnyEffect(AllDamageEffects)
+> ```
+> 
 > 
 > **Value Per Rarity:**
 > 
@@ -329,6 +413,12 @@ The int value of the type is displayed in parentheses after the name.
 > 
 > **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch
 > 
+> **Requirement:**
+> ```
+> (itemData, magicItem) => !magicItem.HasAnyEffect(AllDamageEffects)
+> ```
+> 
+> 
 > **Value Per Rarity:**
 > 
 > |Rarity|Min|Max|Increment|
@@ -343,6 +433,12 @@ The int value of the type is displayed in parentheses after the name.
 > **Display Text:** Add +{0:0.#} lightning damage
 > 
 > **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch
+> 
+> **Requirement:**
+> ```
+> (itemData, magicItem) => !magicItem.HasAnyEffect(AllDamageEffects)
+> ```
+> 
 > 
 > **Value Per Rarity:**
 > 
@@ -359,6 +455,12 @@ The int value of the type is displayed in parentheses after the name.
 > 
 > **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch
 > 
+> **Requirement:**
+> ```
+> (itemData, magicItem) => !magicItem.HasAnyEffect(AllDamageEffects)
+> ```
+> 
+> 
 > **Value Per Rarity:**
 > 
 > |Rarity|Min|Max|Increment|
@@ -373,6 +475,12 @@ The int value of the type is displayed in parentheses after the name.
 > **Display Text:** Add +{0:0.#} spirit damage
 > 
 > **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch
+> 
+> **Requirement:**
+> ```
+> (itemData, magicItem) => !magicItem.HasAnyEffect(AllDamageEffects)
+> ```
+> 
 > 
 > **Value Per Rarity:**
 > 
@@ -464,6 +572,12 @@ The int value of the type is displayed in parentheses after the name.
 > 
 > **Allowed Item Types:** Legs
 > 
+> **Requirement:**
+> ```
+> (itemData, magicItem) => !magicItem.HasEffect(MagicEffectType.RemoveSpeedPenalty)
+> ```
+> 
+> 
 > **Value Per Rarity:**
 > 
 > |Rarity|Min|Max|Increment|
@@ -509,6 +623,12 @@ The int value of the type is displayed in parentheses after the name.
 > 
 > **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Tool
 > 
+> **Requirement:**
+> ```
+> (itemData, magicItem) => itemData.m_shared.m_attack.m_attackStamina > 0 || itemData.m_shared.m_secondaryAttack.m_attackStamina > 0
+> ```
+> 
+> 
 > **Value Per Rarity:**
 > 
 > |Rarity|Min|Max|Increment|
@@ -523,6 +643,12 @@ The int value of the type is displayed in parentheses after the name.
 > **Display Text:** Reduce block stamina use by -{0:0.#}%
 > 
 > **Allowed Item Types:** Shield
+> 
+> **Requirement:**
+> ```
+> (itemData, magicItem) => itemData.m_shared.m_blockPower > 0
+> ```
+> 
 > 
 > **Value Per Rarity:**
 > 
@@ -539,6 +665,12 @@ The int value of the type is displayed in parentheses after the name.
 > 
 > **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Tool, Shield, Helmet, Chest, Legs, Shoulder, Utility
 > 
+> **Requirement:**
+> ```
+> (itemData, magicItem) => !magicItem.HasEffect(MagicEffectType.ModifyDurability)
+> ```
+> 
+> 
 > **Value Per Rarity:**
 > 
 > |Rarity|Min|Max|Increment|
@@ -551,6 +683,12 @@ The int value of the type is displayed in parentheses after the name.
 > **Display Text:** Weightless
 > 
 > **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Tool, Shield, Helmet, Chest, Legs, Shoulder, Utility
+> 
+> **Requirement:**
+> ```
+> (itemData, magicItem) => !magicItem.HasEffect(MagicEffectType.ReduceWeight)
+> ```
+> 
 > 
 > **Value Per Rarity:**
 > 

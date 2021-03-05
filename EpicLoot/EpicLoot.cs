@@ -366,12 +366,22 @@ namespace EpicLoot
             magicItem.Rarity = RollItemRarity(lootDrop);
 
             var effectCount = RollEffectCountPerRarity(magicItem.Rarity);
-            var availableEffects = MagicItemEffectDefinitions.GetAvailableEffects(baseItem.m_shared.m_itemType, magicItem.Rarity);
-            _weightedEffectTable.Setup(availableEffects, x => x.SelectionWeight, true);
-            for (int i = 0; i < effectCount && i < availableEffects.Count; i++)
+           
+            for (int i = 0; i < effectCount; i++)
             {
+                var availableEffects = MagicItemEffectDefinitions.GetAvailableEffects(baseItem, magicItem);
+                if (availableEffects.Count == 0)
+                {
+                    Debug.LogWarning($"Tried to add more effects to magic item ({baseItem.m_shared.m_name}) but there were no more available effects. " +
+                                     $"Current Effects: {(string.Join(", ", magicItem.Effects.Select(x => x.EffectType.ToString())))}");
+                    break;
+                }
+
+                _weightedEffectTable.Setup(availableEffects, x => x.SelectionWeight);
                 var effectDef = _weightedEffectTable.Roll();
-                magicItem.Effects.Add(RollEffect(effectDef, magicItem.Rarity));
+
+                var effect = RollEffect(effectDef, magicItem.Rarity);
+                magicItem.Effects.Add(effect);
             }
 
             return magicItem;
@@ -486,11 +496,24 @@ namespace EpicLoot
             t.AppendLine();
             t.AppendLine("The int value of the type is displayed in parentheses after the name.");
             t.AppendLine();
-            t.AppendLine();
             t.AppendLine("  * **Display Text:** This text appears in the tooltip for the magic item, with {0:?} replaced with the rolled value for the effect, formatted using the shown C# string format.");
             t.AppendLine("  * **Allowed Item Types:** This effect may only be rolled on items of a the types in this list. When this list is empty, this is usually done because this is a special effect type added programatically or currently not allowed to roll.");
+            t.AppendLine("  * **Requirement:** A function called when attempting to add this effect to an item. The `Requirement` function must return true for this effect to be able to be added to this magic item.");
             t.AppendLine("  * **Value Per Rarity:** This effect may only be rolled on items of a rarity included in this table. The value is rolled using a linear distribution between Min and Max and divisble by the Increment.");
             t.AppendLine();
+            t.AppendLine("Some lists of effect types are used in requirements to consolidate code. They are: PhysicalDamageEffects, ElementalDamageEffects, and AllDamageEffects. Included here for your reference:");
+            t.AppendLine();
+            t.AppendLine("  * **`PhysicalDamageEffects`:** AddBluntDamage, AddSlashingDamage, AddPiercingDamage");
+            t.AppendLine("  * **`ElementalDamageEffects`:** AddFireDamage, AddFrostDamage, AddLightningDamage");
+            t.AppendLine("  * **`AllDamageEffects`:** AddBluntDamage, AddSlashingDamage, AddPiercingDamage, AddFireDamage, AddFrostDamage, AddLightningDamage, AddPoisonDamage, AddSpiritDamage");
+            t.AppendLine();
+
+            Dictionary<string, string> requirementSource = null;
+            const string devSourceFile = @"C:\Users\rknapp\Documents\GitHub\ValheimMods\EpicLoot\MagicItemEffectDefinitions_Setup.cs";
+            if (File.Exists(devSourceFile))
+            {
+                requirementSource = ParseSource(File.ReadLines(devSourceFile));
+            }
 
             foreach (var definitionEntry in MagicItemEffectDefinitions.AllDefinitions)
             {
@@ -500,6 +523,17 @@ namespace EpicLoot
                 t.AppendLine($"> **Display Text:** {def.DisplayText}");
                 t.AppendLine("> ");
                 t.AppendLine("> **Allowed Item Types:** " + (def.AllowedItemTypes.Count == 0 ? "*None*" : string.Join(", ", def.AllowedItemTypes)));
+
+                if (requirementSource != null && requirementSource.ContainsKey(def.Type.ToString()))
+                {
+                    t.AppendLine("> ");
+                    t.AppendLine("> **Requirement:**");
+                    t.AppendLine("> ```");
+                    t.AppendLine($"> {requirementSource[def.Type.ToString()]}");
+                    t.AppendLine("> ```");
+                    t.AppendLine("> ");
+                }
+
                 if (def.ValuesPerRarity.Count > 0)
                 {
                     t.AppendLine("> ");
@@ -587,11 +621,52 @@ namespace EpicLoot
             //var outputFilePath = Path.Combine(Path.GetDirectoryName(typeof(EpicLoot).Assembly.Location), "info.md");
             //File.WriteAllText(outputFilePath, t.ToString());
 
-            const string devOutputPath = "C:\\Users\\rknapp\\Documents\\GitHub\\ValheimMods\\EpicLoot";
+            const string devOutputPath = @"C:\Users\rknapp\Documents\GitHub\ValheimMods\EpicLoot";
             if (Directory.Exists(devOutputPath))
             {
                 File.WriteAllText(Path.Combine(devOutputPath, "info.md"), t.ToString());
             }
+        }
+
+        private Dictionary<string, string> ParseSource(IEnumerable<string> lines)
+        {
+            var results = new Dictionary<string, string>();
+            var currentType = "";
+            foreach (var sourceLine in lines)
+            {
+                var line = sourceLine.Trim();
+                if (string.IsNullOrEmpty(currentType))
+                {
+                    if (line.StartsWith("Type = "))
+                    {
+                        var start = line.IndexOf(".", StringComparison.InvariantCulture);
+                        var end = line.IndexOf(",", StringComparison.InvariantCulture);
+                        if (start < 0 || end < 0)
+                        {
+                            continue;
+                        }
+
+                        start += 1;
+                        currentType = line.Substring(start, end - start);
+                    }
+                }
+                else
+                {
+                    if (line.StartsWith("});") || line.StartsWith("Add("))
+                    {
+                        currentType = "";
+                    }
+                    else if (line.StartsWith("Requirement"))
+                    {
+                        var start = ("Requirement = ").Length;
+                        var end = line.Length - 1;
+                        var requirementText = line.Substring(start, end - start);
+                        results.Add(currentType, requirementText);
+                    }
+                }
+            }
+
+            return results;
         }
 
         private string GetMagicEffectCountTableLine(ItemRarity rarity)

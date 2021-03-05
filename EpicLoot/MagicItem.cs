@@ -86,9 +86,39 @@ namespace EpicLoot
             return Effects.Where(x => x.EffectType == effectType).ToList();
         }
 
+        public List<MagicItemEffect> GetEffects(int effectType)
+        {
+            return Effects.Where(x => x.IntType == effectType).ToList();
+        }
+
         public float GetTotalEffectValue(MagicEffectType effectType, float scale = 1)
         {
             return GetEffects(effectType).Sum(x => x.EffectValue) * scale;
+        }
+
+        public float GetTotalEffectValue(int effectType, float scale = 1)
+        {
+            return GetEffects(effectType).Sum(x => x.EffectValue) * scale;
+        }
+
+        public bool HasEffect(MagicEffectType effectType)
+        {
+            return Effects.Exists(x => x.EffectType == effectType);
+        }
+
+        public bool HasEffect(int effectType)
+        {
+            return Effects.Exists(x => x.IntType == effectType);
+        }
+
+        public bool HasAnyEffect(IEnumerable<MagicEffectType> effectTypes)
+        {
+            return Effects.Any(x => effectTypes.Contains(x.EffectType));
+        }
+
+        public bool HasAnyEffect(IEnumerable<int> effectTypes)
+        {
+            return Effects.Any(x => effectTypes.Contains(x.IntType));
         }
 
         private static string GetEffectText(MagicItemEffect effect)
@@ -117,11 +147,6 @@ namespace EpicLoot
         public static Sprite GetBgSpriteByRarity(ItemRarity rarity)
         {
             return EpicLoot.Assets.GenericItemBgSprite;
-        }
-
-        public bool HasEffect(MagicEffectType effectType)
-        {
-            return Effects.Exists(x => x.EffectType == effectType);
         }
     }
 }

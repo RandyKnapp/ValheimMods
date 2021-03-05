@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ExtendedItemDataFramework;
 
 namespace EpicLoot
 {
@@ -25,7 +26,7 @@ namespace EpicLoot
         public Dictionary<ItemRarity, ValueDef> ValuesPerRarity = new Dictionary<ItemRarity, ValueDef>();
         public float SelectionWeight = 1;
         public string Comment;
-        // TODO: Prefix/Postfix
+        public Func<ExtendedItemData, MagicItem, bool> Requirement;
     }
 
     public static partial class MagicItemEffectDefinitions
@@ -80,11 +81,16 @@ namespace EpicLoot
             return effectDef;
         }
 
-        public static List<MagicItemEffectDefinition> GetAvailableEffects(ItemDrop.ItemData.ItemType itemType, ItemRarity itemRarity)
+        public static List<MagicItemEffectDefinition> GetAvailableEffects(ExtendedItemData itemData, MagicItem magicItem)
         {
+            var itemType = itemData.m_shared.m_itemType;
+            var itemRarity = magicItem.Rarity;
             if (SortedDefinitions.ContainsKey(itemType) && SortedDefinitions[itemType].ContainsKey(itemRarity))
             {
-                return SortedDefinitions[itemType][itemRarity].Values.ToList();
+                var availableDefs = SortedDefinitions[itemType][itemRarity].Values.ToList();
+                availableDefs.RemoveAll(x => magicItem.HasEffect(x.Type));
+                availableDefs.RemoveAll(x => x.Requirement != null && !x.Requirement(itemData, magicItem));
+                return availableDefs;
             }
 
             return new List<MagicItemEffectDefinition>();
