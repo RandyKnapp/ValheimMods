@@ -101,14 +101,14 @@ namespace EpicLoot
         {
             switch (rarity)
             {
-                case ItemRarity.Magic: // Blue
-                    return "#7386ff";
-                case ItemRarity.Rare: // Yellow
-                    return "#ffff75";
-                case ItemRarity.Epic: // Purple
-                    return "#d078ff";
-                case ItemRarity.Legendary: // Teal (Magenta?)
-                    return "#18E775"; //"#e83180";
+                case ItemRarity.Magic:
+                    return EpicLoot.MagicRarityColor.Value;
+                case ItemRarity.Rare:
+                    return EpicLoot.RareRarityColor.Value;
+                case ItemRarity.Epic:
+                    return EpicLoot.EpicRarityColor.Value;
+                case ItemRarity.Legendary:
+                    return EpicLoot.LegendaryRarityColor.Value;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(rarity), rarity, null);
             }
@@ -116,7 +116,7 @@ namespace EpicLoot
 
         public static Sprite GetBgSpriteByRarity(ItemRarity rarity)
         {
-            return EpicLoot.Assets.MagicItemBgSprites[(int)rarity];
+            return EpicLoot.Assets.GenericItemBgSprite;
         }
 
         public bool HasEffect(MagicEffectType effectType)

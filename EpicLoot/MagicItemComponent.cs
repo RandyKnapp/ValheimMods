@@ -188,9 +188,9 @@ namespace EpicLoot
                     setItemObject.SetActive(true);
                     setItemTransform = setItemObject.transform;
                     var setItemInit = setItemTransform.GetComponent<Image>();
-                    setItemInit.color = Color.white;
                     setItemInit.raycastTarget = false;
-                    setItemInit.sprite = EpicLoot.Assets.SetItemSprite;
+                    setItemInit.sprite = EpicLoot.Assets.GenericSetItemSprite;
+                    setItemInit.color = ColorUtility.TryParseHtmlString(EpicLoot.SetItemColor.Value, out var color) ? color : Color.white;
                 }
             }
 
@@ -248,6 +248,7 @@ namespace EpicLoot
                 {
                     magicItem.enabled = true;
                     magicItem.sprite = item.GetMagicItem().GetBgSprite();
+                    magicItem.color = item.GetMagicItem().GetColor();
                 }
 
                 var setItem = element.m_go.transform.Find("setItem").GetComponent<Image>();
@@ -292,6 +293,7 @@ namespace EpicLoot
                 {
                     magicItem.enabled = true;
                     magicItem.sprite = itemData.GetMagicItem().GetBgSprite();
+                    magicItem.color = itemData.GetMagicItem().GetColor();
                 }
             }
         }

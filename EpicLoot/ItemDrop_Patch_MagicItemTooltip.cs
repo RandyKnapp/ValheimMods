@@ -253,7 +253,6 @@ namespace EpicLoot
 
         public static void Postfix(ref string __result, ItemDrop.ItemData item)
         {
-
             if (!item.IsMagic())
             {
                 var text = new StringBuilder();
@@ -274,17 +273,20 @@ namespace EpicLoot
 
                 __result += text.ToString();
             }
+            
+            __result = __result.Replace("<color=orange>", "<color=lightblue>");
+            __result = __result.Replace("<color=yellow>", "<color=lightblue>");
         }
 
         private static void AddSetTooltip(ItemDrop.ItemData item, StringBuilder text)
         {
             var setPieces = ObjectDB.instance.GetSetPieces(item.m_shared.m_setName);
             var currentSetEquipped = Player.m_localPlayer.GetEquippedSetPieces(item.m_shared.m_setName);
-            var setEffectColor = currentSetEquipped.Count == item.m_shared.m_setSize ? EpicLoot.SetItemColor : "grey";
+            var setEffectColor = currentSetEquipped.Count == item.m_shared.m_setSize ? EpicLoot.SetItemColor.Value : "grey";
 
             TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
             var setDisplayName = textInfo.ToTitleCase(item.m_shared.m_setName);
-            text.Append($"\n\n<color={EpicLoot.SetItemColor}>ᛟ Set: {setDisplayName} ({currentSetEquipped.Count}/{item.m_shared.m_setSize}):</color>");
+            text.Append($"\n\n<color={EpicLoot.SetItemColor.Value}>ᛟ Set: {setDisplayName} ({currentSetEquipped.Count}/{item.m_shared.m_setSize}):</color>");
 
             foreach (var setItem in setPieces)
             {

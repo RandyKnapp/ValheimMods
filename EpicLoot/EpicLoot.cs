@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using BepInEx;
+using BepInEx.Configuration;
 using Common;
 using ExtendedItemDataFramework;
 using fastJSON;
@@ -17,8 +18,8 @@ namespace EpicLoot
     public class Assets
     {
         public Sprite EquippedSprite;
-        public Sprite SetItemSprite;
-        public Sprite[] MagicItemBgSprites = new Sprite[4];
+        public Sprite GenericSetItemSprite;
+        public Sprite GenericItemBgSprite;
         public GameObject[] MagicItemLootBeamPrefabs = new GameObject[4];
     }
 
@@ -27,7 +28,12 @@ namespace EpicLoot
     public class EpicLoot : BaseUnityPlugin
     {
         private const string Version = "0.1.0";
-        public const string SetItemColor = "#26FFFF";
+
+        public static ConfigEntry<string> SetItemColor;
+        public static ConfigEntry<string> MagicRarityColor;
+        public static ConfigEntry<string> RareRarityColor;
+        public static ConfigEntry<string> EpicRarityColor;
+        public static ConfigEntry<string> LegendaryRarityColor;
 
         public static readonly List<ItemDrop.ItemData.ItemType> AllowedMagicItemTypes = new List<ItemDrop.ItemData.ItemType>
         {
@@ -42,6 +48,11 @@ namespace EpicLoot
             ItemDrop.ItemData.ItemType.Shield,
             ItemDrop.ItemData.ItemType.Tool,
             ItemDrop.ItemData.ItemType.Torch,
+        };
+
+        public static readonly List<string> RestrictedItemNames = new List<string>
+        {
+            "$item_tankard", "$item_tankard_odin", "Unarmed", "CAPE TEST"
         };
 
         public static Dictionary<ItemRarity, Dictionary<int, float>> MagicEffectCountWeightsPerRarity = new Dictionary<ItemRarity, Dictionary<int, float>>()
@@ -76,6 +87,12 @@ namespace EpicLoot
             _weightedEffectCountTable = new WeightedRandomCollection<KeyValuePair<int, float>>(random);
             _weightedRarityTable = new WeightedRandomCollection<KeyValuePair<ItemRarity, int>>(random);
 
+            MagicRarityColor = Config.Bind("Item Colors", "Magic Rarity Color", "#00abff", "The color of Magic rarity items, the lowest magic item tier. Default is blue.");
+            RareRarityColor = Config.Bind("Item Colors", "Rare Rarity Color", "#ffff75", "The color of Rare rarity items, the second magic item tier. Default is yellow.");
+            EpicRarityColor = Config.Bind("Item Colors", "Epic Rarity Color", "#d078ff", "The color of Epic rarity items, the third magic item tier. Default is purple.");
+            LegendaryRarityColor = Config.Bind("Item Colors", "Legendary Rarity Color", "#18e775", "The color of Legendary rarity items, the highest magic item tier. Default is green.");
+            SetItemColor = Config.Bind("Item Colors", "Set Item Color", "#26ffff", "The color of set item text and the set item icon. Default is cyan.");
+
             MagicItemEffectDefinitions.SetupMagicItemEffectDefinitions();
 
             LootTables.Clear();
@@ -84,12 +101,9 @@ namespace EpicLoot
             PrintInfo();
 
             var assetBundle = LoadAssetBundle("epicloot");
-            Assets.MagicItemBgSprites[(int)ItemRarity.Magic] = assetBundle.LoadAsset<Sprite>("MagicItemBg");
-            Assets.MagicItemBgSprites[(int)ItemRarity.Rare] = assetBundle.LoadAsset<Sprite>("RareItemBg");
-            Assets.MagicItemBgSprites[(int)ItemRarity.Epic] = assetBundle.LoadAsset<Sprite>("EpicItemBg");
-            Assets.MagicItemBgSprites[(int)ItemRarity.Legendary] = assetBundle.LoadAsset<Sprite>("LegendaryItemBg");
             Assets.EquippedSprite = assetBundle.LoadAsset<Sprite>("Equipped");
-            Assets.SetItemSprite = assetBundle.LoadAsset<Sprite>("SetItemMarker");
+            Assets.GenericSetItemSprite = assetBundle.LoadAsset<Sprite>("GenericSetItemMarker");
+            Assets.GenericItemBgSprite = assetBundle.LoadAsset<Sprite>("GenericItemBg");
             Assets.MagicItemLootBeamPrefabs[(int)ItemRarity.Magic] = assetBundle.LoadAsset<GameObject>("MagicLootBeam");
             Assets.MagicItemLootBeamPrefabs[(int)ItemRarity.Rare] = assetBundle.LoadAsset<GameObject>("RareLootBeam");
             Assets.MagicItemLootBeamPrefabs[(int)ItemRarity.Epic] = assetBundle.LoadAsset<GameObject>("EpicLootBeam");
@@ -216,13 +230,13 @@ namespace EpicLoot
 
         public static bool CanBeMagicItem(ItemDrop.ItemData item)
         {
-            return item != null && IsPlayerItem(item) && Nonstackable(item) && IsNotTankard(item) && AllowedMagicItemTypes.Contains(item.m_shared.m_itemType);
+            return item != null && IsPlayerItem(item) && Nonstackable(item) && IsNotRestrictedItem(item) && AllowedMagicItemTypes.Contains(item.m_shared.m_itemType);
         }
 
-        private static bool IsNotTankard(ItemDrop.ItemData item)
+        private static bool IsNotRestrictedItem(ItemDrop.ItemData item)
         {
             // This is dumb, but it's the only way I can think of to do this
-            return item.m_shared.m_name != "$item_tankard" && item.m_shared.m_name != "$item_tankard_odin";
+            return !RestrictedItemNames.Contains(item.m_shared.m_name);
         }
 
         private static bool Nonstackable(ItemDrop.ItemData item)

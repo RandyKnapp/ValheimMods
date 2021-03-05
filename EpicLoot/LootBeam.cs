@@ -22,6 +22,8 @@ namespace EpicLoot
                 var magicItem = _itemDrop.m_itemData.GetMagicItem();
                 _beam = Instantiate(EpicLoot.Assets.MagicItemLootBeamPrefabs[(int) magicItem.Rarity], transform);
                 _beam.transform.localPosition = Vector3.up * HeightOffset;
+                var beamColorSetter = _beam.AddComponent<BeamColorSetter>();
+                beamColorSetter.SetColor(magicItem.GetColor());
             }
 
             if (ShouldHideBeam())

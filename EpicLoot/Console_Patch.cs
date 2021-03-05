@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Common;
 using HarmonyLib;
 using UnityEngine;
@@ -50,9 +48,12 @@ namespace EpicLoot
                     if (rarityArg != "random" && !Enum.TryParse(rarityArg, out ItemRarity rarity))
                     {
                         __instance.AddString($"> Could not parse rarity ({rarityArg}) using random instead");
-                        foreach (ItemRarity checkRarity in Enum.GetValues(typeof(ItemRarity)))
+                        switch (rarity)
                         {
-                            rarityTable[(int)checkRarity] = checkRarity == rarity ? 1 : 0;
+                            case ItemRarity.Magic:      rarityTable = new [] { 1, 0, 0, 0, }; break;
+                            case ItemRarity.Rare:       rarityTable = new [] { 0, 1, 0, 0, }; break;
+                            case ItemRarity.Epic:       rarityTable = new [] { 0, 0, 1, 0, }; break;
+                            case ItemRarity.Legendary:  rarityTable = new [] { 0, 0, 0, 1, }; break;
                         }
                     }
 

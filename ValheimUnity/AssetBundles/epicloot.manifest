@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 3505892772
+CRC: 3931577320
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 25824219b44de49d41aa299336024dc8
+    Hash: e3729267b1a3446025ad48aab988a441
   TypeTreeHash:
     serializedVersion: 2
     Hash: aa1cb1906b05ca43c48a238e8acf33e8
@@ -43,9 +43,11 @@ SerializeReferenceClassIdentifiers: []
 Assets:
 - Assets/EpicLoot/Sprites/SetItemMarker.png
 - Assets/EpicLoot/Prefabs/RareLootBeam.prefab
+- Assets/EpicLoot/Sprites/GenericSetItemMarker.png
 - Assets/EpicLoot/Sprites/LegendaryItemBg.png
 - Assets/EpicLoot/Sprites/MagicItemBg.png
 - Assets/EpicLoot/Prefabs/EpicLootBeam.prefab
+- Assets/EpicLoot/Sprites/GenericItemBg.png
 - Assets/EpicLoot/Sprites/EpicItemBg.png
 - Assets/EpicLoot/Prefabs/MagicLootBeam.prefab
 - Assets/EpicLoot/Prefabs/LegendaryLootBeam.prefab
