@@ -1,0 +1,5 @@
+if exist "C:\Program Files (x86)\Steam\steamapps\common\Valheim dedicated server\BepInEx\plugins" ( 
+    xcopy "C:\Users\rknapp\Documents\GitHub\ValheimMods\EpicLoot\bin\Debug\EpicLoot.dll" "C:\Program Files (x86)\Steam\steamapps\common\Valheim dedicated server\BepInEx\plugins\EpicLoot\" /q /y /i
+    xcopy "C:\Users\rknapp\Documents\GitHub\ValheimMods\EpicLoot\loottables.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim dedicated server\BepInEx\plugins\EpicLoot\" /q /y /i
+    xcopy "C:\Users\rknapp\Documents\GitHub\ValheimMods\Libs\fastJSON.dll" "C:\Program Files (x86)\Steam\steamapps\common\Valheim dedicated server\BepInEx\plugins\EpicLoot\" /q /y /i
+    xcopy "C:\Users\rknapp\Documents\GitHub\ValheimMods\ValheimUnity\AssetBundles\epicloot" "C:\Program Files (x86)\Steam\steamapps\common\Valheim dedicated server\BepInEx\plugins\EpicLoot\" /q /y /i )

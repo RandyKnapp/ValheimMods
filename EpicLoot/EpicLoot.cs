@@ -67,7 +67,6 @@ namespace EpicLoot
         public static Dictionary<string, List<LootTable>> LootTables = new Dictionary<string, List<LootTable>>();
 
         public static event Action LootTableLoaded;
-        public static event Action<string, Character, List<LootTable>> CharacterDied;
         public static event Action<ExtendedItemData, MagicItem> MagicItemGenerated;
 
         private Harmony _harmony;
@@ -180,7 +179,7 @@ namespace EpicLoot
         {
             var key = lootTable.Object;
             var levels = (lootTable.Level != null && lootTable.Level.Length > 0) ? string.Join(", ", lootTable.Level) : "all";
-            Debug.LogWarning($"Added LootTable: {key} ({levels})");
+            Debug.Log($"Added LootTable: {key} ({levels})");
             if (!LootTables.ContainsKey(key))
             {
                 LootTables.Add(key, new List<LootTable>());
@@ -250,38 +249,58 @@ namespace EpicLoot
             return item.m_shared.m_icons.Length > 0;
         }
 
+        public static string GetCharacterCleanName(Character character)
+        {
+            return character.name.Replace("(Clone)", "").Trim();
+        }
+
         public static void OnCharacterDeath(CharacterDrop characterDrop)
         {
-            var characterName = characterDrop.name.Replace("(Clone)", "").Trim();
-            var level = characterDrop.m_character.m_level;
+            var characterName = GetCharacterCleanName(characterDrop.m_character);
+            var level = characterDrop.m_character.GetLevel();
+            var dropPoint = characterDrop.m_character.GetCenterPoint() + characterDrop.transform.TransformVector(characterDrop.m_spawnOffset);
+
+            OnCharacterDeath(characterName, level, dropPoint);
+        }
+
+        public static void OnCharacterDeath(string characterName, int level, Vector3 dropPoint)
+        {
             var lootTable = GetLootTable(characterName, level);
             if (lootTable != null)
             {
-                Debug.Log($"CharacterDrop OnDeath: {characterName} (lvl {level})");
-                CharacterDied?.Invoke(characterName, characterDrop.m_character, lootTable);
-                List<GameObject> loot = RollLootTableAndSpawnObjects(lootTable, characterName);
-                DropItems(loot, characterDrop.m_character.GetCenterPoint() + characterDrop.transform.TransformVector(characterDrop.m_spawnOffset));
+                List<GameObject> loot = RollLootTableAndSpawnObjects(lootTable, characterName, dropPoint);
+                Debug.Log($"Rolling on loot table: {characterName} (lvl {level}), spawned {loot.Count} items at drop point({dropPoint}).");
+                DropItems(loot, dropPoint);
+                foreach (var l in loot)
+                {
+                    var itemData = l.GetComponent<ItemDrop>().m_itemData;
+                    var magicItem = itemData.GetMagicItem();
+                    if (magicItem != null)
+                    {
+                        Debug.Log($"  - {itemData.m_shared.m_name} <{l.transform.position}>: {string.Join(", ", magicItem.Effects.Select(x => x.EffectType.ToString()))}");
+                    }
+                }
             }
             else
             {
-                Debug.Log($"CharacterDrop OnDeath (no loot table): {characterName} (lvl {level})");
+                Debug.Log($"Could not find loot table for: {characterName} (lvl {level})");
             }
         }
 
-        public static List<GameObject> RollLootTableAndSpawnObjects(List<LootTable> lootTables, string objectName)
+        public static List<GameObject> RollLootTableAndSpawnObjects(List<LootTable> lootTables, string objectName, Vector3 dropPoint)
         {
-            return RollLootTableInternal(lootTables, objectName);
+            return RollLootTableInternal(lootTables, objectName, dropPoint);
         }
 
-        public static List<GameObject> RollLootTableAndSpawnObjects(LootTable lootTable, string objectName)
+        public static List<GameObject> RollLootTableAndSpawnObjects(LootTable lootTable, string objectName, Vector3 dropPoint)
         {
-            return RollLootTableInternal(lootTable, objectName);
+            return RollLootTableInternal(lootTable, objectName, dropPoint);
         }
 
-        public static List<ItemDrop.ItemData> RollLootTable(List<LootTable> lootTables, string objectName)
+        public static List<ItemDrop.ItemData> RollLootTable(List<LootTable> lootTables, string objectName, Vector3 dropPoint)
         {
             var results = new List<ItemDrop.ItemData>();
-            var gameObjects = RollLootTableInternal(lootTables, objectName);
+            var gameObjects = RollLootTableInternal(lootTables, objectName, dropPoint);
             foreach (var itemObject in gameObjects)
             {
                 results.Add(itemObject.GetComponent<ItemDrop>().m_itemData);
@@ -291,10 +310,10 @@ namespace EpicLoot
             return results;
         }
 
-        public static List<ItemDrop.ItemData> RollLootTable(LootTable lootTable, string objectName)
+        public static List<ItemDrop.ItemData> RollLootTable(LootTable lootTable, string objectName, Vector3 dropPoint)
         {
             var results = new List<ItemDrop.ItemData>();
-            var gameObjects = RollLootTableInternal(lootTable, objectName);
+            var gameObjects = RollLootTableInternal(lootTable, objectName, dropPoint);
             foreach (var itemObject in gameObjects)
             {
                 results.Add(itemObject.GetComponent<ItemDrop>().m_itemData);
@@ -304,17 +323,17 @@ namespace EpicLoot
             return results;
         }
 
-        private static List<GameObject> RollLootTableInternal(List<LootTable> lootTables, string objectName)
+        private static List<GameObject> RollLootTableInternal(List<LootTable> lootTables, string objectName, Vector3 dropPoint)
         {
             var results = new List<GameObject>();
             foreach (var lootTable in lootTables)
             {
-                results.AddRange(RollLootTableInternal(lootTable, objectName));
+                results.AddRange(RollLootTableInternal(lootTable, objectName, dropPoint));
             }
             return results;
         }
 
-        private static List<GameObject> RollLootTableInternal(LootTable lootTable, string objectName)
+        private static List<GameObject> RollLootTableInternal(LootTable lootTable, string objectName, Vector3 dropPoint)
         {
             var results = new List<GameObject>();
 
@@ -338,7 +357,8 @@ namespace EpicLoot
                     continue;
                 }
 
-                var item = Instantiate(itemPrefab);
+                var randomRotation = Quaternion.Euler(0.0f, (float) UnityEngine.Random.Range(0, 360), 0.0f);
+                var item = Instantiate(itemPrefab, dropPoint, randomRotation);
                 var itemDrop = item.GetComponent<ItemDrop>();
                 if (!CanBeMagicItem(itemDrop.m_itemData))
                 {
@@ -429,12 +449,14 @@ namespace EpicLoot
             _weightedRarityTable.Setup(rarityWeights, x => x.Value);
             return _weightedRarityTable.Roll().Key;
         }
+        
 
         public static void DropItems(List<GameObject> loot, Vector3 centerPos, float dropHemisphereRadius = 0.5f)
         {
             foreach (var item in loot)
             {
                 var vector3 = Random.insideUnitSphere * dropHemisphereRadius;
+                vector3.y = Mathf.Abs(vector3.y);
                 item.transform.position = centerPos + vector3;
                 item.transform.rotation = Quaternion.Euler(0.0f, Random.Range(0, 360), 0.0f);
 

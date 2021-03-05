@@ -131,9 +131,11 @@
   <Import Project="..\Common\Common.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy "$(TargetDir)\$(TargetFileName)" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
+    <PostBuildEvent>xcopy "$(TargetDir)$(TargetFileName)" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
 xcopy "$(ProjectDir)loottables.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
 xcopy "$(SolutionDir)Libs\fastJSON.dll" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
-xcopy "$(SolutionDir)ValheimUnity\AssetBundles\epicloot" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i</PostBuildEvent>
+xcopy "$(SolutionDir)ValheimUnity\AssetBundles\epicloot" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
+
+call "$(ProjectDir)CopyToDedicatedServer.bat"</PostBuildEvent>
   </PropertyGroup>
 </Project>

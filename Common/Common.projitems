@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Consumables.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GotDestroyed.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlayerExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PrefabCreator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utils.cs" />

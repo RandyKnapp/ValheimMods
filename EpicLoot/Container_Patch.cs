@@ -17,7 +17,7 @@ namespace EpicLoot
             var lootTable = EpicLoot.GetLootTable(containerName, 1);
             if (lootTable != null)
             {
-                var items = EpicLoot.RollLootTable(lootTable, __instance.m_piece.name);
+                var items = EpicLoot.RollLootTable(lootTable, __instance.m_piece.name, __instance.transform.position);
                 foreach (var item in items)
                 {
                     __instance.m_inventory.AddItem(item);
