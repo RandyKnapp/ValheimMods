@@ -8,7 +8,7 @@ namespace EquipmentAndQuickSlots
     {
         public static bool Prefix(Player __instance, int index)
         {
-            if (index >= __instance.m_inventory.m_width)
+            if (index > __instance.m_inventory.m_width)
             {
                 var itemAt = __instance.m_inventory.GetItemAt(
                     index - __instance.m_inventory.m_width - 1 + EquipmentAndQuickSlots.QuickUseSlotIndexStart, 
