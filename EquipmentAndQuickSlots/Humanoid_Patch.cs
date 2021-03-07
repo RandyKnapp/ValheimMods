@@ -1,9 +1,34 @@
-﻿using System;
-using HarmonyLib;
+﻿using HarmonyLib;
+using UnityEngine;
 
 namespace EquipmentAndQuickSlots
 {
-    public static class EquipUtil
+    //public void UseItem(Inventory inventory, ItemDrop.ItemData item, bool fromInventoryGui)
+    [HarmonyPatch(typeof(Humanoid), "UseItem")]
+    public static class Humanoid_UseItem_Patch
+    {
+        public static bool Prefix(Humanoid __instance, Inventory inventory, ItemDrop.ItemData item, bool fromInventoryGui)
+        {
+            if (!__instance.IsPlayer())
+            {
+                return true;
+            }
+
+            var player = __instance as Player;
+
+            if (item.m_shared.m_itemType != ItemDrop.ItemData.ItemType.Consumable)
+            {
+                if (player.InventoryContainsItem(item) && __instance.ToggleEquiped(item) || fromInventoryGui)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+    }
+
+    /*public static class EquipUtil
     {
         public static void MoveItemToSlot(Inventory inventory, ItemDrop.ItemData item, Vector2i dest)
         {
@@ -92,5 +117,5 @@ namespace EquipmentAndQuickSlots
             }
         }
     }
-
+    */
 }

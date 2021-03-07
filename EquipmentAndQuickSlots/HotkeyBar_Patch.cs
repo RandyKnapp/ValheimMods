@@ -1,148 +1,311 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using HarmonyLib;
 using UnityEngine;
 using UnityEngine.UI;
+using Object = UnityEngine.Object;
 
 namespace EquipmentAndQuickSlots
 {
-    //void UpdateIcons(Player player)
-    [HarmonyPatch(typeof(HotkeyBar), "UpdateIcons", new Type[] { typeof(Player) })]
-    public static class HotkeyBar_UpdateIcons_Patch
+    public static class CustomHotkeyBar
     {
-        public static bool Prefix(HotkeyBar __instance, Player player)
+        [HarmonyPatch(typeof(HotkeyBar), "UpdateIcons")]
+        public static class HotkeyBar_UpdateIcons_Patch
         {
-            if (!EquipmentAndQuickSlots.QuickSlotsEnabled.Value)
+            public static bool Prefix(HotkeyBar __instance, Player player)
             {
-                return true;
-            }
-
-            if (player == null || player.IsDead())
-            {
-                foreach (HotkeyBar.ElementData element in __instance.m_elements)
+                if (__instance.name != "QuickSlotsHotkeyBar")
                 {
-                    UnityEngine.Object.Destroy(element.m_go);
+                    return true;
                 }
-                __instance.m_elements.Clear();
-            }
-            else
-            {
-                player.GetInventory().GetBoundItems(__instance.m_items);
-                __instance.m_items.Sort((a, b) => a.m_gridPos.y == b.m_gridPos.y ? a.m_gridPos.x.CompareTo(b.m_gridPos.x) : a.m_gridPos.y.CompareTo(b.m_gridPos.y));
-                int num = player.GetInventory().m_width + EquipmentAndQuickSlots.QuickUseSlotCount;
-                if (__instance.m_elements.Count != num)
+
+                if (player == null || player.IsDead())
                 {
-                    foreach (HotkeyBar.ElementData element in __instance.m_elements)
+                    foreach (var element in __instance.m_elements)
                     {
-                        UnityEngine.Object.Destroy(element.m_go);
+                        Object.Destroy(element.m_go);
                     }
+
                     __instance.m_elements.Clear();
-                    for (int index = 0; index < num; ++index)
+                }
+                else
+                {
+                    player.GetQuickSlotInventory().GetBoundItems(__instance.m_items);
+                    __instance.m_items.Sort((x, y) => x.m_gridPos.x.CompareTo(y.m_gridPos.x));
+                    const int showElementCount = 3;
+                    if (__instance.m_elements.Count != showElementCount)
                     {
-                        var parent = __instance.transform;
-                        if (index >= 8)
+                        foreach (var element in __instance.m_elements)
                         {
-                            parent = __instance.transform.parent.Find("healthpanel");
+                            Object.Destroy(element.m_go);
                         }
-                        HotkeyBar.ElementData elementData = new HotkeyBar.ElementData()
-                        {
-                            m_go = UnityEngine.Object.Instantiate<GameObject>(__instance.m_elementPrefab, parent)
-                        };
 
-                        if (index < 8)
+                        __instance.m_elements.Clear();
+                        for (var index = 0; index < showElementCount; ++index)
                         {
+                            var elementData = new HotkeyBar.ElementData()
+                            {
+                                m_go = Object.Instantiate(__instance.m_elementPrefab, __instance.transform)
+                            };
                             elementData.m_go.transform.localPosition = new Vector3(index * __instance.m_elementSpace, 0.0f, 0.0f);
-                            elementData.m_go.transform.Find("binding").GetComponent<Text>().text = (index + 1).ToString();
-                        }
-                        else
-                        {
-                            var offset = new Vector2(100, -150);
-                            var quickSlotIndex = index - 8;
-                            elementData.m_go.transform.localPosition = new Vector3(offset.x, offset.y - quickSlotIndex * __instance.m_elementSpace, 0.0f);
-                            elementData.m_go.transform.localEulerAngles = new Vector3(0, 0, -90);
-                            string label = EquipmentAndQuickSlots.GetBindingLabel(quickSlotIndex);
+                            elementData.m_icon = elementData.m_go.transform.transform.Find("icon").GetComponent<Image>();
+                            elementData.m_durability = elementData.m_go.transform.Find("durability").GetComponent<GuiBar>();
+                            elementData.m_amount = elementData.m_go.transform.Find("amount").GetComponent<Text>();
+                            elementData.m_equiped = elementData.m_go.transform.Find("equiped").gameObject;
+                            elementData.m_queued = elementData.m_go.transform.Find("queued").gameObject;
+                            elementData.m_selection = elementData.m_go.transform.Find("selected").gameObject;
+
                             var bindingText = elementData.m_go.transform.Find("binding").GetComponent<Text>();
-                            bindingText.text = label;
+                            bindingText.enabled = true;
                             bindingText.horizontalOverflow = HorizontalWrapMode.Overflow;
+                            bindingText.text = EquipmentAndQuickSlots.GetBindingLabel(index);
+
+                            __instance.m_elements.Add(elementData);
                         }
-                        elementData.m_icon = elementData.m_go.transform.transform.Find("icon").GetComponent<Image>();
-                        elementData.m_durability = elementData.m_go.transform.Find("durability").GetComponent<GuiBar>();
-                        elementData.m_amount = elementData.m_go.transform.Find("amount").GetComponent<Text>();
-                        elementData.m_equiped = elementData.m_go.transform.Find("equiped").gameObject;
-                        elementData.m_queued = elementData.m_go.transform.Find("queued").gameObject;
-                        elementData.m_selection = elementData.m_go.transform.Find("selected").gameObject;
-                        __instance.m_elements.Add(elementData);
                     }
-                }
 
-                foreach (HotkeyBar.ElementData element in __instance.m_elements)
-                {
-                    element.m_used = false;
-                }
-
-                bool isGamepadActive = ZInput.IsGamepadActive();
-                for (int index = 0; index < __instance.m_items.Count; ++index)
-                {
-                    ItemDrop.ItemData itemData = __instance.m_items[index];
-                    HotkeyBar.ElementData element = GetElementForItem(__instance.m_elements, itemData);
-                    element.m_used = true;
-                    element.m_icon.gameObject.SetActive(true);
-                    element.m_icon.sprite = itemData.GetIcon();
-                    element.m_durability.gameObject.SetActive(itemData.m_shared.m_useDurability);
-                    if (itemData.m_shared.m_useDurability)
+                    foreach (var element in __instance.m_elements)
                     {
-                        if (itemData.m_durability <= 0.0f)
+                        element.m_used = false;
+                    }
+
+                    var isGamepadActive = ZInput.IsGamepadActive();
+                    foreach (var itemData in __instance.m_items)
+                    {
+                        var element = __instance.m_elements[itemData.m_gridPos.x];
+                        element.m_used = true;
+                        element.m_icon.gameObject.SetActive(true);
+                        element.m_icon.sprite = itemData.GetIcon();
+                        element.m_durability.gameObject.SetActive(itemData.m_shared.m_useDurability);
+                        if (itemData.m_shared.m_useDurability)
                         {
-                            element.m_durability.SetValue(1.0f);
-                            element.m_durability.SetColor(Mathf.Sin(Time.time * 10.0f) > 0.0f ? Color.red : new Color(0.0f, 0.0f, 0.0f, 0.0f));
+                            if (itemData.m_durability <= 0.0)
+                            {
+                                element.m_durability.SetValue(1f);
+                                element.m_durability.SetColor((double) Mathf.Sin(Time.time * 10f) > 0.0 ? Color.red : new Color(0.0f, 0.0f, 0.0f, 0.0f));
+                            }
+                            else
+                            {
+                                element.m_durability.SetValue(itemData.GetDurabilityPercentage());
+                                element.m_durability.ResetColor();
+                            }
+                        }
+
+                        element.m_equiped.SetActive(itemData.m_equiped);
+                        element.m_queued.SetActive(player.IsItemQueued(itemData));
+                        if (itemData.m_shared.m_maxStackSize > 1)
+                        {
+                            element.m_amount.gameObject.SetActive(true);
+                            element.m_amount.text = itemData.m_stack.ToString() + "/" + itemData.m_shared.m_maxStackSize.ToString();
                         }
                         else
                         {
-                            element.m_durability.SetValue(itemData.GetDurabilityPercentage());
-                            element.m_durability.ResetColor();
+                            element.m_amount.gameObject.SetActive(false);
                         }
                     }
-                    element.m_equiped.SetActive(itemData.m_equiped);
-                    element.m_queued.SetActive(player.IsItemQueued(itemData));
-                    if (itemData.m_shared.m_maxStackSize > 1)
+
+                    for (var index = 0; index < __instance.m_elements.Count; ++index)
                     {
-                        element.m_amount.gameObject.SetActive(true);
-                        element.m_amount.text = $"{itemData.m_stack}/{itemData.m_shared.m_maxStackSize}";
+                        var element = __instance.m_elements[index];
+                        element.m_selection.SetActive(isGamepadActive && index == __instance.m_selected);
+                        if (!element.m_used)
+                        {
+                            element.m_icon.gameObject.SetActive(false);
+                            element.m_durability.gameObject.SetActive(false);
+                            element.m_equiped.SetActive(false);
+                            element.m_queued.SetActive(false);
+                            element.m_amount.gameObject.SetActive(false);
+                        }
+                    }
+                }
+
+                return false;
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(Hud), "Awake")]
+    public static class Hud_Awake_Patch
+    {
+        public static void Postfix(Hud __instance)
+        {
+            var hotkeyBar = __instance.GetComponentInChildren<HotkeyBar>();
+
+            if (hotkeyBar.transform.parent.Find("QuickSlotsHotkeyBar") == null)
+            {
+                var quickslotsHotkeyBar = Object.Instantiate(hotkeyBar.gameObject, hotkeyBar.transform.parent, true);
+                quickslotsHotkeyBar.name = "QuickSlotsHotkeyBar";
+                quickslotsHotkeyBar.transform.SetSiblingIndex(hotkeyBar.transform.GetSiblingIndex() + 1);
+                (quickslotsHotkeyBar.transform as RectTransform).anchoredPosition = new Vector2(0, -100) + (hotkeyBar.transform as RectTransform).anchoredPosition;
+                quickslotsHotkeyBar.GetComponent<HotkeyBar>().m_selected = -1;
+
+                /*Object.Destroy(quickslotsHotkeyBar.GetComponent<HotkeyBar>());
+                var newHotkeyBar = quickslotsHotkeyBar.AddComponent<CustomHotkeyBar>();
+                newHotkeyBar.m_elementPrefab = hotkeyBar.m_elementPrefab;
+                newHotkeyBar.m_elementSpace = hotkeyBar.m_elementSpace;
+                newHotkeyBar.m_selected = -1;*/
+            }
+        }
+    }
+
+    public static class HotkeyBarController
+    {
+        public static List<HotkeyBar> HotkeyBars;
+        public static int SelectedHotkeyBarIndex = -1;
+
+        [HarmonyPatch(typeof(Hud), "Update")]
+        public static class Hud_Update_Patch
+        {
+            public static void Postfix(Hud __instance)
+            {
+                var player = Player.m_localPlayer;
+                if (HotkeyBars == null)
+                {
+                    HotkeyBars = __instance.transform.parent.GetComponentsInChildren<HotkeyBar>().ToList();
+                }
+
+                if (player != null)
+                {
+                    if (SelectedHotkeyBarIndex >= 0 && SelectedHotkeyBarIndex < HotkeyBars.Count)
+                    {
+                        var currentHotKeyBar = HotkeyBars[SelectedHotkeyBarIndex];
+                        UpdateHotkeyBarInput(currentHotKeyBar);
                     }
                     else
                     {
-                        element.m_amount.gameObject.SetActive(false);
+                        UpdateInitialHotkeyBarInput();
                     }
                 }
 
-                for (int index = 0; index < __instance.m_elements.Count; ++index)
+                foreach (var hotkeyBar in HotkeyBars)
                 {
-                    HotkeyBar.ElementData element = __instance.m_elements[index];
-                    element.m_selection.SetActive(isGamepadActive && index == __instance.m_selected);
-                    if (!element.m_used)
+                    if (hotkeyBar.m_selected > hotkeyBar.m_elements.Count - 1)
                     {
-                        element.m_icon.gameObject.SetActive(false);
-                        element.m_durability.gameObject.SetActive(false);
-                        element.m_equiped.SetActive(false);
-                        element.m_queued.SetActive(false);
-                        element.m_amount.gameObject.SetActive(false);
+                        hotkeyBar.m_selected = Mathf.Max(0, hotkeyBar.m_elements.Count - 1);
+                    }
+
+                    hotkeyBar.UpdateIcons(player);
+                }
+            }
+
+            private static void UpdateInitialHotkeyBarInput()
+            {
+                if (ZInput.GetButtonDown("JoyDPadLeft") || ZInput.GetButtonDown("JoyDPadRight"))
+                {
+                    SelectHotkeyBar(0, false);
+                }
+            }
+
+            public static void UpdateHotkeyBarInput(HotkeyBar hotkeyBar)
+            {
+                var player = Player.m_localPlayer;
+                if (hotkeyBar.m_selected >= 0 && player != null && !InventoryGui.IsVisible() && !Menu.IsVisible() && !GameCamera.InFreeFly())
+                {
+                    if (ZInput.GetButtonDown("JoyDPadLeft"))
+                    {
+                        if (hotkeyBar.m_selected == 0)
+                        {
+                            GotoHotkeyBar(SelectedHotkeyBarIndex - 1);
+                        }
+                        else
+                        {
+                            hotkeyBar.m_selected = Mathf.Max(0, hotkeyBar.m_selected - 1);
+                        }
+                    }
+                    else if (ZInput.GetButtonDown("JoyDPadRight"))
+                    {
+                        if (hotkeyBar.m_selected == hotkeyBar.m_elements.Count - 1)
+                        {
+                            GotoHotkeyBar(SelectedHotkeyBarIndex + 1);
+                        }
+                        else
+                        {
+                            hotkeyBar.m_selected = Mathf.Min(hotkeyBar.m_elements.Count - 1, hotkeyBar.m_selected + 1);
+                        }
+                    }
+
+                    if (ZInput.GetButtonDown("JoyDPadUp"))
+                    {
+                        if (hotkeyBar.name == "QuickSlotsHotkeyBar")
+                        {
+                            var quickSlotInventory = player.GetQuickSlotInventory();
+                            var item = quickSlotInventory.GetItemAt(hotkeyBar.m_selected, 0);
+                            player.UseItem(quickSlotInventory, item, false);
+                        }
+                        else
+                        {
+                            player.UseHotbarItem(hotkeyBar.m_selected + 1);
+                        }
+                    }
+                }
+
+                if (hotkeyBar.m_selected > hotkeyBar.m_elements.Count - 1)
+                {
+                    hotkeyBar.m_selected = Mathf.Max(0, hotkeyBar.m_elements.Count - 1);
+                }
+            }
+
+            public static void GotoHotkeyBar(int newIndex)
+            {
+                if (newIndex < 0 || newIndex >= HotkeyBars.Count)
+                {
+                    return;
+                }
+
+                var fromRight = newIndex < SelectedHotkeyBarIndex;
+                SelectHotkeyBar(newIndex, fromRight);
+            }
+
+            public static void SelectHotkeyBar(int index, bool fromRight)
+            {
+                if (index < 0 || index >= HotkeyBars.Count)
+                {
+                    return;
+                }
+
+                SelectedHotkeyBarIndex = index;
+                for (var i = 0; i < HotkeyBars.Count; i++)
+                {
+                    var hotkeyBar = HotkeyBars[i];
+                    if (i == index)
+                    {
+                        hotkeyBar.m_selected = fromRight ? hotkeyBar.m_elements.Count - 1 : 0;
+                    }
+                    else
+                    {
+                        hotkeyBar.m_selected = -1;
                     }
                 }
             }
 
-            return false;
+            public static void DeselectHotkeyBar()
+            {
+                SelectedHotkeyBarIndex = -1;
+                foreach (var hotkeyBar in HotkeyBars)
+                {
+                    hotkeyBar.m_selected = -1;
+                }
+            }
         }
 
-        private static HotkeyBar.ElementData GetElementForItem(List<HotkeyBar.ElementData> elements, ItemDrop.ItemData item)
+        [HarmonyPatch(typeof(Hud), "OnDestroy")]
+        public static class Hud_OnDestroy_Patch
         {
-            if (item.m_gridPos.y == 0)
+            public static void Postfix(Hud __instance)
             {
-                return elements[item.m_gridPos.x];
+                HotkeyBars = null;
+                SelectedHotkeyBarIndex = -1;
             }
-            else
-            {
-                return elements[Player.m_localPlayer.GetInventory().m_width + item.m_gridPos.x - EquipmentAndQuickSlots.QuickUseSlotIndexStart];
-            }
+        }
+    }
+
+    [HarmonyPatch(typeof(HotkeyBar), "Update")]
+    public static class HotkeyBar_Update_Patch
+    {
+        public static bool Prefix(HotkeyBar __instance)
+        {
+            // Everything controlled in above update
+            return false;
         }
     }
 }

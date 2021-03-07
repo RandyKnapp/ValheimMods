@@ -11,8 +11,7 @@ namespace EquipmentAndQuickSlots
     [BepInDependency("moreslots", BepInDependency.DependencyFlags.SoftDependency)]
     public class EquipmentAndQuickSlots : BaseUnityPlugin
     {
-        public const int QuickUseSlotCount = 3;
-        public const int QuickUseSlotIndexStart = 5;
+        public const int QuickSlotCount = 3;
         public const int EquipSlotCount = 5;
         public static ConfigEntry<string>[] KeyCodes = new ConfigEntry<string>[3];
         public static ConfigEntry<string>[] HotkeyLabels = new ConfigEntry<string>[3];
@@ -55,7 +54,7 @@ namespace EquipmentAndQuickSlots
                 var player = Player.m_localPlayer;
                 if (player != null && player.TakeInput())
                 {
-                    for (int i = 0; i < QuickUseSlotCount; ++i)
+                    for (int i = 0; i < QuickSlotCount; ++i)
                     {
                         CheckQuickUseInput(player, i);
                     }
@@ -65,7 +64,7 @@ namespace EquipmentAndQuickSlots
 
         public static string GetBindingLabel(int index)
         {
-            index = Mathf.Clamp(index, 0, QuickUseSlotCount - 1);
+            index = Mathf.Clamp(index, 0, QuickSlotCount - 1);
             var keycode = GetBindingKeycode(index);
             var label = HotkeyLabels[index].Value;
             if (string.IsNullOrEmpty(label))
@@ -80,7 +79,7 @@ namespace EquipmentAndQuickSlots
 
         public static string GetBindingKeycode(int index)
         {
-            index = Mathf.Clamp(index, 0, QuickUseSlotCount - 1);
+            index = Mathf.Clamp(index, 0, QuickSlotCount - 1);
             return KeyCodes[index].Value.ToLowerInvariant();
         }
 
@@ -99,28 +98,12 @@ namespace EquipmentAndQuickSlots
             var keyCode = GetBindingKeycode(index);
             if (Input.GetKeyDown(keyCode))
             {
-                var bonusInventoryRowIndex = GetBonusInventoryRowIndex();
-                var item = player.GetInventory().GetItemAt(QuickUseSlotIndexStart + index, bonusInventoryRowIndex);
+                var item = player.GetQuickSlotItem(index);
                 if (item != null)
                 {
                     player.UseItem(null, item, false);
                 }
             }
-        }
-
-        public static bool IsQuickSlot(Vector2i pos)
-        {
-            var bonusInventoryRowIndex = GetBonusInventoryRowIndex();
-            var startIndex = EquipmentAndQuickSlots.QuickUseSlotIndexStart;
-            var endIndex = startIndex + EquipmentAndQuickSlots.QuickUseSlotCount;
-            return pos.y == bonusInventoryRowIndex && pos.x >= startIndex && pos.x < endIndex;
-        }
-
-        public static Vector2i GetQuickSlotPosition(int index)
-        {
-            var bonusInventoryRowIndex = GetBonusInventoryRowIndex();
-            var startIndex = EquipmentAndQuickSlots.QuickUseSlotIndexStart;
-            return new Vector2i(startIndex + index, bonusInventoryRowIndex);
         }
 
         public static bool IsEquipmentSlot(Vector2i pos)

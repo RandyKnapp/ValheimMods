@@ -1,57 +1,48 @@
-﻿using System;
-using System.Collections.Generic;
-using HarmonyLib;
+﻿using HarmonyLib;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace EquipmentAndQuickSlots
 {
     //private void UpdateGui(Player player, ItemDrop.ItemData dragItem)
-    [HarmonyPatch(typeof(InventoryGrid), "UpdateGui", new Type[] {typeof(Player), typeof(ItemDrop.ItemData)})]
+    [HarmonyPatch(typeof(GuiBar), "Awake")]
+    public static class GuiBar_Awake_Patch
+    {
+        private static bool Prefix(GuiBar __instance)
+        {
+            // I have no idea why this bar is set to zero initially
+            if (__instance.name == "durability" && __instance.m_bar.sizeDelta.x != 54)
+            {
+                __instance.m_bar.sizeDelta = new Vector2(54, 0);
+            }
+
+            return true;
+        }
+    }
+
+    //private void UpdateGui(Player player, ItemDrop.ItemData dragItem)
+    [HarmonyPatch(typeof(InventoryGrid), "UpdateGui", typeof(Player), typeof(ItemDrop.ItemData))]
     public static class InventoryGrid_UpdateGui_Patch
     {
-        private static void Postfix(InventoryGrid __instance, Player player, ItemDrop.ItemData dragItem, List<InventoryGrid.Element> ___m_elements)
+        private static void Postfix(InventoryGrid __instance, Player player, ItemDrop.ItemData dragItem)
         {
-            if (__instance.name != "PlayerGrid")
+            if (__instance.name != "QuickSlotGrid")
             {
                 return;
             }
+            
+            for (int i = 0; i < EquipmentAndQuickSlots.QuickSlotCount; ++i)
+            {
+                var element = __instance.m_elements[i];
+                var bindingText = element.m_go.transform.Find("binding").GetComponent<Text>();
+                bindingText.enabled = true;
+                bindingText.horizontalOverflow = HorizontalWrapMode.Overflow;
+                bindingText.text = EquipmentAndQuickSlots.GetBindingLabel(i);
+            }
+        }
+    }
 
-            if (EquipmentAndQuickSlots.QuickSlotsEnabled.Value)
-            {
-                var quickSlotBkg = GetOrCreateBackground(__instance, "QuickSlotBkg");
-                quickSlotBkg.anchoredPosition = new Vector2(480, -173);
-                quickSlotBkg.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 240);
-                quickSlotBkg.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 90);
-                quickSlotBkg.localScale = new Vector3(1, 1, 1);
-            }
-            else
-            {
-                var existingBkg = __instance.transform.parent.Find("QuickSlotBkg");
-                if (existingBkg != null)
-                {
-                    GameObject.Destroy(existingBkg.gameObject);
-                }
-            }
-
-            if (EquipmentAndQuickSlots.EquipmentSlotsEnabled.Value)
-            {
-                var equipmentBkg = GetOrCreateBackground(__instance, "EquipmentBkg");
-                equipmentBkg.anchoredPosition = new Vector2(485, 10);
-                equipmentBkg.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 210);
-                equipmentBkg.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 260);
-                equipmentBkg.localScale = new Vector3(1, 1, 1);
-            }
-            else
-            {
-                var existingBkg = __instance.transform.parent.Find("EquipmentBkg");
-                if (existingBkg != null)
-                {
-                    GameObject.Destroy(existingBkg.gameObject);
-                }
-            }
-
-            float horizontalSpacing = __instance.m_elementSpace + 10;
+    /*float horizontalSpacing = __instance.m_elementSpace + 10;
             float verticalSpacing = __instance.m_elementSpace + 10;
             string[] equipNames = { "Head", "Chest", "Legs", "Shoulders", "Utility" };
             Vector2[] equipPositions = {
@@ -86,52 +77,6 @@ namespace EquipmentAndQuickSlots
 
                 Vector2 offset = new Vector2(692, -20);
                 (element.m_go.transform as RectTransform).anchoredPosition = offset + equipPositions[i];
-            }
+            }*/
 
-            for (int i = 0; i < EquipmentAndQuickSlots.QuickUseSlotCount; ++i)
-            {
-                var x = EquipmentAndQuickSlots.QuickUseSlotIndexStart + i;
-                var element = GetElement(___m_elements, x, y);
-                if (EquipmentAndQuickSlots.QuickSlotsEnabled.Value)
-                {
-                    element.m_go.SetActive(true);
-                    var bindingText = element.m_go.transform.Find("binding").GetComponent<Text>();
-                    bindingText.enabled = true;
-                    bindingText.horizontalOverflow = HorizontalWrapMode.Overflow;
-                    bindingText.text = EquipmentAndQuickSlots.GetBindingLabel(i);
-
-                    Vector2 offset = new Vector2(310, 1);
-                    Vector2 position = new Vector2(x * __instance.m_elementSpace, 4 * -__instance.m_elementSpace);
-                    (element.m_go.transform as RectTransform).anchoredPosition = offset + position;
-                }
-                else
-                {
-                    element.m_go.SetActive(false);
-                }
-            }
         }
-
-        private static RectTransform GetOrCreateBackground(InventoryGrid __instance, string name)
-        {
-            var existingBkg = __instance.transform.parent.Find(name);
-            if (existingBkg == null)
-            {
-                var bkg = __instance.transform.parent.Find("Bkg").gameObject;
-                var background = GameObject.Instantiate(bkg, bkg.transform.parent);
-                background.name = name;
-                background.transform.SetSiblingIndex(bkg.transform.GetSiblingIndex() + 1);
-                existingBkg = background.transform;
-            }
-
-            return existingBkg as RectTransform;
-        }
-
-        private static InventoryGrid.Element GetElement(List<InventoryGrid.Element> elements, int x, int y)
-        {
-            var inventoryWidth = Player.m_localPlayer.GetInventory().GetWidth();
-            return elements[y * inventoryWidth + x];
-        }
-    }
-
-    
-}
