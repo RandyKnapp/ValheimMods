@@ -30,49 +30,77 @@ namespace EquipmentAndQuickSlots
     public static class InventoryGui_Patch
     {
         public static InventoryGrid QuickSlotGrid;
+        public static InventoryGrid EquipmentSlotGrid;
 
         [HarmonyPatch(typeof(InventoryGui), "Awake")]
         public static class InventoryGui_Awake_Patch
         {
             public static void Postfix(InventoryGui __instance)
             {
-                if (QuickSlotGrid != null)
+                BuildQuickSlotGrid(__instance);
+                BuildEquipmentSlotGrid(__instance);
+            }
+
+            private static void BuildQuickSlotGrid(InventoryGui inventoryGui)
+            {
+                BuildInventoryGrid(ref QuickSlotGrid, "QuickSlotGrid", new Vector2(500, -140), inventoryGui);
+            }
+
+            private static void BuildEquipmentSlotGrid(InventoryGui inventoryGui)
+            {
+                BuildInventoryGrid(ref EquipmentSlotGrid, "EquipmentSlotGrid", new Vector2(500, 100), inventoryGui);
+            }
+
+            private static void BuildInventoryGrid(ref InventoryGrid grid, string name, Vector2 position, InventoryGui inventoryGui)
+            {
+                if (grid != null)
                 {
-                    Object.Destroy(QuickSlotGrid);
-                    QuickSlotGrid = null;
+                    Object.Destroy(grid);
+                    grid = null;
                 }
 
-                var go = new GameObject("QuickSlotGrid", typeof(RectTransform));
-                go.transform.SetParent(__instance.m_player, false);
+                var go = new GameObject(name, typeof(RectTransform));
+                go.transform.SetParent(inventoryGui.m_player, false);
 
                 var highlight = new GameObject("SelectedFrame", typeof(RectTransform));
                 highlight.transform.SetParent(go.transform, false);
                 highlight.AddComponent<Image>().color = Color.magenta;
 
-                QuickSlotGrid = go.AddComponent<InventoryGrid>();
+                grid = go.AddComponent<InventoryGrid>();
                 var root = new GameObject("Root", typeof(RectTransform));
                 root.transform.SetParent(go.transform, false);
 
                 var rect = go.transform as RectTransform;
-                rect.anchoredPosition = new Vector2(500, -140);
+                rect.anchoredPosition = position;
 
-                QuickSlotGrid.m_elementPrefab = __instance.m_playerGrid.m_elementPrefab;
-                QuickSlotGrid.m_gridRoot = root.transform as RectTransform;
-                //QuickSlotGrid.m_uiGroup = __instance.m_playerGrid.m_uiGroup; // TODO, figure this out
-                QuickSlotGrid.m_elementSpace = __instance.m_playerGrid.m_elementSpace;
-                QuickSlotGrid.ResetView();
+                grid.m_elementPrefab = inventoryGui.m_playerGrid.m_elementPrefab;
+                grid.m_gridRoot = root.transform as RectTransform;
+                grid.m_elementSpace = inventoryGui.m_playerGrid.m_elementSpace;
+                grid.ResetView();
 
-                QuickSlotGrid.m_onSelected += __instance.OnSelectedItem;
-                QuickSlotGrid.m_onRightClick += __instance.OnRightClickItem;
+                grid.m_onSelected += OnSelected(inventoryGui);
+                grid.m_onRightClick += inventoryGui.OnRightClickItem;
 
-                QuickSlotGrid.m_uiGroup = QuickSlotGrid.gameObject.AddComponent<UIGroupHandler>();
-                QuickSlotGrid.m_uiGroup.m_groupPriority = 1;
-                QuickSlotGrid.m_uiGroup.m_active = true;
-                QuickSlotGrid.m_uiGroup.m_enableWhenActiveAndGamepad = highlight;
+                grid.m_uiGroup = QuickSlotGrid.gameObject.AddComponent<UIGroupHandler>();
+                grid.m_uiGroup.m_groupPriority = 1;
+                grid.m_uiGroup.m_active = true;
+                grid.m_uiGroup.m_enableWhenActiveAndGamepad = highlight;
 
-                var list = __instance.m_uiGroups.ToList();
-                list.Insert(2, QuickSlotGrid.m_uiGroup);
-                __instance.m_uiGroups = list.ToArray();
+                var list = inventoryGui.m_uiGroups.ToList();
+                list.Insert(2, grid.m_uiGroup);
+                inventoryGui.m_uiGroups = list.ToArray();
+            }
+
+            private static Action<InventoryGrid, ItemDrop.ItemData, Vector2i, InventoryGrid.Modifier> OnSelected(InventoryGui inventoryGui)
+            {
+                return (InventoryGrid inventoryGrid, ItemDrop.ItemData item, Vector2i pos, InventoryGrid.Modifier mod) =>
+                {
+                    if (mod == InventoryGrid.Modifier.Move)
+                    {
+                        mod = InventoryGrid.Modifier.Select;
+                    }
+                    inventoryGui.OnSelectedItem(inventoryGrid, item, pos, mod);
+                };
             }
         }
 
@@ -82,15 +110,27 @@ namespace EquipmentAndQuickSlots
             public static void Postfix(InventoryGui __instance)
             {
                 var player = Player.m_localPlayer;
-                if (QuickSlotGrid == null || player == null)
+                if (player == null)
                 {
                     return;
                 }
 
-                var quickSlotInventory = player.GetQuickSlotInventory();
-                if (quickSlotInventory != null)
+                if (QuickSlotGrid != null)
                 {
-                    QuickSlotGrid.UpdateInventory(quickSlotInventory, player, __instance.m_dragItem);
+                    var quickSlotInventory = player.GetQuickSlotInventory();
+                    if (quickSlotInventory != null)
+                    {
+                        QuickSlotGrid.UpdateInventory(quickSlotInventory, player, __instance.m_dragItem);
+                    }
+                }
+
+                if (EquipmentSlotGrid != null)
+                {
+                    var equipmentSlotInventory = player.GetEquipmentSlotInventory();
+                    if (equipmentSlotInventory != null)
+                    {
+                        EquipmentSlotGrid.UpdateInventory(equipmentSlotInventory, player, __instance.m_dragItem);
+                    }
                 }
             }
         }

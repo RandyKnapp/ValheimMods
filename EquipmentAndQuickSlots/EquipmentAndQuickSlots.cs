@@ -7,19 +7,20 @@ using UnityEngine;
 
 namespace EquipmentAndQuickSlots
 {
-    [BepInPlugin("randyknapp.mods.equipmentandquickslots", "Equipment and Quick Slots", "1.0.4")]
+    [BepInPlugin("randyknapp.mods.equipmentandquickslots", "Equipment and Quick Slots", "2.0.0")]
     [BepInDependency("moreslots", BepInDependency.DependencyFlags.SoftDependency)]
     public class EquipmentAndQuickSlots : BaseUnityPlugin
     {
         public const int QuickSlotCount = 3;
-        public const int EquipSlotCount = 5;
-        public static ConfigEntry<string>[] KeyCodes = new ConfigEntry<string>[3];
-        public static ConfigEntry<string>[] HotkeyLabels = new ConfigEntry<string>[3];
-        public static List<ItemDrop.ItemData.ItemType> EquipSlotTypes = new List<ItemDrop.ItemData.ItemType> {
+        public static int EquipSlotCount => EquipSlotTypes.Count;
+        public static readonly ConfigEntry<string>[] KeyCodes = new ConfigEntry<string>[3];
+        public static readonly ConfigEntry<string>[] HotkeyLabels = new ConfigEntry<string>[3];
+        public static readonly List<ItemDrop.ItemData.ItemType> EquipSlotTypes = new List<ItemDrop.ItemData.ItemType>() {
             ItemDrop.ItemData.ItemType.Helmet,
             ItemDrop.ItemData.ItemType.Chest,
             ItemDrop.ItemData.ItemType.Legs,
             ItemDrop.ItemData.ItemType.Shoulder,
+            ItemDrop.ItemData.ItemType.Utility,
             ItemDrop.ItemData.ItemType.Utility
         };
 
@@ -83,16 +84,6 @@ namespace EquipmentAndQuickSlots
             return KeyCodes[index].Value.ToLowerInvariant();
         }
 
-        public static int GetBonusInventoryRowIndex()
-        {
-            if (Player.m_localPlayer != null)
-            {
-                return Player.m_localPlayer.GetInventory().GetHeight() - 1;
-            }
-
-            return 0;
-        }
-
         public static void CheckQuickUseInput(Player player, int index)
         {
             var keyCode = GetBindingKeycode(index);
@@ -106,36 +97,19 @@ namespace EquipmentAndQuickSlots
             }
         }
 
-        public static bool IsEquipmentSlot(Vector2i pos)
+        public static ItemDrop.ItemData.ItemType GetEquipmentTypeForSlot(int index)
         {
-            return IsEquipmentSlot(pos.x, pos.y);
-        }
-
-        public static bool IsEquipmentSlot(int x, int y)
-        {
-            var bonusInventoryRowIndex = GetBonusInventoryRowIndex();
-            return y == bonusInventoryRowIndex && x >= 0 && x < EquipSlotCount;
-        }
-
-        public static ItemDrop.ItemData.ItemType GetEquipmentTypeForSlot(Vector2i pos)
-        {
-            if (IsEquipmentSlot(pos))
+            if (index < 0 || index >= EquipSlotTypes.Count)
             {
-                return EquipSlotTypes[pos.x];
-            }
-            return ItemDrop.ItemData.ItemType.None;
-        }
-
-        public static Vector2i GetEquipmentSlotForType(ItemDrop.ItemData.ItemType type)
-        {
-            int index = EquipSlotTypes.IndexOf(type);
-            if (index >= 0)
-            {
-                var bonusInventoryRowIndex = GetBonusInventoryRowIndex();
-                return new Vector2i(index, bonusInventoryRowIndex);
+                return ItemDrop.ItemData.ItemType.None;
             }
 
-            return new Vector2i();
+            return EquipSlotTypes[index];
+        }
+
+        public static int GetEquipmentSlotForType(ItemDrop.ItemData.ItemType type)
+        {
+            return EquipSlotTypes.IndexOf(type);
         }
 
         public static bool IsSlotEquippable(ItemDrop.ItemData item)

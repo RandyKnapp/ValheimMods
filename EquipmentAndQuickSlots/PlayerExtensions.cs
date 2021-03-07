@@ -7,6 +7,7 @@ namespace EquipmentAndQuickSlots
     public class ExtendedPlayerData : MonoBehaviour
     {
         public Inventory QuickSlotInventory = new Inventory(nameof(QuickSlotInventory), null, EquipmentAndQuickSlots.QuickSlotCount, 1);
+        public Inventory EquipmentSlotInventory = new Inventory(nameof(EquipmentSlotInventory), null, EquipmentAndQuickSlots.EquipSlotCount, 1);
 
         private Player _player;
         private bool _isLoading;
@@ -40,6 +41,10 @@ namespace EquipmentAndQuickSlots
             var pkg = new ZPackage();
             QuickSlotInventory.Save(pkg);
             SaveValue(_player, nameof(QuickSlotInventory), pkg.GetBase64());
+
+            pkg = new ZPackage();
+            EquipmentSlotInventory.Save(pkg);
+            SaveValue(_player, nameof(EquipmentSlotInventory), pkg.GetBase64());
         }
 
         public void Load(Player fromPlayer)
@@ -54,11 +59,19 @@ namespace EquipmentAndQuickSlots
             LoadValue(fromPlayer, "ExtendedPlayerData", out var init);
             Debug.LogWarning("Loaded ExtendedPlayerData");
 
-            if (LoadValue(fromPlayer, nameof(QuickSlotInventory), out var inventoryBase64String))
+            if (LoadValue(fromPlayer, nameof(QuickSlotInventory), out var quickSlotData))
             {
-                var pkg = new ZPackage(inventoryBase64String);
+                var pkg = new ZPackage(quickSlotData);
                 _isLoading = true;
                 QuickSlotInventory.Load(pkg);
+                _isLoading = false;
+            }
+
+            if (LoadValue(fromPlayer, nameof(EquipmentSlotInventory), out var equipSlotData))
+            {
+                var pkg = new ZPackage(equipSlotData);
+                _isLoading = true;
+                EquipmentSlotInventory.Load(pkg);
                 _isLoading = false;
             }
         }
@@ -97,6 +110,10 @@ namespace EquipmentAndQuickSlots
             {
                 result.Add(player.GetQuickSlotInventory());
             }
+            if (player.IsExtended() && player.GetEquipmentSlotInventory() != null)
+            {
+                result.Add(player.GetEquipmentSlotInventory());
+            }
             return result;
         }
 
@@ -106,6 +123,17 @@ namespace EquipmentAndQuickSlots
             if (extendedPlayer != null)
             {
                 return extendedPlayer.QuickSlotInventory;
+            }
+
+            return null;
+        }
+
+        public static Inventory GetEquipmentSlotInventory(this Player player)
+        {
+            var extendedPlayer = player.Extended();
+            if (extendedPlayer != null)
+            {
+                return extendedPlayer.EquipmentSlotInventory;
             }
 
             return null;
@@ -127,10 +155,21 @@ namespace EquipmentAndQuickSlots
             return null;
         }
 
-        /*public static Inventory GetQuickUseInventory(this Player player)
+        public static ItemDrop.ItemData GetEquipmentSlotItem(this Player player, int index)
         {
-            
-        }*/
+            if (index < 0 || index > EquipmentAndQuickSlots.EquipSlotCount)
+            {
+                return null;
+            }
+
+            var extendedPlayer = player.Extended();
+            if (extendedPlayer != null)
+            {
+                return extendedPlayer.EquipmentSlotInventory.GetItemAt(index, 0);
+            }
+
+            return null;
+        }
 
         public static void InitializeExtendedPlayer(this Player player)
         {
