@@ -89,14 +89,8 @@ namespace EpicLoot
 
         public static string GetDecoratedName(this ItemDrop.ItemData itemData)
         {
-            if (itemData.IsMagic())
-            {
-                return $"<color={itemData.GetMagicItem().GetColorString()}>{itemData.m_shared.m_name}</color>";
-            }
-            else
-            {
-                return itemData.m_shared.m_name;
-            }
+            var color = itemData.IsMagic() ? itemData.GetMagicItem().GetColorString() : "white";
+            return $"<color={color}>{itemData.m_shared.m_name}</color>";
         }
 
         public static bool IsPartOfSet(this ItemDrop.ItemData itemData, string setName)
