@@ -7,17 +7,19 @@ using Object = UnityEngine.Object;
 
 namespace EquipmentAndQuickSlots
 {
-    /*[HarmonyPatch(typeof(InventoryGui), "OnSelectedItem", new Type[] { typeof(InventoryGrid), typeof(ItemDrop.ItemData), typeof(Vector2i), typeof(InventoryGrid.Modifier) })]
+    [HarmonyPatch(typeof(InventoryGui), "OnSelectedItem", new Type[] { typeof(InventoryGrid), typeof(ItemDrop.ItemData), typeof(Vector2i), typeof(InventoryGrid.Modifier) })]
     public static class InventoryGui_OnSelectedItem_Patch
     {
-        public static bool Prefix(InventoryGui __instance, InventoryGrid grid, ItemDrop.ItemData item, Vector2i pos, InventoryGrid.Modifier mod, GameObject ___m_dragGo, ItemDrop.ItemData ___m_dragItem)
+        public static bool Prefix(InventoryGui __instance, InventoryGrid grid, ItemDrop.ItemData item, Vector2i pos, InventoryGrid.Modifier mod)
         {
-            if (grid.m_inventory.m_name.Equals("Inventory") && EquipmentAndQuickSlots.EquipmentSlotsEnabled.Value && EquipmentAndQuickSlots.IsEquipmentSlot(pos))
+            if (grid.m_inventory.m_name.Equals("EquipmentSlotInventory") && EquipmentAndQuickSlots.EquipmentSlotsEnabled.Value)
             {
-                if (___m_dragItem != null && EquipmentAndQuickSlots.IsSlotEquippable(___m_dragItem) && EquipmentAndQuickSlots.GetEquipmentTypeForSlot(pos) == ___m_dragItem.m_shared.m_itemType)
+                if (__instance.m_dragItem != null 
+                    && EquipmentAndQuickSlots.IsSlotEquippable(__instance.m_dragItem) 
+                    && EquipmentAndQuickSlots.GetEquipmentTypeForSlot(pos.x) == __instance.m_dragItem.m_shared.m_itemType)
                 {
                     var player = Player.m_localPlayer;
-                    player.UseItem(player.GetInventory(), ___m_dragItem, true);
+                    player.UseItem(player.GetInventory(), __instance.m_dragItem, true);
                     __instance.SetupDragItem(null, null, 1);
                 }
                 return false;
@@ -25,7 +27,7 @@ namespace EquipmentAndQuickSlots
 
             return true;
         }
-    }*/
+    }
 
     public static class InventoryGui_Patch
     {

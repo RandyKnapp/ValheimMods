@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using System;
+using HarmonyLib;
 using UnityEngine;
 
 namespace EquipmentAndQuickSlots
@@ -28,35 +29,24 @@ namespace EquipmentAndQuickSlots
         }
     }
 
-    /*public static class EquipUtil
-    {
-        public static void MoveItemToSlot(Inventory inventory, ItemDrop.ItemData item, Vector2i dest)
-        {
-            var originalPosition = item.m_gridPos;
-            var itemInDest = inventory.GetItemAt(dest.x, dest.y);
-            if (itemInDest != null)
-            {
-                itemInDest.m_gridPos = originalPosition;
-            }
-
-            item.m_gridPos = dest;
-            inventory.Changed();
-        }
-    }
-
     //public bool EquipItem(ItemDrop.ItemData item, bool triggerEquipEffects = true)
-    [HarmonyPatch(typeof(Humanoid), "EquipItem", new Type[] { typeof(ItemDrop.ItemData), typeof(bool) })]
+    [HarmonyPatch(typeof(Humanoid), "EquipItem", typeof(ItemDrop.ItemData), typeof(bool))]
     public static class Humanoid_EquipItem_Patch
     {
-        public static bool Prefix(ItemDrop.ItemData item, Inventory ___m_inventory)
+        public static bool Prefix(Humanoid __instance, ItemDrop.ItemData item)
         {
-            if (EquipmentAndQuickSlots.EquipmentSlotsEnabled.Value && item != null && EquipmentAndQuickSlots.IsSlotEquippable(item))
+            if (__instance == null || item == null || !__instance.IsPlayer())
+            {
+                return true;
+            }
+
+            if (EquipmentAndQuickSlots.EquipmentSlotsEnabled.Value && EquipmentAndQuickSlots.IsSlotEquippable(item))
             {
                 var currentInventorySlot = item.m_gridPos;
                 var correctInventorySlot = EquipmentAndQuickSlots.GetEquipmentSlotForType(item.m_shared.m_itemType);
-                if (currentInventorySlot != correctInventorySlot)
+                if (currentInventorySlot.x != correctInventorySlot)
                 {
-                    EquipUtil.MoveItemToSlot(___m_inventory, item, correctInventorySlot);
+                    Player.m_localPlayer.GetEquipmentSlotInventory()?.MoveItemToThis(__instance.m_inventory, item, item.m_stack, correctInventorySlot, 0);
                 }
             }
 
@@ -64,14 +54,14 @@ namespace EquipmentAndQuickSlots
         }
     }
 
-    //public bool EquipItem(ItemDrop.ItemData item, bool triggerEquipEffects = true)
-    [HarmonyPatch(typeof(Humanoid), "UnequipItem", new Type[] { typeof(ItemDrop.ItemData), typeof(bool) })]
+    //public void UnequipItem(ItemDrop.ItemData item, bool triggerEquipEffects = true)
+    [HarmonyPatch(typeof(Humanoid), "UnequipItem", typeof(ItemDrop.ItemData), typeof(bool))]
     public static class Humanoid_UnequipItem_Patch
     {
         private static bool _shouldDrop;
         private static bool _dropping;
 
-        public static bool Prefix(ItemDrop.ItemData item, Inventory ___m_inventory)
+        public static bool Prefix(Humanoid __instance, ItemDrop.ItemData item)
         {
             if (!EquipmentAndQuickSlots.EquipmentSlotsEnabled.Value)
             {
@@ -83,13 +73,18 @@ namespace EquipmentAndQuickSlots
                 return false;
             }
 
-            _shouldDrop = false;
-            if (item != null && EquipmentAndQuickSlots.IsSlotEquippable(item) && EquipmentAndQuickSlots.IsEquipmentSlot(item.m_gridPos))
+            if (!__instance.IsPlayer())
             {
-                if (___m_inventory.HaveEmptySlot())
+                return true;
+            }
+
+            _shouldDrop = false;
+            if (item != null && EquipmentAndQuickSlots.IsSlotEquippable(item))
+            {
+                if (__instance.m_inventory.HaveEmptySlot())
                 {
-                    var correctInventorySlot = ___m_inventory.FindEmptySlot(false);
-                    EquipUtil.MoveItemToSlot(___m_inventory, item, correctInventorySlot);
+                    var correctInventorySlot = __instance.m_inventory.FindEmptySlot(false);
+                    __instance.m_inventory.MoveItemToThis((__instance as Player).GetEquipmentSlotInventory(), item, item.m_stack, correctInventorySlot.x, correctInventorySlot.y);
                 }
                 else
                 {
@@ -117,5 +112,4 @@ namespace EquipmentAndQuickSlots
             }
         }
     }
-    */
 }

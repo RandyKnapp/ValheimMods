@@ -47,6 +47,7 @@
     <Reference Include="BepInEx">
       <HintPath>..\Libs\BepInEx.dll</HintPath>
     </Reference>
+    <Reference Include="System" />
     <Reference Include="UnityEngine">
       <HintPath>..\..\..\..\Downloads\Valheim\denikson-BepInExPack_Valheim-5.4.601\BepInExPack_Valheim\unstripped_corlib\UnityEngine.dll</HintPath>
     </Reference>
@@ -79,6 +80,7 @@
     <Compile Include="Inventory_Patch.cs" />
     <Compile Include="EquipmentAndQuickSlots.cs" />
     <Compile Include="PlayerExtensions.cs" />
+    <Compile Include="PlayerInventoryManager.cs" />
     <Compile Include="Player_Patch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

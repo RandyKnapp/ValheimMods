@@ -21,25 +21,4 @@ namespace EquipmentAndQuickSlots
         }
     }
 
-    //void GetBoundItems(List<ItemDrop.ItemData> bound)
-    /*[HarmonyPatch(typeof(Inventory), "GetBoundItems", new Type[] { typeof(List<ItemDrop.ItemData>) })]
-    public static class Inventory_GetBoundItems_Patch
-    {
-        public static void Postfix(List<ItemDrop.ItemData> bound, List<ItemDrop.ItemData> ___m_inventory)
-        {
-            if (!EquipmentAndQuickSlots.QuickSlotsEnabled.Value)
-            {
-                return;
-            }
-
-            foreach (ItemDrop.ItemData itemData in ___m_inventory)
-            {
-                if (EquipmentAndQuickSlots.IsQuickSlot(itemData.m_gridPos))
-                {
-                    bound.Add(itemData);
-                }
-            }
-        }
-    }*/
-
 }
