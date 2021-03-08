@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using HarmonyLib;
-using UnityEngine;
+﻿using HarmonyLib;
 
 namespace EquipmentAndQuickSlots
 {

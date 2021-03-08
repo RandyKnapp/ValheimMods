@@ -33,24 +33,26 @@ namespace EquipmentAndQuickSlots
     [HarmonyPatch(typeof(Humanoid), "EquipItem", typeof(ItemDrop.ItemData), typeof(bool))]
     public static class Humanoid_EquipItem_Patch
     {
-        public static bool Prefix(Humanoid __instance, ItemDrop.ItemData item)
+        public static void Postfix(Humanoid __instance, ItemDrop.ItemData item, bool __result)
         {
-            if (__instance == null || item == null || !__instance.IsPlayer())
+            if (!__result || __instance == null || item == null || !__instance.IsPlayer())
             {
-                return true;
+                return;
             }
 
-            if (EquipmentAndQuickSlots.EquipmentSlotsEnabled.Value && EquipmentAndQuickSlots.IsSlotEquippable(item))
+            Debug.Log($"Equipped item {item.m_shared.m_setName} at slot <{item.m_gridPos}>");
+            var player = __instance as Player;
+            if (EquipmentAndQuickSlots.EquipmentSlotsEnabled.Value && EquipmentAndQuickSlots.IsSlotEquippable(item) && player.GetEquipmentSlotInventory() != null)
             {
                 var currentInventorySlot = item.m_gridPos;
                 var correctInventorySlot = EquipmentAndQuickSlots.GetEquipmentSlotForType(item.m_shared.m_itemType);
                 if (currentInventorySlot.x != correctInventorySlot)
                 {
-                    Player.m_localPlayer.GetEquipmentSlotInventory()?.MoveItemToThis(__instance.m_inventory, item, item.m_stack, correctInventorySlot, 0);
+                    //player.GetEquipmentSlotInventory().MoveItemToThis(__instance.m_inventory, item, item.m_stack, correctInventorySlot, 0);
                 }
             }
 
-            return true;
+            return;
         }
     }
 
@@ -84,7 +86,7 @@ namespace EquipmentAndQuickSlots
                 if (__instance.m_inventory.HaveEmptySlot())
                 {
                     var correctInventorySlot = __instance.m_inventory.FindEmptySlot(false);
-                    __instance.m_inventory.MoveItemToThis((__instance as Player).GetEquipmentSlotInventory(), item, item.m_stack, correctInventorySlot.x, correctInventorySlot.y);
+                    //__instance.m_inventory.MoveItemToThis((__instance as Player).GetEquipmentSlotInventory(), item, item.m_stack, correctInventorySlot.x, correctInventorySlot.y);
                 }
                 else
                 {

@@ -22,11 +22,11 @@ namespace EquipmentAndQuickSlots
                 {
                     var currentFunction = FunctionStack.Peek();
                     var currentStack = string.Join(" > ", FunctionStack);
-                    Debug.LogWarning($"Getting inventory during: {currentStack}");
+                    //Debug.LogWarning($"Getting inventory during: {currentStack}");
                     if (UseCombinedInventory.Contains(currentFunction))
                     {
                         __result = player.GetCombinedInventory();
-                        Debug.Log($"result: inventory.count={__result.m_inventory.Count} weight={__result.GetTotalWeight()}");
+                        //Debug.Log($"result: inventory.count={__result.m_inventory.Count} weight={__result.GetTotalWeight()}");
                     }
                     else
                     {
@@ -61,7 +61,7 @@ namespace EquipmentAndQuickSlots
 
         public static bool Push(string functionName)
         {
-            Debug.LogWarning($"Pushed: {functionName}");
+            //Debug.LogWarning($"Pushed: {functionName}");
             FunctionStack.Push(functionName);
             return true;
         }
