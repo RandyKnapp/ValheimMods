@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using BepInEx;
 using UnityEngine;
 
@@ -55,6 +56,29 @@ namespace Common
         {
             var spritePath = Path.Combine(modFolder, iconName);
             return LoadSpriteFromFile(spritePath);
+        }
+
+        public static string RemoveBetween(string s, string from, string to)
+        {
+            int start = 0;
+            while (start >= 0)
+            {
+                start = s.IndexOf(from, StringComparison.InvariantCulture);
+                if (start < 0)
+                {
+                    break;
+                }
+
+                int end = s.IndexOf(to, start, StringComparison.InvariantCulture);
+                if (end < 0)
+                {
+                    break;
+                }
+
+                s = s.Remove(start, end - start + to.Length);
+            }
+
+            return s;
         }
     }
 }

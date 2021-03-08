@@ -21,6 +21,9 @@ namespace EpicLoot
         public Sprite GenericSetItemSprite;
         public Sprite GenericItemBgSprite;
         public GameObject[] MagicItemLootBeamPrefabs = new GameObject[4];
+        public readonly Dictionary<string, GameObject[]> CraftingMaterialPrefabs = new Dictionary<string, GameObject[]>();
+        public readonly List<GameObject> RegisteredPrefabs = new List<GameObject>();
+        public readonly List<GameObject> RegisteredItemPrefabs = new List<GameObject>();
     }
 
     [BepInPlugin("randyknapp.mods.epicloot", "Epic Loot", Version)]
@@ -29,11 +32,15 @@ namespace EpicLoot
     {
         private const string Version = "0.1.0";
 
-        public static ConfigEntry<string> SetItemColor;
-        public static ConfigEntry<string> MagicRarityColor;
-        public static ConfigEntry<string> RareRarityColor;
-        public static ConfigEntry<string> EpicRarityColor;
-        public static ConfigEntry<string> LegendaryRarityColor;
+        private static ConfigEntry<string> SetItemColor;
+        private static ConfigEntry<string> MagicRarityColor;
+        private static ConfigEntry<string> RareRarityColor;
+        private static ConfigEntry<string> EpicRarityColor;
+        private static ConfigEntry<string> LegendaryRarityColor;
+        private static ConfigEntry<int> MagicMaterialIconColor;
+        private static ConfigEntry<int> RareMaterialIconColor;
+        private static ConfigEntry<int> EpicMaterialIconColor;
+        private static ConfigEntry<int> LegendaryMaterialIconColor;
 
         public static readonly List<ItemDrop.ItemData.ItemType> AllowedMagicItemTypes = new List<ItemDrop.ItemData.ItemType>
         {
@@ -48,6 +55,20 @@ namespace EpicLoot
             ItemDrop.ItemData.ItemType.Shield,
             ItemDrop.ItemData.ItemType.Tool,
             ItemDrop.ItemData.ItemType.Torch,
+        };
+
+        public static readonly Dictionary<string, string> MagicItemColors = new Dictionary<string, string>()
+        {
+            { "Red",    "#ff4545" },
+            { "Orange", "#ffac59" },
+            { "Yellow", "#ffff75" },
+            { "Green",  "#80fa70" },
+            { "Teal",   "#18e7a9" },
+            { "Blue",   "#00abff" },
+            { "Indigo", "#709bba" },
+            { "Purple", "#d078ff" },
+            { "Pink",   "#ff63d6" },
+            { "Gray",   "#dbcadb" },
         };
 
         public static readonly List<string> RestrictedItemNames = new List<string>
@@ -86,11 +107,17 @@ namespace EpicLoot
             _weightedEffectCountTable = new WeightedRandomCollection<KeyValuePair<int, float>>(random);
             _weightedRarityTable = new WeightedRandomCollection<KeyValuePair<ItemRarity, int>>(random);
 
-            MagicRarityColor = Config.Bind("Item Colors", "Magic Rarity Color", "#00abff", "The color of Magic rarity items, the lowest magic item tier. Default is blue.");
-            RareRarityColor = Config.Bind("Item Colors", "Rare Rarity Color", "#ffff75", "The color of Rare rarity items, the second magic item tier. Default is yellow.");
-            EpicRarityColor = Config.Bind("Item Colors", "Epic Rarity Color", "#d078ff", "The color of Epic rarity items, the third magic item tier. Default is purple.");
-            LegendaryRarityColor = Config.Bind("Item Colors", "Legendary Rarity Color", "#18e775", "The color of Legendary rarity items, the highest magic item tier. Default is green.");
-            SetItemColor = Config.Bind("Item Colors", "Set Item Color", "#26ffff", "The color of set item text and the set item icon. Default is cyan.");
+            //TODO: Red, Orange, Yellow, Green, Teal, Blue, Indigo, Purple, Pink, Gray, #Custom:IconIndex
+            MagicRarityColor = Config.Bind("Item Colors", "Magic Rarity Color", "Blue", "The color of Magic rarity items, the lowest magic item tier. (Optional, use an HTML hex color starting with # to have a custom color.) Available options: Red, Orange, Yellow, Green, Teal, Blue, Indigo, Purple, Pink, Gray");
+            MagicMaterialIconColor = Config.Bind("Item Colors", "Magic Crafting Material Icon Index", 5, "Indicates the color of the icon used for magic crafting materials. A number between 0 and 9. Available options: 0=Red, 1=Orange, 2=Yellow, 3=Green, 4=Teal, 5=Blue, 6=Indigo, 7=Purple, 8=Pink, 9=Gray");
+            RareRarityColor = Config.Bind("Item Colors", "Rare Rarity Color", "Yellow", "The color of Rare rarity items, the second magic item tier. (Optional, use an HTML hex color starting with # to have a custom color.) Available options: Red, Orange, Yellow, Green, Teal, Blue, Indigo, Purple, Pink, Gray");
+            RareMaterialIconColor = Config.Bind("Item Colors", "Rare Crafting Material Icon Index", 2, "Indicates the color of the icon used for rare crafting materials. A number between 0 and 9. Available options: 0=Red, 1=Orange, 2=Yellow, 3=Green, 4=Teal, 5=Blue, 6=Indigo, 7=Purple, 8=Pink, 9=Gray");
+            EpicRarityColor = Config.Bind("Item Colors", "Epic Rarity Color", "Purple", "The color of Epic rarity items, the third magic item tier. (Optional, use an HTML hex color starting with # to have a custom color.) Available options: Red, Orange, Yellow, Green, Teal, Blue, Indigo, Purple, Pink, Gray");
+            EpicMaterialIconColor = Config.Bind("Item Colors", "Epic Crafting Material Icon Index", 7, "Indicates the color of the icon used for epic crafting materials. A number between 0 and 9. Available options: 0=Red, 1=Orange, 2=Yellow, 3=Green, 4=Teal, 5=Blue, 6=Indigo, 7=Purple, 8=Pink, 9=Gray");
+            LegendaryRarityColor = Config.Bind("Item Colors", "Legendary Rarity Color", "Teal", "The color of Legendary rarity items, the highest magic item tier. (Optional, use an HTML hex color starting with # to have a custom color.) Available options: Red, Orange, Yellow, Green, Teal, Blue, Indigo, Purple, Pink, Gray");
+            LegendaryMaterialIconColor = Config.Bind("Item Colors", "Legendary Crafting Material Icon Index", 4, "Indicates the color of the icon used for legendary crafting materials. A number between 0 and 9. Available options: 0=Red, 1=Orange, 2=Yellow, 3=Green, 4=Teal, 5=Blue, 6=Indigo, 7=Purple, 8=Pink, 9=Gray");
+
+            SetItemColor = Config.Bind("Item Colors", "Set Item Color", "#26ffff", "The color of set item text and the set item icon. Use a hex color, default is cyan");
 
             MagicItemEffectDefinitions.SetupMagicItemEffectDefinitions();
 
@@ -99,6 +126,19 @@ namespace EpicLoot
             AddLootTableConfig(lootConfig);
             PrintInfo();
 
+            LoadAssets();
+
+            ExtendedItemData.LoadExtendedItemData += SetupTestMagicItem;
+            ExtendedItemData.LoadExtendedItemData += MagicItemComponent.OnNewExtendedItemData;
+            ExtendedItemData.NewExtendedItemData += MagicItemComponent.OnNewExtendedItemData;
+
+            _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
+
+            LootTableLoaded?.Invoke();
+        }
+
+        private void LoadAssets()
+        {
             var assetBundle = LoadAssetBundle("epicloot");
             Assets.EquippedSprite = assetBundle.LoadAsset<Sprite>("Equipped");
             Assets.GenericSetItemSprite = assetBundle.LoadAsset<Sprite>("GenericSetItemMarker");
@@ -108,13 +148,29 @@ namespace EpicLoot
             Assets.MagicItemLootBeamPrefabs[(int)ItemRarity.Epic] = assetBundle.LoadAsset<GameObject>("EpicLootBeam");
             Assets.MagicItemLootBeamPrefabs[(int)ItemRarity.Legendary] = assetBundle.LoadAsset<GameObject>("LegendaryLootBeam");
 
-            ExtendedItemData.LoadExtendedItemData += SetupTestMagicItem;
-            ExtendedItemData.LoadExtendedItemData += MagicItemComponent.OnNewExtendedItemData;
-            ExtendedItemData.NewExtendedItemData += MagicItemComponent.OnNewExtendedItemData;
+            LoadCraftingMaterialAssets(assetBundle, "Shard");
+            LoadCraftingMaterialAssets(assetBundle, "Dust");
+            LoadCraftingMaterialAssets(assetBundle, "Reagent");
+            LoadCraftingMaterialAssets(assetBundle, "Essence");
+        }
 
-            _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
-
-            LootTableLoaded?.Invoke();
+        private static void LoadCraftingMaterialAssets(AssetBundle assetBundle, string type)
+        {
+            var prefabs = new GameObject[4];
+            foreach (ItemRarity rarity in Enum.GetValues(typeof(ItemRarity)))
+            {
+                var assetName = $"{type}{rarity}";
+                var prefab = assetBundle.LoadAsset<GameObject>(assetName);
+                if (prefab == null)
+                {
+                    Debug.LogError($"Tried to load asset {assetName} but it does not exist in the asset bundle!");
+                    continue;
+                }
+                prefabs[(int) rarity] = prefab;
+                Assets.RegisteredPrefabs.Add(prefab);
+                Assets.RegisteredItemPrefabs.Add(prefab);
+            }
+            Assets.CraftingMaterialPrefabs.Add(type, prefabs);
         }
 
         private static void SetupTestMagicItem(ExtendedItemData itemdata)
@@ -185,6 +241,46 @@ namespace EpicLoot
                 LootTables.Add(key, new List<LootTable>());
             }
             LootTables[key].Add(lootTable);
+        }
+
+        public static void TryRegisterPrefabs(ZNetScene zNetScene)
+        {
+            if (zNetScene == null)
+            {
+                return;
+            }
+
+            Debug.Log($"TryRegisterPrefabs: {Assets.RegisteredPrefabs.Count}");
+            foreach (var prefab in Assets.RegisteredPrefabs)
+            {
+                zNetScene.m_prefabs.Add(prefab);
+            }
+        }
+
+        public static void TryRegisterItems()
+        {
+            if (ObjectDB.instance == null || ObjectDB.instance.m_items.Count == 0)
+            {
+                return;
+            }
+
+            Debug.Log($"TryRegisterItems: {Assets.RegisteredItemPrefabs.Count}");
+            foreach (var prefab in Assets.RegisteredItemPrefabs)
+            {
+                var itemDrop = prefab.GetComponent<ItemDrop>();
+                if (itemDrop != null)
+                {
+                    if (ObjectDB.instance.GetItemPrefab(prefab.name.GetStableHashCode()) == null)
+                    {
+                        ObjectDB.instance.m_items.Add(prefab);
+                    }
+                }
+            }
+        }
+
+        public static void TryRegisterRecipes()
+        {
+
         }
 
         private static T LoadJsonFile<T>(string filename) where T : class
@@ -707,6 +803,62 @@ namespace EpicLoot
                 result += $"{valueString}|";
             }
             return result;
+        }
+
+        public static string GetSetItemColor()
+        {
+            return SetItemColor.Value;
+        }
+
+        public static string GetRarityColor(ItemRarity rarity)
+        {
+            switch (rarity)
+            {
+                case ItemRarity.Magic:
+                    return GetColor(MagicRarityColor.Value);
+                case ItemRarity.Rare:
+                    return GetColor(RareRarityColor.Value);
+                case ItemRarity.Epic:
+                    return GetColor(EpicRarityColor.Value);
+                case ItemRarity.Legendary:
+                    return GetColor(LegendaryRarityColor.Value);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(rarity), rarity, null);
+            }
+        }
+
+        private static string GetColor(string configValue)
+        {
+            if (configValue.StartsWith("#"))
+            {
+                return configValue;
+            }
+            else
+            {
+                if (MagicItemColors.TryGetValue(configValue, out var color))
+                {
+                    return color;
+                }
+            }
+
+            return "#000000";
+        }
+
+        public static int GetRarityIconIndex(ItemRarity rarity)
+        {
+            switch (rarity)
+            {
+                case ItemRarity.Magic:
+                    return Mathf.Clamp(MagicMaterialIconColor.Value, 0, 9);
+                case ItemRarity.Rare:
+                    return Mathf.Clamp(RareMaterialIconColor.Value, 0, 9);
+                case ItemRarity.Epic:
+                    return Mathf.Clamp(EpicMaterialIconColor.Value, 0, 9);
+                case ItemRarity.Legendary:
+                    return Mathf.Clamp(LegendaryMaterialIconColor.Value, 0, 9);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(rarity), rarity, null);
+            }
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace EpicLoot
+namespace EpicLoot.LootBeams
 {
     [RequireComponent(typeof(ItemDrop))]
     public class LootBeam : MonoBehaviour
@@ -24,20 +24,14 @@ namespace EpicLoot
                 _beam.transform.localPosition = Vector3.up * HeightOffset;
                 var beamColorSetter = _beam.AddComponent<BeamColorSetter>();
                 beamColorSetter.SetColor(magicItem.GetColor());
+                _beam.GetComponent<Animator>().Play("Show");
+                _beam.AddComponent<AlwaysPointUp>();
             }
 
             if (ShouldHideBeam())
             {
                 Destroy(_beam);
                 _beam = null;
-            }
-
-            if (_beam != null)
-            {
-                _beam.transform.rotation = Quaternion.identity;
-
-                //float groundHeight = ZoneSystem.instance.GetGroundHeight(_beam.transform.position);
-                //_beam.transform.position = new Vector3(_beam.transform.position.x, groundHeight, _beam.transform.position.z);
             }
         }
 

@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace EpicLoot
+namespace EpicLoot.LootBeams
 {
     public class BeamColorSetter : MonoBehaviour
     {

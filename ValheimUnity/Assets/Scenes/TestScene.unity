@@ -207,7 +207,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 365701182}
   m_LocalRotation: {x: 0.40821788, y: -0.23456968, z: 0.10938163, w: 0.8754261}
-  m_LocalPosition: {x: 0, y: 3, z: 0}
+  m_LocalPosition: {x: -1.8, y: 6.03, z: 3.12}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -220,10 +220,35 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3376545128329984454, guid: cba8770b26436b24e9167a92039f4606,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3376545128762133278, guid: cba8770b26436b24e9167a92039f4606,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3753712280713120200, guid: cba8770b26436b24e9167a92039f4606,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4940432647215792977, guid: cba8770b26436b24e9167a92039f4606,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4940432647999313591, guid: cba8770b26436b24e9167a92039f4606,
         type: 3}
       propertyPath: m_Name
       value: LegendaryLootBeam
+      objectReference: {fileID: 0}
+    - target: {fileID: 4940432647999313591, guid: cba8770b26436b24e9167a92039f4606,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4940432647999313595, guid: cba8770b26436b24e9167a92039f4606,
         type: 3}
@@ -243,7 +268,7 @@ PrefabInstance:
     - target: {fileID: 4940432647999313595, guid: cba8770b26436b24e9167a92039f4606,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 6
+      value: 0.769
       objectReference: {fileID: 0}
     - target: {fileID: 4940432647999313595, guid: cba8770b26436b24e9167a92039f4606,
         type: 3}
@@ -289,10 +314,40 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2470749421550350550, guid: 4290914a710a4244fae0a3564485186b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2470749421620583429, guid: 4290914a710a4244fae0a3564485186b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2470749422312161952, guid: 4290914a710a4244fae0a3564485186b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2470749422585761170, guid: 4290914a710a4244fae0a3564485186b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2470749422617386446, guid: 4290914a710a4244fae0a3564485186b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2470749422674829634, guid: 4290914a710a4244fae0a3564485186b,
         type: 3}
       propertyPath: m_Name
       value: MagicLootBeam
+      objectReference: {fileID: 0}
+    - target: {fileID: 2470749422674829634, guid: 4290914a710a4244fae0a3564485186b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2470749422674829638, guid: 4290914a710a4244fae0a3564485186b,
         type: 3}
@@ -312,7 +367,7 @@ PrefabInstance:
     - target: {fileID: 2470749422674829638, guid: 4290914a710a4244fae0a3564485186b,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 2.72
       objectReference: {fileID: 0}
     - target: {fileID: 2470749422674829638, guid: 4290914a710a4244fae0a3564485186b,
         type: 3}
@@ -349,6 +404,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2847157199120366212, guid: 4290914a710a4244fae0a3564485186b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4290914a710a4244fae0a3564485186b, type: 3}
 --- !u!1001 &1050908694
@@ -362,6 +422,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: RareLootBeam
+      objectReference: {fileID: 0}
+    - target: {fileID: 2470749422674829634, guid: ef864042faa7d3a488f7dfdc70090dae,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2470749422674829638, guid: ef864042faa7d3a488f7dfdc70090dae,
         type: 3}
@@ -416,6 +481,11 @@ PrefabInstance:
     - target: {fileID: 2470749422674829638, guid: ef864042faa7d3a488f7dfdc70090dae,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6604243270787396469, guid: ef864042faa7d3a488f7dfdc70090dae,
+        type: 3}
+      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -510,6 +580,21 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3657549933599200152, guid: 5a860626c2dc0a04ea839d3e822ddfcb,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3996330540857982312, guid: 5a860626c2dc0a04ea839d3e822ddfcb,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7945463627690915179, guid: 5a860626c2dc0a04ea839d3e822ddfcb,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7945463628884805672, guid: 5a860626c2dc0a04ea839d3e822ddfcb,
         type: 3}
       propertyPath: m_RootOrder
@@ -528,7 +613,7 @@ PrefabInstance:
     - target: {fileID: 7945463628884805672, guid: 5a860626c2dc0a04ea839d3e822ddfcb,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 4
+      value: 1.09
       objectReference: {fileID: 0}
     - target: {fileID: 7945463628884805672, guid: 5a860626c2dc0a04ea839d3e822ddfcb,
         type: 3}
@@ -569,6 +654,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: EpicLootBeam
+      objectReference: {fileID: 0}
+    - target: {fileID: 7945463628884805676, guid: 5a860626c2dc0a04ea839d3e822ddfcb,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7945463629208757500, guid: 5a860626c2dc0a04ea839d3e822ddfcb,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5a860626c2dc0a04ea839d3e822ddfcb, type: 3}

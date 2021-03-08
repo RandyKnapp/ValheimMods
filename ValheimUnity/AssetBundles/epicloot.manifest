@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 3931577320
+CRC: 63521140
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: e3729267b1a3446025ad48aab988a441
+    Hash: 933e0c559992b5e942d297381cb5cc77
   TypeTreeHash:
     serializedVersion: 2
-    Hash: aa1cb1906b05ca43c48a238e8acf33e8
+    Hash: 5f6c20c701240b028ac096ce6d78ac2e
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -15,11 +15,19 @@ ClassTypes:
   Script: {instanceID: 0}
 - Class: 21
   Script: {instanceID: 0}
+- Class: 23
+  Script: {instanceID: 0}
 - Class: 28
+  Script: {instanceID: 0}
+- Class: 33
   Script: {instanceID: 0}
 - Class: 43
   Script: {instanceID: 0}
 - Class: 48
+  Script: {instanceID: 0}
+- Class: 54
+  Script: {instanceID: 0}
+- Class: 65
   Script: {instanceID: 0}
 - Class: 74
   Script: {instanceID: 0}
@@ -31,26 +39,52 @@ ClassTypes:
   Script: {instanceID: 0}
 - Class: 95
   Script: {instanceID: 0}
+- Class: 114
+  Script: {fileID: 1109157524, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
+- Class: 114
+  Script: {fileID: 825357479, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
+- Class: 114
+  Script: {fileID: 1521249158, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
+- Class: 115
+  Script: {instanceID: 0}
 - Class: 120
   Script: {instanceID: 0}
 - Class: 198
   Script: {instanceID: 0}
 - Class: 199
   Script: {instanceID: 0}
+- Class: 205
+  Script: {instanceID: 0}
 - Class: 213
   Script: {instanceID: 0}
 SerializeReferenceClassIdentifiers: []
 Assets:
-- Assets/EpicLoot/Sprites/SetItemMarker.png
-- Assets/EpicLoot/Prefabs/RareLootBeam.prefab
-- Assets/EpicLoot/Sprites/GenericSetItemMarker.png
-- Assets/EpicLoot/Sprites/LegendaryItemBg.png
-- Assets/EpicLoot/Sprites/MagicItemBg.png
-- Assets/EpicLoot/Prefabs/EpicLootBeam.prefab
-- Assets/EpicLoot/Sprites/GenericItemBg.png
-- Assets/EpicLoot/Sprites/EpicItemBg.png
-- Assets/EpicLoot/Prefabs/MagicLootBeam.prefab
-- Assets/EpicLoot/Prefabs/LegendaryLootBeam.prefab
-- Assets/EpicLoot/Sprites/RareItemBg.png
-- Assets/EpicLoot/Sprites/Equipped.png
+- Assets/EpicLoot/Prefabs/DustRare.prefab
+- Assets/EpicLoot/Sprites/Inventory/SetItemMarker.png
+- Assets/EpicLoot/Prefabs/DustEpic.prefab
+- Assets/EpicLoot/Prefabs/ReagentRare.prefab
+- Assets/EpicLoot/Prefabs/LootBeams/RareLootBeam.prefab
+- Assets/EpicLoot/Prefabs/EssenceRare.prefab
+- Assets/EpicLoot/Prefabs/ShardEpic.prefab
+- Assets/EpicLoot/Sprites/Inventory/GenericSetItemMarker.png
+- Assets/EpicLoot/Prefabs/ShardLegendary.prefab
+- Assets/EpicLoot/Sprites/Inventory/LegendaryItemBg.png
+- Assets/EpicLoot/Prefabs/ReagentLegendary.prefab
+- Assets/EpicLoot/Prefabs/EssenceMagic.prefab
+- Assets/EpicLoot/Sprites/Inventory/MagicItemBg.png
+- Assets/EpicLoot/Prefabs/LootBeams/EpicLootBeam.prefab
+- Assets/EpicLoot/Sprites/Inventory/GenericItemBg.png
+- Assets/EpicLoot/Prefabs/EssenceEpic.prefab
+- Assets/EpicLoot/Sprites/Inventory/EpicItemBg.png
+- Assets/EpicLoot/Prefabs/DustMagic.prefab
+- Assets/EpicLoot/Prefabs/ReagentMagic.prefab
+- Assets/EpicLoot/Prefabs/ShardMagic.prefab
+- Assets/EpicLoot/Prefabs/DustLegendary.prefab
+- Assets/EpicLoot/Prefabs/LootBeams/MagicLootBeam.prefab
+- Assets/EpicLoot/Prefabs/LootBeams/LegendaryLootBeam.prefab
+- Assets/EpicLoot/Sprites/Inventory/RareItemBg.png
+- Assets/EpicLoot/Prefabs/ReagentEpic.prefab
+- Assets/EpicLoot/Sprites/Inventory/Equipped.png
+- Assets/EpicLoot/Prefabs/EssenceLegendary.prefab
+- Assets/EpicLoot/Prefabs/ShardRare.prefab
 Dependencies: []

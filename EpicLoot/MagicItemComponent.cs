@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using EpicLoot.Crafting;
 using ExtendedItemDataFramework;
 using fastJSON;
 using HarmonyLib;
@@ -89,7 +90,16 @@ namespace EpicLoot
 
         public static string GetDecoratedName(this ItemDrop.ItemData itemData)
         {
-            var color = itemData.IsMagic() ? itemData.GetMagicItem().GetColorString() : "white";
+            var color = "white";
+            if (itemData.IsMagic())
+            {
+                color = itemData.GetMagicItem().GetColorString();
+            }
+            else if (itemData.IsMagicCraftingMaterial())
+            {
+                color = itemData.GetCraftingMaterialRarityColor();
+            }
+
             return $"<color={color}>{itemData.m_shared.m_name}</color>";
         }
 
@@ -184,7 +194,7 @@ namespace EpicLoot
                     var setItemInit = setItemTransform.GetComponent<Image>();
                     setItemInit.raycastTarget = false;
                     setItemInit.sprite = EpicLoot.Assets.GenericSetItemSprite;
-                    setItemInit.color = ColorUtility.TryParseHtmlString(EpicLoot.SetItemColor.Value, out var color) ? color : Color.white;
+                    setItemInit.color = ColorUtility.TryParseHtmlString(EpicLoot.GetSetItemColor(), out var color) ? color : Color.white;
                 }
             }
 

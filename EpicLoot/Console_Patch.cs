@@ -33,8 +33,22 @@ namespace EpicLoot
                 CheckStackQuality(__instance);
                 return false;
             }
+            else if (command.Equals("magicmats", StringComparison.InvariantCultureIgnoreCase))
+            {
+                SpawnMagicCraftingMaterials();
+                return false;
+            }
 
             return true;
+        }
+
+        private static void SpawnMagicCraftingMaterials()
+        {
+            foreach (var itemPrefab in EpicLoot.Assets.RegisteredItemPrefabs)
+            {
+                var itemDrop = UnityEngine.Object.Instantiate<GameObject>(itemPrefab, Player.m_localPlayer.transform.position + Player.m_localPlayer.transform.forward * 2f + Vector3.up, Quaternion.identity).GetComponent<ItemDrop>();
+                itemDrop.m_itemData.m_stack = 50;
+            }
         }
 
         public static void MagicItem(Console __instance, string[] args)

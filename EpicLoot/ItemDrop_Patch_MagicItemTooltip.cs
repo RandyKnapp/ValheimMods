@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Text;
+using EpicLoot.Crafting;
 using ExtendedItemDataFramework;
 using HarmonyLib;
 using UnityEngine;
@@ -12,11 +13,10 @@ namespace EpicLoot
     [HarmonyPatch(typeof(InventoryGrid), "CreateItemTooltip", typeof(ItemDrop.ItemData), typeof(UITooltip))]
     public static class InventoryGrid_CreateItemTooltip_MagicItemComponent_Patch
     {
-        //private static readonly Color NormalColor = new Color(1.0f, 0.7176471f, 0.3602941f);
-
-        public static void Postfix(ItemDrop.ItemData item, UITooltip tooltip)
+        public static bool Prefix(ItemDrop.ItemData item, UITooltip tooltip)
         {
             tooltip.Set(item.GetDecoratedName(), item.GetTooltip());
+            return false;
         }
     }
 
@@ -253,6 +253,11 @@ namespace EpicLoot
 
         public static void Postfix(ref string __result, ItemDrop.ItemData item)
         {
+            if (item != null && item.IsMagicCraftingMaterial())
+            {
+                __result = $"<color={item.GetCraftingMaterialRarityColor()}>{item.GetCraftingMaterialRarity()} crafting material\n</color>" + __result;
+            }
+
             if (!item.IsMagic())
             {
                 var text = new StringBuilder();
@@ -282,11 +287,11 @@ namespace EpicLoot
         {
             var setPieces = ObjectDB.instance.GetSetPieces(item.m_shared.m_setName);
             var currentSetEquipped = Player.m_localPlayer.GetEquippedSetPieces(item.m_shared.m_setName);
-            var setEffectColor = currentSetEquipped.Count == item.m_shared.m_setSize ? EpicLoot.SetItemColor.Value : "grey";
+            var setEffectColor = currentSetEquipped.Count == item.m_shared.m_setSize ? EpicLoot.GetSetItemColor() : "grey";
 
             TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
             var setDisplayName = textInfo.ToTitleCase(item.m_shared.m_setName);
-            text.Append($"\n\n<color={EpicLoot.SetItemColor.Value}>ᛟ Set: {setDisplayName} ({currentSetEquipped.Count}/{item.m_shared.m_setSize}):</color>");
+            text.Append($"\n\n<color={EpicLoot.GetSetItemColor()}>ᛟ Set: {setDisplayName} ({currentSetEquipped.Count}/{item.m_shared.m_setSize}):</color>");
 
             foreach (var setItem in setPieces)
             {

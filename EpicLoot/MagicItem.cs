@@ -129,19 +129,7 @@ namespace EpicLoot
 
         public static string GetColorByRarity(ItemRarity rarity)
         {
-            switch (rarity)
-            {
-                case ItemRarity.Magic:
-                    return EpicLoot.MagicRarityColor.Value;
-                case ItemRarity.Rare:
-                    return EpicLoot.RareRarityColor.Value;
-                case ItemRarity.Epic:
-                    return EpicLoot.EpicRarityColor.Value;
-                case ItemRarity.Legendary:
-                    return EpicLoot.LegendaryRarityColor.Value;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(rarity), rarity, null);
-            }
+            return EpicLoot.GetRarityColor(rarity);
         }
 
         public static Sprite GetBgSpriteByRarity(ItemRarity rarity)

@@ -56,6 +56,10 @@
     <Reference Include="UnityEngine">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\unstripped_corlib\UnityEngine.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.AnimationModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\unstripped_corlib\UnityEngine.AnimationModule.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine.AssetBundleModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\unstripped_corlib\UnityEngine.AssetBundleModule.dll</HintPath>
@@ -81,13 +85,17 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BeamColorSetter.cs" />
+    <Compile Include="Crafting\CraftingItemExtensions.cs" />
+    <Compile Include="Crafting\ItemDrop_Patch.cs" />
+    <Compile Include="LootBeams\AlwaysPointUp.cs" />
+    <Compile Include="LootBeams\BeamColorSetter.cs" />
     <Compile Include="CharacterDrop_Patch.cs" />
     <Compile Include="Console_Patch.cs" />
     <Compile Include="Container_Patch.cs" />
+    <Compile Include="Crafting\Disenchant.cs" />
     <Compile Include="InventoryGui_Patch.cs" />
     <Compile Include="ItemDrop_Patch.cs" />
-    <Compile Include="LootBeam.cs" />
+    <Compile Include="LootBeams\LootBeam.cs" />
     <Compile Include="LootConfig.cs" />
     <Compile Include="EpicLoot.cs" />
     <Compile Include="MagicItem.cs" />
@@ -114,7 +122,9 @@
     <Compile Include="MagicItemEffects\ModifyStaminaRegen.cs" />
     <Compile Include="MagicItemEffects\ReduceWeight.cs" />
     <Compile Include="MagicItemEffects\ModifyMovementSpeed.cs" />
+    <Compile Include="ObjectDB_Patch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ZNetScene_Patch.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="info.md" />

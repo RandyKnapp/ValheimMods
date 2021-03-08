@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using EpicLoot.LootBeams;
+using HarmonyLib;
 
 namespace EpicLoot
 {
