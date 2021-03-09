@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 63521140
+CRC: 734517344
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 933e0c559992b5e942d297381cb5cc77
+    Hash: b56b55cc65bb6a7d9238ebcf32c1ba2a
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 5f6c20c701240b028ac096ce6d78ac2e
+    Hash: 4cd6c108ac7530b7d26f27e2c91f59cf
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -40,11 +40,11 @@ ClassTypes:
 - Class: 95
   Script: {instanceID: 0}
 - Class: 114
-  Script: {fileID: 1109157524, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
-- Class: 114
   Script: {fileID: 825357479, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
 - Class: 114
   Script: {fileID: 1521249158, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
+- Class: 114
+  Script: {fileID: 1109157524, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
 - Class: 115
   Script: {instanceID: 0}
 - Class: 120
@@ -59,32 +59,37 @@ ClassTypes:
   Script: {instanceID: 0}
 SerializeReferenceClassIdentifiers: []
 Assets:
-- Assets/EpicLoot/Prefabs/DustRare.prefab
+- Assets/EpicLoot/Prefabs/CraftingMaterials/DustRare.prefab
 - Assets/EpicLoot/Sprites/Inventory/SetItemMarker.png
-- Assets/EpicLoot/Prefabs/DustEpic.prefab
-- Assets/EpicLoot/Prefabs/ReagentRare.prefab
+- Assets/EpicLoot/Prefabs/CraftingMaterials/RunestoneRare.prefab
+- Assets/EpicLoot/Prefabs/CraftingMaterials/DustEpic.prefab
+- Assets/EpicLoot/Prefabs/CraftingMaterials/ReagentRare.prefab
 - Assets/EpicLoot/Prefabs/LootBeams/RareLootBeam.prefab
-- Assets/EpicLoot/Prefabs/EssenceRare.prefab
-- Assets/EpicLoot/Prefabs/ShardEpic.prefab
+- Assets/EpicLoot/Prefabs/CraftingMaterials/EssenceRare.prefab
+- Assets/EpicLoot/Prefabs/CraftingMaterials/ShardEpic.prefab
 - Assets/EpicLoot/Sprites/Inventory/GenericSetItemMarker.png
-- Assets/EpicLoot/Prefabs/ShardLegendary.prefab
+- Assets/EpicLoot/Prefabs/CraftingMaterials/ShardLegendary.prefab
 - Assets/EpicLoot/Sprites/Inventory/LegendaryItemBg.png
-- Assets/EpicLoot/Prefabs/ReagentLegendary.prefab
-- Assets/EpicLoot/Prefabs/EssenceMagic.prefab
+- Assets/EpicLoot/Prefabs/CraftingMaterials/ReagentLegendary.prefab
+- Assets/EpicLoot/Prefabs/CraftingMaterials/EssenceMagic.prefab
 - Assets/EpicLoot/Sprites/Inventory/MagicItemBg.png
 - Assets/EpicLoot/Prefabs/LootBeams/EpicLootBeam.prefab
 - Assets/EpicLoot/Sprites/Inventory/GenericItemBg.png
-- Assets/EpicLoot/Prefabs/EssenceEpic.prefab
+- Assets/EpicLoot/Prefabs/CraftingMaterials/EssenceEpic.prefab
 - Assets/EpicLoot/Sprites/Inventory/EpicItemBg.png
-- Assets/EpicLoot/Prefabs/DustMagic.prefab
-- Assets/EpicLoot/Prefabs/ReagentMagic.prefab
-- Assets/EpicLoot/Prefabs/ShardMagic.prefab
-- Assets/EpicLoot/Prefabs/DustLegendary.prefab
+- Assets/EpicLoot/Prefabs/CraftingMaterials/DustMagic.prefab
+- Assets/EpicLoot/Prefabs/CraftingMaterials/ReagentMagic.prefab
+- Assets/EpicLoot/Prefabs/CraftingMaterials/ShardMagic.prefab
+- Assets/EpicLoot/Prefabs/CraftingMaterials/DustLegendary.prefab
+- Assets/EpicLoot/Sounds/Disenchant.wav
 - Assets/EpicLoot/Prefabs/LootBeams/MagicLootBeam.prefab
 - Assets/EpicLoot/Prefabs/LootBeams/LegendaryLootBeam.prefab
+- Assets/EpicLoot/Prefabs/CraftingMaterials/RunestoneMagic.prefab
 - Assets/EpicLoot/Sprites/Inventory/RareItemBg.png
-- Assets/EpicLoot/Prefabs/ReagentEpic.prefab
+- Assets/EpicLoot/Prefabs/CraftingMaterials/ReagentEpic.prefab
 - Assets/EpicLoot/Sprites/Inventory/Equipped.png
-- Assets/EpicLoot/Prefabs/EssenceLegendary.prefab
-- Assets/EpicLoot/Prefabs/ShardRare.prefab
+- Assets/EpicLoot/Prefabs/CraftingMaterials/RunestoneLegendary.prefab
+- Assets/EpicLoot/Prefabs/CraftingMaterials/EssenceLegendary.prefab
+- Assets/EpicLoot/Prefabs/CraftingMaterials/RunestoneEpic.prefab
+- Assets/EpicLoot/Prefabs/CraftingMaterials/ShardRare.prefab
 Dependencies: []

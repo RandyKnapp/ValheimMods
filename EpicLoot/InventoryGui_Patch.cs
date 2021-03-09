@@ -4,7 +4,7 @@ using UnityEngine;
 namespace EpicLoot
 {
     //public bool CanRepair(ItemDrop.ItemData item)
-    [HarmonyPatch(typeof(InventoryGui), "CanRepair")]
+    /*[HarmonyPatch(typeof(InventoryGui), "CanRepair")]
     class InventoryGui_CanRepair_Patch
     {
         public static void Postfix(ItemDrop.ItemData item, ref bool __result)
@@ -22,7 +22,6 @@ namespace EpicLoot
 
             if (item.IsMagic())
             {
-                Debug.Log($"Checking can repair magic item: {item.m_shared.m_name}, station: {currentCraftingStation.m_name}");
                 if (currentCraftingStation.m_name == "$piece_artisanstation")
                 {
                     __result = true;
@@ -33,5 +32,5 @@ namespace EpicLoot
                 }
             }
         }
-    }
+    }*/
 }

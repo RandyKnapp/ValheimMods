@@ -7,6 +7,7 @@ using System.Text;
 using BepInEx;
 using BepInEx.Configuration;
 using Common;
+using EpicLoot.Crafting;
 using ExtendedItemDataFramework;
 using fastJSON;
 using HarmonyLib;
@@ -107,7 +108,6 @@ namespace EpicLoot
             _weightedEffectCountTable = new WeightedRandomCollection<KeyValuePair<int, float>>(random);
             _weightedRarityTable = new WeightedRandomCollection<KeyValuePair<ItemRarity, int>>(random);
 
-            //TODO: Red, Orange, Yellow, Green, Teal, Blue, Indigo, Purple, Pink, Gray, #Custom:IconIndex
             MagicRarityColor = Config.Bind("Item Colors", "Magic Rarity Color", "Blue", "The color of Magic rarity items, the lowest magic item tier. (Optional, use an HTML hex color starting with # to have a custom color.) Available options: Red, Orange, Yellow, Green, Teal, Blue, Indigo, Purple, Pink, Gray");
             MagicMaterialIconColor = Config.Bind("Item Colors", "Magic Crafting Material Icon Index", 5, "Indicates the color of the icon used for magic crafting materials. A number between 0 and 9. Available options: 0=Red, 1=Orange, 2=Yellow, 3=Green, 4=Teal, 5=Blue, 6=Indigo, 7=Purple, 8=Pink, 9=Gray");
             RareRarityColor = Config.Bind("Item Colors", "Rare Rarity Color", "Yellow", "The color of Rare rarity items, the second magic item tier. (Optional, use an HTML hex color starting with # to have a custom color.) Available options: Red, Orange, Yellow, Green, Teal, Blue, Indigo, Purple, Pink, Gray");
@@ -147,6 +147,8 @@ namespace EpicLoot
             Assets.MagicItemLootBeamPrefabs[(int)ItemRarity.Rare] = assetBundle.LoadAsset<GameObject>("RareLootBeam");
             Assets.MagicItemLootBeamPrefabs[(int)ItemRarity.Epic] = assetBundle.LoadAsset<GameObject>("EpicLootBeam");
             Assets.MagicItemLootBeamPrefabs[(int)ItemRarity.Legendary] = assetBundle.LoadAsset<GameObject>("LegendaryLootBeam");
+
+            LoadCraftingMaterialAssets(assetBundle, "Runestone");
 
             LoadCraftingMaterialAssets(assetBundle, "Shard");
             LoadCraftingMaterialAssets(assetBundle, "Dust");
@@ -250,7 +252,6 @@ namespace EpicLoot
                 return;
             }
 
-            Debug.Log($"TryRegisterPrefabs: {Assets.RegisteredPrefabs.Count}");
             foreach (var prefab in Assets.RegisteredPrefabs)
             {
                 zNetScene.m_prefabs.Add(prefab);
@@ -264,7 +265,6 @@ namespace EpicLoot
                 return;
             }
 
-            Debug.Log($"TryRegisterItems: {Assets.RegisteredItemPrefabs.Count}");
             foreach (var prefab in Assets.RegisteredItemPrefabs)
             {
                 var itemDrop = prefab.GetComponent<ItemDrop>();
@@ -280,7 +280,7 @@ namespace EpicLoot
 
         public static void TryRegisterRecipes()
         {
-
+            Recipes_Setup.SetupRecipes();
         }
 
         private static T LoadJsonFile<T>(string filename) where T : class
@@ -326,6 +326,11 @@ namespace EpicLoot
         public static bool CanBeMagicItem(ItemDrop.ItemData item)
         {
             return item != null && IsPlayerItem(item) && Nonstackable(item) && IsNotRestrictedItem(item) && AllowedMagicItemTypes.Contains(item.m_shared.m_itemType);
+        }
+
+        public static Sprite GetMagicItemBgSprite()
+        {
+            return Assets.GenericItemBgSprite;
         }
 
         private static bool IsNotRestrictedItem(ItemDrop.ItemData item)

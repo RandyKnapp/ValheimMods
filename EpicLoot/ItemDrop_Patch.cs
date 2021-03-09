@@ -8,10 +8,7 @@ namespace EpicLoot
     {
         public static void Postfix(ItemDrop __instance)
         {
-            if (__instance.m_itemData.IsMagic())
-            {
-                __instance.gameObject.AddComponent<LootBeam>();
-            }
+            __instance.gameObject.AddComponent<LootBeam>();
         }
     }
 }

@@ -24,5 +24,20 @@ namespace EpicLoot.Crafting
         {
             return EpicLoot.GetRarityColor(item.GetCraftingMaterialRarity());
         }
+
+        public static bool IsRunestone(this ItemDrop.ItemData item)
+        {
+            return item.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Material && item.m_shared.m_ammoType == "Runestone";
+        }
+
+        public static ItemRarity GetRunestoneRarity(this ItemDrop.ItemData item)
+        {
+            return item.GetCraftingMaterialRarity();
+        }
+
+        public static string GetRunestoneRarityColor(this ItemDrop.ItemData item)
+        {
+            return item.GetCraftingMaterialRarityColor();
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using EpicLoot.Crafting;
 using ExtendedItemDataFramework;
@@ -6,6 +7,7 @@ using fastJSON;
 using HarmonyLib;
 using UnityEngine;
 using UnityEngine.UI;
+using Object = UnityEngine.Object;
 
 namespace EpicLoot
 {
@@ -78,6 +80,48 @@ namespace EpicLoot
             return itemData.Extended()?.GetComponent<MagicItemComponent>() != null;
         }
 
+        public static bool UseMagicBackground(this ItemDrop.ItemData itemData)
+        {
+            return itemData.IsMagic() || itemData.IsRunestone();
+        }
+
+        public static ItemRarity GetRarity(this ItemDrop.ItemData itemData)
+        {
+            if (itemData.IsMagic())
+            {
+                return itemData.GetMagicItem().Rarity;
+            }
+            else if (itemData.IsMagicCraftingMaterial())
+            {
+                return itemData.GetCraftingMaterialRarity();
+            }
+            else if (itemData.IsRunestone())
+            {
+                return itemData.GetRunestoneRarity();
+            }
+
+            throw new ArgumentException("itemData is not magic item, magic crafting material, or runestone");
+        }
+
+        public static Color GetRarityColor(this ItemDrop.ItemData itemData)
+        {
+            var colorString = "white";
+            if (itemData.IsMagic())
+            {
+                colorString = itemData.GetMagicItem().GetColorString();
+            }
+            else if (itemData.IsMagicCraftingMaterial())
+            {
+                colorString = itemData.GetCraftingMaterialRarityColor();
+            }
+            else if (itemData.IsRunestone())
+            {
+                colorString = itemData.GetRunestoneRarityColor();
+            }
+
+            return ColorUtility.TryParseHtmlString(colorString, out var color) ? color : Color.white;
+        }
+
         public static bool HasMagicEffect(this ItemDrop.ItemData itemData, MagicEffectType effectType)
         {
             return itemData.GetMagicItem()?.HasEffect(effectType) ?? false;
@@ -95,7 +139,7 @@ namespace EpicLoot
             {
                 color = itemData.GetMagicItem().GetColorString();
             }
-            else if (itemData.IsMagicCraftingMaterial())
+            else if (itemData.IsMagicCraftingMaterial() || itemData.IsRunestone())
             {
                 color = itemData.GetCraftingMaterialRarityColor();
             }
@@ -248,11 +292,11 @@ namespace EpicLoot
                 var element = __instance.GetElement(item.m_gridPos.x, item.m_gridPos.y, __instance.m_inventory.GetWidth());
 
                 var magicItem = ItemBackgroundHelper.CreateAndGetMagicItemBackgroundImage(element.m_go, element.m_equiped.gameObject, true);
-                if (item.IsMagic())
+                if (item.UseMagicBackground())
                 {
                     magicItem.enabled = true;
-                    magicItem.sprite = item.GetMagicItem().GetBgSprite();
-                    magicItem.color = item.GetMagicItem().GetColor();
+                    magicItem.sprite = EpicLoot.GetMagicItemBgSprite();
+                    magicItem.color = item.GetRarityColor();
                 }
 
                 var setItem = element.m_go.transform.Find("setItem").GetComponent<Image>();
@@ -293,11 +337,11 @@ namespace EpicLoot
                 }
 
                 var magicItem = ItemBackgroundHelper.CreateAndGetMagicItemBackgroundImage(element.m_go, element.m_equiped, false);
-                if (itemData.IsMagic())
+                if (itemData.UseMagicBackground())
                 {
                     magicItem.enabled = true;
-                    magicItem.sprite = itemData.GetMagicItem().GetBgSprite();
-                    magicItem.color = itemData.GetMagicItem().GetColor();
+                    magicItem.sprite = EpicLoot.GetMagicItemBgSprite();
+                    magicItem.color = itemData.GetRarityColor();
                 }
             }
         }

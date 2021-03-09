@@ -46,13 +46,13 @@ namespace EpicLoot
 
         public string GetRarityDisplay()
         {
-            var color = GetColorByRarity(Rarity);
+            var color = GetColorString();
             return $"<color={color}>{Rarity.ToString()}</color>";
         }
 
         public string GetTooltip()
         {
-            var color = GetColorByRarity(Rarity);
+            var color = GetColorString();
             var tooltip = $"<color={color}>\n";
             foreach (var effect in Effects)
             {
@@ -64,7 +64,7 @@ namespace EpicLoot
 
         public Color GetColor()
         {
-            if (ColorUtility.TryParseHtmlString(GetColorByRarity(Rarity), out Color color))
+            if (ColorUtility.TryParseHtmlString(GetColorString(), out Color color))
             {
                 return color;
             }
@@ -73,12 +73,7 @@ namespace EpicLoot
 
         public string GetColorString()
         {
-            return GetColorByRarity(Rarity);
-        }
-
-        public Sprite GetBgSprite()
-        {
-            return GetBgSpriteByRarity(Rarity);
+            return EpicLoot.GetRarityColor(Rarity);
         }
 
         public List<MagicItemEffect> GetEffects(MagicEffectType effectType)
@@ -125,16 +120,6 @@ namespace EpicLoot
         {
             var effectDef = MagicItemEffectDefinitions.Get(effect.EffectType);
             return string.Format(effectDef.DisplayText, effect.EffectValue);
-        }
-
-        public static string GetColorByRarity(ItemRarity rarity)
-        {
-            return EpicLoot.GetRarityColor(rarity);
-        }
-
-        public static Sprite GetBgSpriteByRarity(ItemRarity rarity)
-        {
-            return EpicLoot.Assets.GenericItemBgSprite;
         }
     }
 }

@@ -18,13 +18,17 @@ Information about EVERY magic effect and loot drop table can be found in info.md
 
 - [X] Print Data
 - [X] Finish Magic Effects
-- [X] Prevent Repair
+- [X] Prevent Repair (reverted for early access)
 - [X] Effect exclusivity
 - [X] Effect specific items
 - [X] Effect requirements (i.e. must have movement penalty before removing it)
-- [ ] Custom item sets (replace troll too)
-- [ ] Rename item if magic (prefix/postfix? Legendary names?)
 - [X] Dropped item particle effect
+- [X] Create crafting materials
+- [X] Destroy trophies for crafting materials (seidric reduction)
+- [X] Destroy magic items for crafting materials (runic reduction)
+- [ ] Enchant items (dverger enchanting, fjölkyngi, galdr)
+- [ ] Change/Reroll magic item effects
+- [ ] Gamble for magic items from Merchant
 - [ ] Loot tables
   - [ ] Monsters
 	- [X] Meadows
@@ -43,15 +47,11 @@ Information about EVERY magic effect and loot drop table can be found in info.md
 
 Future
 
-- [ ] Create crafting materials
-- [ ] Destroy trophies for crafting materials (seidric reduction)
-- [ ] Destroy magic items for crafting materials (runic reduction)
-- [ ] Enchant items (dverger enchanting, fjölkyngi, galdr)
-- [ ] Change/Reroll magic item effects
-- [ ] Consume runestones to learn effects?
+- [ ] Custom item sets (replace troll too)
+- [ ] Rename item if magic (prefix/postfix? Legendary names?)
 - [ ] New Runes skill (enchanting)
 - [ ] New Seidr skill (for what?)
-- [ ] Gamble for magic items from Merchant
+
 
 ## Magic Effects:
 

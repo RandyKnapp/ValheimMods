@@ -27,7 +27,7 @@ namespace EpicLoot
     {
         private static bool Prefix(ref string __result, ItemDrop.ItemData item, int qualityLevel, bool crafting)
         {
-            if (crafting || !item.IsMagic())
+            if (!item.IsMagic())
             {
                 return true;
             }
@@ -47,204 +47,214 @@ namespace EpicLoot
                 text.Append("\n<color=aqua>$item_dlc</color>");
             }
 
-            ItemDrop.ItemData.AddHandedTip(item, text);
-            if (item.m_crafterID != 0L)
+            if (!crafting)
             {
-                text.AppendFormat("\n$item_crafter: <color=orange>{0}</color>", item.m_crafterName);
-            }
-
-            if (!item.m_shared.m_teleportable)
-            {
-                text.Append("\n<color=orange>$item_noteleport</color>");
-            }
-
-            if (item.m_shared.m_value > 0)
-            {
-                text.AppendFormat("\n$item_value: <color=orange>{0} ({1})</color>", item.GetValue(), item.m_shared.m_value);
-            }
-
-            var weightColor = magicItem.HasEffect(MagicEffectType.ReduceWeight) || magicItem.HasEffect(MagicEffectType.Weightless) ? magicColor : "orange";
-            text.Append($"\n$item_weight: <color={weightColor}>{item.GetWeight():0.0}</color>");
-
-            if (item.m_shared.m_maxQuality > 1)
-            {
-                text.AppendFormat("\n$item_quality: <color=orange>{0}</color>", qualityLevel);
-            }
-
-            var indestructible = magicItem.HasEffect(MagicEffectType.Indestructible);
-            if (!indestructible && item.m_shared.m_useDurability)
-            {
-                var maxDurabilityColor1 = magicItem.HasEffect(MagicEffectType.ModifyDurability) ? magicColor : "orange";
-                var maxDurabilityColor2 = magicItem.HasEffect(MagicEffectType.ModifyDurability) ? magicColor : "yellow";
-
-                float maxDurability = item.GetMaxDurability(qualityLevel);
-                float durability = item.m_durability;
-                float currentDurabilityPercentage = item.GetDurabilityPercentage() * 100f;
-                string durabilityPercentageString = currentDurabilityPercentage.ToString("0");
-                string durabilityValueString = durability.ToString("0");
-                string durabilityMaxString = maxDurability.ToString("0");
-                text.Append($"\n$item_durability: <color={maxDurabilityColor1}>{durabilityPercentageString}%</color> <color={maxDurabilityColor2}>({durabilityValueString}/{durabilityMaxString})</color>");
-
-                if (item.m_shared.m_canBeReparied)
+                ItemDrop.ItemData.AddHandedTip(item, text);
+                if (item.m_crafterID != 0L)
                 {
-                    Recipe recipe = ObjectDB.instance.GetRecipe(item);
-                    if (recipe != null)
-                    {
-                        int minStationLevel = recipe.m_minStationLevel;
-                        text.AppendFormat("\n$item_repairlevel: <color=orange>{0}</color>", minStationLevel.ToString());
-                    }
-                }
-            }
-            else if (indestructible)
-            {
-                text.Append($"\n$item_durability: <color={magicColor}>Indestructible</color>");
-            }
-
-            var magicBlockPower = magicItem.HasEffect(MagicEffectType.ModifyBlockPower);
-            var magicBlockColor1 = magicBlockPower ? magicColor : "orange";
-            var magicBlockColor2 = magicBlockPower ? magicColor : "yellow";
-            var magicParry = magicItem.HasEffect(MagicEffectType.ModifyParry);
-            var totalParryBonusMod = magicItem.GetTotalEffectValue(MagicEffectType.ModifyParry, 0.01f);
-            var magicParryColor = magicParry ? magicColor : "orange";
-            switch (item.m_shared.m_itemType)
-            {
-                case ItemDrop.ItemData.ItemType.Consumable:
-                    if (item.m_shared.m_food > 0.0)
-                    {
-                        text.AppendFormat("\n$item_food_health: <color=orange>{0}</color>", item.m_shared.m_food);
-                        text.AppendFormat("\n$item_food_stamina: <color=orange>{0}</color>", item.m_shared.m_foodStamina);
-                        text.AppendFormat("\n$item_food_duration: <color=orange>{0}s</color>", item.m_shared.m_foodBurnTime);
-                        text.AppendFormat("\n$item_food_regen: <color=orange>{0} hp/tick</color>", item.m_shared.m_foodRegen);
-                    }
-
-                    string consumeStatusEffectTooltip = item.GetStatusEffectTooltip();
-                    if (consumeStatusEffectTooltip.Length > 0)
-                    {
-                        text.Append("\n\n");
-                        text.Append(consumeStatusEffectTooltip);
-                    }
-
-                    break;
-
-                case ItemDrop.ItemData.ItemType.OneHandedWeapon:
-                case ItemDrop.ItemData.ItemType.Bow:
-                case ItemDrop.ItemData.ItemType.TwoHandedWeapon:
-                case ItemDrop.ItemData.ItemType.Torch:
-                    text.Append(GetDamageTooltipString(magicItem, item.GetDamage(qualityLevel), item.m_shared.m_skillType, magicColor));
-                    float baseBlockPower1 = item.GetBaseBlockPower(qualityLevel);
-                    float blockPowerTooltipValue = item.GetBlockPowerTooltip(qualityLevel);
-                    string blockPowerPercentageString = blockPowerTooltipValue.ToString("0");
-                    text.Append($"\n$item_blockpower: <color={magicBlockColor1}>{baseBlockPower1}</color> <color={magicBlockColor2}>({blockPowerPercentageString})</color>");
-                    if (item.m_shared.m_timedBlockBonus > 1.0)
-                    {
-                        text.Append($"\n$item_deflection: <color={magicParryColor}>{item.GetDeflectionForce(qualityLevel)}</color>");
-
-                        var timedBlockBonus = item.m_shared.m_timedBlockBonus;
-                        if (magicParry)
-                        {
-                            timedBlockBonus *= 1.0f + totalParryBonusMod;
-                        }
-
-                        text.Append($"\n$item_parrybonus: <color={magicParryColor}>{timedBlockBonus:0.#}x</color>");
-                    }
-
-                    text.AppendFormat("\n$item_knockback: <color=orange>{0}</color>", item.m_shared.m_attackForce);
-
-                    var magicBackstab = magicItem.HasEffect(MagicEffectType.ModifyBackstab);
-                    var totalBackstabBonusMod = magicItem.GetTotalEffectValue(MagicEffectType.ModifyBackstab, 0.01f);
-                    var magicBackstabColor = magicBackstab ? magicColor : "orange";
-                    var backstabValue = item.m_shared.m_backstabBonus * (1.0f + totalBackstabBonusMod);
-                    text.Append($"\n$item_backstab: <color={magicBackstabColor}>{backstabValue:0.#}x</color>");
-
-                    string projectileTooltip = item.GetProjectileTooltip(qualityLevel);
-                    if (projectileTooltip.Length > 0)
-                    {
-                        text.Append("\n\n");
-                        text.Append(projectileTooltip);
-                    }
-
-                    string statusEffectTooltip2 = item.GetStatusEffectTooltip();
-                    if (statusEffectTooltip2.Length > 0)
-                    {
-                        text.Append("\n\n");
-                        text.Append(statusEffectTooltip2);
-                    }
-
-                    break;
-
-                case ItemDrop.ItemData.ItemType.Shield:
-                    float baseBlockPower2 = item.GetBaseBlockPower(qualityLevel);
-                    blockPowerTooltipValue = item.GetBlockPowerTooltip(qualityLevel);
-                    string str5 = blockPowerTooltipValue.ToString("0");
-                    text.Append($"\n$item_blockpower: <color={magicBlockColor1}>{baseBlockPower2}</color> <color={magicBlockColor2}>({str5})</color>");
-                    if (item.m_shared.m_timedBlockBonus > 1.0)
-                    {
-                        text.Append($"\n$item_deflection: <color={magicParryColor}>{item.GetDeflectionForce(qualityLevel)}</color>");
-
-                        var timedBlockBonus = item.m_shared.m_timedBlockBonus;
-                        if (magicParry)
-                        {
-                            timedBlockBonus *= 1.0f + totalParryBonusMod;
-                        }
-
-                        text.Append($"\n$item_parrybonus: <color={magicParryColor}>{timedBlockBonus:0.#}x</color>");
-                    }
-
-                    break;
-
-                case ItemDrop.ItemData.ItemType.Helmet:
-                case ItemDrop.ItemData.ItemType.Chest:
-                case ItemDrop.ItemData.ItemType.Legs:
-                case ItemDrop.ItemData.ItemType.Shoulder:
-                    var magicArmorColor = magicItem.HasEffect(MagicEffectType.ModifyArmor) ? magicColor : "orange";
-                    text.Append($"\n$item_armor: <color={magicArmorColor}>{item.GetArmor(qualityLevel):0.#}</color>");
-                    string modifiersTooltipString = SE_Stats.GetDamageModifiersTooltipString(item.m_shared.m_damageModifiers);
-                    if (modifiersTooltipString.Length > 0)
-                    {
-                        text.Append(modifiersTooltipString);
-                    }
-
-                    string statusEffectTooltip3 = item.GetStatusEffectTooltip();
-                    if (statusEffectTooltip3.Length > 0)
-                    {
-                        text.Append("\n");
-                        text.Append(statusEffectTooltip3);
-                    }
-
-                    break;
-
-                case ItemDrop.ItemData.ItemType.Ammo:
-                    text.Append(item.GetDamage(qualityLevel).GetTooltipString(item.m_shared.m_skillType));
-                    text.AppendFormat("\n$item_knockback: <color=orange>{0}</color>", item.m_shared.m_attackForce);
-                    break;
-            }
-
-            var magicMovement = magicItem.HasEffect(MagicEffectType.ModifyMovementSpeed);
-            if ((magicMovement || item.m_shared.m_movementModifier != 0) && localPlayer != null)
-            {
-                var removePenalty = magicItem.HasEffect(MagicEffectType.RemoveSpeedPenalty);
-
-                var itemMovementModifier = removePenalty ? 0 : item.m_shared.m_movementModifier * 100f;
-                if (magicMovement)
-                {
-                    itemMovementModifier += magicItem.GetTotalEffectValue(MagicEffectType.ModifyMovementSpeed);
+                    text.AppendFormat("\n$item_crafter: <color=orange>{0}</color>", item.m_crafterName);
                 }
 
-                var itemMovementModDisplay = (itemMovementModifier == 0) ? "0%" : $"{itemMovementModifier:+0;-0}%";
+                if (!item.m_shared.m_teleportable)
+                {
+                    text.Append("\n<color=orange>$item_noteleport</color>");
+                }
 
-                float movementModifier = localPlayer.GetEquipmentMovementModifier();
-                var totalMovementModifier = movementModifier * 100f;
-                var color = (removePenalty || magicMovement) ? magicColor : "orange";
-                text.Append($"\n$item_movement_modifier: <color={color}>{itemMovementModDisplay}</color> ($item_total:<color=yellow>{totalMovementModifier:+0;-0}%</color>)");
+                if (item.m_shared.m_value > 0)
+                {
+                    text.AppendFormat("\n$item_value: <color=orange>{0} ({1})</color>", item.GetValue(), item.m_shared.m_value);
+                }
+
+                var weightColor = magicItem.HasEffect(MagicEffectType.ReduceWeight) || magicItem.HasEffect(MagicEffectType.Weightless) ? magicColor : "orange";
+                text.Append($"\n$item_weight: <color={weightColor}>{item.GetWeight():0.0}</color>");
+
+                if (item.m_shared.m_maxQuality > 1)
+                {
+                    text.AppendFormat("\n$item_quality: <color=orange>{0}</color>", qualityLevel);
+                }
+
+                var indestructible = magicItem.HasEffect(MagicEffectType.Indestructible);
+                if (!indestructible && item.m_shared.m_useDurability)
+                {
+                    var maxDurabilityColor1 = magicItem.HasEffect(MagicEffectType.ModifyDurability) ? magicColor : "orange";
+                    var maxDurabilityColor2 = magicItem.HasEffect(MagicEffectType.ModifyDurability) ? magicColor : "yellow";
+
+                    float maxDurability = item.GetMaxDurability(qualityLevel);
+                    float durability = item.m_durability;
+                    float currentDurabilityPercentage = item.GetDurabilityPercentage() * 100f;
+                    string durabilityPercentageString = currentDurabilityPercentage.ToString("0");
+                    string durabilityValueString = durability.ToString("0");
+                    string durabilityMaxString = maxDurability.ToString("0");
+                    text.Append($"\n$item_durability: <color={maxDurabilityColor1}>{durabilityPercentageString}%</color> <color={maxDurabilityColor2}>({durabilityValueString}/{durabilityMaxString})</color>");
+
+                    if (item.m_shared.m_canBeReparied)
+                    {
+                        Recipe recipe = ObjectDB.instance.GetRecipe(item);
+                        if (recipe != null)
+                        {
+                            int minStationLevel = recipe.m_minStationLevel;
+                            text.AppendFormat("\n$item_repairlevel: <color=orange>{0}</color>", minStationLevel.ToString());
+                        }
+                    }
+                }
+                else if (indestructible)
+                {
+                    text.Append($"\n$item_durability: <color={magicColor}>Indestructible</color>");
+                }
+
+                var magicBlockPower = magicItem.HasEffect(MagicEffectType.ModifyBlockPower);
+                var magicBlockColor1 = magicBlockPower ? magicColor : "orange";
+                var magicBlockColor2 = magicBlockPower ? magicColor : "yellow";
+                var magicParry = magicItem.HasEffect(MagicEffectType.ModifyParry);
+                var totalParryBonusMod = magicItem.GetTotalEffectValue(MagicEffectType.ModifyParry, 0.01f);
+                var magicParryColor = magicParry ? magicColor : "orange";
+                switch (item.m_shared.m_itemType)
+                {
+                    case ItemDrop.ItemData.ItemType.Consumable:
+                        if (item.m_shared.m_food > 0.0)
+                        {
+                            text.AppendFormat("\n$item_food_health: <color=orange>{0}</color>", item.m_shared.m_food);
+                            text.AppendFormat("\n$item_food_stamina: <color=orange>{0}</color>", item.m_shared.m_foodStamina);
+                            text.AppendFormat("\n$item_food_duration: <color=orange>{0}s</color>", item.m_shared.m_foodBurnTime);
+                            text.AppendFormat("\n$item_food_regen: <color=orange>{0} hp/tick</color>", item.m_shared.m_foodRegen);
+                        }
+
+                        string consumeStatusEffectTooltip = item.GetStatusEffectTooltip();
+                        if (consumeStatusEffectTooltip.Length > 0)
+                        {
+                            text.Append("\n\n");
+                            text.Append(consumeStatusEffectTooltip);
+                        }
+
+                        break;
+
+                    case ItemDrop.ItemData.ItemType.OneHandedWeapon:
+                    case ItemDrop.ItemData.ItemType.Bow:
+                    case ItemDrop.ItemData.ItemType.TwoHandedWeapon:
+                    case ItemDrop.ItemData.ItemType.Torch:
+                        text.Append(GetDamageTooltipString(magicItem, item.GetDamage(qualityLevel), item.m_shared.m_skillType, magicColor));
+                        float baseBlockPower1 = item.GetBaseBlockPower(qualityLevel);
+                        float blockPowerTooltipValue = item.GetBlockPowerTooltip(qualityLevel);
+                        string blockPowerPercentageString = blockPowerTooltipValue.ToString("0");
+                        text.Append($"\n$item_blockpower: <color={magicBlockColor1}>{baseBlockPower1}</color> <color={magicBlockColor2}>({blockPowerPercentageString})</color>");
+                        if (item.m_shared.m_timedBlockBonus > 1.0)
+                        {
+                            text.Append($"\n$item_deflection: <color={magicParryColor}>{item.GetDeflectionForce(qualityLevel)}</color>");
+
+                            var timedBlockBonus = item.m_shared.m_timedBlockBonus;
+                            if (magicParry)
+                            {
+                                timedBlockBonus *= 1.0f + totalParryBonusMod;
+                            }
+
+                            text.Append($"\n$item_parrybonus: <color={magicParryColor}>{timedBlockBonus:0.#}x</color>");
+                        }
+
+                        text.AppendFormat("\n$item_knockback: <color=orange>{0}</color>", item.m_shared.m_attackForce);
+
+                        var magicBackstab = magicItem.HasEffect(MagicEffectType.ModifyBackstab);
+                        var totalBackstabBonusMod = magicItem.GetTotalEffectValue(MagicEffectType.ModifyBackstab, 0.01f);
+                        var magicBackstabColor = magicBackstab ? magicColor : "orange";
+                        var backstabValue = item.m_shared.m_backstabBonus * (1.0f + totalBackstabBonusMod);
+                        text.Append($"\n$item_backstab: <color={magicBackstabColor}>{backstabValue:0.#}x</color>");
+
+                        string projectileTooltip = item.GetProjectileTooltip(qualityLevel);
+                        if (projectileTooltip.Length > 0)
+                        {
+                            text.Append("\n\n");
+                            text.Append(projectileTooltip);
+                        }
+
+                        string statusEffectTooltip2 = item.GetStatusEffectTooltip();
+                        if (statusEffectTooltip2.Length > 0)
+                        {
+                            text.Append("\n\n");
+                            text.Append(statusEffectTooltip2);
+                        }
+
+                        break;
+
+                    case ItemDrop.ItemData.ItemType.Shield:
+                        float baseBlockPower2 = item.GetBaseBlockPower(qualityLevel);
+                        blockPowerTooltipValue = item.GetBlockPowerTooltip(qualityLevel);
+                        string str5 = blockPowerTooltipValue.ToString("0");
+                        text.Append($"\n$item_blockpower: <color={magicBlockColor1}>{baseBlockPower2}</color> <color={magicBlockColor2}>({str5})</color>");
+                        if (item.m_shared.m_timedBlockBonus > 1.0)
+                        {
+                            text.Append($"\n$item_deflection: <color={magicParryColor}>{item.GetDeflectionForce(qualityLevel)}</color>");
+
+                            var timedBlockBonus = item.m_shared.m_timedBlockBonus;
+                            if (magicParry)
+                            {
+                                timedBlockBonus *= 1.0f + totalParryBonusMod;
+                            }
+
+                            text.Append($"\n$item_parrybonus: <color={magicParryColor}>{timedBlockBonus:0.#}x</color>");
+                        }
+
+                        break;
+
+                    case ItemDrop.ItemData.ItemType.Helmet:
+                    case ItemDrop.ItemData.ItemType.Chest:
+                    case ItemDrop.ItemData.ItemType.Legs:
+                    case ItemDrop.ItemData.ItemType.Shoulder:
+                        var magicArmorColor = magicItem.HasEffect(MagicEffectType.ModifyArmor) ? magicColor : "orange";
+                        text.Append($"\n$item_armor: <color={magicArmorColor}>{item.GetArmor(qualityLevel):0.#}</color>");
+                        string modifiersTooltipString = SE_Stats.GetDamageModifiersTooltipString(item.m_shared.m_damageModifiers);
+                        if (modifiersTooltipString.Length > 0)
+                        {
+                            text.Append(modifiersTooltipString);
+                        }
+
+                        string statusEffectTooltip3 = item.GetStatusEffectTooltip();
+                        if (statusEffectTooltip3.Length > 0)
+                        {
+                            text.Append("\n");
+                            text.Append(statusEffectTooltip3);
+                        }
+
+                        break;
+
+                    case ItemDrop.ItemData.ItemType.Ammo:
+                        text.Append(item.GetDamage(qualityLevel).GetTooltipString(item.m_shared.m_skillType));
+                        text.AppendFormat("\n$item_knockback: <color=orange>{0}</color>", item.m_shared.m_attackForce);
+                        break;
+                }
+
+                var magicMovement = magicItem.HasEffect(MagicEffectType.ModifyMovementSpeed);
+                if ((magicMovement || item.m_shared.m_movementModifier != 0) && localPlayer != null)
+                {
+                    var removePenalty = magicItem.HasEffect(MagicEffectType.RemoveSpeedPenalty);
+
+                    var itemMovementModifier = removePenalty ? 0 : item.m_shared.m_movementModifier * 100f;
+                    if (magicMovement)
+                    {
+                        itemMovementModifier += magicItem.GetTotalEffectValue(MagicEffectType.ModifyMovementSpeed);
+                    }
+
+                    var itemMovementModDisplay = (itemMovementModifier == 0) ? "0%" : $"{itemMovementModifier:+0;-0}%";
+
+                    float movementModifier = localPlayer.GetEquipmentMovementModifier();
+                    var totalMovementModifier = movementModifier * 100f;
+                    var color = (removePenalty || magicMovement) ? magicColor : "orange";
+                    text.Append($"\n$item_movement_modifier: <color={color}>{itemMovementModDisplay}</color> ($item_total:<color=yellow>{totalMovementModifier:+0;-0}%</color>)");
+                }
             }
 
             // Add magic item effects here
             text.Append(magicItem.GetTooltip());
 
-            // Set stuff
-            if (!string.IsNullOrEmpty(item.m_shared.m_setName))
+            if (crafting)
             {
-                AddSetTooltip(item, text);
+                text.Append("\n\n<color=red>This item will be DESTROYED as a SACRIFICE to the gods.</color>");
+            }
+            else
+            {
+                // Set stuff
+                if (!string.IsNullOrEmpty(item.m_shared.m_setName))
+                {
+                    AddSetTooltip(item, text);
+                }
             }
 
             __result = text.ToString();
@@ -253,7 +263,7 @@ namespace EpicLoot
 
         public static void Postfix(ref string __result, ItemDrop.ItemData item)
         {
-            if (item != null && item.IsMagicCraftingMaterial())
+            if (item != null && (item.IsMagicCraftingMaterial() || item.IsRunestone()))
             {
                 __result = $"<color={item.GetCraftingMaterialRarityColor()}>{item.GetCraftingMaterialRarity()} crafting material\n</color>" + __result;
             }

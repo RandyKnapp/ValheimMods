@@ -47,7 +47,7 @@ namespace EpicLoot
             foreach (var itemPrefab in EpicLoot.Assets.RegisteredItemPrefabs)
             {
                 var itemDrop = UnityEngine.Object.Instantiate<GameObject>(itemPrefab, Player.m_localPlayer.transform.position + Player.m_localPlayer.transform.forward * 2f + Vector3.up, Quaternion.identity).GetComponent<ItemDrop>();
-                itemDrop.m_itemData.m_stack = 50;
+                itemDrop.m_itemData.m_stack = itemDrop.m_itemData.m_shared.m_maxStackSize / 2;
             }
         }
 
@@ -73,16 +73,20 @@ namespace EpicLoot
             for (var i = 0; i < count; i++)
             {
                 var rarityTable = new[] { 1, 1, 1, 1 };
-                if (rarityArg != "random" && !Enum.TryParse(rarityArg, out ItemRarity rarity))
+                switch (rarityArg.ToLowerInvariant())
                 {
-                    __instance.AddString($"> Could not parse rarity ({rarityArg}) using random instead");
-                    switch (rarity)
-                    {
-                        case ItemRarity.Magic: rarityTable = new[] { 1, 0, 0, 0, }; break;
-                        case ItemRarity.Rare: rarityTable = new[] { 0, 1, 0, 0, }; break;
-                        case ItemRarity.Epic: rarityTable = new[] { 0, 0, 1, 0, }; break;
-                        case ItemRarity.Legendary: rarityTable = new[] { 0, 0, 0, 1, }; break;
-                    }
+                    case "magic":
+                        rarityTable = new[] { 1, 0, 0, 0, };
+                        break;
+                    case "rare":
+                        rarityTable = new[] { 0, 1, 0, 0, };
+                        break;
+                    case "epic":
+                        rarityTable = new[] { 0, 0, 1, 0, };
+                        break;
+                    case "legendary":
+                        rarityTable = new[] { 0, 0, 0, 1, };
+                        break;
                 }
 
                 var item = itemArg;
