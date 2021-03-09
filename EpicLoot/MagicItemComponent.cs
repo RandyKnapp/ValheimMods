@@ -132,10 +132,14 @@ namespace EpicLoot
             return itemData.Extended()?.GetComponent<MagicItemComponent>()?.MagicItem;
         }
 
-        public static string GetDecoratedName(this ItemDrop.ItemData itemData)
+        public static string GetDecoratedName(this ItemDrop.ItemData itemData, string colorOverride = null)
         {
             var color = "white";
-            if (itemData.IsMagic())
+            if (!string.IsNullOrEmpty(colorOverride))
+            {
+                color = colorOverride;
+            }
+            else if (itemData.IsMagic())
             {
                 color = itemData.GetMagicItem().GetColorString();
             }

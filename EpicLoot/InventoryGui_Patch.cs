@@ -1,7 +1,4 @@
-﻿using HarmonyLib;
-using UnityEngine;
-
-namespace EpicLoot
+﻿namespace EpicLoot
 {
     //public bool CanRepair(ItemDrop.ItemData item)
     /*[HarmonyPatch(typeof(InventoryGui), "CanRepair")]

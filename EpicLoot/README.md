@@ -35,7 +35,7 @@ Current Known Mod Conflicts:
 - [X] Destroy trophies for crafting materials (seidric reduction)
 - [X] Destroy magic items for crafting materials (runic reduction)
 - [ ] Enchant items: add new magic effects to non-magic item
-- [ ] Augment items: change/reroll magic item effects
+- [ ] Augment items: change/reroll magic item effects (transmute? modify?)
 - [ ] Gamble for magic items from Merchant
 - [ ] Custom crafting station for enchanting
 - [ ] Loot tables

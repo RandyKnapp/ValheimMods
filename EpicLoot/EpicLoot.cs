@@ -956,6 +956,11 @@ namespace EpicLoot
             }
         }
 
+        public static Color GetRarityColorARGB(ItemRarity rarity)
+        {
+            return ColorUtility.TryParseHtmlString(GetRarityColor(rarity), out var color) ? color : Color.white;
+        }
+
         private static string GetColor(string configValue)
         {
             if (configValue.StartsWith("#"))
