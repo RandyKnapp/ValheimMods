@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Common;
 using ExtendedItemDataFramework;
 using HarmonyLib;
@@ -166,10 +167,9 @@ namespace EpicLoot.Crafting
 
                     __instance.m_minStationLevelIcon.gameObject.SetActive(false);
 
-                    var isEquipped = recipe.FromItem.m_equiped;
-                    __instance.m_craftButton.interactable = !isEquipped;
+                    __instance.m_craftButton.interactable = true;
                     __instance.m_craftButton.GetComponentInChildren<Text>().text = "Enchant";
-                    __instance.m_craftButton.GetComponent<UITooltip>().m_text = isEquipped ? "Item is currently equipped" : "";
+                    __instance.m_craftButton.GetComponent<UITooltip>().m_text = "";
                 }
                 else
                 {
@@ -183,7 +183,24 @@ namespace EpicLoot.Crafting
 
             private static string GenerateEnchantTooltip(EnchantRecipe recipe)
             {
-                return $"TODO Enchant Tooltip:\n{recipe.FromItem.m_shared.m_name} -> {recipe.ToRarity}";
+                var sb = new StringBuilder();
+                var rarityColor = EpicLoot.GetRarityColor(recipe.ToRarity);
+                sb.AppendLine($"{recipe.FromItem.m_shared.m_name} -> {recipe.FromItem.GetDecoratedName(rarityColor)}");
+                sb.AppendLine($"<color={rarityColor}>");
+
+                var effectCountWeights = EpicLoot.MagicEffectCountWeightsPerRarity[recipe.ToRarity];
+                var totalWeight = effectCountWeights.Sum(x => x.Value);
+                foreach (var effectCountEntry in effectCountWeights)
+                {
+                    var count = effectCountEntry.Key;
+                    var weight = effectCountEntry.Value;
+                    var percent = (int)(weight / totalWeight * 100);
+                    var label = count == 1 ? $"{count} effect:" : $"{count} effects:";
+                    sb.AppendLine($"  ‣ {label} {percent}%");
+                }
+                sb.Append("</color>");
+
+                return sb.ToString();
             }
         }
 
@@ -270,6 +287,14 @@ namespace EpicLoot.Crafting
                     amountText.color = Color.white;
                 }
             }
+            else
+            {
+                var bgIconTransform = icon.transform.parent.Find("bgIcon");
+                if (bgIconTransform != null)
+                {
+                    bgIconTransform.gameObject.SetActive(false);
+                }
+            }
             return true;
         }
 
@@ -324,15 +349,26 @@ namespace EpicLoot.Crafting
             {
                 if (InEnchantTab() && SelectedRecipe >= 0 && SelectedRecipe < Recipes.Count)
                 {
-                    /*var recipe = Recipes[SelectedRecipe];
-                    player.GetInventory().RemoveItem(recipe.FromItem);
-                    foreach (var product in recipe.Products)
+                    var recipe = Recipes[SelectedRecipe];
+
+                    if (!recipe.FromItem.IsExtended())
                     {
-                        var itemData = player.GetInventory().AddItem(product.Key.name, product.Value, 1, 0, 0, "");
-                        if (itemData.IsMagicCraftingMaterial())
-                        {
-                            itemData.m_variant = EpicLoot.GetRarityIconIndex(itemData.GetRarity());
-                        }
+                        var inventory = player.GetInventory();
+                        inventory.RemoveItem(recipe.FromItem);
+                        var extendedItemData = new ExtendedItemData(recipe.FromItem);
+                        inventory.m_inventory.Add(extendedItemData);
+                        inventory.Changed();
+                        recipe.FromItem = extendedItemData;
+                    }
+                    
+                    var magicItemComponent = recipe.FromItem.Extended().AddComponent<MagicItemComponent>();
+                    var magicItem = EpicLoot.RollMagicItem(recipe.ToRarity, recipe.FromItem.Extended());
+                    magicItemComponent.SetMagicItem(magicItem);
+
+                    // Spend Resources
+                    if (!player.NoCostCheat())
+                    {
+                        player.ConsumeResources(recipe.GetRequirementArray(), 1);
                     }
                     __instance.UpdateCraftingPanel();
 
@@ -343,7 +379,7 @@ namespace EpicLoot.Crafting
 
                     Game.instance.GetPlayerProfile().m_playerStats.m_crafts++;
                     Gogan.LogEvent("Game", "Disenchanted", recipe.FromItem.m_shared.m_name, 1);
-                    return false;*/
+                    return false;
                 }
                 return true;
             }
@@ -448,11 +484,6 @@ namespace EpicLoot.Crafting
 
         public static void GenerateEnchantRecipes()
         {
-            Debug.LogWarning("Known Mats:");
-            foreach (var knownMat in Player.m_localPlayer.m_knownMaterial)
-            {
-                Debug.Log($"- {knownMat}");
-            }
             Recipes.Clear();
             if (Player.m_localPlayer != null)
             {
@@ -503,7 +534,7 @@ namespace EpicLoot.Crafting
                     recipe.Cost.Add(new KeyValuePair<ItemDrop, int>(dustPrefab, dustCost));
                     recipe.Cost.Add(new KeyValuePair<ItemDrop, int>(essencePrefab, otherCost));
                     break;
-
+                    
                 case ItemDrop.ItemData.ItemType.Shield:
                 case ItemDrop.ItemData.ItemType.Helmet:
                 case ItemDrop.ItemData.ItemType.Chest:

@@ -31,6 +31,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_itemData.m_shared.m_description
       value: A catalyst of empyreal potential. Used to enchant or augment magic items.
+        Obtained by sacrificing powerful trophies.
       objectReference: {fileID: 0}
     - target: {fileID: 124223530235104039, guid: f8c9237298dab3a438c66dbedd157d72,
         type: 3}

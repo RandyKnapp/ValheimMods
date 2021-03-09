@@ -16,7 +16,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_itemData.m_shared.m_description
       value: A form representing pure synthesis. Used to enchant or augment armor
-        and shields.
+        and shields. Obtained by sacrificing magic armor or shields.
       objectReference: {fileID: 0}
     - target: {fileID: 4812765547126240509, guid: 6576477ba955d1d498e87413b5318733,
         type: 3}

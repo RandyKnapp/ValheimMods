@@ -76,7 +76,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_itemData.m_shared.m_description
       value: The distilled protean power to change one's environment. Used to enchant
-        or augment weapons and tools.
+        or augment weapons and tools. Obtained by sacrificing magic weapons or tools.
       objectReference: {fileID: 0}
     - target: {fileID: 8495594747941318552, guid: c8d9be30add4b914cbe91a4732a05c05,
         type: 3}

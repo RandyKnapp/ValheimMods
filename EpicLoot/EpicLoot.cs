@@ -607,11 +607,15 @@ namespace EpicLoot
 
         public static MagicItem RollMagicItem(LootDrop lootDrop, ExtendedItemData baseItem)
         {
-            var magicItem = new MagicItem();
-            magicItem.Rarity = RollItemRarity(lootDrop);
+            var rarity = RollItemRarity(lootDrop);
+            return RollMagicItem(rarity, baseItem);
+        }
+
+        public static MagicItem RollMagicItem(ItemRarity rarity, ExtendedItemData baseItem)
+        {
+            var magicItem = new MagicItem { Rarity = rarity };
 
             var effectCount = RollEffectCountPerRarity(magicItem.Rarity);
-           
             for (int i = 0; i < effectCount; i++)
             {
                 var availableEffects = MagicItemEffectDefinitions.GetAvailableEffects(baseItem, magicItem);

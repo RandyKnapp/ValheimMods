@@ -308,23 +308,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: piece_augmenter
       objectReference: {fileID: 0}
-    - target: {fileID: 2531013302555889047, guid: 86ba45a41e00eac4f85102fa1e85c830,
-        type: 3}
-      propertyPath: m_icon
-      value: 
-      objectReference: {fileID: 21300000, guid: 85acac5b7cef71b4eb80b9de5d2cec9f,
-        type: 3}
-    - target: {fileID: 2531013302555889047, guid: 86ba45a41e00eac4f85102fa1e85c830,
-        type: 3}
-      propertyPath: m_name
-      value: Augmenter
-      objectReference: {fileID: 0}
-    - target: {fileID: 2531013302555889047, guid: 86ba45a41e00eac4f85102fa1e85c830,
-        type: 3}
-      propertyPath: m_description
-      value: Allows Augmenting magic items at a Forge.  (Does not upgrade the forge's
-        level)
-      objectReference: {fileID: 0}
     - target: {fileID: 4348747926042235049, guid: 86ba45a41e00eac4f85102fa1e85c830,
         type: 3}
       propertyPath: m_RootOrder
@@ -393,17 +376,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: piece_enchanter
-      objectReference: {fileID: 0}
-    - target: {fileID: 2531013302555889047, guid: c224f9ae488df6d4983589dab34b352d,
-        type: 3}
-      propertyPath: m_description
-      value: Allows Sacrificing and Enchanting magic items at a Forge.  (Does not
-        upgrade the forge's level)
-      objectReference: {fileID: 0}
-    - target: {fileID: 2531013302555889047, guid: c224f9ae488df6d4983589dab34b352d,
-        type: 3}
-      propertyPath: m_resources.Array.size
-      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 4348747926042235049, guid: c224f9ae488df6d4983589dab34b352d,
         type: 3}

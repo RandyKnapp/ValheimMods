@@ -21,7 +21,8 @@ PrefabInstance:
     - target: {fileID: 4812765547126240509, guid: 6576477ba955d1d498e87413b5318733,
         type: 3}
       propertyPath: m_itemData.m_shared.m_description
-      value: A sliver of monstrous lifeforce. Used to augment magic items.
+      value: A sliver of monstrous lifeforce. Used to augment magic items. Obtained
+        by sacrificing animal and monster rophies.
       objectReference: {fileID: 0}
     - target: {fileID: 4812765547126240509, guid: 6576477ba955d1d498e87413b5318733,
         type: 3}

@@ -20,7 +20,8 @@ PrefabInstance:
     - target: {fileID: 124223530235104039, guid: f8c9237298dab3a438c66dbedd157d72,
         type: 3}
       propertyPath: m_itemData.m_shared.m_description
-      value: The remant upon the sacrificial altar. Used to enchant items.
+      value: The remant upon the sacrificial altar. Used to enchant items. Obtained
+        by sacrificing magic items.
       objectReference: {fileID: 0}
     - target: {fileID: 124223530235104039, guid: f8c9237298dab3a438c66dbedd157d72,
         type: 3}

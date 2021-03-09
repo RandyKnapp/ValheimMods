@@ -17,3 +17,6 @@ Copy EquipmentAndQuickSlots.dll into the BepInEx/plugins folder
     * Fixed issue where gamepad could not use quick slots
   * 1.0.5
     * Fixed issue where the previous fix broke the #8 hotkey...
+
+### Known Bugs:
+  * Cannot unequip an item with zero durability
