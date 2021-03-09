@@ -121,75 +121,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1001 &110179951
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 4940432647999313591, guid: cba8770b26436b24e9167a92039f4606,
-        type: 3}
-      propertyPath: m_Name
-      value: LegendaryLootBeam
-      objectReference: {fileID: 0}
-    - target: {fileID: 4940432647999313595, guid: cba8770b26436b24e9167a92039f4606,
-        type: 3}
-      propertyPath: m_RootOrder
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 4940432647999313595, guid: cba8770b26436b24e9167a92039f4606,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4940432647999313595, guid: cba8770b26436b24e9167a92039f4606,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4940432647999313595, guid: cba8770b26436b24e9167a92039f4606,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -2.23
-      objectReference: {fileID: 0}
-    - target: {fileID: 4940432647999313595, guid: cba8770b26436b24e9167a92039f4606,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4940432647999313595, guid: cba8770b26436b24e9167a92039f4606,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4940432647999313595, guid: cba8770b26436b24e9167a92039f4606,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4940432647999313595, guid: cba8770b26436b24e9167a92039f4606,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4940432647999313595, guid: cba8770b26436b24e9167a92039f4606,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4940432647999313595, guid: cba8770b26436b24e9167a92039f4606,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4940432647999313595, guid: cba8770b26436b24e9167a92039f4606,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: cba8770b26436b24e9167a92039f4606, type: 3}
 --- !u!1 &365701182
 GameObject:
   m_ObjectHideFlags: 0
@@ -358,104 +289,176 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1382107703}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -10}
+  m_LocalRotation: {x: 0.32154742, y: 0.47216627, z: -0.19007874, w: 0.79845876}
+  m_LocalPosition: {x: -1.5063863, y: 2.0762777, z: -0.95675474}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &2051593722
+--- !u!1001 &1503376769
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: -8679921383154817045, guid: b562a24222e7220428d007dcfac20ff6,
+    - target: {fileID: 2179127083323863650, guid: 86ba45a41e00eac4f85102fa1e85c830,
+        type: 3}
+      propertyPath: m_Name
+      value: piece_augmenter
+      objectReference: {fileID: 0}
+    - target: {fileID: 2531013302555889047, guid: 86ba45a41e00eac4f85102fa1e85c830,
+        type: 3}
+      propertyPath: m_icon
+      value: 
+      objectReference: {fileID: 21300000, guid: 85acac5b7cef71b4eb80b9de5d2cec9f,
+        type: 3}
+    - target: {fileID: 2531013302555889047, guid: 86ba45a41e00eac4f85102fa1e85c830,
+        type: 3}
+      propertyPath: m_name
+      value: Augmenter
+      objectReference: {fileID: 0}
+    - target: {fileID: 2531013302555889047, guid: 86ba45a41e00eac4f85102fa1e85c830,
+        type: 3}
+      propertyPath: m_description
+      value: Allows Augmenting magic items at a Forge.  (Does not upgrade the forge's
+        level)
+      objectReference: {fileID: 0}
+    - target: {fileID: 4348747926042235049, guid: 86ba45a41e00eac4f85102fa1e85c830,
         type: 3}
       propertyPath: m_RootOrder
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: b562a24222e7220428d007dcfac20ff6,
-        type: 3}
-      propertyPath: m_LocalScale.x
-      value: 0.20207
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: b562a24222e7220428d007dcfac20ff6,
-        type: 3}
-      propertyPath: m_LocalScale.y
-      value: 0.20207
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: b562a24222e7220428d007dcfac20ff6,
-        type: 3}
-      propertyPath: m_LocalScale.z
-      value: 0.20207
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: b562a24222e7220428d007dcfac20ff6,
+    - target: {fileID: 4348747926042235049, guid: 86ba45a41e00eac4f85102fa1e85c830,
         type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: b562a24222e7220428d007dcfac20ff6,
+    - target: {fileID: 4348747926042235049, guid: 86ba45a41e00eac4f85102fa1e85c830,
         type: 3}
       propertyPath: m_LocalPosition.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: b562a24222e7220428d007dcfac20ff6,
+    - target: {fileID: 4348747926042235049, guid: 86ba45a41e00eac4f85102fa1e85c830,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -1.9
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: b562a24222e7220428d007dcfac20ff6,
+    - target: {fileID: 4348747926042235049, guid: 86ba45a41e00eac4f85102fa1e85c830,
         type: 3}
       propertyPath: m_LocalRotation.w
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: b562a24222e7220428d007dcfac20ff6,
+    - target: {fileID: 4348747926042235049, guid: 86ba45a41e00eac4f85102fa1e85c830,
         type: 3}
       propertyPath: m_LocalRotation.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: b562a24222e7220428d007dcfac20ff6,
+    - target: {fileID: 4348747926042235049, guid: 86ba45a41e00eac4f85102fa1e85c830,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: b562a24222e7220428d007dcfac20ff6,
+    - target: {fileID: 4348747926042235049, guid: 86ba45a41e00eac4f85102fa1e85c830,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: b562a24222e7220428d007dcfac20ff6,
+    - target: {fileID: 4348747926042235049, guid: 86ba45a41e00eac4f85102fa1e85c830,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: b562a24222e7220428d007dcfac20ff6,
+    - target: {fileID: 4348747926042235049, guid: 86ba45a41e00eac4f85102fa1e85c830,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: b562a24222e7220428d007dcfac20ff6,
+    - target: {fileID: 4348747926042235049, guid: 86ba45a41e00eac4f85102fa1e85c830,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: -3890413325872013027, guid: b562a24222e7220428d007dcfac20ff6,
-        type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 7276bc657b88b0140b7bbf077abf1421, type: 2}
-    - target: {fileID: 919132149155446097, guid: b562a24222e7220428d007dcfac20ff6,
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 86ba45a41e00eac4f85102fa1e85c830, type: 3}
+--- !u!1001 &2032931742
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 2179127083323863650, guid: c224f9ae488df6d4983589dab34b352d,
         type: 3}
       propertyPath: m_Name
-      value: RunicEnergyFocus
+      value: piece_enchanter
       objectReference: {fileID: 0}
-    - target: {fileID: 6444263678948303042, guid: b562a24222e7220428d007dcfac20ff6,
+    - target: {fileID: 2531013302555889047, guid: c224f9ae488df6d4983589dab34b352d,
         type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 0bf8de3868af74c4c99f0c2a000b878a, type: 2}
+      propertyPath: m_description
+      value: Allows Sacrificing and Enchanting magic items at a Forge.  (Does not
+        upgrade the forge's level)
+      objectReference: {fileID: 0}
+    - target: {fileID: 2531013302555889047, guid: c224f9ae488df6d4983589dab34b352d,
+        type: 3}
+      propertyPath: m_resources.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4348747926042235049, guid: c224f9ae488df6d4983589dab34b352d,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4348747926042235049, guid: c224f9ae488df6d4983589dab34b352d,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4348747926042235049, guid: c224f9ae488df6d4983589dab34b352d,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4348747926042235049, guid: c224f9ae488df6d4983589dab34b352d,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4348747926042235049, guid: c224f9ae488df6d4983589dab34b352d,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4348747926042235049, guid: c224f9ae488df6d4983589dab34b352d,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4348747926042235049, guid: c224f9ae488df6d4983589dab34b352d,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4348747926042235049, guid: c224f9ae488df6d4983589dab34b352d,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4348747926042235049, guid: c224f9ae488df6d4983589dab34b352d,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4348747926042235049, guid: c224f9ae488df6d4983589dab34b352d,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4348747926042235049, guid: c224f9ae488df6d4983589dab34b352d,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: b562a24222e7220428d007dcfac20ff6, type: 3}
+  m_SourcePrefab: {fileID: 100100000, guid: c224f9ae488df6d4983589dab34b352d, type: 3}

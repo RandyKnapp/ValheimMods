@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 734517344
+CRC: 1646301403
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: b56b55cc65bb6a7d9238ebcf32c1ba2a
+    Hash: 95fca02db77f3eeaf1f769c60dff5b9e
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 4cd6c108ac7530b7d26f27e2c91f59cf
+    Hash: fc5a5ce937bd0bf8f87ef2a126113efe
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -39,8 +39,14 @@ ClassTypes:
   Script: {instanceID: 0}
 - Class: 95
   Script: {instanceID: 0}
+- Class: 108
+  Script: {instanceID: 0}
 - Class: 114
   Script: {fileID: 825357479, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
+- Class: 114
+  Script: {fileID: 2094620348, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
+- Class: 114
+  Script: {fileID: -201937006, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
 - Class: 114
   Script: {fileID: 1521249158, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
 - Class: 114
@@ -70,6 +76,7 @@ Assets:
 - Assets/EpicLoot/Sprites/Inventory/GenericSetItemMarker.png
 - Assets/EpicLoot/Prefabs/CraftingMaterials/ShardLegendary.prefab
 - Assets/EpicLoot/Sprites/Inventory/LegendaryItemBg.png
+- Assets/EpicLoot/Prefabs/StationExtensions/piece_augmenter.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/ReagentLegendary.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/EssenceMagic.prefab
 - Assets/EpicLoot/Sprites/Inventory/MagicItemBg.png
@@ -88,6 +95,7 @@ Assets:
 - Assets/EpicLoot/Sprites/Inventory/RareItemBg.png
 - Assets/EpicLoot/Prefabs/CraftingMaterials/ReagentEpic.prefab
 - Assets/EpicLoot/Sprites/Inventory/Equipped.png
+- Assets/EpicLoot/Prefabs/StationExtensions/piece_enchanter.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/RunestoneLegendary.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/EssenceLegendary.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/RunestoneEpic.prefab

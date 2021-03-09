@@ -90,6 +90,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Crafting\CraftingItemExtensions.cs" />
+    <Compile Include="Crafting\CraftingStation_Patch.cs" />
     <Compile Include="Crafting\InventoryGui_Patch.cs" />
     <Compile Include="Crafting\ItemDrop_Patch.cs" />
     <Compile Include="Crafting\Recipes_Setup.cs" />

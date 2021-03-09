@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Common;
+using EpicLoot.Crafting;
 using HarmonyLib;
 using UnityEngine;
 
@@ -44,10 +45,13 @@ namespace EpicLoot
 
         private static void SpawnMagicCraftingMaterials()
         {
-            foreach (var itemPrefab in EpicLoot.Assets.RegisteredItemPrefabs)
+            foreach (var itemPrefab in EpicLoot.RegisteredItemPrefabs)
             {
                 var itemDrop = UnityEngine.Object.Instantiate<GameObject>(itemPrefab, Player.m_localPlayer.transform.position + Player.m_localPlayer.transform.forward * 2f + Vector3.up, Quaternion.identity).GetComponent<ItemDrop>();
-                itemDrop.m_itemData.m_stack = itemDrop.m_itemData.m_shared.m_maxStackSize / 2;
+                if (itemDrop.m_itemData.IsMagicCraftingMaterial() || itemDrop.m_itemData.IsRunestone())
+                {
+                    itemDrop.m_itemData.m_stack = itemDrop.m_itemData.m_shared.m_maxStackSize / 2;
+                }
             }
         }
 

@@ -4,15 +4,23 @@ This mod aims to add a loot drop experience to Valheim similar to Diablo or othe
 
 The mod is currently in Early Access! That means it's not done! Be patient as the author adds new features, fixes bugs, and finishes things up. If you want to help, please provide feedback on the [Nexus mod page](TODO) or on the [github](https://github.com/RandyKnapp/ValheimMods/tree/main/EpicLoot) page for the following subjects:
 
-- Bugs
-- Balance Issues
-- Missing content (but first check the TODO list below to make sure the author isn't already planning to do it)
-- Suggestions for new magic item effects
-- Suggestions for other improvements
+  * Bugs
+  * Balance Issues
+  * Missing content (but first check the TODO list below to make sure the author isn't already planning to do it)
+  * Suggestions for new magic item effects
+  * Suggestions for other improvements
 
 Information about EVERY magic effect and loot drop table can be found in info.md.
 
+Current Known Mod Conflicts:
+
+  * BetterUI: You won't be able to see the magic item properties in the tooltip. Go to the BetterUI config and set `showCustomTooltips = false`.
+
 **Author's Note:** This mod uses an image of the Odal rune (ᛟ) to denote set items. It's reconstructed Proto-Germanic meaning is "Heritage" or "Possession" and the author felt like it was the best rune from the Elder Futhark to signify set items. However, the Odal rune with wings or feet was and is used as a Nazi symbol. The author ***UNEQUIVOCALLY CONDEMNS*** Nazis, Nazism, anti-semitism, and white supremacy. Furthermore, those who hold or practice those beliefs are not welcome to use this mod. Fuck Nazis.
+
+## Bugs:
+
+- [ ] Upgrading item removes magic item
 
 ## TODO:
 
@@ -26,9 +34,10 @@ Information about EVERY magic effect and loot drop table can be found in info.md
 - [X] Create crafting materials
 - [X] Destroy trophies for crafting materials (seidric reduction)
 - [X] Destroy magic items for crafting materials (runic reduction)
-- [ ] Enchant items (dverger enchanting, fjölkyngi, galdr)
-- [ ] Change/Reroll magic item effects
+- [ ] Enchant items: add new magic effects to non-magic item
+- [ ] Augment items: change/reroll magic item effects
 - [ ] Gamble for magic items from Merchant
+- [ ] Custom crafting station for enchanting
 - [ ] Loot tables
   - [ ] Monsters
 	- [X] Meadows
@@ -44,6 +53,7 @@ Information about EVERY magic effect and loot drop table can be found in info.md
 	- [ ] Plains
 - [X] Set item UI treatment
 - [ ] Balance, balance, balance
+- [ ] Move tooltip code to postfix, parse and inject rather than redo from scratch
 
 Future
 

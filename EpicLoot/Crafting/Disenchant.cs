@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using Common;
 using ExtendedItemDataFramework;
 using HarmonyLib;
 using UnityEngine;
@@ -9,14 +11,6 @@ using Object = UnityEngine.Object;
 
 namespace EpicLoot.Crafting
 {
-    public static class GameObjectExtensions
-    {
-        public static RectTransform RectTransform(this GameObject go)
-        {
-            return go.transform as RectTransform;
-        }
-    }
-
     public static class Disenchant
     {
         public static readonly Dictionary<ItemRarity, List<string>> TrophyShards = new Dictionary<ItemRarity, List<string>>()
@@ -155,7 +149,14 @@ namespace EpicLoot.Crafting
 
             private static bool CanDisenchantHere(CraftingStation station)
             {
-                return station != null && (station.m_name == "$piece_artisanstation" || station.m_name == "$piece_forge");
+                if (station == null)
+                {
+                    return false;
+                }
+
+                var isArtisan = station.m_name == "$piece_artisanstation";
+                var isForgeWithEnchanter = station.m_name == "$piece_forge" && station.m_attachedExtensions.Find(x => x.name.StartsWith("piece_enchanter"));
+                return isArtisan || isForgeWithEnchanter;
             }
         }
 

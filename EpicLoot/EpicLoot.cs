@@ -23,8 +23,15 @@ namespace EpicLoot
         public Sprite GenericItemBgSprite;
         public GameObject[] MagicItemLootBeamPrefabs = new GameObject[4];
         public readonly Dictionary<string, GameObject[]> CraftingMaterialPrefabs = new Dictionary<string, GameObject[]>();
-        public readonly List<GameObject> RegisteredPrefabs = new List<GameObject>();
-        public readonly List<GameObject> RegisteredItemPrefabs = new List<GameObject>();
+    }
+
+    public class PieceDef
+    {
+        public string Table;
+        public string PieceTable;
+        public string CraftingStation;
+        public string ExtendStation;
+        public List<RecipeRequirementConfig> Resources = new List<RecipeRequirementConfig>();
     }
 
     [BepInPlugin("randyknapp.mods.epicloot", "Epic Loot", Version)]
@@ -85,8 +92,11 @@ namespace EpicLoot
             { ItemRarity.Legendary, new Dictionary<int, float>() { { 4, 80 }, { 5, 18 }, { 6, 2 } } }
         };
 
-        public static Assets Assets = new Assets();
-        public static Dictionary<string, List<LootTable>> LootTables = new Dictionary<string, List<LootTable>>();
+        public static readonly Assets Assets = new Assets();
+        public static readonly Dictionary<string, List<LootTable>> LootTables = new Dictionary<string, List<LootTable>>();
+        public static readonly List<GameObject> RegisteredPrefabs = new List<GameObject>();
+        public static readonly List<GameObject> RegisteredItemPrefabs = new List<GameObject>();
+        public static readonly Dictionary<GameObject, PieceDef> RegisteredPieces = new Dictionary<GameObject, PieceDef>();
 
         public static event Action LootTableLoaded;
         public static event Action<ExtendedItemData, MagicItem> MagicItemGenerated;
@@ -154,6 +164,38 @@ namespace EpicLoot
             LoadCraftingMaterialAssets(assetBundle, "Dust");
             LoadCraftingMaterialAssets(assetBundle, "Reagent");
             LoadCraftingMaterialAssets(assetBundle, "Essence");
+
+            LoadStationExtension(assetBundle, "piece_enchanter", new PieceDef()
+            {
+                Table = "_HammerPieceTable",
+                CraftingStation = "piece_workbench",
+                ExtendStation = "forge",
+                Resources = new List<RecipeRequirementConfig>
+                {
+                    new RecipeRequirementConfig { item = "Stone", amount = 10 },
+                    new RecipeRequirementConfig { item = "SurtlingCore", amount = 3 },
+                    new RecipeRequirementConfig { item = "Copper", amount = 3 },
+                }
+            });
+            LoadStationExtension(assetBundle, "piece_augmenter", new PieceDef()
+            {
+                Table = "_HammerPieceTable",
+                CraftingStation = "piece_workbench",
+                ExtendStation = "forge",
+                Resources = new List<RecipeRequirementConfig>
+                {
+                    new RecipeRequirementConfig { item = "Obsidian", amount = 10 },
+                    new RecipeRequirementConfig { item = "Crystal", amount = 3 },
+                    new RecipeRequirementConfig { item = "Bronze", amount = 3 },
+                }
+            });
+        }
+
+        private static void LoadStationExtension(AssetBundle assetBundle, string assetName, PieceDef pieceDef)
+        {
+            var prefab = assetBundle.LoadAsset<GameObject>(assetName);
+            RegisteredPieces.Add(prefab, pieceDef);
+            RegisteredPrefabs.Add(prefab);
         }
 
         private static void LoadCraftingMaterialAssets(AssetBundle assetBundle, string type)
@@ -169,8 +211,8 @@ namespace EpicLoot
                     continue;
                 }
                 prefabs[(int) rarity] = prefab;
-                Assets.RegisteredPrefabs.Add(prefab);
-                Assets.RegisteredItemPrefabs.Add(prefab);
+                RegisteredPrefabs.Add(prefab);
+                RegisteredItemPrefabs.Add(prefab);
             }
             Assets.CraftingMaterialPrefabs.Add(type, prefabs);
         }
@@ -178,7 +220,7 @@ namespace EpicLoot
         private static void SetupTestMagicItem(ExtendedItemData itemdata)
         {
             // Weapon (Club)
-            if (itemdata.GetUniqueId() == "1493f9a4-65b4-41e3-8871-611ec8cb7564")
+            /*if (itemdata.GetUniqueId() == "1493f9a4-65b4-41e3-8871-611ec8cb7564")
             {
                 var magicItem = new MagicItem {Rarity = ItemRarity.Epic};
                 magicItem.Effects.Add(RollEffect(MagicItemEffectDefinitions.Get(MagicEffectType.ModifyAttackStaminaUse), magicItem.Rarity));
@@ -216,7 +258,7 @@ namespace EpicLoot
                 magicItem.Effects.Add(RollEffect(MagicItemEffectDefinitions.Get(MagicEffectType.ModifyJumpStaminaUse), magicItem.Rarity));
                 magicItem.Effects.Add(RollEffect(MagicItemEffectDefinitions.Get(MagicEffectType.AddCarryWeight), magicItem.Rarity));
                 itemdata.ReplaceComponent<MagicItemComponent>().SetMagicItem(magicItem);
-            }
+            }*/
         }
 
         private void OnDestroy()
@@ -252,9 +294,71 @@ namespace EpicLoot
                 return;
             }
 
-            foreach (var prefab in Assets.RegisteredPrefabs)
+            foreach (var prefab in RegisteredPrefabs)
             {
-                zNetScene.m_prefabs.Add(prefab);
+                if (!zNetScene.m_prefabs.Contains(prefab))
+                {
+                    zNetScene.m_prefabs.Add(prefab);
+                }
+            }
+        }
+
+        public static void TryRegisterPieces(List<PieceTable> pieceTables, List<CraftingStation> craftingStations)
+        {
+            foreach (var entry in RegisteredPieces)
+            {
+                var prefab = entry.Key;
+                var pieceDef = entry.Value;
+
+                var piece = prefab.GetComponent<Piece>();
+
+                var pieceTable = pieceTables.Find(x => x.name == pieceDef.Table);
+                if (pieceTable.m_pieces.Contains(prefab))
+                {
+                    continue;
+                }
+                pieceTable.m_pieces.Add(prefab);
+
+                var pieceStation = craftingStations.Find(x => x.name == pieceDef.CraftingStation);
+                piece.m_craftingStation = pieceStation;
+
+                var resources = new List<Piece.Requirement>();
+                foreach (var resource in pieceDef.Resources)
+                {
+                    var resourcePrefab = ObjectDB.instance.GetItemPrefab(resource.item);
+                    resources.Add(new Piece.Requirement()
+                    {
+                        m_resItem = resourcePrefab.GetComponent<ItemDrop>(),
+                        m_amount = resource.amount
+                    });
+                }
+                piece.m_resources = resources.ToArray();
+
+                var stationExt = prefab.GetComponent<StationExtension>();
+                if (stationExt != null && !string.IsNullOrEmpty(pieceDef.ExtendStation))
+                {
+                    var stationPrefab = pieceTable.m_pieces.Find(x => x.name == pieceDef.ExtendStation);
+                    if (stationPrefab != null)
+                    {
+                        var station = stationPrefab.GetComponent<CraftingStation>();
+                        stationExt.m_craftingStation = station;
+                    }
+
+                    var otherExt = pieceTable.m_pieces.Find(x => x.GetComponent<StationExtension>() != null);
+                    if (otherExt != null)
+                    {
+                        var otherStationExt = otherExt.GetComponent<StationExtension>();
+                        var otherPiece = otherExt.GetComponent<Piece>();
+
+                        stationExt.m_connectionPrefab = otherStationExt.m_connectionPrefab;
+                        piece.m_placeEffect.m_effectPrefabs = otherPiece.m_placeEffect.m_effectPrefabs.ToArray();
+                    }
+                }
+                else
+                {
+                    var otherPiece = pieceTable.m_pieces.Find(x => x.GetComponent<Piece>() != null).GetComponent<Piece>();
+                    piece.m_placeEffect.m_effectPrefabs.AddRangeToArray(otherPiece.m_placeEffect.m_effectPrefabs);
+                }
             }
         }
 
@@ -264,8 +368,8 @@ namespace EpicLoot
             {
                 return;
             }
-
-            foreach (var prefab in Assets.RegisteredItemPrefabs)
+            
+            foreach (var prefab in RegisteredItemPrefabs)
             {
                 var itemDrop = prefab.GetComponent<ItemDrop>();
                 if (itemDrop != null)
@@ -276,6 +380,26 @@ namespace EpicLoot
                     }
                 }
             }
+
+            var pieceTables = new List<PieceTable>();
+            foreach (var itemPrefab in ObjectDB.instance.m_items)
+            {
+                var item = itemPrefab.GetComponent<ItemDrop>().m_itemData;
+                if (item.m_shared.m_buildPieces != null && !pieceTables.Contains(item.m_shared.m_buildPieces))
+                {
+                    pieceTables.Add(item.m_shared.m_buildPieces);
+                }
+            }
+
+            var craftingStations = new List<CraftingStation>();
+            foreach (var pieceTable in pieceTables)
+            {
+                craftingStations.AddRange(pieceTable.m_pieces
+                    .Where(x => x.GetComponent<CraftingStation>() != null)
+                    .Select(x => x.GetComponent<CraftingStation>()));
+            }
+
+            TryRegisterPieces(pieceTables, craftingStations);
         }
 
         public static void TryRegisterRecipes()
