@@ -137,6 +137,7 @@
   <ItemGroup>
     <None Include="info.md" />
     <None Include="loottables.json" />
+    <None Include="manifest.json" />
     <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>

@@ -8,7 +8,7 @@ using Object = UnityEngine.Object;
 
 namespace EpicLoot.Crafting
 {
-    public static class Disenchant
+    public static class Enchanting
     {
         public static readonly Dictionary<ItemRarity, List<string>> TrophyShards = new Dictionary<ItemRarity, List<string>>()
         {
@@ -163,64 +163,68 @@ namespace EpicLoot.Crafting
         {
             public static void Postfix(InventoryGui __instance, Player player, float dt)
             {
-                if (SelectedRecipe >= 0 && SelectedRecipe < Recipes.Count)
+                if (InDisenchantTab())
                 {
-                    var recipe = Recipes[SelectedRecipe];
-                    var itemData = recipe.FromItem;
-
-                    __instance.m_recipeIcon.enabled = true;
-                    __instance.m_recipeIcon.sprite = itemData.GetIcon();
-
-                    __instance.m_recipeName.enabled = true;
-                    __instance.m_recipeName.text = Localization.instance.Localize(itemData.GetDecoratedName());
-
-                    __instance.m_recipeDecription.enabled = true;
-                    __instance.m_recipeDecription.text = Localization.instance.Localize(ItemDrop.ItemData.GetTooltip(itemData, itemData.m_quality, true));
-                    __instance.m_recipeDecription.text += "\n\nDisenchanting will destroy this item and produce the following:";
-
-                    var magicItemBG = __instance.m_recipeIcon.transform.parent.Find("MagicItemBG");
-                    Image bgImage = null;
-                    if (magicItemBG == null)
+                    if (SelectedRecipe >= 0 && SelectedRecipe < Recipes.Count)
                     {
-                        bgImage = Object.Instantiate(__instance.m_recipeIcon, __instance.m_recipeIcon.transform.parent, true);
-                        bgImage.name = "MagicItemBG";
-                        bgImage.transform.SetSiblingIndex(__instance.m_recipeIcon.transform.GetSiblingIndex());
-                        bgImage.sprite = EpicLoot.GetMagicItemBgSprite();
-                        bgImage.color = recipe.FromItem.GetRarityColor();
+                        var recipe = Recipes[SelectedRecipe];
+                        var itemData = recipe.FromItem;
+
+                        __instance.m_recipeIcon.enabled = true;
+                        __instance.m_recipeIcon.sprite = itemData.GetIcon();
+
+                        __instance.m_recipeName.enabled = true;
+                        __instance.m_recipeName.text = Localization.instance.Localize(itemData.GetDecoratedName());
+
+                        __instance.m_recipeDecription.enabled = true;
+                        __instance.m_recipeDecription.text = Localization.instance.Localize(ItemDrop.ItemData.GetTooltip(itemData, itemData.m_quality, true));
+
+                        var magicItemBG = __instance.m_recipeIcon.transform.parent.Find("MagicItemBG");
+                        Image bgImage = null;
+                        if (magicItemBG == null)
+                        {
+                            bgImage = Object.Instantiate(__instance.m_recipeIcon, __instance.m_recipeIcon.transform.parent, true);
+                            bgImage.name = "MagicItemBG";
+                            bgImage.transform.SetSiblingIndex(__instance.m_recipeIcon.transform.GetSiblingIndex());
+                            bgImage.sprite = EpicLoot.GetMagicItemBgSprite();
+                            bgImage.color = recipe.FromItem.GetRarityColor();
+                        }
+                        else
+                        {
+                            bgImage = magicItemBG.GetComponent<Image>();
+                            bgImage.sprite = EpicLoot.GetMagicItemBgSprite();
+                            bgImage.color = recipe.FromItem.GetRarityColor();
+                        }
+
+                        bgImage.enabled = recipe.FromItem.UseMagicBackground();
+
+                        __instance.m_itemCraftType.gameObject.SetActive(true);
+                        __instance.m_itemCraftType.text = "Destroy this item and get:";
+
+                        __instance.m_variantButton.gameObject.SetActive(false);
+
+                        SetupRequirementList(__instance, player, recipe);
+
+                        __instance.m_minStationLevelIcon.gameObject.SetActive(false);
+
+                        var isEquipped = recipe.FromItem.m_equiped;
+                        var canPutProductsInInventory = true;
+                        foreach (var product in recipe.Products)
+                        {
+                            canPutProductsInInventory = canPutProductsInInventory && player.GetInventory().CanAddItem(product.Key.m_itemData, product.Value);
+                        }
+                        __instance.m_craftButton.interactable = canPutProductsInInventory && !isEquipped;
+                        __instance.m_craftButton.GetComponentInChildren<Text>().text = "Sacrifice";
+                        __instance.m_craftButton.GetComponent<UITooltip>().m_text =
+                            canPutProductsInInventory ? (isEquipped ? "Item is currently equipped" : "") : Localization.instance.Localize("$inventory_full");
                     }
                     else
                     {
-                        bgImage = magicItemBG.GetComponent<Image>();
-                        bgImage.sprite = EpicLoot.GetMagicItemBgSprite();
-                        bgImage.color = recipe.FromItem.GetRarityColor();
-                    }
-
-                    bgImage.enabled = recipe.FromItem.UseMagicBackground();
-
-                    __instance.m_itemCraftType.gameObject.SetActive(false);
-                    __instance.m_variantButton.gameObject.SetActive(false);
-
-                    SetupRequirementList(__instance, player, recipe);
-
-                    __instance.m_minStationLevelIcon.gameObject.SetActive(false);
-
-                    var isEquipped = recipe.FromItem.m_equiped;
-                    var canPutProductsInInventory = true;
-                    foreach (var product in recipe.Products)
-                    {
-                        canPutProductsInInventory = canPutProductsInInventory && player.GetInventory().CanAddItem(product.Key.m_itemData, product.Value);
-                    }
-                    __instance.m_craftButton.interactable = canPutProductsInInventory && !isEquipped;
-                    __instance.m_craftButton.GetComponentInChildren<Text>().text = "Sacrifice";
-                    __instance.m_craftButton.GetComponent<UITooltip>().m_text = 
-                        canPutProductsInInventory ? (isEquipped ? "Item is currently equipped" : "") : Localization.instance.Localize("$inventory_full");
-                }
-                else
-                {
-                    var magicItemBG = __instance.m_recipeIcon.transform.parent.Find("MagicItemBG");
-                    if (magicItemBG != null)
-                    {
-                        magicItemBG.GetComponent<Image>().enabled = false;
+                        var magicItemBG = __instance.m_recipeIcon.transform.parent.Find("MagicItemBG");
+                        if (magicItemBG != null)
+                        {
+                            magicItemBG.GetComponent<Image>().enabled = false;
+                        }
                     }
                 }
             }
@@ -406,27 +410,38 @@ namespace EpicLoot.Crafting
             element.SetActive(true);
             element.RectTransform().anchoredPosition = new Vector2(0.0f, count * -__instance.m_recipeListSpace);
 
+            var item = recipe.FromItem;
+
             var image = element.transform.Find("icon").GetComponent<Image>();
-            image.sprite = recipe.FromItem.GetIcon();
+            image.sprite = item.GetIcon();
             image.color = Color.white;
 
-            if (recipe.FromItem.UseMagicBackground())
+            if (item.UseMagicBackground())
             {
                 var bgImage = Object.Instantiate(image, image.transform.parent, true);
                 bgImage.name = "MagicItemBG";
                 bgImage.transform.SetSiblingIndex(image.transform.GetSiblingIndex());
                 bgImage.sprite = EpicLoot.Assets.GenericItemBgSprite;
-                bgImage.color = recipe.FromItem.GetRarityColor();
+                bgImage.color = item.GetRarityColor();
             }
 
             var nameText = element.transform.Find("name").GetComponent<Text>();
-            nameText.text = Localization.instance.Localize(recipe.FromItem.GetDecoratedName());
+            nameText.text = Localization.instance.Localize(item.GetDecoratedName());
 
             var durability = element.transform.Find("Durability").GetComponent<GuiBar>();
-            durability.gameObject.SetActive(false);
+            if (item.m_shared.m_useDurability && item.m_durability < item.GetMaxDurability())
+            {
+                durability.gameObject.SetActive(true);
+                durability.SetValue(item.GetDurabilityPercentage());
+            }
+            else
+            {
+                durability.gameObject.SetActive(false);
+            }
 
             var quality = element.transform.Find("QualityLevel").GetComponent<Text>();
-            quality.gameObject.SetActive(false);
+            quality.gameObject.SetActive(true);
+            quality.text = item.m_quality.ToString();
 
             element.GetComponent<Button>().onClick.AddListener(() => OnSelectedRecipe(__instance, index));
             __instance.m_recipeList.Add(element);

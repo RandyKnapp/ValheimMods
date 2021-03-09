@@ -41,14 +41,15 @@ namespace EpicLoot
 
             text.Append($"<color={magicColor}>{magicItem.Rarity} {displayName}</color>\n");
             text.Append(item.m_shared.m_description);
-            text.Append("\n");
-            if (item.m_shared.m_dlc.Length > 0)
-            {
-                text.Append("\n<color=aqua>$item_dlc</color>");
-            }
-
+            
             if (!crafting)
             {
+                text.Append("\n");
+                if (item.m_shared.m_dlc.Length > 0)
+                {
+                    text.Append("\n<color=aqua>$item_dlc</color>");
+                }
+
                 ItemDrop.ItemData.AddHandedTip(item, text);
                 if (item.m_crafterID != 0L)
                 {
