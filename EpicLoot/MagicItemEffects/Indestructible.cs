@@ -66,11 +66,15 @@ namespace EpicLoot.MagicItemEffects
             {
                 foreach (var itemData in __instance.m_items)
                 {
-                    HotkeyBar.ElementData element = __instance.m_elements[itemData.m_gridPos.x];
-
-                    if (itemData.HasMagicEffect(MagicEffectType.Indestructible))
+                    var elementIndex = itemData.m_gridPos.x;
+                    if (elementIndex >= 0 && elementIndex < __instance.m_elements.Count)
                     {
-                        element.m_durability.gameObject.SetActive(false);
+                        HotkeyBar.ElementData element = __instance.m_elements[elementIndex];
+
+                        if (itemData.HasMagicEffect(MagicEffectType.Indestructible))
+                        {
+                            element.m_durability.gameObject.SetActive(false);
+                        }
                     }
                 }
             }

@@ -359,7 +359,7 @@ namespace EpicLoot.Crafting
                 if (InDisenchantTab() && SelectedRecipe >= 0 && SelectedRecipe < Recipes.Count)
                 {
                     var recipe = Recipes[SelectedRecipe];
-                    player.GetInventory().RemoveItem(recipe.FromItem);
+                    player.GetInventory().RemoveOneItem(recipe.FromItem);
                     foreach (var product in recipe.Products)
                     {
                         var itemData = player.GetInventory().AddItem(product.Key.name, product.Value, 1, 0, 0, "");

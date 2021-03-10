@@ -1,4 +1,4 @@
-# EpicLoot Data v0.1.0
+# EpicLoot Data v0.5.1
 
 *Author: RandyKnapp*
 *Source: [Github](https://github.com/RandyKnapp/ValheimMods/tree/main/EpicLoot)*

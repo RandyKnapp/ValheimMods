@@ -28,7 +28,6 @@ namespace EpicLoot
     public class PieceDef
     {
         public string Table;
-        public string PieceTable;
         public string CraftingStation;
         public string ExtendStation;
         public List<RecipeRequirementConfig> Resources = new List<RecipeRequirementConfig>();
@@ -38,7 +37,7 @@ namespace EpicLoot
     [BepInDependency("randyknapp.mods.extendeditemdataframework")]
     public class EpicLoot : BaseUnityPlugin
     {
-        private const string Version = "0.1.0";
+        private const string Version = "0.5.1";
 
         private static ConfigEntry<string> SetItemColor;
         private static ConfigEntry<string> MagicRarityColor;

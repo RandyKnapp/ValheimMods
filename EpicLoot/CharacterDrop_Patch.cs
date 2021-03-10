@@ -21,6 +21,11 @@ namespace EpicLoot
     {
         public static void Postfix(Ragdoll __instance, CharacterDrop characterDrop)
         {
+            if (characterDrop == null || characterDrop.m_character == null || characterDrop.m_character.IsPlayer())
+            {
+                return;
+            }
+
             var characterName = EpicLoot.GetCharacterCleanName(characterDrop.m_character);
             var level = characterDrop.m_character.GetLevel();
 

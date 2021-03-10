@@ -1,4 +1,4 @@
-# Epic Loot v0.5.0
+# Epic Loot v0.5.1
 Author: RandyKnapp
 Source: [Github](https://github.com/RandyKnapp/ValheimMods/blob/main/EpicLoot/)
 
@@ -12,6 +12,8 @@ The mod is currently in ***Early Access***! That means it's **not done**! Be pat
   * **Suggestions** for new magic item effects
   * **Suggestions** for something else like UI or art improvements
 
+***EpicLoot works in multiplayer and on dedicated servers!*** The server and all players should have the mod and its dependencies installed.
+
 Information about every magic effect and loot drop table can be found in [info.md](https://github.com/RandyKnapp/ValheimMods/blob/main/EpicLoot/info.md).
 
 ## Dependencies
@@ -21,6 +23,7 @@ Information about every magic effect and loot drop table can be found in [info.m
 ## Current Known Mod Conflicts
 
   * **BetterUI** ([Nexus](https://www.nexusmods.com/valheim/mods/189), [Thunderstore](https://valheim.thunderstore.io/package/Masa/BetterUI/)): You won't be able to see the magic item properties in the tooltip. Go to the BetterUI config and set `showCustomTooltips = false`.
+  * **Multicraft** ([Nexus](https://www.nexusmods.com/valheim/mods/263). [Thunderstore](https://valheim.thunderstore.io/package/MaxiMods/MultiCraft/)): You won't be ablt to do any sacrificing or enchanting at all. You will need to disable Multicraft.
 
 ## Known Bugs
 
@@ -36,7 +39,7 @@ Information about every magic effect and loot drop table can be found in [info.m
 - [X] Create crafting materials
 - [X] Destroy trophies for crafting materials (seidric reduction)
 - [X] Destroy magic items for crafting materials (runic reduction)
-- [ ] Enchant items: add new magic effects to non-magic item
+- [X] Enchant items: add new magic effects to non-magic item
 - [ ] Streamline enchanting UI. Use selectable rarity per item.
 - [ ] Augment items: change/reroll magic item effects (transmute? modify?)
 - [ ] Gamble for magic items from Merchant
