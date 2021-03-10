@@ -1,14 +1,13 @@
 ﻿using System.Collections.Generic;
 using Common;
 using ExtendedItemDataFramework;
-using HarmonyLib;
 using UnityEngine;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
 namespace EpicLoot.Crafting
 {
-    public static class Enchanting
+    public class DisenchantTabController : TabController
     {
         public static readonly Dictionary<ItemRarity, List<string>> TrophyShards = new Dictionary<ItemRarity, List<string>>()
         {
@@ -63,89 +62,43 @@ namespace EpicLoot.Crafting
             public List<KeyValuePair<ItemDrop, int>> Products = new List<KeyValuePair<ItemDrop, int>>();
         }
 
-        public static Button TabDisenchant;
-        public static readonly List<DisenchantRecipe> Recipes = new List<DisenchantRecipe>();
-        public static int SelectedRecipe;
+        public readonly List<DisenchantRecipe> Recipes = new List<DisenchantRecipe>();
 
-        [HarmonyPatch(typeof(InventoryGui), "OnDestroy")]
-        public static class InventoryGui_OnDestroy_Patch
+        public DisenchantTabController() : base(CraftingTabType.Disenchant, true)
         {
-            public static void Postfix()
-            {
-                TabDisenchant = null;
-            }
         }
 
-        [HarmonyPatch(typeof(InventoryGui), "Hide")]
-        public static class InventoryGui_Hide_Patch
+        protected override string GetTabButtonId() => "Disenchant";
+        protected override string GetTabButtonText() => "SACRIFICE";
+
+        public override void OnHide()
         {
-            public static void Postfix()
-            {
-                if (TabDisenchant != null)
-                {
-                    TabDisenchant.interactable = true;
-                }
-                Recipes.Clear();
-                SelectedRecipe = -1;
-            }
+            Recipes.Clear();
+            base.OnHide();
         }
 
-        [HarmonyPatch(typeof(InventoryGui), "UpdateCraftingPanel")]
-        public static class InventoryGui_UpdateCraftingPanel_Patch
+        public override void UpdateCraftingPanel(InventoryGui __instance, bool focusView)
         {
-            public static bool Prefix(InventoryGui __instance, bool focusView)
+            UpdateRecipeList(__instance);
+            if (Recipes.Count > 0)
             {
-                if (TabDisenchant == null)
+                if (SelectedRecipe >= 0 && SelectedRecipe < Recipes.Count)
                 {
-                    var go = Object.Instantiate(__instance.m_tabUpgrade, __instance.m_tabUpgrade.transform.parent, true).gameObject;
-                    go.name = "Disenchant";
-                    go.GetComponentInChildren<Text>().text = "SACRIFICE";
-                    go.transform.SetSiblingIndex(__instance.m_tabUpgrade.transform.GetSiblingIndex() + 1);
-                    go.RectTransform().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 100);
-                    TabDisenchant = go.GetComponent<Button>();
-                    TabDisenchant.gameObject.RectTransform().anchoredPosition = TabDisenchant.gameObject.RectTransform().anchoredPosition + new Vector2(107, 0);
-                    TabDisenchant.onClick.RemoveAllListeners();
-                    TabDisenchant.onClick.AddListener(TabDisenchant.GetComponent<ButtonSfx>().OnClick);
-                    TabDisenchant.onClick.AddListener(OnDisenchatTabPressed);
-                }
-
-                var player = Player.m_localPlayer;
-                var station = player.GetCurrentCraftingStation();
-                var canDisenchantAtThisStation = CanDisenchantHere(station);
-                TabDisenchant.gameObject.SetActive(canDisenchantAtThisStation);
-                if (!canDisenchantAtThisStation)
-                {
-                    return true;
-                }
-
-                if (!InDisenchantTab())
-                {
-                    return true;
-                }
-
-                UpdateRecipeList(__instance);
-                if (Recipes.Count > 0)
-                {
-                    if (SelectedRecipe >= 0 && SelectedRecipe < Recipes.Count)
-                    {
-                        SetRecipe(__instance, SelectedRecipe, focusView);
-                    }
-                    else
-                    {
-                        SelectedRecipe = 0;
-                        SetRecipe(__instance, 0, focusView);
-                    }
+                    SetRecipe(__instance, SelectedRecipe, focusView);
                 }
                 else
                 {
-                    SetRecipe(__instance, -1, focusView);
+                    SelectedRecipe = 0;
+                    SetRecipe(__instance, 0, focusView);
                 }
-
-                return false;
+            }
+            else
+            {
+                SetRecipe(__instance, -1, focusView);
             }
         }
 
-        private static bool CanDisenchantHere(CraftingStation station)
+        public override bool IsAllowedAtThisStation(CraftingStation station)
         {
             if (station == null)
             {
@@ -157,76 +110,44 @@ namespace EpicLoot.Crafting
             return isArtisan || isForgeWithEnchanter;
         }
 
-        //public void UpdateRecipe(Player player, float dt)
-        [HarmonyPatch(typeof(InventoryGui), "UpdateRecipe")]
-        public static class InventoryGui_UpdateRecipe_Patch
+        public override void UpdateRecipe(InventoryGui __instance, Player player, float dt, Image bgImage)
         {
-            public static void Postfix(InventoryGui __instance, Player player, float dt)
+            if (SelectedRecipe >= 0 && SelectedRecipe < Recipes.Count)
             {
-                if (InDisenchantTab())
+                var recipe = Recipes[SelectedRecipe];
+                var itemData = recipe.FromItem;
+
+                __instance.m_recipeIcon.enabled = true;
+                __instance.m_recipeIcon.sprite = itemData.GetIcon();
+
+                __instance.m_recipeName.enabled = true;
+                __instance.m_recipeName.text = Localization.instance.Localize(itemData.GetDecoratedName());
+
+                __instance.m_recipeDecription.enabled = true;
+                __instance.m_recipeDecription.text = Localization.instance.Localize(ItemDrop.ItemData.GetTooltip(itemData, itemData.m_quality, true));
+
+                bgImage.color = recipe.FromItem.GetRarityColor();
+                bgImage.enabled = recipe.FromItem.UseMagicBackground();
+
+                __instance.m_itemCraftType.gameObject.SetActive(true);
+                __instance.m_itemCraftType.text = "Destroy this item and get:";
+
+                __instance.m_variantButton.gameObject.SetActive(false);
+
+                SetupRequirementList(__instance, player, recipe);
+
+                __instance.m_minStationLevelIcon.gameObject.SetActive(false);
+
+                var isEquipped = recipe.FromItem.m_equiped;
+                var canPutProductsInInventory = true;
+                foreach (var product in recipe.Products)
                 {
-                    if (SelectedRecipe >= 0 && SelectedRecipe < Recipes.Count)
-                    {
-                        var recipe = Recipes[SelectedRecipe];
-                        var itemData = recipe.FromItem;
-
-                        __instance.m_recipeIcon.enabled = true;
-                        __instance.m_recipeIcon.sprite = itemData.GetIcon();
-
-                        __instance.m_recipeName.enabled = true;
-                        __instance.m_recipeName.text = Localization.instance.Localize(itemData.GetDecoratedName());
-
-                        __instance.m_recipeDecription.enabled = true;
-                        __instance.m_recipeDecription.text = Localization.instance.Localize(ItemDrop.ItemData.GetTooltip(itemData, itemData.m_quality, true));
-
-                        var magicItemBG = __instance.m_recipeIcon.transform.parent.Find("MagicItemBG");
-                        Image bgImage = null;
-                        if (magicItemBG == null)
-                        {
-                            bgImage = Object.Instantiate(__instance.m_recipeIcon, __instance.m_recipeIcon.transform.parent, true);
-                            bgImage.name = "MagicItemBG";
-                            bgImage.transform.SetSiblingIndex(__instance.m_recipeIcon.transform.GetSiblingIndex());
-                            bgImage.sprite = EpicLoot.GetMagicItemBgSprite();
-                            bgImage.color = recipe.FromItem.GetRarityColor();
-                        }
-                        else
-                        {
-                            bgImage = magicItemBG.GetComponent<Image>();
-                            bgImage.sprite = EpicLoot.GetMagicItemBgSprite();
-                            bgImage.color = recipe.FromItem.GetRarityColor();
-                        }
-
-                        bgImage.enabled = recipe.FromItem.UseMagicBackground();
-
-                        __instance.m_itemCraftType.gameObject.SetActive(true);
-                        __instance.m_itemCraftType.text = "Destroy this item and get:";
-
-                        __instance.m_variantButton.gameObject.SetActive(false);
-
-                        SetupRequirementList(__instance, player, recipe);
-
-                        __instance.m_minStationLevelIcon.gameObject.SetActive(false);
-
-                        var isEquipped = recipe.FromItem.m_equiped;
-                        var canPutProductsInInventory = true;
-                        foreach (var product in recipe.Products)
-                        {
-                            canPutProductsInInventory = canPutProductsInInventory && player.GetInventory().CanAddItem(product.Key.m_itemData, product.Value);
-                        }
-                        __instance.m_craftButton.interactable = canPutProductsInInventory && !isEquipped;
-                        __instance.m_craftButton.GetComponentInChildren<Text>().text = "Sacrifice";
-                        __instance.m_craftButton.GetComponent<UITooltip>().m_text =
-                            canPutProductsInInventory ? (isEquipped ? "Item is currently equipped" : "") : Localization.instance.Localize("$inventory_full");
-                    }
-                    else
-                    {
-                        var magicItemBG = __instance.m_recipeIcon.transform.parent.Find("MagicItemBG");
-                        if (magicItemBG != null)
-                        {
-                            magicItemBG.GetComponent<Image>().enabled = false;
-                        }
-                    }
+                    canPutProductsInInventory = canPutProductsInInventory && player.GetInventory().CanAddItem(product.Key.m_itemData, product.Value);
                 }
+                __instance.m_craftButton.interactable = canPutProductsInInventory && !isEquipped;
+                __instance.m_craftButton.GetComponentInChildren<Text>().text = "Sacrifice";
+                __instance.m_craftButton.GetComponent<UITooltip>().m_text =
+                    canPutProductsInInventory ? (isEquipped ? "Item is currently equipped" : "") : Localization.instance.Localize("$inventory_full");
             }
         }
 
@@ -279,7 +200,7 @@ namespace EpicLoot.Crafting
                 {
                     if (bgIconTransform == null)
                     {
-                        bgIconTransform = GameObject.Instantiate(icon, icon.transform.parent, true).transform;
+                        bgIconTransform = Object.Instantiate(icon, icon.transform.parent, true).transform;
                         bgIconTransform.name = "bgIcon";
                         bgIconTransform.SetSiblingIndex(icon.transform.GetSiblingIndex());
                     }
@@ -307,83 +228,46 @@ namespace EpicLoot.Crafting
             return true;
         }
 
-        //public void OnTabCraftPressed()
-        [HarmonyPatch(typeof(InventoryGui), "OnTabCraftPressed")]
-        public static class InventoryGui_OnTabCraftPressed_Patch
+        public override void OnCraftPressed(InventoryGui __instance)
         {
-            public static bool Prefix(InventoryGui __instance)
+            if (SelectedRecipe >= 0 && SelectedRecipe < Recipes.Count)
             {
-                TabDisenchant.interactable = true;
-                SelectedRecipe = -1;
-                return true;
-            }
-        }
-
-        //public void OnTabUpgradePressed()
-        [HarmonyPatch(typeof(InventoryGui), "OnTabUpgradePressed")]
-        public static class InventoryGui_OnTabUpgradePressed_Patch
-        {
-            public static bool Prefix(InventoryGui __instance)
-            {
-                TabDisenchant.interactable = true;
-                SelectedRecipe = -1;
-                return true;
-            }
-        }
-
-        [HarmonyPatch(typeof(InventoryGui), "OnCraftPressed")]
-        public static class InventoryGui_OnCraftPressed_Patch
-        {
-            public static bool Prefix(InventoryGui __instance)
-            {
-                if (InDisenchantTab() && SelectedRecipe >= 0 && SelectedRecipe < Recipes.Count)
+                __instance.m_craftTimer = 0.0f;
+                var currentCraftingStation = Player.m_localPlayer.GetCurrentCraftingStation();
+                if (currentCraftingStation != null)
                 {
-                    __instance.m_craftTimer = 0.0f;
-                    CraftingStation currentCraftingStation = Player.m_localPlayer.GetCurrentCraftingStation();
-                    if (currentCraftingStation != null)
-                    {
-                        currentCraftingStation.m_craftItemEffects.Create(Player.m_localPlayer.transform.position, Quaternion.identity);
-                    }
-                    return false;
+                    currentCraftingStation.m_craftItemEffects.Create(Player.m_localPlayer.transform.position, Quaternion.identity);
                 }
-                return true;
             }
         }
 
-        //public void DoCrafting(Player player)
-        [HarmonyPatch(typeof(InventoryGui), "DoCrafting")]
-        public static class InventoryGui_DoCrafting_Patch
+        public override void DoCrafting(InventoryGui __instance, Player player)
         {
-            public static bool Prefix(InventoryGui __instance, Player player)
+            if (SelectedRecipe >= 0 && SelectedRecipe < Recipes.Count)
             {
-                if (InDisenchantTab() && SelectedRecipe >= 0 && SelectedRecipe < Recipes.Count)
+                var recipe = Recipes[SelectedRecipe];
+                player.GetInventory().RemoveOneItem(recipe.FromItem);
+                foreach (var product in recipe.Products)
                 {
-                    var recipe = Recipes[SelectedRecipe];
-                    player.GetInventory().RemoveOneItem(recipe.FromItem);
-                    foreach (var product in recipe.Products)
+                    var itemData = player.GetInventory().AddItem(product.Key.name, product.Value, 1, 0, 0, "");
+                    if (itemData.IsMagicCraftingMaterial())
                     {
-                        var itemData = player.GetInventory().AddItem(product.Key.name, product.Value, 1, 0, 0, "");
-                        if (itemData.IsMagicCraftingMaterial())
-                        {
-                            itemData.m_variant = EpicLoot.GetRarityIconIndex(itemData.GetRarity());
-                        }
+                        itemData.m_variant = EpicLoot.GetRarityIconIndex(itemData.GetRarity());
                     }
-                    __instance.UpdateCraftingPanel();
-
-                    if (player.GetCurrentCraftingStation() != null)
-                    {
-                        player.GetCurrentCraftingStation().m_craftItemDoneEffects.Create(player.transform.position, Quaternion.identity);
-                    }
-
-                    Game.instance.GetPlayerProfile().m_playerStats.m_crafts++;
-                    Gogan.LogEvent("Game", "Disenchanted", recipe.FromItem.m_shared.m_name, 1);
-                    return false;
                 }
-                return true;
+                __instance.UpdateCraftingPanel();
+
+                if (player.GetCurrentCraftingStation() != null)
+                {
+                    player.GetCurrentCraftingStation().m_craftItemDoneEffects.Create(player.transform.position, Quaternion.identity);
+                }
+
+                Game.instance.GetPlayerProfile().m_playerStats.m_crafts++;
+                Gogan.LogEvent("Game", "Disenchanted", recipe.FromItem.m_shared.m_name, 1);
             }
         }
 
-        public static void UpdateRecipeList(InventoryGui __instance)
+        public void UpdateRecipeList(InventoryGui __instance)
         { 
             __instance.m_availableRecipes.Clear();
             foreach (var recipe in __instance.m_recipeList)
@@ -392,7 +276,7 @@ namespace EpicLoot.Crafting
             }
             __instance.m_recipeList.Clear();
 
-            GenerateDisenchantRecipes();
+            GenerateRecipes();
             for (var index = 0; index < Recipes.Count; index++)
             {
                 var disenchantRecipe = Recipes[index];
@@ -400,10 +284,10 @@ namespace EpicLoot.Crafting
             }
 
             __instance.m_recipeListRoot.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 
-                Mathf.Max(__instance.m_recipeListBaseSize, (float)__instance.m_recipeList.Count * __instance.m_recipeListSpace));
+                Mathf.Max(__instance.m_recipeListBaseSize, __instance.m_recipeList.Count * __instance.m_recipeListSpace));
         }
 
-        public static void AddRecipeToList(InventoryGui __instance, DisenchantRecipe recipe, int index)
+        public void AddRecipeToList(InventoryGui __instance, DisenchantRecipe recipe, int index)
         {
             var count = __instance.m_recipeList.Count;
             var element = Object.Instantiate(__instance.m_recipeElementPrefab, __instance.m_recipeListRoot);
@@ -427,6 +311,10 @@ namespace EpicLoot.Crafting
 
             var nameText = element.transform.Find("name").GetComponent<Text>();
             nameText.text = Localization.instance.Localize(item.GetDecoratedName());
+            if (item.m_shared.m_maxStackSize > 1 && item.m_stack > 1)
+            {
+                nameText.text += $" x{item.m_stack}";
+            }
 
             var durability = element.transform.Find("Durability").GetComponent<GuiBar>();
             if (item.m_shared.m_useDurability && item.m_durability < item.GetMaxDurability())
@@ -447,13 +335,13 @@ namespace EpicLoot.Crafting
             __instance.m_recipeList.Add(element);
         }
 
-        private static void OnSelectedRecipe(InventoryGui __instance, int index)
+        private void OnSelectedRecipe(InventoryGui __instance, int index)
         {
             SelectedRecipe = index;
             SetRecipe(__instance, SelectedRecipe, false);
         }
 
-        public static void SetRecipe(InventoryGui __instance, int index, bool center)
+        public void SetRecipe(InventoryGui __instance, int index, bool center)
         {
             for (var i = 0; i < __instance.m_recipeList.Count; ++i)
             {
@@ -467,27 +355,7 @@ namespace EpicLoot.Crafting
             }
         }
 
-        private static bool InDisenchantTab()
-        {
-            return TabDisenchant != null && !TabDisenchant.interactable;
-        }
-
-        public static void OnDisenchatTabPressed()
-        {
-            var instance = InventoryGui.instance;
-            instance.m_tabCraft.interactable = true;
-            instance.m_tabUpgrade.interactable = true;
-            TabDisenchant.interactable = false;
-            if (Enchant.TabEnchant != null)
-            {
-                Enchant.TabEnchant.interactable = true;
-            }
-
-            GenerateDisenchantRecipes();
-            instance.UpdateCraftingPanel();
-        }
-
-        public static void GenerateDisenchantRecipes()
+        public override void GenerateRecipes()
         {
             Recipes.Clear();
             if (Player.m_localPlayer != null)

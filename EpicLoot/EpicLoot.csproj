@@ -91,16 +91,18 @@
   <ItemGroup>
     <Compile Include="Crafting\CraftingItemExtensions.cs" />
     <Compile Include="Crafting\CraftingStation_Patch.cs" />
-    <Compile Include="Crafting\Enchant.cs" />
+    <Compile Include="Crafting\CraftingTabs.cs" />
+    <Compile Include="Crafting\EnchantTabController.cs" />
     <Compile Include="Crafting\InventoryGui_Patch.cs" />
     <Compile Include="Crafting\ItemDrop_Patch.cs" />
     <Compile Include="Crafting\Recipes_Setup.cs" />
+    <Compile Include="Crafting\TabController.cs" />
     <Compile Include="LootBeams\AlwaysPointUp.cs" />
     <Compile Include="LootBeams\BeamColorSetter.cs" />
     <Compile Include="CharacterDrop_Patch.cs" />
     <Compile Include="Console_Patch.cs" />
     <Compile Include="Container_Patch.cs" />
-    <Compile Include="Crafting\Disenchant.cs" />
+    <Compile Include="Crafting\DisenchantTabController.cs" />
     <Compile Include="InventoryGui_Patch.cs" />
     <Compile Include="ItemDrop_Patch.cs" />
     <Compile Include="LootBeams\LootBeam.cs" />

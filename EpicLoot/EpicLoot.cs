@@ -37,7 +37,7 @@ namespace EpicLoot
     [BepInDependency("randyknapp.mods.extendeditemdataframework")]
     public class EpicLoot : BaseUnityPlugin
     {
-        private const string Version = "0.5.1";
+        private const string Version = "0.5.2";
 
         private static ConfigEntry<string> SetItemColor;
         private static ConfigEntry<string> MagicRarityColor;
@@ -277,12 +277,17 @@ namespace EpicLoot
         public static void AddLootTable(LootTable lootTable)
         {
             var key = lootTable.Object;
-            var levels = (lootTable.Level != null && lootTable.Level.Length > 0) ? string.Join(", ", lootTable.Level) : "all";
-            Debug.Log($"Added LootTable: {key} ({levels})");
+            if (string.IsNullOrEmpty(key) || lootTable.Loot.Length == 0 || lootTable.Drops.Length == 0)
+            {
+                return;
+            }
+
+            Debug.Log($"Added LootTable: {key}");
             if (!LootTables.ContainsKey(key))
             {
                 LootTables.Add(key, new List<LootTable>());
             }
+
             LootTables[key].Add(lootTable);
         }
 
@@ -489,10 +494,10 @@ namespace EpicLoot
 
         public static void OnCharacterDeath(string characterName, int level, Vector3 dropPoint)
         {
-            var lootTable = GetLootTable(characterName, level);
-            if (lootTable != null)
+            var lootTables = GetLootTable(characterName, level);
+            if (lootTables != null && lootTables.Count > 0)
             {
-                List<GameObject> loot = RollLootTableAndSpawnObjects(lootTable, characterName, dropPoint);
+                List<GameObject> loot = RollLootTableAndSpawnObjects(lootTables, characterName, dropPoint);
                 Debug.Log($"Rolling on loot table: {characterName} (lvl {level}), spawned {loot.Count} items at drop point({dropPoint}).");
                 DropItems(loot, dropPoint);
                 foreach (var l in loot)
@@ -703,11 +708,52 @@ namespace EpicLoot
 
         public static List<LootTable> GetLootTable(string objectName, int level)
         {
-            if (LootTables.TryGetValue(objectName, out List<LootTable> lootTable))
+            var results = new List<LootTable>();
+            if (LootTables.TryGetValue(objectName, out List<LootTable> lootTables))
             {
-                return lootTable.Where(x => x.Level == null || x.Level.Length == 0 || x.Level.Contains(level)).ToList();
+                foreach (var lootTable in lootTables)
+                {
+                    results.Add(GenerateLootTableForLevel(lootTable, level));
+                }
             }
-            return null;
+            return results;
+        }
+
+        public static LootTable GenerateLootTableForLevel(LootTable lootTable, int level)
+        {
+            var result = new LootTable()
+            {
+                Object = lootTable.Object
+            };
+
+            // Use only the level-specific drops
+            if (level == 2 && !ArrayUtils.IsNullOrEmpty(lootTable.Drops2))
+            {
+                result.Drops = lootTable.Drops2.ToArray();
+            }
+            else if (level == 3 && !ArrayUtils.IsNullOrEmpty(lootTable.Drops3))
+            {
+                result.Drops = lootTable.Drops3.ToArray();
+            }
+            else
+            {
+                result.Drops = lootTable.Drops.ToArray();
+            }
+
+            // Combine all the loot up to the level
+            var allLoot = new List<LootDrop>();
+            allLoot.AddRange(lootTable.Loot);
+            if (level >= 2 && !ArrayUtils.IsNullOrEmpty(lootTable.Loot2))
+            {
+                allLoot.AddRange(lootTable.Loot2);
+            }
+            if (level >= 3 && !ArrayUtils.IsNullOrEmpty(lootTable.Loot3))
+            {
+                allLoot.AddRange(lootTable.Loot3);
+            }
+            result.Loot = allLoot.ToArray();
+
+            return result;
         }
 
         private void PrintInfo()
@@ -819,51 +865,8 @@ namespace EpicLoot
                 {
                     t.AppendLine($"## {lootTableEntry.Key}");
                     t.AppendLine();
-                    var levelDisplay = (lootTable.Level == null || lootTable.Level.Length == 0) ? "All" : string.Join(", ", lootTable.Level);
-                    t.AppendLine($"> **Levels:** {levelDisplay}");
-                    t.AppendLine(">");
-                    float total = lootTable.Drops.Sum(x => x.Length > 1 ? x[1] : 0);
-                    if (total > 0)
-                    {
-                        t.AppendLine($"> | Number of Items | Weight (Chance) |");
-                        t.AppendLine($"> | -- | -- |");
-                        foreach (var drop in lootTable.Drops)
-                        {
-                            var count = drop.Length > 0 ? drop[0] : 0;
-                            var value = drop.Length > 1 ? drop[1] : 0;
-                            var percent = (value / total) * 100;
-                            t.AppendLine($"> | {count} | {value} ({percent:0.#}%) |");
-                        }
-                    }
-
-                    t.AppendLine(">");
-                    t.AppendLine("> | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |");
-                    t.AppendLine("> | -- | -- | -- | -- | -- | -- |");
-
-                    float totalLootWeight = lootTable.Loot.Sum(x => x.Weight);
-                    foreach (var lootDrop in lootTable.Loot)
-                    {
-                        var percentChance = lootDrop.Weight / totalLootWeight * 100;
-                        if (lootDrop.Rarity == null || lootDrop.Rarity.Length == 0)
-                        {
-                            t.AppendLine($"> | {lootDrop.Item} | {lootDrop.Weight} ({percentChance:0.#}%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |");
-                            continue;
-                        }
-
-                        float rarityTotal = lootDrop.Rarity.Sum();
-                        float[] rarityPercent =
-                        {
-                            lootDrop.Rarity[0] / rarityTotal * 100,
-                            lootDrop.Rarity[1] / rarityTotal * 100,
-                            lootDrop.Rarity[2] / rarityTotal * 100,
-                            lootDrop.Rarity[3] / rarityTotal * 100,
-                        };
-                        t.AppendLine($"> | {lootDrop.Item} | {lootDrop.Weight} ({percentChance:0.#}%) " +
-                            $"| {lootDrop.Rarity[0]} ({rarityPercent[0]:0.#}%) " +
-                            $"| {lootDrop.Rarity[1]} ({rarityPercent[1]:0.#}%) " +
-                            $"| {lootDrop.Rarity[2]:0.#} ({rarityPercent[2]:0.#}%) " +
-                            $"| {lootDrop.Rarity[3]} ({rarityPercent[3]:0.#}%) |");
-                    }
+                    WriteLootTableDrops(t, lootTable);
+                    WriteLootTableItems(t, lootTable);
                     t.AppendLine();
                 }
             }
@@ -878,7 +881,99 @@ namespace EpicLoot
             }
         }
 
-        private Dictionary<string, string> ParseSource(IEnumerable<string> lines)
+        private static void WriteLootTableDrops(StringBuilder t, LootTable lootTable)
+        {
+            var dropTables = new[] { lootTable.Drops, lootTable.Drops2, lootTable.Drops3 };
+            for (var i = 0; i < 3; i++)
+            {
+                var levelDisplay = $" (lvl {i + 1})";
+                if (i == 0 && ArrayUtils.IsNullOrEmpty(lootTable.Drops2) && ArrayUtils.IsNullOrEmpty(lootTable.Drops3))
+                {
+                    levelDisplay = "";
+                }
+                else if (i == 0 && ArrayUtils.IsNullOrEmpty(lootTable.Drops2))
+                {
+                    levelDisplay = " (lvl 1, 2)";
+                }
+                else if (i == 0 && ArrayUtils.IsNullOrEmpty(lootTable.Drops3))
+                {
+                    levelDisplay = " (lvl 1, 3)";
+                }
+
+                var dropTable = dropTables[i];
+                if (ArrayUtils.IsNullOrEmpty(dropTable))
+                {
+                    continue;
+                }
+
+                float total = lootTable.Drops.Sum(x => x.Length > 1 ? x[1] : 0);
+                if (total > 0)
+                {
+                    t.AppendLine($"> | Drops{levelDisplay} | Weight (Chance) |");
+                    t.AppendLine($"> | -- | -- |");
+                    foreach (var drop in dropTable)
+                    {
+                        var count = drop.Length > 0 ? drop[0] : 0;
+                        var value = drop.Length > 1 ? drop[1] : 0;
+                        var percent = (value / total) * 100;
+                        t.AppendLine($"> | {count} | {value} ({percent:0.#}%) |");
+                    }
+                }
+                t.AppendLine();
+            }
+        }
+
+        private static void WriteLootTableItems(StringBuilder t, LootTable lootTable)
+        {
+            var lootLists = new[] { lootTable.Loot, lootTable.Loot2, lootTable.Loot3 };
+
+            for (var i = 0; i < 3; i++)
+            {
+                var levelDisplay = $" (lvl {i + 1}+)";
+                if (i == 0 && ArrayUtils.IsNullOrEmpty(lootTable.Loot2) && ArrayUtils.IsNullOrEmpty(lootTable.Loot3))
+                {
+                    levelDisplay = "";
+                }
+
+                var lootList = lootLists[i];
+                if (ArrayUtils.IsNullOrEmpty(lootList))
+                {
+                    continue;
+                }
+
+                t.AppendLine($"> | Items{levelDisplay} | Weight (Chance) | Magic | Rare | Epic | Legendary |");
+                t.AppendLine("> | -- | -- | -- | -- | -- | -- |");
+
+                float totalLootWeight = lootList.Sum(x => x.Weight);
+                foreach (var lootDrop in lootList)
+                {
+                    var percentChance = lootDrop.Weight / totalLootWeight * 100;
+                    if (lootDrop.Rarity == null || lootDrop.Rarity.Length == 0)
+                    {
+                        t.AppendLine($"> | {lootDrop.Item} | {lootDrop.Weight} ({percentChance:0.#}%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |");
+                        continue;
+                    }
+
+                    float rarityTotal = lootDrop.Rarity.Sum();
+                    float[] rarityPercent =
+                    {
+                        lootDrop.Rarity[0] / rarityTotal * 100,
+                        lootDrop.Rarity[1] / rarityTotal * 100,
+                        lootDrop.Rarity[2] / rarityTotal * 100,
+                        lootDrop.Rarity[3] / rarityTotal * 100,
+                    };
+                    t.AppendLine($"> | {lootDrop.Item} | {lootDrop.Weight} ({percentChance:0.#}%) " +
+                                 $"| {lootDrop.Rarity[0]} ({rarityPercent[0]:0.#}%) " +
+                                 $"| {lootDrop.Rarity[1]} ({rarityPercent[1]:0.#}%) " +
+                                 $"| {lootDrop.Rarity[2]:0.#} ({rarityPercent[2]:0.#}%) " +
+                                 $"| {lootDrop.Rarity[3]} ({rarityPercent[3]:0.#}%) |");
+                }
+
+                t.AppendLine();
+            }
+        }
+
+        private static Dictionary<string, string> ParseSource(IEnumerable<string> lines)
         {
             var results = new Dictionary<string, string>();
             var currentType = "";
@@ -919,7 +1014,7 @@ namespace EpicLoot
             return results;
         }
 
-        private string GetMagicEffectCountTableLine(ItemRarity rarity)
+        private static string GetMagicEffectCountTableLine(ItemRarity rarity)
         {
             var effectCounts = MagicEffectCountWeightsPerRarity[rarity];
             var total = effectCounts.Sum(x => x.Value);

@@ -1,4 +1,4 @@
-# Epic Loot v0.5.1
+# Epic Loot v0.5.2
 Author: RandyKnapp
 Source: [Github](https://github.com/RandyKnapp/ValheimMods/blob/main/EpicLoot/)
 
@@ -16,6 +16,16 @@ The mod is currently in ***Early Access***! That means it's **not done**! Be pat
 
 Information about every magic effect and loot drop table can be found in [info.md](https://github.com/RandyKnapp/ValheimMods/blob/main/EpicLoot/info.md).
 
+## Cheats
+
+Enter these into the console (F5):
+
+  * `magicitem <rarity> <itemtype> <amount>`: Roll a random magic item using the specified values. (alias: `mi`)
+    * `<rarity>`: (String) One of: magic, rare, epic, legendary, random. If left empty, uses random.
+	* `<itemtype>`: (String) The internal ID of an item. May be "random". If left empty, uses random.
+	* `<amount>`: (Int) The number of magic items to roll. If the other values are set to random, rerolls that random item each time. If left empty, uses 1.
+  * `magicmats`: Spawns a bunch of all the magic crafting materials
+
 ## Dependencies
 
   * **Extended Item Data Framework**: Required. Download from [Nexus](https://www.nexusmods.com/valheim/mods/281]), [Thunderstore](https://valheim.thunderstore.io/package/RandyKnapp/ExtendedItemDataFramework/)
@@ -23,7 +33,7 @@ Information about every magic effect and loot drop table can be found in [info.m
 ## Current Known Mod Conflicts
 
   * **BetterUI** ([Nexus](https://www.nexusmods.com/valheim/mods/189), [Thunderstore](https://valheim.thunderstore.io/package/Masa/BetterUI/)): You won't be able to see the magic item properties in the tooltip. Go to the BetterUI config and set `showCustomTooltips = false`.
-  * **Multicraft** ([Nexus](https://www.nexusmods.com/valheim/mods/263). [Thunderstore](https://valheim.thunderstore.io/package/MaxiMods/MultiCraft/)): You won't be ablt to do any sacrificing or enchanting at all. You will need to disable Multicraft.
+  * **Multicraft** ([Nexus](https://www.nexusmods.com/valheim/mods/263), [Thunderstore](https://valheim.thunderstore.io/package/MaxiMods/MultiCraft/)): You won't be able to do any sacrificing or enchanting at all. You will need to disable Multicraft.
 
 ## Known Bugs
 

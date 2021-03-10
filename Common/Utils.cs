@@ -80,4 +80,12 @@ namespace Common
             return s;
         }
     }
+
+    public static class ArrayUtils
+    {
+        public static bool IsNullOrEmpty<T>(T[] a)
+        {
+            return a == null || a.Length == 0;
+        }
+    }
 }

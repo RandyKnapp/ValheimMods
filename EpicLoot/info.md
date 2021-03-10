@@ -1,4 +1,4 @@
-# EpicLoot Data v0.5.1
+# EpicLoot Data v0.5.2
 
 *Author: RandyKnapp*
 *Source: [Github](https://github.com/RandyKnapp/ValheimMods/tree/main/EpicLoot)*
@@ -719,13 +719,11 @@ Some lists of effect types are used in requirements to consolidate code. They ar
 A list of every built-in loot table from the mod. The name of the loot table is the object name followed by a number signifying the level of the object.
 ## Greyling
 
-> **Levels:** All
->
-> | Number of Items | Weight (Chance) |
+> | Drops | Weight (Chance) |
 > | -- | -- |
 > | 0 | 95 (95%) |
 > | 1 | 5 (5%) |
->
+
 > | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Club | 1 (16.7%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
@@ -735,39 +733,24 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 > | ArmorRagsChest | 1 (16.7%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
 > | ShieldWood | 1 (16.7%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
 
+
 ## Greydwarf
 
-> **Levels:** 1, 2
->
-> | Number of Items | Weight (Chance) |
+> | Drops (lvl 1) | Weight (Chance) |
 > | -- | -- |
 > | 0 | 95 (95%) |
 > | 1 | 5 (5%) |
->
-> | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
-> | -- | -- | -- | -- | -- | -- |
-> | Club | 1 (8.3%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
-> | AxeStone | 1 (8.3%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
-> | AxeFlint | 1 (8.3%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
-> | SpearFlint | 1 (8.3%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
-> | KnifeFlint | 1 (8.3%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
-> | ShieldWood | 1 (8.3%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
-> | ArmorLeatherLegs | 1 (8.3%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
-> | ArmorLeatherChest | 1 (8.3%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
-> | HelmetLeather | 1 (8.3%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
-> | CapeDeerHide | 1 (8.3%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
-> | Hammer | 1 (8.3%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
-> | Bow | 1 (8.3%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
 
-## Greydwarf
-
-> **Levels:** 3
->
-> | Number of Items | Weight (Chance) |
+> | Drops (lvl 2) | Weight (Chance) |
 > | -- | -- |
-> | 0 | 70 (70%) |
-> | 1 | 30 (30%) |
->
+> | 0 | 90 (90%) |
+> | 1 | 10 (10%) |
+
+> | Drops (lvl 3) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 80 (80%) |
+> | 1 | 20 (20%) |
+
 > | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Club | 1 (8.3%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
@@ -780,19 +763,28 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 > | ArmorLeatherChest | 1 (8.3%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
 > | HelmetLeather | 1 (8.3%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
 > | CapeDeerHide | 1 (8.3%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
-> | Hammer | 1 (8.3%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
+> | Hammer | 1 (8.3%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
 > | Bow | 1 (8.3%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
+
 
 ## Greydwarf_Elite
 
-> **Levels:** 1, 2
->
-> | Number of Items | Weight (Chance) |
+> | Drops (lvl 1) | Weight (Chance) |
 > | -- | -- |
 > | 0 | 70 (70%) |
 > | 1 | 30 (30%) |
->
-> | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
+
+> | Drops (lvl 2) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 60 (60%) |
+> | 1 | 40 (40%) |
+
+> | Drops (lvl 3) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 50 (50%) |
+> | 1 | 50 (50%) |
+
+> | Items (lvl 1+) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | AxeFlint | 1 (20%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
 > | KnifeFlint | 1 (20%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
@@ -800,33 +792,31 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 > | SpearFlint | 1 (20%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
 > | Bow | 1 (20%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
 
-## Greydwarf_Elite
-
-> **Levels:** 3
->
-> | Number of Items | Weight (Chance) |
-> | -- | -- |
-> | 0 | 70 (70%) |
-> | 1 | 30 (30%) |
->
-> | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Items (lvl 3+) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
-> | AxeStone | 5 (50%) | 60 (60%) | 30 (30%) | 10 (10%) | 0 (0%) |
-> | ArmorTrollLeatherLegs | 1 (10%) | 60 (60%) | 30 (30%) | 10 (10%) | 0 (0%) |
-> | ArmorTrollLeatherChest | 1 (10%) | 60 (60%) | 30 (30%) | 10 (10%) | 0 (0%) |
-> | HelmetTrollLeather | 1 (10%) | 60 (60%) | 30 (30%) | 10 (10%) | 0 (0%) |
-> | CapeTrollHide | 1 (10%) | 60 (60%) | 30 (30%) | 10 (10%) | 0 (0%) |
-> | Bow | 1 (10%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
+> | ArmorTrollLeatherLegs | 1 (25%) | 60 (60%) | 30 (30%) | 10 (10%) | 0 (0%) |
+> | ArmorTrollLeatherChest | 1 (25%) | 60 (60%) | 30 (30%) | 10 (10%) | 0 (0%) |
+> | HelmetTrollLeather | 1 (25%) | 60 (60%) | 30 (30%) | 10 (10%) | 0 (0%) |
+> | CapeTrollHide | 1 (25%) | 60 (60%) | 30 (30%) | 10 (10%) | 0 (0%) |
+
 
 ## Greydwarf_Shaman
 
-> **Levels:** 1, 2, 3
->
-> | Number of Items | Weight (Chance) |
+> | Drops (lvl 1) | Weight (Chance) |
 > | -- | -- |
 > | 0 | 60 (60%) |
 > | 1 | 40 (40%) |
->
+
+> | Drops (lvl 2) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 50 (50%) |
+> | 1 | 50 (50%) |
+
+> | Drops (lvl 3) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 40 (40%) |
+> | 1 | 60 (60%) |
+
 > | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | ArmorLeatherLegs | 1 (11.1%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
@@ -838,16 +828,25 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 > | ShieldWood | 1 (11.1%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
 > | SpearFlint | 1 (11.1%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
 > | BowFineWood | 1 (11.1%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
+
 
 ## Troll
 
-> **Levels:** 1, 2, 3
->
-> | Number of Items | Weight (Chance) |
+> | Drops (lvl 1) | Weight (Chance) |
 > | -- | -- |
 > | 0 | 60 (60%) |
 > | 1 | 40 (40%) |
->
+
+> | Drops (lvl 2) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 50 (50%) |
+> | 1 | 50 (50%) |
+
+> | Drops (lvl 3) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 40 (40%) |
+> | 1 | 60 (60%) |
+
 > | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | ArmorLeatherLegs | 1 (11.1%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
@@ -860,37 +859,50 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 > | SpearFlint | 1 (11.1%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
 > | BowFineWood | 1 (11.1%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
 
+
 ## Skeleton
 
-> **Levels:** 1, 2, 3
->
-> | Number of Items | Weight (Chance) |
+> | Drops (lvl 1) | Weight (Chance) |
 > | -- | -- |
 > | 0 | 95 (95%) |
 > | 1 | 5 (5%) |
->
-> | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
+
+> | Drops (lvl 2) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 90 (90%) |
+> | 1 | 10 (10%) |
+
+> | Drops (lvl 3) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 75 (75%) |
+> | 1 | 25 (25%) |
+
+> | Items (lvl 1+) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
-> | SwordBronze | 3 (20%) | 98 (98%) | 2 (2%) | 0 (0%) | 0 (0%) |
-> | AxeBronze | 1 (6.7%) | 98 (98%) | 2 (2%) | 0 (0%) | 0 (0%) |
-> | MaceBronze | 1 (6.7%) | 98 (98%) | 2 (2%) | 0 (0%) | 0 (0%) |
-> | AtgeirBronze | 1 (6.7%) | 98 (98%) | 2 (2%) | 0 (0%) | 0 (0%) |
-> | SpearBronze | 1 (6.7%) | 98 (98%) | 2 (2%) | 0 (0%) | 0 (0%) |
-> | ShieldWood | 2 (13.3%) | 98 (98%) | 2 (2%) | 0 (0%) | 0 (0%) |
-> | HelmetLeather | 1 (6.7%) | 98 (98%) | 2 (2%) | 0 (0%) | 0 (0%) |
-> | HelmetLeather | 1 (6.7%) | 98 (98%) | 2 (2%) | 0 (0%) | 0 (0%) |
-> | ArmorLeatherChest | 1 (6.7%) | 98 (98%) | 2 (2%) | 0 (0%) | 0 (0%) |
-> | Bow | 3 (20%) | 98 (98%) | 2 (2%) | 0 (0%) | 0 (0%) |
+> | ShieldWood | 10 (20%) | 98 (98%) | 2 (2%) | 0 (0%) | 0 (0%) |
+> | ArmorLeatherLegs | 10 (20%) | 98 (98%) | 2 (2%) | 0 (0%) | 0 (0%) |
+> | ArmorLeatherChest | 10 (20%) | 98 (98%) | 2 (2%) | 0 (0%) | 0 (0%) |
+> | HelmetLeather | 10 (20%) | 98 (98%) | 2 (2%) | 0 (0%) | 0 (0%) |
+> | Bow | 10 (20%) | 98 (98%) | 2 (2%) | 0 (0%) | 0 (0%) |
+
+> | Items (lvl 2+) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | SwordBronze | 1 (14.3%) | 98 (98%) | 2 (2%) | 0 (0%) | 0 (0%) |
+> | AxeBronze | 1 (14.3%) | 98 (98%) | 2 (2%) | 0 (0%) | 0 (0%) |
+> | MaceBronze | 1 (14.3%) | 98 (98%) | 2 (2%) | 0 (0%) | 0 (0%) |
+> | AtgeirBronze | 1 (14.3%) | 98 (98%) | 2 (2%) | 0 (0%) | 0 (0%) |
+> | SpearBronze | 1 (14.3%) | 98 (98%) | 2 (2%) | 0 (0%) | 0 (0%) |
+> | ShieldBronzeBuckler | 1 (14.3%) | 98 (98%) | 2 (2%) | 0 (0%) | 0 (0%) |
+> | BowFineWood | 1 (14.3%) | 98 (98%) | 2 (2%) | 0 (0%) | 0 (0%) |
+
 
 ## Ghost
 
-> **Levels:** 1, 2, 3
->
-> | Number of Items | Weight (Chance) |
+> | Drops | Weight (Chance) |
 > | -- | -- |
 > | 0 | 70 (95.9%) |
 > | 1 | 3 (4.1%) |
->
+
 > | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | ArmorLeatherLegs | 1 (9.1%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
@@ -903,32 +915,260 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 > | SpearFlint | 1 (9.1%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
 > | Bow | 3 (27.3%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
 
+
+## Blob
+
+> | Drops | Weight (Chance) |
+> | -- | -- |
+> | 0 | 90 (90%) |
+> | 1 | 9 (9%) |
+> | 2 | 1 (1%) |
+
+> | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | ArmorBronzeLegs | 1 (11.1%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | ArmorBronzeChest | 1 (11.1%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | HelmetBronze | 1 (11.1%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | SwordBronze | 1 (11.1%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | AxeBronze | 1 (11.1%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | MaceBronze | 1 (11.1%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | AtgeirBronze | 1 (11.1%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | SpearBronze | 1 (11.1%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | ShieldBronzeBuckler | 1 (11.1%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+
+
+## BlobElite
+
+> | Drops | Weight (Chance) |
+> | -- | -- |
+> | 0 | 90 (90%) |
+> | 1 | 9 (9%) |
+> | 2 | 1 (1%) |
+
+> | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | ArmorBronzeLegs | 1 (11.1%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | ArmorBronzeChest | 1 (11.1%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | HelmetBronze | 1 (11.1%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | SwordBronze | 1 (11.1%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | AxeBronze | 1 (11.1%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | MaceBronze | 1 (11.1%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | AtgeirBronze | 1 (11.1%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | SpearBronze | 1 (11.1%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | ShieldBronzeBuckler | 1 (11.1%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+
+
+## Draugr
+
+> | Drops (lvl 1) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 90 (90%) |
+> | 1 | 9 (9%) |
+> | 2 | 1 (1%) |
+
+> | Drops (lvl 2) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 75 (75%) |
+> | 1 | 23 (23%) |
+> | 2 | 2 (2%) |
+
+> | Drops (lvl 3) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 60 (60%) |
+> | 1 | 37 (37%) |
+> | 2 | 3 (3%) |
+
+> | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | ArmorBronzeLegs | 1 (7.7%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | ArmorBronzeChest | 1 (7.7%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | HelmetBronze | 1 (7.7%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | SwordBronze | 1 (7.7%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | AxeBronze | 1 (7.7%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | MaceBronze | 1 (7.7%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | AtgeirBronze | 1 (7.7%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | SpearBronze | 1 (7.7%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | ShieldBronzeBuckler | 1 (7.7%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | BowFineWood | 1 (7.7%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | Hammer | 1 (7.7%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | Cultivator | 1 (7.7%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | Hoe | 1 (7.7%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+
+
+## Draugr_Elite
+
+> | Drops (lvl 1) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 70 (70%) |
+> | 1 | 28 (28%) |
+> | 2 | 2 (2%) |
+
+> | Drops (lvl 2) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 60 (60%) |
+> | 1 | 37 (37%) |
+> | 2 | 3 (3%) |
+
+> | Drops (lvl 3) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 50 (50%) |
+> | 1 | 46 (46%) |
+> | 2 | 4 (4%) |
+
+> | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | ArmorBronzeLegs | 1 (7.7%) | 70 (70%) | 25 (25%) | 5 (5%) | 0 (0%) |
+> | ArmorBronzeChest | 1 (7.7%) | 70 (70%) | 25 (25%) | 5 (5%) | 0 (0%) |
+> | HelmetBronze | 1 (7.7%) | 70 (70%) | 25 (25%) | 5 (5%) | 0 (0%) |
+> | SwordBronze | 1 (7.7%) | 70 (70%) | 25 (25%) | 5 (5%) | 0 (0%) |
+> | AxeBronze | 1 (7.7%) | 70 (70%) | 25 (25%) | 5 (5%) | 0 (0%) |
+> | MaceBronze | 1 (7.7%) | 70 (70%) | 25 (25%) | 5 (5%) | 0 (0%) |
+> | AtgeirBronze | 1 (7.7%) | 70 (70%) | 25 (25%) | 5 (5%) | 0 (0%) |
+> | SpearBronze | 1 (7.7%) | 70 (70%) | 25 (25%) | 5 (5%) | 0 (0%) |
+> | ShieldBronzeBuckler | 1 (7.7%) | 70 (70%) | 25 (25%) | 5 (5%) | 0 (0%) |
+> | BowFineWood | 1 (7.7%) | 70 (70%) | 25 (25%) | 5 (5%) | 0 (0%) |
+> | Hammer | 1 (7.7%) | 70 (70%) | 25 (25%) | 5 (5%) | 0 (0%) |
+> | Cultivator | 1 (7.7%) | 70 (70%) | 25 (25%) | 5 (5%) | 0 (0%) |
+> | Hoe | 1 (7.7%) | 70 (70%) | 25 (25%) | 5 (5%) | 0 (0%) |
+
+
+## Leech
+
+> | Drops | Weight (Chance) |
+> | -- | -- |
+> | 0 | 93 (93%) |
+> | 1 | 6 (6%) |
+> | 2 | 1 (1%) |
+
+> | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | ArmorBronzeLegs | 1 (11.1%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | ArmorBronzeChest | 1 (11.1%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | HelmetBronze | 1 (11.1%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | SwordBronze | 1 (11.1%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | AxeBronze | 1 (11.1%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | MaceBronze | 1 (11.1%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | AtgeirBronze | 1 (11.1%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | SpearBronze | 1 (11.1%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | ShieldBronzeBuckler | 1 (11.1%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+
+
+## Surtling
+
+> | Drops | Weight (Chance) |
+> | -- | -- |
+> | 0 | 93 (93%) |
+> | 1 | 6 (6%) |
+> | 2 | 1 (1%) |
+
+> | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | ArmorBronzeLegs | 1 (11.1%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | ArmorBronzeChest | 1 (11.1%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | HelmetBronze | 1 (11.1%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | SwordBronze | 1 (11.1%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | AxeBronze | 1 (11.1%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | MaceBronze | 1 (11.1%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | AtgeirBronze | 1 (11.1%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | SpearBronze | 1 (11.1%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | ShieldBronzeBuckler | 1 (11.1%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+
+
+## Wraith
+
+> | Drops | Weight (Chance) |
+> | -- | -- |
+> | 0 | 70 (70%) |
+> | 1 | 29 (29%) |
+> | 2 | 1 (1%) |
+
+> | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | ArmorBronzeLegs | 1 (11.1%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | ArmorBronzeChest | 1 (11.1%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | HelmetBronze | 1 (11.1%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | SwordBronze | 1 (11.1%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | AxeBronze | 1 (11.1%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | MaceBronze | 1 (11.1%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | AtgeirBronze | 1 (11.1%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | SpearBronze | 1 (11.1%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | ShieldBronzeBuckler | 1 (11.1%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+
+
 ## Eikthyr
 
-> **Levels:** All
->
-> | Number of Items | Weight (Chance) |
+> | Drops | Weight (Chance) |
 > | -- | -- |
 > | 1 | 70 (70%) |
 > | 2 | 30 (30%) |
->
+
 > | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
-> | SledgeStagbreaker | 2 (33.3%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
-> | SpearFlint | 1 (16.7%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
-> | Bow | 1 (16.7%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
-> | PickaxeAntler | 2 (33.3%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
+> | SledgeStagbreaker | 1 (8.3%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
+> | SpearFlint | 2 (16.7%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
+> | KnifeFlint | 2 (16.7%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
+> | Bow | 2 (16.7%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
+> | ShieldWood | 2 (16.7%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
+> | ShieldWoodTower | 2 (16.7%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
+> | PickaxeAntler | 1 (8.3%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
+
+
+## gd_king
+
+> | Drops | Weight (Chance) |
+> | -- | -- |
+> | 1 | 70 (70%) |
+> | 2 | 30 (30%) |
+
+> | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | KnifeCopper | 2 (11.8%) | 80 (80%) | 15 (15%) | 5 (5%) | 0 (0%) |
+> | AtgeirBronze | 1 (5.9%) | 80 (80%) | 15 (15%) | 5 (5%) | 0 (0%) |
+> | AxeBronze | 1 (5.9%) | 80 (80%) | 15 (15%) | 5 (5%) | 0 (0%) |
+> | MaceBronze | 1 (5.9%) | 80 (80%) | 15 (15%) | 5 (5%) | 0 (0%) |
+> | SpearBronze | 1 (5.9%) | 80 (80%) | 15 (15%) | 5 (5%) | 0 (0%) |
+> | SwordBronze | 1 (5.9%) | 80 (80%) | 15 (15%) | 5 (5%) | 0 (0%) |
+> | ShieldBronzeBuckler | 1 (5.9%) | 80 (80%) | 15 (15%) | 5 (5%) | 0 (0%) |
+> | BowFineWood | 2 (11.8%) | 80 (80%) | 15 (15%) | 5 (5%) | 0 (0%) |
+> | ArmorTrollLeatherLegs | 1 (5.9%) | 80 (80%) | 15 (15%) | 5 (5%) | 0 (0%) |
+> | ArmorTrollLeatherChest | 1 (5.9%) | 80 (80%) | 15 (15%) | 5 (5%) | 0 (0%) |
+> | HelmetTrollLeather | 1 (5.9%) | 80 (80%) | 15 (15%) | 5 (5%) | 0 (0%) |
+> | CapeTrollHide | 1 (5.9%) | 80 (80%) | 15 (15%) | 5 (5%) | 0 (0%) |
+> | ArmorBronzeLegs | 1 (5.9%) | 80 (80%) | 15 (15%) | 5 (5%) | 0 (0%) |
+> | ArmorBronzeChest | 1 (5.9%) | 80 (80%) | 15 (15%) | 5 (5%) | 0 (0%) |
+> | HelmetBronze | 1 (5.9%) | 80 (80%) | 15 (15%) | 5 (5%) | 0 (0%) |
+
+
+## Bonemass
+
+> | Drops | Weight (Chance) |
+> | -- | -- |
+> | 1 | 70 (70%) |
+> | 2 | 30 (30%) |
+
+> | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Battleaxe | 1 (9.1%) | 59 (59%) | 30 (30%) | 10 (10%) | 1 (1%) |
+> | SwordIron | 1 (9.1%) | 59 (59%) | 30 (30%) | 10 (10%) | 1 (1%) |
+> | AxeIron | 1 (9.1%) | 59 (59%) | 30 (30%) | 10 (10%) | 1 (1%) |
+> | SledgeIron | 1 (9.1%) | 59 (59%) | 30 (30%) | 10 (10%) | 1 (1%) |
+> | MaceIron | 1 (9.1%) | 59 (59%) | 30 (30%) | 10 (10%) | 1 (1%) |
+> | AtgeirIron | 1 (9.1%) | 59 (59%) | 30 (30%) | 10 (10%) | 1 (1%) |
+> | ArmorIronLegs | 1 (9.1%) | 59 (59%) | 30 (30%) | 10 (10%) | 1 (1%) |
+> | ArmorIronChest | 1 (9.1%) | 59 (59%) | 30 (30%) | 10 (10%) | 1 (1%) |
+> | HelmetIron | 1 (9.1%) | 59 (59%) | 30 (30%) | 10 (10%) | 1 (1%) |
+> | ShieldBanded | 1 (9.1%) | 59 (59%) | 30 (30%) | 10 (10%) | 1 (1%) |
+> | ShieldIronTower | 1 (9.1%) | 59 (59%) | 30 (30%) | 10 (10%) | 1 (1%) |
+
 
 ## TreasureChest_meadows
 
-> **Levels:** All
->
-> | Number of Items | Weight (Chance) |
+> | Drops | Weight (Chance) |
 > | -- | -- |
-> | 0 | 80 (80%) |
-> | 1 | 18 (18%) |
+> | 0 | 78 (78%) |
+> | 1 | 20 (20%) |
 > | 2 | 2 (2%) |
->
+
 > | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Club | 1 (12.5%) | 97 (97%) | 2 (2%) | 1 (1%) | 0 (0%) |
@@ -940,15 +1180,14 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 > | Hammer | 1 (12.5%) | 97 (97%) | 2 (2%) | 1 (1%) | 0 (0%) |
 > | Hoe | 1 (12.5%) | 97 (97%) | 2 (2%) | 1 (1%) | 0 (0%) |
 
+
 ## TreasureChest_blackforest
 
-> **Levels:** All
->
-> | Number of Items | Weight (Chance) |
+> | Drops | Weight (Chance) |
 > | -- | -- |
 > | 0 | 70 (70%) |
 > | 1 | 30 (30%) |
->
+
 > | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Club | 1 (8.3%) | 96 (96%) | 3 (3%) | 1 (1%) | 0 (0%) |
@@ -964,17 +1203,16 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 > | Hammer | 1 (8.3%) | 96 (96%) | 3 (3%) | 1 (1%) | 0 (0%) |
 > | Bow | 1 (8.3%) | 96 (96%) | 3 (3%) | 1 (1%) | 0 (0%) |
 
+
 ## TreasureChest_forestcrypt
 
-> **Levels:** All
->
-> | Number of Items | Weight (Chance) |
+> | Drops | Weight (Chance) |
 > | -- | -- |
-> | 0 | 148 (74%) |
-> | 1 | 30 (15%) |
-> | 2 | 20 (10%) |
-> | 3 | 2 (1%) |
->
+> | 0 | 68 (68%) |
+> | 1 | 20 (20%) |
+> | 2 | 10 (10%) |
+> | 3 | 2 (2%) |
+
 > | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | SwordBronze | 1 (9.1%) | 95 (95%) | 4 (4%) | 1 (1%) | 0 (0%) |
@@ -983,20 +1221,19 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 > | AtgeirBronze | 1 (9.1%) | 95 (95%) | 4 (4%) | 1 (1%) | 0 (0%) |
 > | ShieldBronzeBuckler | 1 (9.1%) | 95 (95%) | 4 (4%) | 1 (1%) | 0 (0%) |
 > | HelmetLeather | 2 (18.2%) | 95 (95%) | 4 (4%) | 1 (1%) | 0 (0%) |
-> | HelmetLeather | 2 (18.2%) | 95 (95%) | 4 (4%) | 1 (1%) | 0 (0%) |
+> | ArmorLeatherLegs | 2 (18.2%) | 95 (95%) | 4 (4%) | 1 (1%) | 0 (0%) |
 > | ArmorLeatherChest | 2 (18.2%) | 95 (95%) | 4 (4%) | 1 (1%) | 0 (0%) |
+
 
 ## TreasureChest_trollcave
 
-> **Levels:** All
->
-> | Number of Items | Weight (Chance) |
+> | Drops | Weight (Chance) |
 > | -- | -- |
-> | 0 | 60 (53.6%) |
-> | 1 | 30 (26.8%) |
-> | 2 | 20 (17.9%) |
+> | 0 | 58 (52.7%) |
+> | 1 | 30 (27.3%) |
+> | 2 | 20 (18.2%) |
 > | 3 | 2 (1.8%) |
->
+
 > | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | SwordBronze | 1 (9.1%) | 95 (95%) | 4 (4%) | 1 (1%) | 0 (0%) |
@@ -1005,6 +1242,83 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 > | AtgeirBronze | 1 (9.1%) | 95 (95%) | 4 (4%) | 1 (1%) | 0 (0%) |
 > | ShieldBronzeBuckler | 1 (9.1%) | 95 (95%) | 4 (4%) | 1 (1%) | 0 (0%) |
 > | HelmetLeather | 2 (18.2%) | 95 (95%) | 4 (4%) | 1 (1%) | 0 (0%) |
-> | HelmetLeather | 2 (18.2%) | 95 (95%) | 4 (4%) | 1 (1%) | 0 (0%) |
+> | ArmorLeatherLegs | 2 (18.2%) | 95 (95%) | 4 (4%) | 1 (1%) | 0 (0%) |
 > | ArmorLeatherChest | 2 (18.2%) | 95 (95%) | 4 (4%) | 1 (1%) | 0 (0%) |
+
+
+## TreasureChest_meadows_buried
+
+> | Drops | Weight (Chance) |
+> | -- | -- |
+> | 0 | 58 (52.7%) |
+> | 1 | 30 (27.3%) |
+> | 2 | 20 (18.2%) |
+> | 3 | 2 (1.8%) |
+
+> | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Battleaxe | 1 (6.3%) | 70 (70%) | 25 (25%) | 5 (5%) | 0 (0%) |
+> | SwordIron | 1 (6.3%) | 70 (70%) | 25 (25%) | 5 (5%) | 0 (0%) |
+> | AxeIron | 1 (6.3%) | 70 (70%) | 25 (25%) | 5 (5%) | 0 (0%) |
+> | SledgeIron | 1 (6.3%) | 70 (70%) | 25 (25%) | 5 (5%) | 0 (0%) |
+> | MaceIron | 1 (6.3%) | 70 (70%) | 25 (25%) | 5 (5%) | 0 (0%) |
+> | AtgeirIron | 1 (6.3%) | 70 (70%) | 25 (25%) | 5 (5%) | 0 (0%) |
+> | ArmorIronLegs | 2 (12.5%) | 70 (70%) | 25 (25%) | 5 (5%) | 0 (0%) |
+> | ArmorIronChest | 2 (12.5%) | 70 (70%) | 25 (25%) | 5 (5%) | 0 (0%) |
+> | HelmetIron | 2 (12.5%) | 70 (70%) | 25 (25%) | 5 (5%) | 0 (0%) |
+> | ShieldBanded | 2 (12.5%) | 70 (70%) | 25 (25%) | 5 (5%) | 0 (0%) |
+> | ShieldIronTower | 2 (12.5%) | 70 (70%) | 25 (25%) | 5 (5%) | 0 (0%) |
+
+
+## TreasureChest_sunkencrypt
+
+> | Drops | Weight (Chance) |
+> | -- | -- |
+> | 0 | 58 (52.7%) |
+> | 1 | 30 (27.3%) |
+> | 2 | 20 (18.2%) |
+> | 3 | 2 (1.8%) |
+
+> | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | ArmorBronzeLegs | 1 (7.7%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | ArmorBronzeChest | 1 (7.7%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | HelmetBronze | 1 (7.7%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | SwordBronze | 1 (7.7%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | AxeBronze | 1 (7.7%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | MaceBronze | 1 (7.7%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | AtgeirBronze | 1 (7.7%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | SpearBronze | 1 (7.7%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | ShieldBronzeBuckler | 1 (7.7%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | BowFineWood | 1 (7.7%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | Hammer | 1 (7.7%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | Cultivator | 1 (7.7%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | Hoe | 1 (7.7%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+
+
+## TreasureChest_swamp
+
+> | Drops | Weight (Chance) |
+> | -- | -- |
+> | 0 | 58 (52.7%) |
+> | 1 | 30 (27.3%) |
+> | 2 | 20 (18.2%) |
+> | 3 | 2 (1.8%) |
+
+> | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | ArmorBronzeLegs | 1 (7.7%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | ArmorBronzeChest | 1 (7.7%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | HelmetBronze | 1 (7.7%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | SwordBronze | 1 (7.7%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | AxeBronze | 1 (7.7%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | MaceBronze | 1 (7.7%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | AtgeirBronze | 1 (7.7%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | SpearBronze | 1 (7.7%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | ShieldBronzeBuckler | 1 (7.7%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | BowFineWood | 1 (7.7%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | Hammer | 1 (7.7%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | Cultivator | 1 (7.7%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | Hoe | 1 (7.7%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+
 

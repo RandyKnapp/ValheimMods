@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Common;
 
 namespace EpicLoot
 {
@@ -14,9 +17,12 @@ namespace EpicLoot
     public class LootTable
     {
         public string Object;
-        public int[] Level;
         public int[][] Drops;
+        public int[][] Drops2;
+        public int[][] Drops3;
         public LootDrop[] Loot;
+        public LootDrop[] Loot2;
+        public LootDrop[] Loot3;
     }
 
     [Serializable]
