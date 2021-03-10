@@ -58,13 +58,13 @@ Enter these into the console (F5):
   - [ ] Monsters
 	- [X] Meadows
 	- [X] Black Forest
-	- [ ] Swamp
+	- [X] Swamp
 	- [ ] Mountains
 	- [ ] Plains
   - [ ] World Chests
   	- [X] Meadows
 	- [X] Black Forest
-	- [ ] Swamp
+	- [X] Swamp
 	- [ ] Mountains
 	- [ ] Plains
 - [X] Set item UI treatment
@@ -115,11 +115,11 @@ Enter these into the console (F5):
 - [X] TreasureChest_forestcrypt
 - [ ] TreasureChest_heath (???)
 - [X] TreasureChest_meadows
-- [ ] TreasureChest_meadows_buried
+- [X] TreasureChest_meadows_buried
 - [ ] TreasureChest_mountains
 - [ ] TreasureChest_plains_stone
-- [ ] TreasureChest_sunkencrypt
-- [ ] TreasureChest_swamp
+- [X] TreasureChest_sunkencrypt
+- [X] TreasureChest_swamp
 - [X] TreasureChest_trollcave
 - [ ] shipwreck_karve_chest
 
