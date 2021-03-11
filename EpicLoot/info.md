@@ -1,4 +1,4 @@
-# EpicLoot Data v0.5.2
+# EpicLoot Data v0.5.3
 
 *Author: RandyKnapp*
 *Source: [Github](https://github.com/RandyKnapp/ValheimMods/tree/main/EpicLoot)*
@@ -900,8 +900,8 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 
 > | Drops | Weight (Chance) |
 > | -- | -- |
-> | 0 | 70 (95.9%) |
-> | 1 | 3 (4.1%) |
+> | 0 | 70 (70%) |
+> | 1 | 30 (30%) |
 
 > | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |

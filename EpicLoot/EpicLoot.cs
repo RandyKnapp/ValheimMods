@@ -37,7 +37,7 @@ namespace EpicLoot
     [BepInDependency("randyknapp.mods.extendeditemdataframework")]
     public class EpicLoot : BaseUnityPlugin
     {
-        private const string Version = "0.5.2";
+        private const string Version = "0.5.3";
 
         private static ConfigEntry<string> SetItemColor;
         private static ConfigEntry<string> MagicRarityColor;

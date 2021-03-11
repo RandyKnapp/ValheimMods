@@ -50,8 +50,8 @@ namespace EpicLoot.Crafting
         public static readonly Dictionary<string, KeyValuePair<string, int>> BossTrophies = new Dictionary<string, KeyValuePair<string, int>>()
         {
             { "$item_trophy_eikthyr", new KeyValuePair<string, int>("RunestoneMagic", 1) },
-            { "$item_trophy_elder", new KeyValuePair<string, int>("RunestoneEpic", 1) },
-            { "$item_trophy_bonemass", new KeyValuePair<string, int>("RunestoneRare", 1) },
+            { "$item_trophy_elder", new KeyValuePair<string, int>("RunestoneRare", 1) },
+            { "$item_trophy_bonemass", new KeyValuePair<string, int>("RunestoneEpic", 1) },
             { "$item_trophy_dragonqueen", new KeyValuePair<string, int>("RunestoneLegendary", 1) },
             { "$item_trophy_goblinking", new KeyValuePair<string, int>("RunestoneLegendary", 3) },
         };

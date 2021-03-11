@@ -52,11 +52,13 @@ namespace EpicLoot
 
         public string GetTooltip()
         {
+            var showRange = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
+
             var color = GetColorString();
             var tooltip = $"<color={color}>\n";
             foreach (var effect in Effects)
             {
-                tooltip += $"\n‣ {GetEffectText(effect)}";
+                tooltip += $"\n‣ {GetEffectText(effect, Rarity, showRange)}";
             }
             tooltip += "</color>";
             return tooltip;
@@ -116,10 +118,19 @@ namespace EpicLoot
             return Effects.Any(x => effectTypes.Contains(x.IntType));
         }
 
-        private static string GetEffectText(MagicItemEffect effect)
+        private static string GetEffectText(MagicItemEffect effect, ItemRarity rarity, bool showRange)
         {
             var effectDef = MagicItemEffectDefinitions.Get(effect.EffectType);
-            return string.Format(effectDef.DisplayText, effect.EffectValue);
+            var result = string.Format(effectDef.DisplayText, effect.EffectValue);
+            if (showRange)
+            {
+                var valueRangeForRarity = effectDef.ValuesPerRarity[rarity];
+                if (!Mathf.Approximately(valueRangeForRarity.MinValue, valueRangeForRarity.MaxValue))
+                {
+                    result += $" [{valueRangeForRarity.MinValue}-{valueRangeForRarity.MaxValue}]";
+                }
+            }
+            return result;
         }
     }
 }

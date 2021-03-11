@@ -14,7 +14,7 @@ namespace EpicLoot.MagicItemEffects
                 var items = player.GetMagicEquipmentWithEffect(MagicEffectType.ModifyHealthRegen);
                 foreach (var item in items)
                 {
-                    var regenValue = item.GetMagicItem().GetTotalEffectValue(MagicEffectType.ModifyHealthRegen);
+                    var regenValue = item.GetMagicItem().GetTotalEffectValue(MagicEffectType.ModifyHealthRegen, 0.01f);
                     regenMultiplier += regenValue;
                 }
             }

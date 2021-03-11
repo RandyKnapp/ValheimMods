@@ -14,7 +14,7 @@ namespace EpicLoot.MagicItemEffects
                 var items = player.GetMagicEquipmentWithEffect(MagicEffectType.ModifyStaminaRegen);
                 foreach (var item in items)
                 {
-                    var regenValue = item.GetMagicItem().GetTotalEffectValue(MagicEffectType.ModifyStaminaRegen);
+                    var regenValue = item.GetMagicItem().GetTotalEffectValue(MagicEffectType.ModifyStaminaRegen, 0.01f);
                     staminaMultiplier += regenValue;
                 }
             }

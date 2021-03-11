@@ -1,4 +1,4 @@
-# Epic Loot v0.5.2
+# Epic Loot v0.5.3
 Author: RandyKnapp
 Source: [Github](https://github.com/RandyKnapp/ValheimMods/blob/main/EpicLoot/)
 
