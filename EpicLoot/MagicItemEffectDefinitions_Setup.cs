@@ -379,13 +379,13 @@ namespace EpicLoot
             Add(new MagicItemEffectDefinition()
             {
                 Type = MagicEffectType.AddPoisonDamage,
-                DisplayText = "Add +{0:0.#} poison damage",
+                DisplayText = "Attacks deal poison damage for {0:0} seconds",
                 AllowedItemTypes = Weapons,
                 Requirement = (itemData, magicItem) => !magicItem.HasAnyEffect(AllDamageEffects),
                 ValuesPerRarity = {
-                    { ItemRarity.Magic,     new MagicItemEffectDefinition.ValueDef() { MinValue = 1, MaxValue = 4, Increment = 1 } },
-                    { ItemRarity.Rare,      new MagicItemEffectDefinition.ValueDef() { MinValue = 3, MaxValue = 8, Increment = 1 } },
-                    { ItemRarity.Epic,      new MagicItemEffectDefinition.ValueDef() { MinValue = 7, MaxValue = 15, Increment = 1 } },
+                    { ItemRarity.Magic,     new MagicItemEffectDefinition.ValueDef() { MinValue = 2, MaxValue = 4, Increment = 1 } },
+                    { ItemRarity.Rare,      new MagicItemEffectDefinition.ValueDef() { MinValue = 4, MaxValue = 8, Increment = 1 } },
+                    { ItemRarity.Epic,      new MagicItemEffectDefinition.ValueDef() { MinValue = 8, MaxValue = 15, Increment = 1 } },
                     { ItemRarity.Legendary, new MagicItemEffectDefinition.ValueDef() { MinValue = 15, MaxValue = 20, Increment = 1 } }
                 }
             });

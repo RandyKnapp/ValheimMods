@@ -15,13 +15,14 @@ namespace EpicLoot.Crafting
                 "$item_trophy_boar",
                 "$item_trophy_deer",
                 "$item_trophy_greydwarf",
-                "$item_trophy_greydwarfbrute",
-                "$item_trophy_greydwarfshaman",
                 "$item_trophy_neck",
                 "$item_trophy_skeleton",
                 "$item_trophy_skeletonpoison",
             }},
             {ItemRarity.Rare, new List<string> {
+                "$item_trophy_troll",
+                "$item_trophy_greydwarfbrute",
+                "$item_trophy_greydwarfshaman",
                 "$item_trophy_blob",
                 "$item_trophy_draugr",
                 "$item_trophy_draugrelite",
@@ -71,10 +72,13 @@ namespace EpicLoot.Crafting
         protected override string GetTabButtonId() => "Disenchant";
         protected override string GetTabButtonText() => "SACRIFICE";
 
-        public override void OnHide()
+        public override void SetActive(bool active)
         {
-            Recipes.Clear();
-            base.OnHide();
+            if (!active)
+            {
+                Recipes.Clear();
+            }
+            base.SetActive(active);
         }
 
         public override void UpdateCraftingPanel(InventoryGui __instance, bool focusView)

@@ -51,12 +51,20 @@ namespace EpicLoot.Crafting
         [HarmonyPatch(typeof(InventoryGui), "Hide")]
         public static class InventoryGui_Hide_Patch
         {
-            public static void Postfix()
+            public static bool Prefix(InventoryGui __instance)
             {
-                foreach (var tabController in CustomTabs())
+                if (!__instance.m_animator.GetBool("visible"))
                 {
-                    tabController.OnHide();
+                    return true;
                 }
+
+                foreach (var tabController in TabControllers)
+                {
+                    tabController.SetActive(false);
+                }
+                TabControllers.Find(x => x.Tab == CraftingTabType.Crafting)?.SetActive(true);
+
+                return true;
             }
         }
 
@@ -80,7 +88,7 @@ namespace EpicLoot.Crafting
                 }
 
                 var activeTab = GetActiveTabController();
-                if (activeTab != null && activeTab.IsCustomTab)
+                if (activeTab != null)
                 {
                     activeTab.UpdateCraftingPanel(__instance, focusView);
                     return false;
@@ -158,7 +166,7 @@ namespace EpicLoot.Crafting
 
         private static TabController GetActiveTabController()
         {
-            return TabControllers.FirstOrDefault(tabController => tabController.IsCustomTab && tabController.IsActive());
+            return TabControllers.FirstOrDefault(tabController => tabController.IsCustomTab &&  tabController.IsActive());
         }
 
         private static void OnTabPressed(TabController tab)

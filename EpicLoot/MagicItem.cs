@@ -122,7 +122,7 @@ namespace EpicLoot
         {
             var effectDef = MagicItemEffectDefinitions.Get(effect.EffectType);
             var result = string.Format(effectDef.DisplayText, effect.EffectValue);
-            if (showRange)
+            if (showRange && effectDef.ValuesPerRarity.ContainsKey(rarity))
             {
                 var valueRangeForRarity = effectDef.ValuesPerRarity[rarity];
                 if (!Mathf.Approximately(valueRangeForRarity.MinValue, valueRangeForRarity.MaxValue))

@@ -1,4 +1,4 @@
-# EpicLoot Data v0.5.3
+# EpicLoot Data v0.5.4
 
 *Author: RandyKnapp*
 *Source: [Github](https://github.com/RandyKnapp/ValheimMods/tree/main/EpicLoot)*
@@ -451,7 +451,7 @@ Some lists of effect types are used in requirements to consolidate code. They ar
 
 ## AddPoisonDamage (23)
 
-> **Display Text:** Add +{0:0.#} poison damage
+> **Display Text:** Attacks deal poison damage for {0:0} seconds
 > 
 > **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch
 > 
@@ -465,9 +465,9 @@ Some lists of effect types are used in requirements to consolidate code. They ar
 > 
 > |Rarity|Min|Max|Increment|
 > |--|--|--|--|
-> |Magic|1|4|1|
-> |Rare|3|8|1|
-> |Epic|7|15|1|
+> |Magic|2|4|1|
+> |Rare|4|8|1|
+> |Epic|8|15|1|
 > |Legendary|15|20|1|
 
 ## AddSpiritDamage (24)

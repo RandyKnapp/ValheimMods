@@ -33,10 +33,13 @@ namespace EpicLoot.Crafting
         protected override string GetTabButtonId() => "Enchant";
         protected override string GetTabButtonText() => "ENCHANT";
 
-        public override void OnHide()
+        public override void SetActive(bool active)
         {
-            Recipes.Clear();
-            base.OnHide();
+            if (!active)
+            {
+                Recipes.Clear();
+            }
+            base.SetActive(active);
         }
 
         public override void UpdateCraftingPanel(InventoryGui __instance, bool focusView)

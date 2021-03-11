@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using ExtendedItemDataFramework;
+﻿using ExtendedItemDataFramework;
 using HarmonyLib;
 using UnityEngine;
 

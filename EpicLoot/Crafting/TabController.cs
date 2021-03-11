@@ -13,6 +13,8 @@ namespace EpicLoot.Crafting
         public Button TabButton;
         public int SelectedRecipe = -1;
 
+        protected bool _hasInventoryListener;
+
         public TabController(CraftingTabType tabType, bool isCustomTab, Button tabButton = null)
         {
             Tab = tabType;
@@ -27,16 +29,6 @@ namespace EpicLoot.Crafting
         public virtual void OnDestroy()
         {
             TabButton = null;
-        }
-
-        public virtual void OnHide()
-        {
-            if (TabButton != null)
-            {
-                TabButton.interactable = true;
-            }
-
-            SelectedRecipe = -1;
         }
 
         public virtual void TryInitialize(InventoryGui inventoryGui, int tabIndex, Action<TabController> onTabPressed)
@@ -80,19 +72,30 @@ namespace EpicLoot.Crafting
             SelectedRecipe = -1;
             if (active)
             {
-                Player.m_localPlayer.GetInventory().m_onChanged += OnInventoryChanged;
+                if (!_hasInventoryListener && Player.m_localPlayer != null)
+                {
+                    Player.m_localPlayer.GetInventory().m_onChanged += OnInventoryChanged;
+                    _hasInventoryListener = true;
+                }
                 GenerateRecipes();
             }
             else
             {
-                Player.m_localPlayer.GetInventory().m_onChanged -= OnInventoryChanged;
+                if (_hasInventoryListener && Player.m_localPlayer != null)
+                {
+                    Player.m_localPlayer.GetInventory().m_onChanged -= OnInventoryChanged;
+                    _hasInventoryListener = false;
+                }
             }
         }
 
         public virtual void OnInventoryChanged()
         {
-            InventoryGui.instance.OnCraftCancelPressed();
-            UpdateCraftingPanel(InventoryGui.instance, false);
+            if (IsActive())
+            {
+                InventoryGui.instance.OnCraftCancelPressed();
+                UpdateCraftingPanel(InventoryGui.instance, false);
+            }
         }
 
         public virtual void UpdateCraftingPanel(InventoryGui instance, bool focusView)
