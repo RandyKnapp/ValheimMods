@@ -141,7 +141,7 @@ namespace EpicLoot
             ExtendedItemData.LoadExtendedItemData += MagicItemComponent.OnNewExtendedItemData;
             ExtendedItemData.NewExtendedItemData += MagicItemComponent.OnNewExtendedItemData;
 
-            _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
+            _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), "randyknapp.mods.epicloot");
 
             LootTableLoaded?.Invoke();
         }
