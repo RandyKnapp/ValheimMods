@@ -12,6 +12,7 @@ using ExtendedItemDataFramework;
 using fastJSON;
 using HarmonyLib;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using Random = UnityEngine.Random;
 
 namespace EpicLoot
@@ -38,7 +39,7 @@ namespace EpicLoot
     public class EpicLoot : BaseUnityPlugin
     {
         private const string PluginId = "randyknapp.mods.epicloot";
-        private const string Version = "0.5.6";
+        private const string Version = "0.5.7";
 
         private static ConfigEntry<string> SetItemColor;
         private static ConfigEntry<string> MagicRarityColor;
@@ -154,6 +155,25 @@ namespace EpicLoot
             _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), PluginId);
 
             LootTableLoaded?.Invoke();
+        }
+
+        private void Update()
+        {
+            PointerEventData pointerData = new PointerEventData(EventSystem.current)
+            {
+                position = Input.mousePosition
+            };
+
+            List<RaycastResult> results = new List<RaycastResult>();
+            EventSystem.current.RaycastAll(pointerData, results);
+
+            Debug.LogWarning("== Objects under cursor: ==");
+            if (Input.GetKeyDown(KeyCode.I))
+            {
+                results.ForEach((result) => {
+                    Debug.Log($"- {result.gameObject.name} ({result.gameObject.transform.parent.name})");
+                });
+            }
         }
 
         private void LoadAssets()
