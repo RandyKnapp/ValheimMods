@@ -2,7 +2,7 @@
 {
     public class CrafterNameData : BaseExtendedItemComponent
     {
-        public string CrafterName;
+        public string CrafterName = "";
 
         public CrafterNameData(ExtendedItemData parent) 
             : base(typeof(CrafterNameData).AssemblyQualifiedName, parent)
