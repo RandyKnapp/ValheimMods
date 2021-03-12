@@ -114,7 +114,8 @@ namespace EpicLoot.Crafting
         {
             var sb = new StringBuilder();
             var rarityColor = EpicLoot.GetRarityColor(recipe.ToRarity);
-            sb.AppendLine($"{recipe.FromItem.m_shared.m_name} \u2794 {recipe.FromItem.GetDecoratedName(rarityColor)}");
+            var rarityDisplay = EpicLoot.GetRarityDisplayName(recipe.ToRarity);
+            sb.AppendLine($"{recipe.FromItem.m_shared.m_name} \u2794 <color={rarityColor}>{rarityDisplay}</color> {recipe.FromItem.GetDecoratedName(rarityColor)}");
             sb.AppendLine($"<color={rarityColor}>");
 
             var effectCountWeights = EpicLoot.MagicEffectCountWeightsPerRarity[recipe.ToRarity];

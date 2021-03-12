@@ -26,6 +26,12 @@ namespace EpicLoot.LootBeams
                 beamColorSetter.SetColor(magicItem.GetColor());
                 _beam.GetComponent<Animator>().Play("Show");
                 _beam.AddComponent<AlwaysPointUp>();
+
+                var audio = _beam.GetComponentsInChildren<AudioSource>();
+                foreach (var audioSource in audio)
+                {
+                    audioSource.outputAudioMixerGroup = AudioMan.instance.m_ambientMixer;
+                }
             }
 
             if (ShouldHideBeam())

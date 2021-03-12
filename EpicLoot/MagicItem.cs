@@ -47,7 +47,7 @@ namespace EpicLoot
         public string GetRarityDisplay()
         {
             var color = GetColorString();
-            return $"<color={color}>{Rarity.ToString()}</color>";
+            return $"<color={color}>{EpicLoot.GetRarityDisplayName(Rarity)}</color>";
         }
 
         public string GetTooltip()

@@ -106,25 +106,26 @@ namespace EpicLoot.Crafting
         {
             public static void Postfix(InventoryGui __instance, Player player, float dt)
             {
-                var magicItemBG = __instance.m_recipeIcon.transform.parent.Find("MagicItemBG");
-                Image bgImage;
-                if (magicItemBG == null)
-                {
-                    bgImage = Object.Instantiate(__instance.m_recipeIcon, __instance.m_recipeIcon.transform.parent, true);
-                    bgImage.name = "MagicItemBG";
-                    bgImage.transform.SetSiblingIndex(__instance.m_recipeIcon.transform.GetSiblingIndex());
-                    bgImage.sprite = EpicLoot.GetMagicItemBgSprite();
-                    bgImage.color = Color.white;
-                }
-                else
-                {
-                    bgImage = magicItemBG.GetComponent<Image>();
-                }
-
-                bgImage.enabled = false;
-
                 var activeTab = GetActiveTabController();
-                activeTab?.UpdateRecipe(__instance, player, dt, bgImage);
+                if (activeTab != null)
+                {
+                    var magicItemBG = __instance.m_recipeIcon.transform.parent.Find("MagicItemBG");
+                    Image bgImage;
+                    if (magicItemBG == null)
+                    {
+                        bgImage = Object.Instantiate(__instance.m_recipeIcon, __instance.m_recipeIcon.transform.parent, true);
+                        bgImage.name = "MagicItemBG";
+                        bgImage.transform.SetSiblingIndex(__instance.m_recipeIcon.transform.GetSiblingIndex());
+                        bgImage.sprite = EpicLoot.GetMagicItemBgSprite();
+                        bgImage.color = Color.white;
+                    }
+                    else
+                    {
+                        bgImage = magicItemBG.GetComponent<Image>();
+                    }
+
+                    activeTab.UpdateRecipe(__instance, player, dt, bgImage);
+                }
             }
         }
 

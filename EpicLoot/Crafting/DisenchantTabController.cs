@@ -38,7 +38,6 @@ namespace EpicLoot.Crafting
                 "$item_trophy_goblin",
                 "$item_trophy_hatchling",
                 "$item_trophy_lox",
-                "$item_trophy_serpent",
                 "$item_trophy_sgolem",
             }},
             {ItemRarity.Legendary, new List<string> {
@@ -139,6 +138,7 @@ namespace EpicLoot.Crafting
 
                 __instance.m_recipeDecription.enabled = true;
                 __instance.m_recipeDecription.text = Localization.instance.Localize(ItemDrop.ItemData.GetTooltip(itemData, itemData.m_quality, true));
+                __instance.m_recipeDecription.text += "\n\n<color=red>This item will be DESTROYED as a SACRIFICE to the gods.</color>";
 
                 bgImage.color = recipe.FromItem.GetRarityColor();
                 bgImage.enabled = recipe.FromItem.UseMagicBackground();

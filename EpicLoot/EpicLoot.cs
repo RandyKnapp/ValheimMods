@@ -38,7 +38,7 @@ namespace EpicLoot
     public class EpicLoot : BaseUnityPlugin
     {
         private const string PluginId = "randyknapp.mods.epicloot";
-        private const string Version = "0.5.5";
+        private const string Version = "0.5.6";
 
         private static ConfigEntry<string> SetItemColor;
         private static ConfigEntry<string> MagicRarityColor;
@@ -49,6 +49,11 @@ namespace EpicLoot
         private static ConfigEntry<int> RareMaterialIconColor;
         private static ConfigEntry<int> EpicMaterialIconColor;
         private static ConfigEntry<int> LegendaryMaterialIconColor;
+        private static ConfigEntry<string> MagicRarityDisplayName;
+        private static ConfigEntry<string> RareRarityDisplayName;
+        private static ConfigEntry<string> EpicRarityDisplayName;
+        private static ConfigEntry<string> LegendaryRarityDisplayName;
+        public static ConfigEntry<bool> UseScrollingCraftDescription;
 
         public static readonly List<ItemDrop.ItemData.ItemType> AllowedMagicItemTypes = new List<ItemDrop.ItemData.ItemType>
         {
@@ -126,8 +131,12 @@ namespace EpicLoot
             EpicMaterialIconColor = Config.Bind("Item Colors", "Epic Crafting Material Icon Index", 7, "Indicates the color of the icon used for epic crafting materials. A number between 0 and 9. Available options: 0=Red, 1=Orange, 2=Yellow, 3=Green, 4=Teal, 5=Blue, 6=Indigo, 7=Purple, 8=Pink, 9=Gray");
             LegendaryRarityColor = Config.Bind("Item Colors", "Legendary Rarity Color", "Teal", "The color of Legendary rarity items, the highest magic item tier. (Optional, use an HTML hex color starting with # to have a custom color.) Available options: Red, Orange, Yellow, Green, Teal, Blue, Indigo, Purple, Pink, Gray");
             LegendaryMaterialIconColor = Config.Bind("Item Colors", "Legendary Crafting Material Icon Index", 4, "Indicates the color of the icon used for legendary crafting materials. A number between 0 and 9. Available options: 0=Red, 1=Orange, 2=Yellow, 3=Green, 4=Teal, 5=Blue, 6=Indigo, 7=Purple, 8=Pink, 9=Gray");
-
             SetItemColor = Config.Bind("Item Colors", "Set Item Color", "#26ffff", "The color of set item text and the set item icon. Use a hex color, default is cyan");
+            MagicRarityDisplayName = Config.Bind("Rarity", "Magic Rarity Display Name", "Magic", "The name of the lowest rarity.");
+            RareRarityDisplayName = Config.Bind("Rarity", "Rare Rarity Display Name", "Rare", "The name of the second rarity.");
+            EpicRarityDisplayName = Config.Bind("Rarity", "Epic Rarity Display Name", "Epic", "The name of the third rarity.");
+            LegendaryRarityDisplayName = Config.Bind("Rarity", "Legendary Rarity Display Name", "Legendary", "The name of the highest rarity.");
+            UseScrollingCraftDescription = Config.Bind("Crafting UI", "Use Scrolling Craft Description", true, "Changes the item description in the crafting panel to scroll instead of scale when it gets too long for the space.");
 
             MagicItemEffectDefinitions.SetupMagicItemEffectDefinitions();
 
@@ -373,6 +382,29 @@ namespace EpicLoot
             {
                 return;
             }
+
+            // Fix custom name and icons for crafting materials
+            foreach (var prefab in RegisteredItemPrefabs)
+            {
+                var itemDrop = prefab.GetComponent<ItemDrop>();
+                if (itemDrop != null)
+                {
+                    if (itemDrop.m_itemData.IsMagicCraftingMaterial() || itemDrop.m_itemData.IsRunestone())
+                    {
+                        var rarity = itemDrop.m_itemData.GetRarity();
+                        var correctName = GetRarityDisplayName(rarity);
+                        if (!itemDrop.m_itemData.m_shared.m_name.StartsWith(correctName))
+                        {
+                            itemDrop.m_itemData.m_shared.m_name = itemDrop.m_itemData.m_shared.m_name.Replace(rarity.ToString(), correctName);
+                        }
+
+                        if (itemDrop.m_itemData.IsMagicCraftingMaterial())
+                        {
+                            itemDrop.m_itemData.m_variant = GetRarityIconIndex(rarity);
+                        }
+                    }
+                }
+            }
             
             foreach (var prefab in RegisteredItemPrefabs)
             {
@@ -585,22 +617,19 @@ namespace EpicLoot
                 ZNetView.m_forceDisableInit = false;
                 item.AddComponent<GotDestroyed>();
                 var itemDrop = item.GetComponent<ItemDrop>();
-                if (!CanBeMagicItem(itemDrop.m_itemData))
+                if (CanBeMagicItem(itemDrop.m_itemData) && !ArrayUtils.IsNullOrEmpty(lootDrop.Rarity))
                 {
-                    Debug.LogError($"Tried to spawn loot ({lootDrop.Item}) for ({objectName}), but the item type ({itemDrop.m_itemData.m_shared.m_itemType}) is not allowed as a magic item!");
-                    continue;
+                    var itemData = new ExtendedItemData(itemDrop.m_itemData);
+                    var magicItemComponent = itemData.AddComponent<MagicItemComponent>();
+                    var magicItem = RollMagicItem(lootDrop, itemData);
+                    magicItemComponent.SetMagicItem(magicItem);
+
+                    itemDrop.m_itemData = itemData;
+                    InitializeMagicItem(itemData, magicItem);
+                    MagicItemGenerated?.Invoke(itemData, magicItem);
                 }
 
-                var itemData = new ExtendedItemData(itemDrop.m_itemData);
-                var magicItemComponent = itemData.AddComponent<MagicItemComponent>();
-                var magicItem = RollMagicItem(lootDrop, itemData);
-                magicItemComponent.SetMagicItem(magicItem);
-
-                itemDrop.m_itemData = itemData;
-
-                InitializeMagicItem(itemData, magicItem);
                 results.Add(item);
-                MagicItemGenerated?.Invoke(itemData, magicItem);
             }
 
             return results;
@@ -1040,6 +1069,23 @@ namespace EpicLoot
         public static string GetSetItemColor()
         {
             return SetItemColor.Value;
+        }
+
+        public static string GetRarityDisplayName(ItemRarity rarity)
+        {
+            switch (rarity)
+            {
+                case ItemRarity.Magic:
+                    return MagicRarityDisplayName.Value;
+                case ItemRarity.Rare:
+                    return RareRarityDisplayName.Value;
+                case ItemRarity.Epic:
+                    return EpicRarityDisplayName.Value;
+                case ItemRarity.Legendary:
+                    return LegendaryRarityDisplayName.Value;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(rarity), rarity, null);
+            }
         }
 
         public static string GetRarityColor(ItemRarity rarity)
