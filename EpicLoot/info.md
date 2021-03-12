@@ -1168,8 +1168,9 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 
 > | Drops | Weight (Chance) |
 > | -- | -- |
-> | 1 | 20 (90.9%) |
-> | 2 | 2 (9.1%) |
+> | 0 | 78 (78%) |
+> | 1 | 20 (20%) |
+> | 2 | 2 (2%) |
 
 > | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
