@@ -17,7 +17,7 @@ namespace EpicLoot
         {
             var input = __instance.m_input.text;
             var args = input.Split(' ');
-            if (args.Length == 0)
+            if (args.Length == 0 || !__instance.IsCheatsEnabled())
             {
                 return true;
             }

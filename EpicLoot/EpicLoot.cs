@@ -39,7 +39,7 @@ namespace EpicLoot
     public class EpicLoot : BaseUnityPlugin
     {
         private const string PluginId = "randyknapp.mods.epicloot";
-        private const string Version = "0.5.7";
+        private const string Version = "0.5.8";
 
         private static ConfigEntry<string> SetItemColor;
         private static ConfigEntry<string> MagicRarityColor;
@@ -157,7 +157,7 @@ namespace EpicLoot
             LootTableLoaded?.Invoke();
         }
 
-        private void Update()
+        /*private void Update()
         {
             PointerEventData pointerData = new PointerEventData(EventSystem.current)
             {
@@ -174,7 +174,7 @@ namespace EpicLoot
                     Debug.Log($"- {result.gameObject.name} ({result.gameObject.transform.parent.name})");
                 });
             }
-        }
+        }*/
 
         private void LoadAssets()
         {
@@ -635,7 +635,6 @@ namespace EpicLoot
                 ZNetView.m_forceDisableInit = !initializeObject;
                 var item = Instantiate(itemPrefab, dropPoint, randomRotation);
                 ZNetView.m_forceDisableInit = false;
-                item.AddComponent<GotDestroyed>();
                 var itemDrop = item.GetComponent<ItemDrop>();
                 if (CanBeMagicItem(itemDrop.m_itemData) && !ArrayUtils.IsNullOrEmpty(lootDrop.Rarity))
                 {
