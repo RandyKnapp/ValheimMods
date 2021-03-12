@@ -5,10 +5,11 @@ using HarmonyLib;
 
 namespace ExtendedItemDataFramework
 {
-    [BepInPlugin("randyknapp.mods.extendeditemdataframework", "Extended Item Data Framework", Version)]
+    [BepInPlugin(PluginId, "Extended Item Data Framework", Version)]
     public class ExtendedItemDataFramework : BaseUnityPlugin
     {
-        private const string Version = "1.0.0";
+        public const string PluginId = "randyknapp.mods.extendeditemdataframework";
+        public const string Version = "1.0.0";
 
         private static ConfigEntry<bool> _enabledConfig;
         private static ConfigEntry<bool> _loggingEnabled;
@@ -29,7 +30,7 @@ namespace ExtendedItemDataFramework
             ExtendedItemData.NewExtendedItemData += UniqueItemData.OnNewExtendedItemData;
             ExtendedItemData.LoadExtendedItemData += UniqueItemData.OnLoadExtendedItemData;
 
-            _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
+            _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), PluginId);
         }
 
         private void OnDestroy()
@@ -37,7 +38,7 @@ namespace ExtendedItemDataFramework
             ExtendedItemData.NewExtendedItemData -= UniqueItemData.OnNewExtendedItemData;
             ExtendedItemData.LoadExtendedItemData -= UniqueItemData.OnLoadExtendedItemData;
 
-            _harmony?.UnpatchAll();
+            _harmony?.UnpatchAll(PluginId);
             _instance = null;
         }
 

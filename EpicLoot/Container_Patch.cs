@@ -1,4 +1,6 @@
-﻿using HarmonyLib;
+﻿using System.Linq;
+using HarmonyLib;
+using UnityEngine;
 
 namespace EpicLoot
 {
@@ -18,6 +20,10 @@ namespace EpicLoot
             if (lootTable != null)
             {
                 var items = EpicLoot.RollLootTable(lootTable, __instance.m_piece.name, __instance.transform.position);
+                if (items.Count > 0)
+                {
+                    Debug.LogWarning($"CHEST DROP: <{__instance.transform.position.ToString("0.#")}> {string.Join(", ", items.Select(x => x.m_shared.m_name))}");
+                }
                 foreach (var item in items)
                 {
                     __instance.m_inventory.AddItem(item);
