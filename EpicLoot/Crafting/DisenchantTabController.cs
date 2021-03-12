@@ -57,6 +57,15 @@ namespace EpicLoot.Crafting
             { "$item_trophy_goblinking", new KeyValuePair<string, int>("RunestoneLegendary", 3) },
         };
 
+        public static readonly Dictionary<string, List<KeyValuePair<string, int>>> SpecialDisenchants = new Dictionary<string, List<KeyValuePair<string, int>>>()
+        {
+            { "$item_cryptkey", new List<KeyValuePair<string, int>>() {
+                new KeyValuePair<string, int>("DustRare", 1),
+                new KeyValuePair<string, int>("EssenceRare", 1),
+                new KeyValuePair<string, int>("ReagentRare", 1),
+            }},
+        };
+
         public class DisenchantRecipe
         {
             public ItemDrop.ItemData FromItem;
@@ -332,7 +341,7 @@ namespace EpicLoot.Crafting
             }
 
             var quality = element.transform.Find("QualityLevel").GetComponent<Text>();
-            quality.gameObject.SetActive(true);
+            quality.gameObject.SetActive(item.m_shared.m_maxQuality > 1);
             quality.text = item.m_quality.ToString();
 
             element.GetComponent<Button>().onClick.AddListener(() => OnSelectedRecipe(__instance, index));
@@ -341,6 +350,7 @@ namespace EpicLoot.Crafting
 
         private void OnSelectedRecipe(InventoryGui __instance, int index)
         {
+            __instance.OnCraftCancelPressed();
             SelectedRecipe = index;
             SetRecipe(__instance, SelectedRecipe, false);
         }
@@ -364,32 +374,45 @@ namespace EpicLoot.Crafting
             Recipes.Clear();
             if (Player.m_localPlayer != null)
             {
-                foreach (var item in Player.m_localPlayer.GetInventory().GetAllItems())
-                {
-                    var recipe = GenerateTrophyRecipe(item);
-                    if (recipe != null)
-                    {
-                        Recipes.Add(recipe);
-                    }
-                }
-
-                foreach (var item in Player.m_localPlayer.GetInventory().GetAllItems())
-                {
-                    var recipe = GenerateBossTrophyRecipe(item);
-                    if (recipe != null)
-                    {
-                        Recipes.Add(recipe);
-                    }
-                }
+                var trophyRecipes = new List<DisenchantRecipe>();
+                var bossRecipes = new List<DisenchantRecipe>();
+                var specialRecipes = new List<DisenchantRecipe>();
+                var standardRecipes = new List<DisenchantRecipe>();
 
                 foreach (var item in Player.m_localPlayer.GetInventory().GetAllItems())
                 {
                     var recipe = GenerateDisenchantRecipe(item);
                     if (recipe != null)
                     {
-                        Recipes.Add(recipe);
+                        standardRecipes.Add(recipe);
+                        continue;
+                    }
+
+                    recipe = GenerateTrophyRecipe(item);
+                    if (recipe != null)
+                    {
+                        trophyRecipes.Add(recipe);
+                        continue;
+                    }
+
+                    recipe = GenerateBossTrophyRecipe(item);
+                    if (recipe != null)
+                    {
+                        bossRecipes.Add(recipe);
+                        continue;
+                    }
+
+                    recipe = GenerateSpecialRecipe(item);
+                    if (recipe != null)
+                    {
+                        specialRecipes.Add(recipe);
                     }
                 }
+
+                Recipes.AddRange(trophyRecipes);
+                Recipes.AddRange(bossRecipes);
+                Recipes.AddRange(specialRecipes);
+                Recipes.AddRange(standardRecipes);
             }
         }
 
@@ -423,6 +446,21 @@ namespace EpicLoot.Crafting
                     recipe.Products.Add(new KeyValuePair<ItemDrop, int>(prefab, entry.Value));
                     return recipe;
                 }
+            }
+            return null;
+        }
+
+        private static DisenchantRecipe GenerateSpecialRecipe(ItemDrop.ItemData item)
+        {
+            if (SpecialDisenchants.TryGetValue(item.m_shared.m_name, out var entry))
+            {
+                var recipe = new DisenchantRecipe { FromItem = item };
+                foreach (var productEntry in entry)
+                {
+                    var prefab = ObjectDB.instance.GetItemPrefab(productEntry.Key).GetComponent<ItemDrop>();
+                    recipe.Products.Add(new KeyValuePair<ItemDrop, int>(prefab, productEntry.Value));
+                }
+                return recipe;
             }
             return null;
         }

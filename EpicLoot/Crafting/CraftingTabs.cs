@@ -24,6 +24,7 @@ namespace EpicLoot.Crafting
         {
             public static void Postfix(InventoryGui __instance)
             {
+                TabControllers.Clear();
                 TabControllers.Add(new TabController(CraftingTabType.Crafting, false, __instance.m_tabCraft));
                 TabControllers.Add(new TabController(CraftingTabType.Upgrade, false, __instance.m_tabUpgrade));
                 TabControllers.Add(new DisenchantTabController());
@@ -45,6 +46,7 @@ namespace EpicLoot.Crafting
                 {
                     tabController.OnDestroy();
                 }
+                TabControllers.Clear();
             }
         }
 

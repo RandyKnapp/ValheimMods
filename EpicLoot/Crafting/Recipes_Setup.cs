@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace EpicLoot.Crafting
 {
@@ -6,7 +7,7 @@ namespace EpicLoot.Crafting
     {
         public static void SetupRecipes()
         {
-            const int upgradeRatio = 10;
+            const int upgradeRatio = 5;
 
             foreach (var materialPrefabsEntry in EpicLoot.Assets.CraftingMaterialPrefabs)
             {
@@ -30,7 +31,28 @@ namespace EpicLoot.Crafting
                     recipe.m_resources = new[] { new Piece.Requirement() { m_resItem = resource, m_amount = upgradeRatio } };
                     recipe.m_minStationLevel = 1;
                     recipe.m_enabled = true;
-                    //recipe.m_craftingStation = ZNetScene.instance.GetPrefab(("ArtisanStation").GetStableHashCode()).GetComponent<CraftingStation>();
+
+                    ObjectDB.instance.m_recipes.Add(recipe);
+                }
+            }
+
+            // Shard to Dust, Essence, Reagent at 2:1
+            const int conversionRatio = 2;
+            var toTypes = new [] { "Dust", "Essence", "Reagent" };
+            foreach (ItemRarity rarity in Enum.GetValues(typeof(ItemRarity)))
+            {
+                foreach (var otherType in toTypes)
+                {
+                    var prefab = EpicLoot.Assets.CraftingMaterialPrefabs[otherType][(int)rarity];
+                    var resourcePrefab = EpicLoot.Assets.CraftingMaterialPrefabs["Shard"][(int) rarity];
+
+                    var recipe = ScriptableObject.CreateInstance<Recipe>();
+                    recipe.name = $"Recipe_{rarity}ShardTo{otherType}_Conversion";
+                    recipe.m_item = prefab.GetComponent<ItemDrop>();
+                    var resource = resourcePrefab.GetComponent<ItemDrop>();
+                    recipe.m_resources = new[] { new Piece.Requirement() { m_resItem = resource, m_amount = conversionRatio } };
+                    recipe.m_minStationLevel = 1;
+                    recipe.m_enabled = true;
 
                     ObjectDB.instance.m_recipes.Add(recipe);
                 }

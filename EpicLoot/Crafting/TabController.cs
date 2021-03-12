@@ -28,12 +28,22 @@ namespace EpicLoot.Crafting
 
         public virtual void OnDestroy()
         {
+            if (TabButton != null)
+            {
+                Object.Destroy(TabButton.gameObject);
+            }
             TabButton = null;
         }
 
         public virtual void TryInitialize(InventoryGui inventoryGui, int tabIndex, Action<TabController> onTabPressed)
         {
-            if (IsCustomTab && TabButton == null)
+            if (!IsCustomTab)
+            {
+                return;
+            }
+
+            var existingButton = inventoryGui.m_tabCraft.transform.parent.Find(GetTabButtonId());
+            if (existingButton == null)
             {
                 var go = Object.Instantiate(inventoryGui.m_tabUpgrade, inventoryGui.m_tabUpgrade.transform.parent, true).gameObject;
                 go.name = GetTabButtonId();
