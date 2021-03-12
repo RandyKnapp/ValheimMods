@@ -45,6 +45,7 @@ namespace EpicLoot.Crafting
                 "$item_trophy_deathsquito",
                 "$item_trophy_goblinbrute",
                 "$item_trophy_goblinshaman",
+                "$item_trophy_serpent"
             }},
         };
 
