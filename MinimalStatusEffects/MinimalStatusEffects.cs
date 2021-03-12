@@ -19,9 +19,12 @@ namespace MinimalStatusEffects
         public static ConfigEntry<float> SailingPowerIndicatorScale;
     }
 
-    [BepInPlugin("randyknapp.mods.minimalstatuseffects", "Minimal Status Effects", "1.0.3")]
+    [BepInPlugin(PluginId, "Minimal Status Effects", Version)]
     public class MinimalStatusEffects : BaseUnityPlugin
     {
+        public const string PluginId = "randyknapp.mods.minimalstatuseffects";
+        public const string Version = "1.0.3";
+
         private Harmony _harmony;
 
         private void Awake()
@@ -39,12 +42,12 @@ namespace MinimalStatusEffects
             MinimalStatusEffectConfig.SailingPowerIndicatorPosition = Config.Bind("SailingIndicator", "SailingPowerIndicatorPosition", new Vector2(-270, -215), "Location of the sailing power indicator on screen.");
             MinimalStatusEffectConfig.SailingPowerIndicatorScale = Config.Bind("SailingIndicator", "SailingPowerIndicatorScale", 0.65f, "Scale of the sailing power indicator.");
 
-            _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), null);
+            _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), PluginId);
         }
 
         private void OnDestroy()
         {
-            _harmony.UnpatchAll();
+            _harmony.UnpatchAll(PluginId);
         }
     }
 }

@@ -6,10 +6,12 @@ using UnityEngine;
 
 namespace DvergerColor
 {
-    [BepInPlugin("randyknapp.mods.dvergercolor", "Dverger Color", "1.0.2")]
+    [BepInPlugin(PluginId, "Dverger Color", "1.0.2")]
     [BepInProcess("valheim.exe")]
     public class DvergerColor : BaseUnityPlugin
     {
+        public const string PluginId = "randyknapp.mods.dvergercolor";
+
         public static ConfigEntry<Color> Color;
         public static ConfigEntry<int> MaxSteps;
         public static ConfigEntry<float> MinAngle;
@@ -47,12 +49,12 @@ namespace DvergerColor
             ToggleHotkey = Config.Bind("Hotkeys", "Toggle Light On/Off", "\\", "Press this button to turn the light beam on or off.");
             TurnOffInBed = Config.Bind("General", "Turn Off In Bed", true, "Whether the circlet should be turned off when you get into bed.");
 
-            _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), null);
+            _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), PluginId);
         }
 
         private void OnDestroy()
         {
-            _harmony.UnpatchAll();
+            _harmony.UnpatchAll(PluginId);
         }
     }
 }

@@ -9,9 +9,11 @@ using UnityEngine;
 
 namespace Jam
 {
-    [BepInPlugin("randyknapp.mods.jam", "Jam", "1.0.0")]
+    [BepInPlugin(PluginId, "Jam", "1.0.0")]
     public class Jam : BaseUnityPlugin
     {
+        public const string PluginId = "randyknapp.mods.jam";
+
         private Harmony _harmony;
         public static RecipesConfig Recipes;
         public static readonly Dictionary<string, GameObject> Prefabs = new Dictionary<string, GameObject>();
@@ -34,7 +36,7 @@ namespace Jam
 
             assetBundle?.Unload(false);
 
-            _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
+            _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), PluginId);
         }
 
         private static T LoadJsonFile<T>(string filename) where T : class
@@ -79,7 +81,7 @@ namespace Jam
 
         private void OnDestroy()
         {
-            _harmony?.UnpatchAll();
+            _harmony?.UnpatchAll(PluginId);
             foreach (var prefab in Prefabs.Values)
             {
                 Destroy(prefab);

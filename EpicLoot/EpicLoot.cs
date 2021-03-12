@@ -33,10 +33,11 @@ namespace EpicLoot
         public List<RecipeRequirementConfig> Resources = new List<RecipeRequirementConfig>();
     }
 
-    [BepInPlugin("randyknapp.mods.epicloot", "Epic Loot", Version)]
+    [BepInPlugin(PluginId, "Epic Loot", Version)]
     [BepInDependency("randyknapp.mods.extendeditemdataframework")]
     public class EpicLoot : BaseUnityPlugin
     {
+        private const string PluginId = "randyknapp.mods.epicloot";
         private const string Version = "0.5.5";
 
         private static ConfigEntry<string> SetItemColor;
@@ -141,7 +142,7 @@ namespace EpicLoot
             ExtendedItemData.LoadExtendedItemData += MagicItemComponent.OnNewExtendedItemData;
             ExtendedItemData.NewExtendedItemData += MagicItemComponent.OnNewExtendedItemData;
 
-            _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), "randyknapp.mods.epicloot");
+            _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), PluginId);
 
             LootTableLoaded?.Invoke();
         }
@@ -263,7 +264,7 @@ namespace EpicLoot
         private void OnDestroy()
         {
             ExtendedItemData.LoadExtendedItemData -= SetupTestMagicItem;
-            _harmony?.UnpatchAll();
+            _harmony?.UnpatchAll(PluginId);
         }
 
         public static void AddLootTableConfig(LootConfig lootConfig)
@@ -518,21 +519,21 @@ namespace EpicLoot
 
         public static List<GameObject> RollLootTableAndSpawnObjects(List<LootTable> lootTables, string objectName, Vector3 dropPoint)
         {
-            return RollLootTableInternal(lootTables, objectName, dropPoint);
+            return RollLootTableInternal(lootTables, objectName, dropPoint, true);
         }
 
         public static List<GameObject> RollLootTableAndSpawnObjects(LootTable lootTable, string objectName, Vector3 dropPoint)
         {
-            return RollLootTableInternal(lootTable, objectName, dropPoint);
+            return RollLootTableInternal(lootTable, objectName, dropPoint, true);
         }
 
         public static List<ItemDrop.ItemData> RollLootTable(List<LootTable> lootTables, string objectName, Vector3 dropPoint)
         {
             var results = new List<ItemDrop.ItemData>();
-            var gameObjects = RollLootTableInternal(lootTables, objectName, dropPoint);
+            var gameObjects = RollLootTableInternal(lootTables, objectName, dropPoint, false);
             foreach (var itemObject in gameObjects)
             {
-                results.Add(itemObject.GetComponent<ItemDrop>().m_itemData);
+                results.Add(itemObject.GetComponent<ItemDrop>().m_itemData.Clone());
                 Destroy(itemObject);
             }
 
@@ -541,28 +542,20 @@ namespace EpicLoot
 
         public static List<ItemDrop.ItemData> RollLootTable(LootTable lootTable, string objectName, Vector3 dropPoint)
         {
-            var results = new List<ItemDrop.ItemData>();
-            var gameObjects = RollLootTableInternal(lootTable, objectName, dropPoint);
-            foreach (var itemObject in gameObjects)
-            {
-                results.Add(itemObject.GetComponent<ItemDrop>().m_itemData);
-                Destroy(itemObject);
-            }
-
-            return results;
+            return RollLootTable(new List<LootTable> {lootTable}, objectName, dropPoint);
         }
 
-        private static List<GameObject> RollLootTableInternal(List<LootTable> lootTables, string objectName, Vector3 dropPoint)
+        private static List<GameObject> RollLootTableInternal(List<LootTable> lootTables, string objectName, Vector3 dropPoint, bool initializeObject)
         {
             var results = new List<GameObject>();
             foreach (var lootTable in lootTables)
             {
-                results.AddRange(RollLootTableInternal(lootTable, objectName, dropPoint));
+                results.AddRange(RollLootTableInternal(lootTable, objectName, dropPoint, initializeObject));
             }
             return results;
         }
 
-        private static List<GameObject> RollLootTableInternal(LootTable lootTable, string objectName, Vector3 dropPoint)
+        private static List<GameObject> RollLootTableInternal(LootTable lootTable, string objectName, Vector3 dropPoint, bool initializeObject)
         {
             var results = new List<GameObject>();
 
@@ -586,8 +579,11 @@ namespace EpicLoot
                     continue;
                 }
 
-                var randomRotation = Quaternion.Euler(0.0f, (float) UnityEngine.Random.Range(0, 360), 0.0f);
+                var randomRotation = Quaternion.Euler(0.0f, Random.Range(0.0f, 360.0f), 0.0f);
+                ZNetView.m_forceDisableInit = !initializeObject;
                 var item = Instantiate(itemPrefab, dropPoint, randomRotation);
+                ZNetView.m_forceDisableInit = false;
+                item.AddComponent<GotDestroyed>();
                 var itemDrop = item.GetComponent<ItemDrop>();
                 if (!CanBeMagicItem(itemDrop.m_itemData))
                 {
@@ -601,8 +597,9 @@ namespace EpicLoot
                 magicItemComponent.SetMagicItem(magicItem);
 
                 itemDrop.m_itemData = itemData;
-                results.Add(item);
 
+                InitializeMagicItem(itemData, magicItem);
+                results.Add(item);
                 MagicItemGenerated?.Invoke(itemData, magicItem);
             }
 
@@ -636,10 +633,18 @@ namespace EpicLoot
                 var effect = RollEffect(effectDef, magicItem.Rarity);
                 magicItem.Effects.Add(effect);
             }
-
+            
             return magicItem;
         }
-        
+
+        private static void InitializeMagicItem(ExtendedItemData baseItem, MagicItem magicItem)
+        {
+            if (baseItem.m_shared.m_useDurability)
+            {
+                baseItem.m_durability = Random.Range(0.2f, 1.0f) * baseItem.GetMaxDurability();
+            }
+        }
+
         public static int RollEffectCountPerRarity(ItemRarity rarity)
         {
             Dictionary<int, float> countPercents = MagicEffectCountWeightsPerRarity[rarity];

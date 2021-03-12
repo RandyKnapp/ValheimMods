@@ -7,10 +7,12 @@ using UnityEngine;
 
 namespace EquipmentAndQuickSlots
 {
-    [BepInPlugin("randyknapp.mods.equipmentandquickslots", "Equipment and Quick Slots", "2.0.0")]
+    [BepInPlugin(PluginId, "Equipment and Quick Slots", "2.0.0")]
     [BepInDependency("moreslots", BepInDependency.DependencyFlags.SoftDependency)]
     public class EquipmentAndQuickSlots : BaseUnityPlugin
     {
+        public const string PluginId = "randyknapp.mods.equipmentandquickslots";
+
         public const int QuickSlotCount = 3;
         public static int EquipSlotCount => EquipSlotTypes.Count;
         public static readonly ConfigEntry<string>[] KeyCodes = new ConfigEntry<string>[3];
@@ -40,12 +42,12 @@ namespace EquipmentAndQuickSlots
             EquipmentSlotsEnabled = Config.Bind("Toggles", "Enable Equipment Slots", true, "Enable the equipment slots. !!! WARNING !!! If you disable this while wearing equipment, you will LOSE IT!");
             QuickSlotsEnabled = Config.Bind("Toggles", "Enable Quick Slots", true, "Enable the quick slots. !!! WARNING !!! If you disable this while items are in the quickslots, you will LOSE THEM!");
 
-            _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
+            _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), PluginId);
         }
 
         private void OnDestroy()
         {
-            _harmony?.UnpatchAll();
+            _harmony?.UnpatchAll(PluginId);
         }
 
         private void Update()

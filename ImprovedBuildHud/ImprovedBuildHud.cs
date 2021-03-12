@@ -15,11 +15,13 @@ namespace ImprovedBuildHud
         public static ConfigEntry<string> CanBuildAmountColor;
     }
 
-    [BepInPlugin("randyknapp.mods.improvedbuildhud", "Improved Build HUD", "1.0.3")]
+    [BepInPlugin(PluginId, "Improved Build HUD", "1.0.3")]
     [BepInProcess("valheim.exe")]
     [BepInDependency("aedenthorn.CraftFromContainers", BepInDependency.DependencyFlags.SoftDependency)]
     public class ImprovedBuildHud : BaseUnityPlugin
     {
+        public const string PluginId = "randyknapp.mods.improvedbuildhud";
+
         private Harmony _harmony;
         private static List<Container> _cachedContainers;
 
@@ -31,7 +33,7 @@ namespace ImprovedBuildHud
             ImprovedBuildHudConfig.InventoryAmountColor = Config.Bind("General", "Inventory Amount Color", "lightblue", "Color to set the inventory amount after the requirement amount. Leave empty to set no color. You can use the #XXXXXX hex color format.");
             ImprovedBuildHudConfig.CanBuildAmountFormat = Config.Bind("General", "Can Build Amount Color", "({0})", "Format for the amount of times you can build the currently selected item with your current inventory. Uses standard C# format rules. Leave empty to hide altogether.");
             ImprovedBuildHudConfig.CanBuildAmountColor = Config.Bind("General", "Can Build Amount Color", "white", "Color to set the can-build amount. Leave empty to set no color. You can use the #XXXXXX hex color format.");
-            _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), null);
+            _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), PluginId);
 
             /*CraftFromContainersInstalledAndActive = false;
             var bepInExManager = GameObject.Find("BepInEx_Manager");
@@ -49,7 +51,7 @@ namespace ImprovedBuildHud
         private void OnDestroy()
         {
             CraftFromContainersInstalledAndActive = false;
-            _harmony?.UnpatchAll();
+            _harmony?.UnpatchAll(PluginId);
         }
 
         private void LateUpdate()

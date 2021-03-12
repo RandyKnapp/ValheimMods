@@ -8,9 +8,11 @@ using UnityEngine;
 
 namespace ItsJustWood
 {
-    [BepInPlugin("randyknapp.mods.itsjustwood", "It's Just Wood", "1.0.1")]
+    [BepInPlugin(PluginId, "It's Just Wood", "1.0.1")]
     public class ItsJustWood : BaseUnityPlugin
     {
+        public const string PluginId = "randyknapp.mods.itsjustwood";
+
         public static ConfigEntry<Vector2> FineWoodToWoodCount;
         public static ConfigEntry<Vector2> CoreWoodToWoodCount;
         public static ConfigEntry<Vector2> AncientBarkToWoodCount;
@@ -34,35 +36,13 @@ namespace ItsJustWood
 
             AllowAncientBarkForCoal = Config.Bind("Fuel", "AllowAncientBarkForCoal", true, "Allow ancient bark to be used to create coal in a charcoal kiln");
 
-            _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
-            //_initialized = false;
+            _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), PluginId);
         }
 
         private void OnDestroy()
         {
-            //_initialized = false;
-            _harmony?.UnpatchAll();
+            _harmony?.UnpatchAll(PluginId);
         }
-
-        /*private void Update()
-        {
-            if (_initialized)
-            {
-                return;
-            }
-
-            if (ZNetScene.instance == null || ObjectDB.instance == null)
-            {
-                return;
-            }
-
-            if (!ObjectDB.instance.m_recipes.Exists(x => x.name == "Recipe_FineWoodToWood"))
-            {
-                TryRegisterRecipes();
-            }
-
-            _initialized = true;
-        }*/
 
         public static void TryRegisterRecipes()
         {
