@@ -33,7 +33,6 @@ namespace ItsJustWood
             }
 
             var fuelItem = GetAvailableFuelItem(inventory, __instance.m_fuelItem.m_itemData.m_shared.m_name);
-            Debug.Log($"Try adding: {fuelItem}");
             if (!string.IsNullOrEmpty(fuelItem))
             {
                 if ((double)Mathf.CeilToInt(__instance.m_nview.GetZDO().GetFloat("fuel")) >= (double)__instance.m_maxFuel)
