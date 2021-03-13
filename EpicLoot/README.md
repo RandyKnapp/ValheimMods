@@ -2,6 +2,8 @@
 Author: RandyKnapp
 Source: [Github](https://github.com/RandyKnapp/ValheimMods/blob/main/EpicLoot/)
 
+Patch notes: https://github.com/RandyKnapp/ValheimMods/blob/main/EpicLoot/patchnotes.md
+
 This mod aims to add a loot drop experience to Valheim similar to Diablo or other RPGs. Monsters and chests can now drop Magic, Rare, Epic, or Legendary magic items. Each magic item has a number of magic effects on it, that give bonuses to the item or your character when that magic item is equipped.
 
 The mod is currently in ***Early Access***! That means it's **not done**! Be patient as the author adds new features, fixes bugs, and finishes things up. If you want to help, please provide feedback on the [Nexus mod page](https://www.nexusmods.com/valheim/mods/387) or on the [github](https://github.com/RandyKnapp/ValheimMods/tree/main/EpicLoot) for the following:
@@ -18,7 +20,7 @@ Information about every magic effect and loot drop table can be found in [info.m
 
 ## Cheats
 
-Enter these into the console (F5):
+Enter these into the console (F5) after using `imacheater`:
 
   * `magicitem <rarity> <itemtype> <amount>`: Roll a random magic item using the specified values. (alias: `mi`)
     * `<rarity>`: (String) One of: magic, rare, epic, legendary, random. If left empty, uses random.
@@ -110,9 +112,9 @@ Enter these into the console (F5):
 ## Chests
 
 - [X] TreasureChest_blackforest
-- [X] TreasureChest_fCrypt (???)
+- [X] TreasureChest_fCrypt
 - [X] TreasureChest_forestcrypt
-- [ ] ~TreasureChest_heath (???)~
+- [X] TreasureChest_heath
 - [X] TreasureChest_meadows
 - [X] TreasureChest_meadows_buried
 - [X] TreasureChest_mountains

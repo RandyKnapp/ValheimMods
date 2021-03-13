@@ -150,6 +150,7 @@
     <None Include="info.md" />
     <None Include="loottables.json" />
     <None Include="manifest.json" />
+    <None Include="patchnotes.md" />
     <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>
