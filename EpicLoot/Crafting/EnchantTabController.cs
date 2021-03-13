@@ -119,12 +119,12 @@ namespace EpicLoot.Crafting
             sb.AppendLine($"<color={rarityColor}>");
 
             var effectCountWeights = LootRoller.GetEffectCountsPerRarity(recipe.ToRarity);
-            var totalWeight = effectCountWeights.Sum(x => x.Value);
+            float totalWeight = effectCountWeights.Sum(x => x.Value);
             foreach (var effectCountEntry in effectCountWeights)
             {
                 var count = effectCountEntry.Key;
                 var weight = effectCountEntry.Value;
-                var percent = (int)(weight / totalWeight * 100);
+                var percent = (int)(weight / totalWeight * 100.0f);
                 var label = count == 1 ? $"{count} effect:" : $"{count} effects:";
                 sb.AppendLine($"  ‣ {label} {percent}%");
             }

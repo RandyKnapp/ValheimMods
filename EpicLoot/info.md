@@ -1,4 +1,4 @@
-# EpicLoot Data v0.5.9
+# EpicLoot Data v0.5.10
 
 *Author: RandyKnapp*
 *Source: [Github](https://github.com/RandyKnapp/ValheimMods/tree/main/EpicLoot)*
@@ -810,15 +810,16 @@ Sets of loot drop data that can be referenced in the loot tables
 
 > | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
-> | KnifeCopper | 1 (11.1%) | 95 (95%) | 5 (5%) | 0 (0%) | 0 (0%) |
-> | SledgeStagbreaker | 1 (11.1%) | 95 (95%) | 5 (5%) | 0 (0%) | 0 (0%) |
-> | SwordBronze | 1 (11.1%) | 95 (95%) | 5 (5%) | 0 (0%) | 0 (0%) |
-> | AxeBronze | 1 (11.1%) | 95 (95%) | 5 (5%) | 0 (0%) | 0 (0%) |
-> | MaceBronze | 1 (11.1%) | 95 (95%) | 5 (5%) | 0 (0%) | 0 (0%) |
-> | AtgeirBronze | 1 (11.1%) | 95 (95%) | 5 (5%) | 0 (0%) | 0 (0%) |
-> | SpearBronze | 1 (11.1%) | 95 (95%) | 5 (5%) | 0 (0%) | 0 (0%) |
-> | ShieldBronzeBuckler | 1 (11.1%) | 95 (95%) | 5 (5%) | 0 (0%) | 0 (0%) |
-> | BowFineWood | 1 (11.1%) | 95 (95%) | 5 (5%) | 0 (0%) | 0 (0%) |
+> | KnifeCopper | 1 (10%) | 95 (95%) | 5 (5%) | 0 (0%) | 0 (0%) |
+> | SledgeStagbreaker | 1 (10%) | 95 (95%) | 5 (5%) | 0 (0%) | 0 (0%) |
+> | SwordBronze | 1 (10%) | 95 (95%) | 5 (5%) | 0 (0%) | 0 (0%) |
+> | AxeBronze | 1 (10%) | 95 (95%) | 5 (5%) | 0 (0%) | 0 (0%) |
+> | MaceBronze | 1 (10%) | 95 (95%) | 5 (5%) | 0 (0%) | 0 (0%) |
+> | AtgeirBronze | 1 (10%) | 95 (95%) | 5 (5%) | 0 (0%) | 0 (0%) |
+> | SpearBronze | 1 (10%) | 95 (95%) | 5 (5%) | 0 (0%) | 0 (0%) |
+> | BowFineWood | 1 (10%) | 95 (95%) | 5 (5%) | 0 (0%) | 0 (0%) |
+> | KnifeChitin | 1 (10%) | 95 (95%) | 5 (5%) | 0 (0%) | 0 (0%) |
+> | SpearChitin | 1 (10%) | 95 (95%) | 5 (5%) | 0 (0%) | 0 (0%) |
 
 
 ## Tier2Armor
@@ -907,20 +908,20 @@ Sets of loot drop data that can be referenced in the loot tables
 
 > | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
-> | SwordSilver | 10 (43.5%) | 10 (9.1%) | 40 (36.4%) | 45 (40.9%) | 15 (13.6%) |
-> | SpearWolfFang | 10 (43.5%) | 10 (9.1%) | 40 (36.4%) | 45 (40.9%) | 15 (13.6%) |
-> | KnifeChitin | 1 (4.3%) | 10 (9.1%) | 40 (36.4%) | 45 (40.9%) | 15 (13.6%) |
-> | MaceSilver | 1 (4.3%) | 10 (9.1%) | 40 (36.4%) | 45 (40.9%) | 15 (13.6%) |
-> | SpearChitin | 1 (4.3%) | 10 (9.1%) | 40 (36.4%) | 45 (40.9%) | 15 (13.6%) |
+> | SwordSilver | 10 (45.5%) | 10 (9.1%) | 40 (36.4%) | 45 (40.9%) | 15 (13.6%) |
+> | SpearWolfFang | 10 (45.5%) | 10 (9.1%) | 40 (36.4%) | 45 (40.9%) | 15 (13.6%) |
+> | MaceSilver | 1 (4.5%) | 10 (9.1%) | 40 (36.4%) | 45 (40.9%) | 15 (13.6%) |
+> | BowDraugrFang | 1 (4.5%) | 10 (9.1%) | 40 (36.4%) | 45 (40.9%) | 15 (13.6%) |
 
 
 ## Tier4Armor
 
 > | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
-> | ArmorWolfLegs | 1 (33.3%) | 10 (9.1%) | 40 (36.4%) | 45 (40.9%) | 15 (13.6%) |
-> | ArmorWolfChest | 1 (33.3%) | 10 (9.1%) | 40 (36.4%) | 45 (40.9%) | 15 (13.6%) |
-> | HelmetDrake | 1 (33.3%) | 10 (9.1%) | 40 (36.4%) | 45 (40.9%) | 15 (13.6%) |
+> | ArmorWolfLegs | 1 (25%) | 10 (9.1%) | 40 (36.4%) | 45 (40.9%) | 15 (13.6%) |
+> | ArmorWolfChest | 1 (25%) | 10 (9.1%) | 40 (36.4%) | 45 (40.9%) | 15 (13.6%) |
+> | HelmetDrake | 1 (25%) | 10 (9.1%) | 40 (36.4%) | 45 (40.9%) | 15 (13.6%) |
+> | CapeWolf | 1 (25%) | 10 (9.1%) | 40 (36.4%) | 45 (40.9%) | 15 (13.6%) |
 
 
 ## Tier4Shields
@@ -1293,7 +1294,8 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 
 > | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
-> | Tier2Everything | 1 (100%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | Tier2Everything | 2 (66.7%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | Tier3Everything | 1 (33.3%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
 
 
 ## Surtling
@@ -1306,7 +1308,8 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 
 > | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
-> | Tier2Everything | 1 (100%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | Tier2Everything | 2 (66.7%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | Tier3Everything | 1 (33.3%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
 
 
 ## Wraith
@@ -1669,18 +1672,18 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 
 > | Items (lvl 1+) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
-> | Tier4Everything | 4 (80%) | 0 (0%) | 55 (55%) | 40 (40%) | 5 (5%) |
-> | Tier5Everything | 1 (20%) | 0 (0%) | 55 (55%) | 40 (40%) | 5 (5%) |
+> | Tier3Everything | 4 (80%) | 0 (0%) | 55 (55%) | 40 (40%) | 5 (5%) |
+> | Tier4Everything | 1 (20%) | 0 (0%) | 55 (55%) | 40 (40%) | 5 (5%) |
 
 > | Items (lvl 2+) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
-> | Tier4Everything | 2 (66.7%) | 0 (0%) | 45 (45%) | 45 (45%) | 10 (10%) |
-> | Tier5Everything | 1 (33.3%) | 0 (0%) | 45 (45%) | 45 (45%) | 10 (10%) |
+> | Tier3Everything | 2 (66.7%) | 0 (0%) | 45 (45%) | 45 (45%) | 10 (10%) |
+> | Tier4Everything | 1 (33.3%) | 0 (0%) | 45 (45%) | 45 (45%) | 10 (10%) |
 
 > | Items (lvl 3+) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
+> | Tier3Everything | 1 (50%) | 0 (0%) | 30 (30%) | 55 (55%) | 15 (15%) |
 > | Tier4Everything | 1 (50%) | 0 (0%) | 30 (30%) | 55 (55%) | 15 (15%) |
-> | Tier5Everything | 1 (50%) | 0 (0%) | 30 (30%) | 55 (55%) | 15 (15%) |
 
 
 ## Eikthyr
@@ -1790,10 +1793,8 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 
 > | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
-> | Tier1Weapons | 3 (37.5%) | 95 (95%) | 4 (4%) | 1 (1%) | 0 (0%) |
-> | Tier1Armor | 3 (37.5%) | 95 (95%) | 4 (4%) | 1 (1%) | 0 (0%) |
-> | Tier2Weapons | 1 (12.5%) | 95 (95%) | 4 (4%) | 1 (1%) | 0 (0%) |
-> | Tier2Armor | 1 (12.5%) | 95 (95%) | 4 (4%) | 1 (1%) | 0 (0%) |
+> | Tier1Everything | 2 (66.7%) | 95 (95%) | 4 (4%) | 1 (1%) | 0 (0%) |
+> | Tier2Everything | 1 (33.3%) | 95 (95%) | 4 (4%) | 1 (1%) | 0 (0%) |
 
 
 ## TreasureChest_fCrypt
@@ -1807,7 +1808,7 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 
 > | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
-> | TreasureChest_fCrypt.1 | 1 (100%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
+> | TreasureChest_forestcrypt.1 | 1 (100%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
 
 
 ## TreasureChest_trollcave
@@ -1821,8 +1822,8 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 
 > | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
-> | Tier2Weapons | 1 (50%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
-> | TrollArmor | 1 (50%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
+> | Tier1Everything | 1 (50%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
+> | Tier2Everything | 1 (50%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
 
 
 ## shipwreck_karve_chest
@@ -1836,8 +1837,8 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 
 > | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
-> | Tier2Weapons | 1 (50%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
-> | Tier2Armor | 1 (50%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
+> | Tier0Everything | 1 (50%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
+> | Tier1Everything | 1 (50%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
 
 
 ## TreasureChest_meadows_buried
@@ -1851,9 +1852,8 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 
 > | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
-> | Tier1Weapons | 3 (50%) | 70 (70%) | 25 (25%) | 5 (5%) | 0 (0%) |
-> | Tier1Armor | 2 (33.3%) | 70 (70%) | 25 (25%) | 5 (5%) | 0 (0%) |
-> | Tier0Shields | 1 (16.7%) | 70 (70%) | 25 (25%) | 5 (5%) | 0 (0%) |
+> | Tier0Everything | 3 (60%) | 70 (70%) | 25 (25%) | 5 (5%) | 0 (0%) |
+> | Tier1Everything | 2 (40%) | 70 (70%) | 25 (25%) | 5 (5%) | 0 (0%) |
 
 
 ## TreasureChest_sunkencrypt
@@ -1867,8 +1867,8 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 
 > | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
-> | Tier2Everything | 3 (75%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
-> | Tier3Everything | 1 (25%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | Tier0Everything | 3 (75%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | Tier1Everything | 1 (25%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
 
 
 ## TreasureChest_swamp
@@ -1902,6 +1902,20 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 
 
 ## TreasureChest_plains_stone
+
+> | Drops | Weight (Chance) |
+> | -- | -- |
+> | 0 | 58 (52.7%) |
+> | 1 | 30 (27.3%) |
+> | 2 | 20 (18.2%) |
+> | 3 | 2 (1.8%) |
+
+> | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | TreasureChest_forestcrypt.1 | 1 (100%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
+
+
+## TreasureChest_heath
 
 > | Drops | Weight (Chance) |
 > | -- | -- |

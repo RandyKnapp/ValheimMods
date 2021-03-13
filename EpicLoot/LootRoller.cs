@@ -188,7 +188,7 @@ namespace EpicLoot
                     }
                     _weightedLootTable.Setup(itemSet.Loot, x => x.Weight);
                     result = _weightedLootTable.Roll();
-                    if (ArrayUtils.IsNullOrEmpty(rarityOverride))
+                    if (!ArrayUtils.IsNullOrEmpty(rarityOverride))
                     {
                         result.Rarity = rarityOverride;
                     }

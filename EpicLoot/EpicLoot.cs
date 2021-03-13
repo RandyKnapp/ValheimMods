@@ -39,7 +39,7 @@ namespace EpicLoot
     public class EpicLoot : BaseUnityPlugin
     {
         private const string PluginId = "randyknapp.mods.epicloot";
-        private const string Version = "0.5.9";
+        private const string Version = "0.5.10";
 
         private static ConfigEntry<string> _setItemColor;
         private static ConfigEntry<string> _magicRarityColor;
@@ -87,7 +87,7 @@ namespace EpicLoot
 
         public static readonly List<string> RestrictedItemNames = new List<string>
         {
-            "$item_tankard", "$item_tankard_odin", "Unarmed", "CAPE TEST"
+            "$item_tankard", "Unarmed", "CAPE TEST", "Cheat sword", "$item_sword_fire", "$item_tankard_odin", "$item_cape_odin", "$item_helmet_odin"
         };
 
         public static readonly Assets Assets = new Assets();
