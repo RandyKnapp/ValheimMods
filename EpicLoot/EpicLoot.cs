@@ -11,8 +11,8 @@ using EpicLoot.Crafting;
 using ExtendedItemDataFramework;
 using fastJSON;
 using HarmonyLib;
+using JetBrains.Annotations;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using Random = UnityEngine.Random;
 
 namespace EpicLoot
@@ -39,21 +39,21 @@ namespace EpicLoot
     public class EpicLoot : BaseUnityPlugin
     {
         private const string PluginId = "randyknapp.mods.epicloot";
-        private const string Version = "0.5.8";
+        private const string Version = "0.5.9";
 
-        private static ConfigEntry<string> SetItemColor;
-        private static ConfigEntry<string> MagicRarityColor;
-        private static ConfigEntry<string> RareRarityColor;
-        private static ConfigEntry<string> EpicRarityColor;
-        private static ConfigEntry<string> LegendaryRarityColor;
-        private static ConfigEntry<int> MagicMaterialIconColor;
-        private static ConfigEntry<int> RareMaterialIconColor;
-        private static ConfigEntry<int> EpicMaterialIconColor;
-        private static ConfigEntry<int> LegendaryMaterialIconColor;
-        private static ConfigEntry<string> MagicRarityDisplayName;
-        private static ConfigEntry<string> RareRarityDisplayName;
-        private static ConfigEntry<string> EpicRarityDisplayName;
-        private static ConfigEntry<string> LegendaryRarityDisplayName;
+        private static ConfigEntry<string> _setItemColor;
+        private static ConfigEntry<string> _magicRarityColor;
+        private static ConfigEntry<string> _rareRarityColor;
+        private static ConfigEntry<string> _epicRarityColor;
+        private static ConfigEntry<string> _legendaryRarityColor;
+        private static ConfigEntry<int> _magicMaterialIconColor;
+        private static ConfigEntry<int> _rareMaterialIconColor;
+        private static ConfigEntry<int> _epicMaterialIconColor;
+        private static ConfigEntry<int> _legendaryMaterialIconColor;
+        private static ConfigEntry<string> _magicRarityDisplayName;
+        private static ConfigEntry<string> _rareRarityDisplayName;
+        private static ConfigEntry<string> _epicRarityDisplayName;
+        private static ConfigEntry<string> _legendaryRarityDisplayName;
         public static ConfigEntry<bool> UseScrollingCraftDescription;
 
         public static readonly List<ItemDrop.ItemData.ItemType> AllowedMagicItemTypes = new List<ItemDrop.ItemData.ItemType>
@@ -90,60 +90,36 @@ namespace EpicLoot
             "$item_tankard", "$item_tankard_odin", "Unarmed", "CAPE TEST"
         };
 
-        public static Dictionary<ItemRarity, Dictionary<int, float>> MagicEffectCountWeightsPerRarity = new Dictionary<ItemRarity, Dictionary<int, float>>()
-        {
-            { ItemRarity.Magic, new Dictionary<int, float>() { { 1, 80 }, { 2, 18 }, { 3, 2 } } },
-            { ItemRarity.Rare, new Dictionary<int, float>() { { 2, 80 }, { 3, 18 }, { 4, 2 } } },
-            { ItemRarity.Epic, new Dictionary<int, float>() { { 3, 80 }, { 4, 18 }, { 5, 2 } } },
-            { ItemRarity.Legendary, new Dictionary<int, float>() { { 4, 80 }, { 5, 18 }, { 6, 2 } } }
-        };
-
         public static readonly Assets Assets = new Assets();
-        public static readonly Dictionary<string, List<LootTable>> LootTables = new Dictionary<string, List<LootTable>>();
         public static readonly List<GameObject> RegisteredPrefabs = new List<GameObject>();
         public static readonly List<GameObject> RegisteredItemPrefabs = new List<GameObject>();
         public static readonly Dictionary<GameObject, PieceDef> RegisteredPieces = new Dictionary<GameObject, PieceDef>();
 
         public static event Action LootTableLoaded;
-        public static event Action<ExtendedItemData, MagicItem> MagicItemGenerated;
 
         private Harmony _harmony;
 
-        private static WeightedRandomCollection<int[]> _weightedDropCountTable;
-        private static WeightedRandomCollection<LootDrop> _weightedLootTable;
-        private static WeightedRandomCollection<MagicItemEffectDefinition> _weightedEffectTable;
-        private static WeightedRandomCollection<KeyValuePair<int, float>> _weightedEffectCountTable;
-        private static WeightedRandomCollection<KeyValuePair<ItemRarity, int>> _weightedRarityTable;
-
+        [UsedImplicitly]
         private void Awake()
         {
-            var random = new System.Random();
-            _weightedDropCountTable = new WeightedRandomCollection<int[]>(random);
-            _weightedLootTable = new WeightedRandomCollection<LootDrop>(random);
-            _weightedEffectTable = new WeightedRandomCollection<MagicItemEffectDefinition>(random);
-            _weightedEffectCountTable = new WeightedRandomCollection<KeyValuePair<int, float>>(random);
-            _weightedRarityTable = new WeightedRandomCollection<KeyValuePair<ItemRarity, int>>(random);
-
-            MagicRarityColor = Config.Bind("Item Colors", "Magic Rarity Color", "Blue", "The color of Magic rarity items, the lowest magic item tier. (Optional, use an HTML hex color starting with # to have a custom color.) Available options: Red, Orange, Yellow, Green, Teal, Blue, Indigo, Purple, Pink, Gray");
-            MagicMaterialIconColor = Config.Bind("Item Colors", "Magic Crafting Material Icon Index", 5, "Indicates the color of the icon used for magic crafting materials. A number between 0 and 9. Available options: 0=Red, 1=Orange, 2=Yellow, 3=Green, 4=Teal, 5=Blue, 6=Indigo, 7=Purple, 8=Pink, 9=Gray");
-            RareRarityColor = Config.Bind("Item Colors", "Rare Rarity Color", "Yellow", "The color of Rare rarity items, the second magic item tier. (Optional, use an HTML hex color starting with # to have a custom color.) Available options: Red, Orange, Yellow, Green, Teal, Blue, Indigo, Purple, Pink, Gray");
-            RareMaterialIconColor = Config.Bind("Item Colors", "Rare Crafting Material Icon Index", 2, "Indicates the color of the icon used for rare crafting materials. A number between 0 and 9. Available options: 0=Red, 1=Orange, 2=Yellow, 3=Green, 4=Teal, 5=Blue, 6=Indigo, 7=Purple, 8=Pink, 9=Gray");
-            EpicRarityColor = Config.Bind("Item Colors", "Epic Rarity Color", "Purple", "The color of Epic rarity items, the third magic item tier. (Optional, use an HTML hex color starting with # to have a custom color.) Available options: Red, Orange, Yellow, Green, Teal, Blue, Indigo, Purple, Pink, Gray");
-            EpicMaterialIconColor = Config.Bind("Item Colors", "Epic Crafting Material Icon Index", 7, "Indicates the color of the icon used for epic crafting materials. A number between 0 and 9. Available options: 0=Red, 1=Orange, 2=Yellow, 3=Green, 4=Teal, 5=Blue, 6=Indigo, 7=Purple, 8=Pink, 9=Gray");
-            LegendaryRarityColor = Config.Bind("Item Colors", "Legendary Rarity Color", "Teal", "The color of Legendary rarity items, the highest magic item tier. (Optional, use an HTML hex color starting with # to have a custom color.) Available options: Red, Orange, Yellow, Green, Teal, Blue, Indigo, Purple, Pink, Gray");
-            LegendaryMaterialIconColor = Config.Bind("Item Colors", "Legendary Crafting Material Icon Index", 4, "Indicates the color of the icon used for legendary crafting materials. A number between 0 and 9. Available options: 0=Red, 1=Orange, 2=Yellow, 3=Green, 4=Teal, 5=Blue, 6=Indigo, 7=Purple, 8=Pink, 9=Gray");
-            SetItemColor = Config.Bind("Item Colors", "Set Item Color", "#26ffff", "The color of set item text and the set item icon. Use a hex color, default is cyan");
-            MagicRarityDisplayName = Config.Bind("Rarity", "Magic Rarity Display Name", "Magic", "The name of the lowest rarity.");
-            RareRarityDisplayName = Config.Bind("Rarity", "Rare Rarity Display Name", "Rare", "The name of the second rarity.");
-            EpicRarityDisplayName = Config.Bind("Rarity", "Epic Rarity Display Name", "Epic", "The name of the third rarity.");
-            LegendaryRarityDisplayName = Config.Bind("Rarity", "Legendary Rarity Display Name", "Legendary", "The name of the highest rarity.");
+            _magicRarityColor = Config.Bind("Item Colors", "Magic Rarity Color", "Blue", "The color of Magic rarity items, the lowest magic item tier. (Optional, use an HTML hex color starting with # to have a custom color.) Available options: Red, Orange, Yellow, Green, Teal, Blue, Indigo, Purple, Pink, Gray");
+            _magicMaterialIconColor = Config.Bind("Item Colors", "Magic Crafting Material Icon Index", 5, "Indicates the color of the icon used for magic crafting materials. A number between 0 and 9. Available options: 0=Red, 1=Orange, 2=Yellow, 3=Green, 4=Teal, 5=Blue, 6=Indigo, 7=Purple, 8=Pink, 9=Gray");
+            _rareRarityColor = Config.Bind("Item Colors", "Rare Rarity Color", "Yellow", "The color of Rare rarity items, the second magic item tier. (Optional, use an HTML hex color starting with # to have a custom color.) Available options: Red, Orange, Yellow, Green, Teal, Blue, Indigo, Purple, Pink, Gray");
+            _rareMaterialIconColor = Config.Bind("Item Colors", "Rare Crafting Material Icon Index", 2, "Indicates the color of the icon used for rare crafting materials. A number between 0 and 9. Available options: 0=Red, 1=Orange, 2=Yellow, 3=Green, 4=Teal, 5=Blue, 6=Indigo, 7=Purple, 8=Pink, 9=Gray");
+            _epicRarityColor = Config.Bind("Item Colors", "Epic Rarity Color", "Purple", "The color of Epic rarity items, the third magic item tier. (Optional, use an HTML hex color starting with # to have a custom color.) Available options: Red, Orange, Yellow, Green, Teal, Blue, Indigo, Purple, Pink, Gray");
+            _epicMaterialIconColor = Config.Bind("Item Colors", "Epic Crafting Material Icon Index", 7, "Indicates the color of the icon used for epic crafting materials. A number between 0 and 9. Available options: 0=Red, 1=Orange, 2=Yellow, 3=Green, 4=Teal, 5=Blue, 6=Indigo, 7=Purple, 8=Pink, 9=Gray");
+            _legendaryRarityColor = Config.Bind("Item Colors", "Legendary Rarity Color", "Teal", "The color of Legendary rarity items, the highest magic item tier. (Optional, use an HTML hex color starting with # to have a custom color.) Available options: Red, Orange, Yellow, Green, Teal, Blue, Indigo, Purple, Pink, Gray");
+            _legendaryMaterialIconColor = Config.Bind("Item Colors", "Legendary Crafting Material Icon Index", 4, "Indicates the color of the icon used for legendary crafting materials. A number between 0 and 9. Available options: 0=Red, 1=Orange, 2=Yellow, 3=Green, 4=Teal, 5=Blue, 6=Indigo, 7=Purple, 8=Pink, 9=Gray");
+            _setItemColor = Config.Bind("Item Colors", "Set Item Color", "#26ffff", "The color of set item text and the set item icon. Use a hex color, default is cyan");
+            _magicRarityDisplayName = Config.Bind("Rarity", "Magic Rarity Display Name", "Magic", "The name of the lowest rarity.");
+            _rareRarityDisplayName = Config.Bind("Rarity", "Rare Rarity Display Name", "Rare", "The name of the second rarity.");
+            _epicRarityDisplayName = Config.Bind("Rarity", "Epic Rarity Display Name", "Epic", "The name of the third rarity.");
+            _legendaryRarityDisplayName = Config.Bind("Rarity", "Legendary Rarity Display Name", "Legendary", "The name of the highest rarity.");
             UseScrollingCraftDescription = Config.Bind("Crafting UI", "Use Scrolling Craft Description", true, "Changes the item description in the crafting panel to scroll instead of scale when it gets too long for the space.");
 
             MagicItemEffectDefinitions.SetupMagicItemEffectDefinitions();
 
-            LootTables.Clear();
-            var lootConfig = LoadJsonFile<LootConfig>("loottables.json");
-            AddLootTableConfig(lootConfig);
+            LootRoller.Initialize(LoadJsonFile<LootConfig>("loottables.json"));
             PrintInfo();
 
             LoadAssets();
@@ -290,35 +266,11 @@ namespace EpicLoot
             }*/
         }
 
+        [UsedImplicitly]
         private void OnDestroy()
         {
             ExtendedItemData.LoadExtendedItemData -= SetupTestMagicItem;
             _harmony?.UnpatchAll(PluginId);
-        }
-
-        public static void AddLootTableConfig(LootConfig lootConfig)
-        {
-            foreach (var lootTable in lootConfig.LootTables)
-            {
-                AddLootTable(lootTable);
-            }
-        }
-
-        public static void AddLootTable(LootTable lootTable)
-        {
-            var key = lootTable.Object;
-            if (string.IsNullOrEmpty(key) || lootTable.Loot.Length == 0 || lootTable.Drops.Length == 0)
-            {
-                return;
-            }
-
-            Debug.Log($"Added LootTable: {key}");
-            if (!LootTables.ContainsKey(key))
-            {
-                LootTables.Add(key, new List<LootTable>());
-            }
-
-            LootTables[key].Add(lootTable);
         }
 
         public static void TryRegisterPrefabs(ZNetScene zNetScene)
@@ -487,13 +439,13 @@ namespace EpicLoot
             return null;
         }
 
-        private static string GetAssetPath(string assetName, bool ignoreErrors = false)
+        private static string GetAssetPath(string assetName)
         {
             var assetFileName = Path.Combine(Paths.PluginPath, "EpicLoot", assetName);
             if (!File.Exists(assetFileName))
             {
                 Assembly assembly = typeof(EpicLoot).Assembly;
-                assetFileName = Path.Combine(Path.GetDirectoryName(assembly.Location), assetName);
+                assetFileName = Path.Combine(Path.GetDirectoryName(assembly.Location) ?? string.Empty, assetName);
                 if (!File.Exists(assetFileName))
                 {
                     Debug.LogError($"Could not find asset ({assetName})");
@@ -547,10 +499,10 @@ namespace EpicLoot
 
         public static void OnCharacterDeath(string characterName, int level, Vector3 dropPoint)
         {
-            var lootTables = GetLootTable(characterName, level);
+            var lootTables = LootRoller.GetLootTable(characterName, level);
             if (lootTables != null && lootTables.Count > 0)
             {
-                List<GameObject> loot = RollLootTableAndSpawnObjects(lootTables, characterName, dropPoint);
+                List<GameObject> loot = LootRoller.RollLootTableAndSpawnObjects(lootTables, characterName, dropPoint);
                 Debug.Log($"Rolling on loot table: {characterName} (lvl {level}), spawned {loot.Count} items at drop point({dropPoint}).");
                 DropItems(loot, dropPoint);
                 foreach (var l in loot)
@@ -568,174 +520,6 @@ namespace EpicLoot
                 Debug.Log($"Could not find loot table for: {characterName} (lvl {level})");
             }
         }
-
-        public static List<GameObject> RollLootTableAndSpawnObjects(List<LootTable> lootTables, string objectName, Vector3 dropPoint)
-        {
-            return RollLootTableInternal(lootTables, objectName, dropPoint, true);
-        }
-
-        public static List<GameObject> RollLootTableAndSpawnObjects(LootTable lootTable, string objectName, Vector3 dropPoint)
-        {
-            return RollLootTableInternal(lootTable, objectName, dropPoint, true);
-        }
-
-        public static List<ItemDrop.ItemData> RollLootTable(List<LootTable> lootTables, string objectName, Vector3 dropPoint)
-        {
-            var results = new List<ItemDrop.ItemData>();
-            var gameObjects = RollLootTableInternal(lootTables, objectName, dropPoint, false);
-            foreach (var itemObject in gameObjects)
-            {
-                results.Add(itemObject.GetComponent<ItemDrop>().m_itemData.Clone());
-                Destroy(itemObject);
-            }
-
-            return results;
-        }
-
-        public static List<ItemDrop.ItemData> RollLootTable(LootTable lootTable, string objectName, Vector3 dropPoint)
-        {
-            return RollLootTable(new List<LootTable> {lootTable}, objectName, dropPoint);
-        }
-
-        private static List<GameObject> RollLootTableInternal(List<LootTable> lootTables, string objectName, Vector3 dropPoint, bool initializeObject)
-        {
-            var results = new List<GameObject>();
-            foreach (var lootTable in lootTables)
-            {
-                results.AddRange(RollLootTableInternal(lootTable, objectName, dropPoint, initializeObject));
-            }
-            return results;
-        }
-
-        private static List<GameObject> RollLootTableInternal(LootTable lootTable, string objectName, Vector3 dropPoint, bool initializeObject)
-        {
-            var results = new List<GameObject>();
-
-            _weightedDropCountTable.Setup(lootTable.Drops, dropPair => dropPair.Length == 2 ? dropPair[1] : 1);
-            var dropCountRollResult = _weightedDropCountTable.Roll();
-            var dropCount = dropCountRollResult.Length >= 1 ? dropCountRollResult[0] : 0;
-            if (dropCount == 0)
-            {
-                return results;
-            }
-
-            _weightedLootTable.Setup(lootTable.Loot, x => x.Weight);
-            var selectedDrops = _weightedLootTable.Roll(dropCount);
-
-            foreach (var lootDrop in selectedDrops)
-            {
-                var itemPrefab = ObjectDB.instance.GetItemPrefab(lootDrop.Item);
-                if (itemPrefab == null)
-                {
-                    Debug.LogError($"Tried to spawn loot ({lootDrop.Item}) for ({objectName}), but the item prefab was not found!");
-                    continue;
-                }
-
-                var randomRotation = Quaternion.Euler(0.0f, Random.Range(0.0f, 360.0f), 0.0f);
-                ZNetView.m_forceDisableInit = !initializeObject;
-                var item = Instantiate(itemPrefab, dropPoint, randomRotation);
-                ZNetView.m_forceDisableInit = false;
-                var itemDrop = item.GetComponent<ItemDrop>();
-                if (CanBeMagicItem(itemDrop.m_itemData) && !ArrayUtils.IsNullOrEmpty(lootDrop.Rarity))
-                {
-                    var itemData = new ExtendedItemData(itemDrop.m_itemData);
-                    var magicItemComponent = itemData.AddComponent<MagicItemComponent>();
-                    var magicItem = RollMagicItem(lootDrop, itemData);
-                    magicItemComponent.SetMagicItem(magicItem);
-
-                    itemDrop.m_itemData = itemData;
-                    InitializeMagicItem(itemData, magicItem);
-                    MagicItemGenerated?.Invoke(itemData, magicItem);
-                }
-
-                results.Add(item);
-            }
-
-            return results;
-        }
-
-        public static MagicItem RollMagicItem(LootDrop lootDrop, ExtendedItemData baseItem)
-        {
-            var rarity = RollItemRarity(lootDrop);
-            return RollMagicItem(rarity, baseItem);
-        }
-
-        public static MagicItem RollMagicItem(ItemRarity rarity, ExtendedItemData baseItem)
-        {
-            var magicItem = new MagicItem { Rarity = rarity };
-
-            var effectCount = RollEffectCountPerRarity(magicItem.Rarity);
-            for (int i = 0; i < effectCount; i++)
-            {
-                var availableEffects = MagicItemEffectDefinitions.GetAvailableEffects(baseItem, magicItem);
-                if (availableEffects.Count == 0)
-                {
-                    Debug.LogWarning($"Tried to add more effects to magic item ({baseItem.m_shared.m_name}) but there were no more available effects. " +
-                                     $"Current Effects: {(string.Join(", ", magicItem.Effects.Select(x => x.EffectType.ToString())))}");
-                    break;
-                }
-
-                _weightedEffectTable.Setup(availableEffects, x => x.SelectionWeight);
-                var effectDef = _weightedEffectTable.Roll();
-
-                var effect = RollEffect(effectDef, magicItem.Rarity);
-                magicItem.Effects.Add(effect);
-            }
-            
-            return magicItem;
-        }
-
-        private static void InitializeMagicItem(ExtendedItemData baseItem, MagicItem magicItem)
-        {
-            if (baseItem.m_shared.m_useDurability)
-            {
-                baseItem.m_durability = Random.Range(0.2f, 1.0f) * baseItem.GetMaxDurability();
-            }
-        }
-
-        public static int RollEffectCountPerRarity(ItemRarity rarity)
-        {
-            Dictionary<int, float> countPercents = MagicEffectCountWeightsPerRarity[rarity];
-            _weightedEffectCountTable.Setup(countPercents, x => x.Value);
-            return _weightedEffectCountTable.Roll().Key;
-        }
-
-        public static MagicItemEffect RollEffect(MagicItemEffectDefinition effectDef, ItemRarity itemRarity)
-        {
-            var valuesDef = effectDef.ValuesPerRarity[itemRarity];
-            float value = valuesDef.MinValue;
-            if (valuesDef.Increment != 0)
-            {
-                int incrementCount = (int)((valuesDef.MaxValue - valuesDef.MinValue) / valuesDef.Increment);
-                value = valuesDef.MinValue + (Random.Range(0, incrementCount + 1) * valuesDef.Increment);
-            }
-
-            return new MagicItemEffect()
-            {
-                EffectType = effectDef.Type,
-                EffectValue = value
-            };
-        }
-
-        public static ItemRarity RollItemRarity(LootDrop lootDrop)
-        {
-            if (lootDrop.Rarity == null || lootDrop.Rarity.Length == 0)
-            {
-                return ItemRarity.Magic;
-            }
-
-            Dictionary<ItemRarity, int> rarityWeights = new Dictionary<ItemRarity, int>()
-            {
-                { ItemRarity.Magic, lootDrop.Rarity.Length >= 1 ? lootDrop.Rarity[0] : 0 },
-                { ItemRarity.Rare, lootDrop.Rarity.Length >= 2 ? lootDrop.Rarity[1] : 0 },
-                { ItemRarity.Epic, lootDrop.Rarity.Length >= 3 ? lootDrop.Rarity[2] : 0 },
-                { ItemRarity.Legendary, lootDrop.Rarity.Length >= 4 ? lootDrop.Rarity[3] : 0 }
-            };
-
-            _weightedRarityTable.Setup(rarityWeights, x => x.Value);
-            return _weightedRarityTable.Roll().Key;
-        }
-        
 
         public static void DropItems(List<GameObject> loot, Vector3 centerPos, float dropHemisphereRadius = 0.5f)
         {
@@ -757,56 +541,6 @@ namespace EpicLoot
                     rigidbody.AddForce(insideUnitSphere * 5f, ForceMode.VelocityChange);
                 }
             }
-        }
-
-        public static List<LootTable> GetLootTable(string objectName, int level)
-        {
-            var results = new List<LootTable>();
-            if (LootTables.TryGetValue(objectName, out List<LootTable> lootTables))
-            {
-                foreach (var lootTable in lootTables)
-                {
-                    results.Add(GenerateLootTableForLevel(lootTable, level));
-                }
-            }
-            return results;
-        }
-
-        public static LootTable GenerateLootTableForLevel(LootTable lootTable, int level)
-        {
-            var result = new LootTable()
-            {
-                Object = lootTable.Object
-            };
-
-            // Use only the level-specific drops
-            if (level == 2 && !ArrayUtils.IsNullOrEmpty(lootTable.Drops2))
-            {
-                result.Drops = lootTable.Drops2.ToArray();
-            }
-            else if (level == 3 && !ArrayUtils.IsNullOrEmpty(lootTable.Drops3))
-            {
-                result.Drops = lootTable.Drops3.ToArray();
-            }
-            else
-            {
-                result.Drops = lootTable.Drops.ToArray();
-            }
-
-            // Combine all the loot up to the level
-            var allLoot = new List<LootDrop>();
-            allLoot.AddRange(lootTable.Loot);
-            if (level >= 2 && !ArrayUtils.IsNullOrEmpty(lootTable.Loot2))
-            {
-                allLoot.AddRange(lootTable.Loot2);
-            }
-            if (level >= 3 && !ArrayUtils.IsNullOrEmpty(lootTable.Loot3))
-            {
-                allLoot.AddRange(lootTable.Loot3);
-            }
-            result.Loot = allLoot.ToArray();
-
-            return result;
         }
 
         private void PrintInfo()
@@ -905,12 +639,27 @@ namespace EpicLoot
                 t.AppendLine();
             }
 
+            // Item Sets
+            t.AppendLine("# Item Sets");
+            t.AppendLine();
+            t.AppendLine("Sets of loot drop data that can be referenced in the loot tables");
+
+            foreach (var lootTableEntry in LootRoller.ItemSets)
+            {
+                var itemSet = lootTableEntry.Value;
+
+                t.AppendLine($"## {lootTableEntry.Key}");
+                t.AppendLine();
+                WriteLootList(t, string.Empty, itemSet.Loot);
+                t.AppendLine();
+            }
+
             // Loot tables
             t.AppendLine("# Loot Tables");
             t.AppendLine();
             t.AppendLine("A list of every built-in loot table from the mod. The name of the loot table is the object name followed by a number signifying the level of the object.");
 
-            foreach (var lootTableEntry in LootTables)
+            foreach (var lootTableEntry in LootRoller.LootTables)
             {
                 var list = lootTableEntry.Value;
 
@@ -994,36 +743,41 @@ namespace EpicLoot
                     continue;
                 }
 
-                t.AppendLine($"> | Items{levelDisplay} | Weight (Chance) | Magic | Rare | Epic | Legendary |");
-                t.AppendLine("> | -- | -- | -- | -- | -- | -- |");
+                WriteLootList(t, levelDisplay, lootList);
+            }
+        }
 
-                float totalLootWeight = lootList.Sum(x => x.Weight);
-                foreach (var lootDrop in lootList)
+        private static void WriteLootList(StringBuilder t, string levelDisplay, LootDrop[] lootList)
+        {
+            t.AppendLine($"> | Items{levelDisplay} | Weight (Chance) | Magic | Rare | Epic | Legendary |");
+            t.AppendLine("> | -- | -- | -- | -- | -- | -- |");
+
+            float totalLootWeight = lootList.Sum(x => x.Weight);
+            foreach (var lootDrop in lootList)
+            {
+                var percentChance = lootDrop.Weight / totalLootWeight * 100;
+                if (lootDrop.Rarity == null || lootDrop.Rarity.Length == 0)
                 {
-                    var percentChance = lootDrop.Weight / totalLootWeight * 100;
-                    if (lootDrop.Rarity == null || lootDrop.Rarity.Length == 0)
-                    {
-                        t.AppendLine($"> | {lootDrop.Item} | {lootDrop.Weight} ({percentChance:0.#}%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |");
-                        continue;
-                    }
-
-                    float rarityTotal = lootDrop.Rarity.Sum();
-                    float[] rarityPercent =
-                    {
-                        lootDrop.Rarity[0] / rarityTotal * 100,
-                        lootDrop.Rarity[1] / rarityTotal * 100,
-                        lootDrop.Rarity[2] / rarityTotal * 100,
-                        lootDrop.Rarity[3] / rarityTotal * 100,
-                    };
-                    t.AppendLine($"> | {lootDrop.Item} | {lootDrop.Weight} ({percentChance:0.#}%) " +
-                                 $"| {lootDrop.Rarity[0]} ({rarityPercent[0]:0.#}%) " +
-                                 $"| {lootDrop.Rarity[1]} ({rarityPercent[1]:0.#}%) " +
-                                 $"| {lootDrop.Rarity[2]:0.#} ({rarityPercent[2]:0.#}%) " +
-                                 $"| {lootDrop.Rarity[3]} ({rarityPercent[3]:0.#}%) |");
+                    t.AppendLine($"> | {lootDrop.Item} | {lootDrop.Weight} ({percentChance:0.#}%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |");
+                    continue;
                 }
 
-                t.AppendLine();
+                float rarityTotal = lootDrop.Rarity.Sum();
+                float[] rarityPercent =
+                {
+                    lootDrop.Rarity[0] / rarityTotal * 100,
+                    lootDrop.Rarity[1] / rarityTotal * 100,
+                    lootDrop.Rarity[2] / rarityTotal * 100,
+                    lootDrop.Rarity[3] / rarityTotal * 100,
+                };
+                t.AppendLine($"> | {lootDrop.Item} | {lootDrop.Weight} ({percentChance:0.#}%) " +
+                             $"| {lootDrop.Rarity[0]} ({rarityPercent[0]:0.#}%) " +
+                             $"| {lootDrop.Rarity[1]} ({rarityPercent[1]:0.#}%) " +
+                             $"| {lootDrop.Rarity[2]:0.#} ({rarityPercent[2]:0.#}%) " +
+                             $"| {lootDrop.Rarity[3]} ({rarityPercent[3]:0.#}%) |");
             }
+
+            t.AppendLine();
         }
 
         private static Dictionary<string, string> ParseSource(IEnumerable<string> lines)
@@ -1069,14 +823,16 @@ namespace EpicLoot
 
         private static string GetMagicEffectCountTableLine(ItemRarity rarity)
         {
-            var effectCounts = MagicEffectCountWeightsPerRarity[rarity];
-            var total = effectCounts.Sum(x => x.Value);
+            var effectCounts = LootRoller.GetEffectCountsPerRarity(rarity);
+            float total = effectCounts.Sum(x => x.Value);
             var result = $"|{rarity}|";
-            for (int i = 1; i <= 6; ++i)
+            for (var i = 1; i <= 6; ++i)
             {
                 var valueString = " ";
-                if (effectCounts.TryGetValue(i, out float value))
+                var i1 = i;
+                if (effectCounts.TryFind(x => x.Key == i1, out var found))
                 {
+                    var value = found.Value;
                     var percent = value / total * 100;
                     valueString = $"{value} ({percent:0.#}%)";
                 }
@@ -1087,7 +843,7 @@ namespace EpicLoot
 
         public static string GetSetItemColor()
         {
-            return SetItemColor.Value;
+            return _setItemColor.Value;
         }
 
         public static string GetRarityDisplayName(ItemRarity rarity)
@@ -1095,13 +851,13 @@ namespace EpicLoot
             switch (rarity)
             {
                 case ItemRarity.Magic:
-                    return MagicRarityDisplayName.Value;
+                    return _magicRarityDisplayName.Value;
                 case ItemRarity.Rare:
-                    return RareRarityDisplayName.Value;
+                    return _rareRarityDisplayName.Value;
                 case ItemRarity.Epic:
-                    return EpicRarityDisplayName.Value;
+                    return _epicRarityDisplayName.Value;
                 case ItemRarity.Legendary:
-                    return LegendaryRarityDisplayName.Value;
+                    return _legendaryRarityDisplayName.Value;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(rarity), rarity, null);
             }
@@ -1112,13 +868,13 @@ namespace EpicLoot
             switch (rarity)
             {
                 case ItemRarity.Magic:
-                    return GetColor(MagicRarityColor.Value);
+                    return GetColor(_magicRarityColor.Value);
                 case ItemRarity.Rare:
-                    return GetColor(RareRarityColor.Value);
+                    return GetColor(_rareRarityColor.Value);
                 case ItemRarity.Epic:
-                    return GetColor(EpicRarityColor.Value);
+                    return GetColor(_epicRarityColor.Value);
                 case ItemRarity.Legendary:
-                    return GetColor(LegendaryRarityColor.Value);
+                    return GetColor(_legendaryRarityColor.Value);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(rarity), rarity, null);
             }
@@ -1151,13 +907,13 @@ namespace EpicLoot
             switch (rarity)
             {
                 case ItemRarity.Magic:
-                    return Mathf.Clamp(MagicMaterialIconColor.Value, 0, 9);
+                    return Mathf.Clamp(_magicMaterialIconColor.Value, 0, 9);
                 case ItemRarity.Rare:
-                    return Mathf.Clamp(RareMaterialIconColor.Value, 0, 9);
+                    return Mathf.Clamp(_rareMaterialIconColor.Value, 0, 9);
                 case ItemRarity.Epic:
-                    return Mathf.Clamp(EpicMaterialIconColor.Value, 0, 9);
+                    return Mathf.Clamp(_epicMaterialIconColor.Value, 0, 9);
                 case ItemRarity.Legendary:
-                    return Mathf.Clamp(LegendaryMaterialIconColor.Value, 0, 9);
+                    return Mathf.Clamp(_legendaryMaterialIconColor.Value, 0, 9);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(rarity), rarity, null);
             }

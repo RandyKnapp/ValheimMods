@@ -33,7 +33,6 @@ Enter these into the console (F5):
 ## Current Known Mod Conflicts
 
   * **BetterUI** ([Nexus](https://www.nexusmods.com/valheim/mods/189), [Thunderstore](https://valheim.thunderstore.io/package/Masa/BetterUI/)): You won't be able to see the magic item properties in the tooltip. Go to the BetterUI config and set `showCustomTooltips = false`.
-  * **Multicraft** ([Nexus](https://www.nexusmods.com/valheim/mods/263), [Thunderstore](https://valheim.thunderstore.io/package/MaxiMods/MultiCraft/)): You won't be able to do any sacrificing or enchanting at all. You will need to disable Multicraft.
 
 ## Known Bugs
 
@@ -54,19 +53,19 @@ Enter these into the console (F5):
 - [ ] Augment items: change/reroll magic item effects (transmute? modify?)
 - [ ] Gamble for magic items from Merchant
 - [ ] Custom crafting station for enchanting
-- [ ] Loot tables
-  - [ ] Monsters
+- [X] Loot tables
+  - [X] Monsters
 	- [X] Meadows
 	- [X] Black Forest
 	- [X] Swamp
-	- [ ] Mountains
-	- [ ] Plains
-  - [ ] World Chests
+	- [X] Mountains
+	- [X] Plains
+  - [X] World Chests
   	- [X] Meadows
 	- [X] Black Forest
 	- [X] Swamp
-	- [ ] Mountains
-	- [ ] Plains
+	- [X] Mountains
+	- [X] Plains
 - [X] Set item UI treatment
 - [ ] Balance, balance, balance
 - [ ] Move tooltip code to postfix, parse and inject rather than redo from scratch
@@ -111,16 +110,16 @@ Enter these into the console (F5):
 ## Chests
 
 - [X] TreasureChest_blackforest
-- [ ] TreasureChest_fCrypt (???)
+- [X] TreasureChest_fCrypt (???)
 - [X] TreasureChest_forestcrypt
-- [ ] TreasureChest_heath (???)
+- [ ] ~TreasureChest_heath (???)~
 - [X] TreasureChest_meadows
 - [X] TreasureChest_meadows_buried
-- [ ] TreasureChest_mountains
-- [ ] TreasureChest_plains_stone
+- [X] TreasureChest_mountains
+- [X] TreasureChest_plains_stone
 - [X] TreasureChest_sunkencrypt
 - [X] TreasureChest_swamp
 - [X] TreasureChest_trollcave
-- [ ] shipwreck_karve_chest
+- [X] shipwreck_karve_chest
 
 **Author's Note:** This mod uses an image of the Odal rune (ᛟ) to denote set items. It's reconstructed Proto-Germanic meaning is "Heritage" or "Possession" and the author felt like it was the best rune from the Elder Futhark to signify set items. However, the Odal rune with wings or feet was and is used as a Nazi symbol. The author ***UNEQUIVOCALLY CONDEMNS*** Nazis, Nazism, anti-semitism, and white supremacy. Furthermore, those who hold or practice those beliefs are not welcome to use this mod. F\*\*k Nazis.

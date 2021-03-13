@@ -117,6 +117,7 @@
     <Compile Include="LootBeams\LootBeam.cs" />
     <Compile Include="LootConfig.cs" />
     <Compile Include="EpicLoot.cs" />
+    <Compile Include="LootRoller.cs" />
     <Compile Include="MagicItem.cs" />
     <Compile Include="MagicItemComponent.cs" />
     <Compile Include="MagicItemEffectDefinition.cs" />

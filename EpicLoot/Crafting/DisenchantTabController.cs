@@ -153,16 +153,58 @@ namespace EpicLoot.Crafting
                 __instance.m_minStationLevelIcon.gameObject.SetActive(false);
 
                 var isEquipped = recipe.FromItem.m_equiped;
-                var canPutProductsInInventory = true;
-                foreach (var product in recipe.Products)
-                {
-                    canPutProductsInInventory = canPutProductsInInventory && player.GetInventory().CanAddItem(product.Key.m_itemData, product.Value);
-                }
+                var canPutProductsInInventory = CanAddItems(player.GetInventory(), recipe.Products, 1);
                 __instance.m_craftButton.interactable = canPutProductsInInventory && !isEquipped;
                 __instance.m_craftButton.GetComponentInChildren<Text>().text = "Sacrifice";
                 __instance.m_craftButton.GetComponent<UITooltip>().m_text =
                     canPutProductsInInventory ? (isEquipped ? "Item is currently equipped" : "") : Localization.instance.Localize("$inventory_full");
             }
+        }
+
+        public static bool CanAddItems(Inventory inventory, List<KeyValuePair<ItemDrop, int>> items, int extraSpaces = 0)
+        {
+            var emptySlots = inventory.GetEmptySlots() + extraSpaces;
+            var freeStackSpaceTable = new Dictionary<ItemDrop.ItemData, int>();
+            foreach (var itemEntry in items)
+            {
+                var item = itemEntry.Key.m_itemData;
+                var amount = itemEntry.Value;
+                if (!freeStackSpaceTable.ContainsKey(item))
+                {
+                    freeStackSpaceTable.Add(item, inventory.FindFreeStackSpace(item.m_shared.m_name));
+                }
+
+                var freeStackSpace = freeStackSpaceTable[item];
+                if (freeStackSpace < amount && emptySlots == 0)
+                {
+                    return false;
+                }
+                else
+                {
+                    if (freeStackSpace > 0 && freeStackSpace >= amount)
+                    {
+                        freeStackSpaceTable[item] -= amount;
+                    }
+                    else if (freeStackSpace > 0 && freeStackSpace < amount)
+                    {
+                        freeStackSpaceTable[item] = 0;
+                        if (emptySlots == 0)
+                        {
+                            return false;
+                        }
+                        else
+                        {
+                            emptySlots--;
+                        }
+                    }
+                    else if (freeStackSpace <= 0 && emptySlots > 0)
+                    {
+                        emptySlots--;
+                    }
+                }
+            }
+
+            return true;
         }
 
         public static void SetupRequirementList(InventoryGui __instance, Player player, DisenchantRecipe recipe)
@@ -261,15 +303,33 @@ namespace EpicLoot.Crafting
             {
                 var recipe = Recipes[SelectedRecipe];
                 player.GetInventory().RemoveOneItem(recipe.FromItem);
+                var didntAdd = new List<KeyValuePair<ItemDrop.ItemData, int>>();
                 foreach (var product in recipe.Products)
                 {
-                    var itemData = player.GetInventory().AddItem(product.Key.name, product.Value, 1, 0, 0, "");
-                    if (itemData.IsMagicCraftingMaterial())
+                    var canAdd = player.GetInventory().CanAddItem(product.Key.m_itemData, product.Value);
+                    if (canAdd)
                     {
-                        itemData.m_variant = EpicLoot.GetRarityIconIndex(itemData.GetRarity());
+                        var itemData = player.GetInventory().AddItem(product.Key.name, product.Value, 1, 0, 0, "");
+                        if (itemData.IsMagicCraftingMaterial())
+                        {
+                            itemData.m_variant = EpicLoot.GetRarityIconIndex(itemData.GetRarity());
+                        }
+                    }
+                    else
+                    {
+                        var newItem = product.Key.m_itemData.Clone();
+                        newItem.m_dropPrefab = ObjectDB.instance.GetItemPrefab(product.Key.GetPrefabName(product.Key.gameObject.name));
+                        didntAdd.Add(new KeyValuePair<ItemDrop.ItemData, int>(newItem, product.Value));
                     }
                 }
                 __instance.UpdateCraftingPanel();
+
+                foreach (var itemNotAdded in didntAdd)
+                {
+                    var itemDrop = ItemDrop.DropItem(itemNotAdded.Key, itemNotAdded.Value, player.transform.position + player.transform.forward + player.transform.up, player.transform.rotation);
+                    itemDrop.GetComponent<Rigidbody>().velocity = (player.transform.forward + Vector3.up) * 5f;
+                    player.Message(MessageHud.MessageType.TopLeft, $"$msg_dropped {itemDrop.m_itemData.m_shared.m_name} (Inventory was full when crafting)", itemDrop.m_itemData.m_stack, itemDrop.m_itemData.GetIcon());
+                }
 
                 if (player.GetCurrentCraftingStation() != null)
                 {

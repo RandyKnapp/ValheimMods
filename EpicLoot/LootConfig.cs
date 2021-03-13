@@ -23,8 +23,26 @@ namespace EpicLoot
     }
 
     [Serializable]
+    public class LootItemSet
+    {
+        public string Name;
+        public LootDrop[] Loot;
+    }
+
+    [Serializable]
+    public class MagicEffectsCountConfig
+    {
+        public int[][] Magic;
+        public int[][] Rare;
+        public int[][] Epic;
+        public int[][] Legendary;
+    }
+
+    [Serializable]
     public class LootConfig
     {
+        public MagicEffectsCountConfig MagicEffectsCount;
+        public LootItemSet[] ItemSets;
         public LootTable[] LootTables;
     }
 }

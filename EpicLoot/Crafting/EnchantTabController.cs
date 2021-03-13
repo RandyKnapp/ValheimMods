@@ -118,7 +118,7 @@ namespace EpicLoot.Crafting
             sb.AppendLine($"{recipe.FromItem.m_shared.m_name} \u2794 <color={rarityColor}>{rarityDisplay}</color> {recipe.FromItem.GetDecoratedName(rarityColor)}");
             sb.AppendLine($"<color={rarityColor}>");
 
-            var effectCountWeights = EpicLoot.MagicEffectCountWeightsPerRarity[recipe.ToRarity];
+            var effectCountWeights = LootRoller.GetEffectCountsPerRarity(recipe.ToRarity);
             var totalWeight = effectCountWeights.Sum(x => x.Value);
             foreach (var effectCountEntry in effectCountWeights)
             {
@@ -257,7 +257,7 @@ namespace EpicLoot.Crafting
                 }
                 
                 var magicItemComponent = recipe.FromItem.Extended().AddComponent<MagicItemComponent>();
-                var magicItem = EpicLoot.RollMagicItem(recipe.ToRarity, recipe.FromItem.Extended());
+                var magicItem = LootRoller.RollMagicItem(recipe.ToRarity, recipe.FromItem.Extended());
                 magicItemComponent.SetMagicItem(magicItem);
 
                 // Spend Resources

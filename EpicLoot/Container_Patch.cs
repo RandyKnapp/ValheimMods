@@ -16,10 +16,10 @@ namespace EpicLoot
             }
 
             var containerName = __instance.m_piece.name.Replace("(Clone)", "").Trim();
-            var lootTable = EpicLoot.GetLootTable(containerName, 1);
+            var lootTable = LootRoller.GetLootTable(containerName, 1);
             if (lootTable != null)
             {
-                var items = EpicLoot.RollLootTable(lootTable, __instance.m_piece.name, __instance.transform.position);
+                var items = LootRoller.RollLootTable(lootTable, __instance.m_piece.name, __instance.transform.position);
                 Debug.Log($"Rolling on loot table: {containerName}, spawned {items.Count} items at drop point({__instance.transform.position.ToString("0")}).");
                 foreach (var item in items)
                 {
