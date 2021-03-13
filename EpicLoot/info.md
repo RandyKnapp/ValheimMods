@@ -1582,21 +1582,18 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 
 > | Drops (lvl 1) | Weight (Chance) |
 > | -- | -- |
-> | 0 | 90 (90%) |
-> | 1 | 9 (9%) |
-> | 2 | 1 (1%) |
+> | 0 | 60 (60%) |
+> | 1 | 40 (40%) |
 
 > | Drops (lvl 2) | Weight (Chance) |
 > | -- | -- |
-> | 0 | 75 (75%) |
-> | 1 | 23 (23%) |
-> | 2 | 2 (2%) |
+> | 0 | 50 (50%) |
+> | 1 | 50 (50%) |
 
 > | Drops (lvl 3) | Weight (Chance) |
 > | -- | -- |
-> | 0 | 60 (60%) |
-> | 1 | 37 (37%) |
-> | 2 | 3 (3%) |
+> | 0 | 30 (30%) |
+> | 1 | 70 (70%) |
 
 > | Items (lvl 1+) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
@@ -1618,21 +1615,18 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 
 > | Drops (lvl 1) | Weight (Chance) |
 > | -- | -- |
-> | 0 | 90 (90%) |
-> | 1 | 9 (9%) |
-> | 2 | 1 (1%) |
+> | 0 | 60 (60%) |
+> | 1 | 40 (40%) |
 
 > | Drops (lvl 2) | Weight (Chance) |
 > | -- | -- |
-> | 0 | 75 (75%) |
-> | 1 | 23 (23%) |
-> | 2 | 2 (2%) |
+> | 0 | 50 (50%) |
+> | 1 | 50 (50%) |
 
 > | Drops (lvl 3) | Weight (Chance) |
 > | -- | -- |
-> | 0 | 60 (60%) |
-> | 1 | 37 (37%) |
-> | 2 | 3 (3%) |
+> | 0 | 30 (30%) |
+> | 1 | 70 (70%) |
 
 > | Items (lvl 1+) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
@@ -1652,23 +1646,12 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 
 ## Serpent
 
-> | Drops (lvl 1) | Weight (Chance) |
+> | Drops | Weight (Chance) |
 > | -- | -- |
-> | 0 | 90 (90%) |
-> | 1 | 9 (9%) |
-> | 2 | 1 (1%) |
-
-> | Drops (lvl 2) | Weight (Chance) |
-> | -- | -- |
-> | 0 | 75 (75%) |
-> | 1 | 23 (23%) |
-> | 2 | 2 (2%) |
-
-> | Drops (lvl 3) | Weight (Chance) |
-> | -- | -- |
-> | 0 | 60 (60%) |
-> | 1 | 37 (37%) |
-> | 2 | 3 (3%) |
+> | 0 | 30 (30%) |
+> | 1 | 50 (50%) |
+> | 2 | 15 (15%) |
+> | 3 | 5 (5%) |
 
 > | Items (lvl 1+) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
@@ -1867,8 +1850,8 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 
 > | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
-> | Tier0Everything | 3 (75%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
-> | Tier1Everything | 1 (25%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | Tier2Everything | 3 (75%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | Tier3Everything | 1 (25%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
 
 
 ## TreasureChest_swamp

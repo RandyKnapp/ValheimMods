@@ -795,8 +795,8 @@
       "Object": "TreasureChest_sunkencrypt",
       "Drops": [ [0, 58], [1, 30], [2, 20], [3, 2] ],
       "Loot": [
-        { "Item": "Tier0Everything", "Weight": 3, "Rarity": [ 80, 17, 3, 0 ] },
-        { "Item": "Tier1Everything", "Weight": 1, "Rarity": [ 80, 17, 3, 0 ] }
+        { "Item": "Tier2Everything", "Weight": 3, "Rarity": [ 80, 17, 3, 0 ] },
+        { "Item": "Tier3Everything", "Weight": 1, "Rarity": [ 80, 17, 3, 0 ] }
       ]
     },
     // TreasureChest_swamp
