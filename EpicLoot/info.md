@@ -41,7 +41,7 @@ Some lists of effect types are used in requirements to consolidate code. They ar
 > 
 > **Allowed Item Types:** *None*
 > 
-> ***Notes:*** *Can't be rolled. Just added to make a Legendary Magic Item version of this item.*
+> ***Notes:*** *Can't be rolled. Just added to make a Magic Item version of this item.*
 
 ## Megingjord (1)
 
@@ -49,7 +49,7 @@ Some lists of effect types are used in requirements to consolidate code. They ar
 > 
 > **Allowed Item Types:** *None*
 > 
-> ***Notes:*** *Can't be rolled. Just added to make a Legendary Magic Item version of this item.*
+> ***Notes:*** *Can't be rolled. Just added to make a Magic Item version of this item.*
 
 ## Wishbone (2)
 
@@ -57,7 +57,7 @@ Some lists of effect types are used in requirements to consolidate code. They ar
 > 
 > **Allowed Item Types:** *None*
 > 
-> ***Notes:*** *Can't be rolled. Just added to make a Legendary Magic Item version of this item.*
+> ***Notes:*** *Can't be rolled. Just added to make a Magic Item version of this item.*
 
 ## ModifyDamage (3)
 
