@@ -39,7 +39,7 @@ namespace EpicLoot
     public class EpicLoot : BaseUnityPlugin
     {
         private const string PluginId = "randyknapp.mods.epicloot";
-        private const string Version = "0.5.10";
+        private const string Version = "0.5.11";
 
         private static ConfigEntry<string> _setItemColor;
         private static ConfigEntry<string> _magicRarityColor;
@@ -499,10 +499,10 @@ namespace EpicLoot
 
         public static void OnCharacterDeath(string characterName, int level, Vector3 dropPoint)
         {
-            var lootTables = LootRoller.GetLootTable(characterName, level);
+            var lootTables = LootRoller.GetLootTable(characterName);
             if (lootTables != null && lootTables.Count > 0)
             {
-                List<GameObject> loot = LootRoller.RollLootTableAndSpawnObjects(lootTables, characterName, dropPoint);
+                List<GameObject> loot = LootRoller.RollLootTableAndSpawnObjects(lootTables, level, characterName, dropPoint);
                 Debug.Log($"Rolling on loot table: {characterName} (lvl {level}), spawned {loot.Count} items at drop point({dropPoint}).");
                 DropItems(loot, dropPoint);
                 foreach (var l in loot)

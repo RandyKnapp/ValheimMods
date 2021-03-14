@@ -114,17 +114,17 @@ namespace EpicLoot
                     Drops = new[] { new[] { 1, 1 } },
                     Loot = new[]
                     {
-                            new LootDrop()
-                            {
-                                Item = item,
-                                Rarity = rarityTable
-                            }
+                        new LootDrop()
+                        {
+                            Item = item,
+                            Rarity = rarityTable
                         }
+                    }
                 };
 
                 var randomOffset = UnityEngine.Random.insideUnitSphere;
                 var dropPoint = Player.m_localPlayer.transform.position + Player.m_localPlayer.transform.forward * 3 + Vector3.up * 1.5f + randomOffset;
-                items.AddRange(LootRoller.RollLootTableAndSpawnObjects(loot, loot.Object, dropPoint));
+                items.AddRange(LootRoller.RollLootTableAndSpawnObjects(loot, 1, loot.Object, dropPoint));
             }
         }
 

@@ -46,7 +46,7 @@ namespace EpicLoot
             if (itemdata.m_shared.m_name == "$item_helmet_dverger")
             {
                 var magicItem = new MagicItem();
-                magicItem.Rarity = ItemRarity.Legendary;
+                magicItem.Rarity = ItemRarity.Rare;
                 magicItem.Effects.Add(new MagicItemEffect() { EffectType = MagicEffectType.DvergerCirclet });
                 magicItem.DisplayNameOverride = "circlet";
 
@@ -55,7 +55,7 @@ namespace EpicLoot
             else if (itemdata.m_shared.m_name == "$item_beltstrength")
             {
                 var magicItem = new MagicItem();
-                magicItem.Rarity = ItemRarity.Legendary;
+                magicItem.Rarity = ItemRarity.Rare;
                 magicItem.Effects.Add(new MagicItemEffect() { EffectType = MagicEffectType.Megingjord });
                 magicItem.DisplayNameOverride = "belt";
 
@@ -64,7 +64,7 @@ namespace EpicLoot
             else if (itemdata.m_shared.m_name == "$item_wishbone")
             {
                 var magicItem = new MagicItem();
-                magicItem.Rarity = ItemRarity.Legendary;
+                magicItem.Rarity = ItemRarity.Rare;
                 magicItem.Effects.Add(new MagicItemEffect() { EffectType = MagicEffectType.Wishbone });
                 magicItem.DisplayNameOverride = "remains";
 

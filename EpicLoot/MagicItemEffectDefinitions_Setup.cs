@@ -86,21 +86,21 @@ namespace EpicLoot
             {
                 Type = MagicEffectType.DvergerCirclet,
                 DisplayText = "Perpetual lightsource",
-                Comment = "Can't be rolled. Just added to make a Legendary Magic Item version of this item.",
+                Comment = "Can't be rolled. Just added to make a Magic Item version of this item.",
             });
 
             Add(new MagicItemEffectDefinition()
             {
                 Type = MagicEffectType.Megingjord,
                 DisplayText = "Carry weight increased by +150",
-                Comment = "Can't be rolled. Just added to make a Legendary Magic Item version of this item."
+                Comment = "Can't be rolled. Just added to make a Magic Item version of this item."
             });
 
             Add(new MagicItemEffectDefinition()
             {
                 Type = MagicEffectType.Wishbone,
                 DisplayText = "Finds secrets",
-                Comment = "Can't be rolled. Just added to make a Legendary Magic Item version of this item."
+                Comment = "Can't be rolled. Just added to make a Magic Item version of this item."
             });
 
             Add(new MagicItemEffectDefinition()
