@@ -1,6 +1,8 @@
 ## Version 0.5.11
   * Fixed a bug where crafter name would be applied to upgraded objects
   * Upgraded objects automatically repaired to full durability
+  * Changing the default rarity of Dverger Circlet, Megingjord, and Wishbone to Rare
+  * Fixing a bug where Eikthyr (or some other mob, like Troll lvl 3) dies repeatedly
 ## Version 0.5.10
   * Removing all cheat and dlc items from the random loot generation cheat	
   * Fixed a bug that showed 0% chance for all magic effect counts while enchanting	
