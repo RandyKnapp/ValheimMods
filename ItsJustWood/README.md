@@ -1,4 +1,4 @@
-# It's Just Wood!
+# It's Just Wood! v1.0.2
 ##### by RandyKnapp
 > Ever get frustrated that you can't fuel a fire with that stack of nice, fine wood you have in your inventory? Wonder why ancient bark can't make coal? Worry no more!
 

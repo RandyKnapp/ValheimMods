@@ -4,11 +4,12 @@ using BepInEx;
 using BepInEx.Configuration;
 using Common;
 using HarmonyLib;
+using JetBrains.Annotations;
 using UnityEngine;
 
 namespace ItsJustWood
 {
-    [BepInPlugin(PluginId, "It's Just Wood", "1.0.1")]
+    [BepInPlugin(PluginId, "It's Just Wood", "1.0.2")]
     public class ItsJustWood : BaseUnityPlugin
     {
         public const string PluginId = "randyknapp.mods.itsjustwood";
@@ -22,8 +23,8 @@ namespace ItsJustWood
         public static ConfigEntry<bool> AllowAncientBarkForCoal;
 
         private Harmony _harmony;
-        //private bool _initialized;
 
+        [UsedImplicitly]
         private void Awake()
         {
             FineWoodToWoodCount = Config.Bind("Recipes", "FineWoodToWoodCount", new Vector2(8, 8), "The Fine Wood -> Wood recipe counts. X = amount of fine wood used, Y = amount of wood created");
@@ -39,14 +40,21 @@ namespace ItsJustWood
             _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), PluginId);
         }
 
+        [UsedImplicitly]
         private void OnDestroy()
         {
             _harmony?.UnpatchAll(PluginId);
         }
 
+        public static bool IsObjectDBReady()
+        {
+            // Hack, just making sure the built-in items and prefabs have loaded
+            return ObjectDB.instance != null && ObjectDB.instance.m_items.Count != 0 && ObjectDB.instance.GetItemPrefab("Amber") != null;
+        }
+
         public static void TryRegisterRecipes()
         {
-            if (ObjectDB.instance == null || ObjectDB.instance.m_items.Count == 0)
+            if (!IsObjectDBReady())
             {
                 return;
             }
