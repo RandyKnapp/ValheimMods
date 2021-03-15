@@ -52,7 +52,7 @@ namespace EpicLoot.Crafting
                 go.RectTransform().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, GetTabWidth());
                 TabButton = go.GetComponent<Button>();
                 TabButton.gameObject.RectTransform().anchoredPosition = TabButton.gameObject.RectTransform().anchoredPosition + new Vector2(107 * (tabIndex + 1), 0);
-                TabButton.onClick.RemoveAllListeners();
+                TabButton.onClick = new Button.ButtonClickedEvent();
                 TabButton.onClick.AddListener(TabButton.GetComponent<ButtonSfx>().OnClick);
                 TabButton.onClick.AddListener(() => onTabPressed(this));
             }

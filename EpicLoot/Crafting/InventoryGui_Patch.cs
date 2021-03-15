@@ -28,6 +28,7 @@ namespace EpicLoot.Crafting
 
                 var scrollRectGO = new GameObject("ScrollView", typeof(RectTransform), typeof(ScrollRect), typeof(Image));
                 scrollRectGO.transform.SetParent(__instance.m_recipeDecription.transform.parent, false);
+                scrollRectGO.transform.SetSiblingIndex(0);
                 var rt = scrollRectGO.transform as RectTransform;
                 rt.anchorMin = new Vector2(0, 1);
                 rt.anchorMax = new Vector2(0, 1);

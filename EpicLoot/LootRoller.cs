@@ -87,20 +87,20 @@ namespace EpicLoot
             LootTables[key].Add(lootTable);
         }
 
-        public static List<GameObject> RollLootTableAndSpawnObjects(List<LootTable> lootTables, string objectName, Vector3 dropPoint)
+        public static List<GameObject> RollLootTableAndSpawnObjects(List<LootTable> lootTables, int level, string objectName, Vector3 dropPoint)
         {
-            return RollLootTableInternal(lootTables, objectName, dropPoint, true);
+            return RollLootTableInternal(lootTables, level, objectName, dropPoint, true);
         }
 
-        public static List<GameObject> RollLootTableAndSpawnObjects(LootTable lootTable, string objectName, Vector3 dropPoint)
+        public static List<GameObject> RollLootTableAndSpawnObjects(LootTable lootTable, int level, string objectName, Vector3 dropPoint)
         {
-            return RollLootTableInternal(lootTable, objectName, dropPoint, true);
+            return RollLootTableInternal(lootTable, level, objectName, dropPoint, true);
         }
 
-        public static List<ItemDrop.ItemData> RollLootTable(List<LootTable> lootTables, string objectName, Vector3 dropPoint)
+        public static List<ItemDrop.ItemData> RollLootTable(List<LootTable> lootTables, int level, string objectName, Vector3 dropPoint)
         {
             var results = new List<ItemDrop.ItemData>();
-            var gameObjects = RollLootTableInternal(lootTables, objectName, dropPoint, false);
+            var gameObjects = RollLootTableInternal(lootTables, level, objectName, dropPoint, false);
             foreach (var itemObject in gameObjects)
             {
                 results.Add(itemObject.GetComponent<ItemDrop>().m_itemData.Clone());
@@ -110,26 +110,27 @@ namespace EpicLoot
             return results;
         }
 
-        public static List<ItemDrop.ItemData> RollLootTable(LootTable lootTable, string objectName, Vector3 dropPoint)
+        public static List<ItemDrop.ItemData> RollLootTable(LootTable lootTable, int level, string objectName, Vector3 dropPoint)
         {
-            return RollLootTable(new List<LootTable> { lootTable }, objectName, dropPoint);
+            return RollLootTable(new List<LootTable> { lootTable }, level, objectName, dropPoint);
         }
 
-        private static List<GameObject> RollLootTableInternal(IEnumerable<LootTable> lootTables, string objectName, Vector3 dropPoint, bool initializeObject)
+        private static List<GameObject> RollLootTableInternal(IEnumerable<LootTable> lootTables, int level, string objectName, Vector3 dropPoint, bool initializeObject)
         {
             var results = new List<GameObject>();
             foreach (var lootTable in lootTables)
             {
-                results.AddRange(RollLootTableInternal(lootTable, objectName, dropPoint, initializeObject));
+                results.AddRange(RollLootTableInternal(lootTable, level, objectName, dropPoint, initializeObject));
             }
             return results;
         }
 
-        private static List<GameObject> RollLootTableInternal(LootTable lootTable, string objectName, Vector3 dropPoint, bool initializeObject)
+        private static List<GameObject> RollLootTableInternal(LootTable lootTable, int level, string objectName, Vector3 dropPoint, bool initializeObject)
         {
             var results = new List<GameObject>();
 
-            _weightedDropCountTable.Setup(lootTable.Drops, dropPair => dropPair.Length == 2 ? dropPair[1] : 1);
+            var drops = GetDropsForLevel(lootTable, level);
+            _weightedDropCountTable.Setup(drops, dropPair => dropPair.Length == 2 ? dropPair[1] : 1);
             var dropCountRollResult = _weightedDropCountTable.Roll();
             var dropCount = dropCountRollResult.Length >= 1 ? dropCountRollResult[0] : 0;
             if (dropCount == 0)
@@ -137,7 +138,8 @@ namespace EpicLoot
                 return results;
             }
 
-            _weightedLootTable.Setup(lootTable.Loot, x => x.Weight);
+            var loot = GetLootForLevel(lootTable, level);
+            _weightedLootTable.Setup(loot, x => x.Weight);
             var selectedDrops = _weightedLootTable.Roll(dropCount);
 
             foreach (var ld in selectedDrops)
@@ -235,18 +237,30 @@ namespace EpicLoot
                     case "1":
                     case "Loot":
                     case "Loot1":
-                        lootList = lootTable.Loot;
-                        return true;
+                        if (!ArrayUtils.IsNullOrEmpty(lootTable.Loot))
+                        {
+                            lootList = lootTable.Loot;
+                            return true;
+                        }
+                        break;
 
                     case "2":
                     case "Loot2":
-                        lootList = lootTable.Loot2;
-                        return true;
+                        if (!ArrayUtils.IsNullOrEmpty(lootTable.Loot2))
+                        {
+                            lootList = lootTable.Loot2;
+                            return true;
+                        }
+                        break;
 
                     case "3":
                     case "Loot3":
-                        lootList = lootTable.Loot3;
-                        return true;
+                        if (!ArrayUtils.IsNullOrEmpty(lootTable.Loot3))
+                        {
+                            lootList = lootTable.Loot3;
+                            return true;
+                        }
+                        break;
                 }
             }
 
@@ -352,55 +366,50 @@ namespace EpicLoot
             return _weightedRarityTable.Roll().Key;
         }
 
-        public static List<LootTable> GetLootTable(string objectName, int level)
+        public static List<LootTable> GetLootTable(string objectName)
         {
             var results = new List<LootTable>();
             if (LootTables.TryGetValue(objectName, out List<LootTable> lootTables))
             {
                 foreach (var lootTable in lootTables)
                 {
-                    results.Add(GenerateLootTableForLevel(lootTable, level));
+                    results.Add(lootTable);
                 }
             }
             return results;
         }
 
-        public static LootTable GenerateLootTableForLevel(LootTable lootTable, int level)
+        public static int[][] GetDropsForLevel([NotNull] LootTable lootTable, int level)
         {
-            var result = new LootTable()
-            {
-                Object = lootTable.Object
-            };
-
-            // Use only the level-specific drops
             if (level == 2 && !ArrayUtils.IsNullOrEmpty(lootTable.Drops2))
             {
-                result.Drops = lootTable.Drops2.ToArray();
+                return lootTable.Drops2;
             }
             else if (level == 3 && !ArrayUtils.IsNullOrEmpty(lootTable.Drops3))
             {
-                result.Drops = lootTable.Drops3.ToArray();
+                return lootTable.Drops3;
             }
             else
             {
-                result.Drops = lootTable.Drops.ToArray();
+                return lootTable.Drops;
             }
+        }
 
+        public static LootDrop[] GetLootForLevel([NotNull] LootTable lootTable, int level)
+        {
             // Loot list is EXCLUSIVE, if present, defaults to level 1 if absent
-            if (level == 1)
-            {
-                result.Loot = lootTable.Loot;
-            }
             if (level == 2 && !ArrayUtils.IsNullOrEmpty(lootTable.Loot2))
             {
-                result.Loot = lootTable.Loot2;
+                return lootTable.Loot2.ToArray();
             }
             else if (level == 3 && !ArrayUtils.IsNullOrEmpty(lootTable.Loot3))
             {
-                result.Loot = lootTable.Loot3;
+                return lootTable.Loot3.ToArray();
             }
-
-            return result;
+            else
+            {
+                return lootTable.Loot.ToArray();
+            }
         }
     }
 }

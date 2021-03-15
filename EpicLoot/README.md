@@ -1,4 +1,4 @@
-# Epic Loot v0.5.10
+# Epic Loot v0.5.11
 Author: RandyKnapp
 Source: [Github](https://github.com/RandyKnapp/ValheimMods/blob/main/EpicLoot/)
 
@@ -18,6 +18,10 @@ The mod is currently in ***Early Access***! That means it's **not done**! Be pat
 
 Information about every magic effect and loot drop table can be found in [info.md](https://github.com/RandyKnapp/ValheimMods/blob/main/EpicLoot/info.md).
 
+## Installation
+
+Copy the contents of "files" to a new folder called "EpicLoot" in your BepInEx/plugins directory.
+
 ## Cheats
 
 Enter these into the console (F5) after using `imacheater`:
@@ -35,93 +39,92 @@ Enter these into the console (F5) after using `imacheater`:
 ## Current Known Mod Conflicts
 
   * **BetterUI** ([Nexus](https://www.nexusmods.com/valheim/mods/189), [Thunderstore](https://valheim.thunderstore.io/package/Masa/BetterUI/)): You won't be able to see the magic item properties in the tooltip. Go to the BetterUI config and set `showCustomTooltips = false`.
+  * **PlantingPlus**: Something about this mod breaks how my recipes and prefabs load. It won't be compatible.
 
 ## Known Bugs
 
 ## TODO
 
-- [X] Print Data
-- [X] Finish Magic Effects
-- [X] Prevent Repair (reverted for early access)
-- [X] Effect exclusivity
-- [X] Effect specific items
-- [X] Effect requirements (i.e. must have movement penalty before removing it)
-- [X] Dropped item particle effect
-- [X] Create crafting materials
-- [X] Destroy trophies for crafting materials (seidric reduction)
-- [X] Destroy magic items for crafting materials (runic reduction)
-- [X] Enchant items: add new magic effects to non-magic item
 - [ ] Streamline enchanting UI. Use selectable rarity per item.
+- [ ] Configurable magic effects
+- [ ] More exclusions and configurable requirements for magic effects
 - [ ] Augment items: change/reroll magic item effects (transmute? modify?)
+- [ ] Infuse items: rarity to next rarity (like diablo upgrade rare to legendary)
+- [ ] List of active magic effects on the player status screen
 - [ ] Gamble for magic items from Merchant
 - [ ] Custom crafting station for enchanting
-- [X] Loot tables
-  - [X] Monsters
-	- [X] Meadows
-	- [X] Black Forest
-	- [X] Swamp
-	- [X] Mountains
-	- [X] Plains
-  - [X] World Chests
-  	- [X] Meadows
-	- [X] Black Forest
-	- [X] Swamp
-	- [X] Mountains
-	- [X] Plains
-- [X] Set item UI treatment
+- [ ] Create effects for in-game models of magic items
 - [ ] Balance, balance, balance
 - [ ] Move tooltip code to postfix, parse and inject rather than redo from scratch
-
-#### Future TODO
-
 - [ ] Custom item sets (replace troll too)
 - [ ] Rename item if magic (prefix/postfix? Legendary names?)
 - [ ] New Runes skill (enchanting)
 - [ ] New Seidr skill (for what?)
 
-
 ## Magic Effects:
 
-- [X] ModifyParry
-- [X] ModifyArmor
-- [X] ModifyBackstab
-- [X] IncreaseHealth
-- [X] IncreaseStamina
-- [X] ModifyHealthRegen
-- [X] ModifyStaminaRegen
-- [X] AddFireDamage
-- [X] AddFrostDamage
-- [X] AddLightningDamage
-- [X] AddPoisonDamage
-- [X] AddSpiritDamage
-- [X] ModifyElementalDamage
-- [X] AddFireResistance       
-- [X] AddFrostResistance      
-- [X] AddLightningResistance
-- [X] AddPoisonResistance
-- [X] AddSpiritResistance
-- [X] ModifySprintStaminaUse
-- [X] ModifyJumpStaminaUse
-- [X] ModifyAttackStaminaUse
-- [X] ModifyBlockStaminaUse
-- [X] ModifyMovementSpeed
-- [X] Indestructible
-- [X] Weightless
-- [X] AddCarryWeight
+#### Weapons
+- [ ] Paralyze
+- [ ] Add Knockback
+- [ ] Slow
+- [ ] Luck (increase drop rate and rarity chance)
+- [ ] Riches (add chance to drop treasure on all mobs)
+- [ ] Blink (bow or spear, teleport to impact point)
+- [ ] Life steal
+- [ ] Exploding shot (bows, deal aoe damage on arrow impact)
+- [ ] Multishot (bows, shoot multiple arrows from one)
+- [ ] Quick draw (bows, draw speed dramatically increased)
+- [ ] Recall (spear, automaticallyl pick up spear after throwing)
+- [ ] Immobilize
+- [ ] Modify Attack Speed
+- [ ] Increase damage vs staggered enemies
+- [ ] Duelist (sword, when off hand is empty, increase parry and block power by a lot)
+- [ ] Opportunist (knife, add backstab damaged to staggered enemies)
+- [ ] Throwing (change alterate attack to throw like spear)
+- [ ] Increase stagger duration
+- [ ] Blind
+- [ ] Immovable (tower shield, immune to stagger and knockback while blocking)
+- [ ] Glowing
 
-## Chests
+#### Armor
+- [ ] Luck (increase drop rate and rarity chance)
+- [ ] Warm (Prevent freezing effect)
+- [ ] Waterproof (cape, prevent Wet effect from rain)
+- [ ] Waterwalk (legs)
+- [ ] Double Jump (legs)
+- [ ] Thorns damage
+- [ ] Sneak increase (legs)
+- [ ] Dodge improvement (legs)
+- [ ] Feather Fall (legs)
+- [ ] Nightvision (helmet)
+- [ ] Discovery radius increase (helmet)
+- [ ] Quick learner (helmet, increase xp gain)
+- [ ] Increase armor when below HP threshold
+- [ ] % chance to stagger attackers
+- [ ] % chance to ignore incoming damage
+- [ ] Improve Skill Level
+- [ ] Comfortable (Increase Comfort level when resting)
+- [ ] Glowing
 
-- [X] TreasureChest_blackforest
-- [X] TreasureChest_fCrypt
-- [X] TreasureChest_forestcrypt
-- [X] TreasureChest_heath
-- [X] TreasureChest_meadows
-- [X] TreasureChest_meadows_buried
-- [X] TreasureChest_mountains
-- [X] TreasureChest_plains_stone
-- [X] TreasureChest_sunkencrypt
-- [X] TreasureChest_swamp
-- [X] TreasureChest_trollcave
-- [X] shipwreck_karve_chest
+#### Tools
+- [ ] Build freedom (hammer, don't require crafting station)
+- [ ] No stamina cost
+
+## Legendary Items:
+
+- [ ] Sleipnir's Hoof (Club, increase move speed)
+- [ ] Gungnir (Ancient Bark Spear)
+- [ ] Mjolnir (Iron Sledge)
+- [ ] Skofnung (Iron Sword)
+- [ ] Dainslief (Silver Sword)
+- [ ] Angurvadal (Sword)
+- [ ] Vidar's Shoes (Iron Legs, huge kick damage boost?)
+- [ ] Skidbaldnir (ship that can turn into an item)
+- [ ] Hofund (Sword, charges with each kill, then discharges on heavy attack)
+- [ ] Gjallarhorn (Tankard, when used (how?) makes all enemies flee from the player)
+
+## Basic Item Sets:
+
+## Legendary Sets:
 
 **Author's Note:** This mod uses an image of the Odal rune (ᛟ) to denote set items. It's reconstructed Proto-Germanic meaning is "Heritage" or "Possession" and the author felt like it was the best rune from the Elder Futhark to signify set items. However, the Odal rune with wings or feet was and is used as a Nazi symbol. The author ***UNEQUIVOCALLY CONDEMNS*** Nazis, Nazism, anti-semitism, and white supremacy. Furthermore, those who hold or practice those beliefs are not welcome to use this mod. F\*\*k Nazis.

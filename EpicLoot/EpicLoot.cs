@@ -24,6 +24,8 @@ namespace EpicLoot
         public Sprite GenericItemBgSprite;
         public GameObject[] MagicItemLootBeamPrefabs = new GameObject[4];
         public readonly Dictionary<string, GameObject[]> CraftingMaterialPrefabs = new Dictionary<string, GameObject[]>();
+        public Sprite SmallButtonEnchantOverlay;
+        public AudioClip[] MagicItemDropSFX = new AudioClip[4];
     }
 
     public class PieceDef
@@ -39,7 +41,7 @@ namespace EpicLoot
     public class EpicLoot : BaseUnityPlugin
     {
         private const string PluginId = "randyknapp.mods.epicloot";
-        private const string Version = "0.5.10";
+        private const string Version = "0.5.11";
 
         private static ConfigEntry<string> _setItemColor;
         private static ConfigEntry<string> _magicRarityColor;
@@ -158,10 +160,16 @@ namespace EpicLoot
             Assets.EquippedSprite = assetBundle.LoadAsset<Sprite>("Equipped");
             Assets.GenericSetItemSprite = assetBundle.LoadAsset<Sprite>("GenericSetItemMarker");
             Assets.GenericItemBgSprite = assetBundle.LoadAsset<Sprite>("GenericItemBg");
+            Assets.SmallButtonEnchantOverlay = assetBundle.LoadAsset<Sprite>("SmallButtonEnchantOverlay");
             Assets.MagicItemLootBeamPrefabs[(int)ItemRarity.Magic] = assetBundle.LoadAsset<GameObject>("MagicLootBeam");
             Assets.MagicItemLootBeamPrefabs[(int)ItemRarity.Rare] = assetBundle.LoadAsset<GameObject>("RareLootBeam");
             Assets.MagicItemLootBeamPrefabs[(int)ItemRarity.Epic] = assetBundle.LoadAsset<GameObject>("EpicLootBeam");
             Assets.MagicItemLootBeamPrefabs[(int)ItemRarity.Legendary] = assetBundle.LoadAsset<GameObject>("LegendaryLootBeam");
+
+            Assets.MagicItemDropSFX[(int)ItemRarity.Magic] = assetBundle.LoadAsset<AudioClip>("MagicItemDrop");
+            Assets.MagicItemDropSFX[(int)ItemRarity.Rare] = assetBundle.LoadAsset<AudioClip>("RareItemDrop");
+            Assets.MagicItemDropSFX[(int)ItemRarity.Epic] = assetBundle.LoadAsset<AudioClip>("EpicItemDrop");
+            Assets.MagicItemDropSFX[(int)ItemRarity.Legendary] = assetBundle.LoadAsset<AudioClip>("LegendaryItemDrop");
 
             LoadCraftingMaterialAssets(assetBundle, "Runestone");
 
@@ -499,10 +507,10 @@ namespace EpicLoot
 
         public static void OnCharacterDeath(string characterName, int level, Vector3 dropPoint)
         {
-            var lootTables = LootRoller.GetLootTable(characterName, level);
+            var lootTables = LootRoller.GetLootTable(characterName);
             if (lootTables != null && lootTables.Count > 0)
             {
-                List<GameObject> loot = LootRoller.RollLootTableAndSpawnObjects(lootTables, characterName, dropPoint);
+                List<GameObject> loot = LootRoller.RollLootTableAndSpawnObjects(lootTables, level, characterName, dropPoint);
                 Debug.Log($"Rolling on loot table: {characterName} (lvl {level}), spawned {loot.Count} items at drop point({dropPoint}).");
                 DropItems(loot, dropPoint);
                 foreach (var l in loot)
@@ -917,6 +925,11 @@ namespace EpicLoot
                 default:
                     throw new ArgumentOutOfRangeException(nameof(rarity), rarity, null);
             }
+        }
+
+        public static AudioClip GetMagicItemDropSFX(ItemRarity rarity)
+        {
+            return Assets.MagicItemDropSFX[(int) rarity];
         }
     }
 }

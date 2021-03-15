@@ -198,7 +198,7 @@ MonoBehaviour:
   m_noClipping: 1
   m_onlyInTeleportArea: 0
   m_allowedInDungeons: 0
-  m_spaceRequirement: 3
+  m_spaceRequirement: 2
   m_repairPiece: 0
   m_canBeRemoved: 1
   m_onlyInBiome: 0

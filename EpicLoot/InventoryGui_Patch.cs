@@ -37,9 +37,8 @@ namespace EpicLoot
                 var upgradeItem = __instance.m_craftUpgradeItem;
                 player.UnequipItem(upgradeItem);
 
-                upgradeItem.m_crafterID = player.GetPlayerID();
-                upgradeItem.SetCrafterName(player.GetPlayerName());
                 upgradeItem.m_quality = newQuality;
+                upgradeItem.m_durability = upgradeItem.GetMaxDurability();
 
                 if (!player.NoCostCheat())
                 {

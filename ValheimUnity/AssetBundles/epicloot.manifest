@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 303462184
+CRC: 1446739925
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 0e460385f868b98b7bd4a417d347b721
+    Hash: d6c2e0deb133f51fbe5e611132b7d32d
   TypeTreeHash:
     serializedVersion: 2
     Hash: fc5a5ce937bd0bf8f87ef2a126113efe
@@ -75,13 +75,17 @@ Assets:
 - Assets/EpicLoot/Prefabs/CraftingMaterials/ShardEpic.prefab
 - Assets/EpicLoot/Sprites/Inventory/GenericSetItemMarker.png
 - Assets/EpicLoot/Prefabs/CraftingMaterials/ShardLegendary.prefab
+- Assets/EpicLoot/Sounds/MagicItemDrop.wav
 - Assets/EpicLoot/Sprites/Inventory/LegendaryItemBg.png
+- Assets/EpicLoot/Sounds/EpicItemDrop.wav
 - Assets/EpicLoot/Prefabs/StationExtensions/piece_augmenter.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/ReagentLegendary.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/EssenceMagic.prefab
+- Assets/EpicLoot/Sounds/RareItemDrop.wav
 - Assets/EpicLoot/Sprites/Inventory/MagicItemBg.png
 - Assets/EpicLoot/Prefabs/LootBeams/EpicLootBeam.prefab
 - Assets/EpicLoot/Sprites/Inventory/GenericItemBg.png
+- Assets/EpicLoot/Sprites/Inventory/SmallButtonEnchantOverlay.png
 - Assets/EpicLoot/Prefabs/CraftingMaterials/EssenceEpic.prefab
 - Assets/EpicLoot/Sprites/Inventory/EpicItemBg.png
 - Assets/EpicLoot/Prefabs/CraftingMaterials/DustMagic.prefab
@@ -90,6 +94,7 @@ Assets:
 - Assets/EpicLoot/Prefabs/CraftingMaterials/DustLegendary.prefab
 - Assets/EpicLoot/Sounds/Disenchant.wav
 - Assets/EpicLoot/Prefabs/LootBeams/MagicLootBeam.prefab
+- Assets/EpicLoot/Sounds/LegendaryItemDrop.wav
 - Assets/EpicLoot/Prefabs/LootBeams/LegendaryLootBeam.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/RunestoneMagic.prefab
 - Assets/EpicLoot/Sprites/Inventory/RareItemBg.png
