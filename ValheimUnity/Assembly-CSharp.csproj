@@ -649,6 +649,9 @@
     <Reference Include="UnityEditor.UI">
       <HintPath>C:/Users/rknapp/Documents/GitHub/ValheimMods/ValheimUnity/Library/ScriptAssemblies/UnityEditor.UI.dll</HintPath>
     </Reference>
+    <Reference Include="Unity.2D.Sprite.Editor">
+      <HintPath>C:/Users/rknapp/Documents/GitHub/ValheimMods/ValheimUnity/Library/ScriptAssemblies/Unity.2D.Sprite.Editor.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup></ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

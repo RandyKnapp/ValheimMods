@@ -24,6 +24,8 @@ namespace EpicLoot
         public Sprite GenericItemBgSprite;
         public GameObject[] MagicItemLootBeamPrefabs = new GameObject[4];
         public readonly Dictionary<string, GameObject[]> CraftingMaterialPrefabs = new Dictionary<string, GameObject[]>();
+        public Sprite SmallButtonEnchantOverlay;
+        public AudioClip[] MagicItemDropSFX = new AudioClip[4];
     }
 
     public class PieceDef
@@ -158,10 +160,16 @@ namespace EpicLoot
             Assets.EquippedSprite = assetBundle.LoadAsset<Sprite>("Equipped");
             Assets.GenericSetItemSprite = assetBundle.LoadAsset<Sprite>("GenericSetItemMarker");
             Assets.GenericItemBgSprite = assetBundle.LoadAsset<Sprite>("GenericItemBg");
+            Assets.SmallButtonEnchantOverlay = assetBundle.LoadAsset<Sprite>("SmallButtonEnchantOverlay");
             Assets.MagicItemLootBeamPrefabs[(int)ItemRarity.Magic] = assetBundle.LoadAsset<GameObject>("MagicLootBeam");
             Assets.MagicItemLootBeamPrefabs[(int)ItemRarity.Rare] = assetBundle.LoadAsset<GameObject>("RareLootBeam");
             Assets.MagicItemLootBeamPrefabs[(int)ItemRarity.Epic] = assetBundle.LoadAsset<GameObject>("EpicLootBeam");
             Assets.MagicItemLootBeamPrefabs[(int)ItemRarity.Legendary] = assetBundle.LoadAsset<GameObject>("LegendaryLootBeam");
+
+            Assets.MagicItemDropSFX[(int)ItemRarity.Magic] = assetBundle.LoadAsset<AudioClip>("MagicItemDrop");
+            Assets.MagicItemDropSFX[(int)ItemRarity.Rare] = assetBundle.LoadAsset<AudioClip>("RareItemDrop");
+            Assets.MagicItemDropSFX[(int)ItemRarity.Epic] = assetBundle.LoadAsset<AudioClip>("EpicItemDrop");
+            Assets.MagicItemDropSFX[(int)ItemRarity.Legendary] = assetBundle.LoadAsset<AudioClip>("LegendaryItemDrop");
 
             LoadCraftingMaterialAssets(assetBundle, "Runestone");
 
@@ -917,6 +925,11 @@ namespace EpicLoot
                 default:
                     throw new ArgumentOutOfRangeException(nameof(rarity), rarity, null);
             }
+        }
+
+        public static AudioClip GetMagicItemDropSFX(ItemRarity rarity)
+        {
+            return Assets.MagicItemDropSFX[(int) rarity];
         }
     }
 }

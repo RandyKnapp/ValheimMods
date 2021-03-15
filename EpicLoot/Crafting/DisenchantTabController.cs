@@ -159,6 +159,22 @@ namespace EpicLoot.Crafting
                 __instance.m_craftButton.GetComponent<UITooltip>().m_text =
                     canPutProductsInInventory ? (isEquipped ? "Item is currently equipped" : "") : Localization.instance.Localize("$inventory_full");
             }
+            else
+            {
+                bgImage.enabled = false;
+                __instance.m_itemCraftType.gameObject.SetActive(false);
+                __instance.m_variantButton.gameObject.SetActive(false);
+                __instance.m_minStationLevelIcon.gameObject.SetActive(false);
+                __instance.m_recipeIcon.enabled = false;
+                __instance.m_recipeName.enabled = false;
+                __instance.m_recipeDecription.enabled = false;
+                foreach (var req in __instance.m_recipeRequirementList)
+                {
+                    InventoryGui.HideRequirement(req.transform);
+                }
+
+                __instance.m_craftButton.interactable = false;
+            }
         }
 
         public static bool CanAddItems(Inventory inventory, List<KeyValuePair<ItemDrop, int>> items, int extraSpaces = 0)
