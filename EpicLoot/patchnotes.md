@@ -1,3 +1,10 @@
+## Version 0.5.12
+  * Enchanting an item maintains its current durability percentage
+  * Enchanting uses a new UI flow and shows the item after you enchant it
+  * Magic Item Effects now load from a config file
+  * Magic Item Effects now use a string ID instead of an enum
+  * Changing TreasureChest_plains_stone loottable to use the TreasureChest_heath table
+  * Fixed mod conflict with PlantingPlus
 ## Version 0.5.11
   * Fixed a bug where crafter name would be applied to upgraded objects
   * Upgraded objects automatically repaired to full durability

@@ -407,6 +407,12 @@ namespace EpicLoot.Crafting
                     inventory.Changed();
                     recipe.FromItem = extendedItemData;
                 }
+
+                float previousDurabilityPercent = 0;
+                if (recipe.FromItem.m_shared.m_useDurability)
+                {
+                    previousDurabilityPercent = recipe.FromItem.m_durability / recipe.FromItem.GetMaxDurability();
+                }
                 
                 var magicItemComponent = recipe.FromItem.Extended().AddComponent<MagicItemComponent>();
                 var magicItem = LootRoller.RollMagicItem(SelectedRarity, recipe.FromItem.Extended());
@@ -417,6 +423,13 @@ namespace EpicLoot.Crafting
                 {
                     player.ConsumeResources(GetRecipeRequirementArray(recipe, SelectedRarity), 1);
                 }
+
+                // Maintain durability
+                if (recipe.FromItem.m_shared.m_useDurability)
+                {
+                    recipe.FromItem.m_durability = previousDurabilityPercent * recipe.FromItem.GetMaxDurability();
+                }
+
                 __instance.UpdateCraftingPanel();
 
                 if (player.GetCurrentCraftingStation() != null)

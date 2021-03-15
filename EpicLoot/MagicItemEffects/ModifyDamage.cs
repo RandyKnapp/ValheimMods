@@ -53,11 +53,11 @@ namespace EpicLoot.MagicItemEffects
             }
         }
 
-        private static float GetAddedDamageType(MagicItem magicItem, MagicEffectType effect)
+        private static float GetAddedDamageType(MagicItem magicItem, string effectType)
         {
-            if (magicItem.HasEffect(effect))
+            if (magicItem.HasEffect(effectType))
             {
-                return magicItem.GetTotalEffectValue(effect);
+                return magicItem.GetTotalEffectValue(effectType);
             }
 
             return 0;

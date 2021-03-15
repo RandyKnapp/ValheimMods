@@ -825,7 +825,7 @@
       "Object": "TreasureChest_plains_stone",
       "Drops": [ [0, 58], [1, 30], [2, 20], [3, 2] ],
       "Loot": [
-        { "Item": "TreasureChest_forestcrypt.1", "Weight": 1 }
+        { "Item": "TreasureChest_heath.1", "Weight": 1 }
       ]
     },
     // TreasureChest_heath

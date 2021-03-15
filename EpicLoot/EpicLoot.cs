@@ -41,7 +41,7 @@ namespace EpicLoot
     public class EpicLoot : BaseUnityPlugin
     {
         private const string PluginId = "randyknapp.mods.epicloot";
-        private const string Version = "0.5.11";
+        private const string Version = "0.5.12";
 
         private static ConfigEntry<string> _setItemColor;
         private static ConfigEntry<string> _magicRarityColor;
@@ -119,8 +119,7 @@ namespace EpicLoot
             _legendaryRarityDisplayName = Config.Bind("Rarity", "Legendary Rarity Display Name", "Legendary", "The name of the highest rarity.");
             UseScrollingCraftDescription = Config.Bind("Crafting UI", "Use Scrolling Craft Description", true, "Changes the item description in the crafting panel to scroll instead of scale when it gets too long for the space.");
 
-            MagicItemEffectDefinitions.SetupMagicItemEffectDefinitions();
-
+            MagicItemEffectDefinitions.Initialize(LoadJsonFile<MagicItemEffectsList>("magiceffects.json"));
             LootRoller.Initialize(LoadJsonFile<LootConfig>("loottables.json"));
             PrintInfo();
 
@@ -302,15 +301,38 @@ namespace EpicLoot
             foreach (var entry in RegisteredPieces)
             {
                 var prefab = entry.Key;
+                if (prefab == null)
+                {
+                    Debug.LogError($"Tried to register piece but prefab was null!");
+                    continue;
+                }
+
                 var pieceDef = entry.Value;
+                if (pieceDef == null)
+                {
+                    Debug.LogError($"Tried to register piece ({prefab}) but pieceDef was null!");
+                    continue;
+                }
 
                 var piece = prefab.GetComponent<Piece>();
+                if (piece == null)
+                {
+                    Debug.LogError($"Tried to register piece ({prefab}) but Piece component was missing!");
+                    continue;
+                }
 
                 var pieceTable = pieceTables.Find(x => x.name == pieceDef.Table);
+                if (pieceTable == null)
+                {
+                    Debug.LogError($"Tried to register piece ({prefab}) but could not find piece table ({pieceDef.Table}) (pieceTables({pieceTables.Count})= {string.Join(", ", pieceTables.Select(x =>x.name))})!");
+                    continue;
+                }
+
                 if (pieceTable.m_pieces.Contains(prefab))
                 {
                     continue;
                 }
+
                 pieceTable.m_pieces.Add(prefab);
 
                 var pieceStation = craftingStations.Find(x => x.name == pieceDef.CraftingStation);
@@ -356,9 +378,15 @@ namespace EpicLoot
             }
         }
 
+        public static bool IsObjectDBReady()
+        {
+            // Hack, just making sure the built-in items and prefabs have loaded
+            return ObjectDB.instance != null && ObjectDB.instance.m_items.Count != 0 && ObjectDB.instance.GetItemPrefab("Amber") != null;
+        }
+
         public static void TryRegisterItems()
         {
-            if (ObjectDB.instance == null || ObjectDB.instance.m_items.Count == 0)
+            if (!IsObjectDBReady())
             {
                 return;
             }
@@ -578,64 +606,63 @@ namespace EpicLoot
             // Magic item effects
             t.AppendLine("# MagicItemEffect List");
             t.AppendLine();
-            t.AppendLine("The following lists all the built-in **MagicItemEffects**. MagicItemEffects are hardcoded in `MagicItemEffectDefinitions_Setup.cs` and " +
-                         "added to `MagicItemEffectDefinitions`. EpicLoot uses an enum for the types of magic effects, but the backing field underneath is an int. " +
-                         "You can add your own new types using your own enum that starts after `MagicEffectType.MagicEffectEnumEnd` and cast it to `MagicEffectType` " +
-                         "or use your own range of int identifiers.");
+            t.AppendLine("The following lists all the built-in **MagicItemEffects**. MagicItemEffects are defined in `magiceffects.json` and are parsed and added " +
+                         "to `MagicItemEffectDefinitions` on Awake. EpicLoot uses an string for the types of magic effects. You can add your own new types using your own identifiers.");
             t.AppendLine();
-            t.AppendLine("Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinitions` (which gets called in `EpicLoot.Awake`) to add your own.");
-            t.AppendLine();
-            t.AppendLine("The int value of the type is displayed in parentheses after the name.");
+            t.AppendLine("Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinitions` (which gets called in `EpicLoot.Awake`) to add your own using instances of MagicItemEffectDefinition.");
             t.AppendLine();
             t.AppendLine("  * **Display Text:** This text appears in the tooltip for the magic item, with {0:?} replaced with the rolled value for the effect, formatted using the shown C# string format.");
-            t.AppendLine("  * **Allowed Item Types:** This effect may only be rolled on items of a the types in this list. When this list is empty, this is usually done because this is a special effect type added programmatically  or currently not allowed to roll.");
-            t.AppendLine("  * **Requirement:** A function called when attempting to add this effect to an item. The `Requirement` function must return true for this effect to be able to be added to this magic item.");
+            t.AppendLine("  * **Requirements:** A set of requirements.");
+            t.AppendLine("    * **Flags:** A set of predefined flags to check certain weapon properties. The list of flags is: `NoRoll, ExclusiveSelf, ItemHasPhysicalDamage, ItemHasElementalDamage, ItemUsesDurability, ItemHasNegativeMovementSpeedModifier, ItemHasBlockPower, ItemHasParryPower, ItemHasArmor, ItemHasBackstabBonus, ItemUsesStaminaOnAttack`");
+            t.AppendLine("    * **ExclusiveEffectTypes:** This effect may not be rolled on an item that has already rolled on of these effects");
+            t.AppendLine("    * **AllowedItemTypes:** This effect may only be rolled on items of a the types in this list. When this list is empty, this is usually done because this is a special effect type added programmatically  or currently not allowed to roll.");
+            t.AppendLine("    * **AllowedRarities:** This effect may only be rolled on an item of one of these rarities");
+            t.AppendLine("    * **AllowedItemNames:** This effect may only be rolled on an item with one of these names. Use the unlocalized shared name, i.e.: `$item_sword_iron`");
+            t.AppendLine("    * **CustomFlags:** A set of any arbitrary strings for future use");
             t.AppendLine("  * **Value Per Rarity:** This effect may only be rolled on items of a rarity included in this table. The value is rolled using a linear distribution between Min and Max and divisible by the Increment.");
             t.AppendLine();
-            t.AppendLine("Some lists of effect types are used in requirements to consolidate code. They are: PhysicalDamageEffects, ElementalDamageEffects, and AllDamageEffects. Included here for your reference:");
-            t.AppendLine();
-            t.AppendLine("  * **`PhysicalDamageEffects`:** AddBluntDamage, AddSlashingDamage, AddPiercingDamage");
-            t.AppendLine("  * **`ElementalDamageEffects`:** AddFireDamage, AddFrostDamage, AddLightningDamage");
-            t.AppendLine("  * **`AllDamageEffects`:** AddBluntDamage, AddSlashingDamage, AddPiercingDamage, AddFireDamage, AddFrostDamage, AddLightningDamage, AddPoisonDamage, AddSpiritDamage");
-            t.AppendLine();
-
-            Dictionary<string, string> requirementSource = null;
-            const string devSourceFile = @"C:\Users\rknapp\Documents\GitHub\ValheimMods\EpicLoot\MagicItemEffectDefinitions_Setup.cs";
-            if (File.Exists(devSourceFile))
-            {
-                requirementSource = ParseSource(File.ReadLines(devSourceFile));
-            }
 
             foreach (var definitionEntry in MagicItemEffectDefinitions.AllDefinitions)
             {
                 var def = definitionEntry.Value;
-                t.AppendLine($"## {def.Type} ({def.IntType})");
+                t.AppendLine($"## {def.Type}");
                 t.AppendLine();
                 t.AppendLine($"> **Display Text:** {def.DisplayText}");
                 t.AppendLine("> ");
-                t.AppendLine("> **Allowed Item Types:** " + (def.AllowedItemTypes.Count == 0 ? "*None*" : string.Join(", ", def.AllowedItemTypes)));
 
-                if (requirementSource != null && requirementSource.ContainsKey(def.Type.ToString()))
-                {
-                    t.AppendLine("> ");
-                    t.AppendLine("> **Requirement:**");
-                    t.AppendLine("> ```");
-                    t.AppendLine($"> {requirementSource[def.Type.ToString()]}");
-                    t.AppendLine("> ```");
-                    t.AppendLine("> ");
-                }
+                var allowedItemTypes = def.GetAllowedItemTypes();
+                t.AppendLine("> **Allowed Item Types:** " + (allowedItemTypes.Count == 0 ? "*None*" : string.Join(", ", allowedItemTypes)));
+                t.AppendLine("> ");
+                t.AppendLine("> **Requirements:**");
+                t.Append(def.Requirements);
 
-                if (def.ValuesPerRarity.Count > 0)
+                if (def.HasRarityValues())
                 {
                     t.AppendLine("> ");
                     t.AppendLine("> **Value Per Rarity:**");
                     t.AppendLine("> ");
                     t.AppendLine("> |Rarity|Min|Max|Increment|");
                     t.AppendLine("> |--|--|--|--|");
-                    foreach (var entry in def.ValuesPerRarity)
+
+                    if (def.ValuesPerRarity.Magic != null)
                     {
-                        var v = entry.Value;
-                        t.AppendLine($"> |{entry.Key}|{v.MinValue}|{v.MaxValue}|{v.Increment}|");
+                        var v = def.ValuesPerRarity.Magic;
+                        t.AppendLine($"> |Magic|{v.MinValue}|{v.MaxValue}|{v.Increment}|");
+                    }
+                    if (def.ValuesPerRarity.Rare != null)
+                    {
+                        var v = def.ValuesPerRarity.Rare;
+                        t.AppendLine($"> |Rare|{v.MinValue}|{v.MaxValue}|{v.Increment}|");
+                    }
+                    if (def.ValuesPerRarity.Epic != null)
+                    {
+                        var v = def.ValuesPerRarity.Epic;
+                        t.AppendLine($"> |Epic|{v.MinValue}|{v.MaxValue}|{v.Increment}|");
+                    }
+                    if (def.ValuesPerRarity.Legendary != null)
+                    {
+                        var v = def.ValuesPerRarity.Legendary;
+                        t.AppendLine($"> |Legendary|{v.MinValue}|{v.MaxValue}|{v.Increment}|");
                     }
                 }
                 if (!string.IsNullOrEmpty(def.Comment))
@@ -786,47 +813,6 @@ namespace EpicLoot
             }
 
             t.AppendLine();
-        }
-
-        private static Dictionary<string, string> ParseSource(IEnumerable<string> lines)
-        {
-            var results = new Dictionary<string, string>();
-            var currentType = "";
-            foreach (var sourceLine in lines)
-            {
-                var line = sourceLine.Trim();
-                if (string.IsNullOrEmpty(currentType))
-                {
-                    if (line.StartsWith("Type = "))
-                    {
-                        var start = line.IndexOf(".", StringComparison.InvariantCulture);
-                        var end = line.IndexOf(",", StringComparison.InvariantCulture);
-                        if (start < 0 || end < 0)
-                        {
-                            continue;
-                        }
-
-                        start += 1;
-                        currentType = line.Substring(start, end - start);
-                    }
-                }
-                else
-                {
-                    if (line.StartsWith("});") || line.StartsWith("Add("))
-                    {
-                        currentType = "";
-                    }
-                    else if (line.StartsWith("Requirement"))
-                    {
-                        var start = ("Requirement = ").Length;
-                        var end = line.Length - 1;
-                        var requirementText = line.Substring(start, end - start);
-                        results.Add(currentType, requirementText);
-                    }
-                }
-            }
-
-            return results;
         }
 
         private static string GetMagicEffectCountTableLine(ItemRarity rarity)

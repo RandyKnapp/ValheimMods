@@ -1,4 +1,4 @@
-# EpicLoot Data v0.5.11
+# EpicLoot Data v0.5.12
 
 *Author: RandyKnapp*
 *Source: [Github](https://github.com/RandyKnapp/ValheimMods/tree/main/EpicLoot)*
@@ -18,52 +18,61 @@ The raw weight value is shown first, followed by the calculated percentage chanc
 
 # MagicItemEffect List
 
-The following lists all the built-in **MagicItemEffects**. MagicItemEffects are hardcoded in `MagicItemEffectDefinitions_Setup.cs` and added to `MagicItemEffectDefinitions`. EpicLoot uses an enum for the types of magic effects, but the backing field underneath is an int. You can add your own new types using your own enum that starts after `MagicEffectType.MagicEffectEnumEnd` and cast it to `MagicEffectType` or use your own range of int identifiers.
+The following lists all the built-in **MagicItemEffects**. MagicItemEffects are defined in `magiceffects.json` and are parsed and added to `MagicItemEffectDefinitions` on Awake. EpicLoot uses an string for the types of magic effects. You can add your own new types using your own identifiers.
 
-Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinitions` (which gets called in `EpicLoot.Awake`) to add your own.
-
-The int value of the type is displayed in parentheses after the name.
+Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinitions` (which gets called in `EpicLoot.Awake`) to add your own using instances of MagicItemEffectDefinition.
 
   * **Display Text:** This text appears in the tooltip for the magic item, with {0:?} replaced with the rolled value for the effect, formatted using the shown C# string format.
-  * **Allowed Item Types:** This effect may only be rolled on items of a the types in this list. When this list is empty, this is usually done because this is a special effect type added programmatically  or currently not allowed to roll.
-  * **Requirement:** A function called when attempting to add this effect to an item. The `Requirement` function must return true for this effect to be able to be added to this magic item.
+  * **Requirements:** A set of requirements.
+    * **Flags:** A set of predefined flags to check certain weapon properties. The list of flags is: `NoRoll, ExclusiveSelf, ItemHasPhysicalDamage, ItemHasElementalDamage, ItemUsesDurability, ItemHasNegativeMovementSpeedModifier, ItemHasBlockPower, ItemHasParryPower, ItemHasArmor, ItemHasBackstabBonus, ItemUsesStaminaOnAttack`
+    * **ExclusiveEffectTypes:** This effect may not be rolled on an item that has already rolled on of these effects
+    * **AllowedItemTypes:** This effect may only be rolled on items of a the types in this list. When this list is empty, this is usually done because this is a special effect type added programmatically  or currently not allowed to roll.
+    * **AllowedRarities:** This effect may only be rolled on an item of one of these rarities
+    * **AllowedItemNames:** This effect may only be rolled on an item with one of these names. Use the unlocalized shared name, i.e.: `$item_sword_iron`
+    * **CustomFlags:** A set of any arbitrary strings for future use
   * **Value Per Rarity:** This effect may only be rolled on items of a rarity included in this table. The value is rolled using a linear distribution between Min and Max and divisible by the Increment.
 
-Some lists of effect types are used in requirements to consolidate code. They are: PhysicalDamageEffects, ElementalDamageEffects, and AllDamageEffects. Included here for your reference:
-
-  * **`PhysicalDamageEffects`:** AddBluntDamage, AddSlashingDamage, AddPiercingDamage
-  * **`ElementalDamageEffects`:** AddFireDamage, AddFrostDamage, AddLightningDamage
-  * **`AllDamageEffects`:** AddBluntDamage, AddSlashingDamage, AddPiercingDamage, AddFireDamage, AddFrostDamage, AddLightningDamage, AddPoisonDamage, AddSpiritDamage
-
-## DvergerCirclet (0)
+## DvergerCirclet
 
 > **Display Text:** Perpetual lightsource
 > 
 > **Allowed Item Types:** *None*
 > 
+> **Requirements:**
+> > **Flags:** `NoRoll, ExclusiveSelf`
+> 
 > ***Notes:*** *Can't be rolled. Just added to make a Magic Item version of this item.*
 
-## Megingjord (1)
+## Megingjord
 
 > **Display Text:** Carry weight increased by +150
 > 
 > **Allowed Item Types:** *None*
 > 
+> **Requirements:**
+> > **Flags:** `NoRoll, ExclusiveSelf`
+> 
 > ***Notes:*** *Can't be rolled. Just added to make a Magic Item version of this item.*
 
-## Wishbone (2)
+## Wishbone
 
 > **Display Text:** Finds secrets
 > 
 > **Allowed Item Types:** *None*
 > 
+> **Requirements:**
+> > **Flags:** `NoRoll, ExclusiveSelf`
+> 
 > ***Notes:*** *Can't be rolled. Just added to make a Magic Item version of this item.*
 
-## ModifyDamage (3)
+## ModifyDamage
 
 > **Display Text:** All damage increased by +{0:0.#}%
 > 
 > **Allowed Item Types:** *None*
+> 
+> **Requirements:**
+> > **Flags:** `NoRoll, ExclusiveSelf`
 > 
 > **Value Per Rarity:**
 > 
@@ -76,17 +85,16 @@ Some lists of effect types are used in requirements to consolidate code. They ar
 > 
 > ***Notes:*** *Can't be rolled. Too powerful?*
 
-## ModifyPhysicalDamage (4)
+## ModifyPhysicalDamage
 
 > **Display Text:** Physical damage increased by +{0:0.#}%
 > 
 > **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch
 > 
-> **Requirement:**
-> ```
-> (itemData, magicItem) => itemData.m_shared.m_damages.GetTotalPhysicalDamage() > 0 || magicItem.HasAnyEffect(PhysicalDamageEffects)
-> ```
-> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf, ItemHasPhysicalDamage`
+> > **ExclusiveEffectTypes:** `AddBluntDamage, AddSlashingDamage, AddPiercingDamage`
+> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow, Torch`
 > 
 > **Value Per Rarity:**
 > 
@@ -97,17 +105,16 @@ Some lists of effect types are used in requirements to consolidate code. They ar
 > |Epic|10|20|1|
 > |Legendary|15|25|1|
 
-## ModifyElementalDamage (5)
+## ModifyElementalDamage
 
 > **Display Text:** Elemental damage increased by +{0:0.#}%
 > 
 > **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch
 > 
-> **Requirement:**
-> ```
-> (itemData, magicItem) => itemData.m_shared.m_damages.GetTotalElementalDamage() > 0 || magicItem.HasAnyEffect(ElementalDamageEffects)
-> ```
-> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf, ItemHasElementalDamage`
+> > **ExclusiveEffectTypes:** `AddFireDamage, AddFrostDamage, AddLightningDamage`
+> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow, Torch`
 > 
 > **Value Per Rarity:**
 > 
@@ -118,57 +125,40 @@ Some lists of effect types are used in requirements to consolidate code. They ar
 > |Epic|10|20|1|
 > |Legendary|15|25|1|
 
-## ModifyDurability (6)
+## ModifyDurability
 
 > **Display Text:** Max durability increased by +{0:0.#}%
 > 
 > **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Shield, Tool, Helmet, Chest, Legs, Shoulder, Utility
 > 
-> **Requirement:**
-> ```
-> (itemData, magicItem) => !magicItem.HasEffect(MagicEffectType.Indestructible)
-> ```
-> 
-> 
-> **Value Per Rarity:**
-> 
-> |Rarity|Min|Max|Increment|
-> |--|--|--|--|
-> |Magic|50|100|5|
-> |Rare|50|100|5|
-> |Epic|50|100|5|
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf, ItemUsesDurability`
+> > **ExclusiveEffectTypes:** `Indestructible`
+> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Shield, Tool, Helmet, Chest, Legs, Shoulder, Utility`
+> > **AllowedRarities:** `Magic, Rare, Epic`
 
-## ReduceWeight (7)
+## ReduceWeight
 
 > **Display Text:** Weight reduced by -{0:0.#}% 
 > 
 > **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Shield, Tool, Helmet, Chest, Legs, Shoulder, Utility
 > 
-> **Requirement:**
-> ```
-> (itemData, magicItem) => !magicItem.HasEffect(MagicEffectType.Weightless)
-> ```
-> 
-> 
-> **Value Per Rarity:**
-> 
-> |Rarity|Min|Max|Increment|
-> |--|--|--|--|
-> |Magic|70|90|5|
-> |Rare|70|90|5|
-> |Epic|70|90|5|
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **ExclusiveEffectTypes:** `Weightless`
+> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Shield, Tool, Helmet, Chest, Legs, Shoulder, Utility`
+> > **AllowedRarities:** `Magic, Rare, Epic`
 
-## RemoveSpeedPenalty (8)
+## RemoveSpeedPenalty
 
 > **Display Text:** Movement speed penalty removed
 > 
 > **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Shield, Tool, Helmet, Chest, Legs, Shoulder, Utility
 > 
-> **Requirement:**
-> ```
-> (itemData, magicItem) => itemData.m_shared.m_movementModifier < 0
-> ```
-> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf, ItemHasNegativeMovementSpeedModifier`
+> > **ExclusiveEffectTypes:** `ModifyMovementSpeed`
+> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Shield, Tool, Helmet, Chest, Legs, Shoulder, Utility`
 > 
 > **Value Per Rarity:**
 > 
@@ -179,17 +169,15 @@ Some lists of effect types are used in requirements to consolidate code. They ar
 > |Epic|1|0|0|
 > |Legendary|1|0|0|
 
-## ModifyBlockPower (9)
+## ModifyBlockPower
 
 > **Display Text:** Block improved by +{0:0.#}%
 > 
 > **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Shield
 > 
-> **Requirement:**
-> ```
-> (itemData, magicItem) => itemData.m_shared.m_blockPower > 0
-> ```
-> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf, ItemHasBlockPower`
+> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Shield`
 > 
 > **Value Per Rarity:**
 > 
@@ -200,17 +188,15 @@ Some lists of effect types are used in requirements to consolidate code. They ar
 > |Epic|10|20|1|
 > |Legendary|15|25|1|
 
-## ModifyParry (10)
+## ModifyParry
 
 > **Display Text:** Parry improved by +{0:0.#}%
 > 
 > **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Shield
 > 
-> **Requirement:**
-> ```
-> (itemData, magicItem) => itemData.m_shared.m_deflectionForce > 0
-> ```
-> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf, ItemHasParryPower`
+> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Shield`
 > 
 > **Value Per Rarity:**
 > 
@@ -221,17 +207,15 @@ Some lists of effect types are used in requirements to consolidate code. They ar
 > |Epic|10|20|1|
 > |Legendary|15|25|1|
 
-## ModifyArmor (11)
+## ModifyArmor
 
 > **Display Text:** Armor increased by +{0:0.#}%
 > 
 > **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility
 > 
-> **Requirement:**
-> ```
-> (itemData, magicItem) => itemData.m_shared.m_armor > 0
-> ```
-> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf, ItemHasArmor`
+> > **AllowedItemTypes:** `Helmet, Chest, Legs, Shoulder, Utility`
 > 
 > **Value Per Rarity:**
 > 
@@ -242,17 +226,15 @@ Some lists of effect types are used in requirements to consolidate code. They ar
 > |Epic|10|20|1|
 > |Legendary|15|25|1|
 
-## ModifyBackstab (12)
+## ModifyBackstab
 
 > **Display Text:** Backstab improved by +{0:0.#}%
 > 
 > **Allowed Item Types:** OneHandedWeapon, Bow
 > 
-> **Requirement:**
-> ```
-> (itemData, magicItem) => itemData.m_shared.m_backstabBonus > 0
-> ```
-> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf, ItemHasBackstabBonus`
+> > **AllowedItemTypes:** `OneHandedWeapon, Bow`
 > 
 > **Value Per Rarity:**
 > 
@@ -263,12 +245,16 @@ Some lists of effect types are used in requirements to consolidate code. They ar
 > |Epic|10|20|1|
 > |Legendary|15|25|1|
 
-## IncreaseHealth (13)
+## IncreaseHealth
 
 > **Display Text:** Health increased by +{0:0}
 > 
 > **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility, Shield
 > 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedItemTypes:** `Helmet, Chest, Legs, Shoulder, Utility, Shield`
+> 
 > **Value Per Rarity:**
 > 
 > |Rarity|Min|Max|Increment|
@@ -278,12 +264,16 @@ Some lists of effect types are used in requirements to consolidate code. They ar
 > |Epic|20|35|5|
 > |Legendary|25|50|5|
 
-## IncreaseStamina (14)
+## IncreaseStamina
 
 > **Display Text:** Stamina increased by +{0:0}
 > 
 > **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility, Tool
 > 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedItemTypes:** `Helmet, Chest, Legs, Shoulder, Utility, Tool`
+> 
 > **Value Per Rarity:**
 > 
 > |Rarity|Min|Max|Increment|
@@ -293,12 +283,16 @@ Some lists of effect types are used in requirements to consolidate code. They ar
 > |Epic|20|35|5|
 > |Legendary|25|50|5|
 
-## ModifyHealthRegen (15)
+## ModifyHealthRegen
 
 > **Display Text:** Health regen improved by +{0:0.#}%
 > 
 > **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility
 > 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedItemTypes:** `Helmet, Chest, Legs, Shoulder, Utility`
+> 
 > **Value Per Rarity:**
 > 
 > |Rarity|Min|Max|Increment|
@@ -308,12 +302,16 @@ Some lists of effect types are used in requirements to consolidate code. They ar
 > |Epic|10|20|1|
 > |Legendary|15|25|1|
 
-## ModifyStaminaRegen (16)
+## ModifyStaminaRegen
 
 > **Display Text:** Stamina regen improved by +{0:0.#}%
 > 
 > **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility, Tool
 > 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedItemTypes:** `Helmet, Chest, Legs, Shoulder, Utility, Tool`
+> 
 > **Value Per Rarity:**
 > 
 > |Rarity|Min|Max|Increment|
@@ -323,17 +321,16 @@ Some lists of effect types are used in requirements to consolidate code. They ar
 > |Epic|10|20|1|
 > |Legendary|15|25|1|
 
-## AddBluntDamage (17)
+## AddBluntDamage
 
 > **Display Text:** Add +{0:0.#} blunt damage
 > 
 > **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch
 > 
-> **Requirement:**
-> ```
-> (itemData, magicItem) => !magicItem.HasAnyEffect(AllDamageEffects)
-> ```
-> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **ExclusiveEffectTypes:** `AddBluntDamage, AddSlashingDamage, AddPiercingDamage, AddFireDamage, AddFrostDamage, AddLightningDamage, AddPoisonDamage, AddSpiritDamage`
+> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow, Torch`
 > 
 > **Value Per Rarity:**
 > 
@@ -344,17 +341,16 @@ Some lists of effect types are used in requirements to consolidate code. They ar
 > |Epic|7|15|1|
 > |Legendary|15|20|1|
 
-## AddSlashingDamage (18)
+## AddSlashingDamage
 
 > **Display Text:** Add +{0:0.#} slashing damage
 > 
 > **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch
 > 
-> **Requirement:**
-> ```
-> (itemData, magicItem) => !magicItem.HasAnyEffect(AllDamageEffects)
-> ```
-> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **ExclusiveEffectTypes:** `AddBluntDamage, AddSlashingDamage, AddPiercingDamage, AddFireDamage, AddFrostDamage, AddLightningDamage, AddPoisonDamage, AddSpiritDamage`
+> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow, Torch`
 > 
 > **Value Per Rarity:**
 > 
@@ -365,17 +361,16 @@ Some lists of effect types are used in requirements to consolidate code. They ar
 > |Epic|7|15|1|
 > |Legendary|15|20|1|
 
-## AddPiercingDamage (19)
+## AddPiercingDamage
 
 > **Display Text:** Add +{0:0.#} piercing damage
 > 
 > **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch
 > 
-> **Requirement:**
-> ```
-> (itemData, magicItem) => !magicItem.HasAnyEffect(AllDamageEffects)
-> ```
-> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **ExclusiveEffectTypes:** `AddBluntDamage, AddSlashingDamage, AddPiercingDamage, AddFireDamage, AddFrostDamage, AddLightningDamage, AddPoisonDamage, AddSpiritDamage`
+> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow, Torch`
 > 
 > **Value Per Rarity:**
 > 
@@ -386,17 +381,16 @@ Some lists of effect types are used in requirements to consolidate code. They ar
 > |Epic|7|15|1|
 > |Legendary|15|20|1|
 
-## AddFireDamage (20)
+## AddFireDamage
 
 > **Display Text:** Add +{0:0.#} fire damage
 > 
 > **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch
 > 
-> **Requirement:**
-> ```
-> (itemData, magicItem) => !magicItem.HasAnyEffect(AllDamageEffects)
-> ```
-> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **ExclusiveEffectTypes:** `AddBluntDamage, AddSlashingDamage, AddPiercingDamage, AddFireDamage, AddFrostDamage, AddLightningDamage, AddPoisonDamage, AddSpiritDamage`
+> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow, Torch`
 > 
 > **Value Per Rarity:**
 > 
@@ -407,17 +401,16 @@ Some lists of effect types are used in requirements to consolidate code. They ar
 > |Epic|7|15|1|
 > |Legendary|15|20|1|
 
-## AddFrostDamage (21)
+## AddFrostDamage
 
 > **Display Text:** Add +{0:0.#} frost damage
 > 
 > **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch
 > 
-> **Requirement:**
-> ```
-> (itemData, magicItem) => !magicItem.HasAnyEffect(AllDamageEffects)
-> ```
-> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **ExclusiveEffectTypes:** `AddBluntDamage, AddSlashingDamage, AddPiercingDamage, AddFireDamage, AddFrostDamage, AddLightningDamage, AddPoisonDamage, AddSpiritDamage`
+> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow, Torch`
 > 
 > **Value Per Rarity:**
 > 
@@ -428,17 +421,16 @@ Some lists of effect types are used in requirements to consolidate code. They ar
 > |Epic|7|15|1|
 > |Legendary|15|20|1|
 
-## AddLightningDamage (22)
+## AddLightningDamage
 
 > **Display Text:** Add +{0:0.#} lightning damage
 > 
 > **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch
 > 
-> **Requirement:**
-> ```
-> (itemData, magicItem) => !magicItem.HasAnyEffect(AllDamageEffects)
-> ```
-> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **ExclusiveEffectTypes:** `AddBluntDamage, AddSlashingDamage, AddPiercingDamage, AddFireDamage, AddFrostDamage, AddLightningDamage, AddPoisonDamage, AddSpiritDamage`
+> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow, Torch`
 > 
 > **Value Per Rarity:**
 > 
@@ -449,17 +441,16 @@ Some lists of effect types are used in requirements to consolidate code. They ar
 > |Epic|7|15|1|
 > |Legendary|15|20|1|
 
-## AddPoisonDamage (23)
+## AddPoisonDamage
 
 > **Display Text:** Attacks deal poison damage for {0:0} seconds
 > 
 > **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch
 > 
-> **Requirement:**
-> ```
-> (itemData, magicItem) => !magicItem.HasAnyEffect(AllDamageEffects)
-> ```
-> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **ExclusiveEffectTypes:** `AddBluntDamage, AddSlashingDamage, AddPiercingDamage, AddFireDamage, AddFrostDamage, AddLightningDamage, AddPoisonDamage, AddSpiritDamage`
+> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow, Torch`
 > 
 > **Value Per Rarity:**
 > 
@@ -470,17 +461,16 @@ Some lists of effect types are used in requirements to consolidate code. They ar
 > |Epic|8|15|1|
 > |Legendary|15|20|1|
 
-## AddSpiritDamage (24)
+## AddSpiritDamage
 
 > **Display Text:** Add +{0:0.#} spirit damage
 > 
 > **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch
 > 
-> **Requirement:**
-> ```
-> (itemData, magicItem) => !magicItem.HasAnyEffect(AllDamageEffects)
-> ```
-> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **ExclusiveEffectTypes:** `AddBluntDamage, AddSlashingDamage, AddPiercingDamage, AddFireDamage, AddFrostDamage, AddLightningDamage, AddPoisonDamage, AddSpiritDamage`
+> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow, Torch`
 > 
 > **Value Per Rarity:**
 > 
@@ -491,92 +481,66 @@ Some lists of effect types are used in requirements to consolidate code. They ar
 > |Epic|7|15|1|
 > |Legendary|15|20|1|
 
-## AddFireResistance (25)
+## AddFireResistance
 
 > **Display Text:** Gain fire resistance
 > 
 > **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility, Shield
 > 
-> **Value Per Rarity:**
-> 
-> |Rarity|Min|Max|Increment|
-> |--|--|--|--|
-> |Magic|0|0|0|
-> |Rare|0|0|0|
-> |Epic|0|0|0|
-> |Legendary|0|0|0|
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedItemTypes:** `Helmet, Chest, Legs, Shoulder, Utility, Shield`
 
-## AddFrostResistance (26)
+## AddFrostResistance
 
 > **Display Text:** Gain frost resistance
 > 
 > **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility, Shield
 > 
-> **Value Per Rarity:**
-> 
-> |Rarity|Min|Max|Increment|
-> |--|--|--|--|
-> |Magic|0|0|0|
-> |Rare|0|0|0|
-> |Epic|0|0|0|
-> |Legendary|0|0|0|
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedItemTypes:** `Helmet, Chest, Legs, Shoulder, Utility, Shield`
 
-## AddLightningResistance (27)
+## AddLightningResistance
 
 > **Display Text:** Gain lightning resistance
 > 
 > **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility, Shield
 > 
-> **Value Per Rarity:**
-> 
-> |Rarity|Min|Max|Increment|
-> |--|--|--|--|
-> |Magic|0|0|0|
-> |Rare|0|0|0|
-> |Epic|0|0|0|
-> |Legendary|0|0|0|
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedItemTypes:** `Helmet, Chest, Legs, Shoulder, Utility, Shield`
 
-## AddPoisonResistance (28)
+## AddPoisonResistance
 
 > **Display Text:** Gain poison resistance
 > 
 > **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility, Shield
 > 
-> **Value Per Rarity:**
-> 
-> |Rarity|Min|Max|Increment|
-> |--|--|--|--|
-> |Magic|0|0|0|
-> |Rare|0|0|0|
-> |Epic|0|0|0|
-> |Legendary|0|0|0|
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedItemTypes:** `Helmet, Chest, Legs, Shoulder, Utility, Shield`
 
-## AddSpiritResistance (29)
+## AddSpiritResistance
 
 > **Display Text:** Gain spirit resistance
 > 
 > **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility, Shield
 > 
-> **Value Per Rarity:**
-> 
-> |Rarity|Min|Max|Increment|
-> |--|--|--|--|
-> |Magic|0|0|0|
-> |Rare|0|0|0|
-> |Epic|0|0|0|
-> |Legendary|0|0|0|
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedItemTypes:** `Helmet, Chest, Legs, Shoulder, Utility, Shield`
 
-## ModifyMovementSpeed (30)
+## ModifyMovementSpeed
 
 > **Display Text:** Movement increased by +{0:0.#}%
 > 
 > **Allowed Item Types:** Legs
 > 
-> **Requirement:**
-> ```
-> (itemData, magicItem) => !magicItem.HasEffect(MagicEffectType.RemoveSpeedPenalty)
-> ```
-> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **ExclusiveEffectTypes:** `RemoveSpeedPenalty`
+> > **AllowedItemTypes:** `Legs`
 > 
 > **Value Per Rarity:**
 > 
@@ -587,12 +551,16 @@ Some lists of effect types are used in requirements to consolidate code. They ar
 > |Epic|30|45|1|
 > |Legendary|45|60|1|
 
-## ModifySprintStaminaUse (31)
+## ModifySprintStaminaUse
 
 > **Display Text:** Reduce sprint stamina use by -{0:0.#}%
 > 
 > **Allowed Item Types:** Legs
 > 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedItemTypes:** `Legs`
+> 
 > **Value Per Rarity:**
 > 
 > |Rarity|Min|Max|Increment|
@@ -602,12 +570,16 @@ Some lists of effect types are used in requirements to consolidate code. They ar
 > |Epic|11|16|1|
 > |Legendary|14|19|1|
 
-## ModifyJumpStaminaUse (32)
+## ModifyJumpStaminaUse
 
 > **Display Text:** Reduce jump stamina use by -{0:0.#}%
 > 
 > **Allowed Item Types:** Legs
 > 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedItemTypes:** `Legs`
+> 
 > **Value Per Rarity:**
 > 
 > |Rarity|Min|Max|Increment|
@@ -617,17 +589,15 @@ Some lists of effect types are used in requirements to consolidate code. They ar
 > |Epic|11|16|1|
 > |Legendary|14|19|1|
 
-## ModifyAttackStaminaUse (33)
+## ModifyAttackStaminaUse
 
 > **Display Text:** Reduce attack stamina use by -{0:0.#}%
 > 
 > **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Tool
 > 
-> **Requirement:**
-> ```
-> (itemData, magicItem) => itemData.m_shared.m_attack.m_attackStamina > 0 || itemData.m_shared.m_secondaryAttack.m_attackStamina > 0
-> ```
-> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf, ItemUsesStaminaOnAttack`
+> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Tool`
 > 
 > **Value Per Rarity:**
 > 
@@ -638,17 +608,15 @@ Some lists of effect types are used in requirements to consolidate code. They ar
 > |Epic|11|16|1|
 > |Legendary|14|19|1|
 
-## ModifyBlockStaminaUse (34)
+## ModifyBlockStaminaUse
 
 > **Display Text:** Reduce block stamina use by -{0:0.#}%
 > 
 > **Allowed Item Types:** Shield
 > 
-> **Requirement:**
-> ```
-> (itemData, magicItem) => itemData.m_shared.m_blockPower > 0
-> ```
-> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf, ItemHasBlockPower`
+> > **AllowedItemTypes:** `Shield`
 > 
 > **Value Per Rarity:**
 > 
@@ -659,51 +627,38 @@ Some lists of effect types are used in requirements to consolidate code. They ar
 > |Epic|11|16|1|
 > |Legendary|14|19|1|
 
-## Indestructible (35)
+## Indestructible
 
 > **Display Text:** Indestructible
 > 
 > **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Tool, Shield, Helmet, Chest, Legs, Shoulder, Utility
 > 
-> **Requirement:**
-> ```
-> (itemData, magicItem) => !magicItem.HasEffect(MagicEffectType.ModifyDurability)
-> ```
-> 
-> 
-> **Value Per Rarity:**
-> 
-> |Rarity|Min|Max|Increment|
-> |--|--|--|--|
-> |Epic|0|0|0|
-> |Legendary|0|0|0|
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **ExclusiveEffectTypes:** `ModifyDurability`
+> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Tool, Shield, Helmet, Chest, Legs, Shoulder, Utility`
+> > **AllowedRarities:** `Epic, Legendary`
 
-## Weightless (36)
+## Weightless
 
 > **Display Text:** Weightless
 > 
 > **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Tool, Shield, Helmet, Chest, Legs, Shoulder, Utility
 > 
-> **Requirement:**
-> ```
-> (itemData, magicItem) => !magicItem.HasEffect(MagicEffectType.ReduceWeight)
-> ```
-> 
-> 
-> **Value Per Rarity:**
-> 
-> |Rarity|Min|Max|Increment|
-> |--|--|--|--|
-> |Magic|0|0|0|
-> |Rare|0|0|0|
-> |Epic|0|0|0|
-> |Legendary|0|0|0|
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **ExclusiveEffectTypes:** `ReduceWeight`
+> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Tool, Shield, Helmet, Chest, Legs, Shoulder, Utility`
 
-## AddCarryWeight (37)
+## AddCarryWeight
 
 > **Display Text:** Increase carry weight by +{0}
 > 
 > **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedItemTypes:** `Helmet, Chest, Legs, Shoulder, Utility`
 > 
 > **Value Per Rarity:**
 > 
@@ -1895,7 +1850,7 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 
 > | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
-> | TreasureChest_forestcrypt.1 | 1 (100%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
+> | TreasureChest_heath.1 | 1 (100%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
 
 
 ## TreasureChest_heath

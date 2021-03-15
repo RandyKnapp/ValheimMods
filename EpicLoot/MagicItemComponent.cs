@@ -122,7 +122,7 @@ namespace EpicLoot
             return ColorUtility.TryParseHtmlString(colorString, out var color) ? color : Color.white;
         }
 
-        public static bool HasMagicEffect(this ItemDrop.ItemData itemData, MagicEffectType effectType)
+        public static bool HasMagicEffect(this ItemDrop.ItemData itemData, string effectType)
         {
             return itemData.GetMagicItem()?.HasEffect(effectType) ?? false;
         }
@@ -179,12 +179,12 @@ namespace EpicLoot
             return results;
         }
 
-        public static List<ItemDrop.ItemData> GetMagicEquipmentWithEffect(this Player player, MagicEffectType effectType)
+        public static List<ItemDrop.ItemData> GetMagicEquipmentWithEffect(this Player player, string effectType)
         {
             return player.GetEquipment().Where(x => x.HasMagicEffect(effectType)).ToList();
         }
 
-        public static bool HasMagicEquipmentWithEffect(this Player player, MagicEffectType effectType)
+        public static bool HasMagicEquipmentWithEffect(this Player player, string effectType)
         {
             return GetMagicEquipmentWithEffect(player, effectType).Count > 0;
         }

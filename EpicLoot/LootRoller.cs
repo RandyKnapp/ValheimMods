@@ -332,12 +332,16 @@ namespace EpicLoot
 
         public static MagicItemEffect RollEffect(MagicItemEffectDefinition effectDef, ItemRarity itemRarity)
         {
-            var valuesDef = effectDef.ValuesPerRarity[itemRarity];
-            float value = valuesDef.MinValue;
-            if (valuesDef.Increment != 0)
+            float value = 0;
+            var valuesDef = effectDef.GetValuesForRarity(itemRarity);
+            if (valuesDef != null)
             {
-                int incrementCount = (int)((valuesDef.MaxValue - valuesDef.MinValue) / valuesDef.Increment);
-                value = valuesDef.MinValue + (Random.Range(0, incrementCount + 1) * valuesDef.Increment);
+                value = valuesDef.MinValue;
+                if (valuesDef.Increment != 0)
+                {
+                    var incrementCount = (int)((valuesDef.MaxValue - valuesDef.MinValue) / valuesDef.Increment);
+                    value = valuesDef.MinValue + (Random.Range(0, incrementCount + 1) * valuesDef.Increment);
+                }
             }
 
             return new MagicItemEffect()

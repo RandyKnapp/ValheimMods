@@ -17,19 +17,19 @@ namespace EpicLoot
     [Serializable]
     public class MagicItemEffect
     {
-        public MagicEffectType EffectType
-        {
-            get => (MagicEffectType) _effectId;
-            set => _effectId = (int)value;
-        }
-        public int IntType
+        public int Version = 1;
+
+        public string EffectType { get; set; }
+
+        /*public int IntType
         {
             get => _effectId;
             set => _effectId = value;
-        }
+        }*/
+
         public float EffectValue;
 
-        private int _effectId;
+        //private int _effectId;
     }
 
     [Serializable]
@@ -78,56 +78,36 @@ namespace EpicLoot
             return EpicLoot.GetRarityColor(Rarity);
         }
 
-        public List<MagicItemEffect> GetEffects(MagicEffectType effectType)
+        public List<MagicItemEffect> GetEffects(string effectType)
         {
             return Effects.Where(x => x.EffectType == effectType).ToList();
         }
 
-        public List<MagicItemEffect> GetEffects(int effectType)
-        {
-            return Effects.Where(x => x.IntType == effectType).ToList();
-        }
-
-        public float GetTotalEffectValue(MagicEffectType effectType, float scale = 1)
+        public float GetTotalEffectValue(string effectType, float scale = 1)
         {
             return GetEffects(effectType).Sum(x => x.EffectValue) * scale;
         }
 
-        public float GetTotalEffectValue(int effectType, float scale = 1)
-        {
-            return GetEffects(effectType).Sum(x => x.EffectValue) * scale;
-        }
-
-        public bool HasEffect(MagicEffectType effectType)
+        public bool HasEffect(string effectType)
         {
             return Effects.Exists(x => x.EffectType == effectType);
         }
 
-        public bool HasEffect(int effectType)
-        {
-            return Effects.Exists(x => x.IntType == effectType);
-        }
-
-        public bool HasAnyEffect(IEnumerable<MagicEffectType> effectTypes)
+        public bool HasAnyEffect(IEnumerable<string> effectTypes)
         {
             return Effects.Any(x => effectTypes.Contains(x.EffectType));
-        }
-
-        public bool HasAnyEffect(IEnumerable<int> effectTypes)
-        {
-            return Effects.Any(x => effectTypes.Contains(x.IntType));
         }
 
         private static string GetEffectText(MagicItemEffect effect, ItemRarity rarity, bool showRange)
         {
             var effectDef = MagicItemEffectDefinitions.Get(effect.EffectType);
             var result = string.Format(effectDef.DisplayText, effect.EffectValue);
-            if (showRange && effectDef.ValuesPerRarity.ContainsKey(rarity))
+            var values = effectDef.GetValuesForRarity(rarity);
+            if (showRange && values != null)
             {
-                var valueRangeForRarity = effectDef.ValuesPerRarity[rarity];
-                if (!Mathf.Approximately(valueRangeForRarity.MinValue, valueRangeForRarity.MaxValue))
+                if (!Mathf.Approximately(values.MinValue, values.MaxValue))
                 {
-                    result += $" [{valueRangeForRarity.MinValue}-{valueRangeForRarity.MaxValue}]";
+                    result += $" [{values.MinValue}-{values.MaxValue}]";
                 }
             }
             return result;

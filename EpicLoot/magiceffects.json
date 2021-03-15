@@ -1,0 +1,823 @@
+{
+  "MagicItemEffects" : [
+    {
+      "Type" : "DvergerCirclet",
+      "DisplayText" : "Perpetual lightsource",
+      "Requirements" : {
+        "NoRoll": true
+      },
+      "SelectionWeight" : 1,
+      "Comment" : "Can't be rolled. Just added to make a Magic Item version of this item."
+    },
+    {
+      "Type" : "Megingjord",
+      "DisplayText" : "Carry weight increased by +150",
+      "Requirements" : {
+        "NoRoll": true
+      },
+      "SelectionWeight" : 1,
+      "Comment" : "Can't be rolled. Just added to make a Magic Item version of this item."
+    },
+    {
+      "Type" : "Wishbone",
+      "DisplayText" : "Finds secrets",
+      "Requirements" : {
+        "NoRoll": true
+      },
+      "SelectionWeight" : 1,
+      "Comment" : "Can't be rolled. Just added to make a Magic Item version of this item."
+    },
+    {
+      "Type" : "ModifyDamage",
+      "DisplayText" : "All damage increased by +{0:0.#}%",
+      "Requirements" : {
+        "NoRoll": true
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 10, "MaxValue" : 20, "Increment" : 1 },
+        "Rare" : { "MinValue" : 10, "MaxValue" : 20, "Increment" : 1 },
+        "Epic" : { "MinValue" : 10, "MaxValue" : 20, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15, "MaxValue" : 25, "Increment" : 1 }
+      },
+      "SelectionWeight" : 1,
+      "Comment" : "Can't be rolled. Too powerful?"
+    },
+    {
+      "Type" : "ModifyPhysicalDamage",
+      "DisplayText" : "Physical damage increased by +{0:0.#}%",
+      "Requirements" : {
+        "ExclusiveEffectTypes" : [
+          "AddBluntDamage",
+          "AddSlashingDamage",
+          "AddPiercingDamage"
+        ],
+        "AllowedItemTypes" : [
+          "OneHandedWeapon",
+          "TwoHandedWeapon",
+          "Bow",
+          "Torch"
+        ],
+        "ItemHasPhysicalDamage" : true
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 10, "MaxValue" : 20, "Increment" : 1 },
+        "Rare" : { "MinValue" : 10, "MaxValue" : 20, "Increment" : 1 },
+        "Epic" : { "MinValue" : 10, "MaxValue" : 20, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15, "MaxValue" : 25, "Increment" : 1 }
+      },
+      "SelectionWeight" : 1
+    },
+    {
+      "Type" : "ModifyElementalDamage",
+      "DisplayText" : "Elemental damage increased by +{0:0.#}%",
+      "Requirements" : {
+        "ExclusiveEffectTypes" : [
+          "AddFireDamage",
+          "AddFrostDamage",
+          "AddLightningDamage"
+        ],
+        "AllowedItemTypes" : [
+          "OneHandedWeapon",
+          "TwoHandedWeapon",
+          "Bow",
+          "Torch"
+        ],
+        "ItemHasElementalDamage" : true
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 10, "MaxValue" : 20, "Increment" : 1 },
+        "Rare" : { "MinValue" : 10, "MaxValue" : 20, "Increment" : 1 },
+        "Epic" : { "MinValue" : 10, "MaxValue" : 20, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15, "MaxValue" : 25, "Increment" : 1 }
+      },
+      "SelectionWeight" : 1
+    },
+    {
+      "Type" : "ModifyDurability",
+      "DisplayText" : "Max durability increased by +{0:0.#}%",
+      "Requirements" : {
+        "ExclusiveEffectTypes" : [
+          "Indestructible"
+        ],
+        "AllowedItemTypes" : [
+          "OneHandedWeapon",
+          "TwoHandedWeapon",
+          "Bow",
+          "Torch",
+          "Shield",
+          "Tool",
+          "Helmet",
+          "Chest",
+          "Legs",
+          "Shoulder",
+          "Utility"
+        ],
+        "AllowedRarities" : [
+          "Magic",
+          "Rare",
+          "Epic"
+        ],
+        "ItemUsesDurability" : true
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 50, "MaxValue" : 100, "Increment" : 5 },
+        "Rare" : { "MinValue" : 50, "MaxValue" : 100, "Increment" : 5 },
+        "Epic" : { "MinValue" : 50, "MaxValue" : 100, "Increment" : 5 }
+      },
+      "SelectionWeight" : 1
+    },
+    {
+      "Type" : "ReduceWeight",
+      "DisplayText" : "Weight reduced by -{0:0.#}% ",
+      "Requirements" : {
+        "ExclusiveEffectTypes" : [
+          "Weightless"
+        ],
+        "AllowedItemTypes" : [
+          "OneHandedWeapon",
+          "TwoHandedWeapon",
+          "Bow",
+          "Torch",
+          "Shield",
+          "Tool",
+          "Helmet",
+          "Chest",
+          "Legs",
+          "Shoulder",
+          "Utility"
+        ],
+        "AllowedRarities" : [
+          "Magic",
+          "Rare",
+          "Epic"
+        ]
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 70, "MaxValue" : 90, "Increment" : 5 },
+        "Rare" : { "MinValue" : 70, "MaxValue" : 90, "Increment" : 5 },
+        "Epic" : { "MinValue" : 70, "MaxValue" : 90, "Increment" : 5 }
+      },
+      "SelectionWeight" : 1
+    },
+    {
+      "Type" : "RemoveSpeedPenalty",
+      "DisplayText" : "Movement speed penalty removed",
+      "Requirements" : {
+        "ExclusiveEffectTypes" : [
+          "ModifyMovementSpeed"
+        ],
+        "AllowedItemTypes" : [
+          "OneHandedWeapon",
+          "TwoHandedWeapon",
+          "Bow",
+          "Torch",
+          "Shield",
+          "Tool",
+          "Helmet",
+          "Chest",
+          "Legs",
+          "Shoulder",
+          "Utility"
+        ],
+        "ItemHasNegativeMovementSpeedModifier" : true
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 1, "MaxValue" : 0, "Increment" : 0 },
+        "Rare" : { "MinValue" : 1, "MaxValue" : 0, "Increment" : 0 },
+        "Epic" : { "MinValue" : 1, "MaxValue" : 0, "Increment" : 0 },
+        "Legendary" : { "MinValue" : 1, "MaxValue" : 0, "Increment" : 0 }
+      },
+      "SelectionWeight" : 1
+    },
+    {
+      "Type" : "ModifyBlockPower",
+      "DisplayText" : "Block improved by +{0:0.#}%",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "OneHandedWeapon",
+          "TwoHandedWeapon",
+          "Bow",
+          "Torch",
+          "Shield"
+        ],
+        "ItemHasBlockPower" : true
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 10, "MaxValue" : 20, "Increment" : 1 },
+        "Rare" : { "MinValue" : 10, "MaxValue" : 20, "Increment" : 1 },
+        "Epic" : { "MinValue" : 10, "MaxValue" : 20, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15, "MaxValue" : 25, "Increment" : 1 }
+      },
+      "SelectionWeight" : 1
+    },
+    {
+      "Type" : "ModifyParry",
+      "DisplayText" : "Parry improved by +{0:0.#}%",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "OneHandedWeapon",
+          "TwoHandedWeapon",
+          "Bow",
+          "Torch",
+          "Shield"
+        ],
+        "ItemHasParryPower" : true
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 10, "MaxValue" : 20, "Increment" : 1 },
+        "Rare" : { "MinValue" : 10, "MaxValue" : 20, "Increment" : 1 },
+        "Epic" : { "MinValue" : 10, "MaxValue" : 20, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15, "MaxValue" : 25, "Increment" : 1 }
+      },
+      "SelectionWeight" : 1
+    },
+    {
+      "Type" : "ModifyArmor",
+      "DisplayText" : "Armor increased by +{0:0.#}%",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "Helmet",
+          "Chest",
+          "Legs",
+          "Shoulder",
+          "Utility"
+        ],
+        "ItemHasArmor" : true
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 10, "MaxValue" : 20, "Increment" : 1 },
+        "Rare" : { "MinValue" : 10, "MaxValue" : 20, "Increment" : 1 },
+        "Epic" : { "MinValue" : 10, "MaxValue" : 20, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15, "MaxValue" : 25, "Increment" : 1 }
+      },
+      "SelectionWeight" : 1
+    },
+    {
+      "Type" : "ModifyBackstab",
+      "DisplayText" : "Backstab improved by +{0:0.#}%",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "OneHandedWeapon",
+          "Bow"
+        ],
+        "ItemHasBackstabBonus" : true
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 10, "MaxValue" : 20, "Increment" : 1 },
+        "Rare" : { "MinValue" : 10, "MaxValue" : 20, "Increment" : 1 },
+        "Epic" : { "MinValue" : 10, "MaxValue" : 20, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15, "MaxValue" : 25, "Increment" : 1 }
+      },
+      "SelectionWeight" : 1
+    },
+    {
+      "Type" : "IncreaseHealth",
+      "DisplayText" : "Health increased by +{0:0}",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "Helmet",
+          "Chest",
+          "Legs",
+          "Shoulder",
+          "Utility",
+          "Shield"
+        ]
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 10, "MaxValue" : 25, "Increment" : 5 },
+        "Rare" : { "MinValue" : 15, "MaxValue" : 30, "Increment" : 5 },
+        "Epic" : { "MinValue" : 20, "MaxValue" : 35, "Increment" : 5 },
+        "Legendary" : { "MinValue" : 25, "MaxValue" : 50, "Increment" : 5 }
+      },
+      "SelectionWeight" : 1
+    },
+    {
+      "Type" : "IncreaseStamina",
+      "DisplayText" : "Stamina increased by +{0:0}",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "Helmet",
+          "Chest",
+          "Legs",
+          "Shoulder",
+          "Utility",
+          "Tool"
+        ]
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 10, "MaxValue" : 25, "Increment" : 5 },
+        "Rare" : { "MinValue" : 15, "MaxValue" : 30, "Increment" : 5 },
+        "Epic" : { "MinValue" : 20, "MaxValue" : 35, "Increment" : 5 },
+        "Legendary" : { "MinValue" : 25, "MaxValue" : 50, "Increment" : 5 }
+      },
+      "SelectionWeight" : 1
+    },
+    {
+      "Type" : "ModifyHealthRegen",
+      "DisplayText" : "Health regen improved by +{0:0.#}%",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "Helmet",
+          "Chest",
+          "Legs",
+          "Shoulder",
+          "Utility"
+        ]
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 10, "MaxValue" : 20, "Increment" : 1 },
+        "Rare" : { "MinValue" : 10, "MaxValue" : 20, "Increment" : 1 },
+        "Epic" : { "MinValue" : 10, "MaxValue" : 20, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15, "MaxValue" : 25, "Increment" : 1 }
+      },
+      "SelectionWeight" : 1
+    },
+    {
+      "Type" : "ModifyStaminaRegen",
+      "DisplayText" : "Stamina regen improved by +{0:0.#}%",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "Helmet",
+          "Chest",
+          "Legs",
+          "Shoulder",
+          "Utility",
+          "Tool"
+        ]
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 10, "MaxValue" : 20, "Increment" : 1 },
+        "Rare" : { "MinValue" : 10, "MaxValue" : 20, "Increment" : 1 },
+        "Epic" : { "MinValue" : 10, "MaxValue" : 20, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15, "MaxValue" : 25, "Increment" : 1 }
+      },
+      "SelectionWeight" : 1
+    },
+    {
+      "Type" : "AddBluntDamage",
+      "DisplayText" : "Add +{0:0.#} blunt damage",
+      "Requirements" : {
+        "ExclusiveEffectTypes" : [
+          "AddBluntDamage",
+          "AddSlashingDamage",
+          "AddPiercingDamage",
+          "AddFireDamage",
+          "AddFrostDamage",
+          "AddLightningDamage",
+          "AddPoisonDamage",
+          "AddSpiritDamage"
+        ],
+        "AllowedItemTypes" : [
+          "OneHandedWeapon",
+          "TwoHandedWeapon",
+          "Bow",
+          "Torch"
+        ]
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 1, "MaxValue" : 4, "Increment" : 1 },
+        "Rare" : { "MinValue" : 3, "MaxValue" : 8, "Increment" : 1 },
+        "Epic" : { "MinValue" : 7, "MaxValue" : 15, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15, "MaxValue" : 20, "Increment" : 1 }
+      },
+      "SelectionWeight" : 1
+    },
+    {
+      "Type" : "AddSlashingDamage",
+      "DisplayText" : "Add +{0:0.#} slashing damage",
+      "Requirements" : {
+        "ExclusiveEffectTypes" : [
+          "AddBluntDamage",
+          "AddSlashingDamage",
+          "AddPiercingDamage",
+          "AddFireDamage",
+          "AddFrostDamage",
+          "AddLightningDamage",
+          "AddPoisonDamage",
+          "AddSpiritDamage"
+        ],
+        "AllowedItemTypes" : [
+          "OneHandedWeapon",
+          "TwoHandedWeapon",
+          "Bow",
+          "Torch"
+        ]
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 1, "MaxValue" : 4, "Increment" : 1 },
+        "Rare" : { "MinValue" : 3, "MaxValue" : 8, "Increment" : 1 },
+        "Epic" : { "MinValue" : 7, "MaxValue" : 15, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15, "MaxValue" : 20, "Increment" : 1 }
+      },
+      "SelectionWeight" : 1
+    },
+    {
+      "Type" : "AddPiercingDamage",
+      "DisplayText" : "Add +{0:0.#} piercing damage",
+      "Requirements" : {
+        "ExclusiveEffectTypes" : [
+          "AddBluntDamage",
+          "AddSlashingDamage",
+          "AddPiercingDamage",
+          "AddFireDamage",
+          "AddFrostDamage",
+          "AddLightningDamage",
+          "AddPoisonDamage",
+          "AddSpiritDamage"
+        ],
+        "AllowedItemTypes" : [
+          "OneHandedWeapon",
+          "TwoHandedWeapon",
+          "Bow",
+          "Torch"
+        ]
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 1, "MaxValue" : 4, "Increment" : 1 },
+        "Rare" : { "MinValue" : 3, "MaxValue" : 8, "Increment" : 1 },
+        "Epic" : { "MinValue" : 7, "MaxValue" : 15, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15, "MaxValue" : 20, "Increment" : 1 }
+      },
+      "SelectionWeight" : 1
+    },
+    {
+      "Type" : "AddFireDamage",
+      "DisplayText" : "Add +{0:0.#} fire damage",
+      "Requirements" : {
+        "ExclusiveEffectTypes" : [
+          "AddBluntDamage",
+          "AddSlashingDamage",
+          "AddPiercingDamage",
+          "AddFireDamage",
+          "AddFrostDamage",
+          "AddLightningDamage",
+          "AddPoisonDamage",
+          "AddSpiritDamage"
+        ],
+        "AllowedItemTypes" : [
+          "OneHandedWeapon",
+          "TwoHandedWeapon",
+          "Bow",
+          "Torch"
+        ]
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 1, "MaxValue" : 4, "Increment" : 1 },
+        "Rare" : { "MinValue" : 3, "MaxValue" : 8, "Increment" : 1 },
+        "Epic" : { "MinValue" : 7, "MaxValue" : 15, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15, "MaxValue" : 20, "Increment" : 1 }
+      },
+      "SelectionWeight" : 1
+    },
+    {
+      "Type" : "AddFrostDamage",
+      "DisplayText" : "Add +{0:0.#} frost damage",
+      "Requirements" : {
+        "ExclusiveEffectTypes" : [
+          "AddBluntDamage",
+          "AddSlashingDamage",
+          "AddPiercingDamage",
+          "AddFireDamage",
+          "AddFrostDamage",
+          "AddLightningDamage",
+          "AddPoisonDamage",
+          "AddSpiritDamage"
+        ],
+        "AllowedItemTypes" : [
+          "OneHandedWeapon",
+          "TwoHandedWeapon",
+          "Bow",
+          "Torch"
+        ]
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 1, "MaxValue" : 4, "Increment" : 1 },
+        "Rare" : { "MinValue" : 3, "MaxValue" : 8, "Increment" : 1 },
+        "Epic" : { "MinValue" : 7, "MaxValue" : 15, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15, "MaxValue" : 20, "Increment" : 1 }
+      },
+      "SelectionWeight" : 1
+    },
+    {
+      "Type" : "AddLightningDamage",
+      "DisplayText" : "Add +{0:0.#} lightning damage",
+      "Requirements" : {
+        "ExclusiveEffectTypes" : [
+          "AddBluntDamage",
+          "AddSlashingDamage",
+          "AddPiercingDamage",
+          "AddFireDamage",
+          "AddFrostDamage",
+          "AddLightningDamage",
+          "AddPoisonDamage",
+          "AddSpiritDamage"
+        ],
+        "AllowedItemTypes" : [
+          "OneHandedWeapon",
+          "TwoHandedWeapon",
+          "Bow",
+          "Torch"
+        ]
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 1, "MaxValue" : 4, "Increment" : 1 },
+        "Rare" : { "MinValue" : 3, "MaxValue" : 8, "Increment" : 1 },
+        "Epic" : { "MinValue" : 7, "MaxValue" : 15, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15, "MaxValue" : 20, "Increment" : 1 }
+      },
+      "SelectionWeight" : 1
+    },
+    {
+      "Type" : "AddPoisonDamage",
+      "DisplayText" : "Attacks deal poison damage for {0:0} seconds",
+      "Requirements" : {
+        "ExclusiveEffectTypes" : [
+          "AddBluntDamage",
+          "AddSlashingDamage",
+          "AddPiercingDamage",
+          "AddFireDamage",
+          "AddFrostDamage",
+          "AddLightningDamage",
+          "AddPoisonDamage",
+          "AddSpiritDamage"
+        ],
+        "AllowedItemTypes" : [
+          "OneHandedWeapon",
+          "TwoHandedWeapon",
+          "Bow",
+          "Torch"
+        ]
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 2, "MaxValue" : 4, "Increment" : 1 },
+        "Rare" : { "MinValue" : 4, "MaxValue" : 8, "Increment" : 1 },
+        "Epic" : { "MinValue" : 8, "MaxValue" : 15, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15, "MaxValue" : 20, "Increment" : 1 }
+      },
+      "SelectionWeight" : 1
+    },
+    {
+      "Type" : "AddSpiritDamage",
+      "DisplayText" : "Add +{0:0.#} spirit damage",
+      "Requirements" : {
+        "ExclusiveEffectTypes" : [
+          "AddBluntDamage",
+          "AddSlashingDamage",
+          "AddPiercingDamage",
+          "AddFireDamage",
+          "AddFrostDamage",
+          "AddLightningDamage",
+          "AddPoisonDamage",
+          "AddSpiritDamage"
+        ],
+        "AllowedItemTypes" : [
+          "OneHandedWeapon",
+          "TwoHandedWeapon",
+          "Bow",
+          "Torch"
+        ]
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 1, "MaxValue" : 4, "Increment" : 1 },
+        "Rare" : { "MinValue" : 3, "MaxValue" : 8, "Increment" : 1 },
+        "Epic" : { "MinValue" : 7, "MaxValue" : 15, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15, "MaxValue" : 20, "Increment" : 1 }
+      },
+      "SelectionWeight" : 1
+    },
+    {
+      "Type" : "AddFireResistance",
+      "DisplayText" : "Gain fire resistance",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "Helmet",
+          "Chest",
+          "Legs",
+          "Shoulder",
+          "Utility",
+          "Shield"
+        ]
+      },
+      "SelectionWeight" : 1
+    },
+    {
+      "Type" : "AddFrostResistance",
+      "DisplayText" : "Gain frost resistance",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "Helmet",
+          "Chest",
+          "Legs",
+          "Shoulder",
+          "Utility",
+          "Shield"
+        ]
+      },
+      "SelectionWeight" : 1
+    },
+    {
+      "Type" : "AddLightningResistance",
+      "DisplayText" : "Gain lightning resistance",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "Helmet",
+          "Chest",
+          "Legs",
+          "Shoulder",
+          "Utility",
+          "Shield"
+        ]
+      },
+      "SelectionWeight" : 1
+    },
+    {
+      "Type" : "AddPoisonResistance",
+      "DisplayText" : "Gain poison resistance",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "Helmet",
+          "Chest",
+          "Legs",
+          "Shoulder",
+          "Utility",
+          "Shield"
+        ]
+      },
+      "SelectionWeight" : 1
+    },
+    {
+      "Type" : "AddSpiritResistance",
+      "DisplayText" : "Gain spirit resistance",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "Helmet",
+          "Chest",
+          "Legs",
+          "Shoulder",
+          "Utility",
+          "Shield"
+        ]
+      },
+      "SelectionWeight" : 1
+    },
+    {
+      "Type" : "ModifyMovementSpeed",
+      "DisplayText" : "Movement increased by +{0:0.#}%",
+      "Requirements" : {
+        "ExclusiveEffectTypes" : [
+          "RemoveSpeedPenalty"
+        ],
+        "AllowedItemTypes" : [
+          "Legs"
+        ]
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 5, "MaxValue" : 15, "Increment" : 1 },
+        "Rare" : { "MinValue" : 15, "MaxValue" : 30, "Increment" : 1 },
+        "Epic" : { "MinValue" : 30, "MaxValue" : 45, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 45, "MaxValue" : 60, "Increment" : 1 }
+      },
+      "SelectionWeight" : 1
+    },
+    {
+      "Type" : "ModifySprintStaminaUse",
+      "DisplayText" : "Reduce sprint stamina use by -{0:0.#}%",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "Legs"
+        ]
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 5, "MaxValue" : 10, "Increment" : 1 },
+        "Rare" : { "MinValue" : 8, "MaxValue" : 13, "Increment" : 1 },
+        "Epic" : { "MinValue" : 11, "MaxValue" : 16, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 14, "MaxValue" : 19, "Increment" : 1 }
+      },
+      "SelectionWeight" : 1
+    },
+    {
+      "Type" : "ModifyJumpStaminaUse",
+      "DisplayText" : "Reduce jump stamina use by -{0:0.#}%",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "Legs"
+        ]
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 5, "MaxValue" : 10, "Increment" : 1 },
+        "Rare" : { "MinValue" : 8, "MaxValue" : 13, "Increment" : 1 },
+        "Epic" : { "MinValue" : 11, "MaxValue" : 16, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 14, "MaxValue" : 19, "Increment" : 1 }
+      },
+      "SelectionWeight" : 1
+    },
+    {
+      "Type" : "ModifyAttackStaminaUse",
+      "DisplayText" : "Reduce attack stamina use by -{0:0.#}%",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "OneHandedWeapon",
+          "TwoHandedWeapon",
+          "Bow",
+          "Torch",
+          "Tool"
+        ],
+        "ItemUsesStaminaOnAttack" : true
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 5, "MaxValue" : 10, "Increment" : 1 },
+        "Rare" : { "MinValue" : 8, "MaxValue" : 13, "Increment" : 1 },
+        "Epic" : { "MinValue" : 11, "MaxValue" : 16, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 14, "MaxValue" : 19, "Increment" : 1 }
+      },
+      "SelectionWeight" : 1
+    },
+    {
+      "Type" : "ModifyBlockStaminaUse",
+      "DisplayText" : "Reduce block stamina use by -{0:0.#}%",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "Shield"
+        ],
+        "ItemHasBlockPower" : true
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 5, "MaxValue" : 10, "Increment" : 1 },
+        "Rare" : { "MinValue" : 8, "MaxValue" : 13, "Increment" : 1 },
+        "Epic" : { "MinValue" : 11, "MaxValue" : 16, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 14, "MaxValue" : 19, "Increment" : 1 }
+      },
+      "SelectionWeight" : 1
+    },
+    {
+      "Type" : "Indestructible",
+      "DisplayText" : "Indestructible",
+      "Requirements" : {
+        "ExclusiveEffectTypes" : [
+          "ModifyDurability"
+        ],
+        "AllowedItemTypes" : [
+          "OneHandedWeapon",
+          "TwoHandedWeapon",
+          "Bow",
+          "Torch",
+          "Tool",
+          "Shield",
+          "Helmet",
+          "Chest",
+          "Legs",
+          "Shoulder",
+          "Utility"
+        ],
+        "AllowedRarities" : [
+          "Epic",
+          "Legendary"
+        ]
+      },
+      "SelectionWeight" : 1
+    },
+    {
+      "Type" : "Weightless",
+      "DisplayText" : "Weightless",
+      "Requirements" : {
+        "ExclusiveEffectTypes" : [
+          "ReduceWeight"
+        ],
+        "AllowedItemTypes" : [
+          "OneHandedWeapon",
+          "TwoHandedWeapon",
+          "Bow",
+          "Torch",
+          "Tool",
+          "Shield",
+          "Helmet",
+          "Chest",
+          "Legs",
+          "Shoulder",
+          "Utility"
+        ]
+      },
+      "SelectionWeight" : 1
+    },
+    {
+      "Type" : "AddCarryWeight",
+      "DisplayText" : "Increase carry weight by +{0}",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "Helmet",
+          "Chest",
+          "Legs",
+          "Shoulder",
+          "Utility"
+        ]
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 5, "MaxValue" : 10, "Increment" : 5 },
+        "Rare" : { "MinValue" : 10, "MaxValue" : 15, "Increment" : 5 },
+        "Epic" : { "MinValue" : 15, "MaxValue" : 25, "Increment" : 5 },
+        "Legendary" : { "MinValue" : 20, "MaxValue" : 50, "Increment" : 5 }
+      },
+      "SelectionWeight" : 1
+    }
+  ]
+}
