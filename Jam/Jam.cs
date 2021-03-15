@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace Jam
 {
-    [BepInPlugin(PluginId, "Jam", "1.0.0")]
+    [BepInPlugin(PluginId, "Jam", "1.0.3")]
     public class Jam : BaseUnityPlugin
     {
         public const string PluginId = "randyknapp.mods.jam";
@@ -102,9 +102,15 @@ namespace Jam
             }
         }
 
+        public static bool IsObjectDBReady()
+        {
+            // Hack, just making sure the built-in items and prefabs have loaded
+            return ObjectDB.instance != null && ObjectDB.instance.m_items.Count != 0 && ObjectDB.instance.GetItemPrefab("Amber") != null;
+        }
+
         public static void TryRegisterItems()
         {
-            if (ObjectDB.instance == null || ObjectDB.instance.m_items.Count == 0)
+            if (!IsObjectDBReady())
             {
                 return;
             }
@@ -124,7 +130,7 @@ namespace Jam
 
         public static void TryRegisterRecipes()
         {
-            if (ObjectDB.instance == null || ObjectDB.instance.m_items.Count == 0)
+            if (!IsObjectDBReady())
             {
                 return;
             }

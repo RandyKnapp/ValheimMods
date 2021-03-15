@@ -1,4 +1,4 @@
-# Jam
+# Jam v1.0.3
 ##### by RandyKnapp
 Adds more jam to the game:
 
