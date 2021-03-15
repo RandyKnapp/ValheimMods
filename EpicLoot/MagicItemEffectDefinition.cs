@@ -124,74 +124,74 @@ namespace EpicLoot
                 return false;
             }
 
-            if (Requirements.ExclusiveSelf)
+            if (Requirements.ExclusiveSelf && magicItem.HasEffect(Type))
             {
-                return !magicItem.HasEffect(Type);
+                return false;
             }
 
-            if (Requirements.ExclusiveEffectTypes?.Count > 0)
+            if (Requirements.ExclusiveEffectTypes?.Count > 0 && magicItem.HasAnyEffect(Requirements.ExclusiveEffectTypes))
             {
-                return !magicItem.HasAnyEffect(Requirements.ExclusiveEffectTypes);
+                return false;
             }
 
-            if (Requirements.AllowedItemTypes?.Count > 0)
+            if (Requirements.AllowedItemTypes?.Count > 0 && !Requirements.AllowedItemTypes.Contains(itemData.m_shared.m_itemType))
             {
-                return Requirements.AllowedItemTypes.Contains(itemData.m_shared.m_itemType);
+                return false;
             }
 
-            if (Requirements.AllowedRarities?.Count > 0)
+            if (Requirements.AllowedRarities?.Count > 0 && !Requirements.AllowedRarities.Contains(magicItem.Rarity))
             {
-                return Requirements.AllowedRarities.Contains(magicItem.Rarity);
+                return false;
             }
 
-            if (Requirements.AllowedItemNames?.Count > 0)
+            if (Requirements.AllowedItemNames?.Count > 0 && !Requirements.AllowedItemNames.Contains(itemData.m_shared.m_name))
             {
-                return Requirements.AllowedItemNames.Contains(itemData.m_shared.m_name);
+                return false;
             }
 
-            if (Requirements.ItemHasPhysicalDamage)
+            if (Requirements.ItemHasPhysicalDamage && itemData.m_shared.m_damages.GetTotalPhysicalDamage() <= 0)
             {
-                return itemData.m_shared.m_damages.GetTotalPhysicalDamage() > 0;
+                return false;
             }
 
-            if (Requirements.ItemHasElementalDamage)
+            if (Requirements.ItemHasElementalDamage && itemData.m_shared.m_damages.GetTotalElementalDamage() <= 0)
             {
-                return itemData.m_shared.m_damages.GetTotalElementalDamage() > 0;
+                return false;
             }
 
-            if (Requirements.ItemUsesDurability)
+            if (Requirements.ItemUsesDurability && !itemData.m_shared.m_useDurability)
             {
-                return itemData.m_shared.m_useDurability;
+                return false;
             }
 
-            if (Requirements.ItemHasNegativeMovementSpeedModifier)
+            if (Requirements.ItemHasNegativeMovementSpeedModifier && itemData.m_shared.m_movementModifier >= 0)
             {
-                return itemData.m_shared.m_movementModifier < 0;
+                return false;
             }
 
-            if (Requirements.ItemHasBlockPower)
+            if (Requirements.ItemHasBlockPower && itemData.m_shared.m_blockPower <= 0)
             {
-                return itemData.m_shared.m_blockPower > 0;
+                return false;
             }
 
-            if (Requirements.ItemHasParryPower)
+            if (Requirements.ItemHasParryPower && itemData.m_shared.m_deflectionForce <= 0)
             {
-                return itemData.m_shared.m_deflectionForce > 0;
+                return false;
             }
 
-            if (Requirements.ItemHasArmor)
+            if (Requirements.ItemHasArmor && itemData.m_shared.m_armor <= 0)
             {
-                return itemData.m_shared.m_armor > 0;
+                return false;
             }
 
-            if (Requirements.ItemHasBackstabBonus)
+            if (Requirements.ItemHasBackstabBonus && itemData.m_shared.m_backstabBonus <= 0)
             {
-                return itemData.m_shared.m_backstabBonus > 0;
+                return false;
             }
 
-            if (Requirements.ItemUsesStaminaOnAttack)
+            if (Requirements.ItemUsesStaminaOnAttack && itemData.m_shared.m_attack.m_attackStamina <= 0 && itemData.m_shared.m_secondaryAttack.m_attackStamina <= 0)
             {
-                return itemData.m_shared.m_attack.m_attackStamina > 0 || itemData.m_shared.m_secondaryAttack.m_attackStamina > 0;
+                return false;
             }
 
             return true;

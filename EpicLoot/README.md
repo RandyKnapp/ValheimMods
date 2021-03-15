@@ -39,7 +39,6 @@ Enter these into the console (F5) after using `imacheater`:
 ## Current Known Mod Conflicts
 
   * **BetterUI** ([Nexus](https://www.nexusmods.com/valheim/mods/189), [Thunderstore](https://valheim.thunderstore.io/package/Masa/BetterUI/)): You won't be able to see the magic item properties in the tooltip. Go to the BetterUI config and set `showCustomTooltips = false`.
-  * **PlantingPlus**: Something about this mod breaks how my recipes and prefabs load. It won't be compatible.
 
 ## Known Bugs
 
@@ -51,6 +50,7 @@ Enter these into the console (F5) after using `imacheater`:
 - [ ] Augment items: change/reroll magic item effects (transmute? modify?)
 - [ ] Infuse items: rarity to next rarity (like diablo upgrade rare to legendary)
 - [ ] List of active magic effects on the player status screen
+- [ ] Limit drop types by actual player progression?
 - [ ] Gamble for magic items from Merchant
 - [ ] Custom crafting station for enchanting
 - [ ] Create effects for in-game models of magic items
