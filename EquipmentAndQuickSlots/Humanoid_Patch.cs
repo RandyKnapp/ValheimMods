@@ -31,14 +31,14 @@ namespace EquipmentAndQuickSlots
             var slotA = item.m_gridPos;
             if (inventoryA == inventoryB && item.m_gridPos == slotB)
             {
-                Debug.Log("Item already in correct slot");
+                EquipmentAndQuickSlots.Log("Item already in correct slot");
                 return;
             }
 
             var otherItemInSlot = inventoryB.GetItemAt(slotB.x, slotB.y);
             if (otherItemInSlot != null)
             {
-                Debug.Log($"Item exists in other slot ({otherItemInSlot.m_shared.m_name})");
+                EquipmentAndQuickSlots.Log($"Item exists in other slot ({otherItemInSlot.m_shared.m_name})");
                 inventoryB.m_inventory.Remove(otherItemInSlot);
             }
 
@@ -61,6 +61,7 @@ namespace EquipmentAndQuickSlots
             var inventories = player.GetAllInventories();
             var equipSlotInventory = player.GetEquipmentSlotInventory();
             var swaps = new List<SwapData>();
+            var drops = new List<SwapData>();
 
             // Swap in newly equipped items
             foreach (var inventory in inventories)
@@ -77,7 +78,7 @@ namespace EquipmentAndQuickSlots
                                 continue;
                             }
                             swaps.Add(new SwapData(inventory, item, equipSlotInventory, equipSlot));
-                            Debug.LogWarning($"move ({item.m_shared.m_name}) to equip slot");
+                            EquipmentAndQuickSlots.LogWarning($"move ({item.m_shared.m_name}) to equip slot");
                         }
                     }
                 }
@@ -112,12 +113,19 @@ namespace EquipmentAndQuickSlots
                         }
                     }
 
-                    Debug.LogWarning($"move ({item.m_shared.m_name}) to main inventory");
+                    EquipmentAndQuickSlots.LogWarning($"move ({item.m_shared.m_name}) to main inventory");
                     if (!moved)
                     {
-                        player.Message(MessageHud.MessageType.Center, "Could not unequip, inventory full");
-                        player.EquipItem(item, false);
-                        // Could not unequip, no room
+                        if (!CanEquip(item, player))
+                        {
+                            player.Message(MessageHud.MessageType.Center, "Item force unequipped, inventory full, dropped item");
+                            drops.Add(new SwapData(equipSlotInventory, item, null, new Vector2i()));
+                        }
+                        else
+                        {
+                            item.m_equiped = true;
+                            player.Message(MessageHud.MessageType.Center, "Could not unequip, inventory full");
+                        }
                     }
                 }
                 else
@@ -126,16 +134,35 @@ namespace EquipmentAndQuickSlots
                     if ((equipSlot.x >= 0 && equipSlot.y >= 0) && item.m_gridPos != equipSlot)
                     {
                         item.m_gridPos = equipSlot;
-                        Debug.LogWarning($"move ({item.m_shared.m_name}) to correct slot ({equipSlot})");
+                        EquipmentAndQuickSlots.LogWarning($"move ({item.m_shared.m_name}) to correct slot ({equipSlot})");
                     }
                 }
             }
+
+            foreach (var drop in drops)
+            {
+                ItemDrop.DropItem(drop.Item, drop.Item.m_stack, player.transform.position, Quaternion.identity);
+                drop.InventoryA.RemoveItem(drop.Item);
+            }
+            drops.Clear();
 
             foreach (var swap in swaps)
             {
                 Swap(swap.InventoryA, swap.Item, swap.InventoryB, swap.SlotB);
             }
             swaps.Clear();
+        }
+
+        public static bool CanEquip(ItemDrop.ItemData item, Player player)
+        {
+            if (player.IsItemEquiped(item) 
+                || (player.InAttack() || player.InDodge()) 
+                || player.IsPlayer() 
+                && !player.IsDead() 
+                && (player.IsSwiming() && !player.IsOnGround()) 
+                || item.m_shared.m_useDurability && item.m_durability <= 0.0f)
+                return false;
+            return true;
         }
 
         //public bool EquipItem(ItemDrop.ItemData item, bool triggerEquipEffects = true)

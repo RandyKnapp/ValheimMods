@@ -31,7 +31,7 @@ namespace EquipmentAndQuickSlots
             var index = y * width + x;
             if (index < 0 || index >= __instance.m_elements.Count)
             {
-                Debug.LogError($"Tried to get element for item ({x}, {y}) in inventory ({__instance.m_inventory.m_name}) but that element is outside the bounds!");
+                EquipmentAndQuickSlots.LogError($"Tried to get element for item ({x}, {y}) in inventory ({__instance.m_inventory.m_name}) but that element is outside the bounds!");
                 __result = null;
             }
             else
@@ -69,9 +69,9 @@ namespace EquipmentAndQuickSlots
                     new Vector2(), // Head
                     new Vector2(0, -verticalSpacing), // Chest
                     new Vector2(0, -2 * verticalSpacing), // Legs
-                    new Vector2(horizontalSpacing, 0), // Shoulders
-                    new Vector2(horizontalSpacing, -1 * verticalSpacing), // Utility 1
-                    new Vector2(horizontalSpacing, -2 * verticalSpacing), // Utility 2
+                    new Vector2(horizontalSpacing, -0.5f * verticalSpacing), // Shoulders
+                    new Vector2(horizontalSpacing, -1.5f * verticalSpacing), // Utility 1
+                    //new Vector2(horizontalSpacing, -2 * verticalSpacing), // Utility 2
                 };
 
                 for (var i = 0; i < EquipmentAndQuickSlots.EquipSlotCount; ++i)
@@ -83,7 +83,7 @@ namespace EquipmentAndQuickSlots
                     bindingText.text = equipNames[i];
                     bindingText.rectTransform.anchoredPosition = new Vector2(32, 5);
 
-                    var offset = new Vector2();// Vector2(692, -20);
+                    var offset = new Vector2(-20, 79);
                     element.m_go.RectTransform().anchoredPosition = offset + equipPositions[i];
                 }
             }

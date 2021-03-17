@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace EquipmentAndQuickSlots
@@ -11,6 +10,8 @@ namespace EquipmentAndQuickSlots
 
         private Player _player;
         private bool _isLoading;
+
+        public const string Sentinel = "<|>";
 
         public void Awake()
         {
@@ -32,11 +33,11 @@ namespace EquipmentAndQuickSlots
         {
             if (_player == null)
             {
-                Debug.LogError("Tried to save an ExtendedPlayerData without a player!");
+                EquipmentAndQuickSlots.LogError("Tried to save an ExtendedPlayerData without a player!");
                 return;
             }
 
-            Debug.LogWarning("Saving ExtendedPlayerData");
+            EquipmentAndQuickSlots.LogWarning("Saving ExtendedPlayerData");
             SaveValue(_player, "ExtendedPlayerData", "This player is using ExtendedPlayerData!");
 
             var pkg = new ZPackage();
@@ -52,13 +53,13 @@ namespace EquipmentAndQuickSlots
         {
             if (fromPlayer == null)
             {
-                Debug.LogError("Tried to load an ExtendedPlayerData with a null player!");
+                EquipmentAndQuickSlots.LogError("Tried to load an ExtendedPlayerData with a null player!");
                 return;
             }
 
             _player = fromPlayer;
             LoadValue(fromPlayer, "ExtendedPlayerData", out var init);
-            Debug.LogWarning("Loaded ExtendedPlayerData");
+            EquipmentAndQuickSlots.LogWarning("Loaded ExtendedPlayerData");
 
             if (LoadValue(fromPlayer, nameof(QuickSlotInventory), out var quickSlotData))
             {
@@ -81,6 +82,12 @@ namespace EquipmentAndQuickSlots
         {
             if (player.m_knownTexts.ContainsKey(key))
             {
+                player.m_knownTexts.Remove(key);
+            }
+
+            key = Sentinel + key;
+            if (player.m_knownTexts.ContainsKey(key))
+            {
                 player.m_knownTexts[key] = value;
             }
             else
@@ -91,6 +98,10 @@ namespace EquipmentAndQuickSlots
 
         private static bool LoadValue(Player player, string key, out string value)
         {
+            if (!player.m_knownTexts.TryGetValue(key, out value))
+            {
+                key = Sentinel + key;
+            }
             return player.m_knownTexts.TryGetValue(key, out value);
         }
     }

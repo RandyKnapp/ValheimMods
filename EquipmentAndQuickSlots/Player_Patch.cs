@@ -92,7 +92,7 @@ namespace EquipmentAndQuickSlots
             var playerId = playerProfile.GetPlayerID();
             tombStone.Setup(name, playerId);
 
-            Debug.LogWarning($"Creating tombstone for ({name}) with w:{width} h:{height} (total:{totalPossibleSlots})");
+            EquipmentAndQuickSlots.LogWarning($"Creating tombstone for ({name}) with w:{width} h:{height} (total:{totalPossibleSlots})");
 
             EquipmentSlotHelper.AllowMove = true;
         }

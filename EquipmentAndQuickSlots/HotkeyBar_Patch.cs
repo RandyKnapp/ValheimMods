@@ -32,7 +32,7 @@ namespace EquipmentAndQuickSlots
                 {
                     player.GetQuickSlotInventory().GetBoundItems(__instance.m_items);
                     __instance.m_items.Sort((x, y) => x.m_gridPos.x.CompareTo(y.m_gridPos.x));
-                    const int showElementCount = 3;
+                    const int showElementCount = EquipmentAndQuickSlots.QuickSlotCount;
                     if (__instance.m_elements.Count != showElementCount)
                     {
                         foreach (var element in __instance.m_elements)
@@ -133,17 +133,11 @@ namespace EquipmentAndQuickSlots
 
             if (hotkeyBar.transform.parent.Find("QuickSlotsHotkeyBar") == null)
             {
-                var quickslotsHotkeyBar = Object.Instantiate(hotkeyBar.gameObject, hotkeyBar.transform.parent, true);
+                var quickslotsHotkeyBar = Object.Instantiate(hotkeyBar.gameObject, __instance.m_healthBarRoot, true);
                 quickslotsHotkeyBar.name = "QuickSlotsHotkeyBar";
-                quickslotsHotkeyBar.transform.SetSiblingIndex(hotkeyBar.transform.GetSiblingIndex() + 1);
-                (quickslotsHotkeyBar.transform as RectTransform).anchoredPosition = new Vector2(0, -100) + (hotkeyBar.transform as RectTransform).anchoredPosition;
+                (quickslotsHotkeyBar.transform as RectTransform).anchoredPosition = new Vector2(55, -120);
+                quickslotsHotkeyBar.transform.localEulerAngles = new Vector3(0.0f, 0.0f, -90f);
                 quickslotsHotkeyBar.GetComponent<HotkeyBar>().m_selected = -1;
-
-                /*Object.Destroy(quickslotsHotkeyBar.GetComponent<HotkeyBar>());
-                var newHotkeyBar = quickslotsHotkeyBar.AddComponent<CustomHotkeyBar>();
-                newHotkeyBar.m_elementPrefab = hotkeyBar.m_elementPrefab;
-                newHotkeyBar.m_elementSpace = hotkeyBar.m_elementSpace;
-                newHotkeyBar.m_selected = -1;*/
             }
         }
     }
@@ -230,7 +224,7 @@ namespace EquipmentAndQuickSlots
                         {
                             var quickSlotInventory = player.GetQuickSlotInventory();
                             var item = quickSlotInventory.GetItemAt(hotkeyBar.m_selected, 0);
-                            player.UseItem(quickSlotInventory, item, false);
+                            player.UseItem(null, item, false);
                         }
                         else
                         {

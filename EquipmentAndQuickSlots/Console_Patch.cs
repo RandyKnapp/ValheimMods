@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Common;
 using HarmonyLib;
-using UnityEngine;
 
 namespace EquipmentAndQuickSlots
 {
@@ -25,6 +21,21 @@ namespace EquipmentAndQuickSlots
             if (command.Equals("resetinventory", StringComparison.InvariantCultureIgnoreCase))
             {
                 Player.m_localPlayer.GetAllInventories().ForEach(x =>x.RemoveAll());
+                return false;
+            }
+
+            if (command.Equals("breakequipment", StringComparison.InvariantCulture))
+            {
+                foreach (var inventory in Player.m_localPlayer.GetAllInventories())
+                {
+                    foreach (var item in inventory.m_inventory)
+                    {
+                        if (item.m_equiped && item.m_shared.m_useDurability)
+                        {
+                            item.m_durability = 0;
+                        }
+                    }
+                }
                 return false;
             }
 

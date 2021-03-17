@@ -23,15 +23,15 @@ namespace EquipmentAndQuickSlots
 
             private static void BuildQuickSlotGrid(InventoryGui inventoryGui)
             {
-                BuildInventoryGrid(ref QuickSlotGrid, "QuickSlotGrid", new Vector2(500, -140), inventoryGui);
+                BuildInventoryGrid(ref QuickSlotGrid, "QuickSlotGrid", new Vector2(500, -160), new Vector2((74 * EquipmentAndQuickSlots.QuickSlotCount) + 10, 90), inventoryGui);
             }
 
             private static void BuildEquipmentSlotGrid(InventoryGui inventoryGui)
             {
-                BuildInventoryGrid(ref EquipmentSlotGrid, "EquipmentSlotGrid", new Vector2(500, 100), inventoryGui);
+                BuildInventoryGrid(ref EquipmentSlotGrid, "EquipmentSlotGrid", new Vector2(500, 20), new Vector2(210, 270), inventoryGui);
             }
 
-            private static void BuildInventoryGrid(ref InventoryGrid grid, string name, Vector2 position, InventoryGui inventoryGui)
+            private static void BuildInventoryGrid(ref InventoryGrid grid, string name, Vector2 position, Vector2 size, InventoryGui inventoryGui)
             {
                 if (grid != null)
                 {
@@ -44,7 +44,21 @@ namespace EquipmentAndQuickSlots
 
                 var highlight = new GameObject("SelectedFrame", typeof(RectTransform));
                 highlight.transform.SetParent(go.transform, false);
-                highlight.AddComponent<Image>().color = Color.magenta;
+                highlight.AddComponent<Image>().color = Color.yellow;
+                var highlightRT = highlight.transform as RectTransform;
+                highlightRT.anchoredPosition = new Vector2(0, 0);
+                highlightRT.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, size.x + 2);
+                highlightRT.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, size.y + 2);
+                highlightRT.localScale = new Vector3(1, 1, 1);
+
+                var bkg = inventoryGui.m_player.Find("Bkg").gameObject;
+                var background = Object.Instantiate(bkg, go.transform);
+                background.name = name + "Bkg";
+                var backgroundRT = background.transform as RectTransform;
+                backgroundRT.anchoredPosition = new Vector2(0, 0);
+                backgroundRT.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, size.x);
+                backgroundRT.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, size.y);
+                backgroundRT.localScale = new Vector3(1, 1, 1);
 
                 grid = go.AddComponent<InventoryGrid>();
                 var root = new GameObject("Root", typeof(RectTransform));
@@ -83,7 +97,7 @@ namespace EquipmentAndQuickSlots
             {
                 return (InventoryGrid inventoryGrid, ItemDrop.ItemData item, Vector2i pos, InventoryGrid.Modifier mod) =>
                 {
-                    Debug.Log($"OnSelected: inventoryGrid={inventoryGrid}, item={item?.m_shared.m_name}, pos={pos}, mod={mod}");
+                    EquipmentAndQuickSlots.Log($"OnSelected: inventoryGrid={inventoryGrid}, item={item?.m_shared.m_name}, pos={pos}, mod={mod}");
                     inventoryGui.OnSelectedItem(inventoryGrid, item, pos, mod);
                 };
             }
@@ -92,7 +106,7 @@ namespace EquipmentAndQuickSlots
             {
                 return (InventoryGrid inventoryGrid, ItemDrop.ItemData item, Vector2i pos) =>
                 {
-                    Debug.Log($"OnRightClicked: inventoryGrid={inventoryGrid}, item={item?.m_shared.m_name}, pos={pos}");
+                    EquipmentAndQuickSlots.Log($"OnRightClicked: inventoryGrid={inventoryGrid}, item={item?.m_shared.m_name}, pos={pos}");
                     if (item == null || Player.m_localPlayer == null)
                     {
                         return;
@@ -106,7 +120,7 @@ namespace EquipmentAndQuickSlots
                 return (InventoryGrid inventoryGrid, ItemDrop.ItemData item, Vector2i pos, InventoryGrid.Modifier mod) =>
                 {
                     var player = Player.m_localPlayer;
-                    Debug.Log($"OnEquipmentSelected: inventoryGrid={inventoryGrid}, item={item?.m_shared.m_name}, pos={pos}, mod={mod}");
+                    EquipmentAndQuickSlots.Log($"OnEquipmentSelected: inventoryGrid={inventoryGrid}, item={item?.m_shared.m_name}, pos={pos}, mod={mod}");
 
                     if (player != null 
                         && inventoryGui.m_dragItem != null 
@@ -124,7 +138,7 @@ namespace EquipmentAndQuickSlots
                 return (InventoryGrid inventoryGrid, ItemDrop.ItemData item, Vector2i pos) =>
                 {
                     var player = Player.m_localPlayer;
-                    Debug.Log($"OnEquipmentRightClicked: inventoryGrid={inventoryGrid}, item={item?.m_shared.m_name}, pos={pos}");
+                    EquipmentAndQuickSlots.Log($"OnEquipmentRightClicked: inventoryGrid={inventoryGrid}, item={item?.m_shared.m_name}, pos={pos}");
                     if (item != null 
                         && player != null 
                         && item.m_equiped 
@@ -140,7 +154,7 @@ namespace EquipmentAndQuickSlots
         [HarmonyPatch(typeof(InventoryGui), "UpdateInventory")]
         public static class InventoryGui_UpdateInventory_Patch
         {
-            public static void Postfix(InventoryGui __instance, Player player)
+            public static bool Prefix(InventoryGui __instance, Player player)
             {
                 player.m_inventory.Extended().CallBase = true;
                 __instance.m_playerGrid.UpdateInventory(player.m_inventory, player, __instance.m_dragItem);
@@ -163,6 +177,8 @@ namespace EquipmentAndQuickSlots
                         EquipmentSlotGrid.UpdateInventory(equipmentSlotInventory, player, __instance.m_dragItem);
                     }
                 }
+
+                return false;
             }
         }
     }
