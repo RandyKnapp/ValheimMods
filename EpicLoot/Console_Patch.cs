@@ -66,6 +66,7 @@ namespace EpicLoot
             var items = new List<GameObject>();
             var allItemNames = ObjectDB.instance.m_items
                 .Where(x => EpicLoot.CanBeMagicItem(x.GetComponent<ItemDrop>().m_itemData))
+                .Where(x => x.name != "HelmetDverger" && x.name != "BeltStrength" && x.name != "Wishbone")
                 .Select(x => x.name)
                 .ToList();
 
