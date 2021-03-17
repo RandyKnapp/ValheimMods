@@ -15,6 +15,7 @@ namespace EquipmentAndQuickSlots
         public void Awake()
         {
             QuickSlotInventory.m_onChanged += OnInventoryChanged;
+            EquipmentSlotInventory.m_onChanged += OnInventoryChanged;
         }
 
         private void OnInventoryChanged()
@@ -96,12 +97,6 @@ namespace EquipmentAndQuickSlots
 
     public static class PlayerExtensions
     {
-        public static bool InventoryContainsItem(this Player player, ItemDrop.ItemData item)
-        {
-            var inventories = player.GetAllInventories();
-            return inventories.Any(x => x.m_inventory.Contains(item));
-        }
-
         public static List<Inventory> GetAllInventories(this Player player)
         {
             var result = new List<Inventory>();
@@ -114,19 +109,6 @@ namespace EquipmentAndQuickSlots
             {
                 result.Add(player.GetEquipmentSlotInventory());
             }
-            return result;
-        }
-
-        public static Inventory GetCombinedInventory(this Player player)
-        {
-            var allInventories = player.GetAllInventories();
-            var totalItemCount = allInventories.Sum(x => x.m_inventory.Count);
-            var result = new Inventory("PlayerCombinedInventory", null, totalItemCount, 1);
-            foreach (var inventory in allInventories)
-            {
-                result.m_inventory.AddRange(inventory.m_inventory);
-            }
-            result.Changed();
             return result;
         }
 
@@ -226,6 +208,7 @@ namespace EquipmentAndQuickSlots
         {
             player.InitializeExtendedPlayer();
             player.Extended().Load(player);
+            player.EquipIventoryItems();
         }
     }
 }

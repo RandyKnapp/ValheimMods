@@ -81,7 +81,7 @@ namespace EquipmentAndQuickSlots
                 grid.ResetView();
 
                 grid.m_onSelected += OnSelected(inventoryGui);
-                grid.m_onRightClick += inventoryGui.OnRightClickItem;
+                grid.m_onRightClick += OnRightClicked(inventoryGui);
 
                 grid.m_uiGroup = QuickSlotGrid.gameObject.AddComponent<UIGroupHandler>();
                 grid.m_uiGroup.m_groupPriority = 1;
@@ -97,25 +97,33 @@ namespace EquipmentAndQuickSlots
             {
                 return (InventoryGrid inventoryGrid, ItemDrop.ItemData item, Vector2i pos, InventoryGrid.Modifier mod) =>
                 {
-                    if (mod == InventoryGrid.Modifier.Move)
-                    {
-                        mod = InventoryGrid.Modifier.Select;
-                    }
+                    Debug.Log($"OnSelected: inventoryGrid={inventoryGrid}, item={item?.m_shared.m_name}, pos={pos}, mod={mod}");
                     inventoryGui.OnSelectedItem(inventoryGrid, item, pos, mod);
+                };
+            }
+
+            private static Action<InventoryGrid, ItemDrop.ItemData, Vector2i> OnRightClicked(InventoryGui inventoryGui)
+            {
+                return (InventoryGrid inventoryGrid, ItemDrop.ItemData item, Vector2i pos) =>
+                {
+                    Debug.Log($"OnRightClicked: inventoryGrid={inventoryGrid}, item={item?.m_shared.m_name}, pos={pos}");
+                    if (item == null || Player.m_localPlayer == null)
+                    {
+                        return;
+                    }
+                    Player.m_localPlayer.UseItem(Player.m_localPlayer.m_inventory.Extended(), item, true);
                 };
             }
         }
 
-        [HarmonyPatch(typeof(InventoryGui), "Update")]
-        public static class InventoryGui_Update_Patch
+        [HarmonyPatch(typeof(InventoryGui), "UpdateInventory")]
+        public static class InventoryGui_UpdateInventory_Patch
         {
-            public static void Postfix(InventoryGui __instance)
+            public static void Postfix(InventoryGui __instance, Player player)
             {
-                var player = Player.m_localPlayer;
-                if (player == null)
-                {
-                    return;
-                }
+                player.m_inventory.Extended().CallBase = true;
+                __instance.m_playerGrid.UpdateInventory(player.m_inventory, player, __instance.m_dragItem);
+                player.m_inventory.Extended().CallBase = false;
 
                 if (QuickSlotGrid != null)
                 {

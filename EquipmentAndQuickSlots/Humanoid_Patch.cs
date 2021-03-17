@@ -4,31 +4,6 @@ using UnityEngine;
 
 namespace EquipmentAndQuickSlots
 {
-    //public void UseItem(Inventory inventory, ItemDrop.ItemData item, bool fromInventoryGui)
-    [HarmonyPatch(typeof(Humanoid), "UseItem")]
-    public static class Humanoid_UseItem_Patch
-    {
-        public static bool Prefix(Humanoid __instance, Inventory inventory, ItemDrop.ItemData item, bool fromInventoryGui)
-        {
-            if (!__instance.IsPlayer())
-            {
-                return true;
-            }
-
-            var player = __instance as Player;
-
-            if (item.m_shared.m_itemType != ItemDrop.ItemData.ItemType.Consumable)
-            {
-                if (player.InventoryContainsItem(item) && __instance.ToggleEquiped(item) || fromInventoryGui)
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-    }
-
     //public bool EquipItem(ItemDrop.ItemData item, bool triggerEquipEffects = true)
     [HarmonyPatch(typeof(Humanoid), "EquipItem", typeof(ItemDrop.ItemData), typeof(bool))]
     public static class Humanoid_EquipItem_Patch

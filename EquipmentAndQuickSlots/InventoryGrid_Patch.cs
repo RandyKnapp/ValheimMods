@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using Common;
+using HarmonyLib;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,6 +12,7 @@ namespace EquipmentAndQuickSlots
         private static bool Prefix(GuiBar __instance)
         {
             // I have no idea why this bar is set to zero initially
+            // ReSharper disable once CompareOfFloatsByEqualityOperator
             if (__instance.name == "durability" && __instance.m_bar.sizeDelta.x != 54)
             {
                 __instance.m_bar.sizeDelta = new Vector2(54, 0);
@@ -24,11 +26,11 @@ namespace EquipmentAndQuickSlots
     [HarmonyPatch(typeof(InventoryGrid), "UpdateGui", typeof(Player), typeof(ItemDrop.ItemData))]
     public static class InventoryGrid_UpdateGui_Patch
     {
-        private static void Postfix(InventoryGrid __instance, Player player, ItemDrop.ItemData dragItem)
+        private static void Postfix(InventoryGrid __instance)
         {
             if (__instance.name == "QuickSlotGrid")
             {
-                for (int i = 0; i < EquipmentAndQuickSlots.QuickSlotCount; ++i)
+                for (var i = 0; i < EquipmentAndQuickSlots.QuickSlotCount; ++i)
                 {
                     var element = __instance.m_elements[i];
                     var bindingText = element.m_go.transform.Find("binding").GetComponent<Text>();
@@ -39,8 +41,8 @@ namespace EquipmentAndQuickSlots
             }
             else if (__instance.name == "EquipmentSlotGrid")
             {
-                float horizontalSpacing = __instance.m_elementSpace + 10;
-                float verticalSpacing = __instance.m_elementSpace + 10;
+                var horizontalSpacing = __instance.m_elementSpace + 10;
+                var verticalSpacing = __instance.m_elementSpace + 10;
                 string[] equipNames = { "Head", "Chest", "Legs", "Shoulders", "Utility 1", "Utility 2" };
                 Vector2[] equipPositions = {
                     new Vector2(), // Head
@@ -51,7 +53,7 @@ namespace EquipmentAndQuickSlots
                     new Vector2(horizontalSpacing, -2 * verticalSpacing), // Utility 2
                 };
 
-                for (int i = 0; i < EquipmentAndQuickSlots.EquipSlotCount; ++i)
+                for (var i = 0; i < EquipmentAndQuickSlots.EquipSlotCount; ++i)
                 {
                     var element = __instance.m_elements[i];
                     var bindingText = element.m_go.transform.Find("binding").GetComponent<Text>();
@@ -60,8 +62,8 @@ namespace EquipmentAndQuickSlots
                     bindingText.text = equipNames[i];
                     bindingText.rectTransform.anchoredPosition = new Vector2(32, 5);
 
-                    Vector2 offset = new Vector2();// Vector2(692, -20);
-                    (element.m_go.transform as RectTransform).anchoredPosition = offset + equipPositions[i];
+                    var offset = new Vector2();// Vector2(692, -20);
+                    element.m_go.RectTransform().anchoredPosition = offset + equipPositions[i];
                 }
             }
         }

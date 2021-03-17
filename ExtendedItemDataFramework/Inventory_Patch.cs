@@ -69,7 +69,7 @@ namespace ExtendedItemDataFramework
                 return false;
             }
 
-            if (__instance.FindEmptySlot(__instance.TopFirst(itemDrop.m_itemData)).x == -1)
+            if (!__instance.CanAddItem(itemPrefab, stack))
             {
                 return false;
             }

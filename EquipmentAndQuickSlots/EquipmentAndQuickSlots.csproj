@@ -73,6 +73,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Console_Patch.cs" />
+    <Compile Include="ExtendedInventory.cs" />
     <Compile Include="HotkeyBar_Patch.cs" />
     <Compile Include="Humanoid_Patch.cs" />
     <Compile Include="InventoryGrid_Patch.cs" />
@@ -80,7 +82,6 @@
     <Compile Include="Inventory_Patch.cs" />
     <Compile Include="EquipmentAndQuickSlots.cs" />
     <Compile Include="PlayerExtensions.cs" />
-    <Compile Include="PlayerInventoryManager.cs" />
     <Compile Include="Player_Patch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
