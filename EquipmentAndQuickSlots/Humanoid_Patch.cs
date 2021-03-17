@@ -1,91 +1,173 @@
 ﻿using System;
+using System.Collections.Generic;
 using HarmonyLib;
 using UnityEngine;
 
 namespace EquipmentAndQuickSlots
 {
-    //public bool EquipItem(ItemDrop.ItemData item, bool triggerEquipEffects = true)
-    [HarmonyPatch(typeof(Humanoid), "EquipItem", typeof(ItemDrop.ItemData), typeof(bool))]
-    public static class Humanoid_EquipItem_Patch
+    public static class EquipmentSlotHelper
     {
-        public static void Postfix(Humanoid __instance, ItemDrop.ItemData item, bool __result)
+        public static bool DoingEquip = false;
+        public static bool AllowMove = true;
+
+        public class SwapData
         {
-            if (!__result || __instance == null || item == null || !__instance.IsPlayer())
+            public Inventory InventoryA;
+            public ItemDrop.ItemData Item;
+            public Inventory InventoryB;
+            public Vector2i SlotB;
+
+            public SwapData(Inventory inventoryA, ItemDrop.ItemData item, Inventory inventoryB, Vector2i slotB)
             {
+                InventoryA = inventoryA;
+                Item = item;
+                InventoryB = inventoryB;
+                SlotB = slotB;
+            }
+        }
+
+        public static void Swap(Inventory inventoryA, ItemDrop.ItemData item, Inventory inventoryB, Vector2i slotB)
+        {
+            var slotA = item.m_gridPos;
+            if (inventoryA == inventoryB && item.m_gridPos == slotB)
+            {
+                Debug.Log("Item already in correct slot");
                 return;
             }
 
-            Debug.Log($"Equipped item {item.m_shared.m_setName} at slot <{item.m_gridPos}>");
-            var player = __instance as Player;
-            if (EquipmentAndQuickSlots.EquipmentSlotsEnabled.Value && EquipmentAndQuickSlots.IsSlotEquippable(item) && player.GetEquipmentSlotInventory() != null)
+            var otherItemInSlot = inventoryB.GetItemAt(slotB.x, slotB.y);
+            if (otherItemInSlot != null)
             {
-                var currentInventorySlot = item.m_gridPos;
-                var correctInventorySlot = EquipmentAndQuickSlots.GetEquipmentSlotForType(item.m_shared.m_itemType);
-                if (currentInventorySlot.x != correctInventorySlot)
+                Debug.Log($"Item exists in other slot ({otherItemInSlot.m_shared.m_name})");
+                inventoryB.m_inventory.Remove(otherItemInSlot);
+            }
+
+            inventoryA.m_inventory.Remove(item);
+            inventoryB.m_inventory.Add(item);
+            item.m_gridPos = slotB;
+
+            if (otherItemInSlot != null)
+            {
+                otherItemInSlot.m_gridPos = slotA;
+                inventoryA.m_inventory.Add(otherItemInSlot);
+            }
+
+            inventoryA.Changed();
+            inventoryB.Changed();
+        }
+
+        public static void RefreshEquipmentInSlots(Player player)
+        {
+            var inventories = player.GetAllInventories();
+            var equipSlotInventory = player.GetEquipmentSlotInventory();
+            var swaps = new List<SwapData>();
+
+            // Swap in newly equipped items
+            foreach (var inventory in inventories)
+            {
+                if (inventory != equipSlotInventory)
                 {
-                    //player.GetEquipmentSlotInventory().MoveItemToThis(__instance.m_inventory, item, item.m_stack, correctInventorySlot, 0);
+                    foreach (var item in inventory.m_inventory)
+                    {
+                        if (item.m_equiped && EquipmentAndQuickSlots.IsSlotEquippable(item))
+                        {
+                            var equipSlot = EquipmentAndQuickSlots.GetEquipmentSlotForType(item.m_shared.m_itemType);
+                            if (equipSlot.x < 0 || equipSlot.y < 0)
+                            {
+                                continue;
+                            }
+                            swaps.Add(new SwapData(inventory, item, equipSlotInventory, equipSlot));
+                            Debug.LogWarning($"move ({item.m_shared.m_name}) to equip slot");
+                        }
+                    }
                 }
             }
 
-            return;
-        }
-    }
-
-    //public void UnequipItem(ItemDrop.ItemData item, bool triggerEquipEffects = true)
-    [HarmonyPatch(typeof(Humanoid), "UnequipItem", typeof(ItemDrop.ItemData), typeof(bool))]
-    public static class Humanoid_UnequipItem_Patch
-    {
-        private static bool _shouldDrop;
-        private static bool _dropping;
-
-        public static bool Prefix(Humanoid __instance, ItemDrop.ItemData item)
-        {
-            if (!EquipmentAndQuickSlots.EquipmentSlotsEnabled.Value)
+            foreach (var swap in swaps)
             {
-                return true;
+                Swap(swap.InventoryA, swap.Item, swap.InventoryB, swap.SlotB);
             }
+            swaps.Clear();
 
-            if (_dropping)
+            // Swap out unequipped items and incorrectly added
+            foreach (var item in equipSlotInventory.m_inventory)
             {
-                return false;
-            }
-
-            if (!__instance.IsPlayer())
-            {
-                return true;
-            }
-
-            _shouldDrop = false;
-            if (item != null && EquipmentAndQuickSlots.IsSlotEquippable(item))
-            {
-                if (__instance.m_inventory.HaveEmptySlot())
+                if (!item.m_equiped || !EquipmentAndQuickSlots.IsSlotEquippable(item))
                 {
-                    var correctInventorySlot = __instance.m_inventory.FindEmptySlot(false);
-                    //__instance.m_inventory.MoveItemToThis((__instance as Player).GetEquipmentSlotInventory(), item, item.m_stack, correctInventorySlot.x, correctInventorySlot.y);
+                    var destInventories = player.GetAllInventories();
+                    bool moved = false;
+                    foreach (var destInventory in destInventories)
+                    {
+                        if (!destInventory.CountAsEmptySlots(player))
+                        {
+                            continue;
+                        }
+
+                        var emptySlot = destInventory.FindEmptySlot(false);
+                        if (emptySlot.x >= 0 && emptySlot.y >= 0)
+                        {
+                            moved = true;
+                            swaps.Add(new SwapData(equipSlotInventory, item, destInventory, emptySlot));
+                            break;
+                        }
+                    }
+
+                    Debug.LogWarning($"move ({item.m_shared.m_name}) to main inventory");
+                    if (!moved)
+                    {
+                        player.Message(MessageHud.MessageType.Center, "Could not unequip, inventory full");
+                        player.EquipItem(item, false);
+                        // Could not unequip, no room
+                    }
                 }
                 else
                 {
-                    _shouldDrop = true;
+                    var equipSlot = EquipmentAndQuickSlots.GetEquipmentSlotForType(item.m_shared.m_itemType);
+                    if ((equipSlot.x >= 0 && equipSlot.y >= 0) && item.m_gridPos != equipSlot)
+                    {
+                        item.m_gridPos = equipSlot;
+                        Debug.LogWarning($"move ({item.m_shared.m_name}) to correct slot ({equipSlot})");
+                    }
                 }
             }
 
-            return true;
+            foreach (var swap in swaps)
+            {
+                Swap(swap.InventoryA, swap.Item, swap.InventoryB, swap.SlotB);
+            }
+            swaps.Clear();
         }
 
-        public static void Postfix(Humanoid __instance, ItemDrop.ItemData item, Inventory ___m_inventory)
+        //public bool EquipItem(ItemDrop.ItemData item, bool triggerEquipEffects = true)
+        [HarmonyPatch(typeof(Humanoid), "EquipItem")]
+        public static class Humanoid_EquipItem_Patch
         {
-            if (!EquipmentAndQuickSlots.EquipmentSlotsEnabled.Value)
+            public static bool Prefix()
             {
-                return;
+                DoingEquip = true;
+                return true;
             }
 
-            if (_shouldDrop)
+            public static void Postfix(Humanoid __instance, bool __result, ItemDrop.ItemData item)
             {
-                _dropping = true;
-                _shouldDrop = false;
+                if (AllowMove && __instance != null && __instance.IsPlayer() && __instance.m_nview.IsValid())
+                {
+                    RefreshEquipmentInSlots(__instance as Player);
+                }
+                DoingEquip = false;
+            }
+        }
 
-                __instance.DropItem(___m_inventory, item, 1);
-                _dropping = false;
+        //public void UnequipItem(ItemDrop.ItemData item, bool triggerEquipEffects = true)
+        [HarmonyPatch(typeof(Humanoid), "UnequipItem")]
+        public static class Humanoid_UnequipItem_Patch
+        {
+            public static void Postfix(Humanoid __instance, ItemDrop.ItemData item)
+            {
+                if (AllowMove && !DoingEquip && __instance != null && __instance.IsPlayer() && __instance.m_nview.IsValid() && item != null)
+                {
+                    RefreshEquipmentInSlots(__instance as Player);
+                }
             }
         }
     }

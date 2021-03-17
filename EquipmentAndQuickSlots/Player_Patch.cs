@@ -1,4 +1,6 @@
-﻿using HarmonyLib;
+﻿using System.Linq;
+using HarmonyLib;
+using UnityEngine;
 
 namespace EquipmentAndQuickSlots
 {
@@ -40,7 +42,59 @@ namespace EquipmentAndQuickSlots
     {
         public static void Prefix(Player __instance)
         {
-            // TODO: Extend tombstone inventory size
+            if (__instance.m_inventory.NrOfItems() == 0)
+            {
+                return;
+            }
+
+            EquipmentSlotHelper.AllowMove = false;
+            __instance.UnequipAllItems();
+            var allInventories = __instance.GetAllInventories();
+
+            var gameObject = Object.Instantiate(__instance.m_tombstone, __instance.GetCenterPoint(), __instance.transform.rotation);
+            var container = gameObject.GetComponent<Container>();
+
+            // Modify tombstone prefab
+            var totalPossibleSlots = allInventories.Sum(x => x.m_width * x.m_height);
+            var width = __instance.m_inventory.m_width;
+            var height = (totalPossibleSlots / width) + 1;
+            container.m_width = width;
+            container.m_height = height;
+            container.m_inventory.m_width = width;
+            container.m_inventory.m_height = height;
+
+            var containerInventory = container.GetInventory();
+            foreach (var inventory in allInventories)
+            {
+                foreach (var item in inventory.m_inventory)
+                {
+                    if (!item.m_shared.m_questItem && !item.m_equiped)
+                    {
+                        if (containerInventory.GetItemAt(item.m_gridPos.x, item.m_gridPos.y) != null)
+                        {
+                            containerInventory.AddItem(item);
+                        }
+                        else
+                        {
+                            containerInventory.m_inventory.Add(item);
+                        }
+                    }
+                }
+
+                inventory.m_inventory.RemoveAll(item => !item.m_shared.m_questItem && !item.m_equiped);
+                inventory.Changed();
+            }
+            containerInventory.Changed();
+
+            var tombStone = gameObject.GetComponent<TombStone>();
+            var playerProfile = Game.instance.GetPlayerProfile();
+            var name = playerProfile.GetName();
+            var playerId = playerProfile.GetPlayerID();
+            tombStone.Setup(name, playerId);
+
+            Debug.LogWarning($"Creating tombstone for ({name}) with w:{width} h:{height} (total:{totalPossibleSlots})");
+
+            EquipmentSlotHelper.AllowMove = true;
         }
     }
 }

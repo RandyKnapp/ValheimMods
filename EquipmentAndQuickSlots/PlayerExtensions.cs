@@ -112,6 +112,24 @@ namespace EquipmentAndQuickSlots
             return result;
         }
 
+        public static Inventory GetInventoryForItem(this Player player, ItemDrop.ItemData item)
+        {
+            player.m_inventory.Extended().CallBase = true;
+
+            var inventories = player.GetAllInventories();
+            foreach (var inventory in inventories)
+            {
+                if (inventory.ContainsItem(item))
+                {
+                    player.m_inventory.Extended().CallBase = false;
+                    return inventory;
+                }
+            }
+
+            player.m_inventory.Extended().CallBase = false;
+            return null;
+        }
+
         public static Inventory GetQuickSlotInventory(this Player player)
         {
             if (player != null)

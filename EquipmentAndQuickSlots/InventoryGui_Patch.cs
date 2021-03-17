@@ -7,28 +7,6 @@ using Object = UnityEngine.Object;
 
 namespace EquipmentAndQuickSlots
 {
-    [HarmonyPatch(typeof(InventoryGui), "OnSelectedItem", new Type[] { typeof(InventoryGrid), typeof(ItemDrop.ItemData), typeof(Vector2i), typeof(InventoryGrid.Modifier) })]
-    public static class InventoryGui_OnSelectedItem_Patch
-    {
-        public static bool Prefix(InventoryGui __instance, InventoryGrid grid, ItemDrop.ItemData item, Vector2i pos, InventoryGrid.Modifier mod)
-        {
-            if (grid.m_inventory.m_name.Equals("EquipmentSlotInventory") && EquipmentAndQuickSlots.EquipmentSlotsEnabled.Value)
-            {
-                if (__instance.m_dragItem != null 
-                    && EquipmentAndQuickSlots.IsSlotEquippable(__instance.m_dragItem) 
-                    && EquipmentAndQuickSlots.GetEquipmentTypeForSlot(pos.x) == __instance.m_dragItem.m_shared.m_itemType)
-                {
-                    var player = Player.m_localPlayer;
-                    player.UseItem(player.GetInventory(), __instance.m_dragItem, true);
-                    __instance.SetupDragItem(null, null, 1);
-                }
-                return false;
-            }
-
-            return true;
-        }
-    }
-
     public static class InventoryGui_Patch
     {
         public static InventoryGrid QuickSlotGrid;
@@ -80,8 +58,16 @@ namespace EquipmentAndQuickSlots
                 grid.m_elementSpace = inventoryGui.m_playerGrid.m_elementSpace;
                 grid.ResetView();
 
-                grid.m_onSelected += OnSelected(inventoryGui);
-                grid.m_onRightClick += OnRightClicked(inventoryGui);
+                if (name == "EquipmentSlotGrid")
+                {
+                    grid.m_onSelected += OnEquipmentSelected(inventoryGui);
+                    grid.m_onRightClick += OnEquipmentRightClicked(inventoryGui);
+                }
+                else
+                {
+                    grid.m_onSelected += OnSelected(inventoryGui);
+                    grid.m_onRightClick += OnRightClicked(inventoryGui);
+                }
 
                 grid.m_uiGroup = QuickSlotGrid.gameObject.AddComponent<UIGroupHandler>();
                 grid.m_uiGroup.m_groupPriority = 1;
@@ -112,6 +98,41 @@ namespace EquipmentAndQuickSlots
                         return;
                     }
                     Player.m_localPlayer.UseItem(Player.m_localPlayer.m_inventory.Extended(), item, true);
+                };
+            }
+
+            private static Action<InventoryGrid, ItemDrop.ItemData, Vector2i, InventoryGrid.Modifier> OnEquipmentSelected(InventoryGui inventoryGui)
+            {
+                return (InventoryGrid inventoryGrid, ItemDrop.ItemData item, Vector2i pos, InventoryGrid.Modifier mod) =>
+                {
+                    var player = Player.m_localPlayer;
+                    Debug.Log($"OnEquipmentSelected: inventoryGrid={inventoryGrid}, item={item?.m_shared.m_name}, pos={pos}, mod={mod}");
+
+                    if (player != null 
+                        && inventoryGui.m_dragItem != null 
+                        && EquipmentAndQuickSlots.IsSlotEquippable(inventoryGui.m_dragItem)
+                        && pos == EquipmentAndQuickSlots.GetEquipmentSlotForType(inventoryGui.m_dragItem.m_shared.m_itemType))
+                    {
+                        player.QueueEquipItem(inventoryGui.m_dragItem);
+                        inventoryGui.SetupDragItem(null, null, 0);
+                    }
+                };
+            }
+
+            private static Action<InventoryGrid, ItemDrop.ItemData, Vector2i> OnEquipmentRightClicked(InventoryGui inventoryGui)
+            {
+                return (InventoryGrid inventoryGrid, ItemDrop.ItemData item, Vector2i pos) =>
+                {
+                    var player = Player.m_localPlayer;
+                    Debug.Log($"OnEquipmentRightClicked: inventoryGrid={inventoryGrid}, item={item?.m_shared.m_name}, pos={pos}");
+                    if (item != null 
+                        && player != null 
+                        && item.m_equiped 
+                        && player.IsItemEquiped(item)
+                        && inventoryGui.m_dragItem == null)
+                    {
+                        Player.m_localPlayer.QueueUnequipItem(item);
+                    }
                 };
             }
         }

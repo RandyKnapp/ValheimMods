@@ -66,7 +66,22 @@ namespace EquipmentAndQuickSlots
         public bool OverrideAddItem(ItemDrop.ItemData item)
         {
             CallBase = true;
-            var result = _inventories.Any(x => x.CountAsEmptySlots(_player) && x.AddItem(item));
+            var result = false;
+            foreach (var inventory in _inventories)
+            {
+                if (!inventory.CountAsEmptySlots(_player))
+                {
+                    continue;
+                }
+
+                if (inventory.AddItem(item))
+                {
+                    Debug.LogWarning($"Added item ({item.m_shared.m_name}) to ({inventory.m_name}) at ({item.m_gridPos})");
+                    result = true;
+                    break;
+                }
+            }
+            
             CallBase = false;
             return result;
         }

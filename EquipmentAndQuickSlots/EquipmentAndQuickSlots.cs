@@ -109,9 +109,9 @@ namespace EquipmentAndQuickSlots
             return EquipSlotTypes[index];
         }
 
-        public static int GetEquipmentSlotForType(ItemDrop.ItemData.ItemType type)
+        public static Vector2i GetEquipmentSlotForType(ItemDrop.ItemData.ItemType type)
         {
-            return EquipSlotTypes.IndexOf(type);
+            return new Vector2i(EquipSlotTypes.IndexOf(type), 0);
         }
 
         public static bool IsSlotEquippable(ItemDrop.ItemData item)
