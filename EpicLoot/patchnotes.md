@@ -1,3 +1,6 @@
+## Version 0.5.13
+  * Made it slightly easier for other modders to access the enchanting and disenchanting information
+  * Made the tooltip text lookup for set items more defensive to prevent some mod conflicts
 ## Version 0.5.12
   * Enchanting an item maintains its current durability percentage
   * Enchanting uses a new UI flow and shows the item after you enchant it

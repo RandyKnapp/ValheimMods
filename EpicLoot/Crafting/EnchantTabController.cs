@@ -559,11 +559,9 @@ namespace EpicLoot.Crafting
             }
         }
 
-        private static List<KeyValuePair<ItemDrop, int>> GetRecipeCost(EnchantRecipe recipe, ItemRarity rarity)
+        public static List<KeyValuePair<ItemDrop, int>> GetRecipeCost(EnchantRecipe recipe, ItemRarity rarity)
         {
-            var cost = new List<KeyValuePair<ItemDrop, int>>();
-            AddEnchantCosts(recipe, cost, rarity);
-            return cost;
+            return GetEnchantCosts(recipe.FromItem, rarity);
         }
 
         public static Piece.Requirement[] GetRecipeRequirementArray(EnchantRecipe recipe, ItemRarity rarity)
@@ -572,8 +570,9 @@ namespace EpicLoot.Crafting
             return cost.Select(x => new Piece.Requirement() { m_amount = x.Value, m_resItem = x.Key }).ToArray();
         }
 
-        private static void AddEnchantCosts(EnchantRecipe recipe, List<KeyValuePair<ItemDrop, int>> costList, ItemRarity rarity)
+        public static List<KeyValuePair<ItemDrop, int>> GetEnchantCosts(ItemDrop.ItemData item, ItemRarity rarity)
         {
+            var costList = new List<KeyValuePair<ItemDrop, int>>();
             const int runestoneCost = 1;
             const int dustCost = 5;
             const int otherCost = 5;
@@ -583,7 +582,6 @@ namespace EpicLoot.Crafting
             var reagentPrefab = ObjectDB.instance.GetItemPrefab($"Reagent{rarity}").GetComponent<ItemDrop>();
             var runestonePrefab = ObjectDB.instance.GetItemPrefab($"Runestone{rarity}").GetComponent<ItemDrop>();
 
-            var item = recipe.FromItem;
             switch (item.m_shared.m_itemType)
             {
                 case ItemDrop.ItemData.ItemType.OneHandedWeapon:
@@ -607,6 +605,8 @@ namespace EpicLoot.Crafting
                     costList.Add(new KeyValuePair<ItemDrop, int>(reagentPrefab, otherCost));
                     break;
             }
+
+            return costList;
         }
     }
 }

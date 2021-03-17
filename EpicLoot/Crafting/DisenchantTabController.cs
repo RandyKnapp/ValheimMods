@@ -425,7 +425,7 @@ namespace EpicLoot.Crafting
             __instance.m_recipeList.Add(element);
         }
 
-        private void OnSelectedRecipe(InventoryGui __instance, int index)
+        public void OnSelectedRecipe(InventoryGui __instance, int index)
         {
             __instance.OnCraftCancelPressed();
             SelectedRecipe = index;
@@ -493,7 +493,7 @@ namespace EpicLoot.Crafting
             }
         }
 
-        private static DisenchantRecipe GenerateTrophyRecipe(ItemDrop.ItemData item)
+        public static DisenchantRecipe GenerateTrophyRecipe(ItemDrop.ItemData item)
         {
             if (item.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Trophie)
             {
@@ -503,7 +503,7 @@ namespace EpicLoot.Crafting
                     if (entry.Value.Contains(item.m_shared.m_name))
                     {
                         var recipe = new DisenchantRecipe { FromItem = item.Extended() };
-                        AddDisenchantProducts(item, recipe, rarity);
+                        recipe.Products = GetDisenchantProducts(item, rarity);
                         return recipe;
                     }
                 }
@@ -512,7 +512,7 @@ namespace EpicLoot.Crafting
             return null;
         }
 
-        private static DisenchantRecipe GenerateBossTrophyRecipe(ItemDrop.ItemData item)
+        public static DisenchantRecipe GenerateBossTrophyRecipe(ItemDrop.ItemData item)
         {
             if (item.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Trophie)
             {
@@ -527,7 +527,7 @@ namespace EpicLoot.Crafting
             return null;
         }
 
-        private static DisenchantRecipe GenerateSpecialRecipe(ItemDrop.ItemData item)
+        public static DisenchantRecipe GenerateSpecialRecipe(ItemDrop.ItemData item)
         {
             if (SpecialDisenchants.TryGetValue(item.m_shared.m_name, out var entry))
             {
@@ -542,20 +542,21 @@ namespace EpicLoot.Crafting
             return null;
         }
 
-        private static DisenchantRecipe GenerateDisenchantRecipe(ItemDrop.ItemData item)
+        public static DisenchantRecipe GenerateDisenchantRecipe(ItemDrop.ItemData item)
         {
             if (item.IsMagic())
             {
                 var recipe = new DisenchantRecipe { FromItem = item.Extended() };
-                AddDisenchantProducts(item, recipe, item.GetMagicItem().Rarity);
+                recipe.Products = GetDisenchantProducts(item, item.GetRarity());
                 return recipe;
             }
 
             return null;
         }
 
-        private static void AddDisenchantProducts(ItemDrop.ItemData item, DisenchantRecipe recipe, ItemRarity rarity)
+        public static List<KeyValuePair<ItemDrop, int>> GetDisenchantProducts(ItemDrop.ItemData item, ItemRarity rarity)
         {
+            var products = new List<KeyValuePair<ItemDrop, int>>();
             var dustPrefab = ObjectDB.instance.GetItemPrefab($"Dust{rarity}").GetComponent<ItemDrop>();
             var essencePrefab = ObjectDB.instance.GetItemPrefab($"Essence{rarity}").GetComponent<ItemDrop>();
             var reagentPrefab = ObjectDB.instance.GetItemPrefab($"Reagent{rarity}").GetComponent<ItemDrop>();
@@ -564,7 +565,7 @@ namespace EpicLoot.Crafting
             switch (item.m_shared.m_itemType)
             {
                 case ItemDrop.ItemData.ItemType.Trophie:
-                    recipe.Products.Add(new KeyValuePair<ItemDrop, int>(shardPrefab, 1));
+                    products.Add(new KeyValuePair<ItemDrop, int>(shardPrefab, 1));
                     break;
 
                 case ItemDrop.ItemData.ItemType.OneHandedWeapon:
@@ -572,8 +573,8 @@ namespace EpicLoot.Crafting
                 case ItemDrop.ItemData.ItemType.TwoHandedWeapon:
                 case ItemDrop.ItemData.ItemType.Torch:
                 case ItemDrop.ItemData.ItemType.Tool:
-                    recipe.Products.Add(new KeyValuePair<ItemDrop, int>(dustPrefab, 1));
-                    recipe.Products.Add(new KeyValuePair<ItemDrop, int>(essencePrefab, 1));
+                    products.Add(new KeyValuePair<ItemDrop, int>(dustPrefab, 1));
+                    products.Add(new KeyValuePair<ItemDrop, int>(essencePrefab, 1));
                     break;
 
                 case ItemDrop.ItemData.ItemType.Shield:
@@ -582,10 +583,12 @@ namespace EpicLoot.Crafting
                 case ItemDrop.ItemData.ItemType.Legs:
                 case ItemDrop.ItemData.ItemType.Shoulder:
                 case ItemDrop.ItemData.ItemType.Utility:
-                    recipe.Products.Add(new KeyValuePair<ItemDrop, int>(dustPrefab, 1));
-                    recipe.Products.Add(new KeyValuePair<ItemDrop, int>(reagentPrefab, 1));
+                    products.Add(new KeyValuePair<ItemDrop, int>(dustPrefab, 1));
+                    products.Add(new KeyValuePair<ItemDrop, int>(reagentPrefab, 1));
                     break;
             }
+
+            return products;
         }
     }
 }

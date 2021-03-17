@@ -204,10 +204,29 @@ namespace EpicLoot
     {
         public static List<ItemDrop.ItemData> GetSetPieces(this ObjectDB objectDB, string setName)
         {
-            return objectDB.m_items
-                .Where(x => x.GetComponent<ItemDrop>().m_itemData.m_shared.m_setName == setName)
-                .Select(x => x.GetComponent<ItemDrop>().m_itemData)
-                .ToList();
+            List<ItemDrop.ItemData> list = new List<ItemDrop.ItemData>();
+            foreach (var itemPrefab in objectDB.m_items)
+            {
+                if (itemPrefab == null)
+                {
+                    Debug.LogError("Null Item left in ObjectDB! (This means that a prefab was deleted and not an instance)");
+                    continue;
+                }
+
+                var itemDrop = itemPrefab.GetComponent<ItemDrop>();
+                if (itemDrop == null)
+                {
+                    Debug.LogError($"Item in ObjectDB missing ItemDrop: ({itemPrefab.name})");
+                    continue;
+                }
+
+                if (itemDrop.m_itemData.m_shared.m_setName == setName)
+                {
+                    list.Add(itemPrefab.GetComponent<ItemDrop>().m_itemData);
+                }
+            }
+
+            return list;
         }
     }
 
@@ -291,7 +310,7 @@ namespace EpicLoot
                 }
             }
 
-            foreach (var item in __instance.m_inventory.GetAllItems())
+            foreach (var item in __instance.m_inventory.m_inventory)
             {
                 var element = __instance.GetElement(item.m_gridPos.x, item.m_gridPos.y, __instance.m_inventory.GetWidth());
 
