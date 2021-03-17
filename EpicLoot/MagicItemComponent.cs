@@ -313,6 +313,11 @@ namespace EpicLoot
             foreach (var item in __instance.m_inventory.m_inventory)
             {
                 var element = __instance.GetElement(item.m_gridPos.x, item.m_gridPos.y, __instance.m_inventory.GetWidth());
+                if (element == null)
+                {
+                    Debug.LogError($"Could not find element for item ({item.m_shared.m_name}: {item.m_gridPos}) in inventory: {__instance.m_inventory.m_name}");
+                    continue;
+                }
 
                 var magicItem = ItemBackgroundHelper.CreateAndGetMagicItemBackgroundImage(element.m_go, element.m_equiped.gameObject, true);
                 if (item.UseMagicBackground())

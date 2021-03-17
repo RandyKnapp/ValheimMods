@@ -117,7 +117,8 @@ namespace EpicLoot
                         new LootDrop()
                         {
                             Item = item,
-                            Rarity = rarityTable
+                            Rarity = rarityTable,
+                            Weight = 1
                         }
                     }
                 };

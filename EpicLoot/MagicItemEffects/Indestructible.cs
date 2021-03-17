@@ -150,10 +150,10 @@ namespace EpicLoot.MagicItemEffects
         {
             public static void Postfix(InventoryGrid __instance)
             {
-                foreach (ItemDrop.ItemData item in __instance.m_inventory.GetAllItems())
+                foreach (ItemDrop.ItemData item in __instance.m_inventory.m_inventory)
                 {
                     InventoryGrid.Element element = __instance.GetElement(item.m_gridPos.x, item.m_gridPos.y, __instance.m_width);
-                    if (item.HasMagicEffect(MagicEffectType.Indestructible))
+                    if (element != null && item.HasMagicEffect(MagicEffectType.Indestructible))
                     {
                         element.m_durability.gameObject.SetActive(false);
                     }

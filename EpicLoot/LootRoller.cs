@@ -128,11 +128,20 @@ namespace EpicLoot
         private static List<GameObject> RollLootTableInternal(LootTable lootTable, int level, string objectName, Vector3 dropPoint, bool initializeObject)
         {
             var results = new List<GameObject>();
+            if (lootTable == null || level <= 0 || string.IsNullOrEmpty(objectName))
+            {
+                return results;
+            }
 
             var drops = GetDropsForLevel(lootTable, level);
+            if (ArrayUtils.IsNullOrEmpty(drops))
+            {
+                return results;
+            }
+
             _weightedDropCountTable.Setup(drops, dropPair => dropPair.Length == 2 ? dropPair[1] : 1);
             var dropCountRollResult = _weightedDropCountTable.Roll();
-            var dropCount = dropCountRollResult.Length >= 1 ? dropCountRollResult[0] : 0;
+            var dropCount = dropCountRollResult != null && dropCountRollResult.Length >= 1 ? dropCountRollResult[0] : 0;
             if (dropCount == 0)
             {
                 return results;
