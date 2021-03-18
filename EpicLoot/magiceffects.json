@@ -800,6 +800,31 @@
       "SelectionWeight" : 1
     },
     {
+      "Type" : "LifeSteal",
+      "DisplayText" : "Life steal {0:0.#} health points on hit",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "OneHandedWeapon",
+          "TwoHandedWeapon",
+          "Bow",
+          "Torch",
+          "Tool"
+        ],
+        "ItemUsesStaminaOnAttack" : true
+      },
+      "AllowedRarities" : [
+        "Rare",
+        "Epic",
+        "Legendary"
+      ],
+      "ValuesPerRarity" : {
+        "Rare" : { "MinValue" : 1, "MaxValue" : 1, "Increment" : 1 },
+        "Epic" : { "MinValue" : 2, "MaxValue" : 2, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 3, "MaxValue" : 3, "Increment" : 1 }
+      },
+      "SelectionWeight" : 1
+    },
+    {
       "Type" : "AddCarryWeight",
       "DisplayText" : "Increase carry weight by +{0}",
       "Requirements" : {

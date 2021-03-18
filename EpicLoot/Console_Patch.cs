@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Common;
 using EpicLoot.Crafting;
+using ExtendedItemDataFramework;
 using HarmonyLib;
 using UnityEngine;
 
@@ -12,6 +13,7 @@ namespace EpicLoot
     public static class Console_Patch
     {
         private static readonly System.Random _random = new System.Random();
+        private static bool _debugModeEnabled;
 
         public static bool Prefix(Console __instance)
         {
@@ -29,6 +31,10 @@ namespace EpicLoot
                 MagicItem(__instance, args);
                 return false;
             }
+            else if (command.Equals("mieffect", StringComparison.InvariantCultureIgnoreCase)) 
+            {
+              SpawnMagicItemWithEffect(__instance, args);
+            }
             else if (command.Equals("checkstackquality", StringComparison.InvariantCultureIgnoreCase))
             {
                 CheckStackQuality(__instance);
@@ -38,8 +44,16 @@ namespace EpicLoot
             {
                 SpawnMagicCraftingMaterials();
                 return false;
+            } 
+            else if (command.Equals("imacheater", StringComparison.InvariantCultureIgnoreCase)) 
+            {
+                if (!_debugModeEnabled) {
+                    // "imacheater" activates debug hooks
+                    Debug.Log(nameof(_debugModeEnabled));
+                    _debugModeEnabled = true;
+                    LootRoller.MagicItemGenerated += LootRoller_Debug.AddDebugMagicEffects;
+                }
             }
-
             return true;
         }
 
@@ -76,22 +90,7 @@ namespace EpicLoot
 
             for (var i = 0; i < count; i++)
             {
-                var rarityTable = new[] { 1, 1, 1, 1 };
-                switch (rarityArg.ToLowerInvariant())
-                {
-                    case "magic":
-                        rarityTable = new[] { 1, 0, 0, 0, };
-                        break;
-                    case "rare":
-                        rarityTable = new[] { 0, 1, 0, 0, };
-                        break;
-                    case "epic":
-                        rarityTable = new[] { 0, 0, 1, 0, };
-                        break;
-                    case "legendary":
-                        rarityTable = new[] { 0, 0, 0, 1, };
-                        break;
-                }
+                int[] rarityTable = GetRarityTable(rarityArg);
 
                 var item = itemArg;
                 if (item == "random")
@@ -126,6 +125,85 @@ namespace EpicLoot
                 var dropPoint = Player.m_localPlayer.transform.position + Player.m_localPlayer.transform.forward * 3 + Vector3.up * 1.5f + randomOffset;
                 items.AddRange(LootRoller.RollLootTableAndSpawnObjects(loot, 1, loot.Object, dropPoint));
             }
+        }
+
+        public static void SpawnMagicItemWithEffect(Console __instance, string[] args) {
+            if (args.Length < 3) {
+                Debug.LogError("specify effect and item name");
+                return;
+            }
+            
+            if (Player.m_localPlayer == null) {
+                return;
+            }
+            
+            var effectArg = args[1];
+            var itemPrefabNameArg = args[2];
+            __instance.AddString($"magicitem with effect: {effectArg}");
+
+            var magicItemEffectDef = MagicItemEffectDefinitions.AllDefinitions[effectArg];
+            var effectRequirements = magicItemEffectDef.Requirements;
+            // TODO use magicItemEffectDef.GetAllowedItemTypes();
+
+            GameObject itemPrefab = ObjectDB.instance.GetItemPrefab(itemPrefabNameArg);
+            if (itemPrefab == null)
+            {
+                __instance.AddString($"> Could not find item: {itemPrefabNameArg}");
+                return;
+            }
+
+            var fromItemData = itemPrefab.GetComponent<ItemDrop>().m_itemData;
+            if (!EpicLoot.CanBeMagicItem(fromItemData)) {
+                Debug.LogError("Can't be magic item");
+                return;
+            }
+
+            ItemRarity itemRarity;
+            if (effectRequirements.AllowedRarities.Count == 0) {
+                Debug.Log("no req. rarity");
+                itemRarity = ItemRarity.Legendary;
+            } else {
+                itemRarity = effectRequirements.AllowedRarities.First();
+            }
+            Debug.Log("rarity: " + itemRarity);
+            
+            int[] rarityTable = GetRarityTable(itemRarity.ToString());
+
+            var loot = new LootTable() {
+                    Object = "Console",
+                    Drops = new[] {new[] {1, 1}},
+                    Loot = new[] {
+                            new LootDrop() {
+                                    Item = itemPrefab.name,
+                                    Rarity = rarityTable
+                            }
+                    }
+            };
+
+            var randomOffset = UnityEngine.Random.insideUnitSphere;
+            var dropPoint = Player.m_localPlayer.transform.position +
+                            Player.m_localPlayer.transform.forward * 3 + Vector3.up * 1.5f + randomOffset;
+            LootRoller_Debug.SelectedEffectForNextRolledItem = effectArg;
+            LootRoller.RollLootTableAndSpawnObjects(loot, 1, loot.Object, dropPoint);
+        }
+                
+        private static int[] GetRarityTable(string rarityName) {
+            var rarityTable = new[] {1, 1, 1, 1};
+            switch (rarityName.ToLowerInvariant()) {
+                case "magic":
+                    rarityTable = new[] {1, 0, 0, 0,};
+                    break;
+                case "rare":
+                    rarityTable = new[] {0, 1, 0, 0,};
+                    break;
+                case "epic":
+                    rarityTable = new[] {0, 0, 1, 0,};
+                    break;
+                case "legendary":
+                    rarityTable = new[] {0, 0, 0, 1,};
+                    break;
+            }
+            return rarityTable;
         }
 
         public static void CheckStackQuality(Console __instance)

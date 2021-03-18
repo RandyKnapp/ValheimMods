@@ -39,6 +39,7 @@
         public static string ModifyBlockStaminaUse = nameof(ModifyBlockStaminaUse);
         public static string Indestructible = nameof(Indestructible);
         public static string Weightless = nameof(Weightless);
+        public static string LifeSteal = nameof(LifeSteal);
         public static string AddCarryWeight = nameof(AddCarryWeight);
     }
 }
