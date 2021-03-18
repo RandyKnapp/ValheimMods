@@ -64,7 +64,7 @@ namespace EquipmentAndQuickSlots
             {
                 var horizontalSpacing = __instance.m_elementSpace + 10;
                 var verticalSpacing = __instance.m_elementSpace + 10;
-                string[] equipNames = { "Head", "Chest", "Legs", "Shoulders", "Utility 1", "Utility 2" };
+                string[] equipNames = { "Head", "Chest", "Legs", "Shoulders", "Utility" };
                 Vector2[] equipPositions = {
                     new Vector2(), // Head
                     new Vector2(0, -verticalSpacing), // Chest
