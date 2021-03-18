@@ -73,8 +73,9 @@ namespace EpicLoot
         public static void AddLootTable([NotNull] LootTable lootTable)
         {
             var key = lootTable.Object;
-            if (string.IsNullOrEmpty(key) || lootTable.Loot.Length == 0 || lootTable.Drops.Length == 0)
+            if (string.IsNullOrEmpty(key))
             {
+                Debug.LogError("Loot table missing Object name!");
                 return;
             }
 
@@ -236,41 +237,23 @@ namespace EpicLoot
             }
 
             var objectName = parts[0];
-            var tableName = parts[1];
+            var levelText = parts[1];
+            if (!int.TryParse(levelText, out var level))
+            {
+                Debug.LogError($"Tried to get a loot table reference from '{lootDropItem}' but could not parse the level value ({levelText})!");
+                return false;
+            }
 
             if (LootTables.ContainsKey(objectName))
             {
-                var lootTable = LootTables[objectName].First();
-                switch (tableName)
+                var lootTable = LootTables[objectName].FirstOrDefault();
+                if (lootTable != null)
                 {
-                    case "1":
-                    case "Loot":
-                    case "Loot1":
-                        if (!ArrayUtils.IsNullOrEmpty(lootTable.Loot))
-                        {
-                            lootList = lootTable.Loot;
-                            return true;
-                        }
-                        break;
-
-                    case "2":
-                    case "Loot2":
-                        if (!ArrayUtils.IsNullOrEmpty(lootTable.Loot2))
-                        {
-                            lootList = lootTable.Loot2;
-                            return true;
-                        }
-                        break;
-
-                    case "3":
-                    case "Loot3":
-                        if (!ArrayUtils.IsNullOrEmpty(lootTable.Loot3))
-                        {
-                            lootList = lootTable.Loot3;
-                            return true;
-                        }
-                        break;
+                    lootList = GetLootForLevel(lootTable, level);
+                    return true;
                 }
+
+                Debug.LogError($"UNLIKELY: LootTables contains entry for {objectName} but no valid loot tables! Weird!");
             }
 
             return false;
@@ -392,37 +375,98 @@ namespace EpicLoot
             return results;
         }
 
-        public static int[][] GetDropsForLevel([NotNull] LootTable lootTable, int level)
+        public static int[][] GetDropsForLevel([NotNull] LootTable lootTable, int level, bool useNextHighestIfNotPresent = true)
         {
-            if (level == 2 && !ArrayUtils.IsNullOrEmpty(lootTable.Drops2))
+            if (level == 1 && !ArrayUtils.IsNullOrEmpty(lootTable.Drops))
             {
-                return lootTable.Drops2;
-            }
-            else if (level == 3 && !ArrayUtils.IsNullOrEmpty(lootTable.Drops3))
-            {
-                return lootTable.Drops3;
-            }
-            else
-            {
+                if (lootTable.LeveledLoot.Any(x => x.Level == level))
+                {
+                    Debug.LogWarning($"Duplicated leveled drops for ({lootTable.Object} lvl {level}), using 'Drops'");
+                }
                 return lootTable.Drops;
             }
+
+            if (level == 2 && !ArrayUtils.IsNullOrEmpty(lootTable.Drops2))
+            {
+                if (lootTable.LeveledLoot.Any(x => x.Level == level))
+                {
+                    Debug.LogWarning($"Duplicated leveled drops for ({lootTable.Object} lvl {level}), using 'Drops{level}'");
+                }
+                return lootTable.Drops2;
+            }
+
+            if (level == 3 && !ArrayUtils.IsNullOrEmpty(lootTable.Drops3))
+            {
+                if (lootTable.LeveledLoot.Any(x => x.Level == level))
+                {
+                    Debug.LogWarning($"Duplicated leveled drops for ({lootTable.Object} lvl {level}), using 'Drops{level}'");
+                }
+                return lootTable.Drops3;
+            }
+
+            for (var lvl = level; lvl >= 1; --lvl)
+            {
+                var found = lootTable.LeveledLoot.Find(x => x.Level == lvl);
+                if (found != null && !ArrayUtils.IsNullOrEmpty(found.Drops))
+                {
+                    return found.Drops;
+                }
+
+                if (!useNextHighestIfNotPresent)
+                {
+                    return null;
+                }
+            }
+
+            Debug.LogError($"Could not find any leveled drops for ({lootTable.Object} lvl {level}), but a loot table exists for this object!");
+            return null;
         }
 
-        public static LootDrop[] GetLootForLevel([NotNull] LootTable lootTable, int level)
+        public static LootDrop[] GetLootForLevel([NotNull] LootTable lootTable, int level, bool useNextHighestIfNotPresent = true)
         {
-            // Loot list is EXCLUSIVE, if present, defaults to level 1 if absent
-            if (level == 2 && !ArrayUtils.IsNullOrEmpty(lootTable.Loot2))
+            if (level == 1 && !ArrayUtils.IsNullOrEmpty(lootTable.Loot))
             {
-                return lootTable.Loot2.ToArray();
-            }
-            else if (level == 3 && !ArrayUtils.IsNullOrEmpty(lootTable.Loot3))
-            {
-                return lootTable.Loot3.ToArray();
-            }
-            else
-            {
+                if (lootTable.LeveledLoot.Any(x => x.Level == level))
+                {
+                    Debug.LogWarning($"Duplicated leveled loot for ({lootTable.Object} lvl {level}), using 'Loot'");
+                }
                 return lootTable.Loot.ToArray();
             }
+
+            if (level == 2 && !ArrayUtils.IsNullOrEmpty(lootTable.Loot2))
+            {
+                if (lootTable.LeveledLoot.Any(x => x.Level == level))
+                {
+                    Debug.LogWarning($"Duplicated leveled loot for ({lootTable.Object} lvl {level}), using 'Loot{level}'");
+                }
+                return lootTable.Loot2.ToArray();
+            }
+
+            if (level == 3 && !ArrayUtils.IsNullOrEmpty(lootTable.Loot3))
+            {
+                if (lootTable.LeveledLoot.Any(x => x.Level == level))
+                {
+                    Debug.LogWarning($"Duplicated leveled loot for ({lootTable.Object} lvl {level}), using 'Loot{level}'");
+                }
+                return lootTable.Loot3.ToArray();
+            }
+
+            for (var lvl = level; lvl >= 1; --lvl)
+            {
+                var found = lootTable.LeveledLoot.Find(x => x.Level == lvl);
+                if (found != null && !ArrayUtils.IsNullOrEmpty(found.Loot))
+                {
+                    return found.Loot;
+                }
+
+                if (!useNextHighestIfNotPresent)
+                {
+                    return null;
+                }
+            }
+
+            Debug.LogError($"Could not find any leveled loot for ({lootTable.Object} lvl {level}), but a loot table exists for this object!");
+            return null;
         }
     }
 }

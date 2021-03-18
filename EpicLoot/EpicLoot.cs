@@ -41,7 +41,7 @@ namespace EpicLoot
     public class EpicLoot : BaseUnityPlugin
     {
         private const string PluginId = "randyknapp.mods.epicloot";
-        private const string Version = "0.5.14";
+        private const string Version = "0.5.15";
 
         private static ConfigEntry<string> _setItemColor;
         private static ConfigEntry<string> _magicRarityColor;
@@ -685,7 +685,7 @@ namespace EpicLoot
 
                 t.AppendLine($"## {lootTableEntry.Key}");
                 t.AppendLine();
-                WriteLootList(t, string.Empty, itemSet.Loot);
+                WriteLootList(t, 0, itemSet.Loot);
                 t.AppendLine();
             }
 
@@ -720,33 +720,21 @@ namespace EpicLoot
 
         private static void WriteLootTableDrops(StringBuilder t, LootTable lootTable)
         {
-            var dropTables = new[] { lootTable.Drops, lootTable.Drops2, lootTable.Drops3 };
-            for (var i = 0; i < 3; i++)
+            var highestLevel = lootTable.LeveledLoot != null && lootTable.LeveledLoot.Count > 0 ? lootTable.LeveledLoot.Max(x => x.Level) : 0;
+            var limit = Mathf.Max(3, highestLevel);
+            for (var i = 0; i < limit; i++)
             {
-                var levelDisplay = $" (lvl {i + 1})";
-                if (i == 0 && ArrayUtils.IsNullOrEmpty(lootTable.Drops2) && ArrayUtils.IsNullOrEmpty(lootTable.Drops3))
-                {
-                    levelDisplay = "";
-                }
-                else if (i == 0 && ArrayUtils.IsNullOrEmpty(lootTable.Drops2))
-                {
-                    levelDisplay = " (lvl 1, 2)";
-                }
-                else if (i == 0 && ArrayUtils.IsNullOrEmpty(lootTable.Drops3))
-                {
-                    levelDisplay = " (lvl 1, 3)";
-                }
-
-                var dropTable = dropTables[i];
+                var level = i + 1;
+                var dropTable = LootRoller.GetDropsForLevel(lootTable, level, false);
                 if (ArrayUtils.IsNullOrEmpty(dropTable))
                 {
                     continue;
                 }
 
-                float total = lootTable.Drops.Sum(x => x.Length > 1 ? x[1] : 0);
+                float total = dropTable.Sum(x => x.Length > 1 ? x[1] : 0);
                 if (total > 0)
                 {
-                    t.AppendLine($"> | Drops{levelDisplay} | Weight (Chance) |");
+                    t.AppendLine($"> | Drops (lvl {level}) | Weight (Chance) |");
                     t.AppendLine($"> | -- | -- |");
                     foreach (var drop in dropTable)
                     {
@@ -762,28 +750,24 @@ namespace EpicLoot
 
         private static void WriteLootTableItems(StringBuilder t, LootTable lootTable)
         {
-            var lootLists = new[] { lootTable.Loot, lootTable.Loot2, lootTable.Loot3 };
-
-            for (var i = 0; i < 3; i++)
+            var highestLevel = lootTable.LeveledLoot != null && lootTable.LeveledLoot.Count > 0 ? lootTable.LeveledLoot.Max(x => x.Level) : 0;
+            var limit = Mathf.Max(3, highestLevel);
+            for (var i = 0; i < limit; i++)
             {
-                var levelDisplay = $" (lvl {i + 1}+)";
-                if (i == 0 && ArrayUtils.IsNullOrEmpty(lootTable.Loot2) && ArrayUtils.IsNullOrEmpty(lootTable.Loot3))
-                {
-                    levelDisplay = "";
-                }
-
-                var lootList = lootLists[i];
+                var level = i + 1;
+                var lootList = LootRoller.GetLootForLevel(lootTable, level, false);
                 if (ArrayUtils.IsNullOrEmpty(lootList))
                 {
                     continue;
                 }
 
-                WriteLootList(t, levelDisplay, lootList);
+                WriteLootList(t, level, lootList);
             }
         }
 
-        private static void WriteLootList(StringBuilder t, string levelDisplay, LootDrop[] lootList)
+        private static void WriteLootList(StringBuilder t, int level, LootDrop[] lootList)
         {
+            var levelDisplay = level > 0 ? $" (lvl {level})" : "";
             t.AppendLine($"> | Items{levelDisplay} | Weight (Chance) | Magic | Rare | Epic | Legendary |");
             t.AppendLine("> | -- | -- | -- | -- | -- | -- |");
 
