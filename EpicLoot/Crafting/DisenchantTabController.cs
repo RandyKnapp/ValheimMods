@@ -78,8 +78,8 @@ namespace EpicLoot.Crafting
         {
         }
 
-        protected override string GetTabButtonId() => "Disenchant";
-        protected override string GetTabButtonText() => "SACRIFICE";
+        public override string GetTabButtonId() => "Disenchant";
+        public override string GetTabButtonText() => "SACRIFICE";
 
         public override void SetActive(bool active)
         {

@@ -18,6 +18,7 @@ namespace EpicLoot.Crafting
     public static class CraftingTabs
     {
         public static List<TabController> TabControllers = new List<TabController>();
+        public static Text TabTitle;
 
         [HarmonyPatch(typeof(InventoryGui), "Awake")]
         public static class InventoryGui_Awake_Patch
@@ -98,6 +99,48 @@ namespace EpicLoot.Crafting
 
                 return true;
             }
+
+            /*public static void Postfix(InventoryGui __instance)
+            {
+                var index = 0;
+                var start = new Vector2(-560, -300);
+                var spacing = -38;
+                foreach (var tabController in TabControllers)
+                {
+                    var tabButton = tabController.TabButton;
+                    if (tabButton != null && tabButton.gameObject.activeSelf)
+                    {
+                        var rt = tabButton.transform as RectTransform;
+                        rt.anchoredPosition = start + new Vector2(0, index * spacing);
+
+                        index++;
+                    }
+                }
+
+                if (TabTitle == null)
+                {
+                    __instance.m_tabCraft.transform.parent.SetSiblingIndex(__instance.m_repairPanel.GetSiblingIndex() + 1);
+
+                    TabTitle = Object.Instantiate(__instance.m_craftingStationName, __instance.m_craftingStationName.transform.parent, false);
+                    TabTitle.color = Color.white;
+                    TabTitle.fontSize = 26;
+                    TabTitle.rectTransform.anchoredPosition += new Vector2(0, -38);
+                }
+
+                var activeTab = GetActiveTabController();
+                if (__instance.InCraftTab())
+                {
+                    TabTitle.text = Localization.instance.Localize("$inventory_craftbutton");
+                }
+                else if (__instance.InUpradeTab())
+                {
+                    TabTitle.text = Localization.instance.Localize("$inventory_upgradebutton");
+                }
+                else if (activeTab != null)
+                {
+                    TabTitle.text = activeTab.GetTabButtonText();
+                }
+            }*/
         }
 
         //public void UpdateRecipe(Player player, float dt)
@@ -169,7 +212,7 @@ namespace EpicLoot.Crafting
 
         private static TabController GetActiveTabController()
         {
-            return TabControllers.FirstOrDefault(tabController => tabController.IsCustomTab &&  tabController.IsActive());
+            return TabControllers.FirstOrDefault(tabController => tabController.IsCustomTab && tabController.IsActive());
         }
 
         private static void OnTabPressed(TabController tab)

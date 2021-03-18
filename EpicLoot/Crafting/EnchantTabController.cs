@@ -27,8 +27,8 @@ namespace EpicLoot.Crafting
         {
         }
 
-        protected override string GetTabButtonId() => "Enchant";
-        protected override string GetTabButtonText() => "ENCHANT";
+        public override string GetTabButtonId() => "Enchant";
+        public override string GetTabButtonText() => "ENCHANT";
 
         public override void TryInitialize(InventoryGui inventoryGui, int tabIndex, Action<TabController> onTabPressed)
         {
