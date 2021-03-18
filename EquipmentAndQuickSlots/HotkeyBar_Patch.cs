@@ -131,7 +131,7 @@ namespace EquipmentAndQuickSlots
         {
             var hotkeyBar = __instance.GetComponentInChildren<HotkeyBar>();
 
-            if (hotkeyBar.transform.parent.Find("QuickSlotsHotkeyBar") == null)
+            if (EquipmentAndQuickSlots.QuickSlotsEnabled.Value && hotkeyBar.transform.parent.Find("QuickSlotsHotkeyBar") == null)
             {
                 var quickslotsHotkeyBar = Object.Instantiate(hotkeyBar.gameObject, __instance.m_healthBarRoot, true);
                 quickslotsHotkeyBar.name = "QuickSlotsHotkeyBar";

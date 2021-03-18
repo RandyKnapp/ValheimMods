@@ -17,8 +17,14 @@ namespace EquipmentAndQuickSlots
         {
             public static void Postfix(InventoryGui __instance)
             {
-                BuildQuickSlotGrid(__instance);
-                BuildEquipmentSlotGrid(__instance);
+                if (EquipmentAndQuickSlots.QuickSlotsEnabled.Value)
+                {
+                    BuildQuickSlotGrid(__instance);
+                }
+                if (EquipmentAndQuickSlots.EquipmentSlotsEnabled.Value)
+                {
+                    BuildEquipmentSlotGrid(__instance);
+                }
             }
 
             private static void BuildQuickSlotGrid(InventoryGui inventoryGui)
@@ -83,7 +89,7 @@ namespace EquipmentAndQuickSlots
                     grid.m_onRightClick += OnRightClicked(inventoryGui);
                 }
 
-                grid.m_uiGroup = QuickSlotGrid.gameObject.AddComponent<UIGroupHandler>();
+                grid.m_uiGroup = grid.gameObject.AddComponent<UIGroupHandler>();
                 grid.m_uiGroup.m_groupPriority = 1;
                 grid.m_uiGroup.m_active = true;
                 grid.m_uiGroup.m_enableWhenActiveAndGamepad = highlight;

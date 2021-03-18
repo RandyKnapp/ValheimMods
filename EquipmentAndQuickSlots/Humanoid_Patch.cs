@@ -177,7 +177,7 @@ namespace EquipmentAndQuickSlots
 
             public static void Postfix(Humanoid __instance, bool __result, ItemDrop.ItemData item)
             {
-                if (AllowMove && __instance != null && __instance.IsPlayer() && __instance.m_nview.IsValid())
+                if (EquipmentAndQuickSlots.EquipmentSlotsEnabled.Value && AllowMove && __instance != null && __instance.IsPlayer() && __instance.m_nview.IsValid())
                 {
                     RefreshEquipmentInSlots(__instance as Player);
                 }
@@ -191,7 +191,7 @@ namespace EquipmentAndQuickSlots
         {
             public static void Postfix(Humanoid __instance, ItemDrop.ItemData item)
             {
-                if (AllowMove && !DoingEquip && __instance != null && __instance.IsPlayer() && __instance.m_nview.IsValid() && item != null)
+                if (EquipmentAndQuickSlots.EquipmentSlotsEnabled.Value && AllowMove && !DoingEquip && __instance != null && __instance.IsPlayer() && __instance.m_nview.IsValid() && item != null)
                 {
                     RefreshEquipmentInSlots(__instance as Player);
                 }

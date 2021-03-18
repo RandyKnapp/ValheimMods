@@ -12,7 +12,7 @@ It is NOT compatible with 1.x versions and 1.x must be uninstalled correctly bef
 6. Run the game again
 7. You should see your new empty slots in the inventory and be able to re-equip your items
 
-# Equipment and Quick Slots v2.0.1
+# Equipment and Quick Slots v2.0.2
 ##### by RandyKnapp
 Give equipped items their own dedicated inventory slots, plus three more hotkeyable quick slots.
 
@@ -37,3 +37,6 @@ Copy EquipmentAndQuickSlots.dll into the BepInEx/plugins folder
 	* Never drop or lose items on death
   * 2.0.1
 	* Hotfix for not being able to craft when fully equipped
+  * 2.0.2
+	* Fixed an issue where some equipment was lost on death
+	* Re-added the toggles to disable and enable features

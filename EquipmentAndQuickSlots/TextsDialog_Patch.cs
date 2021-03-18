@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using HarmonyLib;
+﻿using HarmonyLib;
 
 namespace EquipmentAndQuickSlots
 {
@@ -13,7 +8,10 @@ namespace EquipmentAndQuickSlots
     {
         public static void Postfix(TextsDialog __instance)
         {
-            __instance.m_texts.RemoveAll(x => x.m_topic.StartsWith(ExtendedPlayerData.Sentinel));
+            if (!EquipmentAndQuickSlots.ViewDebugSaveData.Value)
+            {
+                __instance.m_texts.RemoveAll(x => x.m_topic.StartsWith(ExtendedPlayerData.Sentinel));
+            }
         }
     }
 }

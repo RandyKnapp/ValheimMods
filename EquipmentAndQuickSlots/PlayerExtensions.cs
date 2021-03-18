@@ -66,6 +66,16 @@ namespace EquipmentAndQuickSlots
                 var pkg = new ZPackage(quickSlotData);
                 _isLoading = true;
                 QuickSlotInventory.Load(pkg);
+                
+                if (!EquipmentAndQuickSlots.QuickSlotsEnabled.Value)
+                {
+                    _player.m_inventory.MoveAll(QuickSlotInventory);
+
+                    pkg = new ZPackage(quickSlotData);
+                    QuickSlotInventory.Save(pkg);
+                    SaveValue(_player, nameof(QuickSlotInventory), pkg.GetBase64());
+                }
+
                 _isLoading = false;
             }
 
@@ -74,6 +84,16 @@ namespace EquipmentAndQuickSlots
                 var pkg = new ZPackage(equipSlotData);
                 _isLoading = true;
                 EquipmentSlotInventory.Load(pkg);
+
+                if (!EquipmentAndQuickSlots.EquipmentSlotsEnabled.Value)
+                {
+                    _player.m_inventory.MoveAll(EquipmentSlotInventory);
+
+                    pkg = new ZPackage(quickSlotData);
+                    EquipmentSlotInventory.Save(pkg);
+                    SaveValue(_player, nameof(EquipmentSlotInventory), pkg.GetBase64());
+                }
+
                 _isLoading = false;
             }
         }
@@ -112,11 +132,11 @@ namespace EquipmentAndQuickSlots
         {
             var result = new List<Inventory>();
             result.Add(player.m_inventory);
-            if (player.IsExtended() && player.GetQuickSlotInventory() != null)
+            if (EquipmentAndQuickSlots.QuickSlotsEnabled.Value && player.IsExtended() && player.GetQuickSlotInventory() != null)
             {
                 result.Add(player.GetQuickSlotInventory());
             }
-            if (player.IsExtended() && player.GetEquipmentSlotInventory() != null)
+            if (EquipmentAndQuickSlots.EquipmentSlotsEnabled.Value && player.IsExtended() && player.GetEquipmentSlotInventory() != null)
             {
                 result.Add(player.GetEquipmentSlotInventory());
             }

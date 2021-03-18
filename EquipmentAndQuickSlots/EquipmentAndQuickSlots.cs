@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace EquipmentAndQuickSlots
 {
-    [BepInPlugin(PluginId, "Equipment and Quick Slots", "2.0.0")]
+    [BepInPlugin(PluginId, "Equipment and Quick Slots", "2.0.2")]
     [BepInDependency("moreslots", BepInDependency.DependencyFlags.SoftDependency)]
     public class EquipmentAndQuickSlots : BaseUnityPlugin
     {
@@ -27,6 +27,7 @@ namespace EquipmentAndQuickSlots
 
         public static ConfigEntry<bool> EquipmentSlotsEnabled;
         public static ConfigEntry<bool> QuickSlotsEnabled;
+        public static ConfigEntry<bool> ViewDebugSaveData;
         private static ConfigEntry<bool> _loggingEnabled;
 
         private static EquipmentAndQuickSlots _instance;
@@ -43,8 +44,9 @@ namespace EquipmentAndQuickSlots
             HotkeyLabels[0] = Config.Bind("Hotkeys", "Quick slot hotkey label 1", "", "Hotkey Label for Quick Slot 1. Leave blank to use the hotkey itself.");
             HotkeyLabels[1] = Config.Bind("Hotkeys", "Quick slot hotkey label 2", "", "Hotkey Label for Quick Slot 2. Leave blank to use the hotkey itself.");
             HotkeyLabels[2] = Config.Bind("Hotkeys", "Quick slot hotkey label 3", "", "Hotkey Label for Quick Slot 3. Leave blank to use the hotkey itself.");
-            EquipmentSlotsEnabled = Config.Bind("Toggles", "Enable Equipment Slots", true, "Enable the equipment slots. !!! WARNING !!! If you disable this while wearing equipment, you will LOSE IT!");
-            QuickSlotsEnabled = Config.Bind("Toggles", "Enable Quick Slots", true, "Enable the quick slots. !!! WARNING !!! If you disable this while items are in the quickslots, you will LOSE THEM!");
+            EquipmentSlotsEnabled = Config.Bind("Toggles", "Enable Equipment Slots", true, "Enable the equipment slots. Disabling this while items are equipped with attempt to move them to your inventory.");
+            QuickSlotsEnabled = Config.Bind("Toggles", "Enable Quick Slots", true, "Enable the quick slots. Disabling this while items are in the slots with attempt to move them to your inventory.");
+            ViewDebugSaveData = Config.Bind("Toggles", "View Debug Save Data", false, "Enable to view the raw save data in the compendium.");
 
             _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), PluginId);
         }
