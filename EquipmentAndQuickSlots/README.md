@@ -3,7 +3,7 @@ The new, v2.0 of Equipment and Quick Slots uses a new system for saving and load
 
 It is NOT compatible with 1.x versions and 1.x must be uninstalled correctly before upgrading to the 2.0 version!
 
-### How to Uninstall Equipment and Quick Slots 1.x
+### How to Upgrade Equipment and Quick Slots 1.x to 2.0.0
 1. Start the game with the old mod installed
 2. Find a safe place for your character
 3. Unequip all equipment and move everything out of the quick slots
