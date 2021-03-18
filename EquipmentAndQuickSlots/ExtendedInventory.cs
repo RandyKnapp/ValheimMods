@@ -151,7 +151,7 @@ namespace EquipmentAndQuickSlots
         public int OverrideGetEmptySlots()
         {
             CallBase = true;
-            var result = _inventories.Sum(x => (x.CountAsEmptySlots(_player)) ? 0 : x.GetEmptySlots());
+            var result = _inventories.Sum(x => x.CountAsEmptySlots(_player) ? x.GetEmptySlots() : 0);
             CallBase = false;
             return result;
         }
@@ -159,7 +159,7 @@ namespace EquipmentAndQuickSlots
         public bool OverrideHaveEmptySlot()
         {
             CallBase = true;
-            var result = _inventories.Any(x => !x.CountAsEmptySlots(_player) && x.HaveEmptySlot());
+            var result = _inventories.Any(x => x.CountAsEmptySlots(_player) && x.HaveEmptySlot());
             CallBase = false;
             return result;
         }
