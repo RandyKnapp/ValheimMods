@@ -191,10 +191,6 @@
       "DisplayText" : "Block improved by +{0:0.#}%",
       "Requirements" : {
         "AllowedItemTypes" : [
-          "OneHandedWeapon",
-          "TwoHandedWeapon",
-          "Bow",
-          "Torch",
           "Shield"
         ],
         "ItemHasBlockPower" : true
@@ -212,11 +208,8 @@
       "DisplayText" : "Parry improved by +{0:0.#}%",
       "Requirements" : {
         "AllowedItemTypes" : [
-          "OneHandedWeapon",
-          "TwoHandedWeapon",
-          "Bow",
-          "Torch",
-          "Shield"
+          "Shield",
+          "TwoHandedWeapon"
         ],
         "ItemHasParryPower" : true
       },

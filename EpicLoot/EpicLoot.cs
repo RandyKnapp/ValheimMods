@@ -42,7 +42,7 @@ namespace EpicLoot
     public class EpicLoot : BaseUnityPlugin
     {
         private const string PluginId = "randyknapp.mods.epicloot";
-        private const string Version = "0.5.15";
+        private const string Version = "0.5.16";
 
         private static ConfigEntry<string> _setItemColor;
         private static ConfigEntry<string> _magicRarityColor;
@@ -126,6 +126,7 @@ namespace EpicLoot
             MagicItemEffectDefinitions.Initialize(LoadJsonFile<MagicItemEffectsList>("magiceffects.json"));
             LootRoller.Initialize(LoadJsonFile<LootConfig>("loottables.json"));
             GatedItemTypeHelper.Initialize(LoadJsonFile<ItemInfoConfig>("iteminfo.json"));
+            RecipesHelper.Initialize(LoadJsonFile<RecipesConfig>("recipes.json"));
             PrintInfo();
 
             LoadAssets();
@@ -206,6 +207,17 @@ namespace EpicLoot
                     new RecipeRequirementConfig { item = "Bronze", amount = 3 },
                 }
             });
+
+            LoadItem(assetBundle, "LeatherBelt");
+            LoadItem(assetBundle, "SilverRing");
+            LoadItem(assetBundle, "GoldRubyRing");
+        }
+
+        private static void LoadItem(AssetBundle assetBundle, string assetName)
+        {
+            var prefab = assetBundle.LoadAsset<GameObject>(assetName);
+            RegisteredItemPrefabs.Add(prefab);
+            RegisteredPrefabs.Add(prefab);
         }
 
         private static void LoadStationExtension(AssetBundle assetBundle, string assetName, PieceDef pieceDef)
@@ -454,7 +466,12 @@ namespace EpicLoot
 
         public static void TryRegisterRecipes()
         {
-            Recipes_Setup.SetupRecipes();
+            if (!IsObjectDBReady())
+            {
+                return;
+            }
+
+            RecipesHelper.SetupRecipes();
         }
 
         private static T LoadJsonFile<T>(string filename) where T : class

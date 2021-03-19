@@ -1,4 +1,4 @@
-# EpicLoot Data v0.5.15
+# EpicLoot Data v0.5.16
 
 *Author: RandyKnapp*
 *Source: [Github](https://github.com/RandyKnapp/ValheimMods/tree/main/EpicLoot)*
@@ -30,7 +30,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
     * **ExcludedItemTypes:** This effect may only be rolled on items that are not one of the types on this list.
     * **AllowedRarities:** This effect may only be rolled on an item of one of these rarities. Options are: `Magic, Rare, Epic, Legendary`
     * **ExcludedRarities:** This effect may only be rolled on an item that is not of one of these rarities.
-    * **AllowedSkillTypes:** This effect may only be rolled on an item that uses one of these skill types. Options are: `Swords, Knives, Clubs, Polearms, Spears, Blocking, Axes, Bows, Unarmed, Pickaxes, WoodCutting`
+    * **AllowedSkillTypes:** This effect may only be rolled on an item that uses one of these skill types. Options are: `Swords, Knives, Clubs, Polearms, Spears, Blocking, Axes, Bows, Unarmed, Pickaxes`
     * **ExcludedSkillTypes:** This effect may only be rolled on an item that does not use one of these skill types.
     * **AllowedItemNames:** This effect may only be rolled on an item with one of these names. Use the unlocalized shared name, i.e.: `$item_sword_iron`
     * **ExcludedItemNames:** This effect may only be rolled on an item that does not have one of these names.
@@ -178,11 +178,11 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 > **Display Text:** Block improved by +{0:0.#}%
 > 
-> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Shield
+> **Allowed Item Types:** Shield
 > 
 > **Requirements:**
 > > **Flags:** `ExclusiveSelf, ItemHasBlockPower`
-> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Shield`
+> > **AllowedItemTypes:** `Shield`
 > 
 > **Value Per Rarity:**
 > 
@@ -197,11 +197,11 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 > **Display Text:** Parry improved by +{0:0.#}%
 > 
-> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Shield
+> **Allowed Item Types:** Shield, TwoHandedWeapon
 > 
 > **Requirements:**
 > > **Flags:** `ExclusiveSelf, ItemHasParryPower`
-> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Shield`
+> > **AllowedItemTypes:** `Shield, TwoHandedWeapon`
 > 
 > **Value Per Rarity:**
 > 

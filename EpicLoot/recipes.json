@@ -1,0 +1,316 @@
+{
+  "recipes": [
+    // Enchantable Items
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    {
+      "name": "Recipe_LeatherBelt",
+      "item": "LeatherBelt",
+      "craftingStation": "forge",
+      "resources": [
+        { "item": "LeatherScraps", "amount": 4 },
+        { "item": "Bronze", "amount": 1 }
+      ]
+    },
+    {
+      "name": "Recipe_SilverRing",
+      "item": "SilverRing",
+      "craftingStation": "forge",
+      "resources": [
+        { "item": "Silver", "amount": 1 }
+      ]
+    },
+    {
+      "name": "Recipe_GoldRubyRing",
+      "item": "GoldRubyRing",
+      "craftingStation": "forge",
+      "resources": [
+        { "item": "Coins", "amount": 200 },
+        { "item": "Ruby", "amount": 1 }
+      ]
+    },
+
+    // Upgrade Recipes
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    {
+      "name": "Recipe_ShardRareUpgrade",
+      "item": "ShardRare",
+      "amount": 1,
+      "craftingStation": "",
+      "resources": [
+        { "item": "ShardMagic", "amount": 5 },
+        { "item": "Coins",      "amount": 1 }
+      ]
+    },
+    {
+      "name": "Recipe_ShardEpicUpgrade",
+      "item": "ShardEpic",
+      "amount": 1,
+      "craftingStation": "",
+      "resources": [
+        { "item": "ShardRare", "amount": 5 },
+        { "item": "Coins",     "amount": 5 }
+      ]
+    },
+    {
+      "name": "Recipe_ShardLegendaryUpgrade",
+      "item": "ShardLegendary",
+      "amount": 1,
+      "craftingStation": "",
+      "resources": [
+        { "item": "ShardEpic", "amount": 5 },
+        { "item": "Coins",     "amount": 10 }
+      ]
+    },
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    {
+      "name": "Recipe_DustRareUpgrade",
+      "item": "DustRare",
+      "amount": 1,
+      "craftingStation": "",
+      "resources": [
+        { "item": "DustMagic", "amount": 5  },
+        { "item": "Coins",     "amount": 1 }
+      ]
+    },
+    {
+      "name": "Recipe_DustEpicUpgrade",
+      "item": "DustEpic",
+      "amount": 1,
+      "craftingStation": "",
+      "resources": [
+        { "item": "DustRare", "amount": 5  },
+        { "item": "Coins",    "amount": 15 }
+      ]
+    },
+    {
+      "name": "Recipe_DustLegendaryUpgrade",
+      "item": "DustLegendary",
+      "amount": 1,
+      "craftingStation": "",
+      "resources": [
+        { "item": "DustEpic", "amount": 5  },
+        { "item": "Coins",    "amount": 10 }
+      ]
+    },
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    {
+      "name": "Recipe_ReagentRareUpgrade",
+      "item": "ReagentRare",
+      "amount": 1,
+      "craftingStation": "",
+      "resources": [
+        { "item": "ReagentMagic", "amount": 5 },
+        { "item": "Coins",        "amount": 1 }
+      ]
+    },
+    {
+      "name": "Recipe_ReagentEpicUpgrade",
+      "item": "ReagentEpic",
+      "amount": 1,
+      "craftingStation": "",
+      "resources": [
+        { "item": "ReagentRare", "amount": 5  },
+        { "item": "Coins",       "amount": 5 }
+      ]
+    },
+    {
+      "name": "Recipe_ReagentLegendaryUpgrade",
+      "item": "ReagentLegendary",
+      "amount": 1,
+      "craftingStation": "",
+      "resources": [
+        { "item": "ReagentEpic", "amount": 5  },
+        { "item": "Coins",       "amount": 10 }
+      ]
+    },
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    {
+      "name": "Recipe_EssenceRareUpgrade",
+      "item": "EssenceRare",
+      "amount": 1,
+      "craftingStation": "",
+      "resources": [
+        { "item": "EssenceMagic", "amount": 5 },
+        { "item": "Coins",        "amount": 1 }
+      ]
+    },
+    {
+      "name": "Recipe_EssenceEpicUpgrade",
+      "item": "EssenceEpic",
+      "amount": 1,
+      "craftingStation": "",
+      "resources": [
+        { "item": "EssenceRare", "amount": 5  },
+        { "item": "Coins",       "amount": 5 }
+      ]
+    },
+    {
+      "name": "Recipe_EssenceLegendaryUpgrade",
+      "item": "EssenceLegendary",
+      "amount": 1,
+      "craftingStation": "",
+      "resources": [
+        { "item": "EssenceEpic", "amount": 5  },
+        { "item": "Coins",       "amount": 10 }
+      ]
+    },
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    {
+      "name": "Recipe_RunestoneRareUpgrade",
+      "item": "RunestoneRare",
+      "amount": 1,
+      "craftingStation": "",
+      "resources": [
+        { "item": "RunestoneMagic", "amount": 5 },
+        { "item": "Coins",          "amount": 1 }
+      ]
+    },
+    {
+      "name": "Recipe_RunestoneEpicUpgrade",
+      "item": "RunestoneEpic",
+      "amount": 1,
+      "craftingStation": "",
+      "resources": [
+        { "item": "RunestoneRare", "amount": 5  },
+        { "item": "Coins",         "amount": 5 }
+      ]
+    },
+    {
+      "name": "Recipe_RunestoneLegendaryUpgrade",
+      "item": "RunestoneLegendary",
+      "amount": 1,
+      "craftingStation": "",
+      "resources": [
+        { "item": "RunestoneEpic", "amount": 5  },
+        { "item": "Coins",         "amount": 10 }
+      ]
+    },
+
+    // Conversion Recipes
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    {
+      "name": "Recipe_MagicShardToDust_Conversion",
+      "item": "DustMagic",
+      "amount": 1,
+      "craftingStation": "",
+      "resources": [
+        { "item": "ShardMagic", "amount": 2 },
+        { "item": "Coins",      "amount": 1 }
+      ]
+    },
+    {
+      "name": "Recipe_MagicShardToEssence_Conversion",
+      "item": "EssenceMagic",
+      "amount": 1,
+      "craftingStation": "",
+      "resources": [
+        { "item": "ShardMagic", "amount": 2 },
+        { "item": "Coins",      "amount": 1 }
+      ]
+    },
+    {
+      "name": "Recipe_MagicShardToReagent_Conversion",
+      "item": "ReagentMagic",
+      "amount": 1,
+      "craftingStation": "",
+      "resources": [
+        { "item": "ShardMagic", "amount": 2 },
+        { "item": "Coins",      "amount": 1 }
+      ]
+    },
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    {
+      "name": "Recipe_RareShardToDust_Conversion",
+      "item": "DustRare",
+      "amount": 1,
+      "craftingStation": "",
+      "resources": [
+        { "item": "ShardRare", "amount": 2 },
+        { "item": "Coins",     "amount": 2 }
+      ]
+    },
+    {
+      "name": "Recipe_RareShardToEssence_Conversion",
+      "item": "EssenceRare",
+      "amount": 1,
+      "craftingStation": "",
+      "resources": [
+        { "item": "ShardRare", "amount": 2 },
+        { "item": "Coins",     "amount": 2 }
+      ]
+    },
+    {
+      "name": "Recipe_RareShardToReagent_Conversion",
+      "item": "ReagentRare",
+      "amount": 1,
+      "craftingStation": "",
+      "resources": [
+        { "item": "ShardRare", "amount": 2 },
+        { "item": "Coins",     "amount": 2 }
+      ]
+    },
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    {
+      "name": "Recipe_EpicShardToDust_Conversion",
+      "item": "DustEpic",
+      "amount": 1,
+      "craftingStation": "",
+      "resources": [
+        { "item": "ShardEpic", "amount": 2 },
+        { "item": "Coins",     "amount": 3 }
+      ]
+    },
+    {
+      "name": "Recipe_EpicShardToEssence_Conversion",
+      "item": "EssenceEpic",
+      "amount": 1,
+      "craftingStation": "",
+      "resources": [
+        { "item": "ShardEpic", "amount": 2 },
+        { "item": "Coins",     "amount": 3 }
+      ]
+    },
+    {
+      "name": "Recipe_EpicShardToReagent_Conversion",
+      "item": "ReagentEpic",
+      "amount": 1,
+      "craftingStation": "",
+      "resources": [
+        { "item": "ShardEpic", "amount": 2 },
+        { "item": "Coins",     "amount": 3 }
+      ]
+    },
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    {
+      "name": "Recipe_LegendaryShardToDust_Conversion",
+      "item": "DustLegendary",
+      "amount": 1,
+      "craftingStation": "",
+      "resources": [
+        { "item": "ShardLegendary", "amount": 2 },
+        { "item": "Coins",          "amount": 4 }
+      ]
+    },
+    {
+      "name": "Recipe_LegendaryShardToEssence_Conversion",
+      "item": "EssenceLegendary",
+      "amount": 1,
+      "craftingStation": "",
+      "resources": [
+        { "item": "ShardLegendary", "amount": 2 },
+        { "item": "Coins",          "amount": 4 }
+      ]
+    },
+    {
+      "name": "Recipe_LegendaryShardToReagent_Conversion",
+      "item": "ReagentLegendary",
+      "amount": 1,
+      "craftingStation": "",
+      "resources": [
+        { "item": "ShardLegendary", "amount": 2 },
+        { "item": "Coins",          "amount": 4 }
+      ]
+    }
+  ]
+}

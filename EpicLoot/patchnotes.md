@@ -1,3 +1,10 @@
+## Version 0.5.16
+  * Three new craftable, enchantable utility items
+  * All conversion and upgrade recipes for crafting materials in configurable json file
+  * Small coin amounts added to conversion and upgrade recipes for crafting materials
+  * Magic effect changes:
+    * Parry now only rolls on two-handed weapons and shields
+	* Block now only rolls on shields
 ## Version 0.5.15
   * Loot tables now use a leveled format that can be extended beyond level 3
   * DLC Stuff allowed to enchant

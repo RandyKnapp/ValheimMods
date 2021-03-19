@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 1446739925
+CRC: 552218765
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: d6c2e0deb133f51fbe5e611132b7d32d
+    Hash: b2fe3b754b3c8a125242eb7080ce819e
   TypeTreeHash:
     serializedVersion: 2
-    Hash: fc5a5ce937bd0bf8f87ef2a126113efe
+    Hash: 7e3a239af89839e442e7d2e27c364c05
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -42,15 +42,15 @@ ClassTypes:
 - Class: 108
   Script: {instanceID: 0}
 - Class: 114
+  Script: {fileID: 1109157524, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
+- Class: 114
   Script: {fileID: 825357479, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
+- Class: 114
+  Script: {fileID: 1521249158, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
 - Class: 114
   Script: {fileID: 2094620348, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
 - Class: 114
   Script: {fileID: -201937006, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
-- Class: 114
-  Script: {fileID: 1521249158, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
-- Class: 114
-  Script: {fileID: 1109157524, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
 - Class: 115
   Script: {instanceID: 0}
 - Class: 120
@@ -65,6 +65,7 @@ ClassTypes:
   Script: {instanceID: 0}
 SerializeReferenceClassIdentifiers: []
 Assets:
+- Assets/EpicLoot/Prefabs/Equipment/GoldRubyRing.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/DustRare.prefab
 - Assets/EpicLoot/Sprites/Inventory/SetItemMarker.png
 - Assets/EpicLoot/Prefabs/CraftingMaterials/RunestoneRare.prefab
@@ -88,6 +89,7 @@ Assets:
 - Assets/EpicLoot/Sprites/Inventory/SmallButtonEnchantOverlay.png
 - Assets/EpicLoot/Prefabs/CraftingMaterials/EssenceEpic.prefab
 - Assets/EpicLoot/Sprites/Inventory/EpicItemBg.png
+- Assets/EpicLoot/Prefabs/Equipment/SilverRing.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/DustMagic.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/ReagentMagic.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/ShardMagic.prefab
@@ -100,6 +102,7 @@ Assets:
 - Assets/EpicLoot/Sprites/Inventory/RareItemBg.png
 - Assets/EpicLoot/Prefabs/CraftingMaterials/ReagentEpic.prefab
 - Assets/EpicLoot/Sprites/Inventory/Equipped.png
+- Assets/EpicLoot/Prefabs/Equipment/LeatherBelt.prefab
 - Assets/EpicLoot/Prefabs/StationExtensions/piece_enchanter.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/RunestoneLegendary.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/EssenceLegendary.prefab
