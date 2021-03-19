@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Common;
+using EpicLoot.GatedItemType;
 using ExtendedItemDataFramework;
 using JetBrains.Annotations;
 using UnityEngine;
@@ -140,6 +141,11 @@ namespace EpicLoot
                 return results;
             }
 
+            if (EpicLoot.AlwaysDropCheat)
+            {
+                drops = drops.Where(x => x.Length > 0 && x[0] != 0).ToArray();
+            }
+
             _weightedDropCountTable.Setup(drops, dropPair => dropPair.Length == 2 ? dropPair[1] : 1);
             var dropCountRollResult = _weightedDropCountTable.Roll();
             var dropCount = dropCountRollResult != null && dropCountRollResult.Length >= 1 ? dropCountRollResult[0] : 0;
@@ -155,11 +161,12 @@ namespace EpicLoot
             foreach (var ld in selectedDrops)
             {
                 var lootDrop = ResolveLootDrop(ld, ld.Rarity);
+                var itemID = GatedItemTypeHelper.GetGatedItemID(lootDrop.Item);
 
-                var itemPrefab = ObjectDB.instance.GetItemPrefab(lootDrop.Item);
+                var itemPrefab = ObjectDB.instance.GetItemPrefab(itemID);
                 if (itemPrefab == null)
                 {
-                    Debug.LogError($"Tried to spawn loot ({lootDrop.Item}) for ({objectName}), but the item prefab was not found!");
+                    Debug.LogError($"Tried to spawn loot ({itemID}) for ({objectName}), but the item prefab was not found!");
                     continue;
                 }
 
@@ -377,24 +384,6 @@ namespace EpicLoot
 
         public static int[][] GetDropsForLevel([NotNull] LootTable lootTable, int level, bool useNextHighestIfNotPresent = true)
         {
-            if (level == 1 && !ArrayUtils.IsNullOrEmpty(lootTable.Drops))
-            {
-                if (lootTable.LeveledLoot.Any(x => x.Level == level))
-                {
-                    Debug.LogWarning($"Duplicated leveled drops for ({lootTable.Object} lvl {level}), using 'Drops'");
-                }
-                return lootTable.Drops;
-            }
-
-            if (level == 2 && !ArrayUtils.IsNullOrEmpty(lootTable.Drops2))
-            {
-                if (lootTable.LeveledLoot.Any(x => x.Level == level))
-                {
-                    Debug.LogWarning($"Duplicated leveled drops for ({lootTable.Object} lvl {level}), using 'Drops{level}'");
-                }
-                return lootTable.Drops2;
-            }
-
             if (level == 3 && !ArrayUtils.IsNullOrEmpty(lootTable.Drops3))
             {
                 if (lootTable.LeveledLoot.Any(x => x.Level == level))
@@ -403,13 +392,31 @@ namespace EpicLoot
                 }
                 return lootTable.Drops3;
             }
+            
+            if ((level == 2 || level == 3) && !ArrayUtils.IsNullOrEmpty(lootTable.Drops2))
+            {
+                if (lootTable.LeveledLoot.Any(x => x.Level == level))
+                {
+                    Debug.LogWarning($"Duplicated leveled drops for ({lootTable.Object} lvl {level}), using 'Drops{level}'");
+                }
+                return lootTable.Drops2;
+            }
+
+            if (level <= 3 && !ArrayUtils.IsNullOrEmpty(lootTable.Drops))
+            {
+                if (lootTable.LeveledLoot.Any(x => x.Level == level))
+                {
+                    Debug.LogWarning($"Duplicated leveled drops for ({lootTable.Object} lvl {level}), using 'Drops'");
+                }
+                return lootTable.Drops;
+            }
 
             for (var lvl = level; lvl >= 1; --lvl)
             {
                 var found = lootTable.LeveledLoot.Find(x => x.Level == lvl);
                 if (found != null && !ArrayUtils.IsNullOrEmpty(found.Drops))
                 {
-                    return found.Drops;
+                    return found.Drops.ToArray();
                 }
 
                 if (!useNextHighestIfNotPresent)
@@ -424,24 +431,6 @@ namespace EpicLoot
 
         public static LootDrop[] GetLootForLevel([NotNull] LootTable lootTable, int level, bool useNextHighestIfNotPresent = true)
         {
-            if (level == 1 && !ArrayUtils.IsNullOrEmpty(lootTable.Loot))
-            {
-                if (lootTable.LeveledLoot.Any(x => x.Level == level))
-                {
-                    Debug.LogWarning($"Duplicated leveled loot for ({lootTable.Object} lvl {level}), using 'Loot'");
-                }
-                return lootTable.Loot.ToArray();
-            }
-
-            if (level == 2 && !ArrayUtils.IsNullOrEmpty(lootTable.Loot2))
-            {
-                if (lootTable.LeveledLoot.Any(x => x.Level == level))
-                {
-                    Debug.LogWarning($"Duplicated leveled loot for ({lootTable.Object} lvl {level}), using 'Loot{level}'");
-                }
-                return lootTable.Loot2.ToArray();
-            }
-
             if (level == 3 && !ArrayUtils.IsNullOrEmpty(lootTable.Loot3))
             {
                 if (lootTable.LeveledLoot.Any(x => x.Level == level))
@@ -451,12 +440,30 @@ namespace EpicLoot
                 return lootTable.Loot3.ToArray();
             }
 
+            if ((level == 2 || level == 3) && !ArrayUtils.IsNullOrEmpty(lootTable.Loot2))
+            {
+                if (lootTable.LeveledLoot.Any(x => x.Level == level))
+                {
+                    Debug.LogWarning($"Duplicated leveled loot for ({lootTable.Object} lvl {level}), using 'Loot{level}'");
+                }
+                return lootTable.Loot2.ToArray();
+            }
+            
+            if (level <= 3 && !ArrayUtils.IsNullOrEmpty(lootTable.Loot))
+            {
+                if (lootTable.LeveledLoot.Any(x => x.Level == level))
+                {
+                    Debug.LogWarning($"Duplicated leveled loot for ({lootTable.Object} lvl {level}), using 'Loot'");
+                }
+                return lootTable.Loot.ToArray();
+            }
+
             for (var lvl = level; lvl >= 1; --lvl)
             {
                 var found = lootTable.LeveledLoot.Find(x => x.Level == lvl);
                 if (found != null && !ArrayUtils.IsNullOrEmpty(found.Loot))
                 {
-                    return found.Loot;
+                    return found.Loot.ToArray();
                 }
 
                 if (!useNextHighestIfNotPresent)

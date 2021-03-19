@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -81,7 +80,7 @@ namespace EpicLoot.Crafting
                     text.text = rarity.ToString();
                     text.color = rarityColor;
                     RarityButtons.Add(rarityButton);
-                    var rt = rarityButton.transform as RectTransform;
+                    var rt = rarityButton.gameObject.RectTransform();
                     rt.anchoredPosition = startPos + (index * new Vector2(rt.rect.width + 4, 0));
                     index++;
                 }
@@ -94,7 +93,7 @@ namespace EpicLoot.Crafting
                 Object.Destroy(newDialog);
                 SuccessDialog.gameObject.name = "CraftingSuccessDialog";
 
-                var background = SuccessDialog.gameObject.transform.Find("VariantFrame") as RectTransform;
+                var background = SuccessDialog.gameObject.transform.Find("VariantFrame").gameObject.RectTransform();
                 background.gameObject.name = "Frame";
                 for (int i = 1; i < background.transform.childCount; ++i)
                 {
@@ -334,7 +333,7 @@ namespace EpicLoot.Crafting
                 {
                     if (bgIconTransform == null)
                     {
-                        bgIconTransform = GameObject.Instantiate(icon, icon.transform.parent, true).transform;
+                        bgIconTransform = Object.Instantiate(icon, icon.transform.parent, true).transform;
                         bgIconTransform.name = "bgIcon";
                         bgIconTransform.SetSiblingIndex(icon.transform.GetSiblingIndex());
                     }
@@ -461,7 +460,7 @@ namespace EpicLoot.Crafting
             }
 
             __instance.m_recipeListRoot.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical,
-                Mathf.Max(__instance.m_recipeListBaseSize, (float)__instance.m_recipeList.Count * __instance.m_recipeListSpace));
+                Mathf.Max(__instance.m_recipeListBaseSize, __instance.m_recipeList.Count * __instance.m_recipeListSpace));
         }
 
         public void AddRecipeToList(InventoryGui __instance, EnchantRecipe recipe, int index)
@@ -548,13 +547,10 @@ namespace EpicLoot.Crafting
         {
             if (!item.IsMagic() && EpicLoot.CanBeMagicItem(item))
             {
-                //foreach (ItemRarity rarity in Enum.GetValues(typeof(ItemRarity)))
+                if (Player.m_localPlayer.m_knownMaterial.Contains($"Magic Runestone"))
                 {
-                    if (Player.m_localPlayer.m_knownMaterial.Contains($"Magic Runestone"))
-                    {
-                        var recipe = new EnchantRecipe { FromItem = item.Extended() }; // todo, no rarity in recipe
-                        Recipes.Add(recipe);
-                    }
+                    var recipe = new EnchantRecipe { FromItem = item.Extended() };
+                    Recipes.Add(recipe);
                 }
             }
         }

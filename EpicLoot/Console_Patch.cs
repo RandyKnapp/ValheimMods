@@ -39,8 +39,19 @@ namespace EpicLoot
                 SpawnMagicCraftingMaterials();
                 return false;
             }
+            else if (command.Equals("alwaysdrop", StringComparison.InvariantCultureIgnoreCase))
+            {
+                ToggleAlwaysDrop(__instance);
+                return false;
+            }
 
             return true;
+        }
+
+        private static void ToggleAlwaysDrop(Console __instance)
+        {
+            EpicLoot.AlwaysDropCheat = !EpicLoot.AlwaysDropCheat;
+            __instance.AddString($"Always Drop: {EpicLoot.AlwaysDropCheat}");
         }
 
         private static void SpawnMagicCraftingMaterials()

@@ -8,6 +8,7 @@ using BepInEx;
 using BepInEx.Configuration;
 using Common;
 using EpicLoot.Crafting;
+using EpicLoot.GatedItemType;
 using ExtendedItemDataFramework;
 using fastJSON;
 using HarmonyLib;
@@ -57,6 +58,7 @@ namespace EpicLoot
         private static ConfigEntry<string> _epicRarityDisplayName;
         private static ConfigEntry<string> _legendaryRarityDisplayName;
         public static ConfigEntry<bool> UseScrollingCraftDescription;
+        private static ConfigEntry<GatedItemTypeMode> _gatedItemTypeModeConfig;
 
         public static readonly List<ItemDrop.ItemData.ItemType> AllowedMagicItemTypes = new List<ItemDrop.ItemData.ItemType>
         {
@@ -89,13 +91,14 @@ namespace EpicLoot
 
         public static readonly List<string> RestrictedItemNames = new List<string>
         {
-            "$item_tankard", "Unarmed", "CAPE TEST", "Cheat sword", "$item_sword_fire", "$item_tankard_odin", "$item_cape_odin", "$item_helmet_odin"
+            "$item_tankard", "Unarmed", "CAPE TEST", "Cheat sword", "$item_sword_fire", "$item_tankard_odin"
         };
 
         public static readonly Assets Assets = new Assets();
         public static readonly List<GameObject> RegisteredPrefabs = new List<GameObject>();
         public static readonly List<GameObject> RegisteredItemPrefabs = new List<GameObject>();
         public static readonly Dictionary<GameObject, PieceDef> RegisteredPieces = new Dictionary<GameObject, PieceDef>();
+        public static bool AlwaysDropCheat = false;
 
         public static event Action LootTableLoaded;
 
@@ -118,9 +121,11 @@ namespace EpicLoot
             _epicRarityDisplayName = Config.Bind("Rarity", "Epic Rarity Display Name", "Epic", "The name of the third rarity.");
             _legendaryRarityDisplayName = Config.Bind("Rarity", "Legendary Rarity Display Name", "Legendary", "The name of the highest rarity.");
             UseScrollingCraftDescription = Config.Bind("Crafting UI", "Use Scrolling Craft Description", true, "Changes the item description in the crafting panel to scroll instead of scale when it gets too long for the space.");
+            _gatedItemTypeModeConfig = Config.Bind("Balance", "Item Drop Limits", GatedItemTypeMode.MustKnowRecipe, "Sets how the drop system limits what item types can drop. Unlimited: no limits, exactly what's in the loot table will drop. MustKnowRecipe: items will drop so long as the player has discovered their recipe. MustHaveCrafted: items will only drop once the player has crafted one or picked one up. If an item type cannot drop, it will downgrade to an item of the same type and skill that the player has unlocked (i.e. swords will stay swords)");
 
             MagicItemEffectDefinitions.Initialize(LoadJsonFile<MagicItemEffectsList>("magiceffects.json"));
             LootRoller.Initialize(LoadJsonFile<LootConfig>("loottables.json"));
+            GatedItemTypeHelper.Initialize(LoadJsonFile<ItemInfoConfig>("iteminfo.json"));
             PrintInfo();
 
             LoadAssets();
@@ -615,8 +620,9 @@ namespace EpicLoot
             t.AppendLine("  * **Requirements:** A set of requirements.");
             t.AppendLine("    * **Flags:** A set of predefined flags to check certain weapon properties. The list of flags is: `NoRoll, ExclusiveSelf, ItemHasPhysicalDamage, ItemHasElementalDamage, ItemUsesDurability, ItemHasNegativeMovementSpeedModifier, ItemHasBlockPower, ItemHasParryPower, ItemHasArmor, ItemHasBackstabBonus, ItemUsesStaminaOnAttack`");
             t.AppendLine("    * **ExclusiveEffectTypes:** This effect may not be rolled on an item that has already rolled on of these effects");
-            t.AppendLine("    * **AllowedItemTypes:** This effect may only be rolled on items of a the types in this list. When this list is empty, this is usually done because this is a special effect type added programmatically  or currently not allowed to roll.");
-            t.AppendLine("    * **AllowedRarities:** This effect may only be rolled on an item of one of these rarities");
+            t.AppendLine($"    * **AllowedItemTypes:** This effect may only be rolled on items of a the types in this list. When this list is empty, this is usually done because this is a special effect type added programmatically  or currently not allowed to roll. Options are: `{string.Join(", ", Enum.GetValues(typeof(ItemDrop.ItemData.ItemType)))}`");
+            t.AppendLine($"    * **AllowedRarities:** This effect may only be rolled on an item of one of these rarities. Options are: `{string.Join(", ", AllowedMagicItemTypes)}`");
+            t.AppendLine($"    * **AllowedSkillTypes:** This effect may only be rolled on an item that uses one of these skill types. Options are: `{string.Join(", ", Enum.GetValues(typeof(Skills.SkillType)))}`");
             t.AppendLine("    * **AllowedItemNames:** This effect may only be rolled on an item with one of these names. Use the unlocalized shared name, i.e.: `$item_sword_iron`");
             t.AppendLine("    * **CustomFlags:** A set of any arbitrary strings for future use");
             t.AppendLine("  * **Value Per Rarity:** This effect may only be rolled on items of a rarity included in this table. The value is rolled using a linear distribution between Min and Max and divisible by the Increment.");
@@ -900,6 +906,11 @@ namespace EpicLoot
         public static AudioClip GetMagicItemDropSFX(ItemRarity rarity)
         {
             return Assets.MagicItemDropSFX[(int) rarity];
+        }
+
+        public static GatedItemTypeMode GetGatedItemTypeMode()
+        {
+            return _gatedItemTypeModeConfig.Value;
         }
     }
 }
