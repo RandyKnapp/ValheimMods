@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using Common;
 
 namespace EpicLoot
 {
@@ -11,6 +13,14 @@ namespace EpicLoot
     }
 
     [Serializable]
+    public class LeveledLootDef
+    {
+        public int Level;
+        public int[][] Drops;
+        public LootDrop[] Loot;
+    }
+
+    [Serializable]
     public class LootTable
     {
         public string Object;
@@ -20,6 +30,7 @@ namespace EpicLoot
         public LootDrop[] Loot;
         public LootDrop[] Loot2;
         public LootDrop[] Loot3;
+        public List<LeveledLootDef> LeveledLoot = new List<LeveledLootDef>();
     }
 
     [Serializable]

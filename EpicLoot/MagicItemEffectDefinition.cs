@@ -8,6 +8,7 @@ using UnityEngine;
 
 namespace EpicLoot
 {
+    [Serializable]
     public class MagicItemEffectRequirements
     {
         private static StringBuilder _sb = new StringBuilder();
@@ -17,8 +18,13 @@ namespace EpicLoot
         public bool ExclusiveSelf = true;
         public List<string> ExclusiveEffectTypes = new List<string>();
         public List<ItemDrop.ItemData.ItemType> AllowedItemTypes = new List<ItemDrop.ItemData.ItemType>();
+        public List<ItemDrop.ItemData.ItemType> ExcludedItemTypes = new List<ItemDrop.ItemData.ItemType>();
         public List<ItemRarity> AllowedRarities = new List<ItemRarity>();
+        public List<ItemRarity> ExcludedRarities = new List<ItemRarity>();
+        public List<Skills.SkillType> AllowedSkillTypes = new List<Skills.SkillType>();
+        public List<Skills.SkillType> ExcludedSkillTypes = new List<Skills.SkillType>();
         public List<string> AllowedItemNames = new List<string>();
+        public List<string> ExcludedItemNames = new List<string>();
         public bool ItemHasPhysicalDamage;
         public bool ItemHasElementalDamage;
         public bool ItemUsesDurability;
@@ -63,14 +69,39 @@ namespace EpicLoot
                 _sb.AppendLine($"> > **AllowedItemTypes:** `{string.Join(", ", AllowedItemTypes)}`");
             }
 
+            if (ExcludedItemTypes != null && ExcludedItemTypes.Count > 0)
+            {
+                _sb.AppendLine($"> > **ExcludedItemTypes:** `{string.Join(", ", ExcludedItemTypes)}`");
+            }
+
             if (AllowedRarities != null && AllowedRarities.Count > 0)
             {
                 _sb.AppendLine($"> > **AllowedRarities:** `{string.Join(", ", AllowedRarities)}`");
             }
 
+            if (ExcludedRarities != null && ExcludedRarities.Count > 0)
+            {
+                _sb.AppendLine($"> > **ExcludedRarities:** `{string.Join(", ", ExcludedRarities)}`");
+            }
+
+            if (AllowedSkillTypes != null && AllowedSkillTypes.Count > 0)
+            {
+                _sb.AppendLine($"> > **AllowedSkillTypes:** `{string.Join(", ", AllowedSkillTypes)}`");
+            }
+
+            if (ExcludedSkillTypes != null && ExcludedSkillTypes.Count > 0)
+            {
+                _sb.AppendLine($"> > **ExcludedSkillTypes:** `{string.Join(", ", ExcludedSkillTypes)}`");
+            }
+
             if (AllowedItemNames != null && AllowedItemNames.Count > 0)
             {
                 _sb.AppendLine($"> > **AllowedItemNames:** `{string.Join(", ", AllowedItemNames)}`");
+            }
+
+            if (ExcludedItemNames != null && ExcludedItemNames.Count > 0)
+            {
+                _sb.AppendLine($"> > **ExcludedItemNames:** `{string.Join(", ", ExcludedItemNames)}`");
             }
 
             if (CustomFlags != null && CustomFlags.Count > 0)
@@ -82,8 +113,10 @@ namespace EpicLoot
         }
     }
 
+    [Serializable]
     public class MagicItemEffectDefinition
     {
+        [Serializable]
         public class ValueDef
         {
             public float MinValue;
@@ -91,6 +124,7 @@ namespace EpicLoot
             public float Increment;
         }
 
+        [Serializable]
         public class ValuesPerRarityDef
         {
             public ValueDef Magic;
@@ -139,12 +173,37 @@ namespace EpicLoot
                 return false;
             }
 
+            if (Requirements.ExcludedItemTypes?.Count > 0 && Requirements.ExcludedItemTypes.Contains(itemData.m_shared.m_itemType))
+            {
+                return false;
+            }
+
             if (Requirements.AllowedRarities?.Count > 0 && !Requirements.AllowedRarities.Contains(magicItem.Rarity))
             {
                 return false;
             }
 
+            if (Requirements.ExcludedRarities?.Count > 0 && Requirements.ExcludedRarities.Contains(magicItem.Rarity))
+            {
+                return false;
+            }
+
+            if (Requirements.AllowedSkillTypes?.Count > 0 && !Requirements.AllowedSkillTypes.Contains(itemData.m_shared.m_skillType))
+            {
+                return false;
+            }
+
+            if (Requirements.ExcludedSkillTypes?.Count > 0 && Requirements.ExcludedSkillTypes.Contains(itemData.m_shared.m_skillType))
+            {
+                return false;
+            }
+
             if (Requirements.AllowedItemNames?.Count > 0 && !Requirements.AllowedItemNames.Contains(itemData.m_shared.m_name))
+            {
+                return false;
+            }
+
+            if (Requirements.ExcludedItemNames?.Count > 0 && Requirements.ExcludedItemNames.Contains(itemData.m_shared.m_name))
             {
                 return false;
             }

@@ -1,4 +1,4 @@
-# Epic Loot v0.5.13
+# Epic Loot v0.5.15
 Author: RandyKnapp
 Source: [Github](https://github.com/RandyKnapp/ValheimMods/blob/main/EpicLoot/)
 
@@ -47,10 +47,11 @@ Enter these into the console (F5) after using `imacheater`:
 - [X] Streamline enchanting UI. Use selectable rarity per item.
 - [X] Configurable magic effects
 - [X] More exclusions and configurable requirements for magic effects
+- [ ] Show current equipment with tooltip
 - [ ] Augment items: change/reroll magic item effects (transmute? modify?)
 - [ ] Infuse items: rarity to next rarity (like diablo upgrade rare to legendary)
 - [ ] List of active magic effects on the player status screen
-- [ ] Limit drop types by actual player progression?
+- [X] Limit drop types by actual player progression
 - [ ] Gamble for magic items from Merchant
 - [ ] Custom crafting station for enchanting
 - [ ] Create effects for in-game models of magic items

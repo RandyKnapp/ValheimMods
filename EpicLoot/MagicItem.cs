@@ -18,18 +18,8 @@ namespace EpicLoot
     public class MagicItemEffect
     {
         public int Version = 1;
-
         public string EffectType { get; set; }
-
-        /*public int IntType
-        {
-            get => _effectId;
-            set => _effectId = value;
-        }*/
-
         public float EffectValue;
-
-        //private int _effectId;
     }
 
     [Serializable]

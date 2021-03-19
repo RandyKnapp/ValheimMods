@@ -1,4 +1,18 @@
-# Equipment and Quick Slots
+# !! READ ME FIRST BEFORE UPGRADING !!
+The new, v2.0 of Equipment and Quick Slots uses a new system for saving and loading under the hood.
+
+It is NOT compatible with 1.x versions and 1.x must be uninstalled correctly before upgrading to the 2.0 version!
+
+### How to Upgrade Equipment and Quick Slots 1.x to 2.0.X
+1. Start the game with the old mod installed
+2. Find a safe place for your character
+3. Unequip all equipment and move everything out of the quick slots
+4. Quit the game using the menu
+5. Remove the old Equipment and Quick Slots dll and install the new version
+6. Run the game again
+7. You should see your new empty slots in the inventory and be able to re-equip your items
+
+# Equipment and Quick Slots v2.0.2
 ##### by RandyKnapp
 Give equipped items their own dedicated inventory slots, plus three more hotkeyable quick slots.
 
@@ -17,6 +31,12 @@ Copy EquipmentAndQuickSlots.dll into the BepInEx/plugins folder
     * Fixed issue where gamepad could not use quick slots
   * 1.0.5
     * Fixed issue where the previous fix broke the #8 hotkey...
-
-### Known Bugs:
-  * Cannot unequip an item with zero durability
+  * 2.0.0 Stability Update
+	* Items are saved even if accidentally uninstalling or having an error
+	* UIs work better with controller
+	* Never drop or lose items on death
+  * 2.0.1
+	* Hotfix for not being able to craft when fully equipped
+  * 2.0.2
+	* Fixed an issue where some equipment was lost on death
+	* Re-added the toggles to disable and enable features

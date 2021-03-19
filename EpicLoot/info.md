@@ -1,4 +1,4 @@
-# EpicLoot Data v0.5.13
+# EpicLoot Data v0.5.15
 
 *Author: RandyKnapp*
 *Source: [Github](https://github.com/RandyKnapp/ValheimMods/tree/main/EpicLoot)*
@@ -26,8 +26,9 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
   * **Requirements:** A set of requirements.
     * **Flags:** A set of predefined flags to check certain weapon properties. The list of flags is: `NoRoll, ExclusiveSelf, ItemHasPhysicalDamage, ItemHasElementalDamage, ItemUsesDurability, ItemHasNegativeMovementSpeedModifier, ItemHasBlockPower, ItemHasParryPower, ItemHasArmor, ItemHasBackstabBonus, ItemUsesStaminaOnAttack`
     * **ExclusiveEffectTypes:** This effect may not be rolled on an item that has already rolled on of these effects
-    * **AllowedItemTypes:** This effect may only be rolled on items of a the types in this list. When this list is empty, this is usually done because this is a special effect type added programmatically  or currently not allowed to roll.
-    * **AllowedRarities:** This effect may only be rolled on an item of one of these rarities
+    * **AllowedItemTypes:** This effect may only be rolled on items of a the types in this list. When this list is empty, this is usually done because this is a special effect type added programmatically  or currently not allowed to roll. Options are: `ItemDrop+ItemData+ItemType[]`
+    * **AllowedRarities:** This effect may only be rolled on an item of one of these rarities. Options are: `Helmet, Chest, Legs, Shoulder, Utility, Bow, OneHandedWeapon, TwoHandedWeapon, Shield, Tool, Torch`
+    * **AllowedSkillTypes:** This effect may only be rolled on an item that uses one of these skill types. Options are: `Skills+SkillType[]`
     * **AllowedItemNames:** This effect may only be rolled on an item with one of these names. Use the unlocalized shared name, i.e.: `$item_sword_iron`
     * **CustomFlags:** A set of any arbitrary strings for future use
   * **Value Per Rarity:** This effect may only be rolled on items of a rarity included in this table. The value is rolled using a linear distribution between Min and Max and divisible by the Increment.
@@ -129,36 +130,36 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 > **Display Text:** Max durability increased by +{0:0.#}%
 > 
-> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Shield, Tool, Helmet, Chest, Legs, Shoulder, Utility
+> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Shield, Tool, Helmet, Chest, Legs, Shoulder
 > 
 > **Requirements:**
 > > **Flags:** `ExclusiveSelf, ItemUsesDurability`
 > > **ExclusiveEffectTypes:** `Indestructible`
-> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Shield, Tool, Helmet, Chest, Legs, Shoulder, Utility`
+> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Shield, Tool, Helmet, Chest, Legs, Shoulder`
 > > **AllowedRarities:** `Magic, Rare, Epic`
 
 ## ReduceWeight
 
 > **Display Text:** Weight reduced by -{0:0.#}% 
 > 
-> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Shield, Tool, Helmet, Chest, Legs, Shoulder, Utility
+> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Shield, Tool, Helmet, Chest, Legs, Shoulder
 > 
 > **Requirements:**
 > > **Flags:** `ExclusiveSelf`
 > > **ExclusiveEffectTypes:** `Weightless`
-> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Shield, Tool, Helmet, Chest, Legs, Shoulder, Utility`
+> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Shield, Tool, Helmet, Chest, Legs, Shoulder`
 > > **AllowedRarities:** `Magic, Rare, Epic`
 
 ## RemoveSpeedPenalty
 
 > **Display Text:** Movement speed penalty removed
 > 
-> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Shield, Tool, Helmet, Chest, Legs, Shoulder, Utility
+> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Shield, Tool, Helmet, Chest, Legs, Shoulder
 > 
 > **Requirements:**
 > > **Flags:** `ExclusiveSelf, ItemHasNegativeMovementSpeedModifier`
 > > **ExclusiveEffectTypes:** `ModifyMovementSpeed`
-> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Shield, Tool, Helmet, Chest, Legs, Shoulder, Utility`
+> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Shield, Tool, Helmet, Chest, Legs, Shoulder`
 > 
 > **Value Per Rarity:**
 > 
@@ -230,11 +231,11 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 > **Display Text:** Backstab improved by +{0:0.#}%
 > 
-> **Allowed Item Types:** OneHandedWeapon, Bow
+> **Allowed Item Types:** *None*
 > 
 > **Requirements:**
 > > **Flags:** `ExclusiveSelf, ItemHasBackstabBonus`
-> > **AllowedItemTypes:** `OneHandedWeapon, Bow`
+> > **AllowedSkillTypes:** `Knives, Bows`
 > 
 > **Value Per Rarity:**
 > 
@@ -535,31 +536,31 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 > **Display Text:** Movement increased by +{0:0.#}%
 > 
-> **Allowed Item Types:** Legs
+> **Allowed Item Types:** Legs, Utility
 > 
 > **Requirements:**
 > > **Flags:** `ExclusiveSelf`
 > > **ExclusiveEffectTypes:** `RemoveSpeedPenalty`
-> > **AllowedItemTypes:** `Legs`
+> > **AllowedItemTypes:** `Legs, Utility`
 > 
 > **Value Per Rarity:**
 > 
 > |Rarity|Min|Max|Increment|
 > |--|--|--|--|
-> |Magic|5|15|1|
-> |Rare|15|30|1|
-> |Epic|30|45|1|
-> |Legendary|45|60|1|
+> |Magic|5|10|1|
+> |Rare|6|11|1|
+> |Epic|7|12|1|
+> |Legendary|8|13|1|
 
 ## ModifySprintStaminaUse
 
 > **Display Text:** Reduce sprint stamina use by -{0:0.#}%
 > 
-> **Allowed Item Types:** Legs
+> **Allowed Item Types:** Legs, Utility
 > 
 > **Requirements:**
 > > **Flags:** `ExclusiveSelf`
-> > **AllowedItemTypes:** `Legs`
+> > **AllowedItemTypes:** `Legs, Utility`
 > 
 > **Value Per Rarity:**
 > 
@@ -574,11 +575,11 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 > **Display Text:** Reduce jump stamina use by -{0:0.#}%
 > 
-> **Allowed Item Types:** Legs
+> **Allowed Item Types:** Legs, Utility
 > 
 > **Requirements:**
 > > **Flags:** `ExclusiveSelf`
-> > **AllowedItemTypes:** `Legs`
+> > **AllowedItemTypes:** `Legs, Utility`
 > 
 > **Value Per Rarity:**
 > 
@@ -631,24 +632,24 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 > **Display Text:** Indestructible
 > 
-> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Tool, Shield, Helmet, Chest, Legs, Shoulder, Utility
+> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Tool, Shield, Helmet, Chest, Legs, Shoulder
 > 
 > **Requirements:**
 > > **Flags:** `ExclusiveSelf`
 > > **ExclusiveEffectTypes:** `ModifyDurability`
-> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Tool, Shield, Helmet, Chest, Legs, Shoulder, Utility`
+> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Tool, Shield, Helmet, Chest, Legs, Shoulder`
 > > **AllowedRarities:** `Epic, Legendary`
 
 ## Weightless
 
 > **Display Text:** Weightless
 > 
-> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Tool, Shield, Helmet, Chest, Legs, Shoulder, Utility
+> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Tool, Shield, Helmet, Chest, Legs, Shoulder
 > 
 > **Requirements:**
 > > **Flags:** `ExclusiveSelf`
 > > **ExclusiveEffectTypes:** `ReduceWeight`
-> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Tool, Shield, Helmet, Chest, Legs, Shoulder, Utility`
+> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Tool, Shield, Helmet, Chest, Legs, Shoulder`
 
 ## AddCarryWeight
 
@@ -940,12 +941,30 @@ Sets of loot drop data that can be referenced in the loot tables
 A list of every built-in loot table from the mod. The name of the loot table is the object name followed by a number signifying the level of the object.
 ## Greyling
 
-> | Drops | Weight (Chance) |
+> | Drops (lvl 1) | Weight (Chance) |
 > | -- | -- |
 > | 0 | 95 (95%) |
 > | 1 | 5 (5%) |
 
-> | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Drops (lvl 2) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 95 (95%) |
+> | 1 | 5 (5%) |
+
+> | Drops (lvl 3) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 95 (95%) |
+> | 1 | 5 (5%) |
+
+> | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier0Everything | 1 (100%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
+
+> | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier0Everything | 1 (100%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
+
+> | Items (lvl 3) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier0Everything | 1 (100%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
 
@@ -967,7 +986,12 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 > | 0 | 80 (80%) |
 > | 1 | 20 (20%) |
 
-> | Items (lvl 1+) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Drops (lvl 4) | Weight (Chance) |
+> | -- | -- |
+> | 1 | 90 (90%) |
+> | 2 | 10 (10%) |
+
+> | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier0Weapons | 1 (20%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
 > | Tier1Weapons | 1 (20%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
@@ -975,13 +999,17 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 > | Tier1Armor | 1 (20%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
 > | Tier0Tools | 1 (20%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
 
-> | Items (lvl 2+) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Greydwarf.1 | 1 (100%) | 95 (95%) | 4 (4%) | 1 (1%) | 0 (0%) |
 
-> | Items (lvl 3+) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Items (lvl 3) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
-> | Greydwarf.2 | 1 (100%) | 90 (90%) | 8 (8%) | 2 (2%) | 0 (0%) |
+> | Greydwarf.1 | 1 (100%) | 90 (90%) | 8 (8%) | 2 (2%) | 0 (0%) |
+
+> | Items (lvl 4) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Greydwarf.1 | 1 (100%) | 85 (85%) | 13 (13%) | 2 (2%) | 0 (0%) |
 
 
 ## Greydwarf_Elite
@@ -1001,17 +1029,17 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 > | 0 | 30 (30%) |
 > | 1 | 70 (70%) |
 
-> | Items (lvl 1+) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier1Weapons | 1 (50%) | 95 (95%) | 5 (5%) | 0 (0%) | 0 (0%) |
 > | Tier0Shields | 1 (50%) | 95 (95%) | 5 (5%) | 0 (0%) | 0 (0%) |
 
-> | Items (lvl 2+) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Greydwarf_Elite.1 | 1 (50%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
 > | TrollArmor | 1 (50%) | 80 (80%) | 15 (15%) | 5 (5%) | 0 (0%) |
 
-> | Items (lvl 3+) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Items (lvl 3) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Greydwarf_Elite.2 | 1 (100%) | 60 (60%) | 30 (30%) | 10 (10%) | 0 (0%) |
 
@@ -1033,18 +1061,18 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 > | 0 | 40 (40%) |
 > | 1 | 60 (60%) |
 
-> | Items (lvl 1+) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier1Armor | 1 (25%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
 > | Tier1Weapons | 1 (25%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
 > | Tier0Shields | 1 (25%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
 > | BowFineWood | 1 (25%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
 
-> | Items (lvl 2+) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Greydwarf_Shaman.1 | 1 (100%) | 80 (80%) | 15 (15%) | 5 (5%) | 0 (0%) |
 
-> | Items (lvl 3+) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Items (lvl 3) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Greydwarf_Shaman.2 | 1 (100%) | 60 (60%) | 30 (30%) | 10 (10%) | 0 (0%) |
 
@@ -1069,7 +1097,25 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 > | 1 | 60 (59.4%) |
 > | 5 | 1 (1%) |
 
-> | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier1Armor | 4 (28.6%) | 90 (90%) | 10 (10%) | 0 (0%) | 0 (0%) |
+> | Tier1Weapons | 4 (28.6%) | 90 (90%) | 10 (10%) | 0 (0%) | 0 (0%) |
+> | Tier0Shields | 2 (14.3%) | 90 (90%) | 10 (10%) | 0 (0%) | 0 (0%) |
+> | TrollArmor | 2 (14.3%) | 90 (90%) | 10 (10%) | 0 (0%) | 0 (0%) |
+> | Tier2Armor | 1 (7.1%) | 90 (90%) | 10 (10%) | 0 (0%) | 0 (0%) |
+> | Tier2Weapons | 1 (7.1%) | 90 (90%) | 10 (10%) | 0 (0%) | 0 (0%) |
+
+> | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier1Armor | 4 (28.6%) | 90 (90%) | 10 (10%) | 0 (0%) | 0 (0%) |
+> | Tier1Weapons | 4 (28.6%) | 90 (90%) | 10 (10%) | 0 (0%) | 0 (0%) |
+> | Tier0Shields | 2 (14.3%) | 90 (90%) | 10 (10%) | 0 (0%) | 0 (0%) |
+> | TrollArmor | 2 (14.3%) | 90 (90%) | 10 (10%) | 0 (0%) | 0 (0%) |
+> | Tier2Armor | 1 (7.1%) | 90 (90%) | 10 (10%) | 0 (0%) | 0 (0%) |
+> | Tier2Weapons | 1 (7.1%) | 90 (90%) | 10 (10%) | 0 (0%) | 0 (0%) |
+
+> | Items (lvl 3) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier1Armor | 4 (28.6%) | 90 (90%) | 10 (10%) | 0 (0%) | 0 (0%) |
 > | Tier1Weapons | 4 (28.6%) | 90 (90%) | 10 (10%) | 0 (0%) | 0 (0%) |
@@ -1096,32 +1142,52 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 > | 0 | 60 (60%) |
 > | 1 | 40 (40%) |
 
-> | Items (lvl 1+) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier0Shields | 10 (33.3%) | 98 (98%) | 2 (2%) | 0 (0%) | 0 (0%) |
 > | Tier1Armor | 10 (33.3%) | 98 (98%) | 2 (2%) | 0 (0%) | 0 (0%) |
 > | Tier1Weapons | 10 (33.3%) | 98 (98%) | 2 (2%) | 0 (0%) | 0 (0%) |
 
-> | Items (lvl 2+) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Skeleton.1 | 1 (7.7%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
 > | Tier2Weapons | 4 (30.8%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
 > | Tier2Armor | 4 (30.8%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
 > | Tier2Shields | 4 (30.8%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
 
-> | Items (lvl 3+) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Items (lvl 3) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Skeleton.2 | 1 (100%) | 80 (80%) | 15 (15%) | 5 (5%) | 0 (0%) |
 
 
 ## Ghost
 
-> | Drops | Weight (Chance) |
+> | Drops (lvl 1) | Weight (Chance) |
 > | -- | -- |
 > | 0 | 70 (70%) |
 > | 1 | 30 (30%) |
 
-> | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Drops (lvl 2) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 70 (70%) |
+> | 1 | 30 (30%) |
+
+> | Drops (lvl 3) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 70 (70%) |
+> | 1 | 30 (30%) |
+
+> | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier1Armor | 1 (25%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
+> | Tier1Weapons | 3 (75%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
+
+> | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier1Armor | 1 (25%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
+> | Tier1Weapons | 3 (75%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
+
+> | Items (lvl 3) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier1Armor | 1 (25%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
 > | Tier1Weapons | 3 (75%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
@@ -1129,13 +1195,35 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 
 ## Blob
 
-> | Drops | Weight (Chance) |
+> | Drops (lvl 1) | Weight (Chance) |
 > | -- | -- |
 > | 0 | 90 (90%) |
 > | 1 | 9 (9%) |
 > | 2 | 1 (1%) |
 
-> | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Drops (lvl 2) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 90 (90%) |
+> | 1 | 9 (9%) |
+> | 2 | 1 (1%) |
+
+> | Drops (lvl 3) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 90 (90%) |
+> | 1 | 9 (9%) |
+> | 2 | 1 (1%) |
+
+> | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier2Everything | 5 (83.3%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | Tier3Everything | 1 (16.7%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+
+> | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier2Everything | 5 (83.3%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | Tier3Everything | 1 (16.7%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+
+> | Items (lvl 3) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier2Everything | 5 (83.3%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
 > | Tier3Everything | 1 (16.7%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
@@ -1143,13 +1231,35 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 
 ## BlobElite
 
-> | Drops | Weight (Chance) |
+> | Drops (lvl 1) | Weight (Chance) |
 > | -- | -- |
 > | 0 | 90 (90%) |
 > | 1 | 9 (9%) |
 > | 2 | 1 (1%) |
 
-> | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Drops (lvl 2) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 90 (90%) |
+> | 1 | 9 (9%) |
+> | 2 | 1 (1%) |
+
+> | Drops (lvl 3) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 90 (90%) |
+> | 1 | 9 (9%) |
+> | 2 | 1 (1%) |
+
+> | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier2Everything | 3 (75%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | Tier3Everything | 1 (25%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+
+> | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier2Everything | 3 (75%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | Tier3Everything | 1 (25%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+
+> | Items (lvl 3) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier2Everything | 3 (75%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
 > | Tier3Everything | 1 (25%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
@@ -1175,17 +1285,17 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 > | 1 | 37 (37%) |
 > | 2 | 3 (3%) |
 
-> | Items (lvl 1+) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier2Everything | 4 (80%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
 > | Tier3Everything | 1 (20%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
 
-> | Items (lvl 2+) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier2Everything | 2 (66.7%) | 64 (64%) | 30 (30%) | 6 (6%) | 0 (0%) |
 > | Tier3Everything | 1 (33.3%) | 64 (64%) | 30 (30%) | 6 (6%) | 0 (0%) |
 
-> | Items (lvl 3+) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Items (lvl 3) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier2Everything | 1 (50%) | 40 (40%) | 50 (50%) | 9 (9%) | 1 (1%) |
 > | Tier3Everything | 1 (50%) | 40 (40%) | 50 (50%) | 9 (9%) | 1 (1%) |
@@ -1211,17 +1321,17 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 > | 1 | 46 (46%) |
 > | 2 | 4 (4%) |
 
-> | Items (lvl 1+) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier2Everything | 2 (66.7%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
 > | Tier3Everything | 1 (33.3%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
 
-> | Items (lvl 2+) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier2Everything | 1 (50%) | 64 (64%) | 30 (30%) | 6 (6%) | 0 (0%) |
 > | Tier3Everything | 1 (50%) | 64 (64%) | 30 (30%) | 6 (6%) | 0 (0%) |
 
-> | Items (lvl 3+) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Items (lvl 3) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier2Everything | 1 (50%) | 40 (40%) | 50 (50%) | 9 (9%) | 1 (1%) |
 > | Tier3Everything | 1 (50%) | 40 (40%) | 50 (50%) | 9 (9%) | 1 (1%) |
@@ -1247,7 +1357,17 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 > | 1 | 27 (27%) |
 > | 2 | 3 (3%) |
 
-> | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier2Everything | 2 (66.7%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | Tier3Everything | 1 (33.3%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+
+> | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier2Everything | 2 (66.7%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | Tier3Everything | 1 (33.3%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+
+> | Items (lvl 3) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier2Everything | 2 (66.7%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
 > | Tier3Everything | 1 (33.3%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
@@ -1255,13 +1375,35 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 
 ## Surtling
 
-> | Drops | Weight (Chance) |
+> | Drops (lvl 1) | Weight (Chance) |
 > | -- | -- |
 > | 0 | 93 (93%) |
 > | 1 | 6 (6%) |
 > | 2 | 1 (1%) |
 
-> | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Drops (lvl 2) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 93 (93%) |
+> | 1 | 6 (6%) |
+> | 2 | 1 (1%) |
+
+> | Drops (lvl 3) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 93 (93%) |
+> | 1 | 6 (6%) |
+> | 2 | 1 (1%) |
+
+> | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier2Everything | 2 (66.7%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | Tier3Everything | 1 (33.3%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+
+> | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier2Everything | 2 (66.7%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | Tier3Everything | 1 (33.3%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+
+> | Items (lvl 3) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier2Everything | 2 (66.7%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
 > | Tier3Everything | 1 (33.3%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
@@ -1269,13 +1411,35 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 
 ## Wraith
 
-> | Drops | Weight (Chance) |
+> | Drops (lvl 1) | Weight (Chance) |
 > | -- | -- |
 > | 0 | 70 (70%) |
 > | 1 | 29 (29%) |
 > | 2 | 1 (1%) |
 
-> | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Drops (lvl 2) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 70 (70%) |
+> | 1 | 29 (29%) |
+> | 2 | 1 (1%) |
+
+> | Drops (lvl 3) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 70 (70%) |
+> | 1 | 29 (29%) |
+> | 2 | 1 (1%) |
+
+> | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier2Everything | 3 (60%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | Tier3Everything | 2 (40%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+
+> | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier2Everything | 3 (60%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | Tier3Everything | 2 (40%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+
+> | Items (lvl 3) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier2Everything | 3 (60%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
 > | Tier3Everything | 2 (40%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
@@ -1301,17 +1465,17 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 > | 1 | 37 (37%) |
 > | 2 | 3 (3%) |
 
-> | Items (lvl 1+) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier3Everything | 4 (80%) | 64 (64%) | 30 (30%) | 6 (6%) | 0 (0%) |
 > | Tier4Everything | 1 (20%) | 64 (64%) | 30 (30%) | 6 (6%) | 0 (0%) |
 
-> | Items (lvl 2+) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier3Everything | 2 (66.7%) | 40 (40%) | 50 (50%) | 9 (9%) | 1 (1%) |
 > | Tier4Everything | 1 (33.3%) | 40 (40%) | 50 (50%) | 9 (9%) | 1 (1%) |
 
-> | Items (lvl 3+) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Items (lvl 3) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier3Everything | 1 (50%) | 20 (20%) | 55 (55%) | 23 (23%) | 2 (2%) |
 > | Tier4Everything | 1 (50%) | 20 (20%) | 55 (55%) | 23 (23%) | 2 (2%) |
@@ -1337,17 +1501,17 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 > | 1 | 37 (37%) |
 > | 2 | 3 (3%) |
 
-> | Items (lvl 1+) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier3Everything | 4 (80%) | 64 (64%) | 30 (30%) | 6 (6%) | 0 (0%) |
 > | Tier4Everything | 1 (20%) | 64 (64%) | 30 (30%) | 6 (6%) | 0 (0%) |
 
-> | Items (lvl 2+) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier3Everything | 2 (66.7%) | 40 (40%) | 50 (50%) | 9 (9%) | 1 (1%) |
 > | Tier4Everything | 1 (33.3%) | 40 (40%) | 50 (50%) | 9 (9%) | 1 (1%) |
 
-> | Items (lvl 3+) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Items (lvl 3) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier3Everything | 1 (50%) | 20 (20%) | 55 (55%) | 23 (23%) | 2 (2%) |
 > | Tier4Everything | 1 (50%) | 20 (20%) | 55 (55%) | 23 (23%) | 2 (2%) |
@@ -1373,17 +1537,17 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 > | 1 | 37 (37%) |
 > | 2 | 3 (3%) |
 
-> | Items (lvl 1+) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier3Everything | 4 (80%) | 64 (64%) | 30 (30%) | 6 (6%) | 0 (0%) |
 > | Tier4Everything | 1 (20%) | 64 (64%) | 30 (30%) | 6 (6%) | 0 (0%) |
 
-> | Items (lvl 2+) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier3Everything | 2 (66.7%) | 40 (40%) | 50 (50%) | 9 (9%) | 1 (1%) |
 > | Tier4Everything | 1 (33.3%) | 40 (40%) | 50 (50%) | 9 (9%) | 1 (1%) |
 
-> | Items (lvl 3+) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Items (lvl 3) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier3Everything | 1 (50%) | 20 (20%) | 55 (55%) | 23 (23%) | 2 (2%) |
 > | Tier4Everything | 1 (50%) | 20 (20%) | 55 (55%) | 23 (23%) | 2 (2%) |
@@ -1409,17 +1573,17 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 > | 1 | 37 (37%) |
 > | 2 | 3 (3%) |
 
-> | Items (lvl 1+) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier3Everything | 4 (80%) | 64 (64%) | 30 (30%) | 6 (6%) | 0 (0%) |
 > | Tier4Everything | 1 (20%) | 64 (64%) | 30 (30%) | 6 (6%) | 0 (0%) |
 
-> | Items (lvl 2+) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier3Everything | 2 (66.7%) | 40 (40%) | 50 (50%) | 9 (9%) | 1 (1%) |
 > | Tier4Everything | 1 (33.3%) | 40 (40%) | 50 (50%) | 9 (9%) | 1 (1%) |
 
-> | Items (lvl 3+) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Items (lvl 3) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier3Everything | 1 (50%) | 20 (20%) | 55 (55%) | 23 (23%) | 2 (2%) |
 > | Tier4Everything | 1 (50%) | 20 (20%) | 55 (55%) | 23 (23%) | 2 (2%) |
@@ -1445,17 +1609,17 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 > | 1 | 37 (37%) |
 > | 2 | 3 (3%) |
 
-> | Items (lvl 1+) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier4Everything | 4 (80%) | 0 (0%) | 55 (55%) | 40 (40%) | 5 (5%) |
 > | Tier5Everything | 1 (20%) | 0 (0%) | 55 (55%) | 40 (40%) | 5 (5%) |
 
-> | Items (lvl 2+) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier4Everything | 2 (66.7%) | 0 (0%) | 45 (45%) | 45 (45%) | 10 (10%) |
 > | Tier5Everything | 1 (33.3%) | 0 (0%) | 45 (45%) | 45 (45%) | 10 (10%) |
 
-> | Items (lvl 3+) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Items (lvl 3) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier4Everything | 1 (50%) | 0 (0%) | 30 (30%) | 55 (55%) | 15 (15%) |
 > | Tier5Everything | 1 (50%) | 0 (0%) | 30 (30%) | 55 (55%) | 15 (15%) |
@@ -1481,17 +1645,17 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 > | 1 | 37 (37%) |
 > | 2 | 3 (3%) |
 
-> | Items (lvl 1+) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier4Everything | 4 (80%) | 0 (0%) | 55 (55%) | 40 (40%) | 5 (5%) |
 > | Tier5Everything | 1 (20%) | 0 (0%) | 55 (55%) | 40 (40%) | 5 (5%) |
 
-> | Items (lvl 2+) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier4Everything | 2 (66.7%) | 0 (0%) | 45 (45%) | 45 (45%) | 10 (10%) |
 > | Tier5Everything | 1 (33.3%) | 0 (0%) | 45 (45%) | 45 (45%) | 10 (10%) |
 
-> | Items (lvl 3+) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Items (lvl 3) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier4Everything | 1 (50%) | 0 (0%) | 30 (30%) | 55 (55%) | 15 (15%) |
 > | Tier5Everything | 1 (50%) | 0 (0%) | 30 (30%) | 55 (55%) | 15 (15%) |
@@ -1517,17 +1681,17 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 > | 1 | 37 (37%) |
 > | 2 | 3 (3%) |
 
-> | Items (lvl 1+) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier4Everything | 4 (80%) | 0 (0%) | 55 (55%) | 40 (40%) | 5 (5%) |
 > | Tier5Everything | 1 (20%) | 0 (0%) | 55 (55%) | 40 (40%) | 5 (5%) |
 
-> | Items (lvl 2+) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier4Everything | 2 (66.7%) | 0 (0%) | 45 (45%) | 45 (45%) | 10 (10%) |
 > | Tier5Everything | 1 (33.3%) | 0 (0%) | 45 (45%) | 45 (45%) | 10 (10%) |
 
-> | Items (lvl 3+) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Items (lvl 3) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier4Everything | 1 (50%) | 0 (0%) | 30 (30%) | 55 (55%) | 15 (15%) |
 > | Tier5Everything | 1 (50%) | 0 (0%) | 30 (30%) | 55 (55%) | 15 (15%) |
@@ -1550,17 +1714,17 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 > | 0 | 30 (30%) |
 > | 1 | 70 (70%) |
 
-> | Items (lvl 1+) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier4Everything | 4 (80%) | 0 (0%) | 55 (55%) | 40 (40%) | 5 (5%) |
 > | Tier5Everything | 1 (20%) | 0 (0%) | 55 (55%) | 40 (40%) | 5 (5%) |
 
-> | Items (lvl 2+) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier4Everything | 2 (66.7%) | 0 (0%) | 45 (45%) | 45 (45%) | 10 (10%) |
 > | Tier5Everything | 1 (33.3%) | 0 (0%) | 45 (45%) | 45 (45%) | 10 (10%) |
 
-> | Items (lvl 3+) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Items (lvl 3) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier4Everything | 1 (50%) | 0 (0%) | 30 (30%) | 55 (55%) | 15 (15%) |
 > | Tier5Everything | 1 (50%) | 0 (0%) | 30 (30%) | 55 (55%) | 15 (15%) |
@@ -1583,17 +1747,17 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 > | 0 | 30 (30%) |
 > | 1 | 70 (70%) |
 
-> | Items (lvl 1+) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier4Everything | 4 (80%) | 0 (0%) | 55 (55%) | 40 (40%) | 5 (5%) |
 > | Tier5Everything | 1 (20%) | 0 (0%) | 55 (55%) | 40 (40%) | 5 (5%) |
 
-> | Items (lvl 2+) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier4Everything | 2 (66.7%) | 0 (0%) | 45 (45%) | 45 (45%) | 10 (10%) |
 > | Tier5Everything | 1 (33.3%) | 0 (0%) | 45 (45%) | 45 (45%) | 10 (10%) |
 
-> | Items (lvl 3+) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Items (lvl 3) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier4Everything | 1 (50%) | 0 (0%) | 30 (30%) | 55 (55%) | 15 (15%) |
 > | Tier5Everything | 1 (50%) | 0 (0%) | 30 (30%) | 55 (55%) | 15 (15%) |
@@ -1601,24 +1765,38 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 
 ## Serpent
 
-> | Drops | Weight (Chance) |
+> | Drops (lvl 1) | Weight (Chance) |
 > | -- | -- |
 > | 0 | 30 (30%) |
 > | 1 | 50 (50%) |
 > | 2 | 15 (15%) |
 > | 3 | 5 (5%) |
 
-> | Items (lvl 1+) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Drops (lvl 2) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 30 (30%) |
+> | 1 | 50 (50%) |
+> | 2 | 15 (15%) |
+> | 3 | 5 (5%) |
+
+> | Drops (lvl 3) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 30 (30%) |
+> | 1 | 50 (50%) |
+> | 2 | 15 (15%) |
+> | 3 | 5 (5%) |
+
+> | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier3Everything | 4 (80%) | 0 (0%) | 55 (55%) | 40 (40%) | 5 (5%) |
 > | Tier4Everything | 1 (20%) | 0 (0%) | 55 (55%) | 40 (40%) | 5 (5%) |
 
-> | Items (lvl 2+) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier3Everything | 2 (66.7%) | 0 (0%) | 45 (45%) | 45 (45%) | 10 (10%) |
 > | Tier4Everything | 1 (33.3%) | 0 (0%) | 45 (45%) | 45 (45%) | 10 (10%) |
 
-> | Items (lvl 3+) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Items (lvl 3) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier3Everything | 1 (50%) | 0 (0%) | 30 (30%) | 55 (55%) | 15 (15%) |
 > | Tier4Everything | 1 (50%) | 0 (0%) | 30 (30%) | 55 (55%) | 15 (15%) |
@@ -1626,12 +1804,38 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 
 ## Eikthyr
 
-> | Drops | Weight (Chance) |
+> | Drops (lvl 1) | Weight (Chance) |
 > | -- | -- |
 > | 1 | 70 (70%) |
 > | 2 | 30 (30%) |
 
-> | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Drops (lvl 2) | Weight (Chance) |
+> | -- | -- |
+> | 1 | 70 (70%) |
+> | 2 | 30 (30%) |
+
+> | Drops (lvl 3) | Weight (Chance) |
+> | -- | -- |
+> | 1 | 70 (70%) |
+> | 2 | 30 (30%) |
+
+> | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier1Weapons | 2 (25%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
+> | Tier0Shields | 1 (12.5%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
+> | Tier1Armor | 2 (25%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
+> | Tier1Tools | 2 (25%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
+> | SledgeStagbreaker | 1 (12.5%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
+
+> | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier1Weapons | 2 (25%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
+> | Tier0Shields | 1 (12.5%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
+> | Tier1Armor | 2 (25%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
+> | Tier1Tools | 2 (25%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
+> | SledgeStagbreaker | 1 (12.5%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
+
+> | Items (lvl 3) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier1Weapons | 2 (25%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
 > | Tier0Shields | 1 (12.5%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
@@ -1642,66 +1846,170 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 
 ## gd_king
 
-> | Drops | Weight (Chance) |
+> | Drops (lvl 1) | Weight (Chance) |
 > | -- | -- |
 > | 1 | 35 (35%) |
 > | 2 | 55 (55%) |
 > | 3 | 10 (10%) |
 
-> | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Drops (lvl 2) | Weight (Chance) |
+> | -- | -- |
+> | 1 | 35 (35%) |
+> | 2 | 55 (55%) |
+> | 3 | 10 (10%) |
+
+> | Drops (lvl 3) | Weight (Chance) |
+> | -- | -- |
+> | 1 | 35 (35%) |
+> | 2 | 55 (55%) |
+> | 3 | 10 (10%) |
+
+> | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier2Everything | 1 (100%) | 60 (60%) | 30 (30%) | 9 (9%) | 1 (1%) |
+
+> | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier2Everything | 1 (100%) | 60 (60%) | 30 (30%) | 9 (9%) | 1 (1%) |
+
+> | Items (lvl 3) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier2Everything | 1 (100%) | 60 (60%) | 30 (30%) | 9 (9%) | 1 (1%) |
 
 
 ## Bonemass
 
-> | Drops | Weight (Chance) |
+> | Drops (lvl 1) | Weight (Chance) |
 > | -- | -- |
 > | 2 | 60 (60%) |
 > | 3 | 25 (25%) |
 > | 4 | 15 (15%) |
 
-> | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Drops (lvl 2) | Weight (Chance) |
+> | -- | -- |
+> | 2 | 60 (60%) |
+> | 3 | 25 (25%) |
+> | 4 | 15 (15%) |
+
+> | Drops (lvl 3) | Weight (Chance) |
+> | -- | -- |
+> | 2 | 60 (60%) |
+> | 3 | 25 (25%) |
+> | 4 | 15 (15%) |
+
+> | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier3Everything | 1 (100%) | 19 (19%) | 65 (65%) | 14 (14%) | 2 (2%) |
+
+> | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier3Everything | 1 (100%) | 19 (19%) | 65 (65%) | 14 (14%) | 2 (2%) |
+
+> | Items (lvl 3) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier3Everything | 1 (100%) | 19 (19%) | 65 (65%) | 14 (14%) | 2 (2%) |
 
 
 ## Dragon
 
-> | Drops | Weight (Chance) |
+> | Drops (lvl 1) | Weight (Chance) |
 > | -- | -- |
 > | 2 | 40 (40%) |
 > | 3 | 40 (40%) |
 > | 4 | 20 (20%) |
 
-> | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Drops (lvl 2) | Weight (Chance) |
+> | -- | -- |
+> | 2 | 40 (40%) |
+> | 3 | 40 (40%) |
+> | 4 | 20 (20%) |
+
+> | Drops (lvl 3) | Weight (Chance) |
+> | -- | -- |
+> | 2 | 40 (40%) |
+> | 3 | 40 (40%) |
+> | 4 | 20 (20%) |
+
+> | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier4Everything | 1 (100%) | 0 (0%) | 40 (40%) | 50 (50%) | 10 (10%) |
+
+> | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier4Everything | 1 (100%) | 0 (0%) | 40 (40%) | 50 (50%) | 10 (10%) |
+
+> | Items (lvl 3) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier4Everything | 1 (100%) | 0 (0%) | 40 (40%) | 50 (50%) | 10 (10%) |
 
 
 ## GoblinKing
 
-> | Drops | Weight (Chance) |
+> | Drops (lvl 1) | Weight (Chance) |
 > | -- | -- |
 > | 2 | 20 (20%) |
 > | 3 | 60 (60%) |
 > | 4 | 15 (15%) |
 > | 5 | 5 (5%) |
 
-> | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Drops (lvl 2) | Weight (Chance) |
+> | -- | -- |
+> | 2 | 20 (20%) |
+> | 3 | 60 (60%) |
+> | 4 | 15 (15%) |
+> | 5 | 5 (5%) |
+
+> | Drops (lvl 3) | Weight (Chance) |
+> | -- | -- |
+> | 2 | 20 (20%) |
+> | 3 | 60 (60%) |
+> | 4 | 15 (15%) |
+> | 5 | 5 (5%) |
+
+> | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier5Everything | 1 (100%) | 0 (0%) | 10 (10%) | 70 (70%) | 20 (20%) |
+
+> | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier5Everything | 1 (100%) | 0 (0%) | 10 (10%) | 70 (70%) | 20 (20%) |
+
+> | Items (lvl 3) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier5Everything | 1 (100%) | 0 (0%) | 10 (10%) | 70 (70%) | 20 (20%) |
 
 
 ## TreasureChest_meadows
 
-> | Drops | Weight (Chance) |
+> | Drops (lvl 1) | Weight (Chance) |
 > | -- | -- |
 > | 0 | 78 (78%) |
 > | 1 | 20 (20%) |
 > | 2 | 2 (2%) |
 
-> | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Drops (lvl 2) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 78 (78%) |
+> | 1 | 20 (20%) |
+> | 2 | 2 (2%) |
+
+> | Drops (lvl 3) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 78 (78%) |
+> | 1 | 20 (20%) |
+> | 2 | 2 (2%) |
+
+> | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier0Everything | 4 (80%) | 97 (97%) | 2 (2%) | 1 (1%) | 0 (0%) |
+> | Tier1Everything | 1 (20%) | 97 (97%) | 2 (2%) | 1 (1%) | 0 (0%) |
+
+> | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier0Everything | 4 (80%) | 97 (97%) | 2 (2%) | 1 (1%) | 0 (0%) |
+> | Tier1Everything | 1 (20%) | 97 (97%) | 2 (2%) | 1 (1%) | 0 (0%) |
+
+> | Items (lvl 3) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier0Everything | 4 (80%) | 97 (97%) | 2 (2%) | 1 (1%) | 0 (0%) |
 > | Tier1Everything | 1 (20%) | 97 (97%) | 2 (2%) | 1 (1%) | 0 (0%) |
@@ -1709,12 +2017,32 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 
 ## TreasureChest_blackforest
 
-> | Drops | Weight (Chance) |
+> | Drops (lvl 1) | Weight (Chance) |
 > | -- | -- |
 > | 0 | 70 (70%) |
 > | 1 | 30 (30%) |
 
-> | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Drops (lvl 2) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 70 (70%) |
+> | 1 | 30 (30%) |
+
+> | Drops (lvl 3) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 70 (70%) |
+> | 1 | 30 (30%) |
+
+> | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier0Shields | 1 (33.3%) | 95 (95%) | 4 (4%) | 1 (1%) | 0 (0%) |
+> | Tier1Everything | 2 (66.7%) | 95 (95%) | 4 (4%) | 1 (1%) | 0 (0%) |
+
+> | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier0Shields | 1 (33.3%) | 95 (95%) | 4 (4%) | 1 (1%) | 0 (0%) |
+> | Tier1Everything | 2 (66.7%) | 95 (95%) | 4 (4%) | 1 (1%) | 0 (0%) |
+
+> | Items (lvl 3) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier0Shields | 1 (33.3%) | 95 (95%) | 4 (4%) | 1 (1%) | 0 (0%) |
 > | Tier1Everything | 2 (66.7%) | 95 (95%) | 4 (4%) | 1 (1%) | 0 (0%) |
@@ -1722,14 +2050,38 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 
 ## TreasureChest_forestcrypt
 
-> | Drops | Weight (Chance) |
+> | Drops (lvl 1) | Weight (Chance) |
 > | -- | -- |
 > | 0 | 68 (68%) |
 > | 1 | 20 (20%) |
 > | 2 | 10 (10%) |
 > | 3 | 2 (2%) |
 
-> | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Drops (lvl 2) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 68 (68%) |
+> | 1 | 20 (20%) |
+> | 2 | 10 (10%) |
+> | 3 | 2 (2%) |
+
+> | Drops (lvl 3) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 68 (68%) |
+> | 1 | 20 (20%) |
+> | 2 | 10 (10%) |
+> | 3 | 2 (2%) |
+
+> | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier1Everything | 2 (66.7%) | 95 (95%) | 4 (4%) | 1 (1%) | 0 (0%) |
+> | Tier2Everything | 1 (33.3%) | 95 (95%) | 4 (4%) | 1 (1%) | 0 (0%) |
+
+> | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier1Everything | 2 (66.7%) | 95 (95%) | 4 (4%) | 1 (1%) | 0 (0%) |
+> | Tier2Everything | 1 (33.3%) | 95 (95%) | 4 (4%) | 1 (1%) | 0 (0%) |
+
+> | Items (lvl 3) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier1Everything | 2 (66.7%) | 95 (95%) | 4 (4%) | 1 (1%) | 0 (0%) |
 > | Tier2Everything | 1 (33.3%) | 95 (95%) | 4 (4%) | 1 (1%) | 0 (0%) |
@@ -1737,28 +2089,74 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 
 ## TreasureChest_fCrypt
 
-> | Drops | Weight (Chance) |
+> | Drops (lvl 1) | Weight (Chance) |
 > | -- | -- |
 > | 0 | 68 (68%) |
 > | 1 | 20 (20%) |
 > | 2 | 10 (10%) |
 > | 3 | 2 (2%) |
 
-> | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Drops (lvl 2) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 68 (68%) |
+> | 1 | 20 (20%) |
+> | 2 | 10 (10%) |
+> | 3 | 2 (2%) |
+
+> | Drops (lvl 3) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 68 (68%) |
+> | 1 | 20 (20%) |
+> | 2 | 10 (10%) |
+> | 3 | 2 (2%) |
+
+> | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | TreasureChest_forestcrypt.1 | 1 (100%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
+
+> | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | TreasureChest_forestcrypt.1 | 1 (100%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
+
+> | Items (lvl 3) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | TreasureChest_forestcrypt.1 | 1 (100%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
 
 
 ## TreasureChest_trollcave
 
-> | Drops | Weight (Chance) |
+> | Drops (lvl 1) | Weight (Chance) |
 > | -- | -- |
 > | 0 | 48 (43.6%) |
 > | 1 | 40 (36.4%) |
 > | 2 | 20 (18.2%) |
 > | 3 | 2 (1.8%) |
 
-> | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Drops (lvl 2) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 48 (43.6%) |
+> | 1 | 40 (36.4%) |
+> | 2 | 20 (18.2%) |
+> | 3 | 2 (1.8%) |
+
+> | Drops (lvl 3) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 48 (43.6%) |
+> | 1 | 40 (36.4%) |
+> | 2 | 20 (18.2%) |
+> | 3 | 2 (1.8%) |
+
+> | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier1Everything | 1 (50%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
+> | Tier2Everything | 1 (50%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
+
+> | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier1Everything | 1 (50%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
+> | Tier2Everything | 1 (50%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
+
+> | Items (lvl 3) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier1Everything | 1 (50%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
 > | Tier2Everything | 1 (50%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
@@ -1766,14 +2164,38 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 
 ## shipwreck_karve_chest
 
-> | Drops | Weight (Chance) |
+> | Drops (lvl 1) | Weight (Chance) |
 > | -- | -- |
 > | 0 | 48 (43.6%) |
 > | 1 | 40 (36.4%) |
 > | 2 | 20 (18.2%) |
 > | 3 | 2 (1.8%) |
 
-> | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Drops (lvl 2) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 48 (43.6%) |
+> | 1 | 40 (36.4%) |
+> | 2 | 20 (18.2%) |
+> | 3 | 2 (1.8%) |
+
+> | Drops (lvl 3) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 48 (43.6%) |
+> | 1 | 40 (36.4%) |
+> | 2 | 20 (18.2%) |
+> | 3 | 2 (1.8%) |
+
+> | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier0Everything | 1 (50%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
+> | Tier1Everything | 1 (50%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
+
+> | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier0Everything | 1 (50%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
+> | Tier1Everything | 1 (50%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
+
+> | Items (lvl 3) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier0Everything | 1 (50%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
 > | Tier1Everything | 1 (50%) | 90 (90%) | 9 (9%) | 1 (1%) | 0 (0%) |
@@ -1781,14 +2203,38 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 
 ## TreasureChest_meadows_buried
 
-> | Drops | Weight (Chance) |
+> | Drops (lvl 1) | Weight (Chance) |
 > | -- | -- |
 > | 0 | 48 (43.6%) |
 > | 1 | 40 (36.4%) |
 > | 2 | 20 (18.2%) |
 > | 3 | 2 (1.8%) |
 
-> | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Drops (lvl 2) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 48 (43.6%) |
+> | 1 | 40 (36.4%) |
+> | 2 | 20 (18.2%) |
+> | 3 | 2 (1.8%) |
+
+> | Drops (lvl 3) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 48 (43.6%) |
+> | 1 | 40 (36.4%) |
+> | 2 | 20 (18.2%) |
+> | 3 | 2 (1.8%) |
+
+> | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier0Everything | 3 (60%) | 70 (70%) | 25 (25%) | 5 (5%) | 0 (0%) |
+> | Tier1Everything | 2 (40%) | 70 (70%) | 25 (25%) | 5 (5%) | 0 (0%) |
+
+> | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier0Everything | 3 (60%) | 70 (70%) | 25 (25%) | 5 (5%) | 0 (0%) |
+> | Tier1Everything | 2 (40%) | 70 (70%) | 25 (25%) | 5 (5%) | 0 (0%) |
+
+> | Items (lvl 3) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier0Everything | 3 (60%) | 70 (70%) | 25 (25%) | 5 (5%) | 0 (0%) |
 > | Tier1Everything | 2 (40%) | 70 (70%) | 25 (25%) | 5 (5%) | 0 (0%) |
@@ -1796,14 +2242,38 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 
 ## TreasureChest_sunkencrypt
 
-> | Drops | Weight (Chance) |
+> | Drops (lvl 1) | Weight (Chance) |
 > | -- | -- |
 > | 0 | 58 (52.7%) |
 > | 1 | 30 (27.3%) |
 > | 2 | 20 (18.2%) |
 > | 3 | 2 (1.8%) |
 
-> | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Drops (lvl 2) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 58 (52.7%) |
+> | 1 | 30 (27.3%) |
+> | 2 | 20 (18.2%) |
+> | 3 | 2 (1.8%) |
+
+> | Drops (lvl 3) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 58 (52.7%) |
+> | 1 | 30 (27.3%) |
+> | 2 | 20 (18.2%) |
+> | 3 | 2 (1.8%) |
+
+> | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier2Everything | 3 (75%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | Tier3Everything | 1 (25%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+
+> | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier2Everything | 3 (75%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+> | Tier3Everything | 1 (25%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
+
+> | Items (lvl 3) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier2Everything | 3 (75%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
 > | Tier3Everything | 1 (25%) | 80 (80%) | 17 (17%) | 3 (3%) | 0 (0%) |
@@ -1811,14 +2281,38 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 
 ## TreasureChest_swamp
 
-> | Drops | Weight (Chance) |
+> | Drops (lvl 1) | Weight (Chance) |
 > | -- | -- |
 > | 0 | 58 (52.7%) |
 > | 1 | 30 (27.3%) |
 > | 2 | 20 (18.2%) |
 > | 3 | 2 (1.8%) |
 
-> | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Drops (lvl 2) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 58 (52.7%) |
+> | 1 | 30 (27.3%) |
+> | 2 | 20 (18.2%) |
+> | 3 | 2 (1.8%) |
+
+> | Drops (lvl 3) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 58 (52.7%) |
+> | 1 | 30 (27.3%) |
+> | 2 | 20 (18.2%) |
+> | 3 | 2 (1.8%) |
+
+> | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier2Everything | 5 (83.3%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
+> | Tier3Everything | 1 (16.7%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
+
+> | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier2Everything | 5 (83.3%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
+> | Tier3Everything | 1 (16.7%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
+
+> | Items (lvl 3) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier2Everything | 5 (83.3%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
 > | Tier3Everything | 1 (16.7%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
@@ -1826,14 +2320,38 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 
 ## TreasureChest_mountains
 
-> | Drops | Weight (Chance) |
+> | Drops (lvl 1) | Weight (Chance) |
 > | -- | -- |
 > | 0 | 58 (52.7%) |
 > | 1 | 30 (27.3%) |
 > | 2 | 20 (18.2%) |
 > | 3 | 2 (1.8%) |
 
-> | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Drops (lvl 2) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 58 (52.7%) |
+> | 1 | 30 (27.3%) |
+> | 2 | 20 (18.2%) |
+> | 3 | 2 (1.8%) |
+
+> | Drops (lvl 3) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 58 (52.7%) |
+> | 1 | 30 (27.3%) |
+> | 2 | 20 (18.2%) |
+> | 3 | 2 (1.8%) |
+
+> | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier3Everything | 4 (80%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
+> | Tier4Everything | 1 (20%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
+
+> | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier3Everything | 4 (80%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
+> | Tier4Everything | 1 (20%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
+
+> | Items (lvl 3) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier3Everything | 4 (80%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
 > | Tier4Everything | 1 (20%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
@@ -1841,28 +2359,74 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 
 ## TreasureChest_plains_stone
 
-> | Drops | Weight (Chance) |
+> | Drops (lvl 1) | Weight (Chance) |
 > | -- | -- |
 > | 0 | 58 (52.7%) |
 > | 1 | 30 (27.3%) |
 > | 2 | 20 (18.2%) |
 > | 3 | 2 (1.8%) |
 
-> | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Drops (lvl 2) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 58 (52.7%) |
+> | 1 | 30 (27.3%) |
+> | 2 | 20 (18.2%) |
+> | 3 | 2 (1.8%) |
+
+> | Drops (lvl 3) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 58 (52.7%) |
+> | 1 | 30 (27.3%) |
+> | 2 | 20 (18.2%) |
+> | 3 | 2 (1.8%) |
+
+> | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | TreasureChest_heath.1 | 1 (100%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
+
+> | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | TreasureChest_heath.1 | 1 (100%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
+
+> | Items (lvl 3) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | TreasureChest_heath.1 | 1 (100%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
 
 
 ## TreasureChest_heath
 
-> | Drops | Weight (Chance) |
+> | Drops (lvl 1) | Weight (Chance) |
 > | -- | -- |
 > | 0 | 58 (52.7%) |
 > | 1 | 30 (27.3%) |
 > | 2 | 20 (18.2%) |
 > | 3 | 2 (1.8%) |
 
-> | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | Drops (lvl 2) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 58 (52.7%) |
+> | 1 | 30 (27.3%) |
+> | 2 | 20 (18.2%) |
+> | 3 | 2 (1.8%) |
+
+> | Drops (lvl 3) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 58 (52.7%) |
+> | 1 | 30 (27.3%) |
+> | 2 | 20 (18.2%) |
+> | 3 | 2 (1.8%) |
+
+> | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier4Everything | 3 (75%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
+> | Tier5Everything | 1 (25%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
+
+> | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier4Everything | 3 (75%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
+> | Tier5Everything | 1 (25%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
+
+> | Items (lvl 3) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier4Everything | 3 (75%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
 > | Tier5Everything | 1 (25%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |

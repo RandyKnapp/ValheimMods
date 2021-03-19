@@ -1,0 +1,99 @@
+{
+  "ItemInfo": [
+    {
+      "Type": "Swords",
+      "Fallback": "AxeFlint",
+      "Items": [ "SwordBronze", "SwordIron", "SwordSilver", "SwordBlackmetal" ]
+    },
+    {
+      "Type": "Axes",
+      "Fallback": "Club",
+      "Items": [ "AxeStone", "AxeFlint", "AxeBronze", "AxeIron", "AxeBlackMetal" ]
+    },
+    {
+      "Type": "TwoHandAxes",
+      "Fallback": "AxeIron",
+      "Items": [ "Battleaxe" ]
+    },
+    {
+      "Type": "Knives",
+      "Fallback": "Club",
+      "Items": [ "KnifeFlint", "KnifeCopper", "KnifeChitin", "KnifeBlackMetal" ]
+    },
+    {
+      "Type": "Clubs",
+      "Fallback": "",
+      "Items": [ "Club", "MaceBronze", "MaceIron", "MaceSilver", "MaceNeedle" ]
+    },
+    {
+      "Type": "Sledges",
+      "Fallback": "AxeFlint",
+      "Items": [ "SledgeStagbreaker", "SledgeIron" ]
+    },
+    {
+      "Type": "Polearms",
+      "Fallback": "SpearBronze",
+      "Items": [ "AtgeirBronze", "AtgeirIron", "AtgeirBlackmetal" ]
+    },
+    {
+      "Type": "Spears",
+      "Fallback": "Club",
+      "Items": [ "SpearFlint", "SpearBronze", "SpearElderbark", "SpearChitin", "SpearWolfFang" ]
+    },
+    {
+      "Type": "Pickaxes",
+      "Fallback": "AxeFlint",
+      "Items": [ "PickaxeAntler", "PickaxeBronze", "PickaxeIron" ]
+    },
+    {
+      "Type": "Bows",
+      "Fallback": "Club",
+      "Items": [ "Bow", "BowFineWood", "BowHuntsman", "BowDraugrFang" ]
+    },
+    {
+      "Type": "RoundShields",
+      "Fallback": "Club",
+      "Items": [ "ShieldWood", "ShieldBronzeBuckler", "ShieldBanded", "ShieldSilver", "ShieldBlackmetal" ]
+    },
+    {
+      "Type": "TowerShields",
+      "Fallback": "Club",
+      "Items": [ "ShieldWoodTower", "ShieldIronTower", "ShieldSerpentscale", "ShieldBlackmetalTower" ]
+    },
+    {
+      "Type": "ChestArmor",
+      "Fallback": "",
+      "Items": [ "ArmorRagsChest", "ArmorLeatherChest", "ArmorTrollLeatherChest", "ArmorBronzeChest", "ArmorIronChest", "ArmorWolfChest", "ArmorPaddedCuirass" ]
+    },
+    {
+      "Type": "LegsArmor",
+      "Fallback": "",
+      "Items": [ "ArmorRagsLegs", "ArmorLeatherLegs", "ArmorTrollLeatherLegs", "ArmorBronzeLegs", "ArmorIronLegs", "ArmorWolfLegs", "ArmorPaddedGreaves" ]
+    },
+    {
+      "Type": "HeadArmor",
+      "Fallback": "ArmorRagsChest",
+      "Items": [ "HelmetLeather", "HelmetTrollLeather", "HelmetBronze", "HelmetIron", "HelmetDrake", "HelmetPadded" ]
+    },
+    {
+      "Type": "ShouldersArmor",
+      "Fallback": "ArmorRagsLegs",
+      "Items": [ "CapeDeerHide", "CapeTrollHide", "CapeWolf", "CapeLinen", "CapeLox" ]
+    },
+    {
+      "Type": "Torches",
+      "Fallback": "Club",
+      "Items": [ "Torch" ]
+    },
+    {
+      "Type": "Tools",
+      "Fallback": "Club",
+      "Items": [ "Hammer", "Hoe", "Cultivator" ]
+    },
+    {
+      "Type": "Utility",
+      "Fallback": "",
+      "Items": [ ]
+    }
+  ] 
+}

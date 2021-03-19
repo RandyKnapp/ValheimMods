@@ -23,7 +23,7 @@ namespace EpicLoot
                 return true;
             }
             
-            // init debug hooks when __instance.IsCheatsEnabled
+            // init debug hooks at next console command after enabling cheat mode
             if (!LootRoller_Debug._debugModeEnabled) {
                 Debug.Log(nameof(LootRoller_Debug._debugModeEnabled));
                 LootRoller_Debug._debugModeEnabled = true;
@@ -51,8 +51,20 @@ namespace EpicLoot
             {
                 SpawnMagicCraftingMaterials();
                 return false;
-            } 
+            }
+            else if (command.Equals("alwaysdrop", StringComparison.InvariantCultureIgnoreCase))
+            {
+                ToggleAlwaysDrop(__instance);
+                return false;
+            }
+
             return true;
+        }
+
+        private static void ToggleAlwaysDrop(Console __instance)
+        {
+            EpicLoot.AlwaysDropCheat = !EpicLoot.AlwaysDropCheat;
+            __instance.AddString($"Always Drop: {EpicLoot.AlwaysDropCheat}");
         }
 
         private static void SpawnMagicCraftingMaterials()
@@ -78,6 +90,7 @@ namespace EpicLoot
             var items = new List<GameObject>();
             var allItemNames = ObjectDB.instance.m_items
                 .Where(x => EpicLoot.CanBeMagicItem(x.GetComponent<ItemDrop>().m_itemData))
+                .Where(x => x.name != "HelmetDverger" && x.name != "BeltStrength" && x.name != "Wishbone")
                 .Select(x => x.name)
                 .ToList();
 
@@ -114,7 +127,8 @@ namespace EpicLoot
                         new LootDrop()
                         {
                             Item = item,
-                            Rarity = rarityTable
+                            Rarity = rarityTable,
+                            Weight = 1
                         }
                     }
                 };

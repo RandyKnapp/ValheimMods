@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace EquipmentAndQuickSlots
@@ -12,9 +11,12 @@ namespace EquipmentAndQuickSlots
         private Player _player;
         private bool _isLoading;
 
+        public const string Sentinel = "<|>";
+
         public void Awake()
         {
             QuickSlotInventory.m_onChanged += OnInventoryChanged;
+            EquipmentSlotInventory.m_onChanged += OnInventoryChanged;
         }
 
         private void OnInventoryChanged()
@@ -31,11 +33,11 @@ namespace EquipmentAndQuickSlots
         {
             if (_player == null)
             {
-                Debug.LogError("Tried to save an ExtendedPlayerData without a player!");
+                EquipmentAndQuickSlots.LogError("Tried to save an ExtendedPlayerData without a player!");
                 return;
             }
 
-            Debug.LogWarning("Saving ExtendedPlayerData");
+            EquipmentAndQuickSlots.LogWarning("Saving ExtendedPlayerData");
             SaveValue(_player, "ExtendedPlayerData", "This player is using ExtendedPlayerData!");
 
             var pkg = new ZPackage();
@@ -51,19 +53,29 @@ namespace EquipmentAndQuickSlots
         {
             if (fromPlayer == null)
             {
-                Debug.LogError("Tried to load an ExtendedPlayerData with a null player!");
+                EquipmentAndQuickSlots.LogError("Tried to load an ExtendedPlayerData with a null player!");
                 return;
             }
 
             _player = fromPlayer;
             LoadValue(fromPlayer, "ExtendedPlayerData", out var init);
-            Debug.LogWarning("Loaded ExtendedPlayerData");
+            EquipmentAndQuickSlots.LogWarning("Loaded ExtendedPlayerData");
 
             if (LoadValue(fromPlayer, nameof(QuickSlotInventory), out var quickSlotData))
             {
                 var pkg = new ZPackage(quickSlotData);
                 _isLoading = true;
                 QuickSlotInventory.Load(pkg);
+                
+                if (!EquipmentAndQuickSlots.QuickSlotsEnabled.Value)
+                {
+                    _player.m_inventory.MoveAll(QuickSlotInventory);
+
+                    pkg = new ZPackage(quickSlotData);
+                    QuickSlotInventory.Save(pkg);
+                    SaveValue(_player, nameof(QuickSlotInventory), pkg.GetBase64());
+                }
+
                 _isLoading = false;
             }
 
@@ -72,12 +84,28 @@ namespace EquipmentAndQuickSlots
                 var pkg = new ZPackage(equipSlotData);
                 _isLoading = true;
                 EquipmentSlotInventory.Load(pkg);
+
+                if (!EquipmentAndQuickSlots.EquipmentSlotsEnabled.Value)
+                {
+                    _player.m_inventory.MoveAll(EquipmentSlotInventory);
+
+                    pkg = new ZPackage(quickSlotData);
+                    EquipmentSlotInventory.Save(pkg);
+                    SaveValue(_player, nameof(EquipmentSlotInventory), pkg.GetBase64());
+                }
+
                 _isLoading = false;
             }
         }
 
         private static void SaveValue(Player player, string key, string value)
         {
+            if (player.m_knownTexts.ContainsKey(key))
+            {
+                player.m_knownTexts.Remove(key);
+            }
+
+            key = Sentinel + key;
             if (player.m_knownTexts.ContainsKey(key))
             {
                 player.m_knownTexts[key] = value;
@@ -90,44 +118,47 @@ namespace EquipmentAndQuickSlots
 
         private static bool LoadValue(Player player, string key, out string value)
         {
+            if (!player.m_knownTexts.TryGetValue(key, out value))
+            {
+                key = Sentinel + key;
+            }
             return player.m_knownTexts.TryGetValue(key, out value);
         }
     }
 
     public static class PlayerExtensions
     {
-        public static bool InventoryContainsItem(this Player player, ItemDrop.ItemData item)
-        {
-            var inventories = player.GetAllInventories();
-            return inventories.Any(x => x.m_inventory.Contains(item));
-        }
-
         public static List<Inventory> GetAllInventories(this Player player)
         {
             var result = new List<Inventory>();
             result.Add(player.m_inventory);
-            if (player.IsExtended() && player.GetQuickSlotInventory() != null)
+            if (EquipmentAndQuickSlots.QuickSlotsEnabled.Value && player.IsExtended() && player.GetQuickSlotInventory() != null)
             {
                 result.Add(player.GetQuickSlotInventory());
             }
-            if (player.IsExtended() && player.GetEquipmentSlotInventory() != null)
+            if (EquipmentAndQuickSlots.EquipmentSlotsEnabled.Value && player.IsExtended() && player.GetEquipmentSlotInventory() != null)
             {
                 result.Add(player.GetEquipmentSlotInventory());
             }
             return result;
         }
 
-        public static Inventory GetCombinedInventory(this Player player)
+        public static Inventory GetInventoryForItem(this Player player, ItemDrop.ItemData item)
         {
-            var allInventories = player.GetAllInventories();
-            var totalItemCount = allInventories.Sum(x => x.m_inventory.Count);
-            var result = new Inventory("PlayerCombinedInventory", null, totalItemCount, 1);
-            foreach (var inventory in allInventories)
+            player.m_inventory.Extended().CallBase = true;
+
+            var inventories = player.GetAllInventories();
+            foreach (var inventory in inventories)
             {
-                result.m_inventory.AddRange(inventory.m_inventory);
+                if (inventory.ContainsItem(item))
+                {
+                    player.m_inventory.Extended().CallBase = false;
+                    return inventory;
+                }
             }
-            result.Changed();
-            return result;
+
+            player.m_inventory.Extended().CallBase = false;
+            return null;
         }
 
         public static Inventory GetQuickSlotInventory(this Player player)
@@ -226,6 +257,7 @@ namespace EquipmentAndQuickSlots
         {
             player.InitializeExtendedPlayer();
             player.Extended().Load(player);
+            player.EquipIventoryItems();
         }
     }
 }

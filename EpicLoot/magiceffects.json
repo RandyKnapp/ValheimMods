@@ -109,8 +109,7 @@
           "Helmet",
           "Chest",
           "Legs",
-          "Shoulder",
-          "Utility"
+          "Shoulder"
         ],
         "AllowedRarities" : [
           "Magic",
@@ -143,8 +142,7 @@
           "Helmet",
           "Chest",
           "Legs",
-          "Shoulder",
-          "Utility"
+          "Shoulder"
         ],
         "AllowedRarities" : [
           "Magic",
@@ -176,8 +174,7 @@
           "Helmet",
           "Chest",
           "Legs",
-          "Shoulder",
-          "Utility"
+          "Shoulder"
         ],
         "ItemHasNegativeMovementSpeedModifier" : true
       },
@@ -256,9 +253,9 @@
       "Type" : "ModifyBackstab",
       "DisplayText" : "Backstab improved by +{0:0.#}%",
       "Requirements" : {
-        "AllowedItemTypes" : [
-          "OneHandedWeapon",
-          "Bow"
+        "AllowedSkillTypes" : [
+          "Knives",
+          "Bows"
         ],
         "ItemHasBackstabBonus" : true
       },
@@ -668,14 +665,15 @@
           "RemoveSpeedPenalty"
         ],
         "AllowedItemTypes" : [
-          "Legs"
+          "Legs",
+          "Utility"
         ]
       },
       "ValuesPerRarity" : {
-        "Magic" : { "MinValue" : 5, "MaxValue" : 15, "Increment" : 1 },
-        "Rare" : { "MinValue" : 15, "MaxValue" : 30, "Increment" : 1 },
-        "Epic" : { "MinValue" : 30, "MaxValue" : 45, "Increment" : 1 },
-        "Legendary" : { "MinValue" : 45, "MaxValue" : 60, "Increment" : 1 }
+        "Magic" : { "MinValue" : 5, "MaxValue" : 10, "Increment" : 1 },
+        "Rare" : { "MinValue" : 6, "MaxValue" : 11, "Increment" : 1 },
+        "Epic" : { "MinValue" : 7, "MaxValue" : 12, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 8, "MaxValue" : 13, "Increment" : 1 }
       },
       "SelectionWeight" : 1
     },
@@ -684,7 +682,8 @@
       "DisplayText" : "Reduce sprint stamina use by -{0:0.#}%",
       "Requirements" : {
         "AllowedItemTypes" : [
-          "Legs"
+          "Legs",
+          "Utility"
         ]
       },
       "ValuesPerRarity" : {
@@ -700,7 +699,8 @@
       "DisplayText" : "Reduce jump stamina use by -{0:0.#}%",
       "Requirements" : {
         "AllowedItemTypes" : [
-          "Legs"
+          "Legs",
+          "Utility"
         ]
       },
       "ValuesPerRarity" : {
@@ -766,8 +766,7 @@
           "Helmet",
           "Chest",
           "Legs",
-          "Shoulder",
-          "Utility"
+          "Shoulder"
         ],
         "AllowedRarities" : [
           "Epic",
@@ -793,8 +792,7 @@
           "Helmet",
           "Chest",
           "Legs",
-          "Shoulder",
-          "Utility"
+          "Shoulder"
         ]
       },
       "SelectionWeight" : 1

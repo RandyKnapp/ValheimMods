@@ -1,3 +1,8 @@
+## Version 0.5.15
+  * Loot tables now use a leveled format that can be extended beyond level 3
+## Version 0.5.14
+  * Updating the console command with a few more exclusions
+  * Modified a UI display to better support multiple hotkeybars and multiple inventory grids
 ## Version 0.5.13
   * Made it slightly easier for other modders to access the enchanting and disenchanting information
   * Made the tooltip text lookup for set items more defensive to prevent some mod conflicts

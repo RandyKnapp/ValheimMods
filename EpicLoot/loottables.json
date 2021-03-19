@@ -267,22 +267,40 @@
     ////////////////////////////////////////////////////////////////////////////////////
     {
       "Object": "Greydwarf",
-      "Drops":  [ [0, 95], [1, 5]  ],
-      "Drops2": [ [0, 90], [1, 10] ],
-      "Drops3": [ [0, 80], [1, 20] ],
-      "Loot": [
-        { "Item": "Tier0Weapons", "Weight": 1, "Rarity": [ 99, 1, 0, 0 ] },
-        { "Item": "Tier1Weapons", "Weight": 1, "Rarity": [ 99, 1, 0, 0 ] },
-        { "Item": "Tier0Shields", "Weight": 1, "Rarity": [ 99, 1, 0, 0 ] },
-        { "Item": "Tier1Armor",   "Weight": 1, "Rarity": [ 99, 1, 0, 0 ] },
-        { "Item": "Tier0Tools",   "Weight": 1, "Rarity": [ 99, 1, 0, 0 ] }
-      ],
-      "Loot2": [
-        { "Item": "Greydwarf.1", "Weight": 1, "Rarity": [ 95, 4, 1, 0 ] }
-      ],
-      "Loot3": [
-        { "Item": "Greydwarf.2", "Weight": 1, "Rarity": [ 90, 8, 2, 0 ] }
-      ] 
+      "LeveledLoot": [
+        {
+          "Level": 1,
+          "Drops": [ [0, 95], [1, 5]  ],
+          "Loot": [
+            { "Item": "Tier0Weapons", "Weight": 1, "Rarity": [ 99, 1, 0, 0 ] },
+            { "Item": "Tier1Weapons", "Weight": 1, "Rarity": [ 99, 1, 0, 0 ] },
+            { "Item": "Tier0Shields", "Weight": 1, "Rarity": [ 99, 1, 0, 0 ] },
+            { "Item": "Tier1Armor",   "Weight": 1, "Rarity": [ 99, 1, 0, 0 ] },
+            { "Item": "Tier0Tools",   "Weight": 1, "Rarity": [ 99, 1, 0, 0 ] }
+          ] 
+        },
+        {
+          "Level": 2,
+          "Drops": [ [0, 90], [1, 10] ],
+          "Loot": [
+            { "Item": "Greydwarf.1", "Weight": 1, "Rarity": [ 95, 4, 1, 0 ] }
+          ] 
+        },
+        {
+          "Level": 3,
+          "Drops": [ [0, 80], [1, 20] ],
+          "Loot": [
+            { "Item": "Greydwarf.1", "Weight": 1, "Rarity": [ 90, 8, 2, 0 ] }
+          ] 
+        },
+        {
+          "Level": 4,
+          "Drops": [ [1, 90], [2, 10] ],
+          "Loot": [
+            { "Item": "Greydwarf.1", "Weight": 1, "Rarity": [ 85, 13, 2, 0 ] }
+          ] 
+        }
+      ]
     },
     // Greydwarf_Elite
     ////////////////////////////////////////////////////////////////////////////////////

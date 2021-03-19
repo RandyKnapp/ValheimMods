@@ -58,9 +58,9 @@ namespace EpicLoot.Crafting
             }
         }
 
-        protected virtual string GetTabButtonId() => "TabId";
-        protected virtual string GetTabButtonText() => "TabButton";
-        protected virtual float GetTabWidth() => 100;
+        public virtual string GetTabButtonId() => "TabId";
+        public virtual string GetTabButtonText() => "TabButton";
+        public virtual float GetTabWidth() => 100;
 
         public virtual bool IsAllowedAtThisStation(CraftingStation station)
         {
