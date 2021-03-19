@@ -13,7 +13,7 @@ namespace EpicLoot.HealingQueue
 
         private void Start()
         {
-            InvokeRepeating(nameof(UpdateHealingQueue), 1f, 0.3f);
+            InvokeRepeating(nameof(UpdateHealingQueue), 1f, 0.4f);
         }
 
         public void UpdateHealingQueue()
