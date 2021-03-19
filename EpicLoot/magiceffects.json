@@ -801,14 +801,12 @@
     },
     {
       "Type" : "LifeSteal",
-      "DisplayText" : "Life steal {0:0.#} health points on hit",
+      "DisplayText" : "Heal for {0:0.#}% of damage done",
       "Requirements" : {
         "AllowedItemTypes" : [
           "OneHandedWeapon",
           "TwoHandedWeapon",
-          "Bow",
-          "Torch",
-          "Tool"
+          "Bow"
         ],
         "ItemUsesStaminaOnAttack" : true
       },
@@ -818,9 +816,9 @@
         "Legendary"
       ],
       "ValuesPerRarity" : {
-        "Rare" : { "MinValue" : 1, "MaxValue" : 1, "Increment" : 1 },
-        "Epic" : { "MinValue" : 2, "MaxValue" : 2, "Increment" : 1 },
-        "Legendary" : { "MinValue" : 3, "MaxValue" : 3, "Increment" : 1 }
+        "Rare" : { "MinValue" : 0.8, "MaxValue" : 1.4, "Increment" : 0.1 },
+        "Epic" : { "MinValue" : 1.5, "MaxValue" : 2.2, "Increment" : 0.1 },
+        "Legendary" : { "MinValue" : 2.3, "MaxValue" : 3, "Increment" : 0.1 }
       },
       "SelectionWeight" : 1
     },

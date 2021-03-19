@@ -13,7 +13,6 @@ namespace EpicLoot
     public static class Console_Patch
     {
         private static readonly System.Random _random = new System.Random();
-        private static bool _debugModeEnabled;
 
         public static bool Prefix(Console __instance)
         {
@@ -23,6 +22,13 @@ namespace EpicLoot
             {
                 return true;
             }
+            
+            // init debug hooks when __instance.IsCheatsEnabled
+            if (!LootRoller_Debug._debugModeEnabled) {
+                Debug.Log(nameof(LootRoller_Debug._debugModeEnabled));
+                LootRoller_Debug._debugModeEnabled = true;
+                LootRoller.MagicItemGenerated += LootRoller_Debug.AddDebugMagicEffects;
+            }
 
             var command = args[0];
             if (command.Equals("magicitem", StringComparison.InvariantCultureIgnoreCase) ||
@@ -30,8 +36,9 @@ namespace EpicLoot
             {
                 MagicItem(__instance, args);
                 return false;
-            }
-            else if (command.Equals("mieffect", StringComparison.InvariantCultureIgnoreCase)) 
+            } 
+            else if (command.Equals("magicitemwitheffect", StringComparison.InvariantCultureIgnoreCase) 
+                     || command.Equals("mieffect", StringComparison.InvariantCultureIgnoreCase)) 
             {
               SpawnMagicItemWithEffect(__instance, args);
             }
@@ -45,15 +52,6 @@ namespace EpicLoot
                 SpawnMagicCraftingMaterials();
                 return false;
             } 
-            else if (command.Equals("imacheater", StringComparison.InvariantCultureIgnoreCase)) 
-            {
-                if (!_debugModeEnabled) {
-                    // "imacheater" activates debug hooks
-                    Debug.Log(nameof(_debugModeEnabled));
-                    _debugModeEnabled = true;
-                    LootRoller.MagicItemGenerated += LootRoller_Debug.AddDebugMagicEffects;
-                }
-            }
             return true;
         }
 
@@ -139,7 +137,7 @@ namespace EpicLoot
             
             var effectArg = args[1];
             var itemPrefabNameArg = args[2];
-            __instance.AddString($"magicitem with effect: {effectArg}");
+            __instance.AddString($"magicitem {itemPrefabNameArg} with effect: {effectArg}");
 
             var magicItemEffectDef = MagicItemEffectDefinitions.AllDefinitions[effectArg];
             var effectRequirements = magicItemEffectDef.Requirements;

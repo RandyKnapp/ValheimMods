@@ -68,7 +68,7 @@ namespace EpicLoot
             text.Append($"\n$item_weight: <color={weightColor}>{item.GetWeight():0.0}</color>");
 
             if (magicItem.HasEffect(MagicEffectType.LifeSteal)) {
-              text.Append($"\n$lifeSteal: <color={magicColor}>{magicItem.GetTotalEffectValue(MagicEffectType.LifeSteal):0.0}</color>");
+              text.Append($"\n$life_steal: <color={magicColor}>{magicItem.GetTotalEffectValue(MagicEffectType.LifeSteal):0.#}%</color>");
             }
 
             if (item.m_shared.m_maxQuality > 1)
