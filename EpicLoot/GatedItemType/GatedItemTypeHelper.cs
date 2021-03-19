@@ -20,7 +20,7 @@ namespace EpicLoot.GatedItemType
             foreach (var info in config.ItemInfo)
             {
                 ItemInfos.Add(info);
-                Debug.Log($"Adding ItemTypeInfo: {info.Type}, fallback={info.Fallback}, items={string.Join(",", info.Items)}");
+                //Debug.Log($"Adding ItemTypeInfo: {info.Type}, fallback={info.Fallback}, items={string.Join(",", info.Items)}");
                 foreach (var itemID in info.Items)
                 {
                     ItemInfoByID.Add(itemID, info);

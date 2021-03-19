@@ -1,5 +1,10 @@
 ## Version 0.5.15
   * Loot tables now use a leveled format that can be extended beyond level 3
+  * DLC Stuff allowed to enchant
+  * Can limit magic effects by SkillType
+  * Can limit magic effects by exclusions, see info.md
+  * Drastically reduced Movement Speed bonus (for new drops or enchanted)
+  * Added gating for dropped item types by known recipe or known item (or unlimited)
 ## Version 0.5.14
   * Updating the console command with a few more exclusions
   * Modified a UI display to better support multiple hotkeybars and multiple inventory grids
