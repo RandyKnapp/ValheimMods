@@ -1,0 +1,7 @@
+newmtl Belt
+map_Kd C:/Users/rknapp/Documents/GitHub/ValheimMods/ValheimUnity/Assets/EpicLoot/Texture2D/BronzeArmor_Chest_meshes_chest_d.png
+map_Pm C:/Users/rknapp/Documents/GitHub/ValheimMods/ValheimUnity/Assets/EpicLoot/Texture2D/BronzeArmor_Chest_meshes_chest_m.png
+bump C:/Users/rknapp/Documents/GitHub/ValheimMods/ValheimUnity/Assets/EpicLoot/Texture2D/BronzeArmor_Chest_meshes_n.png
+Kd 1 1 1
+d 1
+

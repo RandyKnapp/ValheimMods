@@ -634,6 +634,9 @@
     <Reference Include="Unity.Rider.Editor">
       <HintPath>C:/Users/rknapp/Documents/GitHub/ValheimMods/ValheimUnity/Library/ScriptAssemblies/Unity.Rider.Editor.dll</HintPath>
     </Reference>
+    <Reference Include="Unity.2D.Sprite.Editor">
+      <HintPath>C:/Users/rknapp/Documents/GitHub/ValheimMods/ValheimUnity/Library/ScriptAssemblies/Unity.2D.Sprite.Editor.dll</HintPath>
+    </Reference>
     <Reference Include="ThunderKit.Core">
       <HintPath>C:/Users/rknapp/Documents/GitHub/ValheimMods/ValheimUnity/Library/ScriptAssemblies/ThunderKit.Core.dll</HintPath>
     </Reference>
@@ -648,9 +651,6 @@
     </Reference>
     <Reference Include="UnityEditor.UI">
       <HintPath>C:/Users/rknapp/Documents/GitHub/ValheimMods/ValheimUnity/Library/ScriptAssemblies/UnityEditor.UI.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.2D.Sprite.Editor">
-      <HintPath>C:/Users/rknapp/Documents/GitHub/ValheimMods/ValheimUnity/Library/ScriptAssemblies/Unity.2D.Sprite.Editor.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup></ItemGroup>

@@ -1,4 +1,4 @@
-# Epic Loot v0.5.15
+# Epic Loot v0.5.16
 Author: RandyKnapp
 Source: [Github](https://github.com/RandyKnapp/ValheimMods/blob/main/EpicLoot/)
 
@@ -68,8 +68,6 @@ Enter these into the console (F5) after using `imacheater`:
 - [ ] Paralyze
 - [ ] Add Knockback
 - [ ] Slow
-- [ ] Luck (increase drop rate and rarity chance)
-- [ ] Riches (add chance to drop treasure on all mobs)
 - [ ] Blink (bow or spear, teleport to impact point)
 - [ ] Life steal
 - [ ] Exploding shot (bows, deal aoe damage on arrow impact)
@@ -88,7 +86,6 @@ Enter these into the console (F5) after using `imacheater`:
 - [ ] Glowing
 
 #### Armor
-- [ ] Luck (increase drop rate and rarity chance)
 - [ ] Warm (Prevent freezing effect)
 - [ ] Waterproof (cape, prevent Wet effect from rain)
 - [ ] Waterwalk (legs)
@@ -106,6 +103,11 @@ Enter these into the console (F5) after using `imacheater`:
 - [ ] Improve Skill Level
 - [ ] Comfortable (Increase Comfort level when resting)
 - [ ] Glowing
+
+#### Utility
+- [ ] Luck (increase drop rate and rarity chance)
+- [ ] Riches (add chance to drop treasure on all mobs)
+- [ ] Add bonus armor (magic shield?)
 
 #### Tools
 - [ ] Build freedom (hammer, don't require crafting station)
@@ -126,6 +128,10 @@ Enter these into the console (F5) after using `imacheater`:
 
 ## Basic Item Sets:
 
+none
+
 ## Legendary Sets:
+
+none
 
 **Author's Note:** This mod uses an image of the Odal rune (ᛟ) to denote set items. It's reconstructed Proto-Germanic meaning is "Heritage" or "Possession" and the author felt like it was the best rune from the Elder Futhark to signify set items. However, the Odal rune with wings or feet was and is used as a Nazi symbol. The author ***UNEQUIVOCALLY CONDEMNS*** Nazis, Nazism, anti-semitism, and white supremacy. Furthermore, those who hold or practice those beliefs are not welcome to use this mod. F\*\*k Nazis.

@@ -1,4 +1,4 @@
-# EpicLoot Data v0.5.15
+# EpicLoot Data v0.5.16
 
 *Author: RandyKnapp*
 *Source: [Github](https://github.com/RandyKnapp/ValheimMods/tree/main/EpicLoot)*
@@ -26,10 +26,14 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
   * **Requirements:** A set of requirements.
     * **Flags:** A set of predefined flags to check certain weapon properties. The list of flags is: `NoRoll, ExclusiveSelf, ItemHasPhysicalDamage, ItemHasElementalDamage, ItemUsesDurability, ItemHasNegativeMovementSpeedModifier, ItemHasBlockPower, ItemHasParryPower, ItemHasArmor, ItemHasBackstabBonus, ItemUsesStaminaOnAttack`
     * **ExclusiveEffectTypes:** This effect may not be rolled on an item that has already rolled on of these effects
-    * **AllowedItemTypes:** This effect may only be rolled on items of a the types in this list. When this list is empty, this is usually done because this is a special effect type added programmatically  or currently not allowed to roll. Options are: `ItemDrop+ItemData+ItemType[]`
-    * **AllowedRarities:** This effect may only be rolled on an item of one of these rarities. Options are: `Helmet, Chest, Legs, Shoulder, Utility, Bow, OneHandedWeapon, TwoHandedWeapon, Shield, Tool, Torch`
-    * **AllowedSkillTypes:** This effect may only be rolled on an item that uses one of these skill types. Options are: `Skills+SkillType[]`
+    * **AllowedItemTypes:** This effect may only be rolled on items of a the types in this list. When this list is empty, this is usually done because this is a special effect type added programmatically  or currently not allowed to roll. Options are: `Helmet, Chest, Legs, Shoulder, Utility, Bow, OneHandedWeapon, TwoHandedWeapon, Shield, Tool, Torch`
+    * **ExcludedItemTypes:** This effect may only be rolled on items that are not one of the types on this list.
+    * **AllowedRarities:** This effect may only be rolled on an item of one of these rarities. Options are: `Magic, Rare, Epic, Legendary`
+    * **ExcludedRarities:** This effect may only be rolled on an item that is not of one of these rarities.
+    * **AllowedSkillTypes:** This effect may only be rolled on an item that uses one of these skill types. Options are: `Swords, Knives, Clubs, Polearms, Spears, Blocking, Axes, Bows, Unarmed, Pickaxes`
+    * **ExcludedSkillTypes:** This effect may only be rolled on an item that does not use one of these skill types.
     * **AllowedItemNames:** This effect may only be rolled on an item with one of these names. Use the unlocalized shared name, i.e.: `$item_sword_iron`
+    * **ExcludedItemNames:** This effect may only be rolled on an item that does not have one of these names.
     * **CustomFlags:** A set of any arbitrary strings for future use
   * **Value Per Rarity:** This effect may only be rolled on items of a rarity included in this table. The value is rolled using a linear distribution between Min and Max and divisible by the Increment.
 
@@ -174,11 +178,11 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 > **Display Text:** Block improved by +{0:0.#}%
 > 
-> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Shield
+> **Allowed Item Types:** Shield
 > 
 > **Requirements:**
 > > **Flags:** `ExclusiveSelf, ItemHasBlockPower`
-> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Shield`
+> > **AllowedItemTypes:** `Shield`
 > 
 > **Value Per Rarity:**
 > 
@@ -193,11 +197,11 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 > **Display Text:** Parry improved by +{0:0.#}%
 > 
-> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Shield
+> **Allowed Item Types:** Shield, TwoHandedWeapon
 > 
 > **Requirements:**
 > > **Flags:** `ExclusiveSelf, ItemHasParryPower`
-> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Shield`
+> > **AllowedItemTypes:** `Shield, TwoHandedWeapon`
 > 
 > **Value Per Rarity:**
 > 

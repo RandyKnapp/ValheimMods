@@ -105,7 +105,7 @@
     <Compile Include="Crafting\InventoryGui_Patch.cs" />
     <Compile Include="Crafting\ItemDrop_Patch.cs" />
     <Compile Include="Crafting\Player_Patch.cs" />
-    <Compile Include="Crafting\Recipes_Setup.cs" />
+    <Compile Include="Crafting\RecipesHelper.cs" />
     <Compile Include="Crafting\TabController.cs" />
     <Compile Include="GatedItemType\GatedItemTypeHelper.cs" />
     <Compile Include="GatedItemType\ItemInfoConfig.cs" />
@@ -158,6 +158,7 @@
     <None Include="manifest.json" />
     <None Include="patchnotes.md" />
     <None Include="README.md" />
+    <None Include="recipes.json" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ExtendedItemDataFramework\ExtendedItemDataFramework.csproj">
@@ -173,6 +174,7 @@
 xcopy "$(ProjectDir)loottables.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
 xcopy "$(ProjectDir)magiceffects.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
 xcopy "$(ProjectDir)iteminfo.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
+xcopy "$(ProjectDir)recipes.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
 xcopy "$(SolutionDir)Libs\fastJSON.dll" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
 xcopy "$(SolutionDir)ValheimUnity\AssetBundles\epicloot" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i</PostBuildEvent>
   </PropertyGroup>
