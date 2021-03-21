@@ -674,6 +674,22 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > |Epic|15|25|5|
 > |Legendary|20|50|5|
 
+## LifeSteal
+
+> **Display Text:** Heal for {0:0.#}% of damage done
+> 
+> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow
+> 
+> 
+> **Value Per Rarity:**
+> 
+> |Rarity|Min|Max|Increment|
+> |--|--|--|--|
+> |Magic|-|-|-|
+> |Rare|0.8|1.4|0.1|
+> |Epic|1.5|2.2|0.1|
+> |Legendary|2.3|3|0.1|
+
 # Item Sets
 
 Sets of loot drop data that can be referenced in the loot tables
