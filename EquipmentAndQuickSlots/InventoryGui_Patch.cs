@@ -187,5 +187,45 @@ namespace EquipmentAndQuickSlots
                 return false;
             }
         }
+
+        [HarmonyPatch(typeof(InventoryGui), "UpdateGamepad")]
+        public static class InventoryGui_UpdateGamepad_Patch
+        {
+            public static bool Prefix(InventoryGui __instance)
+            {
+                if (!__instance.m_inventoryGroup.IsActive())
+                {
+                    return false;
+                }
+                if (ZInput.GetButtonDown("JoyTabLeft"))
+                {
+                    __instance.SetActiveGroup(__instance.m_activeGroup - 1);
+                }
+                if (ZInput.GetButtonDown("JoyTabRight"))
+                {
+                    __instance.SetActiveGroup(__instance.m_activeGroup + 1);
+                }
+                if (__instance.m_activeGroup == 0 && !__instance.IsContainerOpen())
+                {
+                    __instance.SetActiveGroup(1);
+                }
+                if (__instance.m_activeGroup == __instance.m_uiGroups.Length - 1)
+                {
+                    __instance.UpdateRecipeGamepadInput();
+                }
+
+                return false;
+            }
+        }
+
+        //public void UpdateRecipeGamepadInput()
+        [HarmonyPatch(typeof(InventoryGui), "UpdateRecipeGamepadInput")]
+        public static class InventoryGui_UpdateRecipeGamepadInput_Patch
+        {
+            public static bool Prefix(InventoryGui __instance)
+            {
+                return __instance.m_activeGroup == __instance.m_uiGroups.Length - 1;
+            }
+        }
     }
 }
