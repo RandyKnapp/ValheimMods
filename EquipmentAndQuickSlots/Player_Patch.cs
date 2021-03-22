@@ -20,6 +20,11 @@ namespace EquipmentAndQuickSlots
         public static void Postfix(Player __instance)
         {
             __instance.AfterLoad();
+            foreach (var inventory in __instance.GetAllInventories())
+            {
+                inventory.m_onChanged = null;
+                inventory.m_onChanged += __instance.OnInventoryChanged;
+            }
         }
     }
 
@@ -31,7 +36,6 @@ namespace EquipmentAndQuickSlots
             var inv = __instance.m_inventory;
             inv.m_onChanged = null;
             __instance.m_inventory = new ExtendedInventory(__instance, inv.m_name, inv.m_bkg, inv.m_width, inv.m_height);
-            __instance.m_inventory.m_onChanged += __instance.OnInventoryChanged;
             __instance.m_inventory.Extended().OverrideAwake();
         }
     }
