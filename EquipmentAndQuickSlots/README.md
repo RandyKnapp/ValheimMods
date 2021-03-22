@@ -42,3 +42,5 @@ Copy EquipmentAndQuickSlots.dll into the BepInEx/plugins folder
 	* Re-added the toggles to disable and enable features
   * 2.0.3
     * Fixed a bug where players could teleport with items they normally can't
+  * 2.0.4
+    * Fixed gamepad navigation for the crafting recipe list
