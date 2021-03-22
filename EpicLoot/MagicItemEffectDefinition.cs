@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using ExtendedItemDataFramework;
-using fastJSON;
-using UnityEngine;
 
 namespace EpicLoot
 {
@@ -139,6 +137,7 @@ namespace EpicLoot
         public MagicItemEffectRequirements Requirements = new MagicItemEffectRequirements();
         public ValuesPerRarityDef ValuesPerRarity = new ValuesPerRarityDef();
         public float SelectionWeight = 1;
+        public bool CanBeAugmented = true;
         public string Comment;
 
         public List<ItemDrop.ItemData.ItemType> GetAllowedItemTypes()
@@ -280,25 +279,8 @@ namespace EpicLoot
         public List<MagicItemEffectDefinition> MagicItemEffects = new List<MagicItemEffectDefinition>();
     }
 
-    public static partial class MagicItemEffectDefinitions
+    public static class MagicItemEffectDefinitions
     {
-        private static readonly List<ItemDrop.ItemData.ItemType> Weapons = new List<ItemDrop.ItemData.ItemType>()
-        {
-            ItemDrop.ItemData.ItemType.OneHandedWeapon, ItemDrop.ItemData.ItemType.TwoHandedWeapon, ItemDrop.ItemData.ItemType.Bow, ItemDrop.ItemData.ItemType.Torch
-        };
-        private static readonly List<ItemDrop.ItemData.ItemType> Shields = new List<ItemDrop.ItemData.ItemType>()
-        {
-            ItemDrop.ItemData.ItemType.Shield
-        };
-        private static readonly List<ItemDrop.ItemData.ItemType> Armor = new List<ItemDrop.ItemData.ItemType>()
-        {
-            ItemDrop.ItemData.ItemType.Helmet, ItemDrop.ItemData.ItemType.Chest, ItemDrop.ItemData.ItemType.Legs, ItemDrop.ItemData.ItemType.Shoulder, ItemDrop.ItemData.ItemType.Utility
-        };
-        private static readonly List<ItemDrop.ItemData.ItemType> Tools = new List<ItemDrop.ItemData.ItemType>()
-        {
-            ItemDrop.ItemData.ItemType.Tool
-        };
-
         public static readonly Dictionary<string, MagicItemEffectDefinition> AllDefinitions = new Dictionary<string, MagicItemEffectDefinition>();
         public static event Action OnSetupMagicItemEffectDefinitions;
 
@@ -315,11 +297,11 @@ namespace EpicLoot
         {
             if (AllDefinitions.ContainsKey(effectDef.Type))
             {
-                Debug.LogWarning($"Removed previously existing magic effect type: {effectDef.Type}");
+                EpicLoot.LogWarning($"Removed previously existing magic effect type: {effectDef.Type}");
                 AllDefinitions.Remove(effectDef.Type);
             }
 
-            Debug.Log($"Added MagicItemEffect: {effectDef.Type}");
+            EpicLoot.Log($"Added MagicItemEffect: {effectDef.Type}");
             AllDefinitions.Add(effectDef.Type, effectDef);
         }
 
@@ -329,9 +311,23 @@ namespace EpicLoot
             return effectDef;
         }
 
-        public static List<MagicItemEffectDefinition> GetAvailableEffects(ExtendedItemData itemData, MagicItem magicItem)
+        public static List<MagicItemEffectDefinition> GetAvailableEffects(ExtendedItemData itemData, MagicItem magicItem, int ignoreEffectIndex = -1)
         {
-            return AllDefinitions.Values.Where(x => x.CheckRequirements(itemData, magicItem)).ToList();
+            MagicItemEffect effect = null;
+            if (ignoreEffectIndex >= 0 && ignoreEffectIndex < magicItem.Effects.Count)
+            {
+                effect = magicItem.Effects[ignoreEffectIndex];
+                magicItem.Effects.RemoveAt(ignoreEffectIndex);
+            }
+
+            var results = AllDefinitions.Values.Where(x => x.CheckRequirements(itemData, magicItem)).ToList();
+
+            if (effect != null)
+            {
+                magicItem.Effects.Insert(ignoreEffectIndex, effect);
+            }
+
+            return results;
         }
     }
 }

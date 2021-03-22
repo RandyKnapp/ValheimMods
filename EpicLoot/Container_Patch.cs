@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using HarmonyLib;
-using UnityEngine;
 
 namespace EpicLoot
 {
@@ -20,11 +19,11 @@ namespace EpicLoot
             if (lootTable != null)
             {
                 var items = LootRoller.RollLootTable(lootTable, 1, __instance.m_piece.name, __instance.transform.position);
-                Debug.Log($"Rolling on loot table: {containerName}, spawned {items.Count} items at drop point({__instance.transform.position.ToString("0")}).");
+                EpicLoot.Log($"Rolling on loot table: {containerName}, spawned {items.Count} items at drop point({__instance.transform.position.ToString("0")}).");
                 foreach (var item in items)
                 {
                     __instance.m_inventory.AddItem(item);
-                    Debug.Log($"  - {item.m_shared.m_name}" + (item.IsMagic() ? $": {string.Join(", ", item.GetMagicItem().Effects.Select(x => x.EffectType.ToString()))}" : ""));
+                    EpicLoot.Log($"  - {item.m_shared.m_name}" + (item.IsMagic() ? $": {string.Join(", ", item.GetMagicItem().Effects.Select(x => x.EffectType.ToString()))}" : ""));
                 }
             }
         }

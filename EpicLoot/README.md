@@ -1,4 +1,4 @@
-# Epic Loot v0.5.16
+# Epic Loot v0.6.0 - Augmenter Update!
 Author: RandyKnapp
 Source: [Github](https://github.com/RandyKnapp/ValheimMods/blob/main/EpicLoot/)
 
@@ -39,8 +39,12 @@ Enter these into the console (F5) after using `imacheater`:
 ## Current Known Mod Conflicts
 
   * **BetterUI** ([Nexus](https://www.nexusmods.com/valheim/mods/189), [Thunderstore](https://valheim.thunderstore.io/package/Masa/BetterUI/)): You won't be able to see the magic item properties in the tooltip. Go to the BetterUI config and set `showCustomTooltips = false`.
+  * **Crafting With Containers** ([Thunderstore](https://valheim.thunderstore.io/package/abearcodes/CraftingWithContainers/)): Uses double resources when crafting, some other features break. Recommended to not use with EpicLoot.
 
 ## Known Bugs
+
+  * Multiplayer Issue: Some players connecting to a dedicated server cannot access Enchanting sections of the crafting menu. This issue is being investigated.
+  * Gamepad: Still some gamepad issues, especially when using other mods that change the inventory.
 
 ## TODO
 
@@ -134,4 +138,4 @@ none
 
 none
 
-**Author's Note:** This mod uses an image of the Odal rune (ᛟ) to denote set items. It's reconstructed Proto-Germanic meaning is "Heritage" or "Possession" and the author felt like it was the best rune from the Elder Futhark to signify set items. However, the Odal rune with wings or feet was and is used as a Nazi symbol. The author ***UNEQUIVOCALLY CONDEMNS*** Nazis, Nazism, anti-semitism, and white supremacy. Furthermore, those who hold or practice those beliefs are not welcome to use this mod. F\*\*k Nazis.
+**Author's Note:** Older versions of this mod used an image of the Odal rune (ᛟ) to denote set items. It's reconstructed Proto-Germanic meaning is "Heritage" or "Possession" and the author felt like it was the best rune from the Elder Futhark to signify set items. However, the Odal rune with wings or feet was and is used as a Nazi symbol. The author ***UNEQUIVOCALLY CONDEMNS*** Nazis, Nazism, anti-semitism, and white supremacy. Furthermore, those who hold or practice those beliefs are not welcome to use this mod. F\*\*k Nazis.

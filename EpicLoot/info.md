@@ -1,4 +1,4 @@
-# EpicLoot Data v0.5.16
+# EpicLoot Data v0.6.0
 
 *Author: RandyKnapp*
 *Source: [Github](https://github.com/RandyKnapp/ValheimMods/tree/main/EpicLoot)*
@@ -164,15 +164,6 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > > **Flags:** `ExclusiveSelf, ItemHasNegativeMovementSpeedModifier`
 > > **ExclusiveEffectTypes:** `ModifyMovementSpeed`
 > > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Shield, Tool, Helmet, Chest, Legs, Shoulder`
-> 
-> **Value Per Rarity:**
-> 
-> |Rarity|Min|Max|Increment|
-> |--|--|--|--|
-> |Magic|1|0|0|
-> |Rare|1|0|0|
-> |Epic|1|0|0|
-> |Legendary|1|0|0|
 
 ## ModifyBlockPower
 

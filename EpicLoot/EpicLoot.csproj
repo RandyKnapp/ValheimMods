@@ -97,11 +97,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Crafting\AugmentsAvailableDialog.cs" />
     <Compile Include="Crafting\CraftingItemExtensions.cs" />
     <Compile Include="Crafting\CraftingStation_Patch.cs" />
     <Compile Include="Crafting\CraftingTabs.cs" />
+    <Compile Include="Crafting\AugmentChoiceDialog.cs" />
     <Compile Include="Crafting\CraftSuccessDialog.cs" />
+    <Compile Include="Crafting\EnchantCostsConfig.cs" />
+    <Compile Include="Crafting\EnchantCostsHelper.cs" />
     <Compile Include="Crafting\EnchantTabController.cs" />
+    <Compile Include="Crafting\AugmentTabController.cs" />
     <Compile Include="Crafting\InventoryGui_Patch.cs" />
     <Compile Include="Crafting\ItemDrop_Patch.cs" />
     <Compile Include="Crafting\Player_Patch.cs" />
@@ -151,6 +156,7 @@
     <Compile Include="ZNetScene_Patch.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="enchantcosts.json" />
     <None Include="info.md" />
     <None Include="iteminfo.json" />
     <None Include="loottables.json" />
@@ -175,6 +181,7 @@ xcopy "$(ProjectDir)loottables.json" "C:\Program Files (x86)\Steam\steamapps\com
 xcopy "$(ProjectDir)magiceffects.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
 xcopy "$(ProjectDir)iteminfo.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
 xcopy "$(ProjectDir)recipes.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
+xcopy "$(ProjectDir)enchantcosts.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
 xcopy "$(SolutionDir)Libs\fastJSON.dll" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
 xcopy "$(SolutionDir)ValheimUnity\AssetBundles\epicloot" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i</PostBuildEvent>
   </PropertyGroup>

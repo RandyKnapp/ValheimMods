@@ -1,5 +1,4 @@
-﻿using ExtendedItemDataFramework;
-using HarmonyLib;
+﻿using HarmonyLib;
 using UnityEngine;
 
 namespace EpicLoot
@@ -33,7 +32,7 @@ namespace EpicLoot
 
             if (__instance.m_craftUpgradeItem != null && __instance.m_craftUpgradeItem.IsMagic())
             {
-                Debug.LogWarning("Trying to upgrade magic item");
+                EpicLoot.LogWarning("Trying to upgrade magic item");
                 var upgradeItem = __instance.m_craftUpgradeItem;
                 player.UnequipItem(upgradeItem);
 

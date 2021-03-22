@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 
 namespace EpicLoot.GatedItemType
 {
@@ -20,7 +19,7 @@ namespace EpicLoot.GatedItemType
             foreach (var info in config.ItemInfo)
             {
                 ItemInfos.Add(info);
-                //Debug.Log($"Adding ItemTypeInfo: {info.Type}, fallback={info.Fallback}, items={string.Join(",", info.Items)}");
+                //EpicLoot.Log($"Adding ItemTypeInfo: {info.Type}, fallback={info.Fallback}, items={string.Join(",", info.Items)}");
                 foreach (var itemID in info.Items)
                 {
                     ItemInfoByID.Add(itemID, info);
@@ -32,7 +31,7 @@ namespace EpicLoot.GatedItemType
         {
             if (string.IsNullOrEmpty(itemID))
             {
-                Debug.LogError($"Tried to get gated itemID with null or empty itemID!");
+                EpicLoot.LogError($"Tried to get gated itemID with null or empty itemID!");
                 return null;
             }
 
@@ -45,19 +44,19 @@ namespace EpicLoot.GatedItemType
             var player = Player.m_localPlayer;
             if (player == null)
             {
-                Debug.LogError($"Tried to get gated itemID ({itemID}) with null player!");
+                EpicLoot.LogError($"Tried to get gated itemID ({itemID}) with null player!");
                 return null;
             }
 
             if (ObjectDB.instance == null || ObjectDB.instance.m_items.Count == 0)
             {
-                Debug.LogError($"Tried to get gated itemID ({itemID}) but ObjectDB is not initialized!");
+                EpicLoot.LogError($"Tried to get gated itemID ({itemID}) but ObjectDB is not initialized!");
                 return null;
             }
 
             if (!ItemInfoByID.TryGetValue(itemID, out var info))
             {
-                Debug.LogWarning($"Tried to get gated itemID from itemID ({itemID}), but no data exists for it in iteminfo.json. Returning itemID.");
+                EpicLoot.LogWarning($"Tried to get gated itemID from itemID ({itemID}), but no data exists for it in iteminfo.json. Returning itemID.");
                 return itemID;
             }
 
@@ -69,25 +68,25 @@ namespace EpicLoot.GatedItemType
 
             while (CheckIfItemNeedsGate(player, mode, itemName))
             {
-                Debug.Log("Yes...");
+                EpicLoot.Log("Yes...");
                 var index = info.Items.IndexOf(itemID);
                 if (index < 0)
                 {
-                    Debug.LogError($"Something has gone completely wrong, the ItemInfo ({info.Type}) did not contain the itemID ({itemID}).");
+                    EpicLoot.LogError($"Something has gone completely wrong, the ItemInfo ({info.Type}) did not contain the itemID ({itemID}).");
                     return null;
                 }
                 if (index == 0)
                 {
-                    Debug.Log($"Reached end of gated list. Fallback is ({info.Fallback}), returning ({(string.IsNullOrEmpty(info.Fallback) ? itemID : info.Fallback)}){(string.IsNullOrEmpty(info.Fallback) ? "" : " (fallback)")}");
+                    EpicLoot.Log($"Reached end of gated list. Fallback is ({info.Fallback}), returning ({(string.IsNullOrEmpty(info.Fallback) ? itemID : info.Fallback)}){(string.IsNullOrEmpty(info.Fallback) ? "" : " (fallback)")}");
                     return string.IsNullOrEmpty(info.Fallback) ? itemID : info.Fallback;
                 }
 
                 itemID = info.Items[index - 1];
                 itemName = GetItemName(itemID);
-                Debug.Log($"Next lower tier item is ({itemID})");
+                EpicLoot.Log($"Next lower tier item is ({itemID})");
             }
 
-            Debug.Log($"No, return ({itemID})");
+            EpicLoot.Log($"No, return ({itemID})");
             return itemID;
         }
 
@@ -96,14 +95,14 @@ namespace EpicLoot.GatedItemType
             var itemPrefab = ObjectDB.instance.GetItemPrefab(itemID);
             if (itemPrefab == null)
             {
-                Debug.LogError($"Tried to get gated itemID ({itemID}) but there is no prefab with that ID!");
+                EpicLoot.LogError($"Tried to get gated itemID ({itemID}) but there is no prefab with that ID!");
                 return null;
             }
 
             var itemDrop = itemPrefab.GetComponent<ItemDrop>();
             if (itemDrop == null)
             {
-                Debug.LogError($"Tried to get gated itemID ({itemID}) but its prefab has no ItemDrop component!");
+                EpicLoot.LogError($"Tried to get gated itemID ({itemID}) but its prefab has no ItemDrop component!");
                 return null;
             }
 
@@ -113,7 +112,7 @@ namespace EpicLoot.GatedItemType
 
         private static bool CheckIfItemNeedsGate(Player player, GatedItemTypeMode mode, string itemName)
         {
-            Debug.Log($"Checking if item ({itemName}) needs gating...");
+            EpicLoot.Log($"Checking if item ({itemName}) needs gating...");
             switch (mode)
             {
                 case GatedItemTypeMode.MustKnowRecipe: return !player.IsRecipeKnown(itemName);

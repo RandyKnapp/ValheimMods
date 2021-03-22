@@ -3,6 +3,7 @@
     {
       "Type" : "DvergerCirclet",
       "DisplayText" : "Perpetual lightsource",
+      "CanBeAugmented": false, 
       "Requirements" : {
         "NoRoll": true
       },
@@ -12,6 +13,7 @@
     {
       "Type" : "Megingjord",
       "DisplayText" : "Carry weight increased by +150",
+      "CanBeAugmented": false, 
       "Requirements" : {
         "NoRoll": true
       },
@@ -21,6 +23,7 @@
     {
       "Type" : "Wishbone",
       "DisplayText" : "Finds secrets",
+      "CanBeAugmented": false, 
       "Requirements" : {
         "NoRoll": true
       },
@@ -30,6 +33,7 @@
     {
       "Type" : "ModifyDamage",
       "DisplayText" : "All damage increased by +{0:0.#}%",
+      "CanBeAugmented": false, 
       "Requirements" : {
         "NoRoll": true
       },
@@ -177,12 +181,6 @@
           "Shoulder"
         ],
         "ItemHasNegativeMovementSpeedModifier" : true
-      },
-      "ValuesPerRarity" : {
-        "Magic" : { "MinValue" : 1, "MaxValue" : 0, "Increment" : 0 },
-        "Rare" : { "MinValue" : 1, "MaxValue" : 0, "Increment" : 0 },
-        "Epic" : { "MinValue" : 1, "MaxValue" : 0, "Increment" : 0 },
-        "Legendary" : { "MinValue" : 1, "MaxValue" : 0, "Increment" : 0 }
       },
       "SelectionWeight" : 1
     },

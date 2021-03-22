@@ -155,6 +155,16 @@ namespace EpicLoot
         {
             return itemData.m_shared.m_setName == setName;
         }
+
+        public static bool CanBeAugmented(this ItemDrop.ItemData itemData)
+        {
+            if (!itemData.IsMagic())
+            {
+                return false;
+            }
+
+            return itemData.GetMagicItem().Effects.Select(effect => MagicItemEffectDefinitions.Get(effect.EffectType)).Any(effectDef => effectDef.CanBeAugmented);
+        }
     }
 
     public static partial class PlayerExtensions
@@ -209,14 +219,14 @@ namespace EpicLoot
             {
                 if (itemPrefab == null)
                 {
-                    Debug.LogError("Null Item left in ObjectDB! (This means that a prefab was deleted and not an instance)");
+                    EpicLoot.LogError("Null Item left in ObjectDB! (This means that a prefab was deleted and not an instance)");
                     continue;
                 }
 
                 var itemDrop = itemPrefab.GetComponent<ItemDrop>();
                 if (itemDrop == null)
                 {
-                    Debug.LogError($"Item in ObjectDB missing ItemDrop: ({itemPrefab.name})");
+                    EpicLoot.LogError($"Item in ObjectDB missing ItemDrop: ({itemPrefab.name})");
                     continue;
                 }
 
@@ -315,7 +325,7 @@ namespace EpicLoot
                 var element = __instance.GetElement(item.m_gridPos.x, item.m_gridPos.y, __instance.m_inventory.GetWidth());
                 if (element == null)
                 {
-                    Debug.LogError($"Could not find element for item ({item.m_shared.m_name}: {item.m_gridPos}) in inventory: {__instance.m_inventory.m_name}");
+                    EpicLoot.LogError($"Could not find element for item ({item.m_shared.m_name}: {item.m_gridPos}) in inventory: {__instance.m_inventory.m_name}");
                     continue;
                 }
 
@@ -360,7 +370,7 @@ namespace EpicLoot
                 var element = GetElementForItem(___m_elements, itemData);
                 if (element == null)
                 {
-                    Debug.LogWarning($"Tried to get element for {itemData.m_shared.m_name} at {itemData.m_gridPos}, but element was null (total elements = {___m_elements.Count})");
+                    EpicLoot.LogWarning($"Tried to get element for {itemData.m_shared.m_name} at {itemData.m_gridPos}, but element was null (total elements = {___m_elements.Count})");
                     continue;
                 }
 

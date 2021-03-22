@@ -27,6 +27,8 @@ namespace EpicLoot
         public readonly Dictionary<string, GameObject[]> CraftingMaterialPrefabs = new Dictionary<string, GameObject[]>();
         public Sprite SmallButtonEnchantOverlay;
         public AudioClip[] MagicItemDropSFX = new AudioClip[4];
+        public AudioClip ItemLoopSFX;
+        public AudioClip AugmentItemSFX;
     }
 
     public class PieceDef
@@ -42,7 +44,7 @@ namespace EpicLoot
     public class EpicLoot : BaseUnityPlugin
     {
         private const string PluginId = "randyknapp.mods.epicloot";
-        private const string Version = "0.5.16";
+        private const string Version = "0.6.0";
 
         private static ConfigEntry<string> _setItemColor;
         private static ConfigEntry<string> _magicRarityColor;
@@ -57,8 +59,10 @@ namespace EpicLoot
         private static ConfigEntry<string> _rareRarityDisplayName;
         private static ConfigEntry<string> _epicRarityDisplayName;
         private static ConfigEntry<string> _legendaryRarityDisplayName;
-        public static ConfigEntry<bool> UseScrollingCraftDescription;
         private static ConfigEntry<GatedItemTypeMode> _gatedItemTypeModeConfig;
+        public static ConfigEntry<bool> UseScrollingCraftDescription;
+        public static ConfigEntry<CraftingTabStyle> CraftingTabStyle;
+        private static ConfigEntry<bool> _loggingEnabled;
 
         public static readonly List<ItemDrop.ItemData.ItemType> AllowedMagicItemTypes = new List<ItemDrop.ItemData.ItemType>
         {
@@ -102,11 +106,14 @@ namespace EpicLoot
 
         public static event Action LootTableLoaded;
 
+        private static EpicLoot _instance;
         private Harmony _harmony;
 
         [UsedImplicitly]
         private void Awake()
         {
+            _instance = this;
+
             _magicRarityColor = Config.Bind("Item Colors", "Magic Rarity Color", "Blue", "The color of Magic rarity items, the lowest magic item tier. (Optional, use an HTML hex color starting with # to have a custom color.) Available options: Red, Orange, Yellow, Green, Teal, Blue, Indigo, Purple, Pink, Gray");
             _magicMaterialIconColor = Config.Bind("Item Colors", "Magic Crafting Material Icon Index", 5, "Indicates the color of the icon used for magic crafting materials. A number between 0 and 9. Available options: 0=Red, 1=Orange, 2=Yellow, 3=Green, 4=Teal, 5=Blue, 6=Indigo, 7=Purple, 8=Pink, 9=Gray");
             _rareRarityColor = Config.Bind("Item Colors", "Rare Rarity Color", "Yellow", "The color of Rare rarity items, the second magic item tier. (Optional, use an HTML hex color starting with # to have a custom color.) Available options: Red, Orange, Yellow, Green, Teal, Blue, Indigo, Purple, Pink, Gray");
@@ -120,13 +127,16 @@ namespace EpicLoot
             _rareRarityDisplayName = Config.Bind("Rarity", "Rare Rarity Display Name", "Rare", "The name of the second rarity.");
             _epicRarityDisplayName = Config.Bind("Rarity", "Epic Rarity Display Name", "Epic", "The name of the third rarity.");
             _legendaryRarityDisplayName = Config.Bind("Rarity", "Legendary Rarity Display Name", "Legendary", "The name of the highest rarity.");
-            UseScrollingCraftDescription = Config.Bind("Crafting UI", "Use Scrolling Craft Description", true, "Changes the item description in the crafting panel to scroll instead of scale when it gets too long for the space.");
             _gatedItemTypeModeConfig = Config.Bind("Balance", "Item Drop Limits", GatedItemTypeMode.MustKnowRecipe, "Sets how the drop system limits what item types can drop. Unlimited: no limits, exactly what's in the loot table will drop. MustKnowRecipe: items will drop so long as the player has discovered their recipe. MustHaveCrafted: items will only drop once the player has crafted one or picked one up. If an item type cannot drop, it will downgrade to an item of the same type and skill that the player has unlocked (i.e. swords will stay swords)");
+            UseScrollingCraftDescription = Config.Bind("Crafting UI", "Use Scrolling Craft Description", true, "Changes the item description in the crafting panel to scroll instead of scale when it gets too long for the space.");
+            CraftingTabStyle = Config.Bind("Crafting UI", "Crafting Tab Style", Crafting.CraftingTabStyle.HorizontalSquish, "Sets the layout style for crafting tabs, if you've got too many. Horizontal is the vanilla method, but might overlap other mods or run off the screen. HorizontalSquish makes the buttons narrower, works okay with 6 or 7 buttons. Vertical puts the tabs in a column to the left the crafting window. Angled tries to make more room at the top of the crafting panel by angling the tabs, works okay with 6 or 7 tabs.");
+            _loggingEnabled = Config.Bind("Logging", "Logging Enabled", false, "Enable logging");
 
             MagicItemEffectDefinitions.Initialize(LoadJsonFile<MagicItemEffectsList>("magiceffects.json"));
             LootRoller.Initialize(LoadJsonFile<LootConfig>("loottables.json"));
             GatedItemTypeHelper.Initialize(LoadJsonFile<ItemInfoConfig>("iteminfo.json"));
             RecipesHelper.Initialize(LoadJsonFile<RecipesConfig>("recipes.json"));
+            EnchantCostsHelper.Initialize(LoadJsonFile<EnchantingCostsConfig>("enchantcosts.json"));
             PrintInfo();
 
             LoadAssets();
@@ -140,6 +150,30 @@ namespace EpicLoot
             LootTableLoaded?.Invoke();
         }
 
+        public static void Log(string message)
+        {
+            if (_loggingEnabled.Value)
+            {
+                _instance.Logger.LogMessage(message);
+            }
+        }
+
+        public static void LogWarning(string message)
+        {
+            if (_loggingEnabled.Value)
+            {
+                _instance.Logger.LogWarning(message);
+            }
+        }
+
+        public static void LogError(string message)
+        {
+            if (_loggingEnabled.Value)
+            {
+                _instance.Logger.LogError(message);
+            }
+        }
+
         /*private void Update()
         {
             PointerEventData pointerData = new PointerEventData(EventSystem.current)
@@ -150,11 +184,11 @@ namespace EpicLoot
             List<RaycastResult> results = new List<RaycastResult>();
             EventSystem.current.RaycastAll(pointerData, results);
 
-            Debug.LogWarning("== Objects under cursor: ==");
+            EpicLoot.LogWarning("== Objects under cursor: ==");
             if (Input.GetKeyDown(KeyCode.I))
             {
                 results.ForEach((result) => {
-                    Debug.Log($"- {result.gameObject.name} ({result.gameObject.transform.parent.name})");
+                    EpicLoot.Log($"- {result.gameObject.name} ({result.gameObject.transform.parent.name})");
                 });
             }
         }*/
@@ -175,6 +209,8 @@ namespace EpicLoot
             Assets.MagicItemDropSFX[(int)ItemRarity.Rare] = assetBundle.LoadAsset<AudioClip>("RareItemDrop");
             Assets.MagicItemDropSFX[(int)ItemRarity.Epic] = assetBundle.LoadAsset<AudioClip>("EpicItemDrop");
             Assets.MagicItemDropSFX[(int)ItemRarity.Legendary] = assetBundle.LoadAsset<AudioClip>("LegendaryItemDrop");
+            Assets.ItemLoopSFX = assetBundle.LoadAsset<AudioClip>("ItemLoop");
+            Assets.AugmentItemSFX = assetBundle.LoadAsset<AudioClip>("AugmentItem");
 
             LoadCraftingMaterialAssets(assetBundle, "Runestone");
 
@@ -236,7 +272,7 @@ namespace EpicLoot
                 var prefab = assetBundle.LoadAsset<GameObject>(assetName);
                 if (prefab == null)
                 {
-                    Debug.LogError($"Tried to load asset {assetName} but it does not exist in the asset bundle!");
+                    EpicLoot.LogError($"Tried to load asset {assetName} but it does not exist in the asset bundle!");
                     continue;
                 }
                 prefabs[(int) rarity] = prefab;
@@ -293,6 +329,7 @@ namespace EpicLoot
         [UsedImplicitly]
         private void OnDestroy()
         {
+            _instance = null;
             ExtendedItemData.LoadExtendedItemData -= SetupTestMagicItem;
             _harmony?.UnpatchAll(PluginId);
         }
@@ -320,28 +357,28 @@ namespace EpicLoot
                 var prefab = entry.Key;
                 if (prefab == null)
                 {
-                    Debug.LogError($"Tried to register piece but prefab was null!");
+                    EpicLoot.LogError($"Tried to register piece but prefab was null!");
                     continue;
                 }
 
                 var pieceDef = entry.Value;
                 if (pieceDef == null)
                 {
-                    Debug.LogError($"Tried to register piece ({prefab}) but pieceDef was null!");
+                    EpicLoot.LogError($"Tried to register piece ({prefab}) but pieceDef was null!");
                     continue;
                 }
 
                 var piece = prefab.GetComponent<Piece>();
                 if (piece == null)
                 {
-                    Debug.LogError($"Tried to register piece ({prefab}) but Piece component was missing!");
+                    EpicLoot.LogError($"Tried to register piece ({prefab}) but Piece component was missing!");
                     continue;
                 }
 
                 var pieceTable = pieceTables.Find(x => x.name == pieceDef.Table);
                 if (pieceTable == null)
                 {
-                    Debug.LogError($"Tried to register piece ({prefab}) but could not find piece table ({pieceDef.Table}) (pieceTables({pieceTables.Count})= {string.Join(", ", pieceTables.Select(x =>x.name))})!");
+                    EpicLoot.LogError($"Tried to register piece ({prefab}) but could not find piece table ({pieceDef.Table}) (pieceTables({pieceTables.Count})= {string.Join(", ", pieceTables.Select(x =>x.name))})!");
                     continue;
                 }
 
@@ -506,7 +543,7 @@ namespace EpicLoot
                 assetFileName = Path.Combine(Path.GetDirectoryName(assembly.Location) ?? string.Empty, assetName);
                 if (!File.Exists(assetFileName))
                 {
-                    Debug.LogError($"Could not find asset ({assetName})");
+                    EpicLoot.LogError($"Could not find asset ({assetName})");
                     return null;
                 }
             }
@@ -561,7 +598,7 @@ namespace EpicLoot
             if (lootTables != null && lootTables.Count > 0)
             {
                 List<GameObject> loot = LootRoller.RollLootTableAndSpawnObjects(lootTables, level, characterName, dropPoint);
-                Debug.Log($"Rolling on loot table: {characterName} (lvl {level}), spawned {loot.Count} items at drop point({dropPoint}).");
+                EpicLoot.Log($"Rolling on loot table: {characterName} (lvl {level}), spawned {loot.Count} items at drop point({dropPoint}).");
                 DropItems(loot, dropPoint);
                 foreach (var l in loot)
                 {
@@ -569,13 +606,13 @@ namespace EpicLoot
                     var magicItem = itemData.GetMagicItem();
                     if (magicItem != null)
                     {
-                        Debug.Log($"  - {itemData.m_shared.m_name} <{l.transform.position}>: {string.Join(", ", magicItem.Effects.Select(x => x.EffectType.ToString()))}");
+                        EpicLoot.Log($"  - {itemData.m_shared.m_name} <{l.transform.position}>: {string.Join(", ", magicItem.Effects.Select(x => x.EffectType.ToString()))}");
                     }
                 }
             }
             else
             {
-                Debug.Log($"Could not find loot table for: {characterName} (lvl {level})");
+                EpicLoot.Log($"Could not find loot table for: {characterName} (lvl {level})");
             }
         }
 

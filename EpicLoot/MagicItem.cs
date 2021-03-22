@@ -28,6 +28,7 @@ namespace EpicLoot
         public ItemRarity Rarity;
         public List<MagicItemEffect> Effects = new List<MagicItemEffect>();
         public string DisplayNameOverride;
+        public int AugmentedEffectIndex = -1;
 
         public string GetDisplayName(ExtendedItemData baseItem)
         {
@@ -46,10 +47,13 @@ namespace EpicLoot
 
             var color = GetColorString();
             var tooltip = $"<color={color}>\n";
-            foreach (var effect in Effects)
+            for (var index = 0; index < Effects.Count; index++)
             {
-                tooltip += $"\n‣ {GetEffectText(effect, Rarity, showRange)}";
+                var effect = Effects[index];
+                var bullet = (HasBeenAugmented() && index == AugmentedEffectIndex) ? "◇" : "◆";
+                tooltip += $"\n{bullet} {GetEffectText(effect, Rarity, showRange)}";
             }
+
             tooltip += "</color>";
             return tooltip;
         }
@@ -88,7 +92,7 @@ namespace EpicLoot
             return Effects.Any(x => effectTypes.Contains(x.EffectType));
         }
 
-        private static string GetEffectText(MagicItemEffect effect, ItemRarity rarity, bool showRange)
+        public static string GetEffectText(MagicItemEffect effect, ItemRarity rarity, bool showRange)
         {
             var effectDef = MagicItemEffectDefinitions.Get(effect.EffectType);
             var result = string.Format(effectDef.DisplayText, effect.EffectValue);
@@ -101,6 +105,39 @@ namespace EpicLoot
                 }
             }
             return result;
+        }
+
+        public void ReplaceEffect(int index, MagicItemEffect newEffect)
+        {
+            if (index < 0 || index >= Effects.Count)
+            {
+                EpicLoot.LogError("Tried to replace effect on magic item outside of the range of the effects list!");
+                return;
+            }
+
+            if (HasBeenAugmented() && AugmentedEffectIndex != index)
+            {
+                EpicLoot.LogError($"Tried to replace an effect on index {index} but the player has already augmented this item at index {AugmentedEffectIndex}");
+                return;
+            }
+
+            AugmentedEffectIndex = index;
+            Effects[index] = newEffect;
+        }
+
+        public bool HasBeenAugmented()
+        {
+            return AugmentedEffectIndex >= 0 && AugmentedEffectIndex < Effects.Count;
+        }
+
+        public MagicItemEffect GetAugmentedEffect()
+        {
+            if (HasBeenAugmented())
+            {
+                return Effects[AugmentedEffectIndex];
+            }
+
+            return null;
         }
     }
 }

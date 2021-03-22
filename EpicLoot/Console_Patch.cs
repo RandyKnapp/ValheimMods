@@ -44,6 +44,12 @@ namespace EpicLoot
                 ToggleAlwaysDrop(__instance);
                 return false;
             }
+            else if (command.Equals("cheatgating", StringComparison.InvariantCultureIgnoreCase))
+            {
+                LootRoller.CheatDisableGating = !LootRoller.CheatDisableGating;
+                __instance.AddString($"Disable gating for magic item drops: {LootRoller.CheatDisableGating}");
+                return false;
+            }
 
             return true;
         }
@@ -58,10 +64,14 @@ namespace EpicLoot
         {
             foreach (var itemPrefab in EpicLoot.RegisteredItemPrefabs)
             {
-                var itemDrop = UnityEngine.Object.Instantiate<GameObject>(itemPrefab, Player.m_localPlayer.transform.position + Player.m_localPlayer.transform.forward * 2f + Vector3.up, Quaternion.identity).GetComponent<ItemDrop>();
+                var itemDrop = UnityEngine.Object.Instantiate(itemPrefab, Player.m_localPlayer.transform.position + Player.m_localPlayer.transform.forward * 2f + Vector3.up, Quaternion.identity).GetComponent<ItemDrop>();
                 if (itemDrop.m_itemData.IsMagicCraftingMaterial() || itemDrop.m_itemData.IsRunestone())
                 {
                     itemDrop.m_itemData.m_stack = itemDrop.m_itemData.m_shared.m_maxStackSize / 2;
+                }
+                else
+                {
+                    UnityEngine.Object.Destroy(itemDrop.gameObject);
                 }
             }
         }
@@ -71,6 +81,7 @@ namespace EpicLoot
             var rarityArg = args.Length >= 2 ? args[1] : "random";
             var itemArg = args.Length >= 3 ? args[2] : "random";
             var count = args.Length >= 4 ? int.Parse(args[3]) : 1;
+            var effectCount = args.Length >= 5 ? int.Parse(args[4]) : -1;
 
             __instance.AddString($"magicitem - rarity:{rarityArg}, item:{itemArg}, count:{count}");
 
@@ -86,6 +97,7 @@ namespace EpicLoot
                 return;
             }
 
+            LootRoller.CheatEffectCount = effectCount;
             for (var i = 0; i < count; i++)
             {
                 var rarityTable = new[] { 1, 1, 1, 1 };
@@ -139,6 +151,7 @@ namespace EpicLoot
                 var dropPoint = Player.m_localPlayer.transform.position + Player.m_localPlayer.transform.forward * 3 + Vector3.up * 1.5f + randomOffset;
                 items.AddRange(LootRoller.RollLootTableAndSpawnObjects(loot, 1, loot.Object, dropPoint));
             }
+            LootRoller.CheatEffectCount = -1;
         }
 
         public static void CheckStackQuality(Console __instance)

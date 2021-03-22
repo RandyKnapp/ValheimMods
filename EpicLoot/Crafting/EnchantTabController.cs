@@ -139,13 +139,22 @@ namespace EpicLoot.Crafting
             if (!active)
             {
                 Recipes.Clear();
-                SelectedRarity = ItemRarity.Magic;
+                OnSelectedRarity(ItemRarity.Magic);
                 foreach (var rarityButton in RarityButtons)
                 {
                     rarityButton.gameObject.SetActive(false);
                 }
             }
             base.SetActive(active);
+        }
+
+        public override bool DisallowInventoryHiding()
+        {
+            if (SuccessDialog.gameObject.activeSelf)
+            {
+                return true;
+            }
+            return base.DisallowInventoryHiding();
         }
 
         public override void UpdateCraftingPanel(InventoryGui __instance, bool focusView)
@@ -184,6 +193,19 @@ namespace EpicLoot.Crafting
         public void OnSelectedRarity(ItemRarity rarity)
         {
             SelectedRarity = rarity;
+            var nextButtonIndex = (int) SelectedRarity + 1;
+            if (nextButtonIndex >= RarityButtons.Count)
+            {
+                nextButtonIndex = 0;
+            }
+
+            for (var index = 0; index < RarityButtons.Count; index++)
+            {
+                var rarityButton = RarityButtons[index];
+                var gp = rarityButton.GetComponent<UIGamePad>();
+                gp.enabled = index == nextButtonIndex;
+                gp.m_hint.SetActive(ZInput.IsGamepadActive() && index == RarityButtons.Count - 1);
+            }
         }
 
         public override void UpdateRecipe(InventoryGui __instance, Player player, float dt, Image bgImage)
@@ -289,7 +311,7 @@ namespace EpicLoot.Crafting
             var cost = GetRecipeCost(recipe, SelectedRarity);
             foreach (var product in cost)
             {
-                if (SetupRequirement(__instance, __instance.m_recipeRequirementList[index].transform, product.Key, product.Value, player))
+                if (SetupRequirement(__instance, __instance.m_recipeRequirementList[index].transform, product.Key, product.Value, player, true))
                 {
                     ++index;
                 }
@@ -299,83 +321,6 @@ namespace EpicLoot.Crafting
             {
                 InventoryGui.HideRequirement(__instance.m_recipeRequirementList[index].transform);
             }
-        }
-
-        public static bool SetupRequirement(
-            InventoryGui __instance,
-            Transform elementRoot,
-            ItemDrop item,
-            int amount,
-            Player player)
-        {
-            var icon = elementRoot.transform.Find("res_icon").GetComponent<Image>();
-            var nameText = elementRoot.transform.Find("res_name").GetComponent<Text>();
-            var amountText = elementRoot.transform.Find("res_amount").GetComponent<Text>();
-            var tooltip = elementRoot.GetComponent<UITooltip>();
-            if (item != null)
-            {
-                icon.gameObject.SetActive(true);
-                nameText.gameObject.SetActive(true);
-                amountText.gameObject.SetActive(true);
-                if (item.m_itemData.IsMagicCraftingMaterial())
-                {
-                    var rarity = item.m_itemData.GetCraftingMaterialRarity();
-                    icon.sprite = item.m_itemData.m_shared.m_icons[EpicLoot.GetRarityIconIndex(rarity)];
-                }
-                else
-                {
-                    icon.sprite = item.m_itemData.GetIcon();
-                }
-                icon.color = Color.white;
-
-                var bgIconTransform = icon.transform.parent.Find("bgIcon");
-                if (item.m_itemData.UseMagicBackground())
-                {
-                    if (bgIconTransform == null)
-                    {
-                        bgIconTransform = Object.Instantiate(icon, icon.transform.parent, true).transform;
-                        bgIconTransform.name = "bgIcon";
-                        bgIconTransform.SetSiblingIndex(icon.transform.GetSiblingIndex());
-                    }
-
-                    bgIconTransform.gameObject.SetActive(true);
-                    var bgIcon = bgIconTransform.GetComponent<Image>();
-                    bgIcon.sprite = EpicLoot.GetMagicItemBgSprite();
-                    bgIcon.color = item.m_itemData.GetRarityColor();
-                }
-                else if (bgIconTransform != null)
-                {
-                    bgIconTransform.gameObject.SetActive(false);
-                }
-
-                tooltip.m_text = Localization.instance.Localize(item.m_itemData.m_shared.m_name);
-                nameText.text = Localization.instance.Localize(item.m_itemData.m_shared.m_name);
-                if (amount <= 0)
-                {
-                    InventoryGui.HideRequirement(elementRoot);
-                    return false;
-                }
-                amountText.text = amount.ToString();
-
-                var currentAmount = player.GetInventory().CountItems(item.m_itemData.m_shared.m_name);
-                if (currentAmount < amount)
-                {
-                    amountText.color = Mathf.Sin(Time.time * 10.0f) > 0.0f ? Color.red : Color.white;
-                }
-                else
-                {
-                    amountText.color = Color.white;
-                }
-            }
-            else
-            {
-                var bgIconTransform = icon.transform.parent.Find("bgIcon");
-                if (bgIconTransform != null)
-                {
-                    bgIconTransform.gameObject.SetActive(false);
-                }
-            }
-            return true;
         }
 
         public override void OnCraftPressed(InventoryGui __instance)
@@ -439,7 +384,7 @@ namespace EpicLoot.Crafting
                 SuccessDialog.Show(recipe.FromItem.Extended());
 
                 Game.instance.GetPlayerProfile().m_playerStats.m_crafts++;
-                Gogan.LogEvent("Game", "Disenchanted", recipe.FromItem.m_shared.m_name, 1);
+                Gogan.LogEvent("Game", "Enchanted", recipe.FromItem.m_shared.m_name, 1);
             }
         }
 
@@ -513,7 +458,7 @@ namespace EpicLoot.Crafting
         private void OnSelectedRecipe(InventoryGui __instance, int index)
         {
             SelectedRecipe = index;
-            SelectedRarity = ItemRarity.Magic;
+            OnSelectedRarity(ItemRarity.Magic);
             SetRecipe(__instance, SelectedRecipe, false);
         }
 
@@ -547,7 +492,7 @@ namespace EpicLoot.Crafting
         {
             if (!item.IsMagic() && EpicLoot.CanBeMagicItem(item))
             {
-                if (Player.m_localPlayer.m_knownMaterial.Contains($"Magic Runestone"))
+                if (Player.m_localPlayer.m_knownMaterial.Any(x => x.Contains("Runestone")))
                 {
                     var recipe = new EnchantRecipe { FromItem = item.Extended() };
                     Recipes.Add(recipe);
@@ -568,38 +513,23 @@ namespace EpicLoot.Crafting
 
         public static List<KeyValuePair<ItemDrop, int>> GetEnchantCosts(ItemDrop.ItemData item, ItemRarity rarity)
         {
-            var costList = new List<KeyValuePair<ItemDrop, int>>();
-            const int runestoneCost = 1;
-            const int dustCost = 5;
-            const int otherCost = 5;
-
-            var dustPrefab = ObjectDB.instance.GetItemPrefab($"Dust{rarity}").GetComponent<ItemDrop>();
-            var essencePrefab = ObjectDB.instance.GetItemPrefab($"Essence{rarity}").GetComponent<ItemDrop>();
-            var reagentPrefab = ObjectDB.instance.GetItemPrefab($"Reagent{rarity}").GetComponent<ItemDrop>();
-            var runestonePrefab = ObjectDB.instance.GetItemPrefab($"Runestone{rarity}").GetComponent<ItemDrop>();
-
-            switch (item.m_shared.m_itemType)
+            var enchantCostDef = EnchantCostsHelper.GetEnchantCost(item, rarity);
+            if (enchantCostDef == null)
             {
-                case ItemDrop.ItemData.ItemType.OneHandedWeapon:
-                case ItemDrop.ItemData.ItemType.Bow:
-                case ItemDrop.ItemData.ItemType.TwoHandedWeapon:
-                case ItemDrop.ItemData.ItemType.Torch:
-                case ItemDrop.ItemData.ItemType.Tool:
-                    costList.Add(new KeyValuePair<ItemDrop, int>(runestonePrefab, runestoneCost));
-                    costList.Add(new KeyValuePair<ItemDrop, int>(dustPrefab, dustCost));
-                    costList.Add(new KeyValuePair<ItemDrop, int>(essencePrefab, otherCost));
-                    break;
-                    
-                case ItemDrop.ItemData.ItemType.Shield:
-                case ItemDrop.ItemData.ItemType.Helmet:
-                case ItemDrop.ItemData.ItemType.Chest:
-                case ItemDrop.ItemData.ItemType.Legs:
-                case ItemDrop.ItemData.ItemType.Shoulder:
-                case ItemDrop.ItemData.ItemType.Utility:
-                    costList.Add(new KeyValuePair<ItemDrop, int>(runestonePrefab, runestoneCost));
-                    costList.Add(new KeyValuePair<ItemDrop, int>(dustPrefab, dustCost));
-                    costList.Add(new KeyValuePair<ItemDrop, int>(reagentPrefab, otherCost));
-                    break;
+                return null;
+            }
+
+            var costList = new List<KeyValuePair<ItemDrop, int>>();
+
+            foreach (var itemAmountConfig in enchantCostDef)
+            {
+                var prefab = ObjectDB.instance.GetItemPrefab(itemAmountConfig.Item).GetComponent<ItemDrop>();
+                if (prefab == null)
+                {
+                    EpicLoot.LogWarning($"Tried to add unknown item ({itemAmountConfig.Item}) to enchant cost for item ({item.m_shared.m_name})");
+                    continue;
+                }
+                costList.Add(new KeyValuePair<ItemDrop, int>(prefab, itemAmountConfig.Amount));
             }
 
             return costList;

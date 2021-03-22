@@ -1,3 +1,11 @@
+## Version 0.6.0
+  * Added Augmenting at forge with augmenter or at artisan table
+  * Sacrifice, Enchant, and Augment recipes are now configurable in `enchantcosts.json`
+  * Added options for alternate crafting tab layout (compatibility with SimpleRecycling)
+  * Changed set item marker to a non-nazi associated symbol (triskelion instead of odal rune)
+  * Added option to `magicitem` console command to specify the number of effects to roll
+  * Added console command `cheatgating` which toggles item gating on or off
+  * Enabled logging toggle for all of EpicLoot logging
 ## Version 0.5.16
   * Three new craftable, enchantable utility items
   * All conversion and upgrade recipes for crafting materials in configurable json file

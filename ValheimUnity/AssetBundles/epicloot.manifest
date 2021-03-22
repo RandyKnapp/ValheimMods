@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 552218765
+CRC: 1179445845
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: b2fe3b754b3c8a125242eb7080ce819e
+    Hash: ca14c008d10e21c7d35d0b1847fbfdf8
   TypeTreeHash:
     serializedVersion: 2
     Hash: 7e3a239af89839e442e7d2e27c364c05
@@ -96,6 +96,8 @@ Assets:
 - Assets/EpicLoot/Prefabs/CraftingMaterials/DustLegendary.prefab
 - Assets/EpicLoot/Sounds/Disenchant.wav
 - Assets/EpicLoot/Prefabs/LootBeams/MagicLootBeam.prefab
+- Assets/EpicLoot/Sounds/AugmentItem.wav
+- Assets/EpicLoot/Sounds/ItemLoop.wav
 - Assets/EpicLoot/Sounds/LegendaryItemDrop.wav
 - Assets/EpicLoot/Prefabs/LootBeams/LegendaryLootBeam.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/RunestoneMagic.prefab
