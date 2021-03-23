@@ -389,31 +389,47 @@ namespace EpicLoot.Crafting
 
                 // Set as augmented
                 var magicItem = recipe.FromItem.GetMagicItem();
-                magicItem.ReplaceEffect(recipe.EffectIndex, magicItem.Effects[recipe.EffectIndex]);
+                magicItem.AugmentedEffectIndex = recipe.EffectIndex;
+                // Note: I do not know why I have to do this, but this is the only thing that causes this item to save correctly
+                recipe.FromItem.Extended().RemoveComponent<MagicItemComponent>();
+                recipe.FromItem.Extended().AddComponent<MagicItemComponent>().SetMagicItem(magicItem);
 
-                ChoiceDialog.Show(recipe, (newEffect) =>
+                ChoiceDialog.Show(recipe, OnAugmentComplete);
+            }
+        }
+
+        private void OnAugmentComplete(MagicItemEffect newEffect)
+        {
+            if (SelectedRecipe >= 0 && SelectedRecipe < Recipes.Count)
+            {
+                var recipe = Recipes[SelectedRecipe];
+                var magicItem = recipe.FromItem.GetMagicItem();
+
+                if (magicItem.HasBeenAugmented())
                 {
-                    if (magicItem.HasBeenAugmented())
-                    {
-                        magicItem.ReplaceEffect(magicItem.AugmentedEffectIndex, newEffect);
-                    }
-                    else
-                    {
-                        magicItem.ReplaceEffect(recipe.EffectIndex, newEffect);
-                    }
+                    magicItem.ReplaceEffect(magicItem.AugmentedEffectIndex, newEffect);
+                }
+                else
+                {
+                    magicItem.ReplaceEffect(recipe.EffectIndex, newEffect);
+                }
 
-                    __instance.UpdateCraftingPanel();
+                // Note: I do not know why I have to do this, but this is the only thing that causes this item to save correctly
+                recipe.FromItem.Extended().RemoveComponent<MagicItemComponent>();
+                recipe.FromItem.Extended().AddComponent<MagicItemComponent>().SetMagicItem(magicItem);
 
-                    if (player.GetCurrentCraftingStation() != null)
-                    {
-                        player.GetCurrentCraftingStation().m_craftItemDoneEffects.Create(player.transform.position, Quaternion.identity);
-                    }
+                InventoryGui.instance?.UpdateCraftingPanel();
 
-                    OnSelectorValueChanged(recipe.EffectIndex, true);
+                var player = Player.m_localPlayer;
+                if (player.GetCurrentCraftingStation() != null)
+                {
+                    player.GetCurrentCraftingStation().m_craftItemDoneEffects.Create(player.transform.position, Quaternion.identity);
+                }
 
-                    Game.instance.GetPlayerProfile().m_playerStats.m_crafts++;
-                    Gogan.LogEvent("Game", "Augmented", recipe.FromItem.m_shared.m_name, 1);
-                });
+                OnSelectorValueChanged(recipe.EffectIndex, true);
+
+                Game.instance.GetPlayerProfile().m_playerStats.m_crafts++;
+                Gogan.LogEvent("Game", "Augmented", recipe.FromItem.m_shared.m_name, 1);
             }
         }
 
@@ -524,7 +540,7 @@ namespace EpicLoot.Crafting
         {
             if (item.CanBeAugmented())
             {
-                var recipe = new AugmentRecipe { FromItem = item.Extended() };
+                var recipe = new AugmentRecipe { FromItem = item };
                 Recipes.Add(recipe);
             }
         }

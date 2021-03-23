@@ -59,14 +59,7 @@ namespace EpicLoot.Crafting
             Description.text = Localization.instance.Localize(item.GetTooltip());
             Icon.sprite = item.GetIcon();
 
-            var currentEffectDef = MagicItemEffectDefinitions.Get(magicItem.Effects[recipe.EffectIndex].EffectType);
-            var valuelessEffect = currentEffectDef.GetValuesForRarity(rarity) == null;
-
-            var availableEffects = MagicItemEffectDefinitions.GetAvailableEffects(item, magicItem, valuelessEffect ? -1 : recipe.EffectIndex);
-            var newEffectOptions = new List<MagicItemEffect>();
-            newEffectOptions.Add(magicItem.Effects[recipe.EffectIndex]);
-            newEffectOptions.AddRange(LootRoller.RollEffects(availableEffects, rarity, 2));
-
+            var newEffectOptions = LootRoller.RollAugmentEffects(item, magicItem, recipe.EffectIndex);
             for (var index = 0; index < newEffectOptions.Count; index++)
             {
                 var effect = newEffectOptions[index];

@@ -1,3 +1,9 @@
+## Version 0.6.2
+  * Fixed a bug where augmented items would not save when logging out
+  * Fixed a bug where augmenting some items would result in UI errors
+  * Changed the set item icon again, shieldknot
+## Version 0.6.1
+  * (reserved version number for Thunderstore rollback to 0.5.16)
 ## Version 0.6.0
   * Added Augmenting at forge with augmenter or at artisan table
   * Sacrifice, Enchant, and Augment recipes are now configurable in `enchantcosts.json`

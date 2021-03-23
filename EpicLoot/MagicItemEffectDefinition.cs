@@ -329,5 +329,17 @@ namespace EpicLoot
 
             return results;
         }
+
+        public static bool IsValuelessEffect(string effectType, ItemRarity rarity)
+        {
+            var effectDef = Get(effectType);
+            if (effectDef == null)
+            {
+                EpicLoot.LogWarning($"Checking if unknown effect is valuless ({effectType}/{rarity})");
+                return false;
+            }
+
+            return effectDef.GetValuesForRarity(rarity) == null;
+        }
     }
 }

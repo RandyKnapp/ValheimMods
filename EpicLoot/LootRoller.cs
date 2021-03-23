@@ -333,6 +333,7 @@ namespace EpicLoot
 
         public static MagicItemEffect RollEffect(MagicItemEffectDefinition effectDef, ItemRarity itemRarity)
         {
+            EpicLoot.Log($"RollEffect: {effectDef} {itemRarity}");
             float value = 0;
             var valuesDef = effectDef.GetValuesForRarity(itemRarity);
             if (valuesDef != null)
@@ -352,11 +353,11 @@ namespace EpicLoot
             };
         }
 
-        public static List<MagicItemEffect> RollEffects(List<MagicItemEffectDefinition> availableEffects, ItemRarity itemRarity, int count)
+        public static List<MagicItemEffect> RollEffects(List<MagicItemEffectDefinition> availableEffects, ItemRarity itemRarity, int count, bool removeOnSelect = true)
         {
             var results = new List<MagicItemEffect>();
 
-            _weightedEffectTable.Setup(availableEffects, x => x.SelectionWeight, true);
+            _weightedEffectTable.Setup(availableEffects, x => x.SelectionWeight, removeOnSelect);
             var effectDefs = _weightedEffectTable.Roll(count);
 
             foreach (var effectDef in effectDefs)
@@ -491,6 +492,38 @@ namespace EpicLoot
 
             EpicLoot.LogError($"Could not find any leveled loot for ({lootTable.Object} lvl {level}), but a loot table exists for this object!");
             return null;
+        }
+
+        public static List<MagicItemEffect> RollAugmentEffects(ExtendedItemData item, MagicItem magicItem, int effectIndex)
+        {
+            var results = new List<MagicItemEffect>();
+
+            var rarity = magicItem.Rarity;
+            var currentEffect = magicItem.Effects[effectIndex];
+            results.Add(currentEffect);
+
+            var valuelessEffect = MagicItemEffectDefinitions.IsValuelessEffect(currentEffect.EffectType, rarity);
+            var availableEffects = MagicItemEffectDefinitions.GetAvailableEffects(item, magicItem, valuelessEffect ? -1 : effectIndex);
+
+            for (var i = 0; i < 2; i++)
+            {
+                var newEffect = RollEffects(availableEffects, rarity, 1).FirstOrDefault();
+                if (newEffect == null)
+                {
+                    EpicLoot.LogError($"Rolled a null effect: item:{item.m_shared.m_name}, index:{effectIndex}");
+                    continue;
+                }
+
+                results.Add(newEffect);
+
+                var newEffectIsValueless = MagicItemEffectDefinitions.IsValuelessEffect(newEffect.EffectType, rarity);
+                if (newEffectIsValueless)
+                {
+                    availableEffects.RemoveAll(x => x.Type == newEffect.EffectType);
+                }
+            }
+
+            return results;
         }
     }
 }

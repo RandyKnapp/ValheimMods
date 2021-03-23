@@ -15,6 +15,8 @@ namespace EpicLoot
     {
         public MagicItem MagicItem;
 
+        private static readonly JSONParameters saveParams = new JSONParameters { UseExtensions = false };
+
         public MagicItemComponent(ExtendedItemData parent) 
             : base(typeof(MagicItemComponent).AssemblyQualifiedName, parent)
         {
@@ -28,12 +30,12 @@ namespace EpicLoot
 
         public override string Serialize()
         {
-            return JSON.ToJSON(MagicItem);
+            return JSON.ToJSON(MagicItem, saveParams);
         }
 
         public override void Deserialize(string data)
         {
-            MagicItem = JSON.ToObject<MagicItem>(data);
+            MagicItem = JSON.ToObject<MagicItem>(data, saveParams);
         }
 
         public override BaseExtendedItemComponent Clone()

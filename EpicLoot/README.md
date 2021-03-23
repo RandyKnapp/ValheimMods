@@ -1,4 +1,4 @@
-# Epic Loot v0.6.0 - Augmenter Update!
+# Epic Loot v0.6.2 - Augmenter Update!
 Author: RandyKnapp
 Source: [Github](https://github.com/RandyKnapp/ValheimMods/blob/main/EpicLoot/)
 
