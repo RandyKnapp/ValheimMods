@@ -457,9 +457,13 @@ namespace EpicLoot.Crafting
 
         private void OnSelectedRecipe(InventoryGui __instance, int index)
         {
-            SelectedRecipe = index;
-            OnSelectedRarity(ItemRarity.Magic);
-            SetRecipe(__instance, SelectedRecipe, false);
+            if (SelectedRecipe != index)
+            {
+                __instance.OnCraftCancelPressed();
+                SelectedRecipe = index;
+                OnSelectedRarity(ItemRarity.Magic);
+                SetRecipe(__instance, SelectedRecipe, false);
+            }
         }
 
         public void SetRecipe(InventoryGui __instance, int index, bool center)

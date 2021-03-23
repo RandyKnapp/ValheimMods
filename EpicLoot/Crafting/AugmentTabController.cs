@@ -379,6 +379,7 @@ namespace EpicLoot.Crafting
         {
             if (SelectedRecipe >= 0 && SelectedRecipe < Recipes.Count)
             {
+                var previouslySelectedRecipe = SelectedRecipe;
                 var recipe = Recipes[SelectedRecipe];
 
                 // Spend Resources
@@ -386,6 +387,9 @@ namespace EpicLoot.Crafting
                 {
                     player.ConsumeResources(GetRecipeRequirementArray(recipe), 1);
                 }
+
+                UpdateRecipeList(__instance);
+                OnSelectedRecipe(__instance, previouslySelectedRecipe);
 
                 // Set as augmented
                 var magicItem = recipe.FromItem.GetMagicItem();
@@ -398,11 +402,10 @@ namespace EpicLoot.Crafting
             }
         }
 
-        private void OnAugmentComplete(MagicItemEffect newEffect)
+        private void OnAugmentComplete(AugmentRecipe recipe, MagicItemEffect newEffect)
         {
-            if (SelectedRecipe >= 0 && SelectedRecipe < Recipes.Count)
+            if (recipe != null)
             {
-                var recipe = Recipes[SelectedRecipe];
                 var magicItem = recipe.FromItem.GetMagicItem();
 
                 if (magicItem.HasBeenAugmented())
@@ -504,6 +507,7 @@ namespace EpicLoot.Crafting
         {
             if (SelectedRecipe != index)
             {
+                __instance.OnCraftCancelPressed();
                 SelectedRecipe = index;
                 SetRecipe(__instance, SelectedRecipe, false);
                 OnSelectorValueChanged(-1, false);

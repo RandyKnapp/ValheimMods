@@ -1,3 +1,7 @@
+## Version 0.6.3
+  * Fixed a bug where augmenting an equipped item would apply the augment to the first item in the augment list
+  * Fixed a bug where selecting a different item while one was already augmenting would not cancel the craft
+  * Moved the restricted item names list to config (fan request, to allow Dyrnwyn as a drop on their server)
 ## Version 0.6.2
   * Fixed a bug where augmented items would not save when logging out
   * Fixed a bug where augmenting some items would result in UI errors

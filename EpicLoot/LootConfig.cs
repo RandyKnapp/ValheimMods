@@ -54,5 +54,6 @@ namespace EpicLoot
         public MagicEffectsCountConfig MagicEffectsCount;
         public LootItemSet[] ItemSets;
         public LootTable[] LootTables;
+        public List<string> RestrictedItems = new List<string>();
     }
 }

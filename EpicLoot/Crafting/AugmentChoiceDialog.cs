@@ -38,7 +38,7 @@ namespace EpicLoot.Crafting
             }
         }
 
-        public void Show(AugmentTabController.AugmentRecipe recipe, Action<MagicItemEffect> onCompleteCallback)
+        public void Show(AugmentTabController.AugmentRecipe recipe, Action<AugmentTabController.AugmentRecipe, MagicItemEffect> onCompleteCallback)
         {
             gameObject.SetActive(true);
 
@@ -71,7 +71,7 @@ namespace EpicLoot.Crafting
                 buttonColor.m_defaultColor = rarityColor;
                 button.onClick.RemoveAllListeners();
                 button.onClick.AddListener(() => {
-                    onCompleteCallback(effect);
+                    onCompleteCallback(recipe, effect);
                     OnClose();
                 });
             }

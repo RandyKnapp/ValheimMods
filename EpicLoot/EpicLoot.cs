@@ -44,7 +44,7 @@ namespace EpicLoot
     public class EpicLoot : BaseUnityPlugin
     {
         private const string PluginId = "randyknapp.mods.epicloot";
-        private const string Version = "0.6.2";
+        private const string Version = "0.6.3";
 
         private static ConfigEntry<string> _setItemColor;
         private static ConfigEntry<string> _magicRarityColor;
@@ -91,11 +91,6 @@ namespace EpicLoot
             { "Purple", "#d078ff" },
             { "Pink",   "#ff63d6" },
             { "Gray",   "#dbcadb" },
-        };
-
-        public static readonly List<string> RestrictedItemNames = new List<string>
-        {
-            "$item_tankard", "Unarmed", "CAPE TEST", "Cheat sword", "$item_sword_fire", "$item_tankard_odin"
         };
 
         public static readonly Assets Assets = new Assets();
@@ -563,8 +558,7 @@ namespace EpicLoot
 
         private static bool IsNotRestrictedItem(ItemDrop.ItemData item)
         {
-            // This is dumb, but it's the only way I can think of to do this
-            return !RestrictedItemNames.Contains(item.m_shared.m_name);
+            return !LootRoller.Config.RestrictedItems.Contains(item.m_shared.m_name);
         }
 
         private static bool Nonstackable(ItemDrop.ItemData item)

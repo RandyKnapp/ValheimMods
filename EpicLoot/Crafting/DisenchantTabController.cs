@@ -309,9 +309,12 @@ namespace EpicLoot.Crafting
 
         public void OnSelectedRecipe(InventoryGui __instance, int index)
         {
-            __instance.OnCraftCancelPressed();
-            SelectedRecipe = index;
-            SetRecipe(__instance, SelectedRecipe, false);
+            if (SelectedRecipe != index)
+            {
+                __instance.OnCraftCancelPressed();
+                SelectedRecipe = index;
+                SetRecipe(__instance, SelectedRecipe, false);
+            }
         }
 
         public void SetRecipe(InventoryGui __instance, int index, bool center)
