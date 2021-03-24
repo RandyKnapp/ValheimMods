@@ -158,7 +158,7 @@ MonoBehaviour:
       m_deflectionForcePerLevel: 0
       m_timedBlockBonus: 1.5
       m_animationState: 1
-      m_skillType: 1
+      m_skillType: 0
       m_toolTier: 0
       m_damages:
         m_damage: 0

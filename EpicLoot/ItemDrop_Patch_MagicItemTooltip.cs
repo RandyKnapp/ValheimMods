@@ -15,7 +15,17 @@ namespace EpicLoot
     {
         public static bool Prefix(ItemDrop.ItemData item, UITooltip tooltip)
         {
-            tooltip.Set(item.GetDecoratedName(), item.GetTooltip());
+            string tooltipText;
+            if (item.IsEquipable() && !item.m_equiped && Player.m_localPlayer != null && Player.m_localPlayer.HasEquipmentOfType(item.m_shared.m_itemType) && Input.GetKey(KeyCode.LeftControl))
+            {
+                var otherItem = Player.m_localPlayer.GetEquipmentOfType(item.m_shared.m_itemType);
+                tooltipText = item.GetTooltip() + $"\n\n<color=#AAA><i>Currently Equipped:</i></color>\n<size=18>{otherItem.GetDecoratedName()}</size>\n" + otherItem.GetTooltip();
+            }
+            else
+            {
+                tooltipText = item.GetTooltip();
+            }
+            tooltip.Set(item.GetDecoratedName(), tooltipText);
             return false;
         }
     }
@@ -37,9 +47,9 @@ namespace EpicLoot
 
             var magicItem = item.GetMagicItem();
             var magicColor = magicItem.GetColorString();
-            var displayName = magicItem.GetDisplayName(item.Extended());
+            var itemTypeName = magicItem.GetItemTypeName(item.Extended());
 
-            text.Append($"<color={magicColor}>{magicItem.GetRarityDisplay()} {displayName}</color>\n");
+            text.Append($"<color={magicColor}>{magicItem.GetRarityDisplay()} {itemTypeName}</color>\n");
             text.Append(item.m_shared.m_description);
             
             text.Append("\n");
@@ -283,6 +293,7 @@ namespace EpicLoot
             
             __result = __result.Replace("<color=orange>", "<color=lightblue>");
             __result = __result.Replace("<color=yellow>", "<color=lightblue>");
+            __result = __result.Replace("\n\n\n", "\n\n");
         }
 
         private static void AddSetTooltip(ItemDrop.ItemData item, StringBuilder text)

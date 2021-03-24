@@ -46,7 +46,7 @@ namespace EpicLoot
                 EpicLoot.LogWarning("Initialized LootRoller with null");
                 return;
             }
-
+          
             AddItemSets(lootConfig.ItemSets);
             AddLootTables(lootConfig.LootTables);
         }
@@ -303,6 +303,8 @@ namespace EpicLoot
                 var effect = RollEffect(effectDef, magicItem.Rarity);
                 magicItem.Effects.Add(effect);
             }
+
+            magicItem.DisplayName = MagicItemNames.GetNameForItem(baseItem, magicItem);
 
             return magicItem;
         }

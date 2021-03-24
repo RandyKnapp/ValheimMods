@@ -417,6 +417,11 @@ namespace EpicLoot.Crafting
                     magicItem.ReplaceEffect(recipe.EffectIndex, newEffect);
                 }
 
+                if (magicItem.Rarity == ItemRarity.Rare)
+                {
+                    magicItem.DisplayName = MagicItemNames.GetNameForItem(recipe.FromItem, magicItem);
+                }
+
                 // Note: I do not know why I have to do this, but this is the only thing that causes this item to save correctly
                 recipe.FromItem.Extended().RemoveComponent<MagicItemComponent>();
                 recipe.FromItem.Extended().AddComponent<MagicItemComponent>().SetMagicItem(magicItem);
@@ -574,13 +579,21 @@ namespace EpicLoot.Crafting
 
             foreach (var itemAmountConfig in augmentCostDef)
             {
-                var prefab = ObjectDB.instance.GetItemPrefab(itemAmountConfig.Item).GetComponent<ItemDrop>();
+                var prefab = ObjectDB.instance.GetItemPrefab(itemAmountConfig.Item);
                 if (prefab == null)
                 {
-                    EpicLoot.LogWarning($"Tried to add unknown item ({itemAmountConfig.Item}) to enchant cost for item ({item.m_shared.m_name})");
+                    EpicLoot.LogWarning($"Tried to add unknown item ({itemAmountConfig.Item}) to augment cost for item ({item.m_shared.m_name})");
                     continue;
                 }
-                costList.Add(new KeyValuePair<ItemDrop, int>(prefab, itemAmountConfig.Amount));
+
+                var itemDrop = prefab.GetComponent<ItemDrop>();
+                if (itemDrop == null)
+                {
+                    EpicLoot.LogWarning($"Tried to add item without ItemDrop ({itemAmountConfig.Item}) to augment cost for item ({item.m_shared.m_name})");
+                    continue;
+                }
+
+                costList.Add(new KeyValuePair<ItemDrop, int>(itemDrop, itemAmountConfig.Amount));
             }
 
             return costList;

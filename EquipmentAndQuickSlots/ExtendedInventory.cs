@@ -102,7 +102,7 @@ namespace EquipmentAndQuickSlots
             return result;
         }
 
-        public List<ItemDrop.ItemData> OverrideGetEquipedtems()
+        public List<ItemDrop.ItemData> OverrideGetEquipedItems()
         {
             CallBase = true;
             var result = new List<ItemDrop.ItemData>();

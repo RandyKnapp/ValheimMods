@@ -27,12 +27,13 @@ namespace EpicLoot
     {
         public ItemRarity Rarity;
         public List<MagicItemEffect> Effects = new List<MagicItemEffect>();
-        public string DisplayNameOverride;
+        public string TypeNameOverride;
         public int AugmentedEffectIndex = -1;
+        public string DisplayName;
 
-        public string GetDisplayName(ExtendedItemData baseItem)
+        public string GetItemTypeName(ExtendedItemData baseItem)
         {
-            return string.IsNullOrEmpty(DisplayNameOverride) ? baseItem.m_shared.m_name.ToLowerInvariant() : DisplayNameOverride;
+            return string.IsNullOrEmpty(TypeNameOverride) ? Localization.instance.Localize(baseItem.m_shared.m_name).ToLowerInvariant() : TypeNameOverride;
         }
 
         public string GetRarityDisplay()
