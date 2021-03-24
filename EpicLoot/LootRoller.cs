@@ -31,7 +31,6 @@ namespace EpicLoot
         {
             Config = lootConfig;
             
-
             var random = new System.Random();
             _weightedDropCountTable = new WeightedRandomCollection<int[]>(random);
             _weightedLootTable = new WeightedRandomCollection<LootDrop>(random);

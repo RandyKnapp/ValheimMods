@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EpicLoot", "EpicLoot\EpicLo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExtendedItemDataFramework", "ExtendedItemDataFramework\ExtendedItemDataFramework.csproj", "{2F61A8AB-BF4D-4E0C-9B90-4B2BA74438C5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EpicLoot-Addon-MCE", "EpicLoot-Addon-MCE\EpicLoot-Addon-MCE.csproj", "{8B9A7665-F688-4E13-B62A-F62DB7E065C4}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Common\Common.projitems*{08ed5bc9-9e0c-4343-90a5-92497be6e216}*SharedItemsImports = 4
@@ -68,6 +70,10 @@ Global
 		{2F61A8AB-BF4D-4E0C-9B90-4B2BA74438C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2F61A8AB-BF4D-4E0C-9B90-4B2BA74438C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2F61A8AB-BF4D-4E0C-9B90-4B2BA74438C5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B9A7665-F688-4E13-B62A-F62DB7E065C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B9A7665-F688-4E13-B62A-F62DB7E065C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8B9A7665-F688-4E13-B62A-F62DB7E065C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8B9A7665-F688-4E13-B62A-F62DB7E065C4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

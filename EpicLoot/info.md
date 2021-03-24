@@ -953,22 +953,23 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 
 > | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
-> | Tier0Everything | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) | 1 (100%) |
+> | Tier0Everything | 1 (100%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
 
 > | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
-> | Tier0Everything | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) | 1 (100%) |
+> | Tier0Everything | 1 (100%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
 
 > | Items (lvl 3) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
-> | Tier0Everything | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) | 1 (100%) |
+> | Tier0Everything | 1 (100%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
 
 
 ## Greydwarf
 
 > | Drops (lvl 1) | Weight (Chance) |
 > | -- | -- |
-> | 1 | 1 (100%) |
+> | 0 | 95 (95%) |
+> | 1 | 5 (5%) |
 
 > | Drops (lvl 2) | Weight (Chance) |
 > | -- | -- |
@@ -987,11 +988,11 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 
 > | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
-> | Tier0Weapons | 1 (20%) | 0 (0%) | 0 (0%) | 0 (0%) | 1 (100%) |
-> | Tier1Weapons | 1 (20%) | 0 (0%) | 0 (0%) | 0 (0%) | 1 (100%) |
-> | Tier0Shields | 1 (20%) | 0 (0%) | 0 (0%) | 0 (0%) | 1 (100%) |
-> | Tier1Armor | 1 (20%) | 0 (0%) | 0 (0%) | 0 (0%) | 1 (100%) |
-> | Tier0Tools | 1 (20%) | 0 (0%) | 0 (0%) | 0 (0%) | 1 (100%) |
+> | Tier0Weapons | 1 (20%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
+> | Tier1Weapons | 1 (20%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
+> | Tier0Shields | 1 (20%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
+> | Tier1Armor | 1 (20%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
+> | Tier0Tools | 1 (20%) | 99 (99%) | 1 (1%) | 0 (0%) | 0 (0%) |
 
 > | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |

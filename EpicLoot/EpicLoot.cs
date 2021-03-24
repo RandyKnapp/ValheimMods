@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -13,12 +14,18 @@ using ExtendedItemDataFramework;
 using fastJSON;
 using HarmonyLib;
 using JetBrains.Annotations;
-using ModConfigEnforcer;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 namespace EpicLoot
 {
+    public enum LogLevel
+    {
+        Info,
+        Warning,
+        Error
+    }
+
     public class Assets
     {
         public Sprite EquippedSprite;
@@ -42,11 +49,10 @@ namespace EpicLoot
 
     [BepInPlugin(PluginId, "Epic Loot", Version)]
     [BepInDependency("randyknapp.mods.extendeditemdataframework")]
-    [BepInDependency("pfhoenix.modconfigenforcer")]
     public class EpicLoot : BaseUnityPlugin
     {
-        private const string PluginId = "randyknapp.mods.epicloot";
-        private const string Version = "0.6.4";
+        public const string PluginId = "randyknapp.mods.epicloot";
+        public const string Version = "0.6.4";
 
         private static ConfigEntry<string> _setItemColor;
         private static ConfigEntry<string> _magicRarityColor;
@@ -64,10 +70,9 @@ namespace EpicLoot
         public static ConfigEntry<bool> UseScrollingCraftDescription;
         public static ConfigEntry<CraftingTabStyle> CraftingTabStyle;
         private static ConfigEntry<bool> _loggingEnabled;
+        private static ConfigEntry<LogLevel> _logLevel;
         public static ConfigEntry<bool> UseGeneratedMagicItemNames;
-
-        private static ConfigVariable<GatedItemTypeMode> _gatedItemTypeModeConfig;
-        private static JsonFileConfigVariable<LootConfig> _lootConfigFile = new JsonFileConfigVariable<LootConfig>("loottables.json");
+        private static ConfigEntry<GatedItemTypeMode> _gatedItemTypeModeConfig;
 
         public static readonly List<ItemDrop.ItemData.ItemType> AllowedMagicItemTypes = new List<ItemDrop.ItemData.ItemType>
         {
@@ -113,9 +118,7 @@ namespace EpicLoot
         private void Awake()
         {
             _instance = this;
-
-            ConfigManager.RegisterMod(PluginId, Config);
-
+            
             _magicRarityColor = Config.Bind("Item Colors", "Magic Rarity Color", "Blue", "The color of Magic rarity items, the lowest magic item tier. (Optional, use an HTML hex color starting with # to have a custom color.) Available options: Red, Orange, Yellow, Green, Teal, Blue, Indigo, Purple, Pink, Gray");
             _magicMaterialIconColor = Config.Bind("Item Colors", "Magic Crafting Material Icon Index", 5, "Indicates the color of the icon used for magic crafting materials. A number between 0 and 9. Available options: 0=Red, 1=Orange, 2=Yellow, 3=Green, 4=Teal, 5=Blue, 6=Indigo, 7=Purple, 8=Pink, 9=Gray");
             _rareRarityColor = Config.Bind("Item Colors", "Rare Rarity Color", "Yellow", "The color of Rare rarity items, the second magic item tier. (Optional, use an HTML hex color starting with # to have a custom color.) Available options: Red, Orange, Yellow, Green, Teal, Blue, Indigo, Purple, Pink, Gray");
@@ -132,12 +135,9 @@ namespace EpicLoot
             UseScrollingCraftDescription = Config.Bind("Crafting UI", "Use Scrolling Craft Description", true, "Changes the item description in the crafting panel to scroll instead of scale when it gets too long for the space.");
             CraftingTabStyle = Config.Bind("Crafting UI", "Crafting Tab Style", Crafting.CraftingTabStyle.HorizontalSquish, "Sets the layout style for crafting tabs, if you've got too many. Horizontal is the vanilla method, but might overlap other mods or run off the screen. HorizontalSquish makes the buttons narrower, works okay with 6 or 7 buttons. Vertical puts the tabs in a column to the left the crafting window. Angled tries to make more room at the top of the crafting panel by angling the tabs, works okay with 6 or 7 tabs.");
             _loggingEnabled = Config.Bind("Logging", "Logging Enabled", false, "Enable logging");
+            _logLevel = Config.Bind("Logging", "Log Level", LogLevel.Info, "Only log messages of the selected level or higher");
             UseGeneratedMagicItemNames = Config.Bind("General", "Use Generated Magic Item Names", true, "If true, magic items uses special, randomly generated names based on their rarity, type, and magic effects.");
-
-            // Server authoritative config
-            _gatedItemTypeModeConfig = ConfigManager.RegisterModConfigVariable(PluginId, "Item Drop Limits", GatedItemTypeMode.MustKnowRecipe, "Balance", "Sets how the drop system limits what item types can drop. Unlimited: no limits, exactly what's in the loot table will drop. MustKnowRecipe: items will drop so long as the player has discovered their recipe. MustHaveCrafted: items will only drop once the player has crafted one or picked one up. If an item type cannot drop, it will downgrade to an item of the same type and skill that the player has unlocked (i.e. swords will stay swords)", false);
-            ConfigManager.ServerConfigReceived += InitializeOnConfigReceipt;
-            ConfigManager.RegisterModConfigVariable(PluginId, _lootConfigFile);
+            _gatedItemTypeModeConfig = Config.Bind("Balance", "Item Drop Limits", GatedItemTypeMode.MustKnowRecipe, "Sets how the drop system limits what item types can drop. Unlimited: no limits, exactly what's in the loot table will drop. MustKnowRecipe: items will drop so long as the player has discovered their recipe. MustHaveCrafted: items will only drop once the player has crafted one or picked one up. If an item type cannot drop, it will downgrade to an item of the same type and skill that the player has unlocked (i.e. swords will stay swords)");
 
             InitializeConfig();
             PrintInfo();
@@ -153,29 +153,14 @@ namespace EpicLoot
             LootTableLoaded?.Invoke();
         }
 
-        private bool UseLocalConfig;
-        public void Update()
+        public static ConfigFile GetConfigObject()
         {
-            if (UseLocalConfig != ConfigManager.ShouldUseLocalConfig)
-            {
-                EpicLoot.LogError("ShouldUseLocalConfig changed!");
-                //InitializeConfig();
-            }
-            UseLocalConfig = ConfigManager.ShouldUseLocalConfig;
-
-            EpicLoot.Log($"mode = {_gatedItemTypeModeConfig.Value}");
-        }
-
-        public static void InitializeOnConfigReceipt()
-        {
-            EpicLoot.LogError("ServerConfigReceived");
-            InitializeConfig();
+            return _instance.Config;
         }
 
         public static void InitializeConfig()
         {
-            EpicLoot.LogWarning($"Initializing Config: {(ConfigManager.ShouldUseLocalConfig ? "Use Local Config" : "Use Server Config")}");
-            LootRoller.Initialize(_lootConfigFile.Value);
+            LootRoller.Initialize(LoadJsonFile<LootConfig>("loottables.json"));
             MagicItemEffectDefinitions.Initialize(LoadJsonFile<MagicItemEffectsList>("magiceffects.json"));
             GatedItemTypeHelper.Initialize(LoadJsonFile<ItemInfoConfig>("iteminfo.json"));
             RecipesHelper.Initialize(LoadJsonFile<RecipesConfig>("recipes.json"));
@@ -185,15 +170,15 @@ namespace EpicLoot
 
         public static void Log(string message)
         {
-            if (_loggingEnabled.Value)
+            if (_loggingEnabled.Value && _logLevel.Value <= LogLevel.Info)
             {
-                _instance.Logger.LogMessage(message);
+                _instance.Logger.LogInfo(message);
             }
         }
 
         public static void LogWarning(string message)
         {
-            if (_loggingEnabled.Value)
+            if (_loggingEnabled.Value && _logLevel.Value <= LogLevel.Warning)
             {
                 _instance.Logger.LogWarning(message);
             }
@@ -201,7 +186,7 @@ namespace EpicLoot
 
         public static void LogError(string message)
         {
-            if (_loggingEnabled.Value)
+            if (_loggingEnabled.Value && _logLevel.Value <= LogLevel.Error)
             {
                 _instance.Logger.LogError(message);
             }
@@ -554,6 +539,11 @@ namespace EpicLoot
         {
             var jsonFileName = GetAssetPath(filename);
             return !string.IsNullOrEmpty(jsonFileName) ? File.ReadAllText(jsonFileName) : null;
+        }
+
+        public static T JsonToObject<T>(string jsonFile) where T : class
+        {
+            return JSON.ToObject<T>(jsonFile);
         }
 
         public static AssetBundle LoadAssetBundle(string filename)

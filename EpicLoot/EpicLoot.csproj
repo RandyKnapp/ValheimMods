@@ -51,9 +51,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Libs\fastJSON.dll</HintPath>
     </Reference>
-    <Reference Include="ModConfigEnforcer">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\ModConfigEnforcer.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="UnityEngine">
@@ -117,7 +114,6 @@
     <Compile Include="Crafting\TabController.cs" />
     <Compile Include="GatedItemType\GatedItemTypeHelper.cs" />
     <Compile Include="GatedItemType\ItemInfoConfig.cs" />
-    <Compile Include="JsonFileConfigVariable.cs" />
     <Compile Include="LegacyMagicEffectType.cs" />
     <Compile Include="LootBeams\AlwaysPointUp.cs" />
     <Compile Include="LootBeams\BeamColorSetter.cs" />

@@ -1,9 +1,8 @@
 ﻿using System;
-using fastJSON;
 using ModConfigEnforcer;
 using UnityEngine;
 
-namespace EpicLoot
+namespace EpicLoot_Addon_MCE
 {
     public class JsonFileConfigVariable<T> : IConfigVariable where T : class
     {
@@ -22,7 +21,7 @@ namespace EpicLoot
 
         public object GetValue()
         {
-            return ConfigManager.ShouldUseLocalConfig ? EpicLoot.LoadJsonFile<T>(_sourceFile) : _config;
+            return ConfigManager.ShouldUseLocalConfig ? EpicLoot.EpicLoot.LoadJsonFile<T>(_sourceFile) : _config;
         }
 
         public void SetValue(object o)
@@ -33,7 +32,7 @@ namespace EpicLoot
         public void Serialize(ZPackage zpg)
         {
             Debug.LogWarning($"Serialized config ({_sourceFile})");
-            var configJson = EpicLoot.LoadJsonText(_sourceFile);
+            var configJson = EpicLoot.EpicLoot.LoadJsonText(_sourceFile);
             zpg.Write(configJson);
         }
 
@@ -41,7 +40,7 @@ namespace EpicLoot
         {
             Debug.LogWarning($"Deserialized config ({_sourceFile})");
             var configJson = zpg.ReadString();
-            _config = JSON.ToObject<T>(configJson);
+            _config = EpicLoot.EpicLoot.JsonToObject<T>(configJson);
             return _config != null;
         }
     }

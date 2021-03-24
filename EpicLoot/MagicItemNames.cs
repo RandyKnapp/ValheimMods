@@ -50,7 +50,7 @@ namespace EpicLoot
             var baseName = item.m_shared.m_name;
             if (!EpicLoot.UseGeneratedMagicItemNames.Value || magicItem == null)
             {
-                return baseName;
+                return null;
             }
 
             var rarity = magicItem.Rarity;
