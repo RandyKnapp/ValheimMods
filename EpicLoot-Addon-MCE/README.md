@@ -6,12 +6,12 @@ Source: [Github](https://github.com/RandyKnapp/ValheimMods/tree/main/EpicLoot-Ad
 
 This mod addon allows EpicLoot config files to be enforced by the server using ModConfigEnforcer. All loot tables, recipes, even item names will be controlled by the server for all connected clients. Both clients and server are required to have this addon installed to get server enforced configs.
 
-#### Currentlt Enforced by MCE:
+#### Currently Enforced by MCE:
 
   * Config Value: Balance / Item Drop Limits
   * Config File: enchantcosts.json
   * Config File: iteminfo.json
-  * Config Fite: itemnames.json
+  * Config File: itemnames.json
   * Config File: loottables.json
   * Config File: magiceffects.json
   * Config File: recipes.json
