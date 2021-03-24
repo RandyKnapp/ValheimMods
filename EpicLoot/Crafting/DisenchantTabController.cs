@@ -391,13 +391,21 @@ namespace EpicLoot.Crafting
 
             foreach (var itemAmountConfig in productsDef)
             {
-                var prefab = ObjectDB.instance.GetItemPrefab(itemAmountConfig.Item).GetComponent<ItemDrop>();
+                var prefab = ObjectDB.instance.GetItemPrefab(itemAmountConfig.Item);
                 if (prefab == null)
                 {
                     EpicLoot.LogWarning($"Tried to add unknown item ({itemAmountConfig.Item}) to disenchant product for item ({item.m_shared.m_name})");
                     continue;
                 }
-                products.Add(new KeyValuePair<ItemDrop, int>(prefab, itemAmountConfig.Amount));
+
+                var itemDrop = prefab.GetComponent<ItemDrop>();
+                if (itemDrop == null)
+                {
+                    EpicLoot.LogWarning($"Tried to add object with no ItemDrop ({itemAmountConfig.Item}) to disenchant product for item ({item.m_shared.m_name})");
+                    continue;
+                }
+
+                products.Add(new KeyValuePair<ItemDrop, int>(itemDrop, itemAmountConfig.Amount));
             }
 
             return products;

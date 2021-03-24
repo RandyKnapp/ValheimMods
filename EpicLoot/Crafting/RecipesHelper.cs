@@ -9,11 +9,15 @@ namespace EpicLoot.Crafting
         public static void Initialize(RecipesConfig config)
         {
             Config = config;
+
+            if (EpicLoot.IsObjectDBReady())
+            {
+                SetupRecipes();
+            }
         }
 
         public static void SetupRecipes()
         {
-            // Recipes from file
             PrefabCreator.Reset();
             foreach (var recipe in Config.recipes)
             {

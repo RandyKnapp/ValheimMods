@@ -30,6 +30,7 @@ namespace EpicLoot
         public static void Initialize(LootConfig lootConfig)
         {
             Config = lootConfig;
+            
 
             var random = new System.Random();
             _weightedDropCountTable = new WeightedRandomCollection<int[]>(random);
@@ -38,8 +39,14 @@ namespace EpicLoot
             _weightedEffectCountTable = new WeightedRandomCollection<KeyValuePair<int, int>>(random);
             _weightedRarityTable = new WeightedRandomCollection<KeyValuePair<ItemRarity, int>>(random);
 
-            LootTables.Clear();
             ItemSets.Clear();
+            LootTables.Clear();
+            if (Config == null)
+            {
+                EpicLoot.LogWarning("Initialized LootRoller with null");
+                return;
+            }
+          
             AddItemSets(lootConfig.ItemSets);
             AddLootTables(lootConfig.LootTables);
         }

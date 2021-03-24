@@ -276,7 +276,7 @@
       "Object": "Greyling",
       "Drops": [ [0, 95], [1, 5] ],
       "Loot": [
-        { "Item": "Tier0Everything", "Weight": 1, "Rarity": [1, 0, 0, 0] }
+        { "Item": "Tier0Everything", "Weight": 1, "Rarity": [ 0, 0, 0, 1 ] }
       ]
     },
     // Greydwarf
@@ -286,13 +286,13 @@
       "LeveledLoot": [
         {
           "Level": 1,
-          "Drops": [ [0, 95], [1, 5]  ],
+          "Drops": [ [1, 1]  ],
           "Loot": [
-            { "Item": "Tier0Weapons", "Weight": 1, "Rarity": [ 99, 1, 0, 0 ] },
-            { "Item": "Tier1Weapons", "Weight": 1, "Rarity": [ 99, 1, 0, 0 ] },
-            { "Item": "Tier0Shields", "Weight": 1, "Rarity": [ 99, 1, 0, 0 ] },
-            { "Item": "Tier1Armor",   "Weight": 1, "Rarity": [ 99, 1, 0, 0 ] },
-            { "Item": "Tier0Tools",   "Weight": 1, "Rarity": [ 99, 1, 0, 0 ] }
+            { "Item": "Tier0Weapons", "Weight": 1, "Rarity": [ 0, 0, 0, 1 ] },
+            { "Item": "Tier1Weapons", "Weight": 1, "Rarity": [ 0, 0, 0, 1 ] },
+            { "Item": "Tier0Shields", "Weight": 1, "Rarity": [ 0, 0, 0, 1 ] },
+            { "Item": "Tier1Armor",   "Weight": 1, "Rarity": [ 0, 0, 0, 1 ] },
+            { "Item": "Tier0Tools",   "Weight": 1, "Rarity": [ 0, 0, 0, 1 ] }
           ] 
         },
         {

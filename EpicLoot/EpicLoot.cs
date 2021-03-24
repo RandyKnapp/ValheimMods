@@ -13,6 +13,7 @@ using ExtendedItemDataFramework;
 using fastJSON;
 using HarmonyLib;
 using JetBrains.Annotations;
+using ModConfigEnforcer;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -41,6 +42,7 @@ namespace EpicLoot
 
     [BepInPlugin(PluginId, "Epic Loot", Version)]
     [BepInDependency("randyknapp.mods.extendeditemdataframework")]
+    [BepInDependency("pfhoenix.modconfigenforcer")]
     public class EpicLoot : BaseUnityPlugin
     {
         private const string PluginId = "randyknapp.mods.epicloot";
@@ -59,11 +61,13 @@ namespace EpicLoot
         private static ConfigEntry<string> _rareRarityDisplayName;
         private static ConfigEntry<string> _epicRarityDisplayName;
         private static ConfigEntry<string> _legendaryRarityDisplayName;
-        private static ConfigEntry<GatedItemTypeMode> _gatedItemTypeModeConfig;
         public static ConfigEntry<bool> UseScrollingCraftDescription;
         public static ConfigEntry<CraftingTabStyle> CraftingTabStyle;
         private static ConfigEntry<bool> _loggingEnabled;
         public static ConfigEntry<bool> UseGeneratedMagicItemNames;
+
+        private static ConfigVariable<GatedItemTypeMode> _gatedItemTypeModeConfig;
+        private static JsonFileConfigVariable<LootConfig> _lootConfigFile = new JsonFileConfigVariable<LootConfig>("loottables.json");
 
         public static readonly List<ItemDrop.ItemData.ItemType> AllowedMagicItemTypes = new List<ItemDrop.ItemData.ItemType>
         {
@@ -110,6 +114,8 @@ namespace EpicLoot
         {
             _instance = this;
 
+            ConfigManager.RegisterMod(PluginId, Config);
+
             _magicRarityColor = Config.Bind("Item Colors", "Magic Rarity Color", "Blue", "The color of Magic rarity items, the lowest magic item tier. (Optional, use an HTML hex color starting with # to have a custom color.) Available options: Red, Orange, Yellow, Green, Teal, Blue, Indigo, Purple, Pink, Gray");
             _magicMaterialIconColor = Config.Bind("Item Colors", "Magic Crafting Material Icon Index", 5, "Indicates the color of the icon used for magic crafting materials. A number between 0 and 9. Available options: 0=Red, 1=Orange, 2=Yellow, 3=Green, 4=Teal, 5=Blue, 6=Indigo, 7=Purple, 8=Pink, 9=Gray");
             _rareRarityColor = Config.Bind("Item Colors", "Rare Rarity Color", "Yellow", "The color of Rare rarity items, the second magic item tier. (Optional, use an HTML hex color starting with # to have a custom color.) Available options: Red, Orange, Yellow, Green, Teal, Blue, Indigo, Purple, Pink, Gray");
@@ -123,18 +129,17 @@ namespace EpicLoot
             _rareRarityDisplayName = Config.Bind("Rarity", "Rare Rarity Display Name", "Rare", "The name of the second rarity.");
             _epicRarityDisplayName = Config.Bind("Rarity", "Epic Rarity Display Name", "Epic", "The name of the third rarity.");
             _legendaryRarityDisplayName = Config.Bind("Rarity", "Legendary Rarity Display Name", "Legendary", "The name of the highest rarity.");
-            _gatedItemTypeModeConfig = Config.Bind("Balance", "Item Drop Limits", GatedItemTypeMode.MustKnowRecipe, "Sets how the drop system limits what item types can drop. Unlimited: no limits, exactly what's in the loot table will drop. MustKnowRecipe: items will drop so long as the player has discovered their recipe. MustHaveCrafted: items will only drop once the player has crafted one or picked one up. If an item type cannot drop, it will downgrade to an item of the same type and skill that the player has unlocked (i.e. swords will stay swords)");
             UseScrollingCraftDescription = Config.Bind("Crafting UI", "Use Scrolling Craft Description", true, "Changes the item description in the crafting panel to scroll instead of scale when it gets too long for the space.");
             CraftingTabStyle = Config.Bind("Crafting UI", "Crafting Tab Style", Crafting.CraftingTabStyle.HorizontalSquish, "Sets the layout style for crafting tabs, if you've got too many. Horizontal is the vanilla method, but might overlap other mods or run off the screen. HorizontalSquish makes the buttons narrower, works okay with 6 or 7 buttons. Vertical puts the tabs in a column to the left the crafting window. Angled tries to make more room at the top of the crafting panel by angling the tabs, works okay with 6 or 7 tabs.");
             _loggingEnabled = Config.Bind("Logging", "Logging Enabled", false, "Enable logging");
             UseGeneratedMagicItemNames = Config.Bind("General", "Use Generated Magic Item Names", true, "If true, magic items uses special, randomly generated names based on their rarity, type, and magic effects.");
 
-            MagicItemEffectDefinitions.Initialize(LoadJsonFile<MagicItemEffectsList>("magiceffects.json"));
-            LootRoller.Initialize(LoadJsonFile<LootConfig>("loottables.json"));
-            GatedItemTypeHelper.Initialize(LoadJsonFile<ItemInfoConfig>("iteminfo.json"));
-            RecipesHelper.Initialize(LoadJsonFile<RecipesConfig>("recipes.json"));
-            EnchantCostsHelper.Initialize(LoadJsonFile<EnchantingCostsConfig>("enchantcosts.json"));
-            MagicItemNames.Initialize(LoadJsonFile<ItemNameConfig>("itemnames.json"));
+            // Server authoritative config
+            _gatedItemTypeModeConfig = ConfigManager.RegisterModConfigVariable(PluginId, "Item Drop Limits", GatedItemTypeMode.MustKnowRecipe, "Balance", "Sets how the drop system limits what item types can drop. Unlimited: no limits, exactly what's in the loot table will drop. MustKnowRecipe: items will drop so long as the player has discovered their recipe. MustHaveCrafted: items will only drop once the player has crafted one or picked one up. If an item type cannot drop, it will downgrade to an item of the same type and skill that the player has unlocked (i.e. swords will stay swords)", false);
+            ConfigManager.ServerConfigReceived += InitializeOnConfigReceipt;
+            ConfigManager.RegisterModConfigVariable(PluginId, _lootConfigFile);
+
+            InitializeConfig();
             PrintInfo();
 
             LoadAssets();
@@ -146,6 +151,36 @@ namespace EpicLoot
             _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), PluginId);
 
             LootTableLoaded?.Invoke();
+        }
+
+        private bool UseLocalConfig;
+        public void Update()
+        {
+            if (UseLocalConfig != ConfigManager.ShouldUseLocalConfig)
+            {
+                EpicLoot.LogError("ShouldUseLocalConfig changed!");
+                //InitializeConfig();
+            }
+            UseLocalConfig = ConfigManager.ShouldUseLocalConfig;
+
+            EpicLoot.Log($"mode = {_gatedItemTypeModeConfig.Value}");
+        }
+
+        public static void InitializeOnConfigReceipt()
+        {
+            EpicLoot.LogError("ServerConfigReceived");
+            InitializeConfig();
+        }
+
+        public static void InitializeConfig()
+        {
+            EpicLoot.LogWarning($"Initializing Config: {(ConfigManager.ShouldUseLocalConfig ? "Use Local Config" : "Use Server Config")}");
+            LootRoller.Initialize(_lootConfigFile.Value);
+            MagicItemEffectDefinitions.Initialize(LoadJsonFile<MagicItemEffectsList>("magiceffects.json"));
+            GatedItemTypeHelper.Initialize(LoadJsonFile<ItemInfoConfig>("iteminfo.json"));
+            RecipesHelper.Initialize(LoadJsonFile<RecipesConfig>("recipes.json"));
+            EnchantCostsHelper.Initialize(LoadJsonFile<EnchantingCostsConfig>("enchantcosts.json"));
+            MagicItemNames.Initialize(LoadJsonFile<ItemNameConfig>("itemnames.json"));
         }
 
         public static void Log(string message)
@@ -509,19 +544,19 @@ namespace EpicLoot
             RecipesHelper.SetupRecipes();
         }
 
-        private static T LoadJsonFile<T>(string filename) where T : class
+        public static T LoadJsonFile<T>(string filename) where T : class
         {
-            var jsonFileName = GetAssetPath(filename);
-            if (!string.IsNullOrEmpty(jsonFileName))
-            {
-                var jsonFile = File.ReadAllText(jsonFileName);
-                return JSON.ToObject<T>(jsonFile);
-            }
-
-            return null;
+            var jsonFile = LoadJsonText(filename);
+            return string.IsNullOrEmpty(jsonFile) ? null : JSON.ToObject<T>(jsonFile);
         }
 
-        private static AssetBundle LoadAssetBundle(string filename)
+        public static string LoadJsonText(string filename)
+        {
+            var jsonFileName = GetAssetPath(filename);
+            return !string.IsNullOrEmpty(jsonFileName) ? File.ReadAllText(jsonFileName) : null;
+        }
+
+        public static AssetBundle LoadAssetBundle(string filename)
         {
             var assetBundlePath = GetAssetPath(filename);
             if (!string.IsNullOrEmpty(assetBundlePath))
@@ -532,7 +567,7 @@ namespace EpicLoot
             return null;
         }
 
-        private static string GetAssetPath(string assetName)
+        public static string GetAssetPath(string assetName)
         {
             var assetFileName = Path.Combine(Paths.PluginPath, "EpicLoot", assetName);
             if (!File.Exists(assetFileName))
