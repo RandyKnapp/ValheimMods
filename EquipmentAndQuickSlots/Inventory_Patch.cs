@@ -301,7 +301,7 @@ namespace EquipmentAndQuickSlots
         {
             if (__instance.DoExtendedCall())
             {
-                __result = __instance.Extended().OverrideGetEquipedtems();
+                __result = __instance.Extended().OverrideGetEquipedItems();
                 return false;
             }
 

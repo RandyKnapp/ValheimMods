@@ -151,7 +151,9 @@
     <Compile Include="MagicItemEffects\ModifyStaminaRegen.cs" />
     <Compile Include="MagicItemEffects\ReduceWeight.cs" />
     <Compile Include="MagicItemEffects\ModifyMovementSpeed.cs" />
+    <Compile Include="MagicItemNames.cs" />
     <Compile Include="ObjectDB_Patch.cs" />
+    <Compile Include="TextsDialog_Patch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ZNetScene_Patch.cs" />
   </ItemGroup>
@@ -159,6 +161,7 @@
     <None Include="enchantcosts.json" />
     <None Include="info.md" />
     <None Include="iteminfo.json" />
+    <None Include="itemnames.json" />
     <None Include="loottables.json" />
     <None Include="magiceffects.json" />
     <None Include="manifest.json" />
@@ -182,6 +185,7 @@ xcopy "$(ProjectDir)magiceffects.json" "C:\Program Files (x86)\Steam\steamapps\c
 xcopy "$(ProjectDir)iteminfo.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
 xcopy "$(ProjectDir)recipes.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
 xcopy "$(ProjectDir)enchantcosts.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
+xcopy "$(ProjectDir)itemnames.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
 xcopy "$(SolutionDir)Libs\fastJSON.dll" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
 xcopy "$(SolutionDir)ValheimUnity\AssetBundles\epicloot" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i</PostBuildEvent>
   </PropertyGroup>

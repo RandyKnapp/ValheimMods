@@ -44,7 +44,7 @@ namespace EpicLoot
     public class EpicLoot : BaseUnityPlugin
     {
         private const string PluginId = "randyknapp.mods.epicloot";
-        private const string Version = "0.6.3";
+        private const string Version = "0.6.4";
 
         private static ConfigEntry<string> _setItemColor;
         private static ConfigEntry<string> _magicRarityColor;
@@ -63,6 +63,7 @@ namespace EpicLoot
         public static ConfigEntry<bool> UseScrollingCraftDescription;
         public static ConfigEntry<CraftingTabStyle> CraftingTabStyle;
         private static ConfigEntry<bool> _loggingEnabled;
+        public static ConfigEntry<bool> UseGeneratedMagicItemNames;
 
         public static readonly List<ItemDrop.ItemData.ItemType> AllowedMagicItemTypes = new List<ItemDrop.ItemData.ItemType>
         {
@@ -126,12 +127,14 @@ namespace EpicLoot
             UseScrollingCraftDescription = Config.Bind("Crafting UI", "Use Scrolling Craft Description", true, "Changes the item description in the crafting panel to scroll instead of scale when it gets too long for the space.");
             CraftingTabStyle = Config.Bind("Crafting UI", "Crafting Tab Style", Crafting.CraftingTabStyle.HorizontalSquish, "Sets the layout style for crafting tabs, if you've got too many. Horizontal is the vanilla method, but might overlap other mods or run off the screen. HorizontalSquish makes the buttons narrower, works okay with 6 or 7 buttons. Vertical puts the tabs in a column to the left the crafting window. Angled tries to make more room at the top of the crafting panel by angling the tabs, works okay with 6 or 7 tabs.");
             _loggingEnabled = Config.Bind("Logging", "Logging Enabled", false, "Enable logging");
+            UseGeneratedMagicItemNames = Config.Bind("General", "Use Generated Magic Item Names", true, "If true, magic items uses special, randomly generated names based on their rarity, type, and magic effects.");
 
             MagicItemEffectDefinitions.Initialize(LoadJsonFile<MagicItemEffectsList>("magiceffects.json"));
             LootRoller.Initialize(LoadJsonFile<LootConfig>("loottables.json"));
             GatedItemTypeHelper.Initialize(LoadJsonFile<ItemInfoConfig>("iteminfo.json"));
             RecipesHelper.Initialize(LoadJsonFile<RecipesConfig>("recipes.json"));
             EnchantCostsHelper.Initialize(LoadJsonFile<EnchantingCostsConfig>("enchantcosts.json"));
+            MagicItemNames.Initialize(LoadJsonFile<ItemNameConfig>("itemnames.json"));
             PrintInfo();
 
             LoadAssets();

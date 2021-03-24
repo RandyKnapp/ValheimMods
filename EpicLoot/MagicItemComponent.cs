@@ -50,7 +50,7 @@ namespace EpicLoot
                 var magicItem = new MagicItem();
                 magicItem.Rarity = ItemRarity.Rare;
                 magicItem.Effects.Add(new MagicItemEffect() { EffectType = MagicEffectType.DvergerCirclet });
-                magicItem.DisplayNameOverride = "circlet";
+                magicItem.TypeNameOverride = "circlet";
 
                 itemdata.ReplaceComponent<MagicItemComponent>().MagicItem = magicItem;
             }
@@ -59,7 +59,7 @@ namespace EpicLoot
                 var magicItem = new MagicItem();
                 magicItem.Rarity = ItemRarity.Rare;
                 magicItem.Effects.Add(new MagicItemEffect() { EffectType = MagicEffectType.Megingjord });
-                magicItem.DisplayNameOverride = "belt";
+                magicItem.TypeNameOverride = "belt";
 
                 itemdata.ReplaceComponent<MagicItemComponent>().MagicItem = magicItem;
             }
@@ -68,7 +68,7 @@ namespace EpicLoot
                 var magicItem = new MagicItem();
                 magicItem.Rarity = ItemRarity.Rare;
                 magicItem.Effects.Add(new MagicItemEffect() { EffectType = MagicEffectType.Wishbone });
-                magicItem.DisplayNameOverride = "remains";
+                magicItem.TypeNameOverride = "remains";
 
                 itemdata.ReplaceComponent<MagicItemComponent>().MagicItem = magicItem;
             }
@@ -137,20 +137,27 @@ namespace EpicLoot
         public static string GetDecoratedName(this ItemDrop.ItemData itemData, string colorOverride = null)
         {
             var color = "white";
+            var name = itemData.m_shared.m_name;
+
             if (!string.IsNullOrEmpty(colorOverride))
             {
                 color = colorOverride;
             }
             else if (itemData.IsMagic())
             {
-                color = itemData.GetMagicItem().GetColorString();
+                var magicItem = itemData.GetMagicItem();
+                color = magicItem.GetColorString();
+                if (!string.IsNullOrEmpty(magicItem.DisplayName))
+                {
+                    name = magicItem.DisplayName;
+                }
             }
             else if (itemData.IsMagicCraftingMaterial() || itemData.IsRunestone())
             {
                 color = itemData.GetCraftingMaterialRarityColor();
             }
 
-            return $"<color={color}>{itemData.m_shared.m_name}</color>";
+            return $"<color={color}>{name}</color>";
         }
 
         public static bool IsPartOfSet(this ItemDrop.ItemData itemData, string setName)
@@ -209,6 +216,16 @@ namespace EpicLoot
         public static int GetEquippedSetItemCount(this Player player, string setName)
         {
             return player.GetEquippedSetPieces(setName).Count;
+        }
+
+        public static bool HasEquipmentOfType(this Player player, ItemDrop.ItemData.ItemType type)
+        {
+            return player.GetEquipment().Exists(x => x != null && x.m_shared.m_itemType == type);
+        }
+
+        public static ItemDrop.ItemData GetEquipmentOfType(this Player player, ItemDrop.ItemData.ItemType type)
+        {
+            return player.GetEquipment().FirstOrDefault(x => x != null && x.m_shared.m_itemType == type);
         }
     }
 

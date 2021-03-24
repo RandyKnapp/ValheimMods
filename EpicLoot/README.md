@@ -1,4 +1,4 @@
-# Epic Loot v0.6.3 - Augmenter Update!
+# Epic Loot v0.6.4 - Item Names Update!
 Author: RandyKnapp
 Source: [Github](https://github.com/RandyKnapp/ValheimMods/blob/main/EpicLoot/)
 
@@ -30,6 +30,7 @@ Enter these into the console (F5) after using `imacheater`:
     * `<rarity>`: (String) One of: magic, rare, epic, legendary, random. If left empty, uses random.
 	* `<itemtype>`: (String) The internal ID of an item. May be "random". If left empty, uses random.
 	* `<amount>`: (Int) The number of magic items to roll. If the other values are set to random, rerolls that random item each time. If left empty, uses 1.
+	* `<effectcount>`: (Int) The number of magic effects to roll on each item. If left empty, it rolls effect count as normal.
   * `magicmats`: Spawns a bunch of all the magic crafting materials
 
 ## Dependencies
@@ -51,10 +52,10 @@ Enter these into the console (F5) after using `imacheater`:
 - [X] Streamline enchanting UI. Use selectable rarity per item.
 - [X] Configurable magic effects
 - [X] More exclusions and configurable requirements for magic effects
-- [ ] Show current equipment with tooltip
+- [X] Show current equipment with tooltip
 - [X] Augment items: change/reroll magic item effects (transmute? modify?)
 - [ ] Infuse items: rarity to next rarity (like diablo upgrade rare to legendary)
-- [ ] List of active magic effects on the player status screen
+- [X] List of active magic effects on the player status screen
 - [X] Limit drop types by actual player progression
 - [ ] Gamble for magic items from Merchant
 - [ ] Custom crafting station for enchanting
@@ -62,7 +63,7 @@ Enter these into the console (F5) after using `imacheater`:
 - [ ] Balance, balance, balance
 - [ ] Move tooltip code to postfix, parse and inject rather than redo from scratch
 - [ ] Custom item sets (replace troll too)
-- [ ] Rename item if magic (prefix/postfix? Legendary names?)
+- [X] Rename item if magic (Legendary still to-do)
 - [ ] New Runes skill (enchanting)
 - [ ] New Seidr skill (for what?)
 

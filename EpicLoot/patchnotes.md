@@ -1,3 +1,8 @@
+## Version 0.6.4
+  * Item Names Update!
+  * Adding logs to Augmenting
+  * Show all magical effects in compendium
+  * Show currently equipped item in tooltip by holding LeftControl
 ## Version 0.6.3
   * Fixed a bug where augmenting an equipped item would apply the augment to the first item in the augment list
   * Fixed a bug where selecting a different item while one was already augmenting would not cancel the craft

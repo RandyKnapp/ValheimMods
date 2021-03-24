@@ -139,6 +139,8 @@ namespace EpicLoot
         public float SelectionWeight = 1;
         public bool CanBeAugmented = true;
         public string Comment;
+        public List<string> Prefixes = new List<string>();
+        public List<string> Suffixes = new List<string>();
 
         public List<ItemDrop.ItemData.ItemType> GetAllowedItemTypes()
         {

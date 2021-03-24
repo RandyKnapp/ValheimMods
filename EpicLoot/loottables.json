@@ -15,7 +15,15 @@
   //   - It's not recommended to change any of these, but if you wanted to allow Dyrnwyn or tankards for some reason, 
   //     remove them from this list. You really shouldn't remove Unarmed or CAPE TEST from this list.
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  "RestrictedItems" : [ "$item_tankard", "$item_tankard_odin", "Unarmed", "CAPE TEST", "Cheat sword", "$item_sword_fire" ], 
+  "RestrictedItems" : [ 
+    "$item_tankard", 
+    "$item_tankard_odin", 
+    "Unarmed", 
+    "CAPE TEST", 
+    "Cheat sword", 
+    "$item_sword_fire", 
+    "$item_shield_iron_square"
+  ], 
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // ITEM SETS

@@ -39,6 +39,7 @@ namespace EpicLoot
             _weightedRarityTable = new WeightedRandomCollection<KeyValuePair<ItemRarity, int>>(random);
 
             LootTables.Clear();
+            ItemSets.Clear();
             AddItemSets(lootConfig.ItemSets);
             AddLootTables(lootConfig.LootTables);
         }
@@ -295,6 +296,8 @@ namespace EpicLoot
                 var effect = RollEffect(effectDef, magicItem.Rarity);
                 magicItem.Effects.Add(effect);
             }
+
+            magicItem.DisplayName = MagicItemNames.GetNameForItem(baseItem, magicItem);
 
             return magicItem;
         }
