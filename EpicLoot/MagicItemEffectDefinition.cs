@@ -286,6 +286,7 @@ namespace EpicLoot
 
         public static void Initialize(MagicItemEffectsList config)
         {
+            AllDefinitions.Clear();
             foreach (var magicItemEffectDefinition in config.MagicItemEffects)
             {
                 Add(magicItemEffectDefinition);

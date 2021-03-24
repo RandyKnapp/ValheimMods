@@ -16,6 +16,8 @@ namespace EpicLoot.GatedItemType
 
         public static void Initialize(ItemInfoConfig config)
         {
+            ItemInfos.Clear();
+            ItemInfoByID.Clear();
             foreach (var info in config.ItemInfo)
             {
                 ItemInfos.Add(info);
@@ -48,7 +50,7 @@ namespace EpicLoot.GatedItemType
                 return null;
             }
 
-            if (ObjectDB.instance == null || ObjectDB.instance.m_items.Count == 0)
+            if (!EpicLoot.IsObjectDBReady())
             {
                 EpicLoot.LogError($"Tried to get gated itemID ({itemID}) but ObjectDB is not initialized!");
                 return null;
