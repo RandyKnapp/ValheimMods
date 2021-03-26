@@ -1,4 +1,4 @@
-# Epic Loot v0.6.4 - Item Names Update!
+# Epic Loot v0.7.0 - Item Names Update!
 Author: RandyKnapp
 Source: [Github](https://github.com/RandyKnapp/ValheimMods/blob/main/EpicLoot/)
 

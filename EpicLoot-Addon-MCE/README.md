@@ -1,4 +1,4 @@
-# Epic Loot Addon - MCE v1.0.0
+# Epic Loot Addon - MCE v1.0.1
 Author: RandyKnapp
 Source: [Github](https://github.com/RandyKnapp/ValheimMods/tree/main/EpicLoot-Addon-MCE/)
 
@@ -27,3 +27,5 @@ For both the server and the client:
 ## Patch Notes
 #### Version 1.0.0
   * Initial release, allows MCE to control config values
+#### Version 1.0.1
+  * Added config for adventure stuff update

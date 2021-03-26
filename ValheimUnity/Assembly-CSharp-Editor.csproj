@@ -645,9 +645,6 @@
     <Reference Include="Unity.ProBuilder.AssetIdRemapUtility">
       <HintPath>C:/Users/rknapp/Documents/GitHub/ValheimMods/ValheimUnity/Library/ScriptAssemblies/Unity.ProBuilder.AssetIdRemapUtility.dll</HintPath>
     </Reference>
-    <Reference Include="Unity.TextMeshPro.Editor">
-      <HintPath>C:/Users/rknapp/Documents/GitHub/ValheimMods/ValheimUnity/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
-    </Reference>
     <Reference Include="UnityEngine.UI">
       <HintPath>C:/Users/rknapp/Documents/GitHub/ValheimMods/ValheimUnity/Library/ScriptAssemblies/UnityEngine.UI.dll</HintPath>
     </Reference>
@@ -668,9 +665,6 @@
     </Reference>
     <Reference Include="Unity.ProBuilder.AddOns.Editor">
       <HintPath>C:/Users/rknapp/Documents/GitHub/ValheimMods/ValheimUnity/Library/ScriptAssemblies/Unity.ProBuilder.AddOns.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.TextMeshPro">
-      <HintPath>C:/Users/rknapp/Documents/GitHub/ValheimMods/ValheimUnity/Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
     </Reference>
     <Reference Include="ThunderKit.Common">
       <HintPath>C:/Users/rknapp/Documents/GitHub/ValheimMods/ValheimUnity/Library/ScriptAssemblies/ThunderKit.Common.dll</HintPath>

@@ -3,6 +3,7 @@ using BepInEx;
 using BepInEx.Configuration;
 using Common;
 using EpicLoot;
+using EpicLoot.Adventure;
 using EpicLoot.Crafting;
 using EpicLoot.GatedItemType;
 using HarmonyLib;
@@ -16,7 +17,7 @@ namespace EpicLoot_Addon_MCE
     public class EpicLoot_Addon_MCE : BaseUnityPlugin
     {
         private const string PluginId = "randyknapp.mods.epicloot.addon.mce";
-        private const string Version = "1.0.0";
+        private const string Version = "1.0.1";
 
         private static ConfigVariable<GatedItemTypeMode> _gatedItemTypeModeConfig;
         private static readonly JsonFileConfigVariable<LootConfig> _lootConfigFile = new JsonFileConfigVariable<LootConfig>("loottables.json");
@@ -25,6 +26,7 @@ namespace EpicLoot_Addon_MCE
         private static readonly JsonFileConfigVariable<RecipesConfig> _recipesConfigFile = new JsonFileConfigVariable<RecipesConfig>("recipes.json");
         private static readonly JsonFileConfigVariable<EnchantingCostsConfig> _enchantCostsConfigFile = new JsonFileConfigVariable<EnchantingCostsConfig>("enchantcosts.json");
         private static readonly JsonFileConfigVariable<ItemNameConfig> _itemNamesConfigFile = new JsonFileConfigVariable<ItemNameConfig>("itemnames.json");
+        private static readonly JsonFileConfigVariable<AdventureDataConfig> _adventureDataConfigFile = new JsonFileConfigVariable<AdventureDataConfig>("adventuredata.json");
 
         public void Awake()
         {
@@ -50,6 +52,7 @@ namespace EpicLoot_Addon_MCE
             ConfigManager.RegisterModConfigVariable(EpicLoot.EpicLoot.PluginId, _recipesConfigFile);
             ConfigManager.RegisterModConfigVariable(EpicLoot.EpicLoot.PluginId, _enchantCostsConfigFile);
             ConfigManager.RegisterModConfigVariable(EpicLoot.EpicLoot.PluginId, _itemNamesConfigFile);
+            ConfigManager.RegisterModConfigVariable(EpicLoot.EpicLoot.PluginId, _adventureDataConfigFile);
 
             Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), PluginId);
         }
@@ -62,6 +65,7 @@ namespace EpicLoot_Addon_MCE
             RecipesHelper.Initialize(_recipesConfigFile.Value);
             EnchantCostsHelper.Initialize(_enchantCostsConfigFile.Value);
             MagicItemNames.Initialize(_itemNamesConfigFile.Value);
+            AdventureDataManager.Initialize(_adventureDataConfigFile.Value);
         }
 
         [HarmonyPatch(typeof(EpicLoot.EpicLoot), "GetGatedItemTypeMode")]

@@ -1,4 +1,4 @@
-# EpicLoot Data v0.6.4
+# EpicLoot Data v0.7.0
 
 *Author: RandyKnapp*
 *Source: [Github](https://github.com/RandyKnapp/ValheimMods/tree/main/EpicLoot)*
@@ -1795,6 +1795,20 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 > | -- | -- | -- | -- | -- | -- |
 > | Tier3Everything | 1 (50%) | 0 (0%) | 30 (30%) | 55 (55%) | 15 (15%) |
 > | Tier4Everything | 1 (50%) | 0 (0%) | 30 (30%) | 55 (55%) | 15 (15%) |
+
+> | Items (lvl 4) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier3Everything | 2 (66.7%) | 0 (0%) | 45 (45%) | 45 (45%) | 10 (10%) |
+> | Tier4Everything | 1 (33.3%) | 0 (0%) | 45 (45%) | 45 (45%) | 10 (10%) |
+
+> | Items (lvl 5) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier3Everything | 2 (66.7%) | 0 (0%) | 45 (45%) | 45 (45%) | 10 (10%) |
+> | Tier4Everything | 1 (33.3%) | 0 (0%) | 45 (45%) | 45 (45%) | 10 (10%) |
+
+> | Items (lvl 6) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier4Everything | 1 (100%) | 0 (0%) | 45 (45%) | 45 (45%) | 10 (10%) |
 
 
 ## Eikthyr

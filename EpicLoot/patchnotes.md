@@ -1,3 +1,7 @@
+## Version 0.7.0
+  * Added adventure stuff panel to merchant
+  * Added purchasing crafting mats from merchant
+  * Added gambling for magic items from merchant
 ## Version 0.6.4
   * Item Names Update!
   * Adding logs to Augmenting

@@ -1,0 +1,50 @@
+﻿using System;
+using fastJSON;
+using HarmonyLib;
+using UnityEngine;
+
+namespace EpicLoot.Adventure
+{
+    [RequireComponent(typeof(Player))]
+    public class AdventureComponent : MonoBehaviour
+    {
+        public const string SaveDataKey = EpicLoot.PluginId + "+" + nameof(AdventureSaveData);
+        private static readonly JSONParameters _saveLoadParams = new JSONParameters { UseExtensions = false };
+
+        private Player _player;
+        public AdventureSaveData SaveData;
+
+        public void Awake()
+        {
+            _player = GetComponent<Player>();
+            Load();
+        }
+
+        public void Load()
+        {
+            if (_player.m_knownTexts.TryGetValue(SaveDataKey, out var data))
+            {
+                SaveData = JSON.ToObject<AdventureSaveData>(data, _saveLoadParams);
+            }
+            else
+            {
+                SaveData = new AdventureSaveData();
+            }
+        }
+
+        public void Save()
+        {
+            var data = JSON.ToJSON(SaveData, _saveLoadParams);
+            _player.m_knownTexts[SaveDataKey] = data;
+        }
+    }
+
+    [HarmonyPatch(typeof(TextsDialog), "UpdateTextsList")]
+    public static class TextsDialog_UpdateTextsList_Patch
+    {
+        public static void Postfix(TextsDialog __instance)
+        {
+            __instance.m_texts.RemoveAll(x => x.m_topic.Equals(AdventureComponent.SaveDataKey, StringComparison.InvariantCulture));
+        }
+    }
+}

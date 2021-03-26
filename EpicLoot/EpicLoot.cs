@@ -7,6 +7,7 @@ using System.Text;
 using BepInEx;
 using BepInEx.Configuration;
 using Common;
+using EpicLoot.Adventure;
 using EpicLoot.Crafting;
 using EpicLoot.GatedItemType;
 using ExtendedItemDataFramework;
@@ -36,6 +37,7 @@ namespace EpicLoot
         public AudioClip[] MagicItemDropSFX = new AudioClip[4];
         public AudioClip ItemLoopSFX;
         public AudioClip AugmentItemSFX;
+        public GameObject MerchantPanel;
     }
 
     public class PieceDef
@@ -51,7 +53,7 @@ namespace EpicLoot
     public class EpicLoot : BaseUnityPlugin
     {
         public const string PluginId = "randyknapp.mods.epicloot";
-        public const string Version = "0.6.4";
+        public const string Version = "0.7.0";
 
         private static ConfigEntry<string> _setItemColor;
         private static ConfigEntry<string> _magicRarityColor;
@@ -165,6 +167,7 @@ namespace EpicLoot
             RecipesHelper.Initialize(LoadJsonFile<RecipesConfig>("recipes.json"));
             EnchantCostsHelper.Initialize(LoadJsonFile<EnchantingCostsConfig>("enchantcosts.json"));
             MagicItemNames.Initialize(LoadJsonFile<ItemNameConfig>("itemnames.json"));
+            AdventureDataManager.Initialize(LoadJsonFile<AdventureDataConfig>("adventuredata.json"));
         }
 
         public static void Log(string message)
@@ -228,6 +231,8 @@ namespace EpicLoot
             Assets.MagicItemDropSFX[(int)ItemRarity.Legendary] = assetBundle.LoadAsset<AudioClip>("LegendaryItemDrop");
             Assets.ItemLoopSFX = assetBundle.LoadAsset<AudioClip>("ItemLoop");
             Assets.AugmentItemSFX = assetBundle.LoadAsset<AudioClip>("AugmentItem");
+
+            Assets.MerchantPanel = assetBundle.LoadAsset<GameObject>("MerchantPanel");
 
             LoadCraftingMaterialAssets(assetBundle, "Runestone");
 

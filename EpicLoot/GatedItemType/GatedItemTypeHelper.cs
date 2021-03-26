@@ -31,13 +31,17 @@ namespace EpicLoot.GatedItemType
 
         public static string GetGatedItemID(string itemID)
         {
+            return GetGatedItemID(itemID, EpicLoot.GetGatedItemTypeMode());
+        }
+
+        public static string GetGatedItemID(string itemID, GatedItemTypeMode mode)
+        {
             if (string.IsNullOrEmpty(itemID))
             {
                 EpicLoot.LogError($"Tried to get gated itemID with null or empty itemID!");
                 return null;
             }
 
-            var mode = EpicLoot.GetGatedItemTypeMode();
             if (mode == GatedItemTypeMode.Unlimited)
             {
                 return itemID;
@@ -58,7 +62,6 @@ namespace EpicLoot.GatedItemType
 
             if (!ItemInfoByID.TryGetValue(itemID, out var info))
             {
-                EpicLoot.LogWarning($"Tried to get gated itemID from itemID ({itemID}), but no data exists for it in iteminfo.json. Returning itemID.");
                 return itemID;
             }
 
@@ -70,25 +73,25 @@ namespace EpicLoot.GatedItemType
 
             while (CheckIfItemNeedsGate(player, mode, itemName))
             {
-                EpicLoot.Log("Yes...");
+                //EpicLoot.Log("Yes...");
                 var index = info.Items.IndexOf(itemID);
                 if (index < 0)
                 {
-                    EpicLoot.LogError($"Something has gone completely wrong, the ItemInfo ({info.Type}) did not contain the itemID ({itemID}).");
-                    return null;
+                    // Items list is empty, no need to gate any items from of this type
+                    return itemID;
                 }
                 if (index == 0)
                 {
-                    EpicLoot.Log($"Reached end of gated list. Fallback is ({info.Fallback}), returning ({(string.IsNullOrEmpty(info.Fallback) ? itemID : info.Fallback)}){(string.IsNullOrEmpty(info.Fallback) ? "" : " (fallback)")}");
+                    //EpicLoot.Log($"Reached end of gated list. Fallback is ({info.Fallback}), returning ({(string.IsNullOrEmpty(info.Fallback) ? itemID : info.Fallback)}){(string.IsNullOrEmpty(info.Fallback) ? "" : " (fallback)")}");
                     return string.IsNullOrEmpty(info.Fallback) ? itemID : info.Fallback;
                 }
 
                 itemID = info.Items[index - 1];
                 itemName = GetItemName(itemID);
-                EpicLoot.Log($"Next lower tier item is ({itemID})");
+                //EpicLoot.Log($"Next lower tier item is ({itemID})");
             }
 
-            EpicLoot.Log($"No, return ({itemID})");
+            //EpicLoot.Log($"No, return ({itemID})");
             return itemID;
         }
 
@@ -114,7 +117,7 @@ namespace EpicLoot.GatedItemType
 
         private static bool CheckIfItemNeedsGate(Player player, GatedItemTypeMode mode, string itemName)
         {
-            EpicLoot.Log($"Checking if item ({itemName}) needs gating...");
+            //EpicLoot.Log($"Checking if item ({itemName}) needs gating...");
             switch (mode)
             {
                 case GatedItemTypeMode.MustKnowRecipe: return !player.IsRecipeKnown(itemName);

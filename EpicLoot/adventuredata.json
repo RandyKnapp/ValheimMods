@@ -1,0 +1,146 @@
+{
+  "SecretStash": {
+    "Materials": [
+      { "Item": "ShardMagic",         "CoinsCost": 5 },
+      { "Item": "DustMagic",          "CoinsCost": 5 },
+      { "Item": "ReagentMagic",       "CoinsCost": 5 },
+      { "Item": "EssenceMagic",       "CoinsCost": 5 },
+
+      { "Item": "ShardRare",          "CoinsCost": 25 },
+      { "Item": "DustRare",           "CoinsCost": 25 },
+      { "Item": "ReagentRare",        "CoinsCost": 25 },
+      { "Item": "EssenceRare",        "CoinsCost": 25 },
+
+      { "Item": "ShardEpic",          "CoinsCost": 125 },
+      { "Item": "DustEpic",           "CoinsCost": 125 },
+      { "Item": "ReagentEpic",        "CoinsCost": 125 },
+      { "Item": "EssenceEpic",        "CoinsCost": 125 },
+
+      { "Item": "ShardLegendary",     "CoinsCost": 625 },
+      { "Item": "DustLegendary",      "CoinsCost": 625 },
+      { "Item": "ReagentLegendary",   "CoinsCost": 625 },
+      { "Item": "EssenceLegendary",   "CoinsCost": 625 },
+
+      { "Item": "RunestoneMagic",     "CoinsCost": 25 },
+      { "Item": "RunestoneRare",      "CoinsCost": 125 },
+      { "Item": "RunestoneEpic",      "CoinsCost": 625 },
+      { "Item": "RunestoneLegendary", "CoinsCost": 3125 }
+    ],
+    "RollsPerRarity": [ 2, 2, 1, 1 ],
+    "OtherItems": [],
+    "OtherItemRolls": 0,
+    "Gambles": [
+      "AtgeirBlackmetal",
+      "AxeBlackMetal",
+      "Battleaxe",
+      "MaceNeedle",
+      "KnifeBlackMetal",
+      "PickaxeIron",
+      "SledgeIron",
+      "SpearWolfFang",
+      "SwordBlackmetal",
+      "BowDraugrFang",
+      "ShieldBlackmetal",
+      "ShieldBlackmetalTower",
+      "ArmorPaddedCuirass",
+      "ArmorPaddedGreaves",
+      "HelmetPadded",
+      "CapeLox",
+      "LeatherBelt",
+      "GoldRubyRing"
+    ],
+    "GamblesCount": 5,
+    "GambleRarityChance": [ 10, 69, 15, 5, 1 ],
+    "GambleCosts": [
+      { "Item": "AtgeirBronze",           "CoinsCost": 350  },
+      { "Item": "AtgeirIron",             "CoinsCost": 500  },
+      { "Item": "AtgeirBlackmetal",       "CoinsCost": 1500 },
+
+      { "Item": "AxeStone",               "CoinsCost": 100  },
+      { "Item": "AxeFlint",               "CoinsCost": 200  },
+      { "Item": "AxeBronze",              "CoinsCost": 350  },
+      { "Item": "AxeIron",                "CoinsCost": 500  },
+      { "Item": "AxeBlackMetal",          "CoinsCost": 1500 },
+
+      { "Item": "Battleaxe",              "CoinsCost": 500  },
+
+      { "Item": "Club",                   "CoinsCost": 100  },
+      { "Item": "MaceBronze",             "CoinsCost": 350  },
+      { "Item": "MaceIron",               "CoinsCost": 500  },
+      { "Item": "MaceSilver",             "CoinsCost": 800  },
+      { "Item": "MaceNeedle",             "CoinsCost": 1500 },
+
+      { "Item": "KnifeFlint",             "CoinsCost": 100  },
+      { "Item": "KnifeCopper",            "CoinsCost": 150  },
+      { "Item": "KnifeChitin",            "CoinsCost": 350  },
+      { "Item": "KnifeBlackMetal",        "CoinsCost": 1100 },
+
+      { "Item": "PickaxeStone",           "CoinsCost": 450  },
+      { "Item": "PickaxeAntler",          "CoinsCost": 300  },
+      { "Item": "PickaxeBronze",          "CoinsCost": 600  },
+      { "Item": "PickaxeIron",            "CoinsCost": 500  },
+
+      { "Item": "SledgeStagbreaker",      "CoinsCost": 200  },
+      { "Item": "SledgeIron",             "CoinsCost": 700  },
+
+      { "Item": "SpearFlint",             "CoinsCost": 100  },
+      { "Item": "SpearBronze",            "CoinsCost": 300  },
+      { "Item": "SpearElderbark",         "CoinsCost": 400  },
+      { "Item": "SpearChitin",            "CoinsCost": 300  },
+      { "Item": "SpearWolfFang",          "CoinsCost": 600  },
+
+      { "Item": "SwordBronze",            "CoinsCost": 350  },
+      { "Item": "SwordIron",              "CoinsCost": 500  },
+      { "Item": "SwordSilver",            "CoinsCost": 800  },
+      { "Item": "SwordBlackmetal",        "CoinsCost": 1500 },
+
+      { "Item": "Bow",                    "CoinsCost": 100  },
+      { "Item": "BowFineWood",            "CoinsCost": 500  },
+      { "Item": "BowHuntsman",            "CoinsCost": 1000 },
+      { "Item": "BowDraugrFang",          "CoinsCost": 1500 },
+
+      { "Item": "ShieldWood",             "CoinsCost": 100  },
+      { "Item": "ShieldBronzeBuckler",    "CoinsCost": 250  },
+      { "Item": "ShieldBanded",           "CoinsCost": 400  },
+      { "Item": "ShieldSilver",           "CoinsCost": 800  },
+      { "Item": "ShieldBlackmetal",       "CoinsCost": 1500 },
+
+      { "Item": "ShieldWoodTower",        "CoinsCost": 130  },
+      { "Item": "ShieldIronTower",        "CoinsCost": 700  },
+      { "Item": "ShieldSerpentscale",     "CoinsCost": 700  },
+      { "Item": "ShieldBlackmetalTower",  "CoinsCost": 1800 },
+
+      { "Item": "ArmorRagsChest",         "CoinsCost": 100  },
+      { "Item": "ArmorLeatherChest",      "CoinsCost": 200  },
+      { "Item": "ArmorTrollLeatherChest", "CoinsCost": 400  },
+      { "Item": "ArmorBronzeChest",       "CoinsCost": 550  },
+      { "Item": "ArmorIronChest",         "CoinsCost": 900  },
+      { "Item": "ArmorWolfChest",         "CoinsCost": 1400 },
+      { "Item": "ArmorPaddedCuirass",     "CoinsCost": 2000 },
+
+      { "Item": "ArmorRagsLegs",          "CoinsCost": 100  },
+      { "Item": "ArmorLeatherLegs",       "CoinsCost": 200  },
+      { "Item": "ArmorTrollLeatherLegs",  "CoinsCost": 400  },
+      { "Item": "ArmorBronzeLegs",        "CoinsCost": 550  },
+      { "Item": "ArmorIronLegs",          "CoinsCost": 900  },
+      { "Item": "ArmorWolfLegs",          "CoinsCost": 1400 },
+      { "Item": "ArmorPaddedGreaves",     "CoinsCost": 2000 },
+
+      { "Item": "HelmetLeather",          "CoinsCost": 100  },
+      { "Item": "HelmetTrollLeather",     "CoinsCost": 150  },
+      { "Item": "HelmetBronze",           "CoinsCost": 300  },
+      { "Item": "HelmetIron",             "CoinsCost": 450  },
+      { "Item": "HelmetDrake",            "CoinsCost": 750  },
+      { "Item": "HelmetPadded",           "CoinsCost": 1000 },
+
+      { "Item": "CapeDeerHide",           "CoinsCost": 100  },
+      { "Item": "CapeTrollHide",          "CoinsCost": 250  },
+      { "Item": "CapeWolf",               "CoinsCost": 500  },
+      { "Item": "CapeLinen",              "CoinsCost": 1000 },
+      { "Item": "CapeLox",                "CoinsCost": 750  },
+
+      { "Item": "LeatherBelt",            "CoinsCost": 300  },
+      { "Item": "GoldRubyRing",           "CoinsCost": 500  }
+    ]
+  } 
+}

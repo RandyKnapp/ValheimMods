@@ -682,17 +682,48 @@
     {
       "Object": "Serpent",
       "Drops":  [ [0, 30], [1, 50], [2, 15], [3, 5]  ],
-      "Loot": [
-        { "Item": "Tier3Everything", "Weight": 4, "Rarity": [ 0, 55, 40, 5 ] },
-        { "Item": "Tier4Everything", "Weight": 1, "Rarity": [ 0, 55, 40, 5 ] }
-      ],
-      "Loot2": [
-        { "Item": "Tier3Everything", "Weight": 2, "Rarity": [ 0, 45, 45, 10 ] },
-        { "Item": "Tier4Everything", "Weight": 1, "Rarity": [ 0, 45, 45, 10 ] }
-      ],
-      "Loot3": [
-        { "Item": "Tier3Everything", "Weight": 1, "Rarity": [ 0, 30, 55, 15 ] },
-        { "Item": "Tier4Everything", "Weight": 1, "Rarity": [ 0, 30, 55, 15 ] }
+      "LeveledLoot": [
+        {
+          "Level": 1,
+          "Loot": [
+            { "Item": "Tier3Everything", "Weight": 4, "Rarity": [ 0, 55, 40, 5 ] },
+            { "Item": "Tier4Everything", "Weight": 1, "Rarity": [ 0, 55, 40, 5 ] }
+          ]
+        },
+        {
+          "Level": 2,
+          "Loot": [
+            { "Item": "Tier3Everything", "Weight": 2, "Rarity": [ 0, 45, 45, 10 ] },
+            { "Item": "Tier4Everything", "Weight": 1, "Rarity": [ 0, 45, 45, 10 ] }
+          ]
+        },
+        {
+          "Level": 3,
+          "Loot": [
+            { "Item": "Tier3Everything", "Weight": 1, "Rarity": [ 0, 30, 55, 15 ] },
+            { "Item": "Tier4Everything", "Weight": 1, "Rarity": [ 0, 30, 55, 15 ] }
+          ]
+        },
+        {
+          "Level": 4,
+          "Loot": [
+            { "Item": "Tier3Everything", "Weight": 2, "Rarity": [ 0, 45, 45, 10 ] },
+            { "Item": "Tier4Everything", "Weight": 1, "Rarity": [ 0, 45, 45, 10 ] }
+          ]
+        },
+        {
+          "Level": 5,
+          "Loot": [
+            { "Item": "Tier3Everything", "Weight": 2, "Rarity": [ 0, 45, 45, 10 ] },
+            { "Item": "Tier4Everything", "Weight": 1, "Rarity": [ 0, 45, 45, 10 ] }
+          ]
+        },
+        {
+          "Level": 6,
+          "Loot": [
+            { "Item": "Tier4Everything", "Weight": 1, "Rarity": [ 0, 45, 45, 10 ] }
+          ]
+        }
       ]
     },
     

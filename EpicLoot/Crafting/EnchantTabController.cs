@@ -88,37 +88,7 @@ namespace EpicLoot.Crafting
 
             if (SuccessDialog == null)
             {
-                var newDialog = Object.Instantiate(inventoryGui.m_variantDialog, inventoryGui.m_variantDialog.transform.parent);
-                SuccessDialog = newDialog.gameObject.AddComponent<CraftSuccessDialog>();
-                Object.Destroy(newDialog);
-                SuccessDialog.gameObject.name = "CraftingSuccessDialog";
-
-                var background = SuccessDialog.gameObject.transform.Find("VariantFrame").gameObject.RectTransform();
-                background.gameObject.name = "Frame";
-                for (int i = 1; i < background.transform.childCount; ++i)
-                {
-                    var child = background.transform.GetChild(i);
-                    Object.Destroy(child.gameObject);
-                }
-                background.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 380);
-                background.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 550);
-                background.anchoredPosition += new Vector2(20, -270);
-
-                SuccessDialog.MagicBG = Object.Instantiate(inventoryGui.m_recipeIcon, background);
-                SuccessDialog.MagicBG.name = "MagicItemBG";
-                SuccessDialog.MagicBG.sprite = EpicLoot.GetMagicItemBgSprite();
-                SuccessDialog.MagicBG.color = Color.white;
-
-                SuccessDialog.NameText = Object.Instantiate(inventoryGui.m_recipeName, background);
-                SuccessDialog.Description = Object.Instantiate(inventoryGui.m_recipeDecription, background);
-                SuccessDialog.Description.rectTransform.anchoredPosition += new Vector2(0, -110);
-                SuccessDialog.Description.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 460);
-                SuccessDialog.Icon = Object.Instantiate(inventoryGui.m_recipeIcon, background);
-
-                var closeButton = SuccessDialog.gameObject.GetComponentInChildren<Button>();
-                closeButton.onClick = new Button.ButtonClickedEvent();
-                closeButton.onClick.AddListener(SuccessDialog.OnClose);
-                closeButton.transform.SetAsLastSibling();
+                SuccessDialog = CraftSuccessDialog.Create(inventoryGui.m_variantDialog.transform.parent);
             }
         }
 
