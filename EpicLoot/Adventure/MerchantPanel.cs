@@ -14,7 +14,7 @@ namespace EpicLoot.Adventure
         public Button SecretStashBuyButton;
         public Text SecretStashRefreshTime;
         public RectTransform TreasureMapList;
-        public BuyListElement TreasureMapElementPrefab;
+        public TreasureMapListElement TreasureMapElementPrefab;
         public Button TreasureMapBuyButton;
         public Text TreasureMapRefreshTime;
         public RectTransform AvailableBountiesList;
@@ -29,8 +29,10 @@ namespace EpicLoot.Adventure
         public Text CoinsCount;
 
         private int _currentSecretStashInterval = -1;
-        private int _currentPlayerCoins = 0;
+        private int _currentTreasureMapInterval = -1;
+        private int _currentPlayerCoins = -1;
         private int _selectedStashItemIndex = -1;
+        private int _selectedTreasureMapItemIndex = -1;
 
         public void Awake()
         {
@@ -86,9 +88,10 @@ namespace EpicLoot.Adventure
             SecretStashRefreshTime = transform.Find("SecretStash/TimeLeft").GetComponent<Text>();
 
             TreasureMapList = transform.Find("TreasureMap/Panel/ItemList") as RectTransform;
-            TreasureMapElementPrefab = transform.Find("TreasureMap/Panel/ItemElement").gameObject.AddComponent<BuyListElement>();
+            TreasureMapElementPrefab = transform.Find("TreasureMap/Panel/ItemElement").gameObject.AddComponent<TreasureMapListElement>();
             TreasureMapElementPrefab.gameObject.SetActive(false);
             TreasureMapBuyButton = transform.Find("TreasureMap/TreasureMapBuyButton").GetComponent<Button>();
+            TreasureMapBuyButton.onClick.AddListener(OnTreasureMapBuyButtonPressed);
             TreasureMapRefreshTime = transform.Find("TreasureMap/TimeLeft").GetComponent<Text>();
 
             AvailableBountiesList = transform.Find("Bounties/AvailableBountiesPanel/ItemList") as RectTransform;
@@ -142,7 +145,32 @@ namespace EpicLoot.Adventure
             }
         }
 
+        private void OnTreasureMapBuyButtonPressed()
+        {
+            var player = Player.m_localPlayer;
+            var treasureMap = GetSelectedTreasureMapItem();
+            if (player != null && treasureMap != null && CanAfford(treasureMap))
+            {
+                player.StartCoroutine(AdventureDataManager.SpawnTreasureChest(treasureMap.Biome, player, (success, position) =>
+                {
+                    if (success)
+                    {
+                        var inventory = player.GetInventory();
+                        inventory.RemoveItem(GetCoinsName(), treasureMap.Price);
+
+                        StoreGui.instance.m_trader.OnBought(null);
+                        StoreGui.instance.m_buyEffects.Create(player.transform.position, Quaternion.identity);
+                    }
+                }));
+            }
+        }
+
         private bool CanAfford(BuyListElement item)
+        {
+            return item.Price <= _currentPlayerCoins;
+        }
+
+        private bool CanAfford(TreasureMapListElement item)
         {
             return item.Price <= _currentPlayerCoins;
         }
@@ -170,34 +198,41 @@ namespace EpicLoot.Adventure
                 RefreshSecretStashItems();
             }
 
+            var treasureMapInterval = AdventureDataManager.GetCurrentTreasureMapInterval();
+            if (_currentTreasureMapInterval != treasureMapInterval)
+            {
+                _currentTreasureMapInterval = treasureMapInterval;
+                RefreshTreasureMapItems();
+            }
+
             RefreshBuyButtons();
         }
 
         private void RefreshBuyButtons()
         {
             var selectedStashItem = GetSelectedStashItem();
-            SecretStashBuyButton.interactable = selectedStashItem != null && selectedStashItem.Price <= _currentPlayerCoins;
+            SecretStashBuyButton.interactable = selectedStashItem != null && selectedStashItem.CanAfford;
 
             var selectedTreasureMapItem = GetSelectedTreasureMapItem();
-            TreasureMapBuyButton.interactable = selectedTreasureMapItem != null && selectedTreasureMapItem.Price <= _currentPlayerCoins;
+            TreasureMapBuyButton.interactable = selectedTreasureMapItem != null && selectedTreasureMapItem.CanAfford && !selectedTreasureMapItem.AlreadyPurchased;
         }
 
         private BuyListElement GetSelectedStashItem()
         {
-            return GetSelectedItem(SecretStashList);
+            return GetSelectedItem<BuyListElement>(SecretStashList, _selectedStashItemIndex);
         }
 
-        private BuyListElement GetSelectedTreasureMapItem()
+        private TreasureMapListElement GetSelectedTreasureMapItem()
         {
-            return GetSelectedItem(TreasureMapList);
+            return GetSelectedItem<TreasureMapListElement>(TreasureMapList, _selectedTreasureMapItemIndex);
         }
 
-        private BuyListElement GetSelectedItem(RectTransform list)
+        private T GetSelectedItem<T>(RectTransform list, int selectedIndex) where T : Component
         {
             for (int i = 0; i < list.childCount; i++)
             {
-                var child = list.GetChild(i).GetComponent<BuyListElement>();
-                if (child.IsSelected)
+                var child = list.GetChild(i).GetComponent<T>();
+                if (i == selectedIndex)
                 {
                     return child;
                 }
@@ -208,7 +243,7 @@ namespace EpicLoot.Adventure
 
         private void UpdateRefreshTime()
         {
-            SecretStashRefreshTime.text = $"({AdventureDataManager.GetCurrentSecretStashInterval()}) " + ConvertSecondsToDisplayTime(AdventureDataManager.GetSecondsUntilSecretStashRefresh());
+            SecretStashRefreshTime.text = ConvertSecondsToDisplayTime(AdventureDataManager.GetSecondsUntilSecretStashRefresh());
             TreasureMapRefreshTime.text = ConvertSecondsToDisplayTime(AdventureDataManager.GetSecondsUntilTreasureMapRefresh());
             BountiesRefreshTime.text = ConvertSecondsToDisplayTime(AdventureDataManager.GetSecondsUntilBountiesRefresh());
         }
@@ -287,6 +322,32 @@ namespace EpicLoot.Adventure
 
         public void RefreshTreasureMapItems()
         {
+            _currentTreasureMapInterval = AdventureDataManager.GetCurrentTreasureMapInterval();
+
+            DestroyAllActiveListElementsInList(TreasureMapList);
+            var maps = AdventureDataManager.GetItemsForTreasureMap();
+
+            for (var index = 0; index < maps.Count; index++)
+            {
+                var itemInfo = maps[index];
+                var itemElement = Object.Instantiate(TreasureMapElementPrefab, TreasureMapList);
+                itemElement.gameObject.SetActive(true);
+                itemElement.SetItem(itemInfo, _currentPlayerCoins);
+                var i = index;
+                itemElement.OnSelected += (x) => OnTreasureMapItemSelected(x, i);
+                itemElement.SetSelected(index == _selectedTreasureMapItemIndex);
+            }
+        }
+
+        private void OnTreasureMapItemSelected(TreasureMapItemInfo itemInfo, int index)
+        {
+            _selectedTreasureMapItemIndex = index;
+
+            for (int i = 0; i < TreasureMapList.childCount; i++)
+            {
+                var child = TreasureMapList.GetChild(i).GetComponent<TreasureMapListElement>();
+                child.SetSelected(i == _selectedTreasureMapItemIndex);
+            }
         }
 
         public void DestroyAllActiveListElementsInList(RectTransform container)

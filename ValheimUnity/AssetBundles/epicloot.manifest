@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 3983528776
+CRC: 725832307
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 059b7c46010cca71438e1fd20851f6de
+    Hash: 9505fafa2397881c2015c7e502b399f2
   TypeTreeHash:
     serializedVersion: 2
     Hash: b3e4901cb5bbc76ca2ad45201119cae1
@@ -144,6 +144,7 @@ Assets:
 - Assets/EpicLoot/Prefabs/CraftingMaterials/ReagentEpic.prefab
 - Assets/EpicLoot/Sprites/Inventory/Equipped.png
 - Assets/EpicLoot/Prefabs/Equipment/LeatherBelt.prefab
+- Assets/EpicLoot/Prefabs/Adventure/ForestToken.prefab
 - Assets/EpicLoot/Prefabs/StationExtensions/piece_enchanter.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/RunestoneLegendary.prefab
 - Assets/EpicLoot/Sprites/MerchantPanel/BountyTokenIron.png

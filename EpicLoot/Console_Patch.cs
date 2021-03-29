@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Common;
+using EpicLoot.Adventure;
 using EpicLoot.Crafting;
 using HarmonyLib;
 using UnityEngine;
@@ -50,8 +51,42 @@ namespace EpicLoot
                 __instance.AddString($"Disable gating for magic item drops: {LootRoller.CheatDisableGating}");
                 return false;
             }
+            else if (command.Equals("testtreasuremap", StringComparison.InvariantCultureIgnoreCase) ||
+                     command.Equals("testtm", StringComparison.InvariantCultureIgnoreCase))
+            {
+                var player = Player.m_localPlayer;
+
+                var biome = (args.Length >= 2) ? (Heightmap.Biome)Enum.Parse(typeof(Heightmap.Biome), args[1]) : Heightmap.Biome.Meadows;
+                var overrideTreasureMapCount = (args.Length >= 3) ? int.Parse(args[2]) : -1;
+                if (overrideTreasureMapCount >= 0)
+                {
+                    player.GetAdventureSaveData().NumberOfTreasureMapsStarted = overrideTreasureMapCount;
+                }
+                player.StartCoroutine(AdventureDataManager.SpawnTreasureChest(biome, player, OnSpawnTreasureChestResult));
+            }
+            else if (command.Equals("resettreasuremap", StringComparison.InvariantCultureIgnoreCase))
+            {
+                var player = Player.m_localPlayer;
+                var saveData = player.GetAdventureSaveData();
+                saveData.PurchasedTreasureMaps.Clear();
+                saveData.FoundTreasureMapChests.Clear();
+                saveData.NumberOfTreasureMapsStarted = 0;
+                player.SaveAdventureSaveData();
+            }
 
             return true;
+        }
+
+        private static void OnSpawnTreasureChestResult(bool success, Vector3 spawnPoint)
+        {
+            var output = "Failed to spawn treasure map chest";
+            if (success)
+            {
+                output = $"Spawning Treasure Map Chest at <{spawnPoint.x:0.#}, {spawnPoint.y:0.#}, {spawnPoint.z:0.#}>";
+            }
+
+            Console.instance.AddString(output);
+            Debug.LogWarning(output);
         }
 
         private static void ToggleAlwaysDrop(Console __instance)

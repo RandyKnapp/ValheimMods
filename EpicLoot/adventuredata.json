@@ -142,5 +142,19 @@
       { "Item": "LeatherBelt",            "CoinsCost": 300  },
       { "Item": "GoldRubyRing",           "CoinsCost": 500  }
     ]
-  } 
+  },
+  "TreasureMap": {
+    "BiomeInfo": [
+      { "Biome": "Meadows", "Cost": 100, "MinRadius": 0, "MaxRadius": 3000 },
+      { "Biome": "BlackForest", "Cost": 300, "MinRadius": 0, "MaxRadius": 6000 },
+      { "Biome": "Swamp", "Cost": 500, "MinRadius": 2000, "MaxRadius": 6000 },
+      { "Biome": "Mountain", "Cost": 750, "MinRadius": 2000, "MaxRadius": 6000 },
+      { "Biome": "Plains", "Cost": 1000, "MinRadius": 3000, "MaxRadius": 6000 }
+    ],
+    "StartRadiusMin": 0,
+    "StartRadiusMax": 500,
+    "IncreaseRadiusCount": 3,
+    "RadiusInterval": 500,
+    "MinimapAreaRadius": 100 
+  }
 }

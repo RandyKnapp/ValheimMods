@@ -44,7 +44,7 @@ namespace EpicLoot.Adventure
     {
         public static void Postfix(TextsDialog __instance)
         {
-            __instance.m_texts.RemoveAll(x => x.m_topic.Equals(AdventureComponent.SaveDataKey, StringComparison.InvariantCulture));
+            //__instance.m_texts.RemoveAll(x => x.m_topic.Equals(AdventureComponent.SaveDataKey, StringComparison.InvariantCulture));
         }
     }
 }

@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Common;
 using EpicLoot.Crafting;
 using EpicLoot.GatedItemType;
+using UnityEngine;
+using Object = UnityEngine.Object;
 using Random = System.Random;
 
 namespace EpicLoot.Adventure
@@ -22,6 +25,13 @@ namespace EpicLoot.Adventure
             Cost = cost;
             IsGamble = isGamble;
         }
+    }
+
+    public class TreasureMapItemInfo
+    {
+        public Heightmap.Biome Biome;
+        public int Cost;
+        public bool AlreadyPurchased;
     }
 
     //ZNet.m_world.m_seed
@@ -276,6 +286,121 @@ namespace EpicLoot.Adventure
 
             var loot = LootRoller.RollLootTable(lootTable, 1, "Gamble", Player.m_localPlayer.transform.position);
             return loot.Count > 0 ? loot[0] : null;
+        }
+
+        public static List<TreasureMapItemInfo> GetItemsForTreasureMap()
+        {
+            var results = new List<TreasureMapItemInfo>();
+
+            var player = Player.m_localPlayer;
+            var currentInterval = GetCurrentTreasureMapInterval();
+            if (player != null)
+            {
+                var saveData = player.GetAdventureSaveData();
+                foreach (var biome in player.m_knownBiome)
+                {
+                    var lootTableName = $"TreasureMapChest_{biome}";
+                    var lootTableExists = LootRoller.GetLootTable(lootTableName).Count > 0;
+                    if (lootTableExists)
+                    {
+                        var purchased = saveData.HasPurchasedTreasureMap(currentInterval, biome);
+                        var cost = Config.TreasureMap.BiomeInfo.Find(x => x.Biome == biome);
+                        results.Add(new TreasureMapItemInfo()
+                        {
+                            Biome = biome,
+                            Cost = cost?.Cost ?? 99,
+                            AlreadyPurchased = purchased
+                        });
+                    }
+                }
+            }
+
+            return results.OrderBy(x => x.Cost).ToList();
+        }
+
+        public static IEnumerator SpawnTreasureChest(Heightmap.Biome biome, Player player, Action<bool, Vector3> callback)
+        {
+            player.Message(MessageHud.MessageType.Center, "Preparing Treasure Map...");
+            var saveData = player.GetAdventureSaveData();
+            var rangeTries = 0;
+            var radiusRange = GetTreasureMapSpawnRadiusRange(biome, saveData);
+            while (rangeTries < 10)
+            {
+                rangeTries++;
+
+                var tries = 0;
+                while (tries < 10)
+                {
+                    tries++;
+
+                    var randomPoint = UnityEngine.Random.insideUnitCircle;
+                    var mag = randomPoint.magnitude;
+                    var normalized = randomPoint.normalized;
+                    var actualMag = Mathf.Lerp(radiusRange.Item1, radiusRange.Item2, mag);
+                    randomPoint = normalized * actualMag;
+                    var spawnPoint = new Vector3(randomPoint.x, 0, randomPoint.y);
+
+                    var zoneId = ZoneSystem.instance.GetZone(spawnPoint);
+                    while (!ZoneSystem.instance.SpawnZone(zoneId, ZoneSystem.SpawnMode.Full, out _))
+                    {
+                        Debug.LogWarning($"Spawning Zone ({zoneId})...");
+                        yield return null;
+                    }
+
+                    ZoneSystem.instance.GetGroundData(ref spawnPoint, out var normal, out var foundBiome, out _, out _);
+
+                    Debug.LogWarning($"Checking biome at ({randomPoint}): {foundBiome} (try {tries})");
+                    if (foundBiome != biome)
+                    {
+                        // Wrong biome
+                        continue;
+                    }
+                    
+                    var waterLevel = ZoneSystem.instance.m_waterLevel;
+                    var groundHeight = spawnPoint.y;
+                    if (waterLevel > groundHeight + 1.0f)
+                    {
+                        // Too deep, try again
+                        continue;
+                    }
+
+                    Debug.LogWarning($"Success! (ground={groundHeight} water={waterLevel} placed={spawnPoint.y})");
+
+                    const string treasureChestPrefabName = "piece_chest_wood";
+                    var treasureChestPrefab = ZNetScene.instance.GetPrefab(treasureChestPrefabName);
+                    var treasureChestObject = Object.Instantiate(treasureChestPrefab, spawnPoint, Quaternion.FromToRotation(Vector3.up, normal));
+                    var treasureChest = treasureChestObject.AddComponent<TreasureMapChest>();
+                    treasureChest.Setup(player, biome, GetCurrentTreasureMapInterval());
+
+                    var offset2 = UnityEngine.Random.insideUnitCircle * Config.TreasureMap.MinimapAreaRadius;
+                    var offset = new Vector3(offset2.x, 0, offset2.y);
+                    saveData.PurchasedTreasureMap(GetCurrentTreasureMapInterval(), biome, spawnPoint, offset);
+                    Minimap.instance.ShowPointOnMap(spawnPoint + offset);
+
+                    callback?.Invoke(true, spawnPoint);
+                    yield break;
+                }
+
+                radiusRange = new Tuple<float, float>(radiusRange.Item1 + 500, radiusRange.Item2 + 500);
+            }
+
+            callback?.Invoke(false, Vector3.zero);
+        }
+
+        private static Tuple<float, float> GetTreasureMapSpawnRadiusRange(Heightmap.Biome biome, AdventureSaveData saveData)
+        {
+            var biomeInfoConfig = GetBiomeInfoConfig(biome);
+            var minRadius = biomeInfoConfig?.MinRadius ?? 0;
+            var maxRadius = biomeInfoConfig?.MaxRadius ?? 6000;
+            var increments = saveData.NumberOfTreasureMapsStarted / Config.TreasureMap.IncreaseRadiusCount;
+            var min = Mathf.Min(Config.TreasureMap.StartRadiusMin + increments * Config.TreasureMap.RadiusInterval, minRadius);
+            var max = Mathf.Min(Config.TreasureMap.StartRadiusMax + increments * Config.TreasureMap.RadiusInterval, maxRadius);
+            return new Tuple<float, float>(min, max);
+        }
+
+        private static TreasureMapBiomeInfoConfig GetBiomeInfoConfig(Heightmap.Biome biome)
+        {
+            return Config.TreasureMap.BiomeInfo.Find(x => x.Biome == biome);
         }
     }
 }

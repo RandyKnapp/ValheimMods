@@ -24,8 +24,23 @@ namespace EpicLoot.Adventure
     }
 
     [Serializable]
+    public class TreasureMapBiomeInfoConfig
+    {
+        public Heightmap.Biome Biome;
+        public int Cost;
+        public float MinRadius;
+        public float MaxRadius;
+    }
+
+    [Serializable]
     public class TreasureMapConfig
     {
+        public List<TreasureMapBiomeInfoConfig> BiomeInfo = new List<TreasureMapBiomeInfoConfig>();
+        public float StartRadiusMin = 0;
+        public float StartRadiusMax = 500;
+        public int IncreaseRadiusCount = 3;
+        public float RadiusInterval = 500;
+        public float MinimapAreaRadius = 100;
     }
 
     [Serializable]

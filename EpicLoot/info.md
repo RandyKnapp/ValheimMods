@@ -2441,3 +2441,183 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 > | Tier5Everything | 1 (25%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
 
 
+## TreasureMapChest_Meadows
+
+> | Drops (lvl 1) | Weight (Chance) |
+> | -- | -- |
+> | 3 | 60 (60%) |
+> | 4 | 30 (30%) |
+> | 5 | 10 (10%) |
+
+> | Drops (lvl 2) | Weight (Chance) |
+> | -- | -- |
+> | 3 | 60 (60%) |
+> | 4 | 30 (30%) |
+> | 5 | 10 (10%) |
+
+> | Drops (lvl 3) | Weight (Chance) |
+> | -- | -- |
+> | 3 | 60 (60%) |
+> | 4 | 30 (30%) |
+> | 5 | 10 (10%) |
+
+> | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier0Everything | 1 (50%) | 68 (68%) | 30 (30%) | 2 (2%) | 0 (0%) |
+> | Tier1Everything | 1 (50%) | 68 (68%) | 30 (30%) | 2 (2%) | 0 (0%) |
+
+> | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier0Everything | 1 (50%) | 68 (68%) | 30 (30%) | 2 (2%) | 0 (0%) |
+> | Tier1Everything | 1 (50%) | 68 (68%) | 30 (30%) | 2 (2%) | 0 (0%) |
+
+> | Items (lvl 3) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier0Everything | 1 (50%) | 68 (68%) | 30 (30%) | 2 (2%) | 0 (0%) |
+> | Tier1Everything | 1 (50%) | 68 (68%) | 30 (30%) | 2 (2%) | 0 (0%) |
+
+
+## TreasureMapChest_BlackForest
+
+> | Drops (lvl 1) | Weight (Chance) |
+> | -- | -- |
+> | 3 | 60 (60%) |
+> | 4 | 30 (30%) |
+> | 5 | 10 (10%) |
+
+> | Drops (lvl 2) | Weight (Chance) |
+> | -- | -- |
+> | 3 | 60 (60%) |
+> | 4 | 30 (30%) |
+> | 5 | 10 (10%) |
+
+> | Drops (lvl 3) | Weight (Chance) |
+> | -- | -- |
+> | 3 | 60 (60%) |
+> | 4 | 30 (30%) |
+> | 5 | 10 (10%) |
+
+> | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier1Everything | 1 (50%) | 40 (40%) | 50 (50%) | 9 (9%) | 1 (1%) |
+> | Tier2Everything | 1 (50%) | 40 (40%) | 50 (50%) | 9 (9%) | 1 (1%) |
+
+> | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier1Everything | 1 (50%) | 40 (40%) | 50 (50%) | 9 (9%) | 1 (1%) |
+> | Tier2Everything | 1 (50%) | 40 (40%) | 50 (50%) | 9 (9%) | 1 (1%) |
+
+> | Items (lvl 3) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier1Everything | 1 (50%) | 40 (40%) | 50 (50%) | 9 (9%) | 1 (1%) |
+> | Tier2Everything | 1 (50%) | 40 (40%) | 50 (50%) | 9 (9%) | 1 (1%) |
+
+
+## TreasureMapChest_Swamp
+
+> | Drops (lvl 1) | Weight (Chance) |
+> | -- | -- |
+> | 3 | 60 (60%) |
+> | 4 | 30 (30%) |
+> | 5 | 10 (10%) |
+
+> | Drops (lvl 2) | Weight (Chance) |
+> | -- | -- |
+> | 3 | 60 (60%) |
+> | 4 | 30 (30%) |
+> | 5 | 10 (10%) |
+
+> | Drops (lvl 3) | Weight (Chance) |
+> | -- | -- |
+> | 3 | 60 (60%) |
+> | 4 | 30 (30%) |
+> | 5 | 10 (10%) |
+
+> | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier2Everything | 1 (50%) | 10 (9.1%) | 40 (36.4%) | 50 (45.5%) | 10 (9.1%) |
+> | Tier3Everything | 1 (50%) | 10 (9.1%) | 40 (36.4%) | 50 (45.5%) | 10 (9.1%) |
+
+> | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier2Everything | 1 (50%) | 10 (9.1%) | 40 (36.4%) | 50 (45.5%) | 10 (9.1%) |
+> | Tier3Everything | 1 (50%) | 10 (9.1%) | 40 (36.4%) | 50 (45.5%) | 10 (9.1%) |
+
+> | Items (lvl 3) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier2Everything | 1 (50%) | 10 (9.1%) | 40 (36.4%) | 50 (45.5%) | 10 (9.1%) |
+> | Tier3Everything | 1 (50%) | 10 (9.1%) | 40 (36.4%) | 50 (45.5%) | 10 (9.1%) |
+
+
+## TreasureMapChest_Mountain
+
+> | Drops (lvl 1) | Weight (Chance) |
+> | -- | -- |
+> | 3 | 60 (60%) |
+> | 4 | 30 (30%) |
+> | 5 | 10 (10%) |
+
+> | Drops (lvl 2) | Weight (Chance) |
+> | -- | -- |
+> | 3 | 60 (60%) |
+> | 4 | 30 (30%) |
+> | 5 | 10 (10%) |
+
+> | Drops (lvl 3) | Weight (Chance) |
+> | -- | -- |
+> | 3 | 60 (60%) |
+> | 4 | 30 (30%) |
+> | 5 | 10 (10%) |
+
+> | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier3Everything | 1 (50%) | 0 (0%) | 30 (30%) | 55 (55%) | 15 (15%) |
+> | Tier4Everything | 1 (50%) | 0 (0%) | 30 (30%) | 55 (55%) | 15 (15%) |
+
+> | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier3Everything | 1 (50%) | 0 (0%) | 30 (30%) | 55 (55%) | 15 (15%) |
+> | Tier4Everything | 1 (50%) | 0 (0%) | 30 (30%) | 55 (55%) | 15 (15%) |
+
+> | Items (lvl 3) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier3Everything | 1 (50%) | 0 (0%) | 30 (30%) | 55 (55%) | 15 (15%) |
+> | Tier4Everything | 1 (50%) | 0 (0%) | 30 (30%) | 55 (55%) | 15 (15%) |
+
+
+## TreasureMapChest_Plains
+
+> | Drops (lvl 1) | Weight (Chance) |
+> | -- | -- |
+> | 3 | 60 (60%) |
+> | 4 | 30 (30%) |
+> | 5 | 10 (10%) |
+
+> | Drops (lvl 2) | Weight (Chance) |
+> | -- | -- |
+> | 3 | 60 (60%) |
+> | 4 | 30 (30%) |
+> | 5 | 10 (10%) |
+
+> | Drops (lvl 3) | Weight (Chance) |
+> | -- | -- |
+> | 3 | 60 (60%) |
+> | 4 | 30 (30%) |
+> | 5 | 10 (10%) |
+
+> | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier4Everything | 1 (50%) | 0 (0%) | 10 (10%) | 65 (65%) | 25 (25%) |
+> | Tier5Everything | 1 (50%) | 0 (0%) | 10 (10%) | 65 (65%) | 25 (25%) |
+
+> | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier4Everything | 1 (50%) | 0 (0%) | 10 (10%) | 65 (65%) | 25 (25%) |
+> | Tier5Everything | 1 (50%) | 0 (0%) | 10 (10%) | 65 (65%) | 25 (25%) |
+
+> | Items (lvl 3) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier4Everything | 1 (50%) | 0 (0%) | 10 (10%) | 65 (65%) | 25 (25%) |
+> | Tier5Everything | 1 (50%) | 0 (0%) | 10 (10%) | 65 (65%) | 25 (25%) |
+
+

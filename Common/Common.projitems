@@ -15,6 +15,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)MultiValueDictionary.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlayerExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PrefabCreator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SerializableVector3.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)WeightedRandomCollection.cs" />
   </ItemGroup>

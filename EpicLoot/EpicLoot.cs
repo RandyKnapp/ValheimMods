@@ -38,6 +38,8 @@ namespace EpicLoot
         public AudioClip ItemLoopSFX;
         public AudioClip AugmentItemSFX;
         public GameObject MerchantPanel;
+        public Sprite MapIconTreasureMap;
+        public Sprite MapIconBounty;
     }
 
     public class PieceDef
@@ -109,6 +111,8 @@ namespace EpicLoot
         public static readonly List<GameObject> RegisteredItemPrefabs = new List<GameObject>();
         public static readonly Dictionary<GameObject, PieceDef> RegisteredPieces = new Dictionary<GameObject, PieceDef>();
         public static bool AlwaysDropCheat = false;
+        public const Minimap.PinType BountyPinType = (Minimap.PinType) 800;
+        public const Minimap.PinType TreasureMapPinType = (Minimap.PinType) 801;
 
         public static event Action LootTableLoaded;
 
@@ -233,7 +237,9 @@ namespace EpicLoot
             Assets.AugmentItemSFX = assetBundle.LoadAsset<AudioClip>("AugmentItem");
 
             Assets.MerchantPanel = assetBundle.LoadAsset<GameObject>("MerchantPanel");
-
+            Assets.MapIconTreasureMap = assetBundle.LoadAsset<Sprite>("TreasureMapIcon");
+            Assets.MapIconBounty = assetBundle.LoadAsset<Sprite>("MapIconBounty");
+            
             LoadCraftingMaterialAssets(assetBundle, "Runestone");
 
             LoadCraftingMaterialAssets(assetBundle, "Shard");
@@ -269,6 +275,8 @@ namespace EpicLoot
             LoadItem(assetBundle, "LeatherBelt");
             LoadItem(assetBundle, "SilverRing");
             LoadItem(assetBundle, "GoldRubyRing");
+
+            LoadItem(assetBundle, "ForestToken");
         }
 
         private static void LoadItem(AssetBundle assetBundle, string assetName)

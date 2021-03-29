@@ -247,7 +247,7 @@ namespace EpicLoot.Crafting
 
         public static bool CanEnchantRarity(Player player, ItemRarity rarity)
         {
-            return player.m_knownMaterial.Contains($"{rarity} Runestone");
+            return true;
         }
 
         private string GenerateEnchantTooltip(EnchantRecipe recipe)

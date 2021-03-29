@@ -54,7 +54,7 @@ namespace EpicLoot.Adventure
             Icon.sprite = Item.GetIcon();
             Icon.color = CanAfford ? Color.white : new Color(1.0f, 0.0f, 1.0f, 0.0f);
             NameText.text = Localization.instance.Localize(Item.GetDecoratedName(CanAfford ? null : "#AAA"));
-            NameText.color = Color.white;
+            NameText.color = CanAfford ? Color.white : Color.gray;
             CostText.text = Price.ToString();
             if (!CanAfford)
             {
@@ -72,8 +72,7 @@ namespace EpicLoot.Adventure
             if (IsGamble)
             {
                 NameText.text = $"??? {Localization.instance.Localize(Item.m_shared.m_name)}";
-                NameText.color = CanAfford ? Color.white : Color.gray;
-
+                
                 Tooltip.m_topic = NameText.text;
                 Tooltip.m_text = GetGambleTooltip();
             }
