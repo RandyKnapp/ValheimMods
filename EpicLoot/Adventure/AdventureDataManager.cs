@@ -14,15 +14,17 @@ namespace EpicLoot.Adventure
     public class SecretStashItemInfo
     {
         public ItemDrop.ItemData Item;
-        public int Cost;
+        public int CoinsCost;
+        public int ForestTokenCost;
         public string ItemID;
         public bool IsGamble;
 
-        public SecretStashItemInfo(string itemId, ItemDrop.ItemData item, int cost, bool isGamble = false)
+        public SecretStashItemInfo(string itemId, ItemDrop.ItemData item, int coinsCost, int forestTokenCost, bool isGamble = false)
         {
             ItemID = itemId;
             Item = item;
-            Cost = cost;
+            CoinsCost = coinsCost;
+            ForestTokenCost = forestTokenCost;
             IsGamble = isGamble;
         }
     }
@@ -131,7 +133,7 @@ namespace EpicLoot.Adventure
 
                 var itemData = itemDrop.m_itemData.Clone();
                 var cost = Config.SecretStash.GambleCosts.Find(x => x.Item == itemId);
-                availableGambles.Add(new SecretStashItemInfo(itemId, itemData, cost?.CoinsCost ?? 100, true));
+                availableGambles.Add(new SecretStashItemInfo(itemId, itemData, cost?.CoinsCost ?? 1, cost?.ForestTokenCost ?? 0, true));
             }
 
             RollOnListNTimes(random, availableGambles, Config.SecretStash.GamblesCount, results);
@@ -170,7 +172,7 @@ namespace EpicLoot.Adventure
                 var itemData = itemDrop.m_itemData.Clone();
                 if (itemOkayToAddPredicate(itemData))
                 {
-                    results.Add(new SecretStashItemInfo(itemId, itemData, itemConfig.CoinsCost));
+                    results.Add(new SecretStashItemInfo(itemId, itemData, itemConfig.CoinsCost, itemConfig.ForestTokenCost));
                 }
             }
 
@@ -288,7 +290,7 @@ namespace EpicLoot.Adventure
             return loot.Count > 0 ? loot[0] : null;
         }
 
-        public static List<TreasureMapItemInfo> GetItemsForTreasureMap()
+        public static List<TreasureMapItemInfo> GetTreasureMaps()
         {
             var results = new List<TreasureMapItemInfo>();
 
@@ -316,6 +318,21 @@ namespace EpicLoot.Adventure
             }
 
             return results.OrderBy(x => x.Cost).ToList();
+        }
+
+        public static List<SecretStashItemInfo> GetForestTokenItems()
+        {
+            var player = Player.m_localPlayer;
+            if (player == null || Config == null)
+            {
+                return new List<SecretStashItemInfo>();
+            }
+
+            var results = CollectItems(Config.TreasureMap.SaleItems,
+                (x) => x.Item,
+                (x) => player.m_knownMaterial.Contains(x.m_shared.m_name));
+
+            return results;
         }
 
         public static IEnumerator SpawnTreasureChest(Heightmap.Biome biome, Player player, Action<bool, Vector3> callback)

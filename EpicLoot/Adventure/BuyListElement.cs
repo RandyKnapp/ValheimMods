@@ -12,13 +12,15 @@ namespace EpicLoot.Adventure
         public Image Icon;
         public Image MagicBG;
         public Text NameText;
-        public Text CostText;
+        public Text CoinsCostText;
+        public Text ForestTokenCostText;
         public Button Button;
         public UITooltip Tooltip;
 
         public SecretStashItemInfo ItemInfo;
         public ItemDrop.ItemData Item => ItemInfo?.Item;
-        public int Price => ItemInfo?.Cost ?? 0;
+        public int CoinsPrice => ItemInfo?.CoinsCost ?? 0;
+        public int ForestTokensPrice => ItemInfo?.ForestTokenCost ?? 0;
         public bool IsGamble => ItemInfo?.IsGamble ?? false;
         public bool CanAfford;
         public bool IsSelected => SelectedBackground != null && SelectedBackground.activeSelf;
@@ -36,7 +38,8 @@ namespace EpicLoot.Adventure
             Icon = transform.Find("Icon").GetComponent<Image>();
             MagicBG = transform.Find("MagicBG").GetComponent<Image>();
             NameText = transform.Find("Name").GetComponent<Text>();
-            CostText = transform.Find("Price/PriceElement/Amount").GetComponent<Text>();
+            CoinsCostText = transform.Find("Price/PriceElementCoins/Amount").GetComponent<Text>();
+            ForestTokenCostText = transform.Find("Price/PriceElementForestTokens/Amount").GetComponent<Text>();
 
             var iconMaterial = StoreGui.instance.m_listElement.transform.Find("icon").GetComponent<Image>().material;
             if (iconMaterial != null)
@@ -46,20 +49,28 @@ namespace EpicLoot.Adventure
             }
         }
 
-        public void SetItem(SecretStashItemInfo itemInfo, int currentCoins)
+        public void SetItem(SecretStashItemInfo itemInfo, int currentCoins, int currentPlayerForestTokens)
         {
             ItemInfo = itemInfo;
-            CanAfford = Price <= currentCoins;
+            CanAfford = CoinsPrice <= currentCoins && ForestTokensPrice <= currentPlayerForestTokens;
 
             Icon.sprite = Item.GetIcon();
             Icon.color = CanAfford ? Color.white : new Color(1.0f, 0.0f, 1.0f, 0.0f);
             NameText.text = Localization.instance.Localize(Item.GetDecoratedName(CanAfford ? null : "#AAA"));
             NameText.color = CanAfford ? Color.white : Color.gray;
-            CostText.text = Price.ToString();
+
+            CoinsCostText.text = CoinsPrice.ToString();
+            CoinsCostText.transform.parent.gameObject.SetActive(CoinsPrice > 0);
+
+            ForestTokenCostText.text = ForestTokensPrice.ToString();
+            ForestTokenCostText.transform.parent.gameObject.SetActive(ForestTokensPrice > 0);
+
             if (!CanAfford)
             {
-                CostText.color = Color.grey;
+                CoinsCostText.color = Color.grey;
+                ForestTokenCostText.color = Color.grey;
             }
+
             MagicBG.enabled = Item.UseMagicBackground();
             MagicBG.color = CanAfford ? Item.GetRarityColor() : new Color(1.0f, 0.0f, 1.0f, 0.0f);
 

@@ -8,6 +8,7 @@ namespace EpicLoot.Adventure
     {
         public string Item;
         public int CoinsCost;
+        public int ForestTokenCost;
     }
 
     [Serializable]
@@ -28,6 +29,7 @@ namespace EpicLoot.Adventure
     {
         public Heightmap.Biome Biome;
         public int Cost;
+        public int ForestTokens = 0;
         public float MinRadius;
         public float MaxRadius;
     }
@@ -41,6 +43,7 @@ namespace EpicLoot.Adventure
         public int IncreaseRadiusCount = 3;
         public float RadiusInterval = 500;
         public float MinimapAreaRadius = 100;
+        public List<SecretStashItemConfig> SaleItems = new List<SecretStashItemConfig>();
     }
 
     [Serializable]

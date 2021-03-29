@@ -30,6 +30,12 @@ namespace EpicLoot.Adventure
                 var items = LootRoller.RollLootTable(LootTableName, 1, LootTableName, transform.position);
                 items.ForEach(item => container.m_inventory.AddItem(item));
 
+                var biomeConfig = AdventureDataManager.Config.TreasureMap.BiomeInfo.Find(x => x.Biome == biome);
+                if (biomeConfig?.ForestTokens > 0)
+                {
+                    container.m_inventory.AddItem("ForestToken", biomeConfig.ForestTokens, 1, 0, 0, "");
+                }
+
                 container.Save();
             }
             else

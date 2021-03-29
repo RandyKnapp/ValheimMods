@@ -9,7 +9,9 @@ namespace EpicLoot.Adventure
         public GameObject SelectedBackground;
         public Image Icon;
         public Text NameText;
-        public Text CostText;
+        public GameObject PriceContainer;
+        public GameObject PurchasedLabel;
+        public Text CoinsCostText;
         public Button Button;
         public UITooltip Tooltip;
 
@@ -30,7 +32,11 @@ namespace EpicLoot.Adventure
             SelectedBackground.SetActive(false);
             Icon = transform.Find("Icon").GetComponent<Image>();
             NameText = transform.Find("Name").GetComponent<Text>();
-            CostText = transform.Find("Price/PriceElement/Amount").GetComponent<Text>();
+            PriceContainer = transform.Find("Price").gameObject;
+            PriceContainer.SetActive(true);
+            PurchasedLabel = transform.Find("Purchased").gameObject;
+            PurchasedLabel.SetActive(false);
+            CoinsCostText = transform.Find("Price/PriceElementCoins/Amount").GetComponent<Text>();
 
             var iconMaterial = StoreGui.instance.m_listElement.transform.Find("icon").GetComponent<Image>().material;
             if (iconMaterial != null)
@@ -50,14 +56,14 @@ namespace EpicLoot.Adventure
             Icon.color = (CanAfford && !AlreadyPurchased) ? Color.white : new Color(1.0f, 0.0f, 1.0f, 0.0f);
             NameText.text = displayName;
             NameText.color = (CanAfford && !AlreadyPurchased) ? Color.white : Color.gray;
-            CostText.text = AlreadyPurchased ? "purchased" : Price.ToString();
-            if (AlreadyPurchased)
+            PriceContainer.SetActive(!AlreadyPurchased);
+            PurchasedLabel.SetActive(AlreadyPurchased);
+
+            CoinsCostText.text = Price.ToString();
+            CoinsCostText.transform.parent.gameObject.SetActive(Price > 0);
+            if (!CanAfford)
             {
-                CostText.color = Color.green;
-            }
-            else if (!CanAfford)
-            {
-                CostText.color = Color.grey;
+                CoinsCostText.color = Color.grey;
             }
 
             Button.onClick.RemoveAllListeners();

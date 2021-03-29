@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 725832307
+CRC: 4085041781
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 9505fafa2397881c2015c7e502b399f2
+    Hash: 39a6465c91628c550d3df948e06983dc
   TypeTreeHash:
     serializedVersion: 2
     Hash: b3e4901cb5bbc76ca2ad45201119cae1
@@ -109,7 +109,7 @@ Assets:
 - Assets/EpicLoot/Prefabs/CraftingMaterials/EssenceRare.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/ShardEpic.prefab
 - Assets/EpicLoot/Sprites/Inventory/GenericSetItemMarker.png
-- Assets/EpicLoot/Sprites/MerchantPanel/TreasureMapIcon.png
+- Assets/EpicLoot/Sprites/Adventure/TreasureMapIcon.png
 - Assets/EpicLoot/Prefabs/CraftingMaterials/ShardLegendary.prefab
 - Assets/EpicLoot/Sounds/MagicItemDrop.wav
 - Assets/EpicLoot/Sprites/Inventory/LegendaryItemBg.png
@@ -120,16 +120,16 @@ Assets:
 - Assets/EpicLoot/Sounds/RareItemDrop.wav
 - Assets/EpicLoot/Sprites/Inventory/MagicItemBg.png
 - Assets/EpicLoot/Prefabs/LootBeams/EpicLootBeam.prefab
-- Assets/EpicLoot/Sprites/MerchantPanel/MapIconBounty.png
+- Assets/EpicLoot/Sprites/Adventure/MapIconBounty.png
 - Assets/EpicLoot/Sprites/Inventory/GenericItemBg.png
 - Assets/EpicLoot/Sprites/Inventory/SmallButtonEnchantOverlay.png
 - Assets/EpicLoot/Prefabs/CraftingMaterials/EssenceEpic.prefab
 - Assets/EpicLoot/Sprites/Inventory/EpicItemBg.png
 - Assets/EpicLoot/Prefabs/Equipment/SilverRing.prefab
-- Assets/EpicLoot/Sprites/MerchantPanel/BountyTokenGold.png
+- Assets/EpicLoot/Sprites/Adventure/BountyTokenGold.png
 - Assets/EpicLoot/Prefabs/CraftingMaterials/DustMagic.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/ReagentMagic.prefab
-- Assets/EpicLoot/Sprites/MerchantPanel/ForestToken.png
+- Assets/EpicLoot/Sprites/Adventure/ForestToken.png
 - Assets/EpicLoot/Prefabs/UI/MerchantPanel.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/ShardMagic.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/DustLegendary.prefab
@@ -147,7 +147,7 @@ Assets:
 - Assets/EpicLoot/Prefabs/Adventure/ForestToken.prefab
 - Assets/EpicLoot/Prefabs/StationExtensions/piece_enchanter.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/RunestoneLegendary.prefab
-- Assets/EpicLoot/Sprites/MerchantPanel/BountyTokenIron.png
+- Assets/EpicLoot/Sprites/Adventure/BountyTokenIron.png
 - Assets/EpicLoot/Prefabs/CraftingMaterials/EssenceLegendary.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/RunestoneEpic.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/ShardRare.prefab
