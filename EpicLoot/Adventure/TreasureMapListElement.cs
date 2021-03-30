@@ -20,7 +20,6 @@ namespace EpicLoot.Adventure
         public Heightmap.Biome Biome => ItemInfo?.Biome ?? Heightmap.Biome.None;
         public bool CanAfford;
         public bool AlreadyPurchased;
-        public bool IsSelected => SelectedBackground != null && SelectedBackground.activeSelf;
 
         public event Action<TreasureMapItemInfo> OnSelected;
 

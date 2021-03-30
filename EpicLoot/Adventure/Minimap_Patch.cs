@@ -9,13 +9,14 @@ namespace EpicLoot.Adventure
     [HarmonyPatch(typeof(Minimap))]
     public static class Minimap_Patch
     {
-        public class TreasureMapPins
+        public class AreaPinInfo
         {
             public Minimap.PinData Pin;
             public Minimap.PinData Area;
         }
 
-        public static Dictionary<Tuple<int, Heightmap.Biome>, TreasureMapPins> Pins = new Dictionary<Tuple<int, Heightmap.Biome>, TreasureMapPins>();
+        public static Dictionary<Tuple<int, Heightmap.Biome>, AreaPinInfo> TreasureMapPins = new Dictionary<Tuple<int, Heightmap.Biome>, AreaPinInfo>();
+        public static Dictionary<string, AreaPinInfo> BountyPins = new Dictionary<string, AreaPinInfo>();
 
         [HarmonyPatch("Awake")]
         [HarmonyPostfix]
@@ -48,25 +49,48 @@ namespace EpicLoot.Adventure
             }
 
             var unfoundTreasureChests = adventureSaveData.GetUnfoundTreasureChests();
-            var oldPins = Pins.Where(pinEntry => !unfoundTreasureChests.Exists(x => x.Interval == pinEntry.Key.Item1 && x.Biome == pinEntry.Key.Item2)).ToList();
+            var oldPins = TreasureMapPins.Where(pinEntry => !unfoundTreasureChests.Exists(x => x.Interval == pinEntry.Key.Item1 && x.Biome == pinEntry.Key.Item2)).ToList();
             foreach (var pinEntry in oldPins)
             {
                 __instance.RemovePin(pinEntry.Value.Pin);
                 __instance.RemovePin(pinEntry.Value.Area);
-                Pins.Remove(pinEntry.Key);
+                TreasureMapPins.Remove(pinEntry.Key);
             }
 
             foreach (var chestInfo in unfoundTreasureChests)
             {
                 var key = new Tuple<int, Heightmap.Biome>(chestInfo.Interval, chestInfo.Biome);
-                if (!Pins.ContainsKey(key))
+                if (!TreasureMapPins.ContainsKey(key))
                 {
                     var position = chestInfo.Position + chestInfo.MinimapCircleOffset;
                     var area = __instance.AddPin(position, Minimap.PinType.EventArea, string.Empty, false, false);
                     area.m_worldSize = AdventureDataManager.Config.TreasureMap.MinimapAreaRadius * 2;
                     var pin = __instance.AddPin(position, EpicLoot.TreasureMapPinType, $"Treasure Chest: {chestInfo.Biome}", false, false);
 
-                    Pins.Add(key, new TreasureMapPins(){ Pin = pin, Area = area });
+                    TreasureMapPins.Add(key, new AreaPinInfo(){ Pin = pin, Area = area });
+                }
+            }
+
+            var currentBounties = adventureSaveData.GetInProgressBounties();
+            var oldBountyPins = BountyPins.Where(pinEntry => !currentBounties.Exists(x => x.ID == pinEntry.Key)).ToList();
+            foreach (var pinEntry in oldBountyPins)
+            {
+                __instance.RemovePin(pinEntry.Value.Pin);
+                __instance.RemovePin(pinEntry.Value.Area);
+                BountyPins.Remove(pinEntry.Key);
+            }
+
+            foreach (var bounty in currentBounties)
+            {
+                var key = bounty.ID;
+                if (!BountyPins.ContainsKey(key))
+                {
+                    var position = bounty.Position + bounty.MinimapCircleOffset;
+                    var area = __instance.AddPin(position, Minimap.PinType.EventArea, string.Empty, false, false);
+                    area.m_worldSize = AdventureDataManager.Config.TreasureMap.MinimapAreaRadius * 2;
+                    var pin = __instance.AddPin(position, EpicLoot.BountyPinType, $"Bounty: {AdventureDataManager.GetMonsterName(bounty.MonsterID)}", false, false);
+
+                    BountyPins.Add(key, new AreaPinInfo() { Pin = pin, Area = area });
                 }
             }
         }

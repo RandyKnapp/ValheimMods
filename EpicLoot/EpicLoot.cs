@@ -277,6 +277,8 @@ namespace EpicLoot
             LoadItem(assetBundle, "GoldRubyRing");
 
             LoadItem(assetBundle, "ForestToken");
+            LoadItem(assetBundle, "IronBountyToken");
+            LoadItem(assetBundle, "GoldBountyToken");
         }
 
         private static void LoadItem(AssetBundle assetBundle, string assetName)

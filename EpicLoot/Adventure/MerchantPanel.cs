@@ -18,16 +18,17 @@ namespace EpicLoot.Adventure
         public Button TreasureMapBuyButton;
         public Text TreasureMapRefreshTime;
         public RectTransform AvailableBountiesList;
-        public BountyListElement AvailableBountyElementPrefab;
+        public BountyListElement BountyElementPrefab;
         public Button AcceptBountyButton;
         public RectTransform ClaimableBountiesList;
-        public BountyListElement ClaimableBountyElementPrefab;
         public Button ClaimBountyButton;
         public Text BountiesRefreshTime;
         public CraftSuccessDialog GambleSuccessDialog;
 
         public Text CoinsCount;
         public Text ForestTokensCount;
+        public Text IronBountyTokensCount;
+        public Text GoldBountyTokensCount;
 
         private int _currentSecretStashInterval = -1;
         private int _currentTreasureMapInterval = -1;
@@ -35,6 +36,11 @@ namespace EpicLoot.Adventure
         private int _selectedStashItemIndex = -1;
         private int _selectedTreasureMapItemIndex = -1;
         private int _currentPlayerForestTokens = -1;
+        private int _currentBountyInterval = -1;
+        private int _selectedBountyItemIndex = -1;
+        private int _selectedClaimBountyItemIndex = -1;
+        private int _currentIronBountyTokens = -1;
+        private int _currentGoldBountyTokens = -1;
 
         public void Awake()
         {
@@ -97,18 +103,29 @@ namespace EpicLoot.Adventure
             TreasureMapRefreshTime = transform.Find("TreasureMap/TimeLeft").GetComponent<Text>();
 
             AvailableBountiesList = transform.Find("Bounties/AvailableBountiesPanel/ItemList") as RectTransform;
-            AvailableBountyElementPrefab = transform.Find("Bounties/AvailableBountiesPanel/ItemElement").gameObject.AddComponent<BountyListElement>();
-            AvailableBountyElementPrefab.gameObject.SetActive(false);
+            BountyElementPrefab = transform.Find("Bounties/AvailableBountiesPanel/ItemElement").gameObject.AddComponent<BountyListElement>();
+            BountyElementPrefab.gameObject.SetActive(false);
             AcceptBountyButton = transform.Find("Bounties/AcceptBountyButton").GetComponent<Button>();
+            AcceptBountyButton.onClick.AddListener(OnAcceptBountyButtonPressed);
 
             ClaimableBountiesList = transform.Find("Bounties/ClaimableBountiesPanel/ItemList") as RectTransform;
-            ClaimableBountyElementPrefab = transform.Find("Bounties/ClaimableBountiesPanel/ItemElement").gameObject.AddComponent<BountyListElement>();
-            ClaimableBountyElementPrefab.gameObject.SetActive(false);
             ClaimBountyButton = transform.Find("Bounties/ClaimBountyButton").GetComponent<Button>();
+            ClaimBountyButton.onClick.AddListener(OnClaimBountyButtonPressed);
             BountiesRefreshTime = transform.Find("Bounties/TimeLeft").GetComponent<Text>();
 
             CoinsCount = transform.Find("Currencies/CoinsCount").GetComponent<Text>();
             ForestTokensCount = transform.Find("Currencies/ForestTokensCount").GetComponent<Text>();
+            IronBountyTokensCount = transform.Find("Currencies/BountyTokensIronCount").GetComponent<Text>();
+            GoldBountyTokensCount = transform.Find("Currencies/BountyTokensGoldCount").GetComponent<Text>();
+        }
+
+        public void OnEnable()
+        {
+            UpdateCurrencies();
+
+            RefreshSecretStashItems();
+            RefreshTreasureMapItems();
+            RefreshBounties();
         }
 
         private void OnSecretStashBuyButtonPressed()
@@ -208,6 +225,50 @@ namespace EpicLoot.Adventure
             return item.CanAfford;
         }
 
+        private void OnAcceptBountyButtonPressed()
+        {
+            var player = Player.m_localPlayer;
+            if (player == null)
+            {
+                return;
+            }
+
+            var bounty = GetSelectedAvailableBounty();
+            if (bounty != null && bounty.BountyInfo.State == BountyState.Available)
+            {
+                player.StartCoroutine(AdventureDataManager.AcceptBounty(player, bounty.BountyInfo, (success, position) =>
+                {
+                    if (success)
+                    {
+                        RefreshBounties();
+
+                        StoreGui.instance.m_trader.OnBought(null);
+                        StoreGui.instance.m_buyEffects.Create(player.transform.position, Quaternion.identity);
+                    }
+                }));
+            }
+        }
+
+        private void OnClaimBountyButtonPressed()
+        {
+            var player = Player.m_localPlayer;
+            if (player == null)
+            {
+                return;
+            }
+
+            var bounty = GetSelectedClaimableBounty();
+            if (bounty != null && bounty.BountyInfo.State == BountyState.Complete)
+            {
+                AdventureDataManager.ClaimBountyReward(bounty.BountyInfo);
+
+                RefreshBounties();
+
+                StoreGui.instance.m_trader.OnBought(null);
+                StoreGui.instance.m_buyEffects.Create(player.transform.position, Quaternion.identity);
+            }
+        }
+
         private static string GetRefreshTimeTooltip(int refreshInterval)
         {
             return $"<color=lightblue>Every {(refreshInterval > 1 ? $"{refreshInterval} " : "")}in-game day{(refreshInterval > 1 ? "s" : "")}</color>";
@@ -216,20 +277,27 @@ namespace EpicLoot.Adventure
         public void Update()
         {
             UpdateRefreshTime();
-            UpdateCurrencies();
+            var needsRefresh = UpdateCurrencies();
 
             var secretStashInterval = AdventureDataManager.GetCurrentSecretStashInterval();
-            if (_currentSecretStashInterval != secretStashInterval)
+            if (needsRefresh || _currentSecretStashInterval != secretStashInterval)
             {
                 _currentSecretStashInterval = secretStashInterval;
                 RefreshSecretStashItems();
             }
 
             var treasureMapInterval = AdventureDataManager.GetCurrentTreasureMapInterval();
-            if (_currentTreasureMapInterval != treasureMapInterval)
+            if (needsRefresh || _currentTreasureMapInterval != treasureMapInterval)
             {
                 _currentTreasureMapInterval = treasureMapInterval;
                 RefreshTreasureMapItems();
+            }
+
+            var bountyInterval = AdventureDataManager.GetCurrentBountiesInterval();
+            if (_currentBountyInterval != bountyInterval)
+            {
+                _currentBountyInterval = bountyInterval;
+                RefreshBounties();
             }
 
             RefreshBuyButtons();
@@ -250,6 +318,12 @@ namespace EpicLoot.Adventure
                 var selectedTreasureMapPurchase = GetSelectedItem<BuyListElement>(TreasureMapList, _selectedTreasureMapItemIndex);
                 TreasureMapBuyButton.interactable = selectedTreasureMapPurchase != null && selectedTreasureMapPurchase.CanAfford;
             }
+
+            var selectedAvailableBounty = GetSelectedAvailableBounty();
+            AcceptBountyButton.interactable = selectedAvailableBounty != null && selectedAvailableBounty.CanAccept;
+
+            var selectedClaimableBounty = GetSelectedClaimableBounty();
+            ClaimBountyButton.interactable = selectedClaimableBounty != null && selectedClaimableBounty.CanClaim;
         }
 
         private BuyListElement GetSelectedStashItem()
@@ -260,6 +334,16 @@ namespace EpicLoot.Adventure
         private TreasureMapListElement GetSelectedTreasureMapItem()
         {
             return GetSelectedItem<TreasureMapListElement>(TreasureMapList, _selectedTreasureMapItemIndex);
+        }
+
+        private BountyListElement GetSelectedAvailableBounty()
+        {
+            return GetSelectedItem<BountyListElement>(AvailableBountiesList, _selectedBountyItemIndex);
+        }
+
+        private BountyListElement GetSelectedClaimableBounty()
+        {
+            return GetSelectedItem<BountyListElement>(ClaimableBountiesList, _selectedClaimBountyItemIndex);
         }
 
         private T GetSelectedItem<T>(RectTransform list, int selectedIndex) where T : Component
@@ -283,7 +367,7 @@ namespace EpicLoot.Adventure
             BountiesRefreshTime.text = ConvertSecondsToDisplayTime(AdventureDataManager.GetSecondsUntilBountiesRefresh());
         }
 
-        private void UpdateCurrencies()
+        private bool UpdateCurrencies()
         {
             var player = Player.m_localPlayer;
             var inventory = player.GetInventory();
@@ -305,21 +389,41 @@ namespace EpicLoot.Adventure
                 needsRefresh = true;
             }
 
-            if (needsRefresh)
+            var newIronBountyTokenCount = inventory.CountItems(GetIronBountyTokenName());
+            if (newIronBountyTokenCount != _currentIronBountyTokens)
             {
-                RefreshSecretStashItems();
-                RefreshTreasureMapItems();
+                _currentIronBountyTokens = newIronBountyTokenCount;
+                IronBountyTokensCount.text = _currentIronBountyTokens.ToString();
             }
+
+            var newGoldBountyTokenCount = inventory.CountItems(GetGoldBountyTokenName());
+            if (newGoldBountyTokenCount != _currentGoldBountyTokens)
+            {
+                _currentGoldBountyTokens = newGoldBountyTokenCount;
+                GoldBountyTokensCount.text = _currentGoldBountyTokens.ToString();
+            }
+
+            return needsRefresh;
         }
 
-        private static string GetCoinsName()
+        public static string GetCoinsName()
         {
             return ObjectDB.instance.GetItemPrefab("Coins").GetComponent<ItemDrop>().m_itemData.m_shared.m_name;
         }
 
-        private static string GetForestTokenName()
+        public static string GetForestTokenName()
         {
             return ObjectDB.instance.GetItemPrefab("ForestToken").GetComponent<ItemDrop>().m_itemData.m_shared.m_name;
+        }
+
+        public static string GetIronBountyTokenName()
+        {
+            return ObjectDB.instance.GetItemPrefab("IronBountyToken").GetComponent<ItemDrop>().m_itemData.m_shared.m_name;
+        }
+
+        public static string GetGoldBountyTokenName()
+        {
+            return ObjectDB.instance.GetItemPrefab("GoldBountyToken").GetComponent<ItemDrop>().m_itemData.m_shared.m_name;
         }
 
         private static string ConvertSecondsToDisplayTime(int seconds)
@@ -427,6 +531,60 @@ namespace EpicLoot.Adventure
                 {
                     item.SetSelected(selected);
                 }
+            }
+        }
+
+        private void RefreshBounties()
+        {
+            _currentBountyInterval = AdventureDataManager.GetCurrentBountiesInterval();
+
+            DestroyAllActiveListElementsInList(AvailableBountiesList);
+            DestroyAllActiveListElementsInList(ClaimableBountiesList);
+
+            var availableBounties = AdventureDataManager.GetAvailableBounties();
+            for (int index = 0; index < availableBounties.Count; index++)
+            {
+                var itemInfo = availableBounties[index];
+                var itemElement = Instantiate(BountyElementPrefab, AvailableBountiesList);
+                itemElement.gameObject.SetActive(true);
+                itemElement.SetItem(itemInfo);
+                var i = index;
+                itemElement.OnSelected += (x) => OnAvailableBountyItemSelected(i);
+                itemElement.SetSelected(i == _selectedBountyItemIndex);
+            }
+
+            var claimableBounties = AdventureDataManager.GetClaimableBounties();
+            for (int index = 0; index < claimableBounties.Count; index++)
+            {
+                var itemInfo = claimableBounties[index];
+                var itemElement = Instantiate(BountyElementPrefab, ClaimableBountiesList);
+                itemElement.gameObject.SetActive(true);
+                itemElement.SetItem(itemInfo);
+                var i = index;
+                itemElement.OnSelected += (x) => OnClaimableBountyItemSelected(i);
+                itemElement.SetSelected(i == _selectedClaimBountyItemIndex);
+            }
+        }
+
+        private void OnAvailableBountyItemSelected(int index)
+        {
+            _selectedBountyItemIndex = index;
+
+            for (int i = 0; i < AvailableBountiesList.childCount; i++)
+            {
+                var child = AvailableBountiesList.GetChild(i).GetComponent<BountyListElement>();
+                child.SetSelected(i == _selectedBountyItemIndex);
+            }
+        }
+
+        private void OnClaimableBountyItemSelected(int index)
+        {
+            _selectedClaimBountyItemIndex = index;
+
+            for (int i = 0; i < ClaimableBountiesList.childCount; i++)
+            {
+                var child = ClaimableBountiesList.GetChild(i).GetComponent<BountyListElement>();
+                child.SetSelected(i == _selectedClaimBountyItemIndex);
             }
         }
 

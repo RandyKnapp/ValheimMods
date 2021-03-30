@@ -45,6 +45,7 @@ namespace EpicLoot.Adventure
         public const int BountiesRefreshInterval = 4;
 
         public static AdventureDataConfig Config;
+        private static readonly Dictionary<string, Sprite> _cachedTrophySprites = new Dictionary<string, Sprite>();
 
         public static void Initialize(AdventureDataConfig config)
         {
@@ -249,6 +250,11 @@ namespace EpicLoot.Adventure
             return GetRandomForInterval(GetCurrentSecretStashInterval());
         }
 
+        private static Random GetRandomForBounties()
+        {
+            return GetRandomForInterval(GetCurrentBountiesInterval());
+        }
+
         public static ItemDrop.ItemData GenerateGambleItem(SecretStashItemInfo itemInfo)
         {
             var gambleRarity = Config.SecretStash.GambleRarityChance;
@@ -339,6 +345,21 @@ namespace EpicLoot.Adventure
         {
             player.Message(MessageHud.MessageType.Center, "Preparing Treasure Map...");
             var saveData = player.GetAdventureSaveData();
+            yield return GetRandomPointInBiome(biome, saveData, (success, spawnPoint, normal) =>
+            {
+                if (success)
+                {
+                    CreateTreasureChest(biome, player, spawnPoint, normal, saveData, callback);
+                }
+                else
+                {
+                    callback?.Invoke(false, Vector3.zero);
+                }
+            });
+        }
+
+        private static IEnumerator GetRandomPointInBiome(Heightmap.Biome biome, AdventureSaveData saveData, Action<bool, Vector3, Vector3> onComplete)
+        {
             var rangeTries = 0;
             var radiusRange = GetTreasureMapSpawnRadiusRange(biome, saveData);
             while (rangeTries < 10)
@@ -372,7 +393,7 @@ namespace EpicLoot.Adventure
                         // Wrong biome
                         continue;
                     }
-                    
+
                     var waterLevel = ZoneSystem.instance.m_waterLevel;
                     var groundHeight = spawnPoint.y;
                     if (waterLevel > groundHeight + 1.0f)
@@ -383,25 +404,28 @@ namespace EpicLoot.Adventure
 
                     Debug.LogWarning($"Success! (ground={groundHeight} water={waterLevel} placed={spawnPoint.y})");
 
-                    const string treasureChestPrefabName = "piece_chest_wood";
-                    var treasureChestPrefab = ZNetScene.instance.GetPrefab(treasureChestPrefabName);
-                    var treasureChestObject = Object.Instantiate(treasureChestPrefab, spawnPoint, Quaternion.FromToRotation(Vector3.up, normal));
-                    var treasureChest = treasureChestObject.AddComponent<TreasureMapChest>();
-                    treasureChest.Setup(player, biome, GetCurrentTreasureMapInterval());
-
-                    var offset2 = UnityEngine.Random.insideUnitCircle * Config.TreasureMap.MinimapAreaRadius;
-                    var offset = new Vector3(offset2.x, 0, offset2.y);
-                    saveData.PurchasedTreasureMap(GetCurrentTreasureMapInterval(), biome, spawnPoint, offset);
-                    Minimap.instance.ShowPointOnMap(spawnPoint + offset);
-
-                    callback?.Invoke(true, spawnPoint);
+                    onComplete?.Invoke(true, spawnPoint, normal);
                     yield break;
                 }
 
                 radiusRange = new Tuple<float, float>(radiusRange.Item1 + 500, radiusRange.Item2 + 500);
             }
+        }
 
-            callback?.Invoke(false, Vector3.zero);
+        private static void CreateTreasureChest(Heightmap.Biome biome, Player player, Vector3 spawnPoint, Vector3 normal, AdventureSaveData saveData, Action<bool, Vector3> callback)
+        {
+            const string treasureChestPrefabName = "piece_chest_wood";
+            var treasureChestPrefab = ZNetScene.instance.GetPrefab(treasureChestPrefabName);
+            var treasureChestObject = Object.Instantiate(treasureChestPrefab, spawnPoint, Quaternion.FromToRotation(Vector3.up, normal));
+            var treasureChest = treasureChestObject.AddComponent<TreasureMapChest>();
+            treasureChest.Setup(player, biome, GetCurrentTreasureMapInterval());
+
+            var offset2 = UnityEngine.Random.insideUnitCircle * Config.TreasureMap.MinimapAreaRadius;
+            var offset = new Vector3(offset2.x, 0, offset2.y);
+            saveData.PurchasedTreasureMap(GetCurrentTreasureMapInterval(), biome, spawnPoint, offset);
+            Minimap.instance.ShowPointOnMap(spawnPoint + offset);
+
+            callback?.Invoke(true, spawnPoint);
         }
 
         private static Tuple<float, float> GetTreasureMapSpawnRadiusRange(Heightmap.Biome biome, AdventureSaveData saveData)
@@ -418,6 +442,220 @@ namespace EpicLoot.Adventure
         private static TreasureMapBiomeInfoConfig GetBiomeInfoConfig(Heightmap.Biome biome)
         {
             return Config.TreasureMap.BiomeInfo.Find(x => x.Biome == biome);
+        }
+
+        public static List<BountyInfo> GetAvailableBounties()
+        {
+            var player = Player.m_localPlayer;
+            var interval = GetCurrentBountiesInterval();
+            var random = GetRandomForBounties();
+
+            var bountiesPerBiome = new MultiValueDictionary<Heightmap.Biome, BountyTargetConfig>();
+            foreach (var targetConfig in Config.Bounties.Targets)
+            {
+                bountiesPerBiome.Add(targetConfig.Biome, targetConfig);
+            }
+
+            var selectedTargets = new List<BountyTargetConfig>();
+            foreach (var entry in bountiesPerBiome)
+            {
+                var targets = entry.Value;
+                RollOnListNTimes(random, targets, 1, selectedTargets);
+            }
+
+            // Remove the results that the player doesn't know about yet
+            selectedTargets.RemoveAll(result => !player.m_knownBiome.Contains(result.Biome));
+            var saveData = player.GetAdventureSaveData();
+
+            var results = selectedTargets.Select(targetConfig => new BountyInfo()
+                {
+                    Biome = targetConfig.Biome,
+                    Interval = interval,
+                    MonsterID = targetConfig.TargetID,
+                    RewardIron = targetConfig.RewardIron,
+                    RewardGold = targetConfig.RewardGold,
+                    Adds = targetConfig.Adds.ToList()
+                })
+                .ToList();
+
+            results.RemoveAll(x => saveData.HasAcceptedBounty(x.Interval, x.ID));
+
+            return results;
+        }
+
+        public static List<BountyInfo> GetClaimableBounties()
+        {
+            var results = new List<BountyInfo>();
+
+            var saveData = Player.m_localPlayer?.GetAdventureSaveData();
+            if (saveData == null)
+            {
+                return results;
+            }
+
+            return saveData.GetClaimableBounties().Concat(saveData.GetInProgressBounties()).ToList();
+        }
+
+        public static Sprite GetTrophyIconForMonster(string monsterID)
+        {
+            if (_cachedTrophySprites.TryGetValue(monsterID, out var sprite))
+            {
+                return sprite;
+            }
+
+            if (ZNetScene.instance == null)
+            {
+                return null;
+            }
+
+            var prefab = ZNetScene.instance.GetPrefab(monsterID);
+            if (prefab != null)
+            {
+                var character = prefab.GetComponent<Character>();
+                if (character != null)
+                {
+                    var characterDrop = prefab.GetComponent<CharacterDrop>();
+                    if (characterDrop != null)
+                    {
+                        var drops = characterDrop.m_drops.Select(x => x.m_prefab.GetComponent<ItemDrop>());
+                        var trophyPrefab = drops.FirstOrDefault(x => x.m_itemData.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Trophie);
+                        if (trophyPrefab != null)
+                        {
+                            return trophyPrefab.m_itemData.GetIcon();
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        public static IEnumerator AcceptBounty(Player player, BountyInfo bounty, Action<bool, Vector3> callback)
+        {
+            player.Message(MessageHud.MessageType.Center, "Finding Worthy Target...");
+            var saveData = player.GetAdventureSaveData();
+            yield return GetRandomPointInBiome(bounty.Biome, saveData, (success, spawnPoint, _) =>
+            {
+                if (success)
+                {
+                    var offset2 = UnityEngine.Random.insideUnitCircle * Config.TreasureMap.MinimapAreaRadius;
+                    var offset = new Vector3(offset2.x, 0, offset2.y);
+                    saveData.AcceptedBounty(bounty, spawnPoint, offset);
+                    player.SaveAdventureSaveData();
+
+                    // Spawn Monster
+                    SpawnBountyTargets(bounty, spawnPoint, offset);
+                }
+                else
+                {
+                    callback?.Invoke(false, Vector3.zero);
+                }
+            });
+        }
+
+        public static string GetMonsterName(string monsterID)
+        {
+            var monsterPrefab = ZNetScene.instance.GetPrefab(monsterID);
+            return monsterPrefab?.GetComponent<Character>()?.m_name ?? monsterID;
+        }
+
+        private static void SpawnBountyTargets(BountyInfo bounty, Vector3 spawnPoint, Vector3 offset)
+        {
+            var prefabNames = new List<string>() {bounty.MonsterID};
+            foreach (var addConfig in bounty.Adds)
+            {
+                for (var i = 0; i < addConfig.Count; i++)
+                {
+                    prefabNames.Add(addConfig.ID);
+                }
+            }
+
+            foreach (var prefabName in prefabNames)
+            {
+                var prefab = ZNetScene.instance.GetPrefab(prefabName);
+                var creature = Object.Instantiate(prefab, spawnPoint, Quaternion.identity);
+                // TODO: Level
+                // TODO: Custom Name
+                // TODO: Custom effects
+                var bountyTarget = creature.AddComponent<BountyTarget>();
+                bountyTarget.Setup(bounty, prefabName);
+
+                var randomSpacing = UnityEngine.Random.insideUnitSphere * 3;
+                spawnPoint += randomSpacing;
+                ZoneSystem.instance.FindFloor(spawnPoint, out var floorHeight);
+                spawnPoint.y = floorHeight;
+            }
+
+            Minimap.instance.ShowPointOnMap(spawnPoint + offset);
+        }
+
+        public static void SlayBountyTarget(BountyInfo bountyInfo, string monsterID)
+        {
+            var player = Player.m_localPlayer;
+            if (player == null)
+            {
+                return;
+            }
+
+            var saveData = player.GetAdventureSaveData();
+            if (!saveData.HasAcceptedBounty(bountyInfo.Interval, bountyInfo.ID) || bountyInfo.State != BountyState.InProgress)
+            {
+                return;
+            }
+
+            if (bountyInfo.MonsterID == monsterID)
+            {
+                bountyInfo.Slain = true;
+                player.SaveAdventureSaveData();
+            }
+
+            foreach (var addConfig in bountyInfo.Adds)
+            {
+                if (addConfig.ID == monsterID && addConfig.Count > 0)
+                {
+                    addConfig.Count--;
+                    player.SaveAdventureSaveData();
+                    break;
+                }
+            }
+
+            var isComplete = bountyInfo.Slain && bountyInfo.Adds.Sum(x => x.Count) == 0;
+            if (isComplete)
+            {
+                MessageHud.instance.ShowBiomeFoundMsg("Bounty Vanquished!", true);
+                bountyInfo.State = BountyState.Complete;
+                player.SaveAdventureSaveData();
+            }
+        }
+
+        public static void ClaimBountyReward(BountyInfo bountyInfo)
+        {
+            var player = Player.m_localPlayer;
+            if (player == null)
+            {
+                return;
+            }
+
+            var saveData = player.GetAdventureSaveData();
+            if (!saveData.HasAcceptedBounty(bountyInfo.Interval, bountyInfo.ID) || bountyInfo.State != BountyState.Complete)
+            {
+                return;
+            }
+
+            bountyInfo.State = BountyState.Claimed;
+            player.SaveAdventureSaveData();
+
+            MessageHud.instance.ShowBiomeFoundMsg("Bounty Claimed!", true);
+
+            var inventory = player.GetInventory();
+            if (bountyInfo.RewardIron > 0)
+            {
+                inventory.AddItem("IronBountyToken", bountyInfo.RewardIron, 1, 0, 0, string.Empty);
+            }
+            if (bountyInfo.RewardGold > 0)
+            {
+                inventory.AddItem("GoldBountyToken", bountyInfo.RewardGold, 1, 0, 0, string.Empty);
+            }
         }
     }
 }

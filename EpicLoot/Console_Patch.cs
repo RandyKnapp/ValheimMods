@@ -68,9 +68,15 @@ namespace EpicLoot
             {
                 var player = Player.m_localPlayer;
                 var saveData = player.GetAdventureSaveData();
-                saveData.PurchasedTreasureMaps.Clear();
-                saveData.FoundTreasureMapChests.Clear();
+                saveData.TreasureMaps.Clear();
                 saveData.NumberOfTreasureMapsStarted = 0;
+                player.SaveAdventureSaveData();
+            }
+            else if (command.Equals("resetbounties", StringComparison.InvariantCultureIgnoreCase))
+            {
+                var player = Player.m_localPlayer;
+                var saveData = player.GetAdventureSaveData();
+                saveData.Bounties.Clear();
                 player.SaveAdventureSaveData();
             }
 

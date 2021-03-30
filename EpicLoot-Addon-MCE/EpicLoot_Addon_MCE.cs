@@ -84,7 +84,6 @@ namespace EpicLoot_Addon_MCE
             public static void Postfix()
             {
                 // This resets EpicLoot to using its local config when starting a local game
-                EpicLoot.EpicLoot.LogError("ZNet Start");
                 if (ConfigManager.ShouldUseLocalConfig)
                 {
                     EpicLoot.EpicLoot.InitializeConfig();

@@ -157,5 +157,13 @@
       { "Item": "RunestoneEpic",      "ForestTokenCost": 15 },
       { "Item": "RunestoneLegendary", "ForestTokenCost": 20 }
     ] 
-  }
+  },
+  "Bounties": {
+    "Targets": [
+      { "Biome": "Meadows",     "TargetID": "Deer",             "RewardGold": 0, "RewardIron": 1  },
+      { "Biome": "BlackForest", "TargetID": "Greydwarf",        "RewardGold": 0, "RewardIron": 1  },
+      { "Biome": "BlackForest", "TargetID": "Greydwarf_Elite",  "RewardGold": 1, "RewardIron": 0  },
+      { "Biome": "BlackForest", "TargetID": "Greydwarf_Shaman", "RewardGold": 1, "RewardIron": 2, "Adds": [ { "ID": "Greydwarf", "Count": 3 } ] }
+    ]
+  } 
 }

@@ -23,7 +23,6 @@ namespace EpicLoot.Adventure
         public int ForestTokensPrice => ItemInfo?.ForestTokenCost ?? 0;
         public bool IsGamble => ItemInfo?.IsGamble ?? false;
         public bool CanAfford;
-        public bool IsSelected => SelectedBackground != null && SelectedBackground.activeSelf;
 
         public event Action<SecretStashItemInfo> OnSelected;
 

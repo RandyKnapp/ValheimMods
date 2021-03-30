@@ -47,8 +47,26 @@ namespace EpicLoot.Adventure
     }
 
     [Serializable]
+    public class BountyTargetAddConfig
+    {
+        public string ID;
+        public int Count;
+    }
+
+    [Serializable]
+    public class BountyTargetConfig
+    {
+        public Heightmap.Biome Biome;
+        public string TargetID;
+        public int RewardGold;
+        public int RewardIron;
+        public List<BountyTargetAddConfig> Adds = new List<BountyTargetAddConfig>();
+    }
+
+    [Serializable]
     public class BountiesConfig
     {
+        public List<BountyTargetConfig> Targets = new List<BountyTargetConfig>();
     }
 
     [Serializable]

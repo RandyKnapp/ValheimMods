@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 4085041781
+CRC: 453225722
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 39a6465c91628c550d3df948e06983dc
+    Hash: f7ca8abc1b8a8c7efe788716ba0c3699
   TypeTreeHash:
     serializedVersion: 2
     Hash: b3e4901cb5bbc76ca2ad45201119cae1
@@ -135,11 +135,13 @@ Assets:
 - Assets/EpicLoot/Prefabs/CraftingMaterials/DustLegendary.prefab
 - Assets/EpicLoot/Sounds/Disenchant.wav
 - Assets/EpicLoot/Prefabs/LootBeams/MagicLootBeam.prefab
+- Assets/EpicLoot/Prefabs/Adventure/IronBountyToken.prefab
 - Assets/EpicLoot/Sounds/AugmentItem.wav
 - Assets/EpicLoot/Sounds/ItemLoop.wav
 - Assets/EpicLoot/Sounds/LegendaryItemDrop.wav
 - Assets/EpicLoot/Prefabs/LootBeams/LegendaryLootBeam.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/RunestoneMagic.prefab
+- Assets/EpicLoot/Prefabs/Adventure/GoldBountyToken.prefab
 - Assets/EpicLoot/Sprites/Inventory/RareItemBg.png
 - Assets/EpicLoot/Prefabs/CraftingMaterials/ReagentEpic.prefab
 - Assets/EpicLoot/Sprites/Inventory/Equipped.png
