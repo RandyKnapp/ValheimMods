@@ -1,11 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using Common;
 using EpicLoot.Adventure;
+using EpicLoot.Adventure.Feature;
 using EpicLoot.Crafting;
 using HarmonyLib;
 using UnityEngine;
+using Random = System.Random;
 
 namespace EpicLoot
 {
@@ -60,16 +61,16 @@ namespace EpicLoot
                 var overrideTreasureMapCount = (args.Length >= 3) ? int.Parse(args[2]) : -1;
                 if (overrideTreasureMapCount >= 0)
                 {
-                    player.GetAdventureSaveData().NumberOfTreasureMapsStarted = overrideTreasureMapCount;
+                    player.GetAdventureSaveData().NumberOfTreasureMapsOrBountiesStarted = overrideTreasureMapCount;
                 }
-                player.StartCoroutine(AdventureDataManager.SpawnTreasureChest(biome, player, OnSpawnTreasureChestResult));
+                player.StartCoroutine(AdventureDataManager.TreasureMaps.SpawnTreasureChest(biome, player, OnSpawnTreasureChestResult));
             }
             else if (command.Equals("resettreasuremap", StringComparison.InvariantCultureIgnoreCase))
             {
                 var player = Player.m_localPlayer;
                 var saveData = player.GetAdventureSaveData();
                 saveData.TreasureMaps.Clear();
-                saveData.NumberOfTreasureMapsStarted = 0;
+                saveData.NumberOfTreasureMapsOrBountiesStarted = 0;
                 player.SaveAdventureSaveData();
             }
             else if (command.Equals("resetbounties", StringComparison.InvariantCultureIgnoreCase))
@@ -78,6 +79,16 @@ namespace EpicLoot
                 var saveData = player.GetAdventureSaveData();
                 saveData.Bounties.Clear();
                 player.SaveAdventureSaveData();
+            }
+            else if (command.Equals("testbountynames", StringComparison.InvariantCultureIgnoreCase))
+            {
+                var random = new Random();
+                var count = (args.Length >= 2) ? int.Parse(args[1]) : 10;
+                for (var i = 0; i < count; ++i)
+                {
+                    var name = BountiesAdventureFeature.GenerateTargetName(random);
+                    __instance.AddString(name);
+                }
             }
 
             return true;
@@ -126,7 +137,6 @@ namespace EpicLoot
 
             __instance.AddString($"magicitem - rarity:{rarityArg}, item:{itemArg}, count:{count}");
 
-            var items = new List<GameObject>();
             var allItemNames = ObjectDB.instance.m_items
                 .Where(x => EpicLoot.CanBeMagicItem(x.GetComponent<ItemDrop>().m_itemData))
                 .Where(x => x.name != "HelmetDverger" && x.name != "BeltStrength" && x.name != "Wishbone")
@@ -190,7 +200,7 @@ namespace EpicLoot
 
                 var randomOffset = UnityEngine.Random.insideUnitSphere;
                 var dropPoint = Player.m_localPlayer.transform.position + Player.m_localPlayer.transform.forward * 3 + Vector3.up * 1.5f + randomOffset;
-                items.AddRange(LootRoller.RollLootTableAndSpawnObjects(loot, 1, loot.Object, dropPoint));
+                LootRoller.RollLootTableAndSpawnObjects(loot, 1, loot.Object, dropPoint);
             }
             LootRoller.CheatEffectCount = -1;
         }

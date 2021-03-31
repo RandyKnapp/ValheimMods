@@ -100,7 +100,18 @@
   <ItemGroup>
     <Compile Include="Adventure\AdventureComponent.cs" />
     <Compile Include="Adventure\AdventureSaveData.cs" />
+    <Compile Include="Adventure\BaseMerchantPanelListElement.cs" />
     <Compile Include="Adventure\BountyTarget.cs" />
+    <Compile Include="Adventure\Feature\AdventureFeature.cs" />
+    <Compile Include="Adventure\Feature\Bounties.cs" />
+    <Compile Include="Adventure\Feature\BountiesListPanel.cs" />
+    <Compile Include="Adventure\Feature\Gamble.cs" />
+    <Compile Include="Adventure\Feature\GambleListPanel.cs" />
+    <Compile Include="Adventure\Feature\MerchantListPanel.cs" />
+    <Compile Include="Adventure\Feature\SecretStash.cs" />
+    <Compile Include="Adventure\Feature\SecretStashListPanel.cs" />
+    <Compile Include="Adventure\Feature\TreasureMapListPanel.cs" />
+    <Compile Include="Adventure\Feature\TreasureMaps.cs" />
     <Compile Include="Adventure\MessageHud_Patch.cs" />
     <Compile Include="Adventure\Minimap_Patch.cs" />
     <Compile Include="Adventure\PlayerExtensions.cs" />

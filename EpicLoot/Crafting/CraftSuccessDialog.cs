@@ -38,7 +38,7 @@ namespace EpicLoot.Crafting
         {
             gameObject.SetActive(true);
 
-            var rarityColor = item.GetRarityColor();
+            var rarityColor = item.IsMagic() ? item.GetRarityColor() : Color.white;
             
             MagicBG.enabled = item.IsMagic();
             MagicBG.color = rarityColor;
@@ -47,7 +47,10 @@ namespace EpicLoot.Crafting
             Description.text = Localization.instance.Localize(item.GetTooltip());
             Icon.sprite = item.GetIcon();
 
-            _audioSource.PlayOneShot(EpicLoot.GetMagicItemDropSFX(item.GetRarity()));
+            if (item.IsMagic())
+            {
+                _audioSource.PlayOneShot(EpicLoot.GetMagicItemDropSFX(item.GetRarity()));
+            }
         }
 
         public void OnClose()

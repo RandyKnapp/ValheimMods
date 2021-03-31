@@ -1,28 +1,25 @@
 ﻿using System;
 using System.Linq;
 using System.Text;
+using EpicLoot.Adventure.Feature;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace EpicLoot.Adventure
 {
-    public class BuyListElement : MonoBehaviour
+    public class BuyListElement : BaseMerchantPanelListElement<SecretStashItemInfo>
     {
-        public GameObject SelectedBackground;
         public Image Icon;
         public Image MagicBG;
         public Text NameText;
         public Text CoinsCostText;
         public Text ForestTokenCostText;
+        public Text IronBountyTokenCostText;
+        public Text GoldBountyTokenCostText;
         public Button Button;
         public UITooltip Tooltip;
 
         public SecretStashItemInfo ItemInfo;
-        public ItemDrop.ItemData Item => ItemInfo?.Item;
-        public int CoinsPrice => ItemInfo?.CoinsCost ?? 0;
-        public int ForestTokensPrice => ItemInfo?.ForestTokenCost ?? 0;
-        public bool IsGamble => ItemInfo?.IsGamble ?? false;
-        public bool CanAfford;
 
         public event Action<SecretStashItemInfo> OnSelected;
 
@@ -37,8 +34,10 @@ namespace EpicLoot.Adventure
             Icon = transform.Find("Icon").GetComponent<Image>();
             MagicBG = transform.Find("MagicBG").GetComponent<Image>();
             NameText = transform.Find("Name").GetComponent<Text>();
-            CoinsCostText = transform.Find("Price/PriceElementCoins/Amount").GetComponent<Text>();
-            ForestTokenCostText = transform.Find("Price/PriceElementForestTokens/Amount").GetComponent<Text>();
+            CoinsCostText = transform.Find("Price/Coins/Amount").GetComponent<Text>();
+            ForestTokenCostText = transform.Find("Price/ForestTokens/Amount").GetComponent<Text>();
+            IronBountyTokenCostText = transform.Find("Price/IronBountyToken/Amount").GetComponent<Text>();
+            GoldBountyTokenCostText = transform.Find("Price/GoldBountyToken/Amount").GetComponent<Text>();
 
             var iconMaterial = StoreGui.instance.m_listElement.transform.Find("icon").GetComponent<Image>().material;
             if (iconMaterial != null)
@@ -48,58 +47,82 @@ namespace EpicLoot.Adventure
             }
         }
 
-        public void SetItem(SecretStashItemInfo itemInfo, int currentCoins, int currentPlayerForestTokens)
+        public bool CanAfford(Currencies currencies)
+        {
+            return ItemInfo.Cost.Coins <= currencies.Coins
+                   && ItemInfo.Cost.ForestTokens <= currencies.ForestTokens
+                   && ItemInfo.Cost.IronBountyTokens <= currencies.IronBountyTokens
+                   && ItemInfo.Cost.GoldBountyTokens <= currencies.GoldBountyTokens;
+        }
+
+        public void SetItem(SecretStashItemInfo itemInfo, Currencies currencies)
         {
             ItemInfo = itemInfo;
-            CanAfford = CoinsPrice <= currentCoins && ForestTokensPrice <= currentPlayerForestTokens;
+            var canAfford = CanAfford(currencies);
 
-            Icon.sprite = Item.GetIcon();
-            Icon.color = CanAfford ? Color.white : new Color(1.0f, 0.0f, 1.0f, 0.0f);
-            NameText.text = Localization.instance.Localize(Item.GetDecoratedName(CanAfford ? null : "#AAA"));
-            NameText.color = CanAfford ? Color.white : Color.gray;
+            Icon.sprite = ItemInfo.Item.GetIcon();
+            Icon.color = canAfford ? Color.white : new Color(1.0f, 0.0f, 1.0f, 0.0f);
+            NameText.text = Localization.instance.Localize(ItemInfo.Item.GetDecoratedName(canAfford ? null : "grey"));
 
-            CoinsCostText.text = CoinsPrice.ToString();
-            CoinsCostText.transform.parent.gameObject.SetActive(CoinsPrice > 0);
+            CoinsCostText.text = ItemInfo.Cost.Coins.ToString();
+            CoinsCostText.transform.parent.gameObject.SetActive(ItemInfo.Cost.Coins > 0);
 
-            ForestTokenCostText.text = ForestTokensPrice.ToString();
-            ForestTokenCostText.transform.parent.gameObject.SetActive(ForestTokensPrice > 0);
+            ForestTokenCostText.text = ItemInfo.Cost.ForestTokens.ToString();
+            ForestTokenCostText.transform.parent.gameObject.SetActive(ItemInfo.Cost.ForestTokens > 0);
 
-            if (!CanAfford)
+            IronBountyTokenCostText.text = ItemInfo.Cost.IronBountyTokens.ToString();
+            IronBountyTokenCostText.transform.parent.gameObject.SetActive(ItemInfo.Cost.IronBountyTokens > 0);
+
+            GoldBountyTokenCostText.text = ItemInfo.Cost.GoldBountyTokens.ToString();
+            GoldBountyTokenCostText.transform.parent.gameObject.SetActive(ItemInfo.Cost.GoldBountyTokens > 0);
+
+            if (!canAfford)
             {
                 CoinsCostText.color = Color.grey;
                 ForestTokenCostText.color = Color.grey;
+                IronBountyTokenCostText.color = Color.grey;
+                GoldBountyTokenCostText.color = Color.grey;
             }
 
-            MagicBG.enabled = Item.UseMagicBackground();
-            MagicBG.color = CanAfford ? Item.GetRarityColor() : new Color(1.0f, 0.0f, 1.0f, 0.0f);
-
+            MagicBG.enabled = itemInfo.GuaranteedRarity || ItemInfo.Item.UseMagicBackground();
+            if (canAfford)
+            {
+                MagicBG.color = itemInfo.GuaranteedRarity ? EpicLoot.GetRarityColorARGB(itemInfo.Rarity) : ItemInfo.Item.GetRarityColor();
+            }
+            else
+            {
+                MagicBG.color = new Color(1.0f, 0.0f, 1.0f, 0.0f);
+            }
             Button.onClick.RemoveAllListeners();
             Button.onClick.AddListener(() => OnSelected?.Invoke(ItemInfo));
 
-            Tooltip.m_topic = Localization.instance.Localize(Item.GetDecoratedName());
-            Tooltip.m_text = Localization.instance.Localize(Item.GetTooltip());
+            Tooltip.m_topic = Localization.instance.Localize(ItemInfo.Item.GetDecoratedName());
+            Tooltip.m_text = Localization.instance.Localize(ItemInfo.Item.GetTooltip());
 
-            if (IsGamble)
+            if (ItemInfo.IsGamble)
             {
-                NameText.text = $"??? {Localization.instance.Localize(Item.m_shared.m_name)}";
-                
+                var color = canAfford ? (itemInfo.GuaranteedRarity ? EpicLoot.GetRarityColor(itemInfo.Rarity) : "white") : "grey";
+                var rarityDisplay = itemInfo.GuaranteedRarity ? EpicLoot.GetRarityDisplayName(itemInfo.Rarity) : "???";
+                NameText.text = $"<color={color}>{rarityDisplay} {Localization.instance.Localize(ItemInfo.Item.m_shared.m_name)}</color>";
+
                 Tooltip.m_topic = NameText.text;
                 Tooltip.m_text = GetGambleTooltip();
             }
         }
 
-        public void SetSelected(bool selected)
-        {
-            SelectedBackground.SetActive(selected);
-        }
-
-        private static string GetGambleTooltip()
+        private string GetGambleTooltip()
         {
             _sb.Clear();
 
             _sb.AppendLine("Pay a premium for a chance at a magic item!");
             _sb.AppendLine();
             _sb.AppendLine("Chance for:");
+
+            var rarityChance = AdventureDataManager.Config.Gamble.GambleRarityChance;
+            if (ItemInfo.GuaranteedRarity)
+            {
+                rarityChance = AdventureDataManager.Config.Gamble.GambleRarityChanceByRarity[(int)ItemInfo.Rarity];
+            }
 
             var labels = new[]
             {
@@ -110,12 +133,15 @@ namespace EpicLoot.Adventure
                 EpicLoot.GetRarityDisplayName(ItemRarity.Legendary)
             };
 
-            var totalWeight = (float)AdventureDataManager.Config.SecretStash.GambleRarityChance.Sum();
+            var totalWeight = (float)AdventureDataManager.Config.Gamble.GambleRarityChance.Sum();
             for (var i = 0; i < 5; ++i)
             {
-                var color = i == 0 ? "#FFF" : EpicLoot.GetRarityColor((ItemRarity) (i - 1));
-                var percent = AdventureDataManager.Config.SecretStash.GambleRarityChance[i] / totalWeight * 100;
-                _sb.AppendLine($"<color={color}>{labels[i]}: {percent:0.#}%</color>");
+                var color = i == 0 ? "white" : EpicLoot.GetRarityColor((ItemRarity) (i - 1));
+                var percent = rarityChance[i] / totalWeight * 100;
+                if (percent >= 0.01)
+                {
+                    _sb.AppendLine($"<color={color}>{labels[i]}: {percent:0.#}%</color>");
+                }
             }
 
             return _sb.ToString();

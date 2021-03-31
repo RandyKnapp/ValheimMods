@@ -1,29 +1,30 @@
 {
   "SecretStash": {
+    "RefreshInterval": 1,
     "Materials": [
-      { "Item": "ShardMagic",         "CoinsCost": 5 },
-      { "Item": "DustMagic",          "CoinsCost": 5 },
-      { "Item": "ReagentMagic",       "CoinsCost": 5 },
-      { "Item": "EssenceMagic",       "CoinsCost": 5 },
-
-      { "Item": "ShardRare",          "CoinsCost": 25 },
-      { "Item": "DustRare",           "CoinsCost": 25 },
-      { "Item": "ReagentRare",        "CoinsCost": 25 },
-      { "Item": "EssenceRare",        "CoinsCost": 25 },
-
-      { "Item": "ShardEpic",          "CoinsCost": 125 },
-      { "Item": "DustEpic",           "CoinsCost": 125 },
-      { "Item": "ReagentEpic",        "CoinsCost": 125 },
-      { "Item": "EssenceEpic",        "CoinsCost": 125 },
-
-      { "Item": "ShardLegendary",     "CoinsCost": 625 },
-      { "Item": "DustLegendary",      "CoinsCost": 625 },
-      { "Item": "ReagentLegendary",   "CoinsCost": 625 },
-      { "Item": "EssenceLegendary",   "CoinsCost": 625 }
+      { "Item": "ShardMagic", "CoinsCost": 5 },
+      { "Item": "DustMagic", "CoinsCost": 5 },
+      { "Item": "ReagentMagic", "CoinsCost": 5 },
+      { "Item": "EssenceMagic", "CoinsCost": 5 },
+      { "Item": "ShardRare", "CoinsCost": 25 },
+      { "Item": "DustRare", "CoinsCost": 25 },
+      { "Item": "ReagentRare", "CoinsCost": 25 },
+      { "Item": "EssenceRare", "CoinsCost": 25 },
+      { "Item": "ShardEpic", "CoinsCost": 125 },
+      { "Item": "DustEpic", "CoinsCost": 125 },
+      { "Item": "ReagentEpic", "CoinsCost": 125 },
+      { "Item": "EssenceEpic", "CoinsCost": 125 },
+      { "Item": "ShardLegendary", "CoinsCost": 625 },
+      { "Item": "DustLegendary", "CoinsCost": 625 },
+      { "Item": "ReagentLegendary", "CoinsCost": 625 },
+      { "Item": "EssenceLegendary", "CoinsCost": 625 }
     ],
-    "RollsPerRarity": [ 1, 1, 1, 1 ],
+    "RollsPerRarity": [1, 1, 1, 1],
     "OtherItems": [],
-    "OtherItemRolls": 0,
+    "OtherItemRolls": 0
+  },
+  "Gamble": { 
+    "RefreshInterval": 1,
     "Gambles": [
       "AtgeirBlackmetal",
       "AxeBlackMetal",
@@ -44,8 +45,17 @@
       "LeatherBelt",
       "GoldRubyRing"
     ],
-    "GamblesCount": 5,
+    "GamblesCount": 4,
+    "ForestTokenGamblesCount": 2, 
+    "IronBountyGamblesCount": 2, 
+    "GoldBountyGamblesCount": 1, 
     "GambleRarityChance": [ 10, 69, 15, 5, 1 ],
+    "GambleRarityChanceByRarity" : [
+      [ 0, 90, 9, 1, 0 ],
+      [ 0, 0, 90, 9, 1 ],
+      [ 0, 0, 0, 90, 10 ],
+      [ 0, 0, 0, 0, 100 ]
+    ] ,
     "GambleCosts": [
       { "Item": "AtgeirBronze",           "CoinsCost": 350  },
       { "Item": "AtgeirIron",             "CoinsCost": 500  },
@@ -138,7 +148,8 @@
       { "Item": "GoldRubyRing",           "CoinsCost": 500  }
     ]
   },
-  "TreasureMap": {
+  "TreasureMap": { 
+    "RefreshInterval": 6,
     "BiomeInfo": [
       { "Biome": "Meadows",     "Cost": 100,  "ForestTokens": 5,  "MinRadius": 0,    "MaxRadius": 3000 },
       { "Biome": "BlackForest", "Cost": 300,  "ForestTokens": 10, "MinRadius": 0,    "MaxRadius": 6000 },
@@ -158,12 +169,107 @@
       { "Item": "RunestoneLegendary", "ForestTokenCost": 20 }
     ] 
   },
-  "Bounties": {
+  "Bounties": { 
+    "RefreshInterval": 6,
+    "IronMinLevel": 2,
+    "IronMaxLevel": 3,
+    "GoldMinLevel": 3,
+    "GoldMaxLevel": 3, 
+    "AddsMinLevel": 1,
+    "AddsMaxLevel": 2, 
     "Targets": [
       { "Biome": "Meadows",     "TargetID": "Deer",             "RewardGold": 0, "RewardIron": 1  },
+      { "Biome": "Meadows",     "TargetID": "Boar",             "RewardGold": 0, "RewardIron": 1  },
+      { "Biome": "Meadows",     "TargetID": "Boar",             "RewardGold": 0, "RewardIron": 2, "Adds": [ { "ID": "Boar",        "Count": 2 }  ] },
+      { "Biome": "Meadows",     "TargetID": "Neck",             "RewardGold": 0, "RewardIron": 1  },
+      { "Biome": "Meadows",     "TargetID": "Neck",             "RewardGold": 0, "RewardIron": 2, "Adds": [ { "ID": "Neck",        "Count": 2 }  ] },
+      
       { "Biome": "BlackForest", "TargetID": "Greydwarf",        "RewardGold": 0, "RewardIron": 1  },
+      { "Biome": "BlackForest", "TargetID": "Greydwarf",        "RewardGold": 0, "RewardIron": 1  },
+      { "Biome": "BlackForest", "TargetID": "Skeleton",         "RewardGold": 0, "RewardIron": 1  },
+      { "Biome": "BlackForest", "TargetID": "Skeleton",         "RewardGold": 0, "RewardIron": 1  },
+      { "Biome": "BlackForest", "TargetID": "Ghost",            "RewardGold": 0, "RewardIron": 1  },
+      { "Biome": "BlackForest", "TargetID": "Skeleton",         "RewardGold": 0, "RewardIron": 3, "Adds": [ { "ID": "Skeleton",    "Count": 3 }  ] },
       { "Biome": "BlackForest", "TargetID": "Greydwarf_Elite",  "RewardGold": 1, "RewardIron": 0  },
-      { "Biome": "BlackForest", "TargetID": "Greydwarf_Shaman", "RewardGold": 1, "RewardIron": 2, "Adds": [ { "ID": "Greydwarf", "Count": 3 } ] }
-    ]
+      { "Biome": "BlackForest", "TargetID": "Troll",            "RewardGold": 1, "RewardIron": 0  },
+      { "Biome": "BlackForest", "TargetID": "Greydwarf_Shaman", "RewardGold": 1, "RewardIron": 2, "Adds": [ { "ID": "Greydwarf",   "Count": 3 }  ] },
+      
+      { "Biome": "Swamp",       "TargetID": "Blob",             "RewardGold": 0, "RewardIron": 1  },
+      { "Biome": "Swamp",       "TargetID": "Skeleton",         "RewardGold": 0, "RewardIron": 1  },
+      { "Biome": "Swamp",       "TargetID": "Leech",            "RewardGold": 0, "RewardIron": 1  },
+      { "Biome": "Swamp",       "TargetID": "Draugr",           "RewardGold": 0, "RewardIron": 1  },
+      { "Biome": "Swamp",       "TargetID": "Surtling",         "RewardGold": 0, "RewardIron": 1  },
+      { "Biome": "Swamp",       "TargetID": "Wraith",           "RewardGold": 1, "RewardIron": 0  },
+      { "Biome": "Swamp",       "TargetID": "Draugr_Elite",     "RewardGold": 1, "RewardIron": 0  },
+      { "Biome": "Swamp",       "TargetID": "Draugr_Elite",     "RewardGold": 1, "RewardIron": 3, "Adds": [ { "ID": "Draugr",      "Count": 3 }  ] },
+      { "Biome": "Swamp",       "TargetID": "Skeleton",         "RewardGold": 1, "RewardIron": 3, "Adds": [ { "ID": "Skeleton",    "Count": 5 }  ] },
+      
+      { "Biome": "Mountain",    "TargetID": "Wolf",             "RewardGold": 0, "RewardIron": 1  },
+      { "Biome": "Mountain",    "TargetID": "Wolf",             "RewardGold": 0, "RewardIron": 1  },
+      { "Biome": "Mountain",    "TargetID": "Hatchling",        "RewardGold": 0, "RewardIron": 1  },
+      { "Biome": "Mountain",    "TargetID": "Hatchling",        "RewardGold": 0, "RewardIron": 1  },
+      { "Biome": "Mountain",    "TargetID": "Fenring",          "RewardGold": 1, "RewardIron": 0  },
+      { "Biome": "Mountain",    "TargetID": "Fenring",          "RewardGold": 1, "RewardIron": 2, "Adds": [ { "ID": "Wolf",        "Count": 3 }  ] },
+      { "Biome": "Mountain",    "TargetID": "StoneGolem",       "RewardGold": 1, "RewardIron": 0  },
+      { "Biome": "Mountain",    "TargetID": "StoneGolem",       "RewardGold": 2, "RewardIron": 3, "Adds": [ { "ID": "StoneGolem",  "Count": 2 }  ] },
+      
+      { "Biome": "Plains",      "TargetID": "Goblin",           "RewardGold": 0, "RewardIron": 1  },
+      { "Biome": "Plains",      "TargetID": "Goblin",           "RewardGold": 0, "RewardIron": 1  },
+      { "Biome": "Plains",      "TargetID": "Goblin",           "RewardGold": 0, "RewardIron": 1  },
+      { "Biome": "Plains",      "TargetID": "Lox",              "RewardGold": 0, "RewardIron": 1  },
+      { "Biome": "Plains",      "TargetID": "Deathsquito",      "RewardGold": 0, "RewardIron": 1  },
+      { "Biome": "Plains",      "TargetID": "Deathsquito",      "RewardGold": 0, "RewardIron": 1  },
+      { "Biome": "Plains",      "TargetID": "Deathsquito",      "RewardGold": 1, "RewardIron": 2, "Adds": [ { "ID": "Deathsquito", "Count": 2 }  ] },
+      { "Biome": "Plains",      "TargetID": "GoblinBrute",      "RewardGold": 1, "RewardIron": 0  },
+      { "Biome": "Plains",      "TargetID": "GoblinBrute",      "RewardGold": 1, "RewardIron": 2, "Adds": [ { "ID": "Goblin",      "Count": 2 }  ] },
+      { "Biome": "Plains",      "TargetID": "GoblinBrute",      "RewardGold": 1, "RewardIron": 3, "Adds": [ { "ID": "Goblin",      "Count": 3 }  ] },
+      { "Biome": "Plains",      "TargetID": "GoblinShaman",     "RewardGold": 1, "RewardIron": 3, "Adds": [ { "ID": "Goblin",      "Count": 3 }  ] },
+      { "Biome": "Plains",      "TargetID": "GoblinShaman",     "RewardGold": 2, "RewardIron": 5, "Adds": [ { "ID": "GoblinBrute", "Count": 1 }, { "ID": "Goblin", "Count": 2 } ] }
+    ],
+    "Names": {
+      "Prefixes": [
+        "Acid",       "Aeztr",     "Agukir",     "Ajath",     "Akanoth",   "Almollak",   "Anarchis",  "Anger",      "Anguish",
+        "Asja",       "Aunuksih",  "Awnd",       "Azath",     "Azzamod",   "Bagthamuun", "Barb",      "Bathtador",  "Bein",
+        "Bepshish",   "Blemish",   "Blent",      "Bone",      "Boninned",  "Borth",      "Bracknik",  "Brazrannug", "Caella",
+        "Danger",     "Deakgu",    "Deceit",     "Deraria",   "Desonia",   "Dogmozun",   "Domr",      "Dread",      "Drogtherun",
+        "Drorothiuk", "Dugi",      "Dulphumph",  "Dwent",     "Envy",      "Etherezi",   "Ezeret",    "Fafseal",    "Fame",
+        "Fate",       "Feairi",    "Fear",       "Felagi",    "Feldgulg",  "Feral",      "Floerd",    "Florialle",  "Florola",
+        "Frodi",      "Frosti",    "Funa",       "Fwent",     "Gagrellan", "Gallhag",    "Garunoth",  "Griever",    "Grima",
+        "Hagr",       "Hath",      "Hatred",     "Helleanor", "Hephinore", "Hermadi",    "Hildr",     "Hjala",      "Hluti",
+        "Horron",     "Horror",    "Igurg",      "Irrad",     "Ithturus",  "Jaugruje",   "Jecsuqut",  "Jekegshout", "Jougyeq",
+        "Kolruzok",   "Kula",      "Litlaus",    "Lorethe",   "Lugdum",    "Lyvise",     "Malice",    "Malmr",      "Margath",
+        "Mask",       "Mattr",     "Mighty",     "Mimir",     "Mol",       "Moleck",     "Moloth",    "Morbius",    "Mordvig",
+        "Natt",       "Nehgac",    "Nelleanor",  "Nephyana",  "Night",     "Noxuc",      "Nucsus",    "Nysalin",    "Olganeth",
+        "Opathu",     "Orinys",    "Orrakith",   "Ostronag",  "Osuxah",    "Ovaettr",    "Pnaby",     "Pra",        "Qflugi",
+        "Rage",       "Recseh",    "Rezuaq",     "Rok",       "Rot",       "Ruqujua",    "Sal",       "Scabthatch", "Scare",
+        "Scaron",     "Sezzonas",  "Shadeling",  "Shahxuja",  "Skeltal",   "Skjar",      "Skod",      "Skoth",      "Sloth",
+        "Smog",       "Sorguleth", "Sorrow",     "Soul",      "Spirit",    "Spite",      "Stormerki", "Taustpion",  "Terron",
+        "Terror",     "Theloya",   "Tiglemun",   "Torment",   "Trostraus", "Twilight",   "Tyrant",    "Tyvase",     "Uemiara",
+        "Ugaq",       "Und",       "Uquxa",      "Urnollaar", "Ushuq",     "Vaett",      "Vam",       "Vind",       "Vit",
+        "Vozgonoth",  "Vyneano",   "Vynynore",   "Waringo",   "Warrior",   "Wind",       "Witseab",   "Wrath",      "Wurtguth",
+        "Xaanuzhe",   "Xagdrik",   "Xarpug",     "Xogdrath",  "Xolgog",    "Yegoth",     "Yerghug",   "Yoryne",     "Zephinore",
+        "Zetheret",   "Zmak",      "Zollmallan", "Zorinak"
+      ],
+      "Suffixes": [
+        ", Dirt Eater", ", Frenzied Raider", ", Hero Slayer", ", Keeper of Nightmares", ", King of the Wicked", ", Lord of Helheim", 
+        ", Marrow Eater", ", Mysterious One", ", Nomad of the Wastelands", ", Patron of the Mad", ", Spoiled One", ", Steward of the Eclipse", 
+        ", Thief of Ignorance", ", Thunderous One", ", Tortured Soul", ", Treasure Hunter", ", Umbral Stalker", ", Unspeakable Horror",
+
+        "Bannerlord", "Battleborn", "Battlefury", "Bloodspilt", "Carrionfeast", "Clevermind", "Cursebreaker", "Darkcloak", "Darkshade", "Darkstone", 
+        "Dawnbreaker", "Dawnfire", "Deathgreeting", "Deathgrin", "Doomsphere", "Dreadfang", "Glittermist", "Gloryseeker", "Greedgallow", "Griefstrike",
+        "Hailfall", "Jotunkin", "Lamplight", "Nightfall", "Oathbreaker", "Omenbleed", "Pestilence", "Pridefall", "Quake", "Runekennen", 
+        "Scythe", "Siezefrenzy", "Skullcrusher", "Spearpoint", "Spitemonger", "Starfall", "Starlight", "Svalroot", "Swiftspite", "Thrall", 
+        "Toothgrind", "Torment", "Twigsnapper", "Viletongue", "Warbane", "Warfall", "Warfighter", "Whispersmith",
+
+        "of Courage", "of Hostility", "of Might", "of Radiance", "of Silence", "of Spite", "of the Banner", "of the Darkness", "of Tolling Bells", 
+        "of Vengeance", "the Abandoned", "the Ancient", "the Betrayer", "the Brutal", "the Brute", "the Butcher", "the Chatterer", "the Cleaver", 
+        "the Contemptible", "the Corpse", "the Cursed", "the Damned", "the Depraved", "the Destroyer", "the Doomed", "the Empty", "the Evil", 
+        "the Executioner", "the Fiend", "the Fierce", "the Foul", "the Ghastly", "the Gilt", "the Greedy", "the Guilty", "the Handsome", 
+        "the Hellion", "the Horror", "the Humiliated", "the Immortal", "the Insulted", "the Knife", "the Maligned", "the Mangler", "the Miser", 
+        "the Monster", "the Murderer", "the Needle", "the Noxious", "the Omen", "the Pierced", "the Prickly", "the Quickened", "the Raider", 
+        "the Reckoner", "the Revenant", "the Rude", "the Savage", "the Seer", "the Shield", "the Slaughtered", "the Slayer", "the Sleeper", 
+        "the Soldier", "the Spiteful", "the Talisman", "the Terrible", "the Vicious", "the Vile", "the Weapon", "the Wicked" 
+      ] 
+    } 
   } 
 }

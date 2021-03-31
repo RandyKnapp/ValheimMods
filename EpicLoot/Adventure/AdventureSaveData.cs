@@ -32,6 +32,13 @@ namespace EpicLoot.Adventure
         Claimed
     }
 
+    [Serializable]
+    public class BountyTargetInfo
+    {
+        public string MonsterID;
+        public int Count;
+        public int Level;
+    }
 
     [Serializable]
     public class BountyInfo
@@ -39,21 +46,22 @@ namespace EpicLoot.Adventure
         public int Interval;
         public Heightmap.Biome Biome;
         public BountyState State;
-        public string MonsterID;
+        public BountyTargetInfo Target;
+        public string TargetName;
         public int RewardIron;
         public int RewardGold;
         public SerializableVector3 Position;
         public SerializableVector3 MinimapCircleOffset;
-        public List<BountyTargetAddConfig> Adds = new List<BountyTargetAddConfig>();
+        public List<BountyTargetInfo> Adds = new List<BountyTargetInfo>();
         public bool Slain;
 
-        public string ID => $"Bounty.{Interval}.{Biome}.{MonsterID}";
+        public string ID => $"Bounty.{Interval}.{Biome}.{Target.MonsterID}";
     }
 
     [Serializable]
     public class AdventureSaveData
     {
-        public int NumberOfTreasureMapsStarted;
+        public int NumberOfTreasureMapsOrBountiesStarted;
         public List<TreasureMapChestInfo> TreasureMaps = new List<TreasureMapChestInfo>();
         public List<BountyInfo> Bounties = new List<BountyInfo>();
 
@@ -74,7 +82,7 @@ namespace EpicLoot.Adventure
                 MinimapCircleOffset = circleOffset,
             });
 
-            NumberOfTreasureMapsStarted++;
+            NumberOfTreasureMapsOrBountiesStarted++;
 
             return true;
         }

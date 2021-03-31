@@ -927,24 +927,24 @@
       "Object": "TreasureMapChest_Swamp",
       "Drops": [ [3, 60], [4, 30], [5, 10] ],
       "Loot": [
-        { "Item": "Tier2Everything", "Weight": 1, "Rarity": [ 10, 40, 50, 10 ] },
-        { "Item": "Tier3Everything", "Weight": 1, "Rarity": [ 10, 40, 50, 10 ] }
+        { "Item": "Tier2Everything", "Weight": 1, "Rarity": [ 10, 45, 50, 5 ] },
+        { "Item": "Tier3Everything", "Weight": 1, "Rarity": [ 10, 45, 50, 5 ] }
       ]
     },
     {
       "Object": "TreasureMapChest_Mountain",
       "Drops": [ [3, 60], [4, 30], [5, 10] ],
       "Loot": [
-        { "Item": "Tier3Everything", "Weight": 1, "Rarity": [ 0, 30, 55, 15 ] },
-        { "Item": "Tier4Everything", "Weight": 1, "Rarity": [ 0, 30, 55, 15 ] }
+        { "Item": "Tier3Everything", "Weight": 1, "Rarity": [ 0, 30, 60, 10 ] },
+        { "Item": "Tier4Everything", "Weight": 1, "Rarity": [ 0, 30, 60, 10 ] }
       ]
     },
     {
       "Object": "TreasureMapChest_Plains",
       "Drops": [ [3, 60], [4, 30], [5, 10] ],
       "Loot": [
-        { "Item": "Tier4Everything", "Weight": 1, "Rarity": [ 0, 10, 65, 25 ] },
-        { "Item": "Tier5Everything", "Weight": 1, "Rarity": [ 0, 10, 65, 25 ] }
+        { "Item": "Tier4Everything", "Weight": 1, "Rarity": [ 0, 10, 75, 15 ] },
+        { "Item": "Tier5Everything", "Weight": 1, "Rarity": [ 0, 10, 75, 15 ] }
       ]
     }
   ]

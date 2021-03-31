@@ -1,6 +1,4 @@
-﻿using HarmonyLib;
-
-namespace EpicLoot.Adventure
+﻿namespace EpicLoot.Adventure
 {
     public static class PlayerExtensions
     {

@@ -1,12 +1,12 @@
 ﻿using System;
+using EpicLoot.Adventure.Feature;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace EpicLoot.Adventure
 {
-    public class TreasureMapListElement : MonoBehaviour
+    public class TreasureMapListElement : BaseMerchantPanelListElement<TreasureMapItemInfo>
     {
-        public GameObject SelectedBackground;
         public Image Icon;
         public Text NameText;
         public GameObject PriceContainer;
@@ -50,7 +50,7 @@ namespace EpicLoot.Adventure
             CanAfford = Price <= currentCoins;
             AlreadyPurchased = itemInfo.AlreadyPurchased;
 
-            var displayName = Localization.instance.Localize($"Treasure Map: $biome_{Biome.ToString().ToLower()}");
+            var displayName = Localization.instance.Localize($"Treasure Map: $biome_{Biome.ToString().ToLower()} #{itemInfo.Interval + 1}");
 
             Icon.color = (CanAfford && !AlreadyPurchased) ? Color.white : new Color(1.0f, 0.0f, 1.0f, 0.0f);
             NameText.text = displayName;
@@ -75,11 +75,6 @@ namespace EpicLoot.Adventure
         private string GetTooltip()
         {
             return $"This folded piece of ragged parchment has a big red X marked on it, somewhere in the $biome_{Biome.ToString().ToLower()}...";
-        }
-
-        public void SetSelected(bool selected)
-        {
-            SelectedBackground.SetActive(selected);
         }
     }
 }

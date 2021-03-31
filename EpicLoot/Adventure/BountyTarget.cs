@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using HarmonyLib;
+﻿using HarmonyLib;
 using UnityEngine;
 
 namespace EpicLoot.Adventure
@@ -13,9 +8,9 @@ namespace EpicLoot.Adventure
     {
         public const string BountyTargetKey = "BountyTarget";
         public const string MonsterIDKey = "MonsterID";
+        public const string IsAddKey = "IsAdd";
 
         private Character _character;
-        private Humanoid _humanoid;
         private BountyInfo _bountyInfo;
         private string _monsterID;
 
@@ -23,8 +18,6 @@ namespace EpicLoot.Adventure
         {
             _character = GetComponent<Character>();
             _character.m_onDeath += OnDeath;
-
-            _humanoid = GetComponent<Humanoid>();
         }
 
         public void OnDestroy()
@@ -43,12 +36,12 @@ namespace EpicLoot.Adventure
                 var saveData = player.GetAdventureSaveData();
                 if (saveData.GetBountyInfoByID(_bountyInfo.ID) != null && _bountyInfo.State == BountyState.InProgress)
                 {
-                    AdventureDataManager.SlayBountyTarget(_bountyInfo, _monsterID);
+                    AdventureDataManager.Bounties.SlayBountyTarget(_bountyInfo, _monsterID);
                 }
             }
         }
 
-        public void Setup(BountyInfo bounty, string monsterID)
+        public void Setup(BountyInfo bounty, string monsterID, bool isAdd)
         {
             _bountyInfo = bounty;
             _monsterID = monsterID;
@@ -58,12 +51,33 @@ namespace EpicLoot.Adventure
             {
                 zdo.Set(BountyTargetKey, _bountyInfo.ID);
                 zdo.Set(MonsterIDKey, monsterID);
+                zdo.Set(IsAddKey, isAdd);
             }
 
-            _character.m_name = "Target: " + _character.name;
-            _character.SetLevel(3); // TODO: Configurable
+            _character.m_name = isAdd ? $"{_character.m_name} Minion" : (string.IsNullOrEmpty(bounty.TargetName) ? _character.m_name : bounty.TargetName);
+            _character.SetLevel(GetMonsterLevel(bounty, monsterID, isAdd));
             _character.m_baseAI.SetPatrolPoint();
-            _character.m_boss = true;
+            _character.m_boss = !isAdd;
+        }
+
+        private int GetMonsterLevel(BountyInfo bounty, string monsterID, bool isAdd)
+        {
+            if (isAdd)
+            {
+                foreach (var targetInfo in bounty.Adds)
+                {
+                    if (targetInfo.MonsterID == monsterID)
+                    {
+                        return targetInfo.Level;
+                    }
+                }
+
+                return 1;
+            }
+            else
+            {
+                return bounty.Target.Level;
+            }
         }
     }
 
@@ -83,7 +97,8 @@ namespace EpicLoot.Adventure
                     {
                         var bountyTarget = __instance.gameObject.AddComponent<BountyTarget>();
                         var monsterID = zdo.GetString(BountyTarget.MonsterIDKey);
-                        bountyTarget.Setup(bountyInfo, monsterID);
+                        var isAdd = zdo.GetBool(BountyTarget.IsAddKey);
+                        bountyTarget.Setup(bountyInfo, monsterID, isAdd);
                     }
                 }
             }

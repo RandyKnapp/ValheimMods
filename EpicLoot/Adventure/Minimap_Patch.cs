@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
-using UnityEngine;
 
 namespace EpicLoot.Adventure
 {
@@ -88,7 +87,7 @@ namespace EpicLoot.Adventure
                     var position = bounty.Position + bounty.MinimapCircleOffset;
                     var area = __instance.AddPin(position, Minimap.PinType.EventArea, string.Empty, false, false);
                     area.m_worldSize = AdventureDataManager.Config.TreasureMap.MinimapAreaRadius * 2;
-                    var pin = __instance.AddPin(position, EpicLoot.BountyPinType, $"Bounty: {AdventureDataManager.GetMonsterName(bounty.MonsterID)}", false, false);
+                    var pin = __instance.AddPin(position, EpicLoot.BountyPinType, $"Bounty: {AdventureDataManager.GetBountyName(bounty)}", false, false);
 
                     BountyPins.Add(key, new AreaPinInfo() { Pin = pin, Area = area });
                 }

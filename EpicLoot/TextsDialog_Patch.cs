@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using EpicLoot.Adventure;
 using HarmonyLib;
 
 namespace EpicLoot
@@ -16,6 +17,12 @@ namespace EpicLoot
                 return;
             }
 
+            AddMagicEffectsPage(__instance, player);
+            AddTreasureAndBountiesPage(__instance, player);
+        }
+
+        private static void AddMagicEffectsPage(TextsDialog textsDialog, Player player)
+        {
             var magicEffects = new Dictionary<string, List<KeyValuePair<MagicItemEffect, ItemDrop.ItemData>>>();
 
             var allEquipment = player.GetEquipment();
@@ -30,6 +37,7 @@ namespace EpicLoot
                             effectList = new List<KeyValuePair<MagicItemEffect, ItemDrop.ItemData>>();
                             magicEffects.Add(effect.EffectType, effectList);
                         }
+
                         effectList.Add(new KeyValuePair<MagicItemEffect, ItemDrop.ItemData>(effect, item));
                     }
                 }
@@ -43,7 +51,7 @@ namespace EpicLoot
                 var effectDef = MagicItemEffectDefinitions.Get(effectType);
                 var sum = entry.Value.Sum(x => x.Key.EffectValue);
                 var totalEffectText = string.Format(effectDef.DisplayText, sum);
-                var highestRarity = (ItemRarity)entry.Value.Max(x => (int) x.Value.GetRarity());
+                var highestRarity = (ItemRarity) entry.Value.Max(x => (int) x.Value.GetRarity());
 
                 t.AppendLine($"<size=20><color={EpicLoot.GetRarityColor(highestRarity)}>{totalEffectText}</color></size>");
                 foreach (var entry2 in entry.Value)
@@ -56,7 +64,88 @@ namespace EpicLoot
                 t.AppendLine();
             }
 
-            __instance.m_texts.Insert(2, new TextsDialog.TextInfo("Magic Effects", t.ToString()));
+            textsDialog.m_texts.Insert(2, new TextsDialog.TextInfo("Magic Effects", t.ToString()));
         }
+
+        private static void AddTreasureAndBountiesPage(TextsDialog textsDialog, Player player)
+        {
+            var t = new StringBuilder();
+
+            var saveData = player.GetAdventureSaveData();
+
+            t.AppendLine("<color=orange><size=30>Treasure Maps</size></color>");
+            t.AppendLine();
+
+            var sortedTreasureMaps = saveData.TreasureMaps.OrderBy(x => x.State).ThenBy(x => GetBiomeOrder(x.Biome));
+            foreach (var treasureMap in sortedTreasureMaps)
+            {
+                t.AppendLine(Localization.instance.Localize($"Treasure Map: <color={GetBiomeColor(treasureMap.Biome)}>$biome_{treasureMap.Biome.ToString().ToLower()} #{treasureMap.Interval + 1}</color> ({(treasureMap.State == TreasureMapState.Found ? "<color=lime>Found!</color>" : "<color=grey>Still searching...</color>")})"));
+            }
+
+            t.AppendLine();
+            t.AppendLine();
+            t.AppendLine("<color=orange><size=30>Active Bounties</size></color>");
+            t.AppendLine();
+
+            var sortedBounties = saveData.Bounties.OrderBy(x => x.State);
+            foreach (var bounty in sortedBounties)
+            {
+                if (bounty.State == BountyState.Claimed)
+                {
+                    continue;
+                }
+
+                var targetName = AdventureDataManager.GetBountyName(bounty);
+                t.AppendLine($"<size=24>{targetName}</size>");
+                t.Append($"  <color=silver>Classification: <color=lightblue>{AdventureDataManager.GetMonsterName(bounty.Target.MonsterID)}</color>, ");
+                t.AppendLine($" Biome: <color={GetBiomeColor(bounty.Biome)}>$biome_{bounty.Biome.ToString().ToLower()}</color>");
+
+                var status = "";
+                switch (bounty.State)
+                {
+                    case BountyState.InProgress:
+                        status = ("<color=#00f0ff>In Progress</color>");
+                        break;
+                    case BountyState.Complete:
+                        status = ("<color=#70f56c>Vanquished!</color>");
+                        break;
+                }
+
+                t.Append($"  Status: {status}");
+
+                var iron = bounty.RewardIron;
+                var gold = bounty.RewardGold;
+                t.AppendLine($", Reward: {(iron > 0 ? $"<color=white>{MerchantPanel.GetIronBountyTokenName()} {iron}</color>" : "")}{(iron > 0 && gold > 0 ? ", " : "")}{(gold > 0 ? $"<color=#f5da53>{MerchantPanel.GetGoldBountyTokenName()} {gold}</color>" : "")}</color>");
+                t.AppendLine();
+            }
+
+            textsDialog.m_texts.Insert(3, new TextsDialog.TextInfo("Treasure & Bounties", t.ToString()));
+        }
+
+        private static string GetBiomeColor(Heightmap.Biome biome)
+        {
+            var biomeColor = "white";
+            switch (biome)
+            {
+                case Heightmap.Biome.Meadows: biomeColor = "#75d966"; break;
+                case Heightmap.Biome.BlackForest: biomeColor = "#72a178"; break;
+                case Heightmap.Biome.Swamp: biomeColor = "#a88a6f"; break;
+                case Heightmap.Biome.Mountain: biomeColor = "#a3bcd6"; break;
+                case Heightmap.Biome.Plains: biomeColor = "#d6cea3"; break;
+            }
+
+            return biomeColor;
+        }
+
+        private static float GetBiomeOrder(Heightmap.Biome biome)
+        {
+            if (biome == Heightmap.Biome.BlackForest)
+            {
+                return 1.5f;
+            }
+
+            return (float) biome;
+        }
+
     }
 }

@@ -50,8 +50,8 @@ namespace EpicLoot.GatedItemType
             var player = Player.m_localPlayer;
             if (player == null)
             {
-                EpicLoot.LogError($"Tried to get gated itemID ({itemID}) with null player!");
-                return null;
+                //EpicLoot.LogWarning($"Tried to get gated itemID ({itemID}) with null player! Using itemID");
+                return itemID;
             }
 
             if (!EpicLoot.IsObjectDBReady())

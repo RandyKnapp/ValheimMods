@@ -2,6 +2,9 @@
   * Added adventure stuff panel to merchant
   * Added purchasing crafting mats from merchant
   * Added gambling for magic items from merchant
+  * Added purchasable treasure maps
+  * Added bounty hunting
+  * Fixed some bugs with gating
 ## Version 0.6.4
   * Item Names Update!
   * Adding logs to Augmenting

@@ -2535,18 +2535,18 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 
 > | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
-> | Tier2Everything | 1 (50%) | 10 (9.1%) | 40 (36.4%) | 50 (45.5%) | 10 (9.1%) |
-> | Tier3Everything | 1 (50%) | 10 (9.1%) | 40 (36.4%) | 50 (45.5%) | 10 (9.1%) |
+> | Tier2Everything | 1 (50%) | 10 (9.1%) | 45 (40.9%) | 50 (45.5%) | 5 (4.5%) |
+> | Tier3Everything | 1 (50%) | 10 (9.1%) | 45 (40.9%) | 50 (45.5%) | 5 (4.5%) |
 
 > | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
-> | Tier2Everything | 1 (50%) | 10 (9.1%) | 40 (36.4%) | 50 (45.5%) | 10 (9.1%) |
-> | Tier3Everything | 1 (50%) | 10 (9.1%) | 40 (36.4%) | 50 (45.5%) | 10 (9.1%) |
+> | Tier2Everything | 1 (50%) | 10 (9.1%) | 45 (40.9%) | 50 (45.5%) | 5 (4.5%) |
+> | Tier3Everything | 1 (50%) | 10 (9.1%) | 45 (40.9%) | 50 (45.5%) | 5 (4.5%) |
 
 > | Items (lvl 3) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
-> | Tier2Everything | 1 (50%) | 10 (9.1%) | 40 (36.4%) | 50 (45.5%) | 10 (9.1%) |
-> | Tier3Everything | 1 (50%) | 10 (9.1%) | 40 (36.4%) | 50 (45.5%) | 10 (9.1%) |
+> | Tier2Everything | 1 (50%) | 10 (9.1%) | 45 (40.9%) | 50 (45.5%) | 5 (4.5%) |
+> | Tier3Everything | 1 (50%) | 10 (9.1%) | 45 (40.9%) | 50 (45.5%) | 5 (4.5%) |
 
 
 ## TreasureMapChest_Mountain
@@ -2571,18 +2571,18 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 
 > | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
-> | Tier3Everything | 1 (50%) | 0 (0%) | 30 (30%) | 55 (55%) | 15 (15%) |
-> | Tier4Everything | 1 (50%) | 0 (0%) | 30 (30%) | 55 (55%) | 15 (15%) |
+> | Tier3Everything | 1 (50%) | 0 (0%) | 30 (30%) | 60 (60%) | 10 (10%) |
+> | Tier4Everything | 1 (50%) | 0 (0%) | 30 (30%) | 60 (60%) | 10 (10%) |
 
 > | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
-> | Tier3Everything | 1 (50%) | 0 (0%) | 30 (30%) | 55 (55%) | 15 (15%) |
-> | Tier4Everything | 1 (50%) | 0 (0%) | 30 (30%) | 55 (55%) | 15 (15%) |
+> | Tier3Everything | 1 (50%) | 0 (0%) | 30 (30%) | 60 (60%) | 10 (10%) |
+> | Tier4Everything | 1 (50%) | 0 (0%) | 30 (30%) | 60 (60%) | 10 (10%) |
 
 > | Items (lvl 3) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
-> | Tier3Everything | 1 (50%) | 0 (0%) | 30 (30%) | 55 (55%) | 15 (15%) |
-> | Tier4Everything | 1 (50%) | 0 (0%) | 30 (30%) | 55 (55%) | 15 (15%) |
+> | Tier3Everything | 1 (50%) | 0 (0%) | 30 (30%) | 60 (60%) | 10 (10%) |
+> | Tier4Everything | 1 (50%) | 0 (0%) | 30 (30%) | 60 (60%) | 10 (10%) |
 
 
 ## TreasureMapChest_Plains
@@ -2607,17 +2607,17 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 
 > | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
-> | Tier4Everything | 1 (50%) | 0 (0%) | 10 (10%) | 65 (65%) | 25 (25%) |
-> | Tier5Everything | 1 (50%) | 0 (0%) | 10 (10%) | 65 (65%) | 25 (25%) |
+> | Tier4Everything | 1 (50%) | 0 (0%) | 10 (10%) | 75 (75%) | 15 (15%) |
+> | Tier5Everything | 1 (50%) | 0 (0%) | 10 (10%) | 75 (75%) | 15 (15%) |
 
 > | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
-> | Tier4Everything | 1 (50%) | 0 (0%) | 10 (10%) | 65 (65%) | 25 (25%) |
-> | Tier5Everything | 1 (50%) | 0 (0%) | 10 (10%) | 65 (65%) | 25 (25%) |
+> | Tier4Everything | 1 (50%) | 0 (0%) | 10 (10%) | 75 (75%) | 15 (15%) |
+> | Tier5Everything | 1 (50%) | 0 (0%) | 10 (10%) | 75 (75%) | 15 (15%) |
 
 > | Items (lvl 3) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
-> | Tier4Everything | 1 (50%) | 0 (0%) | 10 (10%) | 65 (65%) | 25 (25%) |
-> | Tier5Everything | 1 (50%) | 0 (0%) | 10 (10%) | 65 (65%) | 25 (25%) |
+> | Tier4Everything | 1 (50%) | 0 (0%) | 10 (10%) | 75 (75%) | 15 (15%) |
+> | Tier5Everything | 1 (50%) | 0 (0%) | 10 (10%) | 75 (75%) | 15 (15%) |
 
 

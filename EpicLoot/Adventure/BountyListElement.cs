@@ -5,9 +5,8 @@ using UnityEngine.UI;
 
 namespace EpicLoot.Adventure
 {
-    public class BountyListElement : MonoBehaviour
+    public class BountyListElement : BaseMerchantPanelListElement<BountyInfo>
     {
-        public GameObject SelectedBackground;
         public Image Icon;
         public Text NameText;
         public Text RewardTextIron;
@@ -62,7 +61,7 @@ namespace EpicLoot.Adventure
             RewardTextGold.text = BountyInfo.RewardGold.ToString();
             RewardTextGold.transform.parent.gameObject.SetActive(BountyInfo.RewardGold > 0);
 
-            Icon.sprite = AdventureDataManager.GetTrophyIconForMonster(BountyInfo.MonsterID);
+            Icon.sprite = AdventureDataManager.GetTrophyIconForMonster(BountyInfo.Target.MonsterID);
             Icon.color = canUse ? Color.white : new Color(1.0f, 0.0f, 1.0f, 0.0f);
 
             RewardLabel.SetActive(BountyInfo.State == BountyState.Available);
@@ -79,16 +78,17 @@ namespace EpicLoot.Adventure
         private string GetDisplayName()
         {
             var typeName = BountyInfo.RewardGold > 0 ? "Gold" : "Iron";
-            return Localization.instance.Localize($"{typeName} Bounty: {AdventureDataManager.GetMonsterName(BountyInfo.MonsterID)}");
+            return Localization.instance.Localize($"{typeName} Bounty: {AdventureDataManager.GetBountyName(BountyInfo)}");
         }
 
         private string GetTooltip()
         {
             _sb.Clear();
             var biome = $"$biome_{BountyInfo.Biome.ToString().ToLower()}";
-            var monsterName = AdventureDataManager.GetMonsterName(BountyInfo.MonsterID);
+            var monsterName = AdventureDataManager.GetMonsterName(BountyInfo.Target.MonsterID).ToLowerInvariant();
+            var targetName = string.IsNullOrEmpty(BountyInfo.TargetName) ? "" : $"<color=orange>{BountyInfo.TargetName}</color>, ";
             var adds = BountyInfo.Adds.Count > 0 ? " and its minions" : "";
-            _sb.AppendLine($"Travel to the <color=#31eb41>{biome}</color> and locate the <color=#f03232>{monsterName}</color>. Slay it{adds}. Return to me when it is done.");
+            _sb.AppendLine($"Travel to the <color=#31eb41>{biome}</color> and locate {targetName}the <color=#f03232>{monsterName}</color>. Slay it{adds}. Return to me when it is done.");
             _sb.AppendLine();
 
             _sb.AppendLine("<color=#ffc400>Rewards:</color>");
@@ -112,7 +112,7 @@ namespace EpicLoot.Adventure
                     _sb.AppendLine("  <color=#00f0ff>In Progress</color>");
                     break;
                 case BountyState.Complete:
-                    _sb.AppendLine("  <color=#70f56c>Complete!</color>");
+                    _sb.AppendLine("  <color=#70f56c>Vanquished!</color>");
                     break;
                 case BountyState.Claimed:
                     _sb.AppendLine("  Claimed");
@@ -120,11 +120,6 @@ namespace EpicLoot.Adventure
             }
 
             return _sb.ToString();
-        }
-
-        public void SetSelected(bool selected)
-        {
-            SelectedBackground.SetActive(selected);
         }
     }
 }
