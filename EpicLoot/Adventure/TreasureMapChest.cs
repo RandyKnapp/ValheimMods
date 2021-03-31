@@ -20,7 +20,6 @@ namespace EpicLoot.Adventure
             var zdo = container?.m_nview.GetZDO();
             if (container != null && zdo != null && zdo.IsValid())
             {
-                Debug.Log("Setting up container");
                 container.GetInventory().RemoveAll();
 
                 zdo.Set("TreasureMapChest.Interval", Interval);
@@ -40,7 +39,7 @@ namespace EpicLoot.Adventure
             }
             else
             {
-                Debug.Log("No container!");
+                EpicLoot.LogError($"Trying to set up TreasureMapChest ({biome} {treasureMapInterval}) but there was no Container component!");
             }
         }
 
@@ -120,7 +119,12 @@ namespace EpicLoot.Adventure
         public static void Postfix(Container __instance, long uid, bool granted)
         {
             var zdo = __instance.m_nview.GetZDO();
-            var hasAlreadyBeenFound = zdo != null && zdo.IsValid() && zdo.GetBool("TreasureMapChest.HasBeenFound");
+            if (zdo == null || !zdo.IsValid())
+            {
+                return;
+            }
+
+            var hasAlreadyBeenFound = zdo.GetBool("TreasureMapChest.HasBeenFound");
             if (hasAlreadyBeenFound)
             {
                 return;
@@ -132,7 +136,7 @@ namespace EpicLoot.Adventure
                 var treasureMapChest = __instance.GetComponent<TreasureMapChest>();
                 if (treasureMapChest != null)
                 {
-                    Debug.LogWarning($"Player is opening treasure map chest ({treasureMapChest.Biome}, {treasureMapChest.Interval})!");
+                    EpicLoot.Log($"Player is opening treasure map chest ({treasureMapChest.Biome}, {treasureMapChest.Interval})!");
                     var saveData = player.GetAdventureSaveData();
                     if (saveData.FoundTreasureChest(treasureMapChest.Interval, treasureMapChest.Biome))
                     {
@@ -140,6 +144,8 @@ namespace EpicLoot.Adventure
                     }
 
                     zdo.Set("TreasureMapChest.HasBeenFound", true);
+
+                    __instance.m_privacy = Container.PrivacySetting.Public;
 
                     MessageHud.instance.ShowBiomeFoundMsg("Treasure Found!", true);
 

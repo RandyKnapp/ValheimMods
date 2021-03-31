@@ -29,8 +29,8 @@ namespace EpicLoot.Adventure.Feature
             RollOnListNTimes(random, availableGambles.ToList(), AdventureDataManager.Config.Gamble.ForestTokenGamblesCount, forestTokenGambles);
             foreach (var forestTokenGamble in forestTokenGambles)
             {
-                forestTokenGamble.Cost.Coins /= 2;
-                forestTokenGamble.Cost.ForestTokens = random.Next(4, 7);
+                forestTokenGamble.Cost.Coins = (int)(forestTokenGamble.Cost.Coins * AdventureDataManager.Config.Gamble.ForestTokenGambleCoinsCost);
+                forestTokenGamble.Cost.ForestTokens = random.Next(AdventureDataManager.Config.Gamble.ForestTokenGambleCostMin, AdventureDataManager.Config.Gamble.ForestTokenGambleCostMax + 1);
                 forestTokenGamble.GuaranteedRarity = true;
                 forestTokenGamble.Rarity = ItemRarity.Rare;
                 results.Add(forestTokenGamble);
@@ -41,8 +41,8 @@ namespace EpicLoot.Adventure.Feature
             RollOnListNTimes(random, availableGambles.ToList(), AdventureDataManager.Config.Gamble.IronBountyGamblesCount, ironBountyGambles);
             foreach (var ironBountyGamble in ironBountyGambles)
             {
-                ironBountyGamble.Cost.Coins /= 2;
-                ironBountyGamble.Cost.IronBountyTokens = 1;
+                ironBountyGamble.Cost.Coins = (int)(ironBountyGamble.Cost.Coins * AdventureDataManager.Config.Gamble.IronBountyGambleCoinsCost);
+                ironBountyGamble.Cost.IronBountyTokens = AdventureDataManager.Config.Gamble.IronBountyGambleCost;
                 ironBountyGamble.GuaranteedRarity = true;
                 ironBountyGamble.Rarity = ItemRarity.Epic;
                 results.Add(ironBountyGamble);
@@ -53,8 +53,8 @@ namespace EpicLoot.Adventure.Feature
             RollOnListNTimes(random, availableGambles.ToList(), AdventureDataManager.Config.Gamble.GoldBountyGamblesCount, goldBountyGambles);
             foreach (var goldBountyGamble in goldBountyGambles)
             {
-                goldBountyGamble.Cost.Coins /= 2;
-                goldBountyGamble.Cost.GoldBountyTokens = 1;
+                goldBountyGamble.Cost.Coins = (int)(goldBountyGamble.Cost.Coins * AdventureDataManager.Config.Gamble.GoldBountyGambleCoinsCost);
+                goldBountyGamble.Cost.GoldBountyTokens = AdventureDataManager.Config.Gamble.GoldBountyGambleCost;
                 goldBountyGamble.GuaranteedRarity = true;
                 goldBountyGamble.Rarity = ItemRarity.Legendary;
                 results.Add(goldBountyGamble);

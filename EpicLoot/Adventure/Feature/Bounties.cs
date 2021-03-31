@@ -94,7 +94,7 @@ namespace EpicLoot.Adventure.Feature
 
         public IEnumerator AcceptBounty(Player player, BountyInfo bounty, Action<bool, Vector3> callback)
         {
-            player.Message(MessageHud.MessageType.Center, "Finding Worthy Target...");
+            player.Message(MessageHud.MessageType.Center, "Locating Bounty Target...");
             var saveData = player.GetAdventureSaveData();
             yield return GetRandomPointInBiome(bounty.Biome, saveData, (success, spawnPoint, _) =>
             {
@@ -135,7 +135,7 @@ namespace EpicLoot.Adventure.Feature
                 var prefab = ZNetScene.instance.GetPrefab(prefabName);
                 var creature = Object.Instantiate(prefab, spawnPoint, Quaternion.identity);
                 var bountyTarget = creature.AddComponent<BountyTarget>();
-                bountyTarget.Setup(bounty, prefabName, isAdd);
+                bountyTarget.Setup(bounty, prefabName, isAdd, true);
 
                 var randomSpacing = UnityEngine.Random.insideUnitSphere * 3;
                 spawnPoint += randomSpacing;

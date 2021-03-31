@@ -12,10 +12,12 @@ namespace EpicLoot.Adventure
         {
             public Minimap.PinData Pin;
             public Minimap.PinData Area;
+            public Minimap.PinData DebugPin;
         }
 
         public static Dictionary<Tuple<int, Heightmap.Biome>, AreaPinInfo> TreasureMapPins = new Dictionary<Tuple<int, Heightmap.Biome>, AreaPinInfo>();
         public static Dictionary<string, AreaPinInfo> BountyPins = new Dictionary<string, AreaPinInfo>();
+        public static bool DebugMode;
 
         [HarmonyPatch("Awake")]
         [HarmonyPostfix]
@@ -53,6 +55,10 @@ namespace EpicLoot.Adventure
             {
                 __instance.RemovePin(pinEntry.Value.Pin);
                 __instance.RemovePin(pinEntry.Value.Area);
+                if (pinEntry.Value.DebugPin != null)
+                {
+                    __instance.RemovePin(pinEntry.Value.DebugPin);
+                }
                 TreasureMapPins.Remove(pinEntry.Key);
             }
 
@@ -66,7 +72,15 @@ namespace EpicLoot.Adventure
                     area.m_worldSize = AdventureDataManager.Config.TreasureMap.MinimapAreaRadius * 2;
                     var pin = __instance.AddPin(position, EpicLoot.TreasureMapPinType, $"Treasure Chest: {chestInfo.Biome}", false, false);
 
-                    TreasureMapPins.Add(key, new AreaPinInfo(){ Pin = pin, Area = area });
+                    if (DebugMode)
+                    {
+                        var debugPin = __instance.AddPin(chestInfo.Position, Minimap.PinType.Icon3, $"{chestInfo.Position.x:0.0}, {chestInfo.Position.z:0.0}", false, false);
+                        TreasureMapPins.Add(key, new AreaPinInfo() { Pin = pin, Area = area, DebugPin = debugPin });
+                    }
+                    else
+                    {
+                        TreasureMapPins.Add(key, new AreaPinInfo(){ Pin = pin, Area = area });
+                    }
                 }
             }
 

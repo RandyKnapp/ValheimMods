@@ -12,7 +12,7 @@ namespace EpicLoot.Adventure
         private static readonly JSONParameters _saveLoadParams = new JSONParameters { UseExtensions = false };
 
         private Player _player;
-        public AdventureSaveData SaveData;
+        public AdventureSaveDataList SaveData = new AdventureSaveDataList();
 
         public void Awake()
         {
@@ -24,11 +24,18 @@ namespace EpicLoot.Adventure
         {
             if (_player.m_knownTexts.TryGetValue(SaveDataKey, out var data))
             {
-                SaveData = JSON.ToObject<AdventureSaveData>(data, _saveLoadParams);
+                try
+                {
+                    SaveData = JSON.ToObject<AdventureSaveDataList>(data, _saveLoadParams);
+                }
+                catch (Exception)
+                {
+                    SaveData = new AdventureSaveDataList();
+                }
             }
             else
             {
-                SaveData = new AdventureSaveData();
+                SaveData = new AdventureSaveDataList();
             }
         }
 
@@ -44,7 +51,7 @@ namespace EpicLoot.Adventure
     {
         public static void Postfix(TextsDialog __instance)
         {
-            __instance.m_texts.RemoveAll(x => x.m_topic.Equals(AdventureComponent.SaveDataKey, StringComparison.InvariantCulture));
+            //__instance.m_texts.RemoveAll(x => x.m_topic.Equals(AdventureComponent.SaveDataKey, StringComparison.InvariantCulture));
         }
     }
 }

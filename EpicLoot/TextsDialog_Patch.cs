@@ -97,7 +97,7 @@ namespace EpicLoot
 
                 var targetName = AdventureDataManager.GetBountyName(bounty);
                 t.AppendLine($"<size=24>{targetName}</size>");
-                t.Append($"  <color=silver>Classification: <color=lightblue>{AdventureDataManager.GetMonsterName(bounty.Target.MonsterID)}</color>, ");
+                t.Append($"  <color=silver>Classification: <color=#d66660>{AdventureDataManager.GetMonsterName(bounty.Target.MonsterID)}</color>, ");
                 t.AppendLine($" Biome: <color={GetBiomeColor(bounty.Biome)}>$biome_{bounty.Biome.ToString().ToLower()}</color>");
 
                 var status = "";
@@ -115,7 +115,7 @@ namespace EpicLoot
 
                 var iron = bounty.RewardIron;
                 var gold = bounty.RewardGold;
-                t.AppendLine($", Reward: {(iron > 0 ? $"<color=white>{MerchantPanel.GetIronBountyTokenName()} {iron}</color>" : "")}{(iron > 0 && gold > 0 ? ", " : "")}{(gold > 0 ? $"<color=#f5da53>{MerchantPanel.GetGoldBountyTokenName()} {gold}</color>" : "")}</color>");
+                t.AppendLine($", Reward: {(iron > 0 ? $"<color=white>{MerchantPanel.GetIronBountyTokenName()} x{iron}</color>" : "")}{(iron > 0 && gold > 0 ? ", " : "")}{(gold > 0 ? $"<color=#f5da53>{MerchantPanel.GetGoldBountyTokenName()} x{gold}</color>" : "")}</color>");
                 t.AppendLine();
             }
 

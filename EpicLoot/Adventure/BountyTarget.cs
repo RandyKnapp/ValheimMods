@@ -41,23 +41,54 @@ namespace EpicLoot.Adventure
             }
         }
 
-        public void Setup(BountyInfo bounty, string monsterID, bool isAdd)
+        public void Setup(BountyInfo bounty, string monsterID, bool isAdd, bool initialSetup)
         {
             _bountyInfo = bounty;
             _monsterID = monsterID;
 
             var zdo = _character.m_nview?.GetZDO();
-            if (zdo != null && zdo.IsValid())
+            if (initialSetup && zdo != null && zdo.IsValid())
             {
                 zdo.Set(BountyTargetKey, _bountyInfo.ID);
                 zdo.Set(MonsterIDKey, monsterID);
                 zdo.Set(IsAddKey, isAdd);
             }
 
-            _character.m_name = isAdd ? $"{_character.m_name} Minion" : (string.IsNullOrEmpty(bounty.TargetName) ? _character.m_name : bounty.TargetName);
-            _character.SetLevel(GetMonsterLevel(bounty, monsterID, isAdd));
+            if (initialSetup)
+            {
+                _character.SetLevel(GetMonsterLevel(bounty, monsterID, isAdd));
+                _character.SetMaxHealth(GetModifiedMaxHealth(_character, bounty, isAdd));
+            }
+
+            _character.m_name = GetCharacterName(_character.m_name, isAdd, bounty.TargetName);
             _character.m_baseAI.SetPatrolPoint();
             _character.m_boss = !isAdd;
+        }
+
+        private static float GetModifiedMaxHealth(Character character, BountyInfo bounty, bool isAdd)
+        {
+            if (isAdd)
+            {
+                return character.GetMaxHealth() * AdventureDataManager.Config.Bounties.AddsHealthMultiplier;
+            }
+            else if (bounty.RewardGold > 0)
+            {
+                return character.GetMaxHealth() * AdventureDataManager.Config.Bounties.GoldHealthMultiplier;
+            }
+            else
+            {
+                return character.GetMaxHealth() * AdventureDataManager.Config.Bounties.IronHealthMultiplier;
+            }
+        }
+
+        private static string GetCharacterName(string currentName, bool isAdd, string targetName)
+        {
+            if (currentName.Contains(" Minion"))
+            {
+                currentName = currentName.Replace(" Minion", "");
+            }
+
+            return isAdd ? $"{currentName} Minion" : (string.IsNullOrEmpty(targetName) ? currentName : targetName);
         }
 
         private int GetMonsterLevel(BountyInfo bounty, string monsterID, bool isAdd)
@@ -98,7 +129,7 @@ namespace EpicLoot.Adventure
                         var bountyTarget = __instance.gameObject.AddComponent<BountyTarget>();
                         var monsterID = zdo.GetString(BountyTarget.MonsterIDKey);
                         var isAdd = zdo.GetBool(BountyTarget.IsAddKey);
-                        bountyTarget.Setup(bountyInfo, monsterID, isAdd);
+                        bountyTarget.Setup(bountyInfo, monsterID, isAdd, false);
                     }
                 }
             }

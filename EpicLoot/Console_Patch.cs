@@ -65,13 +65,20 @@ namespace EpicLoot
                 }
                 player.StartCoroutine(AdventureDataManager.TreasureMaps.SpawnTreasureChest(biome, player, OnSpawnTreasureChestResult));
             }
-            else if (command.Equals("resettreasuremap", StringComparison.InvariantCultureIgnoreCase))
+            else if (command.Equals("resettreasuremap", StringComparison.InvariantCultureIgnoreCase) 
+                     || command.Equals("resettm", StringComparison.InvariantCultureIgnoreCase))
             {
                 var player = Player.m_localPlayer;
                 var saveData = player.GetAdventureSaveData();
                 saveData.TreasureMaps.Clear();
                 saveData.NumberOfTreasureMapsOrBountiesStarted = 0;
                 player.SaveAdventureSaveData();
+            }
+            else if (command.Equals("debugtreasuremap", StringComparison.InvariantCultureIgnoreCase) 
+                     || command.Equals("debugtm", StringComparison.InvariantCultureIgnoreCase))
+            {
+                Minimap_Patch.DebugMode = !Minimap_Patch.DebugMode;
+                __instance.AddString($"Treasure Map Debug Mode: {Minimap_Patch.DebugMode}");
             }
             else if (command.Equals("resetbounties", StringComparison.InvariantCultureIgnoreCase))
             {
@@ -89,6 +96,12 @@ namespace EpicLoot
                     var name = BountiesAdventureFeature.GenerateTargetName(random);
                     __instance.AddString(name);
                 }
+            }
+            else if (command.Equals("resetadventure", StringComparison.InvariantCultureIgnoreCase))
+            {
+                var adventureComponent = Player.m_localPlayer.GetComponent<AdventureComponent>();
+                adventureComponent.SaveData = new AdventureSaveDataList();
+                Player.m_localPlayer.SaveAdventureSaveData();
             }
 
             return true;

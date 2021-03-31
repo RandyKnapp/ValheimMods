@@ -40,6 +40,7 @@ namespace EpicLoot.Adventure
         public readonly List<IMerchantListPanel> Panels = new List<IMerchantListPanel>();
 
         public CraftSuccessDialog GambleSuccessDialog;
+        public GameObject InputBlocker;
 
         public Text CoinsCount;
         public Text ForestTokensCount;
@@ -47,9 +48,11 @@ namespace EpicLoot.Adventure
         public Text GoldBountyTokensCount;
 
         private readonly Currencies _currencies = new Currencies(-1);
+        private static MerchantPanel _instance;
 
         public void Awake()
         {
+            _instance = this;
             var storeGui = transform.parent.GetComponent<StoreGui>();
             gameObject.name = nameof(MerchantPanel);
 
@@ -89,6 +92,9 @@ namespace EpicLoot.Adventure
                 }
             }
 
+            InputBlocker = transform.Find("InputBlocker").gameObject;
+            InputBlocker.SetActive(false);
+
             var secretStashRefreshTooltip = GetRefreshTimeTooltip(AdventureDataManager.SecretStash.RefreshInterval);
             var gambleRefreshTooltip = GetRefreshTimeTooltip(AdventureDataManager.Gamble.RefreshInterval);
             var treasureMapRefreshTooltip = GetRefreshTimeTooltip(AdventureDataManager.TreasureMaps.RefreshInterval);
@@ -126,6 +132,11 @@ namespace EpicLoot.Adventure
             {
                 panel.RefreshItems(_currencies);
             }
+
+            if (InputBlocker != null)
+            {
+                InputBlocker.SetActive(false);
+            }
         }
 
         public void OnDisable()
@@ -134,6 +145,11 @@ namespace EpicLoot.Adventure
             {
                 GambleSuccessDialog.OnClose();
             }
+        }
+
+        public void OnDestroy()
+        {
+            _instance = null;
         }
 
         public Currencies GetPlayerCurrencies()
@@ -297,6 +313,14 @@ namespace EpicLoot.Adventure
         public static string GetGoldBountyTokenName()
         {
             return ObjectDB.instance.GetItemPrefab("GoldBountyToken").GetComponent<ItemDrop>().m_itemData.m_shared.m_name;
+        }
+
+        public static void ShowInputBlocker(bool show)
+        {
+            if (_instance != null && _instance.gameObject.activeSelf)
+            {
+                _instance.InputBlocker.SetActive(show);
+            }
         }
     }
 }

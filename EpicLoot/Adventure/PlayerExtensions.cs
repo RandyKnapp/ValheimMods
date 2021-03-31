@@ -15,7 +15,16 @@
 
         public static AdventureSaveData GetAdventureSaveData(this Player player)
         {
-            return GetAdventureComponent(player).SaveData;
+            var worldId = ZNet.m_world?.m_uid ?? 0;
+            var adventureComponent = GetAdventureComponent(player);
+            var saveData = adventureComponent.SaveData.AllSaveData.Find(x => (int)worldId == x.WorldID);
+            if (saveData == null)
+            {
+                saveData = new AdventureSaveData() { WorldID = (int)worldId };
+                adventureComponent.SaveData.AllSaveData.Add(saveData);
+            }
+
+            return saveData;
         }
 
         public static void SaveAdventureSaveData(this Player player)

@@ -59,8 +59,15 @@ namespace EpicLoot.Adventure
     }
 
     [Serializable]
+    public class AdventureSaveDataList
+    {
+        public List<AdventureSaveData> AllSaveData = new List<AdventureSaveData>();
+    }
+
+    [Serializable]
     public class AdventureSaveData
     {
+        public long WorldID;
         public int NumberOfTreasureMapsOrBountiesStarted;
         public List<TreasureMapChestInfo> TreasureMaps = new List<TreasureMapChestInfo>();
         public List<BountyInfo> Bounties = new List<BountyInfo>();

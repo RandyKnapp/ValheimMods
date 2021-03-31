@@ -79,6 +79,7 @@ namespace EpicLoot.Adventure.Feature
             var offset2 = UnityEngine.Random.insideUnitCircle * AdventureDataManager.Config.TreasureMap.MinimapAreaRadius;
             var offset = new Vector3(offset2.x, 0, offset2.y);
             saveData.PurchasedTreasureMap(GetCurrentInterval(), biome, spawnPoint, offset);
+            player.SaveAdventureSaveData();
             Minimap.instance.ShowPointOnMap(spawnPoint + offset);
 
             callback?.Invoke(true, spawnPoint);

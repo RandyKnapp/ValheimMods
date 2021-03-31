@@ -126,6 +126,7 @@ namespace EpicLoot.Adventure.Feature
 
         protected static IEnumerator GetRandomPointInBiome(Heightmap.Biome biome, AdventureSaveData saveData, Action<bool, Vector3, Vector3> onComplete)
         {
+            MerchantPanel.ShowInputBlocker(true);
             var rangeTries = 0;
             var radiusRange = GetTreasureMapSpawnRadiusRange(biome, saveData);
             while (rangeTries < 10)
@@ -147,13 +148,13 @@ namespace EpicLoot.Adventure.Feature
                     var zoneId = ZoneSystem.instance.GetZone(spawnPoint);
                     while (!ZoneSystem.instance.SpawnZone(zoneId, ZoneSystem.SpawnMode.Full, out _))
                     {
-                        Debug.LogWarning($"Spawning Zone ({zoneId})...");
+                        EpicLoot.LogWarning($"Spawning Zone ({zoneId})...");
                         yield return null;
                     }
 
                     ZoneSystem.instance.GetGroundData(ref spawnPoint, out var normal, out var foundBiome, out _, out _);
 
-                    Debug.LogWarning($"Checking biome at ({randomPoint}): {foundBiome} (try {tries})");
+                    EpicLoot.Log($"Checking biome at ({randomPoint}): {foundBiome} (try {tries})");
                     if (foundBiome != biome)
                     {
                         // Wrong biome
@@ -168,14 +169,16 @@ namespace EpicLoot.Adventure.Feature
                         continue;
                     }
 
-                    Debug.LogWarning($"Success! (ground={groundHeight} water={waterLevel} placed={spawnPoint.y})");
+                    EpicLoot.Log($"Success! (ground={groundHeight} water={waterLevel} placed={spawnPoint.y})");
 
                     onComplete?.Invoke(true, spawnPoint, normal);
+                    MerchantPanel.ShowInputBlocker(false);
                     yield break;
                 }
 
                 radiusRange = new Tuple<float, float>(radiusRange.Item1 + 500, radiusRange.Item2 + 500);
             }
+            MerchantPanel.ShowInputBlocker(false);
         }
 
         private static Tuple<float, float> GetTreasureMapSpawnRadiusRange(Heightmap.Biome biome, AdventureSaveData saveData)
