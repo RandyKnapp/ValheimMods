@@ -72,12 +72,22 @@ namespace EpicLoot.Adventure
         public List<TreasureMapChestInfo> TreasureMaps = new List<TreasureMapChestInfo>();
         public List<BountyInfo> Bounties = new List<BountyInfo>();
 
+        [NonSerialized] public bool DebugMode;
+        [NonSerialized] public int IntervalOverride;
+
         public bool PurchasedTreasureMap(int interval, Heightmap.Biome biome, Vector3 position, Vector3 circleOffset)
         {
-            if (HasPurchasedTreasureMap(interval, biome))
+            if (!DebugMode)
             {
-                EpicLoot.LogError($"Player has already purchased treasure map! (interval={interval} biome={biome})");
-                return false;
+                if (HasPurchasedTreasureMap(interval, biome))
+                {
+                    EpicLoot.LogError($"Player has already purchased treasure map! (interval={interval} biome={biome})");
+                    return false;
+                }
+            }
+            else if (IntervalOverride != 0)
+            {
+                interval = IntervalOverride;
             }
 
             TreasureMaps.Add(new TreasureMapChestInfo()

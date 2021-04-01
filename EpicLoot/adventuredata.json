@@ -2,26 +2,27 @@
   "SecretStash": {
     "RefreshInterval": 1,
     "Materials": [
-      { "Item": "ShardMagic", "CoinsCost": 5 },
-      { "Item": "DustMagic", "CoinsCost": 5 },
-      { "Item": "ReagentMagic", "CoinsCost": 5 },
-      { "Item": "EssenceMagic", "CoinsCost": 5 },
-      { "Item": "ShardRare", "CoinsCost": 25 },
-      { "Item": "DustRare", "CoinsCost": 25 },
-      { "Item": "ReagentRare", "CoinsCost": 25 },
-      { "Item": "EssenceRare", "CoinsCost": 25 },
-      { "Item": "ShardEpic", "CoinsCost": 125 },
-      { "Item": "DustEpic", "CoinsCost": 125 },
-      { "Item": "ReagentEpic", "CoinsCost": 125 },
-      { "Item": "EssenceEpic", "CoinsCost": 125 },
-      { "Item": "ShardLegendary", "CoinsCost": 625 },
-      { "Item": "DustLegendary", "CoinsCost": 625 },
+      { "Item": "ShardMagic",       "CoinsCost": 5   },
+      { "Item": "DustMagic",        "CoinsCost": 5   },
+      { "Item": "ReagentMagic",     "CoinsCost": 5   },
+      { "Item": "EssenceMagic",     "CoinsCost": 5   },
+      { "Item": "ShardRare",        "CoinsCost": 25  },
+      { "Item": "DustRare",         "CoinsCost": 25  },
+      { "Item": "ReagentRare",      "CoinsCost": 25  },
+      { "Item": "EssenceRare",      "CoinsCost": 25  },
+      { "Item": "ShardEpic",        "CoinsCost": 125 },
+      { "Item": "DustEpic",         "CoinsCost": 125 },
+      { "Item": "ReagentEpic",      "CoinsCost": 125 },
+      { "Item": "EssenceEpic",      "CoinsCost": 125 },
+      { "Item": "ShardLegendary",   "CoinsCost": 625 },
+      { "Item": "DustLegendary",    "CoinsCost": 625 },
       { "Item": "ReagentLegendary", "CoinsCost": 625 },
       { "Item": "EssenceLegendary", "CoinsCost": 625 }
     ],
     "RollsPerRarity": [1, 1, 1, 1],
-    "OtherItems": [],
-    "OtherItemRolls": 0
+    "OtherItems": [
+      { "Item": "Andvaranaut", "CoinsCost": 2000 }
+    ]
   },
   "Gamble": { 
     "RefreshInterval": 1,
@@ -156,7 +157,7 @@
     ]
   },
   "TreasureMap": { 
-    "RefreshInterval": 6,
+    "RefreshInterval": 7,
     "BiomeInfo": [
       { "Biome": "Meadows",     "Cost": 100,  "ForestTokens": 5,  "MinRadius": 0,    "MaxRadius": 3000 },
       { "Biome": "BlackForest", "Cost": 300,  "ForestTokens": 10, "MinRadius": 0,    "MaxRadius": 6000 },
@@ -177,7 +178,7 @@
     ] 
   },
   "Bounties": { 
-    "RefreshInterval": 6,
+    "RefreshInterval": 7,
     "IronMinLevel": 2,
     "IronMaxLevel": 3,
     "IronHealthMultiplier": 2.0, 

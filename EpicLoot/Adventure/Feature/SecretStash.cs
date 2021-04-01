@@ -65,7 +65,7 @@ namespace EpicLoot.Adventure.Feature
             });
 
             var availableOtherItems = CollectItems(AdventureDataManager.Config.SecretStash.OtherItems);
-            RollOnListNTimes(random, availableOtherItems, AdventureDataManager.Config.SecretStash.OtherItemsRolls, results);
+            results.AddRange(availableOtherItems);
 
             return results;
         }

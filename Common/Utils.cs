@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using BepInEx;
 using UnityEngine;
+using Object = System.Object;
 
 namespace Common
 {
@@ -79,6 +81,15 @@ namespace Common
             }
 
             return s;
+        }
+
+        public static void CopyFields(object originalObject, object cloneObject, Type typeToReflect, BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.Public)
+        {
+            foreach (FieldInfo fieldInfo in typeToReflect.GetFields(bindingFlags))
+            {
+                var originalFieldValue = fieldInfo.GetValue(originalObject);
+                fieldInfo.SetValue(cloneObject, originalFieldValue);
+            }
         }
     }
 

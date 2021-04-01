@@ -115,6 +115,7 @@
     <Compile Include="Adventure\MessageHud_Patch.cs" />
     <Compile Include="Adventure\Minimap_Patch.cs" />
     <Compile Include="Adventure\PlayerExtensions.cs" />
+    <Compile Include="Adventure\SE_CustomFinder.cs" />
     <Compile Include="Adventure\TreasureMapChest.cs" />
     <Compile Include="Adventure\TreasureMapListElement.cs" />
     <Compile Include="Crafting\AugmentsAvailableDialog.cs" />

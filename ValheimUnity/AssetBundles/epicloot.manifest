@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 3739716012
+CRC: 4291147892
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 28b2ada1a8570cb6373c24964d1affdc
+    Hash: 003803308d1a63e28016363a8dc727f2
   TypeTreeHash:
     serializedVersion: 2
     Hash: b3e4901cb5bbc76ca2ad45201119cae1
@@ -109,6 +109,7 @@ Assets:
 - Assets/EpicLoot/Prefabs/CraftingMaterials/EssenceRare.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/ShardEpic.prefab
 - Assets/EpicLoot/Sprites/Inventory/GenericSetItemMarker.png
+- Assets/EpicLoot/Prefabs/Equipment/Andvaranaut.prefab
 - Assets/EpicLoot/Sprites/Adventure/TreasureMapIcon.png
 - Assets/EpicLoot/Prefabs/CraftingMaterials/ShardLegendary.prefab
 - Assets/EpicLoot/Sounds/MagicItemDrop.wav

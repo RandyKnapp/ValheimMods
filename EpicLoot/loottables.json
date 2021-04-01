@@ -909,7 +909,7 @@
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     {
       "Object": "TreasureMapChest_Meadows",
-      "Drops": [ [3, 60], [4, 30], [5, 10] ],
+      "Drops": [ [3, 80], [4, 15], [5, 5] ],
       "Loot": [
         { "Item": "Tier0Everything", "Weight": 1, "Rarity": [ 68, 30, 2, 0 ] },
         { "Item": "Tier1Everything", "Weight": 1, "Rarity": [ 68, 30, 2, 0 ] }
@@ -917,7 +917,7 @@
     },
     {
       "Object": "TreasureMapChest_BlackForest",
-      "Drops": [ [3, 60], [4, 30], [5, 10] ],
+      "Drops": [ [3, 80], [4, 15], [5, 5] ],
       "Loot": [
         { "Item": "Tier1Everything", "Weight": 1, "Rarity": [ 40, 50, 9, 1 ] },
         { "Item": "Tier2Everything", "Weight": 1, "Rarity": [ 40, 50, 9, 1 ] }
@@ -925,7 +925,7 @@
     },
     {
       "Object": "TreasureMapChest_Swamp",
-      "Drops": [ [3, 60], [4, 30], [5, 10] ],
+      "Drops": [ [3, 80], [4, 15], [5, 5] ],
       "Loot": [
         { "Item": "Tier2Everything", "Weight": 1, "Rarity": [ 10, 45, 50, 5 ] },
         { "Item": "Tier3Everything", "Weight": 1, "Rarity": [ 10, 45, 50, 5 ] }
@@ -933,7 +933,7 @@
     },
     {
       "Object": "TreasureMapChest_Mountain",
-      "Drops": [ [3, 60], [4, 30], [5, 10] ],
+      "Drops": [ [3, 80], [4, 15], [5, 5] ],
       "Loot": [
         { "Item": "Tier3Everything", "Weight": 1, "Rarity": [ 0, 30, 60, 10 ] },
         { "Item": "Tier4Everything", "Weight": 1, "Rarity": [ 0, 30, 60, 10 ] }
@@ -941,7 +941,7 @@
     },
     {
       "Object": "TreasureMapChest_Plains",
-      "Drops": [ [3, 60], [4, 30], [5, 10] ],
+      "Drops": [ [3, 80], [4, 15], [5, 5] ],
       "Loot": [
         { "Item": "Tier4Everything", "Weight": 1, "Rarity": [ 0, 10, 75, 15 ] },
         { "Item": "Tier5Everything", "Weight": 1, "Rarity": [ 0, 10, 75, 15 ] }

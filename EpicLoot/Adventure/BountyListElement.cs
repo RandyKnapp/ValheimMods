@@ -77,8 +77,7 @@ namespace EpicLoot.Adventure
 
         private string GetDisplayName()
         {
-            var typeName = BountyInfo.RewardGold > 0 ? "Gold" : "Iron";
-            return Localization.instance.Localize($"{typeName} Bounty: {AdventureDataManager.GetBountyName(BountyInfo)}");
+            return Localization.instance.Localize(AdventureDataManager.GetBountyName(BountyInfo));
         }
 
         private string GetTooltip()

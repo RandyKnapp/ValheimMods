@@ -70,6 +70,17 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > 
 > ***Notes:*** *Can't be rolled. Just added to make a Magic Item version of this item.*
 
+## Andvaranaut
+
+> **Display Text:** Finds Haldor's treasure chests
+> 
+> **Allowed Item Types:** *None*
+> 
+> **Requirements:**
+> > **Flags:** `NoRoll, ExclusiveSelf`
+> 
+> ***Notes:*** *Can't be rolled. Just added to make a Magic Item version of this item.*
+
 ## ModifyDamage
 
 > **Display Text:** All damage increased by +{0:0.#}%
@@ -2445,21 +2456,21 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 
 > | Drops (lvl 1) | Weight (Chance) |
 > | -- | -- |
-> | 3 | 60 (60%) |
-> | 4 | 30 (30%) |
-> | 5 | 10 (10%) |
+> | 3 | 80 (80%) |
+> | 4 | 15 (15%) |
+> | 5 | 5 (5%) |
 
 > | Drops (lvl 2) | Weight (Chance) |
 > | -- | -- |
-> | 3 | 60 (60%) |
-> | 4 | 30 (30%) |
-> | 5 | 10 (10%) |
+> | 3 | 80 (80%) |
+> | 4 | 15 (15%) |
+> | 5 | 5 (5%) |
 
 > | Drops (lvl 3) | Weight (Chance) |
 > | -- | -- |
-> | 3 | 60 (60%) |
-> | 4 | 30 (30%) |
-> | 5 | 10 (10%) |
+> | 3 | 80 (80%) |
+> | 4 | 15 (15%) |
+> | 5 | 5 (5%) |
 
 > | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
@@ -2481,21 +2492,21 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 
 > | Drops (lvl 1) | Weight (Chance) |
 > | -- | -- |
-> | 3 | 60 (60%) |
-> | 4 | 30 (30%) |
-> | 5 | 10 (10%) |
+> | 3 | 80 (80%) |
+> | 4 | 15 (15%) |
+> | 5 | 5 (5%) |
 
 > | Drops (lvl 2) | Weight (Chance) |
 > | -- | -- |
-> | 3 | 60 (60%) |
-> | 4 | 30 (30%) |
-> | 5 | 10 (10%) |
+> | 3 | 80 (80%) |
+> | 4 | 15 (15%) |
+> | 5 | 5 (5%) |
 
 > | Drops (lvl 3) | Weight (Chance) |
 > | -- | -- |
-> | 3 | 60 (60%) |
-> | 4 | 30 (30%) |
-> | 5 | 10 (10%) |
+> | 3 | 80 (80%) |
+> | 4 | 15 (15%) |
+> | 5 | 5 (5%) |
 
 > | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
@@ -2517,21 +2528,21 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 
 > | Drops (lvl 1) | Weight (Chance) |
 > | -- | -- |
-> | 3 | 60 (60%) |
-> | 4 | 30 (30%) |
-> | 5 | 10 (10%) |
+> | 3 | 80 (80%) |
+> | 4 | 15 (15%) |
+> | 5 | 5 (5%) |
 
 > | Drops (lvl 2) | Weight (Chance) |
 > | -- | -- |
-> | 3 | 60 (60%) |
-> | 4 | 30 (30%) |
-> | 5 | 10 (10%) |
+> | 3 | 80 (80%) |
+> | 4 | 15 (15%) |
+> | 5 | 5 (5%) |
 
 > | Drops (lvl 3) | Weight (Chance) |
 > | -- | -- |
-> | 3 | 60 (60%) |
-> | 4 | 30 (30%) |
-> | 5 | 10 (10%) |
+> | 3 | 80 (80%) |
+> | 4 | 15 (15%) |
+> | 5 | 5 (5%) |
 
 > | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
@@ -2553,21 +2564,21 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 
 > | Drops (lvl 1) | Weight (Chance) |
 > | -- | -- |
-> | 3 | 60 (60%) |
-> | 4 | 30 (30%) |
-> | 5 | 10 (10%) |
+> | 3 | 80 (80%) |
+> | 4 | 15 (15%) |
+> | 5 | 5 (5%) |
 
 > | Drops (lvl 2) | Weight (Chance) |
 > | -- | -- |
-> | 3 | 60 (60%) |
-> | 4 | 30 (30%) |
-> | 5 | 10 (10%) |
+> | 3 | 80 (80%) |
+> | 4 | 15 (15%) |
+> | 5 | 5 (5%) |
 
 > | Drops (lvl 3) | Weight (Chance) |
 > | -- | -- |
-> | 3 | 60 (60%) |
-> | 4 | 30 (30%) |
-> | 5 | 10 (10%) |
+> | 3 | 80 (80%) |
+> | 4 | 15 (15%) |
+> | 5 | 5 (5%) |
 
 > | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
@@ -2589,21 +2600,21 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 
 > | Drops (lvl 1) | Weight (Chance) |
 > | -- | -- |
-> | 3 | 60 (60%) |
-> | 4 | 30 (30%) |
-> | 5 | 10 (10%) |
+> | 3 | 80 (80%) |
+> | 4 | 15 (15%) |
+> | 5 | 5 (5%) |
 
 > | Drops (lvl 2) | Weight (Chance) |
 > | -- | -- |
-> | 3 | 60 (60%) |
-> | 4 | 30 (30%) |
-> | 5 | 10 (10%) |
+> | 3 | 80 (80%) |
+> | 4 | 15 (15%) |
+> | 5 | 5 (5%) |
 
 > | Drops (lvl 3) | Weight (Chance) |
 > | -- | -- |
-> | 3 | 60 (60%) |
-> | 4 | 30 (30%) |
-> | 5 | 10 (10%) |
+> | 3 | 80 (80%) |
+> | 4 | 15 (15%) |
+> | 5 | 5 (5%) |
 
 > | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |

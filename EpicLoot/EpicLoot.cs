@@ -110,6 +110,7 @@ namespace EpicLoot
         public static readonly List<GameObject> RegisteredPrefabs = new List<GameObject>();
         public static readonly List<GameObject> RegisteredItemPrefabs = new List<GameObject>();
         public static readonly Dictionary<GameObject, PieceDef> RegisteredPieces = new Dictionary<GameObject, PieceDef>();
+        private static readonly Dictionary<string, Action<ItemDrop>> _customItemSetupActions = new Dictionary<string, Action<ItemDrop>>();
         public static bool AlwaysDropCheat = false;
         public const Minimap.PinType BountyPinType = (Minimap.PinType) 800;
         public const Minimap.PinType TreasureMapPinType = (Minimap.PinType) 801;
@@ -275,17 +276,22 @@ namespace EpicLoot
             LoadItem(assetBundle, "LeatherBelt");
             LoadItem(assetBundle, "SilverRing");
             LoadItem(assetBundle, "GoldRubyRing");
+            LoadItem(assetBundle, "Andvaranaut", SetupAndvaranaut);
 
             LoadItem(assetBundle, "ForestToken");
             LoadItem(assetBundle, "IronBountyToken");
             LoadItem(assetBundle, "GoldBountyToken");
         }
 
-        private static void LoadItem(AssetBundle assetBundle, string assetName)
+        private static void LoadItem(AssetBundle assetBundle, string assetName, Action<ItemDrop> customSetupAction = null)
         {
             var prefab = assetBundle.LoadAsset<GameObject>(assetName);
             RegisteredItemPrefabs.Add(prefab);
             RegisteredPrefabs.Add(prefab);
+            if (customSetupAction != null)
+            {
+                _customItemSetupActions.Add(prefab.name, customSetupAction);
+            }
         }
 
         private static void LoadStationExtension(AssetBundle assetBundle, string assetName, PieceDef pieceDef)
@@ -509,6 +515,11 @@ namespace EpicLoot
                     {
                         ObjectDB.instance.m_items.Add(prefab);
                     }
+
+                    if (_customItemSetupActions.TryGetValue(prefab.name, out var action))
+                    {
+                        action?.Invoke(itemDrop);
+                    }
                 }
             }
 
@@ -541,6 +552,52 @@ namespace EpicLoot
             }
 
             RecipesHelper.SetupRecipes();
+        }
+
+        private static void SetupAndvaranaut(ItemDrop prefab)
+        {
+            var andvaranaut = prefab.m_itemData;
+            var wishbone = ObjectDB.instance.GetItemPrefab("Wishbone").GetComponent<ItemDrop>().m_itemData;
+
+            // first, create custom status effect
+            var originalFinder = wishbone.m_shared.m_equipStatusEffect;
+            var wishboneFinder = ScriptableObject.CreateInstance<SE_CustomFinder>();
+
+            // Copy all values from finder
+            Common.Utils.CopyFields(originalFinder, wishboneFinder, typeof(SE_Finder));
+            wishboneFinder.name = "CustomWishboneFinder";
+
+            var andvaranautFinder = ScriptableObject.CreateInstance<SE_CustomFinder>();
+            Common.Utils.CopyFields(wishboneFinder, andvaranautFinder, typeof(SE_CustomFinder));
+            andvaranautFinder.name = "Andvaranaut";
+            andvaranautFinder.m_name = "Andvaranaut";
+            andvaranautFinder.m_icon = andvaranaut.GetIcon();
+            andvaranautFinder.m_tooltip = "Helps you find treasure chests from Haldor's maps. Move in the direction the pings get more intense.";
+            andvaranautFinder.m_startMessage = "You can sense gold\n(No, wait, just Haldor's treasure chests. Dammit Loki!)";
+
+            // Setup restrictions
+            andvaranautFinder.RequiredComponentTypes = new List<Type> { typeof(TreasureMapChest) };
+            wishboneFinder.DisallowedComponentTypes = new List<Type> { typeof(TreasureMapChest) };
+
+            // Add to list
+            ObjectDB.instance.m_StatusEffects.Remove(originalFinder);
+            ObjectDB.instance.m_StatusEffects.Add(andvaranautFinder);
+            ObjectDB.instance.m_StatusEffects.Add(wishboneFinder);
+
+            // Set new status effect
+            andvaranaut.m_shared.m_equipStatusEffect = andvaranautFinder;
+            wishbone.m_shared.m_equipStatusEffect = wishboneFinder;
+
+            // Setup magic item
+            var magicItem = new MagicItem
+            {
+                Rarity = ItemRarity.Epic,
+                TypeNameOverride = "dwarven ring"
+            };
+            magicItem.Effects.Add(new MagicItemEffect() { EffectType = MagicEffectType.Andvaranaut });
+
+            prefab.m_itemData = new ExtendedItemData(prefab.m_itemData);
+            prefab.m_itemData.Extended().ReplaceComponent<MagicItemComponent>().MagicItem = magicItem;
         }
 
         public static T LoadJsonFile<T>(string filename) where T : class

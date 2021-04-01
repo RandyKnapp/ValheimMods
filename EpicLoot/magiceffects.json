@@ -7,7 +7,6 @@
       "Requirements" : {
         "NoRoll": true
       },
-      "SelectionWeight" : 1,
       "Comment" : "Can't be rolled. Just added to make a Magic Item version of this item."
     },
     {
@@ -17,7 +16,6 @@
       "Requirements" : {
         "NoRoll": true
       },
-      "SelectionWeight" : 1,
       "Comment" : "Can't be rolled. Just added to make a Magic Item version of this item."
     },
     {
@@ -27,7 +25,15 @@
       "Requirements" : {
         "NoRoll": true
       },
-      "SelectionWeight" : 1,
+      "Comment" : "Can't be rolled. Just added to make a Magic Item version of this item."
+    },
+    {
+      "Type": "Andvaranaut",
+      "DisplayText": "Finds Haldor's treasure chests",
+      "CanBeAugmented": false, 
+      "Requirements" : {
+        "NoRoll": true
+      },
       "Comment" : "Can't be rolled. Just added to make a Magic Item version of this item."
     },
     {

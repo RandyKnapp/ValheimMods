@@ -126,15 +126,19 @@ namespace EpicLoot.Adventure.Feature
 
         protected static IEnumerator GetRandomPointInBiome(Heightmap.Biome biome, AdventureSaveData saveData, Action<bool, Vector3, Vector3> onComplete)
         {
+            const int maxRangeIncreases = 10;
+            const int maxPointsInRange = 15;
+
             MerchantPanel.ShowInputBlocker(true);
+
             var rangeTries = 0;
             var radiusRange = GetTreasureMapSpawnRadiusRange(biome, saveData);
-            while (rangeTries < 10)
+            while (rangeTries < maxRangeIncreases)
             {
                 rangeTries++;
 
                 var tries = 0;
-                while (tries < 10)
+                while (tries < maxPointsInRange)
                 {
                     tries++;
 
@@ -146,13 +150,14 @@ namespace EpicLoot.Adventure.Feature
                     var spawnPoint = new Vector3(randomPoint.x, 0, randomPoint.y);
 
                     var zoneId = ZoneSystem.instance.GetZone(spawnPoint);
-                    while (!ZoneSystem.instance.SpawnZone(zoneId, ZoneSystem.SpawnMode.Full, out _))
+                    while (!ZoneSystem.instance.SpawnZone(zoneId, ZoneSystem.SpawnMode.Client, out _))
                     {
                         EpicLoot.LogWarning($"Spawning Zone ({zoneId})...");
                         yield return null;
                     }
 
                     ZoneSystem.instance.GetGroundData(ref spawnPoint, out var normal, out var foundBiome, out _, out _);
+                    var groundHeight = spawnPoint.y;
 
                     EpicLoot.Log($"Checking biome at ({randomPoint}): {foundBiome} (try {tries})");
                     if (foundBiome != biome)
@@ -161,11 +166,31 @@ namespace EpicLoot.Adventure.Feature
                         continue;
                     }
 
+                    var solidHeight = ZoneSystem.instance.GetSolidHeight(spawnPoint);
+                    var offsetFromGround = Math.Abs(solidHeight - groundHeight);
+                    if (offsetFromGround > 5)
+                    {
+                        // Don't place too high off the ground (on top of tree or something?
+                        EpicLoot.Log($"Spawn Point rejected: too high off of ground (groundHeight:{groundHeight}, solidHeight:{solidHeight})");
+                        continue;
+                    }
+
+                    // But also don't place inside rocks
+                    spawnPoint.y = solidHeight;
+
+                    var placedNearPlayerBase = EffectArea.IsPointInsideArea(spawnPoint, EffectArea.Type.PlayerBase, AdventureDataManager.Config.TreasureMap.IncreaseRadiusCount);
+                    if (placedNearPlayerBase)
+                    {
+                        // Don't place near player base
+                        EpicLoot.Log($"Spawn Point rejected: too close to player base");
+                        continue;
+                    }
+
                     var waterLevel = ZoneSystem.instance.m_waterLevel;
-                    var groundHeight = spawnPoint.y;
                     if (waterLevel > groundHeight + 1.0f)
                     {
                         // Too deep, try again
+                        EpicLoot.Log($"Spawn Point rejected: too deep underwater (waterLevel:{waterLevel}, groundHeight:{groundHeight})");
                         continue;
                     }
 
@@ -178,6 +203,8 @@ namespace EpicLoot.Adventure.Feature
 
                 radiusRange = new Tuple<float, float>(radiusRange.Item1 + 500, radiusRange.Item2 + 500);
             }
+
+            onComplete?.Invoke(false, new Vector3(), new Vector3());
             MerchantPanel.ShowInputBlocker(false);
         }
 

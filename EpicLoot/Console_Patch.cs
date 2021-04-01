@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Linq;
 using Common;
 using EpicLoot.Adventure;
@@ -55,15 +56,7 @@ namespace EpicLoot
             else if (command.Equals("testtreasuremap", StringComparison.InvariantCultureIgnoreCase) ||
                      command.Equals("testtm", StringComparison.InvariantCultureIgnoreCase))
             {
-                var player = Player.m_localPlayer;
-
-                var biome = (args.Length >= 2) ? (Heightmap.Biome)Enum.Parse(typeof(Heightmap.Biome), args[1]) : Heightmap.Biome.Meadows;
-                var overrideTreasureMapCount = (args.Length >= 3) ? int.Parse(args[2]) : -1;
-                if (overrideTreasureMapCount >= 0)
-                {
-                    player.GetAdventureSaveData().NumberOfTreasureMapsOrBountiesStarted = overrideTreasureMapCount;
-                }
-                player.StartCoroutine(AdventureDataManager.TreasureMaps.SpawnTreasureChest(biome, player, OnSpawnTreasureChestResult));
+                TestTreasureMap(args);
             }
             else if (command.Equals("resettreasuremap", StringComparison.InvariantCultureIgnoreCase) 
                      || command.Equals("resettm", StringComparison.InvariantCultureIgnoreCase))
@@ -107,12 +100,47 @@ namespace EpicLoot
             return true;
         }
 
-        private static void OnSpawnTreasureChestResult(bool success, Vector3 spawnPoint)
+        private static void TestTreasureMap(string[] args)
+        {
+            var player = Player.m_localPlayer;
+
+            var count = 1;
+            if (args.Length >= 2)
+            {
+                int.TryParse(args[1], out count);
+            }
+
+            var biome = Heightmap.Biome.None;
+            if (args.Length >= 3)
+            {
+                Enum.TryParse(args[2], out biome);
+            }
+
+            var saveData = player.GetAdventureSaveData();
+            player.StartCoroutine(TestTreasureMapCoroutine(saveData, biome, player, count));
+        }
+
+        private static IEnumerator TestTreasureMapCoroutine(AdventureSaveData saveData, Heightmap.Biome biome, Player player, int count)
+        {
+            var biomes = new[] { Heightmap.Biome.Meadows, Heightmap.Biome.BlackForest, Heightmap.Biome.Swamp, Heightmap.Biome.Mountain, Heightmap.Biome.Plains };
+
+            saveData.DebugMode = true;
+            var startInterval = saveData.TreasureMaps.Min(x => x.Interval) - 1;
+            for (var i = 0; i < count; ++i)
+            {
+                saveData.IntervalOverride = startInterval - (i + 1);
+                var selectedBiome = biome == Heightmap.Biome.None ? biomes[UnityEngine.Random.Range(0, biomes.Length)] : biome;
+                yield return AdventureDataManager.TreasureMaps.SpawnTreasureChest(selectedBiome, player, OnTreasureChestSpawnComplete);
+            }
+            saveData.DebugMode = false;
+        }
+
+        private static void OnTreasureChestSpawnComplete(bool success, Vector3 spawnPoint)
         {
             var output = "Failed to spawn treasure map chest";
             if (success)
             {
-                output = $"Spawning Treasure Map Chest at <{spawnPoint.x:0.#}, {spawnPoint.y:0.#}, {spawnPoint.z:0.#}>";
+                output = $"Spawning Treasure Map Chest at <{spawnPoint.x:0.#}, {spawnPoint.z:0.#}> (height:{spawnPoint.y:0.#})";
             }
 
             Console.instance.AddString(output);
