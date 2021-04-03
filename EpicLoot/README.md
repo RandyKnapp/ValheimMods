@@ -47,4 +47,8 @@ Enter these into the console (F5) after using `imacheater`:
   * Multiplayer Issue: Some players connecting to a dedicated server cannot access Enchanting sections of the crafting menu. This issue is being investigated.
   * Gamepad: Still some gamepad issues, especially when using other mods that change the inventory.
 
+## TODO
+
+[To-do List](https://github.com/RandyKnapp/ValheimMods/blob/main/EpicLoot/todo.md)
+
 **Author's Note:** Older versions of this mod used an image of the Odal rune (ᛟ) to denote set items. It's reconstructed Proto-Germanic meaning is "Heritage" or "Possession" and the author felt like it was the best rune from the Elder Futhark to signify set items. However, the Odal rune with wings or feet was and is used as a Nazi symbol. The author ***UNEQUIVOCALLY CONDEMNS*** Nazis, Nazism, anti-semitism, and white supremacy. Furthermore, those who hold or practice those beliefs are not welcome to use this mod. F\*\*k Nazis.
