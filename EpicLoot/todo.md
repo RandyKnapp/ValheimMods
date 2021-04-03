@@ -8,7 +8,7 @@
 - [ ] Infuse items: rarity to next rarity (like diablo upgrade rare to legendary)
 - [X] List of active magic effects on the player status screen
 - [X] Limit drop types by actual player progression
-- [ ] Gamble for magic items from Merchant
+- [X] Gamble for magic items from Merchant
 - [ ] Custom crafting station for enchanting
 - [ ] Create effects for in-game models of magic items
 - [ ] Balance, balance, balance
