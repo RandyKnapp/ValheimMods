@@ -117,37 +117,44 @@ none (do I even want to do this? I don't think so, not at this point)
 
 ## Legendary Sets:
 
-Heimdall (tank): Tower Shield (Guardian of the Gods), Head (Son of Nine Mothers), Chest (Heart of the Bifrost), Legs (Stride of the Aesir)
-	2: +200% Block Power
-	3: Bulwark - activate: take no damage for N seconds
-	4: Undying - On death, gain full health instantly, but long cooldown
+**Heimdall (tank):** Tower Shield (Guardian of the Gods), Head (Son of Nine Mothers), Chest (Heart of the Bifrost), Legs (Stride of the Aesir)
 
-Ragnar (aoe): Battleaxe (Serpentsbane), Cape (Ragnar's Boneless Wrap), Chest (Ragnar's White Shirt), Legs (Ragnar's Ironsides)
-	2: +2 HP/tick, +100% health regen
-	3: Attacks that deal frost damage deal 50% of their damage in an aoe around the attack
-	4: Berserker - activate: stop all health regen but gain +50% to +200% damage based on health missing
+2. +200% Block Power
+3. Bulwark - activate: take no damage for N seconds
+4. Undying - On death, gain full health instantly, but long cooldown
 
-Bloodaxe (dps): Knife (Fratricide), Head (Bloodaxe's Crown), Cape (Bloodaxe's Royal Mantle), Legs (Bloodaxe's Boots)
-	2: +25% attack speed, -50% attack stamina use
-	3: +200% Lightning Damage
-	4: All lightning damage has a chance to paralyze enemies
+**Ragnar (aoe):** Battleaxe (Serpentsbane), Cape (Ragnar's Boneless Wrap), Chest (Ragnar's White Shirt), Legs (Ragnar's Ironsides)
 
-Agilaz (bow): Bow (King's Warning/Second Arrow), Cape (Völund's Wings), Chest (Skadi's Hunting Coat), Legs (Ullr's Hunting Skis)
-	2: Bow draw speed reduced by +50%
-	3: Enemies with two or more negative effects take +30% damage from all sources
-	4: Frost and Poison effects last twice as long
+2. +2 HP/tick, +100% health regen
+3. Attacks that deal frost damage deal 50% of their damage in an aoe around the attack
+4. Berserker - activate: stop all health regen but gain +50% to +200% damage based on health missing
 
-Eir (healing): Head (Gaze of Frigg), Chest (Feast of Protection), Legs (Arrival of Aid), Cape (Wings of the Valkyrie)
-	2: Totem - activate: drop a healing totem where you stand that applies rapid health regen to allies within it
-	3: Can drop two totems simultaneously
-	4: Enemies in totem area are slowed by -30%
+**Bloodaxe (dps):** Knife (Fratricide), Head (Bloodaxe's Crown), Cape (Bloodaxe's Royal Mantle), Legs (Bloodaxe's Boots)
 
-Wayfarer (exploration): Head (), Chest (), Legs(), Cape ()
-	2: Movement speed increase, sprint stamina reduction
-	3: Discovery Range Increase
-	4: activate: For N minutes, all allies in range get +500 carry weight and all movement speed penalties removed
+2. +25% attack speed, -50% attack stamina use
+3. +200% Lightning Damage
+4. All lightning damage has a chance to paralyze enemies
 
-Coxswain (sailing): Head (), Chest (), Legs(), Cape ()
-	2: Increase boat speed and turning speed
-	3: Wind is always at back (like moder)
-	4: Summon indestructible longboat (in water), destroys previously summoned one
+**Agilaz (bow):** Bow (King's Warning/Second Arrow), Cape (Völund's Wings), Chest (Skadi's Hunting Coat), Legs (Ullr's Hunting Skis)
+
+2. Bow draw speed reduced by +50%
+3. Enemies with two or more negative effects take +30% damage from all sources
+4. Frost and Poison effects last twice as long
+
+**Eir (healing):** Head (Gaze of Frigg), Chest (Feast of Protection), Legs (Arrival of Aid), Cape (Wings of the Valkyrie)
+
+2. Totem - activate: drop a healing totem where you stand that applies rapid health regen to allies within it
+3. Can drop two totems simultaneously
+4. Enemies in totem area are slowed by -30%
+
+**Wayfarer (exploration):** Head (), Chest (), Legs(), Cape ()
+
+2. Movement speed increase, sprint stamina reduction
+3. Discovery Range Increase
+4. activate: For N minutes, all allies in range get +500 carry weight and all movement speed penalties removed
+
+**Coxswain (sailing):** Head (), Chest (), Legs(), Cape ()
+
+2. Increase boat speed and turning speed
+3. Wind is always at back (like moder)
+4. Summon indestructible longboat (in water), destroys previously summoned one
