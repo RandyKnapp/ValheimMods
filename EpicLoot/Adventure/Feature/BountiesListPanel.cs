@@ -101,7 +101,56 @@ namespace EpicLoot.Adventure.Feature
         public override void RefreshButton(Currencies playerCurrencies)
         {
             var selectedItem = GetSelectedItem();
-            MainButton.interactable = selectedItem != null && selectedItem.CanClaim;
+            var haveSpace = CanAddRewardToInventory(selectedItem);
+            MainButton.interactable = selectedItem != null && selectedItem.CanClaim && haveSpace;
+            var tooltip = MainButton.GetComponent<UITooltip>();
+            if (tooltip != null)
+            {
+                tooltip.m_text = "";
+                if (selectedItem != null && !selectedItem.CanClaim)
+                {
+                    tooltip.m_text = "Not complete yet";
+                }
+                else if (!haveSpace)
+                {
+                    tooltip.m_text = "No room in inventory for reward";
+                }
+            }
+        }
+
+        public bool CanAddRewardToInventory(BountyListElement selectedItem)
+        {
+            if (selectedItem == null)
+            {
+                return false;
+            }
+
+            var rewardCount = (selectedItem.BountyInfo.RewardIron > 0 ? 1 : 0) + (selectedItem.BountyInfo.RewardGold > 0 ? 1 : 0);
+            var hasEmptySlots = Player.m_localPlayer.GetInventory().GetEmptySlots() >= rewardCount;
+            if (hasEmptySlots)
+            {
+                return true;
+            }
+
+            if (selectedItem.BountyInfo.RewardIron > 0)
+            {
+                var haveSpace = Player.m_localPlayer.GetInventory().FindFreeStackSpace(MerchantPanel.GetIronBountyTokenName()) > selectedItem.BountyInfo.RewardIron;
+                if (!haveSpace)
+                {
+                    return false;
+                }
+            }
+
+            if (selectedItem.BountyInfo.RewardGold > 0)
+            {
+                var haveSpace = Player.m_localPlayer.GetInventory().FindFreeStackSpace(MerchantPanel.GetGoldBountyTokenName()) > selectedItem.BountyInfo.RewardGold;
+                if (!haveSpace)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         protected override void OnMainButtonClicked()

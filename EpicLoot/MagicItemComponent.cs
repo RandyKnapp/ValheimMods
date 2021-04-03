@@ -139,11 +139,6 @@ namespace EpicLoot
             var color = "white";
             var name = itemData.m_shared.m_name;
 
-            if (!string.IsNullOrEmpty(colorOverride))
-            {
-                color = colorOverride;
-            }
-
             if (itemData.IsMagic())
             {
                 var magicItem = itemData.GetMagicItem();
@@ -156,6 +151,11 @@ namespace EpicLoot
             else if (itemData.IsMagicCraftingMaterial() || itemData.IsRunestone())
             {
                 color = itemData.GetCraftingMaterialRarityColor();
+            }
+
+            if (!string.IsNullOrEmpty(colorOverride))
+            {
+                color = colorOverride;
             }
 
             return $"<color={color}>{name}</color>";

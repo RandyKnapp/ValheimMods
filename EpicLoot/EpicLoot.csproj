@@ -135,6 +135,7 @@
     <Compile Include="Crafting\TabController.cs" />
     <Compile Include="GatedItemType\GatedItemTypeHelper.cs" />
     <Compile Include="GatedItemType\ItemInfoConfig.cs" />
+    <Compile Include="Humanoid_Patch.cs" />
     <Compile Include="LegacyMagicEffectType.cs" />
     <Compile Include="LootBeams\AlwaysPointUp.cs" />
     <Compile Include="LootBeams\BeamColorSetter.cs" />
