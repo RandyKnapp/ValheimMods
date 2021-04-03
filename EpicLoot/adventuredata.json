@@ -1,4 +1,5 @@
 {
+  "FulingCoinDropScale": 1.0,
   "SecretStash": {
     "RefreshInterval": 1,
     "Materials": [

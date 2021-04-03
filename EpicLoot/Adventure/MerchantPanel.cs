@@ -166,7 +166,8 @@ namespace EpicLoot.Adventure
             }
             else
             {
-                item = listItem.ItemInfo.Item.Clone();
+                var itemDrop = AdventureFeature.CreateItemDrop(listItem.ItemInfo.ItemID);
+                item = itemDrop.m_itemData;
             }
 
             var inventory = player.GetInventory();

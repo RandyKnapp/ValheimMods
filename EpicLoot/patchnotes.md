@@ -1,3 +1,7 @@
+## Version 0.7.1
+  * Fixed bug with disappearing bounty/treasuremap pins on logout
+  * Fixed but with items purchased from Haldor's Secret Stash disappearing on logout
+  * Added some junk to trophy recipes
 ## Version 0.7.0
   * Added adventure panel to merchant
   * Added purchasing crafting mats from merchant

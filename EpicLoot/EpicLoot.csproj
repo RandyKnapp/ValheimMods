@@ -102,6 +102,7 @@
     <Compile Include="Adventure\AdventureSaveData.cs" />
     <Compile Include="Adventure\BaseMerchantPanelListElement.cs" />
     <Compile Include="Adventure\BountyTarget.cs" />
+    <Compile Include="Adventure\CharacterDrop_Patch.cs" />
     <Compile Include="Adventure\Feature\AdventureFeature.cs" />
     <Compile Include="Adventure\Feature\Bounties.cs" />
     <Compile Include="Adventure\Feature\BountiesListPanel.cs" />
@@ -195,6 +196,7 @@
     <None Include="magiceffects.json" />
     <None Include="manifest.json" />
     <None Include="patchnotes.md" />
+    <None Include="todo.md" />
     <None Include="README.md" />
     <None Include="recipes.json" />
   </ItemGroup>

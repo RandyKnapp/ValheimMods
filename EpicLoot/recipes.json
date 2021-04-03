@@ -303,6 +303,49 @@
         { "item": "ShardLegendary", "amount": 2 },
         { "item": "Coins",          "amount": 4 }
       ]
+    },
+
+    // Junk Recipes
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    {
+      "name": "Recipe_BoneSkeletonTrophy",
+      "item": "TrophySkeleton",
+      "craftingStation": "piece_workbench",
+      "resources": [
+        { "item": "BoneFragments", "amount": 10 }
+      ]
+    },
+    {
+      "name": "Recipe_EyeGreydwarfTrophy",
+      "item": "TrophyGreydwarf",
+      "craftingStation": "piece_workbench",
+      "resources": [
+        { "item": "GreydwarfEye", "amount": 10 }
+      ]
+    },
+    {
+      "name": "Recipe_AntlerDeerTrophy",
+      "item": "TrophyDeer",
+      "craftingStation": "piece_workbench",
+      "resources": [
+        { "item": "HardAntler", "amount": 2 }
+      ]
+    },
+    {
+      "name": "Recipe_CoreSurtlingTrophy",
+      "item": "TrophySurtling",
+      "craftingStation": "piece_workbench",
+      "resources": [
+        { "item": "SurtlingCore", "amount": 2 }
+      ]
+    },
+    {
+      "name": "Recipe_FreezeGlandDrakeTrophy",
+      "item": "TrophyHatchling",
+      "craftingStation": "piece_workbench",
+      "resources": [
+        { "item": "FreezeGland", "amount": 3 }
+      ]
     }
   ]
 }

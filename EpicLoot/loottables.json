@@ -274,9 +274,14 @@
     ////////////////////////////////////////////////////////////////////////////////////
     {
       "Object": "Greyling",
-      "Drops": [ [0, 95], [1, 5] ],
-      "Loot": [
-        { "Item": "Tier0Everything", "Weight": 1, "Rarity": [1, 0, 0, 0] }
+      "LeveledLoot": [
+        {
+          "Level": 1,
+          "Drops": [ [0, 95], [1, 5] ],
+          "Loot": [
+            { "Item": "Tier0Everything", "Weight": 1, "Rarity": [1, 0, 0, 0] }
+          ]
+        }
       ]
     },
     // Greydwarf
@@ -322,77 +327,127 @@
     ////////////////////////////////////////////////////////////////////////////////////
     {
       "Object": "Greydwarf_Elite",
-      "Drops":  [ [0, 60], [1, 40] ],
-      "Drops2": [ [0, 50], [1, 50] ],
-      "Drops3": [ [0, 30], [1, 70] ],
-      "Loot": [
-        { "Item": "Tier1Weapons", "Weight": 1, "Rarity": [ 95, 5, 0, 0 ] },
-        { "Item": "Tier0Shields", "Weight": 1, "Rarity": [ 95, 5, 0, 0 ] }
-      ],
-      "Loot2":[
-        { "Item": "Greydwarf_Elite.1" },
-        { "Item": "TrollArmor",       "Weight": 1, "Rarity": [ 80, 15, 5, 0 ] }
-      ],
-      "Loot3": [
-        { "Item": "Greydwarf_Elite.2", "Weight": 1, "Rarity": [ 60, 30, 10, 0 ] }
+      "LeveledLoot": [
+        {
+          "Level": 1,
+          "Drops":  [ [0, 60], [1, 40] ],
+          "Loot": [
+            { "Item": "Tier1Weapons", "Weight": 1, "Rarity": [ 95, 5, 0, 0 ] },
+            { "Item": "Tier0Shields", "Weight": 1, "Rarity": [ 95, 5, 0, 0 ] }
+          ]
+        },
+        {
+          "Level": 2,
+          "Drops": [ [0, 50], [1, 50] ],
+          "Loot":[
+            { "Item": "Greydwarf_Elite.1" },
+            { "Item": "TrollArmor",       "Weight": 1, "Rarity": [ 80, 15, 5, 0 ] }
+          ]
+        },
+        {
+          "Level": 3,
+          "Drops": [ [0, 30], [1, 70] ],
+          "Loot": [
+            { "Item": "Greydwarf_Elite.2", "Weight": 1, "Rarity": [ 60, 30, 10, 0 ] }
+          ]
+        }
       ]
     },
     // Greydwarf_Shaman
     ////////////////////////////////////////////////////////////////////////////////////
     {
       "Object": "Greydwarf_Shaman",
-      "Drops":  [ [0, 60], [1, 40] ],
-      "Drops2": [ [0, 50], [1, 50] ],
-      "Drops3": [ [0, 40], [1, 60] ],
-      "Loot": [
-        { "Item": "Tier1Armor",   "Weight": 1, "Rarity": [ 99, 1, 0, 0 ] },
-        { "Item": "Tier1Weapons", "Weight": 1, "Rarity": [ 99, 1, 0, 0 ] },
-        { "Item": "Tier0Shields", "Weight": 1, "Rarity": [ 99, 1, 0, 0 ] },
-        { "Item": "BowFineWood",  "Weight": 1, "Rarity": [ 99, 1, 0, 0 ] }
-      ],
-      "Loot2":[
-        { "Item": "Greydwarf_Shaman.1", "Rarity": [ 80, 15, 5, 0 ] }
-      ],
-      "Loot3": [
-        { "Item": "Greydwarf_Shaman.2", "Rarity": [ 60, 30, 10, 0 ] }
+      "LeveledLoot": [
+        {
+          "Level": 1,
+          "Drops":  [ [0, 60], [1, 40] ],
+          "Loot": [
+            { "Item": "Tier1Armor",   "Weight": 1, "Rarity": [ 99, 1, 0, 0 ] },
+            { "Item": "Tier1Weapons", "Weight": 1, "Rarity": [ 99, 1, 0, 0 ] },
+            { "Item": "Tier0Shields", "Weight": 1, "Rarity": [ 99, 1, 0, 0 ] },
+            { "Item": "BowFineWood",  "Weight": 1, "Rarity": [ 99, 1, 0, 0 ] }
+          ],
+        },
+        {
+          "Level": 2,
+          "Drops": [ [0, 50], [1, 50] ],
+          "Loot":[
+            { "Item": "Greydwarf_Shaman.1", "Rarity": [ 80, 15, 5, 0 ] }
+          ],
+        },
+        {
+          "Level": 3,
+          "Drops": [ [0, 40], [1, 60] ],
+          "Loot": [
+            { "Item": "Greydwarf_Shaman.2", "Rarity": [ 60, 30, 10, 0 ] }
+          ]
+        }
       ]
     },
     // Troll
     ////////////////////////////////////////////////////////////////////////////////////
     {
       "Object": "Troll",
-      "Drops":  [ [0, 60], [1, 40], [5, 1] ],
-      "Drops2": [ [0, 50], [1, 50], [5, 1] ],
-      "Drops3": [ [0, 40], [1, 60], [5, 1] ],
-      "Loot": [
-        { "Item": "Tier1Armor",   "Weight": 4, "Rarity": [ 90, 10, 0, 0 ] },
-        { "Item": "Tier1Weapons", "Weight": 4, "Rarity": [ 90, 10, 0, 0 ] },
-        { "Item": "Tier0Shields", "Weight": 2, "Rarity": [ 90, 10, 0, 0 ] },
-        { "Item": "TrollArmor",   "Weight": 2, "Rarity": [ 90, 10, 0, 0 ] },
-        { "Item": "Tier2Armor",   "Weight": 1, "Rarity": [ 90, 10, 0, 0 ] },
-        { "Item": "Tier2Weapons", "Weight": 1, "Rarity": [ 90, 10, 0, 0 ] }
+      "LeveledLoot": [
+        {
+          "Level": 1,
+          "Drops":  [ [0, 60], [1, 40], [5, 1] ],
+          "Loot": [
+            { "Item": "Tier1Armor",   "Weight": 4, "Rarity": [ 90, 10, 0, 0 ] },
+            { "Item": "Tier1Weapons", "Weight": 4, "Rarity": [ 90, 10, 0, 0 ] },
+            { "Item": "Tier0Shields", "Weight": 2, "Rarity": [ 90, 10, 0, 0 ] },
+            { "Item": "TrollArmor",   "Weight": 2, "Rarity": [ 90, 10, 0, 0 ] },
+            { "Item": "Tier2Armor",   "Weight": 1, "Rarity": [ 90, 10, 0, 0 ] },
+            { "Item": "Tier2Weapons", "Weight": 1, "Rarity": [ 90, 10, 0, 0 ] }
+          ]
+        },
+        {
+          "Level": 2,
+          "Drops": [ [0, 50], [1, 50], [5, 1] ],
+          "Loot": [
+            { "Item": "Troll.1" }
+          ]
+        },
+        {
+          "Level": 3,
+          "Drops3": [ [0, 40], [1, 60], [5, 1] ],
+          "Loot": [
+            { "Item": "Troll.1" }
+          ]
+        }
       ]
     },
     // Skeleton
     ////////////////////////////////////////////////////////////////////////////////////
     {
       "Object": "Skeleton",
-      "Drops":  [ [0, 95], [1, 5]  ],
-      "Drops2": [ [0, 85], [1, 15] ],
-      "Drops3": [ [0, 60], [1, 40] ],
-      "Loot": [
-        { "Item": "Tier0Shields", "Weight": 10, "Rarity": [ 98, 2, 0, 0 ] },
-        { "Item": "Tier1Armor",   "Weight": 10, "Rarity": [ 98, 2, 0, 0 ] },
-        { "Item": "Tier1Weapons", "Weight": 10, "Rarity": [ 98, 2, 0, 0 ] }
-      ],
-      "Loot2": [
-        { "Item": "Skeleton.1",   "Weight": 1, "Rarity": [ 90, 9, 1, 0 ] },
-        { "Item": "Tier2Weapons", "Weight": 4, "Rarity": [ 90, 9, 1, 0 ] },
-        { "Item": "Tier2Armor",   "Weight": 4, "Rarity": [ 90, 9, 1, 0 ] },
-        { "Item": "Tier2Shields", "Weight": 4, "Rarity": [ 90, 9, 1, 0 ] }
-      ],
-      "Loot3": [
-        { "Item": "Skeleton.2", "Weight": 1, "Rarity": [ 80, 15, 5, 0 ] }
+      "LeveledLoot": [
+        {
+          "Level": 1,
+          "Drops":  [ [0, 95], [1, 5]  ],
+          "Loot": [
+            { "Item": "Tier0Shields", "Weight": 10, "Rarity": [ 98, 2, 0, 0 ] },
+            { "Item": "Tier1Armor",   "Weight": 10, "Rarity": [ 98, 2, 0, 0 ] },
+            { "Item": "Tier1Weapons", "Weight": 10, "Rarity": [ 98, 2, 0, 0 ] }
+          ],
+        },
+        {
+          "Level": 2,
+          "Drops": [ [0, 85], [1, 15] ],
+          "Loot": [
+            { "Item": "Skeleton.1",   "Weight": 1, "Rarity": [ 90, 9, 1, 0 ] },
+            { "Item": "Tier2Weapons", "Weight": 4, "Rarity": [ 90, 9, 1, 0 ] },
+            { "Item": "Tier2Armor",   "Weight": 4, "Rarity": [ 90, 9, 1, 0 ] },
+            { "Item": "Tier2Shields", "Weight": 4, "Rarity": [ 90, 9, 1, 0 ] }
+          ],
+        },
+        {
+          "Level": 3,
+          "Drops": [ [0, 60], [1, 40] ],
+          "Loot": [
+            { "Item": "Skeleton.2", "Weight": 1, "Rarity": [ 80, 15, 5, 0 ] }
+          ]
+        }
       ]
     },
     // Ghost

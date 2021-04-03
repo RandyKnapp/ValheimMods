@@ -111,7 +111,7 @@ namespace EpicLoot.Adventure.Feature
                 {
                     tooltip.m_text = "Not complete yet";
                 }
-                else if (!haveSpace)
+                else if (selectedItem != null && !haveSpace)
                 {
                     tooltip.m_text = "No room in inventory for reward";
                 }

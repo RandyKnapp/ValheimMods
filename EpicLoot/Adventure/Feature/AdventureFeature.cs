@@ -69,6 +69,26 @@ namespace EpicLoot.Adventure.Feature
             return new Random(GetSeedForInterval(currentInterval, intervalDays));
         }
 
+        public static ItemDrop CreateItemDrop(string prefabName)
+        {
+            var itemPrefab = ObjectDB.instance.GetItemPrefab(prefabName);
+            if (itemPrefab == null)
+            {
+                return null;
+            }
+
+            var itemDrop = itemPrefab.GetComponent<ItemDrop>();
+            if (itemDrop == null)
+            {
+                return null;
+            }
+
+            ZNetView.m_forceDisableInit = true;
+            var item = UnityEngine.Object.Instantiate(itemDrop);
+            ZNetView.m_forceDisableInit = false;
+            return item;
+        }
+
         public static List<SecretStashItemInfo> CollectItems(List<SecretStashItemConfig> itemList)
         {
             return CollectItems(itemList, (x) => x.Item, (x) => true);
@@ -83,21 +103,20 @@ namespace EpicLoot.Adventure.Feature
             foreach (var itemConfig in itemList)
             {
                 var itemId = itemIdPredicate(itemConfig);
-                var itemPrefab = ObjectDB.instance.GetItemPrefab(itemId);
-                if (itemPrefab == null)
+                var item = CreateItemDrop(itemId);
+                if (item == null)
                 {
-                    EpicLoot.LogWarning($"[AdventureData] Could not find item type (gated={itemId} orig={itemConfig.Item}) in ObjectDB!");
+                    EpicLoot.LogWarning($"[AdventureData] Could not find item type (gated={itemId} orig={itemConfig}) in ObjectDB!");
                     continue;
                 }
 
-                var itemDrop = itemPrefab.GetComponent<ItemDrop>();
-                if (itemDrop == null)
+                if (item.GetComponent<ItemDrop>() == null)
                 {
-                    EpicLoot.LogError($"[AdventureData] Item did not have ItemDrop (gated={itemId} orig={itemConfig.Item}!");
+                    EpicLoot.LogError($"[AdventureData] Item did not have ItemDrop (gated={itemId} orig={itemConfig}!");
                     continue;
                 }
 
-                var itemData = itemDrop.m_itemData.Clone();
+                var itemData = item.m_itemData;
                 if (itemOkayToAddPredicate(itemData))
                 {
                     results.Add(new SecretStashItemInfo(itemId, itemData, itemConfig.GetCost()));
@@ -109,7 +128,7 @@ namespace EpicLoot.Adventure.Feature
 
         protected static void RollOnListNTimes<T>(Random random, List<T> list, int n, List<T> results)
         {
-            for (var i = 0; i < n; i++)
+            for (var i = 0; i < n && i < list.Count; i++)
             {
                 var index = random.Next(0, list.Count);
                 var item = list[index];

@@ -123,6 +123,7 @@ namespace EpicLoot.Adventure
     [Serializable]
     public class AdventureDataConfig
     {
+        public float FulingCoinDropScale = 1;
         public SecretStashConfig SecretStash;
         public GambleConfig Gamble;
         public TreasureMapConfig TreasureMap;

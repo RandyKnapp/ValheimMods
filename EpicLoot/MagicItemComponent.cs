@@ -15,7 +15,7 @@ namespace EpicLoot
     {
         public MagicItem MagicItem;
 
-        private static readonly JSONParameters saveParams = new JSONParameters { UseExtensions = false };
+        private static readonly JSONParameters _saveParams = new JSONParameters { UseExtensions = false };
 
         public MagicItemComponent(ExtendedItemData parent) 
             : base(typeof(MagicItemComponent).AssemblyQualifiedName, parent)
@@ -30,12 +30,20 @@ namespace EpicLoot
 
         public override string Serialize()
         {
-            return JSON.ToJSON(MagicItem, saveParams);
+            return JSON.ToJSON(MagicItem, _saveParams);
         }
 
         public override void Deserialize(string data)
         {
-            MagicItem = JSON.ToObject<MagicItem>(data, saveParams);
+            try
+            {
+                MagicItem = JSON.ToObject<MagicItem>(data, _saveParams);
+            }
+            catch (Exception)
+            {
+                EpicLoot.LogError($"[{nameof(MagicItemComponent)}] Could not deserialize MagicItem json data! ({ItemData?.m_shared?.m_name})");
+                throw;
+            }
         }
 
         public override BaseExtendedItemComponent Clone()

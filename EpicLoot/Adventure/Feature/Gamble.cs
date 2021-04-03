@@ -1,7 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using EpicLoot.GatedItemType;
+using UnityEngine;
+using Random = System.Random;
 
 namespace EpicLoot.Adventure.Feature
 {
@@ -75,21 +76,20 @@ namespace EpicLoot.Adventure.Feature
                 }
 
                 var itemId = GatedItemTypeHelper.GetGatedItemID(itemConfig, gatingMode);
-                var itemPrefab = ObjectDB.instance.GetItemPrefab(itemId);
-                if (itemPrefab == null)
+                var item = CreateItemDrop(itemId);
+                if (item == null)
                 {
                     EpicLoot.LogWarning($"[AdventureData] Could not find item type (gated={itemId} orig={itemConfig}) in ObjectDB!");
                     continue;
                 }
 
-                var itemDrop = itemPrefab.GetComponent<ItemDrop>();
-                if (itemDrop == null)
+                if (item.GetComponent<ItemDrop>() == null)
                 {
                     EpicLoot.LogError($"[AdventureData] Item did not have ItemDrop (gated={itemId} orig={itemConfig}!");
                     continue;
                 }
 
-                var itemData = itemDrop.m_itemData.Clone();
+                var itemData = item.m_itemData;
                 var cost = GetGambleCost(itemId);
                 availableGambles.Add(new SecretStashItemInfo(itemId, itemData, cost, true));
             }

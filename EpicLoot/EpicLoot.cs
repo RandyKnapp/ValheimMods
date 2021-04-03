@@ -55,7 +55,7 @@ namespace EpicLoot
     public class EpicLoot : BaseUnityPlugin
     {
         public const string PluginId = "randyknapp.mods.epicloot";
-        public const string Version = "0.7.0";
+        public const string Version = "0.7.1";
 
         private static ConfigEntry<string> _setItemColor;
         private static ConfigEntry<string> _magicRarityColor;
@@ -603,7 +603,18 @@ namespace EpicLoot
         public static T LoadJsonFile<T>(string filename) where T : class
         {
             var jsonFile = LoadJsonText(filename);
-            return string.IsNullOrEmpty(jsonFile) ? null : JSON.ToObject<T>(jsonFile);
+            T result = null;
+            try
+            {
+                result = string.IsNullOrEmpty(jsonFile) ? null : JSON.ToObject<T>(jsonFile);
+            }
+            catch (Exception)
+            {
+                LogError($"Could not parse file '{filename}'! Errors in JSON!");
+                throw;
+            }
+
+            return result;
         }
 
         public static string LoadJsonText(string filename)

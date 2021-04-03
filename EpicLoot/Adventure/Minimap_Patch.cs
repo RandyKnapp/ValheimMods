@@ -33,6 +33,14 @@ namespace EpicLoot.Adventure
             }
         }
 
+        [HarmonyPatch("OnDestroy")]
+        [HarmonyPostfix]
+        public static void OnDestroy_Postfix(Minimap __instance)
+        {
+            TreasureMapPins.Clear();
+            BountyPins.Clear();
+        }
+
         [HarmonyPatch("UpdateDynamicPins")]
         [HarmonyPostfix]
         public static void UpdateDynamicPins_Postfix(Minimap __instance)

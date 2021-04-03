@@ -1,4 +1,4 @@
-# EpicLoot Data v0.7.0
+# EpicLoot Data v0.7.1
 
 *Author: RandyKnapp*
 *Source: [Github](https://github.com/RandyKnapp/ValheimMods/tree/main/EpicLoot)*
@@ -952,25 +952,7 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 > | 0 | 95 (95%) |
 > | 1 | 5 (5%) |
 
-> | Drops (lvl 2) | Weight (Chance) |
-> | -- | -- |
-> | 0 | 95 (95%) |
-> | 1 | 5 (5%) |
-
-> | Drops (lvl 3) | Weight (Chance) |
-> | -- | -- |
-> | 0 | 95 (95%) |
-> | 1 | 5 (5%) |
-
 > | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
-> | -- | -- | -- | -- | -- | -- |
-> | Tier0Everything | 1 (100%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
-
-> | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
-> | -- | -- | -- | -- | -- | -- |
-> | Tier0Everything | 1 (100%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
-
-> | Items (lvl 3) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier0Everything | 1 (100%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
 
@@ -1097,12 +1079,6 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 > | 1 | 50 (49.5%) |
 > | 5 | 1 (1%) |
 
-> | Drops (lvl 3) | Weight (Chance) |
-> | -- | -- |
-> | 0 | 40 (39.6%) |
-> | 1 | 60 (59.4%) |
-> | 5 | 1 (1%) |
-
 > | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier1Armor | 4 (28.6%) | 90 (90%) | 10 (10%) | 0 (0%) | 0 (0%) |
@@ -1114,21 +1090,11 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 
 > | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
-> | Tier1Armor | 4 (28.6%) | 90 (90%) | 10 (10%) | 0 (0%) | 0 (0%) |
-> | Tier1Weapons | 4 (28.6%) | 90 (90%) | 10 (10%) | 0 (0%) | 0 (0%) |
-> | Tier0Shields | 2 (14.3%) | 90 (90%) | 10 (10%) | 0 (0%) | 0 (0%) |
-> | TrollArmor | 2 (14.3%) | 90 (90%) | 10 (10%) | 0 (0%) | 0 (0%) |
-> | Tier2Armor | 1 (7.1%) | 90 (90%) | 10 (10%) | 0 (0%) | 0 (0%) |
-> | Tier2Weapons | 1 (7.1%) | 90 (90%) | 10 (10%) | 0 (0%) | 0 (0%) |
+> | Troll.1 | 1 (100%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
 
 > | Items (lvl 3) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
-> | Tier1Armor | 4 (28.6%) | 90 (90%) | 10 (10%) | 0 (0%) | 0 (0%) |
-> | Tier1Weapons | 4 (28.6%) | 90 (90%) | 10 (10%) | 0 (0%) | 0 (0%) |
-> | Tier0Shields | 2 (14.3%) | 90 (90%) | 10 (10%) | 0 (0%) | 0 (0%) |
-> | TrollArmor | 2 (14.3%) | 90 (90%) | 10 (10%) | 0 (0%) | 0 (0%) |
-> | Tier2Armor | 1 (7.1%) | 90 (90%) | 10 (10%) | 0 (0%) | 0 (0%) |
-> | Tier2Weapons | 1 (7.1%) | 90 (90%) | 10 (10%) | 0 (0%) | 0 (0%) |
+> | Troll.1 | 1 (100%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
 
 
 ## Skeleton
