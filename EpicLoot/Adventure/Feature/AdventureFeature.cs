@@ -32,7 +32,7 @@ namespace EpicLoot.Adventure.Feature
 
         public Random GetRandom()
         {
-            return GetRandomForInterval(RefreshInterval);
+            return GetRandomForInterval(GetCurrentInterval(), RefreshInterval);
         }
 
         protected static int GetSecondsUntilIntervalRefresh(int intervalDays)
@@ -59,14 +59,14 @@ namespace EpicLoot.Adventure.Feature
             return currentDay / intervalDays;
         }
 
-        private static int GetSeedForInterval(int currentInterval)
+        private static int GetSeedForInterval(int currentInterval, int intervalDays)
         {
-            return unchecked((ZNet.m_world?.m_seed ?? 0) + currentInterval * 100);
+            return unchecked((ZNet.m_world?.m_seed ?? 0) + currentInterval * 1000 + intervalDays * 100);
         }
 
-        protected static Random GetRandomForInterval(int currentInterval)
+        protected static Random GetRandomForInterval(int currentInterval, int intervalDays)
         {
-            return new Random(GetSeedForInterval(currentInterval));
+            return new Random(GetSeedForInterval(currentInterval, intervalDays));
         }
 
         public static List<SecretStashItemInfo> CollectItems(List<SecretStashItemConfig> itemList)

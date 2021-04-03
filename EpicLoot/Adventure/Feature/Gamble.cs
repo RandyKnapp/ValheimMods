@@ -68,7 +68,13 @@ namespace EpicLoot.Adventure.Feature
             var availableGambles = new List<SecretStashItemInfo>();
             foreach (var itemConfig in AdventureDataManager.Config.Gamble.Gambles)
             {
-                var itemId = GatedItemTypeHelper.GetGatedItemID(itemConfig, GatedItemTypeMode.MustHaveCrafted);
+                var gatingMode = EpicLoot.GetGatedItemTypeMode();
+                if (gatingMode == GatedItemTypeMode.Unlimited)
+                {
+                    gatingMode = GatedItemTypeMode.MustKnowRecipe;
+                }
+
+                var itemId = GatedItemTypeHelper.GetGatedItemID(itemConfig, gatingMode);
                 var itemPrefab = ObjectDB.instance.GetItemPrefab(itemId);
                 if (itemPrefab == null)
                 {

@@ -96,6 +96,17 @@ namespace EpicLoot
                 adventureComponent.SaveData = new AdventureSaveDataList();
                 Player.m_localPlayer.SaveAdventureSaveData();
             }
+            else if (command.Equals("bounties"))
+            {
+                var interval = (args.Length >= 2) ? int.Parse(args[1]) : AdventureDataManager.Bounties.GetCurrentInterval();
+                var availableBounties = AdventureDataManager.Bounties.GetAvailableBounties(interval, false);
+                BountiesAdventureFeature.PrintBounties($"Bounties for Interval {interval}:", availableBounties);
+            }
+            else if (command.Equals("playerbounties"))
+            {
+                var availableBounties = Player.m_localPlayer.GetAdventureSaveData().Bounties;
+                BountiesAdventureFeature.PrintBounties($"Player Bounties:", availableBounties);
+            }
 
             return true;
         }
@@ -144,7 +155,7 @@ namespace EpicLoot
             }
 
             Console.instance.AddString(output);
-            Debug.LogWarning(output);
+            EpicLoot.LogWarning(output);
         }
 
         private static void ToggleAlwaysDrop(Console __instance)

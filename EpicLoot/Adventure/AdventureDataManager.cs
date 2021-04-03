@@ -25,23 +25,17 @@ namespace EpicLoot.Adventure
             Bounties = new BountiesAdventureFeature();
         }
 
-        public static Sprite GetTrophyIconForMonster(string monsterID)
+        public static Sprite GetTrophyIconForMonster(string monsterID, bool isGold)
         {
             if (_cachedTrophySprites.TryGetValue(monsterID, out var sprite))
             {
                 return sprite;
             }
 
-            if (ZNetScene.instance == null)
+            if (ZNetScene.instance != null)
             {
-                return null;
-            }
-
-            var prefab = ZNetScene.instance.GetPrefab(monsterID);
-            if (prefab != null)
-            {
-                var character = prefab.GetComponent<Character>();
-                if (character != null)
+                var prefab = ZNetScene.instance.GetPrefab(monsterID);
+                if (prefab != null)
                 {
                     var characterDrop = prefab.GetComponent<CharacterDrop>();
                     if (characterDrop != null)
@@ -50,14 +44,34 @@ namespace EpicLoot.Adventure
                         var trophyPrefab = drops.FirstOrDefault(x => x.m_itemData.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Trophie);
                         if (trophyPrefab != null)
                         {
-                            var foundSprite = trophyPrefab.m_itemData.GetIcon();
-                            if (foundSprite != null)
+                            sprite = trophyPrefab.m_itemData.GetIcon();
+                            if (sprite != null)
                             {
-                                _cachedTrophySprites.Add(monsterID, foundSprite);
+                                _cachedTrophySprites.Add(monsterID, sprite);
                             }
-                            return foundSprite;
+                            return sprite;
                         }
                     }
+                }
+            }
+
+            var noTrophySpriteName = $"NoTrophy{(isGold ? "Gold" : "Iron")}Sprite";
+            if (_cachedTrophySprites.TryGetValue(noTrophySpriteName, out sprite))
+            {
+                return sprite;
+            }
+
+            if (ObjectDB.instance != null)
+            {
+                var tokenItem = ObjectDB.instance.GetItemPrefab(isGold ? "GoldBountyToken" : "IronBountyToken");
+                if (tokenItem != null)
+                {
+                    sprite = tokenItem.GetComponent<ItemDrop>().m_itemData.GetIcon();
+                    if (sprite != null)
+                    {
+                        _cachedTrophySprites.Add(noTrophySpriteName, sprite);
+                    }
+                    return sprite;
                 }
             }
 

@@ -61,7 +61,7 @@ namespace EpicLoot.Adventure
             RewardTextGold.text = BountyInfo.RewardGold.ToString();
             RewardTextGold.transform.parent.gameObject.SetActive(BountyInfo.RewardGold > 0);
 
-            Icon.sprite = AdventureDataManager.GetTrophyIconForMonster(BountyInfo.Target.MonsterID);
+            Icon.sprite = AdventureDataManager.GetTrophyIconForMonster(BountyInfo.Target.MonsterID, BountyInfo.RewardGold > 0);
             Icon.color = canUse ? Color.white : new Color(1.0f, 0.0f, 1.0f, 0.0f);
 
             RewardLabel.SetActive(BountyInfo.State == BountyState.Available);

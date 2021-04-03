@@ -37,8 +37,7 @@
       "amount": 1,
       "craftingStation": "",
       "resources": [
-        { "item": "ShardMagic", "amount": 5 },
-        { "item": "Coins",      "amount": 1 }
+        { "item": "ShardMagic", "amount": 5 }
       ]
     },
     {
@@ -69,8 +68,7 @@
       "amount": 1,
       "craftingStation": "",
       "resources": [
-        { "item": "DustMagic", "amount": 5  },
-        { "item": "Coins",     "amount": 1 }
+        { "item": "DustMagic", "amount": 5  }
       ]
     },
     {
@@ -80,7 +78,7 @@
       "craftingStation": "",
       "resources": [
         { "item": "DustRare", "amount": 5  },
-        { "item": "Coins",    "amount": 15 }
+        { "item": "Coins",    "amount": 5 }
       ]
     },
     {
@@ -100,8 +98,7 @@
       "amount": 1,
       "craftingStation": "",
       "resources": [
-        { "item": "ReagentMagic", "amount": 5 },
-        { "item": "Coins",        "amount": 1 }
+        { "item": "ReagentMagic", "amount": 5 }
       ]
     },
     {
@@ -131,8 +128,7 @@
       "amount": 1,
       "craftingStation": "",
       "resources": [
-        { "item": "EssenceMagic", "amount": 5 },
-        { "item": "Coins",        "amount": 1 }
+        { "item": "EssenceMagic", "amount": 5 }
       ]
     },
     {
@@ -162,8 +158,7 @@
       "amount": 1,
       "craftingStation": "",
       "resources": [
-        { "item": "RunestoneMagic", "amount": 5 },
-        { "item": "Coins",          "amount": 1 }
+        { "item": "RunestoneMagic", "amount": 5 }
       ]
     },
     {
@@ -195,8 +190,7 @@
       "amount": 1,
       "craftingStation": "",
       "resources": [
-        { "item": "ShardMagic", "amount": 2 },
-        { "item": "Coins",      "amount": 1 }
+        { "item": "ShardMagic", "amount": 2 }
       ]
     },
     {
@@ -205,8 +199,7 @@
       "amount": 1,
       "craftingStation": "",
       "resources": [
-        { "item": "ShardMagic", "amount": 2 },
-        { "item": "Coins",      "amount": 1 }
+        { "item": "ShardMagic", "amount": 2 }
       ]
     },
     {
@@ -215,8 +208,7 @@
       "amount": 1,
       "craftingStation": "",
       "resources": [
-        { "item": "ShardMagic", "amount": 2 },
-        { "item": "Coins",      "amount": 1 }
+        { "item": "ShardMagic", "amount": 2 }
       ]
     },
     ///////////////////////////////////////////////////////////////////////////////////////////////

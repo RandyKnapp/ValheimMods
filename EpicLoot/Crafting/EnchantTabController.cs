@@ -466,11 +466,8 @@ namespace EpicLoot.Crafting
         {
             if (!item.IsMagic() && EpicLoot.CanBeMagicItem(item))
             {
-                if (Player.m_localPlayer.m_knownMaterial.Any(x => x.Contains("Runestone")))
-                {
-                    var recipe = new EnchantRecipe { FromItem = item.Extended() };
-                    Recipes.Add(recipe);
-                }
+                var recipe = new EnchantRecipe { FromItem = item.Extended() };
+                Recipes.Add(recipe);
             }
         }
 

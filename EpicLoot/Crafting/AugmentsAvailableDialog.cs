@@ -43,14 +43,7 @@ namespace EpicLoot.Crafting
             NameText.text = Localization.instance.Localize(item.GetDecoratedName());
             Icon.sprite = item.GetIcon();
 
-            var valuelessEffect = false;
-            if (recipe.EffectIndex >= 0 && recipe.EffectIndex < magicItem.Effects.Count)
-            {
-                var currentEffectDef = MagicItemEffectDefinitions.Get(magicItem.Effects[recipe.EffectIndex].EffectType);
-                valuelessEffect = currentEffectDef.GetValuesForRarity(rarity) == null;
-            }
-
-            var availableEffects = MagicItemEffectDefinitions.GetAvailableEffects(item.Extended(), item.GetMagicItem(), valuelessEffect ? -1 : recipe.EffectIndex);
+            var availableEffects = AugmentTabController.GetAvailableAugments(recipe, item, magicItem, rarity);
             var t = new StringBuilder();
             foreach (var effectDef in availableEffects)
             {

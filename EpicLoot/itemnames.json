@@ -203,6 +203,7 @@
     ]
   },
   "Legendary": [
-    { "Name": "Fafnir's Bloody Talon", "Types": [ "OneHandedWeapon" ], "Skills": [ "Swords" ] }
+    { "Name": "Fafnir's Bloody Talon", "Types": [ "OneHandedWeapon" ], "Skills": [ "Swords" ] },
+    { "Name": "Lancing Luff's Lancer Lance of Lancing", "Types": [ "OneHandedWeapon"], "Skills": [ "Spears" ] }
   ]
 }

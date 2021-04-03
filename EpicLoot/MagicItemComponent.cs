@@ -143,7 +143,8 @@ namespace EpicLoot
             {
                 color = colorOverride;
             }
-            else if (itemData.IsMagic())
+
+            if (itemData.IsMagic())
             {
                 var magicItem = itemData.GetMagicItem();
                 color = magicItem.GetColorString();

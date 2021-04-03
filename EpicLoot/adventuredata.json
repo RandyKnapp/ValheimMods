@@ -20,6 +20,9 @@
       { "Item": "EssenceLegendary", "CoinsCost": 625 }
     ],
     "RollsPerRarity": [1, 1, 1, 1],
+    "RandomItems": [
+    ],
+    "RandomItemsCount": 0, 
     "OtherItems": [
       { "Item": "Andvaranaut", "CoinsCost": 2000 }
     ]
@@ -159,11 +162,11 @@
   "TreasureMap": { 
     "RefreshInterval": 7,
     "BiomeInfo": [
-      { "Biome": "Meadows",     "Cost": 100,  "ForestTokens": 5,  "MinRadius": 0,    "MaxRadius": 3000 },
-      { "Biome": "BlackForest", "Cost": 300,  "ForestTokens": 10, "MinRadius": 0,    "MaxRadius": 6000 },
-      { "Biome": "Swamp",       "Cost": 500,  "ForestTokens": 15, "MinRadius": 2000, "MaxRadius": 6000 },
-      { "Biome": "Mountain",    "Cost": 750,  "ForestTokens": 20, "MinRadius": 2000, "MaxRadius": 6000 },
-      { "Biome": "Plains",      "Cost": 1000, "ForestTokens": 25, "MinRadius": 3000, "MaxRadius": 6000 }
+      { "Biome": "Meadows",     "Cost": 100, "ForestTokens": 5,  "MinRadius": 0,    "MaxRadius": 3000 },
+      { "Biome": "BlackForest", "Cost": 200, "ForestTokens": 10, "MinRadius": 0,    "MaxRadius": 6000 },
+      { "Biome": "Swamp",       "Cost": 300, "ForestTokens": 15, "MinRadius": 2000, "MaxRadius": 6000 },
+      { "Biome": "Mountain",    "Cost": 400, "ForestTokens": 20, "MinRadius": 2000, "MaxRadius": 6000 },
+      { "Biome": "Plains",      "Cost": 500, "ForestTokens": 25, "MinRadius": 3000, "MaxRadius": 6000 }
     ],
     "StartRadiusMin": 0,
     "StartRadiusMax": 500,

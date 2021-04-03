@@ -59,13 +59,19 @@ namespace EpicLoot.Crafting
             Description.text = Localization.instance.Localize(item.GetTooltip());
             Icon.sprite = item.GetIcon();
 
+            foreach (var button in EffectChoiceButtons)
+            {
+                button.gameObject.SetActive(false);
+            }
+
             var newEffectOptions = LootRoller.RollAugmentEffects(item, magicItem, recipe.EffectIndex);
             for (var index = 0; index < newEffectOptions.Count; index++)
             {
                 var effect = newEffectOptions[index];
                 var button = EffectChoiceButtons[index];
+                button.gameObject.SetActive(true);
                 var text = button.GetComponentInChildren<Text>();
-                text.text = (index == 0 ? "(keep) " : "") + MagicItem.GetEffectText(effect, rarity, true);
+                text.text = (index == 0 ? "<color=white>(keep)</color> " : "") + MagicItem.GetEffectText(effect, rarity, true);
                 text.color = rarityColor;
                 var buttonColor = button.GetComponent<ButtonTextColor>();
                 buttonColor.m_defaultColor = rarityColor;

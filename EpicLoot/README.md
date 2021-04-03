@@ -191,4 +191,14 @@ Eir (healing): Head (Gaze of Frigg), Chest (Feast of Protection), Legs (Arrival 
 	3: Can drop two totems simultaneously
 	4: Enemies in totem area are slowed by -30%
 
+Wayfarer (exploration): Head (), Chest (), Legs(), Cape ()
+	2: Movement speed increase, sprint stamina reduction
+	3: Discovery Range Increase
+	4: activate: For N minutes, all allies in range get +500 carry weight and all movement speed penalties removed
+
+Coxswain (sailing): Head (), Chest (), Legs(), Cape ()
+	2: Increase boat speed and turning speed
+	3: Wind is always at back (like moder)
+	4: Summon indestructible longboat (in water), destroys previously summoned one
+
 **Author's Note:** Older versions of this mod used an image of the Odal rune (ᛟ) to denote set items. It's reconstructed Proto-Germanic meaning is "Heritage" or "Possession" and the author felt like it was the best rune from the Elder Futhark to signify set items. However, the Odal rune with wings or feet was and is used as a Nazi symbol. The author ***UNEQUIVOCALLY CONDEMNS*** Nazis, Nazism, anti-semitism, and white supremacy. Furthermore, those who hold or practice those beliefs are not welcome to use this mod. F\*\*k Nazis.

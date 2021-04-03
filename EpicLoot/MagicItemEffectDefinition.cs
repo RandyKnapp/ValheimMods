@@ -328,6 +328,13 @@ namespace EpicLoot
             if (effect != null)
             {
                 magicItem.Effects.Insert(ignoreEffectIndex, effect);
+                if (AllDefinitions.TryGetValue(effect.EffectType, out var ignoredEffectDef))
+                {
+                    if (!results.Contains(ignoredEffectDef))
+                    {
+                        results.Add(ignoredEffectDef);
+                    }
+                }
             }
 
             return results;

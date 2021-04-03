@@ -180,6 +180,11 @@ namespace EpicLoot
 
             foreach (var ld in selectedDrops)
             {
+                if (ld == null)
+                {
+                    EpicLoot.LogError($"Loot drop was null! RollLootTableInternal({lootTable.Object}, {level}, {objectName})");
+                    continue;
+                }
                 var lootDrop = ResolveLootDrop(ld, ld.Rarity);
                 var itemID = CheatDisableGating ? lootDrop.Item : GatedItemTypeHelper.GetGatedItemID(lootDrop.Item);
 
@@ -382,6 +387,11 @@ namespace EpicLoot
 
             foreach (var effectDef in effectDefs)
             {
+                if (effectDef == null)
+                {
+                    EpicLoot.LogError($"EffectDef was null! RollEffects({itemRarity}, {count})");
+                    continue;
+                }
                 results.Add(RollEffect(effectDef, itemRarity));
             }
 
@@ -525,9 +535,9 @@ namespace EpicLoot
             var valuelessEffect = MagicItemEffectDefinitions.IsValuelessEffect(currentEffect.EffectType, rarity);
             var availableEffects = MagicItemEffectDefinitions.GetAvailableEffects(item, magicItem, valuelessEffect ? -1 : effectIndex);
 
-            for (var i = 0; i < 2; i++)
+            for (var i = 0; i < 2 && i < availableEffects.Count; i++)
             {
-                var newEffect = RollEffects(availableEffects, rarity, 1).FirstOrDefault();
+                var newEffect = RollEffects(availableEffects, rarity, 1, false).FirstOrDefault();
                 if (newEffect == null)
                 {
                     EpicLoot.LogError($"Rolled a null effect: item:{item.m_shared.m_name}, index:{effectIndex}");

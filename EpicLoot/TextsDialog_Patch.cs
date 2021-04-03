@@ -76,10 +76,10 @@ namespace EpicLoot
             t.AppendLine("<color=orange><size=30>Treasure Maps</size></color>");
             t.AppendLine();
 
-            var sortedTreasureMaps = saveData.TreasureMaps.OrderBy(x => x.State).ThenBy(x => GetBiomeOrder(x.Biome));
+            var sortedTreasureMaps = saveData.TreasureMaps.Where(x => x.State == TreasureMapState.Purchased).OrderBy(x => GetBiomeOrder(x.Biome));
             foreach (var treasureMap in sortedTreasureMaps)
             {
-                t.AppendLine(Localization.instance.Localize($"Treasure Map: <color={GetBiomeColor(treasureMap.Biome)}>$biome_{treasureMap.Biome.ToString().ToLower()} #{treasureMap.Interval + 1}</color> ({(treasureMap.State == TreasureMapState.Found ? "<color=lime>Found!</color>" : "<color=grey>Still searching...</color>")})"));
+                t.AppendLine(Localization.instance.Localize($"Treasure Map: <color={GetBiomeColor(treasureMap.Biome)}>$biome_{treasureMap.Biome.ToString().ToLower()} #{treasureMap.Interval + 1}</color>"));
             }
 
             t.AppendLine();

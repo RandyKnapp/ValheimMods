@@ -11,4 +11,15 @@ namespace EpicLoot
             return true;
         }
     }
+
+    //public bool IsAfternoon()
+    /*[HarmonyPatch(typeof(EnvMan), "IsAfternoon")]
+    public static class EnvMan_IsAfternoon_Patch
+    {
+        public static bool Prefix(ref bool __result)
+        {
+            __result = true;
+            return false;
+        }
+    }*/
 }

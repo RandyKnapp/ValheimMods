@@ -113,6 +113,11 @@ namespace EpicLoot.Crafting
                 }
 
                 var player = Player.m_localPlayer;
+                if (player == null)
+                {
+                    return true;
+                }
+
                 var station = player.GetCurrentCraftingStation();
                 foreach (var tabController in CustomTabs())
                 {

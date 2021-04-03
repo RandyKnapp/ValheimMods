@@ -46,8 +46,8 @@ namespace EpicLoot.Crafting
 
                 ChoiceDialog.NameText = Object.Instantiate(inventoryGui.m_recipeName, background);
                 ChoiceDialog.Description = Object.Instantiate(inventoryGui.m_recipeDecription, background);
-                ChoiceDialog.Description.rectTransform.anchoredPosition += new Vector2(0, -55);
-                ChoiceDialog.Description.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 350);
+                ChoiceDialog.Description.rectTransform.anchoredPosition += new Vector2(0, -47);
+                ChoiceDialog.Description.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 340);
                 ChoiceDialog.Icon = Object.Instantiate(inventoryGui.m_recipeIcon, background);
 
                 var closeButton = ChoiceDialog.gameObject.GetComponentInChildren<Button>();
@@ -208,14 +208,13 @@ namespace EpicLoot.Crafting
                 var itemData = recipe.FromItem;
                 var magicItem = itemData.GetMagicItem();
                 var rarity = itemData.GetRarity();
-                var rarityColor = EpicLoot.GetRarityColor(rarity);
                 var rarityColorARGB = EpicLoot.GetRarityColorARGB(rarity);
 
                 __instance.m_recipeIcon.enabled = true;
                 __instance.m_recipeIcon.sprite = itemData.GetIcon();
 
                 __instance.m_recipeName.enabled = true;
-                __instance.m_recipeName.text = Localization.instance.Localize(itemData.GetDecoratedName(rarityColor));
+                __instance.m_recipeName.text = Localization.instance.Localize(itemData.GetDecoratedName());
 
                 __instance.m_recipeDecription.enabled = true;
 
@@ -239,9 +238,17 @@ namespace EpicLoot.Crafting
 
                 var canCraft = Player.m_localPlayer.HaveRequirements(GetRecipeRequirementArray(recipe), false, 1);
                 var hasSelectedEffect = recipe.EffectIndex >= 0;
-                __instance.m_craftButton.interactable = canCraft && hasSelectedEffect;
+                var hasAnyAvailableEnchants = GetAvailableAugments(recipe, recipe.FromItem, recipe.FromItem.GetMagicItem(), recipe.FromItem.GetRarity()).Count > 0;
+                __instance.m_craftButton.interactable = canCraft && hasSelectedEffect && hasAnyAvailableEnchants;
                 __instance.m_craftButton.GetComponentInChildren<Text>().text = "Augment";
-                __instance.m_craftButton.GetComponent<UITooltip>().m_text = hasSelectedEffect ? (canCraft ? "" : Localization.instance.Localize("$msg_missingrequirement")) : "Select an effect to augment";
+                __instance.m_craftButton.GetComponent<UITooltip>().m_text = 
+                    hasSelectedEffect ? 
+                        (canCraft ? 
+                            (hasAnyAvailableEnchants ?
+                                ""
+                                : "No available effects") 
+                            : Localization.instance.Localize("$msg_missingrequirement")) 
+                        : "Select an effect to augment";
             }
             else
             {
@@ -263,6 +270,18 @@ namespace EpicLoot.Crafting
 
                 __instance.m_craftButton.interactable = false;
             }
+        }
+
+        public static List<MagicItemEffectDefinition> GetAvailableAugments(AugmentRecipe recipe, ItemDrop.ItemData item, MagicItem magicItem, ItemRarity rarity)
+        {
+            var valuelessEffect = false;
+            if (recipe.EffectIndex >= 0 && recipe.EffectIndex < magicItem.Effects.Count)
+            {
+                var currentEffectDef = MagicItemEffectDefinitions.Get(magicItem.Effects[recipe.EffectIndex].EffectType);
+                valuelessEffect = currentEffectDef.GetValuesForRarity(rarity) == null;
+            }
+
+            return MagicItemEffectDefinitions.GetAvailableEffects(item.Extended(), item.GetMagicItem(), valuelessEffect ? -1 : recipe.EffectIndex);
         }
 
         private void GenerateAugmentSelectors(AugmentRecipe recipe, InventoryGui inventoryGui)
@@ -482,7 +501,7 @@ namespace EpicLoot.Crafting
             bgImage.color = EpicLoot.GetRarityColorARGB(item.GetRarity());
 
             var nameText = element.transform.Find("name").GetComponent<Text>();
-            nameText.text = Localization.instance.Localize(item.m_shared.m_name);
+            nameText.text = Localization.instance.Localize(item.GetDecoratedName());
             if (item.GetMagicItem() != null && item.GetMagicItem().HasBeenAugmented())
             {
                 nameText.text += " ◇";

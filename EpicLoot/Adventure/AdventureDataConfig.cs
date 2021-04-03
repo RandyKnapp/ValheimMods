@@ -30,6 +30,8 @@ namespace EpicLoot.Adventure
         public int RefreshInterval;
         public List<SecretStashItemConfig> Materials = new List<SecretStashItemConfig>();
         public List<int> RollsPerRarity = new List<int> {1, 1, 1, 1};
+        public List<SecretStashItemConfig> RandomItems = new List<SecretStashItemConfig>();
+        public int RandomItemsCount = 0;
         public List<SecretStashItemConfig> OtherItems = new List<SecretStashItemConfig>();
     }
 

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Common;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -16,9 +17,13 @@ namespace EpicLoot.Adventure.Feature
 
         public List<BountyInfo> GetAvailableBounties()
         {
+            return GetAvailableBounties(GetCurrentInterval());
+        }
+
+        public List<BountyInfo> GetAvailableBounties(int interval, bool removeAcceptedBounties = true)
+        {
             var player = Player.m_localPlayer;
-            var interval = GetCurrentInterval();
-            var random = GetRandom();
+            var random = GetRandomForInterval(interval, RefreshInterval);
 
             var bountiesPerBiome = new MultiValueDictionary<Heightmap.Biome, BountyTargetConfig>();
             foreach (var targetConfig in AdventureDataManager.Config.Bounties.Targets)
@@ -49,9 +54,29 @@ namespace EpicLoot.Adventure.Feature
             })
                 .ToList();
 
-            results.RemoveAll(x => saveData.HasAcceptedBounty(x.Interval, x.ID));
+            //PrintBounties("Player Bounties: ", saveData.Bounties);
+            //PrintBounties("Before: ", results);
+            if (removeAcceptedBounties)
+            {
+                results.RemoveAll(x => saveData.HasAcceptedBounty(x.Interval, x.ID));
+            }
+            //PrintBounties("After: ", results);
 
             return results;
+        }
+
+        public static string PrintBounties(string label, List<BountyInfo> results)
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine(label);
+            for (var index = 0; index < results.Count; index++)
+            {
+                var bountyInfo = results[index];
+                sb.AppendLine($"{index} - {bountyInfo.Interval}, {bountyInfo.Biome}, {bountyInfo.TargetName}, ID={bountyInfo.ID}, state={bountyInfo.State}");
+            }
+
+            EpicLoot.Log(sb.ToString());
+            return sb.ToString();
         }
 
         public static string GenerateTargetName(Random random)
