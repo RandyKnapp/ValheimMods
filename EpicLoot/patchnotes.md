@@ -5,6 +5,7 @@
   * Added purchasable treasure maps
   * Added bounty hunting
   * Fixed some bugs with item gating
+  * Fixed some bugs with augmenting legendary items
 ## Version 0.6.4
   * Item Names Update!
   * Adding logs to Augmenting
