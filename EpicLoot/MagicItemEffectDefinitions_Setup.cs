@@ -44,5 +44,6 @@
         public static string AddCarryWeight = nameof(AddCarryWeight);
         public static string ModifyAttackSpeed = nameof(ModifyAttackSpeed);
         public static string Throwable = nameof(Throwable);
+        public static string Waterproof = nameof(Waterproof);
     }
 }

@@ -728,6 +728,16 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon`
 > > **ExcludedSkillTypes:** `Pickaxes, Spears`
 
+## Waterproof
+
+> **Display Text:** Waterproof
+> 
+> **Allowed Item Types:** Shoulder
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedItemTypes:** `Shoulder`
+
 # Item Sets
 
 Sets of loot drop data that can be referenced in the loot tables

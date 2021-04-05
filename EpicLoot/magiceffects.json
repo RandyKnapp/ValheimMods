@@ -977,6 +977,18 @@
       "SelectionWeight" : 1,
       "Prefixes": [ "Throwing" ],
       "Suffixes": [ "Throwing" ]
+    },
+    {
+      "Type" : "Waterproof",
+      "DisplayText" : "Waterproof",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "Shoulder"
+        ]
+      },
+      "SelectionWeight" : 1,
+      "Prefixes": [ "Waterproof" ],
+      "Suffixes": [ "Water-repelling" ]
     }
   ]
 }
