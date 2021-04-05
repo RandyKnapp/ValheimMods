@@ -31,11 +31,11 @@
 - [ ] Quick draw (bows, draw speed dramatically increased)
 - [ ] Recall (spear, automaticallyl pick up spear after throwing)
 - [ ] Immobilize
-- [ ] Modify Attack Speed
+- [X] Modify Attack Speed
 - [ ] Increase damage vs staggered enemies
 - [ ] Duelist (sword, when off hand is empty, increase parry and block power by a lot)
 - [ ] Opportunist (knife, add backstab damaged to staggered enemies)
-- [ ] Throwing (change alterate attack to throw like spear)
+- [X] Throwing (change alterate attack to throw like spear)
 - [ ] Increase stagger duration
 - [ ] Blind
 - [ ] Immovable (tower shield, immune to stagger and knockback while blocking)

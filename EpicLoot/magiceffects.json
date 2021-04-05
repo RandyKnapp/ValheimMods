@@ -891,6 +891,28 @@
       "Suffixes": [ "Weightlessness" ]
     },
     {
+      "Type" : "AddCarryWeight",
+      "DisplayText" : "Increase carry weight by +{0}",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "Helmet",
+          "Chest",
+          "Legs",
+          "Shoulder",
+          "Utility"
+        ]
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 5, "MaxValue" : 10, "Increment" : 5 },
+        "Rare" : { "MinValue" : 10, "MaxValue" : 15, "Increment" : 5 },
+        "Epic" : { "MinValue" : 15, "MaxValue" : 25, "Increment" : 5 },
+        "Legendary" : { "MinValue" : 20, "MaxValue" : 50, "Increment" : 5 }
+      },
+      "SelectionWeight" : 1,
+      "Prefixes": [ "Pocketed" ],
+      "Suffixes": [ "Pockets" ]
+    },
+    {
       "Type" : "LifeSteal",
       "DisplayText" : "Heal for {0:0.0}% of damage done",
       "Requirements" : {
@@ -914,29 +936,9 @@
         "Epic" : { "MinValue" : 1.5, "MaxValue" : 2.2, "Increment" : 0.1 },
         "Legendary" : { "MinValue" : 2.3, "MaxValue" : 3, "Increment" : 0.1 }
       },
-      "SelectionWeight" : 1
-    },
-    {
-      "Type" : "AddCarryWeight",
-      "DisplayText" : "Increase carry weight by +{0}",
-      "Requirements" : {
-        "AllowedItemTypes" : [
-          "Helmet",
-          "Chest",
-          "Legs",
-          "Shoulder",
-          "Utility"
-        ]
-      },
-      "ValuesPerRarity" : {
-        "Magic" : { "MinValue" : 5, "MaxValue" : 10, "Increment" : 5 },
-        "Rare" : { "MinValue" : 10, "MaxValue" : 15, "Increment" : 5 },
-        "Epic" : { "MinValue" : 15, "MaxValue" : 25, "Increment" : 5 },
-        "Legendary" : { "MinValue" : 20, "MaxValue" : 50, "Increment" : 5 }
-      },
       "SelectionWeight" : 1,
-      "Prefixes": [ "Pocketed" ],
-      "Suffixes": [ "Pockets" ]
+      "Prefixes": [ "Valravn's" ],
+      "Suffixes": [ "Valravn" ]
     },
     {
       "Type" : "ModifyAttackSpeed",
@@ -958,6 +960,23 @@
       "SelectionWeight" : 1,
       "Prefixes": [ "Striker's" ],
       "Suffixes": [ "Striking" ]
+    },
+    {
+      "Type" : "Throwable",
+      "DisplayText" : "Throwable",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "OneHandedWeapon",
+          "TwoHandedWeapon"
+        ],
+        "ExcludedSkillTypes": [
+          "Pickaxes",
+          "Spears"
+        ]
+      },
+      "SelectionWeight" : 1,
+      "Prefixes": [ "Throwing" ],
+      "Suffixes": [ "Throwing" ]
     }
   ]
 }

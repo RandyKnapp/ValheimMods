@@ -1,6 +1,8 @@
 ## Version 0.7.3
   * Added config value to hide equipped and hotbar items in the sacrifice tab
+  * Also added freeze time keybind (RCtrl+Backspace) and made free fly camera fixed update time (so you can fly around during freeze time)
   * Added LifeSteal magic effect (submitted by [nanonull](https://github.com/nanonull))
+  * Added ModifyAttackSpeed
 ## Version 0.7.2
   * Bosses drop one trophy per player (configurable)
   * Fixed a bug where you could complete a bounty just by killing the minions if they were the same type as the bounty target

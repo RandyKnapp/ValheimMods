@@ -113,6 +113,11 @@ namespace EpicLoot
                 var availableBounties = Player.m_localPlayer.GetAdventureSaveData().Bounties;
                 BountiesAdventureFeature.PrintBounties($"Player Bounties:", availableBounties);
             }
+            else if (command.Equals("timescale") || command.Equals("ts"))
+            {
+                var timeScale = (args.Length >= 2) ? float.Parse(args[1]) : 1;
+                Time.timeScale = timeScale;
+            }
 
             return true;
         }

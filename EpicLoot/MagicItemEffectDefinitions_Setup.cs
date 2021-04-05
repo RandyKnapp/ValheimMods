@@ -43,5 +43,6 @@
         public static string LifeSteal = nameof(LifeSteal);
         public static string AddCarryWeight = nameof(AddCarryWeight);
         public static string ModifyAttackSpeed = nameof(ModifyAttackSpeed);
+        public static string Throwable = nameof(Throwable);
     }
 }

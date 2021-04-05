@@ -98,6 +98,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GameCamera_Patch.cs" />
     <Compile Include="Healing\AddHealingQueueToPlayerPatch.cs" />
     <Compile Include="Adventure\AbandonBountyDialog.cs" />
     <Compile Include="Adventure\AdventureComponent.cs" />
@@ -179,6 +180,7 @@
     <Compile Include="MagicItemEffects\ModifyStaminaRegen.cs" />
     <Compile Include="MagicItemEffects\ReduceWeight.cs" />
     <Compile Include="MagicItemEffects\ModifyMovementSpeed.cs" />
+    <Compile Include="MagicItemEffects\Throwable.cs" />
     <Compile Include="MagicItemNames.cs" />
     <Compile Include="Adventure\BountyListElement.cs" />
     <Compile Include="Adventure\BuyListElement.cs" />

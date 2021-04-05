@@ -667,18 +667,6 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > > **ExclusiveEffectTypes:** `ReduceWeight`
 > > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Tool, Shield, Helmet, Chest, Legs, Shoulder`
 
-## LifeSteal
-
-> **Display Text:** Heal for {0:0.0}% of damage done
-> 
-> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow
-> 
-> **Requirements:**
-> > **Flags:** `ExclusiveSelf, ItemUsesStaminaOnAttack`
-> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow`
-> > **AllowedRarities:** `Rare, Epic, Legendary`
-> > **ExcludedSkillTypes:** `Pickaxes`
-
 ## AddCarryWeight
 
 > **Display Text:** Increase carry weight by +{0}
@@ -698,6 +686,18 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > |Epic|15|25|5|
 > |Legendary|20|50|5|
 
+## LifeSteal
+
+> **Display Text:** Heal for {0:0.0}% of damage done
+> 
+> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf, ItemUsesStaminaOnAttack`
+> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow`
+> > **AllowedRarities:** `Rare, Epic, Legendary`
+> > **ExcludedSkillTypes:** `Pickaxes`
+
 ## ModifyAttackSpeed
 
 > **Display Text:** Attack speed increased by +{0:0.#}%
@@ -716,6 +716,17 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > |Rare|8|13|1|
 > |Epic|11|16|1|
 > |Legendary|14|19|1|
+
+## Throwable
+
+> **Display Text:** Throwable
+> 
+> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon`
+> > **ExcludedSkillTypes:** `Pickaxes, Spears`
 
 # Item Sets
 
