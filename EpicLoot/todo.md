@@ -43,7 +43,7 @@
 
 #### Armor
 - [ ] Warm (Prevent freezing effect)
-- [ ] Waterproof (cape, prevent Wet effect from rain)
+- [X] Waterproof (cape, prevent Wet effect from rain)
 - [ ] Waterwalk (legs)
 - [ ] Double Jump (legs)
 - [ ] Thorns damage
