@@ -94,6 +94,9 @@
           "Bow",
           "Torch"
         ],
+        "ExcludedSkillTypes": [
+          "Pickaxes"
+        ],
         "ItemHasElementalDamage" : true
       },
       "ValuesPerRarity" : {
@@ -207,6 +210,9 @@
         "AllowedItemTypes" : [
           "Shield"
         ],
+        "ExcludedSkillTypes": [
+          "Pickaxes"
+        ],
         "ItemHasBlockPower" : true
       },
       "ValuesPerRarity" : {
@@ -226,6 +232,9 @@
         "AllowedItemTypes" : [
           "Shield",
           "TwoHandedWeapon"
+        ],
+        "ExcludedSkillTypes": [
+          "Pickaxes"
         ],
         "ItemHasParryPower" : true
       },
@@ -392,6 +401,9 @@
           "TwoHandedWeapon",
           "Bow",
           "Torch"
+        ],
+        "ExcludedSkillTypes": [
+          "Pickaxes"
         ]
       },
       "ValuesPerRarity" : {
@@ -423,6 +435,9 @@
           "TwoHandedWeapon",
           "Bow",
           "Torch"
+        ],
+        "ExcludedSkillTypes": [
+          "Pickaxes"
         ]
       },
       "ValuesPerRarity" : {
@@ -485,6 +500,9 @@
           "TwoHandedWeapon",
           "Bow",
           "Torch"
+        ],
+        "ExcludedSkillTypes": [
+          "Pickaxes"
         ]
       },
       "ValuesPerRarity" : {
@@ -516,6 +534,9 @@
           "TwoHandedWeapon",
           "Bow",
           "Torch"
+        ],
+        "ExcludedSkillTypes": [
+          "Pickaxes"
         ]
       },
       "ValuesPerRarity" : {
@@ -547,6 +568,9 @@
           "TwoHandedWeapon",
           "Bow",
           "Torch"
+        ],
+        "ExcludedSkillTypes": [
+          "Pickaxes"
         ]
       },
       "ValuesPerRarity" : {
@@ -578,6 +602,9 @@
           "TwoHandedWeapon",
           "Bow",
           "Torch"
+        ],
+        "ExcludedSkillTypes": [
+          "Pickaxes"
         ]
       },
       "ValuesPerRarity" : {
@@ -609,6 +636,9 @@
           "TwoHandedWeapon",
           "Bow",
           "Torch"
+        ],
+        "ExcludedSkillTypes": [
+          "Pickaxes"
         ]
       },
       "ValuesPerRarity" : {
@@ -862,20 +892,23 @@
     },
     {
       "Type" : "LifeSteal",
-      "DisplayText" : "Heal for {0:0.#}% of damage done",
+      "DisplayText" : "Heal for {0:0.0}% of damage done",
       "Requirements" : {
         "AllowedItemTypes" : [
           "OneHandedWeapon",
           "TwoHandedWeapon",
           "Bow"
         ],
+        "ExcludedSkillTypes": [
+          "Pickaxes"
+        ],
+        "AllowedRarities" : [
+          "Rare",
+          "Epic",
+          "Legendary"
+        ],
         "ItemUsesStaminaOnAttack" : true
       },
-      "AllowedRarities" : [
-        "Rare",
-        "Epic",
-        "Legendary"
-      ],
       "ValuesPerRarity" : {
         "Rare" : { "MinValue" : 0.8, "MaxValue" : 1.4, "Increment" : 0.1 },
         "Epic" : { "MinValue" : 1.5, "MaxValue" : 2.2, "Increment" : 0.1 },

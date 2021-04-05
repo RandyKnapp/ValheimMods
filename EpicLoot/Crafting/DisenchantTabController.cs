@@ -339,8 +339,19 @@ namespace EpicLoot.Crafting
             Recipes.Clear();
             if (Player.m_localPlayer != null)
             {
-                foreach (var item in Player.m_localPlayer.GetInventory().GetAllItems())
+                var inventory = Player.m_localPlayer.GetInventory();
+                var boundItems = new List<ItemDrop.ItemData>();
+                inventory.GetBoundItems(boundItems);
+                foreach (var item in inventory.GetAllItems())
                 {
+                    if (!EpicLoot.ShowEquippedAndHotbarItemsInSacrificeTab.Value)
+                    {
+                        if (item != null && item.m_equiped || boundItems.Contains(item))
+                        {
+                            continue;
+                        }
+                    }
+
                     var recipe = GenerateDisenchantRecipe(item);
                     if (recipe != null)
                     {

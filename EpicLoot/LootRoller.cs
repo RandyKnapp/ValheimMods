@@ -26,6 +26,8 @@ namespace EpicLoot
         private static WeightedRandomCollection<KeyValuePair<ItemRarity, int>> _weightedRarityTable;
         public static int CheatEffectCount;
         public static bool CheatDisableGating;
+        public static bool CheatForceMagicEffect;
+        public static string ForcedMagicEffect = "";
 
         public static void Initialize(LootConfig lootConfig)
         {
@@ -123,7 +125,7 @@ namespace EpicLoot
 
         public static List<ItemDrop.ItemData> RollLootTable(LootTable lootTable, int level, string objectName, Vector3 dropPoint)
         {
-            return RollLootTable(new List<LootTable> { lootTable }, level, objectName, dropPoint);
+            return RollLootTable(new List<LootTable> {lootTable}, level, objectName, dropPoint);
         }
 
         public static List<ItemDrop.ItemData> RollLootTable(string lootTableName, int level, string objectName, Vector3 dropPoint)
@@ -209,6 +211,12 @@ namespace EpicLoot
 
                     itemDrop.m_itemData = itemData;
                     InitializeMagicItem(itemData);
+
+                    if (CheatForceMagicEffect)
+                    {
+                        AddDebugMagicEffects(magicItem);
+                    }
+
                     MagicItemGenerated?.Invoke(itemData, magicItem);
                 }
 
@@ -308,7 +316,7 @@ namespace EpicLoot
                 if (availableEffects.Count == 0)
                 {
                     EpicLoot.LogWarning($"Tried to add more effects to magic item ({baseItem.m_shared.m_name}) but there were no more available effects. " +
-                                     $"Current Effects: {(string.Join(", ", magicItem.Effects.Select(x => x.EffectType.ToString())))}");
+                                        $"Current Effects: {(string.Join(", ", magicItem.Effects.Select(x => x.EffectType.ToString())))}");
                     break;
                 }
 
@@ -358,7 +366,6 @@ namespace EpicLoot
 
         public static MagicItemEffect RollEffect(MagicItemEffectDefinition effectDef, ItemRarity itemRarity)
         {
-            EpicLoot.Log($"RollEffect: {effectDef} {itemRarity}");
             float value = 0;
             var valuesDef = effectDef.GetValuesForRarity(itemRarity);
             if (valuesDef != null)
@@ -368,6 +375,7 @@ namespace EpicLoot
                 {
                     var incrementCount = (int)((valuesDef.MaxValue - valuesDef.MinValue) / valuesDef.Increment);
                     value = valuesDef.MinValue + (Random.Range(0, incrementCount + 1) * valuesDef.Increment);
+                    EpicLoot.Log($"RollEffect: {effectDef.Type} {itemRarity} value={value} (min={valuesDef.MinValue} max={valuesDef.MaxValue})");
                 }
             }
 
@@ -554,6 +562,15 @@ namespace EpicLoot
             }
 
             return results;
+        }
+
+        public static void AddDebugMagicEffects(MagicItem item)
+        {
+            if (!string.IsNullOrEmpty(ForcedMagicEffect))
+            {
+                EpicLoot.Log($"AddDebugMagicEffect {ForcedMagicEffect}");
+                item.Effects.Add(RollEffect(MagicItemEffectDefinitions.Get(ForcedMagicEffect), item.Rarity));
+            }
         }
     }
 }

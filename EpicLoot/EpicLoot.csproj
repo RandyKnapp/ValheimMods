@@ -98,6 +98,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Healing\AddHealingQueueToPlayerPatch.cs" />
     <Compile Include="Adventure\AbandonBountyDialog.cs" />
     <Compile Include="Adventure\AdventureComponent.cs" />
     <Compile Include="Adventure\AdventureSaveData.cs" />
@@ -137,6 +138,7 @@
     <Compile Include="Crafting\TabController.cs" />
     <Compile Include="GatedItemType\GatedItemTypeHelper.cs" />
     <Compile Include="GatedItemType\ItemInfoConfig.cs" />
+    <Compile Include="Healing\HealingQueueMono.cs" />
     <Compile Include="Humanoid_Patch.cs" />
     <Compile Include="LegacyMagicEffectType.cs" />
     <Compile Include="LootBeams\AlwaysPointUp.cs" />
@@ -157,6 +159,7 @@
     <Compile Include="MagicItemEffectDefinitions_Setup.cs" />
     <Compile Include="ItemDrop_Patch_MagicItemTooltip.cs" />
     <Compile Include="MagicItemEffects\AddCarryWeight.cs" />
+    <Compile Include="MagicItemEffects\AddLifeSteal.cs" />
     <Compile Include="MagicItemEffects\IncreaseHealth.cs" />
     <Compile Include="MagicItemEffects\IncreaseStamina.cs" />
     <Compile Include="MagicItemEffects\Indestructible.cs" />

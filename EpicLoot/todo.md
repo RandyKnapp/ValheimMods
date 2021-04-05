@@ -25,7 +25,7 @@
 - [ ] Add Knockback
 - [ ] Slow
 - [ ] Blink (bow or spear, teleport to impact point)
-- [ ] Life steal
+- [X] Life steal
 - [ ] Exploding shot (bows, deal aoe damage on arrow impact)
 - [ ] Multishot (bows, shoot multiple arrows from one)
 - [ ] Quick draw (bows, draw speed dramatically increased)

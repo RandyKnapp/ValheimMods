@@ -1,4 +1,4 @@
-# EpicLoot Data v0.7.2
+# EpicLoot Data v0.7.3
 
 *Author: RandyKnapp*
 *Source: [Github](https://github.com/RandyKnapp/ValheimMods/tree/main/EpicLoot)*
@@ -131,6 +131,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > > **Flags:** `ExclusiveSelf, ItemHasElementalDamage`
 > > **ExclusiveEffectTypes:** `AddFireDamage, AddFrostDamage, AddLightningDamage`
 > > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow, Torch`
+> > **ExcludedSkillTypes:** `Pickaxes`
 > 
 > **Value Per Rarity:**
 > 
@@ -185,6 +186,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > **Requirements:**
 > > **Flags:** `ExclusiveSelf, ItemHasBlockPower`
 > > **AllowedItemTypes:** `Shield`
+> > **ExcludedSkillTypes:** `Pickaxes`
 > 
 > **Value Per Rarity:**
 > 
@@ -204,6 +206,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > **Requirements:**
 > > **Flags:** `ExclusiveSelf, ItemHasParryPower`
 > > **AllowedItemTypes:** `Shield, TwoHandedWeapon`
+> > **ExcludedSkillTypes:** `Pickaxes`
 > 
 > **Value Per Rarity:**
 > 
@@ -338,6 +341,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > > **Flags:** `ExclusiveSelf`
 > > **ExclusiveEffectTypes:** `AddBluntDamage, AddSlashingDamage, AddPiercingDamage, AddFireDamage, AddFrostDamage, AddLightningDamage, AddPoisonDamage, AddSpiritDamage`
 > > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow, Torch`
+> > **ExcludedSkillTypes:** `Pickaxes`
 > 
 > **Value Per Rarity:**
 > 
@@ -358,6 +362,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > > **Flags:** `ExclusiveSelf`
 > > **ExclusiveEffectTypes:** `AddBluntDamage, AddSlashingDamage, AddPiercingDamage, AddFireDamage, AddFrostDamage, AddLightningDamage, AddPoisonDamage, AddSpiritDamage`
 > > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow, Torch`
+> > **ExcludedSkillTypes:** `Pickaxes`
 > 
 > **Value Per Rarity:**
 > 
@@ -398,6 +403,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > > **Flags:** `ExclusiveSelf`
 > > **ExclusiveEffectTypes:** `AddBluntDamage, AddSlashingDamage, AddPiercingDamage, AddFireDamage, AddFrostDamage, AddLightningDamage, AddPoisonDamage, AddSpiritDamage`
 > > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow, Torch`
+> > **ExcludedSkillTypes:** `Pickaxes`
 > 
 > **Value Per Rarity:**
 > 
@@ -418,6 +424,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > > **Flags:** `ExclusiveSelf`
 > > **ExclusiveEffectTypes:** `AddBluntDamage, AddSlashingDamage, AddPiercingDamage, AddFireDamage, AddFrostDamage, AddLightningDamage, AddPoisonDamage, AddSpiritDamage`
 > > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow, Torch`
+> > **ExcludedSkillTypes:** `Pickaxes`
 > 
 > **Value Per Rarity:**
 > 
@@ -438,6 +445,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > > **Flags:** `ExclusiveSelf`
 > > **ExclusiveEffectTypes:** `AddBluntDamage, AddSlashingDamage, AddPiercingDamage, AddFireDamage, AddFrostDamage, AddLightningDamage, AddPoisonDamage, AddSpiritDamage`
 > > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow, Torch`
+> > **ExcludedSkillTypes:** `Pickaxes`
 > 
 > **Value Per Rarity:**
 > 
@@ -458,6 +466,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > > **Flags:** `ExclusiveSelf`
 > > **ExclusiveEffectTypes:** `AddBluntDamage, AddSlashingDamage, AddPiercingDamage, AddFireDamage, AddFrostDamage, AddLightningDamage, AddPoisonDamage, AddSpiritDamage`
 > > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow, Torch`
+> > **ExcludedSkillTypes:** `Pickaxes`
 > 
 > **Value Per Rarity:**
 > 
@@ -478,6 +487,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > > **Flags:** `ExclusiveSelf`
 > > **ExclusiveEffectTypes:** `AddBluntDamage, AddSlashingDamage, AddPiercingDamage, AddFireDamage, AddFrostDamage, AddLightningDamage, AddPoisonDamage, AddSpiritDamage`
 > > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow, Torch`
+> > **ExcludedSkillTypes:** `Pickaxes`
 > 
 > **Value Per Rarity:**
 > 
@@ -657,6 +667,18 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > > **ExclusiveEffectTypes:** `ReduceWeight`
 > > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Tool, Shield, Helmet, Chest, Legs, Shoulder`
 
+## LifeSteal
+
+> **Display Text:** Heal for {0:0.0}% of damage done
+> 
+> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf, ItemUsesStaminaOnAttack`
+> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow`
+> > **AllowedRarities:** `Rare, Epic, Legendary`
+> > **ExcludedSkillTypes:** `Pickaxes`
+
 ## AddCarryWeight
 
 > **Display Text:** Increase carry weight by +{0}
@@ -675,22 +697,6 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > |Rare|10|15|5|
 > |Epic|15|25|5|
 > |Legendary|20|50|5|
-
-## LifeSteal
-
-> **Display Text:** Heal for {0:0.#}% of damage done
-> 
-> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow
-> 
-> 
-> **Value Per Rarity:**
-> 
-> |Rarity|Min|Max|Increment|
-> |--|--|--|--|
-> |Magic|-|-|-|
-> |Rare|0.8|1.4|0.1|
-> |Epic|1.5|2.2|0.1|
-> |Legendary|2.3|3|0.1|
 
 # Item Sets
 

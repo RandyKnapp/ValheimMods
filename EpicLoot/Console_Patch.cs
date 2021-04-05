@@ -5,7 +5,6 @@ using Common;
 using EpicLoot.Adventure;
 using EpicLoot.Adventure.Feature;
 using EpicLoot.Crafting;
-using ExtendedItemDataFramework;
 using HarmonyLib;
 using UnityEngine;
 using Random = System.Random;
@@ -15,7 +14,7 @@ namespace EpicLoot
     [HarmonyPatch(typeof(Console), "InputText")]
     public static class Console_Patch
     {
-        private static readonly System.Random _random = new System.Random();
+        private static readonly Random _random = new Random();
 
         public static bool Prefix(Console __instance)
         {
@@ -25,13 +24,6 @@ namespace EpicLoot
             {
                 return true;
             }
-            
-            // init debug hooks at next console command after enabling cheat mode
-            if (!LootRoller_Debug._debugModeEnabled) {
-                Debug.Log(nameof(LootRoller_Debug._debugModeEnabled));
-                LootRoller_Debug._debugModeEnabled = true;
-                LootRoller.MagicItemGenerated += LootRoller_Debug.AddDebugMagicEffects;
-            }
 
             var command = args[0];
             if (command.Equals("magicitem", StringComparison.InvariantCultureIgnoreCase) ||
@@ -39,11 +31,12 @@ namespace EpicLoot
             {
                 MagicItem(__instance, args);
                 return false;
-            } 
+            }
             else if (command.Equals("magicitemwitheffect", StringComparison.InvariantCultureIgnoreCase) 
-                     || command.Equals("mieffect", StringComparison.InvariantCultureIgnoreCase)) 
+                || command.Equals("mieffect", StringComparison.InvariantCultureIgnoreCase)) 
             {
-              SpawnMagicItemWithEffect(__instance, args);
+                SpawnMagicItemWithEffect(__instance, args);
+                return false;
             }
             else if (command.Equals("checkstackquality", StringComparison.InvariantCultureIgnoreCase))
             {
@@ -63,7 +56,7 @@ namespace EpicLoot
             else if (command.Equals("cheatgating", StringComparison.InvariantCultureIgnoreCase))
             {
                 LootRoller.CheatDisableGating = !LootRoller.CheatDisableGating;
-                __instance.AddString($"Disable gating for magic item drops: {LootRoller.CheatDisableGating}");
+                __instance.AddString($"> Disable gating for magic item drops: {LootRoller.CheatDisableGating}");
                 return false;
             }
             else if (command.Equals("testtreasuremap", StringComparison.InvariantCultureIgnoreCase) ||
@@ -84,7 +77,7 @@ namespace EpicLoot
                      || command.Equals("debugtm", StringComparison.InvariantCultureIgnoreCase))
             {
                 Minimap_Patch.DebugMode = !Minimap_Patch.DebugMode;
-                __instance.AddString($"Treasure Map Debug Mode: {Minimap_Patch.DebugMode}");
+                __instance.AddString($"> Treasure Map Debug Mode: {Minimap_Patch.DebugMode}");
             }
             else if (command.Equals("resetbounties", StringComparison.InvariantCultureIgnoreCase))
             {
@@ -169,10 +162,10 @@ namespace EpicLoot
 
         private static void OnTreasureChestSpawnComplete(bool success, Vector3 spawnPoint)
         {
-            var output = "Failed to spawn treasure map chest";
+            var output = "> Failed to spawn treasure map chest";
             if (success)
             {
-                output = $"Spawning Treasure Map Chest at <{spawnPoint.x:0.#}, {spawnPoint.z:0.#}> (height:{spawnPoint.y:0.#})";
+                output = $"> Spawning Treasure Map Chest at <{spawnPoint.x:0.#}, {spawnPoint.z:0.#}> (height:{spawnPoint.y:0.#})";
             }
 
             Console.instance.AddString(output);
@@ -182,7 +175,7 @@ namespace EpicLoot
         private static void ToggleAlwaysDrop(Console __instance)
         {
             EpicLoot.AlwaysDropCheat = !EpicLoot.AlwaysDropCheat;
-            __instance.AddString($"Always Drop: {EpicLoot.AlwaysDropCheat}");
+            __instance.AddString($"> Always Drop: {EpicLoot.AlwaysDropCheat}");
         }
 
         private static void SpawnMagicCraftingMaterials()
@@ -239,7 +232,7 @@ namespace EpicLoot
                     break;
                 }
 
-                __instance.AddString($"  {i + 1} - rarity: [{string.Join(", ", rarityTable)}], item: {item}");
+                __instance.AddString($">  {i + 1} - rarity: [{string.Join(", ", rarityTable)}], item: {item}");
 
                 var loot = new LootTable()
                 {
@@ -263,25 +256,28 @@ namespace EpicLoot
             LootRoller.CheatEffectCount = -1;
         }
 
-        public static void SpawnMagicItemWithEffect(Console __instance, string[] args) {
-            if (args.Length < 3) {
-                Debug.LogError("specify effect and item name");
+        public static void SpawnMagicItemWithEffect(Console __instance, string[] args)
+        {
+            if (args.Length < 3)
+            {
+                EpicLoot.LogError("Specify effect and item name");
                 return;
             }
-            
-            if (Player.m_localPlayer == null) {
-                return;
-            }
-            
+
+            if (Player.m_localPlayer == null) return;
+
             var effectArg = args[1];
             var itemPrefabNameArg = args[2];
-            __instance.AddString($"magicitem {itemPrefabNameArg} with effect: {effectArg}");
+            __instance.AddString($"magicitem - {itemPrefabNameArg} with effect: {effectArg}");
 
-            var magicItemEffectDef = MagicItemEffectDefinitions.AllDefinitions[effectArg];
-            var effectRequirements = magicItemEffectDef.Requirements;
-            // TODO use magicItemEffectDef.GetAllowedItemTypes();
+            var magicItemEffectDef = MagicItemEffectDefinitions.Get(effectArg);
+            if (magicItemEffectDef == null)
+            {
+                __instance.AddString($"> Could not find effect: {effectArg}");
+                return;
+            }
 
-            GameObject itemPrefab = ObjectDB.instance.GetItemPrefab(itemPrefabNameArg);
+            var itemPrefab = ObjectDB.instance.GetItemPrefab(itemPrefabNameArg);
             if (itemPrefab == null)
             {
                 __instance.AddString($"> Could not find item: {itemPrefabNameArg}");
@@ -289,59 +285,60 @@ namespace EpicLoot
             }
 
             var fromItemData = itemPrefab.GetComponent<ItemDrop>().m_itemData;
-            if (!EpicLoot.CanBeMagicItem(fromItemData)) {
-                Debug.LogError("Can't be magic item");
+            if (!EpicLoot.CanBeMagicItem(fromItemData))
+            {
+                __instance.AddString($"> Can't be magic item: {itemPrefabNameArg}");
                 return;
             }
 
-            ItemRarity itemRarity;
-            if (effectRequirements.AllowedRarities.Count == 0) {
-                Debug.Log("no req. rarity");
-                itemRarity = ItemRarity.Legendary;
-            } else {
-                itemRarity = effectRequirements.AllowedRarities.First();
-            }
-            Debug.Log("rarity: " + itemRarity);
-            
-            int[] rarityTable = GetRarityTable(itemRarity.ToString());
-
-            var loot = new LootTable() {
-                    Object = "Console",
-                    Drops = new[] {new[] {1, 1}},
-                    Loot = new[] {
-                            new LootDrop() {
-                                    Item = itemPrefab.name,
-                                    Rarity = rarityTable
-                            }
+            var effectRequirements = magicItemEffectDef.Requirements;
+            var itemRarity = effectRequirements.AllowedRarities.Count == 0 ? ItemRarity.Legendary : effectRequirements.AllowedRarities.First();
+            var rarityTable = GetRarityTable(itemRarity.ToString());
+            var loot = new LootTable
+            {
+                Object = "Console",
+                Drops = new[] {new[] {1, 1}},
+                Loot = new[]
+                {
+                    new LootDrop
+                    {
+                        Item = itemPrefab.name,
+                        Rarity = rarityTable
                     }
+                }
             };
 
             var randomOffset = UnityEngine.Random.insideUnitSphere;
-            var dropPoint = Player.m_localPlayer.transform.position +
-                            Player.m_localPlayer.transform.forward * 3 + Vector3.up * 1.5f + randomOffset;
+            var dropPoint = Player.m_localPlayer.transform.position + Player.m_localPlayer.transform.forward * 3 + Vector3.up * 1.5f + randomOffset;
             // TODO add better hook for desired effect - currently effect will be discarded on next game load
             // if effect was added when magicItem had maximum of available effect
             // however still good for debug
-            LootRoller_Debug.SelectedEffectForNextRolledItem = effectArg;
+            LootRoller.CheatForceMagicEffect = true;
+            LootRoller.ForcedMagicEffect = effectArg;
             LootRoller.RollLootTableAndSpawnObjects(loot, 1, loot.Object, dropPoint);
+            LootRoller.CheatForceMagicEffect = false;
+            LootRoller.ForcedMagicEffect = string.Empty;
         }
-                
-        private static int[] GetRarityTable(string rarityName) {
+
+        private static int[] GetRarityTable(string rarityName)
+        {
             var rarityTable = new[] {1, 1, 1, 1};
-            switch (rarityName.ToLowerInvariant()) {
+            switch (rarityName.ToLowerInvariant())
+            {
                 case "magic":
-                    rarityTable = new[] {1, 0, 0, 0,};
+                    rarityTable = new[] {1, 0, 0, 0};
                     break;
                 case "rare":
-                    rarityTable = new[] {0, 1, 0, 0,};
+                    rarityTable = new[] {0, 1, 0, 0};
                     break;
                 case "epic":
-                    rarityTable = new[] {0, 0, 1, 0,};
+                    rarityTable = new[] {0, 0, 1, 0};
                     break;
                 case "legendary":
-                    rarityTable = new[] {0, 0, 0, 1,};
+                    rarityTable = new[] {0, 0, 0, 1};
                     break;
             }
+
             return rarityTable;
         }
 
@@ -350,7 +347,7 @@ namespace EpicLoot
             __instance.AddString("CheckStackQuality");
             if (ObjectDB.instance == null)
             {
-                __instance.AddString(" - ObjectDB is null");
+                __instance.AddString("> ObjectDB is null");
                 return;
             }
 
@@ -368,13 +365,13 @@ namespace EpicLoot
                 if (itemData.m_shared.m_maxStackSize > 1 && itemData.m_shared.m_maxQuality > 1)
                 {
                     count++;
-                    __instance.AddString($" - {itemDrop.name}");
+                    __instance.AddString($"> {itemDrop.name}");
                 }
             }
 
             if (count == 0)
             {
-                __instance.AddString(" (none)");
+                __instance.AddString("> (none)");
             }
         }
     }
