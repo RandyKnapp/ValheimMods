@@ -17,7 +17,7 @@ namespace EpicLoot_Addon_MCE
     public class EpicLoot_Addon_MCE : BaseUnityPlugin
     {
         private const string PluginId = "randyknapp.mods.epicloot.addon.mce";
-        private const string Version = "1.0.1";
+        private const string Version = "1.0.2";
 
         private static ConfigVariable<GatedItemTypeMode> _gatedItemTypeModeConfig;
         private static ConfigVariable<bool> _bossesDropOneTrophyPerPlayer;
