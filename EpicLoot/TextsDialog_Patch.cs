@@ -7,7 +7,7 @@ using HarmonyLib;
 namespace EpicLoot
 {
     [HarmonyPatch(typeof(TextsDialog), "UpdateTextsList")]
-    public static class TextsDialog_UpdateTextsList_Patche
+    public static class TextsDialog_UpdateTextsList_Patch
     {
         public static void Postfix(TextsDialog __instance)
         {

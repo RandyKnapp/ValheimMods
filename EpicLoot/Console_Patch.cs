@@ -127,6 +127,13 @@ namespace EpicLoot
                 Enum.TryParse(args[2], out biome);
             }
 
+            var overrideTreasureMapCount = -1;
+            if (args.Length >= 4)
+            {
+                int.TryParse(args[3], out overrideTreasureMapCount);
+            }
+
+            AdventureDataManager.CheatNumberOfBounties = overrideTreasureMapCount;
             var saveData = player.GetAdventureSaveData();
             player.StartCoroutine(TestTreasureMapCoroutine(saveData, biome, player, count));
         }
@@ -144,6 +151,7 @@ namespace EpicLoot
                 yield return AdventureDataManager.TreasureMaps.SpawnTreasureChest(selectedBiome, player, OnTreasureChestSpawnComplete);
             }
             saveData.DebugMode = false;
+            AdventureDataManager.CheatNumberOfBounties = -1;
         }
 
         private static void OnTreasureChestSpawnComplete(bool success, Vector3 spawnPoint)

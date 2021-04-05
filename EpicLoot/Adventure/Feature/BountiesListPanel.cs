@@ -82,6 +82,8 @@ namespace EpicLoot.Adventure.Feature
     public class ClaimableBountiesListPanel : MerchantListPanel<BountyListElement>
     {
         private readonly MerchantPanel _merchantPanel;
+        public Button AbandonButton;
+        public Image AbandonButtonIcon;
 
         public ClaimableBountiesListPanel(MerchantPanel merchantPanel, BountyListElement elementPrefab)
             : base(
@@ -91,6 +93,11 @@ namespace EpicLoot.Adventure.Feature
                 null)
         {
             _merchantPanel = merchantPanel;
+
+            AbandonButton = merchantPanel.transform.Find("Bounties/AbandonBountyButton").GetComponent<Button>();
+            AbandonButton.onClick.AddListener(OnAbandonButtonClicked);
+
+            AbandonButtonIcon = AbandonButton.transform.Find("Icon").GetComponent<Image>();
         }
 
         public override bool NeedsRefresh(bool currenciesChanged)
@@ -116,6 +123,10 @@ namespace EpicLoot.Adventure.Feature
                     tooltip.m_text = "No room in inventory for reward";
                 }
             }
+
+            var canAbandon = selectedItem != null && selectedItem.BountyInfo.State == BountyState.InProgress;
+            AbandonButton.interactable = canAbandon;
+            AbandonButtonIcon.color = canAbandon ? Color.red : Color.grey;
         }
 
         public bool CanAddRewardToInventory(BountyListElement selectedItem)
@@ -170,6 +181,21 @@ namespace EpicLoot.Adventure.Feature
 
                 StoreGui.instance.m_trader.OnBought(null);
                 StoreGui.instance.m_buyEffects.Create(player.transform.position, Quaternion.identity);
+            }
+        }
+
+        private void OnAbandonButtonClicked()
+        {
+            var player = Player.m_localPlayer;
+            if (player == null)
+            {
+                return;
+            }
+
+            var bounty = GetSelectedItem();
+            if (bounty != null && bounty.BountyInfo.State == BountyState.InProgress)
+            {
+                _merchantPanel.AbandonBountyDialog.Show(bounty.BountyInfo);
             }
         }
 

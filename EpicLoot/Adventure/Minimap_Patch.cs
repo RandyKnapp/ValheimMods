@@ -8,6 +8,8 @@ namespace EpicLoot.Adventure
     [HarmonyPatch(typeof(Minimap))]
     public static class Minimap_Patch
     {
+        public const float AreaScale = 2.4f;
+
         public class AreaPinInfo
         {
             public Minimap.PinData Pin;
@@ -77,7 +79,7 @@ namespace EpicLoot.Adventure
                 {
                     var position = chestInfo.Position + chestInfo.MinimapCircleOffset;
                     var area = __instance.AddPin(position, Minimap.PinType.EventArea, string.Empty, false, false);
-                    area.m_worldSize = AdventureDataManager.Config.TreasureMap.MinimapAreaRadius * 2;
+                    area.m_worldSize = AdventureDataManager.Config.TreasureMap.MinimapAreaRadius * AreaScale;
                     var pin = __instance.AddPin(position, EpicLoot.TreasureMapPinType, $"Treasure Chest: {chestInfo.Biome}", false, false);
 
                     if (DebugMode)
@@ -108,10 +110,18 @@ namespace EpicLoot.Adventure
                 {
                     var position = bounty.Position + bounty.MinimapCircleOffset;
                     var area = __instance.AddPin(position, Minimap.PinType.EventArea, string.Empty, false, false);
-                    area.m_worldSize = AdventureDataManager.Config.TreasureMap.MinimapAreaRadius * 2;
+                    area.m_worldSize = AdventureDataManager.Config.TreasureMap.MinimapAreaRadius * AreaScale;
                     var pin = __instance.AddPin(position, EpicLoot.BountyPinType, $"Bounty: {AdventureDataManager.GetBountyName(bounty)}", false, false);
 
-                    BountyPins.Add(key, new AreaPinInfo() { Pin = pin, Area = area });
+                    if (DebugMode)
+                    {
+                        var debugPin = __instance.AddPin(bounty.Position, Minimap.PinType.Icon3, $"{bounty.Position.x:0.0}, {bounty.Position.z:0.0}", false, false);
+                        BountyPins.Add(key, new AreaPinInfo() { Pin = pin, Area = area, DebugPin = debugPin });
+                    }
+                    else
+                    {
+                        BountyPins.Add(key, new AreaPinInfo() { Pin = pin, Area = area });
+                    }
                 }
             }
         }

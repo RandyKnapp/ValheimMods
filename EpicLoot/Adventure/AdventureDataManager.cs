@@ -14,6 +14,7 @@ namespace EpicLoot.Adventure
         public static GambleAdventureFeature Gamble;
         public static TreasureMapsAdventureFeature TreasureMaps;
         public static BountiesAdventureFeature Bounties;
+        public static int CheatNumberOfBounties = -1;
 
         public static void Initialize(AdventureDataConfig config)
         {

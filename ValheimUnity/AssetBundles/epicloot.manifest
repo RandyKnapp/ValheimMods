@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 3830773615
+CRC: 67567713
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: e88c6eb1b99ffd7e2cd4b52921abbe36
+    Hash: c371cd7db85da880f55ccc5c881c8b52
   TypeTreeHash:
     serializedVersion: 2
     Hash: 2df2e0e2701922ba796bcd371be6236e
@@ -125,6 +125,7 @@ Assets:
 - Assets/EpicLoot/Sprites/Inventory/GenericItemBg.png
 - Assets/EpicLoot/Sprites/Inventory/SmallButtonEnchantOverlay.png
 - Assets/EpicLoot/Prefabs/CraftingMaterials/EssenceEpic.prefab
+- Assets/EpicLoot/Sounds/AbandonBounty.wav
 - Assets/EpicLoot/Sprites/Inventory/EpicItemBg.png
 - Assets/EpicLoot/Prefabs/Equipment/SilverRing.prefab
 - Assets/EpicLoot/Sprites/Adventure/BountyTokenGold.png

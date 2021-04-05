@@ -13,6 +13,7 @@ namespace EpicLoot.Adventure
         private Character _character;
         private BountyInfo _bountyInfo;
         private string _monsterID;
+        private bool _isAdd;
 
         public void Awake()
         {
@@ -36,7 +37,7 @@ namespace EpicLoot.Adventure
                 var saveData = player.GetAdventureSaveData();
                 if (saveData.GetBountyInfoByID(_bountyInfo.ID) != null && _bountyInfo.State == BountyState.InProgress)
                 {
-                    AdventureDataManager.Bounties.SlayBountyTarget(_bountyInfo, _monsterID);
+                    AdventureDataManager.Bounties.SlayBountyTarget(_bountyInfo, _monsterID, _isAdd);
                 }
             }
         }
@@ -45,9 +46,10 @@ namespace EpicLoot.Adventure
         {
             _bountyInfo = bounty;
             _monsterID = monsterID;
+            _isAdd = isAdd;
 
             var zdo = _character.m_nview?.GetZDO();
-            if (initialSetup && zdo != null && zdo.IsValid())
+            if (zdo != null && zdo.IsValid())
             {
                 zdo.Set(BountyTargetKey, _bountyInfo.ID);
                 zdo.Set(MonsterIDKey, monsterID);

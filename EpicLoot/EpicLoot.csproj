@@ -98,6 +98,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Adventure\AbandonBountyDialog.cs" />
     <Compile Include="Adventure\AdventureComponent.cs" />
     <Compile Include="Adventure\AdventureSaveData.cs" />
     <Compile Include="Adventure\BaseMerchantPanelListElement.cs" />

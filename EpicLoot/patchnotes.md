@@ -1,3 +1,8 @@
+## Version 0.7.2
+  * Bosses drop one trophy per player (configurable)
+  * Fixed a bug where you could complete a bounty just by killing the minions if they were the same type as the bounty target
+  * Changed bounty generation so you don't have identical bounties to other players on the server, to prevent confusion
+  * Can now abandon bounties (please report bugs if the monsters actually don't spawn though)
 ## Version 0.7.1
   * Fixed bug with disappearing bounty/treasuremap pins on logout
   * Fixed but with items purchased from Haldor's Secret Stash disappearing on logout

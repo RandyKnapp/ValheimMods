@@ -328,7 +328,15 @@
       "item": "TrophyDeer",
       "craftingStation": "piece_workbench",
       "resources": [
-        { "item": "HardAntler", "amount": 2 }
+        { "item": "HardAntler", "amount": 5 }
+      ]
+    },
+    {
+      "name": "Recipe_HideTrollTrophy",
+      "item": "TrophyFrostTroll",
+      "craftingStation": "piece_workbench",
+      "resources": [
+        { "item": "TrollHide", "amount": 10 }
       ]
     },
     {

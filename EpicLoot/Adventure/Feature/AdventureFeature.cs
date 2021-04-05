@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Random = System.Random;
 
@@ -61,7 +62,9 @@ namespace EpicLoot.Adventure.Feature
 
         private static int GetSeedForInterval(int currentInterval, int intervalDays)
         {
-            return unchecked((ZNet.m_world?.m_seed ?? 0) + currentInterval * 1000 + intervalDays * 100);
+            var worldSeed = ZNet.m_world?.m_seed ?? 0;
+            var playerId = (int)(Player.m_localPlayer?.GetPlayerID() ?? 0);
+            return unchecked(worldSeed + playerId + currentInterval * 1000 + intervalDays * 100);
         }
 
         protected static Random GetRandomForInterval(int currentInterval, int intervalDays)
@@ -169,7 +172,7 @@ namespace EpicLoot.Adventure.Feature
                     var spawnPoint = new Vector3(randomPoint.x, 0, randomPoint.y);
 
                     var zoneId = ZoneSystem.instance.GetZone(spawnPoint);
-                    while (!ZoneSystem.instance.SpawnZone(zoneId, ZoneSystem.SpawnMode.Client, out _))
+                    while (!ZoneSystem.instance.SpawnZone(zoneId, ZoneSystem.SpawnMode.Full, out _))
                     {
                         EpicLoot.LogWarning($"Spawning Zone ({zoneId})...");
                         yield return null;
@@ -197,11 +200,19 @@ namespace EpicLoot.Adventure.Feature
                     // But also don't place inside rocks
                     spawnPoint.y = solidHeight;
 
-                    var placedNearPlayerBase = EffectArea.IsPointInsideArea(spawnPoint, EffectArea.Type.PlayerBase, AdventureDataManager.Config.TreasureMap.IncreaseRadiusCount);
+                    var placedNearPlayerBase = EffectArea.IsPointInsideArea(spawnPoint, EffectArea.Type.PlayerBase, AdventureDataManager.Config.TreasureMap.MinimapAreaRadius);
                     if (placedNearPlayerBase)
                     {
                         // Don't place near player base
-                        EpicLoot.Log($"Spawn Point rejected: too close to player base");
+                        EpicLoot.Log("Spawn Point rejected: too close to player base");
+                        continue;
+                    }
+
+                    EpicLoot.Log($"Wards: {PrivateArea.m_allAreas.Count}");
+                    var tooCloseToWard = PrivateArea.m_allAreas.Any(x => x.IsInside(spawnPoint, AdventureDataManager.Config.TreasureMap.MinimapAreaRadius));
+                    if (tooCloseToWard)
+                    {
+                        EpicLoot.Log("Spawn Point rejected: too close to player ward");
                         continue;
                     }
 
@@ -232,7 +243,8 @@ namespace EpicLoot.Adventure.Feature
             var biomeInfoConfig = GetBiomeInfoConfig(biome);
             var minRadius = biomeInfoConfig?.MinRadius ?? 0;
             var maxRadius = biomeInfoConfig?.MaxRadius ?? 6000;
-            var increments = saveData.NumberOfTreasureMapsOrBountiesStarted / AdventureDataManager.Config.TreasureMap.IncreaseRadiusCount;
+            var numberOfBounties = AdventureDataManager.CheatNumberOfBounties >= 0 ? AdventureDataManager.CheatNumberOfBounties : saveData.NumberOfTreasureMapsOrBountiesStarted;
+            var increments = numberOfBounties / AdventureDataManager.Config.TreasureMap.IncreaseRadiusCount;
             var min = Mathf.Min(AdventureDataManager.Config.TreasureMap.StartRadiusMin + increments * AdventureDataManager.Config.TreasureMap.RadiusInterval, minRadius);
             var max = Mathf.Min(AdventureDataManager.Config.TreasureMap.StartRadiusMax + increments * AdventureDataManager.Config.TreasureMap.RadiusInterval, maxRadius);
             return new Tuple<float, float>(min, max);

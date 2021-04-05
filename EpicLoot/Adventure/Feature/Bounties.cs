@@ -171,7 +171,7 @@ namespace EpicLoot.Adventure.Feature
             Minimap.instance.ShowPointOnMap(spawnPoint + offset);
         }
 
-        public void SlayBountyTarget(BountyInfo bountyInfo, string monsterID)
+        public void SlayBountyTarget(BountyInfo bountyInfo, string monsterID, bool isAdd)
         {
             var player = Player.m_localPlayer;
             if (player == null)
@@ -185,19 +185,24 @@ namespace EpicLoot.Adventure.Feature
                 return;
             }
 
-            if (bountyInfo.Target.MonsterID == monsterID)
+            EpicLoot.Log($"Bounty Target Slain: bounty={bountyInfo.ID} monsterId={monsterID} ({(isAdd ? "add" : "main target")})");
+
+            if (!isAdd && bountyInfo.Target.MonsterID == monsterID)
             {
                 bountyInfo.Slain = true;
                 player.SaveAdventureSaveData();
             }
 
-            foreach (var addConfig in bountyInfo.Adds)
+            if (isAdd)
             {
-                if (addConfig.MonsterID == monsterID && addConfig.Count > 0)
+                foreach (var addConfig in bountyInfo.Adds)
                 {
-                    addConfig.Count--;
-                    player.SaveAdventureSaveData();
-                    break;
+                    if (addConfig.MonsterID == monsterID && addConfig.Count > 0)
+                    {
+                        addConfig.Count--;
+                        player.SaveAdventureSaveData();
+                        break;
+                    }
                 }
             }
 
@@ -237,6 +242,16 @@ namespace EpicLoot.Adventure.Feature
             if (bountyInfo.RewardGold > 0)
             {
                 inventory.AddItem("GoldBountyToken", bountyInfo.RewardGold, 1, 0, 0, string.Empty);
+            }
+        }
+
+        public void AbandonBounty(BountyInfo bountyInfo)
+        {
+            var saveData = Player.m_localPlayer?.GetAdventureSaveData();
+            if (saveData != null && bountyInfo != null && saveData.BountyIsInProgress(bountyInfo.Interval, bountyInfo.ID))
+            {
+                saveData.AbandonedBounty(bountyInfo.ID);
+                Player.m_localPlayer.SaveAdventureSaveData();
             }
         }
     }

@@ -40,6 +40,7 @@ namespace EpicLoot
         public GameObject MerchantPanel;
         public Sprite MapIconTreasureMap;
         public Sprite MapIconBounty;
+        public AudioClip AbandonBountySFX;
     }
 
     public class PieceDef
@@ -55,7 +56,7 @@ namespace EpicLoot
     public class EpicLoot : BaseUnityPlugin
     {
         public const string PluginId = "randyknapp.mods.epicloot";
-        public const string Version = "0.7.1";
+        public const string Version = "0.7.2";
 
         private static ConfigEntry<string> _setItemColor;
         private static ConfigEntry<string> _magicRarityColor;
@@ -76,6 +77,7 @@ namespace EpicLoot
         private static ConfigEntry<LogLevel> _logLevel;
         public static ConfigEntry<bool> UseGeneratedMagicItemNames;
         private static ConfigEntry<GatedItemTypeMode> _gatedItemTypeModeConfig;
+        public static ConfigEntry<bool> BossesDropOneTrophyPerPlayer;
 
         public static readonly List<ItemDrop.ItemData.ItemType> AllowedMagicItemTypes = new List<ItemDrop.ItemData.ItemType>
         {
@@ -144,6 +146,7 @@ namespace EpicLoot
             _logLevel = Config.Bind("Logging", "Log Level", LogLevel.Info, "Only log messages of the selected level or higher");
             UseGeneratedMagicItemNames = Config.Bind("General", "Use Generated Magic Item Names", true, "If true, magic items uses special, randomly generated names based on their rarity, type, and magic effects.");
             _gatedItemTypeModeConfig = Config.Bind("Balance", "Item Drop Limits", GatedItemTypeMode.MustKnowRecipe, "Sets how the drop system limits what item types can drop. Unlimited: no limits, exactly what's in the loot table will drop. MustKnowRecipe: items will drop so long as the player has discovered their recipe. MustHaveCrafted: items will only drop once the player has crafted one or picked one up. If an item type cannot drop, it will downgrade to an item of the same type and skill that the player has unlocked (i.e. swords will stay swords)");
+            BossesDropOneTrophyPerPlayer = Config.Bind("Balance", "Bosses Drop One Trophy Per Player", true, "Sets bosses to drop a number of trophies equal to the number of players, similar to the way Wishbone works in vanilla.");
 
             InitializeConfig();
             PrintInfo();
@@ -240,7 +243,8 @@ namespace EpicLoot
             Assets.MerchantPanel = assetBundle.LoadAsset<GameObject>("MerchantPanel");
             Assets.MapIconTreasureMap = assetBundle.LoadAsset<Sprite>("TreasureMapIcon");
             Assets.MapIconBounty = assetBundle.LoadAsset<Sprite>("MapIconBounty");
-            
+            Assets.AbandonBountySFX = assetBundle.LoadAsset<AudioClip>("AbandonBounty");
+
             LoadCraftingMaterialAssets(assetBundle, "Runestone");
 
             LoadCraftingMaterialAssets(assetBundle, "Shard");
@@ -374,7 +378,7 @@ namespace EpicLoot
 
         public static void TryRegisterPrefabs(ZNetScene zNetScene)
         {
-            if (zNetScene == null)
+            if (zNetScene == null || zNetScene.m_prefabs == null || zNetScene.m_prefabs.Count <= 0)
             {
                 return;
             }
@@ -384,6 +388,30 @@ namespace EpicLoot
                 if (!zNetScene.m_prefabs.Contains(prefab))
                 {
                     zNetScene.m_prefabs.Add(prefab);
+                }
+            }
+
+            if (GetBossesDropOneTrophyPerPlayer())
+            {
+                foreach (var prefab in zNetScene.m_prefabs)
+                {
+                    var character = prefab.GetComponent<Character>();
+                    if (character == null || !character.IsBoss())
+                    {
+                        continue;
+                    }
+
+                    var characterDrop = prefab.GetComponent<CharacterDrop>();
+                    if (characterDrop == null)
+                    {
+                        continue;
+                    }
+
+                    var trophyDrop = characterDrop.m_drops.Find(x => x.m_prefab != null && x.m_prefab.GetComponent<ItemDrop>()?.m_itemData?.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Trophie);
+                    if (trophyDrop != null)
+                    {
+                        trophyDrop.m_onePerPlayer = true;
+                    }
                 }
             }
         }
@@ -505,7 +533,7 @@ namespace EpicLoot
                     }
                 }
             }
-            
+
             foreach (var prefab in RegisteredItemPrefabs)
             {
                 var itemDrop = prefab.GetComponent<ItemDrop>();
@@ -522,12 +550,19 @@ namespace EpicLoot
                     }
                 }
             }
+            ObjectDB.instance.UpdateItemHashes();
 
             var pieceTables = new List<PieceTable>();
             foreach (var itemPrefab in ObjectDB.instance.m_items)
             {
-                var item = itemPrefab.GetComponent<ItemDrop>().m_itemData;
-                if (item.m_shared.m_buildPieces != null && !pieceTables.Contains(item.m_shared.m_buildPieces))
+                var itemDrop = itemPrefab.GetComponent<ItemDrop>();
+                if (itemDrop == null)
+                {
+                    LogError($"An item without an ItemDrop ({itemPrefab}) exists in ObjectDB.instance.m_items! Don't do this!");
+                    continue;
+                }
+                var item = itemDrop.m_itemData;
+                if (item != null && item.m_shared.m_buildPieces != null && !pieceTables.Contains(item.m_shared.m_buildPieces))
                 {
                     pieceTables.Add(item.m_shared.m_buildPieces);
                 }
@@ -1097,6 +1132,11 @@ namespace EpicLoot
         public static GatedItemTypeMode GetGatedItemTypeMode()
         {
             return _gatedItemTypeModeConfig.Value;
+        }
+
+        public static bool GetBossesDropOneTrophyPerPlayer()
+        {
+            return BossesDropOneTrophyPerPlayer.Value;
         }
     }
 }

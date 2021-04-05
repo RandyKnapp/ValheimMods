@@ -41,6 +41,7 @@ namespace EpicLoot.Adventure
 
         public CraftSuccessDialog GambleSuccessDialog;
         public GameObject InputBlocker;
+        public AbandonBountyDialog AbandonBountyDialog;
 
         public Text CoinsCount;
         public Text ForestTokensCount;
@@ -49,6 +50,7 @@ namespace EpicLoot.Adventure
 
         private readonly Currencies _currencies = new Currencies(-1);
         private static MerchantPanel _instance;
+        private AudioSource _audioSource;
 
         public void Awake()
         {
@@ -56,10 +58,22 @@ namespace EpicLoot.Adventure
             var storeGui = transform.parent.GetComponent<StoreGui>();
             gameObject.name = nameof(MerchantPanel);
 
+            _audioSource = gameObject.GetComponent<AudioSource>();
+            if (_audioSource == null)
+            {
+                _audioSource = gameObject.AddComponent<AudioSource>();
+            }
+
             if (GambleSuccessDialog == null)
             {
                 GambleSuccessDialog = CraftSuccessDialog.Create(transform);
                 GambleSuccessDialog.Frame.anchoredPosition = new Vector2(-700, -300);
+            }
+
+            if (AbandonBountyDialog == null)
+            {
+                AbandonBountyDialog = transform.Find("AbandonBountyDialog").gameObject.AddComponent<AbandonBountyDialog>();
+                AbandonBountyDialog.gameObject.SetActive(false);
             }
 
             var existingBackground = storeGui.m_rootPanel.transform.Find("border (1)");
@@ -143,7 +157,12 @@ namespace EpicLoot.Adventure
         {
             if (GambleSuccessDialog != null)
             {
-                GambleSuccessDialog.OnClose();
+                GambleSuccessDialog.Close();
+            }
+
+            if (AbandonBountyDialog != null)
+            {
+                AbandonBountyDialog.Close();
             }
         }
 
@@ -321,6 +340,15 @@ namespace EpicLoot.Adventure
             if (_instance != null && _instance.gameObject.activeSelf)
             {
                 _instance.InputBlocker.SetActive(show);
+            }
+        }
+
+        public void OnAbandonBounty()
+        {
+            RefreshAll();
+            if (_audioSource != null)
+            {
+                _audioSource.PlayOneShot(EpicLoot.Assets.AbandonBountySFX);
             }
         }
     }

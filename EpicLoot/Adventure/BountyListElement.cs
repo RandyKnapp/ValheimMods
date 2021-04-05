@@ -71,8 +71,11 @@ namespace EpicLoot.Adventure
             Button.onClick.RemoveAllListeners();
             Button.onClick.AddListener(() => OnSelected?.Invoke(BountyInfo));
 
-            Tooltip.m_topic = displayName;
-            Tooltip.m_text = Localization.instance.Localize(GetTooltip());
+            if (Tooltip != null)
+            {
+                Tooltip.m_topic = displayName;
+                Tooltip.m_text = Localization.instance.Localize(GetTooltip());
+            }
         }
 
         private string GetDisplayName()

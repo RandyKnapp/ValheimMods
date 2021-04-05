@@ -20,6 +20,8 @@ namespace EpicLoot_Addon_MCE
         private const string Version = "1.0.1";
 
         private static ConfigVariable<GatedItemTypeMode> _gatedItemTypeModeConfig;
+        private static ConfigVariable<bool> _bossesDropOneTrophyPerPlayer;
+
         private static readonly JsonFileConfigVariable<LootConfig> _lootConfigFile = new JsonFileConfigVariable<LootConfig>("loottables.json");
         private static readonly JsonFileConfigVariable<MagicItemEffectsList> _magicEffectsConfigFile = new JsonFileConfigVariable<MagicItemEffectsList>("magiceffects.json");
         private static readonly JsonFileConfigVariable<ItemInfoConfig> _itemInfoConfigFile = new JsonFileConfigVariable<ItemInfoConfig>("iteminfo.json");
@@ -35,16 +37,8 @@ namespace EpicLoot_Addon_MCE
 
             ConfigManager.ServerConfigReceived += InitializeConfig;
 
-            if (epicLootConfig.TryGetEntry<GatedItemTypeMode>("Balance", "Item Drop Limits", out var gatedItemTypeConfigEntry))
-            {
-                _gatedItemTypeModeConfig = ConfigManager.RegisterModConfigVariable(
-                    EpicLoot.EpicLoot.PluginId, 
-                    gatedItemTypeConfigEntry.Definition.Key,
-                    (GatedItemTypeMode)gatedItemTypeConfigEntry.DefaultValue,
-                    gatedItemTypeConfigEntry.Definition.Section,
-                    gatedItemTypeConfigEntry.Description.Description,
-                    false);
-            }
+            _gatedItemTypeModeConfig = ReplaceConfigVar<GatedItemTypeMode>(epicLootConfig, "Balance", "Item Drop Limits");
+            _bossesDropOneTrophyPerPlayer = ReplaceConfigVar<bool>(epicLootConfig, "Balance", "Bosses Drop One Trophy Per Player");
 
             ConfigManager.RegisterModConfigVariable(EpicLoot.EpicLoot.PluginId, _lootConfigFile);
             ConfigManager.RegisterModConfigVariable(EpicLoot.EpicLoot.PluginId, _magicEffectsConfigFile);
@@ -55,6 +49,22 @@ namespace EpicLoot_Addon_MCE
             ConfigManager.RegisterModConfigVariable(EpicLoot.EpicLoot.PluginId, _adventureDataConfigFile);
 
             Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), PluginId);
+        }
+
+        public static ConfigVariable<T> ReplaceConfigVar<T>(ConfigFile epicLootConfig, string section, string key)
+        {
+            if (epicLootConfig.TryGetEntry<T>(section, key, out var gatedItemTypeConfigEntry))
+            {
+                return ConfigManager.RegisterModConfigVariable(
+                    EpicLoot.EpicLoot.PluginId,
+                    gatedItemTypeConfigEntry.Definition.Key,
+                    (T)gatedItemTypeConfigEntry.DefaultValue,
+                    gatedItemTypeConfigEntry.Definition.Section,
+                    gatedItemTypeConfigEntry.Description.Description,
+                    false);
+            }
+
+            return null;
         }
 
         public static void InitializeConfig()
@@ -74,6 +84,16 @@ namespace EpicLoot_Addon_MCE
             public static bool Prefix(ref GatedItemTypeMode __result)
             {
                 __result = _gatedItemTypeModeConfig.Value;
+                return false;
+            }
+        }
+
+        [HarmonyPatch(typeof(EpicLoot.EpicLoot), "GetBossesDropOneTrophyPerPlayer")]
+        public static class EpicLoot_GetBossesDropOneTrophyPerPlayer_Patch
+        {
+            public static bool Prefix(ref bool __result)
+            {
+                __result = _bossesDropOneTrophyPerPlayer.Value;
                 return false;
             }
         }

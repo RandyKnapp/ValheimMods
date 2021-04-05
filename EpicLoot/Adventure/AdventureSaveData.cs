@@ -29,7 +29,8 @@ namespace EpicLoot.Adventure
         Available,
         InProgress,
         Complete,
-        Claimed
+        Claimed,
+        Abandoned
     }
 
     [Serializable]
@@ -210,6 +211,15 @@ namespace EpicLoot.Adventure
         public List<BountyInfo> GetClaimableBounties()
         {
             return Bounties.Where(x => x.State == BountyState.Complete).ToList();
+        }
+
+        public void AbandonedBounty(string bountyID)
+        {
+            var bounty = GetBountyInfoByID(bountyID);
+            if (bounty != null && bounty.State == BountyState.InProgress)
+            {
+                bounty.State = BountyState.Abandoned;
+            }
         }
     }
 }

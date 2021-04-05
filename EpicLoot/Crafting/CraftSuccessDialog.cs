@@ -30,7 +30,7 @@ namespace EpicLoot.Crafting
         {
             if (ZInput.GetButtonDown("Inventory") || ZInput.GetButtonDown("JoyButtonB") || (ZInput.GetButtonDown("JoyButtonY") || Input.GetKeyDown(KeyCode.Escape)) || ZInput.GetButtonDown("Use"))
             {
-                OnClose();
+                Close();
             }
         }
 
@@ -53,7 +53,7 @@ namespace EpicLoot.Crafting
             }
         }
 
-        public void OnClose()
+        public void Close()
         {
             gameObject.SetActive(false);
         }
@@ -90,7 +90,7 @@ namespace EpicLoot.Crafting
 
             var closeButton = dialog.gameObject.GetComponentInChildren<Button>();
             closeButton.onClick = new Button.ButtonClickedEvent();
-            closeButton.onClick.AddListener(dialog.OnClose);
+            closeButton.onClick.AddListener(dialog.Close);
             closeButton.transform.SetAsLastSibling();
 
             return dialog;

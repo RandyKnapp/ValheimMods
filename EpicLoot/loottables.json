@@ -366,14 +366,14 @@
             { "Item": "Tier1Weapons", "Weight": 1, "Rarity": [ 99, 1, 0, 0 ] },
             { "Item": "Tier0Shields", "Weight": 1, "Rarity": [ 99, 1, 0, 0 ] },
             { "Item": "BowFineWood",  "Weight": 1, "Rarity": [ 99, 1, 0, 0 ] }
-          ],
+          ]
         },
         {
           "Level": 2,
           "Drops": [ [0, 50], [1, 50] ],
           "Loot":[
             { "Item": "Greydwarf_Shaman.1", "Rarity": [ 80, 15, 5, 0 ] }
-          ],
+          ]
         },
         {
           "Level": 3,
@@ -429,7 +429,7 @@
             { "Item": "Tier0Shields", "Weight": 10, "Rarity": [ 98, 2, 0, 0 ] },
             { "Item": "Tier1Armor",   "Weight": 10, "Rarity": [ 98, 2, 0, 0 ] },
             { "Item": "Tier1Weapons", "Weight": 10, "Rarity": [ 98, 2, 0, 0 ] }
-          ],
+          ]
         },
         {
           "Level": 2,
@@ -439,7 +439,7 @@
             { "Item": "Tier2Weapons", "Weight": 4, "Rarity": [ 90, 9, 1, 0 ] },
             { "Item": "Tier2Armor",   "Weight": 4, "Rarity": [ 90, 9, 1, 0 ] },
             { "Item": "Tier2Shields", "Weight": 4, "Rarity": [ 90, 9, 1, 0 ] }
-          ],
+          ]
         },
         {
           "Level": 3,
