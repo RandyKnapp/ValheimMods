@@ -861,6 +861,29 @@
       "Suffixes": [ "Weightlessness" ]
     },
     {
+      "Type" : "LifeSteal",
+      "DisplayText" : "Heal for {0:0.#}% of damage done",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "OneHandedWeapon",
+          "TwoHandedWeapon",
+          "Bow"
+        ],
+        "ItemUsesStaminaOnAttack" : true
+      },
+      "AllowedRarities" : [
+        "Rare",
+        "Epic",
+        "Legendary"
+      ],
+      "ValuesPerRarity" : {
+        "Rare" : { "MinValue" : 0.8, "MaxValue" : 1.4, "Increment" : 0.1 },
+        "Epic" : { "MinValue" : 1.5, "MaxValue" : 2.2, "Increment" : 0.1 },
+        "Legendary" : { "MinValue" : 2.3, "MaxValue" : 3, "Increment" : 0.1 }
+      },
+      "SelectionWeight" : 1
+    },
+    {
       "Type" : "AddCarryWeight",
       "DisplayText" : "Increase carry weight by +{0}",
       "Requirements" : {
