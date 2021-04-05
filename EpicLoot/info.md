@@ -698,6 +698,25 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > |Epic|15|25|5|
 > |Legendary|20|50|5|
 
+## ModifyAttackSpeed
+
+> **Display Text:** Attack speed increased by +{0:0.#}%
+> 
+> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Tool
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow, Tool`
+> 
+> **Value Per Rarity:**
+> 
+> |Rarity|Min|Max|Increment|
+> |--|--|--|--|
+> |Magic|5|10|1|
+> |Rare|8|13|1|
+> |Epic|11|16|1|
+> |Legendary|14|19|1|
+
 # Item Sets
 
 Sets of loot drop data that can be referenced in the loot tables

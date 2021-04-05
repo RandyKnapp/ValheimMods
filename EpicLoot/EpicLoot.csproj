@@ -164,6 +164,7 @@
     <Compile Include="MagicItemEffects\IncreaseStamina.cs" />
     <Compile Include="MagicItemEffects\Indestructible.cs" />
     <Compile Include="MagicItemEffects\ModifyArmor.cs" />
+    <Compile Include="MagicItemEffects\ModifyAttackSpeed.cs" />
     <Compile Include="MagicItemEffects\ModifyAttackStamina.cs" />
     <Compile Include="MagicItemEffects\ModifyBackstab.cs" />
     <Compile Include="MagicItemEffects\ModifyBlockPower.cs" />
