@@ -3,6 +3,8 @@
   * Also added freeze time keybind (RCtrl+Backspace) and made free fly camera fixed update time (so you can fly around during freeze time)
   * Integrated LifeSteal magic effect (submitted by [nanonull](https://github.com/nanonull))
   * Added ModifyAttackSpeed, Waterproof, Paralyze
+  * Localization part 1
+  * Hotfix for bug where buying treasuremaps or bounties can disconnect you from the server
 ## Version 0.7.2
   * Bosses drop one trophy per player (configurable)
   * Fixed a bug where you could complete a bounty just by killing the minions if they were the same type as the bounty target

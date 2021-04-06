@@ -172,7 +172,7 @@ namespace EpicLoot.Adventure.Feature
                     var spawnPoint = new Vector3(randomPoint.x, 0, randomPoint.y);
 
                     var zoneId = ZoneSystem.instance.GetZone(spawnPoint);
-                    while (!ZoneSystem.instance.SpawnZone(zoneId, ZoneSystem.SpawnMode.Full, out _))
+                    while (!ZoneSystem.instance.SpawnZone(zoneId, ZoneSystem.SpawnMode.Client, out _))
                     {
                         EpicLoot.LogWarning($"Spawning Zone ({zoneId})...");
                         yield return null;
