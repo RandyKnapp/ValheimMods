@@ -50,7 +50,7 @@ namespace EpicLoot.Adventure
             CanAfford = Price <= currentCoins;
             AlreadyPurchased = itemInfo.AlreadyPurchased;
 
-            var displayName = Localization.instance.Localize($"Treasure Map: $biome_{Biome.ToString().ToLower()} #{itemInfo.Interval + 1}");
+            var displayName = Localization.instance.Localize("$mod_epicloot_treasuremap_name", $"$biome_{Biome.ToString().ToLower()}", (itemInfo.Interval + 1).ToString());
 
             Icon.color = (CanAfford && !AlreadyPurchased) ? Color.white : new Color(1.0f, 0.0f, 1.0f, 0.0f);
             NameText.text = displayName;
@@ -68,13 +68,14 @@ namespace EpicLoot.Adventure
             Button.onClick.RemoveAllListeners();
             Button.onClick.AddListener(() => OnSelected?.Invoke(ItemInfo));
 
-            Tooltip.m_topic = displayName;
+            Tooltip.m_topic = Localization.instance.Localize(displayName);
             Tooltip.m_text = Localization.instance.Localize(GetTooltip());
         }
 
         private string GetTooltip()
         {
-            return $"This folded piece of ragged parchment has a big red X marked on it, somewhere in the $biome_{Biome.ToString().ToLower()}...";
+            var biome = $"$biome_{Biome.ToString().ToLower()}";
+            return Localization.instance.Localize("$mod_epicloot_treasuremap_tooltip", biome);
         }
     }
 }

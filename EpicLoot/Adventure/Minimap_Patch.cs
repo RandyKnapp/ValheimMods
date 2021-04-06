@@ -80,7 +80,8 @@ namespace EpicLoot.Adventure
                     var position = chestInfo.Position + chestInfo.MinimapCircleOffset;
                     var area = __instance.AddPin(position, Minimap.PinType.EventArea, string.Empty, false, false);
                     area.m_worldSize = AdventureDataManager.Config.TreasureMap.MinimapAreaRadius * AreaScale;
-                    var pin = __instance.AddPin(position, EpicLoot.TreasureMapPinType, $"Treasure Chest: {chestInfo.Biome}", false, false);
+                    var label = Localization.instance.Localize("mod_epicloot_treasurechest_minimappin", $"biome_{chestInfo.Biome.ToString().ToLowerInvariant()}", (chestInfo.Interval + 1).ToString());
+                    var pin = __instance.AddPin(position, EpicLoot.TreasureMapPinType, label, false, false);
 
                     if (DebugMode)
                     {
@@ -111,7 +112,8 @@ namespace EpicLoot.Adventure
                     var position = bounty.Position + bounty.MinimapCircleOffset;
                     var area = __instance.AddPin(position, Minimap.PinType.EventArea, string.Empty, false, false);
                     area.m_worldSize = AdventureDataManager.Config.TreasureMap.MinimapAreaRadius * AreaScale;
-                    var pin = __instance.AddPin(position, EpicLoot.BountyPinType, $"Bounty: {AdventureDataManager.GetBountyName(bounty)}", false, false);
+                    var label = Localization.instance.Localize("$mod_epicloot_bounty_minimappin", AdventureDataManager.GetBountyName(bounty));
+                    var pin = __instance.AddPin(position, EpicLoot.BountyPinType, label, false, false);
 
                     if (DebugMode)
                     {

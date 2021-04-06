@@ -9,6 +9,7 @@ namespace EpicLoot.Adventure
         public const string BountyTargetKey = "BountyTarget";
         public const string MonsterIDKey = "MonsterID";
         public const string IsAddKey = "IsAdd";
+        public const string OriginalNameKey = "OriginalName";
 
         private Character _character;
         private BountyInfo _bountyInfo;
@@ -54,6 +55,10 @@ namespace EpicLoot.Adventure
                 zdo.Set(BountyTargetKey, _bountyInfo.ID);
                 zdo.Set(MonsterIDKey, monsterID);
                 zdo.Set(IsAddKey, isAdd);
+                if (initialSetup)
+                {
+                    zdo.Set(OriginalNameKey, _character.m_name);
+                }
             }
 
             if (initialSetup)
@@ -62,7 +67,8 @@ namespace EpicLoot.Adventure
                 _character.SetMaxHealth(GetModifiedMaxHealth(_character, bounty, isAdd));
             }
 
-            _character.m_name = GetCharacterName(_character.m_name, isAdd, bounty.TargetName);
+            var originalName = zdo?.GetString(OriginalNameKey) ?? "unknown";
+            _character.m_name = GetCharacterName(originalName, isAdd, bounty.TargetName);
             _character.m_baseAI.SetPatrolPoint();
             _character.m_boss = !isAdd;
         }
@@ -83,17 +89,14 @@ namespace EpicLoot.Adventure
             }
         }
 
-        private static string GetCharacterName(string currentName, bool isAdd, string targetName)
+        private static string GetCharacterName(string originalName, bool isAdd, string targetName)
         {
-            if (currentName.Contains(" Minion"))
-            {
-                currentName = currentName.Replace(" Minion", "");
-            }
-
-            return isAdd ? $"{currentName} Minion" : (string.IsNullOrEmpty(targetName) ? currentName : targetName);
+            return isAdd ? 
+                Localization.instance.Localize("$mod_epicloot_bounties_minionname", originalName) 
+                : (string.IsNullOrEmpty(targetName) ? originalName : targetName);
         }
 
-        private int GetMonsterLevel(BountyInfo bounty, string monsterID, bool isAdd)
+        private static int GetMonsterLevel(BountyInfo bounty, string monsterID, bool isAdd)
         {
             if (isAdd)
             {

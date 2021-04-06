@@ -78,7 +78,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Claim Reward
+  m_Text: $mod_epicloot_merchant_claimreward
 --- !u!114 &2171062169609026679
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -172,7 +172,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: abandon bounty?
+  m_Text: $mod_epicloot_merchant_abandonbountyconfirm
 --- !u!114 &1696421516695709690
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -475,6 +475,7 @@ GameObject:
   - component: {fileID: 576774758277968164}
   - component: {fileID: 576774758277968166}
   - component: {fileID: 576774758277968167}
+  - component: {fileID: 3893755824604897033}
   m_Layer: 5
   m_Name: MerchantPanel
   m_TagString: Untagged
@@ -546,6 +547,18 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &3893755824604897033
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 576774758277968165}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 182242463, guid: d920e4723ba2566674efb2f0c3eb6edb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &590251226306684842
 GameObject:
   m_ObjectHideFlags: 0
@@ -698,7 +711,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: It cannot be accepted again.
+  m_Text: $mod_epicloot_merchant_abandonbountydesc
 --- !u!114 &5428252969458005249
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -977,7 +990,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Buy
+  m_Text: $store_buy
 --- !u!114 &1830162145290213179
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1466,7 +1479,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Accept Bounty
+  m_Text: $mod_epicloot_merchant_acceptbounty
 --- !u!114 &77517431234873858
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1695,7 +1708,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Secret Stash
+  m_Text: $mod_epicloot_merchant_secretstash
 --- !u!114 &5214472656697127697
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2656,7 +2669,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Buy
+  m_Text: $store_buy
 --- !u!114 &2612260599317416150
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4176,7 +4189,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Active
+  m_Text: $mod_epicloot_merchant_bountiesactive
 --- !u!114 &2202195419611001371
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5199,7 +5212,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Gamble
+  m_Text: $mod_epicloot_merchant_gamble
 --- !u!114 &8615969614328547201
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5551,7 +5564,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Buy
+  m_Text: $store_buy
 --- !u!114 &4348903461472220980
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5952,7 +5965,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Treasure Maps
+  m_Text: $mod_epicloot_merchant_treasuremaps
 --- !u!114 &1674487730786068440
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7661,7 +7674,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Yes
+  m_Text: $menu_yes
 --- !u!114 &7581193084416588351
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7891,7 +7904,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: No
+  m_Text: $menu_no
 --- !u!114 &8565524753488914428
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8575,7 +8588,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Bounties
+  m_Text: $mod_epicloot_merchant_bounties
 --- !u!114 &7201901909463619397
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8819,7 +8832,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_tooltipPrefab: {fileID: 0}
-  m_text: Abandon Bounty
+  m_text: $mod_epicloot_merchant_abandonbounty
   m_topic: 
   m_gamepadFocusObject: {fileID: 0}
 --- !u!1 &7029990866028612649
@@ -10141,7 +10154,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Available
+  m_Text: $mod_epicloot_merchant_bountiesavailable
 --- !u!114 &853166676455727887
 MonoBehaviour:
   m_ObjectHideFlags: 0

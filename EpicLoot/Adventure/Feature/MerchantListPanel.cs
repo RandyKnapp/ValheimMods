@@ -44,7 +44,7 @@ namespace EpicLoot.Adventure.Feature
         {
             if (RefreshTime != null)
             {
-                RefreshTime.text = ConvertSecondsToDisplayTime(seconds);
+                RefreshTime.text = Localization.instance.Localize(ConvertSecondsToDisplayTime(seconds));
             }
         }
 
@@ -76,22 +76,21 @@ namespace EpicLoot.Adventure.Feature
         {
             if (seconds < 0)
             {
-                return "???";
+                return "$mod_epicloot_merchant_unknown";
             }
 
             var timeSpan = new TimeSpan(0, 0, 0, seconds);
             if (timeSpan.Days > 0)
             {
-                return timeSpan.ToString("d'd 'h'h 'm'm 's's'");
-
+                return timeSpan.ToString("d'$mod_epicloot_merchant_days 'h'$mod_epicloot_merchant_hours 'm'$mod_epicloot_merchant_minutes 's'$mod_epicloot_merchant_seconds'");
             }
             else if (timeSpan.Hours > 0)
             {
-                return timeSpan.ToString(@"h'h 'm'm 's's'");
+                return timeSpan.ToString("h'$mod_epicloot_merchant_hours 'm'$mod_epicloot_merchant_minutes 's'$mod_epicloot_merchant_seconds'");
             }
             else
             {
-                return timeSpan.ToString(@"m'm 's's'");
+                return timeSpan.ToString("m'$mod_epicloot_merchant_minutes 's'$mod_epicloot_merchant_seconds'");
             }
         }
 

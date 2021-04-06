@@ -102,8 +102,8 @@ namespace EpicLoot.Adventure
             if (ItemInfo.IsGamble)
             {
                 var color = canAfford ? (itemInfo.GuaranteedRarity ? EpicLoot.GetRarityColor(itemInfo.Rarity) : "white") : "grey";
-                var rarityDisplay = itemInfo.GuaranteedRarity ? EpicLoot.GetRarityDisplayName(itemInfo.Rarity) : "???";
-                NameText.text = $"<color={color}>{rarityDisplay} {Localization.instance.Localize(ItemInfo.Item.m_shared.m_name)}</color>";
+                var rarityDisplay = itemInfo.GuaranteedRarity ? EpicLoot.GetRarityDisplayName(itemInfo.Rarity) : "$mod_epicloot_merchant_unknown";
+                NameText.text = Localization.instance.Localize($"<color={color}>{rarityDisplay} {ItemInfo.Item.m_shared.m_name}</color>");
 
                 Tooltip.m_topic = NameText.text;
                 Tooltip.m_text = GetGambleTooltip();
@@ -114,9 +114,9 @@ namespace EpicLoot.Adventure
         {
             _sb.Clear();
 
-            _sb.AppendLine("Pay a premium for a chance at a magic item!");
+            _sb.AppendLine("$mod_epicloot_gamble_tooltip");
             _sb.AppendLine();
-            _sb.AppendLine("Chance for:");
+            _sb.AppendLine("$mod_epicloot_gamble_tooltip_chance");
 
             var rarityChance = AdventureDataManager.Config.Gamble.GambleRarityChance;
             if (ItemInfo.GuaranteedRarity)
@@ -126,7 +126,7 @@ namespace EpicLoot.Adventure
 
             var labels = new[]
             {
-                "Non-magic",
+                "$mod_epicloot_gamble_tooltip_nonmagic",
                 EpicLoot.GetRarityDisplayName(ItemRarity.Magic),
                 EpicLoot.GetRarityDisplayName(ItemRarity.Rare),
                 EpicLoot.GetRarityDisplayName(ItemRarity.Epic),
@@ -144,7 +144,7 @@ namespace EpicLoot.Adventure
                 }
             }
 
-            return _sb.ToString();
+            return Localization.instance.Localize(_sb.ToString());
         }
     }
 }

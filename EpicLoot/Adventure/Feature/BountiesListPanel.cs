@@ -116,11 +116,11 @@ namespace EpicLoot.Adventure.Feature
                 tooltip.m_text = "";
                 if (selectedItem != null && !selectedItem.CanClaim)
                 {
-                    tooltip.m_text = "Not complete yet";
+                    tooltip.m_text = "$mod_epicloot_bounties_notcompletetooltip";
                 }
                 else if (selectedItem != null && !haveSpace)
                 {
-                    tooltip.m_text = "No room in inventory for reward";
+                    tooltip.m_text = "$mod_epicloot_bounties_noroomtooltip";
                 }
             }
 

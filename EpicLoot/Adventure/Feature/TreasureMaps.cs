@@ -53,7 +53,7 @@ namespace EpicLoot.Adventure.Feature
 
         public IEnumerator SpawnTreasureChest(Heightmap.Biome biome, Player player, Action<bool, Vector3> callback)
         {
-            player.Message(MessageHud.MessageType.Center, "Preparing Treasure Map...");
+            player.Message(MessageHud.MessageType.Center, "$mod_epicloot_treasuremap_locatingmsg");
             var saveData = player.GetAdventureSaveData();
             yield return GetRandomPointInBiome(biome, saveData, (success, spawnPoint, normal) =>
             {

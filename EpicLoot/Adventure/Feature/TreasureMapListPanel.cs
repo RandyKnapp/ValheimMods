@@ -27,6 +27,20 @@ namespace EpicLoot.Adventure.Feature
         {
             var selectedItem = GetSelectedItem();
             MainButton.interactable = selectedItem != null && selectedItem.CanAfford && !selectedItem.AlreadyPurchased;
+
+            var tooltip = MainButton.GetComponent<UITooltip>();
+            if (tooltip != null)
+            {
+                tooltip.m_text = "";
+                if (selectedItem != null && !selectedItem.CanAfford)
+                {
+                    tooltip.m_text = "$mod_epicloot_merchant_cannotafford";
+                }
+                else if (selectedItem != null && selectedItem.AlreadyPurchased)
+                {
+                    tooltip.m_text = "$mod_epicloot_merchant_purchasedtooltip";
+                }
+            }
         }
 
         protected override void OnMainButtonClicked()

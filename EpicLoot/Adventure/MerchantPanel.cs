@@ -114,11 +114,11 @@ namespace EpicLoot.Adventure
             var treasureMapRefreshTooltip = GetRefreshTimeTooltip(AdventureDataManager.TreasureMaps.RefreshInterval);
             var bountiesRefreshTooltip = GetRefreshTimeTooltip(AdventureDataManager.Bounties.RefreshInterval);
             transform.Find("Sundial").GetComponent<UITooltip>().m_text =
-                $"Secret Stash: {secretStashRefreshTooltip}\n" +
-                $"Gamble: {gambleRefreshTooltip}\n" +
-                $"Treasure Maps: {treasureMapRefreshTooltip}\n" +
-                $"Bounties: {bountiesRefreshTooltip}\n\n" +
-                $"<color=silver>Rollover Time: Midnight</color>";
+                $"$mod_epicloot_merchant_secretstash: {secretStashRefreshTooltip}\n" +
+                $"$mod_epicloot_merchant_gamble: {gambleRefreshTooltip}\n" +
+                $"$mod_epicloot_merchant_treasuremaps: {treasureMapRefreshTooltip}\n" +
+                $"$mod_epicloot_merchant_bounties: {bountiesRefreshTooltip}\n\n" +
+                $"<color=silver>$mod_epicloot_merchant_rollovertime</color>";
 
             var buyListPrefab = transform.Find("SecretStash/Panel/ItemElement").gameObject.AddComponent<BuyListElement>();
             buyListPrefab.gameObject.SetActive(false);
@@ -230,7 +230,10 @@ namespace EpicLoot.Adventure
 
         private static string GetRefreshTimeTooltip(int refreshInterval)
         {
-            return $"<color=lightblue>Every {(refreshInterval > 1 ? $"{refreshInterval} " : "")}in-game day{(refreshInterval > 1 ? "s" : "")}</color>";
+            var message = refreshInterval > 1 ?
+                Localization.instance.Localize("$mod_epicloot_merchant_refreshdays", refreshInterval.ToString()) : 
+                "$mod_epicloot_merchant_refreshday";
+            return $"<color=lightblue>{message}</color>";
         }
 
         public void Update()

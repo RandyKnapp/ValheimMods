@@ -34,11 +34,11 @@ namespace EpicLoot.Adventure.Feature
                 tooltip.m_text = "";
                 if (selectedItem != null && !selectedItem.CanAfford(playerCurrencies))
                 {
-                    tooltip.m_text = "Cannot afford";
+                    tooltip.m_text = "$mod_epicloot_merchant_cannotafford";
                 }
                 else if (!haveSpace)
                 {
-                    tooltip.m_text = "No room in inventory";
+                    tooltip.m_text = "$mod_epicloot_merchant_noroomtooltip";
                 }
             }
         }

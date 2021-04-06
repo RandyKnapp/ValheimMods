@@ -151,6 +151,7 @@ namespace EpicLoot
             _gatedItemTypeModeConfig = Config.Bind("Balance", "Item Drop Limits", GatedItemTypeMode.MustKnowRecipe, "Sets how the drop system limits what item types can drop. Unlimited: no limits, exactly what's in the loot table will drop. MustKnowRecipe: items will drop so long as the player has discovered their recipe. MustHaveCrafted: items will only drop once the player has crafted one or picked one up. If an item type cannot drop, it will downgrade to an item of the same type and skill that the player has unlocked (i.e. swords will stay swords)");
             BossesDropOneTrophyPerPlayer = Config.Bind("Balance", "Bosses Drop One Trophy Per Player", true, "Sets bosses to drop a number of trophies equal to the number of players, similar to the way Wishbone works in vanilla.");
 
+            LoadTranslations();
             InitializeConfig();
             PrintInfo();
 
@@ -163,6 +164,17 @@ namespace EpicLoot
             _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), PluginId);
 
             LootTableLoaded?.Invoke();
+        }
+
+        private static void LoadTranslations()
+        {
+            var translationsJsonText = LoadJsonText("translations.json");
+            var translations = (IDictionary<string, object>)JSON.Parse(translationsJsonText);
+            foreach (var translation in translations)
+            {
+                Log($"Translation: {translation.Key}, {translation.Value}");
+                Localization.instance.AddWord(translation.Key, translation.Value.ToString());
+            }
         }
 
         public static ConfigFile GetConfigObject()
@@ -224,6 +236,7 @@ namespace EpicLoot
             }
         }*/
 
+        [UsedImplicitly]
         private void Update()
         {
             if (Input.GetKey(KeyCode.RightControl) && Input.GetKeyDown(KeyCode.Backspace))
@@ -325,7 +338,7 @@ namespace EpicLoot
                 var prefab = assetBundle.LoadAsset<GameObject>(assetName);
                 if (prefab == null)
                 {
-                    EpicLoot.LogError($"Tried to load asset {assetName} but it does not exist in the asset bundle!");
+                    LogError($"Tried to load asset {assetName} but it does not exist in the asset bundle!");
                     continue;
                 }
                 prefabs[(int) rarity] = prefab;
@@ -434,28 +447,28 @@ namespace EpicLoot
                 var prefab = entry.Key;
                 if (prefab == null)
                 {
-                    EpicLoot.LogError($"Tried to register piece but prefab was null!");
+                    LogError($"Tried to register piece but prefab was null!");
                     continue;
                 }
 
                 var pieceDef = entry.Value;
                 if (pieceDef == null)
                 {
-                    EpicLoot.LogError($"Tried to register piece ({prefab}) but pieceDef was null!");
+                    LogError($"Tried to register piece ({prefab}) but pieceDef was null!");
                     continue;
                 }
 
                 var piece = prefab.GetComponent<Piece>();
                 if (piece == null)
                 {
-                    EpicLoot.LogError($"Tried to register piece ({prefab}) but Piece component was missing!");
+                    LogError($"Tried to register piece ({prefab}) but Piece component was missing!");
                     continue;
                 }
 
                 var pieceTable = pieceTables.Find(x => x.name == pieceDef.Table);
                 if (pieceTable == null)
                 {
-                    EpicLoot.LogError($"Tried to register piece ({prefab}) but could not find piece table ({pieceDef.Table}) (pieceTables({pieceTables.Count})= {string.Join(", ", pieceTables.Select(x =>x.name))})!");
+                    LogError($"Tried to register piece ({prefab}) but could not find piece table ({pieceDef.Table}) (pieceTables({pieceTables.Count})= {string.Join(", ", pieceTables.Select(x =>x.name))})!");
                     continue;
                 }
 
@@ -617,10 +630,10 @@ namespace EpicLoot
             var andvaranautFinder = ScriptableObject.CreateInstance<SE_CustomFinder>();
             Common.Utils.CopyFields(wishboneFinder, andvaranautFinder, typeof(SE_CustomFinder));
             andvaranautFinder.name = "Andvaranaut";
-            andvaranautFinder.m_name = "Andvaranaut";
+            andvaranautFinder.m_name = "$mod_epicloot_item_andvaranaut";
             andvaranautFinder.m_icon = andvaranaut.GetIcon();
-            andvaranautFinder.m_tooltip = "Helps you find treasure chests from Haldor's maps. Move in the direction the pings get more intense.";
-            andvaranautFinder.m_startMessage = "You can sense gold\n(No, wait, just Haldor's treasure chests. Dammit Loki!)";
+            andvaranautFinder.m_tooltip = "$mod_epicloot_item_andvaranaut_tooltip";
+            andvaranautFinder.m_startMessage = "$mod_epicloot_item_andvaranaut_startmsg";
 
             // Setup restrictions
             andvaranautFinder.RequiredComponentTypes = new List<Type> { typeof(TreasureMapChest) };
@@ -639,7 +652,7 @@ namespace EpicLoot
             var magicItem = new MagicItem
             {
                 Rarity = ItemRarity.Epic,
-                TypeNameOverride = "dwarven ring"
+                TypeNameOverride = "$mod_epicloot_item_andvaranaut_type"
             };
             magicItem.Effects.Add(new MagicItemEffect() { EffectType = MagicEffectType.Andvaranaut });
 
@@ -653,7 +666,7 @@ namespace EpicLoot
             var paralyzed = ScriptableObject.CreateInstance<SE_Paralyzed>();
             Common.Utils.CopyFields(lightning, paralyzed, typeof(StatusEffect));
             paralyzed.name = "Paralyze";
-            paralyzed.m_name = "Paralyze";
+            paralyzed.m_name = "mod_epicloot_se_paralyze";
 
             ObjectDB.instance.m_StatusEffects.Add(paralyzed);
         }
@@ -661,7 +674,7 @@ namespace EpicLoot
         public static T LoadJsonFile<T>(string filename) where T : class
         {
             var jsonFile = LoadJsonText(filename);
-            T result = null;
+            T result;
             try
             {
                 result = string.IsNullOrEmpty(jsonFile) ? null : JSON.ToObject<T>(jsonFile);
@@ -706,7 +719,7 @@ namespace EpicLoot
                 assetFileName = Path.Combine(Path.GetDirectoryName(assembly.Location) ?? string.Empty, assetName);
                 if (!File.Exists(assetFileName))
                 {
-                    EpicLoot.LogError($"Could not find asset ({assetName})");
+                    LogError($"Could not find asset ({assetName})");
                     return null;
                 }
             }
@@ -759,8 +772,8 @@ namespace EpicLoot
             var lootTables = LootRoller.GetLootTable(characterName);
             if (lootTables != null && lootTables.Count > 0)
             {
-                List<GameObject> loot = LootRoller.RollLootTableAndSpawnObjects(lootTables, level, characterName, dropPoint);
-                EpicLoot.Log($"Rolling on loot table: {characterName} (lvl {level}), spawned {loot.Count} items at drop point({dropPoint}).");
+                var loot = LootRoller.RollLootTableAndSpawnObjects(lootTables, level, characterName, dropPoint);
+                Log($"Rolling on loot table: {characterName} (lvl {level}), spawned {loot.Count} items at drop point({dropPoint}).");
                 DropItems(loot, dropPoint);
                 foreach (var l in loot)
                 {
@@ -768,13 +781,13 @@ namespace EpicLoot
                     var magicItem = itemData.GetMagicItem();
                     if (magicItem != null)
                     {
-                        EpicLoot.Log($"  - {itemData.m_shared.m_name} <{l.transform.position}>: {string.Join(", ", magicItem.Effects.Select(x => x.EffectType.ToString()))}");
+                        Log($"  - {itemData.m_shared.m_name} <{l.transform.position}>: {string.Join(", ", magicItem.Effects.Select(x => x.EffectType.ToString()))}");
                     }
                 }
             }
             else
             {
-                EpicLoot.Log($"Could not find loot table for: {characterName} (lvl {level})");
+                Log($"Could not find loot table for: {characterName} (lvl {level})");
             }
         }
 

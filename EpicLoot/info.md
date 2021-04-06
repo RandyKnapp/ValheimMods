@@ -745,7 +745,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow
 > 
 > **Requirements:**
-> > **Flags:** `ExclusiveSelf`
+> > **Flags:** `NoRoll, ExclusiveSelf`
 > > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow`
 > > **ExcludedSkillTypes:** `Pickaxes`
 > 

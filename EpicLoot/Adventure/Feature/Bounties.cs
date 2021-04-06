@@ -119,7 +119,7 @@ namespace EpicLoot.Adventure.Feature
 
         public IEnumerator AcceptBounty(Player player, BountyInfo bounty, Action<bool, Vector3> callback)
         {
-            player.Message(MessageHud.MessageType.Center, "Locating Bounty Target...");
+            player.Message(MessageHud.MessageType.Center, "$mod_epicloot_bounties_locatingmsg");
             var saveData = player.GetAdventureSaveData();
             yield return GetRandomPointInBiome(bounty.Biome, saveData, (success, spawnPoint, _) =>
             {
@@ -209,7 +209,7 @@ namespace EpicLoot.Adventure.Feature
             var isComplete = bountyInfo.Slain && bountyInfo.Adds.Sum(x => x.Count) == 0;
             if (isComplete)
             {
-                MessageHud.instance.ShowBiomeFoundMsg("Bounty Vanquished!", true);
+                MessageHud.instance.ShowBiomeFoundMsg("$mod_epicloot_bounties_completemsg", true);
                 bountyInfo.State = BountyState.Complete;
                 player.SaveAdventureSaveData();
             }
@@ -232,7 +232,7 @@ namespace EpicLoot.Adventure.Feature
             bountyInfo.State = BountyState.Claimed;
             player.SaveAdventureSaveData();
 
-            MessageHud.instance.ShowBiomeFoundMsg("Bounty Claimed!", true);
+            MessageHud.instance.ShowBiomeFoundMsg("$mod_epicloot_bounties_claimedmsg", true);
 
             var inventory = player.GetInventory();
             if (bountyInfo.RewardIron > 0)
