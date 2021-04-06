@@ -207,15 +207,15 @@ namespace EpicLoot
                     var itemData = new ExtendedItemData(itemDrop.m_itemData);
                     var magicItemComponent = itemData.AddComponent<MagicItemComponent>();
                     var magicItem = RollMagicItem(lootDrop, itemData);
-                    magicItemComponent.SetMagicItem(magicItem);
-
-                    itemDrop.m_itemData = itemData;
-                    InitializeMagicItem(itemData);
-
                     if (CheatForceMagicEffect)
                     {
                         AddDebugMagicEffects(magicItem);
                     }
+
+                    magicItemComponent.SetMagicItem(magicItem);
+
+                    itemDrop.m_itemData = itemData;
+                    InitializeMagicItem(itemData);
 
                     MagicItemGenerated?.Invoke(itemData, magicItem);
                 }
@@ -566,7 +566,7 @@ namespace EpicLoot
 
         public static void AddDebugMagicEffects(MagicItem item)
         {
-            if (!string.IsNullOrEmpty(ForcedMagicEffect))
+            if (!string.IsNullOrEmpty(ForcedMagicEffect) && !item.HasEffect(ForcedMagicEffect))
             {
                 EpicLoot.Log($"AddDebugMagicEffect {ForcedMagicEffect}");
                 item.Effects.Add(RollEffect(MagicItemEffectDefinitions.Get(ForcedMagicEffect), item.Rarity));

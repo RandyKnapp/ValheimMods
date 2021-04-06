@@ -989,6 +989,30 @@
       "SelectionWeight" : 1,
       "Prefixes": [ "Waterproof" ],
       "Suffixes": [ "Water-repelling" ]
+    },
+    {
+      "Type" : "Paralyze",
+      "DisplayText" : "Paralyze for {0:0.#} seconds",
+      "Requirements" : {
+        "NoRoll": true,
+        "AllowedItemTypes" : [
+          "OneHandedWeapon",
+          "TwoHandedWeapon",
+          "Bow"
+        ],
+        "ExcludedSkillTypes": [
+          "Pickaxes"
+        ]
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 0.5, "MaxValue" : 2, "Increment" : 0.5 },
+        "Rare" : { "MinValue" : 1, "MaxValue" : 2.5, "Increment" : 0.5 },
+        "Epic" : { "MinValue" : 1.5, "MaxValue" : 3, "Increment" : 0.5 },
+        "Legendary" : { "MinValue" : 2, "MaxValue" : 4, "Increment" : 0.5 }
+      },
+      "SelectionWeight" : 1,
+      "Prefixes": [ "Paralyzing" ],
+      "Suffixes": [ "Paralysis" ]
     }
   ]
 }

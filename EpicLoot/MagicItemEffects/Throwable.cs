@@ -79,7 +79,7 @@ namespace EpicLoot.MagicItemEffects
     {
         public static void Postfix(Attack __instance)
         {
-            if (__instance.m_weapon.m_lastProjectile != null)
+            if (__instance.m_weapon.m_lastProjectile != null && __instance.m_weapon.IsMagic() && __instance.m_weapon.GetMagicItem().HasEffect(MagicEffectType.Throwable))
             {
                 var existingMesh = __instance.m_weapon.m_lastProjectile.transform.Find("spear");
                 if (existingMesh != null)

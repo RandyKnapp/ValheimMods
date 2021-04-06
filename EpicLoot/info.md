@@ -738,6 +738,26 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > > **Flags:** `ExclusiveSelf`
 > > **AllowedItemTypes:** `Shoulder`
 
+## Paralyze
+
+> **Display Text:** Paralyze for {0:0.#} seconds
+> 
+> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow`
+> > **ExcludedSkillTypes:** `Pickaxes`
+> 
+> **Value Per Rarity:**
+> 
+> |Rarity|Min|Max|Increment|
+> |--|--|--|--|
+> |Magic|0.5|2|0.5|
+> |Rare|1|2.5|0.5|
+> |Epic|1.5|3|0.5|
+> |Legendary|2|4|0.5|
+
 # Item Sets
 
 Sets of loot drop data that can be referenced in the loot tables

@@ -21,7 +21,7 @@
 ## Magic Effects:
 
 #### Weapons
-- [ ] Paralyze
+- [X] Paralyze (not rolling, too powerful)
 - [ ] Add Knockback
 - [ ] Slow
 - [ ] Blink (bow or spear, teleport to impact point)

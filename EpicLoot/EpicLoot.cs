@@ -10,6 +10,7 @@ using Common;
 using EpicLoot.Adventure;
 using EpicLoot.Crafting;
 using EpicLoot.GatedItemType;
+using EpicLoot.MagicItemEffects;
 using ExtendedItemDataFramework;
 using fastJSON;
 using HarmonyLib;
@@ -587,6 +588,7 @@ namespace EpicLoot
             }
 
             TryRegisterPieces(pieceTables, craftingStations);
+            SetupStatusEffects();
         }
 
         public static void TryRegisterRecipes()
@@ -643,6 +645,17 @@ namespace EpicLoot
 
             prefab.m_itemData = new ExtendedItemData(prefab.m_itemData);
             prefab.m_itemData.Extended().ReplaceComponent<MagicItemComponent>().MagicItem = magicItem;
+        }
+
+        private static void SetupStatusEffects()
+        {
+            var lightning = ObjectDB.instance.GetStatusEffect("Lightning");
+            var paralyzed = ScriptableObject.CreateInstance<SE_Paralyzed>();
+            Common.Utils.CopyFields(lightning, paralyzed, typeof(StatusEffect));
+            paralyzed.name = "Paralyze";
+            paralyzed.m_name = "Paralyze";
+
+            ObjectDB.instance.m_StatusEffects.Add(paralyzed);
         }
 
         public static T LoadJsonFile<T>(string filename) where T : class
