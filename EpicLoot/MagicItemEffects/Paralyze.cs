@@ -25,7 +25,6 @@ namespace EpicLoot.MagicItemEffects
         {
             public static void Postfix(Character __instance, HitData hit)
             {
-                EpicLoot.Log("Character.OnDamaged");
                 OnDamaged(__instance, hit);
             }
         }
@@ -35,7 +34,6 @@ namespace EpicLoot.MagicItemEffects
         {
             public static void Postfix(Character __instance, HitData hit)
             {
-                EpicLoot.Log("Humanoid.OnDamaged");
                 OnDamaged(__instance, hit);
             }
         }

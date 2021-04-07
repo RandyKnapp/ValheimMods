@@ -76,22 +76,17 @@ namespace EpicLoot.Adventure.Feature
                 }
 
                 var itemId = GatedItemTypeHelper.GetGatedItemID(itemConfig, gatingMode);
-                var item = CreateItemDrop(itemId);
-                if (item == null)
+                var itemDrop = CreateItemDrop(itemId);
+                if (itemDrop == null)
                 {
                     EpicLoot.LogWarning($"[AdventureData] Could not find item type (gated={itemId} orig={itemConfig}) in ObjectDB!");
                     continue;
                 }
 
-                if (item.GetComponent<ItemDrop>() == null)
-                {
-                    EpicLoot.LogError($"[AdventureData] Item did not have ItemDrop (gated={itemId} orig={itemConfig}!");
-                    continue;
-                }
-
-                var itemData = item.m_itemData;
+                var itemData = itemDrop.m_itemData;
                 var cost = GetGambleCost(itemId);
                 availableGambles.Add(new SecretStashItemInfo(itemId, itemData, cost, true));
+                Object.Destroy(itemDrop.gameObject);
             }
 
             return availableGambles;

@@ -1,3 +1,7 @@
+## Version 0.7.5
+  * Correctly spawning and checking bounty targets slain (this breaks all current old-version bounties)
+## Version 0.7.4
+  * Removed freeze time, as it totally breaks multiplayer
 ## Version 0.7.3
   * Added config value to hide equipped and hotbar items in the sacrifice tab
   * Also added freeze time keybind (RCtrl+Backspace) and made free fly camera fixed update time (so you can fly around during freeze time)

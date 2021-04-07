@@ -2,7 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using ExtendedItemDataFramework;
 using UnityEngine;
+using Object = UnityEngine.Object;
 using Random = System.Random;
 
 namespace EpicLoot.Adventure.Feature
@@ -80,15 +82,16 @@ namespace EpicLoot.Adventure.Feature
                 return null;
             }
 
-            var itemDrop = itemPrefab.GetComponent<ItemDrop>();
-            if (itemDrop == null)
+            var itemDropPrefab = itemPrefab.GetComponent<ItemDrop>();
+            if (itemDropPrefab == null)
             {
                 return null;
             }
 
             ZNetView.m_forceDisableInit = true;
-            var item = UnityEngine.Object.Instantiate(itemDrop);
+            var item = Object.Instantiate(itemDropPrefab);
             ZNetView.m_forceDisableInit = false;
+
             return item;
         }
 
@@ -106,24 +109,19 @@ namespace EpicLoot.Adventure.Feature
             foreach (var itemConfig in itemList)
             {
                 var itemId = itemIdPredicate(itemConfig);
-                var item = CreateItemDrop(itemId);
-                if (item == null)
+                var itemDrop = CreateItemDrop(itemId);
+                if (itemDrop == null)
                 {
                     EpicLoot.LogWarning($"[AdventureData] Could not find item type (gated={itemId} orig={itemConfig}) in ObjectDB!");
                     continue;
                 }
 
-                if (item.GetComponent<ItemDrop>() == null)
-                {
-                    EpicLoot.LogError($"[AdventureData] Item did not have ItemDrop (gated={itemId} orig={itemConfig}!");
-                    continue;
-                }
-
-                var itemData = item.m_itemData;
+                var itemData = itemDrop.m_itemData;
                 if (itemOkayToAddPredicate(itemData))
                 {
                     results.Add(new SecretStashItemInfo(itemId, itemData, itemConfig.GetCost()));
                 }
+                Object.Destroy(itemDrop.gameObject);
             }
 
             return results;

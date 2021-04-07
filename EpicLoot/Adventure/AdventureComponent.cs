@@ -27,6 +27,19 @@ namespace EpicLoot.Adventure
                 try
                 {
                     SaveData = JSON.ToObject<AdventureSaveDataList>(data, _saveLoadParams);
+
+                    // Clean up old bounties
+                    var removed = 0;
+                    foreach (var saveData in SaveData.AllSaveData)
+                    {
+                        removed += saveData.Bounties.RemoveAll(x => x.State == BountyState.InProgress && x.PlayerID == 0);
+                    }
+
+                    if (removed > 0)
+                    {
+                        EpicLoot.LogWarning($"Removed {removed} invalid bounties");
+                        Save();
+                    }
                 }
                 catch (Exception)
                 {
@@ -51,7 +64,7 @@ namespace EpicLoot.Adventure
     {
         public static void Postfix(TextsDialog __instance)
         {
-            __instance.m_texts.RemoveAll(x => x.m_topic.Equals(AdventureComponent.SaveDataKey, StringComparison.InvariantCulture));
+            //__instance.m_texts.RemoveAll(x => x.m_topic.Equals(AdventureComponent.SaveDataKey, StringComparison.InvariantCulture));
         }
     }
 }

@@ -31,7 +31,7 @@
   "mod_epicloot_merchant_seconds": "s",
   "mod_epicloot_treasuremap_locatingmsg": "Preparing Treasure Map...",
   "mod_epicloot_bounties_tooltip": "Travel to the <color=#31eb41>$1</color> and locate $2 the <color=#f03232>$3</color>. $4. Return to me when it is done.",
-  "mod_epicloot_bounties_tooltip_slay": "Slay it{adds}",
+  "mod_epicloot_bounties_tooltip_slay": "Slay it",
   "mod_epicloot_bounties_tooltip_slaymultiple": "Slay it and its minions",
   "mod_epicloot_bounties_tooltip_rewards": "Rewards:",
   "mod_epicloot_bounties_tooltip_status": "Status:",

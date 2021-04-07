@@ -194,6 +194,7 @@
     <Compile Include="TextsDialog_Patch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ZNetScene_Patch.cs" />
+    <Compile Include="ZNet_Patch.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="adventuredata.json" />

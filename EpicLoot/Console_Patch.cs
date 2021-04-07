@@ -25,6 +25,8 @@ namespace EpicLoot
                 return true;
             }
 
+            var player = Player.m_localPlayer;
+
             var command = args[0];
             if (command.Equals("magicitem", StringComparison.InvariantCultureIgnoreCase) ||
                 command.Equals("mi", StringComparison.InvariantCultureIgnoreCase))
@@ -67,7 +69,6 @@ namespace EpicLoot
             else if (command.Equals("resettreasuremap", StringComparison.InvariantCultureIgnoreCase) 
                      || command.Equals("resettm", StringComparison.InvariantCultureIgnoreCase))
             {
-                var player = Player.m_localPlayer;
                 var saveData = player.GetAdventureSaveData();
                 saveData.TreasureMaps.Clear();
                 saveData.NumberOfTreasureMapsOrBountiesStarted = 0;
@@ -81,7 +82,6 @@ namespace EpicLoot
             }
             else if (command.Equals("resetbounties", StringComparison.InvariantCultureIgnoreCase))
             {
-                var player = Player.m_localPlayer;
                 var saveData = player.GetAdventureSaveData();
                 saveData.Bounties.Clear();
                 player.SaveAdventureSaveData();
@@ -98,9 +98,9 @@ namespace EpicLoot
             }
             else if (command.Equals("resetadventure", StringComparison.InvariantCultureIgnoreCase))
             {
-                var adventureComponent = Player.m_localPlayer.GetComponent<AdventureComponent>();
+                var adventureComponent = player.GetComponent<AdventureComponent>();
                 adventureComponent.SaveData = new AdventureSaveDataList();
-                Player.m_localPlayer.SaveAdventureSaveData();
+                player.SaveAdventureSaveData();
             }
             else if (command.Equals("bounties"))
             {
@@ -110,13 +110,20 @@ namespace EpicLoot
             }
             else if (command.Equals("playerbounties"))
             {
-                var availableBounties = Player.m_localPlayer.GetAdventureSaveData().Bounties;
+                var availableBounties = player.GetAdventureSaveData().Bounties;
                 BountiesAdventureFeature.PrintBounties($"Player Bounties:", availableBounties);
             }
             else if (command.Equals("timescale") || command.Equals("ts"))
             {
                 var timeScale = (args.Length >= 2) ? float.Parse(args[1]) : 1;
                 Time.timeScale = timeScale;
+            }
+            else if (command.Equals("gotomerchant") || command.Equals("gotom"))
+            {
+                if (ZoneSystem.instance.FindClosestLocation("Vendor_BlackForest", player.transform.position, out var location))
+                {
+                    player.TeleportTo(location.m_position + Vector3.right * 5, player.transform.rotation, true);
+                }
             }
 
             return true;

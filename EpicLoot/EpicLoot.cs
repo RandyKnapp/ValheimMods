@@ -57,7 +57,7 @@ namespace EpicLoot
     public class EpicLoot : BaseUnityPlugin
     {
         public const string PluginId = "randyknapp.mods.epicloot";
-        public const string Version = "0.7.3";
+        public const string Version = "0.7.5";
 
         private static ConfigEntry<string> _setItemColor;
         private static ConfigEntry<string> _magicRarityColor;
@@ -236,14 +236,14 @@ namespace EpicLoot
             }
         }*/
 
-        [UsedImplicitly]
+        /*[UsedImplicitly]
         private void Update()
         {
             if (Input.GetKey(KeyCode.RightControl) && Input.GetKeyDown(KeyCode.Backspace))
             {
                 Time.timeScale = Time.timeScale == 0 ? 1 : 0;
             }
-        }
+        }*/
 
         private void LoadAssets()
         {

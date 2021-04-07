@@ -46,6 +46,7 @@ namespace EpicLoot.Adventure.Feature
             {
                 Biome = targetConfig.Biome,
                 Interval = interval,
+                PlayerID = player.GetPlayerID(),
                 Target = new BountyTargetInfo() { MonsterID = targetConfig.TargetID, Level = GetTargetLevel(random, targetConfig.RewardGold > 0, false), Count = 1 },
                 TargetName = GenerateTargetName(random),
                 RewardIron = targetConfig.RewardIron,
@@ -141,7 +142,7 @@ namespace EpicLoot.Adventure.Feature
             });
         }
 
-        private void SpawnBountyTargets(BountyInfo bounty, Vector3 spawnPoint, Vector3 offset)
+        private static void SpawnBountyTargets(BountyInfo bounty, Vector3 spawnPoint, Vector3 offset)
         {
             var prefabNames = new List<string>() { bounty.Target.MonsterID };
             foreach (var addConfig in bounty.Adds)
@@ -160,18 +161,22 @@ namespace EpicLoot.Adventure.Feature
                 var prefab = ZNetScene.instance.GetPrefab(prefabName);
                 var creature = Object.Instantiate(prefab, spawnPoint, Quaternion.identity);
                 var bountyTarget = creature.AddComponent<BountyTarget>();
-                bountyTarget.Setup(bounty, prefabName, isAdd, true);
+                bountyTarget.Initialize(bounty, prefabName, isAdd);
 
-                var randomSpacing = UnityEngine.Random.insideUnitSphere * 3;
+                var randomSpacing = UnityEngine.Random.insideUnitSphere * 4;
                 spawnPoint += randomSpacing;
                 ZoneSystem.instance.FindFloor(spawnPoint, out var floorHeight);
                 spawnPoint.y = floorHeight;
             }
 
             Minimap.instance.ShowPointOnMap(spawnPoint + offset);
+
+            var pkg = new ZPackage();
+            bounty.ToPackage(pkg);
+            ZRoutedRpc.instance.InvokeRoutedRPC("SpawnBounties", pkg);
         }
 
-        public void SlayBountyTarget(BountyInfo bountyInfo, string monsterID, bool isAdd)
+        private static void OnBountyTargetSlain(string bountyID, string monsterID, bool isAdd)
         {
             var player = Player.m_localPlayer;
             if (player == null)
@@ -180,6 +185,14 @@ namespace EpicLoot.Adventure.Feature
             }
 
             var saveData = player.GetAdventureSaveData();
+            var bountyInfo = saveData.GetBountyInfoByID(bountyID);
+
+            if (bountyInfo == null || bountyInfo.PlayerID != player.GetPlayerID())
+            {
+                // Someone else's bounty
+                return;
+            }
+
             if (!saveData.HasAcceptedBounty(bountyInfo.Interval, bountyInfo.ID) || bountyInfo.State != BountyState.InProgress)
             {
                 return;
@@ -253,6 +266,32 @@ namespace EpicLoot.Adventure.Feature
                 saveData.AbandonedBounty(bountyInfo.ID);
                 Player.m_localPlayer.SaveAdventureSaveData();
             }
+        }
+
+        public void RegisterRPC(ZRoutedRpc routedRpc)
+        {
+            routedRpc.Register<ZPackage>("SpawnBounties", RPC_SpawnBounties);
+            routedRpc.Register<ZPackage, string, bool>("SlayBountyTarget", RPC_SlayBountyTarget);
+        }
+
+        public void RPC_SpawnBounties(long sender, ZPackage pkg)
+        {
+            var bounty = BountyInfo.FromPackage(pkg);
+            Debug.LogWarning($"RPC_SpawnBounties: {bounty.ID}");
+        }
+
+        public void RPC_SlayBountyTarget(long sender, ZPackage pkg, string monsterID, bool isAdd)
+        {
+            var bounty = BountyInfo.FromPackage(pkg);
+            Debug.LogWarning($"RPC_SlayBountyTarget: {monsterID} ({(isAdd ? "minion" : "target")})");
+
+            if (Player.m_localPlayer == null || bounty.PlayerID != Player.m_localPlayer.GetPlayerID())
+            {
+                // Not my bounty
+                return;
+            }
+
+            OnBountyTargetSlain(bounty.ID, monsterID, isAdd);
         }
     }
 }

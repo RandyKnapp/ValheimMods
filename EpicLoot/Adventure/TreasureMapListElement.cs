@@ -53,7 +53,7 @@ namespace EpicLoot.Adventure
             var displayName = Localization.instance.Localize("$mod_epicloot_treasuremap_name", $"$biome_{Biome.ToString().ToLower()}", (itemInfo.Interval + 1).ToString());
 
             Icon.color = (CanAfford && !AlreadyPurchased) ? Color.white : new Color(1.0f, 0.0f, 1.0f, 0.0f);
-            NameText.text = displayName;
+            NameText.text = Localization.instance.Localize(displayName);
             NameText.color = (CanAfford && !AlreadyPurchased) ? Color.white : Color.gray;
             PriceContainer.SetActive(!AlreadyPurchased);
             PurchasedLabel.SetActive(AlreadyPurchased);

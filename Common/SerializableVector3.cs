@@ -18,6 +18,22 @@ namespace Common
             this.z = z;
         }
 
+        public void ToPackage(ZPackage pkg)
+        {
+            pkg.Write(x);
+            pkg.Write(y);
+            pkg.Write(z);
+        }
+
+        public static SerializableVector3 FromPackage(ZPackage pkg)
+        {
+            var result = new SerializableVector3();
+            result.x = pkg.ReadSingle();
+            result.y = pkg.ReadSingle();
+            result.z = pkg.ReadSingle();
+            return result;
+        }
+
         public override string ToString()
             => $"[{x}, {y}, {z}]";
 

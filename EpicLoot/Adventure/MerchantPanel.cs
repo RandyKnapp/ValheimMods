@@ -4,6 +4,7 @@ using EpicLoot.Adventure.Feature;
 using EpicLoot.Crafting;
 using UnityEngine;
 using UnityEngine.UI;
+using Object = UnityEngine.Object;
 
 namespace EpicLoot.Adventure
 {
@@ -187,6 +188,7 @@ namespace EpicLoot.Adventure
             {
                 var itemDrop = AdventureFeature.CreateItemDrop(listItem.ItemInfo.ItemID);
                 item = itemDrop.m_itemData;
+                Destroy(itemDrop.gameObject);
             }
 
             var inventory = player.GetInventory();
