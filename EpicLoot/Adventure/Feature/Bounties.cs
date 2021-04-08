@@ -55,13 +55,10 @@ namespace EpicLoot.Adventure.Feature
             })
                 .ToList();
 
-            //PrintBounties("Player Bounties: ", saveData.Bounties);
-            //PrintBounties("Before: ", results);
             if (removeAcceptedBounties)
             {
                 results.RemoveAll(x => saveData.HasAcceptedBounty(x.Interval, x.ID));
             }
-            //PrintBounties("After: ", results);
 
             return results;
         }
