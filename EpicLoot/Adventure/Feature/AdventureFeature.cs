@@ -38,6 +38,18 @@ namespace EpicLoot.Adventure.Feature
             return GetRandomForInterval(GetCurrentInterval(), RefreshInterval);
         }
 
+        public virtual void OnZNetStart()
+        {
+        }
+
+        public virtual void OnZNetDestroyed()
+        {
+        }
+
+        public virtual void OnWorldSave()
+        {
+        }
+
         protected static int GetSecondsUntilIntervalRefresh(int intervalDays)
         {
             if (ZNet.m_world == null || EnvMan.instance == null)

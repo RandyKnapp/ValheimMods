@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using BepInEx;
 using UnityEngine;
+using UnityEngine.Rendering;
 using Object = System.Object;
 
 namespace Common
@@ -90,6 +91,11 @@ namespace Common
                 var originalFieldValue = fieldInfo.GetValue(originalObject);
                 fieldInfo.SetValue(cloneObject, originalFieldValue);
             }
+        }
+
+        public static bool IsServer()
+        {
+            return ZNet.instance.IsServer() || ZNet.instance.IsDedicated() || SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null;
         }
     }
 

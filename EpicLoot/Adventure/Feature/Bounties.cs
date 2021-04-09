@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Common;
+using fastJSON;
+using HarmonyLib;
 using UnityEngine;
 using Object = UnityEngine.Object;
 using Random = System.Random;
@@ -12,6 +14,11 @@ namespace EpicLoot.Adventure.Feature
 {
     public class BountiesAdventureFeature : AdventureFeature
     {
+        public BountyLedger BountyLedger;
+
+        private static readonly JSONParameters _saveLoadParams = new JSONParameters { UseExtensions = false };
+        private const string LedgerIdentifier = "randyknapp.mods.epicloot.BountyLedger";
+
         public override AdventureFeatureType Type => AdventureFeatureType.Bounties;
         public override int RefreshInterval => AdventureDataManager.Config.Bounties.RefreshInterval;
 
@@ -267,20 +274,56 @@ namespace EpicLoot.Adventure.Feature
 
         public void RegisterRPC(ZRoutedRpc routedRpc)
         {
-            routedRpc.Register<ZPackage>("SpawnBounties", RPC_SpawnBounties);
-            routedRpc.Register<ZPackage, string, bool>("SlayBountyTarget", RPC_SlayBountyTarget);
+            //routedRpc.Register<ZPackage>("SpawnBounties", RPC_SpawnBounties);
+            routedRpc.Register<string>("SendKillLogs", RPC_Client_ReceiveKillLogs);
+
+            if (Common.Utils.IsServer())
+            {
+                routedRpc.Register<ZPackage, string, bool>("SlayBountyTarget", RPC_SlayBountyTarget);
+                routedRpc.Register<long>("RequestKillLogs", RPC_Server_RequestKillLogs);
+                routedRpc.Register<long>("ClearKillLogs", RPC_Server_ClearKillLogs);
+            }
+            else
+            {
+                routedRpc.Register<ZPackage, string, bool>("SlayBountyTargetFromServer", RPC_Client_SlayBountyTargetFromServer);
+            }
         }
 
-        public void RPC_SpawnBounties(long sender, ZPackage pkg)
+        /*public void RPC_SpawnBounties(long sender, ZPackage pkg)
         {
             var bounty = BountyInfo.FromPackage(pkg);
             Debug.LogWarning($"RPC_SpawnBounties: {bounty.ID}");
+        }*/
+
+        private void RPC_Client_SlayBountyTargetFromServer(long sender, ZPackage pkg, string monsterID, bool isAdd)
+        {
+            if (Common.Utils.IsServer())
+            {
+                return;
+            }
+            
+            RPC_SlayBountyTarget(sender, pkg, monsterID, isAdd);
         }
 
         public void RPC_SlayBountyTarget(long sender, ZPackage pkg, string monsterID, bool isAdd)
         {
+            var isServer = Common.Utils.IsServer();
+            if (isServer)
+            {
+                EpicLoot.LogWarning($"SERVER: RPC_SlayBountyTarget: {monsterID} ({(isAdd ? "minion" : "target")})");
+                ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.Everybody, "SlayBountyTargetFromServer", pkg, monsterID, isAdd);
+            }
+            else
+            {
+                EpicLoot.LogWarning($"CLIENT: RPC_SlayBountyTarget: {monsterID} ({(isAdd ? "minion" : "target")})");
+            }
+
             var bounty = BountyInfo.FromPackage(pkg);
-            Debug.LogWarning($"RPC_SlayBountyTarget: {monsterID} ({(isAdd ? "minion" : "target")})");
+
+            if (isServer)
+            {
+                AddSlainBountyTargetToLedger(bounty, monsterID, isAdd);
+            }
 
             if (Player.m_localPlayer == null || bounty.PlayerID != Player.m_localPlayer.GetPlayerID())
             {
@@ -289,6 +332,149 @@ namespace EpicLoot.Adventure.Feature
             }
 
             OnBountyTargetSlain(bounty.ID, monsterID, isAdd);
+        }
+
+        private void AddSlainBountyTargetToLedger(BountyInfo bounty, string monsterID, bool isAdd)
+        {
+            if (!Common.Utils.IsServer())
+            {
+                return;
+            }
+
+            if (BountyLedger == null)
+            {
+                EpicLoot.LogError("[BountyLedger] Server tried to add kill log to bounty ledger but BountyLedger was null");
+                return;
+            }
+
+            if (Player.m_localPlayer != null && Player.m_localPlayer.GetPlayerID() == bounty.PlayerID)
+            {
+                EpicLoot.Log($"[BountyLedger] This player ({bounty.PlayerID}) is the local player");
+                return;
+            }
+
+            var characterZdos = ZNet.instance.GetAllCharacterZDOS();
+            var playerIsOnline = characterZdos.Select(zdo => zdo.GetLong("playerID")).Any(playerID => playerID == bounty.PlayerID);
+            if (playerIsOnline)
+            {
+                EpicLoot.Log($"[BountyLedger] This player ({bounty.PlayerID}) is connected to server, don't log the kill, they'll get the RPC");
+                return;
+            }
+
+            BountyLedger.AddKillLog(bounty.PlayerID, bounty.ID, monsterID, isAdd);
+            SaveBountyLedger();
+        }
+
+        public void LoadBountyLedger()
+        {
+            if (!Common.Utils.IsServer() || ZoneSystem.instance == null)
+            {
+                return;
+            }
+
+            var globalKeys = ZoneSystem.instance.GetGlobalKeys();
+            var ledgerGlobalKey = globalKeys.Find(x => x.StartsWith(LedgerIdentifier));
+            var ledgerData = ledgerGlobalKey?.Substring(LedgerIdentifier.Length);
+
+            if (string.IsNullOrEmpty(ledgerData))
+            {
+                BountyLedger = new BountyLedger { WorldID = ZNet.m_world.m_uid };
+            }
+            else
+            {
+                BountyLedger = JSON.ToObject<BountyLedger>(ledgerData, _saveLoadParams);
+            }
+        }
+
+        public void SaveBountyLedger()
+        {
+            if (!Common.Utils.IsServer() || ZoneSystem.instance == null || BountyLedger == null)
+            {
+                return;
+            }
+
+            ZoneSystem.instance.m_globalKeys.RemoveWhere(x => x.StartsWith(LedgerIdentifier));
+
+            var ledgerData = JSON.ToJSON(BountyLedger, _saveLoadParams);
+            ledgerData = LedgerIdentifier + ledgerData;
+            ZoneSystem.instance.SetGlobalKey(ledgerData);
+        }
+
+        public override void OnZNetStart()
+        {
+            if (Common.Utils.IsServer())
+            {
+                LoadBountyLedger();
+            }
+        }
+
+        public override void OnZNetDestroyed()
+        {
+            BountyLedger = null;
+        }
+
+        public override void OnWorldSave()
+        {
+            SaveBountyLedger();
+        }
+
+        private void RPC_Server_RequestKillLogs(long sender, long playerID)
+        {
+            if (!Common.Utils.IsServer())
+            {
+                return;
+            }
+
+            var results = "";
+            if (BountyLedger != null)
+            {
+                var logs = BountyLedger.GetAllKillLogs(playerID);
+                results = JSON.ToNiceJSON(logs, _saveLoadParams);
+            }
+
+            ZRoutedRpc.instance.InvokeRoutedRPC(sender, "SendKillLogs", results);
+        }
+
+        private void RPC_Client_ReceiveKillLogs(long sender, string logData)
+        {
+            var logs = JSON.ToObject<List<BountyKillLog>>(logData);
+            foreach (var killLog in logs)
+            {
+                OnBountyTargetSlain(killLog.BountyID, killLog.MonsterID, killLog.IsAdd);
+            }
+
+            var playerID = Player.m_localPlayer.GetPlayerID();
+            ZRoutedRpc.instance.InvokeRoutedRPC("ClearKillLogs", playerID);
+        }
+
+        private void RPC_Server_ClearKillLogs(long sender, long playerID)
+        {
+            if (!Common.Utils.IsServer())
+            {
+                return;
+            }
+
+            BountyLedger?.RemoveKillLogsForPlayer(playerID);
+            SaveBountyLedger();
+        }
+    }
+
+    [HarmonyPatch(typeof(Game), nameof(Game.SpawnPlayer))]
+    public static class Game_SpawnPlayer_Patch
+    {
+        public static void Postfix()
+        {
+            if (ZRoutedRpc.instance != null && Player.m_localPlayer != null)
+            {
+                Player.m_localPlayer.StartCoroutine(WaitThenRequestKillLogs(Player.m_localPlayer));
+            }
+        }
+
+        public static IEnumerator WaitThenRequestKillLogs(Player player)
+        {
+            yield return new WaitForSeconds(5);
+            var playerID = player.GetPlayerID();
+            ZRoutedRpc.instance.InvokeRoutedRPC("RequestKillLogs", playerID);
         }
     }
 }

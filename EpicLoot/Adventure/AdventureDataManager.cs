@@ -81,13 +81,37 @@ namespace EpicLoot.Adventure
 
         public static string GetBountyName(BountyInfo bountyInfo)
         {
-            return string.IsNullOrEmpty(bountyInfo.TargetName) ? GetMonsterName(bountyInfo.Target.MonsterID) : bountyInfo.TargetName;
+            return Localization.instance.Localize(string.IsNullOrEmpty(bountyInfo.TargetName) ? GetMonsterName(bountyInfo.Target.MonsterID) : bountyInfo.TargetName);
         }
 
         public static string GetMonsterName(string monsterID)
         {
             var monsterPrefab = ZNetScene.instance.GetPrefab(monsterID);
             return monsterPrefab?.GetComponent<Character>()?.m_name ?? monsterID;
+        }
+
+        public static void OnZNetStart()
+        {
+            SecretStash.OnZNetStart();
+            Gamble.OnZNetStart();
+            TreasureMaps.OnZNetStart();
+            Bounties.OnZNetStart();
+        }
+
+        public static void OnZNetDestroyed()
+        {
+            SecretStash.OnZNetDestroyed();
+            Gamble.OnZNetDestroyed();
+            TreasureMaps.OnZNetDestroyed();
+            Bounties.OnZNetDestroyed();
+        }
+
+        public static void OnWorldSave()
+        {
+            SecretStash.OnWorldSave();
+            Gamble.OnWorldSave();
+            TreasureMaps.OnWorldSave();
+            Bounties.OnWorldSave();
         }
     }
 }

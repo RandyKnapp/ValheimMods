@@ -50,8 +50,11 @@ namespace EpicLoot.Adventure
 
         private void OnDeath()
         {
+            EpicLoot.LogWarning("BountyTarget.OnDeath");
             var pkg = new ZPackage();
             _bountyInfo.ToPackage(pkg);
+
+            EpicLoot.LogWarning($"SENDING -> RPC_SlayBountyTarget: {_monsterID} ({(_isAdd ? "minion" : "target")})");
             ZRoutedRpc.instance.InvokeRoutedRPC("SlayBountyTarget", pkg, _monsterID, _isAdd);
         }
 
@@ -143,7 +146,8 @@ namespace EpicLoot.Adventure
                 if (old)
                 {
                     EpicLoot.LogWarning($"Destroying old bounty target: {__instance.name}");
-                    ZNetScene.instance.Destroy(__instance.gameObject);
+                    zdo.Set("BountyTarget", "");
+                    __instance.m_nview.Destroy();
                     return;
                 }
 

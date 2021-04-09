@@ -20,7 +20,7 @@ namespace EpicLoot
         {
             var input = __instance.m_input.text;
             var args = input.Split(' ');
-            if (args.Length == 0 || !__instance.IsCheatsEnabled())
+            if (args.Length == 0)
             {
                 return true;
             }
@@ -28,65 +28,54 @@ namespace EpicLoot
             var player = Player.m_localPlayer;
 
             var command = args[0];
-            if (command.Equals("magicitem", StringComparison.InvariantCultureIgnoreCase) ||
-                command.Equals("mi", StringComparison.InvariantCultureIgnoreCase))
+            if (CheatCommand(command, "magicitem", "mi"))
             {
                 MagicItem(__instance, args);
-                return false;
             }
-            else if (command.Equals("magicitemwitheffect", StringComparison.InvariantCultureIgnoreCase) 
-                || command.Equals("mieffect", StringComparison.InvariantCultureIgnoreCase)) 
+            else if (CheatCommand(command, "magicitemwitheffect", "mieffect")) 
             {
                 SpawnMagicItemWithEffect(__instance, args);
-                return false;
             }
-            else if (command.Equals("checkstackquality", StringComparison.InvariantCultureIgnoreCase))
+            else if (Command(command, "checkstackquality"))
             {
                 CheckStackQuality(__instance);
-                return false;
             }
-            else if (command.Equals("magicmats", StringComparison.InvariantCultureIgnoreCase))
+            else if (CheatCommand(command, "magicmats"))
             {
                 SpawnMagicCraftingMaterials();
-                return false;
             }
-            else if (command.Equals("alwaysdrop", StringComparison.InvariantCultureIgnoreCase))
+            else if (CheatCommand(command, "alwaysdrop"))
             {
                 ToggleAlwaysDrop(__instance);
-                return false;
             }
-            else if (command.Equals("cheatgating", StringComparison.InvariantCultureIgnoreCase))
+            else if (CheatCommand(command, "cheatgating"))
             {
                 LootRoller.CheatDisableGating = !LootRoller.CheatDisableGating;
                 __instance.AddString($"> Disable gating for magic item drops: {LootRoller.CheatDisableGating}");
-                return false;
             }
-            else if (command.Equals("testtreasuremap", StringComparison.InvariantCultureIgnoreCase) ||
-                     command.Equals("testtm", StringComparison.InvariantCultureIgnoreCase))
+            else if (CheatCommand(command, "testtreasuremap", "testtm"))
             {
                 TestTreasureMap(args);
             }
-            else if (command.Equals("resettreasuremap", StringComparison.InvariantCultureIgnoreCase) 
-                     || command.Equals("resettm", StringComparison.InvariantCultureIgnoreCase))
+            else if (Command(command, "resettreasuremap", "resettm"))
             {
                 var saveData = player.GetAdventureSaveData();
                 saveData.TreasureMaps.Clear();
                 saveData.NumberOfTreasureMapsOrBountiesStarted = 0;
                 player.SaveAdventureSaveData();
             }
-            else if (command.Equals("debugtreasuremap", StringComparison.InvariantCultureIgnoreCase) 
-                     || command.Equals("debugtm", StringComparison.InvariantCultureIgnoreCase))
+            else if (Command(command, "debugtreasuremap", "debugtm"))
             {
                 Minimap_Patch.DebugMode = !Minimap_Patch.DebugMode;
                 __instance.AddString($"> Treasure Map Debug Mode: {Minimap_Patch.DebugMode}");
             }
-            else if (command.Equals("resetbounties", StringComparison.InvariantCultureIgnoreCase))
+            else if (Command(command, "resetbounties"))
             {
                 var saveData = player.GetAdventureSaveData();
                 saveData.Bounties.Clear();
                 player.SaveAdventureSaveData();
             }
-            else if (command.Equals("testbountynames", StringComparison.InvariantCultureIgnoreCase))
+            else if (Command(command, "testbountynames"))
             {
                 var random = new Random();
                 var count = (args.Length >= 2) ? int.Parse(args[1]) : 10;
@@ -96,37 +85,58 @@ namespace EpicLoot
                     __instance.AddString(name);
                 }
             }
-            else if (command.Equals("resetadventure", StringComparison.InvariantCultureIgnoreCase))
+            else if (Command(command, "resetadventure"))
             {
                 var adventureComponent = player.GetComponent<AdventureComponent>();
                 adventureComponent.SaveData = new AdventureSaveDataList();
                 player.SaveAdventureSaveData();
             }
-            else if (command.Equals("bounties"))
+            else if (Command(command, "bounties"))
             {
                 var interval = (args.Length >= 2) ? int.Parse(args[1]) : AdventureDataManager.Bounties.GetCurrentInterval();
                 var availableBounties = AdventureDataManager.Bounties.GetAvailableBounties(interval, false);
                 BountiesAdventureFeature.PrintBounties($"Bounties for Interval {interval}:", availableBounties);
             }
-            else if (command.Equals("playerbounties"))
+            else if (Command(command, "playerbounties"))
             {
                 var availableBounties = player.GetAdventureSaveData().Bounties;
                 BountiesAdventureFeature.PrintBounties($"Player Bounties:", availableBounties);
             }
-            else if (command.Equals("timescale") || command.Equals("ts"))
+            else if (CheatCommand(command, "timescale", "ts"))
             {
                 var timeScale = (args.Length >= 2) ? float.Parse(args[1]) : 1;
                 Time.timeScale = timeScale;
             }
-            else if (command.Equals("gotomerchant") || command.Equals("gotom"))
+            else if (CheatCommand(command, "gotomerchant", "gotom"))
             {
                 if (ZoneSystem.instance.FindClosestLocation("Vendor_BlackForest", player.transform.position, out var location))
                 {
                     player.TeleportTo(location.m_position + Vector3.right * 5, player.transform.rotation, true);
                 }
             }
+            else if (Command(command, "globalkeys"))
+            {
+                if (ZoneSystem.instance != null)
+                {
+                    __instance.AddString("> Print Global Keys:");
+                    foreach (var globalKey in ZoneSystem.instance.GetGlobalKeys())
+                    {
+                        __instance.AddString("> " + globalKey);
+                    }
+                }
+            }
 
             return true;
+        }
+
+        private static bool Command(string command, params string[] args)
+        {
+            return args.Contains(command);
+        }
+
+        private static bool CheatCommand(string command, params string[] args)
+        {
+            return Console.instance.IsCheatsEnabled() && args.Contains(command);
         }
 
         private static void TestTreasureMap(string[] args)

@@ -146,6 +146,5 @@ namespace EpicLoot
 
             return (float) biome;
         }
-
     }
 }

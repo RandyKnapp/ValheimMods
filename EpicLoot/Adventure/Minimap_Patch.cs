@@ -8,7 +8,7 @@ namespace EpicLoot.Adventure
     [HarmonyPatch(typeof(Minimap))]
     public static class Minimap_Patch
     {
-        public const float AreaScale = 2.4f;
+        public const float AreaScale = 2.1f;
 
         public class AreaPinInfo
         {
@@ -80,7 +80,7 @@ namespace EpicLoot.Adventure
                     var position = chestInfo.Position + chestInfo.MinimapCircleOffset;
                     var area = __instance.AddPin(position, Minimap.PinType.EventArea, string.Empty, false, false);
                     area.m_worldSize = AdventureDataManager.Config.TreasureMap.MinimapAreaRadius * AreaScale;
-                    var label = Localization.instance.Localize("mod_epicloot_treasurechest_minimappin", $"biome_{chestInfo.Biome.ToString().ToLowerInvariant()}", (chestInfo.Interval + 1).ToString());
+                    var label = Localization.instance.Localize("$mod_epicloot_treasurechest_minimappin", Localization.instance.Localize($"biome_{chestInfo.Biome.ToString().ToLowerInvariant()}"), (chestInfo.Interval + 1).ToString());
                     var pin = __instance.AddPin(position, EpicLoot.TreasureMapPinType, label, false, false);
 
                     if (DebugMode)
