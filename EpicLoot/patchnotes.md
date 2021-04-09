@@ -1,3 +1,6 @@
+## Version 0.7.6
+  * Updated loottables to cover up to 5-star enemies for all enemy types
+  * Bounties are now completed correctly if another player kills your bounty target while you are offline (bounty completes on next login)
 ## Version 0.7.5
   * Correctly spawning and checking bounty targets slain (this breaks all current old-version bounties)
 ## Version 0.7.4

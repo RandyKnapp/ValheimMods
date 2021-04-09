@@ -1,4 +1,4 @@
-# Epic Loot v0.7.5 - Adventure Update!
+# Epic Loot v0.7.6 - Adventure Update!
 Author: RandyKnapp
 Source: [Github](https://github.com/RandyKnapp/ValheimMods/blob/main/EpicLoot/)
 

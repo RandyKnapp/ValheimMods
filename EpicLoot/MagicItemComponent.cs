@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Common;
 using EpicLoot.Crafting;
 using ExtendedItemDataFramework;
 using fastJSON;
@@ -83,7 +84,7 @@ namespace EpicLoot
         }
     }
 
-    public static partial class ItemDataExtensions
+    public static class ItemDataExtensions
     {
         public static bool IsMagic(this ItemDrop.ItemData itemData)
         {
@@ -185,7 +186,7 @@ namespace EpicLoot
         }
     }
 
-    public static partial class PlayerExtensions
+    public static class PlayerExtensions
     {
         public static List<ItemDrop.ItemData> GetEquipment(this Player player)
         {
@@ -310,7 +311,7 @@ namespace EpicLoot
                 equippedImage.sprite = EpicLoot.Assets.EquippedSprite;
                 equippedImage.color = Color.white;
                 equippedImage.raycastTarget = false;
-                var rectTransform = equipped.transform as RectTransform;
+                var rectTransform = equipped.RectTransform();
                 rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, equippedImage.sprite.texture.width);
                 rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, equippedImage.sprite.texture.height);
             }
