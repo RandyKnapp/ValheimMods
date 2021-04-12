@@ -97,7 +97,25 @@ namespace EpicLoot
                 LootTables.Add(key, new List<LootTable>());
             }
 
-            LootTables[key].Add(lootTable);
+            var refKey = lootTable.RefObject;
+            if (string.IsNullOrEmpty(refKey))
+            {
+                LootTables[key].Add(lootTable);
+
+            }
+            else
+            {
+                if (!LootTables.ContainsKey(refKey))
+                {
+                    EpicLoot.LogError("Loot table missing RefObject name!");
+                    return;
+                }
+                else
+                {
+                    var refObject = new List<LootTable>();
+                    LootTables[key] = LootTables[refKey];
+                }
+            }
         }
 
         public static List<GameObject> RollLootTableAndSpawnObjects(List<LootTable> lootTables, int level, string objectName, Vector3 dropPoint)
