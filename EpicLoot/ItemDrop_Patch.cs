@@ -14,11 +14,14 @@ namespace EpicLoot
 
             // This code probably needs to go into EIDF
             var prefab = __instance.m_itemData.m_dropPrefab;
-            var itemDropPrefab = prefab.GetComponent<ItemDrop>();
-            if (itemDropPrefab != null && itemDropPrefab.m_itemData.IsExtended() && !__instance.m_itemData.IsExtended())
+            if (prefab != null)
             {
-                __instance.m_itemData = new ExtendedItemData(itemDropPrefab.m_itemData);
-                __instance.m_itemData.m_dropPrefab = itemDropPrefab.gameObject;
+                var itemDropPrefab = prefab.GetComponent<ItemDrop>();
+                if (itemDropPrefab != null && itemDropPrefab.m_itemData.IsExtended() && !__instance.m_itemData.IsExtended())
+                {
+                    __instance.m_itemData = new ExtendedItemData(itemDropPrefab.m_itemData);
+                    __instance.m_itemData.m_dropPrefab = itemDropPrefab.gameObject;
+                }
             }
         }
     }

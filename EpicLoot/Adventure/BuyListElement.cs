@@ -114,9 +114,9 @@ namespace EpicLoot.Adventure
         {
             _sb.Clear();
 
-            _sb.AppendLine("$mod_epicloot_gamble_tooltip");
+            _sb.AppendLine(Localization.instance.Localize("$mod_epicloot_gamble_tooltip"));
             _sb.AppendLine();
-            _sb.AppendLine("$mod_epicloot_gamble_tooltip_chance");
+            _sb.AppendLine(Localization.instance.Localize("$mod_epicloot_gamble_tooltip_chance"));
 
             var rarityChance = AdventureDataManager.Config.Gamble.GambleRarityChance;
             if (ItemInfo.GuaranteedRarity)
