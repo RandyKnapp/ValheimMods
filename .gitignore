@@ -11,6 +11,7 @@
 /[Mm]emoryCaptures/
 */bin/
 */obj/
+/packages/
 
 
 # Never ignore Asset meta data
