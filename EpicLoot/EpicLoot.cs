@@ -567,13 +567,21 @@ namespace EpicLoot
                     {
                         ObjectDB.instance.m_items.Add(prefab);
                     }
+                }
+            }
 
+            foreach (var prefab in RegisteredItemPrefabs)
+            {
+                var itemDrop = prefab.GetComponent<ItemDrop>();
+                if (itemDrop != null)
+                {
                     if (_customItemSetupActions.TryGetValue(prefab.name, out var action))
                     {
                         action?.Invoke(itemDrop);
                     }
                 }
             }
+
             ObjectDB.instance.UpdateItemHashes();
 
             var pieceTables = new List<PieceTable>();
