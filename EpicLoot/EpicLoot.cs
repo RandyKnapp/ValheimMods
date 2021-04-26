@@ -247,7 +247,8 @@ namespace EpicLoot
 
         private void LoadAssets()
         {
-            var assetBundle = LoadAssetBundle("epicloot");
+            var assetBundle = AssetBundleHelper.GetAssetBundleFromResources("epicloot");
+
             Assets.EquippedSprite = assetBundle.LoadAsset<Sprite>("Equipped");
             Assets.GenericSetItemSprite = assetBundle.LoadAsset<Sprite>("GenericSetItemMarker");
             Assets.GenericItemBgSprite = assetBundle.LoadAsset<Sprite>("GenericItemBg");
@@ -707,15 +708,24 @@ namespace EpicLoot
             return JSON.ToObject<T>(jsonFile);
         }
 
-        public static AssetBundle LoadAssetBundle(string filename)
-        {
-            var assetBundlePath = GetAssetPath(filename);
-            if (!string.IsNullOrEmpty(assetBundlePath))
-            {
-                return AssetBundle.LoadFromFile(assetBundlePath);
-            }
 
-            return null;
+        class AssetBundleHelper
+        {
+            public static AssetBundle GetAssetBundleFromResources(string fileName)
+            {
+                var execAssembly = Assembly.GetExecutingAssembly();
+
+                var resourceName = execAssembly.GetManifestResourceNames()
+                    .Single(str => str.EndsWith(fileName));
+
+                AssetBundle assetBundle;
+                using (var stream = execAssembly.GetManifestResourceStream(resourceName))
+                {
+                    assetBundle = AssetBundle.LoadFromStream(stream);
+                }
+
+                return assetBundle;
+            }
         }
 
         public static string GetAssetPath(string assetName)
