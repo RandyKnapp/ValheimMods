@@ -20,7 +20,8 @@ namespace EpicLoot_Addon_MCE
         private const string Version = "1.0.2";
 
         private static ConfigVariable<GatedItemTypeMode> _gatedItemTypeModeConfig;
-        private static ConfigVariable<bool> _bossesDropOneTrophyPerPlayer;
+        private static ConfigVariable<BossDropMode> _bossTrophyDropMode;
+        private static ConfigVariable<float> _bossTrophyDropPlayerRange;
 
         private static readonly JsonFileConfigVariable<LootConfig> _lootConfigFile = new JsonFileConfigVariable<LootConfig>("loottables.json");
         private static readonly JsonFileConfigVariable<MagicItemEffectsList> _magicEffectsConfigFile = new JsonFileConfigVariable<MagicItemEffectsList>("magiceffects.json");
@@ -38,7 +39,8 @@ namespace EpicLoot_Addon_MCE
             ConfigManager.ServerConfigReceived += InitializeConfig;
 
             _gatedItemTypeModeConfig = ReplaceConfigVar<GatedItemTypeMode>(epicLootConfig, "Balance", "Item Drop Limits");
-            _bossesDropOneTrophyPerPlayer = ReplaceConfigVar<bool>(epicLootConfig, "Balance", "Bosses Drop One Trophy Per Player");
+            _bossTrophyDropMode = ReplaceConfigVar<BossDropMode>(epicLootConfig, "Balance", "Boss Trophy Drop Mode");
+            _bossTrophyDropPlayerRange = ReplaceConfigVar<float>(epicLootConfig, "Balance", "Boss Trophy Drop Player Range");
 
             ConfigManager.RegisterModConfigVariable(EpicLoot.EpicLoot.PluginId, _lootConfigFile);
             ConfigManager.RegisterModConfigVariable(EpicLoot.EpicLoot.PluginId, _magicEffectsConfigFile);
@@ -88,12 +90,22 @@ namespace EpicLoot_Addon_MCE
             }
         }
 
-        [HarmonyPatch(typeof(EpicLoot.EpicLoot), "GetBossesDropOneTrophyPerPlayer")]
-        public static class EpicLoot_GetBossesDropOneTrophyPerPlayer_Patch
+        [HarmonyPatch(typeof(EpicLoot.EpicLoot), nameof(EpicLoot.EpicLoot.GetBossTrophyDropMode))]
+        public static class EpicLoot_GetBossTrophyDropMode_Patch
         {
-            public static bool Prefix(ref bool __result)
+            public static bool Prefix(ref BossDropMode __result)
             {
-                __result = _bossesDropOneTrophyPerPlayer.Value;
+                __result = _bossTrophyDropMode.Value;
+                return false;
+            }
+        }
+
+        [HarmonyPatch(typeof(EpicLoot.EpicLoot), nameof(EpicLoot.EpicLoot.GetBossTrophyDropPlayerRange))]
+        public static class EpicLoot_GetBossTrophyDropPlayerRange_Patch
+        {
+            public static bool Prefix(ref float __result)
+            {
+                __result = _bossTrophyDropPlayerRange.Value;
                 return false;
             }
         }
