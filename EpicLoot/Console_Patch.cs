@@ -171,7 +171,7 @@ namespace EpicLoot
             var biomes = new[] { Heightmap.Biome.Meadows, Heightmap.Biome.BlackForest, Heightmap.Biome.Swamp, Heightmap.Biome.Mountain, Heightmap.Biome.Plains };
 
             saveData.DebugMode = true;
-            var startInterval = saveData.TreasureMaps.Min(x => x.Interval) - 1;
+            var startInterval = saveData.TreasureMaps.Count == 0 ? -1 : saveData.TreasureMaps.Min(x => x.Interval) - 1;
             for (var i = 0; i < count; ++i)
             {
                 saveData.IntervalOverride = startInterval - (i + 1);
