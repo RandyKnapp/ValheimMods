@@ -47,7 +47,7 @@
     <Reference Include="BepInEx">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\core\BepInEx.dll</HintPath>
     </Reference>
-    <Reference Include="LitJSON">
+    <Reference Include="LitJSON, Version=0.10.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\LitJson.0.10.0\lib\net45\LitJSON.dll</HintPath>
     </Reference>
     <Reference Include="System" />
@@ -92,6 +92,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="manifest.json" />
+    <None Include="packages.config" />
     <None Include="README.md" />
   </ItemGroup>
   <Import Project="..\Common\Common.projitems" Label="Shared" />
