@@ -19,20 +19,10 @@ namespace EpicLoot.MagicItemEffects
 
     public static class Paralyze
     {
-        //public virtual void OnDamaged(HitData hit)
-        [HarmonyPatch(typeof(Character), nameof(Character.OnDamaged))]
-        public static class Paralyze_Character_OnDamaged_Patch
+        [HarmonyPatch(typeof(Character), nameof(Character.Damage))]
+        public static class Paralyze_Character_Damage_Patch
         {
-            public static void Postfix(Character __instance, HitData hit)
-            {
-                OnDamaged(__instance, hit);
-            }
-        }
-
-        [HarmonyPatch(typeof(Humanoid), nameof(Humanoid.OnDamaged))]
-        public static class Paralyze_Humanoid_OnDamaged_Patch
-        {
-            public static void Postfix(Character __instance, HitData hit)
+            static void Postfix(Character __instance, HitData hit)
             {
                 OnDamaged(__instance, hit);
             }
