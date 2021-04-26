@@ -196,6 +196,9 @@
     <Compile Include="ZNet_Patch.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="..\ValheimUnity\AssetBundles\epicloot">
+      <Link>epicloot</Link>
+    </EmbeddedResource>
     <None Include="adventuredata.json" />
     <None Include="enchantcosts.json" />
     <None Include="info.md" />
@@ -216,7 +219,11 @@
       <Name>ExtendedItemDataFramework</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="..\Libs\fastJSON.dll">
+      <Link>fastJSON.dll</Link>
+    </EmbeddedResource>
+  </ItemGroup>
   <Import Project="..\Common\Common.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
@@ -229,9 +236,6 @@ xcopy "$(ProjectDir)iteminfo.json" "C:\Program Files (x86)\Steam\steamapps\commo
 xcopy "$(ProjectDir)recipes.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
 xcopy "$(ProjectDir)enchantcosts.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
 xcopy "$(ProjectDir)itemnames.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
-xcopy "$(ProjectDir)adventuredata.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
-
-xcopy "$(SolutionDir)Libs\fastJSON.dll" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
-xcopy "$(SolutionDir)ValheimUnity\AssetBundles\epicloot" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i</PostBuildEvent>
+xcopy "$(ProjectDir)adventuredata.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i</PostBuildEvent>
   </PropertyGroup>
 </Project>

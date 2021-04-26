@@ -124,6 +124,11 @@ namespace EpicLoot
         private static EpicLoot _instance;
         private Harmony _harmony;
 
+        public EpicLoot()
+        {
+            LoadDependencies();
+        }
+
         [UsedImplicitly]
         private void Awake()
         {
@@ -679,6 +684,29 @@ namespace EpicLoot
             ObjectDB.instance.m_StatusEffects.Add(paralyzed);
         }
 
+        private void LoadDependencies()
+        {
+            var assembly = Assembly.GetCallingAssembly();
+            LoadEmbeddedAssembly(assembly, "fastJSON.dll");
+        }
+
+        private static void LoadEmbeddedAssembly(Assembly assembly, string assemblyName)
+        {
+            var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream($"{assembly.GetName().Name}.{assemblyName}");
+            if (stream == null)
+            {
+                LogError($"Could not load embedded assembly ({assemblyName})!");
+                return;
+            }
+
+            using (stream)
+            {
+                var data = new byte[stream.Length];
+                stream.Read(data, 0, data.Length);
+                Assembly.Load(data);
+            }
+        }
+
         public static T LoadJsonFile<T>(string filename) where T : class
         {
             var jsonFile = LoadJsonText(filename);
@@ -709,13 +737,10 @@ namespace EpicLoot
 
         public static AssetBundle LoadAssetBundle(string filename)
         {
-            var assetBundlePath = GetAssetPath(filename);
-            if (!string.IsNullOrEmpty(assetBundlePath))
-            {
-                return AssetBundle.LoadFromFile(assetBundlePath);
-            }
+            var assembly = Assembly.GetCallingAssembly();
+            var assetBundle = AssetBundle.LoadFromStream(assembly.GetManifestResourceStream($"{assembly.GetName().Name}.{filename}"));
 
-            return null;
+            return assetBundle;
         }
 
         public static string GetAssetPath(string assetName)
