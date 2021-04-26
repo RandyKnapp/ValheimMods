@@ -9,7 +9,7 @@ namespace EpicLoot.MagicItemEffects
         [HarmonyPatch(typeof(Character), nameof(Character.Damage))]
         public static class AddLifeSteal_Character_Damage_Patch
         {
-            static void Postfix(HitData hit)
+            public static void Postfix(HitData hit)
             {
                 CheckAndDoLifeSteal(hit);
             }
@@ -20,11 +20,15 @@ namespace EpicLoot.MagicItemEffects
             try
             {
                 if (!hit.HaveAttacker())
+                {
                     return;
+                }
 
-                Humanoid attacker = hit.GetAttacker() as Humanoid;
-                if (!attacker)
+                var attacker = hit.GetAttacker() as Humanoid;
+                if (attacker == null)
+                {
                     return;
+                }
 
                 // TODO track actual weapon which made a hit for better life-steal calculation
                 var weapon = attacker.GetCurrentWeapon();
@@ -32,7 +36,9 @@ namespace EpicLoot.MagicItemEffects
                 // in case weapon's durability is destroyed after hit?
                 // OR in case damage is delayed and player hides weapon - see to-do above
                 if (weapon == null || !weapon.IsMagic() || !weapon.HasMagicEffect(MagicEffectType.LifeSteal))
+                {
                     return;
+                }
                 
                 var lifeStealMultiplier = weapon.GetMagicItem().GetTotalEffectValue(MagicEffectType.LifeSteal, 0.01f);
                 var healOn = hit.m_damage.GetTotalDamage() * lifeStealMultiplier;

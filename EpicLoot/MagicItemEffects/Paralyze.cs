@@ -22,7 +22,7 @@ namespace EpicLoot.MagicItemEffects
         [HarmonyPatch(typeof(Character), nameof(Character.Damage))]
         public static class Paralyze_Character_Damage_Patch
         {
-            static void Postfix(Character __instance, HitData hit)
+            public static void Postfix(Character __instance, HitData hit)
             {
                 OnDamaged(__instance, hit);
             }
@@ -56,13 +56,13 @@ namespace EpicLoot.MagicItemEffects
                 }
 
                 // TODO: this does not work
-                var fx = __instance.transform.Find("fx_Lightning(Clone)/Sparcs");
+                /*var fx = __instance.transform.Find("fx_Lightning(Clone)/Sparcs");
                 if (fx != null)
                 {
                     var ps = fx.GetComponent<ParticleSystem>();
                     var main = ps.main;
                     main.startColor = Color.yellow;
-                }
+                }*/
 
                 var totalParalyzeTime = weapon.GetMagicItem().GetTotalEffectValue(MagicEffectType.Paralyze);
                 seParalyze.Setup(totalParalyzeTime);
