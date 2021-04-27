@@ -12,7 +12,7 @@ It is NOT compatible with 1.x versions and 1.x must be uninstalled correctly bef
 6. Run the game again
 7. You should see your new empty slots in the inventory and be able to re-equip your items
 
-# Equipment and Quick Slots v2.0.4
+# Equipment and Quick Slots v2.0.5
 ##### by RandyKnapp
 Give equipped items their own dedicated inventory slots, plus three more hotkeyable quick slots.
 
@@ -45,3 +45,5 @@ Copy EquipmentAndQuickSlots.dll into the BepInEx/plugins folder
   * 2.0.4
     * Fixed gamepad navigation for the crafting recipe list
 	* Fixed bug preventing new characters from being created
+  * 2.0.5
+    * Put in a potential fix for "losing items" on tombstone pickup (they're in your inventory, just outside the grid. This version should fix that.)

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using HarmonyLib;
 using UnityEngine;
 
@@ -108,6 +109,58 @@ namespace EquipmentAndQuickSlots
             }
 
             EquipmentSlotHelper.AllowMove = true;
+        }
+    }
+
+    [HarmonyPatch(typeof(TombStone), nameof(TombStone.OnTakeAllSuccess))]
+    public static class TombStone_OnTakeAllSuccess_Patch
+    {
+        public static void Postfix()
+        {
+            var player = Player.m_localPlayer;
+            if (player == null)
+            {
+                return;
+            }
+
+            EquipmentAndQuickSlots.LogWarning("Recovered Tombstone Items, verifying inventory...");
+            var droppedItems = new List<ItemDrop.ItemData>();
+            foreach (var inventory in player.GetAllInventories())
+            {
+                foreach (var itemData in inventory.m_inventory)
+                {
+                    var isOutsideInventoryGrid = itemData.m_gridPos.x < 0
+                                             || itemData.m_gridPos.x >= inventory.m_width
+                                             || itemData.m_gridPos.y < 0
+                                             || itemData.m_gridPos.y >= inventory.m_height;
+                    if (isOutsideInventoryGrid)
+                    {
+                        var itemText = Localization.instance.Localize(itemData.m_shared.m_name) + (itemData.m_stack > 1 ? $" x{itemData.m_stack}" : "");
+                        EquipmentAndQuickSlots.LogWarning($"> Item Outside Inventory Grid! ({itemText}, <{itemData.m_gridPos.x},{itemData.m_gridPos.y}>)");
+                        inventory.RemoveItem(itemData);
+                        var addSuccess = inventory.AddItem(itemData);
+                        if (!addSuccess)
+                        {
+                            EquipmentAndQuickSlots.LogError($"> Could not add item to inventory, item dropped! ({itemText})");
+                            droppedItems.Add(itemData);
+                            ItemDrop.DropItem(itemData, itemData.m_stack, player.transform.position + player.transform.forward * 2 + Vector3.up, Quaternion.identity);
+                        }
+                    }
+                }
+            }
+
+            if (droppedItems.Count > 0)
+            {
+                var droppedItemTexts = droppedItems.Select(x => Localization.instance.Localize(x.m_shared.m_name) + (x.m_stack > 1 ? $" x{x.m_stack}" : ""));
+                var droppedItemsMessage = ">>>> ERROR IN TOMBSTONE RECOVERY - ITEMS DROPPED: " + string.Join(", ", droppedItemTexts);
+                player.Message(MessageHud.MessageType.Center, droppedItemsMessage);
+                Debug.LogError(droppedItemsMessage);
+                EquipmentAndQuickSlots.LogError(droppedItemsMessage);
+            }
+            else
+            {
+                EquipmentAndQuickSlots.LogWarning("> No issues!");
+            }
         }
     }
 
