@@ -64,7 +64,7 @@ namespace EpicLoot
     public class EpicLoot : BaseUnityPlugin
     {
         public const string PluginId = "randyknapp.mods.epicloot";
-        public const string Version = "0.7.6";
+        public const string Version = "0.7.7";
 
         private static ConfigEntry<string> _setItemColor;
         private static ConfigEntry<string> _magicRarityColor;
@@ -88,6 +88,7 @@ namespace EpicLoot
         private static ConfigEntry<BossDropMode> _bossTrophyDropMode;
         private static ConfigEntry<float> _bossTrophyDropPlayerRange;
         public static ConfigEntry<bool> ShowEquippedAndHotbarItemsInSacrificeTab;
+        private static ConfigEntry<bool> _adventureModeEnabled;
 
         public static readonly List<ItemDrop.ItemData.ItemType> AllowedMagicItemTypes = new List<ItemDrop.ItemData.ItemType>
         {
@@ -164,6 +165,7 @@ namespace EpicLoot
             _gatedItemTypeModeConfig = Config.Bind("Balance", "Item Drop Limits", GatedItemTypeMode.MustKnowRecipe, "Sets how the drop system limits what item types can drop. Unlimited: no limits, exactly what's in the loot table will drop. MustKnowRecipe: items will drop so long as the player has discovered their recipe. MustHaveCrafted: items will only drop once the player has crafted one or picked one up. If an item type cannot drop, it will downgrade to an item of the same type and skill that the player has unlocked (i.e. swords will stay swords)");
             _bossTrophyDropMode = Config.Bind("Balance", "Boss Trophy Drop Mode", BossDropMode.OnePerPlayerNearBoss, "Sets bosses to drop a number of trophies equal to the number of players, similar to the way Wishbone works in vanilla. Optionally set it to only include players within a certain distance, use 'Boss Trophy Drop Player Range' to set the range.");
             _bossTrophyDropPlayerRange = Config.Bind("Balance", "Boss Trophy Drop Player Range", 100.0f, "Sets the range that bosses check when dropping multiple trophies using the OnePerPlayerNearBoss drop mode.");
+            _adventureModeEnabled = Config.Bind("Balance", "Adventure Mode Enabled", true, "Set to true to enable all the adventure mode features: secret stash, gambling, treasure maps, and bounties. Set to false to disable. This will not actually remove active treasure maps or bounties from your save.");
 
             LoadTranslations();
             InitializeConfig();
@@ -1220,6 +1222,11 @@ namespace EpicLoot
         public static float GetBossTrophyDropPlayerRange()
         {
             return _bossTrophyDropPlayerRange.Value;
+        }
+
+        public static bool IsAdventureModeEnabled()
+        {
+            return _adventureModeEnabled.Value;
         }
     }
 }

@@ -1,4 +1,4 @@
-# Epic Loot Addon - MCE v1.0.2
+# Epic Loot Addon - MCE v1.0.3
 Author: RandyKnapp
 Source: [Github](https://github.com/RandyKnapp/ValheimMods/tree/main/EpicLoot-Addon-MCE/)
 
@@ -31,3 +31,6 @@ For both the server and the client:
   * Added config for adventure stuff update
 #### Version 1.0.2
   * Added config for boss trophy drops
+#### Version 1.0.3
+  * Added additional config for boss trophy drops
+  * Added adventure mode toggle

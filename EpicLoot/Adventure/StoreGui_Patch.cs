@@ -12,6 +12,11 @@ namespace EpicLoot.Adventure
         [HarmonyPostfix]
         public static void Show_Postfix(StoreGui __instance)
         {
+            if (!EpicLoot.IsAdventureModeEnabled())
+            {
+                return;
+            }
+
             if (__instance.transform.Find(nameof(MerchantPanel)) == null)
             {
                 if (MerchantPanel != null)

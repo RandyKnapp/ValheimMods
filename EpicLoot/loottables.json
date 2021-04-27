@@ -455,7 +455,7 @@
           "Drops": [ [0, 65], [1, 34], [2, 1], [3, 0] ],
           "Loot": [
             { "Item": "Tier0Everything", "Weight": 1, "Rarity": [ 45, 44, 10, 1 ] },
-            { "Item": "Tier0Everything", "Weight": 5, "Rarity": [ 45, 44, 10, 1 ] }
+            { "Item": "Tier1Everything", "Weight": 5, "Rarity": [ 45, 44, 10, 1 ] }
           ]
         },
         {

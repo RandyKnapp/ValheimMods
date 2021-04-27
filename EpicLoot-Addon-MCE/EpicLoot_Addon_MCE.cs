@@ -17,11 +17,12 @@ namespace EpicLoot_Addon_MCE
     public class EpicLoot_Addon_MCE : BaseUnityPlugin
     {
         private const string PluginId = "randyknapp.mods.epicloot.addon.mce";
-        private const string Version = "1.0.2";
+        private const string Version = "1.0.3";
 
         private static ConfigVariable<GatedItemTypeMode> _gatedItemTypeModeConfig;
         private static ConfigVariable<BossDropMode> _bossTrophyDropMode;
         private static ConfigVariable<float> _bossTrophyDropPlayerRange;
+        private static ConfigVariable<bool> _adventureModeEnabled;
 
         private static readonly JsonFileConfigVariable<LootConfig> _lootConfigFile = new JsonFileConfigVariable<LootConfig>("loottables.json");
         private static readonly JsonFileConfigVariable<MagicItemEffectsList> _magicEffectsConfigFile = new JsonFileConfigVariable<MagicItemEffectsList>("magiceffects.json");
@@ -41,6 +42,7 @@ namespace EpicLoot_Addon_MCE
             _gatedItemTypeModeConfig = ReplaceConfigVar<GatedItemTypeMode>(epicLootConfig, "Balance", "Item Drop Limits");
             _bossTrophyDropMode = ReplaceConfigVar<BossDropMode>(epicLootConfig, "Balance", "Boss Trophy Drop Mode");
             _bossTrophyDropPlayerRange = ReplaceConfigVar<float>(epicLootConfig, "Balance", "Boss Trophy Drop Player Range");
+            _adventureModeEnabled = ReplaceConfigVar<bool>(epicLootConfig, "Balance", "Adventure Mode Enabled");
 
             ConfigManager.RegisterModConfigVariable(EpicLoot.EpicLoot.PluginId, _lootConfigFile);
             ConfigManager.RegisterModConfigVariable(EpicLoot.EpicLoot.PluginId, _magicEffectsConfigFile);
@@ -106,6 +108,16 @@ namespace EpicLoot_Addon_MCE
             public static bool Prefix(ref float __result)
             {
                 __result = _bossTrophyDropPlayerRange.Value;
+                return false;
+            }
+        }
+
+        [HarmonyPatch(typeof(EpicLoot.EpicLoot), nameof(EpicLoot.EpicLoot.IsAdventureModeEnabled))]
+        public static class EpicLoot_IsAdventureModeEnabled_Patch
+        {
+            public static bool Prefix(ref bool __result)
+            {
+                __result = _adventureModeEnabled.Value;
                 return false;
             }
         }

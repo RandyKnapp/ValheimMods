@@ -1,3 +1,9 @@
+## Version 0.7.7
+  * Added config to drop trophies based only on the number of nearby players, not just total players on the server
+  * Fixed unlocalized minimap icon text for treasure maps
+  * Embedded fastJSON and epicloot asset bundle to DLL (this fixes several linux server issues including one that was causing problems with bounties)
+  * Merged fix from [maxrd2](https://github.com/maxrd2) fixing a crash when hitting enemies on Linux
+  * Added a toggle to disable adventure mode features: secret stash, gambling, treasure maps, and bounties
 ## Version 0.7.6
   * Updated loottables to cover up to 5-star enemies for all enemy types
   * Bounties are now completed correctly if another player kills your bounty target while you are offline (bounty completes on next login)
