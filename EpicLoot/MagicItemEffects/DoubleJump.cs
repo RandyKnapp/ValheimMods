@@ -131,6 +131,11 @@ namespace EpicLoot.MagicItemEffects
 
         public static void ResetDoubleJumpCharges(Character character)
         {
+            if (character == null || character.m_nview == null || !character.m_nview.IsValid())
+            {
+                return;
+            }
+
             var player = character.IsPlayer() ? character as Player : null;
             if (player != null && player.HasMagicEquipmentWithEffect(MagicEffectType.DoubleJump))
             {

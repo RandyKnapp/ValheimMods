@@ -769,6 +769,17 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > > **AllowedItemTypes:** `Legs`
 > > **AllowedRarities:** `Epic, Legendary`
 
+## WaterWalking
+
+> **Display Text:** $mod_epicloot_me_waterwalk
+> 
+> **Allowed Item Types:** Legs
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedItemTypes:** `Legs`
+> > **AllowedRarities:** `Rare, Epic, Legendary`
+
 # Item Sets
 
 Sets of loot drop data that can be referenced in the loot tables

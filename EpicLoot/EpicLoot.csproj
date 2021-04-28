@@ -183,6 +183,7 @@
     <Compile Include="MagicItemEffects\ModifyMovementSpeed.cs" />
     <Compile Include="MagicItemEffects\Throwable.cs" />
     <Compile Include="MagicItemEffects\Waterproof.cs" />
+    <Compile Include="MagicItemEffects\WaterWalking.cs" />
     <Compile Include="MagicItemNames.cs" />
     <Compile Include="Adventure\BountyListElement.cs" />
     <Compile Include="Adventure\BuyListElement.cs" />

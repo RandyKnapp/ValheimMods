@@ -47,5 +47,6 @@
         public static string Waterproof = nameof(Waterproof);
         public static string Paralyze = nameof(Paralyze);
         public static string DoubleJump = nameof(DoubleJump);
+        public static string WaterWalking = nameof(WaterWalking);
     }
 }
