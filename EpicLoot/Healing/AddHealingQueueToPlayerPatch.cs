@@ -1,5 +1,4 @@
-﻿using EpicLoot.Healing;
-using HarmonyLib;
+﻿using HarmonyLib;
 
 namespace EpicLoot.Healing
 {

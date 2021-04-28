@@ -49,6 +49,7 @@ namespace EpicLoot
         public Sprite MapIconTreasureMap;
         public Sprite MapIconBounty;
         public AudioClip AbandonBountySFX;
+        public AudioClip DoubleJumpSFX;
     }
 
     public class PieceDef
@@ -284,6 +285,7 @@ namespace EpicLoot
             Assets.MapIconTreasureMap = assetBundle.LoadAsset<Sprite>("TreasureMapIcon");
             Assets.MapIconBounty = assetBundle.LoadAsset<Sprite>("MapIconBounty");
             Assets.AbandonBountySFX = assetBundle.LoadAsset<AudioClip>("AbandonBounty");
+            Assets.DoubleJumpSFX = assetBundle.LoadAsset<AudioClip>("DoubleJump");
 
             LoadCraftingMaterialAssets(assetBundle, "Runestone");
 

@@ -1013,6 +1013,22 @@
       "SelectionWeight" : 1,
       "Prefixes": [ "Paralyzing" ],
       "Suffixes": [ "Paralysis" ]
+    },
+    {
+      "Type" : "DoubleJump",
+      "DisplayText" : "$mod_epicloot_me_doublejump",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "Legs"
+        ],
+        "AllowedRarities" : [
+          "Epic",
+          "Legendary"
+        ]
+      },
+      "SelectionWeight" : 1,
+      "Prefixes": [ "$mod_epicloot_me_doublejump_prefix" ],
+      "Suffixes": [ "$mod_epicloot_me_doublejump_suffix" ]
     }
   ]
 }

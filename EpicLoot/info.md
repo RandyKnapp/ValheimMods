@@ -758,6 +758,17 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > |Epic|1.5|3|0.5|
 > |Legendary|2|4|0.5|
 
+## DoubleJump
+
+> **Display Text:** $mod_epicloot_me_doublejump
+> 
+> **Allowed Item Types:** Legs
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedItemTypes:** `Legs`
+> > **AllowedRarities:** `Epic, Legendary`
+
 # Item Sets
 
 Sets of loot drop data that can be referenced in the loot tables

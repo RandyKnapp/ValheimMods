@@ -4,7 +4,6 @@ using EpicLoot.Adventure.Feature;
 using EpicLoot.Crafting;
 using UnityEngine;
 using UnityEngine.UI;
-using Object = UnityEngine.Object;
 
 namespace EpicLoot.Adventure
 {
