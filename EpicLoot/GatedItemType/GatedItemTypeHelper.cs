@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
+using EpicLoot.PlayerKnown;
 
 namespace EpicLoot.GatedItemType
 {
@@ -47,13 +49,6 @@ namespace EpicLoot.GatedItemType
                 return itemID;
             }
 
-            var player = Player.m_localPlayer;
-            if (player == null)
-            {
-                //EpicLoot.LogWarning($"Tried to get gated itemID ({itemID}) with null player! Using itemID");
-                return itemID;
-            }
-
             if (!EpicLoot.IsObjectDBReady())
             {
                 EpicLoot.LogError($"Tried to get gated itemID ({itemID}) but ObjectDB is not initialized!");
@@ -71,7 +66,7 @@ namespace EpicLoot.GatedItemType
                 return null;
             }
 
-            while (CheckIfItemNeedsGate(player, mode, itemName))
+            while (CheckIfItemNeedsGate(mode, itemName))
             {
                 //EpicLoot.Log("Yes...");
                 var index = info.Items.IndexOf(itemID);
@@ -115,13 +110,13 @@ namespace EpicLoot.GatedItemType
             return item.m_shared.m_name;
         }
 
-        private static bool CheckIfItemNeedsGate(Player player, GatedItemTypeMode mode, string itemName)
+        private static bool CheckIfItemNeedsGate(GatedItemTypeMode mode, string itemName)
         {
             //EpicLoot.Log($"Checking if item ({itemName}) needs gating...");
             switch (mode)
             {
-                case GatedItemTypeMode.MustKnowRecipe: return !player.IsRecipeKnown(itemName);
-                case GatedItemTypeMode.MustHaveCrafted: return !player.m_knownMaterial.Contains(itemName);
+                case GatedItemTypeMode.MustKnowRecipe: return !PlayerKnownManager.IsRecipeKnown(itemName);
+                case GatedItemTypeMode.MustHaveCrafted: return !PlayerKnownManager.IsItemKnown(itemName);
                 default: return false;
             }
         }

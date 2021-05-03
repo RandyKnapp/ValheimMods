@@ -191,6 +191,8 @@
     <Compile Include="Adventure\MerchantPanel.cs" />
     <Compile Include="Adventure\StoreGui_Patch.cs" />
     <Compile Include="ObjectDB_Patch.cs" />
+    <Compile Include="PlayerKnown\PlayerKnownManager.cs" />
+    <Compile Include="PlayerKnown\PlayerKnownPatches.cs" />
     <Compile Include="TextsDialog_Patch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ZNetScene_Patch.cs" />
