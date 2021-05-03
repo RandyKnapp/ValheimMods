@@ -101,7 +101,7 @@ namespace EpicLoot.PlayerKnown
             HashSet<string> knownMaterial;
             if (!playerKnownMaterial.TryGetValue(sender, out knownMaterial))
             {
-                EpicLoot.Log($"PlayerKnownManager.RPC_AddKnownMaterial: hashset is null for peer {sender}");
+                EpicLoot.LogWarning($"PlayerKnownManager.RPC_AddKnownMaterial: hashset is null for peer {sender}");
                 return;
             }
             knownMaterial.Add(material);
