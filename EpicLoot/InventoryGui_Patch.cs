@@ -6,9 +6,9 @@ namespace EpicLoot
     [HarmonyPatch(typeof(InventoryGui), "DoCrafting")]
     public static class InventoryGui_DoCrafting_Patch
     {
-        public static bool Prefix(InventoryGui __instance, Player player)
+        public static bool Prefix(InventoryGui __instance, Player player, bool __runOriginal)
         {
-            if (__instance.m_craftRecipe == null)
+            if (!__runOriginal || __instance.m_craftRecipe == null)
             {
                 return false;
             }
