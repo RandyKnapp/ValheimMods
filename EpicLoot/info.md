@@ -1,4 +1,4 @@
-# EpicLoot Data v0.7.7
+# EpicLoot Data v0.7.8
 
 *Author: RandyKnapp*
 *Source: [Github](https://github.com/RandyKnapp/ValheimMods/tree/main/EpicLoot)*
@@ -1008,6 +1008,26 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > |Rare|3|8|1|
 > |Epic|7|15|1|
 > |Legendary|15|20|1|
+
+## QuickDraw
+
+> **Display Text:** Increases draw speed by +{0:0.#}%
+> 
+> **Allowed Item Types:** Bow
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedItemTypes:** `Bow`
+> > **ExcludedSkillTypes:** `Pickaxes`
+> 
+> **Value Per Rarity:**
+> 
+> |Rarity|Min|Max|Increment|
+> |--|--|--|--|
+> |Magic|2|8|1|
+> |Rare|6|16|1|
+> |Epic|14|30|1|
+> |Legendary|30|40|1|
 
 # Item Sets
 

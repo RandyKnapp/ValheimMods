@@ -1,4 +1,4 @@
-# Epic Loot v0.7.7 - Adventure Update!
+# Epic Loot v0.7.8 - Adventure Update!
 Author: RandyKnapp
 Source: [Github](https://github.com/RandyKnapp/ValheimMods/blob/main/EpicLoot/)
 
@@ -17,6 +17,14 @@ The mod is currently in ***Early Access***! That means it's **not done**! Be pat
 ***EpicLoot works in multiplayer and on dedicated servers!*** The server and all players should have the mod and its dependencies installed.
 
 Information about every magic effect and loot drop table can be found in [info.md](https://github.com/RandyKnapp/ValheimMods/blob/main/EpicLoot/info.md).
+
+## Credits
+Contibutions from the following modders was invaluable and appreciated: 
+  * [blaxxun (CLLC)](https://www.nexusmods.com/valheim/mods/495) - bugfixes, config sync, various magic item effects, 
+  * [jsza](https://github.com/jsza) - bugfixes, 
+  * [maxrd2](https://github.com/maxrd2) - bugfixes
+  * [nanonull](https://github.com/nanonull) - bugfixes, lifesteal
+  * [xPucTu4](https://github.com/xPucTu4) - bugfixes
 
 ## Installation
 

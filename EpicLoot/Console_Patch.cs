@@ -7,6 +7,7 @@ using EpicLoot.Adventure.Feature;
 using EpicLoot.Crafting;
 using EpicLoot.GatedItemType;
 using EpicLoot.LegendarySystem;
+using ExtendedItemDataFramework;
 using HarmonyLib;
 using UnityEngine;
 using Random = System.Random;
@@ -130,6 +131,10 @@ namespace EpicLoot
                         __instance.AddString("> " + globalKey);
                     }
                 }
+            }
+            else if (Command(command, "fixresistances"))
+            {
+                FixResistances(player);
             }
 
             return true;
@@ -465,6 +470,65 @@ namespace EpicLoot
             {
                 __instance.AddString("> (none)");
             }
+        }
+
+        private static void FixResistances(Player player)
+        {
+            var oldResistanceTypes = new[]
+            {
+                MagicEffectType.AddFireResistance,
+                MagicEffectType.AddFrostResistance,
+                MagicEffectType.AddLightningResistance,
+                MagicEffectType.AddPoisonResistance,
+                MagicEffectType.AddSpiritResistance
+            };
+            foreach (var itemData in player.GetInventory().GetAllItems())
+            {
+                if (itemData.IsMagic() && itemData.GetMagicItem().HasAnyEffect(oldResistanceTypes))
+                {
+                    var magicItem = itemData.GetMagicItem();
+                    var currentEffects = magicItem.Effects;
+                    for (var index = 0; index < currentEffects.Count; index++)
+                    {
+                        var effect = currentEffects[index];
+                        if (oldResistanceTypes.Contains(effect.EffectType))
+                        {
+                            ReplaceMagicEffect(itemData, magicItem, effect, index);
+                        }
+                    }
+                }
+            }
+        }
+
+        private static void ReplaceMagicEffect(ItemDrop.ItemData itemData, MagicItem magicItem, MagicItemEffect effect, int index)
+        {
+            var replacementEffectDef = GetReplacementEffectDef(effect);
+            if (replacementEffectDef == null)
+            {
+                return;
+            }
+
+            var replacementEffect = LootRoller.RollEffect(replacementEffectDef, magicItem.Rarity);
+            magicItem.Effects[index] = replacementEffect;
+            itemData.Extended().Save();
+        }
+
+        private static MagicItemEffectDefinition GetReplacementEffectDef(MagicItemEffect effect)
+        {
+            switch (effect.EffectType)
+            {
+                case "AddFireResistance":
+                    return MagicItemEffectDefinitions.Get(MagicEffectType.AddFireResistancePercentage);
+                case "AddFrostResistance":
+                    return MagicItemEffectDefinitions.Get(MagicEffectType.AddFrostResistancePercentage);
+                case "AddLightningResistance":
+                    return MagicItemEffectDefinitions.Get(MagicEffectType.AddLightningResistancePercentage);
+                case "AddPoisonResistance":
+                    return MagicItemEffectDefinitions.Get(MagicEffectType.AddPoisonResistancePercentage);
+                case "AddSpiritResistance":
+                    return MagicItemEffectDefinitions.Get(MagicEffectType.AddElementalResistancePercentage);
+            }
+            return null;
         }
     }
 }
