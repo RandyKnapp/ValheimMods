@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 3867057007
+CRC: 1888980388
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: af0efb4d96588efefb70d559b1ebf046
+    Hash: 86b392b1bf99089904ddb9e3392abef0
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 9bcb21200f6a7d5bf24dd1feba75c333
+    Hash: 0638681d28c386c0ec13adad4c497303
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -50,9 +50,9 @@ ClassTypes:
 - Class: 114
   Script: {fileID: 2094620348, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
 - Class: 114
-  Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
-- Class: 114
   Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 2a4db7a114972834c8e4117be1d82ba3, type: 3}
 - Class: 114
@@ -110,12 +110,14 @@ Assets:
 - Assets/EpicLoot/Sounds/DoubleJump.wav
 - Assets/EpicLoot/Prefabs/LootBeams/RareLootBeam.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/EssenceRare.prefab
+- Assets/Hovl Studio/Auras pack/Prefabs/FireAura.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/ShardEpic.prefab
 - Assets/EpicLoot/Sprites/Inventory/GenericSetItemMarker.png
 - Assets/EpicLoot/Prefabs/Equipment/Andvaranaut.prefab
 - Assets/EpicLoot/Sprites/Adventure/TreasureMapIcon.png
 - Assets/EpicLoot/Prefabs/CraftingMaterials/ShardLegendary.prefab
 - Assets/EpicLoot/Sounds/MagicItemDrop.wav
+- Assets/EpicLoot/Prefabs/UI/DebugText.prefab
 - Assets/EpicLoot/Sprites/Inventory/LegendaryItemBg.png
 - Assets/EpicLoot/Sounds/EpicItemDrop.wav
 - Assets/EpicLoot/Prefabs/StationExtensions/piece_augmenter.prefab

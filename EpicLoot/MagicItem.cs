@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using EpicLoot.GatedItemType;
 using ExtendedItemDataFramework;
 using UnityEngine;
 
@@ -138,6 +139,22 @@ namespace EpicLoot
             if (HasBeenAugmented())
             {
                 return Effects[AugmentedEffectIndex];
+            }
+
+            return null;
+        }
+
+        public bool IsUniqueLegendary()
+        {
+            return !string.IsNullOrEmpty(LegendaryID);
+        }
+
+        public LegendaryInfo GetLegendaryInfo()
+        {
+            if (IsUniqueLegendary())
+            {
+                LootRoller.LegendaryInfo.TryGetValue(LegendaryID, out var legendaryInfo);
+                return legendaryInfo;
             }
 
             return null;

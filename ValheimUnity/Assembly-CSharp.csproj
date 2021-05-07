@@ -67,6 +67,8 @@
     <None Include="Assets\Loot Beams\Shaders\Beams\Beam AlphaBlended.shader" />
     <None Include="Assets\Loot Beams\Shaders\Beams\Beam Additive.shader" />
     <None Include="Assets\Loot Beams\Readme.txt" />
+    <None Include="Assets\Hovl Studio\Auras pack\Shaders\Blend_CenterGlow.shader" />
+    <None Include="Assets\Hovl Studio\Auras pack\Shaders\Add_CenterGlow.shader" />
     <Reference Include="UnityEngine">
       <HintPath>C:/Program Files/Unity/Hub/Editor/2019.4.20f1/Editor/Data/Managed/UnityEngine/UnityEngine.dll</HintPath>
     </Reference>

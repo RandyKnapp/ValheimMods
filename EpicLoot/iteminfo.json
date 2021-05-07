@@ -101,6 +101,7 @@
       "ID": "Dyrnwyn",
       "Name": "$mod_epicloot_l_dyrnwyn",
       "Description": "$mod_epicloot_l_dyrnwyn_desc",
+      "ItemEffect": "FireAura", 
       "Requirements" : {
         "AllowedSkillTypes": [
           "Swords"

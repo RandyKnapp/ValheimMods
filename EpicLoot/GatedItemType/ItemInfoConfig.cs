@@ -27,6 +27,7 @@ namespace EpicLoot.GatedItemType
         public MagicItemEffectRequirements Requirements;
         public List<GuaranteedMagicEffect> GuaranteedMagicEffects;
         public float SelectionWeight = 1;
+        public string ItemEffect;
     }
 
     [Serializable]

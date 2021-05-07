@@ -9,16 +9,18 @@
 - [X] List of active magic effects on the player status screen
 - [X] Limit drop types by actual player progression
 - [X] Gamble for magic items from Merchant
-- [ ] Custom crafting station for enchanting
+- [ ] Unique legendary system
 - [ ] Create effects for in-game models of magic items
-- [ ] Balance, balance, balance
-- [ ] Move tooltip code to postfix, parse and inject rather than redo from scratch
 - [ ] Custom item sets (replace troll too)
+- [ ] Move tooltip code to postfix, parse and inject rather than redo from scratch
 - [X] Rename item if magic (Legendary still to-do)
+- [ ] Custom crafting station for enchanting
 - [ ] New Runes skill (enchanting)
 - [ ] New Seidr skill (for what?)
 
 ## Magic Effects:
+- [ ] Change Resist effects to a percentage increase in damage reduction
+- [X] Remove Spirit Resist
 
 #### Weapons
 - [X] Paralyze (not rolling, too powerful)
@@ -29,9 +31,9 @@
 - [ ] Exploding shot (bows, deal aoe damage on arrow impact)
 - [ ] Multishot (bows, shoot multiple arrows from one)
 - [ ] Quick draw (bows, draw speed dramatically increased)
-- [ ] Recall (spear, automaticallyl pick up spear after throwing)
+- [ ] Recall (spear, automatically pick up spear after throwing)
 - [ ] Immobilize
-- [X] Modify Attack Speed
+- [X] Modify Attack Speed (fixed now)
 - [ ] Increase damage vs staggered enemies
 - [ ] Duelist (sword, when off hand is empty, increase parry and block power by a lot)
 - [ ] Opportunist (knife, add backstab damaged to staggered enemies)

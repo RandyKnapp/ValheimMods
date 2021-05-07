@@ -170,6 +170,19 @@ namespace EpicLoot
             return $"<color={color}>{name}</color>";
         }
 
+        public static string GetDescription(this ItemDrop.ItemData itemData)
+        {
+            if (itemData.IsMagic())
+            {
+                var magicItem = itemData.GetMagicItem();
+                if (magicItem.IsUniqueLegendary() && LootRoller.LegendaryInfo.TryGetValue(magicItem.LegendaryID, out var legendaryInfo))
+                {
+                    return legendaryInfo.Description;
+                }
+            }
+            return itemData.m_shared.m_description;
+        }
+
         public static bool IsPartOfSet(this ItemDrop.ItemData itemData, string setName)
         {
             return itemData.m_shared.m_setName == setName;

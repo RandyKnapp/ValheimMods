@@ -723,6 +723,7 @@
       "Type" : "AddSpiritResistance",
       "DisplayText" : "Gain spirit resistance",
       "Requirements" : {
+        "NoRoll": true,
         "AllowedItemTypes" : [
           "Helmet",
           "Chest",

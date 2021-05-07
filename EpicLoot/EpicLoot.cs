@@ -17,6 +17,7 @@ using HarmonyLib;
 using JetBrains.Annotations;
 using ServerSync;
 using UnityEngine;
+using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
 
 namespace EpicLoot
@@ -37,6 +38,7 @@ namespace EpicLoot
 
     public class Assets
     {
+        public AssetBundle AssetBundle;
         public Sprite EquippedSprite;
         public Sprite GenericSetItemSprite;
         public Sprite GenericItemBgSprite;
@@ -51,6 +53,7 @@ namespace EpicLoot
         public Sprite MapIconBounty;
         public AudioClip AbandonBountySFX;
         public AudioClip DoubleJumpSFX;
+        public GameObject DebugTextPrefab;
     }
 
     public class PieceDef
@@ -69,7 +72,7 @@ namespace EpicLoot
         public const string DisplayName = "Epic Loot";
         public const string Version = "0.7.7";
 
-        ServerSync.ConfigSync configSync = new ServerSync.ConfigSync(PluginId) { DisplayName = DisplayName, CurrentVersion = Version };
+        private readonly ConfigSync _configSync = new ConfigSync(PluginId) { DisplayName = DisplayName, CurrentVersion = Version };
 
         private static ConfigEntry<string> _setItemColor;
         private static ConfigEntry<string> _magicRarityColor;
@@ -94,6 +97,7 @@ namespace EpicLoot
         private static ConfigEntry<float> _bossTrophyDropPlayerRange;
         public static ConfigEntry<bool> ShowEquippedAndHotbarItemsInSacrificeTab;
         private static ConfigEntry<bool> _adventureModeEnabled;
+        private static ConfigEntry<bool> _serverConfigLocked;
 
         public static readonly List<ItemDrop.ItemData.ItemType> AllowedMagicItemTypes = new List<ItemDrop.ItemData.ItemType>
         {
@@ -132,6 +136,8 @@ namespace EpicLoot
         public static bool AlwaysDropCheat = false;
         public const Minimap.PinType BountyPinType = (Minimap.PinType) 800;
         public const Minimap.PinType TreasureMapPinType = (Minimap.PinType) 801;
+        public static LootConfig LootConfig;
+        public static ItemInfoConfig ItemInfoConfig;
 
         public static event Action LootTableLoaded;
 
@@ -162,10 +168,12 @@ namespace EpicLoot
             _loggingEnabled = Config.Bind("Logging", "Logging Enabled", false, "Enable logging");
             _logLevel = Config.Bind("Logging", "Log Level", LogLevel.Info, "Only log messages of the selected level or higher");
             UseGeneratedMagicItemNames = Config.Bind("General", "Use Generated Magic Item Names", true, "If true, magic items uses special, randomly generated names based on their rarity, type, and magic effects.");
-            _gatedItemTypeModeConfig = config("Balance", "Item Drop Limits", GatedItemTypeMode.MustKnowRecipe, "Sets how the drop system limits what item types can drop. Unlimited: no limits, exactly what's in the loot table will drop. MustKnowRecipe: items will drop so long as the player has discovered their recipe. MustHaveCrafted: items will only drop once the player has crafted one or picked one up. If an item type cannot drop, it will downgrade to an item of the same type and skill that the player has unlocked (i.e. swords will stay swords)");
-            _bossTrophyDropMode = config("Balance", "Boss Trophy Drop Mode", BossDropMode.OnePerPlayerNearBoss, "Sets bosses to drop a number of trophies equal to the number of players, similar to the way Wishbone works in vanilla. Optionally set it to only include players within a certain distance, use 'Boss Trophy Drop Player Range' to set the range.");
-            _bossTrophyDropPlayerRange = config("Balance", "Boss Trophy Drop Player Range", 100.0f, "Sets the range that bosses check when dropping multiple trophies using the OnePerPlayerNearBoss drop mode.");
-            _adventureModeEnabled = config("Balance", "Adventure Mode Enabled", true, "Set to true to enable all the adventure mode features: secret stash, gambling, treasure maps, and bounties. Set to false to disable. This will not actually remove active treasure maps or bounties from your save.");
+            _gatedItemTypeModeConfig = SyncedConfig("Balance", "Item Drop Limits", GatedItemTypeMode.MustKnowRecipe, "Sets how the drop system limits what item types can drop. Unlimited: no limits, exactly what's in the loot table will drop. MustKnowRecipe: items will drop so long as the player has discovered their recipe. MustHaveCrafted: items will only drop once the player has crafted one or picked one up. If an item type cannot drop, it will downgrade to an item of the same type and skill that the player has unlocked (i.e. swords will stay swords)");
+            _bossTrophyDropMode = SyncedConfig("Balance", "Boss Trophy Drop Mode", BossDropMode.OnePerPlayerNearBoss, "Sets bosses to drop a number of trophies equal to the number of players, similar to the way Wishbone works in vanilla. Optionally set it to only include players within a certain distance, use 'Boss Trophy Drop Player Range' to set the range.");
+            _bossTrophyDropPlayerRange = SyncedConfig("Balance", "Boss Trophy Drop Player Range", 100.0f, "Sets the range that bosses check when dropping multiple trophies using the OnePerPlayerNearBoss drop mode.");
+            _adventureModeEnabled = SyncedConfig("Balance", "Adventure Mode Enabled", true, "Set to true to enable all the adventure mode features: secret stash, gambling, treasure maps, and bounties. Set to false to disable. This will not actually remove active treasure maps or bounties from your save.");
+            _serverConfigLocked = SyncedConfig("Config Sync", "Lock Config", false, new ConfigDescription("[Server Only] The configuration is locked and may not be changed by clients once it has been synced from the server. Only valid for server config, will have no effect on clients."));
+            _configSync.AddLockingConfigEntry(_serverConfigLocked);
 
             LoadTranslations();
             InitializeConfig();
@@ -182,13 +190,13 @@ namespace EpicLoot
             LootTableLoaded?.Invoke();
         }
 
-        private ConfigEntry<T> config<T>(string group, string name, T value, string description, bool synchronizedSetting = true) => config(group, name, value, new ConfigDescription(description), synchronizedSetting);
+        private ConfigEntry<T> SyncedConfig<T>(string group, string configName, T value, string description, bool synchronizedSetting = true) => SyncedConfig(group, configName, value, new ConfigDescription(description), synchronizedSetting);
         
-        private ConfigEntry<T> config<T>(string group, string name, T value, ConfigDescription description, bool synchronizedSetting = true)
+        private ConfigEntry<T> SyncedConfig<T>(string group, string configName, T value, ConfigDescription description, bool synchronizedSetting = true)
         {
-            ConfigEntry<T> configEntry = Config.Bind(group, name, value, description);
+            var configEntry = Config.Bind(group, configName, value, description);
 
-            SyncedConfigEntry<T> syncedConfigEntry = configSync.AddConfigEntry(configEntry);
+            var syncedConfigEntry = _configSync.AddConfigEntry(configEntry);
             syncedConfigEntry.SynchronizedConfig = synchronizedSetting;
 
             return configEntry;
@@ -212,13 +220,36 @@ namespace EpicLoot
 
         public static void InitializeConfig()
         {
-            LoadJsonFile<LootConfig>("loottables.json", LootRoller.Initialize);
+            LootConfig = null;
+            ItemInfoConfig = null;
+
+            LoadJsonFile<LootConfig>("loottables.json", OnLootTablesLoaded);
             LoadJsonFile<MagicItemEffectsList>("magiceffects.json", MagicItemEffectDefinitions.Initialize);
-            LoadJsonFile<ItemInfoConfig>("iteminfo.json", GatedItemTypeHelper.Initialize);
+            LoadJsonFile<ItemInfoConfig>("iteminfo.json", OnItemInfoLoaded);
             LoadJsonFile<RecipesConfig>("recipes.json", RecipesHelper.Initialize);
             LoadJsonFile<EnchantingCostsConfig>("enchantcosts.json", EnchantCostsHelper.Initialize);
             LoadJsonFile<ItemNameConfig>("itemnames.json", MagicItemNames.Initialize);
             LoadJsonFile<AdventureDataConfig>("adventuredata.json", AdventureDataManager.Initialize);
+        }
+
+        public static void OnLootTablesLoaded(LootConfig config)
+        {
+            LootConfig = config;
+            if (LootConfig != null && ItemInfoConfig != null)
+            {
+                LootRoller.Initialize(LootConfig, ItemInfoConfig);
+            }
+        }
+
+        public static void OnItemInfoLoaded(ItemInfoConfig config)
+        {
+            GatedItemTypeHelper.Initialize(config);
+
+            ItemInfoConfig = config;
+            if (LootConfig != null && ItemInfoConfig != null)
+            {
+                LootRoller.Initialize(LootConfig, ItemInfoConfig);
+            }
         }
 
         public static void Log(string message)
@@ -276,6 +307,7 @@ namespace EpicLoot
         private void LoadAssets()
         {
             var assetBundle = LoadAssetBundle("epicloot");
+            Assets.AssetBundle = assetBundle;
             Assets.EquippedSprite = assetBundle.LoadAsset<Sprite>("Equipped");
             Assets.GenericSetItemSprite = assetBundle.LoadAsset<Sprite>("GenericSetItemMarker");
             Assets.GenericItemBgSprite = assetBundle.LoadAsset<Sprite>("GenericItemBg");
@@ -297,6 +329,7 @@ namespace EpicLoot
             Assets.MapIconBounty = assetBundle.LoadAsset<Sprite>("MapIconBounty");
             Assets.AbandonBountySFX = assetBundle.LoadAsset<AudioClip>("AbandonBounty");
             Assets.DoubleJumpSFX = assetBundle.LoadAsset<AudioClip>("DoubleJump");
+            Assets.DebugTextPrefab = assetBundle.LoadAsset<GameObject>("DebugText");
 
             LoadCraftingMaterialAssets(assetBundle, "Runestone");
 
@@ -338,6 +371,19 @@ namespace EpicLoot
             LoadItem(assetBundle, "ForestToken");
             LoadItem(assetBundle, "IronBountyToken");
             LoadItem(assetBundle, "GoldBountyToken");
+        }
+
+        public static T LoadAsset<T>(string assetName) where T : Object
+        {
+            try
+            {
+                return Assets.AssetBundle.LoadAsset<T>(assetName);
+            }
+            catch (Exception e)
+            {
+                LogError($"Error loading asset ({assetName}): {e.Message}");
+                return null;
+            }
         }
 
         private static void LoadItem(AssetBundle assetBundle, string assetName, Action<ItemDrop> customSetupAction = null)
@@ -711,7 +757,7 @@ namespace EpicLoot
         public static void LoadJsonFile<T>(string filename, Action<T> onFileLoad) where T : class
         {
             var jsonFile = LoadJsonText(filename);
-            CustomSyncedValue<string> syncedValue = new CustomSyncedValue<string>(_instance.configSync, filename, jsonFile);
+            var syncedValue = new CustomSyncedValue<string>(_instance._configSync, filename, jsonFile);
             void Process()
             {
                 T result;
@@ -756,7 +802,7 @@ namespace EpicLoot
             var assetFileName = Path.Combine(Paths.PluginPath, "EpicLoot", assetName);
             if (!File.Exists(assetFileName))
             {
-                Assembly assembly = typeof(EpicLoot).Assembly;
+                var assembly = typeof(EpicLoot).Assembly;
                 assetFileName = Path.Combine(Path.GetDirectoryName(assembly.Location) ?? string.Empty, assetName);
                 if (!File.Exists(assetFileName))
                 {

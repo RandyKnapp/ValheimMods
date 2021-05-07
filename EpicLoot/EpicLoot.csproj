@@ -41,7 +41,7 @@
     <Reference Include="assembly_utils_publicized">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\valheim_Data\Managed\publicized_assemblies\assembly_utils_publicized.dll</HintPath>
     </Reference>
-    <Reference Include="assembly_valheim">
+    <Reference Include="assembly_valheim_publicized">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\valheim_Data\Managed\publicized_assemblies\assembly_valheim_publicized.dll</HintPath>
     </Reference>
     <Reference Include="BepInEx">
@@ -100,6 +100,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Adventure\Feature\BountyLedger.cs" />
+    <Compile Include="DebugText.cs" />
     <Compile Include="GameCamera_Patch.cs" />
     <Compile Include="Healing\AddHealingQueueToPlayerPatch.cs" />
     <Compile Include="Adventure\AbandonBountyDialog.cs" />
@@ -199,6 +200,7 @@
     <Compile Include="PlayerKnown\PlayerKnownPatches.cs" />
     <Compile Include="TextsDialog_Patch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="VisEquipment_Patch.cs" />
     <Compile Include="ZNetScene_Patch.cs" />
     <Compile Include="ZNet_Patch.cs" />
   </ItemGroup>

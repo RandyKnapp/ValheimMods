@@ -545,7 +545,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility, Shield
 > 
 > **Requirements:**
-> > **Flags:** `ExclusiveSelf`
+> > **Flags:** `NoRoll, ExclusiveSelf`
 > > **AllowedItemTypes:** `Helmet, Chest, Legs, Shoulder, Utility, Shield`
 
 ## ModifyMovementSpeed
