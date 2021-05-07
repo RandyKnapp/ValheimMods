@@ -655,6 +655,7 @@
       "Type" : "AddFireResistance",
       "DisplayText" : "Gain fire resistance",
       "Requirements" : {
+        "NoRoll": true,
         "AllowedItemTypes" : [
           "Helmet",
           "Chest",
@@ -672,6 +673,7 @@
       "Type" : "AddFrostResistance",
       "DisplayText" : "Gain frost resistance",
       "Requirements" : {
+        "NoRoll": true,
         "AllowedItemTypes" : [
           "Helmet",
           "Chest",
@@ -689,6 +691,7 @@
       "Type" : "AddLightningResistance",
       "DisplayText" : "Gain lightning resistance",
       "Requirements" : {
+        "NoRoll": true,
         "AllowedItemTypes" : [
           "Helmet",
           "Chest",
@@ -706,6 +709,7 @@
       "Type" : "AddPoisonResistance",
       "DisplayText" : "Gain poison resistance",
       "Requirements" : {
+        "NoRoll": true,
         "AllowedItemTypes" : [
           "Helmet",
           "Chest",
@@ -736,6 +740,260 @@
       "SelectionWeight" : 1,
       "Prefixes": [ "Serene" ],
       "Suffixes": [ "Spirit Resistance" ]
+    },
+    {
+      "Type" : "AddFireResistancePercentage",
+      "DisplayText" : "+{0:0.#}% reduced fire damage taken",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "Helmet",
+          "Chest",
+          "Legs",
+          "Shoulder",
+          "Utility",
+          "Shield"
+        ]
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 1, "MaxValue" : 4, "Increment" : 1 },
+        "Rare" : { "MinValue" : 3, "MaxValue" : 8, "Increment" : 1 },
+        "Epic" : { "MinValue" : 7, "MaxValue" : 15, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15, "MaxValue" : 20, "Increment" : 1 }
+      },
+      "SelectionWeight" : 1,
+      "Prefixes": [ "Extinguishing" ],
+      "Suffixes": [ "Fire Resistance" ]
+    },
+    {
+      "Type" : "AddFrostResistancePercentage",
+      "DisplayText" : "+{0:0.#}% reduced frost damage taken",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "Helmet",
+          "Chest",
+          "Legs",
+          "Shoulder",
+          "Utility",
+          "Shield"
+        ]
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 1, "MaxValue" : 4, "Increment" : 1 },
+        "Rare" : { "MinValue" : 3, "MaxValue" : 8, "Increment" : 1 },
+        "Epic" : { "MinValue" : 7, "MaxValue" : 15, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15, "MaxValue" : 20, "Increment" : 1 }
+      },
+      "SelectionWeight" : 1,
+      "Prefixes": [ "Insulated" ],
+      "Suffixes": [ "Frost Resistance" ]
+    },
+    {
+      "Type" : "AddLightningResistancePercentage",
+      "DisplayText" : "+{0:0.#}% reduced lightning damage taken",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "Helmet",
+          "Chest",
+          "Legs",
+          "Shoulder",
+          "Utility",
+          "Shield"
+        ]
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 1, "MaxValue" : 4, "Increment" : 1 },
+        "Rare" : { "MinValue" : 3, "MaxValue" : 8, "Increment" : 1 },
+        "Epic" : { "MinValue" : 7, "MaxValue" : 15, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15, "MaxValue" : 20, "Increment" : 1 }
+      },
+      "SelectionWeight" : 1,
+      "Prefixes": [ "Grounded" ],
+      "Suffixes": [ "Lightning Resistance" ]
+    },
+    {
+      "Type" : "AddPoisonResistancePercentage",
+      "DisplayText" : "+{0:0.#}% reduced poison damage taken",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "Helmet",
+          "Chest",
+          "Legs",
+          "Shoulder",
+          "Utility",
+          "Shield"
+        ]
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 1, "MaxValue" : 4, "Increment" : 1 },
+        "Rare" : { "MinValue" : 3, "MaxValue" : 8, "Increment" : 1 },
+        "Epic" : { "MinValue" : 7, "MaxValue" : 15, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15, "MaxValue" : 20, "Increment" : 1 }
+      },
+      "SelectionWeight" : 1,
+      "Prefixes": [ "Curing" ],
+      "Suffixes": [ "Poison Resistance" ]
+    },
+    {
+      "Type" : "AddSpiritResistancePercentage",
+      "DisplayText" : "+{0:0.#}% reduced spirit damage taken",
+      "Requirements" : {
+        "NoRoll": true,
+        "AllowedItemTypes" : [
+          "Helmet",
+          "Chest",
+          "Legs",
+          "Shoulder",
+          "Utility",
+          "Shield"
+        ]
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 1, "MaxValue" : 4, "Increment" : 1 },
+        "Rare" : { "MinValue" : 3, "MaxValue" : 8, "Increment" : 1 },
+        "Epic" : { "MinValue" : 7, "MaxValue" : 15, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15, "MaxValue" : 20, "Increment" : 1 }
+      },
+      "SelectionWeight" : 1,
+      "Prefixes": [ "Serene" ],
+      "Suffixes": [ "Spirit Resistance" ]
+    },
+    {
+      "Type" : "AddElementalResistancePercentage",
+      "DisplayText" : "+{0:0.#}% reduced elemental damage taken",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "Helmet",
+          "Chest",
+          "Legs",
+          "Shoulder",
+          "Utility",
+          "Shield"
+        ]
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 1, "MaxValue" : 2, "Increment" : 1 },
+        "Rare" : { "MinValue" : 2, "MaxValue" : 4, "Increment" : 1 },
+        "Epic" : { "MinValue" : 4, "MaxValue" : 7, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 8, "MaxValue" : 10, "Increment" : 1 }
+      },
+      "SelectionWeight" : 1,
+      "Prefixes": [ "Serene" ],
+      "Suffixes": [ "Elemental Resistance" ]
+    },
+    {
+      "Type" : "AddBluntResistancePercentage",
+      "DisplayText" : "+{0:0.#}% reduced blunt damage taken",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "Helmet",
+          "Chest",
+          "Legs",
+          "Shoulder",
+          "Utility",
+          "Shield"
+        ]
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 1, "MaxValue" : 4, "Increment" : 1 },
+        "Rare" : { "MinValue" : 3, "MaxValue" : 8, "Increment" : 1 },
+        "Epic" : { "MinValue" : 7, "MaxValue" : 15, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15, "MaxValue" : 20, "Increment" : 1 }
+      },
+      "SelectionWeight" : 1,
+      "Prefixes": [ "Serene" ],
+      "Suffixes": [ "Blunt Resistance" ]
+    },
+    {
+      "Type" : "AddSlashingResistancePercentage",
+      "DisplayText" : "+{0:0.#}% reduced slashing damage taken",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "Helmet",
+          "Chest",
+          "Legs",
+          "Shoulder",
+          "Utility",
+          "Shield"
+        ]
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 1, "MaxValue" : 4, "Increment" : 1 },
+        "Rare" : { "MinValue" : 3, "MaxValue" : 8, "Increment" : 1 },
+        "Epic" : { "MinValue" : 7, "MaxValue" : 15, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15, "MaxValue" : 20, "Increment" : 1 }
+      },
+      "SelectionWeight" : 1,
+      "Prefixes": [ "Serene" ],
+      "Suffixes": [ "Slashing Resistance" ]
+    },
+    {
+      "Type" : "AddPiercingResistancePercentage",
+      "DisplayText" : "+{0:0.#}% reduced piercing damage taken",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "Helmet",
+          "Chest",
+          "Legs",
+          "Shoulder",
+          "Utility",
+          "Shield"
+        ]
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 1, "MaxValue" : 4, "Increment" : 1 },
+        "Rare" : { "MinValue" : 3, "MaxValue" : 8, "Increment" : 1 },
+        "Epic" : { "MinValue" : 7, "MaxValue" : 15, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15, "MaxValue" : 20, "Increment" : 1 }
+      },
+      "SelectionWeight" : 1,
+      "Prefixes": [ "Serene" ],
+      "Suffixes": [ "Piercing Resistance" ]
+    },
+    {
+      "Type" : "AddChoppingResistancePercentage",
+      "DisplayText" : "+{0:0.#}% reduced chopping damage taken",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "Helmet",
+          "Chest",
+          "Legs",
+          "Shoulder",
+          "Utility",
+          "Shield"
+        ]
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 1, "MaxValue" : 4, "Increment" : 1 },
+        "Rare" : { "MinValue" : 3, "MaxValue" : 8, "Increment" : 1 },
+        "Epic" : { "MinValue" : 7, "MaxValue" : 15, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15, "MaxValue" : 20, "Increment" : 1 }
+      },
+      "SelectionWeight" : 1,
+      "Prefixes": [ "Serene" ],
+      "Suffixes": [ "Chopping Resistance" ]
+    },
+    {
+      "Type" : "AddPhysicalResistancePercentage",
+      "DisplayText" : "+{0:0.#}% reduced physical damage taken",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "Helmet",
+          "Chest",
+          "Legs",
+          "Shoulder",
+          "Utility",
+          "Shield"
+        ]
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 1, "MaxValue" : 2, "Increment" : 1 },
+        "Rare" : { "MinValue" : 2, "MaxValue" : 4, "Increment" : 1 },
+        "Epic" : { "MinValue" : 4, "MaxValue" : 7, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 8, "MaxValue" : 10, "Increment" : 1 }
+      },
+      "SelectionWeight" : 1,
+      "Prefixes": [ "Serene" ],
+      "Suffixes": [ "Physical Resistance" ]
     },
     {
       "Type" : "ModifyMovementSpeed",
