@@ -28,7 +28,7 @@
 - [ ] Slow
 - [ ] Blink (bow or spear, teleport to impact point)
 - [X] Life steal
-- [ ] Exploding shot (bows, deal aoe damage on arrow impact)
+- [X] Exploding shot (bows, deal aoe damage on arrow impact)
 - [ ] Multishot (bows, shoot multiple arrows from one)
 - [ ] Quick draw (bows, draw speed dramatically increased)
 - [ ] Recall (spear, automatically pick up spear after throwing)
