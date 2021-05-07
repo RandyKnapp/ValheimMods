@@ -1,7 +1,6 @@
 ﻿using EpicLoot.LootBeams;
 using ExtendedItemDataFramework;
 using HarmonyLib;
-using UnityEngine;
 
 namespace EpicLoot
 {

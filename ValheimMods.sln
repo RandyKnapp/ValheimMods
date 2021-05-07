@@ -25,6 +25,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EpicLoot-Addon-MCE", "EpicL
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleHelper", "ConsoleHelper\ConsoleHelper.csproj", "{815F37D9-CEEA-4CDA-ABFB-C62FEA26B5F1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EpicLoot-Addon-Helheim", "EpicLoot-Addon-Helheim\EpicLoot-Addon-Helheim.csproj", "{FB508E8D-0C64-4EC6-B746-F668F510295F}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Common\Common.projitems*{08ed5bc9-9e0c-4343-90a5-92497be6e216}*SharedItemsImports = 4
@@ -80,6 +82,10 @@ Global
 		{815F37D9-CEEA-4CDA-ABFB-C62FEA26B5F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{815F37D9-CEEA-4CDA-ABFB-C62FEA26B5F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{815F37D9-CEEA-4CDA-ABFB-C62FEA26B5F1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FB508E8D-0C64-4EC6-B746-F668F510295F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB508E8D-0C64-4EC6-B746-F668F510295F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB508E8D-0C64-4EC6-B746-F668F510295F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB508E8D-0C64-4EC6-B746-F668F510295F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

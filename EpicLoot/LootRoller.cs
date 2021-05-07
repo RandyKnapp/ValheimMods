@@ -4,6 +4,7 @@ using System.Linq;
 using Common;
 using EpicLoot.GatedItemType;
 using ExtendedItemDataFramework;
+using HarmonyLib;
 using JetBrains.Annotations;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -16,6 +17,7 @@ namespace EpicLoot
         public static LootConfig Config;
         public static readonly Dictionary<string, LootItemSet> ItemSets = new Dictionary<string, LootItemSet>();
         public static readonly Dictionary<string, List<LootTable>> LootTables = new Dictionary<string, List<LootTable>>();
+        public static readonly Dictionary<string, LegendaryInfo> LegendaryInfo = new Dictionary<string, LegendaryInfo>();
 
         public static event Action<ExtendedItemData, MagicItem> MagicItemGenerated;
 
@@ -24,12 +26,19 @@ namespace EpicLoot
         private static WeightedRandomCollection<MagicItemEffectDefinition> _weightedEffectTable;
         private static WeightedRandomCollection<KeyValuePair<int, int>> _weightedEffectCountTable;
         private static WeightedRandomCollection<KeyValuePair<ItemRarity, int>> _weightedRarityTable;
+        private static WeightedRandomCollection<LegendaryInfo> _weightedLegendaryTable;
         public static int CheatEffectCount;
         public static bool CheatDisableGating;
         public static bool CheatForceMagicEffect;
         public static string ForcedMagicEffect = "";
+        public static string CheatForceLegendary;
 
-        public static void Initialize(LootConfig lootConfig)
+        private static readonly LegendaryInfo GenericLegendaryInfo = new LegendaryInfo {
+            ID = nameof(GenericLegendaryInfo)
+        };
+
+
+        public static void Initialize(LootConfig lootConfig, ItemInfoConfig itemInfoConfig)
         {
             Config = lootConfig;
             
@@ -39,9 +48,11 @@ namespace EpicLoot
             _weightedEffectTable = new WeightedRandomCollection<MagicItemEffectDefinition>(random);
             _weightedEffectCountTable = new WeightedRandomCollection<KeyValuePair<int, int>>(random);
             _weightedRarityTable = new WeightedRandomCollection<KeyValuePair<ItemRarity, int>>(random);
+            _weightedLegendaryTable = new WeightedRandomCollection<LegendaryInfo>(random);
 
             ItemSets.Clear();
             LootTables.Clear();
+            LegendaryInfo.Clear();
             if (Config == null)
             {
                 EpicLoot.LogWarning("Initialized LootRoller with null");
@@ -50,6 +61,7 @@ namespace EpicLoot
           
             AddItemSets(lootConfig.ItemSets);
             AddLootTables(lootConfig.LootTables);
+            AddLegendaryInfo(itemInfoConfig.LegendaryItems);
         }
 
         private static void AddItemSets([NotNull] IEnumerable<LootItemSet> itemSets)
@@ -79,6 +91,14 @@ namespace EpicLoot
             foreach (var lootTable in lootTables)
             {
                 AddLootTable(lootTable);
+            }
+        }
+
+        private static void AddLegendaryInfo([NotNull] IEnumerable<LegendaryInfo> legendaryItems)
+        {
+            foreach (var legendaryInfo in legendaryItems)
+            {
+                LegendaryInfo.Add(legendaryInfo.ID, legendaryInfo);
             }
         }
 
@@ -232,7 +252,7 @@ namespace EpicLoot
             var needsResolve = true;
             while (needsResolve)
             {
-                if (ItemSets.TryGetValue(result.Item, out LootItemSet itemSet))
+                if (ItemSets.TryGetValue(result.Item, out var itemSet))
                 {
                     if (itemSet.Loot.Length == 0)
                     {
@@ -245,7 +265,7 @@ namespace EpicLoot
                         result.Rarity = rarityOverride;
                     }
                 }
-                else if (IsLootTableRefence(result.Item, out LootDrop[] lootList))
+                else if (IsLootTableRefence(result.Item, out var lootList))
                 {
                     if (lootList.Length == 0)
                     {
@@ -307,10 +327,53 @@ namespace EpicLoot
 
         public static MagicItem RollMagicItem(ItemRarity rarity, ExtendedItemData baseItem)
         {
+            var cheatLegendary = !string.IsNullOrEmpty(CheatForceLegendary);
+            if (cheatLegendary)
+            {
+                rarity = ItemRarity.Legendary;
+            }
+
             var magicItem = new MagicItem { Rarity = rarity };
 
             var effectCount = CheatEffectCount >= 1 ? CheatEffectCount : RollEffectCountPerRarity(magicItem.Rarity);
-            for (int i = 0; i < effectCount; i++)
+
+            if (rarity == ItemRarity.Legendary)
+            {
+                LegendaryInfo legendary = null;
+                if (cheatLegendary)
+                {
+                    LegendaryInfo.TryGetValue(CheatForceLegendary, out legendary);
+                }
+                
+                if (legendary == null)
+                {
+                    var availableLegendaries = GetAvailableLegendaries(baseItem, magicItem);
+                    _weightedLegendaryTable.Setup(availableLegendaries, x => x.SelectionWeight);
+                    legendary = _weightedLegendaryTable.Roll();
+                }
+
+                if (legendary != GenericLegendaryInfo)
+                {
+                    magicItem.LegendaryID = legendary.ID;
+                    magicItem.DisplayName = legendary.Name;
+
+                    foreach (var guaranteedMagicEffect in legendary.GuaranteedMagicEffects)
+                    {
+                        var effectDef = MagicItemEffectDefinitions.Get(guaranteedMagicEffect.Type);
+                        if (effectDef == null)
+                        {
+                            EpicLoot.LogError($"Could not find magic effect (Type={guaranteedMagicEffect.Type}) while creating legendary item (ID={legendary.ID})");
+                            continue;
+                        }
+
+                        var effect = RollEffect(effectDef, ItemRarity.Legendary, guaranteedMagicEffect.Values);
+                        magicItem.Effects.Add(effect);
+                        effectCount--;
+                    }
+                }
+            }
+
+            for (var i = 0; i < effectCount; i++)
             {
                 var availableEffects = MagicItemEffectDefinitions.GetAvailableEffects(baseItem, magicItem);
                 if (availableEffects.Count == 0)
@@ -327,9 +390,17 @@ namespace EpicLoot
                 magicItem.Effects.Add(effect);
             }
 
-            magicItem.DisplayName = MagicItemNames.GetNameForItem(baseItem, magicItem);
+            if (string.IsNullOrEmpty(magicItem.LegendaryID))
+            {
+                magicItem.DisplayName = MagicItemNames.GetNameForItem(baseItem, magicItem);
+            }
 
             return magicItem;
+        }
+
+        private static IEnumerable<LegendaryInfo> GetAvailableLegendaries(ExtendedItemData baseItem, MagicItem magicItem)
+        {
+            return LegendaryInfo.Values.Where(x => x.Requirements.CheckRequirements(baseItem, magicItem)).AddItem(GenericLegendaryInfo);
         }
 
         private static void InitializeMagicItem(ExtendedItemData baseItem)
@@ -364,10 +435,10 @@ namespace EpicLoot
             }
         }
 
-        public static MagicItemEffect RollEffect(MagicItemEffectDefinition effectDef, ItemRarity itemRarity)
+        public static MagicItemEffect RollEffect(MagicItemEffectDefinition effectDef, ItemRarity itemRarity, MagicItemEffectDefinition.ValueDef valuesOverride = null)
         {
             float value = 0;
-            var valuesDef = effectDef.GetValuesForRarity(itemRarity);
+            var valuesDef = valuesOverride ?? effectDef.GetValuesForRarity(itemRarity);
             if (valuesDef != null)
             {
                 value = valuesDef.MinValue;
@@ -413,7 +484,7 @@ namespace EpicLoot
                 return ItemRarity.Magic;
             }
 
-            Dictionary<ItemRarity, int> rarityWeights = new Dictionary<ItemRarity, int>()
+            var rarityWeights = new Dictionary<ItemRarity, int>()
             {
                 { ItemRarity.Magic, lootDrop.Rarity.Length >= 1 ? lootDrop.Rarity[0] : 0 },
                 { ItemRarity.Rare, lootDrop.Rarity.Length >= 2 ? lootDrop.Rarity[1] : 0 },
@@ -428,7 +499,7 @@ namespace EpicLoot
         public static List<LootTable> GetLootTable(string objectName)
         {
             var results = new List<LootTable>();
-            if (LootTables.TryGetValue(objectName, out List<LootTable> lootTables))
+            if (LootTables.TryGetValue(objectName, out var lootTables))
             {
                 foreach (var lootTable in lootTables)
                 {
@@ -571,6 +642,18 @@ namespace EpicLoot
                 EpicLoot.Log($"AddDebugMagicEffect {ForcedMagicEffect}");
                 item.Effects.Add(RollEffect(MagicItemEffectDefinitions.Get(ForcedMagicEffect), item.Rarity));
             }
+        }
+
+        public static MagicItemEffectDefinition.ValueDef GetLegendaryEffectValues(string legendaryID, string effectType)
+        {
+            if (LegendaryInfo.TryGetValue(legendaryID, out var legendaryInfo))
+            {
+                if (legendaryInfo.GuaranteedMagicEffects.TryFind(x => x.Type == effectType, out var guaranteedMagicEffect))
+                {
+                    return guaranteedMagicEffect.Values;
+                }
+            }
+            return null;
         }
     }
 }

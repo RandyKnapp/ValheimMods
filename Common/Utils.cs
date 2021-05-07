@@ -6,7 +6,6 @@ using System.Reflection;
 using BepInEx;
 using UnityEngine;
 using UnityEngine.Rendering;
-using Object = System.Object;
 
 namespace Common
 {

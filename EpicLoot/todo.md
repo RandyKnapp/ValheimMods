@@ -45,7 +45,7 @@
 - [ ] Warm (Prevent freezing effect)
 - [X] Waterproof (cape, prevent Wet effect from rain)
 - [ ] Waterwalk (legs)
-- [ ] Double Jump (legs)
+- [X] Double Jump (legs)
 - [ ] Thorns damage
 - [ ] Sneak increase (legs)
 - [ ] Dodge improvement (legs)

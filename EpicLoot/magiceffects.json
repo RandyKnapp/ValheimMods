@@ -1013,6 +1013,39 @@
       "SelectionWeight" : 1,
       "Prefixes": [ "Paralyzing" ],
       "Suffixes": [ "Paralysis" ]
+    },
+    {
+      "Type" : "DoubleJump",
+      "DisplayText" : "$mod_epicloot_me_doublejump",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "Legs"
+        ],
+        "AllowedRarities" : [
+          "Epic",
+          "Legendary"
+        ]
+      },
+      "SelectionWeight" : 1,
+      "Prefixes": [ "$mod_epicloot_me_doublejump_prefix" ],
+      "Suffixes": [ "$mod_epicloot_me_doublejump_suffix" ]
+    },
+    {
+      "Type" : "WaterWalking",
+      "DisplayText" : "$mod_epicloot_me_waterwalk",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "Legs"
+        ],
+        "AllowedRarities" : [
+          "Rare",
+          "Epic",
+          "Legendary"
+        ]
+      },
+      "SelectionWeight" : 1,
+      "Prefixes": [ "$mod_epicloot_me_waterwalk_prefix1", "$mod_epicloot_me_waterwalk_prefix2" ],
+      "Suffixes": [ "$mod_epicloot_me_waterwalk_suffix1", "$mod_epicloot_me_waterwalk_suffix2" ]
     }
   ]
 }

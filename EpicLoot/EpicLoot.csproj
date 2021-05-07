@@ -163,6 +163,7 @@
     <Compile Include="ItemDrop_Patch_MagicItemTooltip.cs" />
     <Compile Include="MagicItemEffects\AddCarryWeight.cs" />
     <Compile Include="MagicItemEffects\AddLifeSteal.cs" />
+    <Compile Include="MagicItemEffects\DoubleJump.cs" />
     <Compile Include="MagicItemEffects\IncreaseHealth.cs" />
     <Compile Include="MagicItemEffects\IncreaseStamina.cs" />
     <Compile Include="MagicItemEffects\Indestructible.cs" />
@@ -185,6 +186,7 @@
     <Compile Include="MagicItemEffects\ModifyMovementSpeed.cs" />
     <Compile Include="MagicItemEffects\Throwable.cs" />
     <Compile Include="MagicItemEffects\Waterproof.cs" />
+    <Compile Include="MagicItemEffects\WaterWalking.cs" />
     <Compile Include="MagicItemNames.cs" />
     <Compile Include="Adventure\BountyListElement.cs" />
     <Compile Include="Adventure\BuyListElement.cs" />
@@ -193,6 +195,8 @@
     <Compile Include="Adventure\MerchantPanel.cs" />
     <Compile Include="Adventure\StoreGui_Patch.cs" />
     <Compile Include="ObjectDB_Patch.cs" />
+    <Compile Include="PlayerKnown\PlayerKnownManager.cs" />
+    <Compile Include="PlayerKnown\PlayerKnownPatches.cs" />
     <Compile Include="TextsDialog_Patch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ZNetScene_Patch.cs" />

@@ -1,5 +1,4 @@
 ﻿using System.Text;
-using ExtendedItemDataFramework;
 using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.UI;
