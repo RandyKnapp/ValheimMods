@@ -53,7 +53,12 @@ namespace EpicLoot
                         attachObject = equipEffects;
                     }
 
-                    Object.Instantiate(asset, attachObject, false);
+                    var newEffect = Object.Instantiate(asset, attachObject, false);
+                    var audioSources = newEffect.GetComponentsInChildren<AudioSource>();
+                    foreach (var audioSource in audioSources)
+                    {
+                        audioSource.outputAudioMixerGroup = AudioMan.instance.m_ambientMixer;
+                    }
                 }
             }
         }

@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Common;
 using EpicLoot.GatedItemType;
+using EpicLoot.LegendarySystem;
 using ExtendedItemDataFramework;
-using HarmonyLib;
 using JetBrains.Annotations;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -17,7 +17,6 @@ namespace EpicLoot
         public static LootConfig Config;
         public static readonly Dictionary<string, LootItemSet> ItemSets = new Dictionary<string, LootItemSet>();
         public static readonly Dictionary<string, List<LootTable>> LootTables = new Dictionary<string, List<LootTable>>();
-        public static readonly Dictionary<string, LegendaryInfo> LegendaryInfo = new Dictionary<string, LegendaryInfo>();
 
         public static event Action<ExtendedItemData, MagicItem> MagicItemGenerated;
 
@@ -33,12 +32,7 @@ namespace EpicLoot
         public static string ForcedMagicEffect = "";
         public static string CheatForceLegendary;
 
-        private static readonly LegendaryInfo GenericLegendaryInfo = new LegendaryInfo {
-            ID = nameof(GenericLegendaryInfo)
-        };
-
-
-        public static void Initialize(LootConfig lootConfig, ItemInfoConfig itemInfoConfig)
+        public static void Initialize(LootConfig lootConfig)
         {
             Config = lootConfig;
             
@@ -52,7 +46,6 @@ namespace EpicLoot
 
             ItemSets.Clear();
             LootTables.Clear();
-            LegendaryInfo.Clear();
             if (Config == null)
             {
                 EpicLoot.LogWarning("Initialized LootRoller with null");
@@ -61,7 +54,6 @@ namespace EpicLoot
           
             AddItemSets(lootConfig.ItemSets);
             AddLootTables(lootConfig.LootTables);
-            AddLegendaryInfo(itemInfoConfig.LegendaryItems);
         }
 
         private static void AddItemSets([NotNull] IEnumerable<LootItemSet> itemSets)
@@ -91,14 +83,6 @@ namespace EpicLoot
             foreach (var lootTable in lootTables)
             {
                 AddLootTable(lootTable);
-            }
-        }
-
-        private static void AddLegendaryInfo([NotNull] IEnumerable<LegendaryInfo> legendaryItems)
-        {
-            foreach (var legendaryInfo in legendaryItems)
-            {
-                LegendaryInfo.Add(legendaryInfo.ID, legendaryInfo);
             }
         }
 
@@ -342,17 +326,17 @@ namespace EpicLoot
                 LegendaryInfo legendary = null;
                 if (cheatLegendary)
                 {
-                    LegendaryInfo.TryGetValue(CheatForceLegendary, out legendary);
+                    UniqueLegendaryHelper.TryGetLegendaryInfo(CheatForceLegendary, out legendary);
                 }
                 
                 if (legendary == null)
                 {
-                    var availableLegendaries = GetAvailableLegendaries(baseItem, magicItem);
+                    var availableLegendaries = UniqueLegendaryHelper.GetAvailableLegendaries(baseItem, magicItem);
                     _weightedLegendaryTable.Setup(availableLegendaries, x => x.SelectionWeight);
                     legendary = _weightedLegendaryTable.Roll();
                 }
 
-                if (legendary != GenericLegendaryInfo)
+                if (UniqueLegendaryHelper.IsGenericLegendary(legendary))
                 {
                     magicItem.LegendaryID = legendary.ID;
                     magicItem.DisplayName = legendary.Name;
@@ -396,11 +380,6 @@ namespace EpicLoot
             }
 
             return magicItem;
-        }
-
-        private static IEnumerable<LegendaryInfo> GetAvailableLegendaries(ExtendedItemData baseItem, MagicItem magicItem)
-        {
-            return LegendaryInfo.Values.Where(x => x.Requirements.CheckRequirements(baseItem, magicItem)).AddItem(GenericLegendaryInfo);
         }
 
         private static void InitializeMagicItem(ExtendedItemData baseItem)
@@ -642,18 +621,6 @@ namespace EpicLoot
                 EpicLoot.Log($"AddDebugMagicEffect {ForcedMagicEffect}");
                 item.Effects.Add(RollEffect(MagicItemEffectDefinitions.Get(ForcedMagicEffect), item.Rarity));
             }
-        }
-
-        public static MagicItemEffectDefinition.ValueDef GetLegendaryEffectValues(string legendaryID, string effectType)
-        {
-            if (LegendaryInfo.TryGetValue(legendaryID, out var legendaryInfo))
-            {
-                if (legendaryInfo.GuaranteedMagicEffects.TryFind(x => x.Type == effectType, out var guaranteedMagicEffect))
-                {
-                    return guaranteedMagicEffect.Values;
-                }
-            }
-            return null;
         }
     }
 }

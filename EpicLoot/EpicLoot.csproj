@@ -145,6 +145,8 @@
     <Compile Include="Healing\HealingQueueMono.cs" />
     <Compile Include="Humanoid_Patch.cs" />
     <Compile Include="LegacyMagicEffectType.cs" />
+    <Compile Include="LegendarySystem\LegendaryItemConfig.cs" />
+    <Compile Include="LegendarySystem\UniqueLegendaryHelper.cs" />
     <Compile Include="LootBeams\AlwaysPointUp.cs" />
     <Compile Include="LootBeams\BeamColorSetter.cs" />
     <Compile Include="CharacterDrop_Patch.cs" />
@@ -213,6 +215,7 @@
     <None Include="info.md" />
     <None Include="iteminfo.json" />
     <None Include="itemnames.json" />
+    <None Include="legendaries.json" />
     <None Include="packages.config" />
     <None Include="translations.json" />
     <None Include="loottables.json" />
@@ -240,6 +243,7 @@
   <ItemGroup>
     <Content Include="ILRepack.targets" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="..\Common\Common.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="Copy" AfterTargets="ILRepack">
@@ -254,7 +258,8 @@ xcopy "$(ProjectDir)iteminfo.json" "C:\Program Files (x86)\Steam\steamapps\commo
 xcopy "$(ProjectDir)recipes.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
 xcopy "$(ProjectDir)enchantcosts.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
 xcopy "$(ProjectDir)itemnames.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
-xcopy "$(ProjectDir)adventuredata.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i</PostBuildEvent>
+xcopy "$(ProjectDir)adventuredata.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
+xcopy "$(ProjectDir)legendaries.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i</PostBuildEvent>
   </PropertyGroup>
   <Import Project="..\packages\ILRepack.Lib.MSBuild.Task.2.0.18.2\build\ILRepack.Lib.MSBuild.Task.targets" Condition="Exists('..\packages\ILRepack.Lib.MSBuild.Task.2.0.18.2\build\ILRepack.Lib.MSBuild.Task.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

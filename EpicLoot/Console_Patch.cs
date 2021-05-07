@@ -6,6 +6,7 @@ using EpicLoot.Adventure;
 using EpicLoot.Adventure.Feature;
 using EpicLoot.Crafting;
 using EpicLoot.GatedItemType;
+using EpicLoot.LegendarySystem;
 using HarmonyLib;
 using UnityEngine;
 using Random = System.Random;
@@ -378,7 +379,7 @@ namespace EpicLoot
 
             __instance.AddString($"magicitemlegendary - legendaryID:{legendaryID}");
 
-            if (!LootRoller.LegendaryInfo.TryGetValue(legendaryID, out var legendaryInfo))
+            if (!UniqueLegendaryHelper.TryGetLegendaryInfo(legendaryID, out var legendaryInfo))
             {
                 __instance.AddString($"> Could not find info for legendaryID: ({legendaryID})");
                 return;

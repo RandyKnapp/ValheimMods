@@ -71,7 +71,7 @@ namespace EpicLoot.Crafting
                 var button = EffectChoiceButtons[index];
                 button.gameObject.SetActive(true);
                 var text = button.GetComponentInChildren<Text>();
-                text.text = (index == 0 ? "<color=white>(keep)</color> " : "") + MagicItem.GetEffectText(effect, rarity, true);
+                text.text = Localization.instance.Localize((index == 0 ? "<color=white>($mod_epicloot_augment_keep)</color> " : "") + MagicItem.GetEffectText(effect, rarity, true));
                 text.color = rarityColor;
                 var buttonColor = button.GetComponent<ButtonTextColor>();
                 buttonColor.m_defaultColor = rarityColor;

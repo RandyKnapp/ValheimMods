@@ -10,6 +10,7 @@ using Common;
 using EpicLoot.Adventure;
 using EpicLoot.Crafting;
 using EpicLoot.GatedItemType;
+using EpicLoot.LegendarySystem;
 using EpicLoot.MagicItemEffects;
 using ExtendedItemDataFramework;
 using fastJSON;
@@ -136,8 +137,6 @@ namespace EpicLoot
         public static bool AlwaysDropCheat = false;
         public const Minimap.PinType BountyPinType = (Minimap.PinType) 800;
         public const Minimap.PinType TreasureMapPinType = (Minimap.PinType) 801;
-        public static LootConfig LootConfig;
-        public static ItemInfoConfig ItemInfoConfig;
 
         public static event Action LootTableLoaded;
 
@@ -220,36 +219,14 @@ namespace EpicLoot
 
         public static void InitializeConfig()
         {
-            LootConfig = null;
-            ItemInfoConfig = null;
-
-            LoadJsonFile<LootConfig>("loottables.json", OnLootTablesLoaded);
+            LoadJsonFile<LootConfig>("loottables.json", LootRoller.Initialize);
             LoadJsonFile<MagicItemEffectsList>("magiceffects.json", MagicItemEffectDefinitions.Initialize);
-            LoadJsonFile<ItemInfoConfig>("iteminfo.json", OnItemInfoLoaded);
+            LoadJsonFile<ItemInfoConfig>("iteminfo.json", GatedItemTypeHelper.Initialize);
             LoadJsonFile<RecipesConfig>("recipes.json", RecipesHelper.Initialize);
             LoadJsonFile<EnchantingCostsConfig>("enchantcosts.json", EnchantCostsHelper.Initialize);
             LoadJsonFile<ItemNameConfig>("itemnames.json", MagicItemNames.Initialize);
             LoadJsonFile<AdventureDataConfig>("adventuredata.json", AdventureDataManager.Initialize);
-        }
-
-        public static void OnLootTablesLoaded(LootConfig config)
-        {
-            LootConfig = config;
-            if (LootConfig != null && ItemInfoConfig != null)
-            {
-                LootRoller.Initialize(LootConfig, ItemInfoConfig);
-            }
-        }
-
-        public static void OnItemInfoLoaded(ItemInfoConfig config)
-        {
-            GatedItemTypeHelper.Initialize(config);
-
-            ItemInfoConfig = config;
-            if (LootConfig != null && ItemInfoConfig != null)
-            {
-                LootRoller.Initialize(LootConfig, ItemInfoConfig);
-            }
+            LoadJsonFile<LegendaryItemConfig>("legendaries.json", UniqueLegendaryHelper.Initialize);
         }
 
         public static void Log(string message)

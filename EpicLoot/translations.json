@@ -51,6 +51,7 @@
   "mod_epicloot_treasurechest_name": "Treasure Chest: $1 #$2",
   "mod_epicloot_treasuremap_name": "Treasure Map: $1 #$2",
   "mod_epicloot_treasuremap_tooltip": "This folded piece of ragged parchment has a big red X marked on it, somewhere in the $1...",
+  "mod_epicloot_augment_keep": "keep", 
   "mod_epicloot_me_doublejump": "Air Jump",
   "mod_epicloot_me_doublejump_prefix": "Tyr's",
   "mod_epicloot_me_doublejump_suffix": "of the Wind",

@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 1888980388
+CRC: 1000185003
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 86b392b1bf99089904ddb9e3392abef0
+    Hash: c2f4d8d1def4ba40b8317ceb4ffe4f70
   TypeTreeHash:
     serializedVersion: 2
     Hash: 0638681d28c386c0ec13adad4c497303
@@ -110,7 +110,7 @@ Assets:
 - Assets/EpicLoot/Sounds/DoubleJump.wav
 - Assets/EpicLoot/Prefabs/LootBeams/RareLootBeam.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/EssenceRare.prefab
-- Assets/Hovl Studio/Auras pack/Prefabs/FireAura.prefab
+- Assets/EpicLoot/Prefabs/ItemEffects/FireAura.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/ShardEpic.prefab
 - Assets/EpicLoot/Sprites/Inventory/GenericSetItemMarker.png
 - Assets/EpicLoot/Prefabs/Equipment/Andvaranaut.prefab
@@ -142,6 +142,7 @@ Assets:
 - Assets/EpicLoot/Prefabs/CraftingMaterials/DustLegendary.prefab
 - Assets/EpicLoot/Sounds/Disenchant.wav
 - Assets/EpicLoot/Prefabs/LootBeams/MagicLootBeam.prefab
+- Assets/Hovl Studio/Auras pack/Prefabs/FireAura 1.prefab
 - Assets/EpicLoot/Prefabs/Adventure/IronBountyToken.prefab
 - Assets/EpicLoot/Sounds/AugmentItem.wav
 - Assets/EpicLoot/Sounds/ItemLoop.wav

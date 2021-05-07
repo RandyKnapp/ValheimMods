@@ -305,7 +305,7 @@ namespace EpicLoot.Crafting
                     rt.anchoredPosition = startOffset + new Vector2(0, i * -spacing);
                     var t = selector.GetComponentInChildren<Text>();
                     t.font = inventoryGui.m_recipeDecription.font;
-                    t.text = MagicItem.GetEffectText(augmentableEffects[i], rarity, true);
+                    t.text = Localization.instance.Localize(MagicItem.GetEffectText(augmentableEffects[i], rarity, true));
                     t.color = magicItem.HasBeenAugmented() && recipe.EffectIndex != i ? Color.gray : EpicLoot.GetRarityColorARGB(rarity);
                     t.resizeTextMaxSize = 18;
                     t.resizeTextMinSize = 10;
@@ -332,7 +332,7 @@ namespace EpicLoot.Crafting
                     selector.isOn = recipe.EffectIndex == i;
                     selector.interactable = !magicItem.HasBeenAugmented() || recipe.EffectIndex == i;
                     var t = selector.GetComponentInChildren<Text>();
-                    t.text = MagicItem.GetEffectText(augmentableEffects[i], rarity, true);
+                    t.text = Localization.instance.Localize(MagicItem.GetEffectText(augmentableEffects[i], rarity, true));
                     t.color = magicItem.HasBeenAugmented() && recipe.EffectIndex != i ? Color.gray : EpicLoot.GetRarityColorARGB(rarity);
                 }
             }

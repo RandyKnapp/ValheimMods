@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using EpicLoot.GatedItemType;
+using EpicLoot.LegendarySystem;
 using ExtendedItemDataFramework;
 using UnityEngine;
 
@@ -100,7 +101,7 @@ namespace EpicLoot
         {
             var effectDef = MagicItemEffectDefinitions.Get(effect.EffectType);
             var result = string.Format(effectDef.DisplayText, effect.EffectValue);
-            var values = string.IsNullOrEmpty(legendaryID) ? effectDef.GetValuesForRarity(rarity) : LootRoller.GetLegendaryEffectValues(legendaryID, effect.EffectType);
+            var values = string.IsNullOrEmpty(legendaryID) ? effectDef.GetValuesForRarity(rarity) : UniqueLegendaryHelper.GetLegendaryEffectValues(legendaryID, effect.EffectType);
             if (showRange && values != null)
             {
                 if (!Mathf.Approximately(values.MinValue, values.MaxValue))
@@ -153,7 +154,7 @@ namespace EpicLoot
         {
             if (IsUniqueLegendary())
             {
-                LootRoller.LegendaryInfo.TryGetValue(LegendaryID, out var legendaryInfo);
+                UniqueLegendaryHelper.TryGetLegendaryInfo(LegendaryID, out var legendaryInfo);
                 return legendaryInfo;
             }
 

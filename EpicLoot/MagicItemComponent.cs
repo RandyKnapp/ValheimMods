@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Common;
 using EpicLoot.Crafting;
+using EpicLoot.LegendarySystem;
 using ExtendedItemDataFramework;
 using fastJSON;
 using HarmonyLib;
@@ -175,7 +176,7 @@ namespace EpicLoot
             if (itemData.IsMagic())
             {
                 var magicItem = itemData.GetMagicItem();
-                if (magicItem.IsUniqueLegendary() && LootRoller.LegendaryInfo.TryGetValue(magicItem.LegendaryID, out var legendaryInfo))
+                if (magicItem.IsUniqueLegendary() && UniqueLegendaryHelper.TryGetLegendaryInfo(magicItem.LegendaryID, out var legendaryInfo))
                 {
                     return legendaryInfo.Description;
                 }
