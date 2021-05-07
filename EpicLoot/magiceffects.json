@@ -1305,6 +1305,27 @@
       "SelectionWeight" : 1,
       "Prefixes": [ "$mod_epicloot_me_waterwalk_prefix1", "$mod_epicloot_me_waterwalk_prefix2" ],
       "Suffixes": [ "$mod_epicloot_me_waterwalk_suffix1", "$mod_epicloot_me_waterwalk_suffix2" ]
+    },
+    {
+      "Type" : "ExplosiveArrows",
+      "DisplayText" : "Arrows deal +{0:0.#}% fire damage around the target",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "Bow"
+        ],
+        "ExcludedSkillTypes": [
+          "Pickaxes"
+        ]
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 1, "MaxValue" : 4, "Increment" : 1 },
+        "Rare" : { "MinValue" : 3, "MaxValue" : 8, "Increment" : 1 },
+        "Epic" : { "MinValue" : 7, "MaxValue" : 15, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15, "MaxValue" : 20, "Increment" : 1 }
+      },
+      "SelectionWeight" : 1,
+      "Prefixes": [ "Exploding" ],
+      "Suffixes": [ "Explosive" ]
     }
   ]
 }

@@ -167,6 +167,7 @@
     <Compile Include="MagicItemEffects\AddCarryWeight.cs" />
     <Compile Include="MagicItemEffects\AddLifeSteal.cs" />
     <Compile Include="MagicItemEffects\DoubleJump.cs" />
+    <Compile Include="MagicItemEffects\ExplosiveArrows.cs" />
     <Compile Include="MagicItemEffects\IncreaseHealth.cs" />
     <Compile Include="MagicItemEffects\IncreaseStamina.cs" />
     <Compile Include="MagicItemEffects\Indestructible.cs" />

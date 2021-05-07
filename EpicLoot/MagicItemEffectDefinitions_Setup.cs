@@ -59,5 +59,6 @@
         public static string Paralyze = nameof(Paralyze);
         public static string DoubleJump = nameof(DoubleJump);
         public static string WaterWalking = nameof(WaterWalking);
+        public static string ExplosiveArrows = nameof(ExplosiveArrows);
     }
 }
