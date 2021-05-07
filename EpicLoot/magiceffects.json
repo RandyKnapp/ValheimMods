@@ -743,7 +743,7 @@
     },
     {
       "Type" : "AddFireResistancePercentage",
-      "DisplayText" : "+{0:0.#}% reduced fire damage taken",
+      "DisplayText" : "+{0:0.#}% fire damage reduction",
       "Requirements" : {
         "AllowedItemTypes" : [
           "Helmet",
@@ -766,7 +766,7 @@
     },
     {
       "Type" : "AddFrostResistancePercentage",
-      "DisplayText" : "+{0:0.#}% reduced frost damage taken",
+      "DisplayText" : "+{0:0.#}% frost damage reduction",
       "Requirements" : {
         "AllowedItemTypes" : [
           "Helmet",
@@ -789,7 +789,7 @@
     },
     {
       "Type" : "AddLightningResistancePercentage",
-      "DisplayText" : "+{0:0.#}% reduced lightning damage taken",
+      "DisplayText" : "+{0:0.#}% lightning damage reduction",
       "Requirements" : {
         "AllowedItemTypes" : [
           "Helmet",
@@ -812,7 +812,7 @@
     },
     {
       "Type" : "AddPoisonResistancePercentage",
-      "DisplayText" : "+{0:0.#}% reduced poison damage taken",
+      "DisplayText" : "+{0:0.#}% poison damage reduction",
       "Requirements" : {
         "AllowedItemTypes" : [
           "Helmet",
@@ -835,7 +835,7 @@
     },
     {
       "Type" : "AddSpiritResistancePercentage",
-      "DisplayText" : "+{0:0.#}% reduced spirit damage taken",
+      "DisplayText" : "+{0:0.#}% spirit damage reduction",
       "Requirements" : {
         "NoRoll": true,
         "AllowedItemTypes" : [
@@ -859,7 +859,7 @@
     },
     {
       "Type" : "AddElementalResistancePercentage",
-      "DisplayText" : "+{0:0.#}% reduced elemental damage taken",
+      "DisplayText" : "+{0:0.#}% elemental damage reduction",
       "Requirements" : {
         "AllowedItemTypes" : [
           "Helmet",
@@ -877,12 +877,12 @@
         "Legendary" : { "MinValue" : 8, "MaxValue" : 10, "Increment" : 1 }
       },
       "SelectionWeight" : 1,
-      "Prefixes": [ "Serene" ],
+      "Prefixes": [ "Warding" ],
       "Suffixes": [ "Elemental Resistance" ]
     },
     {
       "Type" : "AddBluntResistancePercentage",
-      "DisplayText" : "+{0:0.#}% reduced blunt damage taken",
+      "DisplayText" : "+{0:0.#}% blunt damage reduction",
       "Requirements" : {
         "AllowedItemTypes" : [
           "Helmet",
@@ -900,12 +900,12 @@
         "Legendary" : { "MinValue" : 15, "MaxValue" : 20, "Increment" : 1 }
       },
       "SelectionWeight" : 1,
-      "Prefixes": [ "Serene" ],
+      "Prefixes": [ "Defensive" ],
       "Suffixes": [ "Blunt Resistance" ]
     },
     {
       "Type" : "AddSlashingResistancePercentage",
-      "DisplayText" : "+{0:0.#}% reduced slashing damage taken",
+      "DisplayText" : "+{0:0.#}% slashing damage reduction",
       "Requirements" : {
         "AllowedItemTypes" : [
           "Helmet",
@@ -923,12 +923,12 @@
         "Legendary" : { "MinValue" : 15, "MaxValue" : 20, "Increment" : 1 }
       },
       "SelectionWeight" : 1,
-      "Prefixes": [ "Serene" ],
+      "Prefixes": [ "Impervious" ],
       "Suffixes": [ "Slashing Resistance" ]
     },
     {
       "Type" : "AddPiercingResistancePercentage",
-      "DisplayText" : "+{0:0.#}% reduced piercing damage taken",
+      "DisplayText" : "+{0:0.#}% piercing damage reduction",
       "Requirements" : {
         "AllowedItemTypes" : [
           "Helmet",
@@ -946,13 +946,14 @@
         "Legendary" : { "MinValue" : 15, "MaxValue" : 20, "Increment" : 1 }
       },
       "SelectionWeight" : 1,
-      "Prefixes": [ "Serene" ],
+      "Prefixes": [ "Impenetrable" ],
       "Suffixes": [ "Piercing Resistance" ]
     },
     {
       "Type" : "AddChoppingResistancePercentage",
-      "DisplayText" : "+{0:0.#}% reduced chopping damage taken",
+      "DisplayText" : "+{0:0.#}% chopping damage reduction",
       "Requirements" : {
+        "NoRoll": true, 
         "AllowedItemTypes" : [
           "Helmet",
           "Chest",
@@ -969,12 +970,12 @@
         "Legendary" : { "MinValue" : 15, "MaxValue" : 20, "Increment" : 1 }
       },
       "SelectionWeight" : 1,
-      "Prefixes": [ "Serene" ],
-      "Suffixes": [ "Chopping Resistance" ]
+      "Prefixes": [ "" ],
+      "Suffixes": [ "" ]
     },
     {
       "Type" : "AddPhysicalResistancePercentage",
-      "DisplayText" : "+{0:0.#}% reduced physical damage taken",
+      "DisplayText" : "+{0:0.#}% physical damage reduction",
       "Requirements" : {
         "AllowedItemTypes" : [
           "Helmet",
@@ -992,7 +993,7 @@
         "Legendary" : { "MinValue" : 8, "MaxValue" : 10, "Increment" : 1 }
       },
       "SelectionWeight" : 1,
-      "Prefixes": [ "Serene" ],
+      "Prefixes": [ "Resistant" ],
       "Suffixes": [ "Physical Resistance" ]
     },
     {
