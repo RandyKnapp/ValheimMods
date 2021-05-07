@@ -19,7 +19,7 @@
 - [ ] New Seidr skill (for what?)
 
 ## Magic Effects:
-- [ ] Change Resist effects to a percentage increase in damage reduction
+- [X] Change Resist effects to a percentage increase in damage reduction
 - [X] Remove Spirit Resist
 
 #### Weapons

@@ -28,6 +28,11 @@ namespace EpicLoot
                 return;
             }
 
+            if (!EpicLoot.CanCharacterDropLoot(characterDrop.m_character))
+            {
+                return;
+            }
+
             var characterName = EpicLoot.GetCharacterCleanName(characterDrop.m_character);
             var level = characterDrop.m_character.GetLevel();
 
@@ -87,6 +92,7 @@ namespace EpicLoot
                                 break;
                         }
 
+                        EpicLoot.LogWarning($"Dropping trophies: {dropCount} (mode={EpicLoot.GetBossTrophyDropMode()})");
                         __result[index] = new KeyValuePair<GameObject, int>(prefab, dropCount);
                     }
                 }

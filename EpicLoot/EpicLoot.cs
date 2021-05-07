@@ -824,11 +824,21 @@ namespace EpicLoot
 
         public static void OnCharacterDeath(CharacterDrop characterDrop)
         {
+            if (!CanCharacterDropLoot(characterDrop.m_character))
+            {
+                return;
+            }
+
             var characterName = GetCharacterCleanName(characterDrop.m_character);
             var level = characterDrop.m_character.GetLevel();
             var dropPoint = characterDrop.m_character.GetCenterPoint() + characterDrop.transform.TransformVector(characterDrop.m_spawnOffset);
 
             OnCharacterDeath(characterName, level, dropPoint);
+        }
+
+        public static bool CanCharacterDropLoot(Character character)
+        {
+            return character != null && !character.IsTamed();
         }
 
         public static void OnCharacterDeath(string characterName, int level, Vector3 dropPoint)

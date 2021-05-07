@@ -505,7 +505,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility, Shield
 > 
 > **Requirements:**
-> > **Flags:** `ExclusiveSelf`
+> > **Flags:** `NoRoll, ExclusiveSelf`
 > > **AllowedItemTypes:** `Helmet, Chest, Legs, Shoulder, Utility, Shield`
 
 ## AddFrostResistance
@@ -515,7 +515,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility, Shield
 > 
 > **Requirements:**
-> > **Flags:** `ExclusiveSelf`
+> > **Flags:** `NoRoll, ExclusiveSelf`
 > > **AllowedItemTypes:** `Helmet, Chest, Legs, Shoulder, Utility, Shield`
 
 ## AddLightningResistance
@@ -525,7 +525,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility, Shield
 > 
 > **Requirements:**
-> > **Flags:** `ExclusiveSelf`
+> > **Flags:** `NoRoll, ExclusiveSelf`
 > > **AllowedItemTypes:** `Helmet, Chest, Legs, Shoulder, Utility, Shield`
 
 ## AddPoisonResistance
@@ -535,7 +535,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility, Shield
 > 
 > **Requirements:**
-> > **Flags:** `ExclusiveSelf`
+> > **Flags:** `NoRoll, ExclusiveSelf`
 > > **AllowedItemTypes:** `Helmet, Chest, Legs, Shoulder, Utility, Shield`
 
 ## AddSpiritResistance
@@ -547,6 +547,215 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > **Requirements:**
 > > **Flags:** `NoRoll, ExclusiveSelf`
 > > **AllowedItemTypes:** `Helmet, Chest, Legs, Shoulder, Utility, Shield`
+
+## AddFireResistancePercentage
+
+> **Display Text:** +{0:0.#}% fire damage reduction
+> 
+> **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility, Shield
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedItemTypes:** `Helmet, Chest, Legs, Shoulder, Utility, Shield`
+> 
+> **Value Per Rarity:**
+> 
+> |Rarity|Min|Max|Increment|
+> |--|--|--|--|
+> |Magic|1|4|1|
+> |Rare|3|8|1|
+> |Epic|7|15|1|
+> |Legendary|15|20|1|
+
+## AddFrostResistancePercentage
+
+> **Display Text:** +{0:0.#}% frost damage reduction
+> 
+> **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility, Shield
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedItemTypes:** `Helmet, Chest, Legs, Shoulder, Utility, Shield`
+> 
+> **Value Per Rarity:**
+> 
+> |Rarity|Min|Max|Increment|
+> |--|--|--|--|
+> |Magic|1|4|1|
+> |Rare|3|8|1|
+> |Epic|7|15|1|
+> |Legendary|15|20|1|
+
+## AddLightningResistancePercentage
+
+> **Display Text:** +{0:0.#}% lightning damage reduction
+> 
+> **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility, Shield
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedItemTypes:** `Helmet, Chest, Legs, Shoulder, Utility, Shield`
+> 
+> **Value Per Rarity:**
+> 
+> |Rarity|Min|Max|Increment|
+> |--|--|--|--|
+> |Magic|1|4|1|
+> |Rare|3|8|1|
+> |Epic|7|15|1|
+> |Legendary|15|20|1|
+
+## AddPoisonResistancePercentage
+
+> **Display Text:** +{0:0.#}% poison damage reduction
+> 
+> **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility, Shield
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedItemTypes:** `Helmet, Chest, Legs, Shoulder, Utility, Shield`
+> 
+> **Value Per Rarity:**
+> 
+> |Rarity|Min|Max|Increment|
+> |--|--|--|--|
+> |Magic|1|4|1|
+> |Rare|3|8|1|
+> |Epic|7|15|1|
+> |Legendary|15|20|1|
+
+## AddSpiritResistancePercentage
+
+> **Display Text:** +{0:0.#}% spirit damage reduction
+> 
+> **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility, Shield
+> 
+> **Requirements:**
+> > **Flags:** `NoRoll, ExclusiveSelf`
+> > **AllowedItemTypes:** `Helmet, Chest, Legs, Shoulder, Utility, Shield`
+> 
+> **Value Per Rarity:**
+> 
+> |Rarity|Min|Max|Increment|
+> |--|--|--|--|
+> |Magic|1|4|1|
+> |Rare|3|8|1|
+> |Epic|7|15|1|
+> |Legendary|15|20|1|
+
+## AddElementalResistancePercentage
+
+> **Display Text:** +{0:0.#}% elemental damage reduction
+> 
+> **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility, Shield
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedItemTypes:** `Helmet, Chest, Legs, Shoulder, Utility, Shield`
+> 
+> **Value Per Rarity:**
+> 
+> |Rarity|Min|Max|Increment|
+> |--|--|--|--|
+> |Magic|1|2|1|
+> |Rare|2|4|1|
+> |Epic|4|7|1|
+> |Legendary|8|10|1|
+
+## AddBluntResistancePercentage
+
+> **Display Text:** +{0:0.#}% blunt damage reduction
+> 
+> **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility, Shield
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedItemTypes:** `Helmet, Chest, Legs, Shoulder, Utility, Shield`
+> 
+> **Value Per Rarity:**
+> 
+> |Rarity|Min|Max|Increment|
+> |--|--|--|--|
+> |Magic|1|4|1|
+> |Rare|3|8|1|
+> |Epic|7|15|1|
+> |Legendary|15|20|1|
+
+## AddSlashingResistancePercentage
+
+> **Display Text:** +{0:0.#}% slashing damage reduction
+> 
+> **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility, Shield
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedItemTypes:** `Helmet, Chest, Legs, Shoulder, Utility, Shield`
+> 
+> **Value Per Rarity:**
+> 
+> |Rarity|Min|Max|Increment|
+> |--|--|--|--|
+> |Magic|1|4|1|
+> |Rare|3|8|1|
+> |Epic|7|15|1|
+> |Legendary|15|20|1|
+
+## AddPiercingResistancePercentage
+
+> **Display Text:** +{0:0.#}% piercing damage reduction
+> 
+> **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility, Shield
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedItemTypes:** `Helmet, Chest, Legs, Shoulder, Utility, Shield`
+> 
+> **Value Per Rarity:**
+> 
+> |Rarity|Min|Max|Increment|
+> |--|--|--|--|
+> |Magic|1|4|1|
+> |Rare|3|8|1|
+> |Epic|7|15|1|
+> |Legendary|15|20|1|
+
+## AddChoppingResistancePercentage
+
+> **Display Text:** +{0:0.#}% chopping damage reduction
+> 
+> **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility, Shield
+> 
+> **Requirements:**
+> > **Flags:** `NoRoll, ExclusiveSelf`
+> > **AllowedItemTypes:** `Helmet, Chest, Legs, Shoulder, Utility, Shield`
+> 
+> **Value Per Rarity:**
+> 
+> |Rarity|Min|Max|Increment|
+> |--|--|--|--|
+> |Magic|1|4|1|
+> |Rare|3|8|1|
+> |Epic|7|15|1|
+> |Legendary|15|20|1|
+
+## AddPhysicalResistancePercentage
+
+> **Display Text:** +{0:0.#}% physical damage reduction
+> 
+> **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility, Shield
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedItemTypes:** `Helmet, Chest, Legs, Shoulder, Utility, Shield`
+> 
+> **Value Per Rarity:**
+> 
+> |Rarity|Min|Max|Increment|
+> |--|--|--|--|
+> |Magic|1|2|1|
+> |Rare|2|4|1|
+> |Epic|4|7|1|
+> |Legendary|8|10|1|
 
 ## ModifyMovementSpeed
 
@@ -779,6 +988,26 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > > **Flags:** `ExclusiveSelf`
 > > **AllowedItemTypes:** `Legs`
 > > **AllowedRarities:** `Rare, Epic, Legendary`
+
+## ExplosiveArrows
+
+> **Display Text:** Arrows deal +{0:0.#}% fire damage around the target
+> 
+> **Allowed Item Types:** Bow
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedItemTypes:** `Bow`
+> > **ExcludedSkillTypes:** `Pickaxes`
+> 
+> **Value Per Rarity:**
+> 
+> |Rarity|Min|Max|Increment|
+> |--|--|--|--|
+> |Magic|1|4|1|
+> |Rare|3|8|1|
+> |Epic|7|15|1|
+> |Legendary|15|20|1|
 
 # Item Sets
 
