@@ -15,6 +15,7 @@ using ExtendedItemDataFramework;
 using fastJSON;
 using HarmonyLib;
 using JetBrains.Annotations;
+using ServerSync;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -60,12 +61,15 @@ namespace EpicLoot
         public List<RecipeRequirementConfig> Resources = new List<RecipeRequirementConfig>();
     }
 
-    [BepInPlugin(PluginId, "Epic Loot", Version)]
+    [BepInPlugin(PluginId, DisplayName, Version)]
     [BepInDependency("randyknapp.mods.extendeditemdataframework")]
     public class EpicLoot : BaseUnityPlugin
     {
         public const string PluginId = "randyknapp.mods.epicloot";
+        public const string DisplayName = "Epic Loot";
         public const string Version = "0.7.7";
+
+        ServerSync.ConfigSync configSync = new ServerSync.ConfigSync(PluginId) { DisplayName = DisplayName, CurrentVersion = Version };
 
         private static ConfigEntry<string> _setItemColor;
         private static ConfigEntry<string> _magicRarityColor;
@@ -134,11 +138,6 @@ namespace EpicLoot
         private static EpicLoot _instance;
         private Harmony _harmony;
 
-        public EpicLoot()
-        {
-            LoadDependencies();
-        }
-
         [UsedImplicitly]
         private void Awake()
         {
@@ -163,10 +162,10 @@ namespace EpicLoot
             _loggingEnabled = Config.Bind("Logging", "Logging Enabled", false, "Enable logging");
             _logLevel = Config.Bind("Logging", "Log Level", LogLevel.Info, "Only log messages of the selected level or higher");
             UseGeneratedMagicItemNames = Config.Bind("General", "Use Generated Magic Item Names", true, "If true, magic items uses special, randomly generated names based on their rarity, type, and magic effects.");
-            _gatedItemTypeModeConfig = Config.Bind("Balance", "Item Drop Limits", GatedItemTypeMode.MustKnowRecipe, "Sets how the drop system limits what item types can drop. Unlimited: no limits, exactly what's in the loot table will drop. MustKnowRecipe: items will drop so long as the player has discovered their recipe. MustHaveCrafted: items will only drop once the player has crafted one or picked one up. If an item type cannot drop, it will downgrade to an item of the same type and skill that the player has unlocked (i.e. swords will stay swords)");
-            _bossTrophyDropMode = Config.Bind("Balance", "Boss Trophy Drop Mode", BossDropMode.OnePerPlayerNearBoss, "Sets bosses to drop a number of trophies equal to the number of players, similar to the way Wishbone works in vanilla. Optionally set it to only include players within a certain distance, use 'Boss Trophy Drop Player Range' to set the range.");
-            _bossTrophyDropPlayerRange = Config.Bind("Balance", "Boss Trophy Drop Player Range", 100.0f, "Sets the range that bosses check when dropping multiple trophies using the OnePerPlayerNearBoss drop mode.");
-            _adventureModeEnabled = Config.Bind("Balance", "Adventure Mode Enabled", true, "Set to true to enable all the adventure mode features: secret stash, gambling, treasure maps, and bounties. Set to false to disable. This will not actually remove active treasure maps or bounties from your save.");
+            _gatedItemTypeModeConfig = config("Balance", "Item Drop Limits", GatedItemTypeMode.MustKnowRecipe, "Sets how the drop system limits what item types can drop. Unlimited: no limits, exactly what's in the loot table will drop. MustKnowRecipe: items will drop so long as the player has discovered their recipe. MustHaveCrafted: items will only drop once the player has crafted one or picked one up. If an item type cannot drop, it will downgrade to an item of the same type and skill that the player has unlocked (i.e. swords will stay swords)");
+            _bossTrophyDropMode = config("Balance", "Boss Trophy Drop Mode", BossDropMode.OnePerPlayerNearBoss, "Sets bosses to drop a number of trophies equal to the number of players, similar to the way Wishbone works in vanilla. Optionally set it to only include players within a certain distance, use 'Boss Trophy Drop Player Range' to set the range.");
+            _bossTrophyDropPlayerRange = config("Balance", "Boss Trophy Drop Player Range", 100.0f, "Sets the range that bosses check when dropping multiple trophies using the OnePerPlayerNearBoss drop mode.");
+            _adventureModeEnabled = config("Balance", "Adventure Mode Enabled", true, "Set to true to enable all the adventure mode features: secret stash, gambling, treasure maps, and bounties. Set to false to disable. This will not actually remove active treasure maps or bounties from your save.");
 
             LoadTranslations();
             InitializeConfig();
@@ -181,6 +180,18 @@ namespace EpicLoot
             _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), PluginId);
 
             LootTableLoaded?.Invoke();
+        }
+
+        private ConfigEntry<T> config<T>(string group, string name, T value, string description, bool synchronizedSetting = true) => config(group, name, value, new ConfigDescription(description), synchronizedSetting);
+        
+        private ConfigEntry<T> config<T>(string group, string name, T value, ConfigDescription description, bool synchronizedSetting = true)
+        {
+            ConfigEntry<T> configEntry = Config.Bind(group, name, value, description);
+
+            SyncedConfigEntry<T> syncedConfigEntry = configSync.AddConfigEntry(configEntry);
+            syncedConfigEntry.SynchronizedConfig = synchronizedSetting;
+
+            return configEntry;
         }
 
         private static void LoadTranslations()
@@ -201,15 +212,13 @@ namespace EpicLoot
 
         public static void InitializeConfig()
         {
-            var itemInfoConfig = LoadJsonFile<ItemInfoConfig>("iteminfo.json");
-
-            LootRoller.Initialize(LoadJsonFile<LootConfig>("loottables.json"), itemInfoConfig);
-            MagicItemEffectDefinitions.Initialize(LoadJsonFile<MagicItemEffectsList>("magiceffects.json"));
-            GatedItemTypeHelper.Initialize(itemInfoConfig);
-            RecipesHelper.Initialize(LoadJsonFile<RecipesConfig>("recipes.json"));
-            EnchantCostsHelper.Initialize(LoadJsonFile<EnchantingCostsConfig>("enchantcosts.json"));
-            MagicItemNames.Initialize(LoadJsonFile<ItemNameConfig>("itemnames.json"));
-            AdventureDataManager.Initialize(LoadJsonFile<AdventureDataConfig>("adventuredata.json"));
+            LoadJsonFile<LootConfig>("loottables.json", LootRoller.Initialize);
+            LoadJsonFile<MagicItemEffectsList>("magiceffects.json", MagicItemEffectDefinitions.Initialize);
+            LoadJsonFile<ItemInfoConfig>("iteminfo.json", GatedItemTypeHelper.Initialize);
+            LoadJsonFile<RecipesConfig>("recipes.json", RecipesHelper.Initialize);
+            LoadJsonFile<EnchantingCostsConfig>("enchantcosts.json", EnchantCostsHelper.Initialize);
+            LoadJsonFile<ItemNameConfig>("itemnames.json", MagicItemNames.Initialize);
+            LoadJsonFile<AdventureDataConfig>("adventuredata.json", AdventureDataManager.Initialize);
         }
 
         public static void Log(string message)
@@ -699,44 +708,28 @@ namespace EpicLoot
             ObjectDB.instance.m_StatusEffects.Add(paralyzed);
         }
 
-        private void LoadDependencies()
-        {
-            var assembly = Assembly.GetCallingAssembly();
-            LoadEmbeddedAssembly(assembly, "fastJSON.dll");
-        }
-
-        private static void LoadEmbeddedAssembly(Assembly assembly, string assemblyName)
-        {
-            var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream($"{assembly.GetName().Name}.{assemblyName}");
-            if (stream == null)
-            {
-                LogError($"Could not load embedded assembly ({assemblyName})!");
-                return;
-            }
-
-            using (stream)
-            {
-                var data = new byte[stream.Length];
-                stream.Read(data, 0, data.Length);
-                Assembly.Load(data);
-            }
-        }
-
-        public static T LoadJsonFile<T>(string filename) where T : class
+        public static void LoadJsonFile<T>(string filename, Action<T> onFileLoad) where T : class
         {
             var jsonFile = LoadJsonText(filename);
-            T result;
-            try
+            CustomSyncedValue<string> syncedValue = new CustomSyncedValue<string>(_instance.configSync, filename, jsonFile);
+            void Process()
             {
-                result = string.IsNullOrEmpty(jsonFile) ? null : JSON.ToObject<T>(jsonFile);
-            }
-            catch (Exception)
-            {
-                LogError($"Could not parse file '{filename}'! Errors in JSON!");
-                throw;
+                T result;
+                try
+                {
+                    result = string.IsNullOrEmpty(syncedValue.Value) ? null : JSON.ToObject<T>(syncedValue.Value);
+                }
+                catch (Exception)
+                {
+                    LogError($"Could not parse file '{filename}'! Errors in JSON!");
+                    throw;
+                }
+
+                onFileLoad(result);
             }
 
-            return result;
+            syncedValue.ValueChanged += Process;
+            Process();
         }
 
         public static string LoadJsonText(string filename)
