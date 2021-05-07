@@ -206,6 +206,7 @@
     <None Include="info.md" />
     <None Include="iteminfo.json" />
     <None Include="itemnames.json" />
+    <None Include="legendaries.json" />
     <None Include="translations.json" />
     <None Include="loottables.json" />
     <None Include="magiceffects.json" />

@@ -201,9 +201,11 @@ namespace EpicLoot
 
         public static void InitializeConfig()
         {
-            LootRoller.Initialize(LoadJsonFile<LootConfig>("loottables.json"));
+            var itemInfoConfig = LoadJsonFile<ItemInfoConfig>("iteminfo.json");
+
+            LootRoller.Initialize(LoadJsonFile<LootConfig>("loottables.json"), itemInfoConfig);
             MagicItemEffectDefinitions.Initialize(LoadJsonFile<MagicItemEffectsList>("magiceffects.json"));
-            GatedItemTypeHelper.Initialize(LoadJsonFile<ItemInfoConfig>("iteminfo.json"));
+            GatedItemTypeHelper.Initialize(itemInfoConfig);
             RecipesHelper.Initialize(LoadJsonFile<RecipesConfig>("recipes.json"));
             EnchantCostsHelper.Initialize(LoadJsonFile<EnchantingCostsConfig>("enchantcosts.json"));
             MagicItemNames.Initialize(LoadJsonFile<ItemNameConfig>("itemnames.json"));

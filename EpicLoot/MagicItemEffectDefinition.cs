@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using ExtendedItemDataFramework;
+using JetBrains.Annotations;
 
 namespace EpicLoot
 {
@@ -109,6 +110,111 @@ namespace EpicLoot
 
             return _sb.ToString();
         }
+
+        public bool CheckRequirements([NotNull] ExtendedItemData itemData, [NotNull] MagicItem magicItem, string magicEffectType = null)
+        {
+            if (NoRoll)
+            {
+                return false;
+            }
+
+            if (ExclusiveSelf && magicItem.HasEffect(magicEffectType))
+            {
+                return false;
+            }
+
+            if (ExclusiveEffectTypes?.Count > 0 && magicItem.HasAnyEffect(ExclusiveEffectTypes))
+            {
+                return false;
+            }
+
+            if (AllowedItemTypes?.Count > 0 && !AllowedItemTypes.Contains(itemData.m_shared.m_itemType))
+            {
+                return false;
+            }
+
+            if (ExcludedItemTypes?.Count > 0 && ExcludedItemTypes.Contains(itemData.m_shared.m_itemType))
+            {
+                return false;
+            }
+
+            if (AllowedRarities?.Count > 0 && !AllowedRarities.Contains(magicItem.Rarity))
+            {
+                return false;
+            }
+
+            if (ExcludedRarities?.Count > 0 && ExcludedRarities.Contains(magicItem.Rarity))
+            {
+                return false;
+            }
+
+            if (AllowedSkillTypes?.Count > 0 && !AllowedSkillTypes.Contains(itemData.m_shared.m_skillType))
+            {
+                return false;
+            }
+
+            if (ExcludedSkillTypes?.Count > 0 && ExcludedSkillTypes.Contains(itemData.m_shared.m_skillType))
+            {
+                return false;
+            }
+
+            if (AllowedItemNames?.Count > 0 && !AllowedItemNames.Contains(itemData.m_shared.m_name))
+            {
+                return false;
+            }
+
+            if (ExcludedItemNames?.Count > 0 && ExcludedItemNames.Contains(itemData.m_shared.m_name))
+            {
+                return false;
+            }
+
+            if (ItemHasPhysicalDamage && itemData.m_shared.m_damages.GetTotalPhysicalDamage() <= 0)
+            {
+                return false;
+            }
+
+            if (ItemHasElementalDamage && itemData.m_shared.m_damages.GetTotalElementalDamage() <= 0)
+            {
+                return false;
+            }
+
+            if (ItemUsesDurability && !itemData.m_shared.m_useDurability)
+            {
+                return false;
+            }
+
+            if (ItemHasNegativeMovementSpeedModifier && itemData.m_shared.m_movementModifier >= 0)
+            {
+                return false;
+            }
+
+            if (ItemHasBlockPower && itemData.m_shared.m_blockPower <= 0)
+            {
+                return false;
+            }
+
+            if (ItemHasParryPower && itemData.m_shared.m_deflectionForce <= 0)
+            {
+                return false;
+            }
+
+            if (ItemHasArmor && itemData.m_shared.m_armor <= 0)
+            {
+                return false;
+            }
+
+            if (ItemHasBackstabBonus && itemData.m_shared.m_backstabBonus <= 0)
+            {
+                return false;
+            }
+
+            if (ItemUsesStaminaOnAttack && itemData.m_shared.m_attack.m_attackStamina <= 0 && itemData.m_shared.m_secondaryAttack.m_attackStamina <= 0)
+            {
+                return false;
+            }
+
+            return true;
+        }
     }
 
     [Serializable]
@@ -154,107 +260,7 @@ namespace EpicLoot
                 return true;
             }
 
-            if (Requirements.NoRoll)
-            {
-                return false;
-            }
-
-            if (Requirements.ExclusiveSelf && magicItem.HasEffect(Type))
-            {
-                return false;
-            }
-
-            if (Requirements.ExclusiveEffectTypes?.Count > 0 && magicItem.HasAnyEffect(Requirements.ExclusiveEffectTypes))
-            {
-                return false;
-            }
-
-            if (Requirements.AllowedItemTypes?.Count > 0 && !Requirements.AllowedItemTypes.Contains(itemData.m_shared.m_itemType))
-            {
-                return false;
-            }
-
-            if (Requirements.ExcludedItemTypes?.Count > 0 && Requirements.ExcludedItemTypes.Contains(itemData.m_shared.m_itemType))
-            {
-                return false;
-            }
-
-            if (Requirements.AllowedRarities?.Count > 0 && !Requirements.AllowedRarities.Contains(magicItem.Rarity))
-            {
-                return false;
-            }
-
-            if (Requirements.ExcludedRarities?.Count > 0 && Requirements.ExcludedRarities.Contains(magicItem.Rarity))
-            {
-                return false;
-            }
-
-            if (Requirements.AllowedSkillTypes?.Count > 0 && !Requirements.AllowedSkillTypes.Contains(itemData.m_shared.m_skillType))
-            {
-                return false;
-            }
-
-            if (Requirements.ExcludedSkillTypes?.Count > 0 && Requirements.ExcludedSkillTypes.Contains(itemData.m_shared.m_skillType))
-            {
-                return false;
-            }
-
-            if (Requirements.AllowedItemNames?.Count > 0 && !Requirements.AllowedItemNames.Contains(itemData.m_shared.m_name))
-            {
-                return false;
-            }
-
-            if (Requirements.ExcludedItemNames?.Count > 0 && Requirements.ExcludedItemNames.Contains(itemData.m_shared.m_name))
-            {
-                return false;
-            }
-
-            if (Requirements.ItemHasPhysicalDamage && itemData.m_shared.m_damages.GetTotalPhysicalDamage() <= 0)
-            {
-                return false;
-            }
-
-            if (Requirements.ItemHasElementalDamage && itemData.m_shared.m_damages.GetTotalElementalDamage() <= 0)
-            {
-                return false;
-            }
-
-            if (Requirements.ItemUsesDurability && !itemData.m_shared.m_useDurability)
-            {
-                return false;
-            }
-
-            if (Requirements.ItemHasNegativeMovementSpeedModifier && itemData.m_shared.m_movementModifier >= 0)
-            {
-                return false;
-            }
-
-            if (Requirements.ItemHasBlockPower && itemData.m_shared.m_blockPower <= 0)
-            {
-                return false;
-            }
-
-            if (Requirements.ItemHasParryPower && itemData.m_shared.m_deflectionForce <= 0)
-            {
-                return false;
-            }
-
-            if (Requirements.ItemHasArmor && itemData.m_shared.m_armor <= 0)
-            {
-                return false;
-            }
-
-            if (Requirements.ItemHasBackstabBonus && itemData.m_shared.m_backstabBonus <= 0)
-            {
-                return false;
-            }
-
-            if (Requirements.ItemUsesStaminaOnAttack && itemData.m_shared.m_attack.m_attackStamina <= 0 && itemData.m_shared.m_secondaryAttack.m_attackStamina <= 0)
-            {
-                return false;
-            }
-
-            return true;
+            return Requirements.CheckRequirements(itemData, magicItem, Type);
         }
 
         public bool HasRarityValues()

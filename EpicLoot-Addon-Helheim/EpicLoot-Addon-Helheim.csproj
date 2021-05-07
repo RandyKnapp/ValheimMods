@@ -84,6 +84,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="helheim.json" />
+    <None Include="Notes.md" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

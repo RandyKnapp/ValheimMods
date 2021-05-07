@@ -95,5 +95,24 @@
       "Fallback": "",
       "Items": [ ]
     }
+  ],
+  "LegendaryItems": [
+    {
+      "ID": "Dyrnwyn",
+      "Name": "$mod_epicloot_l_dyrnwyn",
+      "Description": "$mod_epicloot_l_dyrnwyn_desc",
+      "Requirements" : {
+        "AllowedSkillTypes": [
+          "Swords"
+        ]
+      },
+      "GuaranteedMagicEffects": [
+        {
+          "Type": "AddFireDamage",
+          "Values": { "MinValue" : 36, "MaxValue" : 48, "Increment" : 1 } 
+        }
+      ],
+      "SelectionWeight": 1
+    }
   ] 
 }

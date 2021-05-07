@@ -17,7 +17,7 @@ namespace EpicLoot_Addon_MCE
     public class EpicLoot_Addon_MCE : BaseUnityPlugin
     {
         private const string PluginId = "randyknapp.mods.epicloot.addon.mce";
-        private const string Version = "1.0.3";
+        private const string Version = "1.0.4";
 
         private static ConfigVariable<GatedItemTypeMode> _gatedItemTypeModeConfig;
         private static ConfigVariable<BossDropMode> _bossTrophyDropMode;
@@ -73,7 +73,7 @@ namespace EpicLoot_Addon_MCE
 
         public static void InitializeConfig()
         {
-            LootRoller.Initialize(_lootConfigFile.Value);
+            LootRoller.Initialize(_lootConfigFile.Value, _itemInfoConfigFile.Value);
             MagicItemEffectDefinitions.Initialize(_magicEffectsConfigFile.Value);
             GatedItemTypeHelper.Initialize(_itemInfoConfigFile.Value);
             RecipesHelper.Initialize(_recipesConfigFile.Value);

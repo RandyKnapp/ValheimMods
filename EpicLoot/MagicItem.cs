@@ -30,6 +30,8 @@ namespace EpicLoot
         public string TypeNameOverride;
         public int AugmentedEffectIndex = -1;
         public string DisplayName;
+        public string LegendaryID;
+        public string SetID;
 
         public string GetItemTypeName(ExtendedItemData baseItem)
         {
@@ -93,11 +95,11 @@ namespace EpicLoot
             return Effects.Any(x => effectTypes.Contains(x.EffectType));
         }
 
-        public static string GetEffectText(MagicItemEffect effect, ItemRarity rarity, bool showRange)
+        public static string GetEffectText(MagicItemEffect effect, ItemRarity rarity, bool showRange, string legendaryID = null)
         {
             var effectDef = MagicItemEffectDefinitions.Get(effect.EffectType);
             var result = string.Format(effectDef.DisplayText, effect.EffectValue);
-            var values = effectDef.GetValuesForRarity(rarity);
+            var values = string.IsNullOrEmpty(legendaryID) ? effectDef.GetValuesForRarity(rarity) : LootRoller.GetLegendaryEffectValues(legendaryID, effect.EffectType);
             if (showRange && values != null)
             {
                 if (!Mathf.Approximately(values.MinValue, values.MaxValue))

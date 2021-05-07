@@ -5,6 +5,7 @@ using Common;
 using EpicLoot.Adventure;
 using EpicLoot.Adventure.Feature;
 using EpicLoot.Crafting;
+using EpicLoot.GatedItemType;
 using HarmonyLib;
 using UnityEngine;
 using Random = System.Random;
@@ -35,6 +36,10 @@ namespace EpicLoot
             else if (CheatCommand(command, "magicitemwitheffect", "mieffect")) 
             {
                 SpawnMagicItemWithEffect(__instance, args);
+            }
+            else if (CheatCommand(command, "magicitemlegendary", "milegend"))
+            {
+                SpawnLegendaryMagicItem(__instance, args);
             }
             else if (Command(command, "checkstackquality"))
             {
@@ -359,6 +364,73 @@ namespace EpicLoot
             }
 
             return rarityTable;
+        }
+
+        private static void SpawnLegendaryMagicItem(Console __instance, string[] args)
+        {
+            if (args.Length < 2)
+            {
+                __instance.AddString("> Specify legendaryID");
+                return;
+            }
+
+            var legendaryID = args[1];
+
+            __instance.AddString($"magicitemlegendary - legendaryID:{legendaryID}");
+
+            if (!LootRoller.LegendaryInfo.TryGetValue(legendaryID, out var legendaryInfo))
+            {
+                __instance.AddString($"> Could not find info for legendaryID: ({legendaryID})");
+                return;
+            }
+
+            string itemType = null;
+            if (legendaryInfo.Requirements?.AllowedItemNames?.Count > 0)
+            {
+                itemType = legendaryInfo.Requirements.AllowedItemNames.FirstOrDefault();
+            }
+
+            if (string.IsNullOrEmpty(itemType) && legendaryInfo.Requirements?.AllowedSkillTypes?.Count > 0)
+            {
+                var skill = legendaryInfo.Requirements.AllowedSkillTypes.FirstOrDefault().ToString();
+                var items = GatedItemTypeHelper.ItemInfos.Find(x => x.Type == skill);
+                itemType = items?.Items?.LastOrDefault();
+            }
+
+            if (string.IsNullOrEmpty(itemType) && legendaryInfo.Requirements?.AllowedItemTypes?.Count > 0)
+            {
+                itemType = ObjectDB.instance.GetAllItems(legendaryInfo.Requirements.AllowedItemTypes.First(), string.Empty).FirstOrDefault()?.name;
+            }
+
+            if (string.IsNullOrEmpty(itemType))
+            {
+                itemType = "Club";
+            }
+
+            var loot = new LootTable
+            {
+                Object = "Console",
+                Drops = new[] { new[] { 1, 1 } },
+                Loot = new[]
+                {
+                    new LootDrop
+                    {
+                        Item = itemType,
+                        Rarity = new []{ 0, 0, 0, 1 }
+                    }
+                }
+            };
+
+            LootRoller.CheatForceLegendary = legendaryID;
+            var previousDisableGatingState = LootRoller.CheatDisableGating;
+            LootRoller.CheatDisableGating = true;
+
+            var randomOffset = UnityEngine.Random.insideUnitSphere;
+            var dropPoint = Player.m_localPlayer.transform.position + Player.m_localPlayer.transform.forward * 3 + Vector3.up * 1.5f + randomOffset;
+            LootRoller.RollLootTableAndSpawnObjects(loot, 1, loot.Object, dropPoint);
+
+            LootRoller.CheatForceLegendary = null;
+            LootRoller.CheatDisableGating = previousDisableGatingState;
         }
 
         public static void CheckStackQuality(Console __instance)
