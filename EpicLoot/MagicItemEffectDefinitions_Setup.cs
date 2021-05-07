@@ -60,5 +60,6 @@
         public static string DoubleJump = nameof(DoubleJump);
         public static string WaterWalking = nameof(WaterWalking);
         public static string ExplosiveArrows = nameof(ExplosiveArrows);
+        public static string QuickDraw = nameof(QuickDraw);
     }
 }
