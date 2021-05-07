@@ -93,7 +93,7 @@ namespace EpicLoot.MagicItemEffects
 
 		private static GameObject MarkAttackProjectile(GameObject attackProjectile, Attack attack)
 		{
-			if (attack.m_character == Player.m_localPlayer && Player.m_localPlayer.GetEquipmentOfType(ItemDrop.ItemData.ItemType.Bow)?.GetMagicItem().GetTotalEffectValue(MagicEffectType.ExplosiveArrows, 0.01f) is float explosiveStrength)
+			if (attack.m_character == Player.m_localPlayer && Player.m_localPlayer.GetEquipmentOfType(ItemDrop.ItemData.ItemType.Bow)?.GetMagicItem()?.GetTotalEffectValue(MagicEffectType.ExplosiveArrows, 0.01f) is float explosiveStrength)
 			{
 				attackProjectile.GetComponent<ZNetView>().GetZDO().Set("epic loot exploding arrow", explosiveStrength);
 			}
