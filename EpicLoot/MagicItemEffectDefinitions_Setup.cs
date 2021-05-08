@@ -73,5 +73,6 @@
         public static string AddPickaxesSkill = nameof(AddPickaxesSkill);
         public static string AddMovementSkills = nameof(AddMovementSkills);
         public static string ModifyStaggerDuration = nameof(ModifyStaggerDuration);
+        public static string QuickLearner = nameof(QuickLearner);
     }
 }
