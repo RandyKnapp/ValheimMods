@@ -1896,6 +1896,18 @@
       "Suffixes": [ "$mod_epicloot_me_quicklearner_sufffix1" ]
     },
     {
+      "Type" : "FreeBuild",
+      "DisplayText" : "$mod_epicloot_me_freebuild_display",
+      "Requirements" : {
+        "AllowedItemNames" : [
+          "$item_hammer"
+        ]
+      },
+      "SelectionWeight" : 1,
+      "Prefixes": [ "$mod_epicloot_me_freebuild_prefix1" ],
+      "Suffixes": [ "$mod_epicloot_me_freebuild_sufffix1" ]
+    },
+    {
       "Type" : "RecallWeapon",
       "DisplayText" : "$mod_epicloot_me_recallweapon_display",
       "Requirements" : {

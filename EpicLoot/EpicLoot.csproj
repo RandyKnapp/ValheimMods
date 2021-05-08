@@ -170,6 +170,7 @@
     <Compile Include="MagicItemEffects\DoubleJump.cs" />
     <Compile Include="MagicItemEffects\ExplosiveArrows.cs" />
     <Compile Include="MagicItemEffects\FeatherFall.cs" />
+    <Compile Include="MagicItemEffects\FreeBuild.cs" />
     <Compile Include="MagicItemEffects\IncreaseHealth.cs" />
     <Compile Include="MagicItemEffects\IncreaseStamina.cs" />
     <Compile Include="MagicItemEffects\Indestructible.cs" />
