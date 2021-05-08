@@ -81,5 +81,6 @@
         public static string FeatherFall = nameof(FeatherFall);
         public static string ModifyDiscoveryRadius = nameof(ModifyDiscoveryRadius);
         public static string FreeBuild = nameof(FreeBuild);
+        public static string Comfortable = nameof(Comfortable);
     }
 }
