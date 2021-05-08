@@ -61,5 +61,16 @@
         public static string WaterWalking = nameof(WaterWalking);
         public static string ExplosiveArrows = nameof(ExplosiveArrows);
         public static string QuickDraw = nameof(QuickDraw);
+        public static string AddSwordsSkill = nameof(AddSwordsSkill);
+        public static string AddKnivesSkill = nameof(AddKnivesSkill);
+        public static string AddClubsSkill = nameof(AddClubsSkill);
+        public static string AddPolearmsSkill = nameof(AddPolearmsSkill);
+        public static string AddSpearsSkill = nameof(AddSpearsSkill);
+        public static string AddBlockingSkill = nameof(AddBlockingSkill);
+        public static string AddAxesSkill = nameof(AddAxesSkill);
+        public static string AddBowsSkill = nameof(AddBowsSkill);
+        public static string AddUnarmedSkill = nameof(AddUnarmedSkill);
+        public static string AddPickaxesSkill = nameof(AddPickaxesSkill);
+        public static string AddMovementSkills = nameof(AddMovementSkills);
     }
 }
