@@ -1896,6 +1896,18 @@
       "Suffixes": [ "$mod_epicloot_me_quicklearner_sufffix1" ]
     },
     {
+      "Type" : "FeatherFall",
+      "DisplayText" : "$mod_epicloot_me_featherfall_display",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "Legs"
+        ]
+      },
+      "SelectionWeight" : 1,
+      "Prefixes": [ "$mod_epicloot_me_featherfall_prefix1" ],
+      "Suffixes": [ "$mod_epicloot_me_featherfall_sufffix1" ]
+    },
+    {
       "Type" : "ModifyDiscoveryRadius",
       "DisplayText" : "$mod_epicloot_me_modifydiscoveryradius_display",
       "Requirements" : {
