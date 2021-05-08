@@ -184,6 +184,7 @@
     <Compile Include="MagicItemEffects\ModifyParry.cs" />
     <Compile Include="MagicItemEffects\ModifyResistance.cs" />
     <Compile Include="MagicItemEffects\ModifyRunStaminaDrain.cs" />
+    <Compile Include="MagicItemEffects\AddSkillLevel.cs" />
     <Compile Include="MagicItemEffects\ModifyStaminaRegen.cs" />
     <Compile Include="MagicItemEffects\Paralyze.cs" />
     <Compile Include="MagicItemEffects\QuickDraw.cs" />

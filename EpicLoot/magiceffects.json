@@ -1348,6 +1348,211 @@
       "SelectionWeight" : 1,
       "Prefixes": [ "Quick" ],
       "Suffixes": [ "Quick" ]
+    },
+    {
+      "Type" : "AddSwordsSkill",
+      "DisplayText" : "+{0} swords skill level",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "OneHandedWeapon"
+        ],
+        "AllowedSkillTypes" : [
+          "Swords"
+        ]
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 1, "MaxValue" : 4, "Increment" : 1 },
+        "Rare" : { "MinValue" : 3, "MaxValue" : 8, "Increment" : 1 },
+        "Epic" : { "MinValue" : 7, "MaxValue" : 15, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15, "MaxValue" : 20, "Increment" : 1 }
+      },
+      "SelectionWeight" : 1,
+      "Prefixes": [ "Quick" ],
+      "Suffixes": [ "Quick" ]
+    },
+    {
+      "Type" : "AddKnivesSkill",
+      "DisplayText" : "+{0} knives skill level",
+      "Requirements" : {
+        "AllowedSkillTypes" : [
+          "Knives"
+        ]
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 1, "MaxValue" : 4, "Increment" : 1 },
+        "Rare" : { "MinValue" : 3, "MaxValue" : 8, "Increment" : 1 },
+        "Epic" : { "MinValue" : 7, "MaxValue" : 15, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15, "MaxValue" : 20, "Increment" : 1 }
+      },
+      "SelectionWeight" : 1,
+      "Prefixes": [ "Quick" ],
+      "Suffixes": [ "Quick" ]
+    },
+    {
+      "Type" : "AddClubsSkill",
+      "DisplayText" : "+{0} clubs skill level",
+      "Requirements" : {
+        "AllowedSkillTypes" : [
+          "Clubs"
+        ]
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 1, "MaxValue" : 4, "Increment" : 1 },
+        "Rare" : { "MinValue" : 3, "MaxValue" : 8, "Increment" : 1 },
+        "Epic" : { "MinValue" : 7, "MaxValue" : 15, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15, "MaxValue" : 20, "Increment" : 1 }
+      },
+      "SelectionWeight" : 1,
+      "Prefixes": [ "Quick" ],
+      "Suffixes": [ "Quick" ]
+    },
+    {
+      "Type" : "AddPolearmsSkill",
+      "DisplayText" : "+{0} polearms skill level",
+      "Requirements" : {
+        "AllowedSkillTypes" : [
+          "Polearms"
+        ]
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 1, "MaxValue" : 4, "Increment" : 1 },
+        "Rare" : { "MinValue" : 3, "MaxValue" : 8, "Increment" : 1 },
+        "Epic" : { "MinValue" : 7, "MaxValue" : 15, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15, "MaxValue" : 20, "Increment" : 1 }
+      },
+      "SelectionWeight" : 1,
+      "Prefixes": [ "Quick" ],
+      "Suffixes": [ "Quick" ]
+    },
+    {
+      "Type" : "AddSpearsSkill",
+      "DisplayText" : "+{0} spears skill level",
+      "Requirements" : {
+        "AllowedSkillTypes" : [
+          "Spears"
+        ]
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 1, "MaxValue" : 4, "Increment" : 1 },
+        "Rare" : { "MinValue" : 3, "MaxValue" : 8, "Increment" : 1 },
+        "Epic" : { "MinValue" : 7, "MaxValue" : 15, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15, "MaxValue" : 20, "Increment" : 1 }
+      },
+      "SelectionWeight" : 1,
+      "Prefixes": [ "Quick" ],
+      "Suffixes": [ "Quick" ]
+    },
+    {
+      "Type" : "AddBlockingSkill",
+      "DisplayText" : "+{0} blocking skill level",
+      "Requirements" : {
+        "AllowedSkillTypes" : [
+          "Blocking"
+        ]
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 1, "MaxValue" : 4, "Increment" : 1 },
+        "Rare" : { "MinValue" : 3, "MaxValue" : 8, "Increment" : 1 },
+        "Epic" : { "MinValue" : 7, "MaxValue" : 15, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15, "MaxValue" : 20, "Increment" : 1 }
+      },
+      "SelectionWeight" : 1,
+      "Prefixes": [ "Quick" ],
+      "Suffixes": [ "Quick" ]
+    },
+    {
+      "Type" : "AddAxesSkill",
+      "DisplayText" : "+{0} axes skill level",
+      "Requirements" : {
+        "AllowedSkillTypes" : [
+          "Axes"
+        ]
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 1, "MaxValue" : 4, "Increment" : 1 },
+        "Rare" : { "MinValue" : 3, "MaxValue" : 8, "Increment" : 1 },
+        "Epic" : { "MinValue" : 7, "MaxValue" : 15, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15, "MaxValue" : 20, "Increment" : 1 }
+      },
+      "SelectionWeight" : 1,
+      "Prefixes": [ "Quick" ],
+      "Suffixes": [ "Quick" ]
+    },
+    {
+      "Type" : "AddBowsSkill",
+      "DisplayText" : "+{0} bows skill level",
+      "Requirements" : {
+        "AllowedSkillTypes" : [
+          "Bows"
+        ]
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 1, "MaxValue" : 4, "Increment" : 1 },
+        "Rare" : { "MinValue" : 3, "MaxValue" : 8, "Increment" : 1 },
+        "Epic" : { "MinValue" : 7, "MaxValue" : 15, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15, "MaxValue" : 20, "Increment" : 1 }
+      },
+      "SelectionWeight" : 1,
+      "Prefixes": [ "Quick" ],
+      "Suffixes": [ "Quick" ]
+    },
+    {
+      "Type" : "AddUnarmedSkill",
+      "DisplayText" : "+{0} unarmed skill level",
+      "Requirements" : {
+        "NoRoll": true,
+        "AllowedItemTypes" : [
+          "Chest"
+        ]
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 1, "MaxValue" : 4, "Increment" : 1 },
+        "Rare" : { "MinValue" : 3, "MaxValue" : 8, "Increment" : 1 },
+        "Epic" : { "MinValue" : 7, "MaxValue" : 15, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15, "MaxValue" : 20, "Increment" : 1 }
+      },
+      "SelectionWeight" : 1,
+      "Prefixes": [ "Quick" ],
+      "Suffixes": [ "Quick" ]
+    },
+    {
+      "Type" : "AddPickaxesSkill",
+      "DisplayText" : "+{0} pickaxes skill level",
+      "Requirements" : {
+        "AllowedSkillTypes" : [
+          "Pickaxes"
+        ]
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 1, "MaxValue" : 4, "Increment" : 1 },
+        "Rare" : { "MinValue" : 3, "MaxValue" : 8, "Increment" : 1 },
+        "Epic" : { "MinValue" : 7, "MaxValue" : 15, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15, "MaxValue" : 20, "Increment" : 1 }
+      },
+      "SelectionWeight" : 1,
+      "Prefixes": [ "Quick" ],
+      "Suffixes": [ "Quick" ]
+    },
+    {
+      "Type" : "AddMovementSkills",
+      "DisplayText" : "+{0} movement skills level",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "Chest",
+          "Legs",
+          "Shoulder",
+          "Utility"
+        ]
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 1, "MaxValue" : 4, "Increment" : 1 },
+        "Rare" : { "MinValue" : 3, "MaxValue" : 8, "Increment" : 1 },
+        "Epic" : { "MinValue" : 7, "MaxValue" : 15, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15, "MaxValue" : 20, "Increment" : 1 }
+      },
+      "SelectionWeight" : 1,
+      "Prefixes": [ "Quick" ],
+      "Suffixes": [ "Quick" ]
     }
   ]
 }
