@@ -12,6 +12,31 @@
       "GuaranteedMagicEffects": [
         { "Type": "AddFireDamage", "Values": { "MinValue" : 36, "MaxValue" : 48, "Increment" : 1 } }
       ]
+    },
+    {
+      "ID": "SleipnirsHoof",
+      "Name": "$mod_epicloot_l_sleipnirshoof",
+      "Description": "$mod_epicloot_l_sleipnirshoof_desc",
+      "ItemEffect": "WhiteAura", 
+      "Requirements" : {
+        "AllowedItemTypes": [ "OneHandedWeapon" ],
+        "AllowedSkillTypes": [ "Clubs" ]
+      },
+      "GuaranteedMagicEffects": [
+        { "Type": "ModifyMovementSpeed", "Values": { "MinValue" : 10, "MaxValue" : 14, "Increment" : 1 } }
+      ]
+    },
+    {
+      "ID": "Gungnir",
+      "Name": "$mod_epicloot_l_gungnir",
+      "Description": "$mod_epicloot_l_gungnir_desc",
+      "Requirements" : {
+        "AllowedItemTypes": [ "OneHandedWeapon" ],
+        "AllowedSkillTypes": [ "Spears" ]
+      },
+      "GuaranteedMagicEffects": [
+        { "Type": "ModifyDamage", "Values": { "MinValue" : 20, "MaxValue" : 25, "Increment" : 1 } }
+      ]
     }
   ]  
 }

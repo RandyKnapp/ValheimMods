@@ -30,7 +30,7 @@
 - [X] Life steal
 - [X] Exploding shot (bows, deal aoe damage on arrow impact)
 - [ ] Multishot (bows, shoot multiple arrows from one)
-- [ ] Quick draw (bows, draw speed dramatically increased)
+- [X] Quick draw (bows, draw speed dramatically increased)
 - [ ] Recall (spear, automatically pick up spear after throwing)
 - [ ] Immobilize
 - [X] Modify Attack Speed (fixed now)
@@ -38,7 +38,7 @@
 - [ ] Duelist (sword, when off hand is empty, increase parry and block power by a lot)
 - [ ] Opportunist (knife, add backstab damaged to staggered enemies)
 - [X] Throwing (change alterate attack to throw like spear)
-- [ ] Increase stagger duration
+- [X] Increase stagger duration
 - [ ] Blind
 - [ ] Immovable (tower shield, immune to stagger and knockback while blocking)
 - [ ] Glowing
@@ -49,7 +49,7 @@
 - [ ] Waterwalk (legs)
 - [X] Double Jump (legs)
 - [ ] Thorns damage
-- [ ] Sneak increase (legs)
+- [ ] ~Sneak increase (legs)~
 - [ ] Dodge improvement (legs)
 - [ ] Feather Fall (legs)
 - [ ] Nightvision (helmet)
@@ -58,7 +58,7 @@
 - [ ] Increase armor when below HP threshold
 - [ ] % chance to stagger attackers
 - [ ] % chance to ignore incoming damage
-- [ ] Improve Skill Level
+- [X] Improve Skill Level
 - [ ] Comfortable (Increase Comfort level when resting)
 - [ ] Glowing
 
@@ -73,8 +73,8 @@
 
 ## Legendary Items:
 
-- [ ] Sleipnir's Hoof (Club, increase move speed)
-- [ ] Gungnir (Ancient Bark Spear)
+- [X] Sleipnir's Hoof (Club, increase move speed)
+- [X] Gungnir (Ancient Bark Spear)
 - [ ] Mjolnir (Iron Sledge)
 - [ ] Skofnung (Iron Sword)
 - [ ] Dainslief (Silver Sword)

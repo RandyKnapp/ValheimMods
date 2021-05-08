@@ -1456,6 +1456,28 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > |Epic|11|16|1|
 > |Legendary|14|19|1|
 
+## QuickLearner
+
+> **Display Text:** [mod_epicloot_me_quicklearner_display]
+> 
+> **Prefixes:** [mod_epicloot_me_quicklearner_prefix1]
+> **Suffixes:** [mod_epicloot_me_quicklearner_sufffix1]
+> 
+> **Allowed Item Types:** Helmet
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedItemTypes:** `Helmet`
+> 
+> **Value Per Rarity:**
+> 
+> |Rarity|Min|Max|Increment|
+> |--|--|--|--|
+> |Magic|5|10|1|
+> |Rare|8|13|1|
+> |Epic|11|16|1|
+> |Legendary|14|19|1|
+
 # Item Sets
 
 Sets of loot drop data that can be referenced in the loot tables

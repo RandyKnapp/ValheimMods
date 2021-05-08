@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 1000185003
+CRC: 2778768218
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: c2f4d8d1def4ba40b8317ceb4ffe4f70
+    Hash: bdf95b7d43462a39ea9b26abce0c9b72
   TypeTreeHash:
     serializedVersion: 2
     Hash: 0638681d28c386c0ec13adad4c497303
@@ -105,6 +105,7 @@ Assets:
 - Assets/EpicLoot/Prefabs/CraftingMaterials/DustRare.prefab
 - Assets/EpicLoot/Sprites/Inventory/SetItemMarker.png
 - Assets/EpicLoot/Prefabs/CraftingMaterials/RunestoneRare.prefab
+- Assets/EpicLoot/Prefabs/ItemEffects/WhiteAura.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/DustEpic.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/ReagentRare.prefab
 - Assets/EpicLoot/Sounds/DoubleJump.wav
