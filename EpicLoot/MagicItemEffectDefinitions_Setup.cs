@@ -80,5 +80,6 @@
         public static string StaggerOnDamageTaken = nameof(StaggerOnDamageTaken);
         public static string FeatherFall = nameof(FeatherFall);
         public static string ModifyDiscoveryRadius = nameof(ModifyDiscoveryRadius);
+        public static string FreeBuild = nameof(FreeBuild);
     }
 }
