@@ -1896,6 +1896,20 @@
       "Suffixes": [ "$mod_epicloot_me_quicklearner_sufffix1" ]
     },
     {
+
+      "Type" : "RecallWeapon",
+      "DisplayText" : "$mod_epicloot_me_recallweapon_display",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "OneHandedWeapon",
+          "TwoHandedWeapon"
+        ]
+      },
+      "SelectionWeight" : 1,
+      "Prefixes": [ "$mod_epicloot_me_recallweapon_prefix1" ],
+      "Suffixes": [ "$mod_epicloot_me_recallweapon_sufffix1" ]
+    },
+    {
       "Type" : "ReflectDamage",
       "DisplayText" : "$mod_epicloot_me_reflectdamage_display",
       "Requirements" : {

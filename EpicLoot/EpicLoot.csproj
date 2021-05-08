@@ -193,6 +193,7 @@
     <Compile Include="MagicItemEffects\Paralyze.cs" />
     <Compile Include="MagicItemEffects\QuickDraw.cs" />
     <Compile Include="MagicItemEffects\QuickLearner.cs" />
+    <Compile Include="MagicItemEffects\RecallWeapon.cs" />
     <Compile Include="MagicItemEffects\ReduceWeight.cs" />
     <Compile Include="MagicItemEffects\ModifyMovementSpeed.cs" />
     <Compile Include="MagicItemEffects\ReflectDamage.cs" />
