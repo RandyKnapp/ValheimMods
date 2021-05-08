@@ -1553,6 +1553,27 @@
       "SelectionWeight" : 1,
       "Prefixes": [ "Quick" ],
       "Suffixes": [ "Quick" ]
+    },
+    {
+      "Type" : "ModifyStaggerDuration",
+      "DisplayText" : "Stagger duration increased by +{0:0.#}%",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "OneHandedWeapon",
+          "TwoHandedWeapon",
+          "Bow",
+          "Shield"
+        ]
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 5, "MaxValue" : 10, "Increment" : 1 },
+        "Rare" : { "MinValue" : 8, "MaxValue" : 13, "Increment" : 1 },
+        "Epic" : { "MinValue" : 11, "MaxValue" : 16, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 14, "MaxValue" : 19, "Increment" : 1 }
+      },
+      "SelectionWeight" : 1,
+      "Prefixes": [ "Staggerer's" ],
+      "Suffixes": [ "Staggering" ]
     }
   ]
 }

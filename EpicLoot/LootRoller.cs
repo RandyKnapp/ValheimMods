@@ -336,7 +336,7 @@ namespace EpicLoot
                     legendary = _weightedLegendaryTable.Roll();
                 }
 
-                if (UniqueLegendaryHelper.IsGenericLegendary(legendary))
+                if (!UniqueLegendaryHelper.IsGenericLegendary(legendary))
                 {
                     magicItem.LegendaryID = legendary.ID;
                     magicItem.DisplayName = legendary.Name;
