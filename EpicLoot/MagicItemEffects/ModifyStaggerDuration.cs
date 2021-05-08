@@ -49,7 +49,7 @@ namespace EpicLoot.MagicItemEffects
 	}
 
 	[HarmonyPatch(typeof(Humanoid), "BlockAttack")]
-	public static class RPC_TagCharacterOnHit_Humanoid_BlockAttack_Patch
+	public static class TagCharacterOnBlock_Humanoid_BlockAttack_Patch
 	{
 		private static void Prefix(Humanoid __instance, Character attacker)
 		{
