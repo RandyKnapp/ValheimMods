@@ -178,6 +178,7 @@
     <Compile Include="MagicItemEffects\ModifyBlockPower.cs" />
     <Compile Include="MagicItemEffects\ModifyBlockStaminaUse.cs" />
     <Compile Include="MagicItemEffects\ModifyDamage.cs" />
+    <Compile Include="MagicItemEffects\ModifyDiscoveryRadius.cs" />
     <Compile Include="MagicItemEffects\ModifyDurability.cs" />
     <Compile Include="MagicItemEffects\ModifyHealthRegen.cs" />
     <Compile Include="MagicItemEffects\ModifyJumpStaminaUsage.cs" />
