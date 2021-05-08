@@ -1894,6 +1894,24 @@
       "SelectionWeight" : 1,
       "Prefixes": [ "$mod_epicloot_me_quicklearner_prefix1" ],
       "Suffixes": [ "$mod_epicloot_me_quicklearner_sufffix1" ]
+    },
+    {
+      "Type" : "ModifyDiscoveryRadius",
+      "DisplayText" : "$mod_epicloot_me_modifydiscoveryradius_display",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "Helmet"
+        ]
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 5, "MaxValue" : 10, "Increment" : 1 },
+        "Rare" : { "MinValue" : 8, "MaxValue" : 13, "Increment" : 1 },
+        "Epic" : { "MinValue" : 11, "MaxValue" : 16, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 14, "MaxValue" : 19, "Increment" : 1 }
+      },
+      "SelectionWeight" : 1,
+      "Prefixes": [ "$mod_epicloot_me_modifydiscoveryradius_prefix1" ],
+      "Suffixes": [ "$mod_epicloot_me_modifydiscoveryradius_suffix1" ]
     }
   ]
 }
