@@ -72,5 +72,6 @@
         public static string AddUnarmedSkill = nameof(AddUnarmedSkill);
         public static string AddPickaxesSkill = nameof(AddPickaxesSkill);
         public static string AddMovementSkills = nameof(AddMovementSkills);
+        public static string ModifyStaggerDuration = nameof(ModifyStaggerDuration);
     }
 }
