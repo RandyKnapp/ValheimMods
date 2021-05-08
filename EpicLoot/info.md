@@ -1478,6 +1478,120 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > |Epic|11|16|1|
 > |Legendary|14|19|1|
 
+## RecallWeapon
+
+> **Display Text:** Weapons return to you after being thrown
+> 
+> **Prefixes:** Recaller's
+> **Suffixes:** Recalling
+> 
+> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon`
+
+## ReflectDamage
+
+> **Display Text:** Reflect +{0:0.#}% of direct damage taken
+> 
+> **Prefixes:** Reflector's
+> **Suffixes:** [mod_epicloot_me_reflectdamage_sufffix1]
+> 
+> **Allowed Item Types:** Chest, Shield
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedItemTypes:** `Chest, Shield`
+> 
+> **Value Per Rarity:**
+> 
+> |Rarity|Min|Max|Increment|
+> |--|--|--|--|
+> |Magic|5|10|1|
+> |Rare|8|13|1|
+> |Epic|11|16|1|
+> |Legendary|14|19|1|
+
+## AvoidDamageTaken
+
+> **Display Text:** +{0:0.#}% chance to avoid damage taken
+> 
+> **Prefixes:** Avoidance's
+> **Suffixes:** [mod_epicloot_me_avoiddamagetaken_sufffix1]
+> 
+> **Allowed Item Types:** Chest, Shield
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedItemTypes:** `Chest, Shield`
+> 
+> **Value Per Rarity:**
+> 
+> |Rarity|Min|Max|Increment|
+> |--|--|--|--|
+> |Magic|5|10|1|
+> |Rare|8|13|1|
+> |Epic|11|16|1|
+> |Legendary|14|19|1|
+
+## StaggerOnDamageTaken
+
+> **Display Text:** +{0:0.#}% to stagger attackers on damage taken
+> 
+> **Prefixes:** Revenger's
+> **Suffixes:** [mod_epicloot_me_staggerondamagetaken_sufffix1]
+> 
+> **Allowed Item Types:** Chest, Shield
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedItemTypes:** `Chest, Shield`
+> 
+> **Value Per Rarity:**
+> 
+> |Rarity|Min|Max|Increment|
+> |--|--|--|--|
+> |Magic|5|10|1|
+> |Rare|8|13|1|
+> |Epic|11|16|1|
+> |Legendary|14|19|1|
+
+## FeatherFall
+
+> **Display Text:** Reduced fall speed and no fall damage taken
+> 
+> **Prefixes:** Feather's
+> **Suffixes:** the Feather
+> 
+> **Allowed Item Types:** Legs
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedItemTypes:** `Legs`
+
+## ModifyDiscoveryRadius
+
+> **Display Text:** Discovery radius increased by +{0:0.#}%
+> 
+> **Prefixes:** Explorer's
+> **Suffixes:** [mod_epicloot_me_modifydiscoveryradius_suffix1]
+> 
+> **Allowed Item Types:** Helmet
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedItemTypes:** `Helmet`
+> 
+> **Value Per Rarity:**
+> 
+> |Rarity|Min|Max|Increment|
+> |--|--|--|--|
+> |Magic|5|10|1|
+> |Rare|8|13|1|
+> |Epic|11|16|1|
+> |Legendary|14|19|1|
+
 # Item Sets
 
 Sets of loot drop data that can be referenced in the loot tables

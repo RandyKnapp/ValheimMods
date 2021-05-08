@@ -15,6 +15,7 @@
 - [ ] Move tooltip code to postfix, parse and inject rather than redo from scratch
 - [X] Rename item if magic (Legendary still to-do)
 - [ ] Custom crafting station for enchanting
+- [ ] Distinguish utility items (max enchantable rarity)
 - [ ] New Runes skill (enchanting)
 - [ ] New Seidr skill (for what?)
 

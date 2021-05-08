@@ -1896,7 +1896,6 @@
       "Suffixes": [ "$mod_epicloot_me_quicklearner_sufffix1" ]
     },
     {
-
       "Type" : "RecallWeapon",
       "DisplayText" : "$mod_epicloot_me_recallweapon_display",
       "Requirements" : {

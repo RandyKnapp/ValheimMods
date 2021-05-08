@@ -48,7 +48,7 @@ namespace EpicLoot.Crafting
             {
                 var values = effectDef.GetValuesForRarity(item.GetRarity());
                 var valueDisplay = values != null ? $"({values.MinValue}-{values.MaxValue})" : "";
-                t.AppendLine($"‣ {string.Format(effectDef.DisplayText, valueDisplay)}");
+                t.AppendLine($"‣ {string.Format(Localization.instance.Localize(effectDef.DisplayText), valueDisplay)}");
             }
 
             Description.color = rarityColor;
