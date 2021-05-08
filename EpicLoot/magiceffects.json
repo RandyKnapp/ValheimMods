@@ -2007,5 +2007,29 @@
       "Prefixes": [ "$mod_epicloot_me_modifydiscoveryradius_prefix1" ],
       "Suffixes": [ "$mod_epicloot_me_modifydiscoveryradius_suffix1" ]
     }
+  ,
+    {
+      "Type" : "Comfortable",
+      "DisplayText" : "$mod_epicloot_me_comfortable_display",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "Chest",
+          "Legs",
+          "Shoulder",
+          "Helmet"
+        ],
+        "AllowedRarities" : [
+          "Epic",
+          "Legendary"
+        ]
+      },
+      "ValuesPerRarity" : {
+        "Epic" : { "MinValue" : 1, "MaxValue" : 1, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 2, "MaxValue" : 2, "Increment" : 1 }
+      },
+      "SelectionWeight" : 1,
+      "Prefixes": [ "$mod_epicloot_me_comfortable_prefix1" ],
+      "Suffixes": [ "$mod_epicloot_me_comfortable_suffix1" ]
+    }
   ]
 }
