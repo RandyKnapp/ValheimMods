@@ -73,7 +73,7 @@ namespace EpicLoot
         public const string DisplayName = "Epic Loot";
         public const string Version = "0.7.8";
 
-        private readonly ConfigSync _configSync = new ConfigSync(PluginId) { DisplayName = DisplayName, CurrentVersion = Version };
+        private readonly ConfigSync _configSync = new ConfigSync(PluginId) { DisplayName = DisplayName, CurrentVersion = Version, MinimumRequiredVersion = "0.7.8" };
 
         private static ConfigEntry<string> _setItemColor;
         private static ConfigEntry<string> _magicRarityColor;
@@ -177,6 +177,7 @@ namespace EpicLoot
             LoadTranslations();
             InitializeConfig();
             PrintInfo();
+            //GenerateTranslations();
 
             LoadAssets();
 
@@ -207,7 +208,7 @@ namespace EpicLoot
             var translations = (IDictionary<string, object>)JSON.Parse(translationsJsonText);
             foreach (var translation in translations)
             {
-                Log($"Translation: {translation.Key}, {translation.Value}");
+                //Log($"Translation: {translation.Key}, {translation.Value}");
                 Localization.instance.AddWord(translation.Key, translation.Value.ToString());
             }
         }
@@ -774,13 +775,18 @@ namespace EpicLoot
             return assetBundle;
         }
 
+        public static string GenerateAssetPathAtAssembly(string assetName)
+        {
+            var assembly = typeof(EpicLoot).Assembly;
+            return Path.Combine(Path.GetDirectoryName(assembly.Location) ?? string.Empty, assetName);
+        }
+
         public static string GetAssetPath(string assetName)
         {
             var assetFileName = Path.Combine(Paths.PluginPath, "EpicLoot", assetName);
             if (!File.Exists(assetFileName))
             {
-                var assembly = typeof(EpicLoot).Assembly;
-                assetFileName = Path.Combine(Path.GetDirectoryName(assembly.Location) ?? string.Empty, assetName);
+                assetFileName = GenerateAssetPathAtAssembly(assetName);
                 if (!File.Exists(assetFileName))
                 {
                     LogError($"Could not find asset ({assetName})");
@@ -964,8 +970,23 @@ namespace EpicLoot
                 var def = definitionEntry.Value;
                 t.AppendLine($"## {def.Type}");
                 t.AppendLine();
-                t.AppendLine($"> **Display Text:** {def.DisplayText}");
+                t.AppendLine($"> **Display Text:** {Localization.instance.Localize(def.DisplayText)}");
                 t.AppendLine("> ");
+
+                if (def.Prefixes.Count > 0)
+                {
+                    t.AppendLine($"> **Prefixes:** {Localization.instance.Localize(string.Join(", ", def.Prefixes))}");
+                }
+
+                if (def.Suffixes.Count > 0)
+                {
+                    t.AppendLine($"> **Suffixes:** {Localization.instance.Localize(string.Join(", ", def.Suffixes))}");
+                }
+
+                if (def.Prefixes.Count > 0 || def.Suffixes.Count > 0)
+                {
+                    t.AppendLine("> ");
+                }
 
                 var allowedItemTypes = def.GetAllowedItemTypes();
                 t.AppendLine("> **Allowed Item Types:** " + (allowedItemTypes.Count == 0 ? "*None*" : string.Join(", ", allowedItemTypes)));
@@ -1257,6 +1278,88 @@ namespace EpicLoot
         public static bool IsAdventureModeEnabled()
         {
             return _adventureModeEnabled.Value;
+        }
+
+        private static void GenerateTranslations()
+        {
+            var jsonFile = LoadJsonText("itemnames.json");
+            var config = JSON.ToObject<ItemNameConfig>(jsonFile);
+
+            var translations = new Dictionary<string, string>();
+
+            foreach (var nameEntry in config.Epic.Adjectives.Concat(config.Epic.Names))
+            {
+                var name = nameEntry.Name;
+                var locId = "mod_epicloot_epic_" + Clean(name);
+                translations.Add(locId, name);
+                jsonFile = jsonFile.Replace($"\"Name\": \"{name}\"", $"\"Name\": \"${locId}\"");
+            }
+
+            var outputPath = GenerateAssetPathAtAssembly("itemnames_translated.json");
+            File.WriteAllText(outputPath, jsonFile);
+
+            var translationsOutputPath = GenerateAssetPathAtAssembly("new_translations.json");
+            var translationsText = "{\n" + string.Join("\n", translations.Select(x => $"  \"{x.Key}\": \"{x.Value}\",")) +"\n}";
+            File.WriteAllText(translationsOutputPath, translationsText);
+        }
+
+        private static string Clean(string name)
+        {
+            return name.Replace("'", "").Replace(",", "").Trim().Replace(" ", "_").ToLowerInvariant();
+        }
+
+        private static void ReplaceValueList(List<string> values, string field, string label, MagicItemEffectDefinition effectDef, Dictionary<string, string> translations, ref string magicEffectsJson)
+        {
+            var newValues = new List<string>();
+            for (var index = 0; index < values.Count; index++)
+            {
+                var value = values[index];
+                string key;
+                if (value.StartsWith("$"))
+                {
+                    key = value;
+                }
+                else
+                {
+                    key = GetId(effectDef, $"{field}{index + 1}");
+                    AddTranslation(translations, key, value);
+                }
+                newValues.Add(key);
+            }
+
+            if (newValues.Count > 0)
+            {
+                var old = $"\"{label}\": [ {string.Join(", ", values.Select(x => $"\"{x}\""))} ]";
+                var toReplace = $"\"{label}\": [\n        {string.Join(",\n        ", newValues.Select(x => (x.StartsWith("$") ? $"\"{x}\"" : $"\"${x}\"")))}\n      ]";
+                magicEffectsJson = ReplaceTranslation(magicEffectsJson, old, toReplace);
+            }
+        }
+
+        private static string GetId(MagicItemEffectDefinition effectDef, string field)
+        {
+            return $"mod_epicloot_me_{effectDef.Type.ToLowerInvariant()}_{field.ToLowerInvariant()}";
+        }
+
+        private static void AddTranslation(Dictionary<string, string> translations, string key, string value)
+        {
+            translations.Add(key, value);
+        }
+
+        private static string ReplaceTranslation(string jsonFile, string original, string locId)
+        {
+            return jsonFile.Replace(original, locId);
+        }
+
+        private static string SetupTranslation(MagicItemEffectDefinition effectDef, string value, string field, string replaceFormat, Dictionary<string, string> translations, string jsonFile)
+        {
+            if (string.IsNullOrEmpty(value) || value.StartsWith("$"))
+            {
+                return jsonFile;
+            }
+
+            var key = GetId(effectDef, field);
+            AddTranslation(translations, key, value);
+            return ReplaceTranslation(jsonFile, string.Format(replaceFormat, value), string.Format(replaceFormat, $"${key}"));
         }
     }
 }

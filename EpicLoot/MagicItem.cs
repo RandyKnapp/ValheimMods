@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using EpicLoot.GatedItemType;
 using EpicLoot.LegendarySystem;
 using ExtendedItemDataFramework;
 using UnityEngine;
@@ -100,7 +99,8 @@ namespace EpicLoot
         public static string GetEffectText(MagicItemEffect effect, ItemRarity rarity, bool showRange, string legendaryID = null)
         {
             var effectDef = MagicItemEffectDefinitions.Get(effect.EffectType);
-            var result = string.Format(effectDef.DisplayText, effect.EffectValue);
+            var localizedDisplayText = Localization.instance.Localize(effectDef.DisplayText);
+            var result = string.Format(localizedDisplayText, effect.EffectValue);
             var values = string.IsNullOrEmpty(legendaryID) ? effectDef.GetValuesForRarity(rarity) : UniqueLegendaryHelper.GetLegendaryEffectValues(legendaryID, effect.EffectType);
             if (showRange && values != null)
             {

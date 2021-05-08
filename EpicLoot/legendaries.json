@@ -6,17 +6,12 @@
       "Description": "$mod_epicloot_l_dyrnwyn_desc",
       "ItemEffect": "FireAura", 
       "Requirements" : {
-        "AllowedSkillTypes": [
-          "Swords"
-        ]
+        "AllowedItemTypes": [ "OneHandedWeapon" ],
+        "AllowedSkillTypes": [ "Swords" ]
       },
       "GuaranteedMagicEffects": [
-        {
-          "Type": "AddFireDamage",
-          "Values": { "MinValue" : 36, "MaxValue" : 48, "Increment" : 1 } 
-        }
-      ],
-      "SelectionWeight": 1
+        { "Type": "AddFireDamage", "Values": { "MinValue" : 36, "MaxValue" : 48, "Increment" : 1 } }
+      ]
     }
   ]  
 }

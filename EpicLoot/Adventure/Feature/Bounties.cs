@@ -93,10 +93,10 @@ namespace EpicLoot.Adventure.Feature
                 return string.Empty;
             }
 
-            var prefix = RollOnList(random, prefixes);
-            var suffix = RollOnList(random, suffixes);
-            var space = suffix.StartsWith(" ") || suffix.StartsWith(",") ? "" : " ";
-            return $"{prefix}{space}{suffix}";
+            var prefix = Localization.instance.Localize(RollOnList(random, prefixes));
+            var suffix = Localization.instance.Localize(RollOnList(random, suffixes));
+            var format = suffix.StartsWith(" ") || suffix.StartsWith(",") ? "$mod_epicloot_bounties_targetnameformat_nospace" : "$mod_epicloot_bounties_targetnameformat";
+            return Localization.instance.Localize(format, prefix, suffix);
         }
 
         private static int GetTargetLevel(Random random, bool isGold, bool isAdd)

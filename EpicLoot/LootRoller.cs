@@ -321,6 +321,8 @@ namespace EpicLoot
 
             var effectCount = CheatEffectCount >= 1 ? CheatEffectCount : RollEffectCountPerRarity(magicItem.Rarity);
 
+            Debug.LogWarning($"Rolling Magic Item: rarity={rarity}, effectCount={effectCount}");
+
             if (rarity == ItemRarity.Legendary)
             {
                 LegendaryInfo legendary = null;
@@ -338,6 +340,7 @@ namespace EpicLoot
 
                 if (!UniqueLegendaryHelper.IsGenericLegendary(legendary))
                 {
+                    Debug.LogWarning($"Rolling Unique Legendary: legendary={legendary.ID}");
                     magicItem.LegendaryID = legendary.ID;
                     magicItem.DisplayName = legendary.Name;
 
@@ -359,6 +362,7 @@ namespace EpicLoot
 
             for (var i = 0; i < effectCount; i++)
             {
+                Debug.LogWarning($"> Rolling Magic Item Effect: {i}");
                 var availableEffects = MagicItemEffectDefinitions.GetAvailableEffects(baseItem, magicItem);
                 if (availableEffects.Count == 0)
                 {
@@ -369,14 +373,16 @@ namespace EpicLoot
 
                 _weightedEffectTable.Setup(availableEffects, x => x.SelectionWeight);
                 var effectDef = _weightedEffectTable.Roll();
+                Debug.LogWarning($"> Rolled: {effectDef.Type}");
 
                 var effect = RollEffect(effectDef, magicItem.Rarity);
                 magicItem.Effects.Add(effect);
             }
 
-            if (string.IsNullOrEmpty(magicItem.LegendaryID))
+            if (string.IsNullOrEmpty(magicItem.DisplayName))
             {
                 magicItem.DisplayName = MagicItemNames.GetNameForItem(baseItem, magicItem);
+                Debug.LogWarning($"> Named item: {magicItem.DisplayName}");
             }
 
             return magicItem;
@@ -423,9 +429,9 @@ namespace EpicLoot
                 value = valuesDef.MinValue;
                 if (valuesDef.Increment != 0)
                 {
+                    EpicLoot.Log($"RollEffect: {effectDef.Type} {itemRarity} value={value} (min={valuesDef.MinValue} max={valuesDef.MaxValue})");
                     var incrementCount = (int)((valuesDef.MaxValue - valuesDef.MinValue) / valuesDef.Increment);
                     value = valuesDef.MinValue + (Random.Range(0, incrementCount + 1) * valuesDef.Increment);
-                    EpicLoot.Log($"RollEffect: {effectDef.Type} {itemRarity} value={value} (min={valuesDef.MinValue} max={valuesDef.MaxValue})");
                 }
             }
 

@@ -105,6 +105,9 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 > **Display Text:** Physical damage increased by +{0:0.#}%
 > 
+> **Prefixes:** Strong, Powerful, Mighty, Heavy, Forceful, Wicked, Fighter's, Warrior
+> **Suffixes:** Strength, Power, Might, Force, the Warrior
+> 
 > **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch
 > 
 > **Requirements:**
@@ -124,6 +127,9 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 ## ModifyElementalDamage
 
 > **Display Text:** Elemental damage increased by +{0:0.#}%
+> 
+> **Prefixes:** Energized, Empowered, Charged, Intensified
+> **Suffixes:** Energy, Intensity, Brilliance
 > 
 > **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch
 > 
@@ -146,6 +152,9 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 > **Display Text:** Max durability increased by +{0:0.#}%
 > 
+> **Prefixes:** Sturdy, Stout, Robust
+> **Suffixes:** Sturdiness, Robustness, Stability, the Ox
+> 
 > **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Shield, Tool, Helmet, Chest, Legs, Shoulder
 > 
 > **Requirements:**
@@ -157,6 +166,9 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 ## ReduceWeight
 
 > **Display Text:** Weight reduced by -{0:0.#}% 
+> 
+> **Prefixes:** Light, Slender
+> **Suffixes:** the Feather
 > 
 > **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Shield, Tool, Helmet, Chest, Legs, Shoulder
 > 
@@ -170,6 +182,9 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 > **Display Text:** Movement speed penalty removed
 > 
+> **Prefixes:** Agile, Easy, Graceful
+> **Suffixes:** Agility, Grace
+> 
 > **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Shield, Tool, Helmet, Chest, Legs, Shoulder
 > 
 > **Requirements:**
@@ -180,6 +195,9 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 ## ModifyBlockPower
 
 > **Display Text:** Block improved by +{0:0.#}%
+> 
+> **Prefixes:** Stopping, Defender's
+> **Suffixes:** Stopping, the Defender
 > 
 > **Allowed Item Types:** Shield
 > 
@@ -201,6 +219,9 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 > **Display Text:** Parry improved by +{0:0.#}%
 > 
+> **Prefixes:** Elusive, Rebuking, Duelist's
+> **Suffixes:** Repelling, the Duelist
+> 
 > **Allowed Item Types:** Shield, TwoHandedWeapon
 > 
 > **Requirements:**
@@ -221,6 +242,9 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 > **Display Text:** Armor increased by +{0:0.#}%
 > 
+> **Prefixes:** Heavy, Protected
+> **Suffixes:** Protection
+> 
 > **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility
 > 
 > **Requirements:**
@@ -239,6 +263,9 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 ## ModifyBackstab
 
 > **Display Text:** Backstab improved by +{0:0.#}%
+> 
+> **Prefixes:** Assassin's, Stealthy
+> **Suffixes:** the Assassin, Stealth
 > 
 > **Allowed Item Types:** *None*
 > 
@@ -259,6 +286,9 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 > **Display Text:** Health increased by +{0:0}
 > 
+> **Prefixes:** Healthy
+> **Suffixes:** Health
+> 
 > **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility, Shield
 > 
 > **Requirements:**
@@ -277,6 +307,9 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 ## IncreaseStamina
 
 > **Display Text:** Stamina increased by +{0:0}
+> 
+> **Prefixes:** Enduring
+> **Suffixes:** Endurance
 > 
 > **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility, Tool
 > 
@@ -297,6 +330,9 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 > **Display Text:** Health regen improved by +{0:0.#}%
 > 
+> **Prefixes:** Vigorous
+> **Suffixes:** Vigor
+> 
 > **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility
 > 
 > **Requirements:**
@@ -316,6 +352,9 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 > **Display Text:** Stamina regen improved by +{0:0.#}%
 > 
+> **Prefixes:** Recovering
+> **Suffixes:** Recovery
+> 
 > **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility, Tool
 > 
 > **Requirements:**
@@ -334,6 +373,9 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 ## AddBluntDamage
 
 > **Display Text:** Add +{0:0.#} blunt damage
+> 
+> **Prefixes:** Brute
+> **Suffixes:** Bludgeoning
 > 
 > **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch
 > 
@@ -356,6 +398,9 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 > **Display Text:** Add +{0:0.#} slashing damage
 > 
+> **Prefixes:** Sharp, Keen
+> **Suffixes:** Slashing, Cutting
+> 
 > **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch
 > 
 > **Requirements:**
@@ -377,6 +422,9 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 > **Display Text:** Add +{0:0.#} piercing damage
 > 
+> **Prefixes:** Spiked, Barbed
+> **Suffixes:** Piercing
+> 
 > **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch
 > 
 > **Requirements:**
@@ -396,6 +444,9 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 ## AddFireDamage
 
 > **Display Text:** Add +{0:0.#} fire damage
+> 
+> **Prefixes:** Blazing
+> **Suffixes:** Fire
 > 
 > **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch
 > 
@@ -418,6 +469,9 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 > **Display Text:** Add +{0:0.#} frost damage
 > 
+> **Prefixes:** Frigid
+> **Suffixes:** Frost
+> 
 > **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch
 > 
 > **Requirements:**
@@ -438,6 +492,9 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 ## AddLightningDamage
 
 > **Display Text:** Add +{0:0.#} lightning damage
+> 
+> **Prefixes:** Shocking
+> **Suffixes:** Lightning
 > 
 > **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch
 > 
@@ -460,6 +517,9 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 > **Display Text:** Attacks deal poison damage for {0:0} seconds
 > 
+> **Prefixes:** Infected
+> **Suffixes:** Poison
+> 
 > **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch
 > 
 > **Requirements:**
@@ -480,6 +540,9 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 ## AddSpiritDamage
 
 > **Display Text:** Add +{0:0.#} spirit damage
+> 
+> **Prefixes:** Spirit
+> **Suffixes:** the Spirits
 > 
 > **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch
 > 
@@ -502,6 +565,9 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 > **Display Text:** Gain fire resistance
 > 
+> **Prefixes:** Extinguishing
+> **Suffixes:** Fire Resistance
+> 
 > **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility, Shield
 > 
 > **Requirements:**
@@ -511,6 +577,9 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 ## AddFrostResistance
 
 > **Display Text:** Gain frost resistance
+> 
+> **Prefixes:** Insulated
+> **Suffixes:** Frost Resistance
 > 
 > **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility, Shield
 > 
@@ -522,6 +591,9 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 > **Display Text:** Gain lightning resistance
 > 
+> **Prefixes:** Grounded
+> **Suffixes:** Lightning Resistance
+> 
 > **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility, Shield
 > 
 > **Requirements:**
@@ -531,6 +603,9 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 ## AddPoisonResistance
 
 > **Display Text:** Gain poison resistance
+> 
+> **Prefixes:** Curing
+> **Suffixes:** Poison Resistance
 > 
 > **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility, Shield
 > 
@@ -542,6 +617,9 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 > **Display Text:** Gain spirit resistance
 > 
+> **Prefixes:** Serene
+> **Suffixes:** Spirit Resistance
+> 
 > **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility, Shield
 > 
 > **Requirements:**
@@ -551,6 +629,9 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 ## AddFireResistancePercentage
 
 > **Display Text:** +{0:0.#}% fire damage reduction
+> 
+> **Prefixes:** Extinguishing
+> **Suffixes:** Fire Resistance
 > 
 > **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility, Shield
 > 
@@ -571,6 +652,9 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 > **Display Text:** +{0:0.#}% frost damage reduction
 > 
+> **Prefixes:** Insulated
+> **Suffixes:** Frost Resistance
+> 
 > **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility, Shield
 > 
 > **Requirements:**
@@ -589,6 +673,9 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 ## AddLightningResistancePercentage
 
 > **Display Text:** +{0:0.#}% lightning damage reduction
+> 
+> **Prefixes:** Grounded
+> **Suffixes:** Lightning Resistance
 > 
 > **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility, Shield
 > 
@@ -609,6 +696,9 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 > **Display Text:** +{0:0.#}% poison damage reduction
 > 
+> **Prefixes:** Curing
+> **Suffixes:** Poison Resistance
+> 
 > **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility, Shield
 > 
 > **Requirements:**
@@ -627,6 +717,9 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 ## AddSpiritResistancePercentage
 
 > **Display Text:** +{0:0.#}% spirit damage reduction
+> 
+> **Prefixes:** Serene
+> **Suffixes:** Spirit Resistance
 > 
 > **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility, Shield
 > 
@@ -647,6 +740,9 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 > **Display Text:** +{0:0.#}% elemental damage reduction
 > 
+> **Prefixes:** Warding
+> **Suffixes:** Elemental Resistance
+> 
 > **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility, Shield
 > 
 > **Requirements:**
@@ -665,6 +761,9 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 ## AddBluntResistancePercentage
 
 > **Display Text:** +{0:0.#}% blunt damage reduction
+> 
+> **Prefixes:** Defensive
+> **Suffixes:** Blunt Resistance
 > 
 > **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility, Shield
 > 
@@ -685,6 +784,9 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 > **Display Text:** +{0:0.#}% slashing damage reduction
 > 
+> **Prefixes:** Impervious
+> **Suffixes:** Slashing Resistance
+> 
 > **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility, Shield
 > 
 > **Requirements:**
@@ -703,6 +805,9 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 ## AddPiercingResistancePercentage
 
 > **Display Text:** +{0:0.#}% piercing damage reduction
+> 
+> **Prefixes:** Impenetrable
+> **Suffixes:** Piercing Resistance
 > 
 > **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility, Shield
 > 
@@ -723,6 +828,9 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 > **Display Text:** +{0:0.#}% chopping damage reduction
 > 
+> **Prefixes:** 
+> **Suffixes:** 
+> 
 > **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility, Shield
 > 
 > **Requirements:**
@@ -742,6 +850,9 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 > **Display Text:** +{0:0.#}% physical damage reduction
 > 
+> **Prefixes:** Resistant
+> **Suffixes:** Physical Resistance
+> 
 > **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility, Shield
 > 
 > **Requirements:**
@@ -760,6 +871,9 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 ## ModifyMovementSpeed
 
 > **Display Text:** Movement increased by +{0:0.#}%
+> 
+> **Prefixes:** Quick
+> **Suffixes:** Speed
 > 
 > **Allowed Item Types:** Legs, Utility
 > 
@@ -781,6 +895,9 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 > **Display Text:** Reduce sprint stamina use by -{0:0.#}%
 > 
+> **Prefixes:** Sprinter's
+> **Suffixes:** Sprinting
+> 
 > **Allowed Item Types:** Legs, Utility
 > 
 > **Requirements:**
@@ -799,6 +916,9 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 ## ModifyJumpStaminaUse
 
 > **Display Text:** Reduce jump stamina use by -{0:0.#}%
+> 
+> **Prefixes:** Acrobat's
+> **Suffixes:** the Acrobat
 > 
 > **Allowed Item Types:** Legs, Utility
 > 
@@ -819,6 +939,9 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 > **Display Text:** Reduce attack stamina use by -{0:0.#}%
 > 
+> **Prefixes:** Gladiator's
+> **Suffixes:** the Gladiator
+> 
 > **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Tool
 > 
 > **Requirements:**
@@ -837,6 +960,9 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 ## ModifyBlockStaminaUse
 
 > **Display Text:** Reduce block stamina use by -{0:0.#}%
+> 
+> **Prefixes:** Guardian's
+> **Suffixes:** the Guardian
 > 
 > **Allowed Item Types:** Shield
 > 
@@ -857,6 +983,9 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 > **Display Text:** Indestructible
 > 
+> **Prefixes:** Indestructible
+> **Suffixes:** Indestructibility
+> 
 > **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Tool, Shield, Helmet, Chest, Legs, Shoulder
 > 
 > **Requirements:**
@@ -869,6 +998,9 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 > **Display Text:** Weightless
 > 
+> **Prefixes:** Weightless
+> **Suffixes:** Weightlessness
+> 
 > **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Tool, Shield, Helmet, Chest, Legs, Shoulder
 > 
 > **Requirements:**
@@ -879,6 +1011,9 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 ## AddCarryWeight
 
 > **Display Text:** Increase carry weight by +{0}
+> 
+> **Prefixes:** Pocketed
+> **Suffixes:** Pockets
 > 
 > **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility
 > 
@@ -899,6 +1034,9 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 > **Display Text:** Heal for {0:0.0}% of damage done
 > 
+> **Prefixes:** Valravn's
+> **Suffixes:** Valravn
+> 
 > **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow
 > 
 > **Requirements:**
@@ -910,6 +1048,9 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 ## ModifyAttackSpeed
 
 > **Display Text:** Attack speed increased by +{0:0.#}%
+> 
+> **Prefixes:** Striker's
+> **Suffixes:** Striking
 > 
 > **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Tool
 > 
@@ -930,6 +1071,9 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 > **Display Text:** Throwable
 > 
+> **Prefixes:** Throwing
+> **Suffixes:** Throwing
+> 
 > **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon
 > 
 > **Requirements:**
@@ -941,6 +1085,9 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 > **Display Text:** Waterproof
 > 
+> **Prefixes:** Waterproof
+> **Suffixes:** Water-repelling
+> 
 > **Allowed Item Types:** Shoulder
 > 
 > **Requirements:**
@@ -950,6 +1097,9 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 ## Paralyze
 
 > **Display Text:** Paralyze for {0:0.#} seconds
+> 
+> **Prefixes:** Paralyzing
+> **Suffixes:** Paralysis
 > 
 > **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow
 > 
@@ -969,7 +1119,10 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## DoubleJump
 
-> **Display Text:** $mod_epicloot_me_doublejump
+> **Display Text:** Air Jump
+> 
+> **Prefixes:** Tyr's
+> **Suffixes:** of the Wind
 > 
 > **Allowed Item Types:** Legs
 > 
@@ -980,7 +1133,10 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## WaterWalking
 
-> **Display Text:** $mod_epicloot_me_waterwalk
+> **Display Text:** Water Walking
+> 
+> **Prefixes:** Njord's, Water Walking
+> **Suffixes:** of Water Walking, of Njord's Smooth Sea
 > 
 > **Allowed Item Types:** Legs
 > 
@@ -991,7 +1147,10 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## ExplosiveArrows
 
-> **Display Text:** Arrows deal +{0:0.#}% fire damage around the target
+> **Display Text:** +{0:0.#}% AOE fire damage on impact
+> 
+> **Prefixes:** Exploding
+> **Suffixes:** Explosive
 > 
 > **Allowed Item Types:** Bow
 > 
@@ -1011,7 +1170,10 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## QuickDraw
 
-> **Display Text:** Increases draw speed by +{0:0.#}%
+> **Display Text:** Improves draw speed by +{0:0.#}%
+> 
+> **Prefixes:** Quick-draw
+> **Suffixes:** Quickness
 > 
 > **Allowed Item Types:** Bow
 > 
@@ -1028,6 +1190,271 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > |Rare|6|16|1|
 > |Epic|14|30|1|
 > |Legendary|30|40|1|
+
+## AddSwordsSkill
+
+> **Display Text:** +{0} swords skill level
+> 
+> **Prefixes:** Blademaster's
+> **Suffixes:** the Blademaster
+> 
+> **Allowed Item Types:** OneHandedWeapon
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedItemTypes:** `OneHandedWeapon`
+> > **AllowedSkillTypes:** `Swords`
+> 
+> **Value Per Rarity:**
+> 
+> |Rarity|Min|Max|Increment|
+> |--|--|--|--|
+> |Magic|1|4|1|
+> |Rare|3|8|1|
+> |Epic|7|15|1|
+> |Legendary|15|20|1|
+
+## AddKnivesSkill
+
+> **Display Text:** +{0} knives skill level
+> 
+> **Prefixes:** Scoundrel's
+> **Suffixes:** the Scoundrel
+> 
+> **Allowed Item Types:** *None*
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedSkillTypes:** `Knives`
+> 
+> **Value Per Rarity:**
+> 
+> |Rarity|Min|Max|Increment|
+> |--|--|--|--|
+> |Magic|1|4|1|
+> |Rare|3|8|1|
+> |Epic|7|15|1|
+> |Legendary|15|20|1|
+
+## AddClubsSkill
+
+> **Display Text:** +{0} clubs skill level
+> 
+> **Prefixes:** Bruiser's
+> **Suffixes:** the Bruiser
+> 
+> **Allowed Item Types:** *None*
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedSkillTypes:** `Clubs`
+> 
+> **Value Per Rarity:**
+> 
+> |Rarity|Min|Max|Increment|
+> |--|--|--|--|
+> |Magic|1|4|1|
+> |Rare|3|8|1|
+> |Epic|7|15|1|
+> |Legendary|15|20|1|
+
+## AddPolearmsSkill
+
+> **Display Text:** +{0} polearms skill level
+> 
+> **Prefixes:** Halberdier's
+> **Suffixes:** the Halberdier
+> 
+> **Allowed Item Types:** *None*
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedSkillTypes:** `Polearms`
+> 
+> **Value Per Rarity:**
+> 
+> |Rarity|Min|Max|Increment|
+> |--|--|--|--|
+> |Magic|1|4|1|
+> |Rare|3|8|1|
+> |Epic|7|15|1|
+> |Legendary|15|20|1|
+
+## AddSpearsSkill
+
+> **Display Text:** +{0} spears skill level
+> 
+> **Prefixes:** Hunter's
+> **Suffixes:** the Hunter
+> 
+> **Allowed Item Types:** *None*
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedSkillTypes:** `Spears`
+> 
+> **Value Per Rarity:**
+> 
+> |Rarity|Min|Max|Increment|
+> |--|--|--|--|
+> |Magic|1|4|1|
+> |Rare|3|8|1|
+> |Epic|7|15|1|
+> |Legendary|15|20|1|
+
+## AddBlockingSkill
+
+> **Display Text:** +{0} blocking skill level
+> 
+> **Prefixes:** Shieldmaiden's
+> **Suffixes:** the Shieldmaiden
+> 
+> **Allowed Item Types:** *None*
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedSkillTypes:** `Blocking`
+> 
+> **Value Per Rarity:**
+> 
+> |Rarity|Min|Max|Increment|
+> |--|--|--|--|
+> |Magic|1|4|1|
+> |Rare|3|8|1|
+> |Epic|7|15|1|
+> |Legendary|15|20|1|
+
+## AddAxesSkill
+
+> **Display Text:** +{0} axes skill level
+> 
+> **Prefixes:** Viking's
+> **Suffixes:** the Viking
+> 
+> **Allowed Item Types:** *None*
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedSkillTypes:** `Axes`
+> 
+> **Value Per Rarity:**
+> 
+> |Rarity|Min|Max|Increment|
+> |--|--|--|--|
+> |Magic|1|4|1|
+> |Rare|3|8|1|
+> |Epic|7|15|1|
+> |Legendary|15|20|1|
+
+## AddBowsSkill
+
+> **Display Text:** +{0} bows skill level
+> 
+> **Prefixes:** Archer's
+> **Suffixes:** Archery
+> 
+> **Allowed Item Types:** *None*
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedSkillTypes:** `Bows`
+> 
+> **Value Per Rarity:**
+> 
+> |Rarity|Min|Max|Increment|
+> |--|--|--|--|
+> |Magic|1|4|1|
+> |Rare|3|8|1|
+> |Epic|7|15|1|
+> |Legendary|15|20|1|
+
+## AddUnarmedSkill
+
+> **Display Text:** +{0} unarmed skill level
+> 
+> **Prefixes:** Brawler's
+> **Suffixes:** Brawling
+> 
+> **Allowed Item Types:** Chest
+> 
+> **Requirements:**
+> > **Flags:** `NoRoll, ExclusiveSelf`
+> > **AllowedItemTypes:** `Chest`
+> 
+> **Value Per Rarity:**
+> 
+> |Rarity|Min|Max|Increment|
+> |--|--|--|--|
+> |Magic|1|4|1|
+> |Rare|3|8|1|
+> |Epic|7|15|1|
+> |Legendary|15|20|1|
+
+## AddPickaxesSkill
+
+> **Display Text:** +{0} pickaxes skill level
+> 
+> **Prefixes:** Mining
+> **Suffixes:** the Miner
+> 
+> **Allowed Item Types:** *None*
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedSkillTypes:** `Pickaxes`
+> 
+> **Value Per Rarity:**
+> 
+> |Rarity|Min|Max|Increment|
+> |--|--|--|--|
+> |Magic|1|4|1|
+> |Rare|3|8|1|
+> |Epic|7|15|1|
+> |Legendary|15|20|1|
+
+## AddMovementSkills
+
+> **Display Text:** +{0} movement skills level
+> 
+> **Prefixes:** Adventuring
+> **Suffixes:** the Adventurer
+> 
+> **Allowed Item Types:** Chest, Legs, Shoulder, Utility
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedItemTypes:** `Chest, Legs, Shoulder, Utility`
+> 
+> **Value Per Rarity:**
+> 
+> |Rarity|Min|Max|Increment|
+> |--|--|--|--|
+> |Magic|1|4|1|
+> |Rare|3|8|1|
+> |Epic|7|15|1|
+> |Legendary|15|20|1|
+
+## ModifyStaggerDuration
+
+> **Display Text:** Stagger duration increased by +{0:0.#}%
+> 
+> **Prefixes:** Basher's
+> **Suffixes:** Staggering
+> 
+> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Shield
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow, Shield`
+> 
+> **Value Per Rarity:**
+> 
+> |Rarity|Min|Max|Increment|
+> |--|--|--|--|
+> |Magic|5|10|1|
+> |Rare|8|13|1|
+> |Epic|11|16|1|
+> |Legendary|14|19|1|
 
 # Item Sets
 
