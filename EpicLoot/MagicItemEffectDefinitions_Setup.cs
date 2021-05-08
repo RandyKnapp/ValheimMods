@@ -75,5 +75,6 @@
         public static string ModifyStaggerDuration = nameof(ModifyStaggerDuration);
         public static string QuickLearner = nameof(QuickLearner);
         public static string FeatherFall = nameof(FeatherFall);
+        public static string ModifyDiscoveryRadius = nameof(ModifyDiscoveryRadius);
     }
 }
