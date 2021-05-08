@@ -1896,6 +1896,63 @@
       "Suffixes": [ "$mod_epicloot_me_quicklearner_sufffix1" ]
     },
     {
+      "Type" : "ReflectDamage",
+      "DisplayText" : "$mod_epicloot_me_reflectdamage_display",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "Chest",
+          "Shield"
+        ]
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 5, "MaxValue" : 10, "Increment" : 1 },
+        "Rare" : { "MinValue" : 8, "MaxValue" : 13, "Increment" : 1 },
+        "Epic" : { "MinValue" : 11, "MaxValue" : 16, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 14, "MaxValue" : 19, "Increment" : 1 }
+      },
+      "SelectionWeight" : 1,
+      "Prefixes": [ "$mod_epicloot_me_reflectdamage_prefix1" ],
+      "Suffixes": [ "$mod_epicloot_me_reflectdamage_sufffix1" ]
+    },
+    {
+      "Type" : "AvoidDamageTaken",
+      "DisplayText" : "$mod_epicloot_me_avoiddamagetaken_display",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "Chest",
+          "Shield"
+        ]
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 5, "MaxValue" : 10, "Increment" : 1 },
+        "Rare" : { "MinValue" : 8, "MaxValue" : 13, "Increment" : 1 },
+        "Epic" : { "MinValue" : 11, "MaxValue" : 16, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 14, "MaxValue" : 19, "Increment" : 1 }
+      },
+      "SelectionWeight" : 1,
+      "Prefixes": [ "$mod_epicloot_me_avoiddamagetaken_prefix1" ],
+      "Suffixes": [ "$mod_epicloot_me_avoiddamagetaken_sufffix1" ]
+    },
+    {
+      "Type" : "StaggerOnDamageTaken",
+      "DisplayText" : "$mod_epicloot_me_staggerondamagetaken_display",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "Chest",
+          "Shield"
+        ]
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 5, "MaxValue" : 10, "Increment" : 1 },
+        "Rare" : { "MinValue" : 8, "MaxValue" : 13, "Increment" : 1 },
+        "Epic" : { "MinValue" : 11, "MaxValue" : 16, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 14, "MaxValue" : 19, "Increment" : 1 }
+      },
+      "SelectionWeight" : 1,
+      "Prefixes": [ "$mod_epicloot_me_staggerondamagetaken_prefix1" ],
+      "Suffixes": [ "$mod_epicloot_me_staggerondamagetaken_sufffix1" ]
+    },
+    {
       "Type" : "FeatherFall",
       "DisplayText" : "$mod_epicloot_me_featherfall_display",
       "Requirements" : {
