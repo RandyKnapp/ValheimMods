@@ -1879,7 +1879,7 @@
     },
     {
       "Type" : "QuickLearner",
-      "DisplayText" : "Skill experience gained increased by +{0:0.#}%",
+      "DisplayText" : "$mod_epicloot_me_quicklearner_display",
       "Requirements" : {
         "AllowedItemTypes" : [
           "Helmet"
@@ -1892,8 +1892,8 @@
         "Legendary" : { "MinValue" : 14, "MaxValue" : 19, "Increment" : 1 }
       },
       "SelectionWeight" : 1,
-      "Prefixes": [ "Learner's" ],
-      "Suffixes": [ "Learning" ]
+      "Prefixes": [ "$mod_epicloot_me_quicklearner_prefix1" ],
+      "Suffixes": [ "$mod_epicloot_me_quicklearner_sufffix1" ]
     }
   ]
 }
