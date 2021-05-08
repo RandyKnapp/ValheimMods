@@ -74,5 +74,6 @@
         public static string AddMovementSkills = nameof(AddMovementSkills);
         public static string ModifyStaggerDuration = nameof(ModifyStaggerDuration);
         public static string QuickLearner = nameof(QuickLearner);
+        public static string FeatherFall = nameof(FeatherFall);
     }
 }
