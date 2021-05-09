@@ -247,6 +247,8 @@ namespace EpicLoot
         public string Comment;
         public List<string> Prefixes = new List<string>();
         public List<string> Suffixes = new List<string>();
+        public string EquipEffect;
+        public EffectAttachMode EquipEffectMode = EffectAttachMode.Player;
 
         public List<ItemDrop.ItemData.ItemType> GetAllowedItemTypes()
         {

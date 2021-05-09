@@ -2297,6 +2297,27 @@
       "Suffixes": [
         "$mod_epicloot_me_lifesteallowhealth_suffix1"
       ]
+    },
+    {
+      "Type" : "Glowing",
+      "DisplayText" : "$mod_epicloot_me_glowing_display",
+      "EquipEffect" : "GlowingAura", 
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "Helmet",
+          "Chest",
+          "Legs",
+          "Shoulder",
+          "Utility"
+        ]
+      },
+      "SelectionWeight" : 1,
+      "Prefixes": [
+        "$mod_epicloot_me_glowing_prefix1"
+      ],
+      "Suffixes": [
+        "$mod_epicloot_me_glowing_suffix1"
+      ]
     }
   ]
 }

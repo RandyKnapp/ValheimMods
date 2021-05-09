@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 2979575849
+CRC: 771793759
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: e5403a059d6cdb0be0cedad9b5d4caf0
+    Hash: 6edfc670d151f215fafd5a75eea7c991
   TypeTreeHash:
     serializedVersion: 2
     Hash: 0638681d28c386c0ec13adad4c497303
@@ -125,6 +125,7 @@ Assets:
 - Assets/EpicLoot/Prefabs/StationExtensions/piece_augmenter.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/ReagentLegendary.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/EssenceMagic.prefab
+- Assets/EpicLoot/Prefabs/ItemEffects/GlowingAura.prefab
 - Assets/EpicLoot/Sounds/RareItemDrop.wav
 - Assets/EpicLoot/Sprites/Inventory/MagicItemBg.png
 - Assets/EpicLoot/Prefabs/LootBeams/EpicLootBeam.prefab

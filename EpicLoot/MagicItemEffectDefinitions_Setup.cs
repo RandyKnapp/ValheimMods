@@ -92,5 +92,6 @@
         public static string ModifyAttackSpeedLowHealth = nameof(ModifyAttackSpeedLowHealth);
         public static string AvoidDamageTakenLowHealth = nameof(AvoidDamageTakenLowHealth);
         public static string LifeStealLowHealth = nameof(LifeStealLowHealth);
+        public static string Glowing = nameof(Glowing);
     }
 }

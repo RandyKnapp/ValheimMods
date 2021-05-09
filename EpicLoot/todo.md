@@ -5,6 +5,7 @@
 - [X] More exclusions and configurable requirements for magic effects
 - [X] Show current equipment with tooltip
 - [X] Augment items: change/reroll magic item effects (transmute? modify?)
+- [ ] Re-augment for high gold cost
 - [ ] Infuse items: rarity to next rarity (like diablo upgrade rare to legendary)
 - [X] List of active magic effects on the player status screen
 - [X] Limit drop types by actual player progression
@@ -57,8 +58,8 @@
 - [X] Discovery radius increase (helmet)
 - [X] Quick learner (helmet, increase xp gain)
 - [X] Increase armor when below HP threshold
-- [ ] % chance to stagger attackers
-- [ ] % chance to ignore incoming damage
+- [X] % chance to stagger attackers
+- [X] % chance to ignore incoming damage
 - [X] Improve Skill Level
 - [X] Comfortable (Increase Comfort level when resting)
 - [ ] Glowing

@@ -1836,6 +1836,19 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > > **AllowedRarities:** `Rare, Epic, Legendary`
 > > **ExcludedSkillTypes:** `Pickaxes`
 
+## Glowing
+
+> **Display Text:** Glowing
+> 
+> **Prefixes:** Glowing
+> **Suffixes:** Light
+> 
+> **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedItemTypes:** `Helmet, Chest, Legs, Shoulder, Utility`
+
 # Item Sets
 
 Sets of loot drop data that can be referenced in the loot tables

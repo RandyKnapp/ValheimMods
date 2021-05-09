@@ -20,7 +20,8 @@ namespace EpicLoot.LegendarySystem
         public MagicItemEffectRequirements Requirements;
         public List<GuaranteedMagicEffect> GuaranteedMagicEffects;
         public float SelectionWeight = 1;
-        public string ItemEffect;
+        public string EquipEffect;
+        public EffectAttachMode EquipEffectMode = EffectAttachMode.Player;
         public bool Enchantable;
         public List<RecipeRequirementConfig> EnchantCost = new List<RecipeRequirementConfig>();
     }

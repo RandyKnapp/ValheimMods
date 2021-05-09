@@ -4,7 +4,8 @@
       "ID": "Dyrnwyn",
       "Name": "$mod_epicloot_l_dyrnwyn",
       "Description": "$mod_epicloot_l_dyrnwyn_desc",
-      "ItemEffect": "FireAura", 
+      "EquipEffect": "FireAura", 
+      "EquipEffectMode" : "EquipRoot", 
       "Requirements" : {
         "AllowedItemTypes": [ "OneHandedWeapon" ],
         "AllowedSkillTypes": [ "Swords" ]
@@ -17,7 +18,8 @@
       "ID": "SleipnirsHoof",
       "Name": "$mod_epicloot_l_sleipnirshoof",
       "Description": "$mod_epicloot_l_sleipnirshoof_desc",
-      "ItemEffect": "WhiteAura", 
+      "EquipEffect": "WhiteAura", 
+      "EquipEffectMode" : "EquipRoot", 
       "Requirements" : {
         "AllowedItemTypes": [ "OneHandedWeapon" ],
         "AllowedSkillTypes": [ "Clubs" ]

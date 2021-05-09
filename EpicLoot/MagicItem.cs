@@ -160,5 +160,21 @@ namespace EpicLoot
 
             return null;
         }
+
+        public string GetFirstEquipEffect(out EffectAttachMode mode)
+        {
+            foreach (var effect in Effects)
+            {
+                var effectDef = MagicItemEffectDefinitions.Get(effect.EffectType);
+                if (effectDef != null && !string.IsNullOrEmpty(effectDef.EquipEffect))
+                {
+                    mode = effectDef.EquipEffectMode;
+                    return effectDef.EquipEffect;
+                }
+            }
+
+            mode = EffectAttachMode.None;
+            return null;
+        }
     }
 }
