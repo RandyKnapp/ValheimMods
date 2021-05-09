@@ -2348,6 +2348,28 @@
       "Suffixes": [
         "$mod_epicloot_me_executioner_suffix1"
       ]
+    },
+    {
+      "Type" : "Riches",
+      "DisplayText" : "$mod_epicloot_me_riches_display",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "Utility"
+        ]
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 1, "MaxValue" : 3, "Increment" : 1 },
+        "Rare" : { "MinValue" : 4, "MaxValue" : 6, "Increment" : 1 },
+        "Epic" : { "MinValue" : 7, "MaxValue" : 9, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 10, "MaxValue" : 15, "Increment" : 1 }
+      },
+      "SelectionWeight" : 1,
+      "Prefixes": [
+        "$mod_epicloot_me_riches_prefix1"
+      ],
+      "Suffixes": [
+        "$mod_epicloot_me_riches_suffix1"
+      ]
     }
   ]
 }
