@@ -14,6 +14,8 @@
 	* Avoid damage on hit
 	* Auto-recall thrown weapon
 	* Bonus when health is low: Move Speed, Health Regen, Stamina Regen, Armor, Damage, Block Power, Parry, Attack Speed, Avoid Damage, Lifesteal
+	* Free Build (hammer)
+	* Comfortable
   * Overhaul of Resistances: removed Spirit, resistances now reduce damage by a set percent, and stack (fix existing resistances by using the console command: `fixresistances`)
   * Known items and recipes (for item gating) are now synced between all players on a server
 ## Version 0.7.7

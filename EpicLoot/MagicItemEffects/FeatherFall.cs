@@ -44,6 +44,7 @@ namespace EpicLoot.MagicItemEffects
                     if (currentFeatherFallAura != null && currentFeatherFallAura.GetComponent<ParticleSystem>().isStopped)
                     {
                         currentFeatherFallAura.GetComponent<ParticleSystem>().Play();
+                        currentFeatherFallAura.GetComponent<AudioSource>().Play();
                     }
                     else if (currentFeatherFallAura == null)
                     {
@@ -52,8 +53,8 @@ namespace EpicLoot.MagicItemEffects
                         effect.GetComponent<AudioSource>().outputAudioMixerGroup = AudioMan.instance.m_ambientMixer;
                     }
 
-                    velocity.x = Mathf.Lerp(velocity.x, 0, 1);
-                    velocity.z = Mathf.Lerp(velocity.z, 0, 1);
+                    velocity.x = Mathf.Lerp(velocity.x, 0, 1 / 30f);
+                    velocity.z = Mathf.Lerp(velocity.z, 0, 1 / 30f);
                 }
 
 				velocity.y = Math.Max(MaxFallSpeed, velocity.y);
@@ -63,7 +64,8 @@ namespace EpicLoot.MagicItemEffects
             if (__instance.IsOnGround() && currentFeatherFallAura != null)
             {
                 currentFeatherFallAura.GetComponent<ParticleSystem>().Stop();
+                currentFeatherFallAura.GetComponent<AudioSource>().Stop();
             }
-		}
+        }
 	}
 }
