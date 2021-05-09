@@ -33,10 +33,13 @@ namespace EpicLoot.MagicItemEffects
 
             var animationSpeedup = 0.0f;
             var weapon = currentAttack.GetWeapon();
-            if (weapon != null && weapon.IsMagic() && weapon.HasMagicEffect(MagicEffectType.ModifyAttackSpeed))
+            ModifyWithLowHealth.Apply(player, MagicEffectType.ModifyAttackSpeed, effect =>
             {
-                animationSpeedup = weapon.GetMagicItem().GetTotalEffectValue(MagicEffectType.ModifyAttackSpeed, 0.01f);
-            }
+	            if (weapon != null && weapon.IsMagic() && weapon.HasMagicEffect(effect))
+	            {
+		            animationSpeedup += weapon.GetMagicItem().GetTotalEffectValue(effect, 0.01f);
+	            }
+            });
 
             if (___m_animator.speed > 0.001f)
             {

@@ -8,11 +8,15 @@ namespace EpicLoot.MagicItemEffects
     {
         public static void Postfix(ItemDrop.ItemData __instance, ref float __result)
         {
-            if (__instance.IsMagic() && __instance.GetMagicItem().HasEffect(MagicEffectType.ModifyBlockPower))
-            {
-                var totalBlockPowerMod = __instance.GetMagicItem().GetTotalEffectValue(MagicEffectType.ModifyBlockPower, 0.01f);
-                __result *= 1.0f + totalBlockPowerMod;
-            }
+	        var totalBlockPowerMod = 0f;
+	        ModifyWithLowHealth.Apply(Player.m_localPlayer, MagicEffectType.ModifyBlockPower, effect =>
+	        {
+		        if (__instance.IsMagic() && __instance.GetMagicItem().HasEffect(effect))
+		        {
+			        totalBlockPowerMod += __instance.GetMagicItem().GetTotalEffectValue(effect, 0.01f);
+		        }
+	        });
+            __result *= 1.0f + totalBlockPowerMod;
         }
     }
 }

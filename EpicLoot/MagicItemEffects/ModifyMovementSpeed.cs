@@ -26,10 +26,13 @@ namespace EpicLoot.MagicItemEffects
                     __instance.m_equipmentMovementModifier -= item.m_shared.m_movementModifier;
                 }
 
-                if (item.HasMagicEffect(MagicEffectType.ModifyMovementSpeed))
+                ModifyWithLowHealth.Apply(__instance, MagicEffectType.ModifyMovementSpeed, effect =>
                 {
-                    __instance.m_equipmentMovementModifier += item.GetMagicItem().GetTotalEffectValue(MagicEffectType.ModifyMovementSpeed, 0.01f);
-                }
+	                if (item.HasMagicEffect(effect))
+	                {
+		                __instance.m_equipmentMovementModifier += item.GetMagicItem().GetTotalEffectValue(effect, 0.01f);
+	                }
+                });
             }
         }
     }

@@ -8,11 +8,15 @@ namespace EpicLoot.MagicItemEffects
     {
         public static void Postfix(ItemDrop.ItemData __instance, ref float __result)
         {
-            if (__instance.IsMagic() && __instance.GetMagicItem().HasEffect(MagicEffectType.ModifyArmor))
-            {
-                var totalArmorMod = __instance.GetMagicItem().GetTotalEffectValue(MagicEffectType.ModifyArmor, 0.01f);
-                __result *= 1.0f + totalArmorMod;
-            }
+	        var totalArmorMod = 0f;
+	        ModifyWithLowHealth.Apply(Player.m_localPlayer, MagicEffectType.ModifyArmor, effect =>
+	        {
+		        if (__instance.IsMagic() && __instance.GetMagicItem().HasEffect(effect))
+		        {
+			        totalArmorMod += __instance.GetMagicItem().GetTotalEffectValue(effect, 0.01f);
+		        }
+	        });
+            __result *= 1.0f + totalArmorMod;
         }
     }
 

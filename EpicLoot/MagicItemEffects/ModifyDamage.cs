@@ -46,11 +46,15 @@ namespace EpicLoot.MagicItemEffects
                 __result.m_lightning *= modifier;
             }
 
-            if (magicItem.HasEffect(MagicEffectType.ModifyDamage))
+            var damageMod = 0f;
+            ModifyWithLowHealth.Apply(Player.m_localPlayer, MagicEffectType.ModifyDamage, effect =>
             {
-                var totalDamageMod = magicItem.GetTotalEffectValue(MagicEffectType.ModifyDamage, 0.01f);
-                __result.Modify(1.0f + totalDamageMod);
-            }
+	            if (magicItem.HasEffect(effect))
+	            {
+		            damageMod += magicItem.GetTotalEffectValue(effect, 0.01f);
+	            }
+            });
+			__result.Modify(1.0f + damageMod);
         }
 
         private static float GetAddedDamageType(MagicItem magicItem, string effectType)

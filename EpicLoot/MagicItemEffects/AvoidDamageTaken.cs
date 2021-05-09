@@ -11,14 +11,17 @@ namespace EpicLoot.MagicItemEffects
 		private static bool Prefix(Character __instance, HitData hit)
 		{
 			Character attacker = hit.GetAttacker();
-			if (__instance is Player player && player.HasMagicEquipmentWithEffect(MagicEffectType.AvoidDamageTaken) && attacker != null && attacker != __instance)
+			if (__instance is Player player && attacker != null && attacker != __instance)
 			{
 				var avoidanceChance = 0f;
-				var items = player.GetMagicEquipmentWithEffect(MagicEffectType.AvoidDamageTaken);
-				foreach (var item in items)
+				ModifyWithLowHealth.Apply(player, MagicEffectType.AvoidDamageTaken, effect =>
 				{
-					avoidanceChance += item.GetMagicItem().GetTotalEffectValue(MagicEffectType.AvoidDamageTaken, 0.01f);
-				}
+					var items = player.GetMagicEquipmentWithEffect(effect);
+					foreach (var item in items)
+					{
+						avoidanceChance += item.GetMagicItem().GetTotalEffectValue(effect, 0.01f);
+					}
+				});
 
 				return !(Random.Range(0f, 1f) < avoidanceChance);
 			}

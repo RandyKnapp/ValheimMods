@@ -192,6 +192,7 @@
     <Compile Include="MagicItemEffects\AddSkillLevel.cs" />
     <Compile Include="MagicItemEffects\ModifyStaggerDuration.cs" />
     <Compile Include="MagicItemEffects\ModifyStaminaRegen.cs" />
+    <Compile Include="MagicItemEffects\ModifyWithLowHealth.cs" />
     <Compile Include="MagicItemEffects\Paralyze.cs" />
     <Compile Include="MagicItemEffects\QuickDraw.cs" />
     <Compile Include="MagicItemEffects\QuickLearner.cs" />
