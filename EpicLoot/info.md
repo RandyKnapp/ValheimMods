@@ -1458,10 +1458,10 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## QuickLearner
 
-> **Display Text:** [mod_epicloot_me_quicklearner_display]
+> **Display Text:** Skills improve +{0:0.#}% faster
 > 
-> **Prefixes:** [mod_epicloot_me_quicklearner_prefix1]
-> **Suffixes:** [mod_epicloot_me_quicklearner_sufffix1]
+> **Prefixes:** Student's
+> **Suffixes:** the Student
 > 
 > **Allowed Item Types:** Helmet
 > 
@@ -1477,6 +1477,20 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > |Rare|8|13|1|
 > |Epic|11|16|1|
 > |Legendary|14|19|1|
+
+## FreeBuild
+
+> **Display Text:** No crafting stations required to build
+> 
+> **Prefixes:** Builder's
+> **Suffixes:** the Builder
+> 
+> **Allowed Item Types:** *None*
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedRarities:** `Legendary`
+> > **AllowedItemNames:** `$item_hammer`
 
 ## RecallWeapon
 
@@ -1496,7 +1510,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > **Display Text:** Reflect +{0:0.#}% of direct damage taken
 > 
 > **Prefixes:** Reflector's
-> **Suffixes:** [mod_epicloot_me_reflectdamage_sufffix1]
+> **Suffixes:** Reflecting
 > 
 > **Allowed Item Types:** Chest, Shield
 > 
@@ -1518,7 +1532,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > **Display Text:** +{0:0.#}% chance to avoid damage taken
 > 
 > **Prefixes:** Avoidance's
-> **Suffixes:** [mod_epicloot_me_avoiddamagetaken_sufffix1]
+> **Suffixes:** Avoiding
 > 
 > **Allowed Item Types:** Chest, Shield
 > 
@@ -1540,7 +1554,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > **Display Text:** +{0:0.#}% to stagger attackers on damage taken
 > 
 > **Prefixes:** Revenger's
-> **Suffixes:** [mod_epicloot_me_staggerondamagetaken_sufffix1]
+> **Suffixes:** Revenging
 > 
 > **Allowed Item Types:** Chest, Shield
 > 
@@ -1575,7 +1589,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > **Display Text:** Discovery radius increased by +{0:0.#}%
 > 
 > **Prefixes:** Explorer's
-> **Suffixes:** [mod_epicloot_me_modifydiscoveryradius_suffix1]
+> **Suffixes:** the Explorer
 > 
 > **Allowed Item Types:** Helmet
 > 
@@ -1591,6 +1605,236 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > |Rare|8|13|1|
 > |Epic|11|16|1|
 > |Legendary|14|19|1|
+
+## Comfortable
+
+> **Display Text:** Increase comfort level by +{0}
+> 
+> **Prefixes:** Comfort's
+> **Suffixes:** the Comfortable
+> 
+> **Allowed Item Types:** Chest, Legs, Shoulder, Helmet
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedItemTypes:** `Chest, Legs, Shoulder, Helmet`
+> > **AllowedRarities:** `Epic, Legendary`
+
+## ModifyMovementSpeedLowHealth
+
+> **Display Text:** Movement increased by +{0:0.#}% when below 30% HP
+> 
+> **Prefixes:** Quick
+> **Suffixes:** Speed
+> 
+> **Allowed Item Types:** Legs, Utility
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **ExclusiveEffectTypes:** `RemoveSpeedPenalty`
+> > **AllowedItemTypes:** `Legs, Utility`
+> 
+> **Value Per Rarity:**
+> 
+> |Rarity|Min|Max|Increment|
+> |--|--|--|--|
+> |Magic|7|12|1|
+> |Rare|8|13|1|
+> |Epic|9|14|1|
+> |Legendary|10|15|1|
+
+## ModifyHealthRegenLowHealth
+
+> **Display Text:** Health regen improved by +{0:0.#}% when below 30% HP
+> 
+> **Prefixes:** Vigorous
+> **Suffixes:** Vigor
+> 
+> **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedItemTypes:** `Helmet, Chest, Legs, Shoulder, Utility`
+> 
+> **Value Per Rarity:**
+> 
+> |Rarity|Min|Max|Increment|
+> |--|--|--|--|
+> |Magic|15|25|1|
+> |Rare|15|25|1|
+> |Epic|15|25|1|
+> |Legendary|25|30|1|
+
+## ModifyStaminaRegenLowHealth
+
+> **Display Text:** Stamina regen improved by +{0:0.#}% when below 30% HP
+> 
+> **Prefixes:** Recovering
+> **Suffixes:** Recovery
+> 
+> **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility, Tool
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedItemTypes:** `Helmet, Chest, Legs, Shoulder, Utility, Tool`
+> 
+> **Value Per Rarity:**
+> 
+> |Rarity|Min|Max|Increment|
+> |--|--|--|--|
+> |Magic|15|25|1|
+> |Rare|15|25|1|
+> |Epic|15|25|1|
+> |Legendary|25|30|1|
+
+## ModifyArmorLowHealth
+
+> **Display Text:** Armor increased by +{0:0.#}% when below 30% HP
+> 
+> **Prefixes:** Heavy, Protected
+> **Suffixes:** Protection
+> 
+> **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf, ItemHasArmor`
+> > **AllowedItemTypes:** `Helmet, Chest, Legs, Shoulder, Utility`
+> 
+> **Value Per Rarity:**
+> 
+> |Rarity|Min|Max|Increment|
+> |--|--|--|--|
+> |Magic|15|25|1|
+> |Rare|15|25|1|
+> |Epic|15|25|1|
+> |Legendary|25|30|1|
+
+## ModifyDamageLowHealth
+
+> **Display Text:** All damage increased by +{0:0.#}% when below 30% HP
+> 
+> **Prefixes:** Berserker's
+> **Suffixes:** the Berserker
+> 
+> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow`
+> 
+> **Value Per Rarity:**
+> 
+> |Rarity|Min|Max|Increment|
+> |--|--|--|--|
+> |Magic|3|6|1|
+> |Rare|7|10|1|
+> |Epic|11|14|1|
+> |Legendary|15|20|1|
+
+## ModifyBlockPowerLowHealth
+
+> **Display Text:** Block improved by +{0:0.#}% when below 30% HP
+> 
+> **Prefixes:** Stopping, Defender's
+> **Suffixes:** Stopping, the Defender
+> 
+> **Allowed Item Types:** Shield
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf, ItemHasBlockPower`
+> > **AllowedItemTypes:** `Shield`
+> > **ExcludedSkillTypes:** `Pickaxes`
+> 
+> **Value Per Rarity:**
+> 
+> |Rarity|Min|Max|Increment|
+> |--|--|--|--|
+> |Magic|15|25|1|
+> |Rare|15|25|1|
+> |Epic|15|25|1|
+> |Legendary|25|30|1|
+
+## ModifyParryLowHealth
+
+> **Display Text:** Parry improved by +{0:0.#}% when below 30% HP
+> 
+> **Prefixes:** Elusive, Rebuking, Duelist's
+> **Suffixes:** Repelling, the Duelist
+> 
+> **Allowed Item Types:** Shield, TwoHandedWeapon
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf, ItemHasParryPower`
+> > **AllowedItemTypes:** `Shield, TwoHandedWeapon`
+> > **ExcludedSkillTypes:** `Pickaxes`
+> 
+> **Value Per Rarity:**
+> 
+> |Rarity|Min|Max|Increment|
+> |--|--|--|--|
+> |Magic|15|25|1|
+> |Rare|15|25|1|
+> |Epic|15|25|1|
+> |Legendary|25|30|1|
+
+## ModifyAttackSpeedLowHealth
+
+> **Display Text:** Attack speed increased by +{0:0.#}% when below 30% HP
+> 
+> **Prefixes:** Striker's
+> **Suffixes:** Striking
+> 
+> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Tool
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow, Tool`
+> 
+> **Value Per Rarity:**
+> 
+> |Rarity|Min|Max|Increment|
+> |--|--|--|--|
+> |Magic|7|15|1|
+> |Rare|16|22|1|
+> |Epic|23|30|1|
+> |Legendary|31|40|1|
+
+## AvoidDamageTakenLowHealth
+
+> **Display Text:** +{0:0.#}% chance to avoid damage taken when below 30% HP
+> 
+> **Prefixes:** Avoidance's
+> **Suffixes:** Avoiding
+> 
+> **Allowed Item Types:** Chest, Shield
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedItemTypes:** `Chest, Shield`
+> 
+> **Value Per Rarity:**
+> 
+> |Rarity|Min|Max|Increment|
+> |--|--|--|--|
+> |Magic|7|15|1|
+> |Rare|16|22|1|
+> |Epic|23|30|1|
+> |Legendary|31|40|1|
+
+## LifeStealLowHealth
+
+> **Display Text:** Heal for {0:0.0}% of damage done when below 30% HP
+> 
+> **Prefixes:** Valravn's
+> **Suffixes:** Valravn
+> 
+> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf, ItemUsesStaminaOnAttack`
+> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow`
+> > **AllowedRarities:** `Rare, Epic, Legendary`
+> > **ExcludedSkillTypes:** `Pickaxes`
 
 # Item Sets
 

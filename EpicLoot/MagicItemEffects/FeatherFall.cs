@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
 using HarmonyLib;
 using JetBrains.Annotations;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace EpicLoot.MagicItemEffects
 {
@@ -26,16 +26,44 @@ namespace EpicLoot.MagicItemEffects
 	
 	[HarmonyPatch(typeof(Player), "FixedUpdate")]
 	public class FeatherFallReduceFallSpeed_Player_FixedUpdate_Patch
-	{
+    {
+        public const string FeatherFallEffectName = "FeatherFallAura";
+        public const float MaxFallSpeed = -6;
+
 		[UsedImplicitly]
 		private static void Postfix(Player __instance)
 		{
-			if (__instance.HasMagicEquipmentWithEffect(MagicEffectType.FeatherFall) && __instance.m_body)
+            var currentFeatherFallAura = __instance.transform.Find(FeatherFallEffectName);
+
+			if (!__instance.IsOnGround() && __instance.HasMagicEquipmentWithEffect(MagicEffectType.FeatherFall) && __instance.m_body)
 			{
-				Vector3 velocity = __instance.m_body.velocity;
-				velocity.y = Math.Max(-2, velocity.y);
+				var velocity = __instance.m_body.velocity;
+
+                if (velocity.y <= MaxFallSpeed + float.Epsilon * 10)
+                {
+                    if (currentFeatherFallAura != null && currentFeatherFallAura.GetComponent<ParticleSystem>().isStopped)
+                    {
+                        currentFeatherFallAura.GetComponent<ParticleSystem>().Play();
+                    }
+                    else if (currentFeatherFallAura == null)
+                    {
+                        var effect = Object.Instantiate(EpicLoot.LoadAsset<GameObject>(FeatherFallEffectName), __instance.transform);
+                        effect.name = FeatherFallEffectName;
+                        effect.GetComponent<AudioSource>().outputAudioMixerGroup = AudioMan.instance.m_ambientMixer;
+                    }
+
+                    velocity.x = Mathf.Lerp(velocity.x, 0, 1);
+                    velocity.z = Mathf.Lerp(velocity.z, 0, 1);
+                }
+
+				velocity.y = Math.Max(MaxFallSpeed, velocity.y);
 				__instance.m_body.velocity = velocity;
 			}
+
+            if (__instance.IsOnGround() && currentFeatherFallAura != null)
+            {
+                currentFeatherFallAura.GetComponent<ParticleSystem>().Stop();
+            }
 		}
 	}
 }

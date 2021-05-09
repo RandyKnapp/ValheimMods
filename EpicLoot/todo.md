@@ -32,10 +32,10 @@
 - [X] Exploding shot (bows, deal aoe damage on arrow impact)
 - [ ] Multishot (bows, shoot multiple arrows from one)
 - [X] Quick draw (bows, draw speed dramatically increased)
-- [ ] Recall (spear, automatically pick up spear after throwing)
+- [X] Recall (spear, automatically pick up spear after throwing)
 - [ ] Immobilize
 - [X] Modify Attack Speed (fixed now)
-- [ ] Increase damage vs staggered enemies
+- [X] Increase damage vs staggered enemies
 - [ ] Duelist (sword, when off hand is empty, increase parry and block power by a lot)
 - [ ] Opportunist (knife, add backstab damaged to staggered enemies)
 - [X] Throwing (change alterate attack to throw like spear)
@@ -47,20 +47,20 @@
 #### Armor
 - [ ] Warm (Prevent freezing effect)
 - [X] Waterproof (cape, prevent Wet effect from rain)
-- [ ] Waterwalk (legs)
+- [X] Waterwalk (legs)
 - [X] Double Jump (legs)
-- [ ] Thorns damage
+- [X] Thorns damage
 - [ ] ~Sneak increase (legs)~
 - [ ] Dodge improvement (legs)
-- [ ] Feather Fall (legs)
+- [X] Feather Fall (legs)
 - [ ] Nightvision (helmet)
-- [ ] Discovery radius increase (helmet)
-- [ ] Quick learner (helmet, increase xp gain)
-- [ ] Increase armor when below HP threshold
+- [X] Discovery radius increase (helmet)
+- [X] Quick learner (helmet, increase xp gain)
+- [X] Increase armor when below HP threshold
 - [ ] % chance to stagger attackers
 - [ ] % chance to ignore incoming damage
 - [X] Improve Skill Level
-- [ ] Comfortable (Increase Comfort level when resting)
+- [X] Comfortable (Increase Comfort level when resting)
 - [ ] Glowing
 
 #### Utility

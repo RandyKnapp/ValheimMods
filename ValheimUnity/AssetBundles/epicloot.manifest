@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 1323738288
+CRC: 2979575849
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 77e3dcf7ac110a3fe128c86a482bfdb9
+    Hash: e5403a059d6cdb0be0cedad9b5d4caf0
   TypeTreeHash:
     serializedVersion: 2
     Hash: 0638681d28c386c0ec13adad4c497303
@@ -102,6 +102,7 @@ ClassTypes:
 SerializeReferenceClassIdentifiers: []
 Assets:
 - Assets/EpicLoot/Prefabs/Equipment/GoldRubyRing.prefab
+- Assets/EpicLoot/Prefabs/ItemEffects/FeatherFallAura.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/DustRare.prefab
 - Assets/EpicLoot/Sprites/Inventory/SetItemMarker.png
 - Assets/EpicLoot/Prefabs/CraftingMaterials/RunestoneRare.prefab
