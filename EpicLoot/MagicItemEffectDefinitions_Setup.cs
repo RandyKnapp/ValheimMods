@@ -95,5 +95,6 @@
         public static string Glowing = nameof(Glowing);
         public static string Executioner = nameof(Executioner);
         public static string Riches = nameof(Riches);
+        public static string Opportunist = nameof(Opportunist);
     }
 }

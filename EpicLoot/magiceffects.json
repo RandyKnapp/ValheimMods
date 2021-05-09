@@ -2370,6 +2370,26 @@
       "Suffixes": [
         "$mod_epicloot_me_riches_suffix1"
       ]
+    },
+    {
+      "Type" : "Opportunist",
+      "DisplayText" : "$mod_epicloot_me_opportunist_display",
+      "Requirements" : {
+        "AllowedSkillTypes" : [
+          "Knives"
+        ],
+        "AllowedRarities" : [
+          "Epic",
+          "Legendary"
+        ]
+      },
+      "SelectionWeight" : 1,
+      "Prefixes": [
+        "$mod_epicloot_me_opportunist_prefix1"
+      ],
+      "Suffixes": [
+        "$mod_epicloot_me_opportunist_suffix1"
+      ]
     }
   ]
 }
