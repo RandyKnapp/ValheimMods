@@ -2415,6 +2415,23 @@
       "Suffixes": [
         "$mod_epicloot_me_duelist_suffix1"
       ]
+    },
+    {
+      "Type" : "Immovable",
+      "DisplayText" : "$mod_epicloot_me_immovable_display",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "Shield"
+        ],
+        "ItemHasNoParryPower" : true
+      },
+      "SelectionWeight" : 1,
+      "Prefixes": [
+        "$mod_epicloot_me_immovable_prefix1"
+      ],
+      "Suffixes": [
+        "$mod_epicloot_me_immovable_suffix1"
+      ]
     }
   ]
 }

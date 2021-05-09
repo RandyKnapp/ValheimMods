@@ -30,6 +30,7 @@ namespace EpicLoot
         public bool ItemHasNegativeMovementSpeedModifier;
         public bool ItemHasBlockPower;
         public bool ItemHasParryPower;
+        public bool ItemHasNoParryPower;
         public bool ItemHasArmor;
         public bool ItemHasBackstabBonus;
         public bool ItemUsesStaminaOnAttack;
@@ -49,6 +50,7 @@ namespace EpicLoot
             if (ItemHasNegativeMovementSpeedModifier) _flags.Add(nameof(ItemHasNegativeMovementSpeedModifier));
             if (ItemHasBlockPower) _flags.Add(nameof(ItemHasBlockPower));
             if (ItemHasParryPower) _flags.Add(nameof(ItemHasParryPower));
+            if (ItemHasNoParryPower) _flags.Add(nameof(ItemHasNoParryPower));
             if (ItemHasArmor) _flags.Add(nameof(ItemHasArmor));
             if (ItemHasBackstabBonus) _flags.Add(nameof(ItemHasBackstabBonus));
             if (ItemUsesStaminaOnAttack) _flags.Add(nameof(ItemUsesStaminaOnAttack));
@@ -194,6 +196,11 @@ namespace EpicLoot
             }
 
             if (ItemHasParryPower && itemData.m_shared.m_deflectionForce <= 0)
+            {
+                return false;
+            }
+
+            if (ItemHasNoParryPower && itemData.m_shared.m_deflectionForce > 0)
             {
                 return false;
             }
