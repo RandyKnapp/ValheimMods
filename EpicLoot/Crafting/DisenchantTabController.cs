@@ -56,7 +56,10 @@ namespace EpicLoot.Crafting
                 Object.Destroy(DisenchantAllButton.GetComponent<UITooltip>());
             }
 
-            DisenchantAllButton.gameObject.SetActive(active);
+            if (DisenchantAllButton != null)
+            {
+                DisenchantAllButton.gameObject.SetActive(active);
+            }
 
             base.SetActive(active);
         }

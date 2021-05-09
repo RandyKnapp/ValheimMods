@@ -1494,7 +1494,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## RecallWeapon
 
-> **Display Text:** Weapons return to you after being thrown
+> **Display Text:** Returns to you after being thrown
 > 
 > **Prefixes:** Recaller's
 > **Suffixes:** Recalling
@@ -1507,7 +1507,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## ReflectDamage
 
-> **Display Text:** Reflect +{0:0.#}% of direct damage taken
+> **Display Text:** Reflect +{0:0.#}% of damage back to attacker
 > 
 > **Prefixes:** Reflector's
 > **Suffixes:** Reflecting
@@ -1529,10 +1529,10 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## AvoidDamageTaken
 
-> **Display Text:** +{0:0.#}% chance to avoid damage taken
+> **Display Text:** +{0:0.#}% chance to avoid attack
 > 
-> **Prefixes:** Avoidance's
-> **Suffixes:** Avoiding
+> **Prefixes:** Artful Dodger's
+> **Suffixes:** the Artful Dodger
 > 
 > **Allowed Item Types:** Chest, Shield
 > 
@@ -1551,10 +1551,10 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## StaggerOnDamageTaken
 
-> **Display Text:** +{0:0.#}% to stagger attackers on damage taken
+> **Display Text:** +{0:0.#}% chance to stagger attacker
 > 
-> **Prefixes:** Revenger's
-> **Suffixes:** Revenging
+> **Prefixes:** Avenger's
+> **Suffixes:** Vengeance
 > 
 > **Allowed Item Types:** Chest, Shield
 > 
@@ -1573,9 +1573,9 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## FeatherFall
 
-> **Display Text:** Reduced fall speed and no fall damage taken
+> **Display Text:** Feather Fall
 > 
-> **Prefixes:** Feather's
+> **Prefixes:** Feathery
 > **Suffixes:** the Feather
 > 
 > **Allowed Item Types:** Legs
@@ -1610,8 +1610,8 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 > **Display Text:** Increase comfort level by +{0}
 > 
-> **Prefixes:** Comfort's
-> **Suffixes:** the Comfortable
+> **Prefixes:** Comfortable
+> **Suffixes:** Comfort
 > 
 > **Allowed Item Types:** Chest, Legs, Shoulder, Helmet
 > 
@@ -1803,8 +1803,8 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 > **Display Text:** +{0:0.#}% chance to avoid damage taken when below 30% HP
 > 
-> **Prefixes:** Avoidance's
-> **Suffixes:** Avoiding
+> **Prefixes:** Artful Dodger's
+> **Suffixes:** the Artful Dodger
 > 
 > **Allowed Item Types:** Chest, Shield
 > 
