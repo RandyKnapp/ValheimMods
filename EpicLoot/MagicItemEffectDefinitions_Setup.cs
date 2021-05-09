@@ -96,5 +96,6 @@
         public static string Executioner = nameof(Executioner);
         public static string Riches = nameof(Riches);
         public static string Opportunist = nameof(Opportunist);
+        public static string Duelist = nameof(Duelist);
     }
 }

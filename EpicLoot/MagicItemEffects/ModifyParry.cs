@@ -9,7 +9,7 @@ namespace EpicLoot.MagicItemEffects
         public static void Postfix(ItemDrop.ItemData __instance, ref float __result)
         {
 	        var totalParryMod = 0f;
-	        ModifyWithLowHealth.Apply(Player.m_localPlayer, MagicEffectType.ModifyParry, effect =>
+	        Duelist.Apply(Player.m_localPlayer, MagicEffectType.ModifyParry, effect =>
 	        {
 		        if (__instance.IsMagic() && __instance.GetMagicItem().HasEffect(effect))
 		        {
@@ -39,7 +39,7 @@ namespace EpicLoot.MagicItemEffects
             }
 
             var totalParryBonusMod = 0f;
-			ModifyWithLowHealth.Apply(player, MagicEffectType.ModifyParry, effect =>
+			Duelist.Apply(player, MagicEffectType.ModifyParry, effect =>
             {
 	            if (currentBlocker.IsMagic() && currentBlocker.GetMagicItem().HasEffect(effect))
 	            {
