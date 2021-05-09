@@ -754,6 +754,19 @@ namespace EpicLoot
 
             syncedValue.ValueChanged += Process;
             Process();
+
+            if (jsonFile != null)
+            {
+	            void ConsumeConfigFileEvent(object s, FileSystemEventArgs e) => syncedValue.Value = LoadJsonText(filename);
+	            var filePath = GetAssetPath(filename);
+	            FileSystemWatcher watcher = new FileSystemWatcher(Path.GetDirectoryName(filePath), Path.GetFileName(filePath));
+	            watcher.Changed += ConsumeConfigFileEvent;
+	            watcher.Created += ConsumeConfigFileEvent;
+	            watcher.Renamed += ConsumeConfigFileEvent;
+	            watcher.IncludeSubdirectories = true;
+	            watcher.SynchronizingObject = ThreadingHelper.SynchronizingObject;
+	            watcher.EnableRaisingEvents = true;
+            }
         }
 
         public static string LoadJsonText(string filename)
