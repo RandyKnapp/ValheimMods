@@ -11,12 +11,16 @@ namespace EpicLoot.MagicItemEffects
             if (__instance.m_character.IsPlayer())
             {
                 var player = __instance.m_character as Player;
-                var items = player.GetMagicEquipmentWithEffect(MagicEffectType.ModifyHealthRegen);
-                foreach (var item in items)
+                var regenValue = 0f;
+                ModifyWithLowHealth.Apply(player, MagicEffectType.ModifyHealthRegen, effect =>
                 {
-                    var regenValue = item.GetMagicItem().GetTotalEffectValue(MagicEffectType.ModifyHealthRegen, 0.01f);
-                    regenMultiplier += regenValue;
-                }
+	                var items = player.GetMagicEquipmentWithEffect(effect);
+	                foreach (var item in items)
+	                {
+		                regenValue += item.GetMagicItem().GetTotalEffectValue(effect, 0.01f);
+	                }
+                });
+                regenMultiplier += regenValue;
             }
         }
     }

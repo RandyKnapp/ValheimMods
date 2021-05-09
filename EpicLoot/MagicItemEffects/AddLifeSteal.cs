@@ -35,12 +35,19 @@ namespace EpicLoot.MagicItemEffects
 
                 // in case weapon's durability is destroyed after hit?
                 // OR in case damage is delayed and player hides weapon - see to-do above
-                if (weapon == null || !weapon.IsMagic() || !weapon.HasMagicEffect(MagicEffectType.LifeSteal))
+                if (weapon == null || !weapon.IsMagic() || !(attacker is Player player))
                 {
                     return;
                 }
+
+                var lifeStealMultiplier = 0f;
+                ModifyWithLowHealth.Apply(player, MagicEffectType.LifeSteal, effect => lifeStealMultiplier += weapon.GetMagicItem().GetTotalEffectValue(effect, 0.01f));
+
+                if (lifeStealMultiplier == 0)
+                {
+	                return;
+                }
                 
-                var lifeStealMultiplier = weapon.GetMagicItem().GetTotalEffectValue(MagicEffectType.LifeSteal, 0.01f);
                 var healOn = hit.m_damage.GetTotalDamage() * lifeStealMultiplier;
                 
                 EpicLoot.Log("lifesteal " + healOn);

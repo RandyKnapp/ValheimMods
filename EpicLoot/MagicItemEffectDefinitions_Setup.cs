@@ -82,5 +82,15 @@
         public static string ModifyDiscoveryRadius = nameof(ModifyDiscoveryRadius);
         public static string FreeBuild = nameof(FreeBuild);
         public static string Comfortable = nameof(Comfortable);
+        public static string ModifyMovementSpeedLowHealth = nameof(ModifyMovementSpeedLowHealth);
+        public static string ModifyHealthRegenLowHealth = nameof(ModifyHealthRegenLowHealth);
+        public static string ModifyStaminaRegenLowHealth = nameof(ModifyStaminaRegenLowHealth);
+        public static string ModifyArmorLowHealth = nameof(ModifyArmorLowHealth);
+        public static string ModifyDamageLowHealth = nameof(ModifyDamageLowHealth);
+        public static string ModifyBlockPowerLowHealth = nameof(ModifyBlockPowerLowHealth);
+        public static string ModifyParryLowHealth = nameof(ModifyParryLowHealth);
+        public static string ModifyAttackSpeedLowHealth = nameof(ModifyAttackSpeedLowHealth);
+        public static string AvoidDamageTakenLowHealth = nameof(AvoidDamageTakenLowHealth);
+        public static string LifeStealLowHealth = nameof(LifeStealLowHealth);
     }
 }

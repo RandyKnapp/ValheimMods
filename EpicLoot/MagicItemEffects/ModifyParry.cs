@@ -8,11 +8,15 @@ namespace EpicLoot.MagicItemEffects
     {
         public static void Postfix(ItemDrop.ItemData __instance, ref float __result)
         {
-            if (__instance.IsMagic() && __instance.GetMagicItem().HasEffect(MagicEffectType.ModifyParry))
-            {
-                var totalParryMod = __instance.GetMagicItem().GetTotalEffectValue(MagicEffectType.ModifyParry, 0.01f);
-                __result *= 1.0f + totalParryMod;
-            }
+	        var totalParryMod = 0f;
+	        ModifyWithLowHealth.Apply(Player.m_localPlayer, MagicEffectType.ModifyParry, effect =>
+	        {
+		        if (__instance.IsMagic() && __instance.GetMagicItem().HasEffect(effect))
+		        {
+			        totalParryMod += __instance.GetMagicItem().GetTotalEffectValue(effect, 0.01f);
+		        }
+	        });
+            __result *= 1.0f + totalParryMod;
         }
     }
 
@@ -29,19 +33,26 @@ namespace EpicLoot.MagicItemEffects
             OriginalValue = -1;
 
             ItemDrop.ItemData currentBlocker = __instance.GetCurrentBlocker();
-            if (currentBlocker == null)
+            if (currentBlocker == null || !(__instance is Player player))
             {
                 return true;
             }
 
-            if (currentBlocker.IsMagic() && currentBlocker.GetMagicItem().HasEffect(MagicEffectType.ModifyParry))
+            var totalParryBonusMod = 0f;
+			ModifyWithLowHealth.Apply(player, MagicEffectType.ModifyParry, effect =>
             {
-                Override = true;
-                OriginalValue = currentBlocker.m_shared.m_timedBlockBonus;
+	            if (currentBlocker.IsMagic() && currentBlocker.GetMagicItem().HasEffect(effect))
+	            {
+		            if (!Override)
+		            {
+			            Override = true;
+			            OriginalValue = currentBlocker.m_shared.m_timedBlockBonus;
+		            }
 
-                var totalParryBonusMod = currentBlocker.GetMagicItem().GetTotalEffectValue(MagicEffectType.ModifyParry, 0.01f);
-                currentBlocker.m_shared.m_timedBlockBonus *= 1.0f + totalParryBonusMod;
-            }
+		            totalParryBonusMod += currentBlocker.GetMagicItem().GetTotalEffectValue(effect, 0.01f);
+	            }
+            });
+		    currentBlocker.m_shared.m_timedBlockBonus *= 1.0f + totalParryBonusMod;
 
             return true;
         }
