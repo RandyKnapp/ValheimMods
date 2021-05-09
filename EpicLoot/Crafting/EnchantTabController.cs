@@ -180,6 +180,8 @@ namespace EpicLoot.Crafting
 
         public override void UpdateRecipe(InventoryGui __instance, Player player, float dt, Image bgImage)
         {
+            __instance.m_craftButton.GetComponentInChildren<Text>().text = "Enchant";
+
             if (SelectedRecipe >= 0 && SelectedRecipe < Recipes.Count)
             {
                 var recipe = Recipes[SelectedRecipe];
@@ -220,7 +222,6 @@ namespace EpicLoot.Crafting
 
                 var canCraft = Player.m_localPlayer.HaveRequirements(GetRecipeRequirementArray(recipe, SelectedRarity), false, 1);
                 __instance.m_craftButton.interactable = canCraft;
-                __instance.m_craftButton.GetComponentInChildren<Text>().text = "Enchant";
                 __instance.m_craftButton.GetComponent<UITooltip>().m_text = canCraft ? "" : Localization.instance.Localize("$msg_missingrequirement");
             }
             else

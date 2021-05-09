@@ -136,6 +136,18 @@ namespace EpicLoot.Crafting
             }
         }
 
+        [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.OnCraftCancelPressed))]
+        public static class InventoryGui_OnCraftCancelPressed_Patch
+        {
+            public static void Postfix(InventoryGui __instance)
+            {
+                foreach (var tabController in CustomTabs())
+                {
+                    tabController.OnCraftCanceled();
+                }
+            }
+        }
+
         public static IEnumerator UpdateTabPositions()
         {
             while (true)
@@ -168,7 +180,7 @@ namespace EpicLoot.Crafting
                 {
                     if (tabButton != null && tabButton.gameObject.activeSelf)
                     {
-                        var rt = tabButton.transform as RectTransform;
+                        var rt = (RectTransform)tabButton.transform;
                         rt.anchoredPosition = start + (index * spacing);
                         rt.localEulerAngles = new Vector3(0, 0, angle);
 

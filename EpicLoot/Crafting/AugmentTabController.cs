@@ -202,6 +202,8 @@ namespace EpicLoot.Crafting
 
         public override void UpdateRecipe(InventoryGui __instance, Player player, float dt, Image bgImage)
         {
+            __instance.m_craftButton.GetComponentInChildren<Text>().text = "Augment";
+
             if (SelectedRecipe >= 0 && SelectedRecipe < Recipes.Count)
             {
                 var recipe = Recipes[SelectedRecipe];
@@ -240,7 +242,6 @@ namespace EpicLoot.Crafting
                 var hasSelectedEffect = recipe.EffectIndex >= 0;
                 var hasAnyAvailableEnchants = GetAvailableAugments(recipe, recipe.FromItem, recipe.FromItem.GetMagicItem(), recipe.FromItem.GetRarity()).Count > 0;
                 __instance.m_craftButton.interactable = canCraft && hasSelectedEffect && hasAnyAvailableEnchants;
-                __instance.m_craftButton.GetComponentInChildren<Text>().text = "Augment";
                 __instance.m_craftButton.GetComponent<UITooltip>().m_text = 
                     hasSelectedEffect ? 
                         (canCraft ? 

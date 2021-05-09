@@ -216,5 +216,9 @@ namespace EpicLoot.Crafting
         {
             return false;
         }
+
+        public virtual void OnCraftCanceled()
+        {
+        }
     }
 }

@@ -14,14 +14,18 @@ namespace EpicLoot.Crafting
             public List<KeyValuePair<ItemDrop, int>> Products = new List<KeyValuePair<ItemDrop, int>>();
         }
 
+        public Button DisenchantAllButton;
+        public Text DisenchantAllButtonLabel;
         public readonly List<DisenchantRecipe> Recipes = new List<DisenchantRecipe>();
+
+        private bool _disenchantAllFlag;
 
         public DisenchantTabController() : base(CraftingTabType.Disenchant, true)
         {
         }
 
         public override string GetTabButtonId() => "Disenchant";
-        public override string GetTabButtonText() => "SACRIFICE";
+        public override string GetTabButtonText() => Localization.instance.Localize("$mod_epicloot_sacrifice").ToUpperInvariant();
 
         public override void SetActive(bool active)
         {
@@ -29,6 +33,31 @@ namespace EpicLoot.Crafting
             {
                 Recipes.Clear();
             }
+
+            var instance = InventoryGui.instance;
+            var craftRT = instance.m_craftButton.gameObject.RectTransform();
+            craftRT.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, active ? 224 : 334);
+            craftRT.anchoredPosition = new Vector2(active ? -55 : 0, craftRT.anchoredPosition.y);
+
+            if (active && DisenchantAllButton == null)
+            {
+                DisenchantAllButton = Object.Instantiate(instance.m_craftButton, instance.m_craftButton.transform.parent, true);
+                DisenchantAllButton.onClick = new Button.ButtonClickedEvent();
+                DisenchantAllButton.onClick.AddListener(DisenchantAll);
+                var rt = DisenchantAllButton.gameObject.RectTransform();
+                rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 100);
+                rt.anchoredPosition = new Vector2(117, craftRT.anchoredPosition.y);
+
+                DisenchantAllButtonLabel = DisenchantAllButton.GetComponentInChildren<Text>();
+                DisenchantAllButtonLabel.text = Localization.instance.Localize("$mod_epicloot_sacrificeall");
+                DisenchantAllButtonLabel.color = new Color(1, 0.6308f, 0.2353f);
+                DisenchantAllButton.GetComponent<ButtonTextColor>().m_defaultColor = DisenchantAllButtonLabel.color;
+
+                Object.Destroy(DisenchantAllButton.GetComponent<UITooltip>());
+            }
+
+            DisenchantAllButton.gameObject.SetActive(active);
+
             base.SetActive(active);
         }
 
@@ -67,6 +96,8 @@ namespace EpicLoot.Crafting
 
         public override void UpdateRecipe(InventoryGui __instance, Player player, float dt, Image bgImage)
         {
+            __instance.m_craftButton.GetComponentInChildren<Text>().text = Localization.instance.Localize("$mod_epicloot_sacrifice");
+
             if (SelectedRecipe >= 0 && SelectedRecipe < Recipes.Count)
             {
                 var recipe = Recipes[SelectedRecipe];
@@ -80,13 +111,13 @@ namespace EpicLoot.Crafting
 
                 __instance.m_recipeDecription.enabled = true;
                 __instance.m_recipeDecription.text = Localization.instance.Localize(ItemDrop.ItemData.GetTooltip(itemData, itemData.m_quality, true));
-                __instance.m_recipeDecription.text += "\n\n<color=red>This item will be DESTROYED as a SACRIFICE to the gods.</color>";
+                __instance.m_recipeDecription.text += Localization.instance.Localize("\n\n<color=red>$mod_epicloot_sacrifice_warning</color>");
 
                 bgImage.color = recipe.FromItem.GetRarityColor();
                 bgImage.enabled = recipe.FromItem.UseMagicBackground();
 
                 __instance.m_itemCraftType.gameObject.SetActive(true);
-                __instance.m_itemCraftType.text = "Destroy this item and get:";
+                __instance.m_itemCraftType.text = Localization.instance.Localize("$mod_epicloot_sacrifice_explanation");
 
                 __instance.m_variantButton.gameObject.SetActive(false);
 
@@ -97,9 +128,12 @@ namespace EpicLoot.Crafting
                 var isEquipped = recipe.FromItem.m_equiped;
                 var canPutProductsInInventory = CanAddItems(player.GetInventory(), recipe.Products, 1);
                 __instance.m_craftButton.interactable = canPutProductsInInventory && !isEquipped;
-                __instance.m_craftButton.GetComponentInChildren<Text>().text = "Sacrifice";
-                __instance.m_craftButton.GetComponent<UITooltip>().m_text =
-                    canPutProductsInInventory ? (isEquipped ? "Item is currently equipped" : "") : Localization.instance.Localize("$inventory_full");
+                __instance.m_craftButton.GetComponent<UITooltip>().m_text = 
+                    Localization.instance.Localize(canPutProductsInInventory ? (isEquipped ? "$mod_epicloot_sacrifice_equipped" : "") : "$inventory_full");
+
+                var isStack = itemData.m_stack > 1;
+                DisenchantAllButton.interactable = isStack;
+                DisenchantAllButton.gameObject.SetActive(__instance.m_craftButton.gameObject.activeSelf);
             }
             else
             {
@@ -116,6 +150,7 @@ namespace EpicLoot.Crafting
                 }
 
                 __instance.m_craftButton.interactable = false;
+                DisenchantAllButton.interactable = false;
             }
         }
 
@@ -200,15 +235,19 @@ namespace EpicLoot.Crafting
             if (SelectedRecipe >= 0 && SelectedRecipe < Recipes.Count)
             {
                 var recipe = Recipes[SelectedRecipe];
-                player.GetInventory().RemoveOneItem(recipe.FromItem);
+                var inventory = player.GetInventory();
+                var disenchantCount = _disenchantAllFlag ? recipe.FromItem.m_stack : 1;
+                Debug.LogWarning($"Disenchant{(_disenchantAllFlag ? " (all)" : "")}: count={disenchantCount}");
+                inventory.RemoveItem(recipe.FromItem, disenchantCount);
                 var didntAdd = new List<KeyValuePair<ItemDrop.ItemData, int>>();
                 foreach (var product in recipe.Products)
                 {
+                    var amountToAdd = product.Value * disenchantCount;
                     var addSuccess = false;
-                    var canAdd = player.GetInventory().CanAddItem(product.Key.m_itemData, product.Value);
+                    var canAdd = player.GetInventory().CanAddItem(product.Key.m_itemData, amountToAdd);
                     if (canAdd)
                     {
-                        var itemData = player.GetInventory().AddItem(product.Key.name, product.Value, 1, 0, 0, "");
+                        var itemData = player.GetInventory().AddItem(product.Key.name, amountToAdd, 1, 0, 0, "");
                         addSuccess = itemData != null;
                         if (itemData != null && itemData.IsMagicCraftingMaterial())
                         {
@@ -220,7 +259,7 @@ namespace EpicLoot.Crafting
                     {
                         var newItem = product.Key.m_itemData.Clone();
                         newItem.m_dropPrefab = ObjectDB.instance.GetItemPrefab(product.Key.GetPrefabName(product.Key.gameObject.name));
-                        didntAdd.Add(new KeyValuePair<ItemDrop.ItemData, int>(newItem, product.Value));
+                        didntAdd.Add(new KeyValuePair<ItemDrop.ItemData, int>(newItem, amountToAdd));
                     }
                 }
                 __instance.UpdateCraftingPanel();
@@ -229,7 +268,7 @@ namespace EpicLoot.Crafting
                 {
                     var itemDrop = ItemDrop.DropItem(itemNotAdded.Key, itemNotAdded.Value, player.transform.position + player.transform.forward + player.transform.up, player.transform.rotation);
                     itemDrop.GetComponent<Rigidbody>().velocity = (player.transform.forward + Vector3.up) * 5f;
-                    player.Message(MessageHud.MessageType.TopLeft, $"$msg_dropped {itemDrop.m_itemData.m_shared.m_name} (Inventory was full when crafting)", itemDrop.m_itemData.m_stack, itemDrop.m_itemData.GetIcon());
+                    player.Message(MessageHud.MessageType.TopLeft, $"$msg_dropped {itemDrop.m_itemData.m_shared.m_name} $mod_epicloot_sacrifice_inventoryfullexplanation", itemDrop.m_itemData.m_stack, itemDrop.m_itemData.GetIcon());
                 }
 
                 if (player.GetCurrentCraftingStation() != null)
@@ -240,6 +279,14 @@ namespace EpicLoot.Crafting
                 Game.instance.GetPlayerProfile().m_playerStats.m_crafts++;
                 Gogan.LogEvent("Game", "Disenchanted", recipe.FromItem.m_shared.m_name, 1);
             }
+
+            _disenchantAllFlag = false;
+        }
+
+        private void DisenchantAll()
+        {
+            _disenchantAllFlag = true;
+            OnCraftPressed(InventoryGui.instance);
         }
 
         public void UpdateRecipeList(InventoryGui __instance)
@@ -318,6 +365,11 @@ namespace EpicLoot.Crafting
                 SelectedRecipe = index;
                 SetRecipe(__instance, SelectedRecipe, false);
             }
+        }
+
+        public override void OnCraftCanceled()
+        {
+            _disenchantAllFlag = false;
         }
 
         public void SetRecipe(InventoryGui __instance, int index, bool center)

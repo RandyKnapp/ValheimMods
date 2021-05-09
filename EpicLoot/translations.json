@@ -1,4 +1,10 @@
 {
+  "mod_epicloot_sacrifice": "Sacrifice",
+  "mod_epicloot_sacrifice_warning": "This item will be DESTROYED as a SACRIFICE to the gods.", 
+  "mod_epicloot_sacrifice_explanation": "Destroy this item and get:", 
+  "mod_epicloot_sacrifice_equipped": "Item is currently equipped", 
+  "mod_epicloot_sacrifice_inventoryfullexplanation": "(Inventory was full when crafting)", 
+  "mod_epicloot_sacrificeall": "Sacrifice All",
   "mod_epicloot_item_andvaranaut": "Andvaranaut",
   "mod_epicloot_item_andvaranaut_tooltip": "Helps you find treasure chests from Haldor's maps. Move in the direction the pings get more intense.",
   "mod_epicloot_item_andvaranaut_startmsg": "You can sense gold\n(No, wait, just Haldor's treasure chests. Dammit Loki!)",
