@@ -97,5 +97,6 @@
         public static string Riches = nameof(Riches);
         public static string Opportunist = nameof(Opportunist);
         public static string Duelist = nameof(Duelist);
+        public static string Immovable = nameof(Immovable);
     }
 }
