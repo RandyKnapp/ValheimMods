@@ -32,7 +32,7 @@ namespace EpicLoot
 
     public enum BossDropMode
     {
-        OneOnly,
+        Default,
         OnePerPlayerOnServer,
         OnePerPlayerNearBoss
     }

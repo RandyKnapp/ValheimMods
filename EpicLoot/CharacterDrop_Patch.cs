@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
 using UnityEngine;
@@ -60,7 +61,7 @@ namespace EpicLoot
     {
         public static void Postfix(CharacterDrop __instance, ref List<KeyValuePair<GameObject, int>> __result)
         {
-            if (__instance.m_character != null && __instance.m_character.IsBoss())
+            if (__instance.m_character != null && __instance.m_character.IsBoss() && EpicLoot.GetBossTrophyDropMode() != BossDropMode.Default)
             {
                 for (var index = 0; index < __result.Count; index++)
                 {
@@ -83,10 +84,9 @@ namespace EpicLoot
                                 break;
 
                             case BossDropMode.OnePerPlayerNearBoss:
-                                dropCount = playerList.Count(x => Vector3.Distance(x.m_position, __instance.m_character.transform.position) <= EpicLoot.GetBossTrophyDropPlayerRange());
+                                dropCount = Math.Max(Player.GetPlayersInRangeXZ(__instance.m_character.transform.position,  EpicLoot.GetBossTrophyDropPlayerRange()), playerList.Count(x => Vector3.Distance(x.m_position, __instance.m_character.transform.position) <= EpicLoot.GetBossTrophyDropPlayerRange()));
                                 break;
 
-                            case BossDropMode.OneOnly:
                             default:
                                 dropCount = 1;
                                 break;
