@@ -2318,6 +2318,36 @@
       "Suffixes": [
         "$mod_epicloot_me_glowing_suffix1"
       ]
+    },
+    {
+      "Type" : "Executioner",
+      "DisplayText" : "$mod_epicloot_me_executioner_display",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "OneHandedWeapon",
+          "TwoHandedWeapon",
+          "Bow"
+        ],
+        "ExcludedSkillTypes": [
+          "Pickaxes"
+        ],
+        "AllowedRarities" : [
+          "Epic",
+          "Legendary"
+        ],
+        "ItemUsesStaminaOnAttack" : true
+      },
+      "ValuesPerRarity" : {
+        "Epic" : { "MinValue" : 50, "MaxValue" : 100, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 100, "MaxValue" : 200, "Increment" : 1 }
+      },
+      "SelectionWeight" : 1,
+      "Prefixes": [
+        "$mod_epicloot_me_executioner_prefix1"
+      ],
+      "Suffixes": [
+        "$mod_epicloot_me_executioner_suffix1"
+      ]
     }
   ]
 }
