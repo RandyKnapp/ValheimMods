@@ -9,7 +9,7 @@ namespace EpicLoot.MagicItemEffects
         public static void Postfix(ItemDrop.ItemData __instance, ref float __result)
         {
 	        var totalBlockPowerMod = 0f;
-	        ModifyWithLowHealth.Apply(Player.m_localPlayer, MagicEffectType.ModifyBlockPower, effect =>
+	        Duelist.Apply(Player.m_localPlayer, MagicEffectType.ModifyBlockPower, effect =>
 	        {
 		        if (__instance.IsMagic() && __instance.GetMagicItem().HasEffect(effect))
 		        {
