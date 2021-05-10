@@ -240,7 +240,6 @@ namespace EpicLoot.Crafting
                 var recipe = Recipes[SelectedRecipe];
                 var inventory = player.GetInventory();
                 var disenchantCount = _disenchantAllFlag ? recipe.FromItem.m_stack : 1;
-                Debug.LogWarning($"Disenchant{(_disenchantAllFlag ? " (all)" : "")}: count={disenchantCount}");
                 inventory.RemoveItem(recipe.FromItem, disenchantCount);
                 var didntAdd = new List<KeyValuePair<ItemDrop.ItemData, int>>();
                 foreach (var product in recipe.Products)

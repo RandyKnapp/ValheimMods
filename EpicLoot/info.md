@@ -24,7 +24,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
   * **Display Text:** This text appears in the tooltip for the magic item, with {0:?} replaced with the rolled value for the effect, formatted using the shown C# string format.
   * **Requirements:** A set of requirements.
-    * **Flags:** A set of predefined flags to check certain weapon properties. The list of flags is: `NoRoll, ExclusiveSelf, ItemHasPhysicalDamage, ItemHasElementalDamage, ItemUsesDurability, ItemHasNegativeMovementSpeedModifier, ItemHasBlockPower, ItemHasParryPower, ItemHasNoParryPower, ItemHasArmor, ItemHasBackstabBonus, ItemUsesStaminaOnAttack`
+    * **Flags:** A set of predefined flags to check certain weapon properties. The list of flags is: `NoRoll, ExclusiveSelf, ItemHasPhysicalDamage, ItemHasElementalDamage, ItemUsesDurability, ItemHasNegativeMovementSpeedModifier, ItemHasBlockPower, ItemHasNoParryPower, ItemHasParryPower, ItemHasArmor, ItemHasBackstabBonus, ItemUsesStaminaOnAttack`
     * **ExclusiveEffectTypes:** This effect may not be rolled on an item that has already rolled on of these effects
     * **AllowedItemTypes:** This effect may only be rolled on items of a the types in this list. When this list is empty, this is usually done because this is a special effect type added programmatically  or currently not allowed to roll. Options are: `Helmet, Chest, Legs, Shoulder, Utility, Bow, OneHandedWeapon, TwoHandedWeapon, Shield, Tool, Torch`
     * **ExcludedItemTypes:** This effect may only be rolled on items that are not one of the types on this list.
@@ -1848,6 +1848,115 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > **Requirements:**
 > > **Flags:** `ExclusiveSelf`
 > > **AllowedItemTypes:** `Helmet, Chest, Legs, Shoulder, Utility`
+
+## Executioner
+
+> **Display Text:** Execute low-health enemies (+{0}% damage)
+> 
+> **Prefixes:** Executioner's
+> **Suffixes:** Execution
+> 
+> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf, ItemUsesStaminaOnAttack`
+> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow`
+> > **AllowedRarities:** `Epic, Legendary`
+> > **ExcludedSkillTypes:** `Pickaxes`
+
+## Riches
+
+> **Display Text:** +{0:0.#}% chance for slain enemies to drop treasure
+> 
+> **Prefixes:** Rich
+> **Suffixes:** Riches
+> 
+> **Allowed Item Types:** Utility
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedItemTypes:** `Utility`
+> 
+> **Value Per Rarity:**
+> 
+> |Rarity|Min|Max|Increment|
+> |--|--|--|--|
+> |Magic|1|3|1|
+> |Rare|4|6|1|
+> |Epic|7|9|1|
+> |Legendary|10|15|1|
+
+## Opportunist
+
+> **Display Text:** +{0:0.#}% chance to backstab staggered enemies
+> 
+> **Prefixes:** Opportunist's
+> **Suffixes:** Opportunity
+> 
+> **Allowed Item Types:** *None*
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedRarities:** `Epic, Legendary`
+> > **AllowedSkillTypes:** `Knives`
+
+## Duelist
+
+> **Display Text:** Adds +{0:0.#}% block and parry power without a shield
+> 
+> **Prefixes:** Duelist's
+> **Suffixes:** Dueling
+> 
+> **Allowed Item Types:** OneHandedWeapon
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedItemTypes:** `OneHandedWeapon`
+> > **AllowedSkillTypes:** `Swords`
+> 
+> **Value Per Rarity:**
+> 
+> |Rarity|Min|Max|Increment|
+> |--|--|--|--|
+> |Magic|20|30|1|
+> |Rare|31|40|1|
+> |Epic|41|50|1|
+> |Legendary|51|60|1|
+
+## Immovable
+
+> **Display Text:** Immune to knockback and stagger while blocking
+> 
+> **Prefixes:** Pillar's
+> **Suffixes:** the Pillar
+> 
+> **Allowed Item Types:** Shield
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf, ItemHasNoParryPower`
+> > **AllowedItemTypes:** `Shield`
+
+## ModifyStaggerDamage
+
+> **Display Text:** Damage to staggered enemies increased by +{0:0.#}%
+> 
+> **Prefixes:** Cunning's
+> **Suffixes:** the cunning
+> 
+> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow`
+> 
+> **Value Per Rarity:**
+> 
+> |Rarity|Min|Max|Increment|
+> |--|--|--|--|
+> |Magic|7|15|1|
+> |Rare|16|22|1|
+> |Epic|23|30|1|
+> |Legendary|31|40|1|
 
 # Item Sets
 

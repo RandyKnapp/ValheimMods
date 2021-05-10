@@ -19,6 +19,7 @@ namespace EpicLoot
 
             AddMagicEffectsPage(__instance, player);
             AddTreasureAndBountiesPage(__instance, player);
+
         }
 
         private static void AddMagicEffectsPage(TextsDialog textsDialog, Player player)

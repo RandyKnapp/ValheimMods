@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace EpicLoot
 {
-    public enum EffectAttachMode
+    public enum FxAttachMode
     {
         None,
         Player,
@@ -23,15 +23,15 @@ namespace EpicLoot
                 return;
             }
 
-            var equipEffect = GetEquipEffectName(equippedItem, out var mode);
+            var equipEffect = GetEquipFxName(equippedItem, out var mode);
             if (!string.IsNullOrEmpty(equipEffect))
             {
                 var asset = EpicLoot.LoadAsset<GameObject>(equipEffect);
                 if (asset != null)
                 {
-                    var attachObject = mode == EffectAttachMode.Player ? player.transform : __result.transform;
+                    var attachObject = mode == FxAttachMode.Player ? player.transform : __result.transform;
                     var equipEffects = attachObject.Find("equiped");
-                    if (equipEffects != null && mode == EffectAttachMode.EquipRoot)
+                    if (equipEffects != null && mode == FxAttachMode.EquipRoot)
                     {
                         attachObject = equipEffects;
                     }
@@ -55,20 +55,50 @@ namespace EpicLoot
                 return;
             }
 
-            var equipEffect = GetEquipEffectName(equippedItem, out var mode);
-            if (!string.IsNullOrEmpty(equipEffect) && mode == EffectAttachMode.Player)
+            var equipFx = GetEquipFxName(equippedItem, out var mode);
+            if (!string.IsNullOrEmpty(equipFx) && mode == FxAttachMode.Player)
             {
-                var asset = EpicLoot.LoadAsset<GameObject>(equipEffect);
+                var asset = EpicLoot.LoadAsset<GameObject>(equipFx);
                 if (asset != null)
                 {
                     var attachObject = player.transform;
+                    if (attachObject.Find(equipFx) != null)
+                    {
+                        EpicLoot.LogError($"Equipped item fx ({equippedItem.m_shared.m_name}, {equipFx}) already exists on player!");
+                        return;
+                    }
+
                     var newEffect = Object.Instantiate(asset, attachObject, false);
+                    newEffect.name = equipFx;
                     var audioSources = newEffect.GetComponentsInChildren<AudioSource>();
                     foreach (var audioSource in audioSources)
                     {
                         audioSource.outputAudioMixerGroup = AudioMan.instance.m_ambientMixer;
                     }
                 }
+            }
+        }
+
+        [HarmonyPatch(typeof(Humanoid), nameof(Humanoid.UnequipItem))]
+        [HarmonyPrefix]
+        public static void Humanoid_UnequipItem_Prefix(Humanoid __instance, ItemDrop.ItemData item)
+        {
+            if (item == null || !item.m_equiped)
+            {
+                return;
+            }
+
+            var equipFx = GetEquipFxName(item, out var mode);
+            if (!string.IsNullOrEmpty(equipFx) && mode == FxAttachMode.Player)
+            {
+                var effect = __instance.transform.Find(equipFx);
+                if (effect == null)
+                {
+                    EpicLoot.LogError($"Unequipped item ({item.m_shared.m_name}) from player that had fx, but could not find fx ({equipFx})!");
+                    return;
+                }
+
+                Object.Destroy(effect.gameObject);
             }
         }
 
@@ -98,17 +128,17 @@ namespace EpicLoot
             return equippedItem != null;
         }
 
-        public static string GetEquipEffectName(ItemDrop.ItemData equippedItem, out EffectAttachMode mode)
+        public static string GetEquipFxName(ItemDrop.ItemData equippedItem, out FxAttachMode mode)
         {
             if (equippedItem.IsMagic())
             {
                 var magicItem = equippedItem.GetMagicItem();
                 if (magicItem.IsUniqueLegendary())
                 {
-                    if (!string.IsNullOrEmpty(magicItem.GetLegendaryInfo()?.EquipEffect))
+                    if (!string.IsNullOrEmpty(magicItem.GetLegendaryInfo()?.EquipFx))
                     {
-                        mode = EffectAttachMode.EquipRoot;
-                        return magicItem.GetLegendaryInfo().EquipEffect;
+                        mode = FxAttachMode.EquipRoot;
+                        return magicItem.GetLegendaryInfo().EquipFx;
                     }
                 }
                 else
@@ -121,7 +151,7 @@ namespace EpicLoot
                 }
             }
 
-            mode = EffectAttachMode.None;
+            mode = FxAttachMode.None;
             return null;
         }
     }

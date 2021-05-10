@@ -2301,7 +2301,7 @@
     {
       "Type" : "Glowing",
       "DisplayText" : "$mod_epicloot_me_glowing_display",
-      "EquipEffect" : "GlowingAura", 
+      "EquipFx" : "GlowingAura", 
       "Requirements" : {
         "AllowedItemTypes" : [
           "Helmet",
