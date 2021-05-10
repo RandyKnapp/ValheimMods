@@ -110,8 +110,7 @@
           "Torch"
         ],
         "ExcludedSkillTypes": [
-          "Pickaxes",
-          "Axes"
+          "Pickaxes"
         ],
         "ItemHasElementalDamage" : true
       },
@@ -486,8 +485,7 @@
           "Torch"
         ],
         "ExcludedSkillTypes": [
-          "Pickaxes",
-          "Axes"
+          "Pickaxes"
         ]
       },
       "ValuesPerRarity" : {
@@ -601,8 +599,7 @@
           "Torch"
         ],
         "ExcludedSkillTypes": [
-          "Pickaxes",
-          "Axes"
+          "Pickaxes"
         ]
       },
       "ValuesPerRarity" : {
@@ -640,8 +637,7 @@
           "Torch"
         ],
         "ExcludedSkillTypes": [
-          "Pickaxes",
-          "Axes"
+          "Pickaxes"
         ]
       },
       "ValuesPerRarity" : {
@@ -679,8 +675,7 @@
           "Torch"
         ],
         "ExcludedSkillTypes": [
-          "Pickaxes",
-          "Axes"
+          "Pickaxes"
         ]
       },
       "ValuesPerRarity" : {
@@ -718,8 +713,7 @@
           "Torch"
         ],
         "ExcludedSkillTypes": [
-          "Pickaxes",
-          "Axes"
+          "Pickaxes"
         ]
       },
       "ValuesPerRarity" : {
@@ -757,8 +751,7 @@
           "Torch"
         ],
         "ExcludedSkillTypes": [
-          "Pickaxes",
-          "Axes"
+          "Pickaxes"
         ]
       },
       "ValuesPerRarity" : {
@@ -1865,6 +1858,9 @@
           "TwoHandedWeapon",
           "Bow",
           "Shield"
+        ],
+        "ExcludedSkillTypes": [
+          "Pickaxes"
         ]
       },
       "ValuesPerRarity" : {
@@ -1921,6 +1917,9 @@
         "AllowedItemTypes" : [
           "OneHandedWeapon",
           "TwoHandedWeapon"
+        ],
+        "ExcludedSkillTypes": [
+          "Pickaxes"
         ]
       },
       "SelectionWeight" : 1,
@@ -2152,6 +2151,9 @@
           "OneHandedWeapon",
           "TwoHandedWeapon",
           "Bow"
+        ],
+        "ExcludedSkillTypes": [
+          "Pickaxes"
         ]
       },
       "ValuesPerRarity" : {
@@ -2235,6 +2237,9 @@
           "TwoHandedWeapon",
           "Bow",
           "Tool"
+        ],
+        "ExcludedSkillTypes": [
+          "Pickaxes"
         ]
       },
       "ValuesPerRarity" : {
@@ -2388,9 +2393,9 @@
         ]
       },
       "ValuesPerRarity" : {
-        "Rare" : { "MinValue" : 15, "MaxValue" : 25, "Increment" : 1 },
-        "Epic" : { "MinValue" : 25, "MaxValue" : 40, "Increment" : 1 },
-        "Legendary" : { "MinValue" : 40, "MaxValue" : 55, "Increment" : 1 }
+        "Rare" : { "MinValue" : 10, "MaxValue" : 15, "Increment" : 1 },
+        "Epic" : { "MinValue" : 15, "MaxValue" : 20, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 20, "MaxValue" : 25, "Increment" : 1 }
       },
       "SelectionWeight" : 1,
       "Prefixes": [
@@ -2450,6 +2455,9 @@
           "OneHandedWeapon",
           "TwoHandedWeapon",
           "Bow"
+        ],
+        "ExcludedSkillTypes": [
+          "Pickaxes"
         ]
       },
       "ValuesPerRarity" : {

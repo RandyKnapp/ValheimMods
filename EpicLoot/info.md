@@ -1,4 +1,4 @@
-# EpicLoot Data v0.7.8
+# EpicLoot Data v0.7.9
 
 *Author: RandyKnapp*
 *Source: [Github](https://github.com/RandyKnapp/ValheimMods/tree/main/EpicLoot)*
@@ -204,7 +204,6 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > **Requirements:**
 > > **Flags:** `ExclusiveSelf, ItemHasBlockPower`
 > > **AllowedItemTypes:** `Shield`
-> > **ExcludedSkillTypes:** `Pickaxes`
 > 
 > **Value Per Rarity:**
 > 
@@ -1446,6 +1445,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > **Requirements:**
 > > **Flags:** `ExclusiveSelf`
 > > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow, Shield`
+> > **ExcludedSkillTypes:** `Pickaxes`
 > 
 > **Value Per Rarity:**
 > 
@@ -1504,6 +1504,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > **Requirements:**
 > > **Flags:** `ExclusiveSelf`
 > > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon`
+> > **ExcludedSkillTypes:** `Pickaxes`
 
 ## ReflectDamage
 
@@ -1721,6 +1722,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > **Requirements:**
 > > **Flags:** `ExclusiveSelf`
 > > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow`
+> > **ExcludedSkillTypes:** `Pickaxes`
 > 
 > **Value Per Rarity:**
 > 
@@ -1789,6 +1791,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > **Requirements:**
 > > **Flags:** `ExclusiveSelf`
 > > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow, Tool`
+> > **ExcludedSkillTypes:** `Pickaxes`
 > 
 > **Value Per Rarity:**
 > 
@@ -1948,6 +1951,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > **Requirements:**
 > > **Flags:** `ExclusiveSelf`
 > > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow`
+> > **ExcludedSkillTypes:** `Pickaxes`
 > 
 > **Value Per Rarity:**
 > 
