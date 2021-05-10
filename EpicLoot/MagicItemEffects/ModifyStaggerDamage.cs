@@ -6,15 +6,19 @@ namespace EpicLoot.MagicItemEffects
 	[HarmonyPatch(typeof(Character), "Damage")]
 	public class ModifyStaggerDamage_Character_Damage_Patch
 	{
-		public static bool HandlingProjectileDamage = false;
+		public static float? HandlingProjectileDamage;
 		
 		[UsedImplicitly]
 		private static void Prefix(Character __instance, HitData hit)
 		{
 			Character attacker = hit.GetAttacker();
-			if (!HandlingProjectileDamage && attacker is Player player)
+			if (attacker is Player player && __instance.IsStaggering())
 			{
-				hit.ApplyModifier(ReadStaggerDamageValue(player));
+				if (HandlingProjectileDamage == null)
+				{
+					HandlingProjectileDamage = ReadStaggerDamageValue(player);
+				}
+				hit.ApplyModifier((float)HandlingProjectileDamage);
 			}
 		}
 
@@ -35,21 +39,21 @@ namespace EpicLoot.MagicItemEffects
 	public class ModifyStaggerDamageProjectileHit_Projectile_OnHit_Patch
 	{
 		[UsedImplicitly]
-		private static void Prefix() => ModifyStaggerDamage_Character_Damage_Patch.HandlingProjectileDamage = true;
+		private static void Prefix(Projectile __instance) => ModifyStaggerDamage_Character_Damage_Patch.HandlingProjectileDamage = __instance.m_nview?.GetZDO().GetFloat("epic loot modify stagger damage", 1f);
 
 		[UsedImplicitly]
-		private static void Postfix() => ModifyStaggerDamage_Character_Damage_Patch.HandlingProjectileDamage = false;
+		private static void Postfix() => ModifyStaggerDamage_Character_Damage_Patch.HandlingProjectileDamage = null;
 	}
 
 	[HarmonyPatch(typeof(Projectile), "Setup")]
 	public class ModifyStaggerDamage_Projectile_Setup_Patch
 	{
 		[UsedImplicitly]
-		private static void Prefix(Character owner, HitData hitData)
+		private static void Prefix(Character owner, Projectile __instance)
 		{
 			if (owner is Player player)
 			{
-				hitData.ApplyModifier(ModifyStaggerDamage_Character_Damage_Patch.ReadStaggerDamageValue(player));
+				__instance.m_nview?.GetZDO().Set("epic loot modify stagger damage", ModifyStaggerDamage_Character_Damage_Patch.ReadStaggerDamageValue(player));
 			}
 		}
 	}
