@@ -37,12 +37,12 @@
 - [ ] Immobilize
 - [X] Modify Attack Speed (fixed now)
 - [X] Increase damage vs staggered enemies
-- [ ] Duelist (sword, when off hand is empty, increase parry and block power by a lot)
-- [ ] Opportunist (knife, add backstab damaged to staggered enemies)
+- [X] Duelist (sword, when off hand is empty, increase parry and block power by a lot)
+- [X] Opportunist (knife, add backstab damaged to staggered enemies)
 - [X] Throwing (change alterate attack to throw like spear)
 - [X] Increase stagger duration
 - [ ] Blind
-- [ ] Immovable (tower shield, immune to stagger and knockback while blocking)
+- [X] Immovable (tower shield, immune to stagger and knockback while blocking)
 - [ ] Glowing
 
 #### Armor
@@ -62,15 +62,15 @@
 - [X] % chance to ignore incoming damage
 - [X] Improve Skill Level
 - [X] Comfortable (Increase Comfort level when resting)
-- [ ] Glowing
+- [X] Glowing
 
 #### Utility
 - [ ] Luck (increase drop rate and rarity chance)
-- [ ] Riches (add chance to drop treasure on all mobs)
+- [X] Riches (add chance to drop treasure on all mobs)
 - [ ] Add bonus armor (magic shield?)
 
 #### Tools
-- [ ] Build freedom (hammer, don't require crafting station)
+- [X] Build freedom (hammer, don't require crafting station)
 - [ ] No stamina cost
 
 ## Legendary Items:
