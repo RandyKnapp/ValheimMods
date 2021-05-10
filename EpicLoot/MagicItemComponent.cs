@@ -232,6 +232,12 @@ namespace EpicLoot
             return GetMagicEquipmentWithEffect(player, effectType).Count > 0;
         }
 
+        public static bool HasMagicEquipmentWithEffect(this Player player, string effectType, out List<ItemDrop.ItemData> equipment)
+        {
+            equipment = GetMagicEquipmentWithEffect(player, effectType);
+            return equipment.Count > 0;
+        }
+
         public static List<ItemDrop.ItemData> GetEquippedSetPieces(this Player player, string setName)
         {
             return player.GetEquipment().Where(x => x.IsPartOfSet(setName)).ToList();

@@ -2383,6 +2383,10 @@
           "Legendary"
         ]
       },
+      "ValuesPerRarity" : {
+        "Epic" : { "MinValue" : 25, "MaxValue" : 40, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 40, "MaxValue" : 55, "Increment" : 1 }
+      },
       "SelectionWeight" : 1,
       "Prefixes": [
         "$mod_epicloot_me_opportunist_prefix1"
