@@ -26,6 +26,7 @@
   * Overhaul of Resistances: removed Spirit, resistances now reduce damage by a set percent, and stack (fix existing resistances by using the console command: `fixresistances`)
   * Known items and recipes (for item gating) are now synced between all players on a server
   * Added "Sacrifice All" button to Sacrifice tab which sacrifices the whole stack of whatever you have selected
+  * Fixed a bug where no boss trophies would drop in single player
 ## Version 0.7.7
   * Added config to drop trophies based only on the number of nearby players, not just total players on the server
   * Fixed unlocalized minimap icon text for treasure maps
