@@ -1813,7 +1813,6 @@
       "Type" : "AddPickaxesSkill",
       "DisplayText" : "$mod_epicloot_me_addpickaxesskill_display",
       "Requirements": {
-        "NoRoll": true, // Pierce damage adds pickaxe damage if itemtype is Pickaxe
         "AllowedSkillTypes": [
           "Pickaxes"
         ]
