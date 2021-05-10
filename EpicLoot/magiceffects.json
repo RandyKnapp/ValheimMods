@@ -110,7 +110,8 @@
           "Torch"
         ],
         "ExcludedSkillTypes": [
-          "Pickaxes"
+          "Pickaxes",
+          "Axes"
         ],
         "ItemHasElementalDamage" : true
       },
@@ -254,9 +255,6 @@
       "Requirements" : {
         "AllowedItemTypes" : [
           "Shield"
-        ],
-        "ExcludedSkillTypes": [
-          "Pickaxes"
         ],
         "ItemHasBlockPower" : true
       },
@@ -488,7 +486,8 @@
           "Torch"
         ],
         "ExcludedSkillTypes": [
-          "Pickaxes"
+          "Pickaxes",
+          "Axes"
         ]
       },
       "ValuesPerRarity" : {
@@ -602,7 +601,8 @@
           "Torch"
         ],
         "ExcludedSkillTypes": [
-          "Pickaxes"
+          "Pickaxes",
+          "Axes"
         ]
       },
       "ValuesPerRarity" : {
@@ -640,7 +640,8 @@
           "Torch"
         ],
         "ExcludedSkillTypes": [
-          "Pickaxes"
+          "Pickaxes",
+          "Axes"
         ]
       },
       "ValuesPerRarity" : {
@@ -678,7 +679,8 @@
           "Torch"
         ],
         "ExcludedSkillTypes": [
-          "Pickaxes"
+          "Pickaxes",
+          "Axes"
         ]
       },
       "ValuesPerRarity" : {
@@ -716,7 +718,8 @@
           "Torch"
         ],
         "ExcludedSkillTypes": [
-          "Pickaxes"
+          "Pickaxes",
+          "Axes"
         ]
       },
       "ValuesPerRarity" : {
@@ -754,7 +757,8 @@
           "Torch"
         ],
         "ExcludedSkillTypes": [
-          "Pickaxes"
+          "Pickaxes",
+          "Axes"
         ]
       },
       "ValuesPerRarity" : {
@@ -1808,8 +1812,8 @@
     {
       "Type" : "AddPickaxesSkill",
       "DisplayText" : "$mod_epicloot_me_addpickaxesskill_display",
-      "Requirements" : {
-        "AllowedSkillTypes" : [
+      "Requirements": {
+        "AllowedSkillTypes": [
           "Pickaxes"
         ]
       },
