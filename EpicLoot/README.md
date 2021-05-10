@@ -21,7 +21,8 @@ Information about every magic effect and loot drop table can be found in [info.m
 ## Credits
 Contibutions from the following modders was invaluable and appreciated: 
   * [blaxxun (CLLC)](https://www.nexusmods.com/valheim/mods/495) - bugfixes, config sync, various magic item effects, 
-  * [jsza](https://github.com/jsza) - bugfixes, 
+  * [M3TO](https://github.com/M3TO) - bugfixes
+  * [jsza](https://github.com/jsza) - bugfixes
   * [maxrd2](https://github.com/maxrd2) - bugfixes
   * [nanonull](https://github.com/nanonull) - bugfixes, lifesteal
   * [xPucTu4](https://github.com/xPucTu4) - bugfixes

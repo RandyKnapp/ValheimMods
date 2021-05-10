@@ -2,7 +2,7 @@
   * Reduced Opportunist chance to proc
   * Allowed AddSkill to exceed 100 points (and fixed vanilla bug around damage ranges not going over 100%)
   * Excluded pickaxes from a bunch of magic effects that are useless for them
-  * Added increased chop and pickaxe damage for axes and pickaxes when they have bonus slash/pierce damage
+  * Added increased chop and pickaxe damage for axes and pickaxes when they have bonus slash/pierce damage (by [M3TO](https://github.com/M3TO))
 ## Version 0.7.8
   * ConfigSync from blaxxun added. MCE and the MCE addon are NO LONGER NEEDED!
   * Config json files are now editable while the game is running and will automatically hot reload! (thanks blaxxun!)
