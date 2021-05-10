@@ -2384,6 +2384,7 @@
         ]
       },
       "ValuesPerRarity" : {
+        "Rare" : { "MinValue" : 15, "MaxValue" : 25, "Increment" : 1 },
         "Epic" : { "MinValue" : 25, "MaxValue" : 40, "Increment" : 1 },
         "Legendary" : { "MinValue" : 40, "MaxValue" : 55, "Increment" : 1 }
       },
