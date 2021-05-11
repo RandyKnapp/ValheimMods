@@ -39,7 +39,7 @@ namespace EquipmentAndQuickSlots
                 return;
             }
 
-            if (x >= container.m_width)
+            if (x >= __instance.m_width)
             {
                 int newWidth = x + 1;
                 EquipmentAndQuickSlots.Log($"Changing tombstone container width ({container.m_width} -> {newWidth}) to fit item at pos {x},{y}");
@@ -47,7 +47,7 @@ namespace EquipmentAndQuickSlots
                 __instance.m_width = newWidth;
             }
 
-            if (y >= container.m_height)
+            if (y >= __instance.m_height)
             {
                 int newHeight = y + 1;
                 EquipmentAndQuickSlots.Log($"Changing tombstone container height ({container.m_height} -> {newHeight}) to fit item at pos {x},{y}");
