@@ -23,10 +23,10 @@ namespace EpicLoot
                 return;
             }
 
-            var equipEffect = GetEquipFxName(equippedItem, out var mode);
-            if (!string.IsNullOrEmpty(equipEffect))
+            var equipFx = GetEquipFxName(equippedItem, out var mode);
+            if (!string.IsNullOrEmpty(equipFx))
             {
-                var asset = EpicLoot.LoadAsset<GameObject>(equipEffect);
+                var asset = EpicLoot.LoadAsset<GameObject>(equipFx);
                 if (asset != null)
                 {
                     var attachObject = mode == FxAttachMode.Player ? player.transform : __result.transform;
@@ -36,12 +36,7 @@ namespace EpicLoot
                         attachObject = equipEffects;
                     }
 
-                    var newEffect = Object.Instantiate(asset, attachObject, false);
-                    var audioSources = newEffect.GetComponentsInChildren<AudioSource>();
-                    foreach (var audioSource in audioSources)
-                    {
-                        audioSource.outputAudioMixerGroup = AudioMan.instance.m_ambientMixer;
-                    }
+                    AttachFx(attachObject, equipFx, asset);
                 }
             }
         }
@@ -62,22 +57,27 @@ namespace EpicLoot
                 if (asset != null)
                 {
                     var attachObject = player.transform;
-                    if (attachObject.Find(equipFx) != null)
-                    {
-                        EpicLoot.LogError($"Equipped item fx ({equippedItem.m_shared.m_name}, {equipFx}) already exists on player!");
-                        return;
-                    }
-
-                    var newEffect = Object.Instantiate(asset, attachObject, false);
-                    newEffect.name = equipFx;
-                    var audioSources = newEffect.GetComponentsInChildren<AudioSource>();
-                    foreach (var audioSource in audioSources)
-                    {
-                        audioSource.outputAudioMixerGroup = AudioMan.instance.m_ambientMixer;
-                    }
+                    AttachFx(attachObject, equipFx, asset);
                 }
             }
         }
+
+        private static void AttachFx(Transform attachObject, string equipFx, GameObject asset)
+        {
+            if (attachObject.Find(equipFx) != null)
+            {
+                return;
+            }
+
+            var newEffect = Object.Instantiate(asset, attachObject, false);
+            newEffect.name = equipFx;
+            var audioSources = newEffect.GetComponentsInChildren<AudioSource>();
+            foreach (var audioSource in audioSources)
+            {
+                audioSource.outputAudioMixerGroup = AudioMan.instance.m_ambientMixer;
+            }
+        }
+
 
         [HarmonyPatch(typeof(Humanoid), nameof(Humanoid.UnequipItem))]
         [HarmonyPrefix]
@@ -89,6 +89,11 @@ namespace EpicLoot
             }
 
             var equipFx = GetEquipFxName(item, out var mode);
+            if (OtherItemsUseThisEffect(__instance, equipFx, item, mode))
+            {
+                return;
+            }
+
             if (!string.IsNullOrEmpty(equipFx) && mode == FxAttachMode.Player)
             {
                 var effect = __instance.transform.Find(equipFx);
@@ -100,6 +105,30 @@ namespace EpicLoot
 
                 Object.Destroy(effect.gameObject);
             }
+        }
+
+        private static bool OtherItemsUseThisEffect(Humanoid humanoid, string equipFx, ItemDrop.ItemData item, FxAttachMode mode)
+        {
+            if (humanoid == null || !humanoid.IsPlayer())
+            {
+                return false;
+            }
+
+            var player = (Player)humanoid;
+            foreach (var equipmentItemData in player.GetEquipment())
+            {
+                if (equipmentItemData == item)
+                {
+                    continue;
+                }
+
+                if (GetEquipFxName(equipmentItemData, out var equippedItemMode) == equipFx && equippedItemMode == mode)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public static bool CanCreateEffect(VisEquipment __instance, int itemHash, out Player player, out ItemDrop.ItemData equippedItem)
