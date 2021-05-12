@@ -133,10 +133,13 @@ namespace EquipmentAndQuickSlots
 
             if (EquipmentAndQuickSlots.QuickSlotsEnabled.Value && hotkeyBar.transform.parent.Find("QuickSlotsHotkeyBar") == null)
             {
-                var quickslotsHotkeyBar = Object.Instantiate(hotkeyBar.gameObject, __instance.m_healthBarRoot, true);
+                var quickslotsHotkeyBar = Object.Instantiate(hotkeyBar.gameObject, __instance.m_rootObject.transform, true);
                 quickslotsHotkeyBar.name = "QuickSlotsHotkeyBar";
-                (quickslotsHotkeyBar.transform as RectTransform).anchoredPosition = new Vector2(55, -120);
-                quickslotsHotkeyBar.transform.localEulerAngles = new Vector3(0.0f, 0.0f, -90f);
+                var rt = (RectTransform) quickslotsHotkeyBar.transform;
+                rt.pivot = new Vector2(0, 1);
+                rt.anchorMin = Vector2.zero;
+                rt.anchorMax = Vector2.zero;
+                rt.anchoredPosition = new Vector2(216, 150);
                 quickslotsHotkeyBar.GetComponent<HotkeyBar>().m_selected = -1;
             }
         }

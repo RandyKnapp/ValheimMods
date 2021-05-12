@@ -46,6 +46,7 @@
 - [ ] Glowing
 
 #### Armor
+- [ ] Mimic Dverger Circlet
 - [ ] Warm (Prevent freezing effect)
 - [X] Waterproof (cape, prevent Wet effect from rain)
 - [X] Waterwalk (legs)
