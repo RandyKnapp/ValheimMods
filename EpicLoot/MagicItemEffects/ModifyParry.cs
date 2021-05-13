@@ -1,72 +1,81 @@
-﻿using HarmonyLib;
+﻿using System;
+using HarmonyLib;
 
 namespace EpicLoot.MagicItemEffects
 {
-    //public float GetDeflectionForce(int quality)
-    [HarmonyPatch(typeof(ItemDrop.ItemData), "GetDeflectionForce", typeof(int))]
-    public static class ModifyParry_ItemData_GetDeflectionForce_Patch
-    {
-        public static void Postfix(ItemDrop.ItemData __instance, ref float __result)
-        {
-	        var totalParryMod = 0f;
-	        Duelist.Apply(Player.m_localPlayer, MagicEffectType.ModifyParry, effect =>
-	        {
-		        if (__instance.IsMagic() && __instance.GetMagicItem().HasEffect(effect))
-		        {
-			        totalParryMod += __instance.GetMagicItem().GetTotalEffectValue(effect, 0.01f);
-		        }
-	        });
-            __result *= 1.0f + totalParryMod;
-        }
-    }
+	//public float GetDeflectionForce(int quality)
+	[HarmonyPatch(typeof(ItemDrop.ItemData), "GetDeflectionForce", typeof(int))]
+	public static class ModifyParry_ItemData_GetDeflectionForce_Patch
+	{
+		public static void Postfix(ItemDrop.ItemData __instance, ref float __result)
+		{
+			var totalParryMod = 0f;
+			ModifyWithLowHealth.Apply(Player.m_localPlayer, MagicEffectType.ModifyParry, effect =>
+			{
+				if (__instance.IsMagic() && __instance.GetMagicItem().HasEffect(effect))
+				{
+					totalParryMod += __instance.GetMagicItem().GetTotalEffectValue(effect, 0.01f);
+				}
+			});
 
-    //public override bool BlockAttack(HitData hit, Character attacker)
-    [HarmonyPatch(typeof(Humanoid), "BlockAttack")]
-    public static class ModifyParry_Humanoid_BlockAttack_Patch
-    {
-        public static bool Override;
-        public static float OriginalValue;
+			__result *= 1.0f + totalParryMod;
+			if (__instance.IsMagic() && __instance.GetMagicItem().HasEffect(MagicEffectType.Duelist))
+			{
+				__result += __instance.GetDamage().GetTotalDamage() / 2 * __instance.GetMagicItem().GetTotalEffectValue(MagicEffectType.Duelist, 0.01f);
+			}
 
-        public static bool Prefix(Humanoid __instance, HitData hit, Character attacker)
-        {
-            Override = false;
-            OriginalValue = -1;
+			__result = (float) Math.Round(__result, 1);
+		}
+	}
 
-            ItemDrop.ItemData currentBlocker = __instance.GetCurrentBlocker();
-            if (currentBlocker == null || !(__instance is Player player))
-            {
-                return true;
-            }
+	//public override bool BlockAttack(HitData hit, Character attacker)
+	[HarmonyPatch(typeof(Humanoid), "BlockAttack")]
+	public static class ModifyParry_Humanoid_BlockAttack_Patch
+	{
+		public static bool Override;
+		public static float OriginalValue;
 
-            var totalParryBonusMod = 0f;
-			Duelist.Apply(player, MagicEffectType.ModifyParry, effect =>
-            {
-	            if (currentBlocker.IsMagic() && currentBlocker.GetMagicItem().HasEffect(effect))
-	            {
-		            if (!Override)
-		            {
-			            Override = true;
-			            OriginalValue = currentBlocker.m_shared.m_timedBlockBonus;
-		            }
+		public static bool Prefix(Humanoid __instance, HitData hit, Character attacker)
+		{
+			Override = false;
+			OriginalValue = -1;
 
-		            totalParryBonusMod += currentBlocker.GetMagicItem().GetTotalEffectValue(effect, 0.01f);
-	            }
-            });
-		    currentBlocker.m_shared.m_timedBlockBonus *= 1.0f + totalParryBonusMod;
+			ItemDrop.ItemData currentBlocker = __instance.GetCurrentBlocker();
+			if (currentBlocker == null || !(__instance is Player player))
+			{
+				return true;
+			}
 
-            return true;
-        }
+			var totalParryBonusMod = 0f;
+			ModifyWithLowHealth.Apply(player, MagicEffectType.ModifyParry, effect =>
+			{
+				if (currentBlocker.IsMagic() && currentBlocker.GetMagicItem().HasEffect(effect))
+				{
+					if (!Override)
+					{
+						Override = true;
+						OriginalValue = currentBlocker.m_shared.m_timedBlockBonus;
+					}
 
-        public static void Postfix(Humanoid __instance, HitData hit, Character attacker)
-        {
-            ItemDrop.ItemData currentBlocker = __instance.GetCurrentBlocker();
-            if (currentBlocker != null && Override)
-            {
-                currentBlocker.m_shared.m_timedBlockBonus = OriginalValue;
-            }
+					totalParryBonusMod += currentBlocker.GetMagicItem().GetTotalEffectValue(effect, 0.01f);
+				}
+			});
 
-            Override = false;
-            OriginalValue = -1;
-        }
-    }
+			currentBlocker.m_shared.m_timedBlockBonus *= 1.0f + totalParryBonusMod;
+			
+			return true;
+		}
+
+		public static void Postfix(Humanoid __instance, HitData hit, Character attacker)
+		{
+			ItemDrop.ItemData currentBlocker = __instance.GetCurrentBlocker();
+			if (currentBlocker != null && Override)
+			{
+				currentBlocker.m_shared.m_timedBlockBonus = OriginalValue;
+			}
+
+			Override = false;
+			OriginalValue = -1;
+		}
+	}
 }

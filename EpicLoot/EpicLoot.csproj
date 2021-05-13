@@ -169,7 +169,6 @@
     <Compile Include="MagicItemEffects\AvoidDamageTaken.cs" />
     <Compile Include="MagicItemEffects\Comfortable.cs" />
     <Compile Include="MagicItemEffects\DoubleJump.cs" />
-    <Compile Include="MagicItemEffects\Duelist.cs" />
     <Compile Include="MagicItemEffects\Executioner.cs" />
     <Compile Include="MagicItemEffects\ExplosiveArrows.cs" />
     <Compile Include="MagicItemEffects\FeatherFall.cs" />
