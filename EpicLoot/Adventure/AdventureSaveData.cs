@@ -70,6 +70,7 @@ namespace EpicLoot.Adventure
         public string TargetName = "";
         public int RewardIron;
         public int RewardGold;
+        public int RewardCoins;
         public SerializableVector3 Position;
         public SerializableVector3 MinimapCircleOffset;
         public List<BountyTargetInfo> Adds = new List<BountyTargetInfo>();
@@ -88,6 +89,7 @@ namespace EpicLoot.Adventure
             pkg.Write(TargetName);
             pkg.Write(RewardIron);
             pkg.Write(RewardGold);
+            pkg.Write(RewardCoins);
             Position.ToPackage(pkg);
             MinimapCircleOffset.ToPackage(pkg);
             pkg.Write(Adds.Count);
@@ -110,6 +112,7 @@ namespace EpicLoot.Adventure
             result.TargetName = pkg.ReadString();
             result.RewardIron = pkg.ReadInt();
             result.RewardGold = pkg.ReadInt();
+            result.RewardCoins = pkg.ReadInt();
             result.Position = SerializableVector3.FromPackage(pkg);
             result.MinimapCircleOffset = SerializableVector3.FromPackage(pkg);
 
