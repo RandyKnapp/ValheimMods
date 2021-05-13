@@ -780,7 +780,7 @@
   "mod_epicloot_me_opportunist_prefix1": "Opportunist's",
   "mod_epicloot_me_opportunist_suffix1": "Opportunity",
   "mod_epicloot_me_duelist_display": "Deulist +{0:0.#}%",
-  "mod_epicloot_me_duelist_desc": "When using the magic weapon without anything in the player's off hand, it's block and parry power are increased by +<b><color=yellow>X</color></b>%.",
+  "mod_epicloot_me_duelist_desc": "When using the magic weapon without anything in the player's off hand, its block power is increased by +<b><color=yellow>X</color></b>% of the weapon's attack power, and its parry force is increased by +<b><color=yellow>X/2</color></b>% of the weapon's attack power.",
   "mod_epicloot_me_duelist_prefix1": "Duelist's",
   "mod_epicloot_me_duelist_suffix1": "Dueling",
   "mod_epicloot_me_immovable_display": "Immovable",

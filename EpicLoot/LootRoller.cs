@@ -648,10 +648,14 @@ namespace EpicLoot
             var players = new List<Player>();
             Player.GetPlayersInRange(fromPoint, 100f, players);
 
-            var highestLuckValue = players
-                .Select(x => x.GetTotalMagicEffectValueOnEquipment(MagicEffectType.Luck, 0.01f))
-                .Max();
-            luckFactor += highestLuckValue;
+            if (players.Count > 0)
+            {
+                var totalLuckFactor = players
+                    .Select(x => x.GetTotalMagicEffectValueOnEquipment(MagicEffectType.Luck, 0.01f))
+                    .DefaultIfEmpty(0)
+                    .Sum();
+                luckFactor += totalLuckFactor;
+            }
 
             return luckFactor;
         }

@@ -1,4 +1,5 @@
 ## Version 0.7.10
+  * Fix for Server Side Character crash bug
   * Increased epic and legendary drop rates at low tiers
   * Wishbone is now Epic rarity
   * Dragon's Tears and Yagluth Things can now be converted to legendary runestones or sacrificed for legendary crafting mats
