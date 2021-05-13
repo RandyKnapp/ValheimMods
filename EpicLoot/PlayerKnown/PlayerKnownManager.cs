@@ -74,10 +74,6 @@ namespace EpicLoot.PlayerKnown
 
         public static void RPC_ClientKnown(long sender, ZPackage pkg)
         {
-            if (sender == ZNet.instance.GetUID())
-            {
-                return;
-            }
             int materialCount = LoadKnown(sender, pkg, playerKnownMaterial);
             int recipeCount = LoadKnown(sender, pkg, playerKnownRecipes);
 
@@ -153,12 +149,8 @@ namespace EpicLoot.PlayerKnown
             ZPackage pkg = new ZPackage();
             WriteKnown(player.m_knownMaterial, pkg);
             WriteKnown(player.m_knownRecipes, pkg);
-            long uid = player.GetPlayerID();
-            SetKnown(uid, player.m_knownMaterial, playerKnownMaterial);
-            SetKnown(uid, player.m_knownRecipes, playerKnownRecipes);
 
-
-            EpicLoot.Log($"Sending known: {player.m_knownMaterial.Count} materials / {player.m_knownRecipes.Count} recipes {ZRoutedRpc.instance}");
+            EpicLoot.Log($"Sending known: {player.m_knownMaterial.Count} materials / {player.m_knownRecipes.Count} recipes");
             ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.Everybody, Name_RPC_ClientKnown, pkg);
         }
 
