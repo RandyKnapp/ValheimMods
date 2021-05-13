@@ -2590,6 +2590,30 @@
       "Suffixes": [
         "$mod_epicloot_me_luck_suffix1"
       ]
+    },
+    {
+      "Type" : "ModifyParryWindow",
+      "DisplayText" : "$mod_epicloot_me_modifyparrywindow_display",
+      "Description" : "$mod_epicloot_me_modifyparrywindow_desc",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "Shield"
+        ],
+        "ItemHasParryPower" : true
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 10, "MaxValue" : 40, "Increment" : 1 },
+        "Rare" : { "MinValue" : 20, "MaxValue" : 60, "Increment" : 1 },
+        "Epic" : { "MinValue" : 40, "MaxValue" : 80, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 50, "MaxValue" : 100, "Increment" : 1 }
+      },
+      "SelectionWeight" : 1,
+      "Prefixes": [
+        "$mod_epicloot_me_modifyparrywindow_prefix1"
+      ],
+      "Suffixes": [
+        "$mod_epicloot_me_modifyparrywindow_suffix1"
+      ]
     }
   ]
 }
