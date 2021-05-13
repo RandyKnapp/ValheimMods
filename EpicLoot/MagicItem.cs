@@ -26,10 +26,12 @@ namespace EpicLoot
     [Serializable]
     public class MagicItem
     {
+        public int Version = 2;
         public ItemRarity Rarity;
         public List<MagicItemEffect> Effects = new List<MagicItemEffect>();
         public string TypeNameOverride;
         public int AugmentedEffectIndex = -1;
+        public List<int> AugmentedEffectIndices = new List<int>();
         public string DisplayName;
         public string LegendaryID;
         public string SetID;
@@ -54,7 +56,7 @@ namespace EpicLoot
             for (var index = 0; index < Effects.Count; index++)
             {
                 var effect = Effects[index];
-                var bullet = (HasBeenAugmented() && index == AugmentedEffectIndex) ? "◇" : "◆";
+                var bullet = IsEffectAugmented(index) ? "◇" : "◆";
                 tooltip += $"\n{bullet} {GetEffectText(effect, Rarity, showRange)}";
             }
 
@@ -120,29 +122,38 @@ namespace EpicLoot
                 return;
             }
 
-            if (HasBeenAugmented() && AugmentedEffectIndex != index)
-            {
-                EpicLoot.LogError($"Tried to replace an effect on index {index} but the player has already augmented this item at index {AugmentedEffectIndex}");
-                return;
-            }
+            SetEffectAsAugmented(index);
 
-            AugmentedEffectIndex = index;
             Effects[index] = newEffect;
         }
 
         public bool HasBeenAugmented()
         {
-            return AugmentedEffectIndex >= 0 && AugmentedEffectIndex < Effects.Count;
+            return AugmentedEffectIndex >= 0 && AugmentedEffectIndex < Effects.Count || AugmentedEffectIndices.Count > 0;
         }
 
-        public MagicItemEffect GetAugmentedEffect()
+        public bool IsEffectAugmented(int index)
         {
-            if (HasBeenAugmented())
+            return AugmentedEffectIndex == index || AugmentedEffectIndices.Contains(index);
+        }
+
+        public void SetEffectAsAugmented(int index)
+        {
+            if (AugmentedEffectIndex == index)
             {
-                return Effects[AugmentedEffectIndex];
+                return;
             }
 
-            return null;
+            if (!IsEffectAugmented(index))
+            {
+                AugmentedEffectIndices.Add(index);
+            }
+        }
+
+        public int GetAugmentCount()
+        {
+            var old = AugmentedEffectIndex >= 0 ? 1 : 0;
+            return old + AugmentedEffectIndices.Count;
         }
 
         public bool IsUniqueLegendary()

@@ -307,5 +307,13 @@
         { "Item": "ReagentLegendary", "Amount": 1 }
       ]
     }
-  ]
+  ],
+  "ReAugmentCosts" : [
+    { "Item": "Coins", "Amount": 5000 },
+    { "Item": "Coins", "Amount": 10000 },
+    { "Item": "Coins", "Amount": 15000 },
+    { "Item": "Coins", "Amount": 20000 },
+    { "Item": "Coins", "Amount": 25000 },
+    { "Item": "Coins", "Amount": 30000 }
+  ] 
 }

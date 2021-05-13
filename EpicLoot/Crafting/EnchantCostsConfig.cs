@@ -42,5 +42,6 @@ namespace EpicLoot.Crafting
         public List<DisenchantProductsConfig> DisenchantProducts = new List<DisenchantProductsConfig>();
         public List<EnchantCostConfig> EnchantCosts = new List<EnchantCostConfig>();
         public List<AugmentCostConfig> AugmentCosts = new List<AugmentCostConfig>();
+        public List<ItemAmountConfig> ReAugmentCosts = new List<ItemAmountConfig>();
     }
 }
