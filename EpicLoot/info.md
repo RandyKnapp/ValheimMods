@@ -869,7 +869,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## ModifyMovementSpeed
 
-> **Display Text:** Speed +{0:0.#}%
+> **Display Text:** Move Speed +{0:0.#}%
 > 
 > **Prefixes:** Quick
 > **Suffixes:** Speed
@@ -1623,7 +1623,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## ModifyMovementSpeedLowHealth
 
-> **Display Text:** Speed +{0:0.#}% (Health Critical)
+> **Display Text:** Move Speed +{0:0.#}% (Health Critical)
 > 
 > **Prefixes:** Quick
 > **Suffixes:** Speed
