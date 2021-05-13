@@ -29,7 +29,7 @@ namespace EpicLoot.MagicItemEffects
 						m_attacker = __instance.GetZDOID(),
 						m_dir = hit.m_dir * -1,
 						m_point = attacker.transform.localPosition,
-						m_damage = {m_pierce = hit.GetTotalDamage() * reflectiveDamage}
+						m_damage = {m_pierce = (hit.GetTotalPhysicalDamage() + hit.GetTotalElementalDamage()) * reflectiveDamage}
 					};
 					try
 					{

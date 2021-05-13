@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using System;
+using HarmonyLib;
 
 namespace EpicLoot.MagicItemEffects
 {
@@ -9,14 +10,22 @@ namespace EpicLoot.MagicItemEffects
         public static void Postfix(ItemDrop.ItemData __instance, ref float __result)
         {
 	        var totalBlockPowerMod = 0f;
-	        Duelist.Apply(Player.m_localPlayer, MagicEffectType.ModifyBlockPower, effect =>
+	        ModifyWithLowHealth.Apply(Player.m_localPlayer, MagicEffectType.ModifyBlockPower, effect =>
 	        {
 		        if (__instance.IsMagic() && __instance.GetMagicItem().HasEffect(effect))
 		        {
 			        totalBlockPowerMod += __instance.GetMagicItem().GetTotalEffectValue(effect, 0.01f);
 		        }
 	        });
-            __result *= 1.0f + totalBlockPowerMod;
+
+	        __result *= 1.0f + totalBlockPowerMod;
+
+	        if (__instance.IsMagic() && __instance.GetMagicItem().HasEffect(MagicEffectType.Duelist))
+	        {
+		        __result += __instance.GetDamage().GetTotalDamage() * __instance.GetMagicItem().GetTotalEffectValue(MagicEffectType.Duelist, 0.01f);
+	        }
+
+	        __result = (float) Math.Round(__result, 1);
         }
     }
 }
