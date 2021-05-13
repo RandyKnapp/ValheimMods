@@ -644,7 +644,7 @@
   "mod_epicloot_me_addknivesskill_prefix1": "Scoundrel's",
   "mod_epicloot_me_addknivesskill_suffix1": "the Scoundrel",
   "mod_epicloot_me_addclubsskill_display": "Clubs Skill +{0}",
-  "mod_epicloot_me_addclubsskill_desc": "Increases the player's slubs skill level by +<b><color=yellow>X</color></b>. This may cause the skill level to increase above 100.",
+  "mod_epicloot_me_addclubsskill_desc": "Increases the player's clubs skill level by +<b><color=yellow>X</color></b>. This may cause the skill level to increase above 100.",
   "mod_epicloot_me_addclubsskill_prefix1": "Bruiser's",
   "mod_epicloot_me_addclubsskill_suffix1": "the Bruiser",
   "mod_epicloot_me_addpolearmsskill_display": "Polearms Skill +{0}",
