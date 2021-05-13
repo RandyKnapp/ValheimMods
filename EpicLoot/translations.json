@@ -668,7 +668,7 @@
   "mod_epicloot_me_addbowsskill_prefix1": "Archer's",
   "mod_epicloot_me_addbowsskill_suffix1": "Archery",
   "mod_epicloot_me_addunarmedskill_display": "Unarmed Skill +{0}",
-  "mod_epicloot_me_addunarmedskill_desc": "Increases the player's bows skill level by +<b><color=yellow>X</color></b>. This may cause the skill level to increase above 100.",
+  "mod_epicloot_me_addunarmedskill_desc": "Increases the player's unarmed skill level by +<b><color=yellow>X</color></b>. This may cause the skill level to increase above 100.",
   "mod_epicloot_me_addunarmedskill_prefix1": "Brawler's",
   "mod_epicloot_me_addunarmedskill_suffix1": "Brawling",
   "mod_epicloot_me_addpickaxesskill_display": "Pickaxes Skill +{0}",
