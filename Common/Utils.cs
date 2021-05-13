@@ -104,6 +104,11 @@ namespace Common
         {
             return a == null || a.Length == 0;
         }
+
+        public static T[] Copy<T>(T[] other)
+        {
+            return other?.ToArray();
+        }
     }
 
     public static class ListExtensions

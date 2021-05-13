@@ -1,3 +1,12 @@
+## Version 0.7.10
+  * Increased epic and legendary drop rates at low tiers
+  * Wishbone is now Epic rarity
+  * Dragon's Tears and Yagluth Things can now be converted to legendary runestones or sacrificed for legendary crafting mats
+  * Moder and Yagluth trophies sacrifice for more runestones (2, 4 instead of 1, 3 respectively)
+  * Bosses drop more items overall, especially Moder and Yagluth
+  * Weights in config files are now floats instead of ints
+  * Magic Effect: Luck, increase chance for higher rarity items
+  * Magic Effect names shortened, detailed descriptions added to compendium
 ## Version 0.7.9
   * Reduced Opportunist chance to proc
   * Allowed AddSkill to exceed 100 points (and fixed vanilla bug around damage ranges not going over 100%)

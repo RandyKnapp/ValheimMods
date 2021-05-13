@@ -29,7 +29,6 @@
     },
     {
       "Type": "Andvaranaut",
-      "DisplayText": "$mod_epicloot_me_andvaranaut_display",
       "CanBeAugmented": false, 
       "Requirements" : {
         "NoRoll": true
@@ -39,6 +38,7 @@
     {
       "Type" : "ModifyDamage",
       "DisplayText" : "$mod_epicloot_me_modifydamage_display",
+      "Description" : "$mod_epicloot_me_modifydamage_desc",
       "CanBeAugmented": false, 
       "Requirements" : {
         "NoRoll": true
@@ -55,6 +55,7 @@
     {
       "Type" : "ModifyPhysicalDamage",
       "DisplayText" : "$mod_epicloot_me_modifyphysicaldamage_display",
+      "Description" : "$mod_epicloot_me_modifyphysicaldamage_desc",
       "Requirements" : {
         "ExclusiveEffectTypes" : [
           "AddBluntDamage",
@@ -97,6 +98,7 @@
     {
       "Type" : "ModifyElementalDamage",
       "DisplayText" : "$mod_epicloot_me_modifyelementaldamage_display",
+      "Description" : "$mod_epicloot_me_modifyelementaldamage_desc",
       "Requirements" : {
         "ExclusiveEffectTypes" : [
           "AddFireDamage",
@@ -136,6 +138,7 @@
     {
       "Type" : "ModifyDurability",
       "DisplayText" : "$mod_epicloot_me_modifydurability_display",
+      "Description" : "$mod_epicloot_me_modifydurability_desc",
       "Requirements" : {
         "ExclusiveEffectTypes" : [
           "Indestructible"
@@ -180,6 +183,7 @@
     {
       "Type" : "ReduceWeight",
       "DisplayText" : "$mod_epicloot_me_reduceweight_display",
+      "Description" : "$mod_epicloot_me_reduceweight_desc",
       "Requirements" : {
         "ExclusiveEffectTypes" : [
           "Weightless"
@@ -219,6 +223,7 @@
     {
       "Type" : "RemoveSpeedPenalty",
       "DisplayText" : "$mod_epicloot_me_removespeedpenalty_display",
+      "Description" : "$mod_epicloot_me_removespeedpenalty_desc",
       "Requirements" : {
         "ExclusiveEffectTypes" : [
           "ModifyMovementSpeed"
@@ -251,6 +256,7 @@
     {
       "Type" : "ModifyBlockPower",
       "DisplayText" : "$mod_epicloot_me_modifyblockpower_display",
+      "Description" : "$mod_epicloot_me_modifyblockpower_desc",
       "Requirements" : {
         "AllowedItemTypes" : [
           "Shield"
@@ -276,6 +282,7 @@
     {
       "Type" : "ModifyParry",
       "DisplayText" : "$mod_epicloot_me_modifyparry_display",
+      "Description" : "$mod_epicloot_me_modifyparry_desc",
       "Requirements" : {
         "AllowedItemTypes" : [
           "Shield",
@@ -306,6 +313,7 @@
     {
       "Type" : "ModifyArmor",
       "DisplayText" : "$mod_epicloot_me_modifyarmor_display",
+      "Description" : "$mod_epicloot_me_modifyarmor_desc",
       "Requirements" : {
         "AllowedItemTypes" : [
           "Helmet",
@@ -334,6 +342,7 @@
     {
       "Type" : "ModifyBackstab",
       "DisplayText" : "$mod_epicloot_me_modifybackstab_display",
+      "Description" : "$mod_epicloot_me_modifybackstab_desc",
       "Requirements" : {
         "AllowedSkillTypes" : [
           "Knives",
@@ -360,6 +369,7 @@
     {
       "Type" : "IncreaseHealth",
       "DisplayText" : "$mod_epicloot_me_increasehealth_display",
+      "Description" : "$mod_epicloot_me_increasehealth_desc",
       "Requirements" : {
         "AllowedItemTypes" : [
           "Helmet",
@@ -387,6 +397,7 @@
     {
       "Type" : "IncreaseStamina",
       "DisplayText" : "$mod_epicloot_me_increasestamina_display",
+      "Description" : "$mod_epicloot_me_increasestamina_desc",
       "Requirements" : {
         "AllowedItemTypes" : [
           "Helmet",
@@ -414,6 +425,7 @@
     {
       "Type" : "ModifyHealthRegen",
       "DisplayText" : "$mod_epicloot_me_modifyhealthregen_display",
+      "Description" : "$mod_epicloot_me_modifyhealthregen_desc",
       "Requirements" : {
         "AllowedItemTypes" : [
           "Helmet",
@@ -440,6 +452,7 @@
     {
       "Type" : "ModifyStaminaRegen",
       "DisplayText" : "$mod_epicloot_me_modifystaminaregen_display",
+      "Description" : "$mod_epicloot_me_modifystaminaregen_desc",
       "Requirements" : {
         "AllowedItemTypes" : [
           "Helmet",
@@ -467,6 +480,7 @@
     {
       "Type" : "AddBluntDamage",
       "DisplayText" : "$mod_epicloot_me_addbluntdamage_display",
+      "Description" : "$mod_epicloot_me_addbluntdamage_desc",
       "Requirements" : {
         "ExclusiveEffectTypes" : [
           "AddBluntDamage",
@@ -505,6 +519,7 @@
     {
       "Type" : "AddSlashingDamage",
       "DisplayText" : "$mod_epicloot_me_addslashingdamage_display",
+      "Description" : "$mod_epicloot_me_addslashingdamage_desc",
       "Requirements" : {
         "ExclusiveEffectTypes" : [
           "AddBluntDamage",
@@ -545,6 +560,7 @@
     {
       "Type" : "AddPiercingDamage",
       "DisplayText" : "$mod_epicloot_me_addpiercingdamage_display",
+      "Description" : "$mod_epicloot_me_addpiercingdamage_desc",
       "Requirements" : {
         "ExclusiveEffectTypes" : [
           "AddBluntDamage",
@@ -581,6 +597,7 @@
     {
       "Type" : "AddFireDamage",
       "DisplayText" : "$mod_epicloot_me_addfiredamage_display",
+      "Description" : "$mod_epicloot_me_addfiredamage_desc",
       "Requirements" : {
         "ExclusiveEffectTypes" : [
           "AddBluntDamage",
@@ -619,6 +636,7 @@
     {
       "Type" : "AddFrostDamage",
       "DisplayText" : "$mod_epicloot_me_addfrostdamage_display",
+      "Description" : "$mod_epicloot_me_addfrostdamage_desc",
       "Requirements" : {
         "ExclusiveEffectTypes" : [
           "AddBluntDamage",
@@ -657,6 +675,7 @@
     {
       "Type" : "AddLightningDamage",
       "DisplayText" : "$mod_epicloot_me_addlightningdamage_display",
+      "Description" : "$mod_epicloot_me_addlightningdamage_desc",
       "Requirements" : {
         "ExclusiveEffectTypes" : [
           "AddBluntDamage",
@@ -695,6 +714,7 @@
     {
       "Type" : "AddPoisonDamage",
       "DisplayText" : "$mod_epicloot_me_addpoisondamage_display",
+      "Description" : "$mod_epicloot_me_addpoisondamage_desc",
       "Requirements" : {
         "ExclusiveEffectTypes" : [
           "AddBluntDamage",
@@ -733,6 +753,7 @@
     {
       "Type" : "AddSpiritDamage",
       "DisplayText" : "$mod_epicloot_me_addspiritdamage_display",
+      "Description" : "$mod_epicloot_me_addspiritdamage_desc",
       "Requirements" : {
         "ExclusiveEffectTypes" : [
           "AddBluntDamage",
@@ -771,6 +792,7 @@
     {
       "Type" : "AddFireResistance",
       "DisplayText" : "$mod_epicloot_me_addfireresistance_display",
+      "Description" : "$mod_epicloot_me_addfireresistance_desc",
       "Requirements" : {
         "NoRoll": true,
         "AllowedItemTypes" : [
@@ -793,6 +815,7 @@
     {
       "Type" : "AddFrostResistance",
       "DisplayText" : "$mod_epicloot_me_addfrostresistance_display",
+      "Description" : "$mod_epicloot_me_addfrostresistance_desc",
       "Requirements" : {
         "NoRoll": true,
         "AllowedItemTypes" : [
@@ -815,6 +838,7 @@
     {
       "Type" : "AddLightningResistance",
       "DisplayText" : "$mod_epicloot_me_addlightningresistance_display",
+      "Description" : "$mod_epicloot_me_addlightningresistance_desc",
       "Requirements" : {
         "NoRoll": true,
         "AllowedItemTypes" : [
@@ -837,6 +861,7 @@
     {
       "Type" : "AddPoisonResistance",
       "DisplayText" : "$mod_epicloot_me_addpoisonresistance_display",
+      "Description" : "$mod_epicloot_me_addpoisonresistance_desc",
       "Requirements" : {
         "NoRoll": true,
         "AllowedItemTypes" : [
@@ -859,6 +884,7 @@
     {
       "Type" : "AddSpiritResistance",
       "DisplayText" : "$mod_epicloot_me_addspiritresistance_display",
+      "Description" : "$mod_epicloot_me_addspiritresistance_desc",
       "Requirements" : {
         "NoRoll": true,
         "AllowedItemTypes" : [
@@ -881,6 +907,7 @@
     {
       "Type" : "AddFireResistancePercentage",
       "DisplayText" : "$mod_epicloot_me_addfireresistancepercentage_display",
+      "Description" : "$mod_epicloot_me_addfireresistancepercentage_desc",
       "Requirements" : {
         "AllowedItemTypes" : [
           "Helmet",
@@ -908,6 +935,7 @@
     {
       "Type" : "AddFrostResistancePercentage",
       "DisplayText" : "$mod_epicloot_me_addfrostresistancepercentage_display",
+      "Description" : "$mod_epicloot_me_addfrostresistancepercentage_desc",
       "Requirements" : {
         "AllowedItemTypes" : [
           "Helmet",
@@ -935,6 +963,7 @@
     {
       "Type" : "AddLightningResistancePercentage",
       "DisplayText" : "$mod_epicloot_me_addlightningresistancepercentage_display",
+      "Description" : "$mod_epicloot_me_addlightningresistancepercentage_desc",
       "Requirements" : {
         "AllowedItemTypes" : [
           "Helmet",
@@ -962,6 +991,7 @@
     {
       "Type" : "AddPoisonResistancePercentage",
       "DisplayText" : "$mod_epicloot_me_addpoisonresistancepercentage_display",
+      "Description" : "$mod_epicloot_me_addpoisonresistancepercentage_desc",
       "Requirements" : {
         "AllowedItemTypes" : [
           "Helmet",
@@ -989,6 +1019,7 @@
     {
       "Type" : "AddSpiritResistancePercentage",
       "DisplayText" : "$mod_epicloot_me_addspiritresistancepercentage_display",
+      "Description" : "$mod_epicloot_me_addspiritresistancepercentage_desc",
       "Requirements" : {
         "NoRoll": true,
         "AllowedItemTypes" : [
@@ -1017,6 +1048,7 @@
     {
       "Type" : "AddElementalResistancePercentage",
       "DisplayText" : "$mod_epicloot_me_addelementalresistancepercentage_display",
+      "Description" : "$mod_epicloot_me_addelementalresistancepercentage_desc",
       "Requirements" : {
         "AllowedItemTypes" : [
           "Helmet",
@@ -1044,6 +1076,7 @@
     {
       "Type" : "AddBluntResistancePercentage",
       "DisplayText" : "$mod_epicloot_me_addbluntresistancepercentage_display",
+      "Description" : "$mod_epicloot_me_addbluntresistancepercentage_desc",
       "Requirements" : {
         "AllowedItemTypes" : [
           "Helmet",
@@ -1071,6 +1104,7 @@
     {
       "Type" : "AddSlashingResistancePercentage",
       "DisplayText" : "$mod_epicloot_me_addslashingresistancepercentage_display",
+      "Description" : "$mod_epicloot_me_addslashingresistancepercentage_desc",
       "Requirements" : {
         "AllowedItemTypes" : [
           "Helmet",
@@ -1098,6 +1132,7 @@
     {
       "Type" : "AddPiercingResistancePercentage",
       "DisplayText" : "$mod_epicloot_me_addpiercingresistancepercentage_display",
+      "Description" : "$mod_epicloot_me_addpiercingresistancepercentage_desc",
       "Requirements" : {
         "AllowedItemTypes" : [
           "Helmet",
@@ -1125,6 +1160,7 @@
     {
       "Type" : "AddChoppingResistancePercentage",
       "DisplayText" : "$mod_epicloot_me_addchoppingresistancepercentage_display",
+      "Description" : "$mod_epicloot_me_addchoppingresistancepercentage_desc",
       "Requirements" : {
         "NoRoll": true, 
         "AllowedItemTypes" : [
@@ -1153,6 +1189,7 @@
     {
       "Type" : "AddPhysicalResistancePercentage",
       "DisplayText" : "$mod_epicloot_me_addphysicalresistancepercentage_display",
+      "Description" : "$mod_epicloot_me_addphysicalresistancepercentage_desc",
       "Requirements" : {
         "AllowedItemTypes" : [
           "Helmet",
@@ -1180,6 +1217,7 @@
     {
       "Type" : "ModifyMovementSpeed",
       "DisplayText" : "$mod_epicloot_me_modifymovementspeed_display",
+      "Description" : "$mod_epicloot_me_modifymovementspeed_desc",
       "Requirements" : {
         "ExclusiveEffectTypes" : [
           "RemoveSpeedPenalty"
@@ -1206,6 +1244,7 @@
     {
       "Type" : "ModifySprintStaminaUse",
       "DisplayText" : "$mod_epicloot_me_modifysprintstaminause_display",
+      "Description" : "$mod_epicloot_me_modifysprintstaminause_desc",
       "Requirements" : {
         "AllowedItemTypes" : [
           "Legs",
@@ -1229,6 +1268,7 @@
     {
       "Type" : "ModifyJumpStaminaUse",
       "DisplayText" : "$mod_epicloot_me_modifyjumpstaminause_display",
+      "Description" : "$mod_epicloot_me_modifyjumpstaminause_desc",
       "Requirements" : {
         "AllowedItemTypes" : [
           "Legs",
@@ -1252,6 +1292,7 @@
     {
       "Type" : "ModifyAttackStaminaUse",
       "DisplayText" : "$mod_epicloot_me_modifyattackstaminause_display",
+      "Description" : "$mod_epicloot_me_modifyattackstaminause_desc",
       "Requirements" : {
         "AllowedItemTypes" : [
           "OneHandedWeapon",
@@ -1279,6 +1320,7 @@
     {
       "Type" : "ModifyBlockStaminaUse",
       "DisplayText" : "$mod_epicloot_me_modifyblockstaminause_display",
+      "Description" : "$mod_epicloot_me_modifyblockstaminause_desc",
       "Requirements" : {
         "AllowedItemTypes" : [
           "Shield"
@@ -1302,6 +1344,7 @@
     {
       "Type" : "Indestructible",
       "DisplayText" : "$mod_epicloot_me_indestructible_display",
+      "Description" : "$mod_epicloot_me_indestructible_desc",
       "Requirements" : {
         "ExclusiveEffectTypes" : [
           "ModifyDurability"
@@ -1334,6 +1377,7 @@
     {
       "Type" : "Weightless",
       "DisplayText" : "$mod_epicloot_me_weightless_display",
+      "Description" : "$mod_epicloot_me_weightless_desc",
       "Requirements" : {
         "ExclusiveEffectTypes" : [
           "ReduceWeight"
@@ -1362,6 +1406,7 @@
     {
       "Type" : "AddCarryWeight",
       "DisplayText" : "$mod_epicloot_me_addcarryweight_display",
+      "Description" : "$mod_epicloot_me_addcarryweight_desc",
       "Requirements" : {
         "AllowedItemTypes" : [
           "Helmet",
@@ -1388,6 +1433,7 @@
     {
       "Type" : "LifeSteal",
       "DisplayText" : "$mod_epicloot_me_lifesteal_display",
+      "Description" : "$mod_epicloot_me_lifesteal_desc",
       "Requirements" : {
         "AllowedItemTypes" : [
           "OneHandedWeapon",
@@ -1420,6 +1466,7 @@
     {
       "Type" : "ModifyAttackSpeed",
       "DisplayText" : "$mod_epicloot_me_modifyattackspeed_display",
+      "Description" : "$mod_epicloot_me_modifyattackspeed_desc",
       "Requirements" : {
         "AllowedItemTypes" : [
           "OneHandedWeapon",
@@ -1445,6 +1492,7 @@
     {
       "Type" : "Throwable",
       "DisplayText" : "$mod_epicloot_me_throwable_display",
+      "Description" : "$mod_epicloot_me_throwable_desc",
       "Requirements" : {
         "AllowedItemTypes" : [
           "OneHandedWeapon",
@@ -1466,6 +1514,7 @@
     {
       "Type" : "Waterproof",
       "DisplayText" : "$mod_epicloot_me_waterproof_display",
+      "Description" : "$mod_epicloot_me_waterproof_desc",
       "Requirements" : {
         "AllowedItemTypes" : [
           "Shoulder"
@@ -1482,6 +1531,7 @@
     {
       "Type" : "Paralyze",
       "DisplayText" : "$mod_epicloot_me_paralyze_display",
+      "Description" : "$mod_epicloot_me_paralyze_desc",
       "Requirements" : {
         "NoRoll": true,
         "AllowedItemTypes" : [
@@ -1509,7 +1559,8 @@
     },
     {
       "Type" : "DoubleJump",
-      "DisplayText" : "$mod_epicloot_me_doublejump",
+      "DisplayText" : "$mod_epicloot_me_doublejump_display",
+      "Description" : "$mod_epicloot_me_doublejump_desc",
       "Requirements" : {
         "AllowedItemTypes" : [
           "Legs"
@@ -1521,15 +1572,16 @@
       },
       "SelectionWeight" : 1,
       "Prefixes": [
-        "$mod_epicloot_me_doublejump_prefix"
+        "$mod_epicloot_me_doublejump_prefix1"
       ],
       "Suffixes": [
-        "$mod_epicloot_me_doublejump_suffix"
+        "$mod_epicloot_me_doublejump_suffix1"
       ]
     },
     {
       "Type" : "WaterWalking",
-      "DisplayText" : "$mod_epicloot_me_waterwalk",
+      "DisplayText" : "$mod_epicloot_me_waterwalk_display",
+      "Description" : "$mod_epicloot_me_waterwalk_desc",
       "Requirements" : {
         "AllowedItemTypes" : [
           "Legs"
@@ -1553,6 +1605,7 @@
     {
       "Type" : "ExplosiveArrows",
       "DisplayText" : "$mod_epicloot_me_explosivearrows_display",
+      "Description" : "$mod_epicloot_me_explosivearrows_desc",
       "Requirements" : {
         "AllowedItemTypes" : [
           "Bow"
@@ -1578,6 +1631,7 @@
     {
       "Type" : "QuickDraw",
       "DisplayText" : "$mod_epicloot_me_quickdraw_display",
+      "Description" : "$mod_epicloot_me_quickdraw_desc",
       "Requirements" : {
         "AllowedItemTypes" : [
           "Bow"
@@ -1603,6 +1657,7 @@
     {
       "Type" : "AddSwordsSkill",
       "DisplayText" : "$mod_epicloot_me_addswordsskill_display",
+      "Description" : "$mod_epicloot_me_addswordsskill_desc",
       "Requirements" : {
         "AllowedItemTypes" : [
           "OneHandedWeapon"
@@ -1628,6 +1683,7 @@
     {
       "Type" : "AddKnivesSkill",
       "DisplayText" : "$mod_epicloot_me_addknivesskill_display",
+      "Description" : "$mod_epicloot_me_addknivesskill_desc",
       "Requirements" : {
         "AllowedSkillTypes" : [
           "Knives"
@@ -1650,6 +1706,7 @@
     {
       "Type" : "AddClubsSkill",
       "DisplayText" : "$mod_epicloot_me_addclubsskill_display",
+      "Description" : "$mod_epicloot_me_addclubsskill_desc",
       "Requirements" : {
         "AllowedSkillTypes" : [
           "Clubs"
@@ -1672,6 +1729,7 @@
     {
       "Type" : "AddPolearmsSkill",
       "DisplayText" : "$mod_epicloot_me_addpolearmsskill_display",
+      "Description" : "$mod_epicloot_me_addpolearmsskill_desc",
       "Requirements" : {
         "AllowedSkillTypes" : [
           "Polearms"
@@ -1694,6 +1752,7 @@
     {
       "Type" : "AddSpearsSkill",
       "DisplayText" : "$mod_epicloot_me_addspearsskill_display",
+      "Description" : "$mod_epicloot_me_addspearsskill_desc",
       "Requirements" : {
         "AllowedSkillTypes" : [
           "Spears"
@@ -1716,6 +1775,7 @@
     {
       "Type" : "AddBlockingSkill",
       "DisplayText" : "$mod_epicloot_me_addblockingskill_display",
+      "Description" : "$mod_epicloot_me_addblockingskill_desc",
       "Requirements" : {
         "AllowedSkillTypes" : [
           "Blocking"
@@ -1738,6 +1798,7 @@
     {
       "Type" : "AddAxesSkill",
       "DisplayText" : "$mod_epicloot_me_addaxesskill_display",
+      "Description" : "$mod_epicloot_me_addaxesskill_desc",
       "Requirements" : {
         "AllowedSkillTypes" : [
           "Axes"
@@ -1760,6 +1821,7 @@
     {
       "Type" : "AddBowsSkill",
       "DisplayText" : "$mod_epicloot_me_addbowsskill_display",
+      "Description" : "$mod_epicloot_me_addbowsskill_desc",
       "Requirements" : {
         "AllowedSkillTypes" : [
           "Bows"
@@ -1782,6 +1844,7 @@
     {
       "Type" : "AddUnarmedSkill",
       "DisplayText" : "$mod_epicloot_me_addunarmedskill_display",
+      "Description" : "$mod_epicloot_me_addunarmedskill_desc",
       "Requirements" : {
         "NoRoll": true,
         "AllowedItemTypes" : [
@@ -1805,6 +1868,7 @@
     {
       "Type" : "AddPickaxesSkill",
       "DisplayText" : "$mod_epicloot_me_addpickaxesskill_display",
+      "Description" : "$mod_epicloot_me_addpickaxesskill_desc",
       "Requirements": {
         "AllowedSkillTypes": [
           "Pickaxes"
@@ -1827,6 +1891,7 @@
     {
       "Type" : "AddMovementSkills",
       "DisplayText" : "$mod_epicloot_me_addmovementskills_display",
+      "Description" : "$mod_epicloot_me_addmovementskills_desc",
       "Requirements" : {
         "AllowedItemTypes" : [
           "Chest",
@@ -1852,6 +1917,7 @@
     {
       "Type" : "ModifyStaggerDuration",
       "DisplayText" : "$mod_epicloot_me_modifystaggerduration_display",
+      "Description" : "$mod_epicloot_me_modifystaggerduration_desc",
       "Requirements" : {
         "AllowedItemTypes" : [
           "OneHandedWeapon",
@@ -1880,6 +1946,7 @@
     {
       "Type" : "QuickLearner",
       "DisplayText" : "$mod_epicloot_me_quicklearner_display",
+      "Description" : "$mod_epicloot_me_quicklearner_desc",
       "Requirements" : {
         "AllowedItemTypes" : [
           "Helmet"
@@ -1898,6 +1965,7 @@
     {
       "Type" : "FreeBuild",
       "DisplayText" : "$mod_epicloot_me_freebuild_display",
+      "Description" : "$mod_epicloot_me_freebuild_desc",
       "Requirements" : {
         "AllowedItemNames" : [
           "$item_hammer"
@@ -1913,6 +1981,7 @@
     {
       "Type" : "RecallWeapon",
       "DisplayText" : "$mod_epicloot_me_recallweapon_display",
+      "Description" : "$mod_epicloot_me_recallweapon_desc",
       "Requirements" : {
         "AllowedItemTypes" : [
           "OneHandedWeapon",
@@ -1929,6 +1998,7 @@
     {
       "Type" : "ReflectDamage",
       "DisplayText" : "$mod_epicloot_me_reflectdamage_display",
+      "Description" : "$mod_epicloot_me_reflectdamage_desc",
       "Requirements" : {
         "AllowedItemTypes" : [
           "Chest",
@@ -1948,6 +2018,7 @@
     {
       "Type" : "AvoidDamageTaken",
       "DisplayText" : "$mod_epicloot_me_avoiddamagetaken_display",
+      "Description" : "$mod_epicloot_me_avoiddamagetaken_desc",
       "Requirements" : {
         "AllowedItemTypes" : [
           "Chest",
@@ -1967,6 +2038,7 @@
     {
       "Type" : "StaggerOnDamageTaken",
       "DisplayText" : "$mod_epicloot_me_staggerondamagetaken_display",
+      "Description" : "$mod_epicloot_me_staggerondamagetaken_desc",
       "Requirements" : {
         "AllowedItemTypes" : [
           "Chest",
@@ -1986,6 +2058,7 @@
     {
       "Type" : "FeatherFall",
       "DisplayText" : "$mod_epicloot_me_featherfall_display",
+      "Description" : "$mod_epicloot_me_featherfall_desc",
       "Requirements" : {
         "AllowedItemTypes" : [
           "Legs"
@@ -1998,6 +2071,7 @@
     {
       "Type" : "ModifyDiscoveryRadius",
       "DisplayText" : "$mod_epicloot_me_modifydiscoveryradius_display",
+      "Description" : "$mod_epicloot_me_modifydiscoveryradius_desc",
       "Requirements" : {
         "AllowedItemTypes" : [
           "Helmet"
@@ -2016,6 +2090,7 @@
     {
       "Type" : "Comfortable",
       "DisplayText" : "$mod_epicloot_me_comfortable_display",
+      "Description" : "$mod_epicloot_me_comfortable_desc",
       "Requirements" : {
         "AllowedItemTypes" : [
           "Chest",
@@ -2039,6 +2114,7 @@
     {
       "Type" : "ModifyMovementSpeedLowHealth",
       "DisplayText" : "$mod_epicloot_me_modifymovementspeedlowhealth_display",
+      "Description" : "$mod_epicloot_me_modifymovementspeedlowhealth_desc",
       "Requirements" : {
         "ExclusiveEffectTypes" : [
           "RemoveSpeedPenalty"
@@ -2065,6 +2141,7 @@
     {
       "Type" : "ModifyHealthRegenLowHealth",
       "DisplayText" : "$mod_epicloot_me_modifyhealthregenlowhealth_display",
+      "Description" : "$mod_epicloot_me_modifyhealthregenlowhealth_desc",
       "Requirements" : {
         "AllowedItemTypes" : [
           "Helmet",
@@ -2091,6 +2168,7 @@
     {
       "Type" : "ModifyStaminaRegenLowHealth",
       "DisplayText" : "$mod_epicloot_me_modifystaminaregenlowhealth_display",
+      "Description" : "$mod_epicloot_me_modifystaminaregenlowhealth_desc",
       "Requirements" : {
         "AllowedItemTypes" : [
           "Helmet",
@@ -2118,6 +2196,7 @@
     {
       "Type" : "ModifyArmorLowHealth",
       "DisplayText" : "$mod_epicloot_me_modifyarmorlowhealth_display",
+      "Description" : "$mod_epicloot_me_modifyarmorlowhealth_desc",
       "Requirements" : {
         "AllowedItemTypes" : [
           "Helmet",
@@ -2146,6 +2225,7 @@
     {
       "Type" : "ModifyDamageLowHealth",
       "DisplayText" : "$mod_epicloot_me_modifydamagelowhealth_display",
+      "Description" : "$mod_epicloot_me_modifydamagelowhealth_desc",
       "Requirements" : {
         "AllowedItemTypes" : [
           "OneHandedWeapon",
@@ -2173,6 +2253,7 @@
     {
       "Type" : "ModifyBlockPowerLowHealth",
       "DisplayText" : "$mod_epicloot_me_modifyblockpowerlowhealth_display",
+      "Description" : "$mod_epicloot_me_modifyblockpowerlowhealth_desc",
       "Requirements" : {
         "AllowedItemTypes" : [
           "Shield"
@@ -2201,6 +2282,7 @@
     {
       "Type" : "ModifyParryLowHealth",
       "DisplayText" : "$mod_epicloot_me_modifyparrylowhealth_display",
+      "Description" : "$mod_epicloot_me_modifyparrylowhealth_desc",
       "Requirements" : {
         "AllowedItemTypes" : [
           "Shield",
@@ -2220,17 +2302,16 @@
       "SelectionWeight" : 1,
       "Prefixes": [
         "$mod_epicloot_me_modifyparrylowhealth_prefix1",
-        "$mod_epicloot_me_modifyparrylowhealth_prefix2",
-        "$mod_epicloot_me_modifyparrylowhealth_prefix3"
+        "$mod_epicloot_me_modifyparrylowhealth_prefix2"
       ],
       "Suffixes": [
-        "$mod_epicloot_me_modifyparrylowhealth_suffix1",
-        "$mod_epicloot_me_modifyparrylowhealth_suffix2"
+        "$mod_epicloot_me_modifyparrylowhealth_suffix1"
       ]
     },
     {
       "Type" : "ModifyAttackSpeedLowHealth",
       "DisplayText" : "$mod_epicloot_me_modifyattackspeedlowhealth_display",
+      "Description" : "$mod_epicloot_me_modifyattackspeedlowhealth_desc",
       "Requirements" : {
         "AllowedItemTypes" : [
           "OneHandedWeapon",
@@ -2259,6 +2340,7 @@
     {
       "Type" : "AvoidDamageTakenLowHealth",
       "DisplayText" : "$mod_epicloot_me_avoiddamagetakenlowhealth_display",
+      "Description" : "$mod_epicloot_me_avoiddamagetakenlowhealth_desc",
       "Requirements" : {
         "AllowedItemTypes" : [
           "Chest",
@@ -2278,6 +2360,7 @@
     {
       "Type" : "LifeStealLowHealth",
       "DisplayText" : "$mod_epicloot_me_lifesteallowhealth_display",
+      "Description" : "$mod_epicloot_me_lifesteallowhealth_desc",
       "Requirements" : {
         "AllowedItemTypes" : [
           "OneHandedWeapon",
@@ -2310,6 +2393,7 @@
     {
       "Type" : "Glowing",
       "DisplayText" : "$mod_epicloot_me_glowing_display",
+      "Description" : "$mod_epicloot_me_glowing_desc",
       "EquipFx" : "GlowingAura", 
       "Requirements" : {
         "AllowedItemTypes" : [
@@ -2331,6 +2415,7 @@
     {
       "Type" : "Executioner",
       "DisplayText" : "$mod_epicloot_me_executioner_display",
+      "Description" : "$mod_epicloot_me_executioner_desc",
       "Requirements" : {
         "AllowedItemTypes" : [
           "OneHandedWeapon",
@@ -2361,6 +2446,7 @@
     {
       "Type" : "Riches",
       "DisplayText" : "$mod_epicloot_me_riches_display",
+      "Description" : "$mod_epicloot_me_riches_desc",
       "Requirements" : {
         "AllowedItemTypes" : [
           "Utility"
@@ -2383,6 +2469,7 @@
     {
       "Type" : "Opportunist",
       "DisplayText" : "$mod_epicloot_me_opportunist_display",
+      "Description" : "$mod_epicloot_me_opportunist_desc",
       "Requirements" : {
         "AllowedSkillTypes" : [
           "Knives"
@@ -2408,6 +2495,7 @@
     {
       "Type" : "Duelist",
       "DisplayText" : "$mod_epicloot_me_duelist_display",
+      "Description" : "$mod_epicloot_me_duelist_desc",
       "Requirements" : {
         "AllowedItemTypes" : [
           "OneHandedWeapon"
@@ -2433,6 +2521,7 @@
     {
       "Type" : "Immovable",
       "DisplayText" : "$mod_epicloot_me_immovable_display",
+      "Description" : "$mod_epicloot_me_immovable_desc",
       "Requirements" : {
         "AllowedItemTypes" : [
           "Shield"
@@ -2450,6 +2539,7 @@
     {
       "Type" : "ModifyStaggerDamage",
       "DisplayText" : "$mod_epicloot_me_modifystaggerdamage_display",
+      "Description" : "$mod_epicloot_me_modifystaggerdamage_desc",
       "Requirements" : {
         "AllowedItemTypes" : [
           "OneHandedWeapon",
@@ -2472,6 +2562,33 @@
       ],
       "Suffixes": [
         "$mod_epicloot_me_modifystaggerdamage_suffix1"
+      ]
+    },
+    {
+      "Type" : "Luck",
+      "DisplayText" : "$mod_epicloot_me_luck_display",
+      "Description" : "$mod_epicloot_me_luck_desc",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "Helmet",
+          "Chest",
+          "Legs",
+          "Shoulder",
+          "Utility"
+        ]
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 1, "MaxValue" : 5, "Increment" : 1 },
+        "Rare" : { "MinValue" : 5, "MaxValue" : 10, "Increment" : 1 },
+        "Epic" : { "MinValue" : 10, "MaxValue" : 15, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15, "MaxValue" : 20, "Increment" : 1 }
+      },
+      "SelectionWeight" : 1,
+      "Prefixes": [
+        "$mod_epicloot_me_luck_prefix1"
+      ],
+      "Suffixes": [
+        "$mod_epicloot_me_luck_suffix1"
       ]
     }
   ]

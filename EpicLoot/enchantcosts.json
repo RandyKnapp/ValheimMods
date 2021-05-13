@@ -112,19 +112,43 @@
     {
       "ItemTypes" : [ "Trophie" ],
       "ItemNames" : [ "$item_trophy_dragonqueen" ],
-      "Products" : [ { "Item": "RunestoneLegendary", "Amount": 1 } ]
+      "Products" : [ { "Item": "RunestoneLegendary", "Amount": 2 } ]
     },
     {
       "ItemTypes" : [ "Trophie" ],
       "ItemNames" : [ "$item_trophy_goblinking" ],
-      "Products" : [ { "Item": "RunestoneLegendary", "Amount": 3 } ]
+      "Products" : [ { "Item": "RunestoneLegendary", "Amount": 4 } ]
     },
     {
       "ItemNames" : [ "$item_cryptkey" ],
       "Products" : [
-        { "Item": "DustRare",    "Amount": 1 },
+        { "Item": "DustRare",    "Amount": 2 },
         { "Item": "EssenceRare", "Amount": 1 },
         { "Item": "ReagentRare", "Amount": 1 }
+      ]
+    },
+    {
+      "ItemNames" : [ "$item_dragontear" ],
+      "Products" : [
+        { "Item": "DustLegendary",    "Amount": 2 },
+        { "Item": "EssenceLegendary", "Amount": 1 },
+        { "Item": "ReagentLegendary", "Amount": 1 }
+      ]
+    },
+    {
+      "ItemNames" : [ "$item_dragontear" ],
+      "Products" : [
+        { "Item": "DustLegendary",    "Amount": 2 },
+        { "Item": "EssenceLegendary", "Amount": 1 },
+        { "Item": "ReagentLegendary", "Amount": 1 }
+      ]
+    },
+    {
+      "ItemNames" : [ "Yagluth thing" ],
+      "Products" : [
+        { "Item": "DustLegendary",    "Amount": 6 },
+        { "Item": "EssenceLegendary", "Amount": 3 },
+        { "Item": "ReagentLegendary", "Amount": 3 }
       ]
     }
   ],

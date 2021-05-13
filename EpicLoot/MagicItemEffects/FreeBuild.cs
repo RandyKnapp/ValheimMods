@@ -19,7 +19,7 @@ namespace EpicLoot.MagicItemEffects
 		[UsedImplicitly]
 		private static void Prefix(ref CraftingStation __state, Piece piece)
 		{
-			if (piece == null)
+			if (piece == null || Player.m_localPlayer == null)
 			{
 				return;
 			}
@@ -34,7 +34,7 @@ namespace EpicLoot.MagicItemEffects
 		[UsedImplicitly]
 		private static void Postfix(CraftingStation __state, Piece piece)
 		{
-			if (piece != null)
+			if (piece != null && Player.m_localPlayer != null)
 			{
 				piece.m_craftingStation = __state;
 			}

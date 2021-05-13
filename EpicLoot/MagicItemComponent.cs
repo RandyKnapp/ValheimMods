@@ -76,7 +76,7 @@ namespace EpicLoot
             else if (itemdata.m_shared.m_name == "$item_wishbone")
             {
                 var magicItem = new MagicItem();
-                magicItem.Rarity = ItemRarity.Rare;
+                magicItem.Rarity = ItemRarity.Epic;
                 magicItem.Effects.Add(new MagicItemEffect() { EffectType = MagicEffectType.Wishbone });
                 magicItem.TypeNameOverride = "remains";
 
@@ -225,6 +225,14 @@ namespace EpicLoot
         public static List<ItemDrop.ItemData> GetMagicEquipmentWithEffect(this Player player, string effectType)
         {
             return player.GetEquipment().Where(x => x.HasMagicEffect(effectType)).ToList();
+        }
+
+        public static float GetTotalMagicEffectValueOnEquipment(this Player player, string effectType, float scale = 1.0f)
+        {
+            return player.GetMagicEquipmentWithEffect(effectType)
+                .Select(x => x.GetMagicItem().GetTotalEffectValue(effectType, scale))
+                .DefaultIfEmpty(0)
+                .Sum();
         }
 
         public static bool HasMagicEquipmentWithEffect(this Player player, string effectType)

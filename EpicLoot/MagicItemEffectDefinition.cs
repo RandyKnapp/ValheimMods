@@ -247,6 +247,7 @@ namespace EpicLoot
         public string Type { get; set; }
 
         public string DisplayText = "";
+        public string Description = "";
         public MagicItemEffectRequirements Requirements = new MagicItemEffectRequirements();
         public ValuesPerRarityDef ValuesPerRarity = new ValuesPerRarityDef();
         public float SelectionWeight = 1;

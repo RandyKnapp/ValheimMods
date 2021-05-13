@@ -136,6 +136,19 @@ namespace EpicLoot
             {
                 FixResistances(player);
             }
+            else if (Command(command, "lucktest"))
+            {
+                var lootTable = args.Length > 1 ? args[1] : "Greydwarf";
+                var luckFactor = args.Length > 2 ? float.Parse(args[2]) : 0;
+                LootRoller.PrintLuckTest(lootTable, luckFactor);
+            }
+            else if (Command(command, "lootres"))
+            {
+                var lootTable = args.Length > 1 ? args[1] : "Greydwarf";
+                var level = args.Length > 2 ? int.Parse(args[2]) : 1;
+                var itemIndex = args.Length > 3 ? int.Parse(args[3]) : 0;
+                LootRoller.PrintLootResolutionTest(lootTable, level, itemIndex);
+            }
 
             return true;
         }
@@ -250,7 +263,7 @@ namespace EpicLoot
             LootRoller.CheatEffectCount = effectCount;
             for (var i = 0; i < count; i++)
             {
-                int[] rarityTable = GetRarityTable(rarityArg);
+                var rarityTable = GetRarityTable(rarityArg);
 
                 var item = itemArg;
                 if (item == "random")
@@ -270,7 +283,7 @@ namespace EpicLoot
                 var loot = new LootTable()
                 {
                     Object = "Console",
-                    Drops = new[] { new[] { 1, 1 } },
+                    Drops = new[] { new float[] { 1, 1 } },
                     Loot = new[]
                     {
                         new LootDrop()
@@ -330,7 +343,7 @@ namespace EpicLoot
             var loot = new LootTable
             {
                 Object = "Console",
-                Drops = new[] {new[] {1, 1}},
+                Drops = new[] { new float[] {1, 1} },
                 Loot = new[]
                 {
                     new LootDrop
@@ -350,22 +363,22 @@ namespace EpicLoot
             LootRoller.ForcedMagicEffect = string.Empty;
         }
 
-        private static int[] GetRarityTable(string rarityName)
+        private static float[] GetRarityTable(string rarityName)
         {
-            var rarityTable = new[] {1, 1, 1, 1};
+            var rarityTable = new float[] {1, 1, 1, 1};
             switch (rarityName.ToLowerInvariant())
             {
                 case "magic":
-                    rarityTable = new[] {1, 0, 0, 0};
+                    rarityTable = new float[] {1, 0, 0, 0};
                     break;
                 case "rare":
-                    rarityTable = new[] {0, 1, 0, 0};
+                    rarityTable = new float[] {0, 1, 0, 0};
                     break;
                 case "epic":
-                    rarityTable = new[] {0, 0, 1, 0};
+                    rarityTable = new float[] {0, 0, 1, 0};
                     break;
                 case "legendary":
-                    rarityTable = new[] {0, 0, 0, 1};
+                    rarityTable = new float[] {0, 0, 0, 1};
                     break;
             }
 
@@ -416,13 +429,13 @@ namespace EpicLoot
             var loot = new LootTable
             {
                 Object = "Console",
-                Drops = new[] { new[] { 1, 1 } },
+                Drops = new[] { new float[] { 1, 1 } },
                 Loot = new[]
                 {
                     new LootDrop
                     {
                         Item = itemType,
-                        Rarity = new []{ 0, 0, 0, 1 }
+                        Rarity = new float[]{ 0, 0, 0, 1 }
                     }
                 }
             };

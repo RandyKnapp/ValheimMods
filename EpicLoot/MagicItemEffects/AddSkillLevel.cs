@@ -36,6 +36,7 @@ namespace EpicLoot.MagicItemEffects
             check(MagicEffectType.AddSpearsSkill, SkillType.Spears);
             check(MagicEffectType.AddBlockingSkill, SkillType.Blocking);
             check(MagicEffectType.AddAxesSkill, SkillType.Axes);
+            check(MagicEffectType.AddAxesSkill, SkillType.WoodCutting);
             check(MagicEffectType.AddBowsSkill, SkillType.Bows);
             check(MagicEffectType.AddUnarmedSkill, SkillType.Unarmed);
             check(MagicEffectType.AddPickaxesSkill, SkillType.Pickaxes);

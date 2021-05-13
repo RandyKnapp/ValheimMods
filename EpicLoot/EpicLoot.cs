@@ -71,9 +71,9 @@ namespace EpicLoot
     {
         public const string PluginId = "randyknapp.mods.epicloot";
         public const string DisplayName = "Epic Loot";
-        public const string Version = "0.7.9";
+        public const string Version = "0.7.10";
 
-        private readonly ConfigSync _configSync = new ConfigSync(PluginId) { DisplayName = DisplayName, CurrentVersion = Version, MinimumRequiredVersion = "0.7.9" };
+        private readonly ConfigSync _configSync = new ConfigSync(PluginId) { DisplayName = DisplayName, CurrentVersion = Version, MinimumRequiredVersion = "0.7.10" };
 
         private static ConfigEntry<string> _setItemColor;
         private static ConfigEntry<string> _magicRarityColor;
@@ -142,6 +142,7 @@ namespace EpicLoot
 
         private static EpicLoot _instance;
         private Harmony _harmony;
+        private float _worldLuckFactor = 0;
 
         [UsedImplicitly]
         private void Awake()
@@ -1097,20 +1098,20 @@ namespace EpicLoot
             {
                 var level = i + 1;
                 var dropTable = LootRoller.GetDropsForLevel(lootTable, level, false);
-                if (ArrayUtils.IsNullOrEmpty(dropTable))
+                if (dropTable.Count == 0)
                 {
                     continue;
                 }
 
-                float total = dropTable.Sum(x => x.Length > 1 ? x[1] : 0);
+                float total = dropTable.Sum(x => x.Value);
                 if (total > 0)
                 {
                     t.AppendLine($"> | Drops (lvl {level}) | Weight (Chance) |");
                     t.AppendLine($"> | -- | -- |");
                     foreach (var drop in dropTable)
                     {
-                        var count = drop.Length > 0 ? drop[0] : 0;
-                        var value = drop.Length > 1 ? drop[1] : 0;
+                        var count = drop.Key;
+                        var value = drop.Value;
                         var percent = (value / total) * 100;
                         t.AppendLine($"> | {count} | {value} ({percent:0.#}%) |");
                     }
@@ -1295,20 +1296,22 @@ namespace EpicLoot
 
         private static void GenerateTranslations()
         {
-            var jsonFile = LoadJsonText("itemnames.json");
-            var config = JSON.ToObject<ItemNameConfig>(jsonFile);
+            var jsonFile = LoadJsonText("magiceffects.json");
+            var config = JSON.ToObject<MagicItemEffectsList>(jsonFile);
 
             var translations = new Dictionary<string, string>();
 
-            foreach (var nameEntry in config.Epic.Adjectives.Concat(config.Epic.Names))
+            foreach (var effectDef in config.MagicItemEffects)
             {
-                var name = nameEntry.Name;
-                var locId = "mod_epicloot_epic_" + Clean(name);
-                translations.Add(locId, name);
-                jsonFile = jsonFile.Replace($"\"Name\": \"{name}\"", $"\"Name\": \"${locId}\"");
+                if (string.IsNullOrEmpty(effectDef.Description))
+                {
+                    effectDef.Description = effectDef.DisplayText.Replace("display", "desc");
+                    jsonFile = jsonFile.Replace($"\"DisplayText\" : \"{effectDef.DisplayText}\"", $"\"DisplayText\" : \"{effectDef.DisplayText}\",\n      \"Description\" : \"{effectDef.Description}\"");
+                    translations.Add(effectDef.Description, "");
+                }
             }
 
-            var outputPath = GenerateAssetPathAtAssembly("itemnames_translated.json");
+            var outputPath = GenerateAssetPathAtAssembly("magiceffects_translated.json");
             File.WriteAllText(outputPath, jsonFile);
 
             var translationsOutputPath = GenerateAssetPathAtAssembly("new_translations.json");
@@ -1373,6 +1376,16 @@ namespace EpicLoot
             var key = GetId(effectDef, field);
             AddTranslation(translations, key, value);
             return ReplaceTranslation(jsonFile, string.Format(replaceFormat, value), string.Format(replaceFormat, $"${key}"));
+        }
+
+        public static float GetWorldLuckFactor()
+        {
+            return _instance._worldLuckFactor;
+        }
+
+        public static void SetWorldLuckFactor(float luckFactor)
+        {
+            _instance._worldLuckFactor = luckFactor;
         }
     }
 }
