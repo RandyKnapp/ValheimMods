@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using Common;
 using EpicLoot.Adventure;
@@ -42,6 +43,10 @@ namespace EpicLoot
             else if (CheatCommand(command, "magicitemlegendary", "milegend"))
             {
                 SpawnLegendaryMagicItem(__instance, args);
+            }
+            else if (CheatCommand(command, "magicitemset", "miset"))
+            {
+                SpawnMagicItemSet(__instance, args);
             }
             else if (Command(command, "checkstackquality"))
             {
@@ -389,38 +394,58 @@ namespace EpicLoot
         {
             if (args.Length < 2)
             {
-                __instance.AddString("> Specify legendaryID");
+                __instance.AddString("> Specify legendaryID, itemID (optional)");
                 return;
             }
 
             var legendaryID = args[1];
+            var itemType = args.Length >= 3 ? args[2] : null;
 
             __instance.AddString($"magicitemlegendary - legendaryID:{legendaryID}");
+            SpawnLegendaryItemHelper(legendaryID, itemType, __instance);
+        }
 
+        private static void SpawnLegendaryItemHelper(string legendaryID, string itemType, Console __instance)
+        {
             if (!UniqueLegendaryHelper.TryGetLegendaryInfo(legendaryID, out var legendaryInfo))
             {
-                __instance.AddString($"> Could not find info for legendaryID: ({legendaryID})");
+                if (__instance != null)
+                {
+                    __instance.AddString($"> Could not find info for legendaryID: ({legendaryID})");
+                }
                 return;
             }
 
-            string itemType = null;
-            if (legendaryInfo.Requirements?.AllowedItemNames?.Count > 0)
+            if (string.IsNullOrEmpty(itemType))
             {
-                itemType = legendaryInfo.Requirements.AllowedItemNames.FirstOrDefault();
-            }
+                Debug.LogWarning($"Finding items for legendary ({legendaryInfo.ID})");
+                var dummyMagicItem = new MagicItem { Rarity = ItemRarity.Legendary };
+                var allowedItems = new List<ItemDrop>();
+                foreach (var itemName in GatedItemTypeHelper.ItemInfoByID.Keys)
+                {
+                    var itemPrefab = ObjectDB.instance.GetItemPrefab(itemName);
+                    if (itemPrefab == null)
+                    {
+                        continue;
+                    }
 
-            if (string.IsNullOrEmpty(itemType) && legendaryInfo.Requirements?.AllowedSkillTypes?.Count > 0)
-            {
-                var skill = legendaryInfo.Requirements.AllowedSkillTypes.FirstOrDefault().ToString();
-                var items = GatedItemTypeHelper.ItemInfos.Find(x => x.Type == skill);
-                itemType = items?.Items?.LastOrDefault();
-            }
+                    var itemDrop = itemPrefab.GetComponent<ItemDrop>();
+                    if (itemDrop == null)
+                    {
+                        continue;
+                    }
 
-            if (string.IsNullOrEmpty(itemType) && legendaryInfo.Requirements?.AllowedItemTypes?.Count > 0)
-            {
-                itemType = ObjectDB.instance.GetAllItems(legendaryInfo.Requirements.AllowedItemTypes.First(), string.Empty).FirstOrDefault()?.name;
-            }
+                    var itemData = itemDrop.m_itemData;
+                    if (legendaryInfo.Requirements.CheckRequirements(itemData, dummyMagicItem))
+                    {
+                        Debug.Log($"> {itemDrop.name} ({itemDrop.m_itemData.m_shared.m_itemType.ToString()})");
+                        allowedItems.Add(itemDrop);
+                    }
+                }
 
+                itemType = allowedItems.LastOrDefault()?.name;
+            }
+            
             if (string.IsNullOrEmpty(itemType))
             {
                 itemType = "Club";
@@ -450,6 +475,30 @@ namespace EpicLoot
 
             LootRoller.CheatForceLegendary = null;
             LootRoller.CheatDisableGating = previousDisableGatingState;
+        }
+
+        private static void SpawnMagicItemSet(Console console, string[] args)
+        {
+            if (args.Length < 2)
+            {
+                console.AddString("> Specify Set ID");
+                return;
+            }
+
+            var setID = args[1];
+            var itemType = args.Length >= 3 ? args[2] : null;
+            console.AddString($"magicitemset - setID:{setID}, itemType:{itemType}");
+
+            if (!UniqueLegendaryHelper.TryGetLegendarySetInfo(setID, out var setInfo))
+            {
+                console.AddString($"> Could not find set info for setID: ({setID})");
+                return;
+            }
+
+            foreach (var legendaryID in setInfo.LegendaryIDs)
+            {
+                SpawnLegendaryItemHelper(legendaryID, itemType, console);
+            }
         }
 
         public static void CheckStackQuality(Console __instance)

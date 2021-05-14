@@ -1,17 +1,19 @@
 {
+  // Legendary Items
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   "LegendaryItems": [
     {
       "ID": "Dyrnwyn",
       "Name": "$mod_epicloot_l_dyrnwyn",
       "Description": "$mod_epicloot_l_dyrnwyn_desc",
       "EquipFx": "FireAura", 
-      "EquipFxMode" : "EquipRoot", 
-      "Requirements" : {
+      "EquipFxMode": "EquipRoot", 
+      "Requirements": {
         "AllowedItemTypes": [ "OneHandedWeapon" ],
         "AllowedSkillTypes": [ "Swords" ]
       },
       "GuaranteedMagicEffects": [
-        { "Type": "AddFireDamage", "Values": { "MinValue" : 36, "MaxValue" : 48, "Increment" : 1 } }
+        { "Type": "AddFireDamage", "Values": { "MinValue": 36, "MaxValue": 48, "Increment": 1 } }
       ]
     },
     {
@@ -19,26 +21,116 @@
       "Name": "$mod_epicloot_l_sleipnirshoof",
       "Description": "$mod_epicloot_l_sleipnirshoof_desc",
       "EquipFx": "WhiteAura", 
-      "EquipFxMode" : "EquipRoot", 
-      "Requirements" : {
+      "EquipFxMode": "EquipRoot", 
+      "Requirements": {
         "AllowedItemTypes": [ "OneHandedWeapon" ],
         "AllowedSkillTypes": [ "Clubs" ]
       },
       "GuaranteedMagicEffects": [
-        { "Type": "ModifyMovementSpeed", "Values": { "MinValue" : 10, "MaxValue" : 14, "Increment" : 1 } }
+        { "Type": "ModifyMovementSpeed", "Values": { "MinValue": 10, "MaxValue": 14, "Increment": 1 } }
       ]
     },
     {
       "ID": "Gungnir",
       "Name": "$mod_epicloot_l_gungnir",
       "Description": "$mod_epicloot_l_gungnir_desc",
-      "Requirements" : {
+      "Requirements": {
         "AllowedItemTypes": [ "OneHandedWeapon" ],
         "AllowedSkillTypes": [ "Spears" ]
       },
       "GuaranteedMagicEffects": [
-        { "Type": "ModifyDamage", "Values": { "MinValue" : 20, "MaxValue" : 25, "Increment" : 1 } }
+        { "Type": "ModifyDamage", "Values": { "MinValue": 20, "MaxValue": 25, "Increment": 1 } }
+      ]
+    },
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Legendary Set Items
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Heimdall
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    {
+      "ID": "HeimdallTowerShield",
+      "Name": "$mod_epicloot_l_heimdalltowershield",
+      "Description": "$mod_epicloot_l_heimdalltowershield_desc",
+      "IsSetItem": true, 
+      "Requirements": {
+        "AllowedItemTypes": [
+          "Shield"
+        ],
+        "ItemHasNoParryPower": true
+      },
+      "GuaranteedMagicEffects": [
+        { "Type": "Immovable" }
+      ]
+    },
+    {
+      "ID": "HeimdallHelmet",
+      "Name": "$mod_epicloot_l_heimdallhelmet",
+      "Description": "$mod_epicloot_l_heimdallhelmet_desc",
+      "IsSetItem": true, 
+      "Requirements": {
+        "AllowedItemTypes": [
+          "Helmet"
+        ]
+      },
+      "GuaranteedEffectCount": 6, 
+      "GuaranteedMagicEffects": [
+        { "Type": "ModifyArmorLowHealth", "Values": { "MinValue": 30, "MaxValue": 35, "Increment": 1 } },
+        { "Type": "ModifyStaminaRegenLowHealth", "Values": { "MinValue": 25, "MaxValue": 30, "Increment": 1 } }
+      ]
+    },
+    {
+      "ID": "HeimdallChest",
+      "Name": "$mod_epicloot_l_heimdallchest",
+      "Description": "$mod_epicloot_l_heimdallchest_desc",
+      "IsSetItem": true, 
+      "Requirements": {
+        "AllowedItemTypes": [
+          "Chest"
+        ]
+      },
+      "GuaranteedEffectCount": 6, 
+      "GuaranteedMagicEffects": [
+        { "Type": "ModifyArmor", "Values": { "MinValue": 50, "MaxValue": 50, "Increment": 1 } },
+        { "Type": "IncreaseStamina", "Values": { "MinValue": 50, "MaxValue": 60, "Increment": 1 } }
+      ]
+    },
+    {
+      "ID": "HeimdallLegs",
+      "Name": "$mod_epicloot_l_heimdalllegs",
+      "Description": "$mod_epicloot_l_heimdalllegs_desc",
+      "IsSetItem": true, 
+      "Requirements": {
+        "AllowedItemTypes": [
+          "Legs"
+        ]
+      },
+      "GuaranteedEffectCount": 6, 
+      "GuaranteedMagicEffects": [
+        { "Type": "AddMovementSkills", "Values": { "MinValue": 30, "MaxValue": 40, "Increment": 1 } },
+        { "Type": "ModifyMovementSpeedLowHealth", "Values": { "MinValue": 25, "MaxValue": 25, "Increment": 1 } }
       ]
     }
-  ]  
+  ],
+
+  // Legendary Sets
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  "LegendarySets": [
+    {
+      "ID": "Heimdall",
+      "Name": "$mod_epicloot_set_heimdall",
+      "LegendaryIDs": [
+        "HeimdallTowerShield",
+        "HeimdallHelmet",
+        "HeimdallChest",
+        "HeimdallLegs"
+      ],
+      "SetBonuses": [
+        { "Count": 2, "Effect": { "Type": "ModifyBlockPower", "Values": { "MinValue": 200, "MaxValue": 200, "Increment": 1 } } },
+        { "Count": 3, "Effect": { "Type": "Bulwark" } },
+        { "Count": 4, "Effect": { "Type": "Undying" } }
+      ]
+    }
+  ] 
 }

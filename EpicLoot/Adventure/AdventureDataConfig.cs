@@ -100,6 +100,7 @@ namespace EpicLoot.Adventure
         public string TargetID;
         public int RewardGold;
         public int RewardIron;
+        public int RewardCoins;
         public List<BountyTargetAddConfig> Adds = new List<BountyTargetAddConfig>();
     }
 
