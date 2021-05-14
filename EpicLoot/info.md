@@ -892,7 +892,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## ModifySprintStaminaUse
 
-> **Display Text:** Sprint Stamina Drain -{0:0.#}%
+> **Display Text:** Sprint Stamina Use -{0:0.#}%
 > 
 > **Prefixes:** Sprinter's
 > **Suffixes:** Sprinting
@@ -914,7 +914,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## ModifyJumpStaminaUse
 
-> **Display Text:** Jump Stamina Drain -{0:0.#}%
+> **Display Text:** Jump Stamina Use -{0:0.#}%
 > 
 > **Prefixes:** Acrobat's
 > **Suffixes:** the Acrobat
@@ -936,7 +936,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## ModifyAttackStaminaUse
 
-> **Display Text:** Attack Stamina Drain -{0:0.#}%
+> **Display Text:** Attack Stamina Use -{0:0.#}%
 > 
 > **Prefixes:** Gladiator's
 > **Suffixes:** the Gladiator
@@ -958,7 +958,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## ModifyBlockStaminaUse
 
-> **Display Text:** Block Stamina Drain -{0:0.#}%
+> **Display Text:** Block Stamina Use -{0:0.#}%
 > 
 > **Prefixes:** Guardian's
 > **Suffixes:** the Guardian
