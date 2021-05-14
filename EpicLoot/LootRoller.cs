@@ -343,10 +343,21 @@ namespace EpicLoot
                     legendary = _weightedLegendaryTable.Roll();
                 }
 
+                if (legendary.IsSetItem)
+                {
+                    var setID = UniqueLegendaryHelper.GetSetForLegendaryItem(legendary);
+                    magicItem.SetID = setID;
+                }
+
                 if (!UniqueLegendaryHelper.IsGenericLegendary(legendary))
                 {
                     magicItem.LegendaryID = legendary.ID;
                     magicItem.DisplayName = legendary.Name;
+
+                    if (legendary.GuaranteedEffectCount > 0)
+                    {
+                        effectCount = legendary.GuaranteedEffectCount;
+                    }
 
                     foreach (var guaranteedMagicEffect in legendary.GuaranteedMagicEffects)
                     {

@@ -2592,6 +2592,31 @@
       ]
     },
     {
+      "Type" : "ModifyParryWindow",
+      "DisplayText" : "$mod_epicloot_me_modifyparrywindow_display",
+      "Description" : "$mod_epicloot_me_modifyparrywindow_desc",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "Shield"
+        ],
+        "ItemHasParryPower" : true
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 10, "MaxValue" : 40, "Increment" : 1 },
+        "Rare" : { "MinValue" : 20, "MaxValue" : 60, "Increment" : 1 },
+        "Epic" : { "MinValue" : 40, "MaxValue" : 80, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 50, "MaxValue" : 100, "Increment" : 1 }
+      },
+      "SelectionWeight" : 1,
+      "Prefixes": [
+        "$mod_epicloot_me_modifyparrywindow_prefix1"
+      ],
+      "Suffixes": [
+        "$mod_epicloot_me_modifyparrywindow_suffix1"
+      ]
+    },
+    {
+
       "Type" : "Slow",
       "DisplayText" : "$mod_epicloot_me_slow_display",
       "Description" : "$mod_epicloot_me_slow_desc",
@@ -2618,6 +2643,29 @@
       "Suffixes": [
         "$mod_epicloot_me_slow_suffix1"
       ]
+    },
+
+    // Set Effects
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    {
+      "Type" : "Bulwark",
+      "DisplayText" : "$mod_epicloot_set_me_bulwark",
+      "Requirements" : {
+        "NoRoll" :  true 
+      },
+      "ValuesPerRarity" : {
+        "Legendary" : { "MinValue" : 5, "MaxValue" : 5, "Increment" : 1 }
+      },
+      "Activated" : "Primary",
+      "Cooldown" : 60
+    },
+    {
+      "Type" : "Undying",
+      "DisplayText" : "$mod_epicloot_set_me_undying",
+      "Requirements" : {
+        "NoRoll" :  true 
+      },
+      "Cooldown" : 1200
     }
   ]
 }

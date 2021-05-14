@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using EpicLoot.Adventure;
@@ -55,7 +54,7 @@ namespace EpicLoot
                 var effectType = entry.Key;
                 var effectDef = MagicItemEffectDefinitions.Get(effectType);
                 var sum = entry.Value.Sum(x => x.Key.EffectValue);
-                var totalEffectText = string.Format(effectDef.DisplayText, sum);
+                var totalEffectText = MagicItem.GetEffectText(effectDef, sum);
                 var highestRarity = (ItemRarity) entry.Value.Max(x => (int) x.Value.GetRarity());
 
                 t.AppendLine($"<size=20><color={EpicLoot.GetRarityColor(highestRarity)}>{totalEffectText}</color></size>");
@@ -103,7 +102,7 @@ namespace EpicLoot
                 var targetName = AdventureDataManager.GetBountyName(bounty);
                 t.AppendLine($"<size=24>{targetName}</size>");
                 t.Append($"  <color=silver>Classification: <color=#d66660>{AdventureDataManager.GetMonsterName(bounty.Target.MonsterID)}</color>, ");
-                t.AppendLine($" Biome: <color={GetBiomeColor(bounty.Biome)}>$biome_{bounty.Biome.ToString().ToLower()}</color>");
+                t.AppendLine($" Biome: <color={GetBiomeColor(bounty.Biome)}>$biome_{bounty.Biome.ToString().ToLower()}</color></color>");
 
                 var status = "";
                 switch (bounty.State)
@@ -116,7 +115,7 @@ namespace EpicLoot
                         break;
                 }
 
-                t.Append($"  Status: {status}");
+                t.Append($"  <color=silver>Status: {status}");
 
                 var iron = bounty.RewardIron;
                 var gold = bounty.RewardGold;
@@ -188,6 +187,9 @@ namespace EpicLoot
                 var textContainerBackground = TextContainer.gameObject.AddComponent<Image>();
                 textContainerBackground.color = new Color();
                 textContainerBackground.raycastTarget = true;
+
+                var verticalLayoutGroup = TextContainer.GetComponent<VerticalLayoutGroup>();
+                verticalLayoutGroup.spacing = 0;
 
                 TitleTextPrefab = Object.Instantiate(__instance.m_textAreaTopic, __instance.transform);
                 TitleTextPrefab.gameObject.SetActive(false);
