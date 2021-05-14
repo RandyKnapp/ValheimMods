@@ -486,8 +486,7 @@ namespace EpicLoot
             }
 
             var setID = args[1];
-            var itemType = args.Length >= 3 ? args[2] : null;
-            console.AddString($"magicitemset - setID:{setID}, itemType:{itemType}");
+            console.AddString($"magicitemset - setID:{setID}");
 
             if (!UniqueLegendaryHelper.TryGetLegendarySetInfo(setID, out var setInfo))
             {
@@ -497,7 +496,7 @@ namespace EpicLoot
 
             foreach (var legendaryID in setInfo.LegendaryIDs)
             {
-                SpawnLegendaryItemHelper(legendaryID, itemType, console);
+                SpawnLegendaryItemHelper(legendaryID, null, console);
             }
         }
 
