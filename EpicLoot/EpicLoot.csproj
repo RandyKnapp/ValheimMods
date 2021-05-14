@@ -205,6 +205,7 @@
     <Compile Include="MagicItemEffects\ModifyMovementSpeed.cs" />
     <Compile Include="MagicItemEffects\ReflectDamage.cs" />
     <Compile Include="MagicItemEffects\Riches.cs" />
+    <Compile Include="MagicItemEffects\Slow.cs" />
     <Compile Include="MagicItemEffects\StaggerOnDamageTaken.cs" />
     <Compile Include="MagicItemEffects\Throwable.cs" />
     <Compile Include="MagicItemEffects\Waterproof.cs" />
