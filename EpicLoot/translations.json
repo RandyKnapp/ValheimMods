@@ -559,6 +559,7 @@
   "mod_epicloot_me_addpiercingresistancepercentage_prefix1": "Impenetrable",
   "mod_epicloot_me_addpiercingresistancepercentage_suffix1": "Piercing Resistance",
   "mod_epicloot_me_addchoppingresistancepercentage_display": "+{0:0.#}% chopping Damage Reduction",
+  "mod_epicloot_me_addchoppingresistancepercentage_desc": "The player reduces all chopping damage taken by +<b><color=yellow>X</color></b>%. This effect stacks cumulatively with other damage reduction effects equipped by the player.",
   "mod_epicloot_me_addchoppingresistancepercentage_prefix1": "",
   "mod_epicloot_me_addchoppingresistancepercentage_suffix1": "",
   "mod_epicloot_me_addphysicalresistancepercentage_display": "Physical Damage Reduction +{0:0.#}% ",
