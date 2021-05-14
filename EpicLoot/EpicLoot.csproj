@@ -189,6 +189,7 @@
     <Compile Include="MagicItemEffects\ModifyHealthRegen.cs" />
     <Compile Include="MagicItemEffects\ModifyJumpStaminaUsage.cs" />
     <Compile Include="MagicItemEffects\ModifyParry.cs" />
+    <Compile Include="MagicItemEffects\ModifyParryWindow.cs" />
     <Compile Include="MagicItemEffects\ModifyResistance.cs" />
     <Compile Include="MagicItemEffects\ModifyRunStaminaDrain.cs" />
     <Compile Include="MagicItemEffects\AddSkillLevel.cs" />
@@ -205,6 +206,7 @@
     <Compile Include="MagicItemEffects\ModifyMovementSpeed.cs" />
     <Compile Include="MagicItemEffects\ReflectDamage.cs" />
     <Compile Include="MagicItemEffects\Riches.cs" />
+    <Compile Include="MagicItemEffects\Slow.cs" />
     <Compile Include="MagicItemEffects\StaggerOnDamageTaken.cs" />
     <Compile Include="MagicItemEffects\Throwable.cs" />
     <Compile Include="MagicItemEffects\Waterproof.cs" />

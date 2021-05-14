@@ -1,4 +1,4 @@
-# EpicLoot Data v0.7.10
+# EpicLoot Data v0.8.0
 
 *Author: RandyKnapp*
 *Source: [Github](https://github.com/RandyKnapp/ValheimMods/tree/main/EpicLoot)*
@@ -1983,6 +1983,24 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > |Rare|5|10|1|
 > |Epic|10|15|1|
 > |Legendary|15|20|1|
+
+## Bulwark
+
+> **Display Text:** Bulwark [Activated - Primary]: Prevent all damage for {0} seconds. Cooldown: 60 seconds.
+> 
+> **Allowed Item Types:** *None*
+> 
+> **Requirements:**
+> > **Flags:** `NoRoll, ExclusiveSelf`
+
+## Undying
+
+> **Display Text:** Undying [Passive]: On death, regain full health. Cooldown: 20 minutes.
+> 
+> **Allowed Item Types:** *None*
+> 
+> **Requirements:**
+> > **Flags:** `NoRoll, ExclusiveSelf`
 
 # Item Sets
 

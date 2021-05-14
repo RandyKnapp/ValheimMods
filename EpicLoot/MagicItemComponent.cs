@@ -92,6 +92,12 @@ namespace EpicLoot
             return itemData.Extended()?.GetComponent<MagicItemComponent>() != null;
         }
 
+        public static bool IsMagic(this ItemDrop.ItemData itemData, out MagicItem magicItem)
+        {
+            magicItem = itemData.GetMagicItem();
+            return magicItem != null;
+        }
+
         public static bool UseMagicBackground(this ItemDrop.ItemData itemData)
         {
             return itemData.IsMagic() || itemData.IsRunestone();
@@ -186,7 +192,7 @@ namespace EpicLoot
 
         public static bool IsPartOfSet(this ItemDrop.ItemData itemData, string setName)
         {
-            return itemData.m_shared.m_setName == setName;
+            return itemData.GetSetID() == setName;
         }
 
         public static bool CanBeAugmented(this ItemDrop.ItemData itemData)
@@ -197,6 +203,104 @@ namespace EpicLoot
             }
 
             return itemData.GetMagicItem().Effects.Select(effect => MagicItemEffectDefinitions.Get(effect.EffectType)).Any(effectDef => effectDef.CanBeAugmented);
+        }
+
+        public static string GetSetID(this ItemDrop.ItemData itemData, out bool isMundane)
+        {
+            isMundane = true;
+            if (itemData.IsMagic(out var magicItem) && !string.IsNullOrEmpty(magicItem.SetID))
+            {
+                isMundane = false;
+                return magicItem.SetID;
+            }
+
+            if (!string.IsNullOrEmpty(itemData.m_shared.m_setName))
+            {
+                return itemData.m_shared.m_setName;
+            }
+
+            return null;
+        }
+
+        public static string GetSetID(this ItemDrop.ItemData itemData)
+        {
+            return GetSetID(itemData, out _);
+        }
+
+        public static LegendarySetInfo GetLegendarySetInfo(this ItemDrop.ItemData itemData)
+        {
+            UniqueLegendaryHelper.TryGetLegendarySetInfo(itemData.GetSetID(), out var setInfo);
+            return setInfo;
+        }
+
+        public static bool IsSetItem(this ItemDrop.ItemData itemData)
+        {
+            return !string.IsNullOrEmpty(itemData.GetSetID());
+        }
+
+        public static bool IsLegendarySetItem(this ItemDrop.ItemData itemData)
+        {
+            return itemData.IsMagic(out var magicItem) && !string.IsNullOrEmpty(magicItem.SetID);
+        }
+
+        public static bool IsMundaneSetItem(this ItemDrop.ItemData itemData)
+        {
+            return !string.IsNullOrEmpty(itemData.m_shared.m_setName);
+        }
+
+        public static int GetSetSize(this ItemDrop.ItemData itemData)
+        {
+            var setID = itemData.GetSetID(out var isMundane);
+            if (!string.IsNullOrEmpty(setID))
+            {
+                if (isMundane)
+                {
+                    return itemData.m_shared.m_setSize;
+                }
+                else if (UniqueLegendaryHelper.TryGetLegendarySetInfo(setID, out var setInfo))
+                {
+                    return setInfo.LegendaryIDs.Count;
+                }
+            }
+
+            return 0;
+        }
+
+        public static List<string> GetSetPieces(string setName)
+        {
+            if (UniqueLegendaryHelper.TryGetLegendarySetInfo(setName, out var setInfo))
+            {
+                return setInfo.LegendaryIDs;
+            }
+
+            return GetMundaneSetPieces(ObjectDB.instance, setName);
+        }
+
+        public static List<string> GetMundaneSetPieces(ObjectDB objectDB, string setName)
+        {
+            var results = new List<string>();
+            foreach (var itemPrefab in objectDB.m_items)
+            {
+                if (itemPrefab == null)
+                {
+                    EpicLoot.LogError("Null Item left in ObjectDB! (This means that a prefab was deleted and not an instance)");
+                    continue;
+                }
+
+                var itemDrop = itemPrefab.GetComponent<ItemDrop>();
+                if (itemDrop == null)
+                {
+                    EpicLoot.LogError($"Item in ObjectDB missing ItemDrop: ({itemPrefab.name})");
+                    continue;
+                }
+
+                if (itemDrop.m_itemData.m_shared.m_setName == setName)
+                {
+                    results.Add(itemPrefab.GetComponent<ItemDrop>().m_itemData.m_shared.m_name);
+                }
+            }
+
+            return results;
         }
     }
 
@@ -251,11 +355,6 @@ namespace EpicLoot
             return player.GetEquipment().Where(x => x.IsPartOfSet(setName)).ToList();
         }
 
-        public static int GetEquippedSetItemCount(this Player player, string setName)
-        {
-            return player.GetEquippedSetPieces(setName).Count;
-        }
-
         public static bool HasEquipmentOfType(this Player player, ItemDrop.ItemData.ItemType type)
         {
             return player.GetEquipment().Exists(x => x != null && x.m_shared.m_itemType == type);
@@ -264,36 +363,6 @@ namespace EpicLoot
         public static ItemDrop.ItemData GetEquipmentOfType(this Player player, ItemDrop.ItemData.ItemType type)
         {
             return player.GetEquipment().FirstOrDefault(x => x != null && x.m_shared.m_itemType == type);
-        }
-    }
-
-    public static class ObjectDBExtensions
-    {
-        public static List<ItemDrop.ItemData> GetSetPieces(this ObjectDB objectDB, string setName)
-        {
-            List<ItemDrop.ItemData> list = new List<ItemDrop.ItemData>();
-            foreach (var itemPrefab in objectDB.m_items)
-            {
-                if (itemPrefab == null)
-                {
-                    EpicLoot.LogError("Null Item left in ObjectDB! (This means that a prefab was deleted and not an instance)");
-                    continue;
-                }
-
-                var itemDrop = itemPrefab.GetComponent<ItemDrop>();
-                if (itemDrop == null)
-                {
-                    EpicLoot.LogError($"Item in ObjectDB missing ItemDrop: ({itemPrefab.name})");
-                    continue;
-                }
-
-                if (itemDrop.m_itemData.m_shared.m_setName == setName)
-                {
-                    list.Add(itemPrefab.GetComponent<ItemDrop>().m_itemData);
-                }
-            }
-
-            return list;
         }
     }
 
@@ -394,10 +463,14 @@ namespace EpicLoot
                     magicItem.color = item.GetRarityColor();
                 }
 
-                var setItem = element.m_go.transform.Find("setItem").GetComponent<Image>();
-                if (setItem != null && !string.IsNullOrEmpty(item.m_shared.m_setName))
+                var setItemTransform = element.m_go.transform.Find("setItem");
+                if (setItemTransform != null)
                 {
-                    setItem.enabled = true;
+                    var setItem = setItemTransform.GetComponent<Image>();
+                    if (setItem != null)
+                    {
+                        setItem.enabled = item.IsSetItem();
+                    }
                 }
             }
         }

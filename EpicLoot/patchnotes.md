@@ -1,4 +1,4 @@
-## Version 0.7.10
+## Version 0.8.0
   * Fix for Server Side Character crash bug
   * Increased epic and legendary drop rates at low tiers
   * Wishbone is now Epic rarity
