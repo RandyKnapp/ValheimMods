@@ -45,7 +45,6 @@ namespace EpicLoot.MagicItemEffects
 		}
 	}
 
-	
 	[HarmonyPatch(typeof(Projectile), "OnHit")]
 	public class ExplodingArrowHit_Projectile_OnHit_Patch
 	{

@@ -101,5 +101,6 @@
         public static string ModifyStaggerDamage = nameof(ModifyStaggerDamage);
         public static string Luck = nameof(Luck);
         public static string ModifyParryWindow = nameof(ModifyParryWindow);
+        public static string Slow = nameof(Slow);
     }
 }
