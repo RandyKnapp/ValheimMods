@@ -1,7 +1,7 @@
 ﻿using System;
 using HarmonyLib;
 
-namespace EquipmentAndQuickSlots
+namespace EquipmentAndQuickSlots.Tombstone_Fix
 {
     [HarmonyPatch(typeof(Container), "Load")]
     public static class Container_Load_Patch
