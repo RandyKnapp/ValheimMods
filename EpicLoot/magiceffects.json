@@ -2590,6 +2590,29 @@
       "Suffixes": [
         "$mod_epicloot_me_luck_suffix1"
       ]
+    },
+
+    // Set Effects
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    {
+      "Type" : "Bulwark",
+      "DisplayText" : "$mod_epicloot_set_me_bulwark",
+      "Requirements" : {
+        "NoRoll" :  true 
+      },
+      "ValuesPerRarity" : {
+        "Legendary" : { "MinValue" : 5, "MaxValue" : 5, "Increment" : 1 }
+      },
+      "Activated" : "Primary",
+      "Cooldown" : 60
+    },
+    {
+      "Type" : "Undying",
+      "DisplayText" : "$mod_epicloot_set_me_undying",
+      "Requirements" : {
+        "NoRoll" :  true 
+      },
+      "Cooldown" : 1200
     }
   ]
 }

@@ -1984,6 +1984,24 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > |Epic|10|15|1|
 > |Legendary|15|20|1|
 
+## Bulwark
+
+> **Display Text:** Bulwark [Activated - Primary]: Prevent all damage for {0} seconds. Cooldown: 60 seconds.
+> 
+> **Allowed Item Types:** *None*
+> 
+> **Requirements:**
+> > **Flags:** `NoRoll, ExclusiveSelf`
+
+## Undying
+
+> **Display Text:** Undying [Passive]: On death, regain full health. Cooldown: 20 minutes.
+> 
+> **Allowed Item Types:** *None*
+> 
+> **Requirements:**
+> > **Flags:** `NoRoll, ExclusiveSelf`
+
 # Item Sets
 
 Sets of loot drop data that can be referenced in the loot tables
