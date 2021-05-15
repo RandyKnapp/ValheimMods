@@ -104,7 +104,16 @@ namespace EquipmentAndQuickSlots
                             continue;
                         }
 
+                        var extended = destInventory.Extended();
+                        if (extended != null)
+                        {
+                            extended.CallBase = true;
+                        }
                         var emptySlot = destInventory.FindEmptySlot(false);
+                        if (extended != null)
+                        {
+                            extended.CallBase = false;
+                        }
                         if (emptySlot.x >= 0 && emptySlot.y >= 0)
                         {
                             moved = true;
