@@ -30,11 +30,10 @@ namespace EpicLoot.MagicItemEffects
 
         public static void OnDamaged(Character __instance, HitData hit)
         {
-            if (!hit.GetAttacker().IsPlayer())
-            {
-                return;
-            }
-
+            if (hit == null) return;
+            if (hit.GetAttacker() == null) return;
+            if (hit.GetAttacker().IsPlayer() == false) return;
+            
             var player = (Player)hit.GetAttacker();
             if (player.HasActiveMagicEffect(MagicEffectType.Paralyze))
             {
