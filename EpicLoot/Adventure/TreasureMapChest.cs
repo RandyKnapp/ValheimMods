@@ -67,7 +67,7 @@ namespace EpicLoot.Adventure
             if (!hasBeenFound)
             {
                 var beacon = gameObject.AddComponent<Beacon>();
-                beacon.m_range = 20;
+                beacon.m_range = EpicLoot.GetAndvaranautRange();
             }
 
             // TODO Figure out why this damn thing won't float
