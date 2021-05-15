@@ -30,7 +30,7 @@ namespace EpicLoot.MagicItemEffects
 
         public static void OnDamaged(Character __instance, HitData hit)
         {
-            if (!hit.GetAttacker().IsPlayer())
+            if (hit.GetAttacker()?.IsPlayer() != true)
             {
                 return;
             }

@@ -102,5 +102,7 @@
         public static string Luck = nameof(Luck);
         public static string ModifyParryWindow = nameof(ModifyParryWindow);
         public static string Slow = nameof(Slow);
+        public static string Bulwark = nameof(Bulwark);
+        public static string Undying = nameof(Undying);
     }
 }

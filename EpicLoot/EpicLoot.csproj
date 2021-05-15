@@ -167,6 +167,7 @@
     <Compile Include="MagicItemEffects\AddCarryWeight.cs" />
     <Compile Include="MagicItemEffects\AddLifeSteal.cs" />
     <Compile Include="MagicItemEffects\AvoidDamageTaken.cs" />
+    <Compile Include="MagicItemEffects\Bulwark.cs" />
     <Compile Include="MagicItemEffects\Comfortable.cs" />
     <Compile Include="MagicItemEffects\DoubleJump.cs" />
     <Compile Include="MagicItemEffects\Executioner.cs" />
@@ -210,6 +211,7 @@
     <Compile Include="MagicItemEffects\Slow.cs" />
     <Compile Include="MagicItemEffects\StaggerOnDamageTaken.cs" />
     <Compile Include="MagicItemEffects\Throwable.cs" />
+    <Compile Include="MagicItemEffects\Undying.cs" />
     <Compile Include="MagicItemEffects\Waterproof.cs" />
     <Compile Include="MagicItemEffects\WaterWalking.cs" />
     <Compile Include="MagicItemNames.cs" />
@@ -226,6 +228,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VisEquipment_Patch.cs" />
     <Compile Include="ZNetScene_Patch.cs" />
+    <Compile Include="ZNetView_Patch.cs" />
     <Compile Include="ZNet_Patch.cs" />
   </ItemGroup>
   <ItemGroup>
