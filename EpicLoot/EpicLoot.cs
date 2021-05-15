@@ -98,6 +98,7 @@ namespace EpicLoot
         private static ConfigEntry<GatedItemTypeMode> _gatedItemTypeModeConfig;
         private static ConfigEntry<BossDropMode> _bossTrophyDropMode;
         private static ConfigEntry<float> _bossTrophyDropPlayerRange;
+        private static ConfigEntry<int> _andvaranautRange;
         public static ConfigEntry<bool> ShowEquippedAndHotbarItemsInSacrificeTab;
         private static ConfigEntry<bool> _adventureModeEnabled;
         private static ConfigEntry<bool> _serverConfigLocked;
@@ -177,14 +178,16 @@ namespace EpicLoot
             _bossTrophyDropMode = SyncedConfig("Balance", "Boss Trophy Drop Mode", BossDropMode.OnePerPlayerNearBoss, "Sets bosses to drop a number of trophies equal to the number of players, similar to the way Wishbone works in vanilla. Optionally set it to only include players within a certain distance, use 'Boss Trophy Drop Player Range' to set the range.");
             _bossTrophyDropPlayerRange = SyncedConfig("Balance", "Boss Trophy Drop Player Range", 100.0f, "Sets the range that bosses check when dropping multiple trophies using the OnePerPlayerNearBoss drop mode.");
             _adventureModeEnabled = SyncedConfig("Balance", "Adventure Mode Enabled", true, "Set to true to enable all the adventure mode features: secret stash, gambling, treasure maps, and bounties. Set to false to disable. This will not actually remove active treasure maps or bounties from your save.");
+            _andvaranautRange = SyncedConfig("Balance", "Andvaranaut Range", 20, "Sets the range that Andvaranaut will locate a treasure chest.");
             _serverConfigLocked = SyncedConfig("Config Sync", "Lock Config", false, new ConfigDescription("[Server Only] The configuration is locked and may not be changed by clients once it has been synced from the server. Only valid for server config, will have no effect on clients."));
-            /*AbilityKeyCodes[0] = Config.Bind("Abilities", "Ability Hotkey 1", "g", "Hotkey for Ability Slot 1.");
-            AbilityKeyCodes[1] = Config.Bind("Abilities", "Ability Hotkey 2", "h", "Hotkey for Ability Slot 2.");
-            AbilityKeyCodes[2] = Config.Bind("Abilities", "Ability Hotkey 3", "j", "Hotkey for Ability Slot 3.");
-            AbilityBarAnchor = Config.Bind("Abilities", "Ability Bar Anchor", TextAnchor.LowerCenter, "The point on the HUD to anchor the ability bar. Changing this also changes the pivot of the ability bar to that corner. For reference: the ability bar size is 208 by 64.");
-            AbilityBarPosition = Config.Bind("Abilities", "Ability Bar Position", new Vector2(0, 50), "The position offset from the Ability Bar Anchor at which to place the ability bar.");
-            */
-            _configSync.AddLockingConfigEntry(_serverConfigLocked);
+            
+      /*AbilityKeyCodes[0] = Config.Bind("Abilities", "Ability Hotkey 1", "g", "Hotkey for Ability Slot 1.");
+      AbilityKeyCodes[1] = Config.Bind("Abilities", "Ability Hotkey 2", "h", "Hotkey for Ability Slot 2.");
+      AbilityKeyCodes[2] = Config.Bind("Abilities", "Ability Hotkey 3", "j", "Hotkey for Ability Slot 3.");
+      AbilityBarAnchor = Config.Bind("Abilities", "Ability Bar Anchor", TextAnchor.LowerCenter, "The point on the HUD to anchor the ability bar. Changing this also changes the pivot of the ability bar to that corner. For reference: the ability bar size is 208 by 64.");
+      AbilityBarPosition = Config.Bind("Abilities", "Ability Bar Position", new Vector2(0, 50), "The position offset from the Ability Bar Anchor at which to place the ability bar.");
+      */
+      _configSync.AddLockingConfigEntry(_serverConfigLocked);
 
             LoadTranslations();
             InitializeConfig();
@@ -1299,6 +1302,11 @@ namespace EpicLoot
         public static float GetBossTrophyDropPlayerRange()
         {
             return _bossTrophyDropPlayerRange.Value;
+        }
+
+        public static int GetAndvaranautRange()
+        {
+          return _andvaranautRange.Value;
         }
 
         public static bool IsAdventureModeEnabled()
