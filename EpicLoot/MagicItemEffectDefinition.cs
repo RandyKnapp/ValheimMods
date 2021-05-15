@@ -244,14 +244,6 @@ namespace EpicLoot
             public ValueDef Legendary;
         }
 
-        [Serializable]
-        public enum ActivationMode
-        {
-            None,
-            Primary,
-            Secondary
-        }
-
         public string Type { get; set; }
 
         public string DisplayText = "";
@@ -265,8 +257,7 @@ namespace EpicLoot
         public List<string> Suffixes = new List<string>();
         public string EquipFx;
         public FxAttachMode EquipFxMode = FxAttachMode.Player;
-        public ActivationMode Activated;
-        public float Cooldown;
+        public string Ability;
 
         public List<ItemDrop.ItemData.ItemType> GetAllowedItemTypes()
         {

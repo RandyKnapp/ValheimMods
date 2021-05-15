@@ -2,7 +2,7 @@
 
 namespace EpicLoot
 {
-    [HarmonyPatch(typeof(ZNetScene), "Awake")]
+    [HarmonyPatch(typeof(ZNetScene), nameof(ZNetScene.Awake))]
     public static class ZNetScene_Awake_Patch
     {
         public static bool Prefix(ZNetScene __instance)
@@ -11,15 +11,4 @@ namespace EpicLoot
             return true;
         }
     }
-
-    //public bool IsAfternoon()
-    /*[HarmonyPatch(typeof(EnvMan), "IsAfternoon")]
-    public static class EnvMan_IsAfternoon_Patch
-    {
-        public static bool Prefix(ref bool __result)
-        {
-            __result = true;
-            return false;
-        }
-    }*/
 }

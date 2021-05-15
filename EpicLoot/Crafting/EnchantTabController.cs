@@ -330,7 +330,7 @@ namespace EpicLoot.Crafting
                 }
                 
                 var magicItemComponent = recipe.FromItem.Extended().AddComponent<MagicItemComponent>();
-                var luckFactor = player.GetTotalMagicEffectValueOnEquipment(MagicEffectType.Luck, 0.01f);
+                var luckFactor = player.GetTotalActiveMagicEffectValue(MagicEffectType.Luck, 0.01f);
                 var magicItem = LootRoller.RollMagicItem(SelectedRarity, recipe.FromItem.Extended(), luckFactor);
                 magicItemComponent.SetMagicItem(magicItem);
 

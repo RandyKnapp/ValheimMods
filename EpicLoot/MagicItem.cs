@@ -21,6 +21,16 @@ namespace EpicLoot
         public int Version = 1;
         public string EffectType { get; set; }
         public float EffectValue;
+
+        public MagicItemEffect()
+        {
+        }
+
+        public MagicItemEffect(string type, float value = 0)
+        {
+            EffectType = type;
+            EffectValue = value;
+        }
     }
 
     [Serializable]
@@ -78,12 +88,12 @@ namespace EpicLoot
             return EpicLoot.GetRarityColor(Rarity);
         }
 
-        public List<MagicItemEffect> GetEffects(string effectType)
+        public List<MagicItemEffect> GetEffects(string effectType = null)
         {
-            return Effects.Where(x => x.EffectType == effectType).ToList();
+            return effectType == null ? Effects.ToList() : Effects.Where(x => x.EffectType == effectType).ToList();
         }
 
-        public float GetTotalEffectValue(string effectType, float scale = 1)
+        public float GetTotalEffectValue(string effectType, float scale = 1.0f)
         {
             return GetEffects(effectType).Sum(x => x.EffectValue) * scale;
         }
@@ -202,6 +212,11 @@ namespace EpicLoot
 
             mode = FxAttachMode.None;
             return null;
+        }
+
+        public bool IsLegendarySetItem()
+        {
+            return !string.IsNullOrEmpty(SetID);
         }
     }
 }

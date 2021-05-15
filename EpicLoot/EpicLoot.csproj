@@ -177,6 +177,7 @@
     <Compile Include="MagicItemEffects\IncreaseHealth.cs" />
     <Compile Include="MagicItemEffects\IncreaseStamina.cs" />
     <Compile Include="MagicItemEffects\Indestructible.cs" />
+    <Compile Include="MagicItemEffects\MagicEffectsHelper.cs" />
     <Compile Include="MagicItemEffects\ModifyArmor.cs" />
     <Compile Include="MagicItemEffects\ModifyAttackSpeed.cs" />
     <Compile Include="MagicItemEffects\ModifyAttackStamina.cs" />

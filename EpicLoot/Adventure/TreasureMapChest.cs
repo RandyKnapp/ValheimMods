@@ -86,8 +86,8 @@ namespace EpicLoot.Adventure
         }
     }
 
-    [HarmonyPatch(typeof(Container), "Awake")]
-    public static class Container_Awake
+    [HarmonyPatch(typeof(Container), nameof(Container.Awake))]
+    public static class Container_Awake_Patch
     {
         public static void Postfix(Container __instance)
         {
@@ -114,7 +114,7 @@ namespace EpicLoot.Adventure
         }
     }
 
-    [HarmonyPatch(typeof(Container), "RPC_OpenRespons")]
+    [HarmonyPatch(typeof(Container), nameof(Container.RPC_OpenRespons))]
     public static class Container_RPC_OpenRespons_Patch
     {
         public static void Postfix(Container __instance, long uid, bool granted)

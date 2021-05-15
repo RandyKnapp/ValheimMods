@@ -134,7 +134,7 @@ namespace EpicLoot.Adventure
         }
     }
 
-    [HarmonyPatch(typeof(Character), "Start")]
+    [HarmonyPatch(typeof(Character), nameof(Character.Start))]
     public static class Character_Start_Patch
     {
         public static void Postfix(Character __instance)

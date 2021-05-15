@@ -1,7 +1,5 @@
-﻿using EpicLoot.GatedItemType;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 
 namespace EpicLoot.PlayerKnown
 {

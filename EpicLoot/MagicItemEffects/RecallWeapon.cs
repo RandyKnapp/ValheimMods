@@ -3,11 +3,10 @@ using System.Reflection;
 using System.Reflection.Emit;
 using HarmonyLib;
 using JetBrains.Annotations;
-using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects
 {
-	[HarmonyPatch(typeof(Projectile), "SpawnOnHit")]
+	[HarmonyPatch(typeof(Projectile), nameof(Projectile.SpawnOnHit))]
 	public class RecallWeapon_Projectile_SpawnOnHit_Patch
 	{
 		private static ItemDrop IssueItemRecall(ItemDrop item, Projectile projectile)
@@ -38,7 +37,7 @@ namespace EpicLoot.MagicItemEffects
 		}
 	}
 
-	[HarmonyPatch(typeof(Player), "Awake")]
+	[HarmonyPatch(typeof(Player), nameof(Player.Awake))]
 	public class RPC_WeaponRecall_Player_Awake_Patch
 	{
 		[UsedImplicitly]

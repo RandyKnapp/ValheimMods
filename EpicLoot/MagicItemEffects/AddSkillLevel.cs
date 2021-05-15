@@ -25,7 +25,7 @@ namespace EpicLoot.MagicItemEffects
             {
             	if (type.Contains(skillType))
             	{
-            		increase += (int) player.GetMagicEquipmentWithEffect(effect).Sum(item => item.GetMagicItem().GetTotalEffectValue(effect));
+            		increase += (int) player.GetTotalActiveMagicEffectValue(effect);
             	}
             }
 
@@ -71,7 +71,7 @@ namespace EpicLoot.MagicItemEffects
         }
     }
 
-	[HarmonyPatch(typeof(SkillsDialog), "Setup")]
+	[HarmonyPatch(typeof(SkillsDialog), nameof(SkillsDialog.Setup))]
 	public static class DisplayExtraSkillLevels_SkillsDialog_Setup_Patch
 	{
 		[UsedImplicitly]

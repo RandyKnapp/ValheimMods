@@ -15,7 +15,7 @@ using Random = System.Random;
 
 namespace EpicLoot
 {
-    [HarmonyPatch(typeof(Console), "InputText")]
+    [HarmonyPatch(typeof(Console), nameof(Console.InputText))]
     public static class Console_Patch
     {
         private static readonly Random _random = new Random();

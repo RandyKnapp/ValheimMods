@@ -14,7 +14,7 @@ namespace EpicLoot
 {
     // Set the topic of the tooltip with the decorated name
     //public void CreateItemTooltip(ItemDrop.ItemData item, UITooltip tooltip) => tooltip.Set(item.m_shared.m_name, item.GetTooltip());
-    [HarmonyPatch(typeof(InventoryGrid), "CreateItemTooltip", typeof(ItemDrop.ItemData), typeof(UITooltip))]
+    [HarmonyPatch(typeof(InventoryGrid), nameof(InventoryGrid.CreateItemTooltip), typeof(ItemDrop.ItemData), typeof(UITooltip))]
     public static class InventoryGrid_CreateItemTooltip_MagicItemComponent_Patch
     {
         public static bool Prefix(ItemDrop.ItemData item, UITooltip tooltip)
@@ -36,7 +36,7 @@ namespace EpicLoot
 
     // Set the content of the tooltip
     //public static string GetTooltip(ItemDrop.ItemData item, int qualityLevel, bool crafting)
-    [HarmonyPatch(typeof(ItemDrop.ItemData), "GetTooltip", typeof(ItemDrop.ItemData), typeof(int), typeof(bool))]
+    [HarmonyPatch(typeof(ItemDrop.ItemData), nameof(ItemDrop.ItemData.GetTooltip), typeof(ItemDrop.ItemData), typeof(int), typeof(bool))]
     public static class MagicItemTooltip_ItemDrop_Patch
     {
         [UsedImplicitly]

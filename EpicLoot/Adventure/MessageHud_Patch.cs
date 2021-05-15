@@ -4,8 +4,8 @@ using UnityEngine.UI;
 
 namespace EpicLoot.Adventure
 {
-    [HarmonyPatch(typeof(MessageHud), "Awake")]
-    public class MessageHud_Patch
+    [HarmonyPatch(typeof(MessageHud), nameof(MessageHud.Awake))]
+    public class MessageHud_Awake_Patch
     {
         public static void Postfix(MessageHud __instance)
         {

@@ -8,99 +8,93 @@ using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects
 {
-	[HarmonyPatch(typeof(CharacterAnimEvent), "FixedUpdate")]
+    public static class ModifyStaggerDuration
+    {
+        public const string ZdoKey = "epic loot stagger duration";
+    }
+
+	[HarmonyPatch(typeof(CharacterAnimEvent), nameof(CharacterAnimEvent.FixedUpdate))]
 	public static class ModifyStaggerDuration_CharacterAnimEvent_FixedUpdate_Patch
 	{
-		private static void Prefix(Character ___m_character, ref Animator ___m_animator)
+		[UsedImplicitly]
+        private static void Prefix(Character ___m_character, ref Animator ___m_animator)
 		{
 			if (!(___m_character.m_nview?.GetZDO() is ZDO zdo))
 			{
 				return;
 			}
 
-			float speedupfactor = zdo.GetFloat("epic loot stagger duration");
+			var speedupfactor = zdo.GetFloat(ModifyStaggerDuration.ZdoKey);
 			if (___m_character.IsStaggering() && speedupfactor > 1f && ___m_animator.speed > 0.001f)
 			{
-				float speed = ___m_animator.GetCurrentAnimatorClipInfo(0)[0].clip.length / speedupfactor * (___m_animator.GetCurrentAnimatorClipInfo(0)[0].clip.name == "stagger2" ? 2 : 1);
+				var speed = ___m_animator.GetCurrentAnimatorClipInfo(0)[0].clip.length / speedupfactor * (___m_animator.GetCurrentAnimatorClipInfo(0)[0].clip.name == "stagger2" ? 2 : 1);
 				___m_animator.speed = speed;
 			}
 		}
 	}
 
-	[HarmonyPatch(typeof(Character), "RPC_Damage")]
+	[HarmonyPatch(typeof(Character), nameof(Character.RPC_Damage))]
 	public static class RPC_TagCharacterOnHit_Character_RPC_Damage_Patch
 	{
-		private static void Prefix(Character __instance, HitData hit)
+		[UsedImplicitly]
+        private static void Prefix(Character __instance, HitData hit)
 		{
 			if (!__instance.IsStaggering() && hit.m_skill != Skills.SkillType.Bows && hit.m_skill != Skills.SkillType.None)
 			{
-				float staggerValue = 1f;
+				var staggerValue = 1f;
 				if (hit.GetAttacker() is Player player)
-				{
-					var items = player.GetMagicEquipmentWithEffect(MagicEffectType.ModifyStaggerDuration);
-					foreach (var item in items)
-					{
-						staggerValue += item.GetMagicItem().GetTotalEffectValue(MagicEffectType.ModifyStaggerDuration, 0.01f);
-					}
-				}
-				__instance.m_nview.GetZDO().Set("epic loot stagger duration", staggerValue);
+                {
+                    staggerValue = player.GetTotalActiveMagicEffectValue(MagicEffectType.ModifyStaggerDuration, 0.01f);
+                }
+				__instance.m_nview.GetZDO().Set(ModifyStaggerDuration.ZdoKey, staggerValue);
 			}
 		}
 	}
 
-	[HarmonyPatch(typeof(Humanoid), "BlockAttack")]
+	[HarmonyPatch(typeof(Humanoid), nameof(Humanoid.BlockAttack))]
 	public static class TagCharacterOnBlock_Humanoid_BlockAttack_Patch
 	{
-		private static void Prefix(Humanoid __instance, Character attacker)
+		[UsedImplicitly]
+        private static void Prefix(Humanoid __instance, Character attacker)
 		{
 			if (!attacker.IsStaggering())
 			{
-				float staggerValue = 1f;
+				var staggerValue = 1f;
 				if (__instance is Player player)
 				{
-					var items = player.GetMagicEquipmentWithEffect(MagicEffectType.ModifyStaggerDuration);
-					foreach (var item in items)
-					{
-						staggerValue += item.GetMagicItem().GetTotalEffectValue(MagicEffectType.ModifyStaggerDuration, 0.01f);
-					}
-
-				}
-				attacker.m_nview.GetZDO().Set("epic loot stagger duration", staggerValue);
+                    staggerValue = player.GetTotalActiveMagicEffectValue(MagicEffectType.ModifyStaggerDuration, 0.01f);
+                }
+				attacker.m_nview.GetZDO().Set(ModifyStaggerDuration.ZdoKey, staggerValue);
 			}
 		}
 	}
 
-	[HarmonyPatch(typeof(Projectile), "OnHit")]
+	[HarmonyPatch(typeof(Projectile), nameof(Projectile.OnHit))]
 	public class StaggeringProjectileHit_Projectile_OnHit_Patch
 	{
-		private static void Prefix(Projectile __instance, Collider collider)
+		[UsedImplicitly]
+        private static void Prefix(Projectile __instance, Collider collider)
 		{
 			if (collider != null && Projectile.FindHitObject(collider) is GameObject target && target.GetComponent<Character>() is Character character)
 			{
 				if (__instance.m_nview?.GetZDO() is ZDO zdo)
 				{
-					float staggerValue = zdo.GetFloat("epic loot stagger duration", 1f);
-					character.m_nview.GetZDO().Set("epic loot stagger duration", staggerValue);
+					var staggerValue = zdo.GetFloat(ModifyStaggerDuration.ZdoKey, 1f);
+					character.m_nview.GetZDO().Set(ModifyStaggerDuration.ZdoKey, staggerValue);
 				}
 			}
 		}
 	}
 
-	[HarmonyPatch(typeof(Attack), "FireProjectileBurst")]
+	[HarmonyPatch(typeof(Attack), nameof(Attack.FireProjectileBurst))]
 	public class StaggeringProjectileInstantiation_Attack_FireProjectileBurst_Patch
 	{
 		private static GameObject MarkAttackProjectile(GameObject attackProjectile, Attack attack)
 		{
 			if (attack.m_character == Player.m_localPlayer)
 			{
-				float staggerValue = 1f;
-				var items = Player.m_localPlayer.GetMagicEquipmentWithEffect(MagicEffectType.ModifyStaggerDuration);
-				foreach (var item in items)
-				{
-					staggerValue += item.GetMagicItem().GetTotalEffectValue(MagicEffectType.ModifyStaggerDuration, 0.01f);
-				}
-
-				attackProjectile.GetComponent<ZNetView>().GetZDO().Set("epic loot stagger duration", staggerValue);
+				var staggerValue = 1f + Player.m_localPlayer.GetTotalActiveMagicEffectValue(MagicEffectType.ModifyStaggerDuration, 0.01f);
+                attackProjectile.GetComponent<ZNetView>().GetZDO().Set(ModifyStaggerDuration.ZdoKey, staggerValue);
 			}
 
 			return attackProjectile;

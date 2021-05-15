@@ -302,12 +302,10 @@
       "SelectionWeight" : 1,
       "Prefixes": [
         "$mod_epicloot_me_modifyparry_prefix1",
-        "$mod_epicloot_me_modifyparry_prefix2",
-        "$mod_epicloot_me_modifyparry_prefix3"
+        "$mod_epicloot_me_modifyparry_prefix2"
       ],
       "Suffixes": [
-        "$mod_epicloot_me_modifyparry_suffix1",
-        "$mod_epicloot_me_modifyparry_suffix2"
+        "$mod_epicloot_me_modifyparry_suffix1"
       ]
     },
     {
@@ -2656,8 +2654,7 @@
       "ValuesPerRarity" : {
         "Legendary" : { "MinValue" : 5, "MaxValue" : 5, "Increment" : 1 }
       },
-      "Activated" : "Primary",
-      "Cooldown" : 60
+      "Ability" : "Bulwark"
     },
     {
       "Type" : "Undying",
@@ -2665,7 +2662,7 @@
       "Requirements" : {
         "NoRoll" :  true 
       },
-      "Cooldown" : 1200
+      "Ability" : "Undying"
     }
   ]
 }

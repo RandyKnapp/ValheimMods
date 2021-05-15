@@ -5,8 +5,8 @@ using UnityEngine;
 namespace EpicLoot.Adventure
 {
     //public List<KeyValuePair<GameObject, int>> GenerateDropList()
-    [HarmonyPatch(typeof(CharacterDrop), "GenerateDropList")]
-    public static class CharacterDrop_OnDeath_Patch
+    [HarmonyPatch(typeof(CharacterDrop), nameof(CharacterDrop.GenerateDropList))]
+    public static class CharacterDrop_GenerateDropList_Patch
     {
         public static void Postfix(CharacterDrop __instance, ref List<KeyValuePair<GameObject, int>> __result)
         {

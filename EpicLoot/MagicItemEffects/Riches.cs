@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using HarmonyLib;
 using JetBrains.Annotations;
 using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects
 {
-	[HarmonyPatch(typeof(CharacterDrop), "GenerateDropList")]
+	[HarmonyPatch(typeof(CharacterDrop), nameof(CharacterDrop.GenerateDropList))]
 	public static class Riches_CharacterDrop_GenerateDropList_Patch
 	{
 		[UsedImplicitly]
@@ -15,16 +16,7 @@ namespace EpicLoot.MagicItemEffects
 			Player.GetPlayersInRange(__instance.m_character.transform.position, 100f, playerList);
 
 			var richesAmount = Random.Range(10, 100);
-			var richesChance = 0f;
-			foreach (Player player in playerList)
-			{
-				var items = player.GetMagicEquipmentWithEffect(MagicEffectType.Riches);
-				foreach (var item in items)
-				{
-					richesChance += item.GetMagicItem().GetTotalEffectValue(MagicEffectType.Riches, 0.01f);
-				}
-			}
-
+			var richesChance = playerList.Sum(player => player.GetTotalActiveMagicEffectValue(MagicEffectType.Riches, 0.01f));
 			if (richesChance > 1)
 			{
 				richesAmount = Mathf.RoundToInt(richesAmount * richesChance);
@@ -45,7 +37,7 @@ namespace EpicLoot.MagicItemEffects
 				{
 					if (richesKv.Value <= richesAmount)
 					{
-						int amount = richesAmount / richesKv.Value;
+						var amount = richesAmount / richesKv.Value;
 						__result.Add(new KeyValuePair<GameObject, int>(richesKv.Key, amount));
 						richesAmount -= amount * richesKv.Value;
 					}

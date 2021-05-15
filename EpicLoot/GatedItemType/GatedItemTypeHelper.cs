@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 using EpicLoot.PlayerKnown;
 
 namespace EpicLoot.GatedItemType

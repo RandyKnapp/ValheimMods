@@ -3,7 +3,7 @@ using JetBrains.Annotations;
 
 namespace EpicLoot.MagicItemEffects
 {
-	[HarmonyPatch(typeof(Character), "Damage")]
+	[HarmonyPatch(typeof(Character), nameof(Character.Damage))]
 	public class ModifyStaggerDamage_Character_Damage_Patch
 	{
 		public static float? HandlingProjectileDamage;
@@ -11,7 +11,7 @@ namespace EpicLoot.MagicItemEffects
 		[UsedImplicitly]
 		private static void Prefix(Character __instance, HitData hit)
 		{
-			Character attacker = hit.GetAttacker();
+			var attacker = hit.GetAttacker();
 			if (attacker is Player player && __instance.IsStaggering())
 			{
 				if (HandlingProjectileDamage == null)
@@ -24,18 +24,11 @@ namespace EpicLoot.MagicItemEffects
 
 		public static float ReadStaggerDamageValue(Player player)
 		{
-			var staggerDamage = 1f;
-            var items = player.GetMagicEquipmentWithEffect(MagicEffectType.ModifyStaggerDamage);
-            foreach (var item in items)
-            {
-            	staggerDamage += item.GetMagicItem().GetTotalEffectValue(MagicEffectType.ModifyStaggerDamage, 0.01f);
-            }
-
-            return staggerDamage;
+            return 1 + player.GetTotalActiveMagicEffectValue(MagicEffectType.ModifyStaggerDamage, 0.01f);
 		}
 	}
 
-	[HarmonyPatch(typeof(Projectile), "OnHit")]
+	[HarmonyPatch(typeof(Projectile), nameof(Projectile.OnHit))]
 	public class ModifyStaggerDamageProjectileHit_Projectile_OnHit_Patch
 	{
 		[UsedImplicitly]
@@ -45,7 +38,7 @@ namespace EpicLoot.MagicItemEffects
 		private static void Postfix() => ModifyStaggerDamage_Character_Damage_Patch.HandlingProjectileDamage = null;
 	}
 
-	[HarmonyPatch(typeof(Projectile), "Setup")]
+	[HarmonyPatch(typeof(Projectile), nameof(Projectile.Setup))]
 	public class ModifyStaggerDamage_Projectile_Setup_Patch
 	{
 		[UsedImplicitly]

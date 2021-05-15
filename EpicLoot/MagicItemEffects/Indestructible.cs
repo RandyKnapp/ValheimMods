@@ -30,28 +30,28 @@ namespace EpicLoot.MagicItemEffects
             Override = false;
         }
 
-        [HarmonyPatch(typeof(Attack), "DoAreaAttack")]
+        [HarmonyPatch(typeof(Attack), nameof(Attack.DoAreaAttack))]
         public static class Attack_DoAreaAttack_Patch
         {
             public static bool Prefix(Attack __instance) { return SetValue(__instance.m_weapon); }
             public static void Postfix(Attack __instance) { ResetValue(__instance.m_weapon); }
         }
 
-        [HarmonyPatch(typeof(Attack), "DoMeleeAttack")]
+        [HarmonyPatch(typeof(Attack), nameof(Attack.DoMeleeAttack))]
         public static class Attack_DoMeleeAttack_Patch
         {
             public static bool Prefix(Attack __instance) { return SetValue(__instance.m_weapon); }
             public static void Postfix(Attack __instance) { ResetValue(__instance.m_weapon); }
         }
 
-        [HarmonyPatch(typeof(Attack), "DoNonAttack")]
+        [HarmonyPatch(typeof(Attack), nameof(Attack.DoNonAttack))]
         public static class Attack_DoNonAttack_Patch
         {
             public static bool Prefix(Attack __instance) { return SetValue(__instance.m_weapon); }
             public static void Postfix(Attack __instance) { ResetValue(__instance.m_weapon); }
         }
 
-        [HarmonyPatch(typeof(Attack), "ProjectileAttackTriggered")]
+        [HarmonyPatch(typeof(Attack), nameof(Attack.ProjectileAttackTriggered))]
         public static class Attack_ProjectileAttackTriggered_Patch
         {
             public static bool Prefix(Attack __instance) { return SetValue(__instance.m_weapon); }
@@ -59,7 +59,7 @@ namespace EpicLoot.MagicItemEffects
         }
 
         //public void UpdateIcons(Player player)
-        [HarmonyPatch(typeof(HotkeyBar), "UpdateIcons")]
+        [HarmonyPatch(typeof(HotkeyBar), nameof(HotkeyBar.UpdateIcons))]
         public static class HotkeyBar_UpdateIcons_Patch
         {
             public static void Postfix(HotkeyBar __instance)
@@ -69,7 +69,7 @@ namespace EpicLoot.MagicItemEffects
                     var elementIndex = itemData.m_gridPos.x;
                     if (elementIndex >= 0 && elementIndex < __instance.m_elements.Count)
                     {
-                        HotkeyBar.ElementData element = __instance.m_elements[elementIndex];
+                        var element = __instance.m_elements[elementIndex];
 
                         if (itemData.HasMagicEffect(MagicEffectType.Indestructible))
                         {
@@ -80,21 +80,21 @@ namespace EpicLoot.MagicItemEffects
             }
         }
 
-        [HarmonyPatch(typeof(Humanoid), "BlockAttack")]
+        [HarmonyPatch(typeof(Humanoid), nameof(Humanoid.BlockAttack))]
         public static class Humanoid_BlockAttack_Patch
         {
             public static bool Prefix(Humanoid __instance) { return SetValue(__instance.GetCurrentBlocker()); }
             public static void Postfix(Humanoid __instance) { ResetValue(__instance.GetCurrentBlocker()); }
         }
 
-        [HarmonyPatch(typeof(Humanoid), "EquipItem")]
+        [HarmonyPatch(typeof(Humanoid), nameof(Humanoid.EquipItem))]
         public static class Humanoid_EquipItem_Patch
         {
             public static bool Prefix(ItemDrop.ItemData item) { return SetValue(item); }
             public static void Postfix(ItemDrop.ItemData item) { ResetValue(item); }
         }
 
-        [HarmonyPatch(typeof(Humanoid), "UpdateEquipment")]
+        [HarmonyPatch(typeof(Humanoid), nameof(Humanoid.UpdateEquipment))]
         public static class Humanoid_UpdateEquipment_Patch
         {
             public static bool Prefix(Humanoid __instance, ref List<KeyValuePair<ItemDrop.ItemData, bool>> __state)
@@ -135,7 +135,7 @@ namespace EpicLoot.MagicItemEffects
         }
 
         //public void GetWornItems(List<ItemDrop.ItemData> worn)
-        [HarmonyPatch(typeof(Inventory), "GetWornItems")]
+        [HarmonyPatch(typeof(Inventory), nameof(Inventory.GetWornItems))]
         public static class Inventory_GetWornItems_Patch
         {
             public static void Postfix(List<ItemDrop.ItemData> worn)
@@ -145,14 +145,14 @@ namespace EpicLoot.MagicItemEffects
         }
 
         //public void UpdateIcons(Player player)
-        [HarmonyPatch(typeof(InventoryGrid), "UpdateGui")]
+        [HarmonyPatch(typeof(InventoryGrid), nameof(InventoryGrid.UpdateGui))]
         public static class InventoryGrid_UpdateGui_Patch
         {
             public static void Postfix(InventoryGrid __instance)
             {
-                foreach (ItemDrop.ItemData item in __instance.m_inventory.m_inventory)
+                foreach (var item in __instance.m_inventory.m_inventory)
                 {
-                    InventoryGrid.Element element = __instance.GetElement(item.m_gridPos.x, item.m_gridPos.y, __instance.m_width);
+                    var element = __instance.GetElement(item.m_gridPos.x, item.m_gridPos.y, __instance.m_width);
                     if (element != null && item.HasMagicEffect(MagicEffectType.Indestructible))
                     {
                         element.m_durability.gameObject.SetActive(false);
@@ -161,28 +161,28 @@ namespace EpicLoot.MagicItemEffects
             }
         }
         
-        [HarmonyPatch(typeof(InventoryGui), "AddRecipeToList")]
+        [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.AddRecipeToList))]
         public static class InventoryGui_AddRecipeToList_Patch
         {
             public static bool Prefix(ItemDrop.ItemData item) { return SetValue(item); }
             public static void Postfix(ItemDrop.ItemData item) { ResetValue(item); }
         }
 
-        [HarmonyPatch(typeof(InventoryGui), "SetupUpgradeItem")]
+        [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.SetupUpgradeItem))]
         public static class InventoryGui_SetupUpgradeItem_Patch
         {
             public static bool Prefix(ItemDrop.ItemData item) { return SetValue(item); }
             public static void Postfix(ItemDrop.ItemData item) { ResetValue(item); }
         }
 
-        [HarmonyPatch(typeof(Player), "Repair")]
+        [HarmonyPatch(typeof(Player), nameof(Player.Repair))]
         public static class Player_Repair_Patch
         {
             public static bool Prefix(ItemDrop.ItemData toolItem) { return SetValue(toolItem); }
             public static void Postfix(ItemDrop.ItemData toolItem) { ResetValue(toolItem); }
         }
 
-        [HarmonyPatch(typeof(Player), "UpdatePlacement")]
+        [HarmonyPatch(typeof(Player), nameof(Player.UpdatePlacement))]
         public static class Player_UpdatePlacement_Patch
         {
             public static bool Prefix(Player __instance) { return SetValue(__instance.m_rightItem); }

@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects
 {
-	[HarmonyPatch(typeof(Projectile), "OnHit")]
+	[HarmonyPatch(typeof(Projectile), nameof(Projectile.OnHit))]
 	public class ExecutionerProjectileHit_Projectile_OnHit_Patch
 	{
 		[UsedImplicitly]
@@ -24,11 +24,11 @@ namespace EpicLoot.MagicItemEffects
 		private static void Postfix() => ExecutionerCheckDamage_Character_Damage_Patch.ExecutionerMultiplier = null;
 	}
 
-	[HarmonyPatch(typeof(Character), "Damage")]
+	[HarmonyPatch(typeof(Character), nameof(Character.Damage))]
 	[HarmonyPriority(Priority.VeryLow)]
 	public class ExecutionerCheckDamage_Character_Damage_Patch
 	{
-		public static float? ExecutionerMultiplier = null;
+		public static float? ExecutionerMultiplier;
 
 		[UsedImplicitly]
 		private static void Prefix(Character __instance, HitData hit)
@@ -58,18 +58,12 @@ namespace EpicLoot.MagicItemEffects
 
 		public static float ReadExecutionerValue(Player player)
 		{
-			var executionerValue = 1f;
-			var items = player.GetMagicEquipmentWithEffect(MagicEffectType.Executioner);
-			foreach (var item in items)
-			{
-				executionerValue += item.GetMagicItem().GetTotalEffectValue(MagicEffectType.Executioner, 0.01f);
-			}
-
-			return executionerValue;
+			var executionerValue = 1 + player.GetTotalActiveMagicEffectValue(MagicEffectType.Executioner, 0.01f);
+            return executionerValue;
 		}
 	}
 
-	[HarmonyPatch(typeof(Attack), "FireProjectileBurst")]
+	[HarmonyPatch(typeof(Attack), nameof(Attack.FireProjectileBurst))]
 	public class ExecutionerProjectileInstantiation_Attack_FireProjectileBurst_Patch
 	{
 		private static GameObject MarkAttackProjectile(GameObject attackProjectile, Attack attack)

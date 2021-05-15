@@ -3,36 +3,27 @@
 namespace EpicLoot.MagicItemEffects
 {
     //public void UpdateMovementModifier()
-    [HarmonyPatch(typeof(Player), "UpdateMovementModifier")]
+    [HarmonyPatch(typeof(Player), nameof(Player.UpdateMovementModifier))]
     public static class RemoveSpeedPenalty_Player_UpdateMovementModifier_Patch
     {
         public static void Postfix(Player __instance)
         {
-            DoSpeedCalc(__instance, __instance.m_rightItem);
-            DoSpeedCalc(__instance, __instance.m_leftItem);
-            DoSpeedCalc(__instance, __instance.m_chestItem);
-            DoSpeedCalc(__instance, __instance.m_legItem);
-            DoSpeedCalc(__instance, __instance.m_helmetItem);
-            DoSpeedCalc(__instance, __instance.m_shoulderItem);
-            DoSpeedCalc(__instance, __instance.m_utilityItem);
+            foreach (var itemData in __instance.GetEquipment())
+            {
+                DoSpeedCalc(__instance, itemData);
+            }
+
+            ModifyWithLowHealth.Apply(__instance, MagicEffectType.ModifyMovementSpeed, effect =>
+            {
+                __instance.m_equipmentMovementModifier += __instance.GetTotalActiveMagicEffectValue(MagicEffectType.ModifyMovementSpeed, 0.01f);
+            });
         }
 
         public static void DoSpeedCalc(Player __instance, ItemDrop.ItemData item)
         {
-            if (item != null)
+            if (item != null && item.HasMagicEffect(MagicEffectType.RemoveSpeedPenalty))
             {
-                if (item.HasMagicEffect(MagicEffectType.RemoveSpeedPenalty))
-                {
-                    __instance.m_equipmentMovementModifier -= item.m_shared.m_movementModifier;
-                }
-
-                ModifyWithLowHealth.Apply(__instance, MagicEffectType.ModifyMovementSpeed, effect =>
-                {
-	                if (item.HasMagicEffect(effect))
-	                {
-		                __instance.m_equipmentMovementModifier += item.GetMagicItem().GetTotalEffectValue(effect, 0.01f);
-	                }
-                });
+                __instance.m_equipmentMovementModifier -= item.m_shared.m_movementModifier;
             }
         }
     }

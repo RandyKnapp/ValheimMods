@@ -1,41 +1,42 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using HarmonyLib;
 using JetBrains.Annotations;
 using UnityEngine;
+// ReSharper disable UnusedMember.Local
 
 namespace EpicLoot.MagicItemEffects
 {
 	public class Slow : MonoBehaviour
-	{
-		public float multiplier;
-		public float ttl;
+    {
+        public const string RPCKey = "epic loot slow";
+
+		public float Multiplier;
+		public float TimeToLive;
 
 		private void Start()
 		{
-			Character character = GetComponent<Character>();
+			var character = GetComponent<Character>();
 
-			character.m_acceleration *= multiplier;
-			character.m_runSpeed *= multiplier;
-			character.m_flyFastSpeed *= multiplier;
-			character.m_swimSpeed *= multiplier;
+			character.m_acceleration *= Multiplier;
+			character.m_runSpeed *= Multiplier;
+			character.m_flyFastSpeed *= Multiplier;
+			character.m_swimSpeed *= Multiplier;
 		}
 
 		private void FixedUpdate()
 		{
-			ttl -= Time.fixedDeltaTime;
-			if (ttl > 0)
+			TimeToLive -= Time.fixedDeltaTime;
+			if (TimeToLive > 0)
 			{
 				return;
 			}
 
-			Character character = GetComponent<Character>();
+			var character = GetComponent<Character>();
 
-			character.m_acceleration /= multiplier;
-			character.m_runSpeed /= multiplier;
-			character.m_flyFastSpeed /= multiplier;
-			character.m_swimSpeed /= multiplier;
+			character.m_acceleration /= Multiplier;
+			character.m_runSpeed /= Multiplier;
+			character.m_flyFastSpeed /= Multiplier;
+			character.m_swimSpeed /= Multiplier;
 
 			Destroy(this);
 		}
@@ -45,17 +46,17 @@ namespace EpicLoot.MagicItemEffects
 	public static class SlowAddRPC_Character_Awake_Patch
 	{
 		[UsedImplicitly]
-		private static void Postfix(Character __instance) => __instance.m_nview.Register<float>("epic loot slow", (s, multiplier) => RPC_Slow(__instance, multiplier));
+		private static void Postfix(Character __instance) => __instance.m_nview.Register<float>(Slow.RPCKey, (s, multiplier) => RPC_Slow(__instance, multiplier));
 
 		private static void RPC_Slow(Character character, float multiplier)
 		{
 			if (!(character.GetComponent<Slow>() is Slow slow))
 			{
 				slow = character.gameObject.AddComponent<Slow>();
-				slow.multiplier = multiplier;
+				slow.Multiplier = multiplier;
 			}
 
-			slow.ttl = 2;
+			slow.TimeToLive = 2;
 		}
 	}
 
@@ -65,22 +66,14 @@ namespace EpicLoot.MagicItemEffects
 		[UsedImplicitly]
 		private static void Postfix(Character __instance, HitData hit)
 		{
-			if (!__instance.IsBoss())
+			if (!__instance.IsBoss() && hit.GetAttacker() is Player player && player.HasActiveMagicEffect(MagicEffectType.Slow))
 			{
-				var slowMultiplier = 1f;
-				if ((hit.GetAttacker() as Player)?.GetMagicEquipmentWithEffect(MagicEffectType.Slow) is List<ItemDrop.ItemData> items)
-				{
-					foreach (var item in items)
-					{
-						slowMultiplier -= item.GetMagicItem().GetTotalEffectValue(MagicEffectType.Slow, 0.01f);
-					}
-
-					if (slowMultiplier != 1f)
-					{
-						__instance.m_nview.InvokeRPC(ZRoutedRpc.Everybody, "epic loot slow", slowMultiplier);
-					}
-				}
-			}
+                var slowMultiplier = 1 - player.GetTotalActiveMagicEffectValue(MagicEffectType.Slow, 0.01f);
+                if (!Mathf.Approximately(slowMultiplier, 1))
+                {
+                    __instance.m_nview.InvokeRPC(ZRoutedRpc.Everybody, Slow.RPCKey, slowMultiplier);
+                }
+            }
 		}
 	}
 
@@ -91,7 +84,7 @@ namespace EpicLoot.MagicItemEffects
 		[HarmonyPriority(Priority.LowerThanNormal)]
 		private static void Prefix(Character ___m_character, ref Animator ___m_animator)
 		{
-			if (___m_character.InAttack() && ___m_character.GetComponent<Slow>()?.multiplier is float slowMultiplier)
+			if (___m_character.InAttack() && ___m_character.GetComponent<Slow>()?.Multiplier is float slowMultiplier)
 			{
 				if (___m_animator.speed > 0.001f && (___m_animator.speed * 1e4f % 10 > 3 || ___m_animator.speed * 1e4f % 10 < 1))
 				{

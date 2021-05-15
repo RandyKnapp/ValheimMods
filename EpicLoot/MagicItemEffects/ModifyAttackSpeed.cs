@@ -1,11 +1,9 @@
-﻿using System;
-using HarmonyLib;
+﻿using HarmonyLib;
 using JetBrains.Annotations;
 using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects
 {
-    // This code provided by @blaxxun
     [HarmonyPatch(typeof(CharacterAnimEvent), nameof(CharacterAnimEvent.FixedUpdate))]
     public static class ModifyAttackSpeed_CharacterAnimEvent_FixedUpdate_Patch
     {
@@ -32,13 +30,9 @@ namespace EpicLoot.MagicItemEffects
             }
 
             var animationSpeedup = 0.0f;
-            var weapon = currentAttack.GetWeapon();
             ModifyWithLowHealth.Apply(player, MagicEffectType.ModifyAttackSpeed, effect =>
             {
-	            if (weapon != null && weapon.IsMagic() && weapon.HasMagicEffect(effect))
-	            {
-		            animationSpeedup += weapon.GetMagicItem().GetTotalEffectValue(effect, 0.01f);
-	            }
+                animationSpeedup += player.GetTotalActiveMagicEffectValue(effect, 0.01f);
             });
 
             if (___m_animator.speed > 0.001f)

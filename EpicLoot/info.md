@@ -218,8 +218,8 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 > **Display Text:** Parry +{0:0.#}%
 > 
-> **Prefixes:** Elusive, Rebuking, Duelist's
-> **Suffixes:** Repelling, the Duelist
+> **Prefixes:** Elusive, Rebuking
+> **Suffixes:** Repelling
 > 
 > **Allowed Item Types:** Shield, TwoHandedWeapon
 > 
@@ -1905,7 +1905,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## Duelist
 
-> **Display Text:** Deulist +{0:0.#}%
+> **Display Text:** Duelist +{0:0.#}%
 > 
 > **Prefixes:** Duelist's
 > **Suffixes:** Dueling
@@ -1983,6 +1983,51 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > |Rare|5|10|1|
 > |Epic|10|15|1|
 > |Legendary|15|20|1|
+
+## ModifyParryWindow
+
+> **Display Text:** Parry Window +{0} ms
+> 
+> **Prefixes:** Parrying Expert's
+> **Suffixes:** Expert Parrying
+> 
+> **Allowed Item Types:** Shield
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf, ItemHasParryPower`
+> > **AllowedItemTypes:** `Shield`
+> 
+> **Value Per Rarity:**
+> 
+> |Rarity|Min|Max|Increment|
+> |--|--|--|--|
+> |Magic|10|40|1|
+> |Rare|20|60|1|
+> |Epic|40|80|1|
+> |Legendary|50|100|1|
+
+## Slow
+
+> **Display Text:** Slow +{0:0.#}%
+> 
+> **Prefixes:** Sluggish
+> **Suffixes:** Lethargy
+> 
+> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow`
+> > **ExcludedSkillTypes:** `Pickaxes`
+> 
+> **Value Per Rarity:**
+> 
+> |Rarity|Min|Max|Increment|
+> |--|--|--|--|
+> |Magic|30|50|1|
+> |Rare|40|60|1|
+> |Epic|50|70|1|
+> |Legendary|60|80|1|
 
 ## Bulwark
 

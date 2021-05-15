@@ -59,7 +59,7 @@ namespace EpicLoot
             {
                 var magicItem = new MagicItem();
                 magicItem.Rarity = ItemRarity.Rare;
-                magicItem.Effects.Add(new MagicItemEffect() { EffectType = MagicEffectType.DvergerCirclet });
+                magicItem.Effects.Add(new MagicItemEffect(MagicEffectType.DvergerCirclet));
                 magicItem.TypeNameOverride = "circlet";
 
                 itemdata.ReplaceComponent<MagicItemComponent>().MagicItem = magicItem;
@@ -68,7 +68,7 @@ namespace EpicLoot
             {
                 var magicItem = new MagicItem();
                 magicItem.Rarity = ItemRarity.Rare;
-                magicItem.Effects.Add(new MagicItemEffect() { EffectType = MagicEffectType.Megingjord });
+                magicItem.Effects.Add(new MagicItemEffect(MagicEffectType.Megingjord));
                 magicItem.TypeNameOverride = "belt";
 
                 itemdata.ReplaceComponent<MagicItemComponent>().MagicItem = magicItem;
@@ -77,7 +77,7 @@ namespace EpicLoot
             {
                 var magicItem = new MagicItem();
                 magicItem.Rarity = ItemRarity.Epic;
-                magicItem.Effects.Add(new MagicItemEffect() { EffectType = MagicEffectType.Wishbone });
+                magicItem.Effects.Add(new MagicItemEffect(MagicEffectType.Wishbone));
                 magicItem.TypeNameOverride = "remains";
 
                 itemdata.ReplaceComponent<MagicItemComponent>().MagicItem = magicItem;
@@ -326,25 +326,70 @@ namespace EpicLoot
             return results;
         }
 
-        public static List<ItemDrop.ItemData> GetMagicEquipmentWithEffect(this Player player, string effectType)
+        private static List<ItemDrop.ItemData> GetMagicEquipmentWithEffect(this Player player, string effectType)
         {
             return player.GetEquipment().Where(x => x.HasMagicEffect(effectType)).ToList();
         }
 
-        public static float GetTotalMagicEffectValueOnEquipment(this Player player, string effectType, float scale = 1.0f)
+        public static List<MagicItemEffect> GetAllActiveMagicEffectsOfType(this Player player, string effectType = null)
         {
-            return player.GetMagicEquipmentWithEffect(effectType)
-                .Select(x => x.GetMagicItem().GetTotalEffectValue(effectType, scale))
+            var equipEffects = player.GetEquipment().Where(x => x.IsMagic())
+                .SelectMany(x => x.GetMagicItem().GetEffects(effectType));
+            var setEffects = player.GetAllActiveSetMagicEffects(effectType);
+            return equipEffects.Concat(setEffects).ToList();
+        }
+
+        public static List<MagicItemEffect> GetAllActiveSetMagicEffects(this Player player, string effectType = null)
+        {
+            var activeSetEffects = new List<MagicItemEffect>();
+            var equippedSets = player.GetEquippedSets();
+            foreach (var setInfo in equippedSets)
+            {
+                var count = player.GetEquippedSetPieces(setInfo.ID).Count;
+                foreach (var setBonusInfo in setInfo.SetBonuses)
+                {
+                    if (count >= setBonusInfo.Count && (effectType == null || setBonusInfo.Effect.Type == effectType))
+                    {
+                        var effect = new MagicItemEffect(setBonusInfo.Effect.Type, setBonusInfo.Effect.Values?.MinValue ?? 0);
+                        activeSetEffects.Add(effect);
+                    }
+                }
+            }
+
+            return activeSetEffects;
+        }
+
+        public static HashSet<LegendarySetInfo> GetEquippedSets(this Player player)
+        {
+            var sets = new HashSet<LegendarySetInfo>();
+            foreach (var itemData in player.GetEquipment())
+            {
+                if (itemData.IsMagic(out var magicItem) && magicItem.IsLegendarySetItem())
+                {
+                    if (UniqueLegendaryHelper.TryGetLegendarySetInfo(magicItem.SetID, out var setInfo))
+                    {
+                        sets.Add(setInfo);
+                    }
+                }
+            }
+
+            return sets;
+        }
+
+        public static float GetTotalActiveMagicEffectValue(this Player player, string effectType, float scale = 1.0f)
+        {
+            return player.GetAllActiveMagicEffectsOfType(effectType)
+                .Select(x => x.EffectValue)
                 .DefaultIfEmpty(0)
-                .Sum();
+                .Sum() * scale;
         }
 
-        public static bool HasMagicEquipmentWithEffect(this Player player, string effectType)
+        public static bool HasActiveMagicEffect(this Player player, string effectType)
         {
-            return GetMagicEquipmentWithEffect(player, effectType).Count > 0;
+            return GetMagicEquipmentWithEffect(player, effectType).Count > 0 || player.GetAllActiveSetMagicEffects(effectType).Count > 0;
         }
 
-        public static bool HasMagicEquipmentWithEffect(this Player player, string effectType, out List<ItemDrop.ItemData> equipment)
+        private static bool HasMagicEquipmentWithEffect(this Player player, string effectType, out List<ItemDrop.ItemData> equipment)
         {
             equipment = GetMagicEquipmentWithEffect(player, effectType);
             return equipment.Count > 0;
@@ -363,6 +408,11 @@ namespace EpicLoot
         public static ItemDrop.ItemData GetEquipmentOfType(this Player player, ItemDrop.ItemData.ItemType type)
         {
             return player.GetEquipment().FirstOrDefault(x => x != null && x.m_shared.m_itemType == type);
+        }
+
+        public static Player GetPlayerWithEquippedItem(ItemDrop.ItemData itemData)
+        {
+            return Player.m_players.FirstOrDefault(player => player.IsItemEquiped(itemData));
         }
     }
 
@@ -418,7 +468,7 @@ namespace EpicLoot
     }
 
     //public void UpdateGui(Player player, ItemDrop.ItemData dragItem)
-    [HarmonyPatch(typeof(InventoryGrid), "UpdateGui")]
+    [HarmonyPatch(typeof(InventoryGrid), nameof(InventoryGrid.UpdateGui))]
     public static class InventoryGrid_UpdateGui_MagicItemComponent_Patch
     {
         public static void Postfix(InventoryGrid __instance, Player player, ItemDrop.ItemData dragItem)
@@ -477,7 +527,7 @@ namespace EpicLoot
     }
 
     //void UpdateIcons(Player player)
-    [HarmonyPatch(typeof(HotkeyBar), "UpdateIcons", typeof(Player))]
+    [HarmonyPatch(typeof(HotkeyBar), nameof(HotkeyBar.UpdateIcons), typeof(Player))]
     public static class HotkeyBar_UpdateIcons_Patch
     {
         public static void Postfix(HotkeyBar __instance, List<HotkeyBar.ElementData> ___m_elements, List<ItemDrop.ItemData> ___m_items, Player player)

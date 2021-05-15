@@ -3,25 +3,23 @@
 namespace EpicLoot.MagicItemEffects
 {
     //public float GetArmor(int quality) => this.m_shared.m_armor + (float) Mathf.Max(0, quality - 1) * this.m_shared.m_armorPerLevel;
-    [HarmonyPatch(typeof(ItemDrop.ItemData), "GetArmor", typeof(int))]
+    [HarmonyPatch(typeof(ItemDrop.ItemData), nameof(ItemDrop.ItemData.GetArmor), typeof(int))]
     public static class ModifyArmor_ItemData_GetArmor_Patch
     {
         public static void Postfix(ItemDrop.ItemData __instance, ref float __result)
         {
+            var player = PlayerExtensions.GetPlayerWithEquippedItem(__instance);
 	        var totalArmorMod = 0f;
-	        ModifyWithLowHealth.Apply(Player.m_localPlayer, MagicEffectType.ModifyArmor, effect =>
+	        ModifyWithLowHealth.Apply(player, MagicEffectType.ModifyArmor, effect =>
 	        {
-		        if (__instance.IsMagic() && __instance.GetMagicItem().HasEffect(effect))
-		        {
-			        totalArmorMod += __instance.GetMagicItem().GetTotalEffectValue(effect, 0.01f);
-		        }
+			    totalArmorMod += MagicEffectsHelper.GetTotalActiveMagicEffectValue(player, __instance, effect, 0.01f);
 	        });
             __result *= 1.0f + totalArmorMod;
         }
     }
 
     //public void UpdateCharacterStats(Player player)
-    [HarmonyPatch(typeof(InventoryGui), "UpdateCharacterStats", typeof(Player))]
+    [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.UpdateCharacterStats), typeof(Player))]
     public static class ModifyArmor_InventoryGui_UpdateCharacterStats_Patch
     {
         public static void Postfix(InventoryGui __instance, Player player)
