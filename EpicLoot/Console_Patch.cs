@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Common;
+using EpicLoot.Abilities;
 using EpicLoot.Adventure;
 using EpicLoot.Adventure.Feature;
 using EpicLoot.Crafting;
@@ -153,6 +154,20 @@ namespace EpicLoot
                 var level = args.Length > 2 ? int.Parse(args[2]) : 1;
                 var itemIndex = args.Length > 3 ? int.Parse(args[3]) : 0;
                 LootRoller.PrintLootResolutionTest(lootTable, level, itemIndex);
+            }
+            else if (CheatCommand(command, "resetcooldowns"))
+            {
+                if (player != null)
+                {
+                    var abilityController = player.GetComponent<AbilityController>();
+                    if (abilityController != null)
+                    {
+                        foreach (var ability in abilityController.CurrentAbilities)
+                        {
+                            ability.ResetCooldown();
+                        }
+                    }
+                }
             }
 
             return true;

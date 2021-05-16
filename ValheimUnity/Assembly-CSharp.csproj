@@ -62,13 +62,45 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Hovl Studio\RPG VFX Bundle\Demo scenes\Demo magic circles Vol 1\CameraHolder.cs" />
+    <Compile Include="Assets\Hovl Studio\RPG VFX Bundle\Demo scenes\Demo projectiles\DemoShooting.cs" />
+    <Compile Include="Assets\Hovl Studio\RPG VFX Bundle\Demo scenes\Demo track markers\RaycastInstance.cs" />
+    <Compile Include="Assets\Hovl Studio\RPG VFX Bundle\Scripts\AutoDestroyPS.cs" />
+    <Compile Include="Assets\Hovl Studio\RPG VFX Bundle\Scripts\EGA_EffectSound.cs" />
+    <Compile Include="Assets\Hovl Studio\RPG VFX Bundle\Scripts\Hovl_DemoLasers.cs" />
+    <Compile Include="Assets\Hovl Studio\RPG VFX Bundle\Scripts\Hovl_Laser.cs" />
+    <Compile Include="Assets\Hovl Studio\RPG VFX Bundle\Scripts\Hovl_Laser2.cs" />
+    <Compile Include="Assets\Hovl Studio\RPG VFX Bundle\Scripts\ParticleCollisionInstance.cs" />
+    <Compile Include="Assets\Hovl Studio\RPG VFX Bundle\Scripts\ProjectileMover.cs" />
+    <Compile Include="Assets\Hovl Studio\RPG VFX Bundle\Scripts\Rotator.cs" />
     <Compile Include="Assets\Loot Beams\Scripts\BeamSelector.cs" />
     <Compile Include="Assets\Loot Beams\Scripts\CameraOrbit.cs" />
+    <None Include="Assets\Hovl Studio\RPG VFX Bundle\Demo scenes\Demo projectiles\Readme.txt" />
+    <None Include="Assets\Hovl Studio\RPG VFX Bundle\Prefabs\Projectiles\Readme.txt" />
+    <None Include="Assets\Hovl Studio\RPG VFX Bundle\Demo scenes\Demo AOE skills\Readme.txt" />
+    <None Include="Assets\Hovl Studio\RPG VFX Bundle\Shaders\Lit_CenterGlow.shader" />
+    <None Include="Assets\Hovl Studio\RPG VFX Bundle\Shaders\SmoothSmoke.shader" />
+    <None Include="Assets\Hovl Studio\RPG VFX Bundle\Prefabs\HDRP and URP(LWRP).txt" />
+    <None Include="Assets\Hovl Studio\RPG VFX Bundle\Demo scenes\Demo magic circles Vol 1\Readme.txt" />
+    <None Include="Assets\Hovl Studio\RPG VFX Bundle\Shaders\DissolveNoise.shader" />
     <None Include="Assets\Loot Beams\Shaders\Beams\Beam AlphaBlended.shader" />
+    <None Include="Assets\Hovl Studio\RPG VFX Bundle\Demo scenes\Demo scene lasers\If you want to use lasers in 2D.txt" />
+    <None Include="Assets\Hovl Studio\RPG VFX Bundle\Shaders\Distortion.shader" />
     <None Include="Assets\Loot Beams\Shaders\Beams\Beam Additive.shader" />
+    <None Include="Assets\Hovl Studio\RPG VFX Bundle\Shaders\Blend_TwoSides.shader" />
     <None Include="Assets\Loot Beams\Readme.txt" />
+    <None Include="Assets\Hovl Studio\RPG VFX Bundle\Shaders\Electricity.shader" />
     <None Include="Assets\Hovl Studio\Auras pack\Shaders\Blend_CenterGlow.shader" />
+    <None Include="Assets\Hovl Studio\RPG VFX Bundle\Shaders\Blend_Normals.shader" />
+    <None Include="Assets\Hovl Studio\RPG VFX Bundle\Prefabs\AOE spells\Readme.txt" />
+    <None Include="Assets\Hovl Studio\RPG VFX Bundle\Demo scenes\Demo scene lasers\Readme.txt" />
+    <None Include="Assets\Hovl Studio\RPG VFX Bundle\Shaders\LightGlow.shader" />
+    <None Include="Assets\Hovl Studio\RPG VFX Bundle\Prefabs\Magic circles\Loop version\How to use.txt" />
+    <None Include="Assets\Hovl Studio\RPG VFX Bundle\Shaders\BlendDistort.shader" />
+    <None Include="Assets\Hovl Studio\RPG VFX Bundle\Shaders\AddTrail.shader" />
     <None Include="Assets\Hovl Studio\Auras pack\Shaders\Add_CenterGlow.shader" />
+    <None Include="Assets\Hovl Studio\RPG VFX Bundle\Demo scenes\Demo AOE skills\HDRP and URP(LWRP).txt" />
+    <None Include="Assets\Hovl Studio\RPG VFX Bundle\Scripts\Readme.txt" />
     <Reference Include="UnityEngine">
       <HintPath>C:/Program Files/Unity/Hub/Editor/2019.4.20f1/Editor/Data/Managed/UnityEngine/UnityEngine.dll</HintPath>
     </Reference>
@@ -257,6 +289,33 @@
     </Reference>
     <Reference Include="System.IO.Compression.FileSystem">
       <HintPath>C:/Users/rknapp/Documents/GitHub/ValheimMods/ValheimUnity/Packages/Compression/System.IO.Compression.FileSystem.dll</HintPath>
+    </Reference>
+    <Reference Include="assembly_googleanalytics">
+      <HintPath>C:/Users/rknapp/Documents/GitHub/ValheimMods/ValheimUnity/Packages/valheim/assembly_googleanalytics.dll</HintPath>
+    </Reference>
+    <Reference Include="assembly_guiutils">
+      <HintPath>C:/Users/rknapp/Documents/GitHub/ValheimMods/ValheimUnity/Packages/valheim/assembly_guiutils.dll</HintPath>
+    </Reference>
+    <Reference Include="assembly_lux">
+      <HintPath>C:/Users/rknapp/Documents/GitHub/ValheimMods/ValheimUnity/Packages/valheim/assembly_lux.dll</HintPath>
+    </Reference>
+    <Reference Include="assembly_postprocessing">
+      <HintPath>C:/Users/rknapp/Documents/GitHub/ValheimMods/ValheimUnity/Packages/valheim/assembly_postprocessing.dll</HintPath>
+    </Reference>
+    <Reference Include="assembly_simplemeshcombine">
+      <HintPath>C:/Users/rknapp/Documents/GitHub/ValheimMods/ValheimUnity/Packages/valheim/assembly_simplemeshcombine.dll</HintPath>
+    </Reference>
+    <Reference Include="assembly_steamworks">
+      <HintPath>C:/Users/rknapp/Documents/GitHub/ValheimMods/ValheimUnity/Packages/valheim/assembly_steamworks.dll</HintPath>
+    </Reference>
+    <Reference Include="assembly_sunshafts">
+      <HintPath>C:/Users/rknapp/Documents/GitHub/ValheimMods/ValheimUnity/Packages/valheim/assembly_sunshafts.dll</HintPath>
+    </Reference>
+    <Reference Include="assembly_utils">
+      <HintPath>C:/Users/rknapp/Documents/GitHub/ValheimMods/ValheimUnity/Packages/valheim/assembly_utils.dll</HintPath>
+    </Reference>
+    <Reference Include="assembly_valheim">
+      <HintPath>C:/Users/rknapp/Documents/GitHub/ValheimMods/ValheimUnity/Packages/valheim/assembly_valheim.dll</HintPath>
     </Reference>
     <Reference Include="netstandard">
       <HintPath>C:/Program Files/Unity/Hub/Editor/2019.4.20f1/Editor/Data/NetStandard/ref/2.0.0/netstandard.dll</HintPath>

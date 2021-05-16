@@ -1,0 +1,18 @@
+﻿{
+  "Abilities": [
+    {
+      "ID" : "Bulwark",
+      "IconAsset": "BulwarkIcon",
+      "ActivationMode": "Activated",
+      "Cooldown" : 60,
+      "Action": "StatusEffect",
+      "ActionParams": [ "BulwarkStatusEffect" ]
+    },
+    {
+      "ID" : "Undying",
+      "IconAsset": "Undying",
+      "ActivationMode": "Triggerable",
+      "Cooldown" : 1200
+    }
+  ]
+}

@@ -14,6 +14,9 @@
   "mod_epicloot_item_andvaranaut_type": "dwarven ring",
 
   "mod_epicloot_se_paralyze": "Paralyze",
+  "mod_epicloot_se_bulwark": "Bulwark",
+  "mod_epicloot_se_bulwark_tooltip": "Heimdall's Legacy protects you from all damage!",
+  "mod_epicloot_se_bulwark_startmessage": "Bulwark Activated",
 
   "mod_epicloot_bounties_claimedmsg": "Bounty Claimed!",
   "mod_epicloot_bounties_completemsg": "Bounty Vanquished!",

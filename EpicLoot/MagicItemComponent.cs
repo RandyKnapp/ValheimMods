@@ -331,7 +331,7 @@ namespace EpicLoot
             return player.GetEquipment().Where(x => x.HasMagicEffect(effectType)).ToList();
         }
 
-        public static List<MagicItemEffect> GetAllActiveMagicEffectsOfType(this Player player, string effectType = null)
+        public static List<MagicItemEffect> GetAllActiveMagicEffects(this Player player, string effectType = null)
         {
             var equipEffects = player.GetEquipment().Where(x => x.IsMagic())
                 .SelectMany(x => x.GetMagicItem().GetEffects(effectType));
@@ -378,7 +378,7 @@ namespace EpicLoot
 
         public static float GetTotalActiveMagicEffectValue(this Player player, string effectType, float scale = 1.0f)
         {
-            return player.GetAllActiveMagicEffectsOfType(effectType)
+            return player.GetAllActiveMagicEffects(effectType)
                 .Select(x => x.EffectValue)
                 .DefaultIfEmpty(0)
                 .Sum() * scale;

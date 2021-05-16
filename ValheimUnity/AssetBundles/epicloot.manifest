@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 3458329683
+CRC: 2335200782
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 5815656285a45f9ae47d39aed1b02ddc
+    Hash: ac060dea75de31a0ed143669ae3052c9
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 515a2d4d7bc180d8cb74a34a74d3fc44
+    Hash: a0c6789f22641bd03d47dd63ce00c695
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -76,7 +76,13 @@ ClassTypes:
 - Class: 114
   Script: {fileID: 612592066, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
 - Class: 114
+  Script: {fileID: 1345532120, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
+- Class: 114
   Script: {fileID: -201937006, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
+- Class: 114
+  Script: {fileID: 469224316, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
+- Class: 114
+  Script: {fileID: 313648218, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 30649d3a9faa99c48a7b1166b86bf2a0, type: 3}
 - Class: 114
@@ -105,6 +111,7 @@ Assets:
 - Assets/EpicLoot/Prefabs/ItemEffects/FeatherFallAura.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/DustRare.prefab
 - Assets/EpicLoot/Sprites/Inventory/SetItemMarker.png
+- Assets/EpicLoot/Prefabs/UI/AbilityBar.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/RunestoneRare.prefab
 - Assets/EpicLoot/Prefabs/ItemEffects/WhiteAura.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/DustEpic.prefab
@@ -130,6 +137,7 @@ Assets:
 - Assets/EpicLoot/Sprites/Inventory/MagicItemBg.png
 - Assets/EpicLoot/Prefabs/LootBeams/EpicLootBeam.prefab
 - Assets/EpicLoot/Sprites/Adventure/MapIconBounty.png
+- Assets/EpicLoot/Sprites/Abilities/BulwarkIcon.png
 - Assets/EpicLoot/Sprites/Inventory/GenericItemBg.png
 - Assets/EpicLoot/Sprites/Inventory/SmallButtonEnchantOverlay.png
 - Assets/EpicLoot/Prefabs/CraftingMaterials/EssenceEpic.prefab
@@ -141,6 +149,7 @@ Assets:
 - Assets/EpicLoot/Prefabs/CraftingMaterials/ReagentMagic.prefab
 - Assets/EpicLoot/Sprites/Adventure/ForestToken.png
 - Assets/EpicLoot/Prefabs/UI/MerchantPanel.prefab
+- Assets/EpicLoot/Sprites/Abilities/UndyingIcon.png
 - Assets/EpicLoot/Prefabs/CraftingMaterials/ShardMagic.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/DustLegendary.prefab
 - Assets/EpicLoot/Sounds/Disenchant.wav
@@ -151,6 +160,7 @@ Assets:
 - Assets/EpicLoot/Sounds/ItemLoop.wav
 - Assets/EpicLoot/Sounds/LegendaryItemDrop.wav
 - Assets/EpicLoot/Prefabs/LootBeams/LegendaryLootBeam.prefab
+- Assets/EpicLoot/ScriptableObjects/BulwarkStatusEffect.asset
 - Assets/EpicLoot/Prefabs/CraftingMaterials/RunestoneMagic.prefab
 - Assets/EpicLoot/Prefabs/Adventure/GoldBountyToken.prefab
 - Assets/EpicLoot/Sprites/Inventory/RareItemBg.png

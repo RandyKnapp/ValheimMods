@@ -1,4 +1,4 @@
-Shader "ERB/Particles/Add_CenterGlow"
+Shader "Hovl/Particles/Add_CenterGlow"
 {
 	Properties
 	{	
@@ -12,6 +12,7 @@ Shader "ERB/Particles/Add_CenterGlow"
 		_Color("Color", Color) = (0.5,0.5,0.5,1)
 		[Toggle]_Usecenterglow("Use center glow?", Float) = 0
 		[MaterialToggle] _Usedepth ("Use depth?", Float ) = 0
+		[MaterialToggle] _Usecustomrandom ("Use Custom Random?", Float ) = 0
         _Depthpower ("Depth power", Float ) = 1
 		[Enum(Cull Off,0, Cull Front,1, Cull Back,2)] _CullMode("Culling", Float) = 0
 		[Enum(One,1,OneMinuSrcAlpha,6)] _Blend2 ("Blend mode subset", Float) = 1
@@ -85,6 +86,7 @@ Shader "ERB/Particles/Add_CenterGlow"
 				uniform float4 _Color;
 				uniform float _Emission;
 				uniform fixed _Usedepth;
+				uniform fixed _Usecustomrandom;
 				uniform float _Depthpower;
 
 				v2f vert ( appdata_t v  )
@@ -121,7 +123,7 @@ Shader "ERB/Particles/Add_CenterGlow"
 					float2 uv0_MainTex = i.texcoord.xy * _MainTex_ST.xy + _MainTex_ST.zw;
 					float2 panner107 = ( 1.0 * _Time.y * appendResult21 + uv0_MainTex);
 					float2 appendResult100 = (float2(_DistortionSpeedXYPowerZ.x , _DistortionSpeedXYPowerZ.y));
-					float3 uv0_Flow = i.texcoord.xyz;
+					float4 uv0_Flow = i.texcoord;
 					uv0_Flow.xy = i.texcoord.xy * _Flow_ST.xy + _Flow_ST.zw;
 					float2 panner110 = ( 1.0 * _Time.y * appendResult100 + (uv0_Flow).xy);
 					float2 uv_Mask = i.texcoord.xy * _Mask_ST.xy + _Mask_ST.zw;
@@ -130,13 +132,13 @@ Shader "ERB/Particles/Add_CenterGlow"
 					float4 tex2DNode13 = tex2D( _MainTex, ( panner107 - ( (( tex2D( _Flow, panner110 ) * tex2DNode33 )).rg * Flowpower102 ) ) );
 					float2 appendResult22 = (float2(_SpeedMainTexUVNoiseZW.z , _SpeedMainTexUVNoiseZW.w));
 					float2 uv0_Noise = i.texcoord.xy * _Noise_ST.xy + _Noise_ST.zw;
-					float2 panner108 = ( 1.0 * _Time.y * appendResult22 + uv0_Noise);
+					float ur = lerp(0, i.texcoord.w, _Usecustomrandom);
+					float2 panner108 = ( 1.0 * _Time.y * appendResult22 + ( uv0_Noise + ur ));
 					float4 tex2DNode14 = tex2D( _Noise, panner108 );
 					float4 temp_output_30_0 = ( tex2DNode13 * tex2DNode14 * _Color * i.color * tex2DNode13.a * tex2DNode14.a * _Color.a * i.color.a );
 					float4 temp_cast_0 = ((1.0 + (uv0_Flow.z - 0.0) * (0.0 - 1.0) / (1.0 - 0.0))).xxxx;
 					float4 clampResult38 = clamp( ( tex2DNode33 - temp_cast_0 ) , float4( 0,0,0,0 ) , float4( 1,1,1,1 ) );
-					float4 clampResult40 = clamp( ( tex2DNode33 * clampResult38 ) , float4( 0,0,0,0 ) , float4( 1,1,1,1 ) );
-					
+					float4 clampResult40 = clamp( ( tex2DNode33 * clampResult38 ) , float4( 0,0,0,0 ) , float4( 1,1,1,1 ) );		
 
 					fixed4 col = ( lerp(temp_output_30_0,( temp_output_30_0 * clampResult40 ),_Usecenterglow) * _Emission );
 					UNITY_APPLY_FOG_COLOR(i.fogCoord, col, fixed4(0,0,0,1));
@@ -187,7 +189,7 @@ Node;AmplifyShaderEditor.RangedFloatNode;52;-621.877,229.5624;Float;False;Proper
 Node;AmplifyShaderEditor.ToggleSwitchNode;90;-697.314,128.5203;Float;False;Property;_Usecenterglow;Use center glow?;8;0;Create;True;0;0;False;0;0;2;0;COLOR;0,0,0,0;False;1;COLOR;0,0,0,0;False;1;COLOR;0
 Node;AmplifyShaderEditor.SimpleMultiplyOpNode;51;-461.6268,132.2673;Float;False;2;2;0;COLOR;0,0,0,0;False;1;FLOAT;0;False;1;COLOR;0
 Node;AmplifyShaderEditor.ComponentMaskNode;72;-1580.242,1135.946;Float;False;True;True;True;False;1;0;COLOR;0,0,0,0;False;1;FLOAT3;0
-Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;68;-322.6836,135.062;Float;False;True;2;Float;;0;7;EGA/Particles/Add_CenterGlow;0b6a9f8b4f707c74ca64c0be8e590de0;True;SubShader 0 Pass 0;0;0;SubShader 0 Pass 0;2;True;4;1;False;-1;1;False;-1;0;1;False;-1;0;False;-1;False;False;True;2;False;-1;True;True;True;True;False;0;False;-1;False;True;2;False;-1;True;3;False;-1;False;True;4;Queue=AlphaTest=Queue=0;IgnoreProjector=True;RenderType=Transparent=RenderType;PreviewType=Plane;False;0;False;False;False;False;False;False;False;False;False;False;True;0;0;;0;0;Standard;0;0;1;True;False;2;0;FLOAT4;0,0,0,0;False;1;FLOAT3;0,0,0;False;0
+Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;68;-322.6836,135.062;Float;False;True;2;Float;;0;7;Hovl/Particles/Add_CenterGlow;0b6a9f8b4f707c74ca64c0be8e590de0;True;SubShader 0 Pass 0;0;0;SubShader 0 Pass 0;2;True;4;1;False;-1;1;False;-1;0;1;False;-1;0;False;-1;False;False;True;2;False;-1;True;True;True;True;False;0;False;-1;False;True;2;False;-1;True;3;False;-1;False;True;4;Queue=AlphaTest=Queue=0;IgnoreProjector=True;RenderType=Transparent=RenderType;PreviewType=Plane;False;0;False;False;False;False;False;False;False;False;False;False;True;0;0;;0;0;Standard;0;0;1;True;False;2;0;FLOAT4;0,0,0,0;False;1;FLOAT3;0,0,0;False;0
 WireConnection;100;0;99;1
 WireConnection;100;1;99;2
 WireConnection;59;0;98;0

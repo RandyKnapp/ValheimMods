@@ -29,6 +29,8 @@ namespace EquipmentAndQuickSlots
         public static ConfigEntry<bool> QuickSlotsEnabled;
         public static ConfigEntry<bool> ViewDebugSaveData;
         private static ConfigEntry<bool> _loggingEnabled;
+        public static ConfigEntry<TextAnchor> AbilityBarAnchor;
+        public static ConfigEntry<Vector2> AbilityBarPosition;
 
         private static EquipmentAndQuickSlots _instance;
         private Harmony _harmony;
@@ -47,6 +49,8 @@ namespace EquipmentAndQuickSlots
             EquipmentSlotsEnabled = Config.Bind("Toggles", "Enable Equipment Slots", true, "Enable the equipment slots. Disabling this while items are equipped with attempt to move them to your inventory.");
             QuickSlotsEnabled = Config.Bind("Toggles", "Enable Quick Slots", true, "Enable the quick slots. Disabling this while items are in the slots with attempt to move them to your inventory.");
             ViewDebugSaveData = Config.Bind("Toggles", "View Debug Save Data", false, "Enable to view the raw save data in the compendium.");
+            AbilityBarAnchor = Config.Bind("Quick Slots", "Quick Slots Anchor", TextAnchor.LowerCenter, "The point on the HUD to anchor the Quick Slots bar. Changing this also changes the pivot of the Quick Slots to that corner.");
+            AbilityBarPosition = Config.Bind("Quick Slots", "Quick Slots Position", new Vector2(0, 50), "The position offset from the Quick Slots Anchor at which to place the Quick Slots.");
 
             _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), PluginId);
         }

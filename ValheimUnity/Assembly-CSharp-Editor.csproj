@@ -264,6 +264,33 @@
     <Reference Include="System.IO.Compression.FileSystem">
       <HintPath>C:/Users/rknapp/Documents/GitHub/ValheimMods/ValheimUnity/Packages/Compression/System.IO.Compression.FileSystem.dll</HintPath>
     </Reference>
+    <Reference Include="assembly_googleanalytics">
+      <HintPath>C:/Users/rknapp/Documents/GitHub/ValheimMods/ValheimUnity/Packages/valheim/assembly_googleanalytics.dll</HintPath>
+    </Reference>
+    <Reference Include="assembly_guiutils">
+      <HintPath>C:/Users/rknapp/Documents/GitHub/ValheimMods/ValheimUnity/Packages/valheim/assembly_guiutils.dll</HintPath>
+    </Reference>
+    <Reference Include="assembly_lux">
+      <HintPath>C:/Users/rknapp/Documents/GitHub/ValheimMods/ValheimUnity/Packages/valheim/assembly_lux.dll</HintPath>
+    </Reference>
+    <Reference Include="assembly_postprocessing">
+      <HintPath>C:/Users/rknapp/Documents/GitHub/ValheimMods/ValheimUnity/Packages/valheim/assembly_postprocessing.dll</HintPath>
+    </Reference>
+    <Reference Include="assembly_simplemeshcombine">
+      <HintPath>C:/Users/rknapp/Documents/GitHub/ValheimMods/ValheimUnity/Packages/valheim/assembly_simplemeshcombine.dll</HintPath>
+    </Reference>
+    <Reference Include="assembly_steamworks">
+      <HintPath>C:/Users/rknapp/Documents/GitHub/ValheimMods/ValheimUnity/Packages/valheim/assembly_steamworks.dll</HintPath>
+    </Reference>
+    <Reference Include="assembly_sunshafts">
+      <HintPath>C:/Users/rknapp/Documents/GitHub/ValheimMods/ValheimUnity/Packages/valheim/assembly_sunshafts.dll</HintPath>
+    </Reference>
+    <Reference Include="assembly_utils">
+      <HintPath>C:/Users/rknapp/Documents/GitHub/ValheimMods/ValheimUnity/Packages/valheim/assembly_utils.dll</HintPath>
+    </Reference>
+    <Reference Include="assembly_valheim">
+      <HintPath>C:/Users/rknapp/Documents/GitHub/ValheimMods/ValheimUnity/Packages/valheim/assembly_valheim.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.framework">
       <HintPath>C:/Users/rknapp/Documents/GitHub/ValheimMods/ValheimUnity/Library/PackageCache/com.unity.ext.nunit@1.0.6/net35/unity-custom/nunit.framework.dll</HintPath>
     </Reference>
