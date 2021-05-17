@@ -44,6 +44,7 @@ namespace EpicLoot.Abilities
                 Icon.sprite = EpicLoot.LoadAsset<Sprite>(ability.AbilityDef.IconAsset);
             }
 
+            Binding.enabled = ability.AbilityDef.ActivationMode == AbilityActivationMode.Activated;
             var bindingText = EpicLoot.AbilityKeyCodes[_index].Value.ToUpperInvariant();
             if (Binding.text != bindingText)
             {

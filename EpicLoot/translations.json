@@ -17,6 +17,9 @@
   "mod_epicloot_se_bulwark": "Bulwark",
   "mod_epicloot_se_bulwark_tooltip": "Heimdall's Legacy protects you from all damage!",
   "mod_epicloot_se_bulwark_startmessage": "Bulwark Activated",
+  "mod_epicloot_se_undying": "Undying",
+  "mod_epicloot_se_undying_tooltip": "Heimdall saves you from certain death! Gain immunity from damage for 3 seconds.",
+  "mod_epicloot_se_undying_startmessage": "Heimdall saves you from certain death!",
 
   "mod_epicloot_bounties_claimedmsg": "Bounty Claimed!",
   "mod_epicloot_bounties_completemsg": "Bounty Vanquished!",

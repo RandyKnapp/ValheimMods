@@ -147,6 +147,7 @@ namespace EpicLoot
         public const Minimap.PinType BountyPinType = (Minimap.PinType) 800;
         public const Minimap.PinType TreasureMapPinType = (Minimap.PinType) 801;
 
+        public static event Action AbilitiesInitialized;
         public static event Action LootTableLoaded;
 
         private static EpicLoot _instance;
@@ -196,6 +197,7 @@ namespace EpicLoot
 
             LoadTranslations();
             InitializeConfig();
+            InitializeAbilities();
             PrintInfo();
             //GenerateTranslations();
 
@@ -249,6 +251,12 @@ namespace EpicLoot
             LoadJsonFile<AdventureDataConfig>("adventuredata.json", AdventureDataManager.Initialize);
             LoadJsonFile<LegendaryItemConfig>("legendaries.json", UniqueLegendaryHelper.Initialize);
             LoadJsonFile<AbilityConfig>("abilities.json", AbilityDefinitions.Initialize);
+        }
+
+        private void InitializeAbilities()
+        {
+            MagicEffectType.Initialize();
+            AbilitiesInitialized?.Invoke();
         }
 
         public static void Log(string message)

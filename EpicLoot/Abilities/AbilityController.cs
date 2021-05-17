@@ -93,12 +93,13 @@ namespace EpicLoot.Abilities
             for (var i = 0; i < AbilitySlotCount && i < availableAbilities.Count; i++)
             {
                 var abilityDef = availableAbilities[i];
-                if (abilityDef.ActivationMode == AbilityActivationMode.Activated)
+                if (abilityDef.ActivationMode == AbilityActivationMode.Activated
+                    || abilityDef.ActivationMode == AbilityActivationMode.Triggerable)
                 {
                     if (!_currentAbilities.Exists(x => x.AbilityDef.ID == abilityDef.ID))
                     {
                         Debug.LogWarning($"Add Ability: {abilityDef.ID}");
-                        var ability = new Ability();
+                        var ability = AbilityFactory.Create(abilityDef.ID);
                         ability.Initialize(abilityDef, _player);
                         _currentAbilities.Add(ability);
                     }
@@ -127,6 +128,11 @@ namespace EpicLoot.Abilities
         public virtual Ability GetCurrentAbility(int index)
         {
             return PlayerHasAbility(index) ? _currentAbilities[index] : null;
+        }
+
+        public virtual Ability GetCurrentAbility(string abilityID)
+        {
+            return _currentAbilities.Find(x => x.AbilityDef.ID == abilityID);
         }
     }
 

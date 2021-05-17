@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 2335200782
+CRC: 1707267179
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: ac060dea75de31a0ed143669ae3052c9
+    Hash: 5c05a7f8e28f59aa5c6a6a085b374c98
   TypeTreeHash:
     serializedVersion: 2
     Hash: a0c6789f22641bd03d47dd63ce00c695
@@ -165,6 +165,7 @@ Assets:
 - Assets/EpicLoot/Prefabs/Adventure/GoldBountyToken.prefab
 - Assets/EpicLoot/Sprites/Inventory/RareItemBg.png
 - Assets/EpicLoot/Prefabs/CraftingMaterials/ReagentEpic.prefab
+- Assets/EpicLoot/ScriptableObjects/UndyingStatusEffect.asset
 - Assets/EpicLoot/Sprites/Inventory/Equipped.png
 - Assets/EpicLoot/Prefabs/Equipment/LeatherBelt.prefab
 - Assets/EpicLoot/Prefabs/Adventure/ForestToken.prefab

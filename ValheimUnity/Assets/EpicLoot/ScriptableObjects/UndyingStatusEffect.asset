@@ -1,0 +1,88 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1345532120, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
+  m_Name: UndyingStatusEffect
+  m_EditorClassIdentifier: 
+  m_name: $mod_epicloot_se_undying
+  m_category: 
+  m_icon: {fileID: 21300000, guid: 788bb0d92d65ba4499ab48827610d3d7, type: 3}
+  m_flashIcon: 1
+  m_cooldownIcon: 0
+  m_tooltip: $mod_epicloot_se_undying_tooltip
+  m_attributes: 0
+  m_startMessageType: 2
+  m_startMessage: $mod_epicloot_se_undying_startmessage
+  m_stopMessageType: 1
+  m_stopMessage: 
+  m_repeatMessageType: 1
+  m_repeatMessage: 
+  m_repeatInterval: 0
+  m_ttl: 3
+  m_startEffects:
+    m_effectPrefabs:
+    - m_prefab: {fileID: 1282364566017586, guid: 811926cf8a4683e46a540b0d491524fb,
+        type: 3}
+      m_enabled: 1
+      m_attach: 0
+      m_inheritParentRotation: 0
+      m_inheritParentScale: 0
+      m_randomRotation: 0
+      m_scale: 0
+    - m_prefab: {fileID: 1653710073109452256, guid: 1f2ae6ba73d3aee488c649959d7293c8,
+        type: 3}
+      m_enabled: 1
+      m_attach: 0
+      m_inheritParentRotation: 0
+      m_inheritParentScale: 0
+      m_randomRotation: 0
+      m_scale: 0
+  m_stopEffects:
+    m_effectPrefabs: []
+  m_cooldown: 0
+  m_activationAnimation: gpower
+  m_tickInterval: 0
+  m_healthPerTickMinHealthPercentage: 0
+  m_healthPerTick: 0
+  m_healthOverTime: 0
+  m_healthOverTimeDuration: 0
+  m_healthOverTimeInterval: 5
+  m_staminaOverTime: 0
+  m_staminaOverTimeDuration: 0
+  m_staminaDrainPerSec: 0
+  m_runStaminaDrainModifier: 0
+  m_jumpStaminaUseModifier: 0
+  m_healthRegenMultiplier: 1
+  m_staminaRegenMultiplier: 1
+  m_raiseSkill: 0
+  m_raiseSkillModifier: 0
+  m_mods:
+  - m_type: 1
+    m_modifier: 3
+  - m_type: 2
+    m_modifier: 3
+  - m_type: 4
+    m_modifier: 3
+  - m_type: 32
+    m_modifier: 3
+  - m_type: 64
+    m_modifier: 3
+  - m_type: 128
+    m_modifier: 3
+  - m_type: 256
+    m_modifier: 3
+  - m_type: 512
+    m_modifier: 3
+  m_modifyAttackSkill: 0
+  m_damageModifier: 1
+  m_noiseModifier: 0
+  m_stealthModifier: 0
+  m_addMaxCarryWeight: 0
