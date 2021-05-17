@@ -1,4 +1,8 @@
 ## Version 0.8.0
+  * Added legendary set system
+  * Added item ability system
+  * New Legendary Sets: Heimdall's Legacy
+## Version 0.7.10
   * Fix for Server Side Character crash bug
   * Increased epic and legendary drop rates at low tiers
   * Wishbone is now Epic rarity

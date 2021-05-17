@@ -122,8 +122,8 @@
 - [X] **Heimdall (tank):** Tower Shield (Guardian of the Gods), Head (Son of Nine Mothers), Chest (Heart of the Bifrost), Legs (Stride of the Aesir)
 
 2. - [X] +200% Block Power
-3. - [ ] Bulwark - activate: take no damage for N seconds
-4. - [ ] Undying - On death, gain full health instantly, but long cooldown
+3. - [X] Bulwark - activate: take no damage for N seconds
+4. - [X] Undying - On death, gain full health instantly, but long cooldown
 
 - [ ] **Ragnar (aoe):** Battleaxe (Serpentsbane), Cape (Ragnar's Boneless Wrap), Chest (Ragnar's White Shirt), Legs (Ragnar's Ironsides)
 
