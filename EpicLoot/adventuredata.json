@@ -239,7 +239,9 @@
       { "Biome": "Plains",      "TargetID": "GoblinBrute",      "RewardGold": 3, "RewardIron": 8, "RewardCoins": 120,  "Adds": [ { "ID": "Goblin",      "Count": 2 }  ] },
       { "Biome": "Plains",      "TargetID": "GoblinBrute",      "RewardGold": 3, "RewardIron": 10,"RewardCoins": 180, "Adds": [ { "ID": "Goblin",      "Count": 3 }  ] },
       { "Biome": "Plains",      "TargetID": "GoblinShaman",     "RewardGold": 3, "RewardIron": 10, "RewardCoins":200, "Adds": [ { "ID": "Goblin",      "Count": 3 }  ] },
-      { "Biome": "Plains",      "TargetID": "GoblinShaman",     "RewardGold": 5, "RewardIron": 15, "RewardCoins":250, "Adds": [ { "ID": "GoblinBrute", "Count": 1 }, { "ID": "Goblin", "Count": 2 } ] }
+      { "Biome": "Plains",      "TargetID": "GoblinShaman",     "RewardGold": 5, "RewardIron": 15, "RewardCoins":250, "Adds": [ { "ID": "GoblinBrute", "Count": 1 }, { "ID": "Goblin", "Count": 2 } ] },
+    
+      { "Biome": "Ocean",       "TargetID": "Serpent",          "RewardGold": 1, "RewardIron": 0, "RewardCoins": 30 }
     ],
     "Names": {
       "Prefixes": [
