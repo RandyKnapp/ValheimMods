@@ -132,7 +132,7 @@ namespace EquipmentAndQuickSlots
                         }
                         else
                         {
-                            item.m_equiped = true;
+                            player.EquipItem(item, false);
                             player.Message(MessageHud.MessageType.Center, "Could not unequip, inventory full");
                         }
                     }
