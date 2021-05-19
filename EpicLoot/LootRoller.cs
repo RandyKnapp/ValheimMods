@@ -222,6 +222,7 @@ namespace EpicLoot
                     magicItemComponent.SetMagicItem(magicItem);
 
                     itemDrop.m_itemData = itemData;
+                    itemDrop.Save();
                     InitializeMagicItem(itemData);
 
                     MagicItemGenerated?.Invoke(itemData, magicItem);
