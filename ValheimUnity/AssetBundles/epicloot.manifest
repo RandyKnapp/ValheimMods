@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 1707267179
+CRC: 1260349714
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 5c05a7f8e28f59aa5c6a6a085b374c98
+    Hash: 2506c90bf90f5c2089938e2654972473
   TypeTreeHash:
     serializedVersion: 2
-    Hash: a0c6789f22641bd03d47dd63ce00c695
+    Hash: 800c984910882d5b48b69f8110a5ba74
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -48,9 +48,15 @@ ClassTypes:
 - Class: 114
   Script: {fileID: 1521249158, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
 - Class: 114
+  Script: {fileID: 313648218, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
+- Class: 114
   Script: {fileID: 2094620348, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
 - Class: 114
+  Script: {fileID: 11500000, guid: 30649d3a9faa99c48a7b1166b86bf2a0, type: 3}
+- Class: 114
   Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 2a4db7a114972834c8e4117be1d82ba3, type: 3}
 - Class: 114
@@ -70,8 +76,6 @@ ClassTypes:
 - Class: 114
   Script: {fileID: 11500000, guid: 1aa08ab6e0800fa44ae55d278d1423e3, type: 3}
 - Class: 114
-  Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
-- Class: 114
   Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
 - Class: 114
   Script: {fileID: 612592066, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
@@ -81,10 +85,6 @@ ClassTypes:
   Script: {fileID: -201937006, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
 - Class: 114
   Script: {fileID: 469224316, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
-- Class: 114
-  Script: {fileID: 313648218, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
-- Class: 114
-  Script: {fileID: 11500000, guid: 30649d3a9faa99c48a7b1166b86bf2a0, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: e19747de3f5aca642ab2be37e372fb86, type: 3}
 - Class: 115
@@ -119,6 +119,7 @@ Assets:
 - Assets/EpicLoot/Sounds/DoubleJump.wav
 - Assets/EpicLoot/Prefabs/LootBeams/RareLootBeam.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/EssenceRare.prefab
+- Assets/EpicLoot/Prefabs/ItemEffects/LightningAuraSledge.prefab
 - Assets/EpicLoot/Prefabs/ItemEffects/FireAura.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/ShardEpic.prefab
 - Assets/EpicLoot/Sprites/Inventory/GenericSetItemMarker.png

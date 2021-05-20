@@ -42,6 +42,23 @@
         { "Type": "ModifyDamage", "Values": { "MinValue": 20, "MaxValue": 25, "Increment": 1 } }
       ]
     },
+    {
+      "ID": "Mjolnir",
+      "Name": "$mod_epicloot_l_mjolnir",
+      "Description": "$mod_epicloot_l_mjolnir_desc",
+      "EquipFx": "LightningAuraSledge",
+      "EquipFxMode": "EquipRoot", 
+      "Requirements": {
+        "AllowedItemNames": [ "$item_sledge_iron" ]
+      },
+      "GuaranteedEffectCount": 6, 
+      "GuaranteedMagicEffects": [
+        { "Type": "ModifyPhysicalDamage", "Values": { "MinValue": 36, "MaxValue": 44, "Increment": 1 } },
+        { "Type": "AddLightningDamage", "Values": { "MinValue": 25, "MaxValue": 30, "Increment": 1 } },
+        { "Type": "Throwable" },
+        { "Type": "RecallWeapon" }
+      ]
+    },
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Legendary Set Items
