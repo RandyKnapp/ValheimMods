@@ -794,7 +794,7 @@ namespace EpicLoot
 
             if (jsonFile != null)
             {
-	            void ConsumeConfigFileEvent(object s, FileSystemEventArgs e) => syncedValue.Value = LoadJsonText(filename);
+	            void ConsumeConfigFileEvent(object s, FileSystemEventArgs e) => syncedValue.AssignLocalValue(LoadJsonText(filename));
 	            var filePath = GetAssetPath(filename);
 	            FileSystemWatcher watcher = new FileSystemWatcher(Path.GetDirectoryName(filePath), Path.GetFileName(filePath));
 	            watcher.Changed += ConsumeConfigFileEvent;
