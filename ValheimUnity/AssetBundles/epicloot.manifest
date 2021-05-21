@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 3630428956
+CRC: 3530271701
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: d577b479071faadc2b099a92a01f2930
+    Hash: fac32560d7ac22757d99dab96a563e54
   TypeTreeHash:
     serializedVersion: 2
     Hash: 7664cc45f2b3d5c0a17a99c4a513797a
@@ -111,6 +111,7 @@ SerializeReferenceClassIdentifiers: []
 Assets:
 - Assets/EpicLoot/Prefabs/Equipment/GoldRubyRing.prefab
 - Assets/EpicLoot/Sprites/Abilities/BerserkerIcon.png
+- Assets/EpicLoot/Texture2D/Equipment/PaddedArmorChest2_d.png
 - Assets/EpicLoot/Prefabs/ItemEffects/FeatherFallAura.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/DustRare.prefab
 - Assets/EpicLoot/Sprites/Inventory/SetItemMarker.png
@@ -135,6 +136,7 @@ Assets:
 - Assets/EpicLoot/Sounds/MagicItemDrop.wav
 - Assets/EpicLoot/Prefabs/UI/DebugText.prefab
 - Assets/EpicLoot/Sprites/Inventory/LegendaryItemBg.png
+- Assets/EpicLoot/Texture2D/Equipment/paddedarmortest2_d.png
 - Assets/EpicLoot/Sounds/EpicItemDrop.wav
 - Assets/EpicLoot/Prefabs/StationExtensions/piece_augmenter.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/ReagentLegendary.prefab
@@ -171,9 +173,11 @@ Assets:
 - Assets/EpicLoot/ScriptableObjects/BulwarkStatusEffect.asset
 - Assets/EpicLoot/Prefabs/CraftingMaterials/RunestoneMagic.prefab
 - Assets/EpicLoot/Prefabs/Adventure/GoldBountyToken.prefab
+- Assets/EpicLoot/Texture2D/Equipment/PaddedArmorMain_Heimdall.png
 - Assets/EpicLoot/Sprites/Inventory/RareItemBg.png
 - Assets/EpicLoot/Prefabs/CraftingMaterials/ReagentEpic.prefab
 - Assets/EpicLoot/ScriptableObjects/UndyingStatusEffect.asset
+- Assets/EpicLoot/Texture2D/Equipment/PaddedArmorChest_Heimdall.png
 - Assets/EpicLoot/Sprites/Inventory/Equipped.png
 - Assets/EpicLoot/Prefabs/Equipment/LeatherBelt.prefab
 - Assets/EpicLoot/Prefabs/Adventure/ForestToken.prefab

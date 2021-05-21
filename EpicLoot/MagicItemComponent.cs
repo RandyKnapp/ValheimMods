@@ -10,6 +10,7 @@ using HarmonyLib;
 using UnityEngine;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
+// ReSharper disable RedundantAssignment
 
 namespace EpicLoot
 {
@@ -389,12 +390,6 @@ namespace EpicLoot
             return GetMagicEquipmentWithEffect(player, effectType).Count > 0 || player.GetAllActiveSetMagicEffects(effectType).Count > 0;
         }
 
-        private static bool HasMagicEquipmentWithEffect(this Player player, string effectType, out List<ItemDrop.ItemData> equipment)
-        {
-            equipment = GetMagicEquipmentWithEffect(player, effectType);
-            return equipment.Count > 0;
-        }
-
         public static List<ItemDrop.ItemData> GetEquippedSetPieces(this Player player, string setName)
         {
             return player.GetEquipment().Where(x => x.IsPartOfSet(setName)).ToList();
@@ -571,6 +566,51 @@ namespace EpicLoot
                 : Player.m_localPlayer.GetInventory().m_width + item.m_gridPos.x - 5;
 
             return index >= 0 && index < elements.Count ? elements[index] : null;
+        }
+    }
+
+    [HarmonyPatch(typeof(Player), nameof(Player.GetActionProgress))]
+    public static class Player_GetActionProgress_Patch
+    {
+        public static void Postfix(Player __instance, ref string name)
+        {
+            if (__instance.m_equipQueue.Count > 0)
+            {
+                Player.EquipQueueData equip = __instance.m_equipQueue[0];
+                if (equip.m_duration > 0.5f)
+                {
+                    name = !equip.m_equip ? "$hud_unequipping " + equip.m_item.GetDecoratedName() : "$hud_equipping " + equip.m_item.GetDecoratedName();
+                }
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(ItemDrop))]
+    public static class ItemDrop_Patches
+    {
+        [HarmonyPatch(typeof(ItemDrop), nameof(ItemDrop.GetHoverText))]
+        [HarmonyPrefix]
+        public static bool GetHoverText_Prefix(ItemDrop __instance, ref string __result)
+        {
+            var str = __instance.m_itemData.GetDecoratedName();
+            if (__instance.m_itemData.m_quality > 1)
+            {
+                str = $"{str}[{__instance.m_itemData.m_quality}] ";
+            }
+            else if (__instance.m_itemData.m_stack > 1)
+            {
+                str = $"{str} x{__instance.m_itemData.m_stack}";
+            }
+            __result = Localization.instance.Localize($"{str}\n[<color=yellow><b>$KEY_Use</b></color>] $inventory_pickup");
+            return false;
+        }
+
+        [HarmonyPatch(typeof(ItemDrop), nameof(ItemDrop.GetHoverName))]
+        [HarmonyPrefix]
+        public static bool GetHoverName_Prefix(ItemDrop __instance, ref string __result)
+        {
+            __result = __instance.m_itemData.GetDecoratedName();
+            return false;
         }
     }
 }

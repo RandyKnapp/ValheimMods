@@ -15,7 +15,9 @@ namespace EpicLoot.LegendarySystem
     public class TextureReplacement
     {
         public string ItemID;
-        public string TextureAsset;
+        public string MainTexture;
+        public string ChestTex;
+        public string LegsTex;
     }
 
     [Serializable]

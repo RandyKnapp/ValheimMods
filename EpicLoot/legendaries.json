@@ -101,6 +101,7 @@
       "ID": "HeimdallChest",
       "Name": "$mod_epicloot_l_heimdallchest",
       "Description": "$mod_epicloot_l_heimdallchest_desc",
+      "TextureReplacements": [ { "ItemID": "ArmorPaddedCuirass", "MainTexture": "PaddedArmorMain_Heimdall", "ChestTex": "PaddedArmorChest_Heimdall" } ],
       "IsSetItem": true, 
       "Requirements": {
         "AllowedItemTypes": [
@@ -164,7 +165,7 @@
       "ID": "RagnarChest",
       "Name": "$mod_epicloot_l_ragnarchest",
       "Description": "$mod_epicloot_l_ragnarchest_desc",
-      "TextureReplacements": [ { "ItemID": "ArmorPaddedCuirass", "TextureAsset": "paddedarmortest2_d" } ],
+      "TextureReplacements": [ { "ItemID": "ArmorPaddedCuirass", "MainTexture": "paddedarmortest2_d", "ChestTex": "PaddedArmorChest2_d" } ],
       "IsSetItem": true, 
       "Requirements": {
         "AllowedItemTypes": [
