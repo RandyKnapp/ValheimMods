@@ -13,6 +13,14 @@
       "IconAsset": "UndyingIcon",
       "ActivationMode": "Triggerable",
       "Cooldown" : 1200
+    },
+    {
+      "ID" : "Berserker",
+      "IconAsset": "BerserkerIcon",
+      "ActivationMode": "Activated",
+      "Cooldown" : 180,
+      "Action": "StatusEffect",
+      "ActionParams": [ "BerserkerStatusEffect" ]
     }
   ]
 }

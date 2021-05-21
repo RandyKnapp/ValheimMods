@@ -84,7 +84,6 @@ namespace EpicLoot.Abilities
                 SetCooldownEndTime(cooldownEndTime);
             }
 
-            Debug.LogWarning($"Activated Ability: {AbilityDef.ID}");
             switch (AbilityDef.Action)
             {
                 case AbilityAction.Custom:
@@ -99,7 +98,6 @@ namespace EpicLoot.Abilities
 
         protected virtual void ActivateCustomAction()
         {
-
         }
 
         protected virtual void ActivateStatusEffectAction()

@@ -302,14 +302,14 @@ namespace EpicLoot
             }
         }*/
 
-        /*[UsedImplicitly]
+        [UsedImplicitly]
         private void Update()
         {
             if (Input.GetKey(KeyCode.RightControl) && Input.GetKeyDown(KeyCode.Backspace))
             {
                 Time.timeScale = Time.timeScale == 0 ? 1 : 0;
             }
-        }*/
+        }
 
         private void LoadAssets()
         {

@@ -128,6 +128,62 @@
         { "Type": "AddMovementSkills", "Values": { "MinValue": 30, "MaxValue": 40, "Increment": 1 } },
         { "Type": "ModifyMovementSpeedLowHealth", "Values": { "MinValue": 25, "MaxValue": 25, "Increment": 1 } }
       ]
+    },
+
+    // Ragnar
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    {
+      "ID": "RagnarBattleAxe",
+      "Name": "$mod_epicloot_l_ragnarbattleaxe",
+      "Description": "$mod_epicloot_l_ragnarbattleaxe_desc",
+      "EquipFx": "FrostAuraBattleAxe",
+      "EquipFxMode": "EquipRoot", 
+      "IsSetItem": true, 
+      "Requirements": {
+        "AllowedItemTypes": [ "TwoHandedWeapon" ], 
+        "AllowedSkillTypes": [ "Axes" ]
+      },
+      "GuaranteedMagicEffects": [
+        { "Type": "ModifyPhysicalDamage", "Values": { "MinValue": 15, "MaxValue": 20, "Increment": 1 } },
+        { "Type": "AddFrostDamage", "Values": { "MinValue": 30, "MaxValue": 35, "Increment": 1 } }
+      ]
+    },
+    {
+      "ID": "RagnarCape",
+      "Name": "$mod_epicloot_l_ragnarcape",
+      "Description": "$mod_epicloot_l_ragnarcape_desc",
+      "IsSetItem": true, 
+      "Requirements": {
+        "AllowedItemTypes": [
+          "Shoulder"
+        ]
+      },
+      "GuaranteedEffectCount": 6
+    },
+    {
+      "ID": "RagnarChest",
+      "Name": "$mod_epicloot_l_ragnarchest",
+      "Description": "$mod_epicloot_l_ragnarchest_desc",
+      "TextureReplacements": [ { "ItemID": "ArmorPaddedCuirass", "TextureAsset": "paddedarmortest2_d" } ],
+      "IsSetItem": true, 
+      "Requirements": {
+        "AllowedItemTypes": [
+          "Chest"
+        ]
+      },
+      "GuaranteedEffectCount": 6
+    },
+    {
+      "ID": "RagnarLegs",
+      "Name": "$mod_epicloot_l_ragnarlegs",
+      "Description": "$mod_epicloot_l_ragnarlegs_desc",
+      "IsSetItem": true, 
+      "Requirements": {
+        "AllowedItemTypes": [
+          "Legs"
+        ]
+      },
+      "GuaranteedEffectCount": 6
     }
   ],
 
@@ -147,6 +203,22 @@
         { "Count": 2, "Effect": { "Type": "ModifyBlockPower", "Values": { "MinValue": 200, "MaxValue": 200, "Increment": 1 } } },
         { "Count": 3, "Effect": { "Type": "Bulwark" } },
         { "Count": 4, "Effect": { "Type": "Undying" } }
+      ]
+    },
+    {
+      "ID": "Ragnar",
+      "Name": "$mod_epicloot_set_ragnar",
+      "LegendaryIDs": [
+        "RagnarBattleAxe",
+        "RagnarCape",
+        "RagnarChest",
+        "RagnarLegs"
+      ],
+      "SetBonuses": [
+        { "Count": 2, "Effect": { "Type": "AddHealthRegen", "Values": { "MinValue": 2, "MaxValue": 2, "Increment": 1 } } },
+        { "Count": 2, "Effect": { "Type": "ModifyHealthRegen", "Values": { "MinValue": 100, "MaxValue": 100, "Increment": 1 } } },
+        { "Count": 3, "Effect": { "Type": "Berserker" } },
+        { "Count": 4, "Effect": { "Type": "FrostDamageAOE", "Values": { "MinValue": 50, "MaxValue": 50, "Increment": 1 } } }
       ]
     }
   ] 

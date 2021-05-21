@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 1260349714
+CRC: 3630428956
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 2506c90bf90f5c2089938e2654972473
+    Hash: d577b479071faadc2b099a92a01f2930
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 800c984910882d5b48b69f8110a5ba74
+    Hash: 7664cc45f2b3d5c0a17a99c4a513797a
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -26,6 +26,8 @@ ClassTypes:
 - Class: 48
   Script: {instanceID: 0}
 - Class: 54
+  Script: {instanceID: 0}
+- Class: 64
   Script: {instanceID: 0}
 - Class: 65
   Script: {instanceID: 0}
@@ -108,19 +110,23 @@ ClassTypes:
 SerializeReferenceClassIdentifiers: []
 Assets:
 - Assets/EpicLoot/Prefabs/Equipment/GoldRubyRing.prefab
+- Assets/EpicLoot/Sprites/Abilities/BerserkerIcon.png
 - Assets/EpicLoot/Prefabs/ItemEffects/FeatherFallAura.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/DustRare.prefab
 - Assets/EpicLoot/Sprites/Inventory/SetItemMarker.png
 - Assets/EpicLoot/Prefabs/UI/AbilityBar.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/RunestoneRare.prefab
 - Assets/EpicLoot/Prefabs/ItemEffects/WhiteAura.prefab
+- Assets/EpicLoot/Prefabs/Collision/IceSpikesCollider.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/DustEpic.prefab
+- Assets/EpicLoot/Prefabs/VFX/IceSpikes.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/ReagentRare.prefab
 - Assets/EpicLoot/Sounds/DoubleJump.wav
 - Assets/EpicLoot/Prefabs/LootBeams/RareLootBeam.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/EssenceRare.prefab
 - Assets/EpicLoot/Prefabs/ItemEffects/LightningAuraSledge.prefab
 - Assets/EpicLoot/Prefabs/ItemEffects/FireAura.prefab
+- Assets/EpicLoot/Prefabs/ItemEffects/FrostAuraBattleAxe.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/ShardEpic.prefab
 - Assets/EpicLoot/Sprites/Inventory/GenericSetItemMarker.png
 - Assets/EpicLoot/Prefabs/Equipment/Andvaranaut.prefab
@@ -141,6 +147,7 @@ Assets:
 - Assets/EpicLoot/Sprites/Abilities/BulwarkIcon.png
 - Assets/EpicLoot/Sprites/Inventory/GenericItemBg.png
 - Assets/EpicLoot/Sprites/Inventory/SmallButtonEnchantOverlay.png
+- Assets/EpicLoot/ScriptableObjects/BerserkerStatusEffect.asset
 - Assets/EpicLoot/Prefabs/CraftingMaterials/EssenceEpic.prefab
 - Assets/EpicLoot/Sounds/AbandonBounty.wav
 - Assets/EpicLoot/Sprites/Inventory/EpicItemBg.png

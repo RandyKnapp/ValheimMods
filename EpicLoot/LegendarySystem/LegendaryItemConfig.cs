@@ -12,6 +12,13 @@ namespace EpicLoot.LegendarySystem
     }
 
     [Serializable]
+    public class TextureReplacement
+    {
+        public string ItemID;
+        public string TextureAsset;
+    }
+
+    [Serializable]
     public class LegendaryInfo
     {
         public string ID;
@@ -23,6 +30,7 @@ namespace EpicLoot.LegendarySystem
         public float SelectionWeight = 1;
         public string EquipFx;
         public FxAttachMode EquipFxMode = FxAttachMode.Player;
+        public List<TextureReplacement> TextureReplacements = new List<TextureReplacement>();
         public bool IsSetItem;
         public bool Enchantable;
         public List<RecipeRequirementConfig> EnchantCost = new List<RecipeRequirementConfig>();

@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects
 {
@@ -71,6 +72,13 @@ namespace EpicLoot.MagicItemEffects
                 }
             });
             __result.Modify(1.0f + damageMod);
+
+            if (player != null && player.GetSEMan().HaveStatusEffect("BerserkerStatusEffect"))
+            {
+                var percentLife = player.GetHealthPercentage();
+                var berserkerMod = Mathf.Lerp(2.0f, 0.5f, percentLife);
+                __result.Modify(1.0f + berserkerMod);
+            }
         }
     }
 }

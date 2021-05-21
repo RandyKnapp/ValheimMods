@@ -448,6 +448,34 @@
       ]
     },
     {
+      "Type" : "AddHealthRegen",
+      "DisplayText" : "$mod_epicloot_me_addhealthregen_display",
+      "Description" : "$mod_epicloot_me_addhealthregen_desc",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "Helmet",
+          "Chest",
+          "Legs",
+          "Shoulder",
+          "Utility",
+          "Shield"
+        ]
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 0.5, "MaxValue" : 1.5, "Increment" : 0.5 },
+        "Rare" : { "MinValue" : 1, "MaxValue" : 3, "Increment" : 0.5 },
+        "Epic" : { "MinValue" : 2, "MaxValue" : 4.5, "Increment" : 0.5 },
+        "Legendary" : { "MinValue" : 3, "MaxValue" : 6, "Increment" : 0.5 }
+      },
+      "SelectionWeight" : 1,
+      "Prefixes": [
+        "$mod_epicloot_me_addhealthregen_prefix1"
+      ],
+      "Suffixes": [
+        "$mod_epicloot_me_addhealthregen_suffix1"
+      ]
+    },
+    {
       "Type" : "ModifyStaminaRegen",
       "DisplayText" : "$mod_epicloot_me_modifystaminaregen_display",
       "Description" : "$mod_epicloot_me_modifystaminaregen_desc",
@@ -2614,7 +2642,6 @@
       ]
     },
     {
-
       "Type" : "Slow",
       "DisplayText" : "$mod_epicloot_me_slow_display",
       "Description" : "$mod_epicloot_me_slow_desc",
@@ -2663,6 +2690,24 @@
         "NoRoll" :  true 
       },
       "Ability" : "Undying"
+    },
+    {
+      "Type" : "FrostDamageAOE",
+      "DisplayText" : "$mod_epicloot_set_me_frostdamageaoe_display",
+      "Requirements" : {
+        "NoRoll": true
+      },
+      "ValuesPerRarity" : {
+        "Legendary" : { "MinValue" : 50, "MaxValue" : 50, "Increment" : 1 }
+      }
+    },
+    {
+      "Type" : "Berserker",
+      "DisplayText" : "$mod_epicloot_set_me_berserker",
+      "Requirements" : {
+        "NoRoll" :  true 
+      },
+      "Ability" : "Berserker"
     }
   ]
 }

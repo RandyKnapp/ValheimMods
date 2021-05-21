@@ -79,7 +79,7 @@
 
 - [X] Sleipnir's Hoof (Club, increase move speed)
 - [X] Gungnir (Ancient Bark Spear)
-- [ ] Mjolnir (Iron Sledge)
+- [X] Mjolnir (Iron Sledge)
 - [ ] Skofnung (Iron Sword)
 - [ ] Dainslief (Silver Sword)
 - [ ] Angurvadal (Sword)
@@ -125,11 +125,11 @@
 3. - [X] Bulwark - activate: take no damage for N seconds
 4. - [X] Undying - On death, gain full health instantly, but long cooldown
 
-- [ ] **Ragnar (aoe):** Battleaxe (Serpentsbane), Cape (Ragnar's Boneless Wrap), Chest (Ragnar's White Shirt), Legs (Ragnar's Ironsides)
+- [X] **Ragnar (aoe):** Battleaxe (Serpentsbane), Cape (Ragnar's Boneless Wrap), Chest (Ragnar's White Shirt), Legs (Ragnar's Ironsides)
 
-2. - [ ] +2 HP/tick, +100% health regen
-3. - [ ] Attacks that deal frost damage deal 50% of their damage in an aoe around the attack
-4. - [ ] Berserker - activate: stop all health regen but gain +50% to +200% damage based on health missing
+2. - [X] +2 HP/tick, +100% health regen
+3. - [X] Melee Attacks that deal frost damage deal 50% of weapon damage as frost in a forward-facing cone
+4. - [X] Berserker - activate: stop all health regen but gain +50% to +200% damage based on health missing
 
 - [ ] **Bloodaxe (dps):** Knife (Fratricide), Head (Bloodaxe's Crown), Cape (Bloodaxe's Royal Mantle), Legs (Bloodaxe's Boots)
 

@@ -180,6 +180,7 @@
     <Compile Include="MagicItemEffects\ExplosiveArrows.cs" />
     <Compile Include="MagicItemEffects\FeatherFall.cs" />
     <Compile Include="MagicItemEffects\FreeBuild.cs" />
+    <Compile Include="MagicItemEffects\FrostAOE.cs" />
     <Compile Include="MagicItemEffects\Immovable.cs" />
     <Compile Include="MagicItemEffects\IncreaseHealth.cs" />
     <Compile Include="MagicItemEffects\IncreaseStamina.cs" />

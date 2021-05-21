@@ -347,6 +347,28 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > |Epic|10|20|1|
 > |Legendary|15|25|1|
 
+## AddHealthRegen
+
+> **Display Text:** Health Regen +{0:0.#}/tick
+> 
+> **Prefixes:** Rejuvenating
+> **Suffixes:** Rejuvenation
+> 
+> **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility, Shield
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedItemTypes:** `Helmet, Chest, Legs, Shoulder, Utility, Shield`
+> 
+> **Value Per Rarity:**
+> 
+> |Rarity|Min|Max|Increment|
+> |--|--|--|--|
+> |Magic|0.5|1.5|0.5|
+> |Rare|1|3|0.5|
+> |Epic|2|4.5|0.5|
+> |Legendary|3|6|0.5|
+
 ## ModifyStaminaRegen
 
 > **Display Text:** Stamina Regen +{0:0.#}%
@@ -2031,7 +2053,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## Bulwark
 
-> **Display Text:** Bulwark [Activated - Primary]: Prevent all damage for {0} seconds. Cooldown: 60 seconds.
+> **Display Text:** Bulwark [Activated]: Prevent all damage for {0} seconds. Cooldown: 60 seconds.
 > 
 > **Allowed Item Types:** *None*
 > 
@@ -2041,6 +2063,24 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 ## Undying
 
 > **Display Text:** Undying [Passive]: On death, regain full health. Cooldown: 20 minutes.
+> 
+> **Allowed Item Types:** *None*
+> 
+> **Requirements:**
+> > **Flags:** `NoRoll, ExclusiveSelf`
+
+## FrostDamageAOE
+
+> **Display Text:** Melee attacks that deal frost damage deal an additional 50% of weapon damage as frost in a cone in front of the attacker.
+> 
+> **Allowed Item Types:** *None*
+> 
+> **Requirements:**
+> > **Flags:** `NoRoll, ExclusiveSelf`
+
+## Berserker
+
+> **Display Text:** Berserker [Activated]: For 10 seconds, you cannot regenerate health, but you gain +50% to +200% damage based on health missing. Cooldown: 3 minutes.
 > 
 > **Allowed Item Types:** *None*
 > 
