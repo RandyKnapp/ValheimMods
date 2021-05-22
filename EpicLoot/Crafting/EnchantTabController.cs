@@ -356,6 +356,8 @@ namespace EpicLoot.Crafting
                 }
 
                 SuccessDialog.Show(recipe.FromItem.Extended());
+                
+                MagicItemEffects.Indestructible.MakeItemIndestructible(recipe.FromItem);
 
                 Game.instance.GetPlayerProfile().m_playerStats.m_crafts++;
                 Gogan.LogEvent("Game", "Enchanted", recipe.FromItem.m_shared.m_name, 1);
