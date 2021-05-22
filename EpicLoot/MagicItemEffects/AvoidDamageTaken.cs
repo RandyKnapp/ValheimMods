@@ -4,8 +4,8 @@ using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects
 {
-	[HarmonyPatch(typeof(Character), nameof(Character.Damage))]
-	public class AvoidDamageTaken_Character_Damage_Patch
+	[HarmonyPatch(typeof(Character), nameof(Character.RPC_Damage))]
+	public class AvoidDamageTaken_Character_RPC_Damage_Patch
 	{
 		[UsedImplicitly]
 		private static bool Prefix(Character __instance, HitData hit)
