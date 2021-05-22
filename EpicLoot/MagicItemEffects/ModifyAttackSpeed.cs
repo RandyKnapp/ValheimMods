@@ -41,18 +41,4 @@ namespace EpicLoot.MagicItemEffects
             }
         }
     }
-
-    [HarmonyPatch(typeof(Attack), nameof(Attack.Update))]
-    public class ModifyAttackSpeed_Attack_Update_Patch
-    {
-        public static void Postfix(Attack __instance)
-        {
-            var animator = __instance.m_character.m_animator;
-            var animSpeed = animator.speed.ToString("0.00");
-            var stateInfo = animator.GetCurrentAnimatorStateInfo(0);
-            var transitionInfo = animator.GetAnimatorTransitionInfo(0);
-            var animSpeedMult = stateInfo.speedMultiplier.ToString("0.00");
-            DebugText.SetText($"state={stateInfo.fullPathHash}, speed={animSpeed}, mult={animSpeedMult}, transition={transitionInfo.fullPathHash}");
-        }
-    }
 }
