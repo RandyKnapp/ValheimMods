@@ -328,11 +328,13 @@ namespace EpicLoot.Crafting
                 {
                     previousDurabilityPercent = recipe.FromItem.m_durability / recipe.FromItem.GetMaxDurability();
                 }
-                
-                var magicItemComponent = recipe.FromItem.Extended().AddComponent<MagicItemComponent>();
+
                 var luckFactor = player.GetTotalActiveMagicEffectValue(MagicEffectType.Luck, 0.01f);
+                var magicItemComponent = recipe.FromItem.Extended().AddComponent<MagicItemComponent>();
                 var magicItem = LootRoller.RollMagicItem(SelectedRarity, recipe.FromItem.Extended(), luckFactor);
                 magicItemComponent.SetMagicItem(magicItem);
+
+                EquipmentEffectCache.Reset(player);
 
                 // Spend Resources
                 if (!player.NoCostCheat())

@@ -453,6 +453,8 @@ namespace EpicLoot.Crafting
 
                 Game.instance.GetPlayerProfile().m_playerStats.m_crafts++;
                 Gogan.LogEvent("Game", "Augmented", recipe.FromItem.m_shared.m_name, 1);
+                
+                EquipmentEffectCache.Reset(player);
             }
         }
 
