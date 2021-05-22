@@ -532,40 +532,44 @@ namespace EpicLoot
                 return;
             }
 
+            Dictionary<int, ItemDrop.ItemData> itemPosition = new Dictionary<int, ItemDrop.ItemData>();
+            foreach (ItemDrop.ItemData itemData in ___m_items)
+            {
+                if (GetElementIndexForItem(___m_elements, itemData) is int elementIndex)
+                {
+                    itemPosition[elementIndex] = itemData;
+                }
+                else
+                {
+                    EpicLoot.LogWarning($"Tried to get element for {itemData.m_shared.m_name} at {itemData.m_gridPos}, but element was null (total elements = {___m_elements.Count})");
+                }
+            }
+
             for (var index = 0; index < ___m_elements.Count; index++)
             {
                 var element = ___m_elements[index];
-                var magicItem = ItemBackgroundHelper.CreateAndGetMagicItemBackgroundImage(element.m_go, element.m_equiped, false);
-                magicItem.enabled = false;
-            }
-
-            for (var index = 0; index < ___m_items.Count; ++index)
-            {
-                var itemData = ___m_items[index];
-                var element = GetElementForItem(___m_elements, itemData);
-                if (element == null)
-                {
-                    EpicLoot.LogWarning($"Tried to get element for {itemData.m_shared.m_name} at {itemData.m_gridPos}, but element was null (total elements = {___m_elements.Count})");
-                    continue;
-                }
 
                 var magicItem = ItemBackgroundHelper.CreateAndGetMagicItemBackgroundImage(element.m_go, element.m_equiped, false);
-                if (itemData.UseMagicBackground())
+                if (itemPosition.TryGetValue(index, out ItemDrop.ItemData itemData) && itemData.UseMagicBackground())
                 {
                     magicItem.enabled = true;
                     magicItem.sprite = EpicLoot.GetMagicItemBgSprite();
                     magicItem.color = itemData.GetRarityColor();
                 }
+                else
+                {
+                    magicItem.enabled = false;
+                }
             }
         }
 
-        private static HotkeyBar.ElementData GetElementForItem(List<HotkeyBar.ElementData> elements, ItemDrop.ItemData item)
+        private static int? GetElementIndexForItem(List<HotkeyBar.ElementData> elements, ItemDrop.ItemData item)
         {
             var index = item.m_gridPos.y == 0 
                 ? item.m_gridPos.x 
                 : Player.m_localPlayer.GetInventory().m_width + item.m_gridPos.x - 5;
 
-            return index >= 0 && index < elements.Count ? elements[index] : null;
+            return index >= 0 && index < elements.Count ? (int?) index : null;
         }
     }
 
