@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Common;
 using EpicLoot.Crafting;
 using EpicLoot.LegendarySystem;
 using ExtendedItemDataFramework;
 using fastJSON;
 using HarmonyLib;
+using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
@@ -20,7 +22,7 @@ namespace EpicLoot
 
         private static readonly JSONParameters _saveParams = new JSONParameters { UseExtensions = false };
 
-        public MagicItemComponent(ExtendedItemData parent) 
+        public MagicItemComponent(ExtendedItemData parent)
             : base(typeof(MagicItemComponent).AssemblyQualifiedName, parent)
         {
         }
@@ -305,6 +307,53 @@ namespace EpicLoot
         }
     }
 
+    public static class EquipmentEffectCache
+    {
+        public static ConditionalWeakTable<Player, Dictionary<string, float?>> Values = new ConditionalWeakTable<Player, Dictionary<string, float?>>();
+
+        [HarmonyPatch(typeof(Humanoid), nameof(Humanoid.UnequipItem))]
+        public static class EquipmentEffectCache_Humanoid_UnequipItem_Patch
+        {
+            [UsedImplicitly]
+            public static void Prefix(Humanoid __instance, ItemDrop.ItemData item)
+            {
+                if (__instance is Player player)
+                {
+                    Reset(player);
+                }
+            }
+        }
+
+        [HarmonyPatch(typeof(Humanoid), nameof(Humanoid.EquipItem))]
+        public static class EquipmentEffectCache_Humanoid_EquipItem_Patch
+        {
+            [UsedImplicitly]
+            public static void Prefix(Humanoid __instance, ItemDrop.ItemData item)
+            {
+                if (__instance is Player player)
+                {
+                    Reset(player);
+                }
+            }
+        }
+
+        public static void Reset(Player player)
+        {
+            Values.Remove(player);
+        }
+
+        public static float? Get(Player player, string effect, Func<float?> calculate)
+        {
+            var values = Values.GetOrCreateValue(player);
+            if (values.TryGetValue(effect, out float? value))
+            {
+                return value;
+            }
+
+            return values[effect] = calculate();
+        }
+    }
+
     public static class PlayerExtensions
     {
         public static List<ItemDrop.ItemData> GetEquipment(this Player player)
@@ -379,15 +428,20 @@ namespace EpicLoot
 
         public static float GetTotalActiveMagicEffectValue(this Player player, string effectType, float scale = 1.0f)
         {
-            return player.GetAllActiveMagicEffects(effectType)
-                .Select(x => x.EffectValue)
-                .DefaultIfEmpty(0)
-                .Sum() * scale;
+            return scale * (EquipmentEffectCache.Get(player, effectType, () =>
+            {
+                List<MagicItemEffect> allEffects = player.GetAllActiveMagicEffects(effectType);
+                return allEffects.Count > 0 ? (float?)allEffects.Select(x => x.EffectValue).Sum() : null;
+            }) ?? 0);
         }
 
         public static bool HasActiveMagicEffect(this Player player, string effectType)
         {
-            return GetMagicEquipmentWithEffect(player, effectType).Count > 0 || player.GetAllActiveSetMagicEffects(effectType).Count > 0;
+            return null != EquipmentEffectCache.Get(player, effectType, () =>
+            {
+                List<MagicItemEffect> allEffects = player.GetAllActiveMagicEffects(effectType);
+                return allEffects.Count > 0 ? (float?)allEffects.Select(x => x.EffectValue).Sum() : null;
+            });
         }
 
         public static List<ItemDrop.ItemData> GetEquippedSetPieces(this Player player, string setName)
@@ -561,8 +615,8 @@ namespace EpicLoot
 
         private static HotkeyBar.ElementData GetElementForItem(List<HotkeyBar.ElementData> elements, ItemDrop.ItemData item)
         {
-            var index = item.m_gridPos.y == 0 
-                ? item.m_gridPos.x 
+            var index = item.m_gridPos.y == 0
+                ? item.m_gridPos.x
                 : Player.m_localPlayer.GetInventory().m_width + item.m_gridPos.x - 5;
 
             return index >= 0 && index < elements.Count ? elements[index] : null;
