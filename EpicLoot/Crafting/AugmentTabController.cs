@@ -430,6 +430,17 @@ namespace EpicLoot.Crafting
             if (recipe != null)
             {
                 var magicItem = recipe.FromItem.GetMagicItem();
+
+                if (magicItem.HasEffect(MagicEffectType.Indestructible))
+                {
+                    recipe.FromItem.m_shared.m_useDurability = recipe.FromItem.m_dropPrefab?.GetComponent<ItemDrop>().m_itemData.m_shared.m_useDurability ?? false;
+
+                    if (recipe.FromItem.m_shared.m_useDurability)
+                    {
+                        recipe.FromItem.m_durability = recipe.FromItem.GetMaxDurability();
+                    }
+                }
+                
                 magicItem.ReplaceEffect(recipe.EffectIndex, newEffect);
 
                 if (magicItem.Rarity == ItemRarity.Rare)
@@ -450,6 +461,8 @@ namespace EpicLoot.Crafting
                 }
 
                 OnSelectorValueChanged(recipe.EffectIndex, true);
+
+                MagicItemEffects.Indestructible.MakeItemIndestructible(recipe.FromItem);
 
                 Game.instance.GetPlayerProfile().m_playerStats.m_crafts++;
                 Gogan.LogEvent("Game", "Augmented", recipe.FromItem.m_shared.m_name, 1);
