@@ -75,10 +75,8 @@ namespace EpicLoot
                 return;
             }
 
-            if (ZNet.instance == null)
-            {
-                ZNetView.m_forceDisableInit = true;
-            }
+
+            ZNetView.m_forceDisableInit = true;
             var newEffect = Object.Instantiate(asset, attachObject, false);
             ZNetView.m_forceDisableInit = false;
 
