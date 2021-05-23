@@ -20,20 +20,43 @@ namespace EpicLoot
         [HarmonyPostfix]
         public static void AttachItem_Postfix(VisEquipment __instance, GameObject __result, int itemHash)
         {
-            SetTextureOverrides(__instance, new List<GameObject> {__result}, itemHash);
-
-            if (!CanCreateEffect(__instance, itemHash, out var player, out var equippedItem, out _))
+            if (!CanCreateEffect(__instance, itemHash, out var player, out var equippedItem, out var itemID))
             {
                 return;
             }
 
+            SetTextureOverrides(__instance, new List<GameObject> { __result }, itemID, equippedItem);
+            SetItemFx(__result, equippedItem, player);
+        }
+
+        [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.AttachArmor))]
+        [HarmonyPostfix]
+        public static void AttachArmor_Postfix(VisEquipment __instance, List<GameObject> __result, int itemHash)
+        {
+            if (!CanCreateEffect(__instance, itemHash, out var player, out var equippedItem, out var itemID))
+            {
+                return;
+            }
+
+            SetTextureOverrides(__instance, __result, itemID, equippedItem);
+            SetItemFx(null, equippedItem, player);
+        }
+
+        private static void SetItemFx(GameObject __result, ItemDrop.ItemData equippedItem, Player player)
+        {
             var equipFx = GetEquipFxName(equippedItem, out var mode);
             if (!string.IsNullOrEmpty(equipFx))
             {
                 var asset = EpicLoot.LoadAsset<GameObject>(equipFx);
                 if (asset != null)
                 {
-                    var attachObject = mode == FxAttachMode.Player ? player.transform : __result.transform;
+                    var attachObject = mode == FxAttachMode.Player ? player.transform : __result?.transform;
+                    if (attachObject == null)
+                    {
+                        EpicLoot.LogError($"Tried to attach FX to item that did not exist. item={equippedItem.m_shared.m_name}, equipFx={equipFx}, mode={mode}");
+                        return;
+                    }
+
                     var equipEffects = attachObject.Find("equiped");
                     if (equipEffects != null && mode == FxAttachMode.EquipRoot)
                     {
@@ -45,36 +68,12 @@ namespace EpicLoot
             }
         }
 
-        [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.AttachArmor))]
-        [HarmonyPostfix]
-        public static void AttachArmor_Postfix(VisEquipment __instance, List<GameObject> __result, int itemHash)
-        {
-            SetTextureOverrides(__instance, __result, itemHash);
-
-            if (!CanCreateEffect(__instance, itemHash, out var player, out var equippedItem, out _))
-            {
-                return;
-            }
-
-            var equipFx = GetEquipFxName(equippedItem, out var mode);
-            if (!string.IsNullOrEmpty(equipFx) && mode == FxAttachMode.Player)
-            {
-                var asset = EpicLoot.LoadAsset<GameObject>(equipFx);
-                if (asset != null)
-                {
-                    var attachObject = player.transform;
-                    AttachFx(attachObject, equipFx, asset);
-                }
-            }
-        }
-
         private static void AttachFx(Transform attachObject, string equipFx, GameObject asset)
         {
             if (attachObject.Find(equipFx) != null)
             {
                 return;
             }
-
 
             ZNetView.m_forceDisableInit = true;
             var newEffect = Object.Instantiate(asset, attachObject, false);
@@ -88,13 +87,8 @@ namespace EpicLoot
             }
         }
 
-        private static void SetTextureOverrides(VisEquipment __instance, List<GameObject> __result, int itemHash)
+        private static void SetTextureOverrides(VisEquipment __instance, List<GameObject> __result, string itemID, ItemDrop.ItemData equippedItem)
         {
-            if (!CanCreateEffect(__instance, itemHash, out _, out var equippedItem, out var itemID))
-            {
-                return;
-            }
-
             GetTexOverrides(itemID, equippedItem, out var mainTexture, out var chestTex, out var legsTex);
             if (!string.IsNullOrEmpty(mainTexture))
             {
@@ -102,7 +96,6 @@ namespace EpicLoot
                 {
                     var skinnedMeshRenderers = go.GetComponentsInChildren<SkinnedMeshRenderer>(true);
                     SetMainTextureOnRenderers(skinnedMeshRenderers, mainTexture);
-
 
                     var meshRenderers = go.GetComponentsInChildren<MeshRenderer>(true);
                     SetMainTextureOnRenderers(meshRenderers, mainTexture);

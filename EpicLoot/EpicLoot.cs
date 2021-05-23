@@ -444,6 +444,7 @@ namespace EpicLoot
             var znetAssets = assetBundle.LoadAllAssets<ZNetView>();
             foreach (var asset in znetAssets)
             {
+                Debug.LogWarning($"Loading ZNet Asset: {asset.name}");
                 _assetCache.Add(asset.name, asset.gameObject);
                 RegisteredPrefabs.Add(asset.gameObject);
             }

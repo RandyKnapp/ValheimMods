@@ -230,15 +230,18 @@ namespace ExtendedItemDataFramework
             {
                 if (player.m_leftItem?.m_dropPrefab.name == m_dropPrefab.name)
                 {
+                    Debug.LogWarning($"Set my extended equipment in zdo {m_shared.m_itemType}");
                     zdo.Set("LeftItem ExtendedItemData", data);
                 }
                 if (player.m_rightItem?.m_dropPrefab.name == m_dropPrefab.name)
                 {
+                    Debug.LogWarning($"Set my extended equipment in zdo {m_shared.m_itemType}");
                     zdo.Set("RightItem ExtendedItemData", data);
                 }
             }
             else if (ZDOIdentifierMap.TryGetValue(m_shared.m_itemType, out string zdoKey))
             {
+                Debug.LogWarning($"Set my extended equipment in zdo {m_shared.m_itemType}");
                 zdo.Set(zdoKey, data);
             }
         }

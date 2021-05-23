@@ -132,12 +132,12 @@ namespace EpicLoot.Abilities
 
         protected virtual void SetCooldownEndTime(float cooldownEndTime)
         {
-            _netView.GetZDO().Set(CooldownEndKey, cooldownEndTime);
+            _netView?.GetZDO()?.Set(CooldownEndKey, cooldownEndTime);
         }
 
         public virtual float GetCooldownEndTime()
         {
-            return _netView.GetZDO().GetFloat(CooldownEndKey);
+            return _netView?.GetZDO()?.GetFloat(CooldownEndKey) ?? 0;
         }
 
         public bool IsActivatedAbility()
