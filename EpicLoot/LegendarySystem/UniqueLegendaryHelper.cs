@@ -26,6 +26,7 @@ namespace EpicLoot.LegendarySystem
             AddLegendaryInfo(config.LegendaryItems);
 
             LegendarySets.Clear();
+            _itemsToSetMap.Clear();
             AddLegendarySets(config.LegendarySets);
         }
 

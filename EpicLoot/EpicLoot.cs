@@ -203,7 +203,6 @@ namespace EpicLoot
 
             LoadAssets();
 
-            ExtendedItemData.LoadExtendedItemData += SetupTestMagicItem;
             ExtendedItemData.LoadExtendedItemData += MagicItemComponent.OnNewExtendedItemData;
             ExtendedItemData.NewExtendedItemData += MagicItemComponent.OnNewExtendedItemData;
 
@@ -302,14 +301,14 @@ namespace EpicLoot
             }
         }*/
 
-        [UsedImplicitly]
+        /*[UsedImplicitly]
         private void Update()
         {
             if (Input.GetKey(KeyCode.RightControl) && Input.GetKeyDown(KeyCode.Backspace))
             {
                 Time.timeScale = Time.timeScale == 0 ? 1 : 0;
             }
-        }
+        }*/
 
         private void LoadAssets()
         {
@@ -379,6 +378,8 @@ namespace EpicLoot
             LoadItem(assetBundle, "ForestToken");
             LoadItem(assetBundle, "IronBountyToken");
             LoadItem(assetBundle, "GoldBountyToken");
+
+            LoadAllZNetAssets(assetBundle);
         }
 
         public static T LoadAsset<T>(string assetName) where T : Object
@@ -438,55 +439,20 @@ namespace EpicLoot
             Assets.CraftingMaterialPrefabs.Add(type, prefabs);
         }
 
-        private static void SetupTestMagicItem(ExtendedItemData itemdata)
+        private void LoadAllZNetAssets(AssetBundle assetBundle)
         {
-            // Weapon (Club)
-            /*if (itemdata.GetUniqueId() == "1493f9a4-65b4-41e3-8871-611ec8cb7564")
+            var znetAssets = assetBundle.LoadAllAssets<ZNetView>();
+            foreach (var asset in znetAssets)
             {
-                var magicItem = new MagicItem {Rarity = ItemRarity.Epic};
-                magicItem.Effects.Add(RollEffect(MagicItemEffectDefinitions.Get(MagicEffectType.ModifyAttackStaminaUse), magicItem.Rarity));
-                magicItem.Effects.Add(RollEffect(MagicItemEffectDefinitions.Get(MagicEffectType.Indestructible), magicItem.Rarity));
-                magicItem.Effects.Add(RollEffect(MagicItemEffectDefinitions.Get(MagicEffectType.Weightless), magicItem.Rarity));
-                //var magicItem = RollMagicItem(new LootDrop() { Rarity = { 6, 4, 2, 1 } }, itemdata);
-                itemdata.ReplaceComponent<MagicItemComponent>().SetMagicItem(magicItem);
+                _assetCache.Add(asset.name, asset.gameObject);
+                RegisteredPrefabs.Add(asset.gameObject);
             }
-            // Armor (Bronze Cuirass)
-            else if (itemdata.GetUniqueId() == "84c006c7-3819-463c-b3b6-cb812f184655")
-            {
-                var magicItem = new MagicItem {Rarity = ItemRarity.Epic };
-                //var magicItem = RollMagicItem(new LootDrop() { Rarity = { 6, 4, 2, 1 } }, itemdata);
-                magicItem.Effects.Add(RollEffect(MagicItemEffectDefinitions.Get(MagicEffectType.ModifyMovementSpeed), magicItem.Rarity));
-                magicItem.Effects.Add(RollEffect(MagicItemEffectDefinitions.Get(MagicEffectType.Indestructible), magicItem.Rarity));
-                magicItem.Effects.Add(RollEffect(MagicItemEffectDefinitions.Get(MagicEffectType.Weightless), magicItem.Rarity));
-                magicItem.Effects.Add(RollEffect(MagicItemEffectDefinitions.Get(MagicEffectType.AddCarryWeight), magicItem.Rarity));
-                itemdata.ReplaceComponent<MagicItemComponent>().SetMagicItem(magicItem);
-            }
-            // Shield (Wood Shield)
-            else if (itemdata.GetUniqueId() == "c0d8fb31-04dd-4499-b347-d0484416f159")
-            {
-                var magicItem = new MagicItem {Rarity = ItemRarity.Epic};
-                magicItem.Effects.Add(RollEffect(MagicItemEffectDefinitions.Get(MagicEffectType.ModifyBlockStaminaUse), magicItem.Rarity));
-                magicItem.Effects.Add(RollEffect(MagicItemEffectDefinitions.Get(MagicEffectType.Weightless), magicItem.Rarity));
-                //var magicItem = RollMagicItem(new LootDrop() { Rarity = { 6, 4, 2, 1 } }, itemdata);
-                itemdata.ReplaceComponent<MagicItemComponent>().SetMagicItem(magicItem);
-            }
-            // Legs (Troll Hide Legs)
-            else if (itemdata.GetUniqueId() == "ec539738-6a73-492b-85d8-ce80eb0944f1")
-            {
-                var magicItem = new MagicItem { Rarity = ItemRarity.Epic };
-                magicItem.Effects.Add(RollEffect(MagicItemEffectDefinitions.Get(MagicEffectType.ModifyMovementSpeed), magicItem.Rarity));
-                magicItem.Effects.Add(RollEffect(MagicItemEffectDefinitions.Get(MagicEffectType.ModifySprintStaminaUse), magicItem.Rarity));
-                magicItem.Effects.Add(RollEffect(MagicItemEffectDefinitions.Get(MagicEffectType.ModifyJumpStaminaUse), magicItem.Rarity));
-                magicItem.Effects.Add(RollEffect(MagicItemEffectDefinitions.Get(MagicEffectType.AddCarryWeight), magicItem.Rarity));
-                itemdata.ReplaceComponent<MagicItemComponent>().SetMagicItem(magicItem);
-            }*/
         }
 
         [UsedImplicitly]
         private void OnDestroy()
         {
             _instance = null;
-            ExtendedItemData.LoadExtendedItemData -= SetupTestMagicItem;
             _harmony?.UnpatchAll(PluginId);
         }
 
@@ -504,30 +470,6 @@ namespace EpicLoot
                     zNetScene.m_prefabs.Add(prefab);
                 }
             }
-
-            /*if (GetBossesDropOneTrophyPerPlayer())
-            {
-                foreach (var prefab in zNetScene.m_prefabs)
-                {
-                    var character = prefab.GetComponent<Character>();
-                    if (character == null || !character.IsBoss())
-                    {
-                        continue;
-                    }
-
-                    var characterDrop = prefab.GetComponent<CharacterDrop>();
-                    if (characterDrop == null)
-                    {
-                        continue;
-                    }
-
-                    var trophyDrop = characterDrop.m_drops.Find(x => x.m_prefab != null && x.m_prefab.GetComponent<ItemDrop>()?.m_itemData?.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Trophie);
-                    if (trophyDrop != null)
-                    {
-                        trophyDrop.m_onePerPlayer = true;
-                    }
-                }
-            }*/
         }
 
         public static void TryRegisterPieces(List<PieceTable> pieceTables, List<CraftingStation> craftingStations)

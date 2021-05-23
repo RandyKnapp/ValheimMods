@@ -34,7 +34,7 @@ namespace EpicLoot.Abilities
 
         public virtual void Refresh(Ability ability)
         {
-            if (_index < 0)
+            if (_index < 0 || ability == null || ability.AbilityDef == null)
             {
                 return;
             }
