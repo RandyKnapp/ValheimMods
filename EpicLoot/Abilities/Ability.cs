@@ -69,7 +69,6 @@ namespace EpicLoot.Abilities
 
         public virtual void TryActivate()
         {
-            Debug.LogWarning($"TryActivate Ability: {AbilityDef.ID}");
             if (CanActivate())
             {
                 Activate();

@@ -68,7 +68,7 @@ namespace EpicLoot
     }
 
     [BepInPlugin(PluginId, DisplayName, Version)]
-    [BepInDependency("randyknapp.mods.extendeditemdataframework")]
+    [BepInDependency("randyknapp.mods.extendeditemdataframework", "1.0.2")]
     public class EpicLoot : BaseUnityPlugin
     {
         public const string PluginId = "randyknapp.mods.epicloot";
@@ -441,12 +441,14 @@ namespace EpicLoot
 
         private void LoadAllZNetAssets(AssetBundle assetBundle)
         {
-            var znetAssets = assetBundle.LoadAllAssets<ZNetView>();
+            var znetAssets = assetBundle.LoadAllAssets();
             foreach (var asset in znetAssets)
             {
-                Debug.LogWarning($"Loading ZNet Asset: {asset.name}");
-                _assetCache.Add(asset.name, asset.gameObject);
-                RegisteredPrefabs.Add(asset.gameObject);
+                if (asset is GameObject assetGo && assetGo.GetComponent<ZNetView>() != null)
+                {
+                    _assetCache.Add(asset.name, assetGo);
+                    RegisteredPrefabs.Add(assetGo);
+                }
             }
         }
 

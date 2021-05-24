@@ -47,7 +47,6 @@ namespace EpicLoot.Abilities
             var keyCode = GetBindingKeycode(index);
             if (keyCode != null && Input.GetKeyDown(keyCode))
             {
-                Debug.LogWarning($"Key Down: {keyCode}");
                 UseAbility(index);
             }
         }
@@ -98,7 +97,6 @@ namespace EpicLoot.Abilities
                 {
                     if (!_currentAbilities.Exists(x => x.AbilityDef.ID == abilityDef.ID))
                     {
-                        Debug.LogWarning($"Add Ability: {abilityDef.ID}");
                         var ability = AbilityFactory.Create(abilityDef.ID);
                         ability.Initialize(abilityDef, _player);
                         _currentAbilities.Add(ability);

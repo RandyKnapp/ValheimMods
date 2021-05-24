@@ -433,7 +433,6 @@ namespace EpicLoot
 
             if (string.IsNullOrEmpty(itemType))
             {
-                Debug.LogWarning($"Finding items for legendary ({legendaryInfo.ID})");
                 var dummyMagicItem = new MagicItem { Rarity = ItemRarity.Legendary };
                 var allowedItems = new List<ItemDrop>();
                 foreach (var itemName in GatedItemTypeHelper.ItemInfoByID.Keys)
@@ -453,7 +452,6 @@ namespace EpicLoot
                     var itemData = itemDrop.m_itemData;
                     if (legendaryInfo.Requirements.CheckRequirements(itemData, dummyMagicItem))
                     {
-                        Debug.Log($"> {itemDrop.name} ({itemDrop.m_itemData.m_shared.m_itemType.ToString()})");
                         allowedItems.Add(itemDrop);
                     }
                 }

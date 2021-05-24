@@ -50,7 +50,6 @@ namespace ExtendedItemDataFramework
                 var itemPrefab = ObjectDB.instance.GetItemPrefab(itemHash);
                 if (itemPrefab?.GetComponent<ItemDrop>()?.m_itemData is ItemDrop.ItemData targetItemData)
                 {
-                    Debug.LogError($"Converting other player item to extended item: {itemPrefab.name}");
                     itemData = new ExtendedItemData(targetItemData,
                         targetItemData.m_stack,
                         float.PositiveInfinity, // avoid durability checks running

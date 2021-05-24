@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 3530271701
+CRC: 501021914
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: fac32560d7ac22757d99dab96a563e54
+    Hash: d4f3c19b0515755be2ff9c7cf3900a59
   TypeTreeHash:
     serializedVersion: 2
     Hash: 7664cc45f2b3d5c0a17a99c4a513797a
@@ -140,6 +140,7 @@ Assets:
 - Assets/EpicLoot/Sounds/EpicItemDrop.wav
 - Assets/EpicLoot/Prefabs/StationExtensions/piece_augmenter.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/ReagentLegendary.prefab
+- Assets/EpicLoot/Prefabs/VFX/MagicShield.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/EssenceMagic.prefab
 - Assets/EpicLoot/Prefabs/ItemEffects/GlowingAura.prefab
 - Assets/EpicLoot/Sounds/RareItemDrop.wav
@@ -166,25 +167,31 @@ Assets:
 - Assets/EpicLoot/Prefabs/LootBeams/MagicLootBeam.prefab
 - Assets/Hovl Studio/Auras pack/Prefabs/FireAura 1.prefab
 - Assets/EpicLoot/Prefabs/Adventure/IronBountyToken.prefab
+- Assets/EpicLoot/Prefabs/SFX/sfx_undying.prefab
 - Assets/EpicLoot/Sounds/AugmentItem.wav
 - Assets/EpicLoot/Sounds/ItemLoop.wav
 - Assets/EpicLoot/Sounds/LegendaryItemDrop.wav
 - Assets/EpicLoot/Prefabs/LootBeams/LegendaryLootBeam.prefab
 - Assets/EpicLoot/ScriptableObjects/BulwarkStatusEffect.asset
 - Assets/EpicLoot/Prefabs/CraftingMaterials/RunestoneMagic.prefab
+- Assets/EpicLoot/Prefabs/SFX/sfx_berserker.prefab
 - Assets/EpicLoot/Prefabs/Adventure/GoldBountyToken.prefab
 - Assets/EpicLoot/Texture2D/Equipment/PaddedArmorMain_Heimdall.png
 - Assets/EpicLoot/Sprites/Inventory/RareItemBg.png
+- Assets/EpicLoot/Prefabs/SFX/sfx_bulwark.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/ReagentEpic.prefab
 - Assets/EpicLoot/ScriptableObjects/UndyingStatusEffect.asset
 - Assets/EpicLoot/Texture2D/Equipment/PaddedArmorChest_Heimdall.png
 - Assets/EpicLoot/Sprites/Inventory/Equipped.png
+- Assets/EpicLoot/Prefabs/SFX/sfx_frostcone.prefab
 - Assets/EpicLoot/Prefabs/Equipment/LeatherBelt.prefab
 - Assets/EpicLoot/Prefabs/Adventure/ForestToken.prefab
+- Assets/EpicLoot/Prefabs/VFX/Berserker.prefab
 - Assets/EpicLoot/Prefabs/StationExtensions/piece_enchanter.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/RunestoneLegendary.prefab
 - Assets/EpicLoot/Sprites/Adventure/BountyTokenIron.png
 - Assets/EpicLoot/Prefabs/CraftingMaterials/EssenceLegendary.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/RunestoneEpic.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/ShardRare.prefab
+- Assets/EpicLoot/Prefabs/VFX/Undying.prefab
 Dependencies: []
