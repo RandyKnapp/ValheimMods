@@ -17,7 +17,7 @@ namespace EpicLoot.MagicItemEffects
 
             // check if our marker bit is present and not within float epsilon
             var currentSpeedMarker = ___m_animator.speed * 1e7 % 100;
-            if (currentSpeedMarker > 10 && currentSpeedMarker < 30)
+            if ((currentSpeedMarker > 10 && currentSpeedMarker < 30) || ___m_animator.speed <= 0.001f)
             {
                 return;
             }
@@ -35,10 +35,7 @@ namespace EpicLoot.MagicItemEffects
                 animationSpeedup += player.GetTotalActiveMagicEffectValue(effect, 0.01f);
             });
 
-            if (___m_animator.speed > 0.001f)
-            {
-                ___m_animator.speed = ___m_animator.speed * (1 + animationSpeedup) + 19e-7f; // number with single bit in mantissa set
-            }
+            ___m_animator.speed = ___m_animator.speed * (1 + animationSpeedup) + 19e-7f; // number with single bit in mantissa set
         }
     }
 }
