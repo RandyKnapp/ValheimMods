@@ -890,6 +890,12 @@ namespace EpicLoot
 
         private void PrintInfo()
         {
+            const string devOutputPath = @"C:\Users\rknapp\Documents\GitHub\ValheimMods\EpicLoot";
+            if (!Directory.Exists(devOutputPath))
+            {
+                return;
+            }
+
             var t = new StringBuilder();
             t.AppendLine($"# EpicLoot Data v{Version}");
             t.AppendLine();
@@ -1061,14 +1067,7 @@ namespace EpicLoot
                 }
             }
 
-            //var outputFilePath = Path.Combine(Path.GetDirectoryName(typeof(EpicLoot).Assembly.Location), "info.md");
-            //File.WriteAllText(outputFilePath, t.ToString());
-
-            const string devOutputPath = @"C:\Users\rknapp\Documents\GitHub\ValheimMods\EpicLoot";
-            if (Directory.Exists(devOutputPath))
-            {
-                File.WriteAllText(Path.Combine(devOutputPath, "info.md"), t.ToString());
-            }
+            File.WriteAllText(Path.Combine(devOutputPath, "info.md"), t.ToString());
         }
 
         private static void WriteLootTableDrops(StringBuilder t, LootTable lootTable)
@@ -1079,7 +1078,7 @@ namespace EpicLoot
             {
                 var level = i + 1;
                 var dropTable = LootRoller.GetDropsForLevel(lootTable, level, false);
-                if (dropTable.Count == 0)
+                if (dropTable == null || dropTable.Count == 0)
                 {
                     continue;
                 }
