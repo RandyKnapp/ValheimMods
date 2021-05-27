@@ -34,7 +34,7 @@ namespace DvergerColor
 
         private void Awake()
         {
-            Color = Config.Bind("General", "Color", UnityEngine.Color.white, "The color of the Dverger light beam.");
+            Color = Config.Bind("General", "Color", UnityEngine.Color.white, "The color of the Dverger light beam. Vanilla default is: ????????");
             MaxSteps = Config.Bind("General", "Max Steps", 3, "Define how many steps of focus the Dverger light beam has. Must be at least 2.");
             MinAngle = Config.Bind("General", "Min Angle", 30.0f, "The angle of the beam at the narrowest setting.");
             MaxAngle = Config.Bind("General", "Max Angle", 110.0f, "The angle of the beam at the widest setting.");
