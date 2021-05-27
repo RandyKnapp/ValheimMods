@@ -32,7 +32,7 @@ namespace EpicLoot.MagicItemEffects
 	public class ModifyStaggerDamageProjectileHit_Projectile_OnHit_Patch
 	{
 		[UsedImplicitly]
-		private static void Prefix(Projectile __instance) => ModifyStaggerDamage_Character_Damage_Patch.HandlingProjectileDamage = __instance.m_nview?.GetZDO().GetFloat("epic loot modify stagger damage", 1f);
+		private static void Prefix(Projectile __instance) => ModifyStaggerDamage_Character_Damage_Patch.HandlingProjectileDamage = __instance.m_nview?.GetZDO()?.GetFloat("epic loot modify stagger damage", 1f);
 
 		[UsedImplicitly]
 		private static void Postfix() => ModifyStaggerDamage_Character_Damage_Patch.HandlingProjectileDamage = null;
