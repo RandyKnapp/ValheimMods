@@ -107,6 +107,7 @@ namespace EpicLoot
         public static ConfigEntry<Vector2> AbilityBarPosition;
         public static ConfigEntry<TextAnchor> AbilityBarLayoutAlignment;
         public static ConfigEntry<float> AbilityBarIconSpacing;
+        public static ConfigEntry<float> SetItemDropChance;
 
         public static readonly List<ItemDrop.ItemData.ItemType> AllowedMagicItemTypes = new List<ItemDrop.ItemData.ItemType>
         {
@@ -184,6 +185,7 @@ namespace EpicLoot
             _adventureModeEnabled = SyncedConfig("Balance", "Adventure Mode Enabled", true, "Set to true to enable all the adventure mode features: secret stash, gambling, treasure maps, and bounties. Set to false to disable. This will not actually remove active treasure maps or bounties from your save.");
             _andvaranautRange = SyncedConfig("Balance", "Andvaranaut Range", 20, "Sets the range that Andvaranaut will locate a treasure chest.");
             _serverConfigLocked = SyncedConfig("Config Sync", "Lock Config", false, new ConfigDescription("[Server Only] The configuration is locked and may not be changed by clients once it has been synced from the server. Only valid for server config, will have no effect on clients."));
+            SetItemDropChance = SyncedConfig("Balance", "Set Item Drop Chance", 0.15f, "The percent chance that a legendary item will be a set item. Min = 0, Max = 1");
 
             AbilityKeyCodes[0] = Config.Bind("Abilities", "Ability Hotkey 1", "g", "Hotkey for Ability Slot 1.");
             AbilityKeyCodes[1] = Config.Bind("Abilities", "Ability Hotkey 2", "h", "Hotkey for Ability Slot 2.");

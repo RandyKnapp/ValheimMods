@@ -80,12 +80,8 @@ namespace EpicLoot.Abilities
 
         public override void Awake()
         {
-            AnchorConfig = EpicLoot.AbilityBarAnchor;
-            PositionConfig = EpicLoot.AbilityBarPosition;
-            base.Awake();
-
             _horizontalLayoutGroup = GetComponent<HorizontalLayoutGroup>();
-            EnsureCorrectPosition();
+            base.Awake();
 
             for (var i = 0; i < 3; i++)
             {
@@ -129,6 +125,8 @@ namespace EpicLoot.Abilities
 
         public override void EnsureCorrectPosition()
         {
+            AnchorConfig = EpicLoot.AbilityBarAnchor;
+            PositionConfig = EpicLoot.AbilityBarPosition;
             base.EnsureCorrectPosition();
 
             if (_horizontalLayoutGroup.childAlignment == EpicLoot.AbilityBarLayoutAlignment.Value

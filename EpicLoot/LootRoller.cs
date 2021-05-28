@@ -339,7 +339,11 @@ namespace EpicLoot
                 
                 if (legendary == null)
                 {
-                    var availableLegendaries = UniqueLegendaryHelper.GetAvailableLegendaries(baseItem, magicItem);
+                    var roll = Random.Range(0.0f, 1.0f);
+                    var rollSetItem = roll < EpicLoot.SetItemDropChance.Value;
+                    Debug.LogWarning($"Rolling Legendary: set={rollSetItem} ({roll}/{EpicLoot.SetItemDropChance.Value})");
+                    var availableLegendaries = UniqueLegendaryHelper.GetAvailableLegendaries(baseItem, magicItem, rollSetItem);
+                    Debug.LogWarning($"Available Legendaries: {string.Join(", ", availableLegendaries.Select(x => x.ID))}");
                     _weightedLegendaryTable.Setup(availableLegendaries, x => x.SelectionWeight);
                     legendary = _weightedLegendaryTable.Roll();
                 }

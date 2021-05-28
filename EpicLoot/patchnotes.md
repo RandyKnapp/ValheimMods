@@ -1,7 +1,16 @@
 ## Version 0.8.0
+  * Magic Effect lookup is now optimized
+  * Removed debug function that was eating up frame-time
+  * Legendary effects work in multiplayer
+  * Fixed a nullref in Stagger Damage
+  * Fixed issues with Indestructible
+  * Water Walking no longer works in dungeons to prevent issues in Sunken Crypts
+  * Feint now works as intended
+  * Fixed a bug where level gaps in the loottables.json caused a nullref
+  * New legendary: Mjolnir
   * Added legendary set system
   * Added item ability system
-  * New Legendary Sets: Heimdall's Legacy
+  * New Legendary Sets: Heimdall's Legacy, Ragnar's Fury
 ## Version 0.7.10
   * Fix for Server Side Character crash bug
   * Increased epic and legendary drop rates at low tiers

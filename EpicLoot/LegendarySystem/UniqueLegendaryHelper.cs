@@ -15,7 +15,7 @@ namespace EpicLoot.LegendarySystem
 
         private static readonly Dictionary<string, LegendarySetInfo> _itemsToSetMap = new Dictionary<string, LegendarySetInfo>();
 
-        private static readonly LegendaryInfo GenericLegendaryInfo = new LegendaryInfo
+        public static readonly LegendaryInfo GenericLegendaryInfo = new LegendaryInfo
         {
             ID = nameof(GenericLegendaryInfo)
         };
@@ -60,9 +60,15 @@ namespace EpicLoot.LegendarySystem
             return legendaryInfo == GenericLegendaryInfo;
         }
 
-        public static IEnumerable<LegendaryInfo> GetAvailableLegendaries(ExtendedItemData baseItem, MagicItem magicItem)
+        public static IList<LegendaryInfo> GetAvailableLegendaries(ExtendedItemData baseItem, MagicItem magicItem, bool rollSetItem)
         {
-            return LegendaryInfo.Values.Where(x => !x.IsSetItem && x.Requirements.CheckRequirements(baseItem, magicItem)).AddItem(GenericLegendaryInfo);
+            var availableLegendaries = LegendaryInfo.Values.Where(x => x.IsSetItem == rollSetItem && x.Requirements.CheckRequirements(baseItem, magicItem)).AddItem(GenericLegendaryInfo).ToList();
+            if (rollSetItem && availableLegendaries.Count > 1)
+            {
+                availableLegendaries.Remove(UniqueLegendaryHelper.GenericLegendaryInfo);
+            }
+
+            return availableLegendaries;
         }
 
         public static MagicItemEffectDefinition.ValueDef GetLegendaryEffectValues(string legendaryID, string effectType)
