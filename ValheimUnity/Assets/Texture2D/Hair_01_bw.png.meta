@@ -1,8 +1,11 @@
 fileFormatVersion: 2
-guid: dca2dae7b3711aa4299fd66e55ce5c6e
+guid: 2d13b59722222c74ba524cc3e6534e00
+timeCreated: 1618245722
+licenseType: Free
 TextureImporter:
-  internalIDToNameTable: []
+  internalIDToNameTable: {}
   externalObjects: {}
+  usedFileIDs: []
   serializedVersion: 11
   mipmaps:
     mipMapMode: 0
@@ -27,11 +30,11 @@ TextureImporter:
   generateCubemap: 6
   cubemapConvolution: 0
   seamlessCubemap: 0
-  textureFormat: 12
+  textureFormat: 25
   maxTextureSize: 64
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 0
@@ -77,16 +80,16 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID:
     internalID: 0
     vertices: []
-    indices: 
+    indices:
     edges: []
     weights: []
     secondaryTextures: []
-  spritePackingTag: 
+  spritePackingTag:
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0
-  userData: 
-  assetBundleName: 
-  assetBundleVariant: 
+  userData:
+  assetBundleName:
+  assetBundleVariant:

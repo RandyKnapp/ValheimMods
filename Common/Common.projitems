@@ -9,6 +9,7 @@
     <Import_RootNamespace>Common</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)ConfigPositionedElement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Consumables.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GameObjectExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GotDestroyed.cs" />

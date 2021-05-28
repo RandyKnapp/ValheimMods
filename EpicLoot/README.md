@@ -27,6 +27,9 @@ Contibutions from the following modders was invaluable and appreciated:
   * [nanonull](https://github.com/nanonull) - bugfixes, lifesteal
   * [xPucTu4](https://github.com/xPucTu4) - bugfixes
 
+3D Models:
+  * "Fantasy Longsword" (https://skfb.ly/ontRY) by Faber is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+
 ## Installation
 
 Copy the contents of "files" to a new folder called "EpicLoot" in your BepInEx/plugins directory.

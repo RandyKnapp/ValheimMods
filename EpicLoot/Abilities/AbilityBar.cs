@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Common;
 using HarmonyLib;
 using UnityEngine;
 using UnityEngine.UI;
@@ -69,21 +70,20 @@ namespace EpicLoot.Abilities
         }
     }
 
-    public class AbilityBar : MonoBehaviour
+    public class AbilityBar : ConfigPositionedElement
     {
         public List<AbilityIcon> AbilityIcons = new List<AbilityIcon>();
 
-        protected RectTransform _parent;
-        protected RectTransform _rt;
         protected HorizontalLayoutGroup _horizontalLayoutGroup;
-        protected TextAnchor _currentAnchor;
         protected Player _player;
         protected AbilityController _abilityController;
 
-        public virtual void Awake()
+        public override void Awake()
         {
-            _parent = (RectTransform)transform.parent;
-            _rt = (RectTransform)transform;
+            AnchorConfig = EpicLoot.AbilityBarAnchor;
+            PositionConfig = EpicLoot.AbilityBarPosition;
+            base.Awake();
+
             _horizontalLayoutGroup = GetComponent<HorizontalLayoutGroup>();
             EnsureCorrectPosition();
 
@@ -97,8 +97,10 @@ namespace EpicLoot.Abilities
             }
         }
 
-        public virtual void Update()
+        public override void Update()
         {
+            base.Update();
+
             if (_player == null)
             {
                 _player = Player.m_localPlayer;
@@ -113,8 +115,6 @@ namespace EpicLoot.Abilities
                 return;
             }
 
-            EnsureCorrectPosition();
-
             for (var index = 0; index < AbilityIcons.Count; index++)
             {
                 var abilityIcon = AbilityIcons[index];
@@ -127,52 +127,18 @@ namespace EpicLoot.Abilities
             }
         }
 
-        private void EnsureCorrectPosition()
+        public override void EnsureCorrectPosition()
         {
-            if (_currentAnchor == EpicLoot.AbilityBarAnchor.Value 
-                && _rt.anchoredPosition == EpicLoot.AbilityBarPosition.Value
-                && _horizontalLayoutGroup.childAlignment == EpicLoot.AbilityBarLayoutAlignment.Value
-                && _horizontalLayoutGroup.spacing == EpicLoot.AbilityBarIconSpacing.Value)
+            base.EnsureCorrectPosition();
+
+            if (_horizontalLayoutGroup.childAlignment == EpicLoot.AbilityBarLayoutAlignment.Value
+                && Mathf.Approximately(_horizontalLayoutGroup.spacing, EpicLoot.AbilityBarIconSpacing.Value))
             {
                 return;
             }
 
             _horizontalLayoutGroup.childAlignment = EpicLoot.AbilityBarLayoutAlignment.Value;
             _horizontalLayoutGroup.spacing = EpicLoot.AbilityBarIconSpacing.Value;
-
-            _currentAnchor = EpicLoot.AbilityBarAnchor.Value;
-            switch (_currentAnchor)
-            {
-                case TextAnchor.UpperLeft:
-                    _rt.pivot = _rt.anchorMin = _rt.anchorMax = new Vector2(0, 1);
-                    break;
-                case TextAnchor.UpperCenter:
-                    _rt.pivot = _rt.anchorMin = _rt.anchorMax = new Vector2(0.5f, 1);
-                    break;
-                case TextAnchor.UpperRight:
-                    _rt.pivot = _rt.anchorMin = _rt.anchorMax = new Vector2(1, 1);
-                    break;
-                case TextAnchor.MiddleLeft:
-                    _rt.pivot = _rt.anchorMin = _rt.anchorMax = new Vector2(0, 0.5f);
-                    break;
-                case TextAnchor.MiddleCenter:
-                    _rt.pivot = _rt.anchorMin = _rt.anchorMax = new Vector2(0.5f, 0.5f);
-                    break;
-                case TextAnchor.MiddleRight:
-                    _rt.pivot = _rt.anchorMin = _rt.anchorMax = new Vector2(1, 0.5f);
-                    break;
-                case TextAnchor.LowerLeft:
-                    _rt.pivot = _rt.anchorMin = _rt.anchorMax = new Vector2(0, 0);
-                    break;
-                case TextAnchor.LowerCenter:
-                    _rt.pivot = _rt.anchorMin = _rt.anchorMax = new Vector2(0.5f, 0);
-                    break;
-                case TextAnchor.LowerRight:
-                    _rt.pivot = _rt.anchorMin = _rt.anchorMax = new Vector2(1, 0);
-                    break;
-            }
-
-            _rt.anchoredPosition = EpicLoot.AbilityBarPosition.Value;
         }
     }
 

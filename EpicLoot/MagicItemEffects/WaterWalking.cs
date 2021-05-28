@@ -68,6 +68,12 @@ namespace EpicLoot.MagicItemEffects
                         return true;
                     }
 
+                    if (__instance.m_body.position.y > 4500)
+                    {
+                        IsWaterWalking = false;
+                        return true;
+                    }
+
                     var waterLevel = WaterVolume.GetWaterLevel(__instance.m_body.position);
                     IsWaterWalking = waterLevel > __instance.m_body.position.y;
                     if (IsWaterWalking)
