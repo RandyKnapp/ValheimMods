@@ -3,7 +3,7 @@
 namespace EpicLoot.MagicItemEffects
 {
     //public void ModifyStaminaRegen(ref float staminaMultiplier)
-    [HarmonyPatch(typeof(SEMan), "ModifyStaminaRegen")]
+    [HarmonyPatch(typeof(SEMan), nameof(SEMan.ModifyStaminaRegen))]
     public static class ModifyStaminaRegen_SEMan_ModifyStaminaRegen_Patch
     {
         public static void Postfix(SEMan __instance, ref float staminaMultiplier)
@@ -14,11 +14,7 @@ namespace EpicLoot.MagicItemEffects
                 var regenValue = 0f;
                 ModifyWithLowHealth.Apply(player, MagicEffectType.ModifyStaminaRegen, effect =>
                 {
-					var items = player.GetMagicEquipmentWithEffect(effect);
-	                foreach (var item in items)
-	                {
-		                regenValue += item.GetMagicItem().GetTotalEffectValue(effect, 0.01f);
-	                }
+                    regenValue += player.GetTotalActiveMagicEffectValue(effect, 0.01f);
                 });
                 staminaMultiplier += regenValue;
             }

@@ -33,7 +33,7 @@ namespace EpicLoot.Crafting
         public static Text TabTitle;
         public static Coroutine UpdateTabPositionCoroutine;
 
-        [HarmonyPatch(typeof(InventoryGui), "Awake")]
+        [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.Awake))]
         public static class InventoryGui_Awake_Patch
         {
             public static void Postfix(InventoryGui __instance)
@@ -54,7 +54,7 @@ namespace EpicLoot.Crafting
             }
         }
 
-        [HarmonyPatch(typeof(InventoryGui), "OnDestroy")]
+        [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.OnDestroy))]
         public static class InventoryGui_OnDestroy_Patch
         {
             public static void Postfix(InventoryGui __instance)
@@ -71,7 +71,7 @@ namespace EpicLoot.Crafting
             }
         }
 
-        [HarmonyPatch(typeof(InventoryGui), "Hide")]
+        [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.Hide))]
         public static class InventoryGui_Hide_Patch
         {
             public static bool Prefix(InventoryGui __instance)
@@ -97,7 +97,7 @@ namespace EpicLoot.Crafting
             }
         }
 
-        [HarmonyPatch(typeof(InventoryGui), "UpdateCraftingPanel")]
+        [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.UpdateCraftingPanel))]
         public static class InventoryGui_UpdateCraftingPanel_Patch
         {
             public static bool Prefix(InventoryGui __instance, bool focusView)
@@ -255,7 +255,7 @@ namespace EpicLoot.Crafting
         }
 
         //public void UpdateRecipe(Player player, float dt)
-        [HarmonyPatch(typeof(InventoryGui), "UpdateRecipe")]
+        [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.UpdateRecipe))]
         public static class InventoryGui_UpdateRecipe_Patch
         {
             public static void Postfix(InventoryGui __instance, Player player, float dt)
@@ -283,7 +283,7 @@ namespace EpicLoot.Crafting
             }
         }
 
-        [HarmonyPatch(typeof(InventoryGui), "OnCraftPressed")]
+        [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.OnCraftPressed))]
         public static class InventoryGui_OnCraftPressed_Patch
         {
             public static bool Prefix(InventoryGui __instance)
@@ -300,7 +300,7 @@ namespace EpicLoot.Crafting
         }
 
         //public void DoCrafting(Player player)
-        [HarmonyPatch(typeof(InventoryGui), "DoCrafting")]
+        [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.DoCrafting))]
         public static class InventoryGui_DoCrafting_Patch
         {
             public static bool Prefix(InventoryGui __instance, Player player)
@@ -366,7 +366,7 @@ namespace EpicLoot.Crafting
         }
 
         //public void OnTabCraftPressed()
-        [HarmonyPatch(typeof(InventoryGui), "OnTabCraftPressed")]
+        [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.OnTabCraftPressed))]
         public static class InventoryGui_OnTabCraftPressed_Patch
         {
             public static bool Prefix(InventoryGui __instance)
@@ -377,7 +377,7 @@ namespace EpicLoot.Crafting
         }
 
         //public void OnTabUpgradePressed()
-        [HarmonyPatch(typeof(InventoryGui), "OnTabUpgradePressed")]
+        [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.OnTabUpgradePressed))]
         public static class InventoryGui_OnTabUpgradePressed_Patch
         {
             public static bool Prefix(InventoryGui __instance)
@@ -387,7 +387,7 @@ namespace EpicLoot.Crafting
             }
         }
 
-        [HarmonyPatch(typeof(InventoryGui), "UpdateRecipeGamepadInput")]
+        [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.UpdateRecipeGamepadInput))]
         public static class InventoryGui_UpdateRecipeGamepadInput_Patch
         {
             public static void Postfix(InventoryGui __instance)

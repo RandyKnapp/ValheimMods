@@ -126,12 +126,14 @@ namespace EpicLoot.Adventure
             treasureMapElementPrefab.gameObject.SetActive(false);
             var bountyElementPrefab = transform.Find("Bounties/AvailableBountiesPanel/ItemElement").gameObject.AddComponent<BountyListElement>();
             bountyElementPrefab.gameObject.SetActive(false);
+            var activeBountyElementPrefab = transform.Find("Bounties/ClaimableBountiesPanel/ItemElement").gameObject.AddComponent<BountyListElement>();
+            bountyElementPrefab.gameObject.SetActive(false);
 
             Panels.Add(new SecretStashListPanel(this, buyListPrefab));
             Panels.Add(new GambleListPanel(this, buyListPrefab));
             Panels.Add(new TreasureMapListPanel(this, treasureMapElementPrefab));
             Panels.Add(new AvailableBountiesListPanel(this, bountyElementPrefab));
-            Panels.Add(new ClaimableBountiesListPanel(this, bountyElementPrefab));
+            Panels.Add(new ClaimableBountiesListPanel(this, activeBountyElementPrefab));
 
             CoinsCount = transform.Find("Currencies/CoinsCount").GetComponent<Text>();
             ForestTokensCount = transform.Find("Currencies/ForestTokensCount").GetComponent<Text>();

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace EpicLoot.Crafting
 {
-    [HarmonyPatch(typeof(ItemDrop), "Awake")]
+    [HarmonyPatch(typeof(ItemDrop), nameof(ItemDrop.Awake))]
     public static class ItemDrop_Awake_Patch
     {
         public static void Postfix(ItemDrop __instance)
@@ -48,7 +48,7 @@ namespace EpicLoot.Crafting
         }
     }
 
-    [HarmonyPatch(typeof(Inventory), "Load")]
+    [HarmonyPatch(typeof(Inventory), nameof(Inventory.Load))]
     public static class Inventory_Load_Patch
     {
         public static void Postfix(Inventory __instance)

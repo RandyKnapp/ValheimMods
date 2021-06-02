@@ -328,10 +328,13 @@ namespace EpicLoot.Crafting
                 {
                     previousDurabilityPercent = recipe.FromItem.m_durability / recipe.FromItem.GetMaxDurability();
                 }
-                
+
+                var luckFactor = player.GetTotalActiveMagicEffectValue(MagicEffectType.Luck, 0.01f);
                 var magicItemComponent = recipe.FromItem.Extended().AddComponent<MagicItemComponent>();
-                var magicItem = LootRoller.RollMagicItem(SelectedRarity, recipe.FromItem.Extended());
+                var magicItem = LootRoller.RollMagicItem(SelectedRarity, recipe.FromItem.Extended(), luckFactor);
                 magicItemComponent.SetMagicItem(magicItem);
+
+                EquipmentEffectCache.Reset(player);
 
                 // Spend Resources
                 if (!player.NoCostCheat())
@@ -353,6 +356,8 @@ namespace EpicLoot.Crafting
                 }
 
                 SuccessDialog.Show(recipe.FromItem.Extended());
+                
+                MagicItemEffects.Indestructible.MakeItemIndestructible(recipe.FromItem);
 
                 Game.instance.GetPlayerProfile().m_playerStats.m_crafts++;
                 Gogan.LogEvent("Game", "Enchanted", recipe.FromItem.m_shared.m_name, 1);

@@ -3,7 +3,7 @@
 namespace EpicLoot.MagicItemEffects
 {
     //public override bool BlockAttack(HitData hit, Character attacker)
-    [HarmonyPatch(typeof(Humanoid), "BlockAttack")]
+    [HarmonyPatch(typeof(Humanoid), nameof(Humanoid.BlockAttack))]
     public static class ModifyBlockStaminaUse_Humanoid_BlockAttack_Patch
     {
         public static bool Override;
@@ -14,18 +14,14 @@ namespace EpicLoot.MagicItemEffects
             Override = false;
             OriginalValue = -1;
 
-            ItemDrop.ItemData currentBlockingItem = __instance.GetCurrentBlocker();
-            if (currentBlockingItem == null)
+            if (__instance.IsPlayer())
             {
-                return true;
-            }
+                var player = (Player)__instance;
 
-            if (currentBlockingItem.IsMagic() && currentBlockingItem.GetMagicItem().HasEffect(MagicEffectType.ModifyBlockStaminaUse))
-            {
                 Override = true;
                 OriginalValue = __instance.m_blockStaminaDrain;
 
-                var totalBlockStaminaUseMod = currentBlockingItem.GetMagicItem().GetTotalEffectValue(MagicEffectType.ModifyBlockStaminaUse, 0.01f);
+                var totalBlockStaminaUseMod = player.GetTotalActiveMagicEffectValue(MagicEffectType.ModifyBlockStaminaUse, 0.01f);
                 __instance.m_blockStaminaDrain *= 1.0f - totalBlockStaminaUseMod;
             }
 

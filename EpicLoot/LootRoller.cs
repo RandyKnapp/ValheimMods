@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Common;
 using EpicLoot.GatedItemType;
 using EpicLoot.LegendarySystem;
@@ -20,11 +21,11 @@ namespace EpicLoot
 
         public static event Action<ExtendedItemData, MagicItem> MagicItemGenerated;
 
-        private static WeightedRandomCollection<int[]> _weightedDropCountTable;
+        private static WeightedRandomCollection<KeyValuePair<int, float>> _weightedDropCountTable;
         private static WeightedRandomCollection<LootDrop> _weightedLootTable;
         private static WeightedRandomCollection<MagicItemEffectDefinition> _weightedEffectTable;
-        private static WeightedRandomCollection<KeyValuePair<int, int>> _weightedEffectCountTable;
-        private static WeightedRandomCollection<KeyValuePair<ItemRarity, int>> _weightedRarityTable;
+        private static WeightedRandomCollection<KeyValuePair<int, float>> _weightedEffectCountTable;
+        private static WeightedRandomCollection<KeyValuePair<ItemRarity, float>> _weightedRarityTable;
         private static WeightedRandomCollection<LegendaryInfo> _weightedLegendaryTable;
         public static int CheatEffectCount;
         public static bool CheatDisableGating;
@@ -37,11 +38,11 @@ namespace EpicLoot
             Config = lootConfig;
             
             var random = new System.Random();
-            _weightedDropCountTable = new WeightedRandomCollection<int[]>(random);
+            _weightedDropCountTable = new WeightedRandomCollection<KeyValuePair<int, float>>(random);
             _weightedLootTable = new WeightedRandomCollection<LootDrop>(random);
             _weightedEffectTable = new WeightedRandomCollection<MagicItemEffectDefinition>(random);
-            _weightedEffectCountTable = new WeightedRandomCollection<KeyValuePair<int, int>>(random);
-            _weightedRarityTable = new WeightedRandomCollection<KeyValuePair<ItemRarity, int>>(random);
+            _weightedEffectCountTable = new WeightedRandomCollection<KeyValuePair<int, float>>(random);
+            _weightedRarityTable = new WeightedRandomCollection<KeyValuePair<ItemRarity, float>>(random);
             _weightedLegendaryTable = new WeightedRandomCollection<LegendaryInfo>(random);
 
             ItemSets.Clear();
@@ -188,20 +189,22 @@ namespace EpicLoot
                 return results;
             }
 
+            var luckFactor = GetLuckFactor(dropPoint);
+
             var drops = GetDropsForLevel(lootTable, level);
-            if (ArrayUtils.IsNullOrEmpty(drops))
+            if (drops.Count == 0)
             {
                 return results;
             }
 
             if (EpicLoot.AlwaysDropCheat)
             {
-                drops = drops.Where(x => x.Length > 0 && x[0] != 0).ToArray();
+                drops = drops.Where(x => x.Key > 0).ToList();
             }
 
-            _weightedDropCountTable.Setup(drops, dropPair => dropPair.Length == 2 ? dropPair[1] : 1);
+            _weightedDropCountTable.Setup(drops, dropPair => dropPair.Value);
             var dropCountRollResult = _weightedDropCountTable.Roll();
-            var dropCount = dropCountRollResult != null && dropCountRollResult.Length >= 1 ? dropCountRollResult[0] : 0;
+            var dropCount = dropCountRollResult.Key;
             if (dropCount == 0)
             {
                 return results;
@@ -218,7 +221,7 @@ namespace EpicLoot
                     EpicLoot.LogError($"Loot drop was null! RollLootTableInternal({lootTable.Object}, {level}, {objectName})");
                     continue;
                 }
-                var lootDrop = ResolveLootDrop(ld, ld.Rarity);
+                var lootDrop = ResolveLootDrop(ld);
                 var itemID = CheatDisableGating ? lootDrop.Item : GatedItemTypeHelper.GetGatedItemID(lootDrop.Item);
 
                 var itemPrefab = ObjectDB.instance.GetItemPrefab(itemID);
@@ -237,7 +240,7 @@ namespace EpicLoot
                 {
                     var itemData = new ExtendedItemData(itemDrop.m_itemData);
                     var magicItemComponent = itemData.AddComponent<MagicItemComponent>();
-                    var magicItem = RollMagicItem(lootDrop, itemData);
+                    var magicItem = RollMagicItem(lootDrop, itemData, luckFactor);
                     if (CheatForceMagicEffect)
                     {
                         AddDebugMagicEffects(magicItem);
@@ -246,6 +249,7 @@ namespace EpicLoot
                     magicItemComponent.SetMagicItem(magicItem);
 
                     itemDrop.m_itemData = itemData;
+                    itemDrop.Save();
                     InitializeMagicItem(itemData);
 
                     MagicItemGenerated?.Invoke(itemData, magicItem);
@@ -257,9 +261,9 @@ namespace EpicLoot
             return results;
         }
 
-        private static LootDrop ResolveLootDrop(LootDrop lootDrop, int[] rarityOverride)
+        private static LootDrop ResolveLootDrop(LootDrop lootDrop)
         {
-            var result = new LootDrop { Item = lootDrop.Item, Rarity = lootDrop.Rarity, Weight = lootDrop.Weight };
+            var result = new LootDrop { Item = lootDrop.Item, Rarity = ArrayUtils.Copy(lootDrop.Rarity), Weight = lootDrop.Weight };
             var needsResolve = true;
             while (needsResolve)
             {
@@ -270,10 +274,12 @@ namespace EpicLoot
                         EpicLoot.LogError($"Tried to roll using ItemSet ({itemSet.Name}) but its loot list was empty!");
                     }
                     _weightedLootTable.Setup(itemSet.Loot, x => x.Weight);
-                    result = _weightedLootTable.Roll();
-                    if (!ArrayUtils.IsNullOrEmpty(rarityOverride))
+                    var itemSetResult = _weightedLootTable.Roll();
+                    result.Item = itemSetResult.Item;
+                    result.Weight = itemSetResult.Weight;
+                    if (ArrayUtils.IsNullOrEmpty(result.Rarity))
                     {
-                        result.Rarity = rarityOverride;
+                        result.Rarity = ArrayUtils.Copy(itemSetResult.Rarity);
                     }
                 }
                 else if (IsLootTableRefence(result.Item, out var lootList))
@@ -283,10 +289,12 @@ namespace EpicLoot
                         EpicLoot.LogError($"Tried to roll using loot table reference ({result.Item}) but its loot list was empty!");
                     }
                     _weightedLootTable.Setup(lootList, x => x.Weight);
-                    result = _weightedLootTable.Roll();
-                    if (ArrayUtils.IsNullOrEmpty(rarityOverride))
+                    var referenceResult = _weightedLootTable.Roll();
+                    result.Item = referenceResult.Item;
+                    result.Weight = referenceResult.Weight;
+                    if (ArrayUtils.IsNullOrEmpty(result.Rarity))
                     {
-                        result.Rarity = rarityOverride;
+                        result.Rarity = ArrayUtils.Copy(referenceResult.Rarity);
                     }
                 }
                 else
@@ -330,13 +338,13 @@ namespace EpicLoot
             return false;
         }
 
-        public static MagicItem RollMagicItem(LootDrop lootDrop, ExtendedItemData baseItem)
+        public static MagicItem RollMagicItem(LootDrop lootDrop, ExtendedItemData baseItem, float luckFactor)
         {
-            var rarity = RollItemRarity(lootDrop);
-            return RollMagicItem(rarity, baseItem);
+            var rarity = RollItemRarity(lootDrop, luckFactor);
+            return RollMagicItem(rarity, baseItem, luckFactor);
         }
 
-        public static MagicItem RollMagicItem(ItemRarity rarity, ExtendedItemData baseItem)
+        public static MagicItem RollMagicItem(ItemRarity rarity, ExtendedItemData baseItem, float luckFactor)
         {
             var cheatLegendary = !string.IsNullOrEmpty(CheatForceLegendary);
             if (cheatLegendary)
@@ -358,15 +366,30 @@ namespace EpicLoot
                 
                 if (legendary == null)
                 {
-                    var availableLegendaries = UniqueLegendaryHelper.GetAvailableLegendaries(baseItem, magicItem);
+                    var roll = Random.Range(0.0f, 1.0f);
+                    var rollSetItem = roll < EpicLoot.SetItemDropChance.Value;
+                    Debug.LogWarning($"Rolling Legendary: set={rollSetItem} ({roll}/{EpicLoot.SetItemDropChance.Value})");
+                    var availableLegendaries = UniqueLegendaryHelper.GetAvailableLegendaries(baseItem, magicItem, rollSetItem);
+                    Debug.LogWarning($"Available Legendaries: {string.Join(", ", availableLegendaries.Select(x => x.ID))}");
                     _weightedLegendaryTable.Setup(availableLegendaries, x => x.SelectionWeight);
                     legendary = _weightedLegendaryTable.Roll();
+                }
+
+                if (legendary.IsSetItem)
+                {
+                    var setID = UniqueLegendaryHelper.GetSetForLegendaryItem(legendary);
+                    magicItem.SetID = setID;
                 }
 
                 if (!UniqueLegendaryHelper.IsGenericLegendary(legendary))
                 {
                     magicItem.LegendaryID = legendary.ID;
                     magicItem.DisplayName = legendary.Name;
+
+                    if (legendary.GuaranteedEffectCount > 0)
+                    {
+                        effectCount = legendary.GuaranteedEffectCount;
+                    }
 
                     foreach (var guaranteedMagicEffect in legendary.GuaranteedMagicEffects)
                     {
@@ -424,18 +447,18 @@ namespace EpicLoot
             return _weightedEffectCountTable.Roll().Key;
         }
 
-        public static List<KeyValuePair<int, int>> GetEffectCountsPerRarity(ItemRarity rarity)
+        public static List<KeyValuePair<int, float>> GetEffectCountsPerRarity(ItemRarity rarity)
         {
             switch (rarity)
             {
                 case ItemRarity.Magic:
-                    return Config.MagicEffectsCount.Magic.Select(x => new KeyValuePair<int, int>(x[0], x[1])).ToList();
+                    return Config.MagicEffectsCount.Magic.Select(x => new KeyValuePair<int, float>((int)x[0], x[1])).ToList();
                 case ItemRarity.Rare:
-                    return Config.MagicEffectsCount.Rare.Select(x => new KeyValuePair<int, int>(x[0], x[1])).ToList();
+                    return Config.MagicEffectsCount.Rare.Select(x => new KeyValuePair<int, float>((int)x[0], x[1])).ToList();
                 case ItemRarity.Epic:
-                    return Config.MagicEffectsCount.Epic.Select(x => new KeyValuePair<int, int>(x[0], x[1])).ToList();
+                    return Config.MagicEffectsCount.Epic.Select(x => new KeyValuePair<int, float>((int)x[0], x[1])).ToList();
                 case ItemRarity.Legendary:
-                    return Config.MagicEffectsCount.Legendary.Select(x => new KeyValuePair<int, int>(x[0], x[1])).ToList();
+                    return Config.MagicEffectsCount.Legendary.Select(x => new KeyValuePair<int, float>((int)x[0], x[1])).ToList();
                 default:
                     throw new ArgumentOutOfRangeException(nameof(rarity), rarity, null);
             }
@@ -456,11 +479,7 @@ namespace EpicLoot
                 }
             }
 
-            return new MagicItemEffect()
-            {
-                EffectType = effectDef.Type,
-                EffectValue = value
-            };
+            return new MagicItemEffect(effectDef.Type, value);
         }
 
         public static List<MagicItemEffect> RollEffects(List<MagicItemEffectDefinition> availableEffects, ItemRarity itemRarity, int count, bool removeOnSelect = true)
@@ -483,23 +502,30 @@ namespace EpicLoot
             return results;
         }
 
-        public static ItemRarity RollItemRarity(LootDrop lootDrop)
+        public static ItemRarity RollItemRarity(LootDrop lootDrop, float luckFactor)
         {
             if (lootDrop.Rarity == null || lootDrop.Rarity.Length == 0)
             {
                 return ItemRarity.Magic;
             }
 
-            var rarityWeights = new Dictionary<ItemRarity, int>()
-            {
-                { ItemRarity.Magic, lootDrop.Rarity.Length >= 1 ? lootDrop.Rarity[0] : 0 },
-                { ItemRarity.Rare, lootDrop.Rarity.Length >= 2 ? lootDrop.Rarity[1] : 0 },
-                { ItemRarity.Epic, lootDrop.Rarity.Length >= 3 ? lootDrop.Rarity[2] : 0 },
-                { ItemRarity.Legendary, lootDrop.Rarity.Length >= 4 ? lootDrop.Rarity[3] : 0 }
-            };
+            var rarityWeights = GetRarityWeights(lootDrop.Rarity, luckFactor);
 
             _weightedRarityTable.Setup(rarityWeights, x => x.Value);
             return _weightedRarityTable.Roll().Key;
+        }
+
+        public static Dictionary<ItemRarity, float> GetRarityWeights(float[] rarity, float luckFactor)
+        {
+            var rarityWeights = new Dictionary<ItemRarity, float>()
+            {
+                { ItemRarity.Magic, rarity.Length >= 1 ? rarity[0] : 0 },
+                { ItemRarity.Rare, rarity.Length >= 2 ? rarity[1] : 0 },
+                { ItemRarity.Epic, rarity.Length >= 3 ? rarity[2] : 0 },
+                { ItemRarity.Legendary, rarity.Length >= 4 ? rarity[3] : 0 }
+            };
+
+            return ModifyRarityByLuck(rarityWeights, luckFactor);
         }
 
         public static List<LootTable> GetLootTable(string objectName)
@@ -515,7 +541,7 @@ namespace EpicLoot
             return results;
         }
 
-        public static int[][] GetDropsForLevel([NotNull] LootTable lootTable, int level, bool useNextHighestIfNotPresent = true)
+        public static List<KeyValuePair<int, float>> GetDropsForLevel([NotNull] LootTable lootTable, int level, bool useNextHighestIfNotPresent = true)
         {
             if (level == 3 && !ArrayUtils.IsNullOrEmpty(lootTable.Drops3))
             {
@@ -523,7 +549,7 @@ namespace EpicLoot
                 {
                     EpicLoot.LogWarning($"Duplicated leveled drops for ({lootTable.Object} lvl {level}), using 'Drops{level}'");
                 }
-                return lootTable.Drops3;
+                return ToDropList(lootTable.Drops3);
             }
             
             if ((level == 2 || level == 3) && !ArrayUtils.IsNullOrEmpty(lootTable.Drops2))
@@ -532,7 +558,7 @@ namespace EpicLoot
                 {
                     EpicLoot.LogWarning($"Duplicated leveled drops for ({lootTable.Object} lvl {level}), using 'Drops{level}'");
                 }
-                return lootTable.Drops2;
+                return ToDropList(lootTable.Drops2);
             }
 
             if (level <= 3 && !ArrayUtils.IsNullOrEmpty(lootTable.Drops))
@@ -541,7 +567,7 @@ namespace EpicLoot
                 {
                     EpicLoot.LogWarning($"Duplicated leveled drops for ({lootTable.Object} lvl {level}), using 'Drops'");
                 }
-                return lootTable.Drops;
+                return ToDropList(lootTable.Drops);
             }
 
             for (var lvl = level; lvl >= 1; --lvl)
@@ -549,7 +575,7 @@ namespace EpicLoot
                 var found = lootTable.LeveledLoot.Find(x => x.Level == lvl);
                 if (found != null && !ArrayUtils.IsNullOrEmpty(found.Drops))
                 {
-                    return found.Drops.ToArray();
+                    return ToDropList(found.Drops);
                 }
 
                 if (!useNextHighestIfNotPresent)
@@ -560,6 +586,11 @@ namespace EpicLoot
 
             EpicLoot.LogError($"Could not find any leveled drops for ({lootTable.Object} lvl {level}), but a loot table exists for this object!");
             return null;
+        }
+
+        private static List<KeyValuePair<int, float>> ToDropList(float[][] drops)
+        {
+            return drops.Select(x => new KeyValuePair<int, float>((int) x[0], x[1])).ToList();
         }
 
         public static LootDrop[] GetLootForLevel([NotNull] LootTable lootTable, int level, bool useNextHighestIfNotPresent = true)
@@ -648,6 +679,102 @@ namespace EpicLoot
                 EpicLoot.Log($"AddDebugMagicEffect {ForcedMagicEffect}");
                 item.Effects.Add(RollEffect(MagicItemEffectDefinitions.Get(ForcedMagicEffect), item.Rarity));
             }
+        }
+
+        public static float GetLuckFactor(Vector3 fromPoint)
+        {
+            var luckFactor = EpicLoot.GetWorldLuckFactor();
+            var players = new List<Player>();
+            Player.GetPlayersInRange(fromPoint, 100f, players);
+
+            if (players.Count > 0)
+            {
+                var totalLuckFactor = players
+                    .Select(x => x.GetTotalActiveMagicEffectValue(MagicEffectType.Luck, 0.01f))
+                    .DefaultIfEmpty(0)
+                    .Sum();
+                luckFactor += totalLuckFactor;
+            }
+
+            return luckFactor;
+        }
+
+        public static Dictionary<ItemRarity, float> ModifyRarityByLuck(IReadOnlyDictionary<ItemRarity, float> rarityWeights, float luckFactor = 0)
+        {
+            var results = new Dictionary<ItemRarity, float>();
+            for (var rarity = ItemRarity.Magic; rarity <= ItemRarity.Legendary; rarity++)
+            {
+                var skewFactor = GetSkewFactor(rarity);
+                results.Add(rarity, rarityWeights[rarity] * GetSkewedLuckFactor(luckFactor, skewFactor));
+            }
+
+            return results;
+        }
+
+        public static float GetSkewFactor(ItemRarity rarity)
+        {
+            switch (rarity)
+            {
+                case ItemRarity.Magic: return -0.2f;
+                case ItemRarity.Rare: return 0.0f;
+                case ItemRarity.Epic: return 0.2f;
+                case ItemRarity.Legendary: return 1;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(rarity), rarity, null);
+            }
+        }
+
+        public static float GetSkewedLuckFactor(float luckFactor, float skewFactor)
+        {
+            return Mathf.Max(0, 1 + luckFactor * skewFactor);
+        }
+
+        public static void PrintLuckTest(string lootTableName, float luckFactor)
+        {
+            var lootTable = GetLootTable(lootTableName)[0];
+            var lootDrop = GetLootForLevel(lootTable, 1)[0];
+            lootDrop = ResolveLootDrop(lootDrop);
+            var rarityBase = GetRarityWeights(lootDrop.Rarity, 0);
+            var rarityLuck = GetRarityWeights(lootDrop.Rarity, luckFactor);
+
+            var sb = new StringBuilder();
+            sb.AppendLine($"Luck Test: {lootTableName}, {luckFactor}");
+            sb.AppendLine("Rarity     Base    %       Luck    %       Diff    Factor");
+            sb.AppendLine("=====================================================");
+
+            var rarityBaseTotal = rarityBase.Sum(x => x.Value);
+            var rarityLuckTotal = rarityLuck.Sum(x => x.Value);
+            for (var index = 0; index < 4; index++)
+            {
+                var rarity = (ItemRarity)index;
+                var baseWeight = rarityBase[rarity];
+                var luckWeight = rarityLuck[rarity];
+
+                var basePercent = baseWeight / rarityBaseTotal;
+                var luckPercent = luckWeight / rarityLuckTotal;
+                sb.AppendFormat("{0}{1}{2}{3}{4}{5}{6}\n",
+                    rarity.ToString().PadRight(11),
+                    baseWeight.ToString("0.##").PadRight(8),
+                    basePercent.ToString("0.##%").PadRight(8),
+                    luckWeight.ToString("0.##").PadRight(8),
+                    luckPercent.ToString("0.##%").PadRight(8),
+                    (luckPercent - basePercent).ToString("+0.##%;-0.##%").PadRight(8),
+                    (luckPercent / basePercent).ToString("0.##").PadRight(8));
+            }
+
+            Debug.LogWarning(sb.ToString());
+        }
+
+        public static void PrintLootResolutionTest(string lootTableName, int level, int itemIndex)
+        {
+            Debug.LogWarning($"{lootTableName}:{level}:{itemIndex}");
+
+            var lootTable = GetLootTable(lootTableName)[0];
+            var lootDrop = GetLootForLevel(lootTable, level)[itemIndex];
+            lootDrop = ResolveLootDrop(lootDrop);
+            var rarity = lootDrop.Rarity;
+
+            Debug.LogWarning($"> rarity=[ {rarity[0]}, {rarity[1]}, {rarity[2]}, {rarity[3]} ]");
         }
     }
 }

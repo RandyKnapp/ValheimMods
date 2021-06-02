@@ -11,6 +11,7 @@ namespace EpicLoot.Adventure
         public Text NameText;
         public Text RewardTextIron;
         public Text RewardTextGold;
+        public Text RewardTextCoin;
         public Button Button;
         public UITooltip Tooltip;
         public GameObject RewardLabel;
@@ -34,10 +35,11 @@ namespace EpicLoot.Adventure
             Icon = transform.Find("Icon").GetComponent<Image>();
             NameText = transform.Find("Name").GetComponent<Text>();
             RewardLabel = transform.Find("Rewards/RewardLabel").gameObject;
-            InProgressLabel = transform.Find("Rewards/InProgressLabel").gameObject;
-            CompleteLabel = transform.Find("Rewards/CompleteLabel").gameObject;
+            InProgressLabel = transform.Find("Status/InProgressLabel").gameObject;
+            CompleteLabel = transform.Find("Status/CompleteLabel").gameObject;
             RewardTextIron = transform.Find("Rewards/IronElement/Amount").GetComponent<Text>();
             RewardTextGold = transform.Find("Rewards/GoldElement/Amount").GetComponent<Text>();
+            RewardTextCoin = transform.Find("Rewards/CoinElement/Amount").GetComponent<Text>();
 
             var iconMaterial = StoreGui.instance.m_listElement.transform.Find("icon").GetComponent<Image>().material;
             if (iconMaterial != null)
@@ -60,6 +62,8 @@ namespace EpicLoot.Adventure
             RewardTextIron.transform.parent.gameObject.SetActive(BountyInfo.RewardIron > 0);
             RewardTextGold.text = BountyInfo.RewardGold.ToString();
             RewardTextGold.transform.parent.gameObject.SetActive(BountyInfo.RewardGold > 0);
+            RewardTextCoin.text = BountyInfo.RewardCoins.ToString();
+            RewardTextCoin.transform.parent.gameObject.SetActive(BountyInfo.RewardCoins > 0);
 
             Icon.sprite = AdventureDataManager.GetTrophyIconForMonster(BountyInfo.Target.MonsterID, BountyInfo.RewardGold > 0);
             Icon.color = canUse ? Color.white : new Color(1.0f, 0.0f, 1.0f, 0.0f);
@@ -104,6 +108,10 @@ namespace EpicLoot.Adventure
             if (BountyInfo.RewardGold > 0)
             {
                 _sb.AppendLine($"  {MerchantPanel.GetGoldBountyTokenName()} x{BountyInfo.RewardGold}");
+            }
+            if (BountyInfo.RewardCoins > 0)
+            {
+                _sb.AppendLine($"  {MerchantPanel.GetCoinsName()} x{BountyInfo.RewardCoins}");
             }
 
             _sb.AppendLine();

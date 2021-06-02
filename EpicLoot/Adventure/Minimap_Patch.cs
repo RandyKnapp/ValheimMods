@@ -112,7 +112,7 @@ namespace EpicLoot.Adventure
                     var position = bounty.Position + bounty.MinimapCircleOffset;
                     var area = __instance.AddPin(position, Minimap.PinType.EventArea, string.Empty, false, false);
                     area.m_worldSize = AdventureDataManager.Config.TreasureMap.MinimapAreaRadius * AreaScale;
-                    var label = Localization.instance.Localize("$mod_epicloot_bounty_minimappin", AdventureDataManager.GetBountyName(bounty));
+                    var label = Localization.instance.Localize("$mod_epicloot_bounties_minimappin", AdventureDataManager.GetBountyName(bounty));
                     var pin = __instance.AddPin(position, EpicLoot.BountyPinType, label, false, false);
 
                     if (DebugMode)

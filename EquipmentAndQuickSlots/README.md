@@ -12,7 +12,7 @@ It is NOT compatible with 1.x versions and 1.x must be uninstalled correctly bef
 6. Run the game again
 7. You should see your new empty slots in the inventory and be able to re-equip your items
 
-# Equipment and Quick Slots v2.0.5
+# Equipment and Quick Slots v2.0.9
 ##### by RandyKnapp
 Give equipped items their own dedicated inventory slots, plus three more hotkeyable quick slots.
 
@@ -47,3 +47,14 @@ Copy EquipmentAndQuickSlots.dll into the BepInEx/plugins folder
 	* Fixed bug preventing new characters from being created
   * 2.0.5
     * Put in a potential fix for "losing items" on tombstone pickup (they're in your inventory, just outside the grid. This version should fix that.)
+  * 2.0.6
+    * Fix for double upgrade when using EpicLoot with EAQS
+	* Fix for items lost in tombstone by [jsza](https://github.com/jsza).
+  * 2.0.7
+	* (This entire update provided by [jsza](https://github.com/jsza))
+	* Fix a variety of equipment bugs
+	* Fix a variety of pickup/stacking bugs
+  * 2.0.8
+    * Had to update the number to re-upload to ThunderStore
+  * 2.0.9
+	* Quick slots position is now configurable

@@ -113,7 +113,7 @@ namespace EpicLoot
             return _sb.ToString();
         }
 
-        public bool CheckRequirements([NotNull] ExtendedItemData itemData, [NotNull] MagicItem magicItem, string magicEffectType = null)
+        public bool CheckRequirements([NotNull] ItemDrop.ItemData itemData, [NotNull] MagicItem magicItem, string magicEffectType = null)
         {
             if (NoRoll)
             {
@@ -247,6 +247,7 @@ namespace EpicLoot
         public string Type { get; set; }
 
         public string DisplayText = "";
+        public string Description = "";
         public MagicItemEffectRequirements Requirements = new MagicItemEffectRequirements();
         public ValuesPerRarityDef ValuesPerRarity = new ValuesPerRarityDef();
         public float SelectionWeight = 1;
@@ -256,6 +257,7 @@ namespace EpicLoot
         public List<string> Suffixes = new List<string>();
         public string EquipFx;
         public FxAttachMode EquipFxMode = FxAttachMode.Player;
+        public string Ability;
 
         public List<ItemDrop.ItemData.ItemType> GetAllowedItemTypes()
         {

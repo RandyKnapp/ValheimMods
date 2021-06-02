@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace EpicLoot
 {
-    [HarmonyPatch(typeof(InventoryGui), "DoCrafting")]
+    [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.DoCrafting))]
     public static class InventoryGui_DoCrafting_Patch
     {
         public static bool Prefix(InventoryGui __instance, Player player, bool __runOriginal)

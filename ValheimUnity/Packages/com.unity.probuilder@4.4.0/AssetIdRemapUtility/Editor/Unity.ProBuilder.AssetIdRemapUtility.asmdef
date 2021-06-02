@@ -1,0 +1,10 @@
+{
+    "name": "Unity.ProBuilder.AssetIdRemapUtility",
+    "references": [],
+    "optionalUnityReferences": [],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false
+}

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Common;
 using HarmonyLib;
 using UnityEngine;
 using UnityEngine.UI;
@@ -133,11 +134,14 @@ namespace EquipmentAndQuickSlots
 
             if (EquipmentAndQuickSlots.QuickSlotsEnabled.Value && hotkeyBar.transform.parent.Find("QuickSlotsHotkeyBar") == null)
             {
-                var quickslotsHotkeyBar = Object.Instantiate(hotkeyBar.gameObject, __instance.m_healthBarRoot, true);
+                var quickslotsHotkeyBar = Object.Instantiate(hotkeyBar.gameObject, __instance.m_rootObject.transform, true);
                 quickslotsHotkeyBar.name = "QuickSlotsHotkeyBar";
-                (quickslotsHotkeyBar.transform as RectTransform).anchoredPosition = new Vector2(55, -120);
-                quickslotsHotkeyBar.transform.localEulerAngles = new Vector3(0.0f, 0.0f, -90f);
                 quickslotsHotkeyBar.GetComponent<HotkeyBar>().m_selected = -1;
+
+                var configPositionedElement = quickslotsHotkeyBar.AddComponent<ConfigPositionedElement>();
+                configPositionedElement.PositionConfig = EquipmentAndQuickSlots.QuickSlotsPosition;
+                configPositionedElement.AnchorConfig = EquipmentAndQuickSlots.QuickSlotsAnchor;
+                configPositionedElement.EnsureCorrectPosition();
             }
         }
     }

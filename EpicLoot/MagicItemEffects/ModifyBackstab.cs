@@ -1,22 +1,23 @@
 ﻿using HarmonyLib;
+// ReSharper disable UnusedMember.Local
 
 namespace EpicLoot.MagicItemEffects
 {
-    [HarmonyPatch(typeof(Attack), "DoAreaAttack")]
+    [HarmonyPatch(typeof(Attack), nameof(Attack.DoAreaAttack))]
     public static class ModifyBackstab_Attack_DoAreaAttack_Patch
     {
         private static bool Prefix(Attack __instance) { return ModifyBackstabPatchHelper.DoPrefix(__instance); }
         private static void Postfix(Attack __instance) { ModifyBackstabPatchHelper.DoPostfix(__instance); }
     }
 
-    [HarmonyPatch(typeof(Attack), "DoMeleeAttack")]
+    [HarmonyPatch(typeof(Attack), nameof(Attack.DoMeleeAttack))]
     public static class ModifyBackstab_Attack_DoMeleeAttack_Patch
     {
         private static bool Prefix(Attack __instance) { return ModifyBackstabPatchHelper.DoPrefix(__instance); }
         private static void Postfix(Attack __instance) { ModifyBackstabPatchHelper.DoPostfix(__instance); }
     }
 
-    [HarmonyPatch(typeof(Attack), "FireProjectileBurst")]
+    [HarmonyPatch(typeof(Attack), nameof(Attack.FireProjectileBurst))]
     public static class ModifyBackstab_Attack_FireProjectileBurst_Patch
     {
         private static bool Prefix(Attack __instance) { return ModifyBackstabPatchHelper.DoPrefix(__instance); }
@@ -33,18 +34,18 @@ namespace EpicLoot.MagicItemEffects
             Override = false;
             OriginalValue = -1;
 
-            ItemDrop.ItemData weapon = __instance.m_weapon;
+            var weapon = __instance.m_weapon;
             if (weapon == null)
             {
                 return true;
             }
 
-            if (weapon.HasMagicEffect(MagicEffectType.ModifyBackstab))
+            if (__instance.m_character is Player player && player.HasActiveMagicEffect(MagicEffectType.ModifyBackstab))
             {
                 Override = true;
                 OriginalValue = weapon.m_shared.m_backstabBonus;
 
-                var totalBackstabMod = weapon.GetMagicItem().GetTotalEffectValue(MagicEffectType.ModifyBackstab, 0.01f);
+                var totalBackstabMod = player.GetTotalActiveMagicEffectValue(MagicEffectType.ModifyBackstab, 0.01f);
                 weapon.m_shared.m_backstabBonus *= 1.0f + totalBackstabMod;
             }
 
@@ -53,7 +54,7 @@ namespace EpicLoot.MagicItemEffects
 
         public static void DoPostfix(Attack __instance)
         {
-            ItemDrop.ItemData weapon = __instance.m_weapon;
+            var weapon = __instance.m_weapon;
             if (weapon != null && Override)
             {
                 weapon.m_shared.m_backstabBonus = OriginalValue;

@@ -44,8 +44,8 @@ namespace EpicLoot.Adventure
         public int ForestTokenGamblesCount;
         public int IronBountyGamblesCount;
         public int GoldBountyGamblesCount;
-        public int[] GambleRarityChance = new int[5];
-        public int[][] GambleRarityChanceByRarity = { new int[5], new int[5], new int[5], new int[5] };
+        public float[] GambleRarityChance = new float[5];
+        public float[][] GambleRarityChanceByRarity = { new float[5], new float[5], new float[5], new float[5] };
         public float ForestTokenGambleCoinsCost = 1.0f;
         public int ForestTokenGambleCostMin = 5;
         public int ForestTokenGambleCostMax = 10;
@@ -100,6 +100,7 @@ namespace EpicLoot.Adventure
         public string TargetID;
         public int RewardGold;
         public int RewardIron;
+        public int RewardCoins;
         public List<BountyTargetAddConfig> Adds = new List<BountyTargetAddConfig>();
     }
 

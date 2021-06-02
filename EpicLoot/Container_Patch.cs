@@ -4,7 +4,7 @@ using HarmonyLib;
 namespace EpicLoot
 {
     //public void AddDefaultItems()
-    [HarmonyPatch(typeof(Container), "AddDefaultItems")]
+    [HarmonyPatch(typeof(Container), nameof(Container.AddDefaultItems))]
     public static class Container_AddDefaultItems_Patch
     {
         public static void Postfix(Container __instance)

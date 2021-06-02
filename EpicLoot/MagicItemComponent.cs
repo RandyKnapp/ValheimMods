@@ -1,15 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Common;
 using EpicLoot.Crafting;
 using EpicLoot.LegendarySystem;
 using ExtendedItemDataFramework;
 using fastJSON;
 using HarmonyLib;
+using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
+// ReSharper disable RedundantAssignment
 
 namespace EpicLoot
 {
@@ -19,7 +22,7 @@ namespace EpicLoot
 
         private static readonly JSONParameters _saveParams = new JSONParameters { UseExtensions = false };
 
-        public MagicItemComponent(ExtendedItemData parent) 
+        public MagicItemComponent(ExtendedItemData parent)
             : base(typeof(MagicItemComponent).AssemblyQualifiedName, parent)
         {
         }
@@ -59,7 +62,7 @@ namespace EpicLoot
             {
                 var magicItem = new MagicItem();
                 magicItem.Rarity = ItemRarity.Rare;
-                magicItem.Effects.Add(new MagicItemEffect() { EffectType = MagicEffectType.DvergerCirclet });
+                magicItem.Effects.Add(new MagicItemEffect(MagicEffectType.DvergerCirclet));
                 magicItem.TypeNameOverride = "circlet";
 
                 itemdata.ReplaceComponent<MagicItemComponent>().MagicItem = magicItem;
@@ -68,7 +71,7 @@ namespace EpicLoot
             {
                 var magicItem = new MagicItem();
                 magicItem.Rarity = ItemRarity.Rare;
-                magicItem.Effects.Add(new MagicItemEffect() { EffectType = MagicEffectType.Megingjord });
+                magicItem.Effects.Add(new MagicItemEffect(MagicEffectType.Megingjord));
                 magicItem.TypeNameOverride = "belt";
 
                 itemdata.ReplaceComponent<MagicItemComponent>().MagicItem = magicItem;
@@ -76,8 +79,8 @@ namespace EpicLoot
             else if (itemdata.m_shared.m_name == "$item_wishbone")
             {
                 var magicItem = new MagicItem();
-                magicItem.Rarity = ItemRarity.Rare;
-                magicItem.Effects.Add(new MagicItemEffect() { EffectType = MagicEffectType.Wishbone });
+                magicItem.Rarity = ItemRarity.Epic;
+                magicItem.Effects.Add(new MagicItemEffect(MagicEffectType.Wishbone));
                 magicItem.TypeNameOverride = "remains";
 
                 itemdata.ReplaceComponent<MagicItemComponent>().MagicItem = magicItem;
@@ -90,6 +93,12 @@ namespace EpicLoot
         public static bool IsMagic(this ItemDrop.ItemData itemData)
         {
             return itemData.Extended()?.GetComponent<MagicItemComponent>() != null;
+        }
+
+        public static bool IsMagic(this ItemDrop.ItemData itemData, out MagicItem magicItem)
+        {
+            magicItem = itemData.GetMagicItem();
+            return magicItem != null;
         }
 
         public static bool UseMagicBackground(this ItemDrop.ItemData itemData)
@@ -186,7 +195,7 @@ namespace EpicLoot
 
         public static bool IsPartOfSet(this ItemDrop.ItemData itemData, string setName)
         {
-            return itemData.m_shared.m_setName == setName;
+            return itemData.GetSetID() == setName;
         }
 
         public static bool CanBeAugmented(this ItemDrop.ItemData itemData)
@@ -197,6 +206,151 @@ namespace EpicLoot
             }
 
             return itemData.GetMagicItem().Effects.Select(effect => MagicItemEffectDefinitions.Get(effect.EffectType)).Any(effectDef => effectDef.CanBeAugmented);
+        }
+
+        public static string GetSetID(this ItemDrop.ItemData itemData, out bool isMundane)
+        {
+            isMundane = true;
+            if (itemData.IsMagic(out var magicItem) && !string.IsNullOrEmpty(magicItem.SetID))
+            {
+                isMundane = false;
+                return magicItem.SetID;
+            }
+
+            if (!string.IsNullOrEmpty(itemData.m_shared.m_setName))
+            {
+                return itemData.m_shared.m_setName;
+            }
+
+            return null;
+        }
+
+        public static string GetSetID(this ItemDrop.ItemData itemData)
+        {
+            return GetSetID(itemData, out _);
+        }
+
+        public static LegendarySetInfo GetLegendarySetInfo(this ItemDrop.ItemData itemData)
+        {
+            UniqueLegendaryHelper.TryGetLegendarySetInfo(itemData.GetSetID(), out var setInfo);
+            return setInfo;
+        }
+
+        public static bool IsSetItem(this ItemDrop.ItemData itemData)
+        {
+            return !string.IsNullOrEmpty(itemData.GetSetID());
+        }
+
+        public static bool IsLegendarySetItem(this ItemDrop.ItemData itemData)
+        {
+            return itemData.IsMagic(out var magicItem) && !string.IsNullOrEmpty(magicItem.SetID);
+        }
+
+        public static bool IsMundaneSetItem(this ItemDrop.ItemData itemData)
+        {
+            return !string.IsNullOrEmpty(itemData.m_shared.m_setName);
+        }
+
+        public static int GetSetSize(this ItemDrop.ItemData itemData)
+        {
+            var setID = itemData.GetSetID(out var isMundane);
+            if (!string.IsNullOrEmpty(setID))
+            {
+                if (isMundane)
+                {
+                    return itemData.m_shared.m_setSize;
+                }
+                else if (UniqueLegendaryHelper.TryGetLegendarySetInfo(setID, out var setInfo))
+                {
+                    return setInfo.LegendaryIDs.Count;
+                }
+            }
+
+            return 0;
+        }
+
+        public static List<string> GetSetPieces(string setName)
+        {
+            if (UniqueLegendaryHelper.TryGetLegendarySetInfo(setName, out var setInfo))
+            {
+                return setInfo.LegendaryIDs;
+            }
+
+            return GetMundaneSetPieces(ObjectDB.instance, setName);
+        }
+
+        public static List<string> GetMundaneSetPieces(ObjectDB objectDB, string setName)
+        {
+            var results = new List<string>();
+            foreach (var itemPrefab in objectDB.m_items)
+            {
+                if (itemPrefab == null)
+                {
+                    EpicLoot.LogError("Null Item left in ObjectDB! (This means that a prefab was deleted and not an instance)");
+                    continue;
+                }
+
+                var itemDrop = itemPrefab.GetComponent<ItemDrop>();
+                if (itemDrop == null)
+                {
+                    EpicLoot.LogError($"Item in ObjectDB missing ItemDrop: ({itemPrefab.name})");
+                    continue;
+                }
+
+                if (itemDrop.m_itemData.m_shared.m_setName == setName)
+                {
+                    results.Add(itemPrefab.GetComponent<ItemDrop>().m_itemData.m_shared.m_name);
+                }
+            }
+
+            return results;
+        }
+    }
+
+    public static class EquipmentEffectCache
+    {
+        public static ConditionalWeakTable<Player, Dictionary<string, float?>> Values = new ConditionalWeakTable<Player, Dictionary<string, float?>>();
+
+        [HarmonyPatch(typeof(Humanoid), nameof(Humanoid.UnequipItem))]
+        public static class EquipmentEffectCache_Humanoid_UnequipItem_Patch
+        {
+            [UsedImplicitly]
+            public static void Prefix(Humanoid __instance, ItemDrop.ItemData item)
+            {
+                if (__instance is Player player)
+                {
+                    Reset(player);
+                }
+            }
+        }
+
+        [HarmonyPatch(typeof(Humanoid), nameof(Humanoid.EquipItem))]
+        public static class EquipmentEffectCache_Humanoid_EquipItem_Patch
+        {
+            [UsedImplicitly]
+            public static void Prefix(Humanoid __instance, ItemDrop.ItemData item)
+            {
+                if (__instance is Player player)
+                {
+                    Reset(player);
+                }
+            }
+        }
+
+        public static void Reset(Player player)
+        {
+            Values.Remove(player);
+        }
+
+        public static float? Get(Player player, string effect, Func<float?> calculate)
+        {
+            var values = Values.GetOrCreateValue(player);
+            if (values.TryGetValue(effect, out float? value))
+            {
+                return value;
+            }
+
+            return values[effect] = calculate();
         }
     }
 
@@ -222,30 +376,77 @@ namespace EpicLoot
             return results;
         }
 
-        public static List<ItemDrop.ItemData> GetMagicEquipmentWithEffect(this Player player, string effectType)
+        private static List<ItemDrop.ItemData> GetMagicEquipmentWithEffect(this Player player, string effectType)
         {
             return player.GetEquipment().Where(x => x.HasMagicEffect(effectType)).ToList();
         }
 
-        public static bool HasMagicEquipmentWithEffect(this Player player, string effectType)
+        public static List<MagicItemEffect> GetAllActiveMagicEffects(this Player player, string effectType = null)
         {
-            return GetMagicEquipmentWithEffect(player, effectType).Count > 0;
+            var equipEffects = player.GetEquipment().Where(x => x.IsMagic())
+                .SelectMany(x => x.GetMagicItem().GetEffects(effectType));
+            var setEffects = player.GetAllActiveSetMagicEffects(effectType);
+            return equipEffects.Concat(setEffects).ToList();
         }
 
-        public static bool HasMagicEquipmentWithEffect(this Player player, string effectType, out List<ItemDrop.ItemData> equipment)
+        public static List<MagicItemEffect> GetAllActiveSetMagicEffects(this Player player, string effectType = null)
         {
-            equipment = GetMagicEquipmentWithEffect(player, effectType);
-            return equipment.Count > 0;
+            var activeSetEffects = new List<MagicItemEffect>();
+            var equippedSets = player.GetEquippedSets();
+            foreach (var setInfo in equippedSets)
+            {
+                var count = player.GetEquippedSetPieces(setInfo.ID).Count;
+                foreach (var setBonusInfo in setInfo.SetBonuses)
+                {
+                    if (count >= setBonusInfo.Count && (effectType == null || setBonusInfo.Effect.Type == effectType))
+                    {
+                        var effect = new MagicItemEffect(setBonusInfo.Effect.Type, setBonusInfo.Effect.Values?.MinValue ?? 0);
+                        activeSetEffects.Add(effect);
+                    }
+                }
+            }
+
+            return activeSetEffects;
+        }
+
+        public static HashSet<LegendarySetInfo> GetEquippedSets(this Player player)
+        {
+            var sets = new HashSet<LegendarySetInfo>();
+            foreach (var itemData in player.GetEquipment())
+            {
+                if (itemData.IsMagic(out var magicItem) && magicItem.IsLegendarySetItem())
+                {
+                    if (UniqueLegendaryHelper.TryGetLegendarySetInfo(magicItem.SetID, out var setInfo))
+                    {
+                        sets.Add(setInfo);
+                    }
+                }
+            }
+
+            return sets;
+        }
+
+        public static float GetTotalActiveMagicEffectValue(this Player player, string effectType, float scale = 1.0f)
+        {
+            return scale * (EquipmentEffectCache.Get(player, effectType, () =>
+            {
+                List<MagicItemEffect> allEffects = player.GetAllActiveMagicEffects(effectType);
+                return allEffects.Count > 0 ? (float?)allEffects.Select(x => x.EffectValue).Sum() : null;
+            }) ?? 0);
+        }
+
+        public static bool HasActiveMagicEffect(this Player player, string effectType)
+        {
+            return null != EquipmentEffectCache.Get(player, effectType, () =>
+            {
+                List<MagicItemEffect> allEffects = player.GetAllActiveMagicEffects(effectType);
+                return allEffects.Count > 0 ? (float?)allEffects.Select(x => x.EffectValue).Sum() : null;
+            });
         }
 
         public static List<ItemDrop.ItemData> GetEquippedSetPieces(this Player player, string setName)
         {
             return player.GetEquipment().Where(x => x.IsPartOfSet(setName)).ToList();
-        }
-
-        public static int GetEquippedSetItemCount(this Player player, string setName)
-        {
-            return player.GetEquippedSetPieces(setName).Count;
         }
 
         public static bool HasEquipmentOfType(this Player player, ItemDrop.ItemData.ItemType type)
@@ -257,35 +458,10 @@ namespace EpicLoot
         {
             return player.GetEquipment().FirstOrDefault(x => x != null && x.m_shared.m_itemType == type);
         }
-    }
 
-    public static class ObjectDBExtensions
-    {
-        public static List<ItemDrop.ItemData> GetSetPieces(this ObjectDB objectDB, string setName)
+        public static Player GetPlayerWithEquippedItem(ItemDrop.ItemData itemData)
         {
-            List<ItemDrop.ItemData> list = new List<ItemDrop.ItemData>();
-            foreach (var itemPrefab in objectDB.m_items)
-            {
-                if (itemPrefab == null)
-                {
-                    EpicLoot.LogError("Null Item left in ObjectDB! (This means that a prefab was deleted and not an instance)");
-                    continue;
-                }
-
-                var itemDrop = itemPrefab.GetComponent<ItemDrop>();
-                if (itemDrop == null)
-                {
-                    EpicLoot.LogError($"Item in ObjectDB missing ItemDrop: ({itemPrefab.name})");
-                    continue;
-                }
-
-                if (itemDrop.m_itemData.m_shared.m_setName == setName)
-                {
-                    list.Add(itemPrefab.GetComponent<ItemDrop>().m_itemData);
-                }
-            }
-
-            return list;
+            return Player.m_players.FirstOrDefault(player => player.IsItemEquiped(itemData));
         }
     }
 
@@ -341,7 +517,7 @@ namespace EpicLoot
     }
 
     //public void UpdateGui(Player player, ItemDrop.ItemData dragItem)
-    [HarmonyPatch(typeof(InventoryGrid), "UpdateGui")]
+    [HarmonyPatch(typeof(InventoryGrid), nameof(InventoryGrid.UpdateGui))]
     public static class InventoryGrid_UpdateGui_MagicItemComponent_Patch
     {
         public static void Postfix(InventoryGrid __instance, Player player, ItemDrop.ItemData dragItem)
@@ -386,17 +562,21 @@ namespace EpicLoot
                     magicItem.color = item.GetRarityColor();
                 }
 
-                var setItem = element.m_go.transform.Find("setItem").GetComponent<Image>();
-                if (setItem != null && !string.IsNullOrEmpty(item.m_shared.m_setName))
+                var setItemTransform = element.m_go.transform.Find("setItem");
+                if (setItemTransform != null)
                 {
-                    setItem.enabled = true;
+                    var setItem = setItemTransform.GetComponent<Image>();
+                    if (setItem != null)
+                    {
+                        setItem.enabled = item.IsSetItem();
+                    }
                 }
             }
         }
     }
 
     //void UpdateIcons(Player player)
-    [HarmonyPatch(typeof(HotkeyBar), "UpdateIcons", typeof(Player))]
+    [HarmonyPatch(typeof(HotkeyBar), nameof(HotkeyBar.UpdateIcons), typeof(Player))]
     public static class HotkeyBar_UpdateIcons_Patch
     {
         public static void Postfix(HotkeyBar __instance, List<HotkeyBar.ElementData> ___m_elements, List<ItemDrop.ItemData> ___m_items, Player player)
@@ -406,40 +586,89 @@ namespace EpicLoot
                 return;
             }
 
+            Dictionary<int, ItemDrop.ItemData> itemPosition = new Dictionary<int, ItemDrop.ItemData>();
+            foreach (ItemDrop.ItemData itemData in ___m_items)
+            {
+                if (GetElementIndexForItem(___m_elements, itemData) is int elementIndex)
+                {
+                    itemPosition[elementIndex] = itemData;
+                }
+                else
+                {
+                    EpicLoot.LogWarning($"Tried to get element for {itemData.m_shared.m_name} at {itemData.m_gridPos}, but element was null (total elements = {___m_elements.Count})");
+                }
+            }
+
             for (var index = 0; index < ___m_elements.Count; index++)
             {
                 var element = ___m_elements[index];
-                var magicItem = ItemBackgroundHelper.CreateAndGetMagicItemBackgroundImage(element.m_go, element.m_equiped, false);
-                magicItem.enabled = false;
-            }
-
-            for (var index = 0; index < ___m_items.Count; ++index)
-            {
-                var itemData = ___m_items[index];
-                var element = GetElementForItem(___m_elements, itemData);
-                if (element == null)
-                {
-                    EpicLoot.LogWarning($"Tried to get element for {itemData.m_shared.m_name} at {itemData.m_gridPos}, but element was null (total elements = {___m_elements.Count})");
-                    continue;
-                }
 
                 var magicItem = ItemBackgroundHelper.CreateAndGetMagicItemBackgroundImage(element.m_go, element.m_equiped, false);
-                if (itemData.UseMagicBackground())
+                if (itemPosition.TryGetValue(index, out ItemDrop.ItemData itemData) && itemData.UseMagicBackground())
                 {
                     magicItem.enabled = true;
                     magicItem.sprite = EpicLoot.GetMagicItemBgSprite();
                     magicItem.color = itemData.GetRarityColor();
                 }
+                else
+                {
+                    magicItem.enabled = false;
+                }
             }
         }
 
-        private static HotkeyBar.ElementData GetElementForItem(List<HotkeyBar.ElementData> elements, ItemDrop.ItemData item)
+        private static int? GetElementIndexForItem(List<HotkeyBar.ElementData> elements, ItemDrop.ItemData item)
         {
-            var index = item.m_gridPos.y == 0 
-                ? item.m_gridPos.x 
+            var index = item.m_gridPos.y == 0
+                ? item.m_gridPos.x
                 : Player.m_localPlayer.GetInventory().m_width + item.m_gridPos.x - 5;
 
-            return index >= 0 && index < elements.Count ? elements[index] : null;
+            return index >= 0 && index < elements.Count ? (int?) index : null;
+        }
+    }
+
+    [HarmonyPatch(typeof(Player), nameof(Player.GetActionProgress))]
+    public static class Player_GetActionProgress_Patch
+    {
+        public static void Postfix(Player __instance, ref string name)
+        {
+            if (__instance.m_equipQueue.Count > 0)
+            {
+                Player.EquipQueueData equip = __instance.m_equipQueue[0];
+                if (equip.m_duration > 0.5f)
+                {
+                    name = !equip.m_equip ? "$hud_unequipping " + equip.m_item.GetDecoratedName() : "$hud_equipping " + equip.m_item.GetDecoratedName();
+                }
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(ItemDrop))]
+    public static class ItemDrop_Patches
+    {
+        [HarmonyPatch(typeof(ItemDrop), nameof(ItemDrop.GetHoverText))]
+        [HarmonyPrefix]
+        public static bool GetHoverText_Prefix(ItemDrop __instance, ref string __result)
+        {
+            var str = __instance.m_itemData.GetDecoratedName();
+            if (__instance.m_itemData.m_quality > 1)
+            {
+                str = $"{str}[{__instance.m_itemData.m_quality}] ";
+            }
+            else if (__instance.m_itemData.m_stack > 1)
+            {
+                str = $"{str} x{__instance.m_itemData.m_stack}";
+            }
+            __result = Localization.instance.Localize($"{str}\n[<color=yellow><b>$KEY_Use</b></color>] $inventory_pickup");
+            return false;
+        }
+
+        [HarmonyPatch(typeof(ItemDrop), nameof(ItemDrop.GetHoverName))]
+        [HarmonyPrefix]
+        public static bool GetHoverName_Prefix(ItemDrop __instance, ref string __result)
+        {
+            __result = __instance.m_itemData.GetDecoratedName();
+            return false;
         }
     }
 }

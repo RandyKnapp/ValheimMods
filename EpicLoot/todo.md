@@ -5,16 +5,17 @@
 - [X] More exclusions and configurable requirements for magic effects
 - [X] Show current equipment with tooltip
 - [X] Augment items: change/reroll magic item effects (transmute? modify?)
-- [ ] Re-augment for high gold cost
+- [X] Re-augment for high gold cost
 - [ ] Infuse items: rarity to next rarity (like diablo upgrade rare to legendary)
 - [X] List of active magic effects on the player status screen
 - [X] Limit drop types by actual player progression
 - [X] Gamble for magic items from Merchant
-- [ ] Unique legendary system
+- [X] Unique legendary system
 - [ ] Create effects for in-game models of magic items
-- [ ] Custom item sets (replace troll too)
+- [X] Custom item sets (~replace troll too~ Left vanilla set system intact for Terraheim compatibility)
+- [ ] Create activated ability system
 - [ ] Move tooltip code to postfix, parse and inject rather than redo from scratch
-- [X] Rename item if magic (Legendary still to-do)
+- [X] Rename item if magic ~(Legendary still to-do)~
 - [ ] Custom crafting station for enchanting
 - [ ] Distinguish utility items (max enchantable rarity)
 - [ ] New Runes skill (enchanting)
@@ -46,6 +47,7 @@
 - [ ] Glowing
 
 #### Armor
+- [ ] Mimic Dverger Circlet
 - [ ] Warm (Prevent freezing effect)
 - [X] Waterproof (cape, prevent Wet effect from rain)
 - [X] Waterwalk (legs)
@@ -65,7 +67,7 @@
 - [X] Glowing
 
 #### Utility
-- [ ] Luck (increase drop rate and rarity chance)
+- [X] Luck (increase drop rate and rarity chance)
 - [X] Riches (add chance to drop treasure on all mobs)
 - [ ] Add bonus armor (magic shield?)
 
@@ -77,7 +79,7 @@
 
 - [X] Sleipnir's Hoof (Club, increase move speed)
 - [X] Gungnir (Ancient Bark Spear)
-- [ ] Mjolnir (Iron Sledge)
+- [X] Mjolnir (Iron Sledge)
 - [ ] Skofnung (Iron Sword)
 - [ ] Dainslief (Silver Sword)
 - [ ] Angurvadal (Sword)
@@ -115,50 +117,46 @@
 - [ ] Naegling (sword, Beowulf, twigs and serpents design)
 
 
-## Basic Item Sets:
-
-none (do I even want to do this? I don't think so, not at this point)
-
 ## Legendary Sets:
 
-**Heimdall (tank):** Tower Shield (Guardian of the Gods), Head (Son of Nine Mothers), Chest (Heart of the Bifrost), Legs (Stride of the Aesir)
+- [X] **Heimdall (tank):** Tower Shield (Guardian of the Gods), Head (Son of Nine Mothers), Chest (Heart of the Bifrost), Legs (Stride of the Aesir)
 
-2. +200% Block Power
-3. Bulwark - activate: take no damage for N seconds
-4. Undying - On death, gain full health instantly, but long cooldown
+2. - [X] +200% Block Power
+3. - [X] Bulwark - activate: take no damage for N seconds
+4. - [X] Undying - On death, gain full health instantly, but long cooldown
 
-**Ragnar (aoe):** Battleaxe (Serpentsbane), Cape (Ragnar's Boneless Wrap), Chest (Ragnar's White Shirt), Legs (Ragnar's Ironsides)
+- [X] **Ragnar (aoe):** Battleaxe (Serpentsbane), Cape (Ragnar's Boneless Wrap), Chest (Ragnar's White Shirt), Legs (Ragnar's Ironsides)
 
-2. +2 HP/tick, +100% health regen
-3. Attacks that deal frost damage deal 50% of their damage in an aoe around the attack
-4. Berserker - activate: stop all health regen but gain +50% to +200% damage based on health missing
+2. - [X] +2 HP/tick, +100% health regen
+3. - [X] Melee Attacks that deal frost damage deal 50% of weapon damage as frost in a forward-facing cone
+4. - [X] Berserker - activate: stop all health regen but gain +50% to +200% damage based on health missing
 
-**Bloodaxe (dps):** Knife (Fratricide), Head (Bloodaxe's Crown), Cape (Bloodaxe's Royal Mantle), Legs (Bloodaxe's Boots)
+- [ ] **Bloodaxe (dps):** Knife (Fratricide), Head (Bloodaxe's Crown), Cape (Bloodaxe's Royal Mantle), Legs (Bloodaxe's Boots)
 
-2. +25% attack speed, -50% attack stamina use
-3. +200% Lightning Damage
-4. All lightning damage has a chance to paralyze enemies
+2. - [ ] +25% attack speed, -50% attack stamina use
+3. - [ ] +200% Lightning Damage
+4. - [ ] All lightning damage has a chance to paralyze enemies
 
-**Agilaz (bow):** Bow (King's Warning/Second Arrow), Cape (Völund's Wings), Chest (Skadi's Hunting Coat), Legs (Ullr's Hunting Skis)
+- [ ] **Agilaz (bow):** Bow (King's Warning/Second Arrow), Cape (Völund's Wings), Chest (Skadi's Hunting Coat), Legs (Ullr's Hunting Skis)
 
-2. Bow draw speed reduced by +50%
-3. Enemies with two or more negative effects take +30% damage from all sources
-4. Frost and Poison effects last twice as long
+2. - [ ] Bow draw speed reduced by +50%
+3. - [ ] Enemies with two or more negative effects take +30% damage from all sources
+4. - [ ] Frost and Poison effects last twice as long
 
-**Eir (healing):** Head (Gaze of Frigg), Chest (Feast of Protection), Legs (Arrival of Aid), Cape (Wings of the Valkyrie)
+- [ ] **Eir (healing):** Head (Gaze of Frigg), Chest (Feast of Protection), Legs (Arrival of Aid), Cape (Wings of the Valkyrie)
 
-2. Totem - activate: drop a healing totem where you stand that applies rapid health regen to allies within it
-3. Can drop two totems simultaneously
-4. Enemies in totem area are slowed by -30%
+2. - [ ] Totem - activate: drop a healing totem where you stand that applies rapid health regen to allies within it
+3. - [ ] Can drop two totems simultaneously
+4. - [ ] Enemies in totem area are slowed by -30%
 
-**Wayfarer (exploration):** Head (), Chest (), Legs(), Cape ()
+- [ ] **Wayfarer (exploration):** Head (), Chest (), Legs(), Cape ()
 
-2. Movement speed increase, sprint stamina reduction
-3. Discovery Range Increase
-4. activate: For N minutes, all allies in range get +500 carry weight and all movement speed penalties removed
+2. - [ ] Movement speed increase, sprint stamina reduction
+3. - [ ] Discovery Range Increase
+4. - [ ] activate: For N minutes, all allies in range get +500 carry weight and all movement speed penalties removed
 
-**Coxswain (sailing):** Head (), Chest (), Legs(), Cape ()
+- [ ] **Coxswain (sailing):** Head (), Chest (), Legs(), Cape ()
 
-2. Increase boat speed and turning speed
-3. Wind is always at back (like moder)
-4. Summon indestructible longboat (in water), destroys previously summoned one
+2. - [ ] Increase boat speed and turning speed
+3. - [ ] Wind is always at back (like moder)
+4. - [ ] Summon indestructible longboat (in water), destroys previously summoned one

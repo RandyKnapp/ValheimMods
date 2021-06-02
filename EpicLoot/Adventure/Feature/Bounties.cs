@@ -58,6 +58,7 @@ namespace EpicLoot.Adventure.Feature
                 TargetName = GenerateTargetName(random),
                 RewardIron = targetConfig.RewardIron,
                 RewardGold = targetConfig.RewardGold,
+                RewardCoins = targetConfig.RewardCoins,
                 Adds = targetConfig.Adds.Select(x => new BountyTargetInfo() { MonsterID = x.ID, Count = x.Count, Level = GetTargetLevel(random, false, true) }).ToList()
             })
                 .ToList();
@@ -259,6 +260,10 @@ namespace EpicLoot.Adventure.Feature
             if (bountyInfo.RewardGold > 0)
             {
                 inventory.AddItem("GoldBountyToken", bountyInfo.RewardGold, 1, 0, 0, string.Empty);
+            }
+            if (bountyInfo.RewardCoins > 0)
+            {
+                inventory.AddItem("Coins", bountyInfo.RewardCoins, 1, 0, 0, string.Empty);
             }
         }
 

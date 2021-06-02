@@ -41,15 +41,71 @@ namespace EquipmentAndQuickSlots
     [HarmonyPatch(typeof(Inventory), "AddItem", typeof(ItemDrop.ItemData))]
     public static class Inventory_AddItem2_Patch
     {
-        public static bool Prefix(Inventory __instance, ref bool __result, ItemDrop.ItemData item)
+        public static bool CallingExtended = false;
+
+        public static bool Prefix(Inventory __instance, ref bool __result, ItemDrop.ItemData item, out bool __state)
         {
+            __state = false;
             if (__instance.DoExtendedCall())
             {
+                CallingExtended = true;
+                __state = true;
                 __result = __instance.Extended().OverrideAddItem(item);
                 return false;
             }
 
             return true;
+        }
+
+        public static void Postfix(bool __state)
+        {
+            if (__state)
+            {
+                CallingExtended = false;
+            }
+        }
+    }
+
+    //private Vector2i FindEmptySlot(bool topFirst)
+    [HarmonyPatch(typeof(Inventory), nameof(Inventory.FindEmptySlot))]
+    public static class Inventory_FindEmptySlot_Patch
+    {
+        public static bool Prefix(Inventory __instance, bool topFirst, ref Vector2i __result)
+        {
+            if (__instance.DoExtendedCall())
+            {
+                __result = __instance.Extended().OverrideFindEmptySlot(topFirst);
+                return false;
+            }
+            return true;
+        }
+    }
+
+    //private ItemDrop.ItemData FindFreeStackItem(string name, int quality)
+    [HarmonyPatch(typeof(Inventory), nameof(Inventory.FindFreeStackItem))]
+    public static class Inventory_FindFreeStackItem_Patch
+    {
+        private static bool DoExtended = true;
+
+        public static bool Prefix(Inventory __instance, string name, int quality, ref ItemDrop.ItemData __result, out bool __state)
+        {
+            __state = false;
+            if (DoExtended && Inventory_AddItem2_Patch.CallingExtended && __instance.IsExtended())
+            {
+                __state = true;
+                DoExtended = false;
+                __result = __instance.Extended().OverrideFindFreeStackItem(name, quality);
+                return false;
+            }
+            return true;
+        }
+
+        public static void Postfix(bool __state)
+        {
+            if (__state)
+            {
+                DoExtended = true;
+            }
         }
     }
 

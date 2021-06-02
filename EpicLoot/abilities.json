@@ -1,0 +1,26 @@
+﻿{
+  "Abilities": [
+    {
+      "ID" : "Bulwark",
+      "IconAsset": "BulwarkIcon",
+      "ActivationMode": "Activated",
+      "Cooldown" : 60,
+      "Action": "StatusEffect",
+      "ActionParams": [ "BulwarkStatusEffect" ]
+    },
+    {
+      "ID" : "Undying",
+      "IconAsset": "UndyingIcon",
+      "ActivationMode": "Triggerable",
+      "Cooldown" : 1200
+    },
+    {
+      "ID" : "Berserker",
+      "IconAsset": "BerserkerIcon",
+      "ActivationMode": "Activated",
+      "Cooldown" : 180,
+      "Action": "StatusEffect",
+      "ActionParams": [ "BerserkerStatusEffect" ]
+    }
+  ]
+}

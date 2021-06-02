@@ -4,20 +4,17 @@ using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects
 {
-	[HarmonyPatch(typeof(Minimap), "Explore", typeof(Vector3), typeof(float))]
+	[HarmonyPatch(typeof(Minimap), nameof(Minimap.Explore), typeof(Vector3), typeof(float))]
 	public class DiscoveryRadiusIncrease_Minimap_Explore_Patch
 	{
 		[UsedImplicitly]
 		private static void Prefix(Minimap __instance, ref float radius)
 		{
-			var items = Player.m_localPlayer.GetMagicEquipmentWithEffect(MagicEffectType.ModifyDiscoveryRadius);
-			var skillBonus = 1f;
-			foreach (var item in items)
-			{
-				skillBonus += item.GetMagicItem().GetTotalEffectValue(MagicEffectType.ModifyDiscoveryRadius, 0.01f);
-			}
-
-			radius *= skillBonus;
+            if (Player.m_localPlayer != null)
+            {
+                var skillBonus = 1 + Player.m_localPlayer.GetTotalActiveMagicEffectValue(MagicEffectType.ModifyDiscoveryRadius, 0.01f);
+                radius *= skillBonus;
+            }
 		}
 	}
 }

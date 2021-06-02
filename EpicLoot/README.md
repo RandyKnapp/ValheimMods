@@ -1,4 +1,4 @@
-# Epic Loot v0.7.8 - Adventure Update!
+# Epic Loot v0.8.0 - Legendary Sets Update!
 Author: RandyKnapp
 Source: [Github](https://github.com/RandyKnapp/ValheimMods/blob/main/EpicLoot/)
 
@@ -21,10 +21,14 @@ Information about every magic effect and loot drop table can be found in [info.m
 ## Credits
 Contibutions from the following modders was invaluable and appreciated: 
   * [blaxxun (CLLC)](https://www.nexusmods.com/valheim/mods/495) - bugfixes, config sync, various magic item effects, 
-  * [jsza](https://github.com/jsza) - bugfixes, 
+  * [M3TO](https://github.com/M3TO) - bugfixes
+  * [jsza](https://github.com/jsza) - bugfixes
   * [maxrd2](https://github.com/maxrd2) - bugfixes
   * [nanonull](https://github.com/nanonull) - bugfixes, lifesteal
   * [xPucTu4](https://github.com/xPucTu4) - bugfixes
+
+3D Models:
+  * "Fantasy Longsword" (https://skfb.ly/ontRY) by Faber is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
 
 ## Installation
 
@@ -32,7 +36,7 @@ Copy the contents of "files" to a new folder called "EpicLoot" in your BepInEx/p
 
 ## Cheats
 
-Enter these into the console (F5) after using `imacheater`:
+Enter these into the console (F5) after using `devcommands`:
 
   * `magicitem <rarity> <itemtype> <amount>`: Roll a random magic item using the specified values. (alias: `mi`)
     * `<rarity>`: (String) One of: magic, rare, epic, legendary, random. If left empty, uses random.
@@ -40,6 +44,14 @@ Enter these into the console (F5) after using `imacheater`:
 	* `<amount>`: (Int) The number of magic items to roll. If the other values are set to random, rerolls that random item each time. If left empty, uses 1.
 	* `<effectcount>`: (Int) The number of magic effects to roll on each item. If left empty, it rolls effect count as normal.
   * `magicmats`: Spawns a bunch of all the magic crafting materials
+  * `magicitemwitheffect <effectID> <itemtype>`: Spawn a magic item with the specified magic effect. (alias: `mieffect`)
+    * `<effectID>`: (String) The type of magic effect you want to guarantee
+	* `<itemtype>`: (String) The internal ID of an item.
+  * `magicitemlegendary <legendaryID> <itemtype>`: Spawn a specific legendary item. (alias: `milegend`)
+	* `<legendaryID>`: (String) The ID of the legendary you want to spawn
+	* `<itemtype>`: (String) The internal ID of an item (optional, will use an item that meets the legendary definition's requirements)
+  * `magicitemset <setID>`: Spawn all the items in a legendary item set. (alias: `miset`)
+	* `<setID>`: (String) The ID of the legendary set you want to spawn
 
 ## Dependencies
 
@@ -48,11 +60,9 @@ Enter these into the console (F5) after using `imacheater`:
 ## Current Known Mod Conflicts
 
   * **BetterUI** ([Nexus](https://www.nexusmods.com/valheim/mods/189), [Thunderstore](https://valheim.thunderstore.io/package/Masa/BetterUI/)): You won't be able to see the magic item properties in the tooltip. Go to the BetterUI config and set `showCustomTooltips = false`.
-  * **Crafting With Containers** ([Thunderstore](https://valheim.thunderstore.io/package/abearcodes/CraftingWithContainers/)): Uses double resources when crafting, some other features break. Recommended to not use with EpicLoot.
 
 ## Known Bugs
 
-  * Multiplayer Issue: Some players connecting to a dedicated server cannot access Enchanting sections of the crafting menu. This issue is being investigated.
   * Gamepad: Still some gamepad issues, especially when using other mods that change the inventory.
 
 ## TODO

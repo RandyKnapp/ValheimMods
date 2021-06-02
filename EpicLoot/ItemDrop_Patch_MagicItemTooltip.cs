@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 using EpicLoot.Crafting;
+using EpicLoot.LegendarySystem;
 using ExtendedItemDataFramework;
 using HarmonyLib;
 using JetBrains.Annotations;
@@ -11,7 +14,7 @@ namespace EpicLoot
 {
     // Set the topic of the tooltip with the decorated name
     //public void CreateItemTooltip(ItemDrop.ItemData item, UITooltip tooltip) => tooltip.Set(item.m_shared.m_name, item.GetTooltip());
-    [HarmonyPatch(typeof(InventoryGrid), "CreateItemTooltip", typeof(ItemDrop.ItemData), typeof(UITooltip))]
+    [HarmonyPatch(typeof(InventoryGrid), nameof(InventoryGrid.CreateItemTooltip), typeof(ItemDrop.ItemData), typeof(UITooltip))]
     public static class InventoryGrid_CreateItemTooltip_MagicItemComponent_Patch
     {
         public static bool Prefix(ItemDrop.ItemData item, UITooltip tooltip)
@@ -33,7 +36,7 @@ namespace EpicLoot
 
     // Set the content of the tooltip
     //public static string GetTooltip(ItemDrop.ItemData item, int qualityLevel, bool crafting)
-    [HarmonyPatch(typeof(ItemDrop.ItemData), "GetTooltip", typeof(ItemDrop.ItemData), typeof(int), typeof(bool))]
+    [HarmonyPatch(typeof(ItemDrop.ItemData), nameof(ItemDrop.ItemData.GetTooltip), typeof(ItemDrop.ItemData), typeof(int), typeof(bool))]
     public static class MagicItemTooltip_ItemDrop_Patch
     {
         [UsedImplicitly]
@@ -52,6 +55,10 @@ namespace EpicLoot
             var itemTypeName = magicItem.GetItemTypeName(item.Extended());
 
             text.Append($"<color={magicColor}>{magicItem.GetRarityDisplay()} {itemTypeName}</color>\n");
+            if (item.IsLegendarySetItem())
+            {
+                text.Append($"<color={EpicLoot.GetSetItemColor()}>$mod_epicloot_legendarysetlabel</color>\n");
+            }
             text.Append(item.GetDescription());
             
             text.Append("\n");
@@ -255,7 +262,7 @@ namespace EpicLoot
             text.Append(magicItem.GetTooltip());
 
             // Set stuff
-            if (!string.IsNullOrEmpty(item.m_shared.m_setName))
+            if (item.IsSetItem())
             {
                 AddSetTooltip(item, text);
             }
@@ -277,7 +284,7 @@ namespace EpicLoot
                 var text = new StringBuilder();
 
                 // Set stuff
-                if (!string.IsNullOrEmpty(item.m_shared.m_setName))
+                if (item.IsSetItem())
                 {
                     // Remove old set stuff
                     var index = __result.IndexOf("\n\n$item_seteffect", StringComparison.InvariantCulture);
@@ -300,22 +307,90 @@ namespace EpicLoot
 
         private static void AddSetTooltip(ItemDrop.ItemData item, StringBuilder text)
         {
-            var setPieces = ObjectDB.instance.GetSetPieces(item.m_shared.m_setName);
-            var currentSetEquipped = Player.m_localPlayer.GetEquippedSetPieces(item.m_shared.m_setName);
-            var setEffectColor = currentSetEquipped.Count == item.m_shared.m_setSize ? EpicLoot.GetSetItemColor() : "grey";
+            var setID = item.GetSetID(out var isMundane);
+            var setSize = item.GetSetSize();
 
-            var textInfo = new CultureInfo("en-US", false).TextInfo;
-            var setDisplayName = textInfo.ToTitleCase(item.m_shared.m_setName);
-            text.Append($"\n\n<color={EpicLoot.GetSetItemColor()}>ᛟ Set: {setDisplayName} ({currentSetEquipped.Count}/{item.m_shared.m_setSize}):</color>");
+            var setPieces = ItemDataExtensions.GetSetPieces(setID);
+            var currentSetEquipped = Player.m_localPlayer.GetEquippedSetPieces(setID);
 
-            foreach (var setItem in setPieces)
+            var setDisplayName = GetSetDisplayName(item, isMundane);
+            text.Append($"\n\n<color={EpicLoot.GetSetItemColor()}> Set: {setDisplayName} ({currentSetEquipped.Count}/{setSize}):</color>");
+
+            foreach (var setItemName in setPieces)
             {
-                var isEquipped = currentSetEquipped.Find(x => x.m_shared.m_name == setItem.m_shared.m_name) != null;
+                var isEquipped = IsSetItemEquipped(currentSetEquipped, setItemName, isMundane);
                 var color = isEquipped ? "white" : "grey";
-                text.Append($"\n  <color={color}>{setItem.m_shared.m_name}</color>");
+                var displayName = GetSetItemDisplayName(setItemName, isMundane);
+                text.Append($"\n  <color={color}>{displayName}</color>");
             }
 
-            text.Append($"\n<color={setEffectColor}>({item.m_shared.m_setSize}) ‣ {item.GetSetStatusEffectTooltip().Replace("\n", " ")}</color>");
+            if (isMundane)
+            {
+                var setEffectColor = currentSetEquipped.Count == setSize ? EpicLoot.GetSetItemColor() : "grey";
+                text.Append($"\n<color={setEffectColor}>({setSize}) ‣ {item.GetSetStatusEffectTooltip().Replace("\n", " ")}</color>");
+            }
+            else
+            {
+                var setInfo = item.GetLegendarySetInfo();
+                foreach (var setBonusInfo in setInfo.SetBonuses.OrderBy(x => x.Count))
+                {
+                    var hasEquipped = currentSetEquipped.Count >= setBonusInfo.Count;
+                    var effectDef = MagicItemEffectDefinitions.Get(setBonusInfo.Effect.Type);
+                    if (effectDef == null)
+                    {
+                        EpicLoot.LogError($"Set Tooltip: Could not find effect ({setBonusInfo.Effect.Type}) for set ({setInfo.ID}) bonus ({setBonusInfo.Count})!");
+                        continue;
+                    }
+
+                    var display = MagicItem.GetEffectText(effectDef, setBonusInfo.Effect.Values?.MinValue ?? 0);
+                    text.Append($"\n<color={(hasEquipped ? EpicLoot.GetSetItemColor() : "grey")}>({setBonusInfo.Count}) ‣ {display}</color>");
+                }
+            }
+        }
+
+        private static string GetSetItemDisplayName(string setItemName, bool isMundane)
+        {
+            if (isMundane)
+            {
+                return setItemName;
+            }
+            else if (UniqueLegendaryHelper.TryGetLegendaryInfo(setItemName, out var legendaryInfo))
+            {
+                return legendaryInfo.Name;
+            }
+
+            return setItemName;
+        }
+
+        public static string GetSetDisplayName(ItemDrop.ItemData item, bool isMundane)
+        {
+            if (isMundane)
+            {
+                var textInfo = new CultureInfo("en-US", false).TextInfo;
+                return textInfo.ToTitleCase(item.m_shared.m_setName);
+            }
+
+            var setInfo = item.GetLegendarySetInfo();
+            if (setInfo != null)
+            {
+                return Localization.instance.Localize(setInfo.Name);
+            }
+            else
+            {
+                return $"<unknown set:{item.GetSetID()}>";
+            }
+        }
+
+        public static bool IsSetItemEquipped(List<ItemDrop.ItemData> currentSetEquipped, string setItemName, bool isMundane)
+        {
+            if (isMundane)
+            {
+                return currentSetEquipped.Find(x => x.m_shared.m_name == setItemName) != null;
+            }
+            else
+            {
+                return currentSetEquipped.Find(x => x.IsMagic(out var magicItem) && magicItem.LegendaryID == setItemName) != null;
+            }
         }
 
         public static string GetDamageTooltipString(MagicItem item, HitData.DamageTypes instance, Skills.SkillType skillType, string magicColor)

@@ -1,4 +1,4 @@
-# EpicLoot Data v0.7.8
+# EpicLoot Data v0.8.0
 
 *Author: RandyKnapp*
 *Source: [Github](https://github.com/RandyKnapp/ValheimMods/tree/main/EpicLoot)*
@@ -39,7 +39,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## DvergerCirclet
 
-> **Display Text:** Perpetual lightsource
+> **Display Text:** Perpetual Lightsource
 > 
 > **Allowed Item Types:** *None*
 > 
@@ -50,7 +50,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## Megingjord
 
-> **Display Text:** Carry weight increased by +150
+> **Display Text:** Carry Weight +150
 > 
 > **Allowed Item Types:** *None*
 > 
@@ -61,7 +61,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## Wishbone
 
-> **Display Text:** Finds secrets
+> **Display Text:** Secret Finding
 > 
 > **Allowed Item Types:** *None*
 > 
@@ -72,7 +72,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## Andvaranaut
 
-> **Display Text:** Finds Haldor's treasure chests
+> **Display Text:** 
 > 
 > **Allowed Item Types:** *None*
 > 
@@ -83,7 +83,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## ModifyDamage
 
-> **Display Text:** All damage increased by +{0:0.#}%
+> **Display Text:** All Damage +{0:0.#}%
 > 
 > **Allowed Item Types:** *None*
 > 
@@ -103,7 +103,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## ModifyPhysicalDamage
 
-> **Display Text:** Physical damage increased by +{0:0.#}%
+> **Display Text:** Physical Damage +{0:0.#}%
 > 
 > **Prefixes:** Strong, Powerful, Mighty, Heavy, Forceful, Wicked, Fighter's, Warrior
 > **Suffixes:** Strength, Power, Might, Force, the Warrior
@@ -126,7 +126,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## ModifyElementalDamage
 
-> **Display Text:** Elemental damage increased by +{0:0.#}%
+> **Display Text:** Elemental Damage +{0:0.#}%
 > 
 > **Prefixes:** Energized, Empowered, Charged, Intensified
 > **Suffixes:** Energy, Intensity, Brilliance
@@ -150,7 +150,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## ModifyDurability
 
-> **Display Text:** Max durability increased by +{0:0.#}%
+> **Display Text:** Durability +{0:0.#}%
 > 
 > **Prefixes:** Sturdy, Stout, Robust
 > **Suffixes:** Sturdiness, Robustness, Stability, the Ox
@@ -165,7 +165,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## ReduceWeight
 
-> **Display Text:** Weight reduced by -{0:0.#}% 
+> **Display Text:** Weight -{0:0.#}% 
 > 
 > **Prefixes:** Light, Slender
 > **Suffixes:** the Feather
@@ -180,7 +180,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## RemoveSpeedPenalty
 
-> **Display Text:** Movement speed penalty removed
+> **Display Text:** No Movement Speed Penalty
 > 
 > **Prefixes:** Agile, Easy, Graceful
 > **Suffixes:** Agility, Grace
@@ -194,7 +194,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## ModifyBlockPower
 
-> **Display Text:** Block improved by +{0:0.#}%
+> **Display Text:** Block +{0:0.#}%
 > 
 > **Prefixes:** Stopping, Defender's
 > **Suffixes:** Stopping, the Defender
@@ -204,7 +204,6 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > **Requirements:**
 > > **Flags:** `ExclusiveSelf, ItemHasBlockPower`
 > > **AllowedItemTypes:** `Shield`
-> > **ExcludedSkillTypes:** `Pickaxes`
 > 
 > **Value Per Rarity:**
 > 
@@ -217,10 +216,10 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## ModifyParry
 
-> **Display Text:** Parry improved by +{0:0.#}%
+> **Display Text:** Parry +{0:0.#}%
 > 
-> **Prefixes:** Elusive, Rebuking, Duelist's
-> **Suffixes:** Repelling, the Duelist
+> **Prefixes:** Elusive, Rebuking
+> **Suffixes:** Repelling
 > 
 > **Allowed Item Types:** Shield, TwoHandedWeapon
 > 
@@ -240,7 +239,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## ModifyArmor
 
-> **Display Text:** Armor increased by +{0:0.#}%
+> **Display Text:** Armor +{0:0.#}%
 > 
 > **Prefixes:** Heavy, Protected
 > **Suffixes:** Protection
@@ -262,7 +261,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## ModifyBackstab
 
-> **Display Text:** Backstab improved by +{0:0.#}%
+> **Display Text:** Backstab +{0:0.#}%
 > 
 > **Prefixes:** Assassin's, Stealthy
 > **Suffixes:** the Assassin, Stealth
@@ -284,7 +283,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## IncreaseHealth
 
-> **Display Text:** Health increased by +{0:0}
+> **Display Text:** Health +{0:0}
 > 
 > **Prefixes:** Healthy
 > **Suffixes:** Health
@@ -306,7 +305,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## IncreaseStamina
 
-> **Display Text:** Stamina increased by +{0:0}
+> **Display Text:** Stamina +{0:0}
 > 
 > **Prefixes:** Enduring
 > **Suffixes:** Endurance
@@ -328,7 +327,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## ModifyHealthRegen
 
-> **Display Text:** Health regen improved by +{0:0.#}%
+> **Display Text:** Health Regen +{0:0.#}%
 > 
 > **Prefixes:** Vigorous
 > **Suffixes:** Vigor
@@ -348,9 +347,31 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > |Epic|10|20|1|
 > |Legendary|15|25|1|
 
+## AddHealthRegen
+
+> **Display Text:** Health Regen +{0:0.#}/tick
+> 
+> **Prefixes:** Rejuvenating
+> **Suffixes:** Rejuvenation
+> 
+> **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility, Shield
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedItemTypes:** `Helmet, Chest, Legs, Shoulder, Utility, Shield`
+> 
+> **Value Per Rarity:**
+> 
+> |Rarity|Min|Max|Increment|
+> |--|--|--|--|
+> |Magic|0.5|1.5|0.5|
+> |Rare|1|3|0.5|
+> |Epic|2|4.5|0.5|
+> |Legendary|3|6|0.5|
+
 ## ModifyStaminaRegen
 
-> **Display Text:** Stamina regen improved by +{0:0.#}%
+> **Display Text:** Stamina Regen +{0:0.#}%
 > 
 > **Prefixes:** Recovering
 > **Suffixes:** Recovery
@@ -372,7 +393,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## AddBluntDamage
 
-> **Display Text:** Add +{0:0.#} blunt damage
+> **Display Text:** Blunt Damage +{0:0.#}
 > 
 > **Prefixes:** Brute
 > **Suffixes:** Bludgeoning
@@ -396,7 +417,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## AddSlashingDamage
 
-> **Display Text:** Add +{0:0.#} slashing damage
+> **Display Text:** Slash Damage +{0:0.#}
 > 
 > **Prefixes:** Sharp, Keen
 > **Suffixes:** Slashing, Cutting
@@ -420,7 +441,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## AddPiercingDamage
 
-> **Display Text:** Add +{0:0.#} piercing damage
+> **Display Text:** Pierce Damage +{0:0.#}
 > 
 > **Prefixes:** Spiked, Barbed
 > **Suffixes:** Piercing
@@ -443,7 +464,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## AddFireDamage
 
-> **Display Text:** Add +{0:0.#} fire damage
+> **Display Text:** Fire Damage +{0:0.#}
 > 
 > **Prefixes:** Blazing
 > **Suffixes:** Fire
@@ -467,7 +488,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## AddFrostDamage
 
-> **Display Text:** Add +{0:0.#} frost damage
+> **Display Text:** Frost Damage +{0:0.#}
 > 
 > **Prefixes:** Frigid
 > **Suffixes:** Frost
@@ -491,7 +512,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## AddLightningDamage
 
-> **Display Text:** Add +{0:0.#} lightning damage
+> **Display Text:** Lightning Damage +{0:0.#}
 > 
 > **Prefixes:** Shocking
 > **Suffixes:** Lightning
@@ -515,7 +536,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## AddPoisonDamage
 
-> **Display Text:** Attacks deal poison damage for {0:0} seconds
+> **Display Text:** Poison Damage +{0:0.#}
 > 
 > **Prefixes:** Infected
 > **Suffixes:** Poison
@@ -539,7 +560,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## AddSpiritDamage
 
-> **Display Text:** Add +{0:0.#} spirit damage
+> **Display Text:** Spirit Damage +{0:0.#}
 > 
 > **Prefixes:** Spirit
 > **Suffixes:** the Spirits
@@ -628,7 +649,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## AddFireResistancePercentage
 
-> **Display Text:** +{0:0.#}% fire damage reduction
+> **Display Text:** Fire Damage Reduction +{0:0.#}%
 > 
 > **Prefixes:** Extinguishing
 > **Suffixes:** Fire Resistance
@@ -650,7 +671,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## AddFrostResistancePercentage
 
-> **Display Text:** +{0:0.#}% frost damage reduction
+> **Display Text:** Frost Damage Reduction +{0:0.#}%
 > 
 > **Prefixes:** Insulated
 > **Suffixes:** Frost Resistance
@@ -672,7 +693,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## AddLightningResistancePercentage
 
-> **Display Text:** +{0:0.#}% lightning damage reduction
+> **Display Text:** Lightning Damage Reduction +{0:0.#}%
 > 
 > **Prefixes:** Grounded
 > **Suffixes:** Lightning Resistance
@@ -694,7 +715,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## AddPoisonResistancePercentage
 
-> **Display Text:** +{0:0.#}% poison damage reduction
+> **Display Text:** Poison Damage Reduction +{0:0.#}%
 > 
 > **Prefixes:** Curing
 > **Suffixes:** Poison Resistance
@@ -716,7 +737,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## AddSpiritResistancePercentage
 
-> **Display Text:** +{0:0.#}% spirit damage reduction
+> **Display Text:** Spirit Damage Reduction +{0:0.#}%
 > 
 > **Prefixes:** Serene
 > **Suffixes:** Spirit Resistance
@@ -738,7 +759,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## AddElementalResistancePercentage
 
-> **Display Text:** +{0:0.#}% elemental damage reduction
+> **Display Text:** Elemental Damage Reduction +{0:0.#}%
 > 
 > **Prefixes:** Warding
 > **Suffixes:** Elemental Resistance
@@ -760,7 +781,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## AddBluntResistancePercentage
 
-> **Display Text:** +{0:0.#}% blunt damage reduction
+> **Display Text:** Blunt Damage Reduction +{0:0.#}%
 > 
 > **Prefixes:** Defensive
 > **Suffixes:** Blunt Resistance
@@ -782,7 +803,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## AddSlashingResistancePercentage
 
-> **Display Text:** +{0:0.#}% slashing damage reduction
+> **Display Text:** Slash Damage Reduction +{0:0.#}%
 > 
 > **Prefixes:** Impervious
 > **Suffixes:** Slashing Resistance
@@ -804,7 +825,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## AddPiercingResistancePercentage
 
-> **Display Text:** +{0:0.#}% piercing damage reduction
+> **Display Text:** Pierce Damage Reduction +{0:0.#}%
 > 
 > **Prefixes:** Impenetrable
 > **Suffixes:** Piercing Resistance
@@ -826,7 +847,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## AddChoppingResistancePercentage
 
-> **Display Text:** +{0:0.#}% chopping damage reduction
+> **Display Text:** +{0:0.#}% chopping Damage Reduction
 > 
 > **Prefixes:** 
 > **Suffixes:** 
@@ -848,7 +869,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## AddPhysicalResistancePercentage
 
-> **Display Text:** +{0:0.#}% physical damage reduction
+> **Display Text:** Physical Damage Reduction +{0:0.#}% 
 > 
 > **Prefixes:** Resistant
 > **Suffixes:** Physical Resistance
@@ -870,7 +891,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## ModifyMovementSpeed
 
-> **Display Text:** Movement increased by +{0:0.#}%
+> **Display Text:** Move Speed +{0:0.#}%
 > 
 > **Prefixes:** Quick
 > **Suffixes:** Speed
@@ -893,7 +914,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## ModifySprintStaminaUse
 
-> **Display Text:** Reduce sprint stamina use by -{0:0.#}%
+> **Display Text:** Sprint Stamina Use -{0:0.#}%
 > 
 > **Prefixes:** Sprinter's
 > **Suffixes:** Sprinting
@@ -915,7 +936,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## ModifyJumpStaminaUse
 
-> **Display Text:** Reduce jump stamina use by -{0:0.#}%
+> **Display Text:** Jump Stamina Use -{0:0.#}%
 > 
 > **Prefixes:** Acrobat's
 > **Suffixes:** the Acrobat
@@ -937,7 +958,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## ModifyAttackStaminaUse
 
-> **Display Text:** Reduce attack stamina use by -{0:0.#}%
+> **Display Text:** Attack Stamina Use -{0:0.#}%
 > 
 > **Prefixes:** Gladiator's
 > **Suffixes:** the Gladiator
@@ -959,7 +980,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## ModifyBlockStaminaUse
 
-> **Display Text:** Reduce block stamina use by -{0:0.#}%
+> **Display Text:** Block Stamina Use -{0:0.#}%
 > 
 > **Prefixes:** Guardian's
 > **Suffixes:** the Guardian
@@ -1010,7 +1031,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## AddCarryWeight
 
-> **Display Text:** Increase carry weight by +{0}
+> **Display Text:** Carry Weight +{0}
 > 
 > **Prefixes:** Pocketed
 > **Suffixes:** Pockets
@@ -1032,7 +1053,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## LifeSteal
 
-> **Display Text:** Heal for {0:0.0}% of damage done
+> **Display Text:** Lifesteal +{0:0.#}%
 > 
 > **Prefixes:** Valravn's
 > **Suffixes:** Valravn
@@ -1047,7 +1068,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## ModifyAttackSpeed
 
-> **Display Text:** Attack speed increased by +{0:0.#}%
+> **Display Text:** Attack Speed +{0:0.#}%
 > 
 > **Prefixes:** Striker's
 > **Suffixes:** Striking
@@ -1147,7 +1168,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## ExplosiveArrows
 
-> **Display Text:** +{0:0.#}% AOE fire damage on impact
+> **Display Text:** Explosive Shot +{0:0.#}%
 > 
 > **Prefixes:** Exploding
 > **Suffixes:** Explosive
@@ -1170,7 +1191,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## QuickDraw
 
-> **Display Text:** Improves draw speed by +{0:0.#}%
+> **Display Text:** Quick Draw +{0:0.#}%
 > 
 > **Prefixes:** Quick-draw
 > **Suffixes:** Quickness
@@ -1193,7 +1214,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## AddSwordsSkill
 
-> **Display Text:** +{0} swords skill level
+> **Display Text:** Swords Skill +{0}
 > 
 > **Prefixes:** Blademaster's
 > **Suffixes:** the Blademaster
@@ -1216,7 +1237,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## AddKnivesSkill
 
-> **Display Text:** +{0} knives skill level
+> **Display Text:** Knives Skill +{0}
 > 
 > **Prefixes:** Scoundrel's
 > **Suffixes:** the Scoundrel
@@ -1238,7 +1259,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## AddClubsSkill
 
-> **Display Text:** +{0} clubs skill level
+> **Display Text:** Clubs Skill +{0}
 > 
 > **Prefixes:** Bruiser's
 > **Suffixes:** the Bruiser
@@ -1260,7 +1281,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## AddPolearmsSkill
 
-> **Display Text:** +{0} polearms skill level
+> **Display Text:** Polearms Skill +{0}
 > 
 > **Prefixes:** Halberdier's
 > **Suffixes:** the Halberdier
@@ -1282,7 +1303,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## AddSpearsSkill
 
-> **Display Text:** +{0} spears skill level
+> **Display Text:** Spears Skill +{0}
 > 
 > **Prefixes:** Hunter's
 > **Suffixes:** the Hunter
@@ -1304,7 +1325,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## AddBlockingSkill
 
-> **Display Text:** +{0} blocking skill level
+> **Display Text:** Blocking Skill +{0}
 > 
 > **Prefixes:** Shieldmaiden's
 > **Suffixes:** the Shieldmaiden
@@ -1326,7 +1347,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## AddAxesSkill
 
-> **Display Text:** +{0} axes skill level
+> **Display Text:** Axes Skill +{0}
 > 
 > **Prefixes:** Viking's
 > **Suffixes:** the Viking
@@ -1348,7 +1369,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## AddBowsSkill
 
-> **Display Text:** +{0} bows skill level
+> **Display Text:** Bows Skill +{0}
 > 
 > **Prefixes:** Archer's
 > **Suffixes:** Archery
@@ -1370,7 +1391,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## AddUnarmedSkill
 
-> **Display Text:** +{0} unarmed skill level
+> **Display Text:** Unarmed Skill +{0}
 > 
 > **Prefixes:** Brawler's
 > **Suffixes:** Brawling
@@ -1392,7 +1413,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## AddPickaxesSkill
 
-> **Display Text:** +{0} pickaxes skill level
+> **Display Text:** Pickaxes Skill +{0}
 > 
 > **Prefixes:** Mining
 > **Suffixes:** the Miner
@@ -1414,7 +1435,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## AddMovementSkills
 
-> **Display Text:** +{0} movement skills level
+> **Display Text:** Movement Skills +{0}
 > 
 > **Prefixes:** Adventuring
 > **Suffixes:** the Adventurer
@@ -1436,7 +1457,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## ModifyStaggerDuration
 
-> **Display Text:** Stagger duration increased by +{0:0.#}%
+> **Display Text:** Stagger Duration +{0:0.#}%
 > 
 > **Prefixes:** Basher's
 > **Suffixes:** Staggering
@@ -1446,6 +1467,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > **Requirements:**
 > > **Flags:** `ExclusiveSelf`
 > > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow, Shield`
+> > **ExcludedSkillTypes:** `Pickaxes`
 > 
 > **Value Per Rarity:**
 > 
@@ -1458,7 +1480,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## QuickLearner
 
-> **Display Text:** Skills improve +{0:0.#}% faster
+> **Display Text:** Quick Learner +{0:0.#}%
 > 
 > **Prefixes:** Student's
 > **Suffixes:** the Student
@@ -1480,7 +1502,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## FreeBuild
 
-> **Display Text:** No crafting stations required to build
+> **Display Text:** Free Build
 > 
 > **Prefixes:** Builder's
 > **Suffixes:** the Builder
@@ -1494,7 +1516,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## RecallWeapon
 
-> **Display Text:** Returns to you after being thrown
+> **Display Text:** Recalling
 > 
 > **Prefixes:** Recaller's
 > **Suffixes:** Recalling
@@ -1504,10 +1526,11 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > **Requirements:**
 > > **Flags:** `ExclusiveSelf`
 > > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon`
+> > **ExcludedSkillTypes:** `Pickaxes`
 
 ## ReflectDamage
 
-> **Display Text:** Reflect +{0:0.#}% of damage back to attacker
+> **Display Text:** Thorns +{0:0.#}%
 > 
 > **Prefixes:** Reflector's
 > **Suffixes:** Reflecting
@@ -1529,7 +1552,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## AvoidDamageTaken
 
-> **Display Text:** +{0:0.#}% chance to avoid attack
+> **Display Text:** Feint +{0:0.#}%
 > 
 > **Prefixes:** Artful Dodger's
 > **Suffixes:** the Artful Dodger
@@ -1551,7 +1574,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## StaggerOnDamageTaken
 
-> **Display Text:** +{0:0.#}% chance to stagger attacker
+> **Display Text:** Stagger Chance +{0:0.#}%
 > 
 > **Prefixes:** Avenger's
 > **Suffixes:** Vengeance
@@ -1586,7 +1609,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## ModifyDiscoveryRadius
 
-> **Display Text:** Discovery radius increased by +{0:0.#}%
+> **Display Text:** Discovery Radius +{0:0.#}%
 > 
 > **Prefixes:** Explorer's
 > **Suffixes:** the Explorer
@@ -1608,7 +1631,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## Comfortable
 
-> **Display Text:** Increase comfort level by +{0}
+> **Display Text:** Comfort +{0}
 > 
 > **Prefixes:** Comfortable
 > **Suffixes:** Comfort
@@ -1622,7 +1645,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## ModifyMovementSpeedLowHealth
 
-> **Display Text:** Movement increased by +{0:0.#}% when below 30% HP
+> **Display Text:** Move Speed +{0:0.#}% (Health Critical)
 > 
 > **Prefixes:** Quick
 > **Suffixes:** Speed
@@ -1645,7 +1668,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## ModifyHealthRegenLowHealth
 
-> **Display Text:** Health regen improved by +{0:0.#}% when below 30% HP
+> **Display Text:** Health Regen +{0:0.#}% (Health Critical)
 > 
 > **Prefixes:** Vigorous
 > **Suffixes:** Vigor
@@ -1667,7 +1690,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## ModifyStaminaRegenLowHealth
 
-> **Display Text:** Stamina regen improved by +{0:0.#}% when below 30% HP
+> **Display Text:** Stamina Regen +{0:0.#}% (Health Critical)
 > 
 > **Prefixes:** Recovering
 > **Suffixes:** Recovery
@@ -1689,7 +1712,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## ModifyArmorLowHealth
 
-> **Display Text:** Armor increased by +{0:0.#}% when below 30% HP
+> **Display Text:** Armor +{0:0.#}% (Health Critical)
 > 
 > **Prefixes:** Heavy, Protected
 > **Suffixes:** Protection
@@ -1711,7 +1734,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## ModifyDamageLowHealth
 
-> **Display Text:** All damage increased by +{0:0.#}% when below 30% HP
+> **Display Text:** Damage +{0:0.#}% (Health Critical)
 > 
 > **Prefixes:** Berserker's
 > **Suffixes:** the Berserker
@@ -1721,6 +1744,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > **Requirements:**
 > > **Flags:** `ExclusiveSelf`
 > > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow`
+> > **ExcludedSkillTypes:** `Pickaxes`
 > 
 > **Value Per Rarity:**
 > 
@@ -1733,7 +1757,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## ModifyBlockPowerLowHealth
 
-> **Display Text:** Block improved by +{0:0.#}% when below 30% HP
+> **Display Text:** Block +{0:0.#}% (Health Critical)
 > 
 > **Prefixes:** Stopping, Defender's
 > **Suffixes:** Stopping, the Defender
@@ -1756,10 +1780,10 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## ModifyParryLowHealth
 
-> **Display Text:** Parry improved by +{0:0.#}% when below 30% HP
+> **Display Text:** Parry +{0:0.#}% (Health Critical)
 > 
-> **Prefixes:** Elusive, Rebuking, Duelist's
-> **Suffixes:** Repelling, the Duelist
+> **Prefixes:** Elusive, Rebuking
+> **Suffixes:** Repelling
 > 
 > **Allowed Item Types:** Shield, TwoHandedWeapon
 > 
@@ -1779,7 +1803,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## ModifyAttackSpeedLowHealth
 
-> **Display Text:** Attack speed increased by +{0:0.#}% when below 30% HP
+> **Display Text:** Attack Speed +{0:0.#}% (Health Critical)
 > 
 > **Prefixes:** Striker's
 > **Suffixes:** Striking
@@ -1789,6 +1813,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > **Requirements:**
 > > **Flags:** `ExclusiveSelf`
 > > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow, Tool`
+> > **ExcludedSkillTypes:** `Pickaxes`
 > 
 > **Value Per Rarity:**
 > 
@@ -1801,7 +1826,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## AvoidDamageTakenLowHealth
 
-> **Display Text:** +{0:0.#}% chance to avoid damage taken when below 30% HP
+> **Display Text:** Feint +{0:0.#}% (Health Critical)
 > 
 > **Prefixes:** Artful Dodger's
 > **Suffixes:** the Artful Dodger
@@ -1823,7 +1848,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## LifeStealLowHealth
 
-> **Display Text:** Heal for {0:0.0}% of damage done when below 30% HP
+> **Display Text:** Lifesteal {0:0.0}% (Health Critical)
 > 
 > **Prefixes:** Valravn's
 > **Suffixes:** Valravn
@@ -1851,7 +1876,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## Executioner
 
-> **Display Text:** Execute low-health enemies (+{0}% damage)
+> **Display Text:** Executioner +{0}%
 > 
 > **Prefixes:** Executioner's
 > **Suffixes:** Execution
@@ -1866,7 +1891,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## Riches
 
-> **Display Text:** +{0:0.#}% chance for slain enemies to drop treasure
+> **Display Text:** Riches +{0:0.#}%
 > 
 > **Prefixes:** Rich
 > **Suffixes:** Riches
@@ -1888,7 +1913,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## Opportunist
 
-> **Display Text:** +{0:0.#}% chance to backstab staggered enemies
+> **Display Text:** Opportunist +{0:0.#}%
 > 
 > **Prefixes:** Opportunist's
 > **Suffixes:** Opportunity
@@ -1902,7 +1927,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## Duelist
 
-> **Display Text:** Adds +{0:0.#}% block and parry power without a shield
+> **Display Text:** Duelist +{0:0.#}%
 > 
 > **Prefixes:** Duelist's
 > **Suffixes:** Dueling
@@ -1925,7 +1950,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## Immovable
 
-> **Display Text:** Immune to knockback and stagger while blocking
+> **Display Text:** Immovable
 > 
 > **Prefixes:** Pillar's
 > **Suffixes:** the Pillar
@@ -1938,16 +1963,17 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## ModifyStaggerDamage
 
-> **Display Text:** Damage to staggered enemies increased by +{0:0.#}%
+> **Display Text:** Stagger Damage +{0:0.#}%
 > 
-> **Prefixes:** Cunning's
-> **Suffixes:** the cunning
+> **Prefixes:** Cunning
+> **Suffixes:** Cunning
 > 
 > **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow
 > 
 > **Requirements:**
 > > **Flags:** `ExclusiveSelf`
 > > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow`
+> > **ExcludedSkillTypes:** `Pickaxes`
 > 
 > **Value Per Rarity:**
 > 
@@ -1957,6 +1983,109 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > |Rare|16|22|1|
 > |Epic|23|30|1|
 > |Legendary|31|40|1|
+
+## Luck
+
+> **Display Text:** Luck +{0}
+> 
+> **Prefixes:** Lucky
+> **Suffixes:** Luck
+> 
+> **Allowed Item Types:** Helmet, Chest, Legs, Shoulder, Utility
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedItemTypes:** `Helmet, Chest, Legs, Shoulder, Utility`
+> 
+> **Value Per Rarity:**
+> 
+> |Rarity|Min|Max|Increment|
+> |--|--|--|--|
+> |Magic|1|5|1|
+> |Rare|5|10|1|
+> |Epic|10|15|1|
+> |Legendary|15|20|1|
+
+## ModifyParryWindow
+
+> **Display Text:** Parry Window +{0} ms
+> 
+> **Prefixes:** Parrying Expert's
+> **Suffixes:** Expert Parrying
+> 
+> **Allowed Item Types:** Shield
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf, ItemHasParryPower`
+> > **AllowedItemTypes:** `Shield`
+> 
+> **Value Per Rarity:**
+> 
+> |Rarity|Min|Max|Increment|
+> |--|--|--|--|
+> |Magic|10|40|1|
+> |Rare|20|60|1|
+> |Epic|40|80|1|
+> |Legendary|50|100|1|
+
+## Slow
+
+> **Display Text:** Slow +{0:0.#}%
+> 
+> **Prefixes:** Sluggish
+> **Suffixes:** Lethargy
+> 
+> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow`
+> > **ExcludedSkillTypes:** `Pickaxes`
+> 
+> **Value Per Rarity:**
+> 
+> |Rarity|Min|Max|Increment|
+> |--|--|--|--|
+> |Magic|30|50|1|
+> |Rare|40|60|1|
+> |Epic|50|70|1|
+> |Legendary|60|80|1|
+
+## Bulwark
+
+> **Display Text:** Bulwark [Activated]: Prevent all damage for {0} seconds. Cooldown: 60 seconds.
+> 
+> **Allowed Item Types:** *None*
+> 
+> **Requirements:**
+> > **Flags:** `NoRoll, ExclusiveSelf`
+
+## Undying
+
+> **Display Text:** Undying [Passive]: On death, regain full health. Cooldown: 20 minutes.
+> 
+> **Allowed Item Types:** *None*
+> 
+> **Requirements:**
+> > **Flags:** `NoRoll, ExclusiveSelf`
+
+## FrostDamageAOE
+
+> **Display Text:** Melee attacks that deal frost damage deal an additional 50% of weapon damage as frost in a cone in front of the attacker.
+> 
+> **Allowed Item Types:** *None*
+> 
+> **Requirements:**
+> > **Flags:** `NoRoll, ExclusiveSelf`
+
+## Berserker
+
+> **Display Text:** Berserker [Activated]: For 10 seconds, you cannot regenerate health, but you gain +50% to +200% damage based on health missing. Cooldown: 3 minutes.
+> 
+> **Allowed Item Types:** *None*
+> 
+> **Requirements:**
+> > **Flags:** `NoRoll, ExclusiveSelf`
 
 # Item Sets
 
@@ -2354,27 +2483,27 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 
 > | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
-> | Tier0Everything | 1 (100%) | 97 (97%) | 2 (2%) | 1 (1%) | 0 (0%) |
+> | Tier0Everything | 1 (100%) | 100 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
 
 > | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
-> | Tier0Everything | 1 (100%) | 92 (92%) | 5 (5%) | 2 (2%) | 1 (1%) |
+> | Tier0Everything | 1 (100%) | 95 (95%) | 5 (5%) | 0 (0%) | 0 (0%) |
 
 > | Items (lvl 3) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
-> | Tier0Everything | 1 (100%) | 85 (85%) | 10 (10%) | 3 (3%) | 2 (2%) |
+> | Tier0Everything | 1 (100%) | 90 (90%) | 10 (10%) | 0 (0%) | 0 (0%) |
 
 > | Items (lvl 4) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
-> | Tier0Everything | 1 (100%) | 77 (77%) | 15 (15%) | 5 (5%) | 3 (3%) |
+> | Tier0Everything | 1 (100%) | 80 (80%) | 15 (15%) | 5 (5%) | 0 (0%) |
 
 > | Items (lvl 5) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
-> | Tier0Everything | 1 (100%) | 75 (68.2%) | 20 (18.2%) | 10 (9.1%) | 5 (4.5%) |
+> | Tier0Everything | 1 (100%) | 70 (70%) | 19 (19%) | 10 (10%) | 1 (1%) |
 
 > | Items (lvl 6) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
-> | Tier0Everything | 1 (100%) | 60 (57.1%) | 20 (19%) | 15 (14.3%) | 10 (9.5%) |
+> | Tier0Everything | 1 (100%) | 60 (60%) | 20 (20%) | 15 (15%) | 5 (5%) |
 
 
 ## Tier1Mob
@@ -2413,28 +2542,28 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 
 > | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
-> | Tier0Everything | 10 (90.9%) | 70 (70%) | 25 (25%) | 3 (3%) | 2 (2%) |
-> | Tier1Everything | 1 (9.1%) | 70 (70%) | 25 (25%) | 3 (3%) | 2 (2%) |
+> | Tier0Everything | 10 (90.9%) | 75 (75%) | 25 (25%) | 0 (0%) | 0 (0%) |
+> | Tier1Everything | 1 (9.1%) | 75 (75%) | 25 (25%) | 0 (0%) | 0 (0%) |
 
 > | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
-> | Tier0Everything | 5 (83.3%) | 62 (62%) | 30 (30%) | 5 (5%) | 3 (3%) |
-> | Tier1Everything | 1 (16.7%) | 62 (62%) | 30 (30%) | 5 (5%) | 3 (3%) |
+> | Tier0Everything | 5 (83.3%) | 70 (70%) | 29 (29%) | 1 (1%) | 0 (0%) |
+> | Tier1Everything | 1 (16.7%) | 70 (70%) | 29 (29%) | 1 (1%) | 0 (0%) |
 
 > | Items (lvl 3) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
-> | Tier0Everything | 3 (75%) | 65 (65%) | 35 (35%) | 0 (0%) | 0 (0%) |
-> | Tier1Everything | 1 (25%) | 65 (65%) | 35 (35%) | 0 (0%) | 0 (0%) |
+> | Tier0Everything | 3 (75%) | 63 (63%) | 34 (34%) | 2 (2%) | 1 (1%) |
+> | Tier1Everything | 1 (25%) | 63 (63%) | 34 (34%) | 2 (2%) | 1 (1%) |
 
 > | Items (lvl 4) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
-> | Tier0Everything | 1 (50%) | 55 (55%) | 40 (40%) | 5 (5%) | 0 (0%) |
-> | Tier1Everything | 1 (50%) | 55 (55%) | 40 (40%) | 5 (5%) | 0 (0%) |
+> | Tier0Everything | 1 (50%) | 53 (53%) | 40 (40%) | 5 (5%) | 2 (2%) |
+> | Tier1Everything | 1 (50%) | 53 (53%) | 40 (40%) | 5 (5%) | 2 (2%) |
 
 > | Items (lvl 5) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
-> | Tier0Everything | 1 (16.7%) | 45 (45%) | 44 (44%) | 10 (10%) | 1 (1%) |
-> | Tier1Everything | 5 (83.3%) | 45 (45%) | 44 (44%) | 10 (10%) | 1 (1%) |
+> | Tier0Everything | 1 (16.7%) | 45 (45%) | 43 (43%) | 9 (9%) | 3 (3%) |
+> | Tier1Everything | 5 (83.3%) | 45 (45%) | 43 (43%) | 9 (9%) | 3 (3%) |
 
 > | Items (lvl 6) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
@@ -2480,20 +2609,20 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 
 > | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
-> | Tier1Everything | 1 (50%) | 50 (50%) | 50 (50%) | 0 (0%) | 0 (0%) |
-> | Tier0Shields | 1 (50%) | 50 (50%) | 50 (50%) | 0 (0%) | 0 (0%) |
+> | Tier1Everything | 1 (50%) | 50 (50%) | 47 (47%) | 2 (2%) | 1 (1%) |
+> | Tier0Shields | 1 (50%) | 50 (50%) | 47 (47%) | 2 (2%) | 1 (1%) |
 
 > | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
-> | Tier1Everything | 5 (45.5%) | 40 (40%) | 55 (55%) | 5 (5%) | 0 (0%) |
-> | Tier0Shields | 5 (45.5%) | 40 (40%) | 55 (55%) | 5 (5%) | 0 (0%) |
-> | TrollArmor | 1 (9.1%) | 40 (40%) | 55 (55%) | 5 (5%) | 0 (0%) |
+> | Tier1Everything | 5 (45.5%) | 40 (40%) | 53 (53%) | 5 (5%) | 2 (2%) |
+> | Tier0Shields | 5 (45.5%) | 40 (40%) | 53 (53%) | 5 (5%) | 2 (2%) |
+> | TrollArmor | 1 (9.1%) | 40 (40%) | 53 (53%) | 5 (5%) | 2 (2%) |
 
 > | Items (lvl 3) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
-> | Tier1Everything | 3 (42.9%) | 30 (30%) | 60 (60%) | 9 (9%) | 1 (1%) |
-> | Tier0Shields | 3 (42.9%) | 30 (30%) | 60 (60%) | 9 (9%) | 1 (1%) |
-> | TrollArmor | 1 (14.3%) | 30 (30%) | 60 (60%) | 9 (9%) | 1 (1%) |
+> | Tier1Everything | 3 (42.9%) | 29 (29%) | 59 (59%) | 9 (9%) | 3 (3%) |
+> | Tier0Shields | 3 (42.9%) | 29 (29%) | 59 (59%) | 9 (9%) | 3 (3%) |
+> | TrollArmor | 1 (14.3%) | 29 (29%) | 59 (59%) | 9 (9%) | 3 (3%) |
 
 > | Items (lvl 4) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
@@ -2552,17 +2681,17 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 
 > | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
-> | Tier2Everything | 1 (100%) | 25 (25%) | 75 (75%) | 0 (0%) | 0 (0%) |
+> | Tier2Everything | 1 (100%) | 24 (24%) | 73 (73%) | 2 (2%) | 1 (1%) |
 
 > | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
-> | Tier2Everything | 5 (83.3%) | 15 (15%) | 80 (80%) | 5 (5%) | 0 (0%) |
-> | Tier3Everything | 1 (16.7%) | 15 (15%) | 80 (80%) | 5 (5%) | 0 (0%) |
+> | Tier2Everything | 5 (83.3%) | 15 (15%) | 78 (78%) | 5 (5%) | 2 (2%) |
+> | Tier3Everything | 1 (16.7%) | 15 (15%) | 78 (78%) | 5 (5%) | 2 (2%) |
 
 > | Items (lvl 3) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
-> | Tier2Everything | 3 (75%) | 5 (5%) | 85 (85%) | 9 (9%) | 1 (1%) |
-> | Tier2Everything | 1 (25%) | 5 (5%) | 85 (85%) | 9 (9%) | 1 (1%) |
+> | Tier2Everything | 3 (75%) | 5 (5%) | 83 (83%) | 9 (9%) | 3 (3%) |
+> | Tier3Everything | 1 (25%) | 5 (5%) | 83 (83%) | 9 (9%) | 3 (3%) |
 
 > | Items (lvl 4) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
@@ -2622,7 +2751,7 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 
 > | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
-> | Tier3Everything | 1 (100%) | 0 (0%) | 75 (75%) | 24 (24%) | 1 (1%) |
+> | Tier3Everything | 1 (100%) | 0 (0%) | 75 (74.3%) | 24 (23.8%) | 2 (2%) |
 
 > | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
@@ -2694,7 +2823,7 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 
 > | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
-> | Tier4Everything | 1 (100%) | 0 (0%) | 50 (50%) | 49 (49%) | 1 (1%) |
+> | Tier4Everything | 1 (100%) | 0 (0%) | 50 (48.5%) | 49 (47.6%) | 4 (3.9%) |
 
 > | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
@@ -4768,44 +4897,41 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 
 > | Drops (lvl 1) | Weight (Chance) |
 > | -- | -- |
-> | 2 | 40 (40%) |
+> | 2 | 20 (20%) |
 > | 3 | 40 (40%) |
-> | 4 | 20 (20%) |
-> | 5 | 0 (0%) |
+> | 4 | 30 (30%) |
+> | 5 | 10 (10%) |
 
 > | Drops (lvl 2) | Weight (Chance) |
 > | -- | -- |
-> | 2 | 20 (20%) |
-> | 3 | 50 (50%) |
-> | 4 | 30 (30%) |
-> | 5 | 0 (0%) |
+> | 2 | 20 (17.4%) |
+> | 3 | 50 (43.5%) |
+> | 4 | 30 (26.1%) |
+> | 5 | 15 (13%) |
 
 > | Drops (lvl 3) | Weight (Chance) |
 > | -- | -- |
-> | 2 | 0 (0%) |
-> | 3 | 60 (60%) |
-> | 4 | 40 (40%) |
-> | 5 | 0 (0%) |
+> | 3 | 50 (50%) |
+> | 4 | 30 (30%) |
+> | 5 | 20 (20%) |
 
 > | Drops (lvl 4) | Weight (Chance) |
 > | -- | -- |
-> | 2 | 0 (0%) |
-> | 3 | 35 (35%) |
-> | 4 | 60 (60%) |
-> | 5 | 5 (5%) |
+> | 3 | 20 (20%) |
+> | 4 | 55 (55%) |
+> | 5 | 25 (25%) |
 
 > | Drops (lvl 5) | Weight (Chance) |
 > | -- | -- |
-> | 2 | 0 (0%) |
-> | 3 | 10 (10%) |
-> | 4 | 80 (80%) |
-> | 5 | 10 (10%) |
+> | 3 | 5 (5%) |
+> | 4 | 65 (65%) |
+> | 5 | 30 (30%) |
 
 > | Drops (lvl 6) | Weight (Chance) |
 > | -- | -- |
-> | 2 | 0 (0%) |
-> | 4 | 85 (85%) |
-> | 5 | 15 (15%) |
+> | 4 | 60 (60%) |
+> | 5 | 35 (35%) |
+> | 6 | 5 (5%) |
 
 > | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
@@ -4836,44 +4962,41 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 
 > | Drops (lvl 1) | Weight (Chance) |
 > | -- | -- |
-> | 2 | 20 (20%) |
-> | 3 | 60 (60%) |
-> | 4 | 15 (15%) |
-> | 5 | 5 (5%) |
+> | 3 | 20 (20%) |
+> | 4 | 60 (60%) |
+> | 5 | 15 (15%) |
+> | 6 | 5 (5%) |
 
 > | Drops (lvl 2) | Weight (Chance) |
 > | -- | -- |
-> | 2 | 0 (0%) |
-> | 3 | 70 (70%) |
-> | 4 | 20 (20%) |
-> | 5 | 10 (10%) |
+> | 4 | 70 (70%) |
+> | 5 | 20 (20%) |
+> | 6 | 10 (10%) |
 
 > | Drops (lvl 3) | Weight (Chance) |
 > | -- | -- |
-> | 2 | 0 (0%) |
-> | 3 | 45 (45%) |
-> | 4 | 40 (40%) |
-> | 5 | 15 (15%) |
+> | 4 | 45 (45%) |
+> | 5 | 40 (40%) |
+> | 6 | 15 (15%) |
 
 > | Drops (lvl 4) | Weight (Chance) |
 > | -- | -- |
-> | 2 | 0 (0%) |
-> | 3 | 25 (25%) |
-> | 4 | 50 (50%) |
-> | 5 | 25 (25%) |
+> | 4 | 25 (25%) |
+> | 5 | 50 (50%) |
+> | 6 | 25 (25%) |
 
 > | Drops (lvl 5) | Weight (Chance) |
 > | -- | -- |
-> | 2 | 0 (0%) |
-> | 3 | 5 (5%) |
-> | 4 | 60 (60%) |
-> | 5 | 35 (35%) |
+> | 4 | 5 (5%) |
+> | 5 | 60 (60%) |
+> | 6 | 30 (30%) |
+> | 7 | 5 (5%) |
 
 > | Drops (lvl 6) | Weight (Chance) |
 > | -- | -- |
-> | 2 | 0 (0%) |
-> | 4 | 55 (55%) |
-> | 5 | 45 (45%) |
+> | 5 | 50 (50%) |
+> | 6 | 40 (40%) |
+> | 7 | 10 (10%) |
 
 > | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |

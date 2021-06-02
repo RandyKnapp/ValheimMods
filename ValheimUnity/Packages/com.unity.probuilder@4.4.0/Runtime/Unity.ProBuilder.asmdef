@@ -1,0 +1,23 @@
+{
+    "name": "Unity.ProBuilder",
+    "references": [
+        "Unity.ProBuilder.Poly2Tri",
+        "Unity.ProBuilder.KdTree",
+        "Unity.RenderPipelines.HighDefinition.Runtime"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "com.unity.render-pipelines.high-definition",
+            "expression": "7.1.0",
+            "define": "HDRP_7_1_0_OR_NEWER"
+        }
+    ],
+    "noEngineReferences": false
+}

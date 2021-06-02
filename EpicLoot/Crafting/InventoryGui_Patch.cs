@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 namespace EpicLoot.Crafting
 {
-    [HarmonyPatch(typeof(InventoryGui), "UpdateRecipe")]
+    [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.UpdateRecipe))]
     public static class InventoryGui_UpdateRecipe_Patch
     {
         public static void Postfix(InventoryGui __instance)
@@ -118,7 +118,7 @@ namespace EpicLoot.Crafting
     }
 
     //SetupRequirement
-    [HarmonyPatch(typeof(InventoryGui), "SetupRequirement")]
+    [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.SetupRequirement))]
     public static class InventoryGui_SetupRequirement_Patch
     {
         public static void Postfix(Transform elementRoot, Piece.Requirement req, Player player, bool craft, int quality)
@@ -153,7 +153,7 @@ namespace EpicLoot.Crafting
     }
 
     //HideRequirement
-    [HarmonyPatch(typeof(InventoryGui), "HideRequirement")]
+    [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.HideRequirement))]
     public static class InventoryGui_HideRequirement_Patch
     {
         public static void Postfix(Transform elementRoot)
@@ -166,7 +166,7 @@ namespace EpicLoot.Crafting
         }
     }
 
-    [HarmonyPatch(typeof(InventoryGui), "AddRecipeToList")]
+    [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.AddRecipeToList))]
     public static class InventoryGui_AddRecipeToList_Patch
     {
         public static void Postfix(InventoryGui __instance, Player player, Recipe recipe, ItemDrop.ItemData item, bool canCraft)

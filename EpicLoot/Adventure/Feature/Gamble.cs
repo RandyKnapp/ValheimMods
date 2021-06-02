@@ -116,7 +116,7 @@ namespace EpicLoot.Adventure.Feature
 
             var random = new Random();
             var totalWeight = gambleRarity.Sum();
-            var nonMagic = random.Next(0, totalWeight) < nonMagicWeight;
+            var nonMagic = (random.NextDouble() * totalWeight) < nonMagicWeight;
             if (nonMagic)
             {
                 return itemInfo.Item.Clone();
@@ -135,7 +135,7 @@ namespace EpicLoot.Adventure.Feature
                 LeveledLoot = new List<LeveledLootDef>() {
                     new LeveledLootDef() {
                         Level = 1,
-                        Drops = new[] { new[] { 1, 1 } },
+                        Drops = new[] { new float[] { 1, 1 } },
                         Loot = new[] {
                             new LootDrop() {
                                 Item = itemInfo.ItemID,

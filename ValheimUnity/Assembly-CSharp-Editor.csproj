@@ -264,6 +264,33 @@
     <Reference Include="System.IO.Compression.FileSystem">
       <HintPath>C:/Users/rknapp/Documents/GitHub/ValheimMods/ValheimUnity/Packages/Compression/System.IO.Compression.FileSystem.dll</HintPath>
     </Reference>
+    <Reference Include="assembly_googleanalytics">
+      <HintPath>C:/Users/rknapp/Documents/GitHub/ValheimMods/ValheimUnity/Packages/valheim/assembly_googleanalytics.dll</HintPath>
+    </Reference>
+    <Reference Include="assembly_guiutils">
+      <HintPath>C:/Users/rknapp/Documents/GitHub/ValheimMods/ValheimUnity/Packages/valheim/assembly_guiutils.dll</HintPath>
+    </Reference>
+    <Reference Include="assembly_lux">
+      <HintPath>C:/Users/rknapp/Documents/GitHub/ValheimMods/ValheimUnity/Packages/valheim/assembly_lux.dll</HintPath>
+    </Reference>
+    <Reference Include="assembly_postprocessing">
+      <HintPath>C:/Users/rknapp/Documents/GitHub/ValheimMods/ValheimUnity/Packages/valheim/assembly_postprocessing.dll</HintPath>
+    </Reference>
+    <Reference Include="assembly_simplemeshcombine">
+      <HintPath>C:/Users/rknapp/Documents/GitHub/ValheimMods/ValheimUnity/Packages/valheim/assembly_simplemeshcombine.dll</HintPath>
+    </Reference>
+    <Reference Include="assembly_steamworks">
+      <HintPath>C:/Users/rknapp/Documents/GitHub/ValheimMods/ValheimUnity/Packages/valheim/assembly_steamworks.dll</HintPath>
+    </Reference>
+    <Reference Include="assembly_sunshafts">
+      <HintPath>C:/Users/rknapp/Documents/GitHub/ValheimMods/ValheimUnity/Packages/valheim/assembly_sunshafts.dll</HintPath>
+    </Reference>
+    <Reference Include="assembly_utils">
+      <HintPath>C:/Users/rknapp/Documents/GitHub/ValheimMods/ValheimUnity/Packages/valheim/assembly_utils.dll</HintPath>
+    </Reference>
+    <Reference Include="assembly_valheim">
+      <HintPath>C:/Users/rknapp/Documents/GitHub/ValheimMods/ValheimUnity/Packages/valheim/assembly_valheim.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.framework">
       <HintPath>C:/Users/rknapp/Documents/GitHub/ValheimMods/ValheimUnity/Library/PackageCache/com.unity.ext.nunit@1.0.6/net35/unity-custom/nunit.framework.dll</HintPath>
     </Reference>
@@ -633,17 +660,8 @@
     <Reference Include="Unity.VSCode.Editor">
       <HintPath>C:/Users/rknapp/Documents/GitHub/ValheimMods/ValheimUnity/Library/ScriptAssemblies/Unity.VSCode.Editor.dll</HintPath>
     </Reference>
-    <Reference Include="Unity.ProBuilder">
-      <HintPath>C:/Users/rknapp/Documents/GitHub/ValheimMods/ValheimUnity/Library/ScriptAssemblies/Unity.ProBuilder.dll</HintPath>
-    </Reference>
     <Reference Include="ThunderKit.Thunderstore">
       <HintPath>C:/Users/rknapp/Documents/GitHub/ValheimMods/ValheimUnity/Library/ScriptAssemblies/ThunderKit.Thunderstore.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.ProBuilder.Editor">
-      <HintPath>C:/Users/rknapp/Documents/GitHub/ValheimMods/ValheimUnity/Library/ScriptAssemblies/Unity.ProBuilder.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.ProBuilder.AssetIdRemapUtility">
-      <HintPath>C:/Users/rknapp/Documents/GitHub/ValheimMods/ValheimUnity/Library/ScriptAssemblies/Unity.ProBuilder.AssetIdRemapUtility.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UI">
       <HintPath>C:/Users/rknapp/Documents/GitHub/ValheimMods/ValheimUnity/Library/ScriptAssemblies/UnityEngine.UI.dll</HintPath>
@@ -663,9 +681,6 @@
     <Reference Include="ThunderKit.Core">
       <HintPath>C:/Users/rknapp/Documents/GitHub/ValheimMods/ValheimUnity/Library/ScriptAssemblies/ThunderKit.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Unity.ProBuilder.AddOns.Editor">
-      <HintPath>C:/Users/rknapp/Documents/GitHub/ValheimMods/ValheimUnity/Library/ScriptAssemblies/Unity.ProBuilder.AddOns.Editor.dll</HintPath>
-    </Reference>
     <Reference Include="ThunderKit.Common">
       <HintPath>C:/Users/rknapp/Documents/GitHub/ValheimMods/ValheimUnity/Library/ScriptAssemblies/ThunderKit.Common.dll</HintPath>
     </Reference>
@@ -677,6 +692,22 @@
     <ProjectReference Include="Assembly-CSharp.csproj">
       <Project>{4F36CE63-FC64-3551-8CB6-37895B314EA8}</Project>
       <Name>Assembly-CSharp</Name>
+    </ProjectReference>
+    <ProjectReference Include="Unity.ProBuilder.csproj">
+      <Project>{B414D795-F2CA-FEA3-74E0-6DEB50194D8E}</Project>
+      <Name>Unity.ProBuilder</Name>
+    </ProjectReference>
+    <ProjectReference Include="Unity.ProBuilder.Editor.csproj">
+      <Project>{5C0652AB-9175-F4EE-E1EB-A2AD3C3AF493}</Project>
+      <Name>Unity.ProBuilder.Editor</Name>
+    </ProjectReference>
+    <ProjectReference Include="Unity.ProBuilder.AssetIdRemapUtility.csproj">
+      <Project>{E1B48015-8024-6F34-E415-235560B08AF0}</Project>
+      <Name>Unity.ProBuilder.AssetIdRemapUtility</Name>
+    </ProjectReference>
+    <ProjectReference Include="Unity.ProBuilder.AddOns.Editor.csproj">
+      <Project>{6A197754-C5B1-8C69-4DAC-0637497E238A}</Project>
+      <Name>Unity.ProBuilder.AddOns.Editor</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -1,11 +1,9 @@
-﻿using System;
-using HarmonyLib;
+﻿using HarmonyLib;
 using JetBrains.Annotations;
 using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects
 {
-    // This code provided by @blaxxun
     [HarmonyPatch(typeof(CharacterAnimEvent), nameof(CharacterAnimEvent.FixedUpdate))]
     public static class ModifyAttackSpeed_CharacterAnimEvent_FixedUpdate_Patch
     {
@@ -19,7 +17,7 @@ namespace EpicLoot.MagicItemEffects
 
             // check if our marker bit is present and not within float epsilon
             var currentSpeedMarker = ___m_animator.speed * 1e7 % 100;
-            if (currentSpeedMarker > 10 && currentSpeedMarker < 30)
+            if ((currentSpeedMarker > 10 && currentSpeedMarker < 30) || ___m_animator.speed <= 0.001f)
             {
                 return;
             }
@@ -32,33 +30,12 @@ namespace EpicLoot.MagicItemEffects
             }
 
             var animationSpeedup = 0.0f;
-            var weapon = currentAttack.GetWeapon();
             ModifyWithLowHealth.Apply(player, MagicEffectType.ModifyAttackSpeed, effect =>
             {
-	            if (weapon != null && weapon.IsMagic() && weapon.HasMagicEffect(effect))
-	            {
-		            animationSpeedup += weapon.GetMagicItem().GetTotalEffectValue(effect, 0.01f);
-	            }
+                animationSpeedup += player.GetTotalActiveMagicEffectValue(effect, 0.01f);
             });
 
-            if (___m_animator.speed > 0.001f)
-            {
-                ___m_animator.speed = ___m_animator.speed * (1 + animationSpeedup) + 19e-7f; // number with single bit in mantissa set
-            }
-        }
-    }
-
-    [HarmonyPatch(typeof(Attack), nameof(Attack.Update))]
-    public class ModifyAttackSpeed_Attack_Update_Patch
-    {
-        public static void Postfix(Attack __instance)
-        {
-            var animator = __instance.m_character.m_animator;
-            var animSpeed = animator.speed.ToString("0.00");
-            var stateInfo = animator.GetCurrentAnimatorStateInfo(0);
-            var transitionInfo = animator.GetAnimatorTransitionInfo(0);
-            var animSpeedMult = stateInfo.speedMultiplier.ToString("0.00");
-            DebugText.SetText($"state={stateInfo.fullPathHash}, speed={animSpeed}, mult={animSpeedMult}, transition={transitionInfo.fullPathHash}");
+            ___m_animator.speed = ___m_animator.speed * (1 + animationSpeedup) + 19e-7f; // number with single bit in mantissa set
         }
     }
 }

@@ -77,8 +77,15 @@ namespace EquipmentAndQuickSlots
             var containerInventory = container.GetInventory();
             foreach (var inventory in allInventories)
             {
+	            List<ItemDrop.ItemData> retainItems = new List<ItemDrop.ItemData>();
                 foreach (var item in inventory.m_inventory)
                 {
+                    if (!CreatureLevelControl.API.DropItemOnDeath(item))
+                    {
+	                    retainItems.Add(item);
+	                    continue;
+                    }
+
                     if (containerInventory.GetItemAt(item.m_gridPos.x, item.m_gridPos.y) != null)
                     {
                         var newSlot = containerInventory.FindEmptySlot(true);
@@ -93,7 +100,7 @@ namespace EquipmentAndQuickSlots
                     }
                 }
 
-                inventory.m_inventory.RemoveAll(item => !item.m_shared.m_questItem && !item.m_equiped);
+                inventory.m_inventory = retainItems;
                 inventory.Changed();
                 containerInventory.Changed();
             }
@@ -110,6 +117,25 @@ namespace EquipmentAndQuickSlots
 
             EquipmentSlotHelper.AllowMove = true;
         }
+    }
+
+    [HarmonyPatch(typeof(Game), nameof(Game.SpawnPlayer))]
+    public static class Game_SpawnPlayer_Patch
+    {
+	    public static void Postfix(Game __instance)
+	    {
+		    if (!__instance.m_firstSpawn)
+		    {
+			    Player player = Player.m_localPlayer;
+			    if (player.GetEquipmentSlotInventory() is Inventory inventory)
+			    {
+				    foreach (var equipment in inventory.m_inventory.ToArray())
+				    {
+					    player.EquipItem(equipment);
+				    }
+			    }
+		    }
+	    }
     }
 
     [HarmonyPatch(typeof(TombStone), nameof(TombStone.OnTakeAllSuccess))]

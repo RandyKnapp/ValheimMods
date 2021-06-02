@@ -19,7 +19,7 @@ namespace EpicLoot
         }
     }
 
-    [HarmonyPatch(typeof(Ragdoll), "Setup")]
+    [HarmonyPatch(typeof(Ragdoll), nameof(Ragdoll.Setup))]
     public static class Ragdoll_Setup_Patch
     {
         public static void Postfix(Ragdoll __instance, CharacterDrop characterDrop)
@@ -42,7 +42,7 @@ namespace EpicLoot
         }
     }
 
-    [HarmonyPatch(typeof(Ragdoll), "SpawnLoot")]
+    [HarmonyPatch(typeof(Ragdoll), nameof(Ragdoll.SpawnLoot))]
     public static class Ragdoll_SpawnLoot_Patch
     {
         public static void Postfix(Ragdoll __instance, Vector3 center)
