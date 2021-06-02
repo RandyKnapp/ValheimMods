@@ -81,9 +81,19 @@ namespace EpicLoot
 
         public static void AddLootTables([NotNull] IEnumerable<LootTable> lootTables)
         {
-            foreach (var lootTable in lootTables)
+
+            // Add loottables for mobs or objects that do not reference another template
+            foreach (var lootTable in lootTables.Where(x => x.RefObject == null || x.RefObject == ""))
             {
                 AddLootTable(lootTable);
+                EpicLoot.Log($"Added loottable for {lootTable.Object}");
+            }
+
+            // Add loottables that are based off mob or object templates
+            foreach (var lootTable in lootTables.Where(x => x.RefObject != null && x.RefObject != ""))
+            {
+                AddLootTable(lootTable);
+                EpicLoot.Log($"Added loottable for {lootTable.Object} using {lootTable.RefObject} as reference");
             }
         }
 
@@ -102,7 +112,24 @@ namespace EpicLoot
                 LootTables.Add(key, new List<LootTable>());
             }
 
-            LootTables[key].Add(lootTable);
+            var refKey = lootTable.RefObject;
+            if (string.IsNullOrEmpty(refKey))
+            {
+                LootTables[key].Add(lootTable);
+
+            }
+            else
+            {
+                if (!LootTables.ContainsKey(refKey))
+                {
+                    EpicLoot.LogError("Loot table missing RefObject name!");
+                    return;
+                }
+                else
+                {
+                    LootTables[key] = LootTables[refKey];
+                }
+            }
         }
 
         public static List<GameObject> RollLootTableAndSpawnObjects(List<LootTable> lootTables, int level, string objectName, Vector3 dropPoint)
