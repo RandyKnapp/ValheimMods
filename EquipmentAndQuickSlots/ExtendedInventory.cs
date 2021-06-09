@@ -77,6 +77,7 @@ namespace EquipmentAndQuickSlots
                 if (inventory.AddItem(item))
                 {
                     EquipmentAndQuickSlots.LogWarning($"Added item ({item.m_shared.m_name}) to ({inventory.m_name}) at ({item.m_gridPos})");
+                    OverrideChanged();
                     result = true;
                     break;
                 }
@@ -132,14 +133,6 @@ namespace EquipmentAndQuickSlots
         {
             CallBase = true;
             var result = _inventories.Any(x => x.ContainsItem(item));
-            CallBase = false;
-            return result;
-        }
-
-        public float OverrideGetTotalWeight()
-        {
-            CallBase = true;
-            var result = _inventories.Sum(x => x.GetTotalWeight());
             CallBase = false;
             return result;
         }
@@ -210,6 +203,7 @@ namespace EquipmentAndQuickSlots
         {
             CallBase = true;
             var result = _inventories.Any(x => x.RemoveOneItem(item));
+            OverrideChanged();
             CallBase = false;
             return result;
         }
@@ -218,6 +212,7 @@ namespace EquipmentAndQuickSlots
         {
             CallBase = true;
             var result = _inventories.Any(x => x.RemoveItem(item));
+            OverrideChanged();
             CallBase = false;
             return result;
         }
@@ -226,6 +221,7 @@ namespace EquipmentAndQuickSlots
         {
             CallBase = true;
             var result = _inventories.Any(x => x.RemoveItem(item, amount));
+            OverrideChanged();
             CallBase = false;
             return result;
         }
@@ -250,6 +246,7 @@ namespace EquipmentAndQuickSlots
                     }
                 }
                 inventory.m_inventory.RemoveAll((x => x.m_stack <= 0));
+                OverrideChanged();
             }
             CallBase = false;
         }
@@ -332,12 +329,39 @@ namespace EquipmentAndQuickSlots
             return (totalCount / totalSlots * 100.0f);
         }
 
+        public void OverrideChanged()
+        {
+            CallBase = true;
+            EquipmentAndQuickSlots.LogWarning("Inventory slot change");
+            OverrideUpdateTotalWeight();
+            m_onChanged?.Invoke();
+            CallBase = false;
+        }
+
         public void OverrideUpdateTotalWeight()
         {
             CallBase = true;
-            _inventories.ForEach(x => x.UpdateTotalWeight());
+            m_totalWeight = 0f;
+            float[] iWeight = new float[_inventories.Count()];
+            EquipmentAndQuickSlots.LogWarning("Begin updating " + _inventories.Count() + " inventories of weights");
+
+            for (int i = 0; i < _inventories.Count(); i++)
+            {
+                EquipmentAndQuickSlots.LogWarning("InventoryName: " + _inventories[i].m_name + " has " + _inventories[i].m_inventory.Count() + " items");
+
+                foreach (var itemData in _inventories[i].m_inventory)
+                {
+                    iWeight[i] += itemData.GetWeight();
+                    EquipmentAndQuickSlots.LogWarning("ItemName: " + itemData.m_shared.m_name + ", ItemWeight: " + itemData.GetWeight() + ", Total " + _inventories[i].m_name + " Weight: " + iWeight[i] );
+                }
+                EquipmentAndQuickSlots.LogWarning(_inventories[i].m_name + " Weight:" + iWeight[i]);
+                m_totalWeight += iWeight[i];
+            }
+            EquipmentAndQuickSlots.LogWarning("Total Weight of all inventories: " + m_totalWeight);
             CallBase = false;
+            EquipmentAndQuickSlots.LogWarning("Done Updating Total Weight");
         }
+
 
         public bool OverrideIsTeleportable()
         {
