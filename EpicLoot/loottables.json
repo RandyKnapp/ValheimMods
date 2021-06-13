@@ -119,8 +119,8 @@
     {
       "Name": "Tier0Tools",
       "Loot": [
-        { "Item": "Hammer", "Rarity": [ 97, 2, 1, 0 ] },
-        { "Item": "Hoe",    "Rarity": [ 97, 2, 1, 0 ] }
+        { "Item": "Hammer", "Rarity": [ 38, 50, 8, 4 ] },
+        { "Item": "Hoe",    "Rarity": [ 38, 50, 8, 4 ] }
       ]
     },
     {
@@ -170,7 +170,7 @@
     {
       "Name": "Tier1Tools",
       "Loot": [
-        { "Item": "PickaxeAntler", "Rarity": [ 94, 3, 2, 1 ] }
+        { "Item": "PickaxeAntler", "Rarity": [ 38, 50, 8, 4 ] }
       ]
     },
     {
@@ -225,8 +225,8 @@
     {
       "Name": "Tier2Tools",
       "Loot": [
-        { "Item": "PickaxeBronze", "Rarity": [ 80, 14, 4, 2 ] },
-        { "Item": "Cultivator",    "Rarity": [ 80, 14, 4, 2 ] }
+        { "Item": "PickaxeBronze", "Rarity": [ 38, 50, 8, 4 ] },
+        { "Item": "Cultivator",    "Rarity": [ 38, 50, 8, 4 ] }
       ]
     },
     {
