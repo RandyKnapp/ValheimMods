@@ -1094,10 +1094,10 @@
         }
       ]
     },
-    // Dragon (Moder)
+    // Moder (Dragon)
     ////////////////////////////////////////////////////////////////////////////////////
     {
-      "Object": "Moder",
+      "Object": "Dragon",
       "LeveledLoot": [
         {
           "Level": 1,
@@ -1110,35 +1110,35 @@
           "Level": 2,
           "Drops": [ [2, 20], [3, 50], [4, 30], [5, 15] ],
           "Loot": [
-            { "Item": "Moder.1", "Weight": 1, "Rarity": [ 0, 20, 65, 15 ] }
+            { "Item": "Dragon.1", "Weight": 1, "Rarity": [ 0, 20, 65, 15 ] }
           ]
         },
         {
           "Level": 3,
           "Drops": [ [3, 50], [4, 30], [5, 20] ],
           "Loot": [
-            { "Item": "Moder.1", "Weight": 1, "Rarity": [ 0, 0, 80, 20 ] }
+            { "Item": "Dragon.1", "Weight": 1, "Rarity": [ 0, 0, 80, 20 ] }
           ]
         },
         {
           "Level": 4,
           "Drops": [ [3, 20], [4, 55], [5, 25] ],
           "Loot": [
-            { "Item": "Moder.1", "Weight": 1, "Rarity": [ 0, 0, 75, 25 ] }
+            { "Item": "Dragon.1", "Weight": 1, "Rarity": [ 0, 0, 75, 25 ] }
           ]
         },
         {
           "Level": 5,
           "Drops": [ [3, 5], [4, 65], [5, 30] ],
           "Loot": [
-            { "Item": "Moder.1", "Weight": 1, "Rarity": [ 0, 0, 70, 30 ] }
+            { "Item": "Dragon.1", "Weight": 1, "Rarity": [ 0, 0, 70, 30 ] }
           ]
         },
         {
           "Level": 6,
           "Drops": [ [4, 60], [5, 35], [6, 5] ],
           "Loot": [
-            { "Item": "Moder.1", "Weight": 1, "Rarity": [ 0, 0, 60, 40 ] }
+            { "Item": "Dragon.1", "Weight": 1, "Rarity": [ 0, 0, 60, 40 ] }
           ]
         }
       ]
