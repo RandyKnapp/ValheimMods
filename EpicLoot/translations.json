@@ -821,7 +821,7 @@
   "mod_epicloot_me_slow_prefix1": "Sluggish",
   "mod_epicloot_me_slow_suffix1": "Lethargy",
 
-  "mod_epicloot_set_me_bulwark": "Bulwark [Activated]: Prevent all damage for {0} seconds. Cooldown: 60 seconds.", 
+  "mod_epicloot_set_me_bulwark": "Bulwark [Activated]: Prevent all damage for 5 seconds. Cooldown: 60 seconds.", 
   "mod_epicloot_set_me_undying": "Undying [Passive]: On death, regain full health. Cooldown: 20 minutes.", 
   "mod_epicloot_set_me_frostdamageaoe_display": "Melee attacks that deal frost damage deal an additional 50% of weapon damage as frost in a cone in front of the attacker.", 
   "mod_epicloot_set_me_berserker": "Berserker [Activated]: For 10 seconds, you cannot regenerate health, but you gain +50% to +200% damage based on health missing. Cooldown: 3 minutes.", 
