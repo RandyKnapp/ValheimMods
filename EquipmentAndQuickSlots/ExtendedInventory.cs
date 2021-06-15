@@ -136,10 +136,26 @@ namespace EquipmentAndQuickSlots
             return result;
         }
 
-        public float OverrideGetTotalWeight()
+        public float OverrideGetTotalWeight(bool isPlayerInv = true)
         {
             CallBase = true;
             var result = _inventories.Sum(x => x.GetTotalWeight());
+
+            var totalWeight = 0f;
+
+            if (isPlayerInv) //Skip the full countainer counting when we are not checking Players inventory
+            {
+                foreach (var inventory in _inventories)
+                {
+                    foreach (var itemData in inventory.m_inventory)
+                    {
+                        totalWeight += itemData.GetWeight();
+
+                    }
+                }
+                result = totalWeight;
+            }
+
             CallBase = false;
             return result;
         }
@@ -332,11 +348,27 @@ namespace EquipmentAndQuickSlots
             return (totalCount / totalSlots * 100.0f);
         }
 
-        public void OverrideUpdateTotalWeight()
+        public float OverrideUpdateTotalWeight(bool isPlayerInv = true)
         {
             CallBase = true;
             _inventories.ForEach(x => x.UpdateTotalWeight());
+
+            var totalWeight = 0f;
+
+            if (isPlayerInv) //Skip the full countainer counting when we are not checking Players inventory
+            {
+                foreach (var inventory in _inventories)
+                {
+                    foreach (var itemData in inventory.m_inventory)
+                    {
+                        totalWeight += itemData.GetWeight();
+
+                    }
+                }
+            }
+
             CallBase = false;
+            return totalWeight;
         }
 
         public bool OverrideIsTeleportable()

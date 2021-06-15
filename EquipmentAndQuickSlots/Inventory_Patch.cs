@@ -5,6 +5,24 @@ using UnityEngine;
 
 namespace EquipmentAndQuickSlots
 {
+    /*
+    Update by Kim Strande 15.06.2021
+    UpdateTotalWeight + extended call: check the weight of every item in every inventories if updating players inventory
+    GetTotalWeight + extended call: check the weight of every item in every inventories if updating players inventory
+
+    RemoveAll Postfix: Do UpdateTotalWeight()
+    RemoveItem Postfix: Do UpdateTotalWeight()
+    RemoveOneItem Postfix: Do UpdateTotalWeight()
+    AddItem Postfix: Do UpdateTotalWeight()
+
+    UpdateTotalWeight and GetTotalWeight seems redundant, however, fixing GetTotalWeight was required to get the correct weight before items are moved/removed/added to the inventory.
+    Did not want to run __instance.UpdateTotalWeight() at GetTotalWeight.Postfix as the method are called with Humanoid.AutoPickup() for each Itemdrop nearby. The extended call seems to be ignored when called from Humanoid.AutoPickup().
+    Remove GetTotalWeight patch completely, and add a separate call to UpdateTotalWeight() from OnSpawn() or any other methods that are RunOnce could also solve the initial weight.
+    The only issue we are able to find with this fix after running on multiple clients on dedicated server for almost a week is that when you login (spawn) on top of loot, the game picks it up before it realize your at weight limit.
+    I do not guarantee that my fix is perfomance effective, feel free to improve it further.
+    */
+
+
     //public bool CanAddItem(GameObject prefab, int stack = -1)
     [HarmonyPatch(typeof(Inventory), "CanAddItem", typeof(GameObject), typeof(int))]
     public static class Inventory_CanAddItem_Patch
@@ -57,11 +75,12 @@ namespace EquipmentAndQuickSlots
             return true;
         }
 
-        public static void Postfix(bool __state)
+        public static void Postfix(bool __state, Inventory __instance)
         {
             if (__state)
             {
                 CallingExtended = false;
+                __instance.UpdateTotalWeight();
             }
         }
     }
@@ -129,15 +148,24 @@ namespace EquipmentAndQuickSlots
     [HarmonyPatch(typeof(Inventory), "RemoveOneItem")]
     public static class Inventory_RemoveOneItem_Patch
     {
-        public static bool Prefix(Inventory __instance, ref bool __result, ItemDrop.ItemData item)
+        public static bool Prefix(Inventory __instance, ref bool __result, ItemDrop.ItemData item, out bool __state)
         {
+            __state = false;
             if (__instance.DoExtendedCall())
             {
+                __state = true;
                 __result = __instance.Extended().OverrideRemoveOneItem(item);
                 return false;
             }
 
             return true;
+        }
+        public static void Postfix(bool __state, Inventory __instance)
+        {
+            if (__state)
+            {
+                __instance.UpdateTotalWeight();
+            }
         }
     }
 
@@ -145,15 +173,24 @@ namespace EquipmentAndQuickSlots
     [HarmonyPatch(typeof(Inventory), "RemoveItem", typeof(ItemDrop.ItemData))]
     public static class Inventory_RemoveItem2_Patch
     {
-        public static bool Prefix(Inventory __instance, ref bool __result, ItemDrop.ItemData item)
+        public static bool Prefix(Inventory __instance, ref bool __result, ItemDrop.ItemData item, out bool __state)
         {
+            __state = false;
             if (__instance.DoExtendedCall())
             {
+                __state = true;
                 __result = __instance.Extended().OverrideRemoveItem(item);
                 return false;
             }
 
             return true;
+        }
+        public static void Postfix(bool __state, Inventory __instance)
+        {
+            if (__state)
+            {
+                __instance.UpdateTotalWeight();
+            }
         }
     }
 
@@ -161,15 +198,24 @@ namespace EquipmentAndQuickSlots
     [HarmonyPatch(typeof(Inventory), "RemoveItem", typeof(ItemDrop.ItemData), typeof(int))]
     public static class Inventory_RemoveItem3_Patch
     {
-        public static bool Prefix(Inventory __instance, ref bool __result, ItemDrop.ItemData item, int amount)
+        public static bool Prefix(Inventory __instance, ref bool __result, ItemDrop.ItemData item, int amount, out bool __state)
         {
+            __state = false;
             if (__instance.DoExtendedCall())
             {
+                __state = true;
                 __result = __instance.Extended().OverrideRemoveItem(item, amount);
                 return false;
             }
 
             return true;
+        }
+        public static void Postfix(bool __state, Inventory __instance)
+        {
+            if (__state)
+            {
+                __instance.UpdateTotalWeight();
+            }
         }
     }
 
@@ -177,15 +223,24 @@ namespace EquipmentAndQuickSlots
     [HarmonyPatch(typeof(Inventory), "RemoveItem", typeof(string), typeof(int))]
     public static class Inventory_RemoveItem4_Patch
     {
-        public static bool Prefix(Inventory __instance, string name, int amount)
+        public static bool Prefix(Inventory __instance, string name, int amount, out bool __state)
         {
+            __state = false;
             if (__instance.DoExtendedCall())
             {
+                __state = true;
                 __instance.Extended().OverrideRemoveItem(name, amount);
                 return false;
             }
 
             return true;
+        }
+        public static void Postfix(bool __state, Inventory __instance)
+        {
+            if (__state)
+            {
+                __instance.UpdateTotalWeight();
+            }
         }
     }
 
@@ -445,23 +500,40 @@ namespace EquipmentAndQuickSlots
         }
     }
 
+
+
     //public void UpdateTotalWeight()
     [HarmonyPatch(typeof(Inventory), "UpdateTotalWeight")]
     public static class Inventory_UpdateTotalWeight_Patch
     {
-        public static bool Prefix(Inventory __instance)
+        public static bool Prefix(Inventory __instance, out float __state)
         {
+            __state = 0f;
             if (__instance.DoExtendedCall())
             {
-                __instance.Extended().OverrideUpdateTotalWeight();
+                var isPlayerInv = false; //Skip the full countainer counting when we are not checking Players inventory
+                if (__instance.GetName() == "Inventory")
+                {
+                    isPlayerInv = true;
+                }
+                
+                var totalWeight = __instance.Extended().OverrideUpdateTotalWeight(isPlayerInv);
+                __state = totalWeight;
                 return false;
             }
 
             return true;
         }
+        public static void Postfix(Inventory __instance, float __state)
+        {
+            if (__instance.GetName() == "Inventory") //Do not override weight when not checking Player
+            {
+                __instance.m_totalWeight = __state;
+            }
+            
+        }
     }
-
-    //  public float GetTotalWeight() => this.m_totalWeight;
+   
     [HarmonyPatch(typeof(Inventory), "GetTotalWeight")]
     public static class Inventory_GetTotalWeight_Patch
     {
@@ -469,7 +541,12 @@ namespace EquipmentAndQuickSlots
         {
             if (__instance.DoExtendedCall())
             {
-                __result = __instance.Extended().OverrideGetTotalWeight();
+                var isPlayerInv = false; //Skip the full countainer counting when we are not checking Players inventory
+                if (__instance.GetName() == "Inventory")
+                {
+                    isPlayerInv = true;
+                }
+                __result = __instance.Extended().OverrideGetTotalWeight(isPlayerInv);
                 return false;
             }
 
@@ -492,4 +569,16 @@ namespace EquipmentAndQuickSlots
             return true;
         }
     }
+
+
+
+    [HarmonyPatch(typeof(Inventory), "RemoveAll")]
+    public static class Inventory_RemoveAll_Patch
+    {
+        public static void Postfix(Inventory __instance)
+        {
+            __instance.UpdateTotalWeight();
+        }
+    }
+
 }
