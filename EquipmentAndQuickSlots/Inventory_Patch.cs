@@ -533,7 +533,8 @@ namespace EquipmentAndQuickSlots
             
         }
     }
-   
+
+    //  public float GetTotalWeight() => this.m_totalWeight;
     [HarmonyPatch(typeof(Inventory), "GetTotalWeight")]
     public static class Inventory_GetTotalWeight_Patch
     {
