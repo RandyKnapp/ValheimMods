@@ -60,7 +60,7 @@ namespace EpicLoot
                 var magicItem = new MagicItem();
                 magicItem.Rarity = ItemRarity.Rare;
                 magicItem.Effects.Add(new MagicItemEffect() { EffectType = MagicEffectType.DvergerCirclet });
-                magicItem.TypeNameOverride = "circlet";
+                magicItem.TypeNameOverride = "$mod_epicloot_item_dvergercirclet_type";
 
                 itemdata.ReplaceComponent<MagicItemComponent>().MagicItem = magicItem;
             }
@@ -69,7 +69,7 @@ namespace EpicLoot
                 var magicItem = new MagicItem();
                 magicItem.Rarity = ItemRarity.Rare;
                 magicItem.Effects.Add(new MagicItemEffect() { EffectType = MagicEffectType.Megingjord });
-                magicItem.TypeNameOverride = "belt";
+                magicItem.TypeNameOverride = "$mod_epicloot_item_megingjord_type";
 
                 itemdata.ReplaceComponent<MagicItemComponent>().MagicItem = magicItem;
             }
@@ -78,7 +78,7 @@ namespace EpicLoot
                 var magicItem = new MagicItem();
                 magicItem.Rarity = ItemRarity.Rare;
                 magicItem.Effects.Add(new MagicItemEffect() { EffectType = MagicEffectType.Wishbone });
-                magicItem.TypeNameOverride = "remains";
+                magicItem.TypeNameOverride = "$mod_epicloot_item_wishbone_type";
 
                 itemdata.ReplaceComponent<MagicItemComponent>().MagicItem = magicItem;
             }
