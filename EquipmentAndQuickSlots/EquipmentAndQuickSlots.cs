@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace EquipmentAndQuickSlots
 {
-    [BepInPlugin(PluginId, "Equipment and Quick Slots", "2.0.6")]
+    [BepInPlugin(PluginId, "Equipment and Quick Slots", "2.0.9")]
     [BepInDependency("moreslots", BepInDependency.DependencyFlags.SoftDependency)]
     public class EquipmentAndQuickSlots : BaseUnityPlugin
     {
@@ -29,6 +29,8 @@ namespace EquipmentAndQuickSlots
         public static ConfigEntry<bool> QuickSlotsEnabled;
         public static ConfigEntry<bool> ViewDebugSaveData;
         private static ConfigEntry<bool> _loggingEnabled;
+        public static ConfigEntry<TextAnchor> QuickSlotsAnchor;
+        public static ConfigEntry<Vector2> QuickSlotsPosition;
 
         private static EquipmentAndQuickSlots _instance;
         private Harmony _harmony;
@@ -47,6 +49,8 @@ namespace EquipmentAndQuickSlots
             EquipmentSlotsEnabled = Config.Bind("Toggles", "Enable Equipment Slots", true, "Enable the equipment slots. Disabling this while items are equipped with attempt to move them to your inventory.");
             QuickSlotsEnabled = Config.Bind("Toggles", "Enable Quick Slots", true, "Enable the quick slots. Disabling this while items are in the slots with attempt to move them to your inventory.");
             ViewDebugSaveData = Config.Bind("Toggles", "View Debug Save Data", false, "Enable to view the raw save data in the compendium.");
+            QuickSlotsAnchor = Config.Bind("Quick Slots", "Quick Slots Anchor", TextAnchor.LowerLeft, "The point on the HUD to anchor the Quick Slots bar. Changing this also changes the pivot of the Quick Slots to that corner.");
+            QuickSlotsPosition = Config.Bind("Quick Slots", "Quick Slots Position", new Vector2(216, 150), "The position offset from the Quick Slots Anchor at which to place the Quick Slots.");
 
             _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), PluginId);
         }

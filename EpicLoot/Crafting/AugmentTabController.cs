@@ -222,10 +222,6 @@ namespace EpicLoot.Crafting
 
                 __instance.m_recipeDecription.text = "Replace one magical effect. Once an effect has been augmented, the others are locked.";
 
-                if (magicItem.HasBeenAugmented())
-                {
-                    recipe.EffectIndex = magicItem.AugmentedEffectIndex;
-                }
                 GenerateAugmentSelectors(recipe, __instance);
 
                 bgImage.color = rarityColorARGB;
@@ -238,7 +234,7 @@ namespace EpicLoot.Crafting
 
                 __instance.m_minStationLevelIcon.gameObject.SetActive(false);
 
-                var canCraft = Player.m_localPlayer.HaveRequirements(GetRecipeRequirementArray(recipe), false, 1);
+                var canCraft = Player.m_localPlayer.HaveRequirements(GetRecipeRequirementArray(recipe), false, 1) || player.NoCostCheat();
                 var hasSelectedEffect = recipe.EffectIndex >= 0;
                 var hasAnyAvailableEnchants = GetAvailableAugments(recipe, recipe.FromItem, recipe.FromItem.GetMagicItem(), recipe.FromItem.GetRarity()).Count > 0;
                 __instance.m_craftButton.interactable = canCraft && hasSelectedEffect && hasAnyAvailableEnchants;
@@ -306,8 +302,6 @@ namespace EpicLoot.Crafting
                     rt.anchoredPosition = startOffset + new Vector2(0, i * -spacing);
                     var t = selector.GetComponentInChildren<Text>();
                     t.font = inventoryGui.m_recipeDecription.font;
-                    t.text = Localization.instance.Localize(MagicItem.GetEffectText(augmentableEffects[i], rarity, true));
-                    t.color = magicItem.HasBeenAugmented() && recipe.EffectIndex != i ? Color.gray : EpicLoot.GetRarityColorARGB(rarity);
                     t.resizeTextMaxSize = 18;
                     t.resizeTextMinSize = 10;
                     t.rectTransform.anchoredPosition += new Vector2(300, 0);
@@ -316,11 +310,10 @@ namespace EpicLoot.Crafting
                     t.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, spacing);
                     var index = i;
                     selector.onValueChanged.AddListener((selected) => OnSelectorValueChanged(index, selected));
-                    selector.isOn = recipe.EffectIndex == i;
-                    selector.gameObject.SetActive(true);
-                    selector.interactable = !magicItem.HasBeenAugmented() || recipe.EffectIndex == i;
 
                     EffectSelectors.Add(selector);
+
+                    SetSelectorValues(recipe, i, magicItem, rarity);
                 }
                 else if (i >= effectCount && i < EffectSelectors.Count)
                 {
@@ -328,15 +321,25 @@ namespace EpicLoot.Crafting
                 }
                 else
                 {
-                    var selector = EffectSelectors[i];
-                    selector.gameObject.SetActive(true);
-                    selector.isOn = recipe.EffectIndex == i;
-                    selector.interactable = !magicItem.HasBeenAugmented() || recipe.EffectIndex == i;
-                    var t = selector.GetComponentInChildren<Text>();
-                    t.text = Localization.instance.Localize(MagicItem.GetEffectText(augmentableEffects[i], rarity, true));
-                    t.color = magicItem.HasBeenAugmented() && recipe.EffectIndex != i ? Color.gray : EpicLoot.GetRarityColorARGB(rarity);
+                    SetSelectorValues(recipe, i, magicItem, rarity);
                 }
             }
+        }
+
+        private void SetSelectorValues(AugmentRecipe recipe, int i, MagicItem magicItem, ItemRarity rarity)
+        {
+            var selector = EffectSelectors[i];
+            var augmentableEffects = magicItem.Effects;
+            selector.gameObject.SetActive(true);
+            selector.isOn = recipe.EffectIndex == i;
+            var t = selector.GetComponentInChildren<Text>();
+            t.text = GetAugmentSelectorText(magicItem, i, augmentableEffects, rarity);
+            t.color = EpicLoot.GetRarityColorARGB(rarity);
+        }
+
+        private static string GetAugmentSelectorText(MagicItem magicItem, int i, IReadOnlyList<MagicItemEffect> augmentableEffects, ItemRarity rarity)
+        {
+            return (magicItem.IsEffectAugmented(i) ? "◇ " : "◆ ") + Localization.instance.Localize(MagicItem.GetEffectText(augmentableEffects[i], rarity, true));
         }
 
         private void OnSelectorValueChanged(int index, bool selected)
@@ -413,7 +416,7 @@ namespace EpicLoot.Crafting
 
                 // Set as augmented
                 var magicItem = recipe.FromItem.GetMagicItem();
-                magicItem.AugmentedEffectIndex = recipe.EffectIndex;
+                magicItem.SetEffectAsAugmented(recipe.EffectIndex);
                 // Note: I do not know why I have to do this, but this is the only thing that causes this item to save correctly
                 recipe.FromItem.Extended().RemoveComponent<MagicItemComponent>();
                 recipe.FromItem.Extended().AddComponent<MagicItemComponent>().SetMagicItem(magicItem);
@@ -428,14 +431,17 @@ namespace EpicLoot.Crafting
             {
                 var magicItem = recipe.FromItem.GetMagicItem();
 
-                if (magicItem.HasBeenAugmented())
+                if (magicItem.HasEffect(MagicEffectType.Indestructible))
                 {
-                    magicItem.ReplaceEffect(magicItem.AugmentedEffectIndex, newEffect);
+                    recipe.FromItem.m_shared.m_useDurability = recipe.FromItem.m_dropPrefab?.GetComponent<ItemDrop>().m_itemData.m_shared.m_useDurability ?? false;
+
+                    if (recipe.FromItem.m_shared.m_useDurability)
+                    {
+                        recipe.FromItem.m_durability = recipe.FromItem.GetMaxDurability();
+                    }
                 }
-                else
-                {
-                    magicItem.ReplaceEffect(recipe.EffectIndex, newEffect);
-                }
+                
+                magicItem.ReplaceEffect(recipe.EffectIndex, newEffect);
 
                 if (magicItem.Rarity == ItemRarity.Rare)
                 {
@@ -456,8 +462,12 @@ namespace EpicLoot.Crafting
 
                 OnSelectorValueChanged(recipe.EffectIndex, true);
 
+                MagicItemEffects.Indestructible.MakeItemIndestructible(recipe.FromItem);
+
                 Game.instance.GetPlayerProfile().m_playerStats.m_crafts++;
                 Gogan.LogEvent("Game", "Augmented", recipe.FromItem.m_shared.m_name, 1);
+                
+                EquipmentEffectCache.Reset(player);
             }
         }
 
@@ -576,7 +586,7 @@ namespace EpicLoot.Crafting
 
         public static List<KeyValuePair<ItemDrop, int>> GetRecipeCost(AugmentRecipe recipe)
         {
-            return GetAugmentCosts(recipe.FromItem);
+            return GetAugmentCosts(recipe.FromItem, recipe.EffectIndex);
         }
 
         public static Piece.Requirement[] GetRecipeRequirementArray(AugmentRecipe recipe)
@@ -585,11 +595,11 @@ namespace EpicLoot.Crafting
             return cost.Select(x => new Piece.Requirement() { m_amount = x.Value, m_resItem = x.Key }).ToArray();
         }
 
-        public static List<KeyValuePair<ItemDrop, int>> GetAugmentCosts(ItemDrop.ItemData item)
+        public static List<KeyValuePair<ItemDrop, int>> GetAugmentCosts(ItemDrop.ItemData item, int recipeEffectIndex)
         {
             var rarity = item.GetRarity();
 
-            var augmentCostDef = EnchantCostsHelper.GetAugmentCost(item, rarity);
+            var augmentCostDef = EnchantCostsHelper.GetAugmentCost(item, rarity, recipeEffectIndex);
             if (augmentCostDef == null)
             {
                 return null;

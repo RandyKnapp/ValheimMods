@@ -1,3 +1,27 @@
+## Version 0.8.0
+  * Magic Effect lookup is now optimized
+  * Removed debug function that was eating up frame-time
+  * Legendary effects work in multiplayer
+  * Fixed a nullref in Stagger Damage
+  * Fixed issues with Indestructible
+  * Water Walking no longer works in dungeons to prevent issues in Sunken Crypts
+  * Feint now works as intended
+  * Fixed a bug where level gaps in the loottables.json caused a nullref
+  * New legendary: Mjolnir
+  * Added legendary set system
+  * Added item ability system
+  * New Legendary Sets: Heimdall's Legacy, Ragnar's Fury
+## Version 0.7.10
+  * Fix for Server Side Character crash bug
+  * Increased epic and legendary drop rates at low tiers
+  * Wishbone is now Epic rarity
+  * Dragon's Tears and Yagluth Things can now be converted to legendary runestones or sacrificed for legendary crafting mats
+  * Moder and Yagluth trophies sacrifice for more runestones (2, 4 instead of 1, 3 respectively)
+  * Bosses drop more items overall, especially Moder and Yagluth
+  * Weights in config files are now floats instead of ints
+  * Magic Effect: Luck, increase chance for higher rarity items
+  * Magic Effect names shortened, detailed descriptions added to compendium
+  * Fix not loading initial known items in singleplayer and for server host. ([jsza](https://github.com/jsza))
 ## Version 0.7.9
   * Reduced Opportunist chance to proc
   * Allowed AddSkill to exceed 100 points (and fixed vanilla bug around damage ranges not going over 100%)

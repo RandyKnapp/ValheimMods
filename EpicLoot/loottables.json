@@ -373,42 +373,42 @@
           "Level": 1,
           "Drops": [ [0, 100] ],
           "Loot": [
-            { "Item": "Tier0Everything", "Weight": 1, "Rarity": [ 97, 2, 1, 0 ] }
+            { "Item": "Tier0Everything", "Weight": 1, "Rarity": [ 100, 0, 0, 0 ] }
           ]
         },
         {
           "Level": 2,
           "Drops": [ [0, 95], [1, 5] ],
           "Loot": [
-            { "Item": "Tier0Everything", "Weight": 1, "Rarity": [ 92, 5, 2, 1 ] }
+            { "Item": "Tier0Everything", "Weight": 1, "Rarity": [ 95, 5, 0, 0 ] }
           ]
         },
         {
           "Level": 3,
           "Drops": [ [0, 90], [1, 10] ],
           "Loot": [
-            { "Item": "Tier0Everything", "Weight": 1, "Rarity": [ 85, 10, 3, 2 ] }
+            { "Item": "Tier0Everything", "Weight": 1, "Rarity": [ 90, 10, 0, 0 ] }
           ]
         },
         {
           "Level": 4,
           "Drops": [ [0, 80], [1, 20] ],
           "Loot": [
-            { "Item": "Tier0Everything", "Weight": 1, "Rarity": [ 77, 15, 5, 3 ] }
+            { "Item": "Tier0Everything", "Weight": 1, "Rarity": [ 80, 15, 5, 0 ] }
           ]
         },
         {
           "Level": 5,
           "Drops": [ [0, 70], [1, 30] ],
           "Loot": [
-            { "Item": "Tier0Everything", "Weight": 1, "Rarity": [ 75, 20, 10, 5 ] }
+            { "Item": "Tier0Everything", "Weight": 1, "Rarity": [ 70, 19, 10, 1 ] }
           ]
         },
         {
           "Level": 6,
           "Drops": [ [0, 60], [1, 39], [2, 1] ],
           "Loot": [
-            { "Item": "Tier0Everything", "Weight": 1, "Rarity": [ 60, 20, 15, 10 ] }
+            { "Item": "Tier0Everything", "Weight": 1, "Rarity": [ 60, 20, 15, 5 ] }
           ]
         }
       ]
@@ -422,40 +422,40 @@
           "Level": 1,
           "Drops": [ [0, 95], [1, 5] ],
           "Loot": [
-            { "Item": "Tier0Everything", "Weight": 10, "Rarity": [ 70, 25, 3, 2 ] },
-            { "Item": "Tier1Everything", "Weight": 1,  "Rarity": [ 70, 25, 3, 2 ] }
+            { "Item": "Tier0Everything", "Weight": 10, "Rarity": [ 75, 25, 0, 0 ] },
+            { "Item": "Tier1Everything", "Weight": 1,  "Rarity": [ 75, 25, 0, 0 ] }
           ]
         },
         {
           "Level": 2,
           "Drops": [ [0, 90], [1, 10] ],
           "Loot": [
-            { "Item": "Tier0Everything", "Weight": 5, "Rarity": [ 62, 30, 5, 3 ] },
-            { "Item": "Tier1Everything", "Weight": 1, "Rarity": [ 62, 30, 5, 3 ] }
+            { "Item": "Tier0Everything", "Weight": 5, "Rarity": [ 70, 29, 1, 0 ] },
+            { "Item": "Tier1Everything", "Weight": 1, "Rarity": [ 70, 29, 1, 0 ] }
           ]
         },
         {
           "Level": 3,
           "Drops": [ [0, 85], [1, 15] ],
           "Loot": [
-            { "Item": "Tier0Everything", "Weight": 3, "Rarity": [ 65, 35, 0, 0 ] },
-            { "Item": "Tier1Everything", "Weight": 1, "Rarity": [ 65, 35, 0, 0 ] }
+            { "Item": "Tier0Everything", "Weight": 3, "Rarity": [ 63, 34, 2, 1 ] },
+            { "Item": "Tier1Everything", "Weight": 1, "Rarity": [ 63, 34, 2, 1 ] }
           ]
         },
         {
           "Level": 4,
           "Drops": [ [0, 75], [1, 25] ],
           "Loot": [
-            { "Item": "Tier0Everything", "Weight": 1, "Rarity": [ 55, 40, 5, 0 ] },
-            { "Item": "Tier1Everything", "Weight": 1, "Rarity": [ 55, 40, 5, 0 ] }
+            { "Item": "Tier0Everything", "Weight": 1, "Rarity": [ 53, 40, 5, 2 ] },
+            { "Item": "Tier1Everything", "Weight": 1, "Rarity": [ 53, 40, 5, 2 ] }
           ]
         },
         {
           "Level": 5,
           "Drops": [ [0, 65], [1, 34], [2, 1] ],
           "Loot": [
-            { "Item": "Tier0Everything", "Weight": 1, "Rarity": [ 45, 44, 10, 1 ] },
-            { "Item": "Tier1Everything", "Weight": 5, "Rarity": [ 45, 44, 10, 1 ] }
+            { "Item": "Tier0Everything", "Weight": 1, "Rarity": [ 45, 43, 9, 3 ] },
+            { "Item": "Tier1Everything", "Weight": 5, "Rarity": [ 45, 43, 9, 3 ] }
           ]
         },
         {
@@ -477,26 +477,26 @@
           "Level": 1,
           "Drops": [ [0, 90], [1, 10] ],
           "Loot": [
-            { "Item": "Tier1Everything", "Weight": 1, "Rarity": [ 50, 50, 0, 0 ] },
-            { "Item": "Tier0Shields",    "Weight": 1, "Rarity": [ 50, 50, 0, 0 ] }
+            { "Item": "Tier1Everything", "Weight": 1, "Rarity": [ 50, 47, 2, 1 ] },
+            { "Item": "Tier0Shields",    "Weight": 1, "Rarity": [ 50, 47, 2, 1 ] }
           ]
         },
         {
           "Level": 2,
           "Drops": [ [0, 80], [1, 20] ],
           "Loot": [
-            { "Item": "Tier1Everything", "Weight": 5, "Rarity": [ 40, 55, 5, 0 ] },
-            { "Item": "Tier0Shields",    "Weight": 5, "Rarity": [ 40, 55, 5, 0 ] },
-            { "Item": "TrollArmor",      "Weight": 1, "Rarity": [ 40, 55, 5, 0 ] }
+            { "Item": "Tier1Everything", "Weight": 5, "Rarity": [ 40, 53, 5, 2 ] },
+            { "Item": "Tier0Shields",    "Weight": 5, "Rarity": [ 40, 53, 5, 2 ] },
+            { "Item": "TrollArmor",      "Weight": 1, "Rarity": [ 40, 53, 5, 2 ] }
           ]
         },
         {
           "Level": 3,
           "Drops": [ [0, 70], [1, 30] ],
           "Loot": [
-            { "Item": "Tier1Everything", "Weight": 3, "Rarity": [ 30, 60, 9, 1 ] },
-            { "Item": "Tier0Shields",    "Weight": 3, "Rarity": [ 30, 60, 9, 1 ] },
-            { "Item": "TrollArmor",      "Weight": 1, "Rarity": [ 30, 60, 9, 1 ] }
+            { "Item": "Tier1Everything", "Weight": 3, "Rarity": [ 29, 59, 9, 3 ] },
+            { "Item": "Tier0Shields",    "Weight": 3, "Rarity": [ 29, 59, 9, 3 ] },
+            { "Item": "TrollArmor",      "Weight": 1, "Rarity": [ 29, 59, 9, 3 ] }
           ]
         },
         {
@@ -526,7 +526,7 @@
         }
       ]
     },
-    // Tier 3 Mobs (Troll, Ghost, Leech, Blob, Draugr)
+    // Tier 3 Mobs (Troll, Ghost, Blob, Draugr, Draugr Archer, Leech, Surtling)
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     {
       "Object": "Tier3Mob",
@@ -535,23 +535,23 @@
           "Level": 1,
           "Drops": [ [0, 85], [1, 15] ],
           "Loot": [
-            { "Item": "Tier2Everything", "Weight": 1, "Rarity": [ 25, 75, 0, 0 ] }
+            { "Item": "Tier2Everything", "Weight": 1, "Rarity": [ 24, 73, 2, 1 ] }
           ]
         },
         {
           "Level": 2,
           "Drops": [ [0, 75], [1, 25] ],
           "Loot": [
-            { "Item": "Tier2Everything", "Weight": 5, "Rarity": [ 15, 80, 5, 0 ] },
-            { "Item": "Tier3Everything", "Weight": 1, "Rarity": [ 15, 80, 5, 0 ] }
+            { "Item": "Tier2Everything", "Weight": 5, "Rarity": [ 15, 78, 5, 2 ] },
+            { "Item": "Tier3Everything", "Weight": 1, "Rarity": [ 15, 78, 5, 2 ] }
           ]
         },
         {
           "Level": 3,
           "Drops": [ [0, 65], [1, 34], [2, 1] ],
           "Loot": [
-            { "Item": "Tier2Everything", "Weight": 3, "Rarity": [ 5, 85, 9, 1 ] },
-            { "Item": "Tier2Everything", "Weight": 1, "Rarity": [ 5, 85, 9, 1 ] }
+            { "Item": "Tier2Everything", "Weight": 3, "Rarity": [ 5, 83, 9, 3 ] },
+            { "Item": "Tier3Everything", "Weight": 1, "Rarity": [ 5, 83, 9, 3 ] }
           ]
         },
         {
@@ -589,7 +589,7 @@
           "Level": 1,
           "Drops": [ [0, 80], [1, 20] ],
           "Loot": [
-            { "Item": "Tier3Everything", "Weight": 1, "Rarity": [ 0, 75, 24, 1 ] }
+            { "Item": "Tier3Everything", "Weight": 1, "Rarity": [ 0, 75, 24, 2 ] }
           ]
         },
         {
@@ -634,7 +634,7 @@
         }
       ]
     },
-    // Tier 5 Mobs (Goblin, Deathsquito, Lox, Fenring, Stone Golem, Serpent)
+    // Tier 5 Mobs (Stone Golem, Fenring, Serpent, Deathsquito, Lox, Fuling, Fuling Archer)
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     {
       "Object": "Tier5Mob",
@@ -643,7 +643,7 @@
           "Level": 1,
           "Drops": [ [0, 75], [1, 24], [2, 1] ],
           "Loot": [
-            { "Item": "Tier4Everything", "Weight": 1, "Rarity": [ 0, 50, 49, 1 ] }
+            { "Item": "Tier4Everything", "Weight": 1, "Rarity": [ 0, 50, 49, 4 ] }
           ]
         },
         {
@@ -741,202 +741,30 @@
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Tier 0 Mobs (Greyling, Deer, Boar, Neck)
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    
+
     // Greyling
     ////////////////////////////////////////////////////////////////////////////////////
     {
       "Object": "Greyling",
-      "LeveledLoot": [
-        {
-          "Level": 1,
-          "Drops": [ [0, 100] ],
-          "Loot": [
-            { "Item": "Tier0Mob.1" }
-          ]
-        },
-        {
-          "Level": 2,
-          "Drops": [ [0, 95], [1, 5] ],
-          "Loot": [
-            { "Item": "Tier0Mob.2" }
-          ]
-        },
-        {
-          "Level": 3,
-          "Drops": [ [0, 90], [1, 10] ],
-          "Loot": [
-            { "Item": "Tier0Mob.3" }
-          ]
-        },
-        {
-          "Level": 4,
-          "Drops": [ [0, 80], [1, 20] ],
-          "Loot": [
-            { "Item": "Tier0Mob.4" }
-          ]
-        },
-        {
-          "Level": 5,
-          "Drops": [ [0, 70], [1, 30] ],
-          "Loot": [
-            { "Item": "Tier0Mob.5" }
-          ]
-        },
-        {
-          "Level": 6,
-          "Drops": [ [0, 60], [1, 39], [2, 1] ],
-          "Loot": [
-            { "Item": "Tier0Mob.6" }
-          ]
-        }
-      ]
+      "RefObject": "Tier0Mob"
     },
     // Deer
     ////////////////////////////////////////////////////////////////////////////////////
     {
       "Object": "Deer",
-      "LeveledLoot": [
-        {
-          "Level": 1,
-          "Drops": [ [0, 100] ],
-          "Loot": [
-            { "Item": "Tier0Mob.1" }
-          ]
-        },
-        {
-          "Level": 2,
-          "Drops": [ [0, 95], [1, 5] ],
-          "Loot": [
-            { "Item": "Tier0Mob.2" }
-          ]
-        },
-        {
-          "Level": 3,
-          "Drops": [ [0, 90], [1, 10] ],
-          "Loot": [
-            { "Item": "Tier0Mob.3" }
-          ]
-        },
-        {
-          "Level": 4,
-          "Drops": [ [0, 80], [1, 20] ],
-          "Loot": [
-            { "Item": "Tier0Mob.4" }
-          ]
-        },
-        {
-          "Level": 5,
-          "Drops": [ [0, 70], [1, 30] ],
-          "Loot": [
-            { "Item": "Tier0Mob.5" }
-          ]
-        },
-        {
-          "Level": 6,
-          "Drops": [ [0, 60], [1, 39], [2, 1] ],
-          "Loot": [
-            { "Item": "Tier0Mob.6" }
-          ]
-        }
-      ]
+      "RefObject": "Tier0Mob"
     },
     // Boar
     ////////////////////////////////////////////////////////////////////////////////////
     {
       "Object": "Boar",
-      "LeveledLoot": [
-        {
-          "Level": 1,
-          "Drops": [ [0, 100] ],
-          "Loot": [
-            { "Item": "Tier0Mob.1" }
-          ]
-        },
-        {
-          "Level": 2,
-          "Drops": [ [0, 95], [1, 5] ],
-          "Loot": [
-            { "Item": "Tier0Mob.2" }
-          ]
-        },
-        {
-          "Level": 3,
-          "Drops": [ [0, 90], [1, 10] ],
-          "Loot": [
-            { "Item": "Tier0Mob.3" }
-          ]
-        },
-        {
-          "Level": 4,
-          "Drops": [ [0, 80], [1, 20] ],
-          "Loot": [
-            { "Item": "Tier0Mob.4" }
-          ]
-        },
-        {
-          "Level": 5,
-          "Drops": [ [0, 70], [1, 30] ],
-          "Loot": [
-            { "Item": "Tier0Mob.5" }
-          ]
-        },
-        {
-          "Level": 6,
-          "Drops": [ [0, 60], [1, 39], [2, 1] ],
-          "Loot": [
-            { "Item": "Tier0Mob.6" }
-          ]
-        }
-      ]
+      "RefObject": "Tier0Mob"
     },
     // Neck
     ////////////////////////////////////////////////////////////////////////////////////
     {
       "Object": "Neck",
-      "LeveledLoot": [
-        {
-          "Level": 1,
-          "Drops": [ [0, 100] ],
-          "Loot": [
-            { "Item": "Tier0Mob.1" }
-          ]
-        },
-        {
-          "Level": 2,
-          "Drops": [ [0, 95], [1, 5] ],
-          "Loot": [
-            { "Item": "Tier0Mob.2" }
-          ]
-        },
-        {
-          "Level": 3,
-          "Drops": [ [0, 90], [1, 10] ],
-          "Loot": [
-            { "Item": "Tier0Mob.3" }
-          ]
-        },
-        {
-          "Level": 4,
-          "Drops": [ [0, 80], [1, 20] ],
-          "Loot": [
-            { "Item": "Tier0Mob.4" }
-          ]
-        },
-        {
-          "Level": 5,
-          "Drops": [ [0, 70], [1, 30] ],
-          "Loot": [
-            { "Item": "Tier0Mob.5" }
-          ]
-        },
-        {
-          "Level": 6,
-          "Drops": [ [0, 60], [1, 39], [2, 1] ],
-          "Loot": [
-            { "Item": "Tier0Mob.6" }
-          ]
-        }
-      ]
+      "RefObject": "Tier0Mob"
     },
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -947,1202 +775,182 @@
     ////////////////////////////////////////////////////////////////////////////////////
     {
       "Object": "Greydwarf",
-      "LeveledLoot": [
-        {
-          "Level": 1,
-          "Drops": [ [0, 95], [1, 5] ],
-          "Loot": [
-            { "Item": "Tier1Mob.1" }
-          ]
-        },
-        {
-          "Level": 2,
-          "Drops": [ [0, 90], [1, 10] ],
-          "Loot": [
-            { "Item": "Tier1Mob.2" }
-          ]
-        },
-        {
-          "Level": 3,
-          "Drops": [ [0, 85], [1, 15] ],
-          "Loot": [
-            { "Item": "Tier1Mob.3" }
-          ]
-        },
-        {
-          "Level": 4,
-          "Drops": [ [0, 75], [1, 25] ],
-          "Loot": [
-            { "Item": "Tier1Mob.4" }
-          ]
-        },
-        {
-          "Level": 5,
-          "Drops": [ [0, 65], [1, 34], [2, 1] ],
-          "Loot": [
-            { "Item": "Tier1Mob.5" }
-          ]
-        },
-        {
-          "Level": 6,
-          "Drops": [ [0, 55], [1, 43], [2, 2] ],
-          "Loot": [
-            { "Item": "Tier1Mob.6" }
-          ]
-        }
-      ]
+      "RefObject": "Tier1Mob"
     },
     // Skeleton
     ////////////////////////////////////////////////////////////////////////////////////
     {
       "Object": "Skeleton",
-      "LeveledLoot": [
-        {
-          "Level": 1,
-          "Drops": [ [0, 95], [1, 5] ],
-          "Loot": [
-            { "Item": "Tier1Mob.1" }
-          ]
-        },
-        {
-          "Level": 2,
-          "Drops": [ [0, 90], [1, 10] ],
-          "Loot": [
-            { "Item": "Tier1Mob.2" }
-          ]
-        },
-        {
-          "Level": 3,
-          "Drops": [ [0, 85], [1, 15] ],
-          "Loot": [
-            { "Item": "Tier1Mob.3" }
-          ]
-        },
-        {
-          "Level": 4,
-          "Drops": [ [0, 75], [1, 25] ],
-          "Loot": [
-            { "Item": "Tier1Mob.4" }
-          ]
-        },
-        {
-          "Level": 5,
-          "Drops": [ [0, 65], [1, 34], [2, 1] ],
-          "Loot": [
-            { "Item": "Tier1Mob.5" }
-          ]
-        },
-        {
-          "Level": 6,
-          "Drops": [ [0, 55], [1, 43], [2, 2] ],
-          "Loot": [
-            { "Item": "Tier1Mob.6" }
-          ]
-        }
-      ]
+      "RefObject": "Tier1Mob"
     },
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Tier 2 Mobs (Greydwarf Brute, Greydwarf Shaman, Rancid Remains)
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    
+
     // Greydwarf Brute (Greydwarf_Elite)
     ////////////////////////////////////////////////////////////////////////////////////
     {
       "Object": "Greydwarf_Elite",
-      "LeveledLoot": [
-        {
-          "Level": 1,
-          "Drops": [ [0, 90], [1, 10] ],
-          "Loot": [
-            { "Item": "Tier2Mob.1" }
-          ]
-        },
-        {
-          "Level": 2,
-          "Drops": [ [0, 80], [1, 20] ],
-          "Loot": [
-            { "Item": "Tier2Mob.2" }
-          ]
-        },
-        {
-          "Level": 3,
-          "Drops": [ [0, 70], [1, 30] ],
-          "Loot": [
-            { "Item": "Tier2Mob.3" }
-          ]
-        },
-        {
-          "Level": 4,
-          "Drops": [ [0, 55], [1, 44], [2, 1] ],
-          "Loot": [
-            { "Item": "Tier2Mob.4" }
-          ]
-        },
-        {
-          "Level": 5,
-          "Drops": [ [0, 40], [1, 58], [2, 2] ],
-          "Loot": [
-            { "Item": "Tier2Mob.5" }
-          ]
-        },
-        {
-          "Level": 6,
-          "Drops": [ [0, 25], [1, 71], [2, 3], [3, 1] ],
-          "Loot": [
-            { "Item": "Tier2Mob.6" }
-          ]
-        }
-      ]
+      "RefObject": "Tier2Mob"
     },
     // Greydwarf Shaman (Greydwarf_Shaman)
     ////////////////////////////////////////////////////////////////////////////////////
     {
       "Object": "Greydwarf_Shaman",
-      "LeveledLoot": [
-        {
-          "Level": 1,
-          "Drops": [ [0, 90], [1, 10] ],
-          "Loot": [
-            { "Item": "Tier2Mob.1" }
-          ]
-        },
-        {
-          "Level": 2,
-          "Drops": [ [0, 80], [1, 20] ],
-          "Loot": [
-            { "Item": "Tier2Mob.2" }
-          ]
-        },
-        {
-          "Level": 3,
-          "Drops": [ [0, 70], [1, 30] ],
-          "Loot": [
-            { "Item": "Tier2Mob.3" }
-          ]
-        },
-        {
-          "Level": 4,
-          "Drops": [ [0, 55], [1, 44], [2, 1] ],
-          "Loot": [
-            { "Item": "Tier2Mob.4" }
-          ]
-        },
-        {
-          "Level": 5,
-          "Drops": [ [0, 40], [1, 58], [2, 2] ],
-          "Loot": [
-            { "Item": "Tier2Mob.5" }
-          ]
-        },
-        {
-          "Level": 6,
-          "Drops": [ [0, 25], [1, 71], [2, 3], [3, 1] ],
-          "Loot": [
-            { "Item": "Tier2Mob.6" }
-          ]
-        }
-      ]
+      "RefObject": "Tier2Mob"
     },
     // Rancid Remains (Skeleton_Poison)
     ////////////////////////////////////////////////////////////////////////////////////
     {
       "Object": "Skeleton_Poison",
-      "LeveledLoot": [
-        {
-          "Level": 1,
-          "Drops": [ [0, 90], [1, 10] ],
-          "Loot": [
-            { "Item": "Tier2Mob.1" }
-          ]
-        },
-        {
-          "Level": 2,
-          "Drops": [ [0, 80], [1, 20] ],
-          "Loot": [
-            { "Item": "Tier2Mob.2" }
-          ]
-        },
-        {
-          "Level": 3,
-          "Drops": [ [0, 70], [1, 30] ],
-          "Loot": [
-            { "Item": "Tier2Mob.3" }
-          ]
-        },
-        {
-          "Level": 4,
-          "Drops": [ [0, 55], [1, 44], [2, 1] ],
-          "Loot": [
-            { "Item": "Tier2Mob.4" }
-          ]
-        },
-        {
-          "Level": 5,
-          "Drops": [ [0, 40], [1, 58], [2, 2] ],
-          "Loot": [
-            { "Item": "Tier2Mob.5" }
-          ]
-        },
-        {
-          "Level": 6,
-          "Drops": [ [0, 25], [1, 71], [2, 3], [3, 1] ],
-          "Loot": [
-            { "Item": "Tier2Mob.6" }
-          ]
-        }
-      ]
+      "RefObject": "Tier2Mob"
     },
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Tier 3 Mobs (Troll, Ghost, Leech, Blob, Draugr, Surtling)
+    // Tier 3 Mobs (Troll, Ghost, Blob, Draugr, Draugr Archer, Leech, Surtling)
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    
+
     // Troll
     ////////////////////////////////////////////////////////////////////////////////////
     {
       "Object": "Troll",
-      "LeveledLoot": [
-        {
-          "Level": 1,
-          "Drops": [ [0, 85], [1, 15] ],
-          "Loot": [
-            { "Item": "Tier3Mob.1" }
-          ]
-        },
-        {
-          "Level": 2,
-          "Drops": [ [0, 75], [1, 25] ],
-          "Loot": [
-            { "Item": "Tier3Mob.2" }
-          ]
-        },
-        {
-          "Level": 3,
-          "Drops": [ [0, 65], [1, 34], [2, 1] ],
-          "Loot": [
-            { "Item": "Tier3Mob.3" }
-          ]
-        },
-        {
-          "Level": 4,
-          "Drops": [ [0, 50], [1, 48], [2, 2] ],
-          "Loot": [
-            { "Item": "Tier3Mob.4" }
-          ]
-        },
-        {
-          "Level": 5,
-          "Drops": [ [0, 35], [1, 61], [2, 3], [3, 1] ],
-          "Loot": [
-            { "Item": "Tier3Mob.5" }
-          ]
-        },
-        {
-          "Level": 6,
-          "Drops": [ [0, 20], [1, 74], [2, 4], [3, 2] ],
-          "Loot": [
-            { "Item": "Tier3Mob.6" }
-          ]
-        }
-      ]
+      "RefObject": "Tier3Mob"
     },
     // Ghost
     ////////////////////////////////////////////////////////////////////////////////////
     {
       "Object": "Ghost",
-      "LeveledLoot": [
-        {
-          "Level": 1,
-          "Drops": [ [0, 85], [1, 15] ],
-          "Loot": [
-            { "Item": "Tier3Mob.1" }
-          ]
-        },
-        {
-          "Level": 2,
-          "Drops": [ [0, 75], [1, 25] ],
-          "Loot": [
-            { "Item": "Tier3Mob.2" }
-          ]
-        },
-        {
-          "Level": 3,
-          "Drops": [ [0, 65], [1, 34], [2, 1] ],
-          "Loot": [
-            { "Item": "Tier3Mob.3" }
-          ]
-        },
-        {
-          "Level": 4,
-          "Drops": [ [0, 50], [1, 48], [2, 2] ],
-          "Loot": [
-            { "Item": "Tier3Mob.4" }
-          ]
-        },
-        {
-          "Level": 5,
-          "Drops": [ [0, 35], [1, 61], [2, 3], [3, 1] ],
-          "Loot": [
-            { "Item": "Tier3Mob.5" }
-          ]
-        },
-        {
-          "Level": 6,
-          "Drops": [ [0, 20], [1, 74], [2, 4], [3, 2] ],
-          "Loot": [
-            { "Item": "Tier3Mob.6" }
-          ]
-        }
-      ]
+      "RefObject": "Tier3Mob"
     },
     // Blob
     ////////////////////////////////////////////////////////////////////////////////////
     {
       "Object": "Blob",
-      "LeveledLoot": [
-        {
-          "Level": 1,
-          "Drops": [ [0, 85], [1, 15] ],
-          "Loot": [
-            { "Item": "Tier3Mob.1" }
-          ]
-        },
-        {
-          "Level": 2,
-          "Drops": [ [0, 75], [1, 25] ],
-          "Loot": [
-            { "Item": "Tier3Mob.2" }
-          ]
-        },
-        {
-          "Level": 3,
-          "Drops": [ [0, 65], [1, 34], [2, 1] ],
-          "Loot": [
-            { "Item": "Tier3Mob.3" }
-          ]
-        },
-        {
-          "Level": 4,
-          "Drops": [ [0, 50], [1, 48], [2, 2] ],
-          "Loot": [
-            { "Item": "Tier3Mob.4" }
-          ]
-        },
-        {
-          "Level": 5,
-          "Drops": [ [0, 35], [1, 61], [2, 3], [3, 1] ],
-          "Loot": [
-            { "Item": "Tier3Mob.5" }
-          ]
-        },
-        {
-          "Level": 6,
-          "Drops": [ [0, 20], [1, 74], [2, 4], [3, 2] ],
-          "Loot": [
-            { "Item": "Tier3Mob.6" }
-          ]
-        }
-      ]
+      "RefObject": "Tier3Mob"
     },
     // Draugr
     ////////////////////////////////////////////////////////////////////////////////////
     {
       "Object": "Draugr",
-      "LeveledLoot": [
-        {
-          "Level": 1,
-          "Drops": [ [0, 85], [1, 15] ],
-          "Loot": [
-            { "Item": "Tier3Mob.1" }
-          ]
-        },
-        {
-          "Level": 2,
-          "Drops": [ [0, 75], [1, 25] ],
-          "Loot": [
-            { "Item": "Tier3Mob.2" }
-          ]
-        },
-        {
-          "Level": 3,
-          "Drops": [ [0, 65], [1, 34], [2, 1] ],
-          "Loot": [
-            { "Item": "Tier3Mob.3" }
-          ]
-        },
-        {
-          "Level": 4,
-          "Drops": [ [0, 50], [1, 48], [2, 2] ],
-          "Loot": [
-            { "Item": "Tier3Mob.4" }
-          ]
-        },
-        {
-          "Level": 5,
-          "Drops": [ [0, 35], [1, 61], [2, 3], [3, 1] ],
-          "Loot": [
-            { "Item": "Tier3Mob.5" }
-          ]
-        },
-        {
-          "Level": 6,
-          "Drops": [ [0, 20], [1, 74], [2, 4], [3, 2] ],
-          "Loot": [
-            { "Item": "Tier3Mob.6" }
-          ]
-        }
-      ]
+      "RefObject": "Tier3Mob"
+    },
+    // Draugr Archer
+    ////////////////////////////////////////////////////////////////////////////////////
+    {
+      "Object": "Draugr_Ranged",
+      "RefObject": "Tier3Mob"
     },
     // Leech
     ////////////////////////////////////////////////////////////////////////////////////
     {
       "Object": "Leech",
-      "LeveledLoot": [
-        {
-          "Level": 1,
-          "Drops": [ [0, 85], [1, 15] ],
-          "Loot": [
-            { "Item": "Tier3Mob.1" }
-          ]
-        },
-        {
-          "Level": 2,
-          "Drops": [ [0, 75], [1, 25] ],
-          "Loot": [
-            { "Item": "Tier3Mob.2" }
-          ]
-        },
-        {
-          "Level": 3,
-          "Drops": [ [0, 65], [1, 34], [2, 1] ],
-          "Loot": [
-            { "Item": "Tier3Mob.3" }
-          ]
-        },
-        {
-          "Level": 4,
-          "Drops": [ [0, 50], [1, 48], [2, 2] ],
-          "Loot": [
-            { "Item": "Tier3Mob.4" }
-          ]
-        },
-        {
-          "Level": 5,
-          "Drops": [ [0, 35], [1, 61], [2, 3], [3, 1] ],
-          "Loot": [
-            { "Item": "Tier3Mob.5" }
-          ]
-        },
-        {
-          "Level": 6,
-          "Drops": [ [0, 20], [1, 74], [2, 4], [3, 2] ],
-          "Loot": [
-            { "Item": "Tier3Mob.6" }
-          ]
-        }
-      ]
+      "RefObject": "Tier3Mob"
     },
     // Surtling
     ////////////////////////////////////////////////////////////////////////////////////
     {
       "Object": "Surtling",
-      "LeveledLoot": [
-        {
-          "Level": 1,
-          "Drops": [ [0, 85], [1, 15] ],
-          "Loot": [
-            { "Item": "Tier3Mob.1" }
-          ]
-        },
-        {
-          "Level": 2,
-          "Drops": [ [0, 75], [1, 25] ],
-          "Loot": [
-            { "Item": "Tier3Mob.2" }
-          ]
-        },
-        {
-          "Level": 3,
-          "Drops": [ [0, 65], [1, 34], [2, 1] ],
-          "Loot": [
-            { "Item": "Tier3Mob.3" }
-          ]
-        },
-        {
-          "Level": 4,
-          "Drops": [ [0, 50], [1, 48], [2, 2] ],
-          "Loot": [
-            { "Item": "Tier3Mob.4" }
-          ]
-        },
-        {
-          "Level": 5,
-          "Drops": [ [0, 35], [1, 61], [2, 3], [3, 1] ],
-          "Loot": [
-            { "Item": "Tier3Mob.5" }
-          ]
-        },
-        {
-          "Level": 6,
-          "Drops": [ [0, 20], [1, 74], [2, 4], [3, 2] ],
-          "Loot": [
-            { "Item": "Tier3Mob.6" }
-          ]
-        }
-      ]
+      "RefObject": "Tier3Mob"
     },
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Tier 4 Mobs (Draugr Elite, Oozer, Wraith, Wolf, Drake)
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    
+
     // Draugr Elite (Draugr_Elite)
     ////////////////////////////////////////////////////////////////////////////////////
     {
       "Object": "Draugr_Elite",
-      "LeveledLoot": [
-        {
-          "Level": 1,
-          "Drops": [ [0, 80], [1, 20] ],
-          "Loot": [
-            { "Item": "Tier4Mob.1" }
-          ]
-        },
-        {
-          "Level": 2,
-          "Drops": [ [0, 65], [1, 34], [2, 1] ],
-          "Loot": [
-            { "Item": "Tier4Mob.2" }
-          ]
-        },
-        {
-          "Level": 3,
-          "Drops": [ [0, 50], [1, 48], [2, 2] ],
-          "Loot": [
-            { "Item": "Tier4Mob.3" }
-          ]
-        },
-        {
-          "Level": 4,
-          "Drops": [ [0, 30], [1, 66], [2, 3], [3, 1] ],
-          "Loot": [
-            { "Item": "Tier4Mob.4" }
-          ]
-        },
-        {
-          "Level": 5,
-          "Drops": [ [0, 10], [1, 84], [2, 4], [3, 2] ],
-          "Loot": [
-            { "Item": "Tier4Mob.5" }
-          ]
-        },
-        {
-          "Level": 6,
-          "Drops": [ [0, 0], [1, 92], [2, 5], [3, 3] ],
-          "Loot": [
-            { "Item": "Tier4Mob.6" }
-          ]
-        }
-      ]
+      "RefObject": "Tier4Mob"
     },
     // Oozer (BlobElite)
     ////////////////////////////////////////////////////////////////////////////////////
     {
       "Object": "BlobElite",
-      "LeveledLoot": [
-        {
-          "Level": 1,
-          "Drops": [ [0, 80], [1, 20] ],
-          "Loot": [
-            { "Item": "Tier4Mob.1" }
-          ]
-        },
-        {
-          "Level": 2,
-          "Drops": [ [0, 65], [1, 34], [2, 1] ],
-          "Loot": [
-            { "Item": "Tier4Mob.2" }
-          ]
-        },
-        {
-          "Level": 3,
-          "Drops": [ [0, 50], [1, 48], [2, 2] ],
-          "Loot": [
-            { "Item": "Tier4Mob.3" }
-          ]
-        },
-        {
-          "Level": 4,
-          "Drops": [ [0, 30], [1, 66], [2, 3], [3, 1] ],
-          "Loot": [
-            { "Item": "Tier4Mob.4" }
-          ]
-        },
-        {
-          "Level": 5,
-          "Drops": [ [0, 10], [1, 84], [2, 4], [3, 2] ],
-          "Loot": [
-            { "Item": "Tier4Mob.5" }
-          ]
-        },
-        {
-          "Level": 6,
-          "Drops": [ [0, 0], [1, 92], [2, 5], [3, 3] ],
-          "Loot": [
-            { "Item": "Tier4Mob.6" }
-          ]
-        }
-      ]
+      "RefObject": "Tier4Mob"
     },
     // Wraith
     ////////////////////////////////////////////////////////////////////////////////////
     {
       "Object": "Wraith",
-      "LeveledLoot": [
-        {
-          "Level": 1,
-          "Drops": [ [0, 80], [1, 20] ],
-          "Loot": [
-            { "Item": "Tier4Mob.1" }
-          ]
-        },
-        {
-          "Level": 2,
-          "Drops": [ [0, 65], [1, 34], [2, 1] ],
-          "Loot": [
-            { "Item": "Tier4Mob.2" }
-          ]
-        },
-        {
-          "Level": 3,
-          "Drops": [ [0, 50], [1, 48], [2, 2] ],
-          "Loot": [
-            { "Item": "Tier4Mob.3" }
-          ]
-        },
-        {
-          "Level": 4,
-          "Drops": [ [0, 30], [1, 66], [2, 3], [3, 1] ],
-          "Loot": [
-            { "Item": "Tier4Mob.4" }
-          ]
-        },
-        {
-          "Level": 5,
-          "Drops": [ [0, 10], [1, 84], [2, 4], [3, 2] ],
-          "Loot": [
-            { "Item": "Tier4Mob.5" }
-          ]
-        },
-        {
-          "Level": 6,
-          "Drops": [ [0, 0], [1, 92], [2, 5], [3, 3] ],
-          "Loot": [
-            { "Item": "Tier4Mob.6" }
-          ]
-        }
-      ]
+      "RefObject": "Tier4Mob"
     },
     // Wolf
     ////////////////////////////////////////////////////////////////////////////////////
     {
       "Object": "Wolf",
-      "LeveledLoot": [
-        {
-          "Level": 1,
-          "Drops": [ [0, 80], [1, 20] ],
-          "Loot": [
-            { "Item": "Tier4Mob.1" }
-          ]
-        },
-        {
-          "Level": 2,
-          "Drops": [ [0, 65], [1, 34], [2, 1] ],
-          "Loot": [
-            { "Item": "Tier4Mob.2" }
-          ]
-        },
-        {
-          "Level": 3,
-          "Drops": [ [0, 50], [1, 48], [2, 2] ],
-          "Loot": [
-            { "Item": "Tier4Mob.3" }
-          ]
-        },
-        {
-          "Level": 4,
-          "Drops": [ [0, 30], [1, 66], [2, 3], [3, 1] ],
-          "Loot": [
-            { "Item": "Tier4Mob.4" }
-          ]
-        },
-        {
-          "Level": 5,
-          "Drops": [ [0, 10], [1, 84], [2, 4], [3, 2] ],
-          "Loot": [
-            { "Item": "Tier4Mob.5" }
-          ]
-        },
-        {
-          "Level": 6,
-          "Drops": [ [0, 0], [1, 92], [2, 5], [3, 3] ],
-          "Loot": [
-            { "Item": "Tier4Mob.6" }
-          ]
-        }
-      ]
+      "RefObject": "Tier4Mob"
     },
     // Drake (Hatchling)
     ////////////////////////////////////////////////////////////////////////////////////
     {
       "Object": "Hatchling",
-      "LeveledLoot": [
-        {
-          "Level": 1,
-          "Drops": [ [0, 80], [1, 20] ],
-          "Loot": [
-            { "Item": "Tier4Mob.1" }
-          ]
-        },
-        {
-          "Level": 2,
-          "Drops": [ [0, 65], [1, 34], [2, 1] ],
-          "Loot": [
-            { "Item": "Tier4Mob.2" }
-          ]
-        },
-        {
-          "Level": 3,
-          "Drops": [ [0, 50], [1, 48], [2, 2] ],
-          "Loot": [
-            { "Item": "Tier4Mob.3" }
-          ]
-        },
-        {
-          "Level": 4,
-          "Drops": [ [0, 30], [1, 66], [2, 3], [3, 1] ],
-          "Loot": [
-            { "Item": "Tier4Mob.4" }
-          ]
-        },
-        {
-          "Level": 5,
-          "Drops": [ [0, 10], [1, 84], [2, 4], [3, 2] ],
-          "Loot": [
-            { "Item": "Tier4Mob.5" }
-          ]
-        },
-        {
-          "Level": 6,
-          "Drops": [ [0, 0], [1, 92], [2, 5], [3, 3] ],
-          "Loot": [
-            { "Item": "Tier4Mob.6" }
-          ]
-        }
-      ]
+      "RefObject": "Tier4Mob"
     },
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //Begin Tier 5 Mobs (Stone Golem, Fenring, Serpent, Goblin, Deathsquito, Lox)
+    //Begin Tier 5 Mobs (Stone Golem, Fenring, Serpent, Deathsquito, Lox, Fuling, Fuling Archer)
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Stone Golem (StoneGolem)
     ////////////////////////////////////////////////////////////////////////////////////
     {
       "Object": "StoneGolem",
-      "LeveledLoot": [
-        {
-          "Level": 1,
-          "Drops": [ [0, 75], [1, 24], [2, 1] ],
-          "Loot": [
-            { "Item": "Tier5Mob.1" }
-          ]
-        },
-        {
-          "Level": 2,
-          "Drops": [ [0, 60], [1, 38], [2, 2] ],
-          "Loot": [
-            { "Item": "Tier5Mob.2" }
-          ]
-        },
-        {
-          "Level": 3,
-          "Drops": [ [0, 45], [1, 51], [2, 3], [3, 1] ],
-          "Loot": [
-            { "Item": "Tier5Mob.3" }
-          ]
-        },
-        {
-          "Level": 4,
-          "Drops": [ [0, 25], [1, 69], [2, 4], [3, 2] ],
-          "Loot": [
-            { "Item": "Tier5Mob.4" }
-          ]
-        },
-        {
-          "Level": 5,
-          "Drops": [ [0, 5], [1, 87], [2, 5], [3, 3] ],
-          "Loot": [
-            { "Item": "Tier5Mob.5" }
-          ]
-        },
-        {
-          "Level": 6,
-          "Drops": [ [0, 0], [1, 86], [2, 10], [3, 4] ],
-          "Loot": [
-            { "Item": "Tier5Mob.6" }
-          ]
-        }
-      ]
+      "RefObject": "Tier5Mob"
     },
     // Fenring
     ////////////////////////////////////////////////////////////////////////////////////
     {
       "Object": "Fenring",
-      "LeveledLoot": [
-        {
-          "Level": 1,
-          "Drops": [ [0, 75], [1, 24], [2, 1] ],
-          "Loot": [
-            { "Item": "Tier5Mob.1" }
-          ]
-        },
-        {
-          "Level": 2,
-          "Drops": [ [0, 60], [1, 38], [2, 2] ],
-          "Loot": [
-            { "Item": "Tier5Mob.2" }
-          ]
-        },
-        {
-          "Level": 3,
-          "Drops": [ [0, 45], [1, 51], [2, 3], [3, 1] ],
-          "Loot": [
-            { "Item": "Tier5Mob.3" }
-          ]
-        },
-        {
-          "Level": 4,
-          "Drops": [ [0, 25], [1, 69], [2, 4], [3, 2] ],
-          "Loot": [
-            { "Item": "Tier5Mob.4" }
-          ]
-        },
-        {
-          "Level": 5,
-          "Drops": [ [0, 5], [1, 87], [2, 5], [3, 3] ],
-          "Loot": [
-            { "Item": "Tier5Mob.5" }
-          ]
-        },
-        {
-          "Level": 6,
-          "Drops": [ [0, 0], [1, 86], [2, 10], [3, 4] ],
-          "Loot": [
-            { "Item": "Tier5Mob.6" }
-          ]
-        }
-      ]
+      "RefObject": "Tier5Mob"
     },
     // Serpent
     ////////////////////////////////////////////////////////////////////////////////////
     {
       "Object": "Serpent",
-      "LeveledLoot": [
-        {
-          "Level": 1,
-          "Drops": [ [0, 75], [1, 24], [2, 1] ],
-          "Loot": [
-            { "Item": "Tier5Mob.1" }
-          ]
-        },
-        {
-          "Level": 2,
-          "Drops": [ [0, 60], [1, 38], [2, 2] ],
-          "Loot": [
-            { "Item": "Tier5Mob.2" }
-          ]
-        },
-        {
-          "Level": 3,
-          "Drops": [ [0, 45], [1, 51], [2, 3], [3, 1] ],
-          "Loot": [
-            { "Item": "Tier5Mob.3" }
-          ]
-        },
-        {
-          "Level": 4,
-          "Drops": [ [0, 25], [1, 69], [2, 4], [3, 2] ],
-          "Loot": [
-            { "Item": "Tier5Mob.4" }
-          ]
-        },
-        {
-          "Level": 5,
-          "Drops": [ [0, 5], [1, 87], [2, 5], [3, 3] ],
-          "Loot": [
-            { "Item": "Tier5Mob.5" }
-          ]
-        },
-        {
-          "Level": 6,
-          "Drops": [ [0, 0], [1, 86], [2, 10], [3, 4] ],
-          "Loot": [
-            { "Item": "Tier5Mob.6" }
-          ]
-        }
-      ]
+      "RefObject": "Tier5Mob"
     },
     // Deathsquito
     ////////////////////////////////////////////////////////////////////////////////////
     {
       "Object": "Deathsquito",
-      "LeveledLoot": [
-        {
-          "Level": 1,
-          "Drops": [ [0, 75], [1, 24], [2, 1] ],
-          "Loot": [
-            { "Item": "Tier5Mob.1" }
-          ]
-        },
-        {
-          "Level": 2,
-          "Drops": [ [0, 60], [1, 38], [2, 2] ],
-          "Loot": [
-            { "Item": "Tier5Mob.2" }
-          ]
-        },
-        {
-          "Level": 3,
-          "Drops": [ [0, 45], [1, 51], [2, 3], [3, 1] ],
-          "Loot": [
-            { "Item": "Tier5Mob.3" }
-          ]
-        },
-        {
-          "Level": 4,
-          "Drops": [ [0, 25], [1, 69], [2, 4], [3, 2] ],
-          "Loot": [
-            { "Item": "Tier5Mob.4" }
-          ]
-        },
-        {
-          "Level": 5,
-          "Drops": [ [0, 5], [1, 87], [2, 5], [3, 3] ],
-          "Loot": [
-            { "Item": "Tier5Mob.5" }
-          ]
-        },
-        {
-          "Level": 6,
-          "Drops": [ [0, 0], [1, 86], [2, 10], [3, 4] ],
-          "Loot": [
-            { "Item": "Tier5Mob.6" }
-          ]
-        }
-      ]
+      "RefObject": "Tier5Mob"
     },
     // Lox
     ////////////////////////////////////////////////////////////////////////////////////
     {
       "Object": "Lox",
-      "LeveledLoot": [
-        {
-          "Level": 1,
-          "Drops": [ [0, 75], [1, 24], [2, 1] ],
-          "Loot": [
-            { "Item": "Tier5Mob.1" }
-          ]
-        },
-        {
-          "Level": 2,
-          "Drops": [ [0, 60], [1, 38], [2, 2] ],
-          "Loot": [
-            { "Item": "Tier5Mob.2" }
-          ]
-        },
-        {
-          "Level": 3,
-          "Drops": [ [0, 45], [1, 51], [2, 3], [3, 1] ],
-          "Loot": [
-            { "Item": "Tier5Mob.3" }
-          ]
-        },
-        {
-          "Level": 4,
-          "Drops": [ [0, 25], [1, 69], [2, 4], [3, 2] ],
-          "Loot": [
-            { "Item": "Tier5Mob.4" }
-          ]
-        },
-        {
-          "Level": 5,
-          "Drops": [ [0, 5], [1, 87], [2, 5], [3, 3] ],
-          "Loot": [
-            { "Item": "Tier5Mob.5" }
-          ]
-        },
-        {
-          "Level": 6,
-          "Drops": [ [0, 0], [1, 86], [2, 10], [3, 4] ],
-          "Loot": [
-            { "Item": "Tier5Mob.6" }
-          ]
-        }
-      ]
+      "RefObject": "Tier5Mob"
     },
     // Fuling (Goblin)
     ////////////////////////////////////////////////////////////////////////////////////
     {
       "Object": "Goblin",
-      "LeveledLoot": [
-        {
-          "Level": 1,
-          "Drops": [ [0, 75], [1, 24], [2, 1] ],
-          "Loot": [
-            { "Item": "Tier5Mob.1" }
-          ]
-        },
-        {
-          "Level": 2,
-          "Drops": [ [0, 60], [1, 38], [2, 2] ],
-          "Loot": [
-            { "Item": "Tier5Mob.2" }
-          ]
-        },
-        {
-          "Level": 3,
-          "Drops": [ [0, 45], [1, 51], [2, 3], [3, 1] ],
-          "Loot": [
-            { "Item": "Tier5Mob.3" }
-          ]
-        },
-        {
-          "Level": 4,
-          "Drops": [ [0, 25], [1, 69], [2, 4], [3, 2] ],
-          "Loot": [
-            { "Item": "Tier5Mob.4" }
-          ]
-        },
-        {
-          "Level": 5,
-          "Drops": [ [0, 5], [1, 87], [2, 5], [3, 3] ],
-          "Loot": [
-            { "Item": "Tier5Mob.5" }
-          ]
-        },
-        {
-          "Level": 6,
-          "Drops": [ [0, 0], [1, 86], [2, 10], [3, 4] ],
-          "Loot": [
-            { "Item": "Tier5Mob.6" }
-          ]
-        }
-      ]
+      "RefObject": "Tier5Mob"
+    },
+    // Fuling Archer (GoblinArcher)
+    ////////////////////////////////////////////////////////////////////////////////////
+    {
+      "Object": "GoblinArcher",
+      "RefObject": "Tier5Mob"
     },
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Tier 6 Mobs (Fuling Berserker, Fuling Shaman)
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    
+
     // Fuling Berserker (GoblinBrute)
     ////////////////////////////////////////////////////////////////////////////////////
     {
       "Object": "GoblinBrute",
-      "LeveledLoot": [
-        {
-          "Level": 1,
-          "Drops": [ [0, 70], [1, 28], [2, 2] ],
-          "Loot": [
-            { "Item": "Tier6Mob.1" }
-          ]
-        },
-        {
-          "Level": 2,
-          "Drops": [ [0, 50], [1, 46], [2, 3], [3, 1] ],
-          "Loot": [
-            { "Item": "Tier6Mob.2" }
-          ]
-        },
-        {
-          "Level": 3,
-          "Drops": [ [0, 30], [1, 64], [2, 4], [3, 2] ],
-          "Loot": [
-            { "Item": "Tier6Mob.3" }
-          ]
-        },
-        {
-          "Level": 4,
-          "Drops": [ [0, 5], [1, 87], [2, 5], [3, 3] ],
-          "Loot": [
-            { "Item": "Tier6Mob.4" }
-          ]
-        },
-        {
-          "Level": 5,
-          "Drops": [ [0, 0], [1, 86], [2, 10], [3, 4] ],
-          "Loot": [
-            { "Item": "Tier6Mob.5" }
-          ]
-        },
-        {
-          "Level": 6,
-          "Drops": [ [0, 0], [1, 80], [2, 15], [3, 5] ],
-          "Loot": [
-            { "Item": "Tier6Mob.6" }
-          ]
-        }
-      ]
+      "RefObject": "Tier6Mob"
     },
     // Fuling Shaman (GoblinShaman)
     ////////////////////////////////////////////////////////////////////////////////////
     {
       "Object": "GoblinShaman",
-      "LeveledLoot": [
-        {
-          "Level": 1,
-          "Drops": [ [0, 70], [1, 28], [2, 2] ],
-          "Loot": [
-            { "Item": "Tier6Mob.1" }
-          ]
-        },
-        {
-          "Level": 2,
-          "Drops": [ [0, 50], [1, 46], [2, 3], [3, 1] ],
-          "Loot": [
-            { "Item": "Tier6Mob.2" }
-          ]
-        },
-        {
-          "Level": 3,
-          "Drops": [ [0, 30], [1, 64], [2, 4], [3, 2] ],
-          "Loot": [
-            { "Item": "Tier6Mob.3" }
-          ]
-        },
-        {
-          "Level": 4,
-          "Drops": [ [0, 5], [1, 87], [2, 5], [3, 3] ],
-          "Loot": [
-            { "Item": "Tier6Mob.4" }
-          ]
-        },
-        {
-          "Level": 5,
-          "Drops": [ [0, 0], [1, 86], [2, 10], [3, 4] ],
-          "Loot": [
-            { "Item": "Tier6Mob.5" }
-          ]
-        },
-        {
-          "Level": 6,
-          "Drops": [ [0, 0], [1, 80], [2, 15], [3, 5] ],
-          "Loot": [
-            { "Item": "Tier6Mob.6" }
-          ]
-        }
-      ]
+      "RefObject": "Tier6Mob"
     },
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2298,51 +1106,51 @@
         }
       ]
     },
-    // Dragon (Moder)
+    // Moder (Dragon)
     ////////////////////////////////////////////////////////////////////////////////////
     {
-      "Object": "Moder",
+      "Object": "Dragon",
       "LeveledLoot": [
         {
           "Level": 1,
-          "Drops": [ [2, 40], [3, 40], [4, 20], [5, 0] ],
+          "Drops": [ [2, 20], [3, 40], [4, 30], [5, 10] ],
           "Loot": [
             { "Item": "Tier4Everything", "Weight": 1, "Rarity": [ 0, 40, 50, 10 ] }
           ]
         },
         {
           "Level": 2,
-          "Drops": [ [2, 20], [3, 50], [4, 30], [5, 0] ],
+          "Drops": [ [2, 20], [3, 50], [4, 30], [5, 15] ],
           "Loot": [
-            { "Item": "Moder.1", "Weight": 1, "Rarity": [ 0, 20, 65, 15 ] }
+            { "Item": "Dragon.1", "Weight": 1, "Rarity": [ 0, 20, 65, 15 ] }
           ]
         },
         {
           "Level": 3,
-          "Drops": [ [2, 0], [3, 60], [4, 40], [5, 0] ],
+          "Drops": [ [3, 50], [4, 30], [5, 20] ],
           "Loot": [
-            { "Item": "Moder.1", "Weight": 1, "Rarity": [ 0, 0, 80, 20 ] }
+            { "Item": "Dragon.1", "Weight": 1, "Rarity": [ 0, 0, 80, 20 ] }
           ]
         },
         {
           "Level": 4,
-          "Drops": [ [2, 0], [3, 35], [4, 60], [5, 5] ],
+          "Drops": [ [3, 20], [4, 55], [5, 25] ],
           "Loot": [
-            { "Item": "Moder.1", "Weight": 1, "Rarity": [ 0, 0, 75, 25 ] }
+            { "Item": "Dragon.1", "Weight": 1, "Rarity": [ 0, 0, 75, 25 ] }
           ]
         },
         {
           "Level": 5,
-          "Drops": [ [2, 0], [3, 10], [4, 80], [5, 10] ],
+          "Drops": [ [3, 5], [4, 65], [5, 30] ],
           "Loot": [
-            { "Item": "Moder.1", "Weight": 1, "Rarity": [ 0, 0, 70, 30 ] }
+            { "Item": "Dragon.1", "Weight": 1, "Rarity": [ 0, 0, 70, 30 ] }
           ]
         },
         {
           "Level": 6,
-          "Drops": [ [2, 0], [4, 85], [5, 15] ],
+          "Drops": [ [4, 60], [5, 35], [6, 5] ],
           "Loot": [
-            { "Item": "Moder.1", "Weight": 1, "Rarity": [ 0, 0, 60, 40 ] }
+            { "Item": "Dragon.1", "Weight": 1, "Rarity": [ 0, 0, 60, 40 ] }
           ]
         }
       ]
@@ -2354,42 +1162,42 @@
       "LeveledLoot": [
         {
           "Level": 1,
-          "Drops": [ [2, 20], [3, 60], [4, 15], [5, 5] ],
+          "Drops": [ [3, 20], [4, 60], [5, 15], [6, 5] ],
           "Loot": [
             { "Item": "Tier5Everything", "Weight": 1, "Rarity": [ 0, 0, 80, 20 ] }
           ]
         },
         {
           "Level": 2,
-          "Drops": [ [2, 0], [3, 70], [4, 20], [5, 10] ],
+          "Drops": [ [4, 70], [5, 20], [6, 10] ],
           "Loot": [
             { "Item": "GoblinKing.1", "Weight": 1, "Rarity": [ 0, 0, 70, 30 ] }
           ]
         },
         {
           "Level": 3,
-          "Drops": [ [2, 0], [3, 45], [4, 40], [5, 15] ],
+          "Drops": [ [4, 45], [5, 40], [6, 15] ],
           "Loot": [
             { "Item": "GoblinKing.1", "Weight": 1, "Rarity": [ 0, 0, 60, 40 ] }
           ]
         },
         {
           "Level": 4,
-          "Drops": [ [2, 0], [3, 25], [4, 50], [5, 25] ],
+          "Drops": [ [4, 25], [5, 50], [6, 25] ],
           "Loot": [
             { "Item": "GoblinKing.1", "Weight": 1, "Rarity": [ 0, 0, 40, 60 ] }
           ]
         },
         {
           "Level": 5,
-          "Drops": [ [2, 0], [3, 5], [4, 60], [5, 35] ],
+          "Drops": [ [4, 5], [5, 60], [6, 30], [7, 5] ],
           "Loot": [
             { "Item": "GoblinKing.1", "Weight": 1, "Rarity": [ 0, 0, 20, 80 ] }
           ]
         },
         {
           "Level": 6,
-          "Drops": [ [2, 0], [4, 55], [5, 45] ],
+          "Drops": [ [5, 50], [6, 40], [7, 10] ],
           "Loot": [
             { "Item": "GoblinKing.1", "Weight": 1, "Rarity": [ 0, 0, 0, 100 ] }
           ]

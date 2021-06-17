@@ -7,6 +7,7 @@ using System.Text;
 using BepInEx;
 using BepInEx.Configuration;
 using Common;
+using EpicLoot.Abilities;
 using EpicLoot.Adventure;
 using EpicLoot.Crafting;
 using EpicLoot.GatedItemType;
@@ -55,6 +56,7 @@ namespace EpicLoot
         public AudioClip AbandonBountySFX;
         public AudioClip DoubleJumpSFX;
         public GameObject DebugTextPrefab;
+        public GameObject AbilityBar;
     }
 
     public class PieceDef
@@ -66,14 +68,14 @@ namespace EpicLoot
     }
 
     [BepInPlugin(PluginId, DisplayName, Version)]
-    [BepInDependency("randyknapp.mods.extendeditemdataframework")]
+    [BepInDependency("randyknapp.mods.extendeditemdataframework", "1.0.2")]
     public class EpicLoot : BaseUnityPlugin
     {
         public const string PluginId = "randyknapp.mods.epicloot";
         public const string DisplayName = "Epic Loot";
-        public const string Version = "0.7.9";
+        public const string Version = "0.8.0";
 
-        private readonly ConfigSync _configSync = new ConfigSync(PluginId) { DisplayName = DisplayName, CurrentVersion = Version, MinimumRequiredVersion = "0.7.9" };
+        private readonly ConfigSync _configSync = new ConfigSync(PluginId) { DisplayName = DisplayName, CurrentVersion = Version, MinimumRequiredVersion = "0.8.0" };
 
         private static ConfigEntry<string> _setItemColor;
         private static ConfigEntry<string> _magicRarityColor;
@@ -96,9 +98,16 @@ namespace EpicLoot
         private static ConfigEntry<GatedItemTypeMode> _gatedItemTypeModeConfig;
         private static ConfigEntry<BossDropMode> _bossTrophyDropMode;
         private static ConfigEntry<float> _bossTrophyDropPlayerRange;
+        private static ConfigEntry<int> _andvaranautRange;
         public static ConfigEntry<bool> ShowEquippedAndHotbarItemsInSacrificeTab;
         private static ConfigEntry<bool> _adventureModeEnabled;
         private static ConfigEntry<bool> _serverConfigLocked;
+        public static readonly ConfigEntry<string>[] AbilityKeyCodes = new ConfigEntry<string>[AbilityController.AbilitySlotCount];
+        public static ConfigEntry<TextAnchor> AbilityBarAnchor;
+        public static ConfigEntry<Vector2> AbilityBarPosition;
+        public static ConfigEntry<TextAnchor> AbilityBarLayoutAlignment;
+        public static ConfigEntry<float> AbilityBarIconSpacing;
+        public static ConfigEntry<float> SetItemDropChance;
 
         public static readonly List<ItemDrop.ItemData.ItemType> AllowedMagicItemTypes = new List<ItemDrop.ItemData.ItemType>
         {
@@ -134,14 +143,17 @@ namespace EpicLoot
         public static readonly List<GameObject> RegisteredItemPrefabs = new List<GameObject>();
         public static readonly Dictionary<GameObject, PieceDef> RegisteredPieces = new Dictionary<GameObject, PieceDef>();
         private static readonly Dictionary<string, Action<ItemDrop>> _customItemSetupActions = new Dictionary<string, Action<ItemDrop>>();
+        private static readonly Dictionary<string, Object> _assetCache = new Dictionary<string, Object>();
         public static bool AlwaysDropCheat = false;
         public const Minimap.PinType BountyPinType = (Minimap.PinType) 800;
         public const Minimap.PinType TreasureMapPinType = (Minimap.PinType) 801;
 
+        public static event Action AbilitiesInitialized;
         public static event Action LootTableLoaded;
 
         private static EpicLoot _instance;
         private Harmony _harmony;
+        private float _worldLuckFactor;
 
         [UsedImplicitly]
         private void Awake()
@@ -171,17 +183,28 @@ namespace EpicLoot
             _bossTrophyDropMode = SyncedConfig("Balance", "Boss Trophy Drop Mode", BossDropMode.OnePerPlayerNearBoss, "Sets bosses to drop a number of trophies equal to the number of players, similar to the way Wishbone works in vanilla. Optionally set it to only include players within a certain distance, use 'Boss Trophy Drop Player Range' to set the range.");
             _bossTrophyDropPlayerRange = SyncedConfig("Balance", "Boss Trophy Drop Player Range", 100.0f, "Sets the range that bosses check when dropping multiple trophies using the OnePerPlayerNearBoss drop mode.");
             _adventureModeEnabled = SyncedConfig("Balance", "Adventure Mode Enabled", true, "Set to true to enable all the adventure mode features: secret stash, gambling, treasure maps, and bounties. Set to false to disable. This will not actually remove active treasure maps or bounties from your save.");
+            _andvaranautRange = SyncedConfig("Balance", "Andvaranaut Range", 20, "Sets the range that Andvaranaut will locate a treasure chest.");
             _serverConfigLocked = SyncedConfig("Config Sync", "Lock Config", false, new ConfigDescription("[Server Only] The configuration is locked and may not be changed by clients once it has been synced from the server. Only valid for server config, will have no effect on clients."));
+            SetItemDropChance = SyncedConfig("Balance", "Set Item Drop Chance", 0.15f, "The percent chance that a legendary item will be a set item. Min = 0, Max = 1");
+
+            AbilityKeyCodes[0] = Config.Bind("Abilities", "Ability Hotkey 1", "g", "Hotkey for Ability Slot 1.");
+            AbilityKeyCodes[1] = Config.Bind("Abilities", "Ability Hotkey 2", "h", "Hotkey for Ability Slot 2.");
+            AbilityKeyCodes[2] = Config.Bind("Abilities", "Ability Hotkey 3", "j", "Hotkey for Ability Slot 3.");
+            AbilityBarAnchor = Config.Bind("Abilities", "Ability Bar Anchor", TextAnchor.LowerLeft, "The point on the HUD to anchor the ability bar. Changing this also changes the pivot of the ability bar to that corner. For reference: the ability bar size is 208 by 64.");
+            AbilityBarPosition = Config.Bind("Abilities", "Ability Bar Position", new Vector2(150, 170), "The position offset from the Ability Bar Anchor at which to place the ability bar.");
+            AbilityBarLayoutAlignment = Config.Bind("Abilities", "Ability Bar Layout Alignment", TextAnchor.LowerLeft, "The Ability Bar is a Horizontal Layout Group. This value indicates how the elements inside are aligned. Choices with 'Center' in them will keep the items centered on the bar, even if there are fewer than the maximum allowed. 'Left' will be left aligned, and similar for 'Right'.");
+            AbilityBarIconSpacing = Config.Bind("Abilities", "Ability Bar Icon Spacing", 8.0f, "The number of units between the icons on the ability bar.");
+
             _configSync.AddLockingConfigEntry(_serverConfigLocked);
 
             LoadTranslations();
             InitializeConfig();
+            InitializeAbilities();
             PrintInfo();
             //GenerateTranslations();
 
             LoadAssets();
 
-            ExtendedItemData.LoadExtendedItemData += SetupTestMagicItem;
             ExtendedItemData.LoadExtendedItemData += MagicItemComponent.OnNewExtendedItemData;
             ExtendedItemData.NewExtendedItemData += MagicItemComponent.OnNewExtendedItemData;
 
@@ -228,6 +251,13 @@ namespace EpicLoot
             LoadJsonFile<ItemNameConfig>("itemnames.json", MagicItemNames.Initialize);
             LoadJsonFile<AdventureDataConfig>("adventuredata.json", AdventureDataManager.Initialize);
             LoadJsonFile<LegendaryItemConfig>("legendaries.json", UniqueLegendaryHelper.Initialize);
+            LoadJsonFile<AbilityConfig>("abilities.json", AbilityDefinitions.Initialize);
+        }
+
+        private void InitializeAbilities()
+        {
+            MagicEffectType.Initialize();
+            AbilitiesInitialized?.Invoke();
         }
 
         public static void Log(string message)
@@ -308,6 +338,7 @@ namespace EpicLoot
             Assets.AbandonBountySFX = assetBundle.LoadAsset<AudioClip>("AbandonBounty");
             Assets.DoubleJumpSFX = assetBundle.LoadAsset<AudioClip>("DoubleJump");
             Assets.DebugTextPrefab = assetBundle.LoadAsset<GameObject>("DebugText");
+            Assets.AbilityBar = assetBundle.LoadAsset<GameObject>("AbilityBar");
 
             LoadCraftingMaterialAssets(assetBundle, "Runestone");
 
@@ -349,13 +380,22 @@ namespace EpicLoot
             LoadItem(assetBundle, "ForestToken");
             LoadItem(assetBundle, "IronBountyToken");
             LoadItem(assetBundle, "GoldBountyToken");
+
+            LoadAllZNetAssets(assetBundle);
         }
 
         public static T LoadAsset<T>(string assetName) where T : Object
         {
             try
             {
-                return Assets.AssetBundle.LoadAsset<T>(assetName);
+                if (_assetCache.ContainsKey(assetName))
+                {
+                    return (T)_assetCache[assetName];
+                }
+
+                var asset = Assets.AssetBundle.LoadAsset<T>(assetName);
+                _assetCache.Add(assetName, asset);
+                return asset;
             }
             catch (Exception e)
             {
@@ -401,55 +441,23 @@ namespace EpicLoot
             Assets.CraftingMaterialPrefabs.Add(type, prefabs);
         }
 
-        private static void SetupTestMagicItem(ExtendedItemData itemdata)
+        private void LoadAllZNetAssets(AssetBundle assetBundle)
         {
-            // Weapon (Club)
-            /*if (itemdata.GetUniqueId() == "1493f9a4-65b4-41e3-8871-611ec8cb7564")
+            var znetAssets = assetBundle.LoadAllAssets();
+            foreach (var asset in znetAssets)
             {
-                var magicItem = new MagicItem {Rarity = ItemRarity.Epic};
-                magicItem.Effects.Add(RollEffect(MagicItemEffectDefinitions.Get(MagicEffectType.ModifyAttackStaminaUse), magicItem.Rarity));
-                magicItem.Effects.Add(RollEffect(MagicItemEffectDefinitions.Get(MagicEffectType.Indestructible), magicItem.Rarity));
-                magicItem.Effects.Add(RollEffect(MagicItemEffectDefinitions.Get(MagicEffectType.Weightless), magicItem.Rarity));
-                //var magicItem = RollMagicItem(new LootDrop() { Rarity = { 6, 4, 2, 1 } }, itemdata);
-                itemdata.ReplaceComponent<MagicItemComponent>().SetMagicItem(magicItem);
+                if (asset is GameObject assetGo && assetGo.GetComponent<ZNetView>() != null)
+                {
+                    _assetCache.Add(asset.name, assetGo);
+                    RegisteredPrefabs.Add(assetGo);
+                }
             }
-            // Armor (Bronze Cuirass)
-            else if (itemdata.GetUniqueId() == "84c006c7-3819-463c-b3b6-cb812f184655")
-            {
-                var magicItem = new MagicItem {Rarity = ItemRarity.Epic };
-                //var magicItem = RollMagicItem(new LootDrop() { Rarity = { 6, 4, 2, 1 } }, itemdata);
-                magicItem.Effects.Add(RollEffect(MagicItemEffectDefinitions.Get(MagicEffectType.ModifyMovementSpeed), magicItem.Rarity));
-                magicItem.Effects.Add(RollEffect(MagicItemEffectDefinitions.Get(MagicEffectType.Indestructible), magicItem.Rarity));
-                magicItem.Effects.Add(RollEffect(MagicItemEffectDefinitions.Get(MagicEffectType.Weightless), magicItem.Rarity));
-                magicItem.Effects.Add(RollEffect(MagicItemEffectDefinitions.Get(MagicEffectType.AddCarryWeight), magicItem.Rarity));
-                itemdata.ReplaceComponent<MagicItemComponent>().SetMagicItem(magicItem);
-            }
-            // Shield (Wood Shield)
-            else if (itemdata.GetUniqueId() == "c0d8fb31-04dd-4499-b347-d0484416f159")
-            {
-                var magicItem = new MagicItem {Rarity = ItemRarity.Epic};
-                magicItem.Effects.Add(RollEffect(MagicItemEffectDefinitions.Get(MagicEffectType.ModifyBlockStaminaUse), magicItem.Rarity));
-                magicItem.Effects.Add(RollEffect(MagicItemEffectDefinitions.Get(MagicEffectType.Weightless), magicItem.Rarity));
-                //var magicItem = RollMagicItem(new LootDrop() { Rarity = { 6, 4, 2, 1 } }, itemdata);
-                itemdata.ReplaceComponent<MagicItemComponent>().SetMagicItem(magicItem);
-            }
-            // Legs (Troll Hide Legs)
-            else if (itemdata.GetUniqueId() == "ec539738-6a73-492b-85d8-ce80eb0944f1")
-            {
-                var magicItem = new MagicItem { Rarity = ItemRarity.Epic };
-                magicItem.Effects.Add(RollEffect(MagicItemEffectDefinitions.Get(MagicEffectType.ModifyMovementSpeed), magicItem.Rarity));
-                magicItem.Effects.Add(RollEffect(MagicItemEffectDefinitions.Get(MagicEffectType.ModifySprintStaminaUse), magicItem.Rarity));
-                magicItem.Effects.Add(RollEffect(MagicItemEffectDefinitions.Get(MagicEffectType.ModifyJumpStaminaUse), magicItem.Rarity));
-                magicItem.Effects.Add(RollEffect(MagicItemEffectDefinitions.Get(MagicEffectType.AddCarryWeight), magicItem.Rarity));
-                itemdata.ReplaceComponent<MagicItemComponent>().SetMagicItem(magicItem);
-            }*/
         }
 
         [UsedImplicitly]
         private void OnDestroy()
         {
             _instance = null;
-            ExtendedItemData.LoadExtendedItemData -= SetupTestMagicItem;
             _harmony?.UnpatchAll(PluginId);
         }
 
@@ -467,30 +475,6 @@ namespace EpicLoot
                     zNetScene.m_prefabs.Add(prefab);
                 }
             }
-
-            /*if (GetBossesDropOneTrophyPerPlayer())
-            {
-                foreach (var prefab in zNetScene.m_prefabs)
-                {
-                    var character = prefab.GetComponent<Character>();
-                    if (character == null || !character.IsBoss())
-                    {
-                        continue;
-                    }
-
-                    var characterDrop = prefab.GetComponent<CharacterDrop>();
-                    if (characterDrop == null)
-                    {
-                        continue;
-                    }
-
-                    var trophyDrop = characterDrop.m_drops.Find(x => x.m_prefab != null && x.m_prefab.GetComponent<ItemDrop>()?.m_itemData?.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Trophie);
-                    if (trophyDrop != null)
-                    {
-                        trophyDrop.m_onePerPlayer = true;
-                    }
-                }
-            }*/
         }
 
         public static void TryRegisterPieces(List<PieceTable> pieceTables, List<CraftingStation> craftingStations)
@@ -715,7 +699,7 @@ namespace EpicLoot
                 Rarity = ItemRarity.Epic,
                 TypeNameOverride = "$mod_epicloot_item_andvaranaut_type"
             };
-            magicItem.Effects.Add(new MagicItemEffect() { EffectType = MagicEffectType.Andvaranaut });
+            magicItem.Effects.Add(new MagicItemEffect(MagicEffectType.Andvaranaut));
 
             prefab.m_itemData = new ExtendedItemData(prefab.m_itemData);
             prefab.m_itemData.Extended().ReplaceComponent<MagicItemComponent>().MagicItem = magicItem;
@@ -757,7 +741,7 @@ namespace EpicLoot
 
             if (jsonFile != null)
             {
-	            void ConsumeConfigFileEvent(object s, FileSystemEventArgs e) => syncedValue.Value = LoadJsonText(filename);
+	            void ConsumeConfigFileEvent(object s, FileSystemEventArgs e) => syncedValue.AssignLocalValue(LoadJsonText(filename));
 	            var filePath = GetAssetPath(filename);
 	            FileSystemWatcher watcher = new FileSystemWatcher(Path.GetDirectoryName(filePath), Path.GetFileName(filePath));
 	            watcher.Changed += ConsumeConfigFileEvent;
@@ -908,6 +892,12 @@ namespace EpicLoot
 
         private void PrintInfo()
         {
+            const string devOutputPath = @"C:\Users\rknapp\Documents\GitHub\ValheimMods\EpicLoot";
+            if (!Directory.Exists(devOutputPath))
+            {
+                return;
+            }
+
             var t = new StringBuilder();
             t.AppendLine($"# EpicLoot Data v{Version}");
             t.AppendLine();
@@ -1079,14 +1069,7 @@ namespace EpicLoot
                 }
             }
 
-            //var outputFilePath = Path.Combine(Path.GetDirectoryName(typeof(EpicLoot).Assembly.Location), "info.md");
-            //File.WriteAllText(outputFilePath, t.ToString());
-
-            const string devOutputPath = @"C:\Users\rknapp\Documents\GitHub\ValheimMods\EpicLoot";
-            if (Directory.Exists(devOutputPath))
-            {
-                File.WriteAllText(Path.Combine(devOutputPath, "info.md"), t.ToString());
-            }
+            File.WriteAllText(Path.Combine(devOutputPath, "info.md"), t.ToString());
         }
 
         private static void WriteLootTableDrops(StringBuilder t, LootTable lootTable)
@@ -1097,20 +1080,20 @@ namespace EpicLoot
             {
                 var level = i + 1;
                 var dropTable = LootRoller.GetDropsForLevel(lootTable, level, false);
-                if (ArrayUtils.IsNullOrEmpty(dropTable))
+                if (dropTable == null || dropTable.Count == 0)
                 {
                     continue;
                 }
 
-                float total = dropTable.Sum(x => x.Length > 1 ? x[1] : 0);
+                float total = dropTable.Sum(x => x.Value);
                 if (total > 0)
                 {
                     t.AppendLine($"> | Drops (lvl {level}) | Weight (Chance) |");
                     t.AppendLine($"> | -- | -- |");
                     foreach (var drop in dropTable)
                     {
-                        var count = drop.Length > 0 ? drop[0] : 0;
-                        var value = drop.Length > 1 ? drop[1] : 0;
+                        var count = drop.Key;
+                        var value = drop.Value;
                         var percent = (value / total) * 100;
                         t.AppendLine($"> | {count} | {value} ({percent:0.#}%) |");
                     }
@@ -1288,6 +1271,11 @@ namespace EpicLoot
             return _bossTrophyDropPlayerRange.Value;
         }
 
+        public static int GetAndvaranautRange()
+        {
+          return _andvaranautRange.Value;
+        }
+
         public static bool IsAdventureModeEnabled()
         {
             return _adventureModeEnabled.Value;
@@ -1295,20 +1283,22 @@ namespace EpicLoot
 
         private static void GenerateTranslations()
         {
-            var jsonFile = LoadJsonText("itemnames.json");
-            var config = JSON.ToObject<ItemNameConfig>(jsonFile);
+            var jsonFile = LoadJsonText("magiceffects.json");
+            var config = JSON.ToObject<MagicItemEffectsList>(jsonFile);
 
             var translations = new Dictionary<string, string>();
 
-            foreach (var nameEntry in config.Epic.Adjectives.Concat(config.Epic.Names))
+            foreach (var effectDef in config.MagicItemEffects)
             {
-                var name = nameEntry.Name;
-                var locId = "mod_epicloot_epic_" + Clean(name);
-                translations.Add(locId, name);
-                jsonFile = jsonFile.Replace($"\"Name\": \"{name}\"", $"\"Name\": \"${locId}\"");
+                if (string.IsNullOrEmpty(effectDef.Description))
+                {
+                    effectDef.Description = effectDef.DisplayText.Replace("display", "desc");
+                    jsonFile = jsonFile.Replace($"\"DisplayText\" : \"{effectDef.DisplayText}\"", $"\"DisplayText\" : \"{effectDef.DisplayText}\",\n      \"Description\" : \"{effectDef.Description}\"");
+                    translations.Add(effectDef.Description, "");
+                }
             }
 
-            var outputPath = GenerateAssetPathAtAssembly("itemnames_translated.json");
+            var outputPath = GenerateAssetPathAtAssembly("magiceffects_translated.json");
             File.WriteAllText(outputPath, jsonFile);
 
             var translationsOutputPath = GenerateAssetPathAtAssembly("new_translations.json");
@@ -1373,6 +1363,16 @@ namespace EpicLoot
             var key = GetId(effectDef, field);
             AddTranslation(translations, key, value);
             return ReplaceTranslation(jsonFile, string.Format(replaceFormat, value), string.Format(replaceFormat, $"${key}"));
+        }
+
+        public static float GetWorldLuckFactor()
+        {
+            return _instance._worldLuckFactor;
+        }
+
+        public static void SetWorldLuckFactor(float luckFactor)
+        {
+            _instance._worldLuckFactor = luckFactor;
         }
     }
 }

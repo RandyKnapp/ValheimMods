@@ -1,5 +1,7 @@
-﻿using HarmonyLib;
+﻿using System.Collections.Generic;
+using HarmonyLib;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace EpicLoot
 {
@@ -18,45 +20,49 @@ namespace EpicLoot
         [HarmonyPostfix]
         public static void AttachItem_Postfix(VisEquipment __instance, GameObject __result, int itemHash)
         {
-            if (!CanCreateEffect(__instance, itemHash, out var player, out var equippedItem))
+            if (!CanCreateEffect(__instance, itemHash, out var player, out var equippedItem, out var itemID))
             {
                 return;
             }
 
+            SetTextureOverrides(__instance, new List<GameObject> { __result }, itemID, equippedItem);
+            SetItemFx(__result, equippedItem, player);
+        }
+
+        [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.AttachArmor))]
+        [HarmonyPostfix]
+        public static void AttachArmor_Postfix(VisEquipment __instance, List<GameObject> __result, int itemHash)
+        {
+            if (!CanCreateEffect(__instance, itemHash, out var player, out var equippedItem, out var itemID))
+            {
+                return;
+            }
+
+            SetTextureOverrides(__instance, __result, itemID, equippedItem);
+            SetItemFx(null, equippedItem, player);
+        }
+
+        private static void SetItemFx(GameObject __result, ItemDrop.ItemData equippedItem, Player player)
+        {
             var equipFx = GetEquipFxName(equippedItem, out var mode);
             if (!string.IsNullOrEmpty(equipFx))
             {
                 var asset = EpicLoot.LoadAsset<GameObject>(equipFx);
                 if (asset != null)
                 {
-                    var attachObject = mode == FxAttachMode.Player ? player.transform : __result.transform;
+                    var attachObject = mode == FxAttachMode.Player ? player.transform : __result?.transform;
+                    if (attachObject == null)
+                    {
+                        EpicLoot.LogError($"Tried to attach FX to item that did not exist. item={equippedItem.m_shared.m_name}, equipFx={equipFx}, mode={mode}");
+                        return;
+                    }
+
                     var equipEffects = attachObject.Find("equiped");
                     if (equipEffects != null && mode == FxAttachMode.EquipRoot)
                     {
                         attachObject = equipEffects;
                     }
 
-                    AttachFx(attachObject, equipFx, asset);
-                }
-            }
-        }
-
-        [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.AttachArmor))]
-        [HarmonyPostfix]
-        public static void AttachArmor_Postfix(VisEquipment __instance, int itemHash)
-        {
-            if (!CanCreateEffect(__instance, itemHash, out var player, out var equippedItem))
-            {
-                return;
-            }
-
-            var equipFx = GetEquipFxName(equippedItem, out var mode);
-            if (!string.IsNullOrEmpty(equipFx) && mode == FxAttachMode.Player)
-            {
-                var asset = EpicLoot.LoadAsset<GameObject>(equipFx);
-                if (asset != null)
-                {
-                    var attachObject = player.transform;
                     AttachFx(attachObject, equipFx, asset);
                 }
             }
@@ -69,7 +75,10 @@ namespace EpicLoot
                 return;
             }
 
+            ZNetView.m_forceDisableInit = true;
             var newEffect = Object.Instantiate(asset, attachObject, false);
+            ZNetView.m_forceDisableInit = false;
+
             newEffect.name = equipFx;
             var audioSources = newEffect.GetComponentsInChildren<AudioSource>();
             foreach (var audioSource in audioSources)
@@ -78,6 +87,81 @@ namespace EpicLoot
             }
         }
 
+        private static void SetTextureOverrides(VisEquipment __instance, List<GameObject> __result, string itemID, ItemDrop.ItemData equippedItem)
+        {
+            GetTexOverrides(itemID, equippedItem, out var mainTexture, out var chestTex, out var legsTex);
+            if (!string.IsNullOrEmpty(mainTexture))
+            {
+                foreach (var go in __result)
+                {
+                    var skinnedMeshRenderers = go.GetComponentsInChildren<SkinnedMeshRenderer>(true);
+                    SetMainTextureOnRenderers(skinnedMeshRenderers, mainTexture);
+
+                    var meshRenderers = go.GetComponentsInChildren<MeshRenderer>(true);
+                    SetMainTextureOnRenderers(meshRenderers, mainTexture);
+                }
+            }
+
+            if (!string.IsNullOrEmpty(chestTex))
+            {
+                var chestTexAsset = EpicLoot.LoadAsset<Texture>(chestTex);
+                if (chestTexAsset != null)
+                {
+                    __instance.m_bodyModel.material.SetTexture("_ChestTex", chestTexAsset);
+                }
+                else
+                {
+                    EpicLoot.LogError($"Missing Texture Override Asset: ChestTex={chestTex}");
+                }
+            }
+
+            if (!string.IsNullOrEmpty(legsTex))
+            {
+                var legsTexAsset = EpicLoot.LoadAsset<Texture>(legsTex);
+                if (legsTexAsset != null)
+                {
+                    __instance.m_bodyModel.material.SetTexture("_ChestTex", legsTexAsset);
+                }
+                else
+                {
+                    EpicLoot.LogError($"Missing Texture Override Asset: LegsTex={legsTex}");
+                }
+            }
+        }
+
+        private static void SetMainTextureOnRenderers(IEnumerable<Renderer> renderers, string mainTexture)
+        {
+            var mainTextureAsset = EpicLoot.LoadAsset<Texture>(mainTexture);
+            if (mainTextureAsset != null)
+            {
+                foreach (var renderer in renderers)
+                {
+                    renderer.material.mainTexture = mainTextureAsset;
+                }
+            }
+            else
+            {
+                EpicLoot.LogError($"Missing Texture Override Asset: MainTexture={mainTexture}");
+            }
+        }
+
+        private static void GetTexOverrides(string itemID, ItemDrop.ItemData equippedItem, out string mainTexture, out string chestTex, out string legsTex)
+        {
+            mainTexture = null;
+            chestTex = null;
+            legsTex = null;
+
+            if (equippedItem.IsMagic(out var magicItem) && magicItem.IsUniqueLegendary())
+            {
+                var textureOverride = magicItem.GetLegendaryInfo()?.TextureReplacements?.Find(x => x.ItemID == itemID);
+                if (textureOverride != null)
+                {
+                    mainTexture = textureOverride.MainTexture;
+                    chestTex = textureOverride.ChestTex;
+                    legsTex = textureOverride.LegsTex;
+                }
+            }
+        }
 
         [HarmonyPatch(typeof(Humanoid), nameof(Humanoid.UnequipItem))]
         [HarmonyPrefix]
@@ -114,7 +198,7 @@ namespace EpicLoot
                 return false;
             }
 
-            var player = (Player)humanoid;
+            var player = (Player) humanoid;
             foreach (var equipmentItemData in player.GetEquipment())
             {
                 if (equipmentItemData == item)
@@ -131,9 +215,10 @@ namespace EpicLoot
             return false;
         }
 
-        public static bool CanCreateEffect(VisEquipment __instance, int itemHash, out Player player, out ItemDrop.ItemData equippedItem)
+        public static bool CanCreateEffect(VisEquipment __instance, int itemHash, out Player player, out ItemDrop.ItemData equippedItem, out string itemID)
         {
             equippedItem = null;
+            itemID = null;
             player = __instance.GetComponent<Player>();
             if (player == null)
             {
@@ -146,6 +231,7 @@ namespace EpicLoot
                 return false;
             }
 
+            itemID = itemPrefab.name;
             var itemDrop = itemPrefab.GetComponent<ItemDrop>();
             if (itemDrop == null)
             {
@@ -159,9 +245,8 @@ namespace EpicLoot
 
         public static string GetEquipFxName(ItemDrop.ItemData equippedItem, out FxAttachMode mode)
         {
-            if (equippedItem.IsMagic())
+            if (equippedItem.IsMagic(out var magicItem))
             {
-                var magicItem = equippedItem.GetMagicItem();
                 if (magicItem.IsUniqueLegendary())
                 {
                     if (!string.IsNullOrEmpty(magicItem.GetLegendaryInfo()?.EquipFx))
@@ -182,6 +267,61 @@ namespace EpicLoot
 
             mode = FxAttachMode.None;
             return null;
+        }
+
+        [HarmonyPatch(typeof(Humanoid), nameof(Humanoid.EquipItem))]
+        [HarmonyPostfix]
+        public static void EquipItem_Postfix(Humanoid __instance, bool __result, ItemDrop.ItemData item)
+        {
+            if (!__result || __instance == null || __instance.m_visEquipment == null || item == null)
+            {
+                return;
+            }
+
+            if (item.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Tool)
+            {
+                __instance.m_visEquipment.m_currentRightItemHash = -1;
+            }
+            else if (item.m_shared.m_itemType == ItemDrop.ItemData.ItemType.OneHandedWeapon)
+            {
+                if (__instance.m_rightItem != null && __instance.m_rightItem.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Torch && __instance.m_leftItem == null)
+                {
+                    __instance.m_visEquipment.m_currentLeftItemHash = -1;
+                }
+                __instance.m_visEquipment.m_currentRightItemHash = -1;
+            }
+            else if (item.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Shield)
+            {
+                __instance.m_visEquipment.m_currentLeftItemHash = -1;
+            }
+            else if (item.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Bow)
+            {
+                __instance.m_visEquipment.m_currentLeftItemHash = -1;
+            }
+            else if (item.m_shared.m_itemType == ItemDrop.ItemData.ItemType.TwoHandedWeapon)
+            {
+                __instance.m_visEquipment.m_currentRightItemHash = -1;
+            }
+            else if (item.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Chest)
+            {
+                __instance.m_visEquipment.m_currentChestItemHash = -1;
+            }
+            else if (item.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Legs)
+            {
+                __instance.m_visEquipment.m_currentLegItemHash = -1;
+            }
+            else if (item.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Helmet)
+            {
+                __instance.m_visEquipment.m_currentHelmetItemHash = -1;
+            }
+            else if (item.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Shoulder)
+            {
+                __instance.m_visEquipment.m_currentShoulderItemHash = -1;
+            }
+            else if (item.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Utility)
+            {
+                __instance.m_visEquipment.m_currentUtilityItemHash = -1;
+            }
         }
     }
 }

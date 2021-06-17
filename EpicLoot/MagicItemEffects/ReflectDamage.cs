@@ -3,42 +3,36 @@ using JetBrains.Annotations;
 
 namespace EpicLoot.MagicItemEffects
 {
-	[HarmonyPatch(typeof(Character), "Damage")]
+	[HarmonyPatch(typeof(Character), nameof(Character.Damage))]
 	public class ReflectiveDamage_Character_Damage_Patch
 	{
-		private static bool IsApplyingReflectiveDmg = false;
+		private static bool _isApplyingReflectiveDmg;
 
 		[UsedImplicitly]
 		[HarmonyPriority(Priority.Last)]
 		private static void Prefix(Character __instance, HitData hit)
 		{
-			Character attacker = hit.GetAttacker();
-			if (__instance is Player player && player.HasMagicEquipmentWithEffect(MagicEffectType.ReflectDamage) && attacker != null && attacker != __instance && !IsApplyingReflectiveDmg)
+			var attacker = hit.GetAttacker();
+			if (__instance is Player player && player.HasActiveMagicEffect(MagicEffectType.ReflectDamage) && attacker != null && attacker != __instance && !_isApplyingReflectiveDmg)
 			{
-				var reflectiveDamage = 0f;
-				var items = player.GetMagicEquipmentWithEffect(MagicEffectType.ReflectDamage);
-				foreach (var item in items)
+				var reflectiveDamage = player.GetTotalActiveMagicEffectValue(MagicEffectType.ReflectDamage, 0.01f);
+                if (reflectiveDamage > 0)
 				{
-					reflectiveDamage += item.GetMagicItem().GetTotalEffectValue(MagicEffectType.ReflectDamage, 0.01f);
-				}
-
-				if (reflectiveDamage > 0)
-				{
-					HitData hitData = new HitData()
+					var hitData = new HitData()
 					{
 						m_attacker = __instance.GetZDOID(),
 						m_dir = hit.m_dir * -1,
 						m_point = attacker.transform.localPosition,
-						m_damage = {m_pierce = hit.GetTotalDamage() * reflectiveDamage}
+						m_damage = {m_pierce = (hit.GetTotalPhysicalDamage() + hit.GetTotalElementalDamage()) * reflectiveDamage}
 					};
 					try
 					{
-						IsApplyingReflectiveDmg = true;
+						_isApplyingReflectiveDmg = true;
 						attacker.Damage(hitData);
 					}
 					finally
 					{
-						IsApplyingReflectiveDmg = false;
+						_isApplyingReflectiveDmg = false;
 					}
 				}
 			}

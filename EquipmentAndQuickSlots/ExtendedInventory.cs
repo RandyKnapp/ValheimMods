@@ -86,6 +86,48 @@ namespace EquipmentAndQuickSlots
             return result;
         }
 
+        public Vector2i OverrideFindEmptySlot(bool topFirst)
+        {
+            CallBase = true;
+            Vector2i result = new Vector2i(-1, -1);
+            foreach (var inventory in _inventories)
+            {
+                if (!inventory.CountAsEmptySlots(_player))
+                {
+                    continue;
+                }
+
+                result = inventory.FindEmptySlot(topFirst);
+                if (result.x != -1)
+                {
+                    break;
+                }
+            }
+
+            CallBase = false;
+            return result;
+        }
+
+        public ItemDrop.ItemData OverrideFindFreeStackItem(string name, int quality)
+        {
+            ItemDrop.ItemData result = null;
+            foreach (var inventory in _inventories)
+            {
+                if (!inventory.CountAsEmptySlots(_player))
+                {
+                    continue;
+                }
+
+                result = inventory.FindFreeStackItem(name, quality);
+                if (result != null)
+                {
+                    break;
+                }
+            }
+
+            return result;
+        }
+
         public bool OverrideContainsItem(ItemDrop.ItemData item)
         {
             CallBase = true;

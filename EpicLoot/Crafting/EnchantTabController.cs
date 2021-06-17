@@ -162,6 +162,12 @@ namespace EpicLoot.Crafting
 
         public void OnSelectedRarity(ItemRarity rarity)
         {
+            if (rarity == SelectedRarity)
+            {
+                return;
+            }
+
+            OnCraftCanceled();
             SelectedRarity = rarity;
             var nextButtonIndex = (int) SelectedRarity + 1;
             if (nextButtonIndex >= RarityButtons.Count)
@@ -189,12 +195,13 @@ namespace EpicLoot.Crafting
                 var rarityColor = EpicLoot.GetRarityColor(SelectedRarity);
                 var rarityColorARGB = EpicLoot.GetRarityColorARGB(SelectedRarity);
 
+                var isCrafting = __instance.m_craftTimer >= 0.0f;
                 for (var index = 0; index < RarityButtons.Count; index++)
                 {
                     var rarityButton = RarityButtons[index];
                     var rarity = (ItemRarity) index;
                     var canEnchantRarity = CanEnchantRarity(player, rarity);
-                    rarityButton.gameObject.SetActive(canEnchantRarity);
+                    rarityButton.gameObject.SetActive(!isCrafting && canEnchantRarity);
                     rarityButton.interactable = SelectedRarity != rarity;
 
                     var outline = rarityButton.transform.Find("EnchantOutline").GetComponent<Image>();
@@ -328,10 +335,13 @@ namespace EpicLoot.Crafting
                 {
                     previousDurabilityPercent = recipe.FromItem.m_durability / recipe.FromItem.GetMaxDurability();
                 }
-                
+
+                var luckFactor = player.GetTotalActiveMagicEffectValue(MagicEffectType.Luck, 0.01f);
                 var magicItemComponent = recipe.FromItem.Extended().AddComponent<MagicItemComponent>();
-                var magicItem = LootRoller.RollMagicItem(SelectedRarity, recipe.FromItem.Extended());
+                var magicItem = LootRoller.RollMagicItem(SelectedRarity, recipe.FromItem.Extended(), luckFactor);
                 magicItemComponent.SetMagicItem(magicItem);
+
+                EquipmentEffectCache.Reset(player);
 
                 // Spend Resources
                 if (!player.NoCostCheat())
@@ -353,6 +363,8 @@ namespace EpicLoot.Crafting
                 }
 
                 SuccessDialog.Show(recipe.FromItem.Extended());
+                
+                MagicItemEffects.Indestructible.MakeItemIndestructible(recipe.FromItem);
 
                 Game.instance.GetPlayerProfile().m_playerStats.m_crafts++;
                 Gogan.LogEvent("Game", "Enchanted", recipe.FromItem.m_shared.m_name, 1);

@@ -226,7 +226,7 @@ namespace EpicLoot.Adventure.Feature
                     }
 
                     var waterLevel = ZoneSystem.instance.m_waterLevel;
-                    if (waterLevel > groundHeight + 1.0f)
+                    if (biome != Heightmap.Biome.Ocean && waterLevel > groundHeight + 1.0f)
                     {
                         // Too deep, try again
                         EpicLoot.Log($"Spawn Point rejected: too deep underwater (waterLevel:{waterLevel}, groundHeight:{groundHeight})");

@@ -23,7 +23,7 @@ namespace EpicLoot.PlayerKnown
         }
 
         [HarmonyPostfix]
-        [HarmonyPatch(typeof(Player), "OnSpawned")]
+        [HarmonyPatch(typeof(Player), nameof(Player.OnSpawned))]
         private static void Post_Player_OnSpawned(Player __instance)
         {
             if (__instance == Player.m_localPlayer)

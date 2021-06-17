@@ -62,7 +62,13 @@ namespace EpicLoot.MagicItemEffects
                 if (__instance.IsPlayer() && __instance is Player player)
                 {
                     var previousWaterWalking = IsWaterWalking;
-                    if (!player.HasMagicEquipmentWithEffect(MagicEffectType.WaterWalking))
+                    if (!player.HasActiveMagicEffect(MagicEffectType.WaterWalking))
+                    {
+                        IsWaterWalking = false;
+                        return true;
+                    }
+
+                    if (__instance.m_body.position.y > 4500)
                     {
                         IsWaterWalking = false;
                         return true;
@@ -121,7 +127,7 @@ namespace EpicLoot.MagicItemEffects
             public static void Postfix(Humanoid __instance)
             {
                 IsEquippingWaterWalkingItem = false;
-                if (__instance.IsPlayer() && __instance is Player player && player.HasMagicEquipmentWithEffect(MagicEffectType.WaterWalking))
+                if (__instance.IsPlayer() && __instance is Player player && player.HasActiveMagicEffect(MagicEffectType.WaterWalking))
                 {
                     if (player.IsSwiming())
                     {

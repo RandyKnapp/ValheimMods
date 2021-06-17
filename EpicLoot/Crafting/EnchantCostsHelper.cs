@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
 namespace EpicLoot.Crafting
 {
@@ -65,7 +67,7 @@ namespace EpicLoot.Crafting
             return configEntry?.Cost;
         }
 
-        public static List<ItemAmountConfig> GetAugmentCost(ItemDrop.ItemData item, ItemRarity rarity)
+        public static List<ItemAmountConfig> GetAugmentCost(ItemDrop.ItemData item, ItemRarity rarity, int recipeEffectIndex)
         {
             var type = item.m_shared.m_itemType;
 
@@ -83,7 +85,36 @@ namespace EpicLoot.Crafting
                 return true;
             });
 
+            if (configEntry != null && !item.GetMagicItem().IsEffectAugmented(recipeEffectIndex))
+            {
+                var cost = configEntry.Cost.ToList();
+                var reaugmentCost = GetReAugmentCost(item, recipeEffectIndex);
+                if (reaugmentCost != null)
+                {
+                    cost.Add(reaugmentCost);
+                }
+                return cost;
+            }
+
             return configEntry?.Cost;
+        }
+
+        public static ItemAmountConfig GetReAugmentCost(ItemDrop.ItemData item, int indexToAugment)
+        {
+            var magicItem = item.GetMagicItem();
+            if (magicItem == null)
+            {
+                return null;
+            }
+
+            var totalAugments = magicItem.GetAugmentCount();
+            if (totalAugments == 0)
+            {
+                return null;
+            }
+
+            var reaugmentCostIndex = Mathf.Clamp(totalAugments - 1, 0, Config.ReAugmentCosts.Count - 1);
+            return Config.ReAugmentCosts[reaugmentCostIndex];
         }
     }
 }

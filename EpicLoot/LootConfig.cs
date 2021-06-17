@@ -7,15 +7,15 @@ namespace EpicLoot
     public class LootDrop
     {
         public string Item;
-        public int Weight = 1;
-        public int[] Rarity;
+        public float Weight = 1;
+        public float[] Rarity;
     }
 
     [Serializable]
     public class LeveledLootDef
     {
         public int Level;
-        public int[][] Drops;
+        public float[][] Drops;
         public LootDrop[] Loot;
     }
 
@@ -23,9 +23,10 @@ namespace EpicLoot
     public class LootTable
     {
         public string Object;
-        public int[][] Drops;
-        public int[][] Drops2;
-        public int[][] Drops3;
+        public string RefObject;
+        public float[][] Drops;
+        public float[][] Drops2;
+        public float[][] Drops3;
         public LootDrop[] Loot;
         public LootDrop[] Loot2;
         public LootDrop[] Loot3;
@@ -42,10 +43,10 @@ namespace EpicLoot
     [Serializable]
     public class MagicEffectsCountConfig
     {
-        public int[][] Magic;
-        public int[][] Rare;
-        public int[][] Epic;
-        public int[][] Legendary;
+        public float[][] Magic;
+        public float[][] Rare;
+        public float[][] Epic;
+        public float[][] Legendary;
     }
 
     [Serializable]

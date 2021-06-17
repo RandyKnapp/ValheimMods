@@ -1,35 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using HarmonyLib;
 
 namespace EpicLoot.MagicItemEffects
 {
     //public override void ApplyArmorDamageMods(ref HitData.DamageModifiers mods)
-    [HarmonyPatch(typeof(Player), "ApplyArmorDamageMods")]
+    [HarmonyPatch(typeof(Player), nameof(Player.ApplyArmorDamageMods))]
     public static class ModifyResistance_Player_ApplyArmorDamageMods_Patch
     {
         public static void Postfix(Player __instance, ref HitData.DamageModifiers mods)
         {
             var damageMods = new List<HitData.DamageModPair>();
 
-            if (__instance.HasMagicEquipmentWithEffect(MagicEffectType.AddFireResistance))
+            if (__instance.HasActiveMagicEffect(MagicEffectType.AddFireResistance))
             {
                 damageMods.Add(new HitData.DamageModPair() { m_type = HitData.DamageType.Fire, m_modifier = HitData.DamageModifier.Resistant});
             }
-            if (__instance.HasMagicEquipmentWithEffect(MagicEffectType.AddFrostResistance))
+            if (__instance.HasActiveMagicEffect(MagicEffectType.AddFrostResistance))
             {
                 damageMods.Add(new HitData.DamageModPair() { m_type = HitData.DamageType.Frost, m_modifier = HitData.DamageModifier.Resistant });
             }
-            if (__instance.HasMagicEquipmentWithEffect(MagicEffectType.AddLightningResistance))
+            if (__instance.HasActiveMagicEffect(MagicEffectType.AddLightningResistance))
             {
                 damageMods.Add(new HitData.DamageModPair() { m_type = HitData.DamageType.Lightning, m_modifier = HitData.DamageModifier.Resistant });
             }
-            if (__instance.HasMagicEquipmentWithEffect(MagicEffectType.AddPoisonResistance))
+            if (__instance.HasActiveMagicEffect(MagicEffectType.AddPoisonResistance))
             {
                 damageMods.Add(new HitData.DamageModPair() { m_type = HitData.DamageType.Poison, m_modifier = HitData.DamageModifier.Resistant });
             }
-            if (__instance.HasMagicEquipmentWithEffect(MagicEffectType.AddSpiritResistance))
+            if (__instance.HasActiveMagicEffect(MagicEffectType.AddSpiritResistance))
             {
                 damageMods.Add(new HitData.DamageModPair() { m_type = HitData.DamageType.Spirit, m_modifier = HitData.DamageModifier.Resistant });
             }
@@ -38,7 +37,7 @@ namespace EpicLoot.MagicItemEffects
         }
     }
 
-    [HarmonyPatch(typeof(Character), "RPC_Damage")]
+    [HarmonyPatch(typeof(Character), nameof(Character.RPC_Damage))]
     public static class ModifyResistance_Character_RPC_Damage_Patch
     {
 	    public static void Prefix(Character __instance, HitData hit)
@@ -53,7 +52,7 @@ namespace EpicLoot.MagicItemEffects
 			    float value = 1;
 			    foreach (var effect in effects)
 			    {
-				    value -= player.GetMagicEquipmentWithEffect(effect).Sum(item => item.GetMagicItem().GetTotalEffectValue(effect, 0.01f));
+				    value -= player.GetTotalActiveMagicEffectValue(effect, 0.01f);
 			    }
 
 			    return Math.Max(value, 0);

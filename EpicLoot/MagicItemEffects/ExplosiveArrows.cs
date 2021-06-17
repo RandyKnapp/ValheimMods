@@ -9,7 +9,7 @@ using Object = UnityEngine.Object;
 
 namespace EpicLoot.MagicItemEffects
 {
-	[HarmonyPatch(typeof(Projectile), "Awake")]
+	[HarmonyPatch(typeof(Projectile), nameof(Projectile.Awake))]
 	public class RPC_ExplodingArrow_Projectile_Awake_Patch
 	{
         [UsedImplicitly]
@@ -45,8 +45,7 @@ namespace EpicLoot.MagicItemEffects
 		}
 	}
 
-	
-	[HarmonyPatch(typeof(Projectile), "OnHit")]
+	[HarmonyPatch(typeof(Projectile), nameof(Projectile.OnHit))]
 	public class ExplodingArrowHit_Projectile_OnHit_Patch
 	{
         [UsedImplicitly]
@@ -78,12 +77,12 @@ namespace EpicLoot.MagicItemEffects
 		}
 	}
 
-	[HarmonyPatch(typeof(Attack), "FireProjectileBurst")]
+	[HarmonyPatch(typeof(Attack), nameof(Attack.FireProjectileBurst))]
 	public class ExplodingArrowInstantiation_Attack_FireProjectileBurst_Patch
 	{
 		private static GameObject ChooseAttackProjectile(GameObject defaultAttackProjectile, Attack attack)
 		{
-			if (attack.m_character == Player.m_localPlayer && Player.m_localPlayer.HasMagicEquipmentWithEffect(MagicEffectType.ExplosiveArrows))
+			if (attack.m_character == Player.m_localPlayer && Player.m_localPlayer.HasActiveMagicEffect(MagicEffectType.ExplosiveArrows))
 			{
 				return ObjectDB.instance.GetItemPrefab("ArrowFire").GetComponent<ItemDrop>().m_itemData.m_shared.m_attack.m_attackProjectile;
 			}
@@ -93,7 +92,7 @@ namespace EpicLoot.MagicItemEffects
 
 		private static GameObject MarkAttackProjectile(GameObject attackProjectile, Attack attack)
 		{
-			if (attack.m_character == Player.m_localPlayer && Player.m_localPlayer.GetEquipmentOfType(ItemDrop.ItemData.ItemType.Bow)?.GetMagicItem()?.GetTotalEffectValue(MagicEffectType.ExplosiveArrows, 0.01f) is float explosiveStrength && explosiveStrength > 0)
+			if (attack.m_character == Player.m_localPlayer && Player.m_localPlayer.GetTotalActiveMagicEffectValue(MagicEffectType.ExplosiveArrows, 0.01f) is float explosiveStrength && explosiveStrength > 0)
 			{
 				attackProjectile.GetComponent<ZNetView>().GetZDO().Set("epic loot exploding arrow", explosiveStrength);
 			}

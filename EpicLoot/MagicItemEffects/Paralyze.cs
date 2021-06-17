@@ -30,14 +30,13 @@ namespace EpicLoot.MagicItemEffects
 
         public static void OnDamaged(Character __instance, HitData hit)
         {
-            var attacker = hit.GetAttacker() as Humanoid;
-            if (attacker == null)
+            if (hit.GetAttacker()?.IsPlayer() != true)
             {
                 return;
             }
 
-            var weapon = attacker.GetCurrentWeapon();
-            if (weapon != null && weapon.IsMagic() && weapon.HasMagicEffect(MagicEffectType.Paralyze))
+            var player = (Player)hit.GetAttacker();
+            if (player.HasActiveMagicEffect(MagicEffectType.Paralyze))
             {
                 if (hit.GetTotalDamage() <= 0.0)
                 {
@@ -64,7 +63,7 @@ namespace EpicLoot.MagicItemEffects
                     main.startColor = Color.yellow;
                 }*/
 
-                var totalParalyzeTime = weapon.GetMagicItem().GetTotalEffectValue(MagicEffectType.Paralyze);
+                var totalParalyzeTime = player.GetTotalActiveMagicEffectValue(MagicEffectType.Paralyze);
                 seParalyze.Setup(totalParalyzeTime);
             }
         }

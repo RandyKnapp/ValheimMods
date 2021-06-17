@@ -2,7 +2,7 @@
 
 namespace EpicLoot
 {
-    [HarmonyPatch(typeof(ObjectDB), "CopyOtherDB")]
+    [HarmonyPatch(typeof(ObjectDB), nameof(ObjectDB.CopyOtherDB))]
     public static class ObjectDB_CopyOtherDB_Patch
     {
         public static void Postfix()
@@ -12,7 +12,7 @@ namespace EpicLoot
         }
     }
 
-    [HarmonyPatch(typeof(ObjectDB), "Awake")]
+    [HarmonyPatch(typeof(ObjectDB), nameof(ObjectDB.Awake))]
     public static class ObjectDB_Awake_Patch
     {
         public static void Postfix()

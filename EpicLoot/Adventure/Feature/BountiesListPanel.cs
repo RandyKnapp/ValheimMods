@@ -136,7 +136,7 @@ namespace EpicLoot.Adventure.Feature
                 return false;
             }
 
-            var rewardCount = (selectedItem.BountyInfo.RewardIron > 0 ? 1 : 0) + (selectedItem.BountyInfo.RewardGold > 0 ? 1 : 0);
+            var rewardCount = (selectedItem.BountyInfo.RewardIron > 0 ? 1 : 0) + (selectedItem.BountyInfo.RewardGold > 0 ? 1 : 0) + (selectedItem.BountyInfo.RewardCoins > 0 ? 1 : 0);
             var hasEmptySlots = Player.m_localPlayer.GetInventory().GetEmptySlots() >= rewardCount;
             if (hasEmptySlots)
             {
@@ -155,6 +155,15 @@ namespace EpicLoot.Adventure.Feature
             if (selectedItem.BountyInfo.RewardGold > 0)
             {
                 var haveSpace = Player.m_localPlayer.GetInventory().FindFreeStackSpace(MerchantPanel.GetGoldBountyTokenName()) > selectedItem.BountyInfo.RewardGold;
+                if (!haveSpace)
+                {
+                    return false;
+                }
+            }
+
+            if (selectedItem.BountyInfo.RewardCoins > 0)
+            {
+                var haveSpace = Player.m_localPlayer.GetInventory().FindFreeStackSpace(MerchantPanel.GetCoinsName()) > selectedItem.BountyInfo.RewardCoins;
                 if (!haveSpace)
                 {
                     return false;

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using Common;
+using EpicLoot.Abilities;
 using EpicLoot.Adventure;
 using EpicLoot.Adventure.Feature;
 using EpicLoot.Crafting;
@@ -14,7 +16,7 @@ using Random = System.Random;
 
 namespace EpicLoot
 {
-    [HarmonyPatch(typeof(Console), "InputText")]
+    [HarmonyPatch(typeof(Console), nameof(Console.InputText))]
     public static class Console_Patch
     {
         private static readonly Random _random = new Random();
@@ -42,6 +44,10 @@ namespace EpicLoot
             else if (CheatCommand(command, "magicitemlegendary", "milegend"))
             {
                 SpawnLegendaryMagicItem(__instance, args);
+            }
+            else if (CheatCommand(command, "magicitemset", "miset"))
+            {
+                SpawnMagicItemSet(__instance, args);
             }
             else if (Command(command, "checkstackquality"))
             {
@@ -135,6 +141,33 @@ namespace EpicLoot
             else if (Command(command, "fixresistances"))
             {
                 FixResistances(player);
+            }
+            else if (Command(command, "lucktest"))
+            {
+                var lootTable = args.Length > 1 ? args[1] : "Greydwarf";
+                var luckFactor = args.Length > 2 ? float.Parse(args[2]) : 0;
+                LootRoller.PrintLuckTest(lootTable, luckFactor);
+            }
+            else if (Command(command, "lootres"))
+            {
+                var lootTable = args.Length > 1 ? args[1] : "Greydwarf";
+                var level = args.Length > 2 ? int.Parse(args[2]) : 1;
+                var itemIndex = args.Length > 3 ? int.Parse(args[3]) : 0;
+                LootRoller.PrintLootResolutionTest(lootTable, level, itemIndex);
+            }
+            else if (CheatCommand(command, "resetcooldowns"))
+            {
+                if (player != null)
+                {
+                    var abilityController = player.GetComponent<AbilityController>();
+                    if (abilityController != null)
+                    {
+                        foreach (var ability in abilityController.CurrentAbilities)
+                        {
+                            ability.ResetCooldown();
+                        }
+                    }
+                }
             }
 
             return true;
@@ -250,7 +283,7 @@ namespace EpicLoot
             LootRoller.CheatEffectCount = effectCount;
             for (var i = 0; i < count; i++)
             {
-                int[] rarityTable = GetRarityTable(rarityArg);
+                var rarityTable = GetRarityTable(rarityArg);
 
                 var item = itemArg;
                 if (item == "random")
@@ -270,7 +303,7 @@ namespace EpicLoot
                 var loot = new LootTable()
                 {
                     Object = "Console",
-                    Drops = new[] { new[] { 1, 1 } },
+                    Drops = new[] { new float[] { 1, 1 } },
                     Loot = new[]
                     {
                         new LootDrop()
@@ -330,7 +363,7 @@ namespace EpicLoot
             var loot = new LootTable
             {
                 Object = "Console",
-                Drops = new[] {new[] {1, 1}},
+                Drops = new[] { new float[] {1, 1} },
                 Loot = new[]
                 {
                     new LootDrop
@@ -350,22 +383,22 @@ namespace EpicLoot
             LootRoller.ForcedMagicEffect = string.Empty;
         }
 
-        private static int[] GetRarityTable(string rarityName)
+        private static float[] GetRarityTable(string rarityName)
         {
-            var rarityTable = new[] {1, 1, 1, 1};
+            var rarityTable = new float[] {1, 1, 1, 1};
             switch (rarityName.ToLowerInvariant())
             {
                 case "magic":
-                    rarityTable = new[] {1, 0, 0, 0};
+                    rarityTable = new float[] {1, 0, 0, 0};
                     break;
                 case "rare":
-                    rarityTable = new[] {0, 1, 0, 0};
+                    rarityTable = new float[] {0, 1, 0, 0};
                     break;
                 case "epic":
-                    rarityTable = new[] {0, 0, 1, 0};
+                    rarityTable = new float[] {0, 0, 1, 0};
                     break;
                 case "legendary":
-                    rarityTable = new[] {0, 0, 0, 1};
+                    rarityTable = new float[] {0, 0, 0, 1};
                     break;
             }
 
@@ -376,38 +409,56 @@ namespace EpicLoot
         {
             if (args.Length < 2)
             {
-                __instance.AddString("> Specify legendaryID");
+                __instance.AddString("> Specify legendaryID, itemID (optional)");
                 return;
             }
 
             var legendaryID = args[1];
+            var itemType = args.Length >= 3 ? args[2] : null;
 
             __instance.AddString($"magicitemlegendary - legendaryID:{legendaryID}");
+            SpawnLegendaryItemHelper(legendaryID, itemType, __instance);
+        }
 
+        private static void SpawnLegendaryItemHelper(string legendaryID, string itemType, Console __instance)
+        {
             if (!UniqueLegendaryHelper.TryGetLegendaryInfo(legendaryID, out var legendaryInfo))
             {
-                __instance.AddString($"> Could not find info for legendaryID: ({legendaryID})");
+                if (__instance != null)
+                {
+                    __instance.AddString($"> Could not find info for legendaryID: ({legendaryID})");
+                }
                 return;
             }
 
-            string itemType = null;
-            if (legendaryInfo.Requirements?.AllowedItemNames?.Count > 0)
+            if (string.IsNullOrEmpty(itemType))
             {
-                itemType = legendaryInfo.Requirements.AllowedItemNames.FirstOrDefault();
-            }
+                var dummyMagicItem = new MagicItem { Rarity = ItemRarity.Legendary };
+                var allowedItems = new List<ItemDrop>();
+                foreach (var itemName in GatedItemTypeHelper.ItemInfoByID.Keys)
+                {
+                    var itemPrefab = ObjectDB.instance.GetItemPrefab(itemName);
+                    if (itemPrefab == null)
+                    {
+                        continue;
+                    }
 
-            if (string.IsNullOrEmpty(itemType) && legendaryInfo.Requirements?.AllowedSkillTypes?.Count > 0)
-            {
-                var skill = legendaryInfo.Requirements.AllowedSkillTypes.FirstOrDefault().ToString();
-                var items = GatedItemTypeHelper.ItemInfos.Find(x => x.Type == skill);
-                itemType = items?.Items?.LastOrDefault();
-            }
+                    var itemDrop = itemPrefab.GetComponent<ItemDrop>();
+                    if (itemDrop == null)
+                    {
+                        continue;
+                    }
 
-            if (string.IsNullOrEmpty(itemType) && legendaryInfo.Requirements?.AllowedItemTypes?.Count > 0)
-            {
-                itemType = ObjectDB.instance.GetAllItems(legendaryInfo.Requirements.AllowedItemTypes.First(), string.Empty).FirstOrDefault()?.name;
-            }
+                    var itemData = itemDrop.m_itemData;
+                    if (legendaryInfo.Requirements.CheckRequirements(itemData, dummyMagicItem))
+                    {
+                        allowedItems.Add(itemDrop);
+                    }
+                }
 
+                itemType = allowedItems.LastOrDefault()?.name;
+            }
+            
             if (string.IsNullOrEmpty(itemType))
             {
                 itemType = "Club";
@@ -416,13 +467,13 @@ namespace EpicLoot
             var loot = new LootTable
             {
                 Object = "Console",
-                Drops = new[] { new[] { 1, 1 } },
+                Drops = new[] { new float[] { 1, 1 } },
                 Loot = new[]
                 {
                     new LootDrop
                     {
                         Item = itemType,
-                        Rarity = new []{ 0, 0, 0, 1 }
+                        Rarity = new float[]{ 0, 0, 0, 1 }
                     }
                 }
             };
@@ -437,6 +488,29 @@ namespace EpicLoot
 
             LootRoller.CheatForceLegendary = null;
             LootRoller.CheatDisableGating = previousDisableGatingState;
+        }
+
+        private static void SpawnMagicItemSet(Console console, string[] args)
+        {
+            if (args.Length < 2)
+            {
+                console.AddString("> Specify Set ID");
+                return;
+            }
+
+            var setID = args[1];
+            console.AddString($"magicitemset - setID:{setID}");
+
+            if (!UniqueLegendaryHelper.TryGetLegendarySetInfo(setID, out var setInfo))
+            {
+                console.AddString($"> Could not find set info for setID: ({setID})");
+                return;
+            }
+
+            foreach (var legendaryID in setInfo.LegendaryIDs)
+            {
+                SpawnLegendaryItemHelper(legendaryID, null, console);
+            }
         }
 
         public static void CheckStackQuality(Console __instance)

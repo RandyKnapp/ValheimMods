@@ -1,4 +1,7 @@
-﻿namespace EpicLoot
+﻿using EpicLoot.Abilities;
+using EpicLoot.MagicItemEffects;
+
+namespace EpicLoot
 {
     public static partial class MagicEffectType
     {
@@ -19,6 +22,7 @@
         public static string IncreaseHealth = nameof(IncreaseHealth);
         public static string IncreaseStamina = nameof(IncreaseStamina);
         public static string ModifyHealthRegen = nameof(ModifyHealthRegen);
+        public static string AddHealthRegen = nameof(AddHealthRegen);
         public static string ModifyStaminaRegen = nameof(ModifyStaminaRegen);
         public static string AddBluntDamage = nameof(AddBluntDamage);
         public static string AddSlashingDamage = nameof(AddSlashingDamage);
@@ -99,5 +103,17 @@
         public static string Duelist = nameof(Duelist);
         public static string Immovable = nameof(Immovable);
         public static string ModifyStaggerDamage = nameof(ModifyStaggerDamage);
+        public static string Luck = nameof(Luck);
+        public static string ModifyParryWindow = nameof(ModifyParryWindow);
+        public static string Slow = nameof(Slow);
+        public static string FrostDamageAOE = nameof(FrostDamageAOE);
+
+        public static string Bulwark = nameof(Bulwark);
+        public static string Undying = nameof(Undying);
+
+        public static void Initialize()
+        {
+            AbilityFactory.Register("Undying", typeof(UndyingAbility));
+        }
     }
 }

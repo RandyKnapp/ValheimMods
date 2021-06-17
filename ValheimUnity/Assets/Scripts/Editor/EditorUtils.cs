@@ -13,4 +13,20 @@ public class EditorUtils
 
         BuildPipeline.BuildAssetBundles(stagePath, BuildAssetBundleOptions.None, BuildTarget.StandaloneWindows);
     }
+
+    public class MakeScriptableObject
+    {
+        [MenuItem("Assets/Create/Valheim/StatusEffect")]
+        public static void CreateMyAsset()
+        {
+            StatusEffect asset = ScriptableObject.CreateInstance<StatusEffect>();
+
+            AssetDatabase.CreateAsset(asset, "Assets/NewScripableObject.asset");
+            AssetDatabase.SaveAssets();
+
+            EditorUtility.FocusProjectWindow();
+
+            Selection.activeObject = asset;
+        }
+    }
 }

@@ -6,7 +6,7 @@ using Object = UnityEngine.Object;
 
 namespace EpicLoot.MagicItemEffects
 {
-	[HarmonyPatch(typeof(Character), "UpdateGroundContact")]
+	[HarmonyPatch(typeof(Character), nameof(Character.UpdateGroundContact))]
 	public class FeatherFallDisableFallDamage_Character_UpdateGroundContact_Patch
 	{
 		[UsedImplicitly]
@@ -17,14 +17,14 @@ namespace EpicLoot.MagicItemEffects
 				return;
 			}
 			
-			if (__instance is Player player && player.HasMagicEquipmentWithEffect(MagicEffectType.FeatherFall))
+			if (__instance is Player player && player.HasActiveMagicEffect(MagicEffectType.FeatherFall))
 			{
 				___m_maxAirAltitude = Mathf.Min(3.99f + __instance.transform.position.y, ___m_maxAirAltitude);
 			}
 		}
 	}
 	
-	[HarmonyPatch(typeof(Player), "FixedUpdate")]
+	[HarmonyPatch(typeof(Player), nameof(Player.FixedUpdate))]
 	public class FeatherFallReduceFallSpeed_Player_FixedUpdate_Patch
     {
         public const string FeatherFallEffectName = "FeatherFallAura";
@@ -35,7 +35,7 @@ namespace EpicLoot.MagicItemEffects
 		{
             var currentFeatherFallAura = __instance.transform.Find(FeatherFallEffectName);
 
-			if (!__instance.IsOnGround() && __instance.HasMagicEquipmentWithEffect(MagicEffectType.FeatherFall) && __instance.m_body)
+			if (!__instance.IsOnGround() && __instance.HasActiveMagicEffect(MagicEffectType.FeatherFall) && __instance.m_body)
 			{
 				var velocity = __instance.m_body.velocity;
 

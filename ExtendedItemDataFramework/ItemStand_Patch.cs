@@ -28,6 +28,7 @@ namespace ExtendedItemDataFramework
                     itemDrop.m_itemData.m_variant,
                     itemDrop.m_itemData.m_crafterID,
                     itemDrop.m_itemData.m_crafterName);
+                itemDrop.Save();
                 gameObject.GetComponent<Rigidbody>().velocity = Vector3.up * 4f;
                 __instance.m_effects.Create(__instance.m_dropSpawnPoint.position, Quaternion.identity);
             }
