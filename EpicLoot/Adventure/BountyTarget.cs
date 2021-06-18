@@ -61,11 +61,13 @@ namespace EpicLoot.Adventure
         public void Initialize(BountyInfo bounty, string monsterID, bool isAdd)
         {
             _zdo.Set(BountyIDKey, bounty.ID);
-
-            var pkg = new ZPackage();
-            bounty.ToPackage(pkg);
-            pkg.SetPos(0);
-            _zdo.Set(BountyDataKey, pkg.GetBase64());
+            if (ZNet.instance.IsServer() && ZNet.instance.IsDedicated() || !ZNet.instance.IsServer() && !ZNet.instance.IsDedicated())
+            {
+                var pkg = new ZPackage();
+                bounty.ToPackage(pkg);
+                pkg.SetPos(0);
+                _zdo.Set(BountyDataKey, pkg.GetBase64());
+            }
             _zdo.Set(MonsterIDKey, monsterID);
             _zdo.Set(IsAddKey, isAdd);
             _zdo.Set(BountyTargetNameKey, GetTargetName(_character.m_name, isAdd, bounty.TargetName));
@@ -79,10 +81,12 @@ namespace EpicLoot.Adventure
 
         public void Reinitialize()
         {
+            if (ZNet.instance.IsServer() && ZNet.instance.IsDedicated() || !ZNet.instance.IsServer() && !ZNet.instance.IsDedicated())
+            { 
             var pkgString = _zdo.GetString(BountyDataKey);
             var pkg = new ZPackage(pkgString);
             _bountyInfo = BountyInfo.FromPackage(pkg);
-
+            }
             _monsterID = _zdo.GetString(MonsterIDKey);
             _isAdd = _zdo.GetBool(IsAddKey);
 
