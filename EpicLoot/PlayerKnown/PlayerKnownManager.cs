@@ -1,14 +1,21 @@
-﻿using System.Collections.Generic;
+﻿using EpicLoot.GatedItemType;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace EpicLoot.PlayerKnown
 {
     public static class PlayerKnownManager
     {
+        private static GatedItemTypeMode mode;
+        
         // server sends to new peers
-        private const string Name_RPC_ServerKnown = "EpicLoot_ServerKnown";
+        private const string Name_RPC_ServerKnownMats = "EpicLoot_ServerKnown_Mats";
         // client sends to everyone
-        private const string Name_RPC_ClientKnown = "EpicLoot_ClientKnown";
+        private const string Name_RPC_ClientKnownMats = "EpicLoot_ClientKnown_Mats";
+        // server sends to new peers
+        private const string Name_RPC_ServerKnownRecipes = "EpicLoot_ServerKnown_Recipes";
+        // client sends to everyone
+        private const string Name_RPC_ClientKnownRecipes = "EpicLoot_ClientKnown_Recipes";
         // client sends to everyone
         private const string Name_RPC_AddKnownRecipe = "EpicLoot_AddKnownRecipe";
         // client sends to everyone
@@ -21,18 +28,22 @@ namespace EpicLoot.PlayerKnown
         {
             if (!Common.Utils.IsServer())
             {
-                routedRpc.Register<ZPackage>(Name_RPC_ServerKnown, RPC_ServerKnown);
+                routedRpc.Register<ZPackage>(Name_RPC_ServerKnownMats, RPC_ServerKnownMats);
+                routedRpc.Register<ZPackage>(Name_RPC_ServerKnownRecipes, RPC_ServerKnownRecipes);
             }
-            routedRpc.Register<ZPackage>(Name_RPC_ClientKnown, RPC_ClientKnown);
+            routedRpc.Register<ZPackage>(Name_RPC_ClientKnownMats, RPC_ClientKnownMats);
+            routedRpc.Register<ZPackage>(Name_RPC_ClientKnownRecipes, RPC_ClientKnownRecipes);
             routedRpc.Register<string>(Name_RPC_AddKnownRecipe, RPC_AddKnownRecipe);
             routedRpc.Register<string>(Name_RPC_AddKnownMaterial, RPC_AddKnownMaterial);
         }
 
         public static void OnPeerConnect(ZNetPeer peer)
         {
+           
             if (Common.Utils.IsServer())
             {
-                ServerSendKnown(peer);
+                ServerSendKnownMats(peer);
+                ServerSendKnownRecipes(peer);
             }
         }
 
@@ -51,7 +62,8 @@ namespace EpicLoot.PlayerKnown
 
         public static void OnPlayerSpawn()
         {
-            ClientSendKnown();
+            ClientSendKnownRecipes();
+            ClientSendKnownMats();
         }
 
         public static void OnPlayerAddKnownItem(string itemName)
@@ -64,18 +76,26 @@ namespace EpicLoot.PlayerKnown
             ZRoutedRpc.instance?.InvokeRoutedRPC(ZRoutedRpc.Everybody, Name_RPC_AddKnownRecipe, recipeName);
         }
 
-        public static void RPC_ServerKnown(long sender, ZPackage pkg)
+        public static void RPC_ServerKnownMats(long sender, ZPackage pkg)
         {
-            LoadServerKnown(playerKnownMaterial, pkg);
-            LoadServerKnown(playerKnownRecipes, pkg);
+            LoadServerKnownMats(playerKnownMaterial, pkg);
+        }
+        public static void RPC_ServerKnownRecipes(long sender, ZPackage pkg)
+        {
+            LoadServerKnownRecipes(playerKnownRecipes, pkg);
         }
 
-        public static void RPC_ClientKnown(long sender, ZPackage pkg)
+        public static void RPC_ClientKnownMats(long sender, ZPackage pkg)
         {
-            int materialCount = LoadKnown(sender, pkg, playerKnownMaterial);
-            int recipeCount = LoadKnown(sender, pkg, playerKnownRecipes);
+            int materialCount = LoadKnownMats(sender, pkg, playerKnownMaterial);
 
-            EpicLoot.Log($"Received known from peer {sender}: {materialCount} materials / {recipeCount} recipes");
+            EpicLoot.Log($"Received known from peer {sender}: {materialCount} materials");
+        }
+        public static void RPC_ClientKnownRecipes(long sender, ZPackage pkg)
+        {
+            int recipeCount = LoadKnownRecipes(sender, pkg, playerKnownRecipes);
+
+            EpicLoot.Log($"Received known from peer {sender}: {recipeCount} recipes");
         }
 
         public static void RPC_AddKnownRecipe(long sender, string recipe)
@@ -102,40 +122,68 @@ namespace EpicLoot.PlayerKnown
             EpicLoot.Log($"Received add known material from peer {sender}: {material}");
         }
 
-        public static void ServerSendKnown(ZNetPeer peer)
+        public static void ServerSendKnownMats(ZNetPeer peer)
         {
             ZPackage pkg = new ZPackage();
 
-            WriteServerKnown(playerKnownMaterial, pkg);
-            WriteServerKnown(playerKnownRecipes, pkg);
+            WriteServerKnownMats(playerKnownMaterial, pkg);
 
-            ZRoutedRpc.instance.InvokeRoutedRPC(peer.m_uid, Name_RPC_ServerKnown, pkg);
+            ZRoutedRpc.instance.InvokeRoutedRPC(peer.m_uid, Name_RPC_ServerKnownMats, pkg);
+        }
+        public static void ServerSendKnownRecipes(ZNetPeer peer)
+        {
+            ZPackage pkg = new ZPackage();
+
+            WriteServerKnownRecipes(playerKnownRecipes, pkg);
+
+            ZRoutedRpc.instance.InvokeRoutedRPC(peer.m_uid, Name_RPC_ServerKnownRecipes, pkg);
         }
 
-        public static void WriteServerKnown(Dictionary<long, HashSet<string>> dict, ZPackage pkg)
+        public static void WriteServerKnownRecipes(Dictionary<long, HashSet<string>> dict, ZPackage pkg)
         {
             pkg.Write(dict.Count);
             foreach (KeyValuePair<long, HashSet<string>> kvp in dict)
             {
                 ZPackage pkg2 = new ZPackage();
                 pkg2.Write(kvp.Key);
-                WriteKnown(kvp.Value, pkg2);
+                WriteKnownRecipes(kvp.Value, pkg2);
+                pkg.Write(pkg2);
+            }
+        }
+        public static void WriteServerKnownMats(Dictionary<long, HashSet<string>> dict, ZPackage pkg)
+        {
+            pkg.Write(dict.Count);
+            foreach (KeyValuePair<long, HashSet<string>> kvp in dict)
+            {
+                ZPackage pkg2 = new ZPackage();
+                pkg2.Write(kvp.Key);
+                WriteKnownMats(kvp.Value, pkg2);
                 pkg.Write(pkg2);
             }
         }
 
-        public static void LoadServerKnown(Dictionary<long, HashSet<string>> dict, ZPackage pkg)
+        public static void LoadServerKnownMats(Dictionary<long, HashSet<string>> dict, ZPackage pkg)
         {
             int numEntries = pkg.ReadInt();
             for (int i = 0; i < numEntries; i++)
             {
                 ZPackage pkg2 = pkg.ReadPackage();
                 int playerID = pkg2.ReadInt();
-                LoadKnown(playerID, pkg2, dict);
+                LoadKnownMats(playerID, pkg2, dict);
+            }
+        }
+        public static void LoadServerKnownRecipes(Dictionary<long, HashSet<string>> dict, ZPackage pkg)
+        {
+            int numEntries = pkg.ReadInt();
+            for (int i = 0; i < numEntries; i++)
+            {
+                ZPackage pkg2 = pkg.ReadPackage();
+                int playerID = pkg2.ReadInt();
+                LoadKnownRecipes(playerID, pkg2, dict);
             }
         }
 
-        public static void ClientSendKnown()
+        public static void ClientSendKnownMats()
         {
             Player player = Player.m_localPlayer;
             if (player == null)
@@ -145,14 +193,28 @@ namespace EpicLoot.PlayerKnown
             }
 
             ZPackage pkg = new ZPackage();
-            WriteKnown(player.m_knownMaterial, pkg);
-            WriteKnown(player.m_knownRecipes, pkg);
+            WriteKnownMats(player.m_knownMaterial, pkg);
 
-            EpicLoot.Log($"Sending known: {player.m_knownMaterial.Count} materials / {player.m_knownRecipes.Count} recipes");
-            ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.Everybody, Name_RPC_ClientKnown, pkg);
+            EpicLoot.Log($"Sending known: {player.m_knownMaterial.Count} materials");
+            ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.Everybody, Name_RPC_ClientKnownMats, pkg);
+        } 
+        public static void ClientSendKnownRecipes()
+        {
+            Player player = Player.m_localPlayer;
+            if (player == null)
+            {
+                EpicLoot.LogWarning("PlayerKnownManager.ClientSendKnown: m_localPlayer == null");
+                return;
+            }
+
+            ZPackage pkg = new ZPackage();
+            WriteKnownRecipes(player.m_knownRecipes, pkg);
+
+            EpicLoot.Log($"Sending known: {player.m_knownRecipes.Count} recipes");
+            ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.Everybody, Name_RPC_ClientKnownRecipes, pkg);
         }
 
-        public static int LoadKnown(long sender, ZPackage pkg, Dictionary<long, HashSet<string>> outDict)
+        public static int LoadKnownRecipes(long sender, ZPackage pkg, Dictionary<long, HashSet<string>> outDict)
         {
             ZPackage pkgKnown = pkg.ReadPackage();
             var tempKnown = new HashSet<string>();
@@ -161,11 +223,31 @@ namespace EpicLoot.PlayerKnown
             {
                 tempKnown.Add(pkgKnown.ReadString());
             }
-            SetKnown(sender, tempKnown, outDict);
+            SetKnownRecipes(sender, tempKnown, outDict);
+            return tempKnown.Count;
+        }
+        public static int LoadKnownMats(long sender, ZPackage pkg, Dictionary<long, HashSet<string>> outDict)
+        {
+            ZPackage pkgKnown = pkg.ReadPackage();
+            var tempKnown = new HashSet<string>();
+            int numKnown = pkgKnown.ReadInt();
+            for (int i = 0; i < numKnown; i++)
+            {
+                tempKnown.Add(pkgKnown.ReadString());
+            }
+            SetKnownMats(sender, tempKnown, outDict);
             return tempKnown.Count;
         }
 
-        public static void SetKnown(long sender, HashSet<string> hashset, Dictionary<long, HashSet<string>> outDict)
+        public static void SetKnownRecipes(long sender, HashSet<string> hashset, Dictionary<long, HashSet<string>> outDict)
+        {
+            if (outDict.ContainsKey(sender))
+            {
+                outDict.Remove(sender);
+            }
+            outDict.Add(sender, hashset);
+        }
+        public static void SetKnownMats(long sender, HashSet<string> hashset, Dictionary<long, HashSet<string>> outDict)
         {
             if (outDict.ContainsKey(sender))
             {
@@ -174,7 +256,18 @@ namespace EpicLoot.PlayerKnown
             outDict.Add(sender, hashset);
         }
 
-        public static void WriteKnown(HashSet<string> known, ZPackage outPkg)
+        public static void WriteKnownRecipes(HashSet<string> known, ZPackage outPkg)
+        {
+            ZPackage pkg = new ZPackage();
+            pkg.Write(known.Count);
+            foreach (string s in known)
+            {
+                pkg.Write(s);
+            }
+            outPkg.Write(pkg);
+        }
+
+        public static void WriteKnownMats(HashSet<string> known, ZPackage outPkg)
         {
             ZPackage pkg = new ZPackage();
             pkg.Write(known.Count);
