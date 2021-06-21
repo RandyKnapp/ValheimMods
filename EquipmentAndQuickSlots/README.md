@@ -12,7 +12,7 @@ It is NOT compatible with 1.x versions and 1.x must be uninstalled correctly bef
 6. Run the game again
 7. You should see your new empty slots in the inventory and be able to re-equip your items
 
-# Equipment and Quick Slots v2.0.9
+# Equipment and Quick Slots v2.0.10
 ##### by RandyKnapp
 Give equipped items their own dedicated inventory slots, plus three more hotkeyable quick slots.
 
@@ -58,3 +58,5 @@ Copy EquipmentAndQuickSlots.dll into the BepInEx/plugins folder
     * Had to update the number to re-upload to ThunderStore
   * 2.0.9
 	* Quick slots position is now configurable
+  * 2.0.10
+    * Fixed an encumberance bug
