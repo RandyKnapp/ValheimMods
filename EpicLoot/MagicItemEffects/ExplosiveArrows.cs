@@ -36,12 +36,14 @@ namespace EpicLoot.MagicItemEffects
 			Character.GetCharactersInRange(poisonCloud.transform.localPosition, 4f, characters);
 			foreach (var c in characters)
 			{
-				if (c.IsOwner())
-				{
-					var fireHit = new HitData {m_damage = {m_fire = explodingArrowStrength}};
-					c.Damage(fireHit);
-				}
-			}
+                if (!c.IsOwner() || (c.IsPlayer() && !c.IsPVPEnabled()))
+                {
+                    continue;
+                }
+
+                var fireHit = new HitData {m_damage = {m_fire = explodingArrowStrength}};
+                c.Damage(fireHit);
+            }
 		}
 	}
 
