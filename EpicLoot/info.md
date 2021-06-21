@@ -2053,7 +2053,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## Bulwark
 
-> **Display Text:** Bulwark [Activated]: Prevent all damage for {0} seconds. Cooldown: 60 seconds.
+> **Display Text:** Bulwark [Activated]: Prevent all damage for 5 seconds. Cooldown: 60 seconds.
 > 
 > **Allowed Item Types:** *None*
 > 

@@ -826,6 +826,13 @@
   "mod_epicloot_set_me_frostdamageaoe_display": "Melee attacks that deal frost damage deal an additional 50% of weapon damage as frost in a cone in front of the attacker.", 
   "mod_epicloot_set_me_berserker": "Berserker [Activated]: For 10 seconds, you cannot regenerate health, but you gain +50% to +200% damage based on health missing. Cooldown: 3 minutes.", 
 
+  "mod_epicloot_basicmagicnameformat": "Magic {0}", // 0 = base name
+  "mod_epicloot_fullnameformat": "{0}{1}{2}", // 0 = prefix, 1 = base name, 2 = suffix
+  "mod_epicloot_prefixformat": "{0} ",
+  "mod_epicloot_suffixformat": " of {0}",
+  "mod_epicloot_epicnameformat": "{0} {1}", // 0 = adjective, 1 = name
+  "mod_epicloot_basiclegendarynameformat": "Legendary {0}", // 0 = base name
+
   "mod_epicloot_rare_prefix1": "Strange",
   "mod_epicloot_rare_prefix2": "Rare",
   "mod_epicloot_rare_prefix3": "Cryptic",

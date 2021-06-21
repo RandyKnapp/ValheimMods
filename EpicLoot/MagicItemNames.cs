@@ -47,7 +47,7 @@ namespace EpicLoot
 
         public static string GetNameForItem(ItemDrop.ItemData item, MagicItem magicItem)
         {
-            var baseName = item.m_shared.m_name;
+            var baseName = TranslateAndCapitalize(item.m_shared.m_name);
             if (!EpicLoot.UseGeneratedMagicItemNames.Value || magicItem == null)
             {
                 return null;
@@ -57,12 +57,15 @@ namespace EpicLoot
             switch (rarity)
             {
                 case ItemRarity.Magic:
-                    return $"{EpicLoot.GetRarityDisplayName(ItemRarity.Magic)} {baseName}";
+                    var magicFormat = Localization.instance.Localize("$mod_epicloot_basicmagicnameformat");
+                    return string.Format(magicFormat, baseName);
 
                 case ItemRarity.Rare:
                     var prefix = GetPrefix(magicItem);
                     var suffix = GetSuffix(magicItem);
-                    return $"{prefix}{TranslateAndCapitalize(baseName)}{suffix}";
+                    var fullNameFormat = Localization.instance.Localize("$mod_epicloot_fullnameformat");
+
+                    return string.Format(fullNameFormat, prefix, baseName, suffix);
 
                 case ItemRarity.Epic:
                     return BuildEpicName(item, magicItem);
@@ -100,7 +103,8 @@ namespace EpicLoot
             var randomPrefix = GetRandomStringFromList(prefixes);
 
             // Include trailing space
-            return string.IsNullOrEmpty(randomPrefix) ? null : $"{randomPrefix} ";
+            var format = Localization.instance.Localize("$mod_epicloot_prefixformat");
+            return string.IsNullOrEmpty(randomPrefix) ? null : string.Format(format, randomPrefix);
         }
 
         public static object GetSuffix(MagicItem magicItem)
@@ -121,14 +125,16 @@ namespace EpicLoot
             var randomSuffix = GetRandomStringFromList(suffixes);
 
             // Include " of "
-            return string.IsNullOrEmpty(randomSuffix) ? null : $" of {randomSuffix}";
+            var format = Localization.instance.Localize("$mod_epicloot_suffixformat");
+            return string.IsNullOrEmpty(randomSuffix) ? null : string.Format(format, randomSuffix);
         }
 
         public static string BuildEpicName(ItemDrop.ItemData item, MagicItem magicItem)
         {
             var adjective = GetAdjectivePartForItem(item, magicItem);
             var name = GetNamePartForItem(item, magicItem);
-            return $"{adjective} {name}";
+            var format = Localization.instance.Localize("$mod_epicloot_epicnameformat");
+            return string.Format(format, adjective, name);
         }
 
         public static string GetRandomStringFromList(List<string> list)
@@ -193,7 +199,15 @@ namespace EpicLoot
         {
             var allowedNames = GetAllowedNamesFromListAllRequired(Config.Legendary, item, magicItem);
             var name = GetRandomStringFromList(allowedNames);
-            return string.IsNullOrEmpty(name) ? $"{EpicLoot.GetRarityDisplayName(ItemRarity.Legendary)} {TranslateAndCapitalize(item.m_shared.m_name)}" : name;
+
+            if (!string.IsNullOrEmpty(name))
+            {
+                return name;
+            }
+
+            var format = Localization.instance.Localize("$mod_epicloot_basiclegendarynameformat");
+            var baseName = TranslateAndCapitalize(item.m_shared.m_name);
+            return string.Format(format, baseName);
         }
 
         public static List<string> GetAllowedNamesFromListAllRequired(List<ItemNameEntry> nameEntries, ItemDrop.ItemData item, MagicItem magicItem)
