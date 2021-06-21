@@ -83,9 +83,9 @@ namespace EpicLoot.Adventure
         {
             if (ZNet.instance.IsServer() && ZNet.instance.IsDedicated() || !ZNet.instance.IsServer() && !ZNet.instance.IsDedicated())
             { 
-            var pkgString = _zdo.GetString(BountyDataKey);
-            var pkg = new ZPackage(pkgString);
-            _bountyInfo = BountyInfo.FromPackage(pkg);
+                var pkgString = _zdo.GetString(BountyDataKey);
+                var pkg = new ZPackage(pkgString);
+                _bountyInfo = BountyInfo.FromPackage(pkg);
             }
             _monsterID = _zdo.GetString(MonsterIDKey);
             _isAdd = _zdo.GetBool(IsAddKey);
