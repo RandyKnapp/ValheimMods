@@ -1,4 +1,4 @@
-# Epic Loot v0.8.0 - Legendary Sets Update!
+# Epic Loot v0.8.1 - Legendary Sets Update!
 Author: RandyKnapp
 Source: [Github](https://github.com/RandyKnapp/ValheimMods/blob/main/EpicLoot/)
 
@@ -20,12 +20,13 @@ Information about every magic effect and loot drop table can be found in [info.m
 
 ## Credits
 Contibutions from the following modders was invaluable and appreciated: 
-  * [blaxxun (CLLC)](https://www.nexusmods.com/valheim/mods/495) - bugfixes, config sync, various magic item effects, 
+  * [blaxxun (CLLC)](https://www.nexusmods.com/valheim/mods/495) - bugfixes, config sync, various magic item effects
   * [M3TO](https://github.com/M3TO) - bugfixes
   * [jsza](https://github.com/jsza) - bugfixes
   * [maxrd2](https://github.com/maxrd2) - bugfixes
   * [nanonull](https://github.com/nanonull) - bugfixes, lifesteal
   * [xPucTu4](https://github.com/xPucTu4) - bugfixes
+  * LitanyOfFire - legendary definitions
 
 3D Models:
   * "Fantasy Longsword" (https://skfb.ly/ontRY) by Faber is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).

@@ -1,3 +1,11 @@
+﻿## Version 0.8.1
+  * Better item name localization
+  * Fix for explosive arrow friendly fire
+  * Fix for Armor +% magic effect
+  * Fix for serpentscale shield and parry effects
+  * Fix for bounty target NRE and player known sync ([sbtoonz](https://github.com/sbtoonz))
+  * Fix for getting encumbered incorrectly ([M3TO](https://github.com/M3TO))
+  * New legendary weapons from LitanyOfFire: Lævateinn, Strength of the Valkyrie, Skofnung, Gram, Angurvadal, The Shattering, Atgier of Sagas, Skaði's Hunt, Ullr's Favor, The Endless Hunt, Message of Lindisfame, Höfuð, Njǫrd's Favor, Life-Drinker
 ## Version 0.8.0
   * Magic Effect lookup is now optimized
   * Removed debug function that was eating up frame-time
