@@ -1713,7 +1713,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## ModifyArmorLowHealth
 
-> **Display Text:** Armor +{0:0.#}% (Health Critical)
+> **Display Text:** All Armor +{0:0.#}% (Health Critical)
 > 
 > **Prefixes:** Heavy, Protected
 > **Suffixes:** Protection

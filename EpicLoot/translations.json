@@ -748,7 +748,7 @@
   "mod_epicloot_me_modifystaminaregenlowhealth_desc": "The player's stamina regen is increased by +<b><color=yellow>X</color></b>% when below 30% health.",
   "mod_epicloot_me_modifystaminaregenlowhealth_prefix1": "Recovering",
   "mod_epicloot_me_modifystaminaregenlowhealth_suffix1": "Recovery",
-  "mod_epicloot_me_modifyarmorlowhealth_display": "Armor +{0:0.#}% (Health Critical)",
+  "mod_epicloot_me_modifyarmorlowhealth_display": "All Armor +{0:0.#}% (Health Critical)",
   "mod_epicloot_me_modifyarmorlowhealth_desc": "The player's total armor is increased by +<b><color=yellow>X</color></b>% when below 30% health.",
   "mod_epicloot_me_modifyarmorlowhealth_prefix1": "Heavy",
   "mod_epicloot_me_modifyarmorlowhealth_prefix2": "Protected",
