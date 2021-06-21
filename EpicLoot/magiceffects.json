@@ -292,6 +292,9 @@
         "ExcludedSkillTypes": [
           "Pickaxes"
         ],
+        "ExcludedItemNames": [
+          "$item_shield_serpentscale"
+        ],
         "ItemHasParryPower" : true
       },
       "ValuesPerRarity" : {
@@ -2318,6 +2321,9 @@
         "ExcludedSkillTypes": [
           "Pickaxes"
         ],
+        "ExcludedItemNames": [
+          "$item_shield_serpentscale"
+        ],
         "ItemHasParryPower" : true
       },
       "ValuesPerRarity" : {
@@ -2625,6 +2631,9 @@
       "Requirements" : {
         "AllowedItemTypes" : [
           "Shield"
+        ],
+        "ExcludedItemNames": [
+          "$item_shield_serpentscale"
         ],
         "ItemHasParryPower" : true
       },

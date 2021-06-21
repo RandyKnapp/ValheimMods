@@ -227,6 +227,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > > **Flags:** `ExclusiveSelf, ItemHasParryPower`
 > > **AllowedItemTypes:** `Shield, TwoHandedWeapon`
 > > **ExcludedSkillTypes:** `Pickaxes`
+> > **ExcludedItemNames:** `$item_shield_serpentscale`
 > 
 > **Value Per Rarity:**
 > 
@@ -1791,6 +1792,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > > **Flags:** `ExclusiveSelf, ItemHasParryPower`
 > > **AllowedItemTypes:** `Shield, TwoHandedWeapon`
 > > **ExcludedSkillTypes:** `Pickaxes`
+> > **ExcludedItemNames:** `$item_shield_serpentscale`
 > 
 > **Value Per Rarity:**
 > 
@@ -2018,6 +2020,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > **Requirements:**
 > > **Flags:** `ExclusiveSelf, ItemHasParryPower`
 > > **AllowedItemTypes:** `Shield`
+> > **ExcludedItemNames:** `$item_shield_serpentscale`
 > 
 > **Value Per Rarity:**
 > 
