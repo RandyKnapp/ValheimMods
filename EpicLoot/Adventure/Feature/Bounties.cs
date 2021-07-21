@@ -285,6 +285,7 @@ namespace EpicLoot.Adventure.Feature
             if (Common.Utils.IsServer())
             {
                 routedRpc.Register<ZPackage, string, bool>("SlayBountyTarget", RPC_SlayBountyTarget);
+                routedRpc.Register<string, bool, string>("SlayBountyIDTarget", RPC_SlayBountyTarget);
                 routedRpc.Register<long>("RequestKillLogs", RPC_Server_RequestKillLogs);
                 routedRpc.Register<long>("ClearKillLogs", RPC_Server_ClearKillLogs);
             }
@@ -329,6 +330,21 @@ namespace EpicLoot.Adventure.Feature
             {
                 AddSlainBountyTargetToLedger(bounty, monsterID, isAdd);
             }
+
+            if (Player.m_localPlayer == null || bounty.PlayerID != Player.m_localPlayer.GetPlayerID())
+            {
+                // Not my bounty
+                return;
+            }
+
+            OnBountyTargetSlain(bounty.ID, monsterID, isAdd);
+        }
+
+        public void RPC_SlayBountyTarget(long sender, string monsterID, bool isAdd, string ID)
+        {
+            EpicLoot.LogWarning($"CLIENT: RPC_SlayBountyTarget: {monsterID} ({(isAdd ? "minion" : "target")})");
+
+            var bounty = BountyInfo.FromBountyID(ID);
 
             if (Player.m_localPlayer == null || bounty.PlayerID != Player.m_localPlayer.GetPlayerID())
             {
