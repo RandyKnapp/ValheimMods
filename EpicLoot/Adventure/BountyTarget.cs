@@ -44,7 +44,7 @@ namespace EpicLoot.Adventure
 
         private bool HasBeenSetup()
         {
-            var bountyID = _zdo.GetString(BountyTarget.BountyIDKey);
+            var bountyID = _zdo.GetString(BountyIDKey);
             return !string.IsNullOrEmpty(bountyID);
         }
 
@@ -57,12 +57,13 @@ namespace EpicLoot.Adventure
                 _bountyInfo.ToPackage(pkg);
 
                 EpicLoot.LogWarning($"SENDING -> RPC_SlayBountyTarget: {_monsterID} ({(_isAdd ? "minion" : "target")})");
-                ZRoutedRpc.instance.InvokeRoutedRPC("SlayBountyTarget", _monsterID, _isAdd, pkg);
+                ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.Everybody, "SlayBountyTarget", pkg, _monsterID, _isAdd);
             }
             else
             {
-                var bountyID = _zdo.GetString(BountyTarget.BountyIDKey);
-                ZRoutedRpc.instance.InvokeRoutedRPC("SlayBountyIDTarget", _monsterID, _isAdd, bountyID);
+                var bountyID = _zdo.GetString(BountyIDKey);
+                EpicLoot.LogWarning($"SENDING -> RPC_SlayBountyTargetFromBountyId: (bountyID={bountyID}) {_monsterID} ({(_isAdd ? "minion" : "target")})");
+                ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.Everybody, "SlayBountyIDTarget", _monsterID, _isAdd, bountyID);
             }
         }
 
@@ -108,14 +109,13 @@ namespace EpicLoot.Adventure
             {
                 return character.GetMaxHealth() * AdventureDataManager.Config.Bounties.AddsHealthMultiplier;
             }
-            else if (bounty.RewardGold > 0)
+
+            if (bounty.RewardGold > 0)
             {
                 return character.GetMaxHealth() * AdventureDataManager.Config.Bounties.GoldHealthMultiplier;
             }
-            else
-            {
-                return character.GetMaxHealth() * AdventureDataManager.Config.Bounties.IronHealthMultiplier;
-            }
+
+            return character.GetMaxHealth() * AdventureDataManager.Config.Bounties.IronHealthMultiplier;
         }
 
         private static string GetTargetName(string originalName, bool isAdd, string targetName)
@@ -139,10 +139,8 @@ namespace EpicLoot.Adventure
 
                 return 1;
             }
-            else
-            {
-                return bounty.Target.Level;
-            }
+
+            return bounty.Target.Level;
         }
     }
 

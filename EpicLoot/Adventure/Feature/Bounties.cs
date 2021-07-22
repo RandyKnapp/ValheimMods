@@ -279,13 +279,12 @@ namespace EpicLoot.Adventure.Feature
 
         public void RegisterRPC(ZRoutedRpc routedRpc)
         {
-            //routedRpc.Register<ZPackage>("SpawnBounties", RPC_SpawnBounties);
             routedRpc.Register<string>("SendKillLogs", RPC_Client_ReceiveKillLogs);
 
             if (Common.Utils.IsServer())
             {
                 routedRpc.Register<ZPackage, string, bool>("SlayBountyTarget", RPC_SlayBountyTarget);
-                routedRpc.Register<string, bool, string>("SlayBountyIDTarget", RPC_SlayBountyTarget);
+                routedRpc.Register<string, bool, string>("SlayBountyIDTarget", RPC_SlayBountyTargetFromBountyId);
                 routedRpc.Register<long>("RequestKillLogs", RPC_Server_RequestKillLogs);
                 routedRpc.Register<long>("ClearKillLogs", RPC_Server_ClearKillLogs);
             }
@@ -294,12 +293,6 @@ namespace EpicLoot.Adventure.Feature
                 routedRpc.Register<ZPackage, string, bool>("SlayBountyTargetFromServer", RPC_Client_SlayBountyTargetFromServer);
             }
         }
-
-        /*public void RPC_SpawnBounties(long sender, ZPackage pkg)
-        {
-            var bounty = BountyInfo.FromPackage(pkg);
-            Debug.LogWarning($"RPC_SpawnBounties: {bounty.ID}");
-        }*/
 
         private void RPC_Client_SlayBountyTargetFromServer(long sender, ZPackage pkg, string monsterID, bool isAdd)
         {
@@ -340,11 +333,11 @@ namespace EpicLoot.Adventure.Feature
             OnBountyTargetSlain(bounty.ID, monsterID, isAdd);
         }
 
-        public void RPC_SlayBountyTarget(long sender, string monsterID, bool isAdd, string ID)
+        public void RPC_SlayBountyTargetFromBountyId(long sender, string monsterID, bool isAdd, string bountyID)
         {
-            EpicLoot.LogWarning($"CLIENT: RPC_SlayBountyTarget: {monsterID} ({(isAdd ? "minion" : "target")})");
+            EpicLoot.LogWarning($"CLIENT: RPC_SlayBountyTargetFromBountyId: {monsterID} ({(isAdd ? "minion" : "target")})");
 
-            var bounty = BountyInfo.FromBountyID(ID);
+            var bounty = BountyInfo.FromBountyID(bountyID);
 
             if (Player.m_localPlayer == null || bounty.PlayerID != Player.m_localPlayer.GetPlayerID())
             {
