@@ -116,6 +116,13 @@ namespace EpicLoot.Crafting
 
                 SetupRequirementList(__instance, player, recipe);
 
+                __instance.m_craftButton.interactable = canCraft;
+                __instance.m_craftButton.GetComponent<UITooltip>().m_text = tooltip;
+
+                var isStack = itemData.m_stack > 1;
+                DisenchantAllButton.interactable = isStack;
+                DisenchantAllButton.gameObject.SetActive(__instance.m_craftButton.gameObject.activeSelf);
+
                 if (EpicLoot.HasAuga)
                 {
                     Auga.API.ComplexTooltip_SetItem(AugaTabData.ItemInfoGO, itemData, itemData.m_quality, itemData.m_variant);
@@ -129,36 +136,29 @@ namespace EpicLoot.Crafting
                     }
 
                     Auga.API.RequirementsPanel_SetWires(AugaTabData.RequirementsPanelGO, requirementStates, canCraft);
-
-                    return;
                 }
+                else
+                {
+                    __instance.m_recipeIcon.enabled = true;
+                    __instance.m_recipeIcon.sprite = itemData.GetIcon();
 
-                __instance.m_recipeIcon.enabled = true;
-                __instance.m_recipeIcon.sprite = itemData.GetIcon();
+                    __instance.m_recipeName.enabled = true;
+                    __instance.m_recipeName.text = Localization.instance.Localize(itemData.GetDecoratedName());
 
-                __instance.m_recipeName.enabled = true;
-                __instance.m_recipeName.text = Localization.instance.Localize(itemData.GetDecoratedName());
+                    __instance.m_recipeDecription.enabled = true;
+                    __instance.m_recipeDecription.text = Localization.instance.Localize(ItemDrop.ItemData.GetTooltip(itemData, itemData.m_quality, true));
+                    __instance.m_recipeDecription.text += Localization.instance.Localize("\n\n<color=red>$mod_epicloot_sacrifice_warning</color>");
 
-                __instance.m_recipeDecription.enabled = true;
-                __instance.m_recipeDecription.text = Localization.instance.Localize(ItemDrop.ItemData.GetTooltip(itemData, itemData.m_quality, true));
-                __instance.m_recipeDecription.text += Localization.instance.Localize("\n\n<color=red>$mod_epicloot_sacrifice_warning</color>");
+                    bgImage.color = recipe.FromItem.GetRarityColor();
+                    bgImage.enabled = recipe.FromItem.UseMagicBackground();
 
-                bgImage.color = recipe.FromItem.GetRarityColor();
-                bgImage.enabled = recipe.FromItem.UseMagicBackground();
+                    __instance.m_itemCraftType.gameObject.SetActive(true);
+                    __instance.m_itemCraftType.text = Localization.instance.Localize("$mod_epicloot_sacrifice_explanation");
 
-                __instance.m_itemCraftType.gameObject.SetActive(true);
-                __instance.m_itemCraftType.text = Localization.instance.Localize("$mod_epicloot_sacrifice_explanation");
+                    __instance.m_variantButton.gameObject.SetActive(false);
 
-                __instance.m_variantButton.gameObject.SetActive(false);
-
-                __instance.m_minStationLevelIcon.gameObject.SetActive(false);
-
-                __instance.m_craftButton.interactable = canCraft;
-                __instance.m_craftButton.GetComponent<UITooltip>().m_text = tooltip;
-
-                var isStack = itemData.m_stack > 1;
-                DisenchantAllButton.interactable = isStack;
-                DisenchantAllButton.gameObject.SetActive(__instance.m_craftButton.gameObject.activeSelf);
+                    __instance.m_minStationLevelIcon.gameObject.SetActive(false);
+                }
             }
             else
             {
