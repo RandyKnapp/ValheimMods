@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 501021914
+CRC: 3204918148
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: d4f3c19b0515755be2ff9c7cf3900a59
+    Hash: c294ca0ad396777be2826dd6a7d22c2b
   TypeTreeHash:
     serializedVersion: 2
     Hash: 7664cc45f2b3d5c0a17a99c4a513797a
@@ -126,6 +126,7 @@ Assets:
 - Assets/EpicLoot/Prefabs/LootBeams/RareLootBeam.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/EssenceRare.prefab
 - Assets/EpicLoot/Prefabs/ItemEffects/LightningAuraSledge.prefab
+- Assets/EpicLoot/Sprites/Inventory/Auga/AugaEquipped.png
 - Assets/EpicLoot/Prefabs/ItemEffects/FireAura.prefab
 - Assets/EpicLoot/Prefabs/ItemEffects/FrostAuraBattleAxe.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/ShardEpic.prefab
@@ -147,6 +148,8 @@ Assets:
 - Assets/EpicLoot/Sprites/Inventory/MagicItemBg.png
 - Assets/EpicLoot/Prefabs/LootBeams/EpicLootBeam.prefab
 - Assets/EpicLoot/Sprites/Adventure/MapIconBounty.png
+- Assets/EpicLoot/Sprites/Inventory/Auga/disenchant_tabicon.png
+- Assets/EpicLoot/Sprites/Inventory/Auga/AugaItemBG.png
 - Assets/EpicLoot/Sprites/Abilities/BulwarkIcon.png
 - Assets/EpicLoot/Sprites/Inventory/GenericItemBg.png
 - Assets/EpicLoot/Sprites/Inventory/SmallButtonEnchantOverlay.png
@@ -162,6 +165,7 @@ Assets:
 - Assets/EpicLoot/Prefabs/UI/MerchantPanel.prefab
 - Assets/EpicLoot/Sprites/Abilities/UndyingIcon.png
 - Assets/EpicLoot/Prefabs/CraftingMaterials/ShardMagic.prefab
+- Assets/EpicLoot/Sprites/Inventory/Auga/augment_tabicon.png
 - Assets/EpicLoot/Prefabs/CraftingMaterials/DustLegendary.prefab
 - Assets/EpicLoot/Sounds/Disenchant.wav
 - Assets/EpicLoot/Prefabs/LootBeams/MagicLootBeam.prefab
@@ -175,6 +179,7 @@ Assets:
 - Assets/EpicLoot/ScriptableObjects/BulwarkStatusEffect.asset
 - Assets/EpicLoot/Prefabs/CraftingMaterials/RunestoneMagic.prefab
 - Assets/EpicLoot/Prefabs/SFX/sfx_berserker.prefab
+- Assets/EpicLoot/Sprites/Inventory/Auga/AugaSetItem.png
 - Assets/EpicLoot/Prefabs/Adventure/GoldBountyToken.prefab
 - Assets/EpicLoot/Texture2D/Equipment/PaddedArmorMain_Heimdall.png
 - Assets/EpicLoot/Sprites/Inventory/RareItemBg.png
@@ -188,6 +193,7 @@ Assets:
 - Assets/EpicLoot/Prefabs/Adventure/ForestToken.prefab
 - Assets/EpicLoot/Prefabs/VFX/Berserker.prefab
 - Assets/EpicLoot/Prefabs/StationExtensions/piece_enchanter.prefab
+- Assets/EpicLoot/Sprites/Inventory/Auga/enchant_tabicon.png
 - Assets/EpicLoot/Prefabs/CraftingMaterials/RunestoneLegendary.prefab
 - Assets/EpicLoot/Sprites/Adventure/BountyTokenIron.png
 - Assets/EpicLoot/Prefabs/CraftingMaterials/EssenceLegendary.prefab

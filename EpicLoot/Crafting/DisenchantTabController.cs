@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Common;
 using UnityEngine;
 using UnityEngine.UI;
@@ -50,8 +51,11 @@ namespace EpicLoot.Crafting
 
                 DisenchantAllButtonLabel = DisenchantAllButton.GetComponentInChildren<Text>();
                 DisenchantAllButtonLabel.text = Localization.instance.Localize("$mod_epicloot_sacrificeall");
-                DisenchantAllButtonLabel.color = new Color(1, 0.6308f, 0.2353f);
-                DisenchantAllButton.GetComponent<ButtonTextColor>().m_defaultColor = DisenchantAllButtonLabel.color;
+                if (!EpicLoot.HasAuga)
+                {
+                    DisenchantAllButtonLabel.color = new Color(1, 0.6308f, 0.2353f);
+                    DisenchantAllButton.GetComponent<ButtonTextColor>().m_defaultColor = DisenchantAllButtonLabel.color;
+                }
 
                 Object.Destroy(DisenchantAllButton.GetComponent<UITooltip>());
             }
@@ -292,7 +296,8 @@ namespace EpicLoot.Crafting
         }
 
         public void UpdateRecipeList(InventoryGui __instance)
-        { 
+        {
+            EpicLoot.LogWarning("UpdateRecipeList Disenchant");
             __instance.m_availableRecipes.Clear();
             foreach (var recipe in __instance.m_recipeList)
             {

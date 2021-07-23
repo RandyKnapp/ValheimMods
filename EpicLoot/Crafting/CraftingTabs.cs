@@ -42,15 +42,18 @@ namespace EpicLoot.Crafting
                 TabControllers.Add(new TabController(CraftingTabType.Crafting, false, __instance.m_tabCraft));
                 TabControllers.Add(new TabController(CraftingTabType.Upgrade, false, __instance.m_tabUpgrade));
                 TabControllers.Add(new DisenchantTabController());
-                TabControllers.Add(new EnchantTabController());
-                TabControllers.Add(new AugmentTabController());
+                //TabControllers.Add(new EnchantTabController());
+                //TabControllers.Add(new AugmentTabController());
 
                 foreach (var tabController in CustomTabs())
                 {
                     tabController.Awake();
                 }
 
-                UpdateTabPositionCoroutine = __instance.StartCoroutine(UpdateTabPositions());
+                if (!EpicLoot.HasAuga)
+                {
+                    UpdateTabPositionCoroutine = __instance.StartCoroutine(UpdateTabPositions());
+                }
             }
         }
 
@@ -66,7 +69,10 @@ namespace EpicLoot.Crafting
                 TabControllers.Clear();
                 OtherTabs.Clear();
 
-                __instance.StopCoroutine(UpdateTabPositionCoroutine);
+                if (UpdateTabPositionCoroutine != null)
+                {
+                    __instance.StopCoroutine(UpdateTabPositionCoroutine);
+                }
                 UpdateTabPositionCoroutine = null;
             }
         }

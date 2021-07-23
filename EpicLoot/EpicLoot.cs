@@ -42,8 +42,11 @@ namespace EpicLoot
     {
         public AssetBundle AssetBundle;
         public Sprite EquippedSprite;
+        public Sprite AugaEquippedSprite;
         public Sprite GenericSetItemSprite;
+        public Sprite AugaSetItemSprite;
         public Sprite GenericItemBgSprite;
+        public Sprite AugaItemBgSprite;
         public GameObject[] MagicItemLootBeamPrefabs = new GameObject[4];
         public readonly Dictionary<string, GameObject[]> CraftingMaterialPrefabs = new Dictionary<string, GameObject[]>();
         public Sprite SmallButtonEnchantOverlay;
@@ -147,6 +150,7 @@ namespace EpicLoot
         public static bool AlwaysDropCheat = false;
         public const Minimap.PinType BountyPinType = (Minimap.PinType) 800;
         public const Minimap.PinType TreasureMapPinType = (Minimap.PinType) 801;
+        public static bool HasAuga;
 
         public static event Action AbilitiesInitialized;
         public static event Action LootTableLoaded;
@@ -159,7 +163,7 @@ namespace EpicLoot
         private void Awake()
         {
             _instance = this;
-            
+
             _magicRarityColor = Config.Bind("Item Colors", "Magic Rarity Color", "Blue", "The color of Magic rarity items, the lowest magic item tier. (Optional, use an HTML hex color starting with # to have a custom color.) Available options: Red, Orange, Yellow, Green, Teal, Blue, Indigo, Purple, Pink, Gray");
             _magicMaterialIconColor = Config.Bind("Item Colors", "Magic Crafting Material Icon Index", 5, "Indicates the color of the icon used for magic crafting materials. A number between 0 and 9. Available options: 0=Red, 1=Orange, 2=Yellow, 3=Green, 4=Teal, 5=Blue, 6=Indigo, 7=Purple, 8=Pink, 9=Gray");
             _rareRarityColor = Config.Bind("Item Colors", "Rare Rarity Color", "Yellow", "The color of Rare rarity items, the second magic item tier. (Optional, use an HTML hex color starting with # to have a custom color.) Available options: Red, Orange, Yellow, Green, Teal, Blue, Indigo, Purple, Pink, Gray");
@@ -213,6 +217,12 @@ namespace EpicLoot
             LootTableLoaded?.Invoke();
         }
 
+        public void Start()
+        {
+            HasAuga = Auga.API.IsLoaded();
+            LogWarning($"Auga: {(HasAuga ? "Is Loaded!" : "Not Loaded")}");
+        }
+
         private ConfigEntry<T> SyncedConfig<T>(string group, string configName, T value, string description, bool synchronizedSetting = true) => SyncedConfig(group, configName, value, new ConfigDescription(description), synchronizedSetting);
         
         private ConfigEntry<T> SyncedConfig<T>(string group, string configName, T value, ConfigDescription description, bool synchronizedSetting = true)
@@ -254,7 +264,7 @@ namespace EpicLoot
             LoadJsonFile<AbilityConfig>("abilities.json", AbilityDefinitions.Initialize);
         }
 
-        private void InitializeAbilities()
+        private static void InitializeAbilities()
         {
             MagicEffectType.Initialize();
             AbilitiesInitialized?.Invoke();
@@ -317,8 +327,11 @@ namespace EpicLoot
             var assetBundle = LoadAssetBundle("epicloot");
             Assets.AssetBundle = assetBundle;
             Assets.EquippedSprite = assetBundle.LoadAsset<Sprite>("Equipped");
+            Assets.AugaEquippedSprite = assetBundle.LoadAsset<Sprite>("AugaEquipped");
             Assets.GenericSetItemSprite = assetBundle.LoadAsset<Sprite>("GenericSetItemMarker");
+            Assets.AugaSetItemSprite = assetBundle.LoadAsset<Sprite>("AugaSetItem");
             Assets.GenericItemBgSprite = assetBundle.LoadAsset<Sprite>("GenericItemBg");
+            Assets.AugaItemBgSprite = assetBundle.LoadAsset<Sprite>("AugaItemBG");
             Assets.SmallButtonEnchantOverlay = assetBundle.LoadAsset<Sprite>("SmallButtonEnchantOverlay");
             Assets.MagicItemLootBeamPrefabs[(int)ItemRarity.Magic] = assetBundle.LoadAsset<GameObject>("MagicLootBeam");
             Assets.MagicItemLootBeamPrefabs[(int)ItemRarity.Rare] = assetBundle.LoadAsset<GameObject>("RareLootBeam");
@@ -801,7 +814,17 @@ namespace EpicLoot
 
         public static Sprite GetMagicItemBgSprite()
         {
-            return Assets.GenericItemBgSprite;
+            return HasAuga ? Assets.AugaItemBgSprite : Assets.GenericItemBgSprite;
+        }
+
+        public static Sprite GetEquippedSprite()
+        {
+            return HasAuga ? Assets.AugaEquippedSprite : Assets.EquippedSprite;
+        }
+
+        public static Sprite GetSetItemSprite()
+        {
+            return HasAuga ? Assets.AugaSetItemSprite : Assets.GenericSetItemSprite;
         }
 
         private static bool IsNotRestrictedItem(ItemDrop.ItemData item)

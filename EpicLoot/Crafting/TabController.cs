@@ -1,5 +1,6 @@
 ﻿using Common;
 using System;
+using Auga;
 using UnityEngine;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
@@ -38,19 +39,40 @@ namespace EpicLoot.Crafting
 
         public virtual void TryInitialize(InventoryGui inventoryGui, int tabIndex, Action<TabController> onTabPressed)
         {
-            var existingButton = inventoryGui.m_tabCraft.transform.parent.Find(GetTabButtonId());
-            if (IsCustomTab && existingButton == null)
+            if (EpicLoot.HasAuga)
             {
-                var go = Object.Instantiate(inventoryGui.m_tabUpgrade, inventoryGui.m_tabUpgrade.transform.parent, true).gameObject;
-                go.name = GetTabButtonId();
-                go.GetComponentInChildren<Text>().text = GetTabButtonText();
-                go.transform.SetSiblingIndex(inventoryGui.m_tabUpgrade.transform.parent.childCount - 2);
-                go.RectTransform().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, GetTabWidth());
-                TabButton = go.GetComponent<Button>();
-                TabButton.gameObject.RectTransform().anchoredPosition = TabButton.gameObject.RectTransform().anchoredPosition + new Vector2(107 * (tabIndex + 1), 0);
-                TabButton.onClick = new Button.ButtonClickedEvent();
-                TabButton.onClick.AddListener(TabButton.GetComponent<ButtonSfx>().OnClick);
-                TabButton.onClick.AddListener(() => onTabPressed(this));
+                var exists = Auga.API.HasWorkbenchTab(GetTabButtonId());
+                if (IsCustomTab && !exists)
+                {
+                    var buttonSprite = EpicLoot.LoadAsset<Sprite>($"{GetTabButtonId().ToLower()}_tabicon");
+                    var results = Auga.API.AddWorkbenchTab(GetTabButtonId(), buttonSprite, GetTabButtonText(), (index) => onTabPressed(this));
+                    var tabButtonGameObject = results.TabButtonGO;
+                    TabButton = tabButtonGameObject.GetComponent<Button>();
+                }
+            }
+            else
+            {
+                var tabContainer = GetTabContainer(inventoryGui);
+                var existingButton = tabContainer.Find(GetTabButtonId());
+                if (IsCustomTab && existingButton == null)
+                {
+                    var go = Object.Instantiate(GetTabPrefab(inventoryGui), tabContainer, true).gameObject;
+                    go.name = GetTabButtonId();
+                    TabButton = go.GetComponent<Button>();
+
+                    var label = go.GetComponentInChildren<Text>();
+                    if (label != null)
+                    {
+                        label.text = GetTabButtonText();
+                    }
+                    go.RectTransform().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, GetTabWidth());
+                    TabButton.gameObject.RectTransform().anchoredPosition = TabButton.gameObject.RectTransform().anchoredPosition + new Vector2(107 * (tabIndex + 1), 0);
+
+                    go.transform.SetSiblingIndex(tabContainer.childCount - 2);
+                    TabButton.onClick = new Button.ButtonClickedEvent();
+                    TabButton.onClick.AddListener(TabButton.GetComponent<ButtonSfx>().OnClick);
+                    TabButton.onClick.AddListener(() => onTabPressed(this));
+                }
             }
 
             if (TabButton != null)
@@ -64,6 +86,16 @@ namespace EpicLoot.Crafting
             }
         }
 
+        public Transform GetTabContainer(InventoryGui inventoryGui)
+        {
+            return inventoryGui.m_tabCraft.transform.parent;
+        }
+
+        public Button GetTabPrefab(InventoryGui inventoryGui)
+        {
+            return inventoryGui.m_tabUpgrade;
+        }
+
         public virtual string GetTabButtonId() => "TabId";
         public virtual string GetTabButtonText() => "TabButton";
         public virtual float GetTabWidth() => 100;
@@ -75,12 +107,17 @@ namespace EpicLoot.Crafting
 
         public virtual bool IsActive()
         {
-            return TabButton != null && TabButton.isActiveAndEnabled && !TabButton.interactable;
+            if (TabButton == null || !TabButton.isActiveAndEnabled)
+            {
+                return false;
+            }
+
+            return EpicLoot.HasAuga ? Auga.API.IsTabActive(TabButton.gameObject) : !TabButton.interactable;
         }
 
         public virtual void SetActive(bool active)
         {
-            if (TabButton != null)
+            if (TabButton != null && !IsCustomTab)
             {
                 TabButton.interactable = !active;
             }
