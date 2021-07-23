@@ -14,6 +14,7 @@ namespace EpicLoot.Crafting
         public Button TabButton;
         public int SelectedRecipe = -1;
         public GameObject GamepadHint;
+        public WorkbenchTabData AugaTabData;
 
         protected bool _hasInventoryListener;
 
@@ -45,8 +46,8 @@ namespace EpicLoot.Crafting
                 if (IsCustomTab && !exists)
                 {
                     var buttonSprite = EpicLoot.LoadAsset<Sprite>($"{GetTabButtonId().ToLower()}_tabicon");
-                    var results = Auga.API.AddWorkbenchTab(GetTabButtonId(), buttonSprite, GetTabButtonText(), (index) => onTabPressed(this));
-                    var tabButtonGameObject = results.TabButtonGO;
+                    AugaTabData = Auga.API.AddWorkbenchTab(GetTabButtonId(), buttonSprite, GetTabButtonText(), (index) => onTabPressed(this));
+                    var tabButtonGameObject = AugaTabData.TabButtonGO;
                     TabButton = tabButtonGameObject.GetComponent<Button>();
                 }
             }

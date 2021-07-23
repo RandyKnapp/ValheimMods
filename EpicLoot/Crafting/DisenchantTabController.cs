@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Common;
 using UnityEngine;
 using UnityEngine.UI;
@@ -110,6 +109,30 @@ namespace EpicLoot.Crafting
                 var recipe = Recipes[SelectedRecipe];
                 var itemData = recipe.FromItem;
 
+                var canPutProductsInInventory = CanAddItems(player.GetInventory(), recipe.Products, 1);
+                var isEquipped = recipe.FromItem.m_equiped;
+                var canCraft = canPutProductsInInventory && !isEquipped;
+                var tooltip = Localization.instance.Localize(canPutProductsInInventory ? (isEquipped ? "$mod_epicloot_sacrifice_equipped" : "") : "$inventory_full");
+
+                SetupRequirementList(__instance, player, recipe);
+
+                if (EpicLoot.HasAuga)
+                {
+                    Auga.API.ComplexTooltip_SetItem(AugaTabData.ItemInfoGO, itemData, itemData.m_quality, itemData.m_variant);
+                    Auga.API.ComplexTooltip_SetTopic(AugaTabData.ItemInfoGO, Localization.instance.Localize(itemData.GetDecoratedName()));
+                    __instance.m_itemCraftType.text = Localization.instance.Localize($"\n\n<color={Auga.API.RedText}>$mod_epicloot_sacrifice_warning</color>");
+
+                    var requirementStates = new[] { Auga.RequirementWireState.Absent, Auga.RequirementWireState.Absent, Auga.RequirementWireState.Absent, Auga.RequirementWireState.Absent };
+                    for (var i = 0; i < recipe.Products.Count; ++i)
+                    {
+                        requirementStates[i] = Auga.RequirementWireState.Have;
+                    }
+
+                    Auga.API.RequirementsPanel_SetWires(AugaTabData.RequirementsPanelGO, requirementStates, canCraft);
+
+                    return;
+                }
+
                 __instance.m_recipeIcon.enabled = true;
                 __instance.m_recipeIcon.sprite = itemData.GetIcon();
 
@@ -128,15 +151,10 @@ namespace EpicLoot.Crafting
 
                 __instance.m_variantButton.gameObject.SetActive(false);
 
-                SetupRequirementList(__instance, player, recipe);
-
                 __instance.m_minStationLevelIcon.gameObject.SetActive(false);
 
-                var isEquipped = recipe.FromItem.m_equiped;
-                var canPutProductsInInventory = CanAddItems(player.GetInventory(), recipe.Products, 1);
-                __instance.m_craftButton.interactable = canPutProductsInInventory && !isEquipped;
-                __instance.m_craftButton.GetComponent<UITooltip>().m_text = 
-                    Localization.instance.Localize(canPutProductsInInventory ? (isEquipped ? "$mod_epicloot_sacrifice_equipped" : "") : "$inventory_full");
+                __instance.m_craftButton.interactable = canCraft;
+                __instance.m_craftButton.GetComponent<UITooltip>().m_text = tooltip;
 
                 var isStack = itemData.m_stack > 1;
                 DisenchantAllButton.interactable = isStack;
