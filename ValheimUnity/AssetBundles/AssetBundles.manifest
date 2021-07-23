@@ -1,5 +1,5 @@
 ManifestFileVersion: 0
-CRC: 2561718862
+CRC: 3740755245
 AssetBundleManifest:
   AssetBundleInfos:
     Info_0:
@@ -10,4 +10,7 @@ AssetBundleManifest:
       Dependencies: {}
     Info_2:
       Name: helheim
+      Dependencies: {}
+    Info_3:
+      Name: eaqs
       Dependencies: {}

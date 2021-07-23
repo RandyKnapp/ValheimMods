@@ -1,0 +1,31 @@
+ManifestFileVersion: 0
+CRC: 1187554278
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 66fa13624de42e5561ed8dfb67224f7a
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: f98c7bdb74dd487f54cac0f4547117d5
+HashAppended: 0
+ClassTypes:
+- Class: 1
+  Script: {instanceID: 0}
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+- Class: 115
+  Script: {instanceID: 0}
+- Class: 213
+  Script: {instanceID: 0}
+- Class: 222
+  Script: {instanceID: 0}
+- Class: 224
+  Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers: []
+Assets:
+- Assets/EAQS/PaperdollMale.png
+- Assets/EAQS/Paperdolls.prefab
+- Assets/EAQS/PaperdollFemale.png
+Dependencies: []

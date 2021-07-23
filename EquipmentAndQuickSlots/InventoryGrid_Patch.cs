@@ -74,17 +74,36 @@ namespace EquipmentAndQuickSlots
                     //new Vector2(horizontalSpacing, -2 * verticalSpacing), // Utility 2
                 };
 
+                Vector2[] augaEquipPositions = {
+                    new Vector2(), // Head
+                    new Vector2(-0.45f * horizontalSpacing, -0.9f * verticalSpacing), // Chest
+                    new Vector2(0, -1.8f * verticalSpacing), // Legs
+                    new Vector2(0.45f * horizontalSpacing, -0.9f * verticalSpacing), // Shoulders
+                    new Vector2(1.3f * horizontalSpacing, 0), // Utility 1
+                };
+
                 for (var i = 0; i < EquipmentAndQuickSlots.EquipSlotCount; ++i)
                 {
                     var element = __instance.m_elements[i];
-                    var bindingText = element.m_go.transform.Find("binding").GetComponent<Text>();
-                    bindingText.enabled = true;
-                    bindingText.horizontalOverflow = HorizontalWrapMode.Overflow;
-                    bindingText.text = equipNames[i];
-                    bindingText.rectTransform.anchoredPosition = new Vector2(32, 5);
+
+                    if (!EquipmentAndQuickSlots.HasAuga)
+                    {
+                        var bindingText = element.m_go.transform.Find("binding").GetComponent<Text>();
+                        bindingText.enabled = true;
+                        bindingText.horizontalOverflow = HorizontalWrapMode.Overflow;
+                        bindingText.text = equipNames[i];
+                        bindingText.rectTransform.anchoredPosition = new Vector2(32, 5);
+                    }
 
                     var offset = new Vector2(-20, 79);
-                    element.m_go.RectTransform().anchoredPosition = offset + equipPositions[i];
+                    if (EquipmentAndQuickSlots.HasAuga)
+                    {
+                        element.m_go.RectTransform().anchoredPosition = offset + augaEquipPositions[i];
+                    }
+                    else
+                    {
+                        element.m_go.RectTransform().anchoredPosition = offset + equipPositions[i];
+                    }
                 }
             }
         }

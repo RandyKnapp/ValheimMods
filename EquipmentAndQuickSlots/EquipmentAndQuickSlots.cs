@@ -32,6 +32,12 @@ namespace EquipmentAndQuickSlots
         public static ConfigEntry<TextAnchor> QuickSlotsAnchor;
         public static ConfigEntry<Vector2> QuickSlotsPosition;
 
+        public static Sprite PaperdollMale;
+        public static Sprite PaperdollFemale;
+        public static GameObject Paperdolls;
+
+        public static bool HasAuga { get; private set; }
+
         private static EquipmentAndQuickSlots _instance;
         private Harmony _harmony;
 
@@ -52,7 +58,27 @@ namespace EquipmentAndQuickSlots
             QuickSlotsAnchor = Config.Bind("Quick Slots", "Quick Slots Anchor", TextAnchor.LowerLeft, "The point on the HUD to anchor the Quick Slots bar. Changing this also changes the pivot of the Quick Slots to that corner.");
             QuickSlotsPosition = Config.Bind("Quick Slots", "Quick Slots Position", new Vector2(216, 150), "The position offset from the Quick Slots Anchor at which to place the Quick Slots.");
 
+            LoadAssets();
+
             _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), PluginId);
+
+            HasAuga = Auga.API.IsLoaded();
+        }
+
+        private static void LoadAssets()
+        {
+            var assetBundle = LoadAssetBundle("eaqs");
+            PaperdollMale = assetBundle.LoadAsset<Sprite>("PaperdollMale");
+            PaperdollFemale = assetBundle.LoadAsset<Sprite>("PaperdollFemale");
+            Paperdolls = assetBundle.LoadAsset<GameObject>("Paperdolls");
+        }
+
+        public static AssetBundle LoadAssetBundle(string filename)
+        {
+            var assembly = Assembly.GetCallingAssembly();
+            var assetBundle = AssetBundle.LoadFromStream(assembly.GetManifestResourceStream($"{assembly.GetName().Name}.{filename}"));
+
+            return assetBundle;
         }
 
         private void OnDestroy()
