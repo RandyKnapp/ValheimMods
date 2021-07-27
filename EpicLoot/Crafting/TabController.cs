@@ -118,7 +118,7 @@ namespace EpicLoot.Crafting
 
         public virtual void SetActive(bool active)
         {
-            if (TabButton != null && !IsCustomTab)
+            if (TabButton != null && (!EpicLoot.HasAuga || !IsCustomTab))
             {
                 TabButton.interactable = !active;
             }
