@@ -1,6 +1,5 @@
 ﻿using Common;
 using System;
-using Auga;
 using UnityEngine;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
@@ -14,7 +13,7 @@ namespace EpicLoot.Crafting
         public Button TabButton;
         public int SelectedRecipe = -1;
         public GameObject GamepadHint;
-        public WorkbenchTabData AugaTabData;
+        public Auga.WorkbenchTabData AugaTabData;
 
         protected bool _hasInventoryListener;
 
@@ -178,8 +177,10 @@ namespace EpicLoot.Crafting
             ItemDrop item,
             int amount,
             Player player,
-            bool showOutOfMaterials)
+            bool showOutOfMaterials,
+            out bool haveMaterials)
         {
+            haveMaterials = false;
             var icon = elementRoot.transform.Find("res_icon").GetComponent<Image>();
             var nameText = elementRoot.transform.Find("res_name").GetComponent<Text>();
             var amountText = elementRoot.transform.Find("res_amount").GetComponent<Text>();
@@ -230,7 +231,8 @@ namespace EpicLoot.Crafting
                 amountText.text = amount.ToString();
 
                 var currentAmount = player.GetInventory().CountItems(item.m_itemData.m_shared.m_name);
-                if (showOutOfMaterials && currentAmount < amount)
+                haveMaterials = currentAmount >= amount;
+                if (showOutOfMaterials && !haveMaterials)
                 {
                     amountText.color = Mathf.Sin(Time.time * 10.0f) > 0.0f ? Color.red : Color.white;
                 }

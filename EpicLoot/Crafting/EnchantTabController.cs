@@ -120,7 +120,7 @@ namespace EpicLoot.Crafting
 
         public override bool DisallowInventoryHiding()
         {
-            if (SuccessDialog.gameObject.activeSelf)
+            if (SuccessDialog != null && SuccessDialog.gameObject.activeSelf)
             {
                 return true;
             }
@@ -223,13 +223,14 @@ namespace EpicLoot.Crafting
                 __instance.m_itemCraftType.gameObject.SetActive(false);
                 __instance.m_variantButton.gameObject.SetActive(false);
 
-                SetupRequirementList(__instance, player, recipe);
 
                 __instance.m_minStationLevelIcon.gameObject.SetActive(false);
 
                 var canCraft = Player.m_localPlayer.HaveRequirements(GetRecipeRequirementArray(recipe, SelectedRarity), false, 1);
                 __instance.m_craftButton.interactable = canCraft;
                 __instance.m_craftButton.GetComponent<UITooltip>().m_text = canCraft ? "" : Localization.instance.Localize("$msg_missingrequirement");
+
+                SetupRequirementList(__instance, player, recipe, canCraft);
             }
             else
             {
@@ -283,14 +284,17 @@ namespace EpicLoot.Crafting
             return sb.ToString();
         }
 
-        public void SetupRequirementList(InventoryGui __instance, Player player, EnchantRecipe recipe)
+        public void SetupRequirementList(InventoryGui __instance, Player player, EnchantRecipe recipe, bool canCraft)
         {
+            var requirementStates = new[] { Auga.RequirementWireState.Absent, Auga.RequirementWireState.Absent, Auga.RequirementWireState.Absent, Auga.RequirementWireState.Absent };
+
             var index = 0;
             var cost = GetRecipeCost(recipe, SelectedRarity);
             foreach (var product in cost)
             {
-                if (SetupRequirement(__instance, __instance.m_recipeRequirementList[index].transform, product.Key, product.Value, player, true))
+                if (SetupRequirement(__instance, __instance.m_recipeRequirementList[index].transform, product.Key, product.Value, player, true, out var haveMaterials))
                 {
+                    requirementStates[index] = haveMaterials ? Auga.RequirementWireState.Have : Auga.RequirementWireState.DontHave;
                     ++index;
                 }
             }
@@ -298,6 +302,11 @@ namespace EpicLoot.Crafting
             for (; index < __instance.m_recipeRequirementList.Length; ++index)
             {
                 InventoryGui.HideRequirement(__instance.m_recipeRequirementList[index].transform);
+            }
+
+            if (EpicLoot.HasAuga)
+            {
+                Auga.API.RequirementsPanel_SetWires(AugaTabData.RequirementsPanelGO, requirementStates, canCraft);
             }
         }
 

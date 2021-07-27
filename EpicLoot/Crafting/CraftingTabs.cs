@@ -43,7 +43,7 @@ namespace EpicLoot.Crafting
                 TabControllers.Add(new TabController(CraftingTabType.Upgrade, false, __instance.m_tabUpgrade));
                 TabControllers.Add(new DisenchantTabController());
                 //TabControllers.Add(new EnchantTabController());
-                //TabControllers.Add(new AugmentTabController());
+                TabControllers.Add(new AugmentTabController());
 
                 foreach (var tabController in CustomTabs())
                 {
@@ -269,15 +269,20 @@ namespace EpicLoot.Crafting
                 var activeTab = GetActiveTabController();
                 if (activeTab != null)
                 {
-                    var magicItemBG = __instance.m_recipeIcon.transform.parent.Find("MagicItemBG");
+                    var icon = EpicLoot.HasAuga ? Auga.API.RequirementsPanel_GetIcon(activeTab.AugaTabData.RequirementsPanelGO) : __instance.m_recipeIcon;
+                    var magicItemBG = icon.transform.parent.Find("MagicItemBG");
                     Image bgImage;
                     if (magicItemBG == null)
                     {
-                        bgImage = Object.Instantiate(__instance.m_recipeIcon, __instance.m_recipeIcon.transform.parent, true);
+                        bgImage = Object.Instantiate(icon, icon.transform.parent, true);
                         bgImage.name = "MagicItemBG";
-                        bgImage.transform.SetSiblingIndex(__instance.m_recipeIcon.transform.GetSiblingIndex());
+                        bgImage.transform.SetSiblingIndex(icon.transform.GetSiblingIndex());
                         bgImage.sprite = EpicLoot.GetMagicItemBgSprite();
                         bgImage.color = Color.white;
+                        bgImage.rectTransform.anchorMin = new Vector2(0, 0);
+                        bgImage.rectTransform.anchorMax = new Vector2(1, 1);
+                        bgImage.rectTransform.sizeDelta = new Vector2(0, 0);
+                        bgImage.rectTransform.anchoredPosition = new Vector2(0, 0);
                     }
                     else
                     {

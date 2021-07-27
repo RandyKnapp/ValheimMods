@@ -123,8 +123,14 @@ namespace EpicLoot.Crafting
                 DisenchantAllButton.interactable = isStack;
                 DisenchantAllButton.gameObject.SetActive(__instance.m_craftButton.gameObject.activeSelf);
 
+                bgImage.color = recipe.FromItem.GetRarityColor();
+                bgImage.enabled = recipe.FromItem.UseMagicBackground();
+
                 if (EpicLoot.HasAuga)
                 {
+                    AugaTabData.ItemInfoGO.SetActive(true);
+                    AugaTabData.RequirementsPanelGO.SetActive(true);
+
                     Auga.API.ComplexTooltip_SetItem(AugaTabData.ItemInfoGO, itemData, itemData.m_quality, itemData.m_variant);
                     Auga.API.ComplexTooltip_SetTopic(AugaTabData.ItemInfoGO, Localization.instance.Localize(itemData.GetDecoratedName()));
                     __instance.m_itemCraftType.text = Localization.instance.Localize($"\n\n<color={Auga.API.RedText}>$mod_epicloot_sacrifice_warning</color>");
@@ -149,9 +155,6 @@ namespace EpicLoot.Crafting
                     __instance.m_recipeDecription.text = Localization.instance.Localize(ItemDrop.ItemData.GetTooltip(itemData, itemData.m_quality, true));
                     __instance.m_recipeDecription.text += Localization.instance.Localize("\n\n<color=red>$mod_epicloot_sacrifice_warning</color>");
 
-                    bgImage.color = recipe.FromItem.GetRarityColor();
-                    bgImage.enabled = recipe.FromItem.UseMagicBackground();
-
                     __instance.m_itemCraftType.gameObject.SetActive(true);
                     __instance.m_itemCraftType.text = Localization.instance.Localize("$mod_epicloot_sacrifice_explanation");
 
@@ -162,6 +165,12 @@ namespace EpicLoot.Crafting
             }
             else
             {
+                if (EpicLoot.HasAuga)
+                {
+                    AugaTabData.ItemInfoGO.SetActive(false);
+                    AugaTabData.RequirementsPanelGO.SetActive(false);
+                }
+
                 bgImage.enabled = false;
                 __instance.m_itemCraftType.gameObject.SetActive(false);
                 __instance.m_variantButton.gameObject.SetActive(false);
@@ -230,7 +239,7 @@ namespace EpicLoot.Crafting
             var index = 0;
             foreach (var product in recipe.Products)
             {
-                if (SetupRequirement(__instance, __instance.m_recipeRequirementList[index].transform, product.Key, product.Value, player, false))
+                if (SetupRequirement(__instance, __instance.m_recipeRequirementList[index].transform, product.Key, product.Value, player, false, out _))
                 {
                     ++index;
                 }

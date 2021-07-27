@@ -6,6 +6,9 @@
   "mod_epicloot_sacrifice_inventoryfullexplanation": "(Inventory was full when crafting)", 
   "mod_epicloot_sacrificeall": "Sacrifice All",
 
+  "mod_epicloot_augment": "Augment",
+  "mod_epicloot_augment_availableeffects": "Available Effects",
+  "mod_epicloot_augment_explain": "Replace one magical effect. Once an effect has been augmented, the others are locked.", 
   "mod_epicloot_augment_keep": "keep",
 
   "mod_epicloot_item_andvaranaut": "Andvaranaut",
