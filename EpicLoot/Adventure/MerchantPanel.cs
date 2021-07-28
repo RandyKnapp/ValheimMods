@@ -4,6 +4,7 @@ using EpicLoot.Adventure.Feature;
 using EpicLoot.Crafting;
 using UnityEngine;
 using UnityEngine.UI;
+using Object = UnityEngine.Object;
 
 namespace EpicLoot.Adventure
 {
@@ -66,12 +67,31 @@ namespace EpicLoot.Adventure
 
             if (GambleSuccessDialog == null)
             {
-                GambleSuccessDialog = CraftSuccessDialog.Create(transform);
-                GambleSuccessDialog.Frame.anchoredPosition = new Vector2(-700, -300);
+                if (EpicLoot.HasAuga)
+                {
+                    var resultsPanel = Auga.API.Workbench_CreateNewResultsPanel();
+                    resultsPanel.SetActive(false);
+                    resultsPanel.transform.SetParent(transform);
+                    GambleSuccessDialog = resultsPanel.gameObject.AddComponent<CraftSuccessDialog>();
+                    GambleSuccessDialog.NameText = GambleSuccessDialog.transform.Find("Topic").GetComponent<Text>();
+                    GambleSuccessDialog.Frame = (RectTransform)GambleSuccessDialog.transform;
+                    GambleSuccessDialog.Frame.anchoredPosition = new Vector2(0, 0);
+                }
+                else
+                {
+                    GambleSuccessDialog = CraftSuccessDialog.Create(transform);
+                    GambleSuccessDialog.Frame.anchoredPosition = new Vector2(-700, -300);
+                }
             }
 
             if (AbandonBountyDialog == null)
             {
+                if (EpicLoot.HasAuga)
+                {
+                    AugaReplaceButton(transform.Find("AbandonBountyDialog/YesButton").GetComponent<Button>());
+                    AugaReplaceButton(transform.Find("AbandonBountyDialog/NoButton").GetComponent<Button>());
+                }
+
                 AbandonBountyDialog = transform.Find("AbandonBountyDialog").gameObject.AddComponent<AbandonBountyDialog>();
                 AbandonBountyDialog.gameObject.SetActive(false);
             }
@@ -129,6 +149,16 @@ namespace EpicLoot.Adventure
             var activeBountyElementPrefab = transform.Find("Bounties/ClaimableBountiesPanel/ItemElement").gameObject.AddComponent<BountyListElement>();
             bountyElementPrefab.gameObject.SetActive(false);
 
+            if (EpicLoot.HasAuga)
+            {
+                AugaReplaceButton(transform.Find("SecretStash/SecretStashBuyButton").GetComponent<Button>());
+                AugaReplaceButton(transform.Find("Gamble/GambleBuyButton").GetComponent<Button>());
+                AugaReplaceButton(transform.Find("TreasureMap/TreasureMapBuyButton").GetComponent<Button>());
+                AugaReplaceButton(transform.Find("Bounties/AcceptBountyButton").GetComponent<Button>());
+                AugaReplaceButton(transform.Find("Bounties/ClaimBountyButton").GetComponent<Button>());
+                AugaReplaceButton(transform.Find("Bounties/AbandonBountyButton").GetComponent<Button>(), true);
+            }
+
             Panels.Add(new SecretStashListPanel(this, buyListPrefab));
             Panels.Add(new GambleListPanel(this, buyListPrefab));
             Panels.Add(new TreasureMapListPanel(this, treasureMapElementPrefab));
@@ -139,6 +169,151 @@ namespace EpicLoot.Adventure
             ForestTokensCount = transform.Find("Currencies/ForestTokensCount").GetComponent<Text>();
             IronBountyTokensCount = transform.Find("Currencies/BountyTokensIronCount").GetComponent<Text>();
             GoldBountyTokensCount = transform.Find("Currencies/BountyTokensGoldCount").GetComponent<Text>();
+
+            if (EpicLoot.HasAuga)
+            {
+                AugaReplaceBackground(gameObject, true);
+                AugaReplaceBackground(AbandonBountyDialog.gameObject, false);
+
+                AugaFixItemBG(buyListPrefab.gameObject);
+                AugaFixItemBG(treasureMapElementPrefab.gameObject);
+                AugaFixItemBG(bountyElementPrefab.gameObject);
+                AugaFixItemBG(activeBountyElementPrefab.gameObject);
+                AugaFixItemBG(AbandonBountyDialog.BountyDisplay.gameObject);
+
+                AugaFixListElementColors(buyListPrefab.gameObject);
+                AugaFixListElementColors(treasureMapElementPrefab.gameObject);
+                AugaFixListElementColors(bountyElementPrefab.gameObject);
+                AugaFixListElementColors(activeBountyElementPrefab.gameObject);
+                AugaFixListElementColors(AbandonBountyDialog.BountyDisplay.gameObject);
+
+                AugaFixFonts(gameObject);
+
+                AugaMakeSimpleTooltip(treasureMapElementPrefab.gameObject);
+                AugaMakeSimpleTooltip(bountyElementPrefab.gameObject);
+                AugaMakeSimpleTooltip(activeBountyElementPrefab.gameObject);
+            }
+        }
+
+        private static void AugaReplaceBackground(GameObject obj, bool withCornerDecoration)
+        {
+            var image = obj.GetComponent<Image>();
+            Destroy(image);
+            var backgroundPanel = Auga.API.CreatePanel(obj.transform, Vector2.one, "AugaBackground", withCornerDecoration);
+            var rt = (RectTransform)backgroundPanel.transform;
+            rt.SetSiblingIndex(0);
+            rt.anchorMin = Vector2.zero;
+            rt.anchorMax = Vector2.one;
+            rt.pivot = new Vector2(0.5f, 0.5f);
+            rt.sizeDelta = new Vector2(40, 40);
+        }
+
+        private static void AugaFixItemBG(GameObject obj)
+        {
+            var magicBG = obj.transform.Find("MagicBG");
+            if (magicBG != null)
+            {
+                var image = magicBG.GetComponent<Image>();
+                if (image != null)
+                {
+                    image.sprite = EpicLoot.GetMagicItemBgSprite();
+                }
+            }
+
+            var icon = obj.transform.Find("Icon");
+            if (icon != null)
+            {
+                var iconBG = Object.Instantiate(icon, icon.parent);
+                iconBG.SetSiblingIndex(2);
+                var image = iconBG.GetComponent<Image>();
+                image.sprite = Auga.API.GetItemBackgroundSprite();
+                image.color = new Color(0, 0, 0, 0.5f);
+            }
+        }
+
+        private static void AugaFixListElementColors(GameObject obj)
+        {
+            var selected = obj.transform.Find("Selected");
+            if (selected != null)
+            {
+                var image = selected.GetComponent<Image>();
+                if (image != null)
+                {
+                    ColorUtility.TryParseHtmlString(Auga.API.Blue, out var color);
+                    image.color = color;
+                }
+            }
+
+            var background = obj.transform.Find("Background");
+            if (background != null)
+            {
+                var image = background.GetComponent<Image>();
+                if (image != null)
+                {
+                    image.color = new Color(0, 0, 0, 0.5f);
+                }
+            }
+
+            var button = obj.GetComponent<Button>();
+            if (button != null)
+            {
+                button.colors = ColorBlock.defaultColorBlock;
+            }
+        }
+
+        private static void AugaFixFonts(GameObject obj)
+        {
+            var texts = obj.GetComponentsInChildren<Text>(true);
+            foreach (var text in texts)
+            {
+                if (text.font.name == "Norsebold")
+                {
+                    text.font = Auga.API.GetBoldFont();
+                    ColorUtility.TryParseHtmlString(Auga.API.Brown1, out var color);
+                    text.color = color;
+                    text.text = text.text.ToUpperInvariant();
+                }
+                else
+                {
+                    text.font = Auga.API.GetSemiBoldFont();
+                }
+
+                if (text.name == "Count" || text.name == "RewardLabel" || text.name.EndsWith("Count"))
+                {
+                    ColorUtility.TryParseHtmlString(Auga.API.BrightGold, out var color);
+                    text.color = color;
+                }
+            }
+        }
+
+        private static void AugaReplaceButton(Button button, bool icon = false)
+        {
+            var newButton = Auga.API.MediumButton_Create(button.transform.parent, button.name);
+            if (icon)
+            {
+                Object.Destroy(newButton.GetComponentInChildren<Text>().gameObject);
+                var newIcon = Object.Instantiate(button.transform.Find("Icon"), newButton.transform);
+                newIcon.name = "Icon";
+            }
+            else
+            {
+                var newLabel = button.GetComponentInChildren<Text>().text;
+                newButton.GetComponentInChildren<Text>().text = newLabel;
+            }
+            var oldRt = (RectTransform)button.transform;
+            var rt = (RectTransform)newButton.transform;
+            rt.anchorMin = oldRt.anchorMin;
+            rt.anchorMax = oldRt.anchorMax;
+            rt.pivot = oldRt.pivot;
+            rt.anchoredPosition = oldRt.anchoredPosition;
+            rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, oldRt.rect.width);
+
+            Object.DestroyImmediate(button.gameObject);
+        }
+
+        private static void AugaMakeSimpleTooltip(GameObject obj)
+        {
+            Auga.API.Tooltip_MakeSimpleTooltip(obj);
         }
 
         public void OnEnable()
