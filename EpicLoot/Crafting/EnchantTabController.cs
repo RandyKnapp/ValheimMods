@@ -133,17 +133,6 @@ namespace EpicLoot.Crafting
                     var resultsPanel = Auga.API.Workbench_CreateNewResultsPanel();
                     resultsPanel.SetActive(false);
                     SuccessDialog = resultsPanel.gameObject.AddComponent<CraftSuccessDialog>();
-
-                    var icon = SuccessDialog.transform.Find("InventoryElement/icon").GetComponent<Image>();
-                    SuccessDialog.MagicBG = Object.Instantiate(icon, icon.transform.parent);
-                    SuccessDialog.MagicBG.name = "MagicItemBG";
-                    SuccessDialog.MagicBG.sprite = EpicLoot.GetMagicItemBgSprite();
-                    SuccessDialog.MagicBG.color = Color.white;
-                    SuccessDialog.MagicBG.rectTransform.anchorMin = new Vector2(0, 0);
-                    SuccessDialog.MagicBG.rectTransform.anchorMax = new Vector2(1, 1);
-                    SuccessDialog.MagicBG.rectTransform.sizeDelta = new Vector2(0, 0);
-                    SuccessDialog.MagicBG.rectTransform.anchoredPosition = new Vector2(0, 0);
-
                     SuccessDialog.NameText = SuccessDialog.transform.Find("Topic").GetComponent<Text>();
                 }
                 else

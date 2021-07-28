@@ -236,33 +236,56 @@ namespace EpicLoot
 
             var isMagic = item.IsMagic(out var magicItem);
 
-            var itemBG = complexTooltip.transform.Find("Tooltip/IconHeader/IconBkg/Item").GetComponent<Image>();
-            var magicBG = (RectTransform)itemBG.transform.Find("magicItem");
-            if (magicBG == null)
+            var inFront = true;
+            var itemBG = complexTooltip.transform.Find("Tooltip/IconHeader/IconBkg/Item");
+            if (itemBG == null)
             {
-                var magicItemObject = Instantiate(itemBG, itemBG.transform).gameObject;
-                magicItemObject.name = "magicItem";
-                magicItemObject.SetActive(true);
-                magicBG = (RectTransform)magicItemObject.transform;
-                magicBG.anchorMin = Vector2.zero;
-                magicBG.anchorMax = new Vector2(1, 1);
-                magicBG.sizeDelta = Vector2.zero;
-                magicBG.pivot = new Vector2(0.5f, 0.5f);
-                magicBG.anchoredPosition = Vector2.zero;
-                var magicItemInit = magicBG.GetComponent<Image>();
-                magicItemInit.color = Color.white;
-                magicItemInit.raycastTarget = false;
-                magicItemInit.sprite = GetMagicItemBgSprite();
+                itemBG = complexTooltip.transform.Find("InventoryElement/icon");
+                inFront = false;
             }
 
-            magicBG.gameObject.SetActive(isMagic);
+            RectTransform magicBG = null;
+            if (itemBG != null)
+            {
+                var itemBGImage = itemBG.GetComponent<Image>();
+                magicBG = (RectTransform)itemBG.transform.Find("magicItem");
+                if (magicBG == null)
+                {
+                    var magicItemObject = Instantiate(itemBGImage, inFront ? itemBG.transform : itemBG.transform.parent).gameObject;
+                    magicItemObject.name = "magicItem";
+                    magicItemObject.SetActive(true);
+                    magicBG = (RectTransform)magicItemObject.transform;
+                    magicBG.anchorMin = Vector2.zero;
+                    magicBG.anchorMax = new Vector2(1, 1);
+                    magicBG.sizeDelta = Vector2.zero;
+                    magicBG.pivot = new Vector2(0.5f, 0.5f);
+                    magicBG.anchoredPosition = Vector2.zero;
+                    var magicItemInit = magicBG.GetComponent<Image>();
+                    magicItemInit.color = Color.white;
+                    magicItemInit.raycastTarget = false;
+                    magicItemInit.sprite = GetMagicItemBgSprite();
+
+                    if (!inFront)
+                    {
+                        magicBG.SetSiblingIndex(0);
+                    }
+                }
+            }
+
+            if (magicBG != null)
+            {
+                magicBG.gameObject.SetActive(isMagic);
+            }
 
             if (isMagic)
             {
                 var magicColor = magicItem.GetColorString();
                 var itemTypeName = magicItem.GetItemTypeName(item.Extended());
 
-                magicBG.GetComponent<Image>().color = item.GetRarityColor();
+                if (magicBG != null)
+                {
+                    magicBG.GetComponent<Image>().color = item.GetRarityColor();
+                }
 
                 if (item.IsLegendarySetItem())
                 {
