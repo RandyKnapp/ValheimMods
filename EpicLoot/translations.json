@@ -10,6 +10,10 @@
   "mod_epicloot_augment_availableeffects": "Available Effects",
   "mod_epicloot_augment_explain": "Replace one magical effect. Once an effect has been augmented, the others are locked.", 
   "mod_epicloot_augment_keep": "keep",
+  "mod_epicloot_augment_noeffects": "No available effects",
+  "mod_epicloot_augment_selecteffect": "Select an effect to augment", 
+
+  "mod_epicloot_enchant": "Enchant",
 
   "mod_epicloot_item_andvaranaut": "Andvaranaut",
   "mod_epicloot_item_andvaranaut_tooltip": "Helps you find treasure chests from Haldor's maps. Move in the direction the pings get more intense.",

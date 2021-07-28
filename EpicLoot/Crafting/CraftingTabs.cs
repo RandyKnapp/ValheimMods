@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Auga;
 using Common;
 using HarmonyLib;
 using UnityEngine;
@@ -42,7 +43,7 @@ namespace EpicLoot.Crafting
                 TabControllers.Add(new TabController(CraftingTabType.Crafting, false, __instance.m_tabCraft));
                 TabControllers.Add(new TabController(CraftingTabType.Upgrade, false, __instance.m_tabUpgrade));
                 TabControllers.Add(new DisenchantTabController());
-                //TabControllers.Add(new EnchantTabController());
+                TabControllers.Add(new EnchantTabController());
                 TabControllers.Add(new AugmentTabController());
 
                 foreach (var tabController in CustomTabs())

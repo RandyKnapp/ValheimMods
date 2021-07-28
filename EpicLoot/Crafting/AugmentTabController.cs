@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Auga;
 using Common;
 using ExtendedItemDataFramework;
 using UnityEngine;
@@ -285,7 +286,7 @@ namespace EpicLoot.Crafting
 
         public override void UpdateRecipe(InventoryGui __instance, Player player, float dt, Image bgImage)
         {
-            __instance.m_craftButton.GetComponentInChildren<Text>().text = "Augment";
+            __instance.m_craftButton.GetComponentInChildren<Text>().text = Localization.instance.Localize("$mod_epicloot_augment");
 
             if (SelectedRecipe >= 0 && SelectedRecipe < Recipes.Count)
             {
@@ -308,9 +309,9 @@ namespace EpicLoot.Crafting
                         (canCraft ? 
                             (hasAnyAvailableEnchants ?
                                 ""
-                                : "No available effects") 
+                                : Localization.instance.Localize("$mod_epicloot_augment_noeffects")) 
                             : Localization.instance.Localize("$msg_missingrequirement")) 
-                        : "Select an effect to augment";
+                        : Localization.instance.Localize("$mod_epicloot_augment_selecteffect");
 
                 SetupRequirementList(__instance, player, recipe, canCraft);
 
@@ -321,8 +322,8 @@ namespace EpicLoot.Crafting
 
                     Auga.API.ComplexTooltip_SetItemNoTextBoxes(AugaTabData.ItemInfoGO, itemData, itemData.m_quality, itemData.m_variant);
                     Auga.API.ComplexTooltip_SetTopic(AugaTabData.ItemInfoGO, Localization.instance.Localize(itemData.GetDecoratedName()));
-                    __instance.m_itemCraftType.text = "";
                     Auga.API.ComplexTooltip_SetDescription(AugaTabData.ItemInfoGO, Localization.instance.Localize("$mod_epicloot_augment_explain"));
+                    __instance.m_itemCraftType.text = "";
                 }
                 else
                 {

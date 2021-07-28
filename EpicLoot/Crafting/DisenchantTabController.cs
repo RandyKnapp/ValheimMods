@@ -36,7 +36,7 @@ namespace EpicLoot.Crafting
 
             var instance = InventoryGui.instance;
             var craftRT = instance.m_craftButton.gameObject.RectTransform();
-            craftRT.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, active ? 224 : 334);
+            craftRT.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, active ? 224 : EpicLoot.HasAuga ? 272 : 334);
             craftRT.anchoredPosition = new Vector2(active ? -55 : 0, craftRT.anchoredPosition.y);
 
             if (active && DisenchantAllButton == null)
