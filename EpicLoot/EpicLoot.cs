@@ -19,6 +19,7 @@ using HarmonyLib;
 using JetBrains.Annotations;
 using ServerSync;
 using UnityEngine;
+using UnityEngine.UI;
 using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
 
@@ -72,6 +73,7 @@ namespace EpicLoot
 
     [BepInPlugin(PluginId, DisplayName, Version)]
     [BepInDependency("randyknapp.mods.extendeditemdataframework", "1.0.2")]
+    [BepInDependency("randyknapp.mods.auga", BepInDependency.DependencyFlags.SoftDependency)]
     public class EpicLoot : BaseUnityPlugin
     {
         public const string PluginId = "randyknapp.mods.epicloot";
@@ -221,6 +223,71 @@ namespace EpicLoot
         {
             HasAuga = Auga.API.IsLoaded();
             LogWarning($"Auga: {(HasAuga ? "Is Loaded!" : "Not Loaded")}");
+
+            if (HasAuga)
+            {
+                Auga.API.ComplexTooltip_AddItemTooltipCreatedListener(ExtendAugaTooltipForMagicItem);
+            }
+        }
+
+        public static void ExtendAugaTooltipForMagicItem(GameObject complexTooltip, ItemDrop.ItemData item)
+        {
+            Auga.API.ComplexTooltip_SetTopic(complexTooltip, Localization.instance.Localize(item.GetDecoratedName()));
+
+            var isMagic = item.IsMagic(out var magicItem);
+
+            var itemBG = complexTooltip.transform.Find("Tooltip/IconHeader/IconBkg/Item").GetComponent<Image>();
+            var magicBG = (RectTransform)itemBG.transform.Find("magicItem");
+            if (magicBG == null)
+            {
+                var magicItemObject = Instantiate(itemBG, itemBG.transform).gameObject;
+                magicItemObject.name = "magicItem";
+                magicItemObject.SetActive(true);
+                magicBG = (RectTransform)magicItemObject.transform;
+                magicBG.anchorMin = Vector2.zero;
+                magicBG.anchorMax = new Vector2(1, 1);
+                magicBG.sizeDelta = Vector2.zero;
+                magicBG.pivot = new Vector2(0.5f, 0.5f);
+                magicBG.anchoredPosition = Vector2.zero;
+                var magicItemInit = magicBG.GetComponent<Image>();
+                magicItemInit.color = Color.white;
+                magicItemInit.raycastTarget = false;
+                magicItemInit.sprite = GetMagicItemBgSprite();
+            }
+
+            magicBG.gameObject.SetActive(isMagic);
+
+            if (isMagic)
+            {
+                var magicColor = magicItem.GetColorString();
+                var itemTypeName = magicItem.GetItemTypeName(item.Extended());
+
+                magicBG.GetComponent<Image>().color = item.GetRarityColor();
+
+                if (item.IsLegendarySetItem())
+                {
+                    Auga.API.ComplexTooltip_SetSubtitle(complexTooltip, Localization.instance.Localize($"<color={GetSetItemColor()}>$mod_epicloot_legendarysetlabel</color>, {itemTypeName}\n"));
+                }
+                else
+                {
+                    Auga.API.ComplexTooltip_SetSubtitle(complexTooltip, Localization.instance.Localize($"<color={magicColor}>{magicItem.GetRarityDisplay()} {itemTypeName}</color>"));
+                }
+
+                Auga.API.ComplexTooltip_AddDivider(complexTooltip);
+
+                var magicItemText = magicItem.GetTooltip();
+                var textBox = Auga.API.ComplexTooltip_AddTwoColumnTextBox(complexTooltip);
+                magicItemText = magicItemText.Replace("\n\n", "");
+                Auga.API.TooltipTextBox_AddLine(textBox, magicItemText);
+
+                if (magicItem.IsLegendarySetItem())
+                {
+                    var textBox2 = Auga.API.ComplexTooltip_AddTwoColumnTextBox(complexTooltip);
+                    Auga.API.TooltipTextBox_AddLine(textBox2, item.GetSetTooltip());
+                }
+
+                Auga.API.ComplexTooltip_SetDescription(complexTooltip, Localization.instance.Localize(item.GetDescription()));
+            }
         }
 
         private ConfigEntry<T> SyncedConfig<T>(string group, string configName, T value, string description, bool synchronizedSetting = true) => SyncedConfig(group, configName, value, new ConfigDescription(description), synchronizedSetting);

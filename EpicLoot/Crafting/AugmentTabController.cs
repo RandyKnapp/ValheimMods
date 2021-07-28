@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Auga;
 using Common;
 using ExtendedItemDataFramework;
 using UnityEngine;
@@ -320,6 +319,7 @@ namespace EpicLoot.Crafting
                     AugaTabData.ItemInfoGO.SetActive(true);
                     AugaTabData.RequirementsPanelGO.SetActive(true);
 
+                    //Auga.API.ComplexTooltip_ClearTextBoxes(AugaTabData.ItemInfoGO);
                     Auga.API.ComplexTooltip_SetItemNoTextBoxes(AugaTabData.ItemInfoGO, itemData, itemData.m_quality, itemData.m_variant);
                     Auga.API.ComplexTooltip_SetTopic(AugaTabData.ItemInfoGO, Localization.instance.Localize(itemData.GetDecoratedName()));
                     Auga.API.ComplexTooltip_SetDescription(AugaTabData.ItemInfoGO, Localization.instance.Localize("$mod_epicloot_augment_explain"));
@@ -407,7 +407,6 @@ namespace EpicLoot.Crafting
             {
                 if (i < effectCount && i >= EffectSelectors.Count)
                 {
-                    // create new selector
                     Toggle selector;
                     if (EpicLoot.HasAuga)
                     {
@@ -655,7 +654,7 @@ namespace EpicLoot.Crafting
             var bgImage = Object.Instantiate(image, image.transform.parent, true);
             bgImage.name = "MagicItemBG";
             bgImage.transform.SetSiblingIndex(image.transform.GetSiblingIndex());
-            bgImage.sprite = EpicLoot.Assets.GenericItemBgSprite;
+            bgImage.sprite = EpicLoot.GetMagicItemBgSprite();
             bgImage.color = EpicLoot.GetRarityColorARGB(item.GetRarity());
 
             var nameText = element.transform.Find("name").GetComponent<Text>();

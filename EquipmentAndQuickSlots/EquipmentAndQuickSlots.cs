@@ -9,6 +9,7 @@ namespace EquipmentAndQuickSlots
 {
     [BepInPlugin(PluginId, "Equipment and Quick Slots", "2.0.9")]
     [BepInDependency("moreslots", BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency("randyknapp.mods.auga", BepInDependency.DependencyFlags.SoftDependency)]
     public class EquipmentAndQuickSlots : BaseUnityPlugin
     {
         public const string PluginId = "randyknapp.mods.equipmentandquickslots";

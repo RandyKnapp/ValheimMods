@@ -202,14 +202,19 @@ namespace EpicLoot.Crafting
                 }
                 icon.color = Color.white;
 
-                var bgIconTransform = icon.transform.parent.Find("bgIcon");
+                var bgIconTransform = (RectTransform)icon.transform.parent.Find("bgIcon");
                 if (item.m_itemData.UseMagicBackground())
                 {
                     if (bgIconTransform == null)
                     {
-                        bgIconTransform = Object.Instantiate(icon, icon.transform.parent, true).transform;
+                        bgIconTransform = (RectTransform)Object.Instantiate(icon, icon.transform.parent, true).transform;
                         bgIconTransform.name = "bgIcon";
                         bgIconTransform.SetSiblingIndex(icon.transform.GetSiblingIndex());
+                        bgIconTransform.anchorMin = Vector2.zero;
+                        bgIconTransform.anchorMax = new Vector2(1, 1);
+                        bgIconTransform.sizeDelta = Vector2.zero;
+                        bgIconTransform.pivot = new Vector2(0.5f, 0.5f);
+                        bgIconTransform.anchoredPosition = Vector2.zero;
                     }
 
                     bgIconTransform.gameObject.SetActive(true);

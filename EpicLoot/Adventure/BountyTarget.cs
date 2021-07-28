@@ -50,11 +50,9 @@ namespace EpicLoot.Adventure
 
         private void OnDeath()
         {
-            EpicLoot.LogWarning("BountyTarget.OnDeath");
             var pkg = new ZPackage();
             _bountyInfo.ToPackage(pkg);
 
-            EpicLoot.LogWarning($"SENDING -> RPC_SlayBountyTarget: {_monsterID} ({(_isAdd ? "minion" : "target")})");
             ZRoutedRpc.instance.InvokeRoutedRPC("SlayBountyTarget", pkg, _monsterID, _isAdd);
         }
 

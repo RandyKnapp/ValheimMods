@@ -185,7 +185,7 @@ namespace EpicLoot.Crafting
                         var bgImage = Object.Instantiate(image, image.transform.parent, true);
                         bgImage.name = "MagicItemBG";
                         bgImage.transform.SetSiblingIndex(image.transform.GetSiblingIndex());
-                        bgImage.sprite = EpicLoot.Assets.GenericItemBgSprite;
+                        bgImage.sprite = EpicLoot.GetMagicItemBgSprite();
                         bgImage.color = thisItem.GetRarityColor();
                         if (!canCraft)
                         {

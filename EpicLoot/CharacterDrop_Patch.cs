@@ -92,7 +92,7 @@ namespace EpicLoot
                                 break;
                         }
 
-                        EpicLoot.LogWarning($"Dropping trophies: {dropCount} (mode={EpicLoot.GetBossTrophyDropMode()})");
+                        EpicLoot.Log($"Dropping trophies: {dropCount} (mode={EpicLoot.GetBossTrophyDropMode()})");
                         __result[index] = new KeyValuePair<GameObject, int>(prefab, dropCount);
                     }
                 }

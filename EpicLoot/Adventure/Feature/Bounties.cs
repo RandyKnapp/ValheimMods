@@ -315,12 +315,7 @@ namespace EpicLoot.Adventure.Feature
             var isServer = Common.Utils.IsServer();
             if (isServer)
             {
-                EpicLoot.LogWarning($"SERVER: RPC_SlayBountyTarget: {monsterID} ({(isAdd ? "minion" : "target")})");
                 ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.Everybody, "SlayBountyTargetFromServer", pkg, monsterID, isAdd);
-            }
-            else
-            {
-                EpicLoot.LogWarning($"CLIENT: RPC_SlayBountyTarget: {monsterID} ({(isAdd ? "minion" : "target")})");
             }
 
             var bounty = BountyInfo.FromPackage(pkg);

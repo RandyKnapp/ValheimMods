@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text;
 using Common;
 using EpicLoot.Crafting;
 using EpicLoot.LegendarySystem;
@@ -304,6 +306,97 @@ namespace EpicLoot
             }
 
             return results;
+        }
+
+        public static string GetSetTooltip(this ItemDrop.ItemData item)
+        {
+            var text = new StringBuilder();
+            var setID = item.GetSetID(out var isMundane);
+            var setSize = item.GetSetSize();
+
+            var setPieces = ItemDataExtensions.GetSetPieces(setID);
+            var currentSetEquipped = Player.m_localPlayer.GetEquippedSetPieces(setID);
+
+            var setDisplayName = GetSetDisplayName(item, isMundane);
+            text.Append($"\n\n<color={EpicLoot.GetSetItemColor()}> Set: {setDisplayName} ({currentSetEquipped.Count}/{setSize}):</color>");
+
+            foreach (var setItemName in setPieces)
+            {
+                var isEquipped = IsSetItemEquipped(currentSetEquipped, setItemName, isMundane);
+                var color = isEquipped ? "white" : "grey";
+                var displayName = GetSetItemDisplayName(setItemName, isMundane);
+                text.Append($"\n  <color={color}>{displayName}</color>");
+            }
+
+            if (isMundane)
+            {
+                var setEffectColor = currentSetEquipped.Count == setSize ? EpicLoot.GetSetItemColor() : "grey";
+                text.Append($"\n<color={setEffectColor}>({setSize}) ‣ {item.GetSetStatusEffectTooltip().Replace("\n", " ")}</color>");
+            }
+            else
+            {
+                var setInfo = item.GetLegendarySetInfo();
+                foreach (var setBonusInfo in setInfo.SetBonuses.OrderBy(x => x.Count))
+                {
+                    var hasEquipped = currentSetEquipped.Count >= setBonusInfo.Count;
+                    var effectDef = MagicItemEffectDefinitions.Get(setBonusInfo.Effect.Type);
+                    if (effectDef == null)
+                    {
+                        EpicLoot.LogError($"Set Tooltip: Could not find effect ({setBonusInfo.Effect.Type}) for set ({setInfo.ID}) bonus ({setBonusInfo.Count})!");
+                        continue;
+                    }
+
+                    var display = MagicItem.GetEffectText(effectDef, setBonusInfo.Effect.Values?.MinValue ?? 0);
+                    text.Append($"\n<color={(hasEquipped ? EpicLoot.GetSetItemColor() : "grey")}>({setBonusInfo.Count}) ‣ {display}</color>");
+                }
+            }
+
+            return text.ToString();
+        }
+
+        private static string GetSetItemDisplayName(string setItemName, bool isMundane)
+        {
+            if (isMundane)
+            {
+                return setItemName;
+            }
+            else if (UniqueLegendaryHelper.TryGetLegendaryInfo(setItemName, out var legendaryInfo))
+            {
+                return legendaryInfo.Name;
+            }
+
+            return setItemName;
+        }
+
+        public static string GetSetDisplayName(ItemDrop.ItemData item, bool isMundane)
+        {
+            if (isMundane)
+            {
+                var textInfo = new CultureInfo("en-US", false).TextInfo;
+                return textInfo.ToTitleCase(item.m_shared.m_setName);
+            }
+
+            var setInfo = item.GetLegendarySetInfo();
+            if (setInfo != null)
+            {
+                return Localization.instance.Localize(setInfo.Name);
+            }
+            else
+            {
+                return $"<unknown set:{item.GetSetID()}>";
+            }
+        }
+
+        public static bool IsSetItemEquipped(List<ItemDrop.ItemData> currentSetEquipped, string setItemName, bool isMundane)
+        {
+            if (isMundane)
+            {
+                return currentSetEquipped.Find(x => x.m_shared.m_name == setItemName) != null;
+            }
+            else
+            {
+                return currentSetEquipped.Find(x => x.IsMagic(out var magicItem) && magicItem.LegendaryID == setItemName) != null;
+            }
         }
     }
 

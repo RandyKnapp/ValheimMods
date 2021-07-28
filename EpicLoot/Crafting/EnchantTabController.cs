@@ -40,6 +40,7 @@ namespace EpicLoot.Crafting
                     var buttonContainer = new GameObject("EnchantButtons", typeof(RectTransform));
                     buttonContainer.transform.SetParent(AugaTabData.ItemInfoGO.transform);
                     var rt = (RectTransform)buttonContainer.transform;
+                    rt.localScale = Vector3.one;
                     rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 324);
                     rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 20);
                     rt.anchoredPosition = new Vector2(0, 250);
@@ -253,7 +254,7 @@ namespace EpicLoot.Crafting
 
         public override void UpdateRecipe(InventoryGui __instance, Player player, float dt, Image bgImage)
         {
-            __instance.m_craftButton.GetComponentInChildren<Text>().text = "Enchant";
+            __instance.m_craftButton.GetComponentInChildren<Text>().text = Localization.instance.Localize("$mod_epicloot_enchant");
 
             if (SelectedRecipe >= 0 && SelectedRecipe < Recipes.Count)
             {
@@ -297,9 +298,13 @@ namespace EpicLoot.Crafting
                     AugaTabData.ItemInfoGO.SetActive(true);
                     AugaTabData.RequirementsPanelGO.SetActive(true);
 
-                    Auga.API.ComplexTooltip_SetItem(AugaTabData.ItemInfoGO, itemData, itemData.m_quality, itemData.m_variant);
+                    Auga.API.ComplexTooltip_ClearTextBoxes(AugaTabData.ItemInfoGO);
+                    Auga.API.ComplexTooltip_SetItemNoTextBoxes(AugaTabData.ItemInfoGO, itemData, itemData.m_quality, itemData.m_variant);
                     Auga.API.ComplexTooltip_SetTopic(AugaTabData.ItemInfoGO, Localization.instance.Localize(itemData.GetDecoratedName()));
                     __instance.m_itemCraftType.text = "";
+
+                    var textbox = Auga.API.ComplexTooltip_AddTwoColumnTextBox(AugaTabData.ItemInfoGO);
+                    Auga.API.TooltipTextBox_AddLine(textbox, GenerateEnchantTooltip(recipe));
                 }
                 else
                 {
@@ -504,7 +509,7 @@ namespace EpicLoot.Crafting
             /*var bgImage = Object.Instantiate(image, image.transform.parent, true);
             bgImage.name = "MagicItemBG";
             bgImage.transform.SetSiblingIndex(image.transform.GetSiblingIndex());
-            bgImage.sprite = EpicLoot.Assets.GenericItemBgSprite;
+            bgImage.sprite = EpicLoot.Assets.GetMagicItemBgSprite();
             bgImage.color = EpicLoot.GetRarityColorARGB(recipe.ToRarity);
             if (!canCraft)
             {

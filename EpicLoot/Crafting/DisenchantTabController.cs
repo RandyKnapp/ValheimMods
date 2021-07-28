@@ -324,7 +324,6 @@ namespace EpicLoot.Crafting
 
         public void UpdateRecipeList(InventoryGui __instance)
         {
-            EpicLoot.LogWarning("UpdateRecipeList Disenchant");
             __instance.m_availableRecipes.Clear();
             foreach (var recipe in __instance.m_recipeList)
             {
@@ -361,7 +360,7 @@ namespace EpicLoot.Crafting
                 var bgImage = Object.Instantiate(image, image.transform.parent, true);
                 bgImage.name = "MagicItemBG";
                 bgImage.transform.SetSiblingIndex(image.transform.GetSiblingIndex());
-                bgImage.sprite = EpicLoot.Assets.GenericItemBgSprite;
+                bgImage.sprite = EpicLoot.GetMagicItemBgSprite();
                 bgImage.color = item.GetRarityColor();
             }
 
