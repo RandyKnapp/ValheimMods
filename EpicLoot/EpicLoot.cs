@@ -227,6 +227,7 @@ namespace EpicLoot
             if (HasAuga)
             {
                 Auga.API.ComplexTooltip_AddItemTooltipCreatedListener(ExtendAugaTooltipForMagicItem);
+                Auga.API.ComplexTooltip_AddItemStatPreprocessor(AugaTooltipPreprocessor.PreprocessTooltipStat);
             }
         }
 
