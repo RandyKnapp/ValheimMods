@@ -35,66 +35,120 @@ namespace EpicLoot.Crafting
 
             if (RarityButtons.Count == 0)
             {
-                var index = 0;
-                var startPos = new Vector2(60, -95);
-                foreach (ItemRarity rarity in Enum.GetValues(typeof(ItemRarity)))
+                if (EpicLoot.HasAuga)
                 {
-                    var rarityColor = EpicLoot.GetRarityColorARGB(rarity);
+                    var buttonContainer = new GameObject("EnchantButtons", typeof(RectTransform));
+                    buttonContainer.transform.SetParent(AugaTabData.ItemInfoGO.transform);
+                    var rt = (RectTransform)buttonContainer.transform;
+                    rt.localScale = Vector3.one;
+                    rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 324);
+                    rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 20);
+                    rt.anchoredPosition = new Vector2(0, 250);
+                    var hlg = buttonContainer.AddComponent<HorizontalLayoutGroup>();
+                    hlg.childControlWidth = true;
+                    hlg.childForceExpandWidth = true;
 
-                    var rarityButton = Object.Instantiate(inventoryGui.m_variantButton, inventoryGui.m_variantButton.transform.parent, true);
-                    rarityButton.gameObject.name = $"{rarity}EnchantButton";
-                    rarityButton.gameObject.SetActive(false);
-                    rarityButton.onClick = new Button.ButtonClickedEvent();
-                    rarityButton.onClick.AddListener(() => OnSelectedRarity(rarity));
-                    rarityButton.colors = new ColorBlock()
+                    var textPrefab = AugaTabData.ItemInfoGO.transform.Find("Titles/Subtitle").GetComponent<Text>();
+                    foreach (ItemRarity rarity in Enum.GetValues(typeof(ItemRarity)))
                     {
-                        disabledColor = Color.white,
-                        highlightedColor = Color.white,
-                        pressedColor = Color.white,
-                        normalColor = new Color(0.7f, 0.7f, 0.7f, 1)
-                    };
-                    rarityButton.spriteState = new SpriteState()
-                    {
-                        disabledSprite = rarityButton.spriteState.selectedSprite,
-                        selectedSprite = rarityButton.spriteState.selectedSprite,
-                        pressedSprite = rarityButton.spriteState.pressedSprite,
-                        highlightedSprite = rarityButton.spriteState.highlightedSprite
-                    };
-                    var outlineGO = new GameObject("EnchantOutline", typeof(RectTransform), typeof(Image));
-                    var outline = outlineGO.GetComponent<Image>();
-                    outlineGO.transform.SetParent(rarityButton.transform, false);
-                    outline.type = Image.Type.Sliced;
-                    outline.sprite = EpicLoot.Assets.SmallButtonEnchantOverlay;
-                    outline.rectTransform.anchorMin = new Vector2(0, 0);
-                    outline.rectTransform.anchorMax = new Vector2(1, 1);
-                    outline.rectTransform.anchoredPosition = new Vector2(0, 0);
-                    outline.rectTransform.sizeDelta = new Vector2(0, 0);
-                    outline.color = rarityColor;
-                    outline.enabled = true;
+                        var rarityColor = EpicLoot.GetRarityColorARGB(rarity);
+                        var buttonText = Object.Instantiate(textPrefab, buttonContainer.transform);
+                        buttonText.text = EpicLoot.GetRarityDisplayName(rarity);
+                        //buttonText.fontSize = 13;
+                        buttonText.raycastTarget = true;
+                        buttonText.color = Color.white;
+                        var rarityButton = buttonText.gameObject.AddComponent<Button>();
+                        rarityButton.onClick.AddListener(() => OnSelectedRarity(rarity));
+                        var colors = rarityButton.colors;
+                        ColorUtility.TryParseHtmlString("#D1C9C2FF", out var normalColor);
+                        ColorUtility.TryParseHtmlString("#EAE1D9FF", out var highlightedColor);
+                        ColorUtility.TryParseHtmlString("#A39689FF", out var pressedColor);
+                        colors.normalColor = normalColor;
+                        colors.highlightedColor = highlightedColor;
+                        colors.pressedColor = pressedColor;
+                        colors.disabledColor = new Color(rarityColor.r, rarityColor.g, rarityColor.b, 1);
+                        rarityButton.colors = colors;
 
-                    var buttonTextColor = rarityButton.GetComponent<ButtonTextColor>();
-                    buttonTextColor.m_defaultColor = rarityColor;
-                    buttonTextColor.m_defaultColor.a = 0.7f;
-                    buttonTextColor.m_disabledColor = rarityColor;
-                    var text = rarityButton.GetComponentInChildren<Text>();
-                    text.text = rarity.ToString();
-                    text.color = rarityColor;
-                    RarityButtons.Add(rarityButton);
-                    var rt = rarityButton.gameObject.RectTransform();
-                    rt.anchoredPosition = startPos + (index * new Vector2(rt.rect.width + 4, 0));
-                    index++;
+                        RarityButtons.Add(rarityButton);
+                    }
+                }
+                else
+                {
+                    var index = 0;
+                    var startPos = new Vector2(60, -95);
+                    foreach (ItemRarity rarity in Enum.GetValues(typeof(ItemRarity)))
+                    {
+                        var rarityColor = EpicLoot.GetRarityColorARGB(rarity);
+
+                        var rarityButton = Object.Instantiate(inventoryGui.m_variantButton, inventoryGui.m_variantButton.transform.parent, true);
+                        rarityButton.gameObject.name = $"{rarity}EnchantButton";
+                        rarityButton.gameObject.SetActive(false);
+                        rarityButton.onClick = new Button.ButtonClickedEvent();
+                        rarityButton.onClick.AddListener(() => OnSelectedRarity(rarity));
+                        rarityButton.colors = new ColorBlock()
+                        {
+                            disabledColor = Color.white,
+                            highlightedColor = Color.white,
+                            pressedColor = Color.white,
+                            normalColor = new Color(0.7f, 0.7f, 0.7f, 1)
+                        };
+                        rarityButton.spriteState = new SpriteState()
+                        {
+                            disabledSprite = rarityButton.spriteState.selectedSprite,
+                            selectedSprite = rarityButton.spriteState.selectedSprite,
+                            pressedSprite = rarityButton.spriteState.pressedSprite,
+                            highlightedSprite = rarityButton.spriteState.highlightedSprite
+                        };
+                        var outlineGO = new GameObject("EnchantOutline", typeof(RectTransform), typeof(Image));
+                        var outline = outlineGO.GetComponent<Image>();
+                        outlineGO.transform.SetParent(rarityButton.transform, false);
+                        outline.type = Image.Type.Sliced;
+                        outline.sprite = EpicLoot.Assets.SmallButtonEnchantOverlay;
+                        outline.rectTransform.anchorMin = new Vector2(0, 0);
+                        outline.rectTransform.anchorMax = new Vector2(1, 1);
+                        outline.rectTransform.anchoredPosition = new Vector2(0, 0);
+                        outline.rectTransform.sizeDelta = new Vector2(0, 0);
+                        outline.color = rarityColor;
+                        outline.enabled = true;
+
+                        var buttonTextColor = rarityButton.GetComponent<ButtonTextColor>();
+                        buttonTextColor.m_defaultColor = rarityColor;
+                        buttonTextColor.m_defaultColor.a = 0.7f;
+                        buttonTextColor.m_disabledColor = rarityColor;
+                        var text = rarityButton.GetComponentInChildren<Text>();
+                        text.text = rarity.ToString();
+                        text.color = rarityColor;
+                        RarityButtons.Add(rarityButton);
+                        var rt = rarityButton.gameObject.RectTransform();
+                        rt.anchoredPosition = startPos + (index * new Vector2(rt.rect.width + 4, 0));
+                        index++;
+                    }
                 }
             }
 
             if (SuccessDialog == null)
             {
-                SuccessDialog = CraftSuccessDialog.Create(inventoryGui.m_variantDialog.transform.parent);
+                if (EpicLoot.HasAuga)
+                {
+                    var resultsPanel = Auga.API.Workbench_CreateNewResultsPanel();
+                    resultsPanel.SetActive(false);
+                    SuccessDialog = resultsPanel.gameObject.AddComponent<CraftSuccessDialog>();
+                    SuccessDialog.NameText = SuccessDialog.transform.Find("Topic").GetComponent<Text>();
+                }
+                else
+                {
+                    SuccessDialog = CraftSuccessDialog.Create(inventoryGui.m_variantDialog.transform.parent);
+                }
             }
         }
 
         public override void OnDestroy()
         {
             base.OnDestroy();
+            if (EpicLoot.HasAuga && RarityButtons.Count > 0)
+            {
+                Object.Destroy(RarityButtons[0].transform.parent.gameObject);
+            }
             foreach (var rarityButton in RarityButtons)
             {
                 Object.Destroy(rarityButton);
@@ -120,7 +174,7 @@ namespace EpicLoot.Crafting
 
         public override bool DisallowInventoryHiding()
         {
-            if (SuccessDialog.gameObject.activeSelf)
+            if (SuccessDialog != null && SuccessDialog.gameObject.activeSelf)
             {
                 return true;
             }
@@ -179,8 +233,11 @@ namespace EpicLoot.Crafting
             {
                 var rarityButton = RarityButtons[index];
                 var gp = rarityButton.GetComponent<UIGamePad>();
-                gp.enabled = index == nextButtonIndex;
-                gp.m_hint.SetActive(ZInput.IsGamepadActive() && index == RarityButtons.Count - 1);
+                if (gp != null)
+                {
+                    gp.enabled = index == nextButtonIndex;
+                    gp.m_hint.SetActive(ZInput.IsGamepadActive() && index == RarityButtons.Count - 1);
+                }
             }
         }
 
@@ -204,18 +261,12 @@ namespace EpicLoot.Crafting
                     rarityButton.gameObject.SetActive(!isCrafting && canEnchantRarity);
                     rarityButton.interactable = SelectedRarity != rarity;
 
-                    var outline = rarityButton.transform.Find("EnchantOutline").GetComponent<Image>();
-                    outline.enabled = !rarityButton.interactable;
+                    if (!EpicLoot.HasAuga)
+                    {
+                        var outline = rarityButton.transform.Find("EnchantOutline").GetComponent<Image>();
+                        outline.enabled = !rarityButton.interactable;
+                    }
                 }
-
-                __instance.m_recipeIcon.enabled = true;
-                __instance.m_recipeIcon.sprite = itemData.GetIcon();
-
-                __instance.m_recipeName.enabled = true;
-                __instance.m_recipeName.text = Localization.instance.Localize(itemData.GetDecoratedName(rarityColor));
-
-                __instance.m_recipeDecription.enabled = true;
-                __instance.m_recipeDecription.text = Localization.instance.Localize(GenerateEnchantTooltip(recipe));
 
                 bgImage.color = rarityColorARGB;
                 bgImage.enabled = true;
@@ -223,16 +274,47 @@ namespace EpicLoot.Crafting
                 __instance.m_itemCraftType.gameObject.SetActive(false);
                 __instance.m_variantButton.gameObject.SetActive(false);
 
-                SetupRequirementList(__instance, player, recipe);
-
                 __instance.m_minStationLevelIcon.gameObject.SetActive(false);
 
                 var canCraft = Player.m_localPlayer.HaveRequirements(GetRecipeRequirementArray(recipe, SelectedRarity), false, 1);
                 __instance.m_craftButton.interactable = canCraft;
                 __instance.m_craftButton.GetComponent<UITooltip>().m_text = canCraft ? "" : Localization.instance.Localize("$msg_missingrequirement");
+
+                SetupRequirementList(__instance, player, recipe, canCraft);
+
+                if (EpicLoot.HasAuga)
+                {
+                    AugaTabData.ItemInfoGO.SetActive(true);
+                    AugaTabData.RequirementsPanelGO.SetActive(true);
+
+                    Auga.API.ComplexTooltip_ClearTextBoxes(AugaTabData.ItemInfoGO);
+                    Auga.API.ComplexTooltip_SetItemNoTextBoxes(AugaTabData.ItemInfoGO, itemData, itemData.m_quality, itemData.m_variant);
+                    Auga.API.ComplexTooltip_SetTopic(AugaTabData.ItemInfoGO, Localization.instance.Localize(itemData.GetDecoratedName()));
+                    __instance.m_itemCraftType.text = "";
+
+                    var textbox = Auga.API.ComplexTooltip_AddTwoColumnTextBox(AugaTabData.ItemInfoGO);
+                    Auga.API.TooltipTextBox_AddLine(textbox, GenerateEnchantTooltip(recipe));
+                }
+                else
+                {
+                    __instance.m_recipeIcon.enabled = true;
+                    __instance.m_recipeIcon.sprite = itemData.GetIcon();
+
+                    __instance.m_recipeName.enabled = true;
+                    __instance.m_recipeName.text = Localization.instance.Localize(itemData.GetDecoratedName(rarityColor));
+
+                    __instance.m_recipeDecription.enabled = true;
+                    __instance.m_recipeDecription.text = Localization.instance.Localize(GenerateEnchantTooltip(recipe));
+                }
             }
             else
             {
+                if (EpicLoot.HasAuga)
+                {
+                    AugaTabData.ItemInfoGO.SetActive(false);
+                    AugaTabData.RequirementsPanelGO.SetActive(false);
+                }
+
                 bgImage.enabled = false;
                 __instance.m_itemCraftType.gameObject.SetActive(false);
                 __instance.m_variantButton.gameObject.SetActive(false);
@@ -283,14 +365,17 @@ namespace EpicLoot.Crafting
             return sb.ToString();
         }
 
-        public void SetupRequirementList(InventoryGui __instance, Player player, EnchantRecipe recipe)
+        public void SetupRequirementList(InventoryGui __instance, Player player, EnchantRecipe recipe, bool canCraft)
         {
+            var requirementStates = new[] { Auga.RequirementWireState.Absent, Auga.RequirementWireState.Absent, Auga.RequirementWireState.Absent, Auga.RequirementWireState.Absent };
+
             var index = 0;
             var cost = GetRecipeCost(recipe, SelectedRarity);
             foreach (var product in cost)
             {
-                if (SetupRequirement(__instance, __instance.m_recipeRequirementList[index].transform, product.Key, product.Value, player, true))
+                if (SetupRequirement(__instance, __instance.m_recipeRequirementList[index].transform, product.Key, product.Value, player, true, out var haveMaterials))
                 {
+                    requirementStates[index] = haveMaterials ? Auga.RequirementWireState.Have : Auga.RequirementWireState.DontHave;
                     ++index;
                 }
             }
@@ -298,6 +383,11 @@ namespace EpicLoot.Crafting
             for (; index < __instance.m_recipeRequirementList.Length; ++index)
             {
                 InventoryGui.HideRequirement(__instance.m_recipeRequirementList[index].transform);
+            }
+
+            if (EpicLoot.HasAuga)
+            {
+                Auga.API.RequirementsPanel_SetWires(AugaTabData.RequirementsPanelGO, requirementStates, canCraft);
             }
         }
 
@@ -408,7 +498,7 @@ namespace EpicLoot.Crafting
             /*var bgImage = Object.Instantiate(image, image.transform.parent, true);
             bgImage.name = "MagicItemBG";
             bgImage.transform.SetSiblingIndex(image.transform.GetSiblingIndex());
-            bgImage.sprite = EpicLoot.Assets.GenericItemBgSprite;
+            bgImage.sprite = EpicLoot.Assets.GetMagicItemBgSprite();
             bgImage.color = EpicLoot.GetRarityColorARGB(recipe.ToRarity);
             if (!canCraft)
             {

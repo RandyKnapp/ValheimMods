@@ -12,6 +12,8 @@ namespace EpicLoot.Adventure.Feature
         void RefreshButton(Currencies playerCurrencies);
         void UpdateRefreshTime();
         void RefreshItems(Currencies currencies);
+
+        Button GetMainButton();
     }
 
     public abstract class MerchantListPanel<T> : IMerchantListPanel where T : Component, IMerchantPanelListElement
@@ -39,6 +41,11 @@ namespace EpicLoot.Adventure.Feature
         public abstract void UpdateRefreshTime();
         public abstract void RefreshButton(Currencies playerCurrencies);
         protected abstract void OnMainButtonClicked();
+
+        public virtual Button GetMainButton()
+        {
+            return MainButton;
+        }
 
         protected void UpdateRefreshTime(int seconds)
         {

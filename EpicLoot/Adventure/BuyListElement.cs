@@ -39,7 +39,7 @@ namespace EpicLoot.Adventure
             IronBountyTokenCostText = transform.Find("Price/IronBountyToken/Amount").GetComponent<Text>();
             GoldBountyTokenCostText = transform.Find("Price/GoldBountyToken/Amount").GetComponent<Text>();
 
-            var iconMaterial = StoreGui.instance.m_listElement.transform.Find("icon").GetComponent<Image>().material;
+            var iconMaterial = InventoryGui.instance.m_dragItemPrefab.transform.Find("icon").GetComponent<Image>().material;
             if (iconMaterial != null)
             {
                 Icon.material = iconMaterial;
@@ -96,17 +96,31 @@ namespace EpicLoot.Adventure
             Button.onClick.RemoveAllListeners();
             Button.onClick.AddListener(() => OnSelected?.Invoke(ItemInfo));
 
-            Tooltip.m_topic = Localization.instance.Localize(ItemInfo.Item.GetDecoratedName());
-            Tooltip.m_text = Localization.instance.Localize(ItemInfo.Item.GetTooltip());
-
             if (ItemInfo.IsGamble)
             {
                 var color = canAfford ? (itemInfo.GuaranteedRarity ? EpicLoot.GetRarityColor(itemInfo.Rarity) : "white") : "grey";
                 var rarityDisplay = itemInfo.GuaranteedRarity ? EpicLoot.GetRarityDisplayName(itemInfo.Rarity) : "$mod_epicloot_merchant_unknown";
                 NameText.text = Localization.instance.Localize($"<color={color}>{rarityDisplay} {ItemInfo.Item.m_shared.m_name}</color>");
 
+                if (EpicLoot.HasAuga)
+                {
+                    Auga.API.Tooltip_MakeSimpleTooltip(gameObject);
+                }
+
                 Tooltip.m_topic = NameText.text;
                 Tooltip.m_text = GetGambleTooltip();
+            }
+            else
+            {
+                if (EpicLoot.HasAuga)
+                {
+                    Auga.API.Tooltip_MakeItemTooltip(gameObject, ItemInfo.Item);
+                }
+                else
+                {
+                    Tooltip.m_topic = Localization.instance.Localize(ItemInfo.Item.GetDecoratedName());
+                    Tooltip.m_text = Localization.instance.Localize(ItemInfo.Item.GetTooltip());
+                }
             }
         }
 

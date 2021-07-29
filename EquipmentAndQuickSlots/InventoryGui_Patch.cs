@@ -12,6 +12,8 @@ namespace EquipmentAndQuickSlots
         public static InventoryGrid QuickSlotGrid;
         public static InventoryGrid EquipmentSlotGrid;
 
+        public static GameObject AugaPanel;
+
         [HarmonyPatch(typeof(InventoryGui), "Awake")]
         public static class InventoryGui_Awake_Patch
         {
@@ -29,12 +31,14 @@ namespace EquipmentAndQuickSlots
 
             private static void BuildQuickSlotGrid(InventoryGui inventoryGui)
             {
-                BuildInventoryGrid(ref QuickSlotGrid, "QuickSlotGrid", new Vector2(500, -160), new Vector2((74 * EquipmentAndQuickSlots.QuickSlotCount) + 10, 90), inventoryGui);
+                var pos = EquipmentAndQuickSlots.HasAuga ? new Vector2(463, -108) : new Vector2(500, -160);
+                BuildInventoryGrid(ref QuickSlotGrid, "QuickSlotGrid", pos, new Vector2((74 * EquipmentAndQuickSlots.QuickSlotCount) + 10, 90), inventoryGui);
             }
 
             private static void BuildEquipmentSlotGrid(InventoryGui inventoryGui)
             {
-                BuildInventoryGrid(ref EquipmentSlotGrid, "EquipmentSlotGrid", new Vector2(500, 20), new Vector2(210, 270), inventoryGui);
+                var pos = EquipmentAndQuickSlots.HasAuga ? new Vector2(463, 40) : new Vector2(500, 20);
+                BuildInventoryGrid(ref EquipmentSlotGrid, "EquipmentSlotGrid", pos, new Vector2(210, 270), inventoryGui);
             }
 
             private static void BuildInventoryGrid(ref InventoryGrid grid, string name, Vector2 position, Vector2 size, InventoryGui inventoryGui)
@@ -45,26 +49,22 @@ namespace EquipmentAndQuickSlots
                     grid = null;
                 }
 
+                if (EquipmentAndQuickSlots.HasAuga && AugaPanel == null)
+                {
+                    AugaPanel = Auga.API.CreatePanel(inventoryGui.m_player, new Vector2(255, 352), "EAQS", false);
+                    var rt = (RectTransform)AugaPanel.transform;
+                    rt.anchorMin = new Vector2(0, 1);
+                    rt.anchorMax = new Vector2(0, 1);
+                    rt.anchoredPosition = new Vector2(624, 10);
+                    rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 255);
+                    rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 352);
+
+                    var paperdolls = Object.Instantiate(EquipmentAndQuickSlots.Paperdolls, AugaPanel.transform, false);
+                    paperdolls.name = "Paperdolls";
+                }
+
                 var go = new GameObject(name, typeof(RectTransform));
                 go.transform.SetParent(inventoryGui.m_player, false);
-
-                var highlight = new GameObject("SelectedFrame", typeof(RectTransform));
-                highlight.transform.SetParent(go.transform, false);
-                highlight.AddComponent<Image>().color = Color.yellow;
-                var highlightRT = highlight.transform as RectTransform;
-                highlightRT.anchoredPosition = new Vector2(0, 0);
-                highlightRT.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, size.x + 2);
-                highlightRT.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, size.y + 2);
-                highlightRT.localScale = new Vector3(1, 1, 1);
-
-                var bkg = inventoryGui.m_player.Find("Bkg").gameObject;
-                var background = Object.Instantiate(bkg, go.transform);
-                background.name = name + "Bkg";
-                var backgroundRT = background.transform as RectTransform;
-                backgroundRT.anchoredPosition = new Vector2(0, 0);
-                backgroundRT.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, size.x);
-                backgroundRT.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, size.y);
-                backgroundRT.localScale = new Vector3(1, 1, 1);
 
                 grid = go.AddComponent<InventoryGrid>();
                 var root = new GameObject("Root", typeof(RectTransform));
@@ -92,7 +92,30 @@ namespace EquipmentAndQuickSlots
                 grid.m_uiGroup = grid.gameObject.AddComponent<UIGroupHandler>();
                 grid.m_uiGroup.m_groupPriority = 1;
                 grid.m_uiGroup.m_active = true;
-                grid.m_uiGroup.m_enableWhenActiveAndGamepad = highlight;
+
+                if (!EquipmentAndQuickSlots.HasAuga)
+                {
+                    var highlight = new GameObject("SelectedFrame", typeof(RectTransform));
+                    highlight.transform.SetParent(go.transform, false);
+                    highlight.AddComponent<Image>().color = Color.yellow;
+                    var highlightRT = highlight.transform as RectTransform;
+                    highlightRT.SetAsFirstSibling();
+                    highlightRT.anchoredPosition = new Vector2(0, 0);
+                    highlightRT.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, size.x + 2);
+                    highlightRT.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, size.y + 2);
+                    highlightRT.localScale = new Vector3(1, 1, 1);
+                    grid.m_uiGroup.m_enableWhenActiveAndGamepad = highlight;
+
+                    var bkg = inventoryGui.m_player.Find("Bkg").gameObject;
+                    var background = Object.Instantiate(bkg, go.transform);
+                    background.name = name + "Bkg";
+                    var backgroundRT = background.transform as RectTransform;
+                    backgroundRT.SetSiblingIndex(1);
+                    backgroundRT.anchoredPosition = new Vector2(0, 0);
+                    backgroundRT.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, size.x);
+                    backgroundRT.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, size.y);
+                    backgroundRT.localScale = new Vector3(1, 1, 1);
+                }
 
                 var list = inventoryGui.m_uiGroups.ToList();
                 list.Insert(2, grid.m_uiGroup);
@@ -181,6 +204,19 @@ namespace EquipmentAndQuickSlots
                     if (equipmentSlotInventory != null)
                     {
                         EquipmentSlotGrid.UpdateInventory(equipmentSlotInventory, player, __instance.m_dragItem);
+                    }
+                }
+
+                if (EquipmentAndQuickSlots.HasAuga && AugaPanel != null)
+                {
+                    var paperdolls = AugaPanel.transform.Find("Paperdolls");
+                    if (player.m_visEquipment.GetModelIndex() == 1)
+                    {
+                        paperdolls.transform.Find("Male").gameObject.SetActive(false);
+                    }
+                    else
+                    {
+                        paperdolls.transform.Find("Female").gameObject.SetActive(false);
                     }
                 }
 

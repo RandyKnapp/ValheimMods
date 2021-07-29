@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
 using System.Text;
 using EpicLoot.Crafting;
-using EpicLoot.LegendarySystem;
 using ExtendedItemDataFramework;
 using HarmonyLib;
 using JetBrains.Annotations;
@@ -242,15 +238,7 @@ namespace EpicLoot
             var magicMovement = magicItem.HasEffect(MagicEffectType.ModifyMovementSpeed);
             if ((magicMovement || item.m_shared.m_movementModifier != 0) && localPlayer != null)
             {
-                var removePenalty = magicItem.HasEffect(MagicEffectType.RemoveSpeedPenalty);
-
-                var itemMovementModifier = removePenalty ? 0 : item.m_shared.m_movementModifier * 100f;
-                if (magicMovement)
-                {
-                    itemMovementModifier += magicItem.GetTotalEffectValue(MagicEffectType.ModifyMovementSpeed);
-                }
-
-                var itemMovementModDisplay = (itemMovementModifier == 0) ? "0%" : $"{itemMovementModifier:+0;-0}%";
+                var itemMovementModDisplay = GetMovementModifier(item, magicItem, out _, out var removePenalty);
 
                 var movementModifier = localPlayer.GetEquipmentMovementModifier();
                 var totalMovementModifier = movementModifier * 100f;
@@ -264,7 +252,7 @@ namespace EpicLoot
             // Set stuff
             if (item.IsSetItem())
             {
-                AddSetTooltip(item, text);
+                text.Append(item.GetSetTooltip());
             }
 
             __result = text.ToString();
@@ -294,7 +282,7 @@ namespace EpicLoot
                     }
 
                     // Create new
-                    AddSetTooltip(item, text);
+                    text.Append(item.GetSetTooltip());
                 }
 
                 __result += text.ToString();
@@ -303,94 +291,6 @@ namespace EpicLoot
             __result = __result.Replace("<color=orange>", "<color=lightblue>");
             __result = __result.Replace("<color=yellow>", "<color=lightblue>");
             __result = __result.Replace("\n\n\n", "\n\n");
-        }
-
-        private static void AddSetTooltip(ItemDrop.ItemData item, StringBuilder text)
-        {
-            var setID = item.GetSetID(out var isMundane);
-            var setSize = item.GetSetSize();
-
-            var setPieces = ItemDataExtensions.GetSetPieces(setID);
-            var currentSetEquipped = Player.m_localPlayer.GetEquippedSetPieces(setID);
-
-            var setDisplayName = GetSetDisplayName(item, isMundane);
-            text.Append($"\n\n<color={EpicLoot.GetSetItemColor()}> $mod_epicloot_set {setDisplayName} ({currentSetEquipped.Count}/{setSize}):</color>");
-
-            foreach (var setItemName in setPieces)
-            {
-                var isEquipped = IsSetItemEquipped(currentSetEquipped, setItemName, isMundane);
-                var color = isEquipped ? "white" : "grey";
-                var displayName = GetSetItemDisplayName(setItemName, isMundane);
-                text.Append($"\n  <color={color}>{displayName}</color>");
-            }
-
-            if (isMundane)
-            {
-                var setEffectColor = currentSetEquipped.Count == setSize ? EpicLoot.GetSetItemColor() : "grey";
-                text.Append($"\n<color={setEffectColor}>({setSize}) ‣ {item.GetSetStatusEffectTooltip().Replace("\n", " ")}</color>");
-            }
-            else
-            {
-                var setInfo = item.GetLegendarySetInfo();
-                foreach (var setBonusInfo in setInfo.SetBonuses.OrderBy(x => x.Count))
-                {
-                    var hasEquipped = currentSetEquipped.Count >= setBonusInfo.Count;
-                    var effectDef = MagicItemEffectDefinitions.Get(setBonusInfo.Effect.Type);
-                    if (effectDef == null)
-                    {
-                        EpicLoot.LogError($"Set Tooltip: Could not find effect ({setBonusInfo.Effect.Type}) for set ({setInfo.ID}) bonus ({setBonusInfo.Count})!");
-                        continue;
-                    }
-
-                    var display = MagicItem.GetEffectText(effectDef, setBonusInfo.Effect.Values?.MinValue ?? 0);
-                    text.Append($"\n<color={(hasEquipped ? EpicLoot.GetSetItemColor() : "grey")}>({setBonusInfo.Count}) ‣ {display}</color>");
-                }
-            }
-        }
-
-        private static string GetSetItemDisplayName(string setItemName, bool isMundane)
-        {
-            if (isMundane)
-            {
-                return setItemName;
-            }
-            else if (UniqueLegendaryHelper.TryGetLegendaryInfo(setItemName, out var legendaryInfo))
-            {
-                return legendaryInfo.Name;
-            }
-
-            return setItemName;
-        }
-
-        public static string GetSetDisplayName(ItemDrop.ItemData item, bool isMundane)
-        {
-            if (isMundane)
-            {
-                var textInfo = new CultureInfo("en-US", false).TextInfo;
-                return textInfo.ToTitleCase(item.m_shared.m_setName);
-            }
-
-            var setInfo = item.GetLegendarySetInfo();
-            if (setInfo != null)
-            {
-                return Localization.instance.Localize(setInfo.Name);
-            }
-            else
-            {
-                return $"<unknown set:{item.GetSetID()}>";
-            }
-        }
-
-        public static bool IsSetItemEquipped(List<ItemDrop.ItemData> currentSetEquipped, string setItemName, bool isMundane)
-        {
-            if (isMundane)
-            {
-                return currentSetEquipped.Find(x => x.m_shared.m_name == setItemName) != null;
-            }
-            else
-            {
-                return currentSetEquipped.Find(x => x.IsMagic(out var magicItem) && magicItem.LegendaryID == setItemName) != null;
-            }
         }
 
         public static string GetDamageTooltipString(MagicItem item, HitData.DamageTypes instance, Skills.SkillType skillType, string magicColor)
@@ -467,6 +367,189 @@ namespace EpicLoot
             var color1 = magic ? magicColor : "orange";
             var color2 = magic ? magicColor : "yellow";
             return $"<color={color1}>{(object) Mathf.RoundToInt(damage)}</color> <color={color2}>({num1}-{num2}) </color>";
+        }
+
+        public static string GetMovementModifier(ItemDrop.ItemData item, MagicItem magicItem, out bool magicMovement, out bool removePenalty)
+        {
+            magicMovement = magicItem.HasEffect(MagicEffectType.ModifyMovementSpeed);
+            removePenalty = magicItem.HasEffect(MagicEffectType.RemoveSpeedPenalty);
+
+            var itemMovementModifier = removePenalty ? 0 : item.m_shared.m_movementModifier * 100f;
+            if (magicMovement)
+            {
+                itemMovementModifier += magicItem.GetTotalEffectValue(MagicEffectType.ModifyMovementSpeed);
+            }
+
+            return (itemMovementModifier == 0) ? "0%" : $"{itemMovementModifier:+0;-0}%";
+        }
+    }
+
+    public static class AugaTooltipPreprocessor
+    {
+        public static Tuple<string, string> PreprocessTooltipStat(ItemDrop.ItemData item, string label, string value)
+        {
+            if (item.IsMagic(out var magicItem))
+            {
+                var magicColor = magicItem.GetColorString();
+
+                var allMagic = magicItem.HasEffect(MagicEffectType.ModifyDamage);
+                var physMagic = magicItem.HasEffect(MagicEffectType.ModifyPhysicalDamage);
+                var elemMagic = magicItem.HasEffect(MagicEffectType.ModifyElementalDamage);
+                var bluntMagic = magicItem.HasEffect(MagicEffectType.AddBluntDamage);
+                var slashMagic = magicItem.HasEffect(MagicEffectType.AddSlashingDamage);
+                var pierceMagic = magicItem.HasEffect(MagicEffectType.AddPiercingDamage);
+                var fireMagic = magicItem.HasEffect(MagicEffectType.AddFireDamage);
+                var frostMagic = magicItem.HasEffect(MagicEffectType.AddFrostDamage);
+                var lightningMagic = magicItem.HasEffect(MagicEffectType.AddLightningDamage);
+                var poisonMagic = magicItem.HasEffect(MagicEffectType.AddPoisonDamage);
+                var spiritMagic = magicItem.HasEffect(MagicEffectType.AddSpiritDamage);
+
+                switch (label)
+                {
+                    case "$item_durability":
+                        if (magicItem.HasEffect(MagicEffectType.Indestructible))
+                        {
+                            value = $"<color={magicColor}>Indestructible</color>";
+                        }
+                        else if (magicItem.HasEffect(MagicEffectType.ModifyDurability))
+                        {
+                            value = $"<color={magicColor}>{value}</color>";
+                        }
+                        break;
+
+                    case "$item_weight":
+                        if (magicItem.HasEffect(MagicEffectType.ReduceWeight) || magicItem.HasEffect(MagicEffectType.Weightless))
+                        {
+                            value = $"<color={magicColor}>{value}</color>";
+                        }
+                        break;
+
+                    case "$inventory_damage":
+                        if (allMagic)
+                        {
+                            value = $"<color={magicColor}>{value}</color>";
+                        }
+                        break;
+
+                    case "$inventory_blunt":
+                        if (allMagic || physMagic || bluntMagic)
+                        {
+                            value = $"<color={magicColor}>{value}</color>";
+                        }
+                        break;
+
+                    case "$inventory_slash":
+                        if (allMagic || physMagic || slashMagic)
+                        {
+                            value = $"<color={magicColor}>{value}</color>";
+                        }
+                        break;
+
+                    case "$inventory_pierce":
+                        if (allMagic || physMagic || pierceMagic)
+                        {
+                            value = $"<color={magicColor}>{value}</color>";
+                        }
+                        break;
+
+                    case "$inventory_fire":
+                        if (allMagic || elemMagic || fireMagic)
+                        {
+                            value = $"<color={magicColor}>{value}</color>";
+                        }
+                        break;
+
+                    case "$inventory_frost":
+                        if (allMagic || elemMagic || frostMagic)
+                        {
+                            value = $"<color={magicColor}>{value}</color>";
+                        }
+                        break;
+
+                    case "$inventory_lightning":
+                        if (allMagic || elemMagic || lightningMagic)
+                        {
+                            value = $"<color={magicColor}>{value}</color>";
+                        }
+                        break;
+
+                    case "$inventory_poison":
+                        if (allMagic || elemMagic || poisonMagic)
+                        {
+                            value = $"<color={magicColor}>{value}</color>";
+                        }
+                        break;
+
+                    case "$inventory_spirit":
+                        if (allMagic || elemMagic || spiritMagic)
+                        {
+                            value = $"<color={magicColor}>{value}</color>";
+                        }
+                        break;
+
+                    case "$item_backstab":
+                        if (magicItem.HasEffect(MagicEffectType.ModifyBackstab))
+                        {
+                            var totalBackstabBonusMod = magicItem.GetTotalEffectValue(MagicEffectType.ModifyBackstab, 0.01f);
+                            var backstabValue = item.m_shared.m_backstabBonus * (1.0f + totalBackstabBonusMod);
+                            value = $"<color={magicColor}>{backstabValue:0.#}x</color>";
+                        }
+                        break;
+
+                    case "$item_blockpower":
+                        if (magicItem.HasEffect(MagicEffectType.ModifyBlockPower))
+                        {
+                            var baseBlockPower = item.GetBaseBlockPower(item.m_quality);
+                            var blockPowerPercentageString = item.GetBlockPowerTooltip(item.m_quality).ToString("0");
+                            value = $"<color={magicColor}>{baseBlockPower}</color> <color={magicColor}>({blockPowerPercentageString})</color>";
+                        }
+                        break;
+
+                    case "$item_deflection":
+                        if (magicItem.HasEffect(MagicEffectType.ModifyParry))
+                        {
+                            value = $"<color={magicColor}>{item.GetDeflectionForce(item.m_quality)}</color>";
+                        }
+                        break;
+
+                    case "$item_parrybonus":
+                        if (magicItem.HasEffect(MagicEffectType.ModifyParry))
+                        {
+                            var totalParryBonusMod = magicItem.GetTotalEffectValue(MagicEffectType.ModifyParry, 0.01f);
+                            var timedBlockBonus = item.m_shared.m_timedBlockBonus * (1.0f + totalParryBonusMod);
+                            value = $"<color={magicColor}>{timedBlockBonus:0.#}x</color>";
+                        }
+                        break;
+
+                    case "$item_armor":
+                        if (magicItem.HasEffect(MagicEffectType.ModifyArmor))
+                        {
+                            value = $"<color={magicColor}>{value}</color>";
+                        }
+                        break;
+                }
+
+                if (label.StartsWith("$item_movement_modifier") && (magicItem.HasEffect(MagicEffectType.RemoveSpeedPenalty) || magicItem.HasEffect(MagicEffectType.ModifyMovementSpeed)))
+                {
+                    var colorIndex = label.IndexOf("<color", StringComparison.Ordinal);
+                    if (colorIndex >= 0)
+                    {
+                        var sb = new StringBuilder(label);
+                        sb.Remove(colorIndex, "<color=#XXXXXX>".Length);
+                        sb.Insert(colorIndex, $"<color={magicColor}>");
+
+                        var itemMovementModDisplay = MagicItemTooltip_ItemDrop_Patch.GetMovementModifier(item, magicItem, out _, out _);
+                        var valueIndex = colorIndex + "<color=#XXXXXX>".Length;
+                        var percentIndex = label.IndexOf("%", valueIndex, StringComparison.Ordinal);
+                        sb.Remove(valueIndex, percentIndex - valueIndex + 1);
+                        sb.Insert(valueIndex, itemMovementModDisplay);
+
+                        label = sb.ToString();
+                    }
+                }
+            }
+            
+            return new Tuple<string, string>(label, value);
         }
     }
 }

@@ -66,7 +66,7 @@ namespace EpicLoot
             for (var index = 0; index < Effects.Count; index++)
             {
                 var effect = Effects[index];
-                var bullet = IsEffectAugmented(index) ? "◇" : "◆";
+                var bullet = EpicLoot.HasAuga ? (IsEffectAugmented(index) ? "♢" : "♦") : (IsEffectAugmented(index) ? "◇" : "◆");
                 tooltip += $"\n{bullet} {GetEffectText(effect, Rarity, showRange)}";
             }
 

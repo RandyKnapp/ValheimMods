@@ -55,9 +55,25 @@ namespace EpicLoot.Crafting
             MagicBG.enabled = item.IsMagic();
             MagicBG.color = rarityColor;
 
-            NameText.text = Localization.instance.Localize(item.GetDecoratedName());
-            Description.text = Localization.instance.Localize(item.GetTooltip());
-            Icon.sprite = item.GetIcon();
+            if (EpicLoot.HasAuga)
+            {
+                Auga.API.ComplexTooltip_SetItem(gameObject, item);
+            }
+
+            if (NameText != null)
+            {
+                NameText.text = Localization.instance.Localize(item.GetDecoratedName());
+            }
+
+            if (Description != null)
+            {
+                Description.text = Localization.instance.Localize(item.GetTooltip());
+            }
+
+            if (Icon != null)
+            {
+                Icon.sprite = item.GetIcon();
+            }
 
             foreach (var button in EffectChoiceButtons)
             {
@@ -73,8 +89,20 @@ namespace EpicLoot.Crafting
                 var text = button.GetComponentInChildren<Text>();
                 text.text = Localization.instance.Localize((index == 0 ? "<color=white>($mod_epicloot_augment_keep)</color> " : "") + MagicItem.GetEffectText(effect, rarity, true));
                 text.color = rarityColor;
-                var buttonColor = button.GetComponent<ButtonTextColor>();
-                buttonColor.m_defaultColor = rarityColor;
+
+                if (EpicLoot.HasAuga)
+                {
+                    Auga.API.MediumButton_SetColors(button, Color.white, Color.white, Color.white, Color.white, Color.white);
+                }
+                else
+                {
+                    var buttonColor = button.GetComponent<ButtonTextColor>();
+                    if (buttonColor != null)
+                    {
+                        buttonColor.m_defaultColor = rarityColor;
+                    }
+                }
+
                 button.onClick.RemoveAllListeners();
                 button.onClick.AddListener(() => {
                     onCompleteCallback(recipe, effect);

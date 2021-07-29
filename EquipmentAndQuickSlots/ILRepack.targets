@@ -3,7 +3,8 @@
     <Target Name="ILRepacker" AfterTargets="Build">
         <ItemGroup>
             <InputAssemblies Include="$(TargetPath)" />
-            <InputAssemblies Include="$(OutputPath)\CreatureLevelControlAPI.dll" />
+            <InputAssemblies Include="$(OutputPath)CreatureLevelControlAPI.dll" />
+            <InputAssemblies Include="$(SolutionDir)Libs\AugaAPI.dll" />
             <LibraryPath Include="$(OutputPath)" />
             <LibraryPath Include="$(SolutionDir)\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\valheim_Data\Managed\" />
         </ItemGroup>

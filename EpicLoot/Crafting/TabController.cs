@@ -1,5 +1,6 @@
 ﻿using Common;
 using System;
+using Auga;
 using UnityEngine;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
@@ -13,6 +14,7 @@ namespace EpicLoot.Crafting
         public Button TabButton;
         public int SelectedRecipe = -1;
         public GameObject GamepadHint;
+        public Auga.WorkbenchTabData AugaTabData;
 
         protected bool _hasInventoryListener;
 
@@ -38,19 +40,40 @@ namespace EpicLoot.Crafting
 
         public virtual void TryInitialize(InventoryGui inventoryGui, int tabIndex, Action<TabController> onTabPressed)
         {
-            var existingButton = inventoryGui.m_tabCraft.transform.parent.Find(GetTabButtonId());
-            if (IsCustomTab && existingButton == null)
+            if (EpicLoot.HasAuga)
             {
-                var go = Object.Instantiate(inventoryGui.m_tabUpgrade, inventoryGui.m_tabUpgrade.transform.parent, true).gameObject;
-                go.name = GetTabButtonId();
-                go.GetComponentInChildren<Text>().text = GetTabButtonText();
-                go.transform.SetSiblingIndex(inventoryGui.m_tabUpgrade.transform.parent.childCount - 2);
-                go.RectTransform().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, GetTabWidth());
-                TabButton = go.GetComponent<Button>();
-                TabButton.gameObject.RectTransform().anchoredPosition = TabButton.gameObject.RectTransform().anchoredPosition + new Vector2(107 * (tabIndex + 1), 0);
-                TabButton.onClick = new Button.ButtonClickedEvent();
-                TabButton.onClick.AddListener(TabButton.GetComponent<ButtonSfx>().OnClick);
-                TabButton.onClick.AddListener(() => onTabPressed(this));
+                var exists = Auga.API.HasWorkbenchTab(GetTabButtonId());
+                if (IsCustomTab && !exists)
+                {
+                    var buttonSprite = EpicLoot.LoadAsset<Sprite>($"{GetTabButtonId().ToLower()}_tabicon");
+                    AugaTabData = Auga.API.AddWorkbenchTab(GetTabButtonId(), buttonSprite, GetTabButtonText(), (index) => onTabPressed(this));
+                    var tabButtonGameObject = AugaTabData.TabButtonGO;
+                    TabButton = tabButtonGameObject.GetComponent<Button>();
+                }
+            }
+            else
+            {
+                var tabContainer = GetTabContainer(inventoryGui);
+                var existingButton = tabContainer.Find(GetTabButtonId());
+                if (IsCustomTab && existingButton == null)
+                {
+                    var go = Object.Instantiate(GetTabPrefab(inventoryGui), tabContainer, true).gameObject;
+                    go.name = GetTabButtonId();
+                    TabButton = go.GetComponent<Button>();
+
+                    var label = go.GetComponentInChildren<Text>();
+                    if (label != null)
+                    {
+                        label.text = GetTabButtonText();
+                    }
+                    go.RectTransform().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, GetTabWidth());
+                    TabButton.gameObject.RectTransform().anchoredPosition = TabButton.gameObject.RectTransform().anchoredPosition + new Vector2(107 * (tabIndex + 1), 0);
+
+                    go.transform.SetSiblingIndex(tabContainer.childCount - 2);
+                    TabButton.onClick = new Button.ButtonClickedEvent();
+                    TabButton.onClick.AddListener(TabButton.GetComponent<ButtonSfx>().OnClick);
+                    TabButton.onClick.AddListener(() => onTabPressed(this));
+                }
             }
 
             if (TabButton != null)
@@ -64,6 +87,16 @@ namespace EpicLoot.Crafting
             }
         }
 
+        public Transform GetTabContainer(InventoryGui inventoryGui)
+        {
+            return inventoryGui.m_tabCraft.transform.parent;
+        }
+
+        public Button GetTabPrefab(InventoryGui inventoryGui)
+        {
+            return inventoryGui.m_tabUpgrade;
+        }
+
         public virtual string GetTabButtonId() => "TabId";
         public virtual string GetTabButtonText() => "TabButton";
         public virtual float GetTabWidth() => 100;
@@ -75,12 +108,17 @@ namespace EpicLoot.Crafting
 
         public virtual bool IsActive()
         {
-            return TabButton != null && TabButton.isActiveAndEnabled && !TabButton.interactable;
+            if (TabButton == null || !TabButton.isActiveAndEnabled)
+            {
+                return false;
+            }
+
+            return EpicLoot.HasAuga ? Auga.API.IsTabActive(TabButton.gameObject) : !TabButton.interactable;
         }
 
         public virtual void SetActive(bool active)
         {
-            if (TabButton != null)
+            if (TabButton != null && (!EpicLoot.HasAuga || !IsCustomTab))
             {
                 TabButton.interactable = !active;
             }
@@ -140,8 +178,10 @@ namespace EpicLoot.Crafting
             ItemDrop item,
             int amount,
             Player player,
-            bool showOutOfMaterials)
+            bool showOutOfMaterials,
+            out bool haveMaterials)
         {
+            haveMaterials = false;
             var icon = elementRoot.transform.Find("res_icon").GetComponent<Image>();
             var nameText = elementRoot.transform.Find("res_name").GetComponent<Text>();
             var amountText = elementRoot.transform.Find("res_amount").GetComponent<Text>();
@@ -162,14 +202,19 @@ namespace EpicLoot.Crafting
                 }
                 icon.color = Color.white;
 
-                var bgIconTransform = icon.transform.parent.Find("bgIcon");
+                var bgIconTransform = (RectTransform)icon.transform.parent.Find("bgIcon");
                 if (item.m_itemData.UseMagicBackground())
                 {
                     if (bgIconTransform == null)
                     {
-                        bgIconTransform = Object.Instantiate(icon, icon.transform.parent, true).transform;
+                        bgIconTransform = (RectTransform)Object.Instantiate(icon, icon.transform.parent, true).transform;
                         bgIconTransform.name = "bgIcon";
                         bgIconTransform.SetSiblingIndex(icon.transform.GetSiblingIndex());
+                        bgIconTransform.anchorMin = Vector2.zero;
+                        bgIconTransform.anchorMax = new Vector2(1, 1);
+                        bgIconTransform.sizeDelta = Vector2.zero;
+                        bgIconTransform.pivot = new Vector2(0.5f, 0.5f);
+                        bgIconTransform.anchoredPosition = Vector2.zero;
                     }
 
                     bgIconTransform.gameObject.SetActive(true);
@@ -192,7 +237,8 @@ namespace EpicLoot.Crafting
                 amountText.text = amount.ToString();
 
                 var currentAmount = player.GetInventory().CountItems(item.m_itemData.m_shared.m_name);
-                if (showOutOfMaterials && currentAmount < amount)
+                haveMaterials = currentAmount >= amount;
+                if (showOutOfMaterials && !haveMaterials)
                 {
                     amountText.color = Mathf.Sin(Time.time * 10.0f) > 0.0f ? Color.red : Color.white;
                 }

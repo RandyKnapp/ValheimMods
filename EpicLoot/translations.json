@@ -40,15 +40,14 @@
   "mod_epicloot_sacrifice_inventoryfullexplanation": "(Inventory was full when crafting)", 
   "mod_epicloot_sacrificeall": "Sacrifice All",
 
-  "mod_epicloot_enchant": "Enchant",
-  "mod_epicloot_enchant_effects": "effects：",
-  
   "mod_epicloot_augment": "Augment",
-  "mod_epicloot_augment_instructions": "Replace one magical effect. Once an effect has been augmented, the others are locked.",
-  "mod_epicloot_augment_Available_Effects": "Available Effects",
-  "mod_epicloot_augment_Available_Effects_no": "No available effects",
-  "mod_epicloot_augment_Available_Effects_Select": "Select an effect to augment",
+  "mod_epicloot_augment_availableeffects": "Available Effects",
+  "mod_epicloot_augment_explain": "Replace one magical effect. Once an effect has been augmented, the others are locked.", 
   "mod_epicloot_augment_keep": "keep",
+  "mod_epicloot_augment_noeffects": "No available effects",
+  "mod_epicloot_augment_selecteffect": "Select an effect to augment", 
+
+  "mod_epicloot_enchant": "Enchant",
 
   "mod_epicloot_Active_Magic_Effects": "Active Magic Effects",
   "mod_epicloot_Active_Bounties_Classification": "Classification",
