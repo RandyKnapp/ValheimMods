@@ -19,6 +19,7 @@ using HarmonyLib;
 using JetBrains.Annotations;
 using ServerSync;
 using UnityEngine;
+using UnityEngine.UI;
 using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
 
@@ -42,8 +43,11 @@ namespace EpicLoot
     {
         public AssetBundle AssetBundle;
         public Sprite EquippedSprite;
+        public Sprite AugaEquippedSprite;
         public Sprite GenericSetItemSprite;
+        public Sprite AugaSetItemSprite;
         public Sprite GenericItemBgSprite;
+        public Sprite AugaItemBgSprite;
         public GameObject[] MagicItemLootBeamPrefabs = new GameObject[4];
         public readonly Dictionary<string, GameObject[]> CraftingMaterialPrefabs = new Dictionary<string, GameObject[]>();
         public Sprite SmallButtonEnchantOverlay;
@@ -69,6 +73,7 @@ namespace EpicLoot
 
     [BepInPlugin(PluginId, DisplayName, Version)]
     [BepInDependency("randyknapp.mods.extendeditemdataframework", "1.0.2")]
+    [BepInDependency("randyknapp.mods.auga", BepInDependency.DependencyFlags.SoftDependency)]
     public class EpicLoot : BaseUnityPlugin
     {
         public const string PluginId = "randyknapp.mods.epicloot";
@@ -147,6 +152,7 @@ namespace EpicLoot
         public static bool AlwaysDropCheat = false;
         public const Minimap.PinType BountyPinType = (Minimap.PinType) 800;
         public const Minimap.PinType TreasureMapPinType = (Minimap.PinType) 801;
+        public static bool HasAuga;
 
         public static event Action AbilitiesInitialized;
         public static event Action LootTableLoaded;
@@ -159,7 +165,7 @@ namespace EpicLoot
         private void Awake()
         {
             _instance = this;
-            
+
             _magicRarityColor = Config.Bind("Item Colors", "Magic Rarity Color", "Blue", "The color of Magic rarity items, the lowest magic item tier. (Optional, use an HTML hex color starting with # to have a custom color.) Available options: Red, Orange, Yellow, Green, Teal, Blue, Indigo, Purple, Pink, Gray");
             _magicMaterialIconColor = Config.Bind("Item Colors", "Magic Crafting Material Icon Index", 5, "Indicates the color of the icon used for magic crafting materials. A number between 0 and 9. Available options: 0=Red, 1=Orange, 2=Yellow, 3=Green, 4=Teal, 5=Blue, 6=Indigo, 7=Purple, 8=Pink, 9=Gray");
             _rareRarityColor = Config.Bind("Item Colors", "Rare Rarity Color", "Yellow", "The color of Rare rarity items, the second magic item tier. (Optional, use an HTML hex color starting with # to have a custom color.) Available options: Red, Orange, Yellow, Green, Teal, Blue, Indigo, Purple, Pink, Gray");
@@ -169,10 +175,10 @@ namespace EpicLoot
             _legendaryRarityColor = Config.Bind("Item Colors", "Legendary Rarity Color", "Teal", "The color of Legendary rarity items, the highest magic item tier. (Optional, use an HTML hex color starting with # to have a custom color.) Available options: Red, Orange, Yellow, Green, Teal, Blue, Indigo, Purple, Pink, Gray");
             _legendaryMaterialIconColor = Config.Bind("Item Colors", "Legendary Crafting Material Icon Index", 4, "Indicates the color of the icon used for legendary crafting materials. A number between 0 and 9. Available options: 0=Red, 1=Orange, 2=Yellow, 3=Green, 4=Teal, 5=Blue, 6=Indigo, 7=Purple, 8=Pink, 9=Gray");
             _setItemColor = Config.Bind("Item Colors", "Set Item Color", "#26ffff", "The color of set item text and the set item icon. Use a hex color, default is cyan");
-            _magicRarityDisplayName = Config.Bind("Rarity", "Magic Rarity Display Name", "Magic", "The name of the lowest rarity.");
-            _rareRarityDisplayName = Config.Bind("Rarity", "Rare Rarity Display Name", "Rare", "The name of the second rarity.");
-            _epicRarityDisplayName = Config.Bind("Rarity", "Epic Rarity Display Name", "Epic", "The name of the third rarity.");
-            _legendaryRarityDisplayName = Config.Bind("Rarity", "Legendary Rarity Display Name", "Legendary", "The name of the highest rarity.");
+            _magicRarityDisplayName = Config.Bind("Rarity", "Magic Rarity Display Name", "$mod_epicloot_magic", "The name of the lowest rarity.");
+            _rareRarityDisplayName = Config.Bind("Rarity", "Rare Rarity Display Name", "$mod_epicloot_rare", "The name of the second rarity.");
+            _epicRarityDisplayName = Config.Bind("Rarity", "Epic Rarity Display Name", "$mod_epicloot_epic", "The name of the third rarity.");
+            _legendaryRarityDisplayName = Config.Bind("Rarity", "Legendary Rarity Display Name", "$mod_epicloot_legendary", "The name of the highest rarity.");
             UseScrollingCraftDescription = Config.Bind("Crafting UI", "Use Scrolling Craft Description", true, "Changes the item description in the crafting panel to scroll instead of scale when it gets too long for the space.");
             CraftingTabStyle = Config.Bind("Crafting UI", "Crafting Tab Style", Crafting.CraftingTabStyle.HorizontalSquish, "Sets the layout style for crafting tabs, if you've got too many. Horizontal is the vanilla method, but might overlap other mods or run off the screen. HorizontalSquish makes the buttons narrower, works okay with 6 or 7 buttons. Vertical puts the tabs in a column to the left the crafting window. Angled tries to make more room at the top of the crafting panel by angling the tabs, works okay with 6 or 7 tabs.");
             ShowEquippedAndHotbarItemsInSacrificeTab = Config.Bind("Crafting UI", "ShowEquippedAndHotbarItemsInSacrificeTab", false, "If set to false, hides the items that are equipped or on your hotbar in the Sacrifice items list.");
@@ -211,6 +217,101 @@ namespace EpicLoot
             _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), PluginId);
 
             LootTableLoaded?.Invoke();
+        }
+
+        public void Start()
+        {
+            HasAuga = Auga.API.IsLoaded();
+            LogWarning($"Auga: {(HasAuga ? "Is Loaded!" : "Not Loaded")}");
+
+            if (HasAuga)
+            {
+                Auga.API.ComplexTooltip_AddItemTooltipCreatedListener(ExtendAugaTooltipForMagicItem);
+                Auga.API.ComplexTooltip_AddItemStatPreprocessor(AugaTooltipPreprocessor.PreprocessTooltipStat);
+            }
+        }
+
+        public static void ExtendAugaTooltipForMagicItem(GameObject complexTooltip, ItemDrop.ItemData item)
+        {
+            Auga.API.ComplexTooltip_SetTopic(complexTooltip, Localization.instance.Localize(item.GetDecoratedName()));
+
+            var isMagic = item.IsMagic(out var magicItem);
+
+            var inFront = true;
+            var itemBG = complexTooltip.transform.Find("Tooltip/IconHeader/IconBkg/Item");
+            if (itemBG == null)
+            {
+                itemBG = complexTooltip.transform.Find("InventoryElement/icon");
+                inFront = false;
+            }
+
+            RectTransform magicBG = null;
+            if (itemBG != null)
+            {
+                var itemBGImage = itemBG.GetComponent<Image>();
+                magicBG = (RectTransform)itemBG.transform.Find("magicItem");
+                if (magicBG == null)
+                {
+                    var magicItemObject = Instantiate(itemBGImage, inFront ? itemBG.transform : itemBG.transform.parent).gameObject;
+                    magicItemObject.name = "magicItem";
+                    magicItemObject.SetActive(true);
+                    magicBG = (RectTransform)magicItemObject.transform;
+                    magicBG.anchorMin = Vector2.zero;
+                    magicBG.anchorMax = new Vector2(1, 1);
+                    magicBG.sizeDelta = Vector2.zero;
+                    magicBG.pivot = new Vector2(0.5f, 0.5f);
+                    magicBG.anchoredPosition = Vector2.zero;
+                    var magicItemInit = magicBG.GetComponent<Image>();
+                    magicItemInit.color = Color.white;
+                    magicItemInit.raycastTarget = false;
+                    magicItemInit.sprite = GetMagicItemBgSprite();
+
+                    if (!inFront)
+                    {
+                        magicBG.SetSiblingIndex(0);
+                    }
+                }
+            }
+
+            if (magicBG != null)
+            {
+                magicBG.gameObject.SetActive(isMagic);
+            }
+
+            if (isMagic)
+            {
+                var magicColor = magicItem.GetColorString();
+                var itemTypeName = magicItem.GetItemTypeName(item.Extended());
+
+                if (magicBG != null)
+                {
+                    magicBG.GetComponent<Image>().color = item.GetRarityColor();
+                }
+
+                if (item.IsLegendarySetItem())
+                {
+                    Auga.API.ComplexTooltip_SetSubtitle(complexTooltip, Localization.instance.Localize($"<color={GetSetItemColor()}>$mod_epicloot_legendarysetlabel</color>, {itemTypeName}\n"));
+                }
+                else
+                {
+                    Auga.API.ComplexTooltip_SetSubtitle(complexTooltip, Localization.instance.Localize($"<color={magicColor}>{magicItem.GetRarityDisplay()} {itemTypeName}</color>"));
+                }
+
+                Auga.API.ComplexTooltip_AddDivider(complexTooltip);
+
+                var magicItemText = magicItem.GetTooltip();
+                var textBox = Auga.API.ComplexTooltip_AddTwoColumnTextBox(complexTooltip);
+                magicItemText = magicItemText.Replace("\n\n", "");
+                Auga.API.TooltipTextBox_AddLine(textBox, magicItemText);
+
+                if (magicItem.IsLegendarySetItem())
+                {
+                    var textBox2 = Auga.API.ComplexTooltip_AddTwoColumnTextBox(complexTooltip);
+                    Auga.API.TooltipTextBox_AddLine(textBox2, item.GetSetTooltip());
+                }
+
+                Auga.API.ComplexTooltip_SetDescription(complexTooltip, Localization.instance.Localize(item.GetDescription()));
+            }
         }
 
         private ConfigEntry<T> SyncedConfig<T>(string group, string configName, T value, string description, bool synchronizedSetting = true) => SyncedConfig(group, configName, value, new ConfigDescription(description), synchronizedSetting);
@@ -254,7 +355,7 @@ namespace EpicLoot
             LoadJsonFile<AbilityConfig>("abilities.json", AbilityDefinitions.Initialize);
         }
 
-        private void InitializeAbilities()
+        private static void InitializeAbilities()
         {
             MagicEffectType.Initialize();
             AbilitiesInitialized?.Invoke();
@@ -317,8 +418,11 @@ namespace EpicLoot
             var assetBundle = LoadAssetBundle("epicloot");
             Assets.AssetBundle = assetBundle;
             Assets.EquippedSprite = assetBundle.LoadAsset<Sprite>("Equipped");
+            Assets.AugaEquippedSprite = assetBundle.LoadAsset<Sprite>("AugaEquipped");
             Assets.GenericSetItemSprite = assetBundle.LoadAsset<Sprite>("GenericSetItemMarker");
+            Assets.AugaSetItemSprite = assetBundle.LoadAsset<Sprite>("AugaSetItem");
             Assets.GenericItemBgSprite = assetBundle.LoadAsset<Sprite>("GenericItemBg");
+            Assets.AugaItemBgSprite = assetBundle.LoadAsset<Sprite>("AugaItemBG");
             Assets.SmallButtonEnchantOverlay = assetBundle.LoadAsset<Sprite>("SmallButtonEnchantOverlay");
             Assets.MagicItemLootBeamPrefabs[(int)ItemRarity.Magic] = assetBundle.LoadAsset<GameObject>("MagicLootBeam");
             Assets.MagicItemLootBeamPrefabs[(int)ItemRarity.Rare] = assetBundle.LoadAsset<GameObject>("RareLootBeam");
@@ -801,7 +905,17 @@ namespace EpicLoot
 
         public static Sprite GetMagicItemBgSprite()
         {
-            return Assets.GenericItemBgSprite;
+            return HasAuga ? Assets.AugaItemBgSprite : Assets.GenericItemBgSprite;
+        }
+
+        public static Sprite GetEquippedSprite()
+        {
+            return HasAuga ? Assets.AugaEquippedSprite : Assets.EquippedSprite;
+        }
+
+        public static Sprite GetSetItemSprite()
+        {
+            return HasAuga ? Assets.AugaSetItemSprite : Assets.GenericSetItemSprite;
         }
 
         private static bool IsNotRestrictedItem(ItemDrop.ItemData item)

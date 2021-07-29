@@ -37,7 +37,7 @@ namespace EpicLoot.Adventure
             PurchasedLabel.SetActive(false);
             CoinsCostText = transform.Find("Price/PriceElementCoins/Amount").GetComponent<Text>();
 
-            var iconMaterial = StoreGui.instance.m_listElement.transform.Find("icon").GetComponent<Image>().material;
+            var iconMaterial = InventoryGui.instance.m_dragItemPrefab.transform.Find("icon").GetComponent<Image>().material;
             if (iconMaterial != null)
             {
                 Icon.material = iconMaterial;

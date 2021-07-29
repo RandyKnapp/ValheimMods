@@ -28,7 +28,7 @@ namespace EpicLoot.Crafting
         }
 
         public override string GetTabButtonId() => "Augment";
-        public override string GetTabButtonText() => "AUGMENT";
+        public override string GetTabButtonText() => Localization.instance.Localize("$mod_epicloot_augment").ToUpperInvariant();
 
         public override void TryInitialize(InventoryGui inventoryGui, int tabIndex, Action<TabController> onTabPressed)
         {
@@ -36,70 +36,114 @@ namespace EpicLoot.Crafting
 
             if (ChoiceDialog == null)
             {
-                ChoiceDialog = CreateDialog<AugmentChoiceDialog>(inventoryGui, "AugmentChoiceDialog");
-
-                var background = ChoiceDialog.gameObject.transform.Find("Frame").gameObject.RectTransform();
-                ChoiceDialog.MagicBG = Object.Instantiate(inventoryGui.m_recipeIcon, background);
-                ChoiceDialog.MagicBG.name = "MagicItemBG";
-                ChoiceDialog.MagicBG.sprite = EpicLoot.GetMagicItemBgSprite();
-                ChoiceDialog.MagicBG.color = Color.white;
-
-                ChoiceDialog.NameText = Object.Instantiate(inventoryGui.m_recipeName, background);
-                ChoiceDialog.Description = Object.Instantiate(inventoryGui.m_recipeDecription, background);
-                ChoiceDialog.Description.rectTransform.anchoredPosition += new Vector2(0, -47);
-                ChoiceDialog.Description.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 340);
-                ChoiceDialog.Icon = Object.Instantiate(inventoryGui.m_recipeIcon, background);
-
-                var closeButton = ChoiceDialog.gameObject.GetComponentInChildren<Button>();
-                Object.Destroy(closeButton.gameObject);
-
-                for (int i = 0; i < 3; i++)
+                if (EpicLoot.HasAuga)
                 {
-                    var button = Object.Instantiate(inventoryGui.m_craftButton, background);
-                    var rt = button.gameObject.RectTransform();
-                    rt.anchoredPosition = new Vector2(0, -155 - (i * 45));
-                    rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 40);
-                    ChoiceDialog.EffectChoiceButtons.Add(button);
+                    var resultDialog = Auga.API.Workbench_CreateNewResultsPanel();
+                    resultDialog.SetActive(false);
+
+                    ChoiceDialog = resultDialog.AddComponent<AugmentChoiceDialog>();
+
+                    var icon = ChoiceDialog.transform.Find("InventoryElement/icon").GetComponent<Image>();
+                    ChoiceDialog.MagicBG = Object.Instantiate(icon, icon.transform.parent);
+                    ChoiceDialog.MagicBG.name = "MagicItemBG";
+                    ChoiceDialog.MagicBG.sprite = EpicLoot.GetMagicItemBgSprite();
+                    ChoiceDialog.MagicBG.color = Color.white;
+                    ChoiceDialog.MagicBG.rectTransform.anchorMin = new Vector2(0, 0);
+                    ChoiceDialog.MagicBG.rectTransform.anchorMax = new Vector2(1, 1);
+                    ChoiceDialog.MagicBG.rectTransform.sizeDelta = new Vector2(0, 0);
+                    ChoiceDialog.MagicBG.rectTransform.anchoredPosition = new Vector2(0, 0);
+
+                    ChoiceDialog.NameText = ChoiceDialog.transform.Find("Topic").GetComponent<Text>();
+
+                    var closeButton = ChoiceDialog.gameObject.GetComponentInChildren<Button>();
+                    Object.Destroy(closeButton.gameObject);
+
+                    var tooltip = (RectTransform)ChoiceDialog.transform.Find("TooltipScrollContainer");
+                    tooltip.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 360);
+                    var scrollbar = (RectTransform)ChoiceDialog.transform.Find("ScrollBar");
+                    scrollbar.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 360);
+
+                    for (var i = 0; i < 3; i++)
+                    {
+                        var button = Auga.API.MediumButton_Create(resultDialog.transform, $"AugmentButton{i}");
+                        Auga.API.MediumButton_SetColors(button, Color.white, Color.white, Color.white, Color.white, Color.white);
+                        button.navigation = new Navigation { mode = Navigation.Mode.None };
+                        var rt = (RectTransform)button.transform;
+                        rt.anchoredPosition = new Vector2(0, -220 - (i * 40));
+                        rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 295);
+                        ChoiceDialog.EffectChoiceButtons.Add(button);
+                    }
+                }
+                else
+                {
+                    ChoiceDialog = CreateDialog<AugmentChoiceDialog>(inventoryGui, "AugmentChoiceDialog");
+
+                    var background = ChoiceDialog.gameObject.transform.Find("Frame").gameObject.RectTransform();
+                    ChoiceDialog.MagicBG = Object.Instantiate(inventoryGui.m_recipeIcon, background);
+                    ChoiceDialog.MagicBG.name = "MagicItemBG";
+                    ChoiceDialog.MagicBG.sprite = EpicLoot.GetMagicItemBgSprite();
+                    ChoiceDialog.MagicBG.color = Color.white;
+
+                    ChoiceDialog.NameText = Object.Instantiate(inventoryGui.m_recipeName, background);
+                    ChoiceDialog.Description = Object.Instantiate(inventoryGui.m_recipeDecription, background);
+                    ChoiceDialog.Description.rectTransform.anchoredPosition += new Vector2(0, -47);
+                    ChoiceDialog.Description.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 340);
+                    ChoiceDialog.Icon = Object.Instantiate(inventoryGui.m_recipeIcon, background);
+
+                    var closeButton = ChoiceDialog.gameObject.GetComponentInChildren<Button>();
+                    Object.Destroy(closeButton.gameObject);
+
+                    for (var i = 0; i < 3; i++)
+                    {
+                        var button = Object.Instantiate(inventoryGui.m_craftButton, background);
+                        var rt = button.gameObject.RectTransform();
+                        rt.anchoredPosition = new Vector2(0, -155 - (i * 45));
+                        rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 40);
+                        ChoiceDialog.EffectChoiceButtons.Add(button);
+                    }
                 }
             }
 
-            if (AvailableAugmentsDialog == null)
+            if (!EpicLoot.HasAuga)
             {
-                AvailableAugmentsDialog = CreateDialog<AugmentsAvailableDialog>(inventoryGui, "AvailableAugmentsDialog");
+                if (AvailableAugmentsDialog == null)
+                {
+                    AvailableAugmentsDialog = CreateDialog<AugmentsAvailableDialog>(inventoryGui, "AvailableAugmentsDialog");
 
-                var background = AvailableAugmentsDialog.gameObject.transform.Find("Frame").gameObject.RectTransform();
-                AvailableAugmentsDialog.MagicBG = Object.Instantiate(inventoryGui.m_recipeIcon, background);
-                AvailableAugmentsDialog.MagicBG.name = "MagicItemBG";
-                AvailableAugmentsDialog.MagicBG.sprite = EpicLoot.GetMagicItemBgSprite();
-                AvailableAugmentsDialog.MagicBG.color = Color.white;
+                    var background = AvailableAugmentsDialog.gameObject.transform.Find("Frame").gameObject.RectTransform();
+                    AvailableAugmentsDialog.MagicBG = Object.Instantiate(inventoryGui.m_recipeIcon, background);
+                    AvailableAugmentsDialog.MagicBG.name = "MagicItemBG";
+                    AvailableAugmentsDialog.MagicBG.sprite = EpicLoot.GetMagicItemBgSprite();
+                    AvailableAugmentsDialog.MagicBG.color = Color.white;
 
-                AvailableAugmentsDialog.NameText = Object.Instantiate(inventoryGui.m_recipeName, background);
-                AvailableAugmentsDialog.Description = Object.Instantiate(inventoryGui.m_recipeDecription, background);
-                AvailableAugmentsDialog.Description.rectTransform.anchoredPosition += new Vector2(0, -110);
-                AvailableAugmentsDialog.Description.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 460);
-                AvailableAugmentsDialog.Description.resizeTextForBestFit = true;
-                AvailableAugmentsDialog.Icon = Object.Instantiate(inventoryGui.m_recipeIcon, background);
+                    AvailableAugmentsDialog.NameText = Object.Instantiate(inventoryGui.m_recipeName, background);
+                    AvailableAugmentsDialog.Description = Object.Instantiate(inventoryGui.m_recipeDecription, background);
+                    AvailableAugmentsDialog.Description.rectTransform.anchoredPosition += new Vector2(0, -110);
+                    AvailableAugmentsDialog.Description.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 460);
+                    AvailableAugmentsDialog.Description.resizeTextForBestFit = true;
+                    AvailableAugmentsDialog.Icon = Object.Instantiate(inventoryGui.m_recipeIcon, background);
 
-                var closeButton = AvailableAugmentsDialog.gameObject.GetComponentInChildren<Button>();
-                closeButton.onClick = new Button.ButtonClickedEvent();
-                closeButton.onClick.AddListener(AvailableAugmentsDialog.OnClose);
-                closeButton.transform.SetAsLastSibling();
-            }
+                    var closeButton = AvailableAugmentsDialog.gameObject.GetComponentInChildren<Button>();
+                    closeButton.onClick = new Button.ButtonClickedEvent();
+                    closeButton.onClick.AddListener(AvailableAugmentsDialog.OnClose);
+                    closeButton.transform.SetAsLastSibling();
+                }
 
-            if (AvailableAugmentsButton == null)
-            {
-                AvailableAugmentsButton = Object.Instantiate(inventoryGui.m_variantButton, inventoryGui.m_variantButton.transform.parent, true);
-                AvailableAugmentsButton.gameObject.name = "AvailableAugmentsButton";
-                AvailableAugmentsButton.gameObject.SetActive(false);
-                AvailableAugmentsButton.onClick = new Button.ButtonClickedEvent();
-                AvailableAugmentsButton.onClick.AddListener(ShowAvailableAugmentsDialog);
+                if (AvailableAugmentsButton == null)
+                {
+                    AvailableAugmentsButton = Object.Instantiate(inventoryGui.m_variantButton, inventoryGui.m_variantButton.transform.parent, true);
+                    AvailableAugmentsButton.gameObject.name = "AvailableAugmentsButton";
+                    AvailableAugmentsButton.gameObject.SetActive(false);
+                    AvailableAugmentsButton.onClick = new Button.ButtonClickedEvent();
+                    AvailableAugmentsButton.onClick.AddListener(ShowAvailableAugmentsDialog);
 
-                var text = AvailableAugmentsButton.GetComponentInChildren<Text>();
-                text.text = "Available Effects";
+                    var text = AvailableAugmentsButton.GetComponentInChildren<Text>();
+                    text.text = Localization.instance.Localize("$mod_epicloot_augment_availableeffects");
 
-                var rt = AvailableAugmentsButton.gameObject.RectTransform();
-                rt.anchoredPosition += new Vector2(50, 0);
-                rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 150);
+                    var rt = AvailableAugmentsButton.gameObject.RectTransform();
+                    rt.anchoredPosition += new Vector2(50, 0);
+                    rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 150);
+                }
             }
         }
 
@@ -127,9 +171,12 @@ namespace EpicLoot.Crafting
         public override void OnDestroy()
         {
             base.OnDestroy();
-            foreach (var toggle in EffectSelectors)
+            if (!EpicLoot.HasAuga)
             {
-                Object.Destroy(toggle);
+                foreach (var toggle in EffectSelectors)
+                {
+                    Object.Destroy(toggle);
+                }
             }
             EffectSelectors.Clear();
             Object.Destroy(ChoiceDialog);
@@ -141,26 +188,62 @@ namespace EpicLoot.Crafting
             if (!active)
             {
                 Recipes.Clear();
-                foreach (var toggle in EffectSelectors)
+                if (!EpicLoot.HasAuga)
                 {
-                    toggle.gameObject.SetActive(false);
+                    foreach (var toggle in EffectSelectors)
+                    {
+                        toggle.gameObject.SetActive(false);
+                    }
+                }
+                else
+                {
+                    EffectSelectors.Clear();
                 }
             }
-            AvailableAugmentsButton.gameObject.SetActive(active);
-            if (AvailableAugmentsDialog.gameObject.activeSelf && !active)
+
+            if (EpicLoot.HasAuga)
             {
-                AvailableAugmentsDialog.OnClose();
+                if (active)
+                {
+                    var augmentsAvailableText = Auga.API.CustomVariantPanel_Enable("$mod_epicloot_augment_availableeffects", (showing) =>
+                    {
+                        if (showing)
+                        {
+                            ShowAvailableAugmentsDialog();
+                        }
+                    });
+
+                    AvailableAugmentsDialog = augmentsAvailableText.gameObject.GetComponent<AugmentsAvailableDialog>();
+                    if (AvailableAugmentsDialog == null)
+                    {
+                        AvailableAugmentsDialog = augmentsAvailableText.gameObject.AddComponent<AugmentsAvailableDialog>();
+                    }
+                    AvailableAugmentsDialog.Description = augmentsAvailableText;
+                }
+                else
+                {
+                    Auga.API.CustomVariantPanel_Disable();
+                }
             }
-            if (ChoiceDialog.gameObject.activeSelf && !active)
+            else
             {
-                ChoiceDialog.OnClose();
+                AvailableAugmentsButton.gameObject.SetActive(active);
+                if (AvailableAugmentsDialog.gameObject.activeSelf && !active)
+                {
+                    AvailableAugmentsDialog.OnClose();
+                }
+                if (ChoiceDialog.gameObject.activeSelf && !active)
+                {
+                    ChoiceDialog.OnClose();
+                }
             }
+
             base.SetActive(active);
         }
 
         public override bool DisallowInventoryHiding()
         {
-            if (ChoiceDialog.gameObject.activeSelf || AvailableAugmentsDialog.gameObject.activeSelf)
+            if ((ChoiceDialog != null && ChoiceDialog.gameObject.activeInHierarchy) || (AvailableAugmentsDialog != null && AvailableAugmentsDialog.gameObject.activeInHierarchy))
             {
                 return true;
             }
@@ -202,35 +285,17 @@ namespace EpicLoot.Crafting
 
         public override void UpdateRecipe(InventoryGui __instance, Player player, float dt, Image bgImage)
         {
-            __instance.m_craftButton.GetComponentInChildren<Text>().text = "Augment";
+            __instance.m_craftButton.GetComponentInChildren<Text>().text = Localization.instance.Localize("$mod_epicloot_augment");
 
             if (SelectedRecipe >= 0 && SelectedRecipe < Recipes.Count)
             {
                 var recipe = Recipes[SelectedRecipe];
                 var itemData = recipe.FromItem;
-                var magicItem = itemData.GetMagicItem();
                 var rarity = itemData.GetRarity();
                 var rarityColorARGB = EpicLoot.GetRarityColorARGB(rarity);
 
-                __instance.m_recipeIcon.enabled = true;
-                __instance.m_recipeIcon.sprite = itemData.GetIcon();
-
-                __instance.m_recipeName.enabled = true;
-                __instance.m_recipeName.text = Localization.instance.Localize(itemData.GetDecoratedName());
-
-                __instance.m_recipeDecription.enabled = true;
-
-                __instance.m_recipeDecription.text = "Replace one magical effect. Once an effect has been augmented, the others are locked.";
-
-                GenerateAugmentSelectors(recipe, __instance);
-
-                bgImage.color = rarityColorARGB;
-                bgImage.enabled = true;
-
                 __instance.m_itemCraftType.gameObject.SetActive(false);
                 __instance.m_variantButton.gameObject.SetActive(false);
-
-                SetupRequirementList(__instance, player, recipe);
 
                 __instance.m_minStationLevelIcon.gameObject.SetActive(false);
 
@@ -243,12 +308,48 @@ namespace EpicLoot.Crafting
                         (canCraft ? 
                             (hasAnyAvailableEnchants ?
                                 ""
-                                : "No available effects") 
+                                : Localization.instance.Localize("$mod_epicloot_augment_noeffects")) 
                             : Localization.instance.Localize("$msg_missingrequirement")) 
-                        : "Select an effect to augment";
+                        : Localization.instance.Localize("$mod_epicloot_augment_selecteffect");
+
+                SetupRequirementList(__instance, player, recipe, canCraft);
+
+                if (EpicLoot.HasAuga)
+                {
+                    AugaTabData.ItemInfoGO.SetActive(true);
+                    AugaTabData.RequirementsPanelGO.SetActive(true);
+
+                    //Auga.API.ComplexTooltip_ClearTextBoxes(AugaTabData.ItemInfoGO);
+                    Auga.API.ComplexTooltip_SetItemNoTextBoxes(AugaTabData.ItemInfoGO, itemData, itemData.m_quality, itemData.m_variant);
+                    Auga.API.ComplexTooltip_SetTopic(AugaTabData.ItemInfoGO, Localization.instance.Localize(itemData.GetDecoratedName()));
+                    Auga.API.ComplexTooltip_SetDescription(AugaTabData.ItemInfoGO, Localization.instance.Localize("$mod_epicloot_augment_explain"));
+                    __instance.m_itemCraftType.text = "";
+                }
+                else
+                {
+                    __instance.m_recipeIcon.enabled = true;
+                    __instance.m_recipeIcon.sprite = itemData.GetIcon();
+
+                    __instance.m_recipeName.enabled = true;
+                    __instance.m_recipeName.text = Localization.instance.Localize(itemData.GetDecoratedName());
+
+                    __instance.m_recipeDecription.enabled = true;
+                    __instance.m_recipeDecription.text = Localization.instance.Localize("$mod_epicloot_augment_explain");
+                }
+
+                bgImage.color = rarityColorARGB;
+                bgImage.enabled = true;
+
+                GenerateAugmentSelectors(recipe, __instance);
             }
             else
             {
+                if (EpicLoot.HasAuga)
+                {
+                    AugaTabData.ItemInfoGO.SetActive(false);
+                    AugaTabData.RequirementsPanelGO.SetActive(false);
+                }
+
                 bgImage.enabled = false;
                 __instance.m_itemCraftType.gameObject.SetActive(false);
                 __instance.m_variantButton.gameObject.SetActive(false);
@@ -256,10 +357,15 @@ namespace EpicLoot.Crafting
                 __instance.m_recipeIcon.enabled = false;
                 __instance.m_recipeName.enabled = false;
                 __instance.m_recipeDecription.enabled = false;
-                foreach (var toggle in EffectSelectors)
+
+                if (!EpicLoot.HasAuga)
                 {
-                    toggle.gameObject.SetActive(false);
+                    foreach (var toggle in EffectSelectors)
+                    {
+                        toggle.gameObject.SetActive(false);
+                    }
                 }
+
                 foreach (var req in __instance.m_recipeRequirementList)
                 {
                     InventoryGui.HideRequirement(req.transform);
@@ -291,23 +397,38 @@ namespace EpicLoot.Crafting
 
             var augmentableEffects = magicItem.Effects;
             var effectCount = augmentableEffects.Count;
+
+            if (EffectSelectors.Count == 0 && EpicLoot.HasAuga)
+            {
+                Auga.API.ComplexTooltip_ClearTextBoxes(AugaTabData.ItemInfoGO);
+            }
+
             for (var i = 0; i < Mathf.Max(effectCount, EffectSelectors.Count); ++i)
             {
                 if (i < effectCount && i >= EffectSelectors.Count)
                 {
-                    // create new selector
-                    var selector = Object.Instantiate(checkboxPrefab, inventoryGui.m_variantButton.transform.parent, false);
-                    selector.gameObject.name = $"EffectSelector{i}";
-                    var rt = selector.gameObject.RectTransform();
-                    rt.anchoredPosition = startOffset + new Vector2(0, i * -spacing);
-                    var t = selector.GetComponentInChildren<Text>();
-                    t.font = inventoryGui.m_recipeDecription.font;
-                    t.resizeTextMaxSize = 18;
-                    t.resizeTextMinSize = 10;
-                    t.rectTransform.anchoredPosition += new Vector2(300, 0);
-                    t.alignment = TextAnchor.MiddleLeft;
-                    t.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 300);
-                    t.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, spacing);
+                    Toggle selector;
+                    if (EpicLoot.HasAuga)
+                    {
+                        var checkboxTextBox = Auga.API.ComplexTooltip_AddCheckBoxTextBox(AugaTabData.ItemInfoGO);
+                        selector = checkboxTextBox.GetComponentInChildren<Toggle>(true);
+                    }
+                    else
+                    {
+                        selector = Object.Instantiate(checkboxPrefab, inventoryGui.m_variantButton.transform.parent, false);
+                        selector.gameObject.name = $"EffectSelector{i}";
+                        var rt = selector.gameObject.RectTransform();
+                        rt.anchoredPosition = startOffset + new Vector2(0, i * -spacing);
+                        var t = selector.GetComponentInChildren<Text>();
+                        t.font = inventoryGui.m_recipeDecription.font;
+                        t.resizeTextMaxSize = 18;
+                        t.resizeTextMinSize = 10;
+                        t.rectTransform.anchoredPosition += new Vector2(300, 0);
+                        t.alignment = TextAnchor.MiddleLeft;
+                        t.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 300);
+                        t.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, spacing);
+                    }
+
                     var index = i;
                     selector.onValueChanged.AddListener((selected) => OnSelectorValueChanged(index, selected));
 
@@ -317,7 +438,14 @@ namespace EpicLoot.Crafting
                 }
                 else if (i >= effectCount && i < EffectSelectors.Count)
                 {
-                    EffectSelectors[i].gameObject.SetActive(false);
+                    if (EpicLoot.HasAuga)
+                    {
+                        EffectSelectors[i].transform.parent.gameObject.SetActive(false);
+                    }
+                    else
+                    {
+                        EffectSelectors[i].gameObject.SetActive(false);
+                    }
                 }
                 else
                 {
@@ -330,7 +458,16 @@ namespace EpicLoot.Crafting
         {
             var selector = EffectSelectors[i];
             var augmentableEffects = magicItem.Effects;
-            selector.gameObject.SetActive(true);
+
+            if (EpicLoot.HasAuga)
+            {
+                selector.transform.parent.gameObject.SetActive(true);
+            }
+            else
+            {
+                selector.gameObject.SetActive(true);
+            }
+
             selector.isOn = recipe.EffectIndex == i;
             var t = selector.GetComponentInChildren<Text>();
             t.text = GetAugmentSelectorText(magicItem, i, augmentableEffects, rarity);
@@ -339,7 +476,8 @@ namespace EpicLoot.Crafting
 
         private static string GetAugmentSelectorText(MagicItem magicItem, int i, IReadOnlyList<MagicItemEffect> augmentableEffects, ItemRarity rarity)
         {
-            return (magicItem.IsEffectAugmented(i) ? "◇ " : "◆ ") + Localization.instance.Localize(MagicItem.GetEffectText(augmentableEffects[i], rarity, true));
+            var symbol = EpicLoot.HasAuga ? (magicItem.IsEffectAugmented(i) ? "♢ " : "♦ ") : (magicItem.IsEffectAugmented(i) ? "◇ " : "◆ ");
+            return symbol + Localization.instance.Localize(MagicItem.GetEffectText(augmentableEffects[i], rarity, true));
         }
 
         private void OnSelectorValueChanged(int index, bool selected)
@@ -367,14 +505,17 @@ namespace EpicLoot.Crafting
             }
         }
 
-        public void SetupRequirementList(InventoryGui __instance, Player player, AugmentRecipe recipe)
+        public void SetupRequirementList(InventoryGui __instance, Player player, AugmentRecipe recipe, bool canCraft)
         {
+            var requirementStates = new[] { Auga.RequirementWireState.Absent, Auga.RequirementWireState.Absent, Auga.RequirementWireState.Absent, Auga.RequirementWireState.Absent };
+            
             var index = 0;
             var cost = GetRecipeCost(recipe);
             foreach (var product in cost)
             {
-                if (SetupRequirement(__instance, __instance.m_recipeRequirementList[index].transform, product.Key, product.Value, player, true))
+                if (SetupRequirement(__instance, __instance.m_recipeRequirementList[index].transform, product.Key, product.Value, player, true, out var haveMaterials))
                 {
+                    requirementStates[index] = haveMaterials ? Auga.RequirementWireState.Have : Auga.RequirementWireState.DontHave;
                     ++index;
                 }
             }
@@ -382,6 +523,11 @@ namespace EpicLoot.Crafting
             for (; index < __instance.m_recipeRequirementList.Length; ++index)
             {
                 InventoryGui.HideRequirement(__instance.m_recipeRequirementList[index].transform);
+            }
+
+            if (EpicLoot.HasAuga)
+            {
+                Auga.API.RequirementsPanel_SetWires(AugaTabData.RequirementsPanelGO, requirementStates, canCraft);
             }
         }
 
@@ -508,14 +654,14 @@ namespace EpicLoot.Crafting
             var bgImage = Object.Instantiate(image, image.transform.parent, true);
             bgImage.name = "MagicItemBG";
             bgImage.transform.SetSiblingIndex(image.transform.GetSiblingIndex());
-            bgImage.sprite = EpicLoot.Assets.GenericItemBgSprite;
+            bgImage.sprite = EpicLoot.GetMagicItemBgSprite();
             bgImage.color = EpicLoot.GetRarityColorARGB(item.GetRarity());
 
             var nameText = element.transform.Find("name").GetComponent<Text>();
             nameText.text = Localization.instance.Localize(item.GetDecoratedName());
             if (item.GetMagicItem() != null && item.GetMagicItem().HasBeenAugmented())
             {
-                nameText.text += " ◇";
+                nameText.text += EpicLoot.HasAuga ? " ♢" : " ◇";
             }
             nameText.color = Color.white;
 

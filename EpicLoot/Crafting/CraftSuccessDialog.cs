@@ -39,13 +39,33 @@ namespace EpicLoot.Crafting
             gameObject.SetActive(true);
 
             var rarityColor = item.IsMagic() ? item.GetRarityColor() : Color.white;
-            
-            MagicBG.enabled = item.IsMagic();
-            MagicBG.color = rarityColor;
 
-            NameText.text = Localization.instance.Localize(item.GetDecoratedName());
-            Description.text = Localization.instance.Localize(item.GetTooltip());
-            Icon.sprite = item.GetIcon();
+            if (MagicBG != null)
+            {
+                MagicBG.enabled = item.IsMagic();
+                MagicBG.color = rarityColor;
+            }
+
+            if (EpicLoot.HasAuga)
+            {
+                Auga.API.ComplexTooltip_SetItem(gameObject, item);
+                EpicLoot.ExtendAugaTooltipForMagicItem(gameObject, item);
+            }
+
+            if (NameText != null)
+            {
+                NameText.text = Localization.instance.Localize(item.GetDecoratedName());
+            }
+
+            if (Description != null)
+            {
+                Description.text = Localization.instance.Localize(item.GetTooltip());
+            }
+
+            if (Icon != null)
+            {
+                Icon.sprite = item.GetIcon();
+            }
 
             if (item.IsMagic())
             {

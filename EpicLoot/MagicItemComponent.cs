@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text;
 using Common;
 using EpicLoot.Crafting;
 using EpicLoot.LegendarySystem;
@@ -305,6 +307,97 @@ namespace EpicLoot
 
             return results;
         }
+
+        public static string GetSetTooltip(this ItemDrop.ItemData item)
+        {
+            var text = new StringBuilder();
+            var setID = item.GetSetID(out var isMundane);
+            var setSize = item.GetSetSize();
+
+            var setPieces = ItemDataExtensions.GetSetPieces(setID);
+            var currentSetEquipped = Player.m_localPlayer.GetEquippedSetPieces(setID);
+
+            var setDisplayName = GetSetDisplayName(item, isMundane);
+            text.Append($"\n\n<color={EpicLoot.GetSetItemColor()}> Set: {setDisplayName} ({currentSetEquipped.Count}/{setSize}):</color>");
+
+            foreach (var setItemName in setPieces)
+            {
+                var isEquipped = IsSetItemEquipped(currentSetEquipped, setItemName, isMundane);
+                var color = isEquipped ? "white" : "grey";
+                var displayName = GetSetItemDisplayName(setItemName, isMundane);
+                text.Append($"\n  <color={color}>{displayName}</color>");
+            }
+
+            if (isMundane)
+            {
+                var setEffectColor = currentSetEquipped.Count == setSize ? EpicLoot.GetSetItemColor() : "grey";
+                text.Append($"\n<color={setEffectColor}>({setSize}) ‣ {item.GetSetStatusEffectTooltip().Replace("\n", " ")}</color>");
+            }
+            else
+            {
+                var setInfo = item.GetLegendarySetInfo();
+                foreach (var setBonusInfo in setInfo.SetBonuses.OrderBy(x => x.Count))
+                {
+                    var hasEquipped = currentSetEquipped.Count >= setBonusInfo.Count;
+                    var effectDef = MagicItemEffectDefinitions.Get(setBonusInfo.Effect.Type);
+                    if (effectDef == null)
+                    {
+                        EpicLoot.LogError($"Set Tooltip: Could not find effect ({setBonusInfo.Effect.Type}) for set ({setInfo.ID}) bonus ({setBonusInfo.Count})!");
+                        continue;
+                    }
+
+                    var display = MagicItem.GetEffectText(effectDef, setBonusInfo.Effect.Values?.MinValue ?? 0);
+                    text.Append($"\n<color={(hasEquipped ? EpicLoot.GetSetItemColor() : "grey")}>({setBonusInfo.Count}) ‣ {display}</color>");
+                }
+            }
+
+            return text.ToString();
+        }
+
+        private static string GetSetItemDisplayName(string setItemName, bool isMundane)
+        {
+            if (isMundane)
+            {
+                return setItemName;
+            }
+            else if (UniqueLegendaryHelper.TryGetLegendaryInfo(setItemName, out var legendaryInfo))
+            {
+                return legendaryInfo.Name;
+            }
+
+            return setItemName;
+        }
+
+        public static string GetSetDisplayName(ItemDrop.ItemData item, bool isMundane)
+        {
+            if (isMundane)
+            {
+                var textInfo = new CultureInfo("en-US", false).TextInfo;
+                return textInfo.ToTitleCase(item.m_shared.m_setName);
+            }
+
+            var setInfo = item.GetLegendarySetInfo();
+            if (setInfo != null)
+            {
+                return Localization.instance.Localize(setInfo.Name);
+            }
+            else
+            {
+                return $"<unknown set:{item.GetSetID()}>";
+            }
+        }
+
+        public static bool IsSetItemEquipped(List<ItemDrop.ItemData> currentSetEquipped, string setItemName, bool isMundane)
+        {
+            if (isMundane)
+            {
+                return currentSetEquipped.Find(x => x.m_shared.m_name == setItemName) != null;
+            }
+            else
+            {
+                return currentSetEquipped.Find(x => x.IsMagic(out var magicItem) && magicItem.LegendaryID == setItemName) != null;
+            }
+        }
     }
 
     public static class EquipmentEffectCache
@@ -467,47 +560,61 @@ namespace EpicLoot
 
     public static class ItemBackgroundHelper
     {
-        public static Image CreateAndGetMagicItemBackgroundImage(GameObject elementGo, GameObject equipped, bool addSetItem)
+        public static Image CreateAndGetMagicItemBackgroundImage(GameObject elementGo, GameObject equipped, bool isInventoryGrid)
         {
-            var magicItemTransform = elementGo.transform.Find("magicItem");
+            var magicItemTransform = (RectTransform)elementGo.transform.Find("magicItem");
             if (magicItemTransform == null)
             {
                 var magicItemObject = Object.Instantiate(equipped, equipped.transform.parent);
-                magicItemObject.transform.SetSiblingIndex(equipped.transform.GetSiblingIndex() + 1);
+                magicItemObject.transform.SetSiblingIndex(EpicLoot.HasAuga ? equipped.transform.GetSiblingIndex() : equipped.transform.GetSiblingIndex() + 1);
                 magicItemObject.name = "magicItem";
                 magicItemObject.SetActive(true);
-                magicItemTransform = magicItemObject.transform;
+                magicItemTransform = (RectTransform)magicItemObject.transform;
+                magicItemTransform.anchorMin = magicItemTransform.anchorMax = new Vector2(0.5f, 0.5f);
+                magicItemTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 64);
+                magicItemTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 64);
+                magicItemTransform.pivot = new Vector2(0.5f, 0.5f);
+                magicItemTransform.anchoredPosition = Vector2.zero;
                 var magicItemInit = magicItemTransform.GetComponent<Image>();
                 magicItemInit.color = Color.white;
                 magicItemInit.raycastTarget = false;
             }
 
             // Also add set item marker
-            if (addSetItem)
+            if (isInventoryGrid)
             {
-                var setItemTransform = elementGo.transform.Find("setItem");
+                var setItemTransform = (RectTransform)elementGo.transform.Find("setItem");
                 if (setItemTransform == null)
                 {
                     var setItemObject = Object.Instantiate(equipped, equipped.transform.parent);
                     setItemObject.transform.SetAsLastSibling();
                     setItemObject.name = "setItem";
                     setItemObject.SetActive(true);
-                    setItemTransform = setItemObject.transform;
+                    setItemTransform = (RectTransform)setItemObject.transform;
+                    setItemTransform.anchorMin = setItemTransform.anchorMax = new Vector2(0.5f, 0.5f);
+                    setItemTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 64);
+                    setItemTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 64);
+                    setItemTransform.pivot = new Vector2(0.5f, 0.5f);
+                    setItemTransform.anchoredPosition = Vector2.zero;
                     var setItemInit = setItemTransform.GetComponent<Image>();
                     setItemInit.raycastTarget = false;
-                    setItemInit.sprite = EpicLoot.Assets.GenericSetItemSprite;
+                    setItemInit.sprite = EpicLoot.GetSetItemSprite();
                     setItemInit.color = ColorUtility.TryParseHtmlString(EpicLoot.GetSetItemColor(), out var color) ? color : Color.white;
                 }
             }
 
             // Also change equipped image
             var equippedImage = equipped.GetComponent<Image>();
-            if (equippedImage != null)
+            if (equippedImage != null && (!isInventoryGrid || !EpicLoot.HasAuga))
             {
-                equippedImage.sprite = EpicLoot.Assets.EquippedSprite;
+                equippedImage.sprite = EpicLoot.GetEquippedSprite();
                 equippedImage.color = Color.white;
                 equippedImage.raycastTarget = false;
                 var rectTransform = equipped.RectTransform();
+                rectTransform.anchorMin = new Vector2(0.5f, 0.5f);
+                rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+                rectTransform.pivot = new Vector2(0.5f, 0.5f);
+                rectTransform.anchoredPosition = Vector2.zero;
                 rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, equippedImage.sprite.texture.width);
                 rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, equippedImage.sprite.texture.height);
             }
