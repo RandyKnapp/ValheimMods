@@ -1,0 +1,19 @@
+{
+    "name": "ThunderKit.Core",
+    "references": [
+        "ThunderKit.Common",
+        "ThunderKit.Markdown"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "SharpCompress.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": []
+}

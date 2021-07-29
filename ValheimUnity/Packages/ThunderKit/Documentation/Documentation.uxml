@@ -1,0 +1,15 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
+    <Style src="/Packages/com.passivepicasso.thunderkit/Documentation/uss/thunderkit_documentation.uss" />
+    <ui:VisualElement name="thunderkit-home" style="flex-grow: 1; flex-direction: row;">
+        <ui:Box name="topic-bar" style="flex-basis: 250px;">
+            <ui:ScrollView name="content-scroller" show-horizontal-scroller="False" stretch-content-width="true" style="flex-grow: 1; flex-shrink: 1;">
+                <ui:VisualElement name="page-list" focusable="true" pages-root="topics" item-height="20" style="flex-grow: 1;" />
+            </ui:ScrollView>
+        </ui:Box>
+        <ui:VisualElement name="content-view" class="grow" style="border-left-width: 1px; border-left-color: rgb(144, 144, 144); border-right-color: rgb(144, 144, 144); border-top-color: rgb(144, 144, 144); border-bottom-color: rgb(144, 144, 144);">
+            <ui:ScrollView name="content-scroller" show-horizontal-scroller="False" stretch-content-width="true" style="flex-grow: 1; flex-shrink: 1;">
+                <ui:VisualElement name="page-view" class="grow" />
+            </ui:ScrollView>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

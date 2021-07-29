@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<engine:UXML
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:engine="UnityEngine.Experimental.UIElements"
+    xmlns:editor="UnityEditor.Experimental.UIElements"
+    xmlns:upm="UnityEditor.PackageManager.UI"
+
+xsi:noNamespaceSchemaLocation="../../../../../../UIElementsSchema/UIElements.xsd"
+xsi:schemaLocation="
+                        UnityEngine.Experimental.UIElements ../../../../../../UIElementsSchema/UnityEngine.Experimental.UIElements.xsd
+                        UnityEditor.Experimental.UIElements ../../../../../../UIElementsSchema/UnityEditor.Experimental.UIElements.xsd
+                        UnityEditor.PackageManager.UI ../../../../../../UIElementsSchema/UnityEditor.PackageManager.UI.xsd
+"
+>
+
+  <engine:VisualElement name="tkpm-package-view" >
+
+    <engine:VisualElement name="tkpm-package-view-header" >
+
+      <engine:Label name="tkpm-package-title" text="No Package Found"/>
+      <engine:VisualElement name="tkpm-package-info" class="horizontal-stack">
+        <engine:Label name="tkpm-package-info-version-label" text="Version:"/>
+        <engine:Label name="tkpm-package-info-version-value" text="0.0.0"/>
+      </engine:VisualElement>
+      <engine:Label name="tkpm-package-name" text="com.package.name"/>
+      <engine:VisualElement class="horizontal-stack">
+        <engine:Label name="tkpm-package-author-label" text="Author:"/>
+        <engine:Label name="tkpm-package-author-value" text=""/>
+      </engine:VisualElement>
+
+      <engine:VisualElement name="tkpm-package-view-controls" class="horizontal-stack">
+        <engine:Button name="tkpm-package-install-button" text="Install" class="toolbar-button package-control-button noMargin" />
+        <engine:Button name="tkpm-package-version-button" text="0.0.0" class="toolbar-button package-control-button noMargin" />
+      </engine:VisualElement>
+    </engine:VisualElement>
+
+    <engine:VisualElement name="tkpm-package-body" >
+
+      <engine:Label name="tkpm-package-description" text="Lorem Ipsum abridged" />
+
+      <engine:VisualElement class="horizontal-stack">
+
+        <engine:VisualElement class="half">
+          <engine:Label name="tkpm-package-dependencies-label" text="Dependencies" />
+          <engine:VisualElement name="tkpm-package-dependencies" class="vertical-stack" />
+        </engine:VisualElement>
+        
+        <engine:VisualElement class="half">
+          <engine:Label name="tkpm-package-tags-label" text="Tags" />
+          <engine:VisualElement name="tkpm-package-tags" class="horizontal-stack" />
+        </engine:VisualElement>
+
+        
+      </engine:VisualElement>
+      
+    </engine:VisualElement>
+
+  </engine:VisualElement>
+
+</engine:UXML>

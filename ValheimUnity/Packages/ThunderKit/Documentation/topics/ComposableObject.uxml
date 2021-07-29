@@ -1,0 +1,36 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
+    <Style src="/Packages/com.passivepicasso.thunderkit/Documentation/uss/thunderkit_documentation.uss" />
+    <ui:VisualElement name="help-page" class="m4">
+        <ui:VisualElement name="header" class="bm4" style="flex-direction: row; flex-basis: 64px; justify-content: flex-start; align-items: center; background-color: rgba(0, 0, 0, 0.39);">
+            <ui:VisualElement name="icon" class="header-icon TK_ComposableObject_2X_Icon" />
+            <ui:Label text="Composable Object" display-tooltip-when-elided="true" name="title" class="page-header" style="justify-content: center; margin-left: 10px;" />
+        </ui:VisualElement>
+        <ThunderKit.Markdown.MarkdownElement markdown-data-type="Implicit" focusable="false" />
+    </ui:VisualElement>
+    <ui:VisualElement class="standard-spacer" />
+    <ui:VisualElement name="help-page" class="m4">
+        <ui:VisualElement name="header" class="bm4" style="flex-direction: row; flex-basis: 64px; justify-content: flex-start; align-items: center; background-color: rgba(0, 0, 0, 0.39);">
+            <ui:VisualElement name="icon" class="header-icon TK_PathReference_2X_Icon" />
+            <ui:Label text="Path References" display-tooltip-when-elided="true" name="title" class="page-header" style="justify-content: center; margin-left: 10px;" />
+        </ui:VisualElement>
+        <ThunderKit.Markdown.MarkdownElement markdown-data-type="Source" data="ComposableObject/PathReference.md" focusable="false" />
+    </ui:VisualElement>
+    <ui:VisualElement class="standard-spacer" style="height: 50px;" />
+    <ui:VisualElement name="help-page" class="m4">
+        <ui:VisualElement name="header" class="bm4" style="flex-direction: row; flex-basis: 64px; justify-content: flex-start; align-items: center; background-color: rgba(0, 0, 0, 0.39);">
+            <ui:VisualElement name="icon" class="header-icon TK_Manifest_2X_Icon" />
+            <ui:Label text="Manifests and ManifestDatums" display-tooltip-when-elided="true" name="title" class="page-header" style="justify-content: center; margin-left: 10px;" />
+        </ui:VisualElement>
+        <ThunderKit.Markdown.MarkdownElement markdown-data-type="Source" data="ComposableObject/Manifest.md" focusable="false" />
+    </ui:VisualElement>
+    <ui:VisualElement class="standard-spacer" style="height: 50px;" />
+    <ui:VisualElement name="help-page" class="m4">
+        <ui:VisualElement name="header" class="bm4" style="flex-direction: row; flex-basis: 64px; justify-content: flex-start; align-items: center; background-color: rgba(0, 0, 0, 0.39);">
+            <ui:VisualElement name="icon" class="header-icon TK_Pipeline_2X_Icon" />
+            <ui:Label text="Pipelines" display-tooltip-when-elided="true" name="title" class="page-header" style="justify-content: center; margin-left: 10px;" />
+        </ui:VisualElement>
+        <ThunderKit.Markdown.MarkdownElement markdown-data-type="Source" data="ComposableObject/Pipeline.md" focusable="false" />
+    </ui:VisualElement>
+    <ui:VisualElement class="standard-spacer" />
+    <ui:VisualElement class="standard-spacer" />
+</ui:UXML>

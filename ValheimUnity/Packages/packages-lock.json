@@ -1,11 +1,12 @@
 {
   "dependencies": {
     "com.passivepicasso.thunderkit": {
-      "version": "https://github.com/PassivePicasso/ThunderKit.git",
+      "version": "file:ThunderKit",
       "depth": 0,
-      "source": "git",
-      "dependencies": {},
-      "hash": "16eb6ff5b68e38aa07415d6c3e03f6cf3f05f4ca"
+      "source": "embedded",
+      "dependencies": {
+        "com.unity.scriptablebuildpipeline": "1.16.1"
+      }
     },
     "com.unity.2d.sprite": {
       "version": "1.0.0",
@@ -50,6 +51,13 @@
       "dependencies": {
         "com.unity.settings-manager": "1.0.3"
       }
+    },
+    "com.unity.scriptablebuildpipeline": {
+      "version": "1.16.1",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://packages.unity.com"
     },
     "com.unity.settings-manager": {
       "version": "1.0.3",

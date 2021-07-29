@@ -15,13 +15,13 @@ PrefabInstance:
     - target: {fileID: 124223530235104039, guid: f8c9237298dab3a438c66dbedd157d72,
         type: 3}
       propertyPath: m_itemData.m_shared.m_name
-      value: Magic Essence
+      value: Magic $mod_epicloot_assets_Essence
       objectReference: {fileID: 0}
     - target: {fileID: 124223530235104039, guid: f8c9237298dab3a438c66dbedd157d72,
         type: 3}
       propertyPath: m_itemData.m_shared.m_description
-      value: The distilled protean power to change one's environment. Used to enchant
-        or augment weapons and tools. Obtained by sacrificing magic weapons or tools.
+      value: $mod_epicloot_assets_Essence_introduce
+        
       objectReference: {fileID: 0}
     - target: {fileID: 124223530235104039, guid: f8c9237298dab3a438c66dbedd157d72,
         type: 3}

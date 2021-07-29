@@ -1,0 +1,41 @@
+﻿#tkpm-package-source-label {
+	margin-top: 1px;
+	margin-left: 20px;
+}
+
+#tkpm-package-source-header {
+	position: absolute;
+	left: 0px;
+	right: 0px;
+	border-left-width: 0px;
+	border-top-width: 0px;
+	border-right-width: 0px;
+	border-bottom-width: 1px;
+}
+
+#tkpm-package-source-foldout {
+	flex-grow: 1;
+}
+
+#tkpm-package-source-foldout ListView {
+	flex-basis: auto;
+}
+
+#tkpm-package-list {
+	position: absolute;
+	left: 0px;
+	right: 0px;
+	top: 0px;
+	bottom: 0px;
+	flex-grow: 1;
+}
+
+.unity-foldout-content {
+	margin-left: 0px;
+	flex-grow: 1;
+}
+.unity-foldout__content {
+	margin-top: 4px;
+	margin-left: 0px;
+	flex-grow: 1;
+}

@@ -1,0 +1,24 @@
+﻿.folder-icon {
+	background-image: resource("Folder Icon");
+	width: 16px;
+	height: 16px;
+	margin-top: 2px;
+	margin-left: 4px;
+	margin-right: 0px;
+	margin-bottom: 1px;
+}
+Label {
+	margin-top: 2px;
+	margin-left: 0px;
+	margin-right: 0px;
+	margin-bottom: 1px;
+}
+.clickable:hover {
+	background-color: rgb(210,210,210);
+}
+.clickable:selected {
+	background-color: rgb(224,224,224);
+}
+.clickable:selected:hover {
+	background-color: rgb(234,234,234);
+}

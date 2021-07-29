@@ -542,7 +542,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: In Progress
+  m_Text: $mod_epicloot_bounties_tooltip_inprogress
 --- !u!114 &8789426914151044342
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -999,7 +999,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_tooltipPrefab: {fileID: 0}
-  m_text: Gold Bounty Tokens
+  m_text: $mod_epicloot_assets_GoldBountyToken
   m_topic: 
   m_gamepadFocusObject: {fileID: 0}
 --- !u!1 &730244230001963454
@@ -1963,7 +1963,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_tooltipPrefab: {fileID: 0}
-  m_text: Coins
+  m_text: $mod_epicloot_assets_Coins
   m_topic: 
   m_gamepadFocusObject: {fileID: 0}
 --- !u!1 &1244040510123766993
@@ -2322,7 +2322,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Reward:'
+  m_Text: '$mod_epicloot_bounties_tooltip_rewards'
 --- !u!114 &7380509830232165955
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2584,7 +2584,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Vanquished!
+  m_Text: $mod_epicloot_bounties_tooltip_vanquished
 --- !u!114 &6840672951716913897
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4376,7 +4376,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_tooltipPrefab: {fileID: 0}
-  m_text: Forest Tokens
+  m_text: $mod_epicloot_assets_ForestToken
   m_topic: 
   m_gamepadFocusObject: {fileID: 0}
 --- !u!1 &3457738686615189046
@@ -5024,7 +5024,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Reward:'
+  m_Text: '$mod_epicloot_bounties_tooltip_rewards'
 --- !u!114 &1882280470647027269
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5708,7 +5708,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: In Progress
+  m_Text: $mod_epicloot_bounties_tooltip_inprogress
 --- !u!114 &7231759766020060778
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7942,7 +7942,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_tooltipPrefab: {fileID: 0}
-  m_text: Iron Bounty Tokens
+  m_text: $mod_epicloot_assets_IronBountyToken
   m_topic: 
   m_gamepadFocusObject: {fileID: 0}
 --- !u!1 &5889370430449478522
@@ -9549,7 +9549,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Reward:'
+  m_Text: '$mod_epicloot_bounties_tooltip_rewards'
 --- !u!114 &6985178693826407604
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11307,7 +11307,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Vanquished!
+  m_Text: $mod_epicloot_bounties_tooltip_vanquished
 --- !u!114 &4187986580294337938
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11844,7 +11844,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Vanquished!
+  m_Text: $mod_epicloot_bounties_tooltip_vanquished
 --- !u!114 &7551836608995156544
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13199,7 +13199,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: In Progress
+  m_Text: $mod_epicloot_bounties_tooltip_inprogress
 --- !u!114 &1190065817441629911
 MonoBehaviour:
   m_ObjectHideFlags: 0

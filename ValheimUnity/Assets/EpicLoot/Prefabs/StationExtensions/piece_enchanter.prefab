@@ -175,9 +175,9 @@ MonoBehaviour:
   m_primaryTarget: 1
   m_randomTarget: 1
   m_icon: {fileID: 21300000, guid: 592bb637f13b4d4429c76f2801caab99, type: 3}
-  m_name: Enchanter
-  m_description: Allows Sacrificing and Enchanting magic items at a Forge.  (Does
-    not upgrade the forge's level)
+  m_name: $mod_epicloot_assets_Enchanter
+  m_description: $mod_epicloot_assets_Enchanter_introduce
+    
   m_enabled: 1
   m_category: 1
   m_isUpgrade: 0

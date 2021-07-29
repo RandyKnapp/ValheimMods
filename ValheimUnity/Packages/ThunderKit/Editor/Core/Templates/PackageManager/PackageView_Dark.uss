@@ -1,0 +1,22 @@
+﻿#tkpm-package-view-controls{
+	position: absolute;
+	right: 0px;
+}
+#tkpm-package-install-button {
+	border-right-width: 0px;
+}
+
+#tkpm-package-view {
+	border-color: rgb(128,128,128);
+	flex-basis: 0;
+	flex-grow: 1;
+	flex-shrink: 0;
+	margin-left: 2px;
+	margin-top: 2px;
+	margin-right: 2px;
+	margin-bottom: 2px;
+}
+
+.tag {
+	background-color: #444;
+}

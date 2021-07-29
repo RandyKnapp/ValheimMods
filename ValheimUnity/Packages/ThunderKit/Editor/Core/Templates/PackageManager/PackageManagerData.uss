@@ -1,0 +1,177 @@
+﻿ScrollView {
+	flex-grow: 1;
+}
+
+.toolbar-button {
+	border-color: rgb(128,128,128);
+	border-left-width: 0px;
+	border-top-width: 0px;
+	border-right-width: 0px;
+	border-bottom-width: 0px;
+
+	background-image: resource("Builtin Skins/LightSkin/Images/toolbar button.png");
+	height: 18px;
+}
+
+.toolbar-button:hover {
+	color: rgb(0,0,192);
+}
+
+.toolbar-button:hover:active {
+	background-image: resource("Builtin Skins/LightSkin/Images/toolbar button act.png");
+}
+
+.noMargin {
+	margin-left: 0px;
+	margin-top: 0px;
+	margin-right: 0px;
+	margin-bottom: 0px;
+}
+.horizontal-stack {
+	flex-direction: row;
+}
+.vertical-stack {
+	flex-direction: column;
+}
+.justifyend {
+	justify-content: flex-end;
+}
+
+.grow {
+	flex-grow: 1;
+}
+
+.half {
+	flex-shrink: 0.5;
+	flex-grow: 0.5;
+}
+
+.tkpm-sidebar-width {
+	width: 290px;
+}
+
+.tkpm-toolbar {
+	height: 18px;
+	border-color: rgb(128,128,128);
+	border-bottom-width: 1px;
+	background-image: resource("Builtin Skins/LightSkin/Images/Toolbar.png");
+}
+
+.tkpm-package-option {
+	padding-left: 4px;
+	padding-top: 4px;
+	padding-right: 4px;
+	padding-bottom: 4px;
+
+	margin-left: 0px;
+	margin-top: 0px;
+	margin-right: 0px;
+	margin-bottom: 0px;
+	border-color: rgb(128,128,128);
+
+	border-bottom-width: 1px;
+}
+
+.tkpm-package-source {
+	height: 19px;
+}
+
+.unity-text-field__input {
+	border-left-width: 0px;
+	border-top-width: 0px;
+	border-right-width: 0px;
+	border-bottom-width: 0px;
+	border-top-left-radius: 0px;
+	border-top-right-radius: 0px;
+	border-bottom-right-radius: 0px;
+	border-bottom-left-radius: 0px;
+	background-color: rgba(0,0,0,0);
+	background-image: none;
+	flex-grow: 1;
+}
+
+#tkpm-package-source-list {
+	border-color: rgb(128,128,128);
+	border-right-width: 1px;
+	flex-grow: 1;
+}
+#tkpm-filters-selector {
+	margin-left: 1px;
+	padding-top: 0px;
+	padding-left: 4px;
+	padding-right: 4px;
+	padding-bottom: 0px;
+	-unity-slice-left: 1;
+	-unity-slice-top: 1;
+	-unity-slice-right: 1;
+	-unity-slice-bottom: 1;
+	border-top-left-radius: 0px;
+	border-top-right-radius: 0px;
+	border-bottom-right-radius: 0px;
+	border-bottom-left-radius: 0px;
+}
+#tkpm-search-cancelbutton {
+	margin-left: 0px;
+	margin-right: 4px;
+	margin-top: 1px;
+	border-left-width: 0px;
+	border-top-width: 0px;
+	border-right-width: 0px;
+	border-bottom-width: 0px;
+	width: 14px;
+	height: 15px;
+	background-image: resource("Builtin Skins/LightSkin/Images/toolbarsearchCancelButtonOff.png");
+}
+
+#tkpm-search-textfield {
+	padding-top: 1px;
+	padding-left: 17px;
+	padding-right: 17px;
+	padding-bottom: 1px;
+	-unity-slice-top: 1;
+	-unity-slice-left: 14;
+	-unity-slice-bottom: 1;
+	-unity-slice-right: 0;
+	width: 300px;
+	margin-top: 1px;
+	margin-right: -1px;
+	margin-bottom: 1px;
+	align-self: flex-end;
+	background-image: resource("Builtin Skins/LightSkin/Images/toolbarsearch.png");
+}
+
+#tkpm-body {
+	flex-direction: row;
+	flex-grow: 1;
+}
+
+#tkpm-sidebar {
+	border-color: rgb(128,128,128);
+	border-right-width: 1px;
+}
+
+#tkpm-package-view {
+	flex-grow: 1;
+}
+
+#tkpm-root {
+	flex-grow: 1;
+}
+
+#tkpm-package-name {
+	font-size: 11px;
+	-unity-font-style: italic;
+}
+
+#tkpm-package-title {
+	-unity-font-style: bold;
+	font-size: 18px;
+	margin-left: 4px;
+	margin-top: 0px;
+	margin-right: 0px;
+	margin-bottom: 0px;
+	padding-left: 2px;
+	padding-top: 1px;
+	padding-right: 2px;
+	padding-bottom: 2px;
+}

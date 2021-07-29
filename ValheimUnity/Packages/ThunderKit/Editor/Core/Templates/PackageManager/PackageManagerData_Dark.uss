@@ -1,0 +1,77 @@
+﻿#tkpm-root {
+	background-color: rgb(32,32,32);
+}	
+
+.textElement {
+	color: rgb(192,192,192);
+}
+
+.tkpm-toolbar {
+	border-color: rgb(80,80,80);
+	background-image: resource("Builtin Skins/DarkSkin/Images/Toolbar.png");
+}
+
+.toolbar-button {
+	border-color: rgb(80,80,80);
+	border-left-width: 1px;
+	border-top-width: 1px;
+	border-right-width: 1px;
+	border-bottom-width: 1px;
+	color: rgb(164,164,164);
+
+	background-image: resource("Builtin Skins/DarkSkin/Images/toolbar button.png");
+}
+.toolbar-button:hover {
+	color: rgb(192,192,192);
+}
+.toolbar-button:hover:active {
+	background-image: resource("Builtin Skins/DarkSkin/Images/toolbar button act.png");
+	color: rgb(192,192,192);
+}
+#tkpm-sidebar {
+	border-color: rgb(80,80,80);
+}
+
+.tkpm-package-option {
+	border-color: rgb(80,80,80);
+}
+#tkpm-package-source-list {
+	border-color: rgb(80,80,80);
+}
+
+#tkpm-search-textfield {
+	background-image: resource("Builtin Skins/DarkSkin/Images/toolbarsearch.png");
+}
+#tkpm-search-cancelbutton {
+	background-image: resource("Builtin Skins/DarkSkin/Images/toolbarsearchCancelButtonOff.png");
+}
+
+
+
+Scroller.vertical > ScrollerButton#LowButton {
+	background-image: resource("Builtin Skins/DarkSkin/Images/scroll vert up.png");
+}
+Scroller.vertical > ScrollerButton#HighButton {
+	background-image: resource("Builtin Skins/DarkSkin/Images/scroll vert down.png");
+}
+Scroller.vertical > Slider {
+	background-image: resource("Builtin Skins/DarkSkin/Images/scroll vert.png");
+}
+Slider.vertical > #DragElement {
+	background-image: resource("Builtin Skins/DarkSkin/Images/slider thumb.png");
+}
+Scroller.vertical > #DragElement {
+	background-image: resource("Builtin Skins/DarkSkin/Images/scroll vert thumb.png");
+}
+.unity-foldout-toggle > #Checkmark {
+	background-image: resource("Builtin Skins/DarkSkin/Images/IN foldout.png");
+}
+.unity-foldout-toggle:focus > #Checkmark {
+	background-image: resource("Builtin Skins/DarkSkin/Images/IN foldout focus.png");
+}
+.unity-foldout-toggle:checked > #Checkmark {
+	background-image: resource("Builtin Skins/DarkSkin/Images/IN foldout on.png");
+}
+.unity-foldout-toggle:focus:checked > #Checkmark {
+	background-image: resource("Builtin Skins/DarkSkin/Images/IN foldout focus on.png");
+}

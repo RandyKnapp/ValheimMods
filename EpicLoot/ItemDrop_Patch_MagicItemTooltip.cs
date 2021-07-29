@@ -276,7 +276,7 @@ namespace EpicLoot
             if (item != null && (item.IsMagicCraftingMaterial() || item.IsRunestone()))
             {
                 var rarityDisplay = EpicLoot.GetRarityDisplayName(item.GetCraftingMaterialRarity());
-                __result = $"<color={item.GetCraftingMaterialRarityColor()}>{rarityDisplay} crafting material\n</color>" + __result;
+                __result = $"<color={item.GetCraftingMaterialRarityColor()}>{rarityDisplay} $mod_epicloot_craftingmaterial\n</color>" + __result;
             }
 
             if (item != null && !item.IsMagic())

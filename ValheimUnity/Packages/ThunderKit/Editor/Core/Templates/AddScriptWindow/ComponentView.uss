@@ -1,0 +1,16 @@
+﻿#script-icon {	
+	width: 16px;
+	height: 16px;
+	margin-left: 4px;
+	margin-top: 1px;
+	margin-right: 1px;
+	margin-bottom: 2px;
+	align-self: center;
+}
+#script-name {
+	margin-left: 1px;
+	margin-top: 1px;
+	margin-right: 1px;
+	margin-bottom: 1px;
+	-unity-text-align: middle-left;
+}

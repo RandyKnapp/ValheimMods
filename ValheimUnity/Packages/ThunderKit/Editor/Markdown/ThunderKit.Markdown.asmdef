@@ -1,0 +1,16 @@
+{
+    "name": "ThunderKit.Markdown",
+    "references": [],
+    "optionalUnityReferences": [],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "Markdig.Signed.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": []
+}

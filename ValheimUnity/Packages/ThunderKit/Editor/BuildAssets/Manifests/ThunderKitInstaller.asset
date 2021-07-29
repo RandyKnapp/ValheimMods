@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e563561e08b6a3642a487177f5cfbb37, type: 3}
+  m_Name: ThunderKitInstaller
+  m_EditorClassIdentifier: 
+  Data:
+  - {fileID: 114466755582540086}
+--- !u!114 &114466755582540086
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dda4ac7962f04724eacfeb26af5e2b75, type: 3}
+  m_Name: UnityPackages
+  m_EditorClassIdentifier: 
+  StagingPaths:
+  - <StagingRoot>
+  unityPackages:
+  - {fileID: 11400000, guid: 0709b8d54314eb44ba3cfb0eeec4b083, type: 2}

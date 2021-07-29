@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: e8ee67075528d2844840e3d1b97249ac
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - m_PersistentViewDataDictionary: {instanceID: 0}
+  - deletePackage: {instanceID: 0}
+  - ThunderKitIcon: {fileID: 2800000, guid: 917f110b180892a4191b2bf32c4671d4, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

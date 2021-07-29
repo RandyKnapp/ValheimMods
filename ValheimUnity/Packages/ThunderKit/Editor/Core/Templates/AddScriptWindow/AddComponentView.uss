@@ -1,0 +1,133 @@
+﻿.window-border {
+	border-color: rgb(128,128,128);
+	border-left-width: 1px;
+	border-top-width: 1px;
+	border-right-width: 1px;
+	border-bottom-width: 1px;
+}
+
+.border-bottom-1px {
+	border-color: rgb(128,128,128);
+	border-bottom-width: 1px;
+}
+
+.margin2px {
+	margin-left: 2px;
+	margin-top: 2px;
+	margin-right: 2px;
+	margin-bottom: 2px;
+}
+.unity-text-field__input {
+	border-left-width: 0px;
+	border-top-width: 0px;
+	border-right-width: 0px;
+	border-bottom-width: 0px;
+	border-top-left-radius: 0px;
+	border-top-right-radius: 0px;
+	border-bottom-right-radius: 0px;
+	border-bottom-left-radius: 0px;
+	background-color: rgba(0,0,0,0);
+	background-image: none;
+	flex-grow: 1;
+}
+
+
+.center-text {
+	-unity-text-align: middle-center;
+}
+
+.hidden {
+	visibility: hidden;
+}
+
+.grow {
+	flex-grow: 1;
+}
+
+.horizontal-stack {
+	flex-direction: row;
+}
+.vertical-stack {
+	flex-direction: column;
+}
+.noMargin {
+	margin-left: 0px;
+	margin-top: 0px;
+	margin-right: 0px;
+	margin-bottom: 0px;
+}
+.searchfield {
+	height: 15px;
+	flex-grow: 1;
+	flex-shrink: 1;
+	padding-top: 1px;
+	padding-left: 17px;
+	padding-right: 17px;
+	padding-bottom: 1px;
+	-unity-slice-top: 1;
+	-unity-slice-left: 14;
+	-unity-slice-bottom: 1;
+	-unity-slice-right: 0;
+	margin-top: 1px;
+	margin-left: 4px;
+	margin-right: -1px;
+	margin-bottom: 0px;
+	align-self: flex-end;
+	background-image: resource("Builtin Skins/LightSkin/Images/toolbarsearch.png");
+}
+
+.searchfield:focus{
+	background-image: resource("Builtin Skins/LightSkin/Images/toolbarsearch.png");
+}
+
+
+#ComponentView:hover {
+	background-color: rgb(210,210,210);
+}
+#ComponentView:selected {
+	background-color: rgb(224,224,224);
+}
+#ComponentView:selected:hover {
+	background-color: rgb(234,234,234);
+}
+
+
+.searchfield-cancelbutton {
+	padding-top: 2px;
+	padding-bottom: 0px;
+	margin-left: 0px;
+	margin-top: 1px;
+	margin-right: 4px;
+	margin-bottom: 0px;
+	border-left-width: 0px;
+	border-top-width: 0px;
+	border-right-width: 0px;
+	border-bottom-width: 0px;
+	width: 14px;
+	height: 15px;
+	background-image: resource("Builtin Skins/LightSkin/Images/toolbarsearchCancelButtonOff.png");
+}
+
+#search-box {
+	flex-grow: 0;
+	margin-top: 4px;
+	padding-bottom: 4px;
+}
+#script-list {
+	margin-top: 0px;
+	margin-bottom: 27px;
+}
+#script-list Label {
+	flex-grow: 1;
+	height: 20px;
+}
+.script-action-button {
+	position: absolute;
+	height: 20px;
+	bottom: 0px;
+	left: 0px;
+	right: 0px;
+}
+.unity-list-view__item--selected {
+	color: #000000;
+}

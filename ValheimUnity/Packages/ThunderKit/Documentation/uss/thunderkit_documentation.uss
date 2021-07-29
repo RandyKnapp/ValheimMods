@@ -1,0 +1,265 @@
+.TK_ComposableObject_2X_Icon {
+    background-image: url('/Packages/com.passivepicasso.thunderkit/Documentation/graphics/TK_ComposableObject_2X_Icon.png');
+}
+
+.TK_Manifest_2X_Icon {
+    background-image: url('/Packages/com.passivepicasso.thunderkit/Documentation/graphics/TK_Manifest_2X_Icon.png');
+}
+
+.TK_PackageSource_2X_Icon {
+    background-image: url('/Packages/com.passivepicasso.thunderkit/Documentation/graphics/TK_PackageSource_2X_Icon.png');
+}
+
+.TK_PathReference_2X_Icon {
+    background-image: url('/Packages/com.passivepicasso.thunderkit/Documentation/graphics/TK_PathReference_2X_Icon.png');
+}
+
+.TK_Pipeline_2X_Icon {
+    background-image: url('/Packages/com.passivepicasso.thunderkit/Documentation/graphics/TK_Pipeline_2X_Icon.png');
+}
+
+.TK_Server_Icon {
+    background-image: url('/Packages/com.passivepicasso.thunderkit/Documentation/graphics/TK_Server_Icon.png');
+}
+
+.TK_ThunderKitSetting_2X_Icon {
+    background-image: url('/Packages/com.passivepicasso.thunderkit/Documentation/graphics/TK_ThunderKitSetting_2X_Icon.png');
+}
+
+.TK_UnityPackage_2X_Icon {
+    background-image: url('/Packages/com.passivepicasso.thunderkit/Documentation/graphics/TK_UnityPackage_2X_Icon.png');
+}
+
+.TK_Documentation_2X_Icon {
+    background-image: url('/Packages/com.passivepicasso.thunderkit/Documentation/graphics/TK_Documentation_2X_Icon.png');
+}
+
+.hidden {
+    visibility: hidden;
+}
+
+.minimize {
+    position: absolute;
+    height: 0;
+    width: 0;
+}
+
+.grow {
+    flex-grow: 1;
+}
+
+.m2 {
+    margin-left: 2px;
+    margin-right: 2px;
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+
+.m4 {
+    margin-left: 4px;
+    margin-right: 4px;
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+
+.bm4 {
+    margin-bottom: 4px;
+}
+
+.page-header {
+    -unity-font: url('/Packages/com.passivepicasso.thunderkit/Editor/ThirdParty/CascadiaCode/otf/static/CascadiaMono-Bold.otf');
+    font-size: 32px;
+    -unity-font-style: normal;
+    color: rgba(255, 255, 255, 0.53);
+}
+
+.settings-header {
+    font-size: 12px;
+    -unity-font-style: normal;
+    background-color: rgba(0, 0, 0, 0.25);
+    padding-left: 3px;
+    padding-right: 3px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    margin-bottom: 2px;
+}
+
+.settings-background {
+    background-color: rgba(191, 191, 191, 0.25);
+    border-left-color: rgba(0, 0, 0, 0.75);
+    border-right-color: rgba(0, 0, 0, 0.75);
+    border-top-color: rgba(0, 0, 0, 0.75);
+    border-bottom-color: rgba(0, 0, 0, 0.75);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+}
+
+.header-icon {
+    width: 64px;
+    height: 64px;
+    min-width: 64px;
+    min-height: 64px;
+}
+
+.selected {
+    background-color: rgba(128, 0, 0, 0.5);
+}
+
+.pagelistview__page {
+    font-size: 12px;
+    flex-grow: 1;
+}
+
+.pagelistview__page--header {
+    border-top-width: 0;
+    border-bottom-width: 1px;
+    border-top-color: rgba(0, 0, 0, 0.25);
+    border-bottom-color: rgba(0, 0, 0, 0.25);
+    flex-direction: row;
+    flex-grow: 1;
+}
+
+.index-toggle {
+    width: 13px;
+    margin-left: 0;
+    margin-top: 0;
+    margin-right: 0;
+    margin-bottom: 0;
+    padding-left: 0;
+    padding-top: 0;
+    padding-right: 0;
+    padding-bottom: 0;
+    border-left-width: 0;
+    border-top-width: 0;
+    border-right-width: 0;
+    border-bottom-width: 0;
+}
+
+.unity-toggle__checkmark {
+    margin-left: 1px;
+    margin-top: 1px;
+    margin-right: -1px;
+    margin-bottom: -1px;
+}
+
+.unity-toggle-checkmark {
+    margin-left: 1px;
+    margin-top: 1px;
+    margin-right: -1px;
+    margin-bottom: -1px;
+}
+
+.unity-foldout__toggle {
+    margin-left: 0;
+    margin-top: 0;
+    margin-right: 0;
+    margin-bottom: 0;
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.unity-foldout-toggle {
+    margin-left: 0;
+    margin-top: 4;
+    margin-right: 0;
+    margin-bottom: 0;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.shrink {
+    flex-shrink: 1;
+}
+
+.setting-header-icon {
+    width: 20px;
+    height: 20px;
+    background-image: url('/Packages/com.passivepicasso.thunderkit/Editor/Graphics/TK_Setting_Icon.png');
+}
+
+.setting-background {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.thunderkit-field {
+    flex-direction: row;
+    flex-grow: 1;
+    align-self: stretch;
+}
+
+.thunderkit-field-label {
+    width: 150px;
+}
+
+.thunderkit-field-input {
+    flex-grow: 1;
+}
+
+.thunderkit-header {
+    -unity-font-style: bold;
+    font-size: 11px;
+    background-color: rgb(204, 204, 204);
+    color: rgb(0, 0, 0);
+    margin-left: 0;
+    margin-top: 0;
+    margin-right: 0;
+}
+
+.thunderkit-error {
+    opacity: 0.25;
+    background-color: rgb(255, 0, 0);
+    border-color: rgb(255, 0, 0);
+    border-left-width: 1px;
+    border-top-width: 1px;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
+    margin-left: 2px;
+    margin-top: 3px;
+    margin-right: 2px;
+    margin-bottom: 1px;
+}
+
+.thunderkit-setting {
+    opacity: 0.25;
+    background-color: rgb(170, 170, 170);
+    border-color: rgb(0, 0, 0);
+    border-left-width: 1px;
+    border-top-width: 1px;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
+    margin-left: 2px;
+    margin-top: 2px;
+    margin-right: 2px;
+    margin-bottom: 1px;
+}
+
+.configure-game-button {
+}
+
+.standard-spacer {
+    height: 50px;
+}
+
+.assetlink {
+    border-bottom-color: rgb(128, 0, 0);
+    border-color: rgb(128, 0, 0);
+}
+.assetlink .inline {
+    color: rgb(192, 0, 0);
+}
+
+
+.menulink {
+    border-bottom-color: rgb(0, 128, 0);
+    border-color: rgb(0, 128, 0);
+}
+.menulink .inline {
+    color: rgb(0, 128, 0);
+}

@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<engine:UXML
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:engine="UnityEngine.Experimental.UIElements"
+    xmlns:editor="UnityEditor.Experimental.UIElements"
+    xmlns:upm="UnityEditor.PackageManager.UI"
+
+xsi:noNamespaceSchemaLocation="../../../../../../UIElementsSchema/UIElements.xsd"
+xsi:schemaLocation="
+                        UnityEngine.Experimental.UIElements ../../../../../../UIElementsSchema/UnityEngine.Experimental.UIElements.xsd
+                        UnityEditor.Experimental.UIElements ../../../../../../UIElementsSchema/UnityEditor.Experimental.UIElements.xsd
+                        UnityEditor.PackageManager.UI ../../../../../../UIElementsSchema/UnityEditor.PackageManager.UI.xsd
+"
+>
+  <engine:VisualElement class="window-border grow">
+    <engine:VisualElement class="horizontal-stack">
+      <engine:Button name="back-button" tooltip="Go back to search component menu" text="&lt; Back" class="no-margin no-padding"/>
+      <engine:VisualElement name="search-box" class="horizontal-stack border-bottom-1px grow">
+        <engine:TextField name="nameField" multiline="false" tooltip="Enter new component name" />
+      </engine:VisualElement>
+    </engine:VisualElement>
+
+    <engine:ListView name="folder-list"  class="grow border-bottom-1px" item-height="20" />
+    <engine:Button name="create-script-button" tooltip="create new component at location" text="Create new Component" class="script-action-button"/>
+  </engine:VisualElement>
+</engine:UXML>

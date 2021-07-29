@@ -222,14 +222,14 @@ MonoBehaviour:
     m_quality: 1
     m_variant: 0
     m_shared:
-      m_name: Gold Bounty Token
+      m_name: $mod_epicloot_assets_GoldBountyToken
       m_dlc: 
       m_itemType: 16
       m_icons:
       - {fileID: 21300000, guid: cf0f10f80a953d64088ff30196340e7e, type: 3}
       m_attachOverride: 0
-      m_description: Only the greatest monster-slayers of Valheim carry these heavy
-        tokens.
+      m_description: $mod_epicloot_assets_GoldBountyToken_introduce
+        
       m_maxStackSize: 999
       m_maxQuality: 1
       m_weight: 0.01

@@ -1,0 +1,16 @@
+{
+  "name": "com.passivepicasso.thunderkit",
+  "version": "3.3.0",
+  "displayName": "ThunderKit",
+  "description": "Mod toolkit for working with Thunderstore",
+  "unity": "2018.4",
+  "release": "12f1",
+  "author": {
+    "name": "ThunderKit",
+    "url": "https://github.com/PassivePicasso/ThunderKit"
+  },
+  "dependencies": {
+    "com.unity.scriptablebuildpipeline": "1.16.1"
+  }
+}
+ 
