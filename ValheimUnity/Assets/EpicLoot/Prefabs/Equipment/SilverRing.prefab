@@ -119,13 +119,13 @@ MonoBehaviour:
     m_quality: 1
     m_variant: 0
     m_shared:
-      m_name: Silver Ring
+      m_name: $mod_epicloot_assets_SilverRing
       m_dlc: 
       m_itemType: 18
       m_icons:
       - {fileID: 21300000, guid: 2ab84721236793a448f29e958db233eb, type: 3}
       m_attachOverride: 0
-      m_description: An intricately wrought loop of fine silver
+      m_description: $mod_epicloot_assets_SilverRing_introduce
       m_maxStackSize: 1
       m_maxQuality: 1
       m_weight: 0.1

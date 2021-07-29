@@ -70,13 +70,13 @@ PrefabInstance:
     - target: {fileID: 8495594747941318552, guid: c8d9be30add4b914cbe91a4732a05c05,
         type: 3}
       propertyPath: m_itemData.m_shared.m_name
-      value: Epic Reagent
+      value: Epic $mod_epicloot_assets_Reagent
       objectReference: {fileID: 0}
     - target: {fileID: 8495594747941318552, guid: c8d9be30add4b914cbe91a4732a05c05,
         type: 3}
       propertyPath: m_itemData.m_shared.m_description
-      value: A form representing pure synthesis. Used to enchant or augment armor
-        and shields. Obtained by sacrificing magic armor or shields.
+      value: $mod_epicloot_assets_Reagent_introduce
+        
       objectReference: {fileID: 0}
     - target: {fileID: 8495594747941318552, guid: c8d9be30add4b914cbe91a4732a05c05,
         type: 3}

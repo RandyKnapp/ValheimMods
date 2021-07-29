@@ -308,6 +308,7 @@ namespace EpicLoot.Crafting
                         (canCraft ? 
                             (hasAnyAvailableEnchants ?
                                 ""
+
                                 : Localization.instance.Localize("$mod_epicloot_augment_noeffects")) 
                             : Localization.instance.Localize("$msg_missingrequirement")) 
                         : Localization.instance.Localize("$mod_epicloot_augment_selecteffect");

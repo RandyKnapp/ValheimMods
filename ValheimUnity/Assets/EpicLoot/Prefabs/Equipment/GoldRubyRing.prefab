@@ -213,13 +213,13 @@ MonoBehaviour:
     m_quality: 1
     m_variant: 0
     m_shared:
-      m_name: Gold Ruby Ring
+      m_name: $mod_epicloot_assets_GoldRubyRing
       m_dlc: 
       m_itemType: 18
       m_icons:
       - {fileID: 21300000, guid: c2a0eec8f4713ba49b7f10f806e62b7e, type: 3}
       m_attachOverride: 0
-      m_description: A beautiful ring of fine gold, set with a square-cut ruby
+      m_description: $mod_epicloot_assets_GoldRubyRing_introduce
       m_maxStackSize: 1
       m_maxQuality: 1
       m_weight: 0.1
