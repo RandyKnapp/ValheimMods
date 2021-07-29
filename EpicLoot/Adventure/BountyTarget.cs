@@ -101,7 +101,7 @@ namespace EpicLoot.Adventure
                 }
                 catch (Exception)
                 {
-                    EpicLoot.LogError($"Error loading bounty info on creature ({name})! Possibly old or outdated bounty target, destroying creature.\nBountyData:\n{pkgString}");
+                    Debug.LogError($"[EpicLoot] Error loading bounty info on creature ({name})! Possibly old or outdated bounty target, destroying creature.\nBountyData:\n{pkgString}");
                     _zdo.Set("BountyTarget", "");
                     _zdo.Set(BountyDataKey, "");
                     _character.m_nview.Destroy();

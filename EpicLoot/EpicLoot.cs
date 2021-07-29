@@ -918,6 +918,11 @@ namespace EpicLoot
             return HasAuga ? Assets.AugaSetItemSprite : Assets.GenericSetItemSprite;
         }
 
+        public static string GetMagicEffectPip(bool hasBeenAugmented)
+        {
+            return HasAuga ? (hasBeenAugmented ? "♢" : "♦") : (hasBeenAugmented ? "◇" : "◆");
+        }
+
         private static bool IsNotRestrictedItem(ItemDrop.ItemData item)
         {
             return !LootRoller.Config.RestrictedItems.Contains(item.m_shared.m_name);

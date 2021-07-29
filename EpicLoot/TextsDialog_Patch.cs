@@ -68,7 +68,10 @@ namespace EpicLoot
                 t.AppendLine();
             }
 
-            textsDialog.m_texts.Insert(2, new TextsDialog.TextInfo(Localization.instance.Localize("$mod_epicloot_active_magic_effects"), Localization.instance.Localize(t.ToString())));
+            textsDialog.m_texts.Insert(EpicLoot.HasAuga ? 0 : 2, 
+                new TextsDialog.TextInfo(
+                    Localization.instance.Localize($"{EpicLoot.GetMagicEffectPip(false)} $mod_epicloot_active_magic_effects"), 
+                    Localization.instance.Localize(t.ToString())));
         }
         
         public static void AddTreasureAndBountiesPage(TextsDialog textsDialog, Player player)
@@ -123,7 +126,10 @@ namespace EpicLoot
                 t.AppendLine();
             }
 
-            textsDialog.m_texts.Insert(4, new TextsDialog.TextInfo(Localization.instance.Localize("$mod_epicloot_adventure_title"), Localization.instance.Localize(t.ToString())));
+            textsDialog.m_texts.Insert(EpicLoot.HasAuga ? 2 : 4, 
+                new TextsDialog.TextInfo(
+                    Localization.instance.Localize($"{EpicLoot.GetMagicEffectPip(false)} $mod_epicloot_adventure_title"), 
+                    Localization.instance.Localize(t.ToString())));
         }
         
         public static string GetBiomeColor(Heightmap.Biome biome)
@@ -166,9 +172,10 @@ namespace EpicLoot
                 t.AppendLine();
             }
 
-            textsDialog.m_texts.Insert(3, new TextsDialog.TextInfo(
-                Localization.instance.Localize("$mod_epicloot_me_explaintitle"),
-                Localization.instance.Localize(t.ToString())));
+            textsDialog.m_texts.Insert(EpicLoot.HasAuga ? 1 : 3,
+                new TextsDialog.TextInfo(
+                    Localization.instance.Localize($"{EpicLoot.GetMagicEffectPip(false)} $mod_epicloot_me_explaintitle"),
+                    Localization.instance.Localize(t.ToString())));
         }
     }
 

@@ -476,8 +476,8 @@ namespace EpicLoot.Crafting
 
         private static string GetAugmentSelectorText(MagicItem magicItem, int i, IReadOnlyList<MagicItemEffect> augmentableEffects, ItemRarity rarity)
         {
-            var symbol = EpicLoot.HasAuga ? (magicItem.IsEffectAugmented(i) ? "♢ " : "♦ ") : (magicItem.IsEffectAugmented(i) ? "◇ " : "◆ ");
-            return symbol + Localization.instance.Localize(MagicItem.GetEffectText(augmentableEffects[i], rarity, true));
+            var pip = EpicLoot.GetMagicEffectPip(magicItem.IsEffectAugmented(i));
+            return $"{pip} {Localization.instance.Localize(MagicItem.GetEffectText(augmentableEffects[i], rarity, true))}";
         }
 
         private void OnSelectorValueChanged(int index, bool selected)
@@ -661,7 +661,7 @@ namespace EpicLoot.Crafting
             nameText.text = Localization.instance.Localize(item.GetDecoratedName());
             if (item.GetMagicItem() != null && item.GetMagicItem().HasBeenAugmented())
             {
-                nameText.text += EpicLoot.HasAuga ? " ♢" : " ◇";
+                nameText.text += $" {EpicLoot.GetMagicEffectPip(true)}";
             }
             nameText.color = Color.white;
 

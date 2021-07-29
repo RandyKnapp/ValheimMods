@@ -84,9 +84,16 @@ namespace EpicLoot.MagicItemEffects
         [UsedImplicitly]
         private static void Prefix(Projectile __instance, Collider collider)
         {
-            if (collider != null && Projectile.FindHitObject(collider) is GameObject target && target.GetComponent<Character>() is Character character)
+            if (collider == null)
             {
-                if (__instance.m_nview?.GetZDO() is ZDO zdo)
+                return;
+            }
+
+            var target = Projectile.FindHitObject(collider);
+            if (target != null)
+            {
+                var character = target.GetComponent<Character>();
+                if (character != null && __instance.m_nview?.GetZDO() is ZDO zdo)
                 {
                     var staggerValue = zdo.GetFloat(ModifyStaggerDuration.ZdoKey, 1f);
                     character.m_nview.GetZDO().Set(ModifyStaggerDuration.ZdoKey, staggerValue);
