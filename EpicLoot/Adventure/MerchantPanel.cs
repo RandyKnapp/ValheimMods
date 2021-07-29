@@ -133,7 +133,18 @@ namespace EpicLoot.Adventure
             var gambleRefreshTooltip = GetRefreshTimeTooltip(AdventureDataManager.Gamble.RefreshInterval);
             var treasureMapRefreshTooltip = GetRefreshTimeTooltip(AdventureDataManager.TreasureMaps.RefreshInterval);
             var bountiesRefreshTooltip = GetRefreshTimeTooltip(AdventureDataManager.Bounties.RefreshInterval);
-            transform.Find("Sundial").GetComponent<UITooltip>().m_text =
+
+            var sundialTooltip = transform.Find("Sundial").GetComponent<UITooltip>();
+            if (EpicLoot.HasAuga)
+            {
+                Auga.API.Tooltip_MakeSimpleTooltip(sundialTooltip.gameObject);
+                var rt = (RectTransform)sundialTooltip.transform;
+                rt.anchoredPosition = new Vector2(20, -20);
+                rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 40);
+                rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 40);
+            }
+
+            sundialTooltip.m_text =
                 $"$mod_epicloot_merchant_secretstash: {secretStashRefreshTooltip}\n" +
                 $"$mod_epicloot_merchant_gamble: {gambleRefreshTooltip}\n" +
                 $"$mod_epicloot_merchant_treasuremaps: {treasureMapRefreshTooltip}\n" +
