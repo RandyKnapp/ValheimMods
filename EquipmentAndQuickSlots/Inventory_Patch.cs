@@ -461,22 +461,6 @@ namespace EquipmentAndQuickSlots
         }
     }
 
-    //  public float GetTotalWeight() => this.m_totalWeight;
-    [HarmonyPatch(typeof(Inventory), "GetTotalWeight")]
-    public static class Inventory_GetTotalWeight_Patch
-    {
-        public static bool Prefix(Inventory __instance, ref float __result)
-        {
-            if (__instance.DoExtendedCall())
-            {
-                __result = __instance.Extended().OverrideGetTotalWeight();
-                return false;
-            }
-
-            return true;
-        }
-    }
-
     //public bool IsTeleportable()
     [HarmonyPatch(typeof(Inventory), "IsTeleportable")]
     public static class Inventory_IsTeleportable_Patch

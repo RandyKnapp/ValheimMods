@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using System.Linq;
+using HarmonyLib;
 
 namespace EpicLoot.MagicItemEffects
 {
@@ -9,11 +10,22 @@ namespace EpicLoot.MagicItemEffects
         public static void Postfix(ItemDrop.ItemData __instance, ref float __result)
         {
             var player = PlayerExtensions.GetPlayerWithEquippedItem(__instance);
-	        var totalArmorMod = 0f;
-	        ModifyWithLowHealth.Apply(player, MagicEffectType.ModifyArmor, effect =>
-	        {
-			    totalArmorMod += MagicEffectsHelper.GetTotalActiveMagicEffectValue(player, __instance, effect, 0.01f);
-	        });
+
+            // Apply this item's armor for just this item
+            var totalArmorMod = __instance.GetMagicItem()?.GetTotalEffectValue(MagicEffectType.ModifyArmor, 0.01f) ?? 0f;
+
+            // apply +armor from set bonuses globally
+            if (player != null)
+            {
+                totalArmorMod += MagicEffectsHelper.GetTotalActiveSetEffectValue(player, MagicEffectType.ModifyArmor, 0.01f);
+            }
+
+            // Apply +armor (health critical) for all items
+            ModifyWithLowHealth.ApplyOnlyForLowHealth(player, MagicEffectType.ModifyArmor, effect =>
+            {
+                totalArmorMod += MagicEffectsHelper.GetTotalActiveMagicEffectValue(player, __instance, effect, 0.01f);
+            });
+
             __result *= 1.0f + totalArmorMod;
         }
     }

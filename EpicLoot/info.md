@@ -1,4 +1,4 @@
-# EpicLoot Data v0.8.0
+# EpicLoot Data v0.8.3
 
 *Author: RandyKnapp*
 *Source: [Github](https://github.com/RandyKnapp/ValheimMods/tree/main/EpicLoot)*
@@ -72,7 +72,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## Andvaranaut
 
-> **Display Text:** 
+> **Display Text:** Haldor's Treasure Finder
 > 
 > **Allowed Item Types:** *None*
 > 
@@ -227,6 +227,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > > **Flags:** `ExclusiveSelf, ItemHasParryPower`
 > > **AllowedItemTypes:** `Shield, TwoHandedWeapon`
 > > **ExcludedSkillTypes:** `Pickaxes`
+> > **ExcludedItemNames:** `$item_shield_serpentscale`
 > 
 > **Value Per Rarity:**
 > 
@@ -1712,7 +1713,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## ModifyArmorLowHealth
 
-> **Display Text:** Armor +{0:0.#}% (Health Critical)
+> **Display Text:** All Armor +{0:0.#}% (Health Critical)
 > 
 > **Prefixes:** Heavy, Protected
 > **Suffixes:** Protection
@@ -1791,6 +1792,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > > **Flags:** `ExclusiveSelf, ItemHasParryPower`
 > > **AllowedItemTypes:** `Shield, TwoHandedWeapon`
 > > **ExcludedSkillTypes:** `Pickaxes`
+> > **ExcludedItemNames:** `$item_shield_serpentscale`
 > 
 > **Value Per Rarity:**
 > 
@@ -2018,6 +2020,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > **Requirements:**
 > > **Flags:** `ExclusiveSelf, ItemHasParryPower`
 > > **AllowedItemTypes:** `Shield`
+> > **ExcludedItemNames:** `$item_shield_serpentscale`
 > 
 > **Value Per Rarity:**
 > 
@@ -2053,7 +2056,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## Bulwark
 
-> **Display Text:** Bulwark [Activated]: Prevent all damage for {0} seconds. Cooldown: 60 seconds.
+> **Display Text:** Bulwark [Activated]: Prevent all damage for 5 seconds. Cooldown: 60 seconds.
 > 
 > **Allowed Item Types:** *None*
 > 
@@ -4726,6 +4729,74 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 > | Tier3Everything | 10 (90.9%) | 0 (0%) | 60 (60%) | 25 (25%) | 15 (15%) |
 
 
+## Draugr_Ranged
+
+> | Drops (lvl 1) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 85 (85%) |
+> | 1 | 15 (15%) |
+
+> | Drops (lvl 2) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 75 (75%) |
+> | 1 | 25 (25%) |
+
+> | Drops (lvl 3) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 65 (65%) |
+> | 1 | 34 (34%) |
+> | 2 | 1 (1%) |
+
+> | Drops (lvl 4) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 50 (50%) |
+> | 1 | 48 (48%) |
+> | 2 | 2 (2%) |
+
+> | Drops (lvl 5) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 35 (35%) |
+> | 1 | 61 (61%) |
+> | 2 | 3 (3%) |
+> | 3 | 1 (1%) |
+
+> | Drops (lvl 6) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 20 (20%) |
+> | 1 | 74 (74%) |
+> | 2 | 4 (4%) |
+> | 3 | 2 (2%) |
+
+> | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier2Everything | 1 (100%) | 24 (24%) | 73 (73%) | 2 (2%) | 1 (1%) |
+
+> | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier2Everything | 5 (83.3%) | 15 (15%) | 78 (78%) | 5 (5%) | 2 (2%) |
+> | Tier3Everything | 1 (16.7%) | 15 (15%) | 78 (78%) | 5 (5%) | 2 (2%) |
+
+> | Items (lvl 3) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier2Everything | 3 (75%) | 5 (5%) | 83 (83%) | 9 (9%) | 3 (3%) |
+> | Tier3Everything | 1 (25%) | 5 (5%) | 83 (83%) | 9 (9%) | 3 (3%) |
+
+> | Items (lvl 4) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier2Everything | 1 (50%) | 0 (0%) | 80 (80%) | 15 (15%) | 5 (5%) |
+> | Tier3Everything | 1 (50%) | 0 (0%) | 80 (80%) | 15 (15%) | 5 (5%) |
+
+> | Items (lvl 5) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier2Everything | 1 (16.7%) | 0 (0%) | 70 (70%) | 20 (20%) | 10 (10%) |
+> | Tier3Everything | 5 (83.3%) | 0 (0%) | 70 (70%) | 20 (20%) | 10 (10%) |
+
+> | Items (lvl 6) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier2Everything | 1 (9.1%) | 0 (0%) | 60 (60%) | 25 (25%) | 15 (15%) |
+> | Tier3Everything | 10 (90.9%) | 0 (0%) | 60 (60%) | 25 (25%) | 15 (15%) |
+
+
 ## Leech
 
 > | Drops (lvl 1) | Weight (Chance) |
@@ -5573,6 +5644,78 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 
 
 ## Goblin
+
+> | Drops (lvl 1) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 75 (75%) |
+> | 1 | 24 (24%) |
+> | 2 | 1 (1%) |
+
+> | Drops (lvl 2) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 60 (60%) |
+> | 1 | 38 (38%) |
+> | 2 | 2 (2%) |
+
+> | Drops (lvl 3) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 45 (45%) |
+> | 1 | 51 (51%) |
+> | 2 | 3 (3%) |
+> | 3 | 1 (1%) |
+
+> | Drops (lvl 4) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 25 (25%) |
+> | 1 | 69 (69%) |
+> | 2 | 4 (4%) |
+> | 3 | 2 (2%) |
+
+> | Drops (lvl 5) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 5 (5%) |
+> | 1 | 87 (87%) |
+> | 2 | 5 (5%) |
+> | 3 | 3 (3%) |
+
+> | Drops (lvl 6) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 0 (0%) |
+> | 1 | 86 (86%) |
+> | 2 | 10 (10%) |
+> | 3 | 4 (4%) |
+
+> | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier4Everything | 1 (100%) | 0 (0%) | 50 (48.5%) | 49 (47.6%) | 4 (3.9%) |
+
+> | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier4Everything | 5 (83.3%) | 0 (0%) | 30 (30%) | 65 (65%) | 5 (5%) |
+> | Tier5Everything | 1 (16.7%) | 0 (0%) | 30 (30%) | 65 (65%) | 5 (5%) |
+
+> | Items (lvl 3) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier4Everything | 3 (75%) | 0 (0%) | 10 (10%) | 80 (80%) | 10 (10%) |
+> | Tier5Everything | 1 (25%) | 0 (0%) | 10 (10%) | 80 (80%) | 10 (10%) |
+
+> | Items (lvl 4) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier4Everything | 1 (50%) | 0 (0%) | 0 (0%) | 85 (85%) | 15 (15%) |
+> | Tier5Everything | 1 (50%) | 0 (0%) | 0 (0%) | 85 (85%) | 15 (15%) |
+
+> | Items (lvl 5) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier4Everything | 1 (16.7%) | 0 (0%) | 0 (0%) | 80 (80%) | 20 (20%) |
+> | Tier5Everything | 5 (83.3%) | 0 (0%) | 0 (0%) | 80 (80%) | 20 (20%) |
+
+> | Items (lvl 6) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier4Everything | 1 (9.1%) | 0 (0%) | 0 (0%) | 75 (75%) | 25 (25%) |
+> | Tier5Everything | 10 (90.9%) | 0 (0%) | 0 (0%) | 75 (75%) | 25 (25%) |
+
+
+## GoblinArcher
 
 > | Drops (lvl 1) | Weight (Chance) |
 > | -- | -- |

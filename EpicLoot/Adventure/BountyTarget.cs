@@ -44,26 +44,39 @@ namespace EpicLoot.Adventure
 
         private bool HasBeenSetup()
         {
-            var bountyID = _zdo.GetString(BountyTarget.BountyIDKey);
+            var bountyID = _zdo.GetString(BountyIDKey);
             return !string.IsNullOrEmpty(bountyID);
         }
 
         private void OnDeath()
         {
-            var pkg = new ZPackage();
-            _bountyInfo.ToPackage(pkg);
+            EpicLoot.LogWarning("BountyTarget.OnDeath");
+            if (ZNet.instance.IsServer() || !ZNet.instance.IsServer() && !ZNet.instance.IsDedicated())
+            {
+                var pkg = new ZPackage();
+                _bountyInfo.ToPackage(pkg);
 
-            ZRoutedRpc.instance.InvokeRoutedRPC("SlayBountyTarget", pkg, _monsterID, _isAdd);
+                EpicLoot.LogWarning($"SENDING -> RPC_SlayBountyTarget: {_monsterID} ({(_isAdd ? "minion" : "target")})");
+                ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.Everybody, "SlayBountyTarget", pkg, _monsterID, _isAdd);
+            }
+            else
+            {
+                var bountyID = _zdo.GetString(BountyIDKey);
+                EpicLoot.LogWarning($"SENDING -> RPC_SlayBountyTargetFromBountyId: (bountyID={bountyID}) {_monsterID} ({(_isAdd ? "minion" : "target")})");
+                ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.Everybody, "SlayBountyIDTarget", _monsterID, _isAdd, bountyID);
+            }
         }
 
         public void Initialize(BountyInfo bounty, string monsterID, bool isAdd)
         {
             _zdo.Set(BountyIDKey, bounty.ID);
-
-            var pkg = new ZPackage();
-            bounty.ToPackage(pkg);
-            pkg.SetPos(0);
-            _zdo.Set(BountyDataKey, pkg.GetBase64());
+            if (ZNet.instance.IsServer() || !ZNet.instance.IsServer() && !ZNet.instance.IsDedicated())
+            {
+                var pkg = new ZPackage();
+                bounty.ToPackage(pkg);
+                pkg.SetPos(0);
+                _zdo.Set(BountyDataKey, pkg.GetBase64());
+            }
             _zdo.Set(MonsterIDKey, monsterID);
             _zdo.Set(IsAddKey, isAdd);
             _zdo.Set(BountyTargetNameKey, GetTargetName(_character.m_name, isAdd, bounty.TargetName));
@@ -77,10 +90,12 @@ namespace EpicLoot.Adventure
 
         public void Reinitialize()
         {
-            var pkgString = _zdo.GetString(BountyDataKey);
-            var pkg = new ZPackage(pkgString);
-            _bountyInfo = BountyInfo.FromPackage(pkg);
-
+            if (ZNet.instance.IsServer() || !ZNet.instance.IsServer() && !ZNet.instance.IsDedicated())
+            { 
+                var pkgString = _zdo.GetString(BountyDataKey);
+                var pkg = new ZPackage(pkgString);
+                _bountyInfo = BountyInfo.FromPackage(pkg);
+            }
             _monsterID = _zdo.GetString(MonsterIDKey);
             _isAdd = _zdo.GetBool(IsAddKey);
 
@@ -94,14 +109,13 @@ namespace EpicLoot.Adventure
             {
                 return character.GetMaxHealth() * AdventureDataManager.Config.Bounties.AddsHealthMultiplier;
             }
-            else if (bounty.RewardGold > 0)
+
+            if (bounty.RewardGold > 0)
             {
                 return character.GetMaxHealth() * AdventureDataManager.Config.Bounties.GoldHealthMultiplier;
             }
-            else
-            {
-                return character.GetMaxHealth() * AdventureDataManager.Config.Bounties.IronHealthMultiplier;
-            }
+
+            return character.GetMaxHealth() * AdventureDataManager.Config.Bounties.IronHealthMultiplier;
         }
 
         private static string GetTargetName(string originalName, bool isAdd, string targetName)
@@ -125,10 +139,8 @@ namespace EpicLoot.Adventure
 
                 return 1;
             }
-            else
-            {
-                return bounty.Target.Level;
-            }
+
+            return bounty.Target.Level;
         }
     }
 

@@ -1,4 +1,6 @@
-﻿namespace EpicLoot.MagicItemEffects
+﻿using System.Linq;
+
+namespace EpicLoot.MagicItemEffects
 {
     public static class MagicEffectsHelper
     {
@@ -38,6 +40,12 @@
             }
 
             return false;
+        }
+
+        public static float GetTotalActiveSetEffectValue(Player player, string effectType, float scale = 1.0f)
+        {
+            var setEffects = player.GetAllActiveSetMagicEffects(MagicEffectType.ModifyArmor);
+            return setEffects.Count > 0 ? scale * setEffects.Sum(x => x.EffectValue) : 0;
         }
     }
 }

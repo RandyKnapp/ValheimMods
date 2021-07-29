@@ -1,4 +1,4 @@
-{
+﻿{
   "mod_epicloot_sacrifice": "Sacrifice",
   "mod_epicloot_sacrifice_warning": "This item will be DESTROYED as a SACRIFICE to the gods.", 
   "mod_epicloot_sacrifice_explanation": "Destroy this item and get:", 
@@ -755,7 +755,7 @@
   "mod_epicloot_me_modifystaminaregenlowhealth_desc": "The player's stamina regen is increased by +<b><color=yellow>X</color></b>% when below 30% health.",
   "mod_epicloot_me_modifystaminaregenlowhealth_prefix1": "Recovering",
   "mod_epicloot_me_modifystaminaregenlowhealth_suffix1": "Recovery",
-  "mod_epicloot_me_modifyarmorlowhealth_display": "Armor +{0:0.#}% (Health Critical)",
+  "mod_epicloot_me_modifyarmorlowhealth_display": "All Armor +{0:0.#}% (Health Critical)",
   "mod_epicloot_me_modifyarmorlowhealth_desc": "The player's total armor is increased by +<b><color=yellow>X</color></b>% when below 30% health.",
   "mod_epicloot_me_modifyarmorlowhealth_prefix1": "Heavy",
   "mod_epicloot_me_modifyarmorlowhealth_prefix2": "Protected",
@@ -828,10 +828,17 @@
   "mod_epicloot_me_slow_prefix1": "Sluggish",
   "mod_epicloot_me_slow_suffix1": "Lethargy",
 
-  "mod_epicloot_set_me_bulwark": "Bulwark [Activated]: Prevent all damage for {0} seconds. Cooldown: 60 seconds.", 
+  "mod_epicloot_set_me_bulwark": "Bulwark [Activated]: Prevent all damage for 5 seconds. Cooldown: 60 seconds.", 
   "mod_epicloot_set_me_undying": "Undying [Passive]: On death, regain full health. Cooldown: 20 minutes.", 
   "mod_epicloot_set_me_frostdamageaoe_display": "Melee attacks that deal frost damage deal an additional 50% of weapon damage as frost in a cone in front of the attacker.", 
   "mod_epicloot_set_me_berserker": "Berserker [Activated]: For 10 seconds, you cannot regenerate health, but you gain +50% to +200% damage based on health missing. Cooldown: 3 minutes.", 
+
+  "mod_epicloot_basicmagicnameformat": "Magic {0}", // 0 = base name
+  "mod_epicloot_fullnameformat": "{0}{1}{2}", // 0 = prefix, 1 = base name, 2 = suffix
+  "mod_epicloot_prefixformat": "{0} ",
+  "mod_epicloot_suffixformat": " of {0}",
+  "mod_epicloot_epicnameformat": "{0} {1}", // 0 = adjective, 1 = name
+  "mod_epicloot_basiclegendarynameformat": "Legendary {0}", // 0 = base name
 
   "mod_epicloot_rare_prefix1": "Strange",
   "mod_epicloot_rare_prefix2": "Rare",
@@ -1038,6 +1045,34 @@
   "mod_epicloot_l_gungnir_desc": "Fashioned from the wood of the world tree Yggdrasil and engraved with the contracts from which Odin's power derives.",
   "mod_epicloot_l_mjolnir": "Mjolnir, Hammer of Thor", 
   "mod_epicloot_l_mjolnir_desc": "\"Mjolnir hurled forth towards the savage crew, and slew all the mountain-giants, who with Hyimir had him pursued.\" -Hymiskvida, Poetic Edda", 
+  "mod_epicloot_l_lokis": "Lævateinn, Knife of Loki", 
+  "mod_epicloot_l_lokis_desc": "Created to destroy the falcon Víðópnir, it crackles with godlike energies.", 
+  "mod_epicloot_l_valk": "Strength of the Valkyrie", 
+  "mod_epicloot_l_valk_desc": "Those nearest to death are closest to glory.", 
+  "mod_epicloot_l_skofnung": "Skofnung", 
+  "mod_epicloot_l_skofnung_desc": "The blade of legendary king Hrólfr Kraki, supernaturally sharp and imbued with the souls of his 12 faithful berserker bodyguards.", 
+  "mod_epicloot_l_gram": "Gram", 
+  "mod_epicloot_l_gram_desc": "The blade pulled from the tree, broken by Odin and reforged by dwarves, the slayer of Fafnir- it is the legendary blade itself!", 
+  "mod_epicloot_l_angurvadal": "Angurvadal", 
+  "mod_epicloot_l_angurvadal_desc": "Inscribed with runes, the sword of Fritiof is dim in times of peace, but brightly glows in times of war.", 
+  "mod_epicloot_l_shard": "The Shattering", 
+  "mod_epicloot_l_shard_desc": "Forged from shards harvested from the shattered edges of reality iself, from when Valheim was sundered from the realms.", 
+  "mod_epicloot_l_gunnar": "Atgier of Sagas", 
+  "mod_epicloot_l_gunnar_desc": "Gunnar Hámundarson's legendary Atgeir, said to sing when taken down for battle. It cuts as sharp as any song.", 
+  "mod_epicloot_l_skadi": "Skaði's Hunt", 
+  "mod_epicloot_l_skadi_desc": "The favored weapon of the goddess of the hunt, it's weilder is imbued with the swiftness of her legendary skis.", 
+  "mod_epicloot_l_ullr": "Ullr's Favor", 
+  "mod_epicloot_l_ullr_desc": "Ullr's mighty bow of the winter hunt, often given as a reward to those who have done favors for Odin. It seems that you are the latest to have gained his gratitude.", 
+  "mod_epicloot_l_endbow": "The Endless Hunt", 
+  "mod_epicloot_l_endbow_desc": "Forged from star fire and imbued with the legacy of your heroic deeds, this bow will never fail you. The Hunter of the Forsaken will never falter.", 
+  "mod_epicloot_l_lind": "Message of Lindisfame", 
+  "mod_epicloot_l_lind_desc": "Let all those who think they are safe and forever protected know- Odin's war is coming.", 
+  "mod_epicloot_l_hofund": "Höfuð", 
+  "mod_epicloot_l_hofund_desc": "The sword of Heimdall, the watchman of the gods and the keeper of the Bifrost bridge to Asgard. This blade is truly worthy of the eternal watchman.", 
+  "mod_epicloot_l_njord": "Njǫrd's Favor", 
+  "mod_epicloot_l_njord_desc": "The god Njǫrd, ruler of wind, sea, and riches, caught a piece of hurricane gale and fashioned it into this knife. A blade as swift and cutting as the northern wind.", 
+  "mod_epicloot_l_bloodmace": "Life-Drinker", 
+  "mod_epicloot_l_bloodmace_desc": "The spirits of the deathsquitos remain in this weapon, thirsting to drink deep of blood and grow strong.", 
 
   "mod_epicloot_l_heimdalltowershield": "Guardian of the Gods",
   "mod_epicloot_l_heimdalltowershield_desc": "None shall cross the burning rainbow bridge of Bifrost whilst Heimdall bars the way.",

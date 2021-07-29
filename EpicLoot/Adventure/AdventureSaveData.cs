@@ -127,6 +127,19 @@ namespace EpicLoot.Adventure
 
             return result;
         }
+
+        public static BountyInfo FromBountyID(string ID)
+        {
+            try
+            {
+                return Player.m_localPlayer.GetAdventureSaveData().Bounties.Where(b => b.ID == ID).Single();
+            }
+            catch
+            {
+                EpicLoot.LogError($"Bounty {ID} not found");
+                return null;
+            }
+        }
     }
 
     [Serializable]

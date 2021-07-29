@@ -7,10 +7,23 @@ namespace EpicLoot.MagicItemEffects
 		public static void Apply(Player player, string name, Action<string> action)
 		{
 			action(name);
-			if (player != null && player.GetHealth() / player.GetMaxHealth() < 0.3f)
+			if (PlayerHasLowHealth(player))
 			{
 				action(name + "LowHealth");
 			}
 		}
+
+        public static void ApplyOnlyForLowHealth(Player player, string name, Action<string> action)
+        {
+            if (PlayerHasLowHealth(player))
+            {
+                action(name + "LowHealth");
+            }
+        }
+
+        public static bool PlayerHasLowHealth(Player player)
+        {
+            return player != null && player.GetHealth() / player.GetMaxHealth() < 0.3f;
+        }
 	}
 }

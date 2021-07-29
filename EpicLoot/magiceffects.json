@@ -29,6 +29,7 @@
     },
     {
       "Type": "Andvaranaut",
+      "DisplayText" : "$mod_epicloot_me_andvaranaut_display",
       "CanBeAugmented": false, 
       "Requirements" : {
         "NoRoll": true
@@ -290,6 +291,9 @@
         ],
         "ExcludedSkillTypes": [
           "Pickaxes"
+        ],
+        "ExcludedItemNames": [
+          "$item_shield_serpentscale"
         ],
         "ItemHasParryPower" : true
       },
@@ -2317,6 +2321,9 @@
         "ExcludedSkillTypes": [
           "Pickaxes"
         ],
+        "ExcludedItemNames": [
+          "$item_shield_serpentscale"
+        ],
         "ItemHasParryPower" : true
       },
       "ValuesPerRarity" : {
@@ -2624,6 +2631,9 @@
       "Requirements" : {
         "AllowedItemTypes" : [
           "Shield"
+        ],
+        "ExcludedItemNames": [
+          "$item_shield_serpentscale"
         ],
         "ItemHasParryPower" : true
       },

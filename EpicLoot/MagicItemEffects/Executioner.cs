@@ -33,7 +33,7 @@ namespace EpicLoot.MagicItemEffects
 		[UsedImplicitly]
 		private static void Prefix(Character __instance, HitData hit)
 		{
-			if (hit?.GetAttacker() is Player player)
+			if (hit?.GetAttacker() is Player player && __instance != null)
 			{
 				if (__instance.GetComponent<ZNetView>().GetZDO().GetBool("epic loot executioner flag " + player.GetZDO().m_uid))
 				{
@@ -51,8 +51,7 @@ namespace EpicLoot.MagicItemEffects
 					__instance.GetComponent<ZNetView>().GetZDO().Set("epic loot executioner flag " + player.GetZDO().m_uid, true);
 				}
 			}
-
-
+            
 			ExecutionerMultiplier = null;
 		}
 

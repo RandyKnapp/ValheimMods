@@ -82,7 +82,7 @@
 - [X] Mjolnir (Iron Sledge)
 - [ ] Skofnung (Iron Sword)
 - [ ] Dainslief (Silver Sword)
-- [ ] Angurvadal (Sword)
+- [X] Angurvadal (Sword)
 - [ ] Vidar's Shoes (Iron Legs, huge kick damage boost?)
 - [ ] Skidbaldnir (ship that can turn into an item)
 - [ ] Hofund (Sword, charges with each kill, then discharges on heavy attack)
