@@ -119,15 +119,15 @@ MonoBehaviour:
     m_quality: 1
     m_variant: 0
     m_shared:
-      m_name: Andvaranaut
+      m_name: $mod_epicloot_assets_Andvaranaut
       m_dlc: 
       m_itemType: 18
       m_icons:
       - {fileID: 21300000, guid: 22113e598a258284a9b19135117a8634, type: 3}
       m_attachOverride: 0
-      m_description: A dwarven-crafted ring in the shape of a dragon. Supposedly,
-        it will guide any who wear it to sources of gold, but this one seems to be
-        cursed to only find Haldor's treasure chests.
+      m_description: $mod_epicloot_assets_Andvaranaut_introduce
+        
+        
       m_maxStackSize: 1
       m_maxQuality: 1
       m_weight: 0.1

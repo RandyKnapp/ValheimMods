@@ -222,13 +222,13 @@ MonoBehaviour:
     m_quality: 1
     m_variant: 0
     m_shared:
-      m_name: Iron Bounty Token
+      m_name: $mod_epicloot_assets_IronBountyToken
       m_dlc: 
       m_itemType: 16
       m_icons:
       - {fileID: 21300000, guid: b43c59fe16120ab48b68b7398c97aee2, type: 3}
       m_attachOverride: 0
-      m_description: A toothy iron skull that commemorates your deeds.
+      m_description: $mod_epicloot_assets_IronBountyToken_introduce
       m_maxStackSize: 999
       m_maxQuality: 1
       m_weight: 0.01

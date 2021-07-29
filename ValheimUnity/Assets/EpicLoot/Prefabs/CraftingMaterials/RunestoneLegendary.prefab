@@ -15,12 +15,12 @@ PrefabInstance:
     - target: {fileID: 198913167976628282, guid: 2240de27b5e08e845b1b823b1e94dfa8,
         type: 3}
       propertyPath: m_itemData.m_shared.m_name
-      value: Legendary Runestone
+      value: Legendary $mod_epicloot_assets_Runestone
       objectReference: {fileID: 0}
     - target: {fileID: 198913167976628282, guid: 2240de27b5e08e845b1b823b1e94dfa8,
         type: 3}
       propertyPath: m_itemData.m_shared.m_ammoType
-      value: Runestone
+      value: $mod_epicloot_assets_Reagent
       objectReference: {fileID: 0}
     - target: {fileID: 198913167976628282, guid: 2240de27b5e08e845b1b823b1e94dfa8,
         type: 3}
@@ -30,8 +30,8 @@ PrefabInstance:
     - target: {fileID: 198913167976628282, guid: 2240de27b5e08e845b1b823b1e94dfa8,
         type: 3}
       propertyPath: m_itemData.m_shared.m_description
-      value: A catalyst of empyreal potential. Used to enchant or augment magic items.
-        Obtained by sacrificing powerful trophies.
+      value: $mod_epicloot_assets_Runestone_introduce
+        
       objectReference: {fileID: 0}
     - target: {fileID: 198913167976628282, guid: 2240de27b5e08e845b1b823b1e94dfa8,
         type: 3}

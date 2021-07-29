@@ -15,13 +15,13 @@ PrefabInstance:
     - target: {fileID: 124223530235104039, guid: f8c9237298dab3a438c66dbedd157d72,
         type: 3}
       propertyPath: m_itemData.m_shared.m_name
-      value: Magic Shard
+      value: Magic $mod_epicloot_assets_Shard
       objectReference: {fileID: 0}
     - target: {fileID: 124223530235104039, guid: f8c9237298dab3a438c66dbedd157d72,
         type: 3}
       propertyPath: m_itemData.m_shared.m_description
-      value: A sliver of monstrous lifeforce. Used to augment magic items. Obtained
-        by sacrificing animal and monster trophies.
+      value: $mod_epicloot_assets_Shard_introduce
+        
       objectReference: {fileID: 0}
     - target: {fileID: 124223530235104039, guid: f8c9237298dab3a438c66dbedd157d72,
         type: 3}
