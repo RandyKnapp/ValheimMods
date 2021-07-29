@@ -23,7 +23,7 @@ namespace EpicLoot
             if (item.IsEquipable() && !item.m_equiped && Player.m_localPlayer != null && Player.m_localPlayer.HasEquipmentOfType(item.m_shared.m_itemType) && Input.GetKey(KeyCode.LeftControl))
             {
                 var otherItem = Player.m_localPlayer.GetEquipmentOfType(item.m_shared.m_itemType);
-                tooltipText = item.GetTooltip() + $"\n\n<color=#AAA><i>Currently Equipped:</i></color>\n<size=18>{otherItem.GetDecoratedName()}</size>\n" + otherItem.GetTooltip();
+                tooltipText = item.GetTooltip() + $"\n\n<color=#AAA><i>$mod_epicloot_CurrentlyEquipped:</i></color>\n<size=18>{otherItem.GetDecoratedName()}</size>\n" + otherItem.GetTooltip();
             }
             else
             {
@@ -117,7 +117,7 @@ namespace EpicLoot
             }
             else if (indestructible)
             {
-                text.Append($"\n$item_durability: <color={magicColor}>Indestructible</color>");
+                text.Append($"\n$item_durability: <color={magicColor}>$mod_epicloot_me_indestructible_display</color>");
             }
 
             var magicBlockPower = magicItem.HasEffect(MagicEffectType.ModifyBlockPower);
@@ -276,7 +276,7 @@ namespace EpicLoot
             if (item != null && (item.IsMagicCraftingMaterial() || item.IsRunestone()))
             {
                 var rarityDisplay = EpicLoot.GetRarityDisplayName(item.GetCraftingMaterialRarity());
-                __result = $"<color={item.GetCraftingMaterialRarityColor()}>{rarityDisplay} crafting material\n</color>" + __result;
+                __result = $"<color={item.GetCraftingMaterialRarityColor()}>{rarityDisplay} $mod_epicloot_craftingmaterial\n</color>" + __result;
             }
 
             if (item != null && !item.IsMagic())
@@ -314,7 +314,7 @@ namespace EpicLoot
             var currentSetEquipped = Player.m_localPlayer.GetEquippedSetPieces(setID);
 
             var setDisplayName = GetSetDisplayName(item, isMundane);
-            text.Append($"\n\n<color={EpicLoot.GetSetItemColor()}> Set: {setDisplayName} ({currentSetEquipped.Count}/{setSize}):</color>");
+            text.Append($"\n\n<color={EpicLoot.GetSetItemColor()}> $mod_epicloot_set {setDisplayName} ({currentSetEquipped.Count}/{setSize}):</color>");
 
             foreach (var setItemName in setPieces)
             {

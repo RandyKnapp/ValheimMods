@@ -64,3 +64,15 @@ sysinfo.txt
 crashlytics-build.properties
 
 *.swp
+/valheim_Data/BepInEx-out/plugins/ExtendedItemDataFramework.dll
+/valheim_Data/BepInEx-out/plugins/EpicLoot/translations.json
+/valheim_Data/BepInEx-out/plugins/EpicLoot/recipes.json
+/valheim_Data/BepInEx-out/plugins/EpicLoot/magiceffects.json
+/valheim_Data/BepInEx-out/plugins/EpicLoot/loottables.json
+/valheim_Data/BepInEx-out/plugins/EpicLoot/legendaries.json
+/valheim_Data/BepInEx-out/plugins/EpicLoot/itemnames.json
+/valheim_Data/BepInEx-out/plugins/EpicLoot/iteminfo.json
+/valheim_Data/BepInEx-out/plugins/EpicLoot/EpicLoot.dll
+/valheim_Data/BepInEx-out/plugins/EpicLoot/enchantcosts.json
+/valheim_Data/BepInEx-out/plugins/EpicLoot/adventuredata.json
+/valheim_Data/BepInEx-out/plugins/EpicLoot/abilities.json

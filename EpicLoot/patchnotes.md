@@ -1,4 +1,7 @@
-﻿## Version 0.8.2
+﻿## Version 0.8.3
+  * ServerSync updated to latest
+  * Fix for bounty completion bug
+## Version 0.8.2
   * Better item name localization
   * Fix for explosive arrow friendly fire
   * Fix for Armor +% magic effect
