@@ -117,7 +117,7 @@ namespace EpicLoot
             }
             else if (indestructible)
             {
-                text.Append($"\n$item_durability: <color={magicColor}>Indestructible</color>");
+                text.Append($"\n$item_durability: <color={magicColor}>$mod_epicloot_me_indestructible_display</color>");
             }
 
             var magicBlockPower = magicItem.HasEffect(MagicEffectType.ModifyBlockPower);
@@ -276,7 +276,7 @@ namespace EpicLoot
             if (item != null && (item.IsMagicCraftingMaterial() || item.IsRunestone()))
             {
                 var rarityDisplay = EpicLoot.GetRarityDisplayName(item.GetCraftingMaterialRarity());
-                __result = $"<color={item.GetCraftingMaterialRarityColor()}>{rarityDisplay} crafting material\n</color>" + __result;
+                __result = $"<color={item.GetCraftingMaterialRarityColor()}>{rarityDisplay} $mod_epicloot_craftingmaterial\n</color>" + __result;
             }
 
             if (item != null && !item.IsMagic())
@@ -314,7 +314,7 @@ namespace EpicLoot
             var currentSetEquipped = Player.m_localPlayer.GetEquippedSetPieces(setID);
 
             var setDisplayName = GetSetDisplayName(item, isMundane);
-            text.Append($"\n\n<color={EpicLoot.GetSetItemColor()}> Set: {setDisplayName} ({currentSetEquipped.Count}/{setSize}):</color>");
+            text.Append($"\n\n<color={EpicLoot.GetSetItemColor()}> $mod_epicloot_set {setDisplayName} ({currentSetEquipped.Count}/{setSize}):</color>");
 
             foreach (var setItemName in setPieces)
             {
