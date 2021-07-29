@@ -119,7 +119,7 @@ namespace EpicLoot.Adventure
             switch (BountyInfo.State)
             {
                 case BountyState.Available:
-                    _sb.AppendLine("  $mod_epicloot_bounties_tooltip_available");
+                    _sb.AppendLine($"  {Localization.instance.Localize("$mod_epicloot_bounties_tooltip_available")}");
                     break;
                 case BountyState.InProgress:
                     _sb.AppendLine("  <color=#00f0ff>$mod_epicloot_bounties_tooltip_inprogress</color>");

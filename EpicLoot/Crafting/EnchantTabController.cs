@@ -357,7 +357,7 @@ namespace EpicLoot.Crafting
                 var count = effectCountEntry.Key;
                 var weight = effectCountEntry.Value;
                 var percent = (int)(weight / totalWeight * 100.0f);
-                var label = count == 1 ? $"{count} $mod_epicloot_enchant_effects" : $"{count} $mod_epicloot_enchant_effects";
+                var label = count == 1 ? $"{count} $mod_epicloot_enchant_effect" : $"{count} $mod_epicloot_enchant_effects";
                 sb.AppendLine($"  ‣ {label} {percent}%");
             }
             sb.Append("</color>");

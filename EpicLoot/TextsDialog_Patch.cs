@@ -68,7 +68,7 @@ namespace EpicLoot
                 t.AppendLine();
             }
 
-            textsDialog.m_texts.Insert(2, new TextsDialog.TextInfo(Localization.instance.Localize("$mod_epicloot_Active_Magic_Effects"), Localization.instance.Localize(t.ToString())));
+            textsDialog.m_texts.Insert(2, new TextsDialog.TextInfo(Localization.instance.Localize("$mod_epicloot_active_magic_effects"), Localization.instance.Localize(t.ToString())));
         }
         
         public static void AddTreasureAndBountiesPage(TextsDialog textsDialog, Player player)
@@ -88,7 +88,7 @@ namespace EpicLoot
 
             t.AppendLine();
             t.AppendLine();
-            t.AppendLine("<color=orange><size=30>$mod_epicloot_Active_Bounties</size></color>");
+            t.AppendLine("<color=orange><size=30>$mod_epicloot_activebounties</size></color>");
             t.AppendLine();
 
             var sortedBounties = saveData.Bounties.OrderBy(x => x.State);
@@ -101,8 +101,8 @@ namespace EpicLoot
 
                 var targetName = AdventureDataManager.GetBountyName(bounty);
                 t.AppendLine($"<size=24>{targetName}</size>");
-                t.Append($"  <color=silver>$mod_epicloot_Active_Bounties_Classification: <color=#d66660>{AdventureDataManager.GetMonsterName(bounty.Target.MonsterID)}</color>, ");
-                t.AppendLine($" $mod_epicloot_Active_Bounties_Biome <color={GetBiomeColor(bounty.Biome)}>$biome_{bounty.Biome.ToString().ToLower()}</color></color>");
+                t.Append($"  <color=silver>$mod_epicloot_activebounties_classification: <color=#d66660>{AdventureDataManager.GetMonsterName(bounty.Target.MonsterID)}</color>, ");
+                t.AppendLine($" $mod_epicloot_activebounties_biome: <color={GetBiomeColor(bounty.Biome)}>$biome_{bounty.Biome.ToString().ToLower()}</color></color>");
 
                 var status = "";
                 switch (bounty.State)
@@ -123,7 +123,7 @@ namespace EpicLoot
                 t.AppendLine();
             }
 
-            textsDialog.m_texts.Insert(4, new TextsDialog.TextInfo(Localization.instance.Localize("$mod_epicloot_Treasure_Bounties"), Localization.instance.Localize(t.ToString())));
+            textsDialog.m_texts.Insert(4, new TextsDialog.TextInfo(Localization.instance.Localize("$mod_epicloot_adventure_title"), Localization.instance.Localize(t.ToString())));
         }
         
         public static string GetBiomeColor(Heightmap.Biome biome)

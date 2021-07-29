@@ -188,16 +188,16 @@ namespace EpicLoot.Crafting
             if (!active)
             {
                 Recipes.Clear();
-                if (!EpicLoot.HasAuga)
+                if (EpicLoot.HasAuga)
+                {
+                    EffectSelectors.Clear();
+                }
+                else
                 {
                     foreach (var toggle in EffectSelectors)
                     {
                         toggle.gameObject.SetActive(false);
                     }
-                }
-                else
-                {
-                    EffectSelectors.Clear();
                 }
             }
 
@@ -320,7 +320,6 @@ namespace EpicLoot.Crafting
                     AugaTabData.ItemInfoGO.SetActive(true);
                     AugaTabData.RequirementsPanelGO.SetActive(true);
 
-                    //Auga.API.ComplexTooltip_ClearTextBoxes(AugaTabData.ItemInfoGO);
                     Auga.API.ComplexTooltip_SetItemNoTextBoxes(AugaTabData.ItemInfoGO, itemData, itemData.m_quality, itemData.m_variant);
                     Auga.API.ComplexTooltip_SetTopic(AugaTabData.ItemInfoGO, Localization.instance.Localize(itemData.GetDecoratedName()));
                     Auga.API.ComplexTooltip_SetDescription(AugaTabData.ItemInfoGO, Localization.instance.Localize("$mod_epicloot_augment_explain"));

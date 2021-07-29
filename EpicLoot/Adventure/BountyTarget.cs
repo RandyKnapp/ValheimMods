@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using System;
+using HarmonyLib;
 using JetBrains.Annotations;
 using UnityEngine;
 
@@ -94,7 +95,18 @@ namespace EpicLoot.Adventure
             { 
                 var pkgString = _zdo.GetString(BountyDataKey);
                 var pkg = new ZPackage(pkgString);
-                _bountyInfo = BountyInfo.FromPackage(pkg);
+                try
+                {
+                    _bountyInfo = BountyInfo.FromPackage(pkg);
+                }
+                catch (Exception)
+                {
+                    EpicLoot.LogError($"Error loading bounty info on creature ({name})! Possibly old or outdated bounty target, destroying creature.\nBountyData:\n{pkgString}");
+                    _zdo.Set("BountyTarget", "");
+                    _zdo.Set(BountyDataKey, "");
+                    _character.m_nview.Destroy();
+                    return;
+                }
             }
             _monsterID = _zdo.GetString(MonsterIDKey);
             _isAdd = _zdo.GetBool(IsAddKey);

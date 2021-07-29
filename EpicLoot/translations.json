@@ -1,8 +1,11 @@
 ﻿{
   "mod_epicloot_craftingmaterial": "crafting material",
+  "mod_epicloot_set": "Set",
+
   "mod_epicloot_circlet": "circlet",
   "mod_epicloot_belt": "belt",
   "mod_epicloot_remains": "remains",
+
   "mod_epicloot_assets_Dust": "Dust",
   "mod_epicloot_assets_Dust_introduce": "The remant upon the sacrificial altar. Used to enchant items. Obtained by sacrificing magic items.",
   "mod_epicloot_assets_Shard": "Shard",
@@ -48,13 +51,15 @@
   "mod_epicloot_augment_selecteffect": "Select an effect to augment", 
 
   "mod_epicloot_enchant": "Enchant",
+  "mod_epicloot_enchant_effect": "effect",
+  "mod_epicloot_enchant_effects": "effects",
 
-  "mod_epicloot_Active_Magic_Effects": "Active Magic Effects",
-  "mod_epicloot_Active_Bounties_Classification": "Classification",
-  "mod_epicloot_Active_Bounties_Biome": "Biome：",
-  "mod_epicloot_Active_Bounties": "Active Bounties",
-  "mod_epicloot_Treasure_Bounties": "<color=orange><size=30>Treasure & Bounties</size></color>",
-  "mod_epicloot_CurrentlyEquipped": "Currently Equipped", 
+  "mod_epicloot_active_magic_effects": "Active Magic Effects",
+  "mod_epicloot_activebounties_classification": "Classification",
+  "mod_epicloot_activebounties_biome": "Biome",
+  "mod_epicloot_activebounties": "Active Bounties",
+  "mod_epicloot_adventure_title": "Treasure & Bounties",
+  "mod_epicloot_currentlyequipped": "Currently Equipped", 
   
   "mod_epicloot_item_andvaranaut": "Andvaranaut",
   "mod_epicloot_item_andvaranaut_tooltip": "Helps you find treasure chests from Haldor's maps. Move in the direction the pings get more intense.",
@@ -70,9 +75,8 @@
   "mod_epicloot_se_undying_startmessage": "Heimdall saves you from certain death!",
   "mod_epicloot_se_berserker": "Berserker", 
   "mod_epicloot_se_berserker_tooltip": "You cannot regenerate health, but deal +50% to +200% damage based on health missing.", 
-  "mod_epicloot_se_berserker_startmessage": "Raaaage!!", 
-  "mod_epicloot_set": "set：",
-  
+  "mod_epicloot_se_berserker_startmessage": "Raaaage!!",
+
   "mod_epicloot_bounties_claimedmsg": "Bounty Claimed!",
   "mod_epicloot_bounties_completemsg": "Bounty Vanquished!",
   "mod_epicloot_bounties_locatingmsg": "Locating Bounty Target...",
@@ -400,8 +404,10 @@
   "mod_epicloot_bounties_suffix_warfall": "Warfall",
   "mod_epicloot_bounties_suffix_warfighter": "Warfighter",
   "mod_epicloot_bounties_suffix_whispersmith": "Whispersmith",
+
   "mod_epicloot_bounties_targetnameformat": "$1 $2",
   "mod_epicloot_bounties_targetnameformat_nospace": "$1$2",
+
   "mod_epicloot_bounties_tooltip": "Travel to the <color=#31eb41>$1</color> and locate $2 the <color=#f03232>$3</color>. $4. Return to me when it is done.",
   "mod_epicloot_bounties_tooltip_available": "Available",
   "mod_epicloot_bounties_tooltip_claimed": "Claimed",

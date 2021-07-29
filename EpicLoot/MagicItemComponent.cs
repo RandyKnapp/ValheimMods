@@ -318,7 +318,7 @@ namespace EpicLoot
             var currentSetEquipped = Player.m_localPlayer.GetEquippedSetPieces(setID);
 
             var setDisplayName = GetSetDisplayName(item, isMundane);
-            text.Append($"\n\n<color={EpicLoot.GetSetItemColor()}> Set: {setDisplayName} ({currentSetEquipped.Count}/{setSize}):</color>");
+            text.Append($"\n\n<color={EpicLoot.GetSetItemColor()}> $mod_epicloot_set: {setDisplayName} ({currentSetEquipped.Count}/{setSize}):</color>");
 
             foreach (var setItemName in setPieces)
             {
