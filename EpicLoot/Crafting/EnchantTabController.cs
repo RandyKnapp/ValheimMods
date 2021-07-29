@@ -27,7 +27,7 @@ namespace EpicLoot.Crafting
         }
 
         public override string GetTabButtonId() => "Enchant";
-        public override string GetTabButtonText() => "ENCHANT";
+        public override string GetTabButtonText() => Localization.instance.Localize("$mod_epicloot_enchant").ToUpperInvariant();
 
         public override void TryInitialize(InventoryGui inventoryGui, int tabIndex, Action<TabController> onTabPressed)
         {
@@ -186,7 +186,7 @@ namespace EpicLoot.Crafting
 
         public override void UpdateRecipe(InventoryGui __instance, Player player, float dt, Image bgImage)
         {
-            __instance.m_craftButton.GetComponentInChildren<Text>().text = "Enchant";
+            __instance.m_craftButton.GetComponentInChildren<Text>().text = Localization.instance.Localize("$mod_epicloot_enchant");
 
             if (SelectedRecipe >= 0 && SelectedRecipe < Recipes.Count)
             {
@@ -275,7 +275,7 @@ namespace EpicLoot.Crafting
                 var count = effectCountEntry.Key;
                 var weight = effectCountEntry.Value;
                 var percent = (int)(weight / totalWeight * 100.0f);
-                var label = count == 1 ? $"{count} effect:" : $"{count} effects:";
+                var label = count == 1 ? $"{count} $mod_epicloot_enchant_effects" : $"{count} $mod_epicloot_enchant_effects";
                 sb.AppendLine($"  ‣ {label} {percent}%");
             }
             sb.Append("</color>");

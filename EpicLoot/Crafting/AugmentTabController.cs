@@ -28,7 +28,7 @@ namespace EpicLoot.Crafting
         }
 
         public override string GetTabButtonId() => "Augment";
-        public override string GetTabButtonText() => "AUGMENT";
+        public override string GetTabButtonText() => Localization.instance.Localize("$mod_epicloot_augment").ToUpperInvariant();
 
         public override void TryInitialize(InventoryGui inventoryGui, int tabIndex, Action<TabController> onTabPressed)
         {
@@ -95,7 +95,7 @@ namespace EpicLoot.Crafting
                 AvailableAugmentsButton.onClick.AddListener(ShowAvailableAugmentsDialog);
 
                 var text = AvailableAugmentsButton.GetComponentInChildren<Text>();
-                text.text = "Available Effects";
+                text.text = Localization.instance.Localize("$mod_epicloot_augment_Available_Effects");
 
                 var rt = AvailableAugmentsButton.gameObject.RectTransform();
                 rt.anchoredPosition += new Vector2(50, 0);
@@ -202,7 +202,7 @@ namespace EpicLoot.Crafting
 
         public override void UpdateRecipe(InventoryGui __instance, Player player, float dt, Image bgImage)
         {
-            __instance.m_craftButton.GetComponentInChildren<Text>().text = "Augment";
+            __instance.m_craftButton.GetComponentInChildren<Text>().text = Localization.instance.Localize("$mod_epicloot_augment");
 
             if (SelectedRecipe >= 0 && SelectedRecipe < Recipes.Count)
             {
@@ -220,7 +220,7 @@ namespace EpicLoot.Crafting
 
                 __instance.m_recipeDecription.enabled = true;
 
-                __instance.m_recipeDecription.text = "Replace one magical effect. Once an effect has been augmented, the others are locked.";
+                __instance.m_recipeDecription.text = Localization.instance.Localize("$mod_epicloot_augment_instructions");
 
                 GenerateAugmentSelectors(recipe, __instance);
 
@@ -243,9 +243,9 @@ namespace EpicLoot.Crafting
                         (canCraft ? 
                             (hasAnyAvailableEnchants ?
                                 ""
-                                : "No available effects") 
+                                : Localization.instance.Localize("$mod_epicloot_augment_Available_Effects_no"))
                             : Localization.instance.Localize("$msg_missingrequirement")) 
-                        : "Select an effect to augment";
+                        : Localization.instance.Localize("$mod_epicloot_augment_Available_Effects_Select");
             }
             else
             {
