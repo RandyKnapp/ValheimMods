@@ -16,12 +16,12 @@ PrefabInstance:
     - target: {fileID: 4812765547126240509, guid: 6576477ba955d1d498e87413b5318733,
         type: 3}
       propertyPath: m_itemData.m_shared.m_name
-      value: Rare $mod_epicloot_assets_Shard
+      value: Rare $mod_epicloot_assets_shard
       objectReference: {fileID: 0}
     - target: {fileID: 4812765547126240509, guid: 6576477ba955d1d498e87413b5318733,
         type: 3}
       propertyPath: m_itemData.m_shared.m_description
-      value: $mod_epicloot_assets_Shard_introduce
+      value: $mod_epicloot_assets_shard_introduce
         
       objectReference: {fileID: 0}
     - target: {fileID: 4812765547126240509, guid: 6576477ba955d1d498e87413b5318733,

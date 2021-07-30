@@ -222,13 +222,13 @@ MonoBehaviour:
     m_quality: 1
     m_variant: 0
     m_shared:
-      m_name: $mod_epicloot_assets_ForestToken
+      m_name: $mod_epicloot_assets_foresttoken
       m_dlc: 
       m_itemType: 16
       m_icons:
       - {fileID: 21300000, guid: 28b42a99841abba4f87cb7fc0099050d, type: 3}
       m_attachOverride: 0
-      m_description: $mod_epicloot_assets_ForestToken_introduce
+      m_description: $mod_epicloot_assets_foresttoken_introduce
       m_maxStackSize: 999
       m_maxQuality: 1
       m_weight: 0.01

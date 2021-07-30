@@ -76,12 +76,12 @@ PrefabInstance:
     - target: {fileID: 8495594747941318552, guid: c8d9be30add4b914cbe91a4732a05c05,
         type: 3}
       propertyPath: m_itemData.m_shared.m_name
-      value: Epic $mod_epicloot_assets_Shard
+      value: Epic $mod_epicloot_assets_shard
       objectReference: {fileID: 0}
     - target: {fileID: 8495594747941318552, guid: c8d9be30add4b914cbe91a4732a05c05,
         type: 3}
       propertyPath: m_itemData.m_shared.m_description
-      value: $mod_epicloot_assets_Shard_introduce
+      value: $mod_epicloot_assets_shard_introduce
         
       objectReference: {fileID: 0}
     - target: {fileID: 8495594747941318552, guid: c8d9be30add4b914cbe91a4732a05c05,
