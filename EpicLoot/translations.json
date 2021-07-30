@@ -438,7 +438,7 @@
   "mod_epicloot_merchant_noroomtooltip": "No room in inventory",
   "mod_epicloot_merchant_purchasedtooltip": "Already purchased",
   "mod_epicloot_merchant_purchased": "purchased",
-  "mod_epicloot_merchant_RefreshIntervals": "Refresh Intervals",
+  "mod_epicloot_merchant_refreshintervals": "Refresh Intervals",
   "mod_epicloot_merchant_refreshday": "Every in-game day",
   "mod_epicloot_merchant_refreshdays": "Every $1 in-game days",
   "mod_epicloot_merchant_rollovertime": "Rollover Time: Midnight",
