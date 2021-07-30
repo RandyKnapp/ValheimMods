@@ -175,8 +175,8 @@ MonoBehaviour:
   m_primaryTarget: 1
   m_randomTarget: 1
   m_icon: {fileID: 21300000, guid: 85acac5b7cef71b4eb80b9de5d2cec9f, type: 3}
-  m_name: $mod_epicloot_assets_Augmenter
-  m_description: $mod_epicloot_assets_Augmenter_introduce
+  m_name: $mod_epicloot_assets_augmenter
+  m_description: $mod_epicloot_assets_augmenter_introduce
     
   m_enabled: 1
   m_category: 1

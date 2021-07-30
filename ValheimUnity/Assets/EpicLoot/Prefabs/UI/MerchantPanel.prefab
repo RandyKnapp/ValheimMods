@@ -999,7 +999,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_tooltipPrefab: {fileID: 0}
-  m_text: $mod_epicloot_assets_GoldBountyToken
+  m_text: $mod_epicloot_assets_goldbountytoken
   m_topic: 
   m_gamepadFocusObject: {fileID: 0}
 --- !u!1 &730244230001963454
@@ -1963,7 +1963,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_tooltipPrefab: {fileID: 0}
-  m_text: $mod_epicloot_assets_Coins
+  m_text: $mod_epicloot_assets_coins
   m_topic: 
   m_gamepadFocusObject: {fileID: 0}
 --- !u!1 &1244040510123766993
@@ -4376,7 +4376,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_tooltipPrefab: {fileID: 0}
-  m_text: $mod_epicloot_assets_ForestToken
+  m_text: $mod_epicloot_assets_foresttoken
   m_topic: 
   m_gamepadFocusObject: {fileID: 0}
 --- !u!1 &3457738686615189046
@@ -7942,7 +7942,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_tooltipPrefab: {fileID: 0}
-  m_text: $mod_epicloot_assets_IronBountyToken
+  m_text: $mod_epicloot_assets_ironbountytoken
   m_topic: 
   m_gamepadFocusObject: {fileID: 0}
 --- !u!1 &5889370430449478522
