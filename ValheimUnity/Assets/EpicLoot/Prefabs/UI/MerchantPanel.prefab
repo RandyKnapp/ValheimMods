@@ -13340,7 +13340,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_tooltipPrefab: {fileID: 0}
   m_text: 
-  m_topic: $mod_epicloot_merchant_RefreshIntervals
+  m_topic: $mod_epicloot_merchant_refreshintervals
   m_gamepadFocusObject: {fileID: 0}
 --- !u!1 &8989375017469598359
 GameObject:
