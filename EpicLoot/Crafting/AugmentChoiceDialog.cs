@@ -92,7 +92,7 @@ namespace EpicLoot.Crafting
 
                 if (EpicLoot.HasAuga)
                 {
-                    Auga.API.MediumButton_SetColors(button, Color.white, Color.white, Color.white, Color.white, Color.white);
+                    Auga.API.Button_SetTextColors(button, Color.white, Color.white, Color.white, Color.white, Color.white, rarityColor);
                 }
                 else
                 {

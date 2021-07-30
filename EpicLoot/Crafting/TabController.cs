@@ -42,11 +42,11 @@ namespace EpicLoot.Crafting
         {
             if (EpicLoot.HasAuga)
             {
-                var exists = Auga.API.HasWorkbenchTab(GetTabButtonId());
+                var exists = Auga.API.Workbench_HasWorkbenchTab(GetTabButtonId());
                 if (IsCustomTab && !exists)
                 {
                     var buttonSprite = EpicLoot.LoadAsset<Sprite>($"{GetTabButtonId().ToLower()}_tabicon");
-                    AugaTabData = Auga.API.AddWorkbenchTab(GetTabButtonId(), buttonSprite, GetTabButtonText(), (index) => onTabPressed(this));
+                    AugaTabData = Auga.API.Workbench_AddWorkbenchTab(GetTabButtonId(), buttonSprite, GetTabButtonText(), (index) => onTabPressed(this));
                     var tabButtonGameObject = AugaTabData.TabButtonGO;
                     TabButton = tabButtonGameObject.GetComponent<Button>();
                 }
@@ -113,7 +113,7 @@ namespace EpicLoot.Crafting
                 return false;
             }
 
-            return EpicLoot.HasAuga ? Auga.API.IsTabActive(TabButton.gameObject) : !TabButton.interactable;
+            return EpicLoot.HasAuga ? Auga.API.Workbench_IsTabActive(TabButton.gameObject) : !TabButton.interactable;
         }
 
         public virtual void SetActive(bool active)

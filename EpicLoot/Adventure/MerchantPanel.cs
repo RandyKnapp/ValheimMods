@@ -210,7 +210,7 @@ namespace EpicLoot.Adventure
         {
             var image = obj.GetComponent<Image>();
             Destroy(image);
-            var backgroundPanel = Auga.API.CreatePanel(obj.transform, Vector2.one, "AugaBackground", withCornerDecoration);
+            var backgroundPanel = Auga.API.Panel_Create(obj.transform, Vector2.one, "AugaBackground", withCornerDecoration);
             var rt = (RectTransform)backgroundPanel.transform;
             rt.SetSiblingIndex(0);
             rt.anchorMin = Vector2.zero;
@@ -299,7 +299,7 @@ namespace EpicLoot.Adventure
 
         private static void AugaReplaceButton(Button button, bool icon = false)
         {
-            var newButton = Auga.API.MediumButton_Create(button.transform.parent, button.name);
+            var newButton = Auga.API.MediumButton_Create(button.transform.parent, button.name, string.Empty);
             if (icon)
             {
                 Object.Destroy(newButton.GetComponentInChildren<Text>().gameObject);

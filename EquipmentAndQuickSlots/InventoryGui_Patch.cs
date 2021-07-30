@@ -51,16 +51,20 @@ namespace EquipmentAndQuickSlots
 
                 if (EquipmentAndQuickSlots.HasAuga && AugaPanel == null)
                 {
-                    AugaPanel = Auga.API.CreatePanel(inventoryGui.m_player, new Vector2(255, 352), "EAQS", false);
+                    AugaPanel = Auga.API.Panel_Create(inventoryGui.m_player, new Vector2(255, 352), "EAQS", false);
                     var rt = (RectTransform)AugaPanel.transform;
                     rt.anchorMin = new Vector2(0, 1);
                     rt.anchorMax = new Vector2(0, 1);
-                    rt.anchoredPosition = new Vector2(624, 10);
+                    rt.anchoredPosition = new Vector2(752, -166);
                     rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 255);
                     rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 352);
 
                     var paperdolls = Object.Instantiate(EquipmentAndQuickSlots.Paperdolls, AugaPanel.transform, false);
                     paperdolls.name = "Paperdolls";
+
+                    var divider = Auga.API.Divider_CreateSmall(AugaPanel.transform, "Divider", 255 - 40);
+                    rt = (RectTransform)divider.transform;
+                    rt.anchoredPosition = new Vector2(0, -157);
                 }
 
                 var go = new GameObject(name, typeof(RectTransform));

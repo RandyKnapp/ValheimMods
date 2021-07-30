@@ -86,10 +86,10 @@ namespace EquipmentAndQuickSlots
                 {
                     var element = __instance.m_elements[i];
 
+                    var bindingText = element.m_go.transform.Find("binding").GetComponent<Text>();
+                    bindingText.enabled = !EquipmentAndQuickSlots.HasAuga;
                     if (!EquipmentAndQuickSlots.HasAuga)
                     {
-                        var bindingText = element.m_go.transform.Find("binding").GetComponent<Text>();
-                        bindingText.enabled = true;
                         bindingText.horizontalOverflow = HorizontalWrapMode.Overflow;
                         bindingText.text = equipNames[i];
                         bindingText.rectTransform.anchoredPosition = new Vector2(32, 5);

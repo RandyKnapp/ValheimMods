@@ -65,8 +65,8 @@ namespace EpicLoot.Crafting
 
                     for (var i = 0; i < 3; i++)
                     {
-                        var button = Auga.API.MediumButton_Create(resultDialog.transform, $"AugmentButton{i}");
-                        Auga.API.MediumButton_SetColors(button, Color.white, Color.white, Color.white, Color.white, Color.white);
+                        var button = Auga.API.MediumButton_Create(resultDialog.transform, $"AugmentButton{i}", string.Empty);
+                        Auga.API.Button_SetTextColors(button, Color.white, Color.white, Color.white, Color.white, Color.white, Color.white);
                         button.navigation = new Navigation { mode = Navigation.Mode.None };
                         var rt = (RectTransform)button.transform;
                         rt.anchoredPosition = new Vector2(0, -220 - (i * 40));
