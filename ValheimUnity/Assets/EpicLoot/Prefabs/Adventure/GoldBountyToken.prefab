@@ -229,7 +229,7 @@ MonoBehaviour:
       - {fileID: 21300000, guid: cf0f10f80a953d64088ff30196340e7e, type: 3}
       m_attachOverride: 0
       m_description: $mod_epicloot_assets_goldbountytoken_introduce
-        tokens.
+        
       m_maxStackSize: 999
       m_maxQuality: 1
       m_weight: 0.01
