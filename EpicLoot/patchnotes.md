@@ -1,4 +1,7 @@
-﻿## Version 0.8.3
+﻿## Version 0.8.4
+  * Added support for Project Auga
+  * Completed localization for the entire mod (thanks Anya77!)
+## Version 0.8.3
   * ServerSync updated to latest
   * Fix for bounty completion bug
 ## Version 0.8.2
