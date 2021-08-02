@@ -27,7 +27,7 @@ Contibutions from the following modders was invaluable and appreciated:
   * [nanonull](https://github.com/nanonull) - bugfixes, lifesteal
   * [xPucTu4](https://github.com/xPucTu4) - bugfixes
   * LitanyOfFire - legendary definitions
-  # Digitalroot - Help with testing
+  * Digitalroot - Help with testing
 
 3D Models:
   * "Fantasy Longsword" (https://skfb.ly/ontRY) by Faber is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
