@@ -12,7 +12,7 @@ namespace EquipmentAndQuickSlots
         public static InventoryGrid QuickSlotGrid;
         public static InventoryGrid EquipmentSlotGrid;
 
-        public static GameObject AugaPanel;
+        public static GameObject EAQSPanel;
 
         [HarmonyPatch(typeof(InventoryGui), "Awake")]
         public static class InventoryGui_Awake_Patch
@@ -31,13 +31,13 @@ namespace EquipmentAndQuickSlots
 
             private static void BuildQuickSlotGrid(InventoryGui inventoryGui)
             {
-                var pos = EquipmentAndQuickSlots.HasAuga ? new Vector2(463, -108) : new Vector2(500, -160);
+                var pos = EquipmentAndQuickSlots.HasAuga ? new Vector2(3, -108) : new Vector2(3, -160);
                 BuildInventoryGrid(ref QuickSlotGrid, "QuickSlotGrid", pos, new Vector2((74 * EquipmentAndQuickSlots.QuickSlotCount) + 10, 90), inventoryGui);
             }
 
             private static void BuildEquipmentSlotGrid(InventoryGui inventoryGui)
             {
-                var pos = EquipmentAndQuickSlots.HasAuga ? new Vector2(463, 40) : new Vector2(500, 20);
+                var pos = EquipmentAndQuickSlots.HasAuga ? new Vector2(3, 40) : new Vector2(3, 20);
                 BuildInventoryGrid(ref EquipmentSlotGrid, "EquipmentSlotGrid", pos, new Vector2(210, 270), inventoryGui);
             }
 
@@ -49,26 +49,40 @@ namespace EquipmentAndQuickSlots
                     grid = null;
                 }
 
-                if (EquipmentAndQuickSlots.HasAuga && AugaPanel == null)
+                if (EAQSPanel == null)
                 {
-                    AugaPanel = Auga.API.Panel_Create(inventoryGui.m_player, new Vector2(255, 352), "EAQS", false);
-                    var rt = (RectTransform)AugaPanel.transform;
-                    rt.anchorMin = new Vector2(0, 1);
-                    rt.anchorMax = new Vector2(0, 1);
-                    rt.anchoredPosition = new Vector2(752, -166);
-                    rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 255);
-                    rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 352);
+                    if (EquipmentAndQuickSlots.HasAuga)
+                    {
+                        EAQSPanel = Auga.API.Panel_Create(inventoryGui.m_player, new Vector2(255, 352), "EAQS", false);
+                        var rt = (RectTransform)EAQSPanel.transform;
+                        rt.anchorMin = new Vector2(0, 1);
+                        rt.anchorMax = new Vector2(0, 1);
+                        rt.anchoredPosition = new Vector2(752, -166);
+                        rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 255);
+                        rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 352);
 
-                    var paperdolls = Object.Instantiate(EquipmentAndQuickSlots.Paperdolls, AugaPanel.transform, false);
-                    paperdolls.name = "Paperdolls";
+                        var paperdolls = Object.Instantiate(EquipmentAndQuickSlots.Paperdolls, EAQSPanel.transform, false);
+                        paperdolls.name = "Paperdolls";
 
-                    var divider = Auga.API.Divider_CreateSmall(AugaPanel.transform, "Divider", 255 - 40);
-                    rt = (RectTransform)divider.transform;
-                    rt.anchoredPosition = new Vector2(0, -157);
+                        var divider = Auga.API.Divider_CreateSmall(EAQSPanel.transform, "Divider", 255 - 40);
+                        rt = (RectTransform)divider.transform;
+                        rt.anchoredPosition = new Vector2(0, -157);
+                    }
+                    else
+                    {
+                        EAQSPanel = new GameObject("EAQS", typeof(RectTransform));
+                        EAQSPanel.transform.SetParent(inventoryGui.m_player);
+                        var rt = (RectTransform)EAQSPanel.transform;
+                        rt.anchorMin = new Vector2(0, 1);
+                        rt.anchorMax = new Vector2(0, 1);
+                        rt.anchoredPosition = new Vector2(752, -166);
+                        rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 255);
+                        rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 352);
+                    }
                 }
 
                 var go = new GameObject(name, typeof(RectTransform));
-                go.transform.SetParent(inventoryGui.m_player, false);
+                go.transform.SetParent(EAQSPanel.transform, false);
 
                 grid = go.AddComponent<InventoryGrid>();
                 var root = new GameObject("Root", typeof(RectTransform));
@@ -211,9 +225,9 @@ namespace EquipmentAndQuickSlots
                     }
                 }
 
-                if (EquipmentAndQuickSlots.HasAuga && AugaPanel != null)
+                if (EquipmentAndQuickSlots.HasAuga && EAQSPanel != null)
                 {
-                    var paperdolls = AugaPanel.transform.Find("Paperdolls");
+                    var paperdolls = EAQSPanel.transform.Find("Paperdolls");
                     if (player.m_visEquipment.GetModelIndex() == 1)
                     {
                         paperdolls.transform.Find("Male").gameObject.SetActive(false);
