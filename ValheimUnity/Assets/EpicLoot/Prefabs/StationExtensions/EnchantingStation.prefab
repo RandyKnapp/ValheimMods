@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 33507433257417112}
   - component: {fileID: 23134451557722048}
   - component: {fileID: 64256048920483946}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TWR_Pre_Dec_Crystal_Small
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -103,7 +103,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4960904934996854}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Crystals
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -141,7 +141,7 @@ GameObject:
   - component: {fileID: 33629145410159394}
   - component: {fileID: 23442074137296522}
   - component: {fileID: 64897799106092992}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TWR_Pre_Dec_Crystal_Large
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -232,7 +232,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4817973542519140}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TWR_Pre_Fur_EnchantingTable_CenterCrystal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -267,7 +267,7 @@ GameObject:
   - component: {fileID: 4563751385534338}
   - component: {fileID: 198932929123495896}
   - component: {fileID: 199619176062534682}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TWR_Pre_Fur_EnchantingTable_ParticleAbsorbtion
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4968,7 +4968,7 @@ GameObject:
   - component: {fileID: 33717521371103818}
   - component: {fileID: 23809712669867424}
   - component: {fileID: 64497388894720832}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TWR_Pre_Dec_Crystal_Large (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5062,7 +5062,7 @@ GameObject:
   - component: {fileID: 33677307681275746}
   - component: {fileID: 23138350396575538}
   - component: {fileID: 64056565359903934}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TWR_Pre_Dec_Crystal_Large (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5158,7 +5158,7 @@ GameObject:
   - component: {fileID: 4694716936741824788}
   - component: {fileID: 6379335376129069488}
   - component: {fileID: 1031410479501244861}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: EnchantingStation
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5219,7 +5219,7 @@ MonoBehaviour:
   m_Script: {fileID: 2094620348, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_primaryTarget: 0
+  m_primaryTarget: 1
   m_randomTarget: 1
   m_icon: {fileID: 21300000, guid: 0793ca53859bd1c45a475db5f38f7e00, type: 3}
   m_name: $piece_enchanting
@@ -5231,20 +5231,20 @@ MonoBehaviour:
   m_comfortGroup: 0
   m_groundPiece: 0
   m_allowAltGroundPlacement: 0
-  m_groundOnly: 1
+  m_groundOnly: 0
   m_cultivatedGroundOnly: 0
   m_waterPiece: 0
   m_clipGround: 0
   m_clipEverything: 0
   m_noInWater: 1
   m_notOnWood: 0
-  m_notOnTiltingSurface: 0
+  m_notOnTiltingSurface: 1
   m_inCeilingOnly: 0
   m_notOnFloor: 0
   m_noClipping: 1
   m_onlyInTeleportArea: 0
   m_allowedInDungeons: 0
-  m_spaceRequirement: 0
+  m_spaceRequirement: 1
   m_repairPiece: 0
   m_canBeRemoved: 1
   m_onlyInBiome: 0
@@ -5266,9 +5266,9 @@ MonoBehaviour:
   m_Script: {fileID: 1521249158, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_persistent: 0
+  m_persistent: 1
   m_distant: 0
-  m_type: 0
+  m_type: 2
   m_syncInitialScale: 0
 --- !u!114 &6379335376129069488
 MonoBehaviour:
@@ -5358,7 +5358,7 @@ GameObject:
   - component: {fileID: 33375607437087104}
   - component: {fileID: 23892718592851248}
   - component: {fileID: 64090857344089414}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TWR_Pre_Dec_Crystal_Large (4)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5452,7 +5452,7 @@ GameObject:
   - component: {fileID: 33816562593501920}
   - component: {fileID: 23211797194331748}
   - component: {fileID: 64733441538212048}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TWR_Pre_Fur_EnchantingTable_Top_Regular_2048
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5546,7 +5546,7 @@ GameObject:
   - component: {fileID: 33543162965164876}
   - component: {fileID: 23815501439822186}
   - component: {fileID: 64994695019787822}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TWR_Pre_Fur_EnchantingTable_Feet_Regular_2048
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5640,7 +5640,7 @@ GameObject:
   - component: {fileID: 33528356514109032}
   - component: {fileID: 23188592235901030}
   - component: {fileID: 64967878336142270}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TWR_Pre_Dec_Crystal_Large (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5733,7 +5733,7 @@ GameObject:
   - component: {fileID: 4455755583129054}
   - component: {fileID: 198605894898093238}
   - component: {fileID: 199151872799578008}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TWR_Pre_Fur_EnchantingTable_ParticleExplosion
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10437,7 +10437,7 @@ GameObject:
   - component: {fileID: 104916889399098185}
   - component: {fileID: 104916889400490857}
   - component: {fileID: 104916889401521577}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Flask_02
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10517,7 +10517,7 @@ GameObject:
   - component: {fileID: 359206055472130145}
   - component: {fileID: 359206055472900161}
   - component: {fileID: 359206055473900033}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Glass_Jar_01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10594,7 +10594,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4952695310757526579}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: _enabled
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10626,7 +10626,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4414271667789608459}
   - component: {fileID: 1146866535633905971}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10673,7 +10673,7 @@ GameObject:
   - component: {fileID: 3431743996691190839}
   - component: {fileID: 9044742674136407704}
   - component: {fileID: 3440734367436218945}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TWR_Pre_Fur_EnchantingTable_Feet_Regular_2048
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10766,7 +10766,7 @@ GameObject:
   - component: {fileID: 749978859661061390}
   - component: {fileID: 749978859659734318}
   - component: {fileID: 749978859658899438}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Glass_Jar_02
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10845,7 +10845,7 @@ GameObject:
   - component: {fileID: 5128850177629537830}
   - component: {fileID: 7435201666291070606}
   - component: {fileID: 368072916184445230}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Flask_02
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10925,7 +10925,7 @@ GameObject:
   - component: {fileID: 8435535180371073155}
   - component: {fileID: 6108053141399846492}
   - component: {fileID: 2260971905924990615}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TWR_Pre_Fur_EnchantingTable_ParticleExplosion
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15629,7 +15629,7 @@ GameObject:
   - component: {fileID: 5521622650388161151}
   - component: {fileID: 2462451353304212749}
   - component: {fileID: 3929252195631488665}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: PlayerBase
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15687,7 +15687,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7287131938122757307}
   - component: {fileID: 9056405479011883643}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TWR_Pre_Dec_OrganJar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15742,7 +15742,7 @@ GameObject:
   - component: {fileID: 6531528081763889143}
   - component: {fileID: 698460143514400452}
   - component: {fileID: 4079106549057015032}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TWR_Pre_Dec_Crystal_L_RoseRed
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15835,7 +15835,7 @@ GameObject:
   - component: {fileID: 1738694862768503253}
   - component: {fileID: 4873737413058494200}
   - component: {fileID: 8214099757489968526}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TWR_Pre_Fur_EnchantingTable_ParticleExplosion
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -20540,7 +20540,7 @@ GameObject:
   - component: {fileID: 4342334994993673997}
   - component: {fileID: 7182711931278314602}
   - component: {fileID: 558258279797799703}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TWR_Pre_Dec_Pot_ObsidianLabeled
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -20631,7 +20631,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9090811740085741176}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: connectionEffectPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -20664,7 +20664,7 @@ GameObject:
   - component: {fileID: 3882499849309570636}
   - component: {fileID: 1237175785936958434}
   - component: {fileID: 3741139434413959913}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TWR_Pre_Dec_Crystal_Small
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -20758,7 +20758,7 @@ GameObject:
   - component: {fileID: 1813983630013045598}
   - component: {fileID: 1803200684189042406}
   - component: {fileID: 1851030162001582950}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TWR_Pre_Dec_Pot_ObsidianLabeledClean
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -20851,7 +20851,7 @@ GameObject:
   - component: {fileID: 8292949137594426267}
   - component: {fileID: 2261853261373224341}
   - component: {fileID: 8226227757402338602}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Flask_04
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -20931,7 +20931,7 @@ GameObject:
   - component: {fileID: 4455030555597755866}
   - component: {fileID: 6322843216911010057}
   - component: {fileID: 5519259079069896751}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Flask_02
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -21009,7 +21009,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8339833043667037145}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: roofCheck_point
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -21042,7 +21042,7 @@ GameObject:
   - component: {fileID: 6191540789043456389}
   - component: {fileID: 6655039027804091065}
   - component: {fileID: 5903343887238181509}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TWR_Pre_Dec_Crystal_Large (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -21133,7 +21133,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 84240939568792291}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Crystals
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -21171,7 +21171,7 @@ GameObject:
   - component: {fileID: 1567499726323591910}
   - component: {fileID: 4614677180975186651}
   - component: {fileID: 6915064735323812543}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TWR_Pre_Fur_EnchantingTable_Feet_Regular_2048
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -21265,7 +21265,7 @@ GameObject:
   - component: {fileID: 7081990484269680708}
   - component: {fileID: 111762443977992178}
   - component: {fileID: 7252881627062585553}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TWR_Pre_Dec_Crystal_Large (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -21356,7 +21356,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 975842601524725323}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TWR_Pre_Fur_EnchantingTable_CenterCrystal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -21392,7 +21392,7 @@ GameObject:
   - component: {fileID: 7942764262635740363}
   - component: {fileID: 4844488677459446641}
   - component: {fileID: 5632271950499045429}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TWR_Pre_Dec_OrganJar_Lid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -21486,7 +21486,7 @@ GameObject:
   - component: {fileID: 8453537556722462518}
   - component: {fileID: 3868863632122088646}
   - component: {fileID: 6867491309108365877}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TWR_Pre_Fur_EnchantingTable_Top_Regular_2048
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -21577,7 +21577,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1599959496752146656}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: New
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -21622,7 +21622,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8394531982979270904}
   - component: {fileID: 7467509599180167534}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: AreaMarker
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -21673,7 +21673,7 @@ GameObject:
   - component: {fileID: 3672658492957542477}
   - component: {fileID: 3665333497929534367}
   - component: {fileID: 3633024449103732377}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TWR_Pre_Dec_Book_O_T02_Em_Alt1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -21767,7 +21767,7 @@ GameObject:
   - component: {fileID: 7912970533362705928}
   - component: {fileID: 8804726147705856188}
   - component: {fileID: 4865760740193295875}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TWR_Pre_Dec_OrganJar_Glass
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -21861,7 +21861,7 @@ GameObject:
   - component: {fileID: 9077006217537083220}
   - component: {fileID: 6342845619222591968}
   - component: {fileID: 2534061685542604139}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TWR_Pre_Dec_Crystal_Large
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -21955,7 +21955,7 @@ GameObject:
   - component: {fileID: 3713268905926904051}
   - component: {fileID: 308666715679332904}
   - component: {fileID: 7243025745170020537}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TWR_Pre_Dec_Crystal_Large (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -22046,7 +22046,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7824625914044077899}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Worn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -22093,7 +22093,7 @@ GameObject:
   - component: {fileID: 3582729787417446739}
   - component: {fileID: 7852250200340989888}
   - component: {fileID: 3770639482047932329}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: SaleMesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -22172,7 +22172,7 @@ GameObject:
   - component: {fileID: 4051292504302179146}
   - component: {fileID: 4051292504301474730}
   - component: {fileID: 4051292504300410218}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Flask_04
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -22253,7 +22253,7 @@ GameObject:
   - component: {fileID: 1743289200723300257}
   - component: {fileID: 9018884213223318186}
   - component: {fileID: 8389543277468459522}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TWR_Pre_Dec_Crystal_Large (4)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -22344,7 +22344,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3561824438350615497}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: _enabled
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -22377,7 +22377,7 @@ GameObject:
   - component: {fileID: 2795674488537115339}
   - component: {fileID: 2371276535029793132}
   - component: {fileID: 2988598707593683814}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Glass_Jar_02
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -22457,7 +22457,7 @@ GameObject:
   - component: {fileID: 4611502498982716514}
   - component: {fileID: 4599579119349400532}
   - component: {fileID: 4567211709996770498}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TWR_Pre_Dec_Crystal_L_RoseRed
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -22551,7 +22551,7 @@ GameObject:
   - component: {fileID: 8690177401630380044}
   - component: {fileID: 4423703394795527011}
   - component: {fileID: 857083880681440895}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TWR_Pre_Fur_EnchantingTable_Top_Regular_2048
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -22644,7 +22644,7 @@ GameObject:
   - component: {fileID: 3102772884368556085}
   - component: {fileID: 6637672291131400977}
   - component: {fileID: 4112509798758494176}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TWR_Pre_Fur_EnchantingTable_ParticleAbsorbtion
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -27345,7 +27345,7 @@ GameObject:
   - component: {fileID: 2440446942372407324}
   - component: {fileID: 5829210930531380494}
   - component: {fileID: 2524114001419576187}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TWR_Pre_Dec_OrganJar_Lid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -27436,7 +27436,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5344792533678611379}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Crystals
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -27474,7 +27474,7 @@ GameObject:
   - component: {fileID: 1514882443649195943}
   - component: {fileID: 4008544861393332074}
   - component: {fileID: 838277936923954467}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TWR_Pre_Dec_Crystal_Small
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -27568,7 +27568,7 @@ GameObject:
   - component: {fileID: 576311447769550494}
   - component: {fileID: 1585246622917651956}
   - component: {fileID: 7792935025289284985}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TWR_Pre_Dec_Book_O_T02_Em_Alt1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -27660,7 +27660,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5584513605794331823}
   - component: {fileID: 5531707688301343859}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TWR_Pre_Dec_OrganJar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -27715,7 +27715,7 @@ GameObject:
   - component: {fileID: 5613205732760306317}
   - component: {fileID: 5603387656149084407}
   - component: {fileID: 5581426007276892899}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TWR_Pre_Dec_OrganJar_Lid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -27809,7 +27809,7 @@ GameObject:
   - component: {fileID: 5613301733112691913}
   - component: {fileID: 5603857743836324411}
   - component: {fileID: 5581906247534901185}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TWR_Geo_Dec_OrganJar_Heart
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -27903,7 +27903,7 @@ GameObject:
   - component: {fileID: 5613556225494469597}
   - component: {fileID: 5603163797020658373}
   - component: {fileID: 5580852186465352193}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TWR_Pre_Dec_OrganJar_Glass
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -27997,7 +27997,7 @@ GameObject:
   - component: {fileID: 4824109767027541986}
   - component: {fileID: 2526260561954348298}
   - component: {fileID: 8793584457393789581}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TWR_Pre_Dec_OrganJar_Glass
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -28091,7 +28091,7 @@ GameObject:
   - component: {fileID: 5082496608201772459}
   - component: {fileID: 3492721193228338390}
   - component: {fileID: 462857659728277541}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TWR_Pre_Dec_Crystal_Large
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -28184,7 +28184,7 @@ GameObject:
   - component: {fileID: 286682812269381749}
   - component: {fileID: 7349591255366322728}
   - component: {fileID: 4882985711906874575}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Glass_Jar_01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -28263,7 +28263,7 @@ GameObject:
   - component: {fileID: 7668252138741453269}
   - component: {fileID: 7791360984154860785}
   - component: {fileID: 6048155072588341679}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TWR_Pre_Fur_EnchantingTable_ParticleAbsorbtion
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -32963,7 +32963,7 @@ GameObject:
   - component: {fileID: 4016281879738457558}
   - component: {fileID: 8515578902234429}
   - component: {fileID: 7309479434228045060}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Glass_Jar_01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -33043,7 +33043,7 @@ GameObject:
   - component: {fileID: 8299945280745414529}
   - component: {fileID: 4030509721148585393}
   - component: {fileID: 3014360250149848193}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TWR_Pre_Dec_Book_O_T02_Em_Alt1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -33136,7 +33136,7 @@ GameObject:
   - component: {fileID: 8503153904658559960}
   - component: {fileID: 1945289749923031064}
   - component: {fileID: 7892828255214121952}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Flask_04
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -33217,7 +33217,7 @@ GameObject:
   - component: {fileID: 6811281169455799134}
   - component: {fileID: 6822105622440539680}
   - component: {fileID: 6781094891991451826}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TWR_Pre_Dec_Pot_ObsidianLabeled
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -33308,7 +33308,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4960133565848843699}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Broken
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -33355,7 +33355,7 @@ GameObject:
   - component: {fileID: 5611828032418675599}
   - component: {fileID: 8899860731023155447}
   - component: {fileID: 3138697908682836835}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Mortar_01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -33434,7 +33434,7 @@ GameObject:
   - component: {fileID: 8853567211373957071}
   - component: {fileID: 6783614370263781500}
   - component: {fileID: 3141394801916840102}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: SaleMesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -33513,7 +33513,7 @@ GameObject:
   - component: {fileID: 7105744868314280016}
   - component: {fileID: 7105744868312985712}
   - component: {fileID: 7105744868312247856}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Mortar_01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -33593,7 +33593,7 @@ GameObject:
   - component: {fileID: 5883491652546145573}
   - component: {fileID: 2360404639608874281}
   - component: {fileID: 7328706982597972413}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TWR_Geo_Dec_OrganJar_Heart
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -33684,7 +33684,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8187600121067225228}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TWR_Pre_Fur_EnchantingTable_CenterCrystal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -33720,7 +33720,7 @@ GameObject:
   - component: {fileID: 736344287243230388}
   - component: {fileID: 9188468056563759280}
   - component: {fileID: 529847985292048716}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TWR_Pre_Dec_Pot_ObsidianLabeledClean
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -33814,7 +33814,7 @@ GameObject:
   - component: {fileID: 2529443598743729546}
   - component: {fileID: 5517886747001769552}
   - component: {fileID: 1843765459734644087}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TWR_Pre_Dec_Pot_ObsidianLabeled
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -33908,7 +33908,7 @@ GameObject:
   - component: {fileID: 7906906283360604797}
   - component: {fileID: 1582846218302880009}
   - component: {fileID: 7694701604083545545}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TWR_Pre_Dec_Crystal_L_RoseRed
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -34002,7 +34002,7 @@ GameObject:
   - component: {fileID: 5268317151547026420}
   - component: {fileID: 6887723395625586922}
   - component: {fileID: 3192509612804148642}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TWR_Pre_Dec_Pot_ObsidianLabeledClean
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -34096,7 +34096,7 @@ GameObject:
   - component: {fileID: 2417964054296705925}
   - component: {fileID: 2949959961083790153}
   - component: {fileID: 3310361623655717619}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TWR_Pre_Dec_Crystal_Large (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -34189,7 +34189,7 @@ GameObject:
   - component: {fileID: 7027965414645576014}
   - component: {fileID: 5722378758591557282}
   - component: {fileID: 4284716338023378095}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: SaleMesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -34267,7 +34267,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6820242377138634839}
   - component: {fileID: 6198644261713422485}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TWR_Pre_Dec_OrganJar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -34321,7 +34321,7 @@ GameObject:
   - component: {fileID: 6238932928520788068}
   - component: {fileID: 8455703487540595988}
   - component: {fileID: 8298592964199095148}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Mortar_01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -34400,7 +34400,7 @@ GameObject:
   - component: {fileID: 4748022046376185934}
   - component: {fileID: 5997844087521714823}
   - component: {fileID: 975267689475736212}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Glass_Jar_02
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -34480,7 +34480,7 @@ GameObject:
   - component: {fileID: 3784988610451161219}
   - component: {fileID: 8497720764388344489}
   - component: {fileID: 3065001701477227588}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TWR_Pre_Dec_Crystal_Large (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -34571,7 +34571,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8980581091066871400}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: _enabled
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -34605,7 +34605,7 @@ GameObject:
   - component: {fileID: 1894847394216688356}
   - component: {fileID: 248244168110327014}
   - component: {fileID: 3856565609898984115}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TWR_Pre_Dec_Crystal_Large (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -34699,7 +34699,7 @@ GameObject:
   - component: {fileID: 2174615655935154921}
   - component: {fileID: 1100556329240973112}
   - component: {fileID: 8296088724484763618}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TWR_Geo_Dec_OrganJar_Heart
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -34793,7 +34793,7 @@ GameObject:
   - component: {fileID: 7906511092719535136}
   - component: {fileID: 6234484146393573588}
   - component: {fileID: 468598479594325473}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TWR_Pre_Dec_Crystal_Large (4)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
