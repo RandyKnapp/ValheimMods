@@ -1,0 +1,6 @@
+newmtl Workbench
+map_Kd D:/RandyKnapp-EPICLOOT/ValheimUnity/Assets/EpicLoot/Texture2D/BuildPieces/WorkBench_d.png
+bump D:/RandyKnapp-EPICLOOT/ValheimUnity/Assets/EpicLoot/Texture2D/BuildPieces/WorkBench_n.png
+Kd 1 1 1
+d 1
+
