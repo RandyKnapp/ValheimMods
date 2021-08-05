@@ -5221,24 +5221,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_primaryTarget: 0
   m_randomTarget: 1
-  m_icon: {fileID: 0}
+  m_icon: {fileID: 21300000, guid: 0793ca53859bd1c45a475db5f38f7e00, type: 3}
   m_name: $piece_enchanting
   m_description: $piece_enchantingstation
   m_enabled: 1
-  m_category: 0
+  m_category: 1
   m_isUpgrade: 0
   m_comfort: 0
   m_comfortGroup: 0
   m_groundPiece: 0
   m_allowAltGroundPlacement: 0
-  m_groundOnly: 0
+  m_groundOnly: 1
   m_cultivatedGroundOnly: 0
   m_waterPiece: 0
   m_clipGround: 0
   m_clipEverything: 0
   m_noInWater: 1
   m_notOnWood: 0
-  m_notOnTiltingSurface: 1
+  m_notOnTiltingSurface: 0
   m_inCeilingOnly: 0
   m_notOnFloor: 0
   m_noClipping: 1
@@ -5283,7 +5283,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_name: $piece_enchanting
-  m_icon: {fileID: 0}
+  m_icon: {fileID: 21300000, guid: 0793ca53859bd1c45a475db5f38f7e00, type: 3}
   m_discoverRange: 4
   m_rangeBuild: 20
   m_craftRequireRoof: 1
@@ -10625,7 +10625,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4414271667789608459}
-  - component: {fileID: 3908912369972002686}
+  - component: {fileID: 1146866535633905971}
   m_Layer: 0
   m_Name: Collider
   m_TagString: Untagged
@@ -10641,14 +10641,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 520177826440832544}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.107, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4315932178628368}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &3908912369972002686
-BoxCollider:
+--- !u!136 &1146866535633905971
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -10657,9 +10657,10 @@ BoxCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 2.1994257, y: 1.3992789, z: 2.1527207}
-  m_Center: {x: 0.0042464733, y: 0.7371417, z: 0.11114371}
+  m_Radius: 0.8037957
+  m_Height: 2.1845205
+  m_Direction: 0
+  m_Center: {x: -0.01748693, y: 0.6297053, z: 0.07147169}
 --- !u!1 &620517069740406775
 GameObject:
   m_ObjectHideFlags: 0
