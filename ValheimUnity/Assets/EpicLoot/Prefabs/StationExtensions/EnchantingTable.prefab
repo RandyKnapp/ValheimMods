@@ -776,7 +776,7 @@ MonoBehaviour:
   m_name: $piece_enchantingtable
   m_description: $piece_enchantingtable
   m_enabled: 1
-  m_category: 0
+  m_category: 1
   m_isUpgrade: 0
   m_comfort: 0
   m_comfortGroup: 0
@@ -795,7 +795,7 @@ MonoBehaviour:
   m_noClipping: 1
   m_onlyInTeleportArea: 0
   m_allowedInDungeons: 0
-  m_spaceRequirement: 1
+  m_spaceRequirement: 0
   m_repairPiece: 0
   m_canBeRemoved: 1
   m_onlyInBiome: 0
