@@ -13,6 +13,8 @@
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
     <TargetFrameworkProfile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -41,6 +43,10 @@
     </Reference>
     <Reference Include="assembly_valheim_publicized">
       <HintPath>..\valheim_Data\Managed\publicized_assemblies\assembly_valheim_publicized.dll</HintPath>
+    </Reference>
+    <Reference Include="AugaAPI, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libs\AugaAPI.dll</HintPath>
     </Reference>
     <Reference Include="BepInEx">
       <HintPath>..\valheim_Data\BepInEx\core\BepInEx.dll</HintPath>
@@ -73,11 +79,27 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="manifest.json" />
+    <None Include="packages.config" />
     <None Include="README.md" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\Libs\AugaAPI.dll">
+      <Link>AugaAPI.dll</Link>
+    </Content>
+    <Content Include="ILRepack.targets">
+      <SubType>Designer</SubType>
+    </Content>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>xcopy "$(TargetDir)$(TargetFileName)" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\" /q /y /i
-xcopy "$(TargetDir)$(TargetFileName)" "C:\Program Files (x86)\Steam\steamapps\common\Valheim_Dev\BepInEx\plugins\" /q /y /i</PostBuildEvent>
-  </PropertyGroup>
+  <Target Name="Copy" AfterTargets="ILRepack">
+    <Exec Command="xcopy &quot;$(TargetDir)$(TargetFileName)&quot; &quot;C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\&quot; /q /y /i" />
+    <Exec Command="xcopy &quot;$(TargetDir)$(TargetFileName)&quot; &quot;C:\Program Files (x86)\Steam\steamapps\common\Valheim_Dev\BepInEx\plugins\&quot; /q /y /i" />
+  </Target>
+  <Import Project="..\packages\ILRepack.Lib.MSBuild.Task.2.0.18.2\build\ILRepack.Lib.MSBuild.Task.targets" Condition="Exists('..\packages\ILRepack.Lib.MSBuild.Task.2.0.18.2\build\ILRepack.Lib.MSBuild.Task.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\ILRepack.Lib.MSBuild.Task.2.0.18.2\build\ILRepack.Lib.MSBuild.Task.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\ILRepack.Lib.MSBuild.Task.2.0.18.2\build\ILRepack.Lib.MSBuild.Task.targets'))" />
+  </Target>
 </Project>

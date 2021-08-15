@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using BepInEx;
 using BepInEx.Configuration;
 using HarmonyLib;
@@ -6,6 +7,7 @@ using HarmonyLib;
 namespace ExtendedItemDataFramework
 {
     [BepInPlugin(PluginId, "Extended Item Data Framework", Version)]
+    [BepInDependency("randyknapp.mods.auga", BepInDependency.DependencyFlags.SoftDependency)]
     public class ExtendedItemDataFramework : BaseUnityPlugin
     {
         public const string PluginId = "randyknapp.mods.extendeditemdataframework";
@@ -16,6 +18,7 @@ namespace ExtendedItemDataFramework
         public static ConfigEntry<bool> DisplayUniqueItemIDInTooltip;
 
         public static bool Enabled => _enabledConfig != null && _enabledConfig.Value;
+        public static bool HasAuga => Auga.API.IsLoaded();
 
         private static ExtendedItemDataFramework _instance;
         private Harmony _harmony;
@@ -31,6 +34,14 @@ namespace ExtendedItemDataFramework
             ExtendedItemData.LoadExtendedItemData += UniqueItemData.OnLoadExtendedItemData;
 
             _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), PluginId);
+        }
+
+        private void Start()
+        {
+            if (HasAuga)
+            {
+                Auga.API.ComplexTooltip_AddItemStatPreprocessor(PreprocessTooltip);
+            }
         }
 
         private void OnDestroy()
@@ -64,6 +75,16 @@ namespace ExtendedItemDataFramework
             {
                 _instance.Logger.LogError(message);
             }
+        }
+
+        private static Tuple<string, string> PreprocessTooltip(ItemDrop.ItemData item, string label, string value)
+        {
+            if (label == "$item_crafter")
+            {
+                value = item.GetCrafterName();
+            }
+
+            return new Tuple<string, string>(label, value);
         }
     }
 }
