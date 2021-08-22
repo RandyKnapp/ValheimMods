@@ -7,7 +7,7 @@
             <InputAssemblies Include="$(OutputPath)\fastJSON.dll" />
             <InputAssemblies Include="$(OutputPath)\AugaAPI.dll" />
             <LibraryPath Include="$(OutputPath)" />
-            <LibraryPath Include="$(SolutionDir)\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\valheim_Data\Managed\" />
+            <LibraryPath Include="$(ValheimDependenciesRoot)\valheim_Data\Managed\" />
         </ItemGroup>
         <ILRepack Parallel="true" DebugInfo="true" Internalize="true" InputAssemblies="@(InputAssemblies)" OutputFile="$(TargetPath)" TargetKind="SameAsPrimaryAssembly" LibraryPath="@(LibraryPath)" />
     </Target>

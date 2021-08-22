@@ -1,0 +1,8 @@
+<Project>
+    <PropertyGroup>
+        <!-- This is only a half measure for build portability as it relies on a fixed file structure.
+          Ideally this would be managed via a package manager, but for now let's use envvars for defaults,
+          and allow for property or envvar level overrides-->
+        <ValheimDependenciesRoot Condition="'$(ValheimDependenciesRoot)' == ''">$(MSBuildProgramFiles32)\Steam\steamapps\common\Valheim</ValheimDependenciesRoot>
+    </PropertyGroup>
+</Project>
