@@ -113,14 +113,14 @@ namespace EpicLoot
             return _sb.ToString();
         }
 
-        public bool CheckRequirements([NotNull] ItemDrop.ItemData itemData, [NotNull] MagicItem magicItem, string magicEffectType = null)
+        public bool CheckRequirements([NotNull] ItemDrop.ItemData itemData, [NotNull] MagicItem magicItem, string magicEffectId = null)
         {
             if (NoRoll)
             {
                 return false;
             }
 
-            if (ExclusiveSelf && magicItem.HasEffect(magicEffectType))
+            if (ExclusiveSelf && magicItem.HasEffect(magicEffectId))
             {
                 return false;
             }
@@ -244,7 +244,24 @@ namespace EpicLoot
             public ValueDef Legendary;
         }
 
+        private string id = String.Empty;
+
         public string Type { get; set; }
+        
+        /// <summary>
+        /// The unique Id of the <see cref="MagicItemEffectDefinition"/> defaulting to the value of <see cref="Type"/>
+        /// </summary>
+        public string Id
+        {
+            get
+            {
+                return string.IsNullOrWhiteSpace(this.id) ? this.Type : this.id;
+            }
+            set
+            {
+                this.id = value;
+            }
+        }
 
         public string DisplayText = "";
         public string Description = "";
@@ -271,7 +288,7 @@ namespace EpicLoot
                 return true;
             }
 
-            return Requirements.CheckRequirements(itemData, magicItem, Type);
+            return Requirements.CheckRequirements(itemData, magicItem, Id);
         }
 
         public bool HasRarityValues()
@@ -315,19 +332,19 @@ namespace EpicLoot
 
         public static void Add(MagicItemEffectDefinition effectDef)
         {
-            if (AllDefinitions.ContainsKey(effectDef.Type))
+            if (AllDefinitions.ContainsKey(effectDef.Id))
             {
-                EpicLoot.LogWarning($"Removed previously existing magic effect type: {effectDef.Type}");
-                AllDefinitions.Remove(effectDef.Type);
+                EpicLoot.LogWarning($"Removed previously existing magic effect type: {effectDef.Id}");
+                AllDefinitions.Remove(effectDef.Id);
             }
 
-            EpicLoot.Log($"Added MagicItemEffect: {effectDef.Type}");
-            AllDefinitions.Add(effectDef.Type, effectDef);
+            EpicLoot.Log($"Added MagicItemEffect: {effectDef.Id}");
+            AllDefinitions.Add(effectDef.Id, effectDef);
         }
 
-        public static MagicItemEffectDefinition Get(string type)
+        public static MagicItemEffectDefinition Get(string id)
         {
-            AllDefinitions.TryGetValue(type, out MagicItemEffectDefinition effectDef);
+            AllDefinitions.TryGetValue(id, out MagicItemEffectDefinition effectDef);
             return effectDef;
         }
 
@@ -345,7 +362,7 @@ namespace EpicLoot
             if (effect != null)
             {
                 magicItem.Effects.Insert(ignoreEffectIndex, effect);
-                if (AllDefinitions.TryGetValue(effect.EffectType, out var ignoredEffectDef))
+                if (AllDefinitions.TryGetValue(effect.EffectId, out var ignoredEffectDef))
                 {
                     if (!results.Contains(ignoredEffectDef))
                     {
@@ -357,12 +374,12 @@ namespace EpicLoot
             return results;
         }
 
-        public static bool IsValuelessEffect(string effectType, ItemRarity rarity)
+        public static bool IsValuelessEffect(string effectId, ItemRarity rarity)
         {
-            var effectDef = Get(effectType);
+            var effectDef = Get(effectId);
             if (effectDef == null)
             {
-                EpicLoot.LogWarning($"Checking if unknown effect is valuless ({effectType}/{rarity})");
+                EpicLoot.LogWarning($"Checking if unknown effect is valuless ({effectId}/{rarity})");
                 return false;
             }
 

@@ -393,10 +393,10 @@ namespace EpicLoot
 
                     foreach (var guaranteedMagicEffect in legendary.GuaranteedMagicEffects)
                     {
-                        var effectDef = MagicItemEffectDefinitions.Get(guaranteedMagicEffect.Type);
+                        var effectDef = MagicItemEffectDefinitions.Get(guaranteedMagicEffect.Id);
                         if (effectDef == null)
                         {
-                            EpicLoot.LogError($"Could not find magic effect (Type={guaranteedMagicEffect.Type}) while creating legendary item (ID={legendary.ID})");
+                            EpicLoot.LogError($"Could not find magic effect (Id={guaranteedMagicEffect.Id}) while creating legendary item (ID={legendary.ID})");
                             continue;
                         }
 
@@ -479,7 +479,7 @@ namespace EpicLoot
                 }
             }
 
-            return new MagicItemEffect(effectDef.Type, value);
+            return new MagicItemEffect(effectDef.Type, effectDef.Id, value);
         }
 
         public static List<MagicItemEffect> RollEffects(List<MagicItemEffectDefinition> availableEffects, ItemRarity itemRarity, int count, bool removeOnSelect = true)
@@ -648,7 +648,7 @@ namespace EpicLoot
             var currentEffect = magicItem.Effects[effectIndex];
             results.Add(currentEffect);
 
-            var valuelessEffect = MagicItemEffectDefinitions.IsValuelessEffect(currentEffect.EffectType, rarity);
+            var valuelessEffect = MagicItemEffectDefinitions.IsValuelessEffect(currentEffect.EffectId, rarity);
             var availableEffects = MagicItemEffectDefinitions.GetAvailableEffects(item, magicItem, valuelessEffect ? -1 : effectIndex);
 
             for (var i = 0; i < 2 && i < availableEffects.Count; i++)
@@ -662,10 +662,10 @@ namespace EpicLoot
 
                 results.Add(newEffect);
 
-                var newEffectIsValueless = MagicItemEffectDefinitions.IsValuelessEffect(newEffect.EffectType, rarity);
+                var newEffectIsValueless = MagicItemEffectDefinitions.IsValuelessEffect(newEffect.EffectId, rarity);
                 if (newEffectIsValueless)
                 {
-                    availableEffects.RemoveAll(x => x.Type == newEffect.EffectType);
+                    availableEffects.RemoveAll(x => x.Type == newEffect.EffectId);
                 }
             }
 
@@ -677,6 +677,7 @@ namespace EpicLoot
             if (!string.IsNullOrEmpty(ForcedMagicEffect) && !item.HasEffect(ForcedMagicEffect))
             {
                 EpicLoot.Log($"AddDebugMagicEffect {ForcedMagicEffect}");
+                // Also has an issue with Type vs Id usage.  Seeking input on how to reconcile.
                 item.Effects.Add(RollEffect(MagicItemEffectDefinitions.Get(ForcedMagicEffect), item.Rarity));
             }
         }

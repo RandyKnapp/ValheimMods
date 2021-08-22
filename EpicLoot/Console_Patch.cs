@@ -587,6 +587,9 @@ namespace EpicLoot
             itemData.Extended().Save();
         }
 
+        // Issue with the Id change.
+        // Proposed fix would be to query the definitions and try to find an eligible match.
+        // Probably use LootRoller?
         private static MagicItemEffectDefinition GetReplacementEffectDef(MagicItemEffect effect)
         {
             switch (effect.EffectType)

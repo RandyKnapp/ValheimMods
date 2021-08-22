@@ -380,7 +380,7 @@ namespace EpicLoot.Crafting
             var valuelessEffect = false;
             if (recipe.EffectIndex >= 0 && recipe.EffectIndex < magicItem.Effects.Count)
             {
-                var currentEffectDef = MagicItemEffectDefinitions.Get(magicItem.Effects[recipe.EffectIndex].EffectType);
+                var currentEffectDef = MagicItemEffectDefinitions.Get(magicItem.Effects[recipe.EffectIndex].EffectId);
                 valuelessEffect = currentEffectDef.GetValuesForRarity(rarity) == null;
             }
 

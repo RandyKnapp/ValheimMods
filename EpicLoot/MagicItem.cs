@@ -19,6 +19,18 @@ namespace EpicLoot
     public class MagicItemEffect
     {
         public int Version = 1;
+        private string effectId = String.Empty;
+        public string EffectId
+        {
+            get
+            {
+                return string.IsNullOrWhiteSpace(this.effectId) ? this.EffectType : this.effectId;
+            }
+            set
+            {
+                this.effectId = value;
+            }
+        }
         public string EffectType { get; set; }
         public float EffectValue;
 
@@ -26,9 +38,17 @@ namespace EpicLoot
         {
         }
 
-        public MagicItemEffect(string type, float value = 0)
+        public MagicItemEffect(string unifiedIdType)
+        {
+            EffectType = unifiedIdType;
+            EffectId = unifiedIdType;
+            EffectValue = 0.0f;
+        }
+
+        public MagicItemEffect(string type, string id, float value = 0)
         {
             EffectType = type;
+            EffectId = id;
             EffectValue = value;
         }
     }
@@ -117,9 +137,9 @@ namespace EpicLoot
 
         public static string GetEffectText(MagicItemEffect effect, ItemRarity rarity, bool showRange, string legendaryID, MagicItemEffectDefinition.ValueDef valuesOverride)
         {
-            var effectDef = MagicItemEffectDefinitions.Get(effect.EffectType);
+            var effectDef = MagicItemEffectDefinitions.Get(effect.EffectId);
             var result = GetEffectText(effectDef, effect.EffectValue);
-            var values = valuesOverride ?? (string.IsNullOrEmpty(legendaryID) ? effectDef.GetValuesForRarity(rarity) : UniqueLegendaryHelper.GetLegendaryEffectValues(legendaryID, effect.EffectType));
+            var values = valuesOverride ?? (string.IsNullOrEmpty(legendaryID) ? effectDef.GetValuesForRarity(rarity) : UniqueLegendaryHelper.GetLegendaryEffectValues(legendaryID, effect.EffectId));
             if (showRange && values != null)
             {
                 if (!Mathf.Approximately(values.MinValue, values.MaxValue))
@@ -202,7 +222,7 @@ namespace EpicLoot
         {
             foreach (var effect in Effects)
             {
-                var effectDef = MagicItemEffectDefinitions.Get(effect.EffectType);
+                var effectDef = MagicItemEffectDefinitions.Get(effect.EffectId);
                 if (effectDef != null && !string.IsNullOrEmpty(effectDef.EquipFx))
                 {
                     mode = effectDef.EquipFxMode;

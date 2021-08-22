@@ -1089,7 +1089,8 @@ namespace EpicLoot
             foreach (var definitionEntry in MagicItemEffectDefinitions.AllDefinitions)
             {
                 var def = definitionEntry.Value;
-                t.AppendLine($"## {def.Type}");
+                // def.Id is not needed for generating documentation here.
+                t.AppendLine($"## {def.Type}"); 
                 t.AppendLine();
                 t.AppendLine($"> **Display Text:** {Localization.instance.Localize(def.DisplayText)}");
                 t.AppendLine("> ");

@@ -71,11 +71,11 @@ namespace EpicLoot.LegendarySystem
             return availableLegendaries;
         }
 
-        public static MagicItemEffectDefinition.ValueDef GetLegendaryEffectValues(string legendaryID, string effectType)
+        public static MagicItemEffectDefinition.ValueDef GetLegendaryEffectValues(string legendaryID, string effectId)
         {
             if (LegendaryInfo.TryGetValue(legendaryID, out var legendaryInfo))
             {
-                if (legendaryInfo.GuaranteedMagicEffects.TryFind(x => x.Type == effectType, out var guaranteedMagicEffect))
+                if (legendaryInfo.GuaranteedMagicEffects.TryFind(x => x.Id == effectId, out var guaranteedMagicEffect))
                 {
                     return guaranteedMagicEffect.Values;
                 }

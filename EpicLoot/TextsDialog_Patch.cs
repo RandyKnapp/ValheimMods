@@ -36,10 +36,10 @@ namespace EpicLoot
                 {
                     foreach (var effect in item.GetMagicItem().Effects)
                     {
-                        if (!magicEffects.TryGetValue(effect.EffectType, out var effectList))
+                        if (!magicEffects.TryGetValue(effect.EffectId, out var effectList))
                         {
                             effectList = new List<KeyValuePair<MagicItemEffect, ItemDrop.ItemData>>();
-                            magicEffects.Add(effect.EffectType, effectList);
+                            magicEffects.Add(effect.EffectId, effectList);
                         }
 
                         effectList.Add(new KeyValuePair<MagicItemEffect, ItemDrop.ItemData>(effect, item));

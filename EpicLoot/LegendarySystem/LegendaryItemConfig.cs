@@ -7,7 +7,20 @@ namespace EpicLoot.LegendarySystem
     [Serializable]
     public class GuaranteedMagicEffect
     {
+        private string id;
         public string Type;
+        public string Id
+        {
+            get
+            {
+                return String.IsNullOrWhiteSpace(this.id) ? this.Type : this.Id;
+            }
+            set
+            {
+                this.id = value;
+            }
+        }
+
         public MagicItemEffectDefinition.ValueDef Values;
     }
 

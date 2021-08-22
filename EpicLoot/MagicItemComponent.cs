@@ -207,7 +207,7 @@ namespace EpicLoot
                 return false;
             }
 
-            return itemData.GetMagicItem().Effects.Select(effect => MagicItemEffectDefinitions.Get(effect.EffectType)).Any(effectDef => effectDef.CanBeAugmented);
+            return itemData.GetMagicItem().Effects.Select(effect => MagicItemEffectDefinitions.Get(effect.EffectId)).Any(effectDef => effectDef.CanBeAugmented);
         }
 
         public static string GetSetID(this ItemDrop.ItemData itemData, out bool isMundane)
@@ -339,10 +339,11 @@ namespace EpicLoot
                 foreach (var setBonusInfo in setInfo.SetBonuses.OrderBy(x => x.Count))
                 {
                     var hasEquipped = currentSetEquipped.Count >= setBonusInfo.Count;
-                    var effectDef = MagicItemEffectDefinitions.Get(setBonusInfo.Effect.Type);
+                    // Also might have an issue with Type vs Id usage. Seeking input on this scenario
+                    var effectDef = MagicItemEffectDefinitions.Get(setBonusInfo.Effect.Id);
                     if (effectDef == null)
                     {
-                        EpicLoot.LogError($"Set Tooltip: Could not find effect ({setBonusInfo.Effect.Type}) for set ({setInfo.ID}) bonus ({setBonusInfo.Count})!");
+                        EpicLoot.LogError($"Set Tooltip: Could not find effect ({setBonusInfo.Effect.Id}) for set ({setInfo.ID}) bonus ({setBonusInfo.Count})!");
                         continue;
                     }
 
@@ -493,7 +494,7 @@ namespace EpicLoot
                 {
                     if (count >= setBonusInfo.Count && (effectType == null || setBonusInfo.Effect.Type == effectType))
                     {
-                        var effect = new MagicItemEffect(setBonusInfo.Effect.Type, setBonusInfo.Effect.Values?.MinValue ?? 0);
+                        var effect = new MagicItemEffect(setBonusInfo.Effect.Type, setBonusInfo.Effect.Id, setBonusInfo.Effect.Values?.MinValue ?? 0);
                         activeSetEffects.Add(effect);
                     }
                 }
