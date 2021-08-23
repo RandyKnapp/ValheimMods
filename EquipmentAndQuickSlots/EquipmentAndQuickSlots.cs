@@ -7,12 +7,12 @@ using UnityEngine;
 
 namespace EquipmentAndQuickSlots
 {
-    [BepInPlugin(PluginId, "Equipment and Quick Slots", "2.0.12")]
+    [BepInPlugin(PluginId, "Equipment and Quick Slots Advanced", "2.0.12")]
     [BepInDependency("moreslots", BepInDependency.DependencyFlags.SoftDependency)]
-    [BepInDependency("randyknapp.mods.auga", BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency("etofi.mods.auga", BepInDependency.DependencyFlags.SoftDependency)]
     public class EquipmentAndQuickSlots : BaseUnityPlugin
     {
-        public const string PluginId = "randyknapp.mods.equipmentandquickslots";
+        public const string PluginId = "etofi.mods.equipmentandquickslotsadvanced";
 
         public const int QuickSlotCount = 3;
         public static int EquipSlotCount => EquipSlotTypes.Count;
@@ -32,7 +32,16 @@ namespace EquipmentAndQuickSlots
         private static ConfigEntry<bool> _loggingEnabled;
         public static ConfigEntry<TextAnchor> QuickSlotsAnchor;
         public static ConfigEntry<Vector2> QuickSlotsPosition;
+
+        //Ergänzungen etofi
+        //-------------------------------------------------------------------------------------------------------------------------------------------
         public static ConfigEntry<bool> InventoryInfiniteWeight;
+        public static ConfigEntry<bool> AllowAllItemsInPortals;
+        public static ConfigEntry<bool> DontLoseSkillsOnDeat;
+        public static ConfigEntry<bool> EquipedArmorDoesntAffectMovementSpeed;
+        public static ConfigEntry<float> MinimapDiscoveryRadius;
+        public static ConfigEntry<float> MinimapDiscoveryRadiusBoat;
+        //-------------------------------------------------------------------------------------------------------------------------------------------
 
         public static Sprite PaperdollMale;
         public static Sprite PaperdollFemale;
@@ -59,7 +68,16 @@ namespace EquipmentAndQuickSlots
             ViewDebugSaveData = Config.Bind("Toggles", "View Debug Save Data", false, "Enable to view the raw save data in the compendium.");
             QuickSlotsAnchor = Config.Bind("Quick Slots", "Quick Slots Anchor", TextAnchor.LowerLeft, "The point on the HUD to anchor the Quick Slots bar. Changing this also changes the pivot of the Quick Slots to that corner.");
             QuickSlotsPosition = Config.Bind("Quick Slots", "Quick Slots Position", new Vector2(216, 150), "The position offset from the Quick Slots Anchor at which to place the Quick Slots.");
-            InventoryInfiniteWeight = Config.Bind("InventoryInfiniteWeight", "Inventory has infinite weight", false, "Enable inventory has infinite weight");
+
+            //Ergänzungen etofi
+            //-------------------------------------------------------------------------------------------------------------------------------------------
+            InventoryInfiniteWeight = Config.Bind("XtraToggles", "Inventory has infinite weight", false, "Enable inventory has infinite weight");
+            AllowAllItemsInPortals = Config.Bind("XtraToggles", "Allow all items in portals", false, "Enable allow all items in portals");
+            DontLoseSkillsOnDeat = Config.Bind("XtraToggles", "Do not lose skills on death", false, "Enable do not lose skills on death");
+            EquipedArmorDoesntAffectMovementSpeed = Config.Bind("XtraToggles", "Equiped armor does not affect movement speed", false, "Enable Equiped armor does not affect movement speed");
+            MinimapDiscoveryRadius = Config.Bind("XtraMinimap", "Set minimap discovery radius", 0f, "Set minimap discovery radius (default=0)");
+            MinimapDiscoveryRadiusBoat = Config.Bind("XtraMinimap", "Set minimap discovery radius on boat", 0f, "Set minimap discovery radius on boat(default=0)");
+            //-------------------------------------------------------------------------------------------------------------------------------------------
 
             LoadAssets();
 

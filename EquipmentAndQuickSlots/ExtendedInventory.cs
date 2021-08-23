@@ -363,7 +363,12 @@ namespace EquipmentAndQuickSlots
         public bool OverrideIsTeleportable()
         {
             CallBase = true;
-            var result = _inventories.All(x => x.IsTeleportable());
+
+            var result = true;
+            if (EquipmentAndQuickSlots.AllowAllItemsInPortals.Value == false)
+            {
+                result = _inventories.All(x => x.IsTeleportable());
+            }
             CallBase = false;
             return result;
         }
