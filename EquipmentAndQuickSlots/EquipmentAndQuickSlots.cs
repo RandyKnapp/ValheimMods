@@ -32,6 +32,7 @@ namespace EquipmentAndQuickSlots
         private static ConfigEntry<bool> _loggingEnabled;
         public static ConfigEntry<TextAnchor> QuickSlotsAnchor;
         public static ConfigEntry<Vector2> QuickSlotsPosition;
+        public static ConfigEntry<bool> InventoryInfiniteWeight;
 
         public static Sprite PaperdollMale;
         public static Sprite PaperdollFemale;
@@ -58,6 +59,7 @@ namespace EquipmentAndQuickSlots
             ViewDebugSaveData = Config.Bind("Toggles", "View Debug Save Data", false, "Enable to view the raw save data in the compendium.");
             QuickSlotsAnchor = Config.Bind("Quick Slots", "Quick Slots Anchor", TextAnchor.LowerLeft, "The point on the HUD to anchor the Quick Slots bar. Changing this also changes the pivot of the Quick Slots to that corner.");
             QuickSlotsPosition = Config.Bind("Quick Slots", "Quick Slots Position", new Vector2(216, 150), "The position offset from the Quick Slots Anchor at which to place the Quick Slots.");
+            InventoryInfiniteWeight = Config.Bind("InventoryInfiniteWeight", "Inventory has infinite weight", false, "Enable inventory has infinite weight");
 
             LoadAssets();
 
