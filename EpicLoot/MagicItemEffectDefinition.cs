@@ -16,6 +16,7 @@ namespace EpicLoot
         public bool NoRoll;
         public bool ExclusiveSelf = true;
         public List<string> ExclusiveEffectTypes = new List<string>();
+        public List<string> RequiredEffectTypes = new List<string>();
         public List<ItemDrop.ItemData.ItemType> AllowedItemTypes = new List<ItemDrop.ItemData.ItemType>();
         public List<ItemDrop.ItemData.ItemType> ExcludedItemTypes = new List<ItemDrop.ItemData.ItemType>();
         public List<ItemRarity> AllowedRarities = new List<ItemRarity>();
@@ -63,6 +64,11 @@ namespace EpicLoot
             if (ExclusiveEffectTypes != null && ExclusiveEffectTypes.Count > 0)
             {
                 _sb.AppendLine($"> > **ExclusiveEffectTypes:** `{string.Join(", ", ExclusiveEffectTypes)}`");
+            }
+
+            if (RequiredEffectTypes != null && RequiredEffectTypes.Count > 0)
+            {
+                _sb.AppendLine($"> > **RequiredEffectTypes:** `{string.Join(", ", RequiredEffectTypes)}`");
             }
 
             if (AllowedItemTypes != null && AllowedItemTypes.Count > 0)
@@ -126,6 +132,11 @@ namespace EpicLoot
             }
 
             if (ExclusiveEffectTypes?.Count > 0 && magicItem.HasAnyEffect(ExclusiveEffectTypes))
+            {
+                return false;
+            }
+
+            if (RequiredEffectTypes?.Count > 0 && magicItem.HasAllEffect(RequiredEffectTypes))
             {
                 return false;
             }

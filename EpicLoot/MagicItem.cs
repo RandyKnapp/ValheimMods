@@ -108,6 +108,11 @@ namespace EpicLoot
             return Effects.Any(x => effectTypes.Contains(x.EffectType));
         }
 
+        public bool HasAllEffect(IEnumerable<string> effectTypes)
+        {
+            return Effects.All(x => effectTypes.Contains(x.EffectType));
+        }
+
         public static string GetEffectText(MagicItemEffectDefinition effectDef, float value)
         {
             var localizedDisplayText = Localization.instance.Localize(effectDef.DisplayText);
