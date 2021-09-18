@@ -15,7 +15,7 @@ namespace ExtendedItemDataFramework
             {
                 itemDrop.m_itemData = new ExtendedItemData(itemDrop.m_itemData);
             }
-            var pos = __instance.transform.position + Vector3.up * __instance.m_spawnOffset;
+            var pos = __instance.m_spawnPoint.position;
             var quaternion = Quaternion.Euler(0.0f, Random.Range(0, 360), 0.0f);
             var position = pos;
             var rotation = quaternion;

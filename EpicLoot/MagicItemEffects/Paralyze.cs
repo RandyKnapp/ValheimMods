@@ -11,7 +11,7 @@ namespace EpicLoot.MagicItemEffects
             ResetTime();
         }
 
-        public override void ModifySpeed(ref float speed)
+        public override void ModifySpeed(float baseSpeed, ref float speed)
         {
             speed *= 0;
         }

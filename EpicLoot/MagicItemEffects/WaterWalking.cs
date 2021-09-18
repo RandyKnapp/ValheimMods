@@ -74,7 +74,8 @@ namespace EpicLoot.MagicItemEffects
                         return true;
                     }
 
-                    var waterLevel = WaterVolume.GetWaterLevel(__instance.m_body.position);
+                    var waterVolume = Object.FindObjectOfType<WaterVolume>();
+                    var waterLevel = waterVolume.GetWaterSurface(__instance.m_body.position);
                     IsWaterWalking = waterLevel > __instance.m_body.position.y;
                     if (IsWaterWalking)
                     {
@@ -139,7 +140,8 @@ namespace EpicLoot.MagicItemEffects
 
         public static void SetPostionToWaterLevel(Character __instance)
         {
-            var waterLevel = WaterVolume.GetWaterLevel(__instance.m_body.position);
+            var waterVolume = Object.FindObjectOfType<WaterVolume>();
+            var waterLevel = waterVolume.GetWaterSurface(__instance.m_body.position);
             SetPostionToWaterLevel(__instance, waterLevel);
         }
 

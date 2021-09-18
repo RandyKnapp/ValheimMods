@@ -22,12 +22,12 @@ namespace ConsoleHelper
     }
 
     [HarmonyPatch]
-    public static class Console_Patches
+    public static class Terminal_Patches
     {
         private static bool _inputtingText;
 
-        [HarmonyPatch(typeof(Console), nameof(Console.IsCheatsEnabled))]
-        public static class Console_IsCheatsEnabled_Patch
+        [HarmonyPatch(typeof(Terminal), nameof(Terminal.IsCheatsEnabled))]
+        public static class Terminal_IsCheatsEnabled_Patch
         {
             public static bool Prefix(ref bool __result)
             {
@@ -36,8 +36,8 @@ namespace ConsoleHelper
             }
         }
 
-        [HarmonyPatch(typeof(Console), nameof(Console.InputText))]
-        public static class Console_InputText_Patch
+        [HarmonyPatch(typeof(Terminal), nameof(Terminal.InputText))]
+        public static class Terminal_InputText_Patch
         {
             public static bool Prefix()
             {
