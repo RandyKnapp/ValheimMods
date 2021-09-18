@@ -88,10 +88,13 @@
     </Resource>
   </ItemGroup>
   <ItemGroup>
+
     <Compile Include="EquippedArmorDoesntAffectMovementSpeed.cs" />
     <Compile Include="MinimapDiscoveryRadius.cs" />
     <Compile Include="DontLoseSkillsOnDeath.cs" />
     <Compile Include="Console_Patch.cs" />
+
+    <Compile Include="Terminal_Patch.cs" />
     <Compile Include="ExtendedInventory.cs" />
     <Compile Include="HotkeyBar_Patch.cs" />
     <Compile Include="Humanoid_Patch.cs" />

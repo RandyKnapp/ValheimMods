@@ -1,4 +1,6 @@
-﻿## Version 0.8.4
+﻿## Version 0.8.5
+  * Updated for H&H
+## Version 0.8.4
   * Added support for Project Auga
   * Completed localization for the entire mod (thanks Anya77!)
 ## Version 0.8.3

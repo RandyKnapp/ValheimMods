@@ -160,7 +160,7 @@
     <Compile Include="LootBeams\AlwaysPointUp.cs" />
     <Compile Include="LootBeams\BeamColorSetter.cs" />
     <Compile Include="CharacterDrop_Patch.cs" />
-    <Compile Include="Console_Patch.cs" />
+    <Compile Include="Terminal_Patch.cs" />
     <Compile Include="Container_Patch.cs" />
     <Compile Include="Crafting\DisenchantTabController.cs" />
     <Compile Include="InventoryGui_Patch.cs" />

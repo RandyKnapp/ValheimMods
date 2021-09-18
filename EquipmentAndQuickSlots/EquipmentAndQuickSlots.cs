@@ -6,8 +6,8 @@ using HarmonyLib;
 using UnityEngine;
 
 namespace EquipmentAndQuickSlots
-{
-    [BepInPlugin(PluginId, "Equipment and Quick Slots Advanced", "2.0.12")]
+
+    [BepInPlugin(PluginId, "Equipment and Quick Slots Advanced", "2.0.13")]
     [BepInDependency("moreslots", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("etofi.mods.auga", BepInDependency.DependencyFlags.SoftDependency)]
     public class EquipmentAndQuickSlots : BaseUnityPlugin

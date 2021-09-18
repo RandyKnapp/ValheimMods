@@ -35,6 +35,20 @@ namespace EpicLoot.Adventure
             }
         }
 
+        [HarmonyPatch(nameof(Minimap.Start))]
+        [HarmonyPostfix]
+        public static void Start_Postfix(Minimap __instance)
+        {
+            if (__instance.m_visibleIconTypes.Length < (int)EpicLoot.TreasureMapPinType + 1)
+            {
+                __instance.m_visibleIconTypes = new bool[(int)EpicLoot.TreasureMapPinType + 1];
+                for (var index = 0; index < __instance.m_visibleIconTypes.Length; ++index)
+                {
+                    __instance.m_visibleIconTypes[index] = true;
+                }
+            }
+        }
+
         [HarmonyPatch("OnDestroy")]
         [HarmonyPostfix]
         public static void OnDestroy_Postfix(Minimap __instance)
