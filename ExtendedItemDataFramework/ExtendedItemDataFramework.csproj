@@ -66,7 +66,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CookingStation_Patch.cs" />
     <Compile Include="Components\CrafterNameData.cs" />
     <Compile Include="Humanoid_Patch.cs" />
     <Compile Include="ExtendedItemDataFramework.cs" />

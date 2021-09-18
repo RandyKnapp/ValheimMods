@@ -1,4 +1,6 @@
-﻿## Version 0.8.5
+﻿## Version 0.8.6
+  * Disabled water walking (won't fix), but made it free to augment off of existing gear.
+## Version 0.8.5
   * Updated for H&H
 ## Version 0.8.4
   * Added support for Project Auga

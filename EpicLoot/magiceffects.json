@@ -1613,14 +1613,7 @@
       "DisplayText" : "$mod_epicloot_me_waterwalk_display",
       "Description" : "$mod_epicloot_me_waterwalk_desc",
       "Requirements" : {
-        "AllowedItemTypes" : [
-          "Legs"
-        ],
-        "AllowedRarities" : [
-          "Rare",
-          "Epic",
-          "Legendary"
-        ]
+        "NoRoll": true
       },
       "SelectionWeight" : 1,
       "Prefixes": [

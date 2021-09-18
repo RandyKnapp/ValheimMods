@@ -85,6 +85,11 @@ namespace EpicLoot.Crafting
                 return true;
             });
 
+            if (EffectIsDeprecated(item, recipeEffectIndex))
+            {
+                return new List<ItemAmountConfig>();
+            }
+
             if (configEntry != null && !item.GetMagicItem().IsEffectAugmented(recipeEffectIndex))
             {
                 var cost = configEntry.Cost.ToList();
@@ -101,6 +106,11 @@ namespace EpicLoot.Crafting
 
         public static ItemAmountConfig GetReAugmentCost(ItemDrop.ItemData item, int indexToAugment)
         {
+            if (EffectIsDeprecated(item, indexToAugment))
+            {
+                return null;
+            }
+
             var magicItem = item.GetMagicItem();
             if (magicItem == null)
             {
@@ -115,6 +125,22 @@ namespace EpicLoot.Crafting
 
             var reaugmentCostIndex = Mathf.Clamp(totalAugments - 1, 0, Config.ReAugmentCosts.Count - 1);
             return Config.ReAugmentCosts[reaugmentCostIndex];
+        }
+
+        public static bool EffectIsDeprecated(ItemDrop.ItemData item, int effectIndex)
+        {
+            var effects = item?.GetMagicItem()?.GetEffects();
+            return (effects != null && effectIndex >= 0 && effectIndex < effects.Count && EffectIsDeprecated(effects[effectIndex].EffectType));
+        }
+
+        public static bool EffectIsDeprecated(string effectType)
+        {
+            if ( effectType == MagicEffectType.WaterWalking )
+            {
+                    return true;
+            }
+
+            return false;
         }
     }
 }

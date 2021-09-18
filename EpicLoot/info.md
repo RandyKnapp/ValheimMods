@@ -1,4 +1,4 @@
-# EpicLoot Data v0.8.5
+# EpicLoot Data v0.8.6
 
 *Author: RandyKnapp*
 *Source: [Github](https://github.com/RandyKnapp/ValheimMods/tree/main/EpicLoot)*
@@ -1160,12 +1160,10 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > **Prefixes:** Njord's, Water Walking
 > **Suffixes:** of Water Walking, of Njord's Smooth Sea
 > 
-> **Allowed Item Types:** Legs
+> **Allowed Item Types:** *None*
 > 
 > **Requirements:**
-> > **Flags:** `ExclusiveSelf`
-> > **AllowedItemTypes:** `Legs`
-> > **AllowedRarities:** `Rare, Epic, Legendary`
+> > **Flags:** `NoRoll, ExclusiveSelf`
 
 ## ExplosiveArrows
 
