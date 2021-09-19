@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects
 {
-    [HarmonyPatch]
+    /*[HarmonyPatch]
     public static class WaterWalking
     {
         public static bool IsWaterWalking;
@@ -149,5 +149,5 @@ namespace EpicLoot.MagicItemEffects
         {
             __instance.m_body.position = new Vector3(__instance.m_body.position.x, waterLevel, __instance.m_body.position.z);
         }
-    }
+    }*/
 }

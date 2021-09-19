@@ -308,7 +308,6 @@ namespace EpicLoot.Crafting
                         (canCraft ? 
                             (hasAnyAvailableEnchants ?
                                 ""
-
                                 : Localization.instance.Localize("$mod_epicloot_augment_noeffects")) 
                             : Localization.instance.Localize("$msg_missingrequirement")) 
                         : Localization.instance.Localize("$mod_epicloot_augment_selecteffect");
@@ -477,7 +476,8 @@ namespace EpicLoot.Crafting
         private static string GetAugmentSelectorText(MagicItem magicItem, int i, IReadOnlyList<MagicItemEffect> augmentableEffects, ItemRarity rarity)
         {
             var pip = EpicLoot.GetMagicEffectPip(magicItem.IsEffectAugmented(i));
-            return $"{pip} {Localization.instance.Localize(MagicItem.GetEffectText(augmentableEffects[i], rarity, true))}";
+            bool free = EnchantCostsHelper.EffectIsDeprecated(augmentableEffects[i].EffectType);
+            return $"{pip} {Localization.instance.Localize(MagicItem.GetEffectText(augmentableEffects[i], rarity, true))}{(free ? " [FREE]" : "")}";
         }
 
         private void OnSelectorValueChanged(int index, bool selected)

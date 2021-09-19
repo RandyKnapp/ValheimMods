@@ -64,5 +64,5 @@ Copy EquipmentAndQuickSlots.dll into the BepInEx/plugins folder
     * Added support for Project Auga
   * 2.0.12
     * Better Valheim+ and Auga positioning for the inventory
-  * 2.0.13
+  * 2.0.14
     * Updated for H&H
