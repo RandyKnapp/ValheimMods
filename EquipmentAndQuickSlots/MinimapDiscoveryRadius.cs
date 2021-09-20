@@ -40,7 +40,7 @@ namespace EquipmentAndQuickSlots
             {
                 return false;
             }
-            if ((bool)Player.m_localPlayer.GetShipControl())
+            if (Player.m_localPlayer.IsAttachedToShip() || (bool)Player.m_localPlayer.GetControlledShip())
             {
                 return true;
             }
@@ -48,7 +48,7 @@ namespace EquipmentAndQuickSlots
             Player.GetPlayersInRange(Player.m_localPlayer.transform.position, 20f, list);
             foreach (Player item in list)
             {
-                if ((bool)item.GetShipControl())
+                if (item.IsAttachedToShip() || (bool)item.GetControlledShip())
                 {
                     return true;
                 }
