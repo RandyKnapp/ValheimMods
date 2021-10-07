@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using ExtendedItemDataFramework;
 using JetBrains.Annotations;
+using EpicLoot.LegendarySystem;
 
 namespace EpicLoot
 {
@@ -279,16 +280,19 @@ namespace EpicLoot
             return ValuesPerRarity.Magic != null && ValuesPerRarity.Epic != null && ValuesPerRarity.Rare != null && ValuesPerRarity.Legendary != null;
         }
 
-        public ValueDef GetValuesForRarity(ItemRarity itemRarity)
+        public ValueDef GetValuesForRarity(ItemRarity itemRarity,string LegendaryID = null)
         {
-            switch (itemRarity)
-            {
-                case ItemRarity.Magic: return ValuesPerRarity.Magic;
-                case ItemRarity.Rare: return ValuesPerRarity.Rare;
-                case ItemRarity.Epic: return ValuesPerRarity.Epic;
-                case ItemRarity.Legendary: return ValuesPerRarity.Legendary;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(itemRarity), itemRarity, null);
+            if (LegendaryID != null) {
+                return UniqueLegendaryHelper.GetLegendaryEffectValues(LegendaryID, Type);
+            } else {
+                switch (itemRarity) {
+                    case ItemRarity.Magic: return ValuesPerRarity.Magic;
+                    case ItemRarity.Rare: return ValuesPerRarity.Rare;
+                    case ItemRarity.Epic: return ValuesPerRarity.Epic;
+                    case ItemRarity.Legendary: return ValuesPerRarity.Legendary;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(itemRarity), itemRarity, null);
+                }
             }
         }
     }
