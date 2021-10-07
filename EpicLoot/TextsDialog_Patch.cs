@@ -5,6 +5,7 @@ using EpicLoot.Adventure;
 using HarmonyLib;
 using UnityEngine;
 using UnityEngine.UI;
+using EpicLoot.LegendarySystem;
 using Object = UnityEngine.Object;
 
 namespace EpicLoot
@@ -12,6 +13,16 @@ namespace EpicLoot
     [HarmonyPatch(typeof(TextsDialog), nameof(TextsDialog.UpdateTextsList))]
     public static class TextsDialog_UpdateTextsList_Patch
     {
+        private class EffectInformation {
+            public string Name { get; }
+            public ItemRarity Rarity { get; }
+
+            public EffectInformation(string name, ItemRarity rarity) {
+                Name = name;
+                Rarity = rarity;
+            }
+        }
+
         public static void Postfix(TextsDialog __instance)
         {
             var player = Player.m_localPlayer;
@@ -27,9 +38,10 @@ namespace EpicLoot
 
         public static void AddMagicEffectsPage(TextsDialog textsDialog, Player player)
         {
-            var magicEffects = new Dictionary<string, List<KeyValuePair<MagicItemEffect, ItemDrop.ItemData>>>();
+            var magicEffects = new Dictionary<string, List<KeyValuePair<MagicItemEffect, EffectInformation>>>();
 
             var allEquipment = player.GetEquipment();
+
             foreach (var item in allEquipment)
             {
                 if (item.IsMagic())
@@ -38,11 +50,32 @@ namespace EpicLoot
                     {
                         if (!magicEffects.TryGetValue(effect.EffectType, out var effectList))
                         {
-                            effectList = new List<KeyValuePair<MagicItemEffect, ItemDrop.ItemData>>();
+                            effectList = new List<KeyValuePair<MagicItemEffect, EffectInformation>>();
                             magicEffects.Add(effect.EffectType, effectList);
                         }
 
-                        effectList.Add(new KeyValuePair<MagicItemEffect, ItemDrop.ItemData>(effect, item));
+                        var effectInformation = new EffectInformation(item.GetDecoratedName(),item.GetRarity());
+                        effectList.Add(new KeyValuePair<MagicItemEffect, EffectInformation>(effect, effectInformation));
+                    }
+                }
+            }
+
+            var allSets = player.GetEquippedSets();
+            foreach (var set in allSets) {
+                var setPieces = player.GetEquippedSetPieces(set.ID);
+                var setPieceCount = setPieces.Count;
+                foreach(var bonus in set.SetBonuses) {
+                    if(bonus.Count <= setPieceCount) {
+
+                        if (!magicEffects.TryGetValue(bonus.Effect.Type, out var effectList)) {
+                            effectList = new List<KeyValuePair<MagicItemEffect, EffectInformation>>();
+                            magicEffects.Add(bonus.Effect.Type, effectList);
+                        }
+
+                        var effect = new MagicItemEffect(bonus.Effect.Type, bonus.Effect.Values?.MinValue ?? 0);
+                        var effectInformation = new EffectInformation(set.Name, ItemRarity.Legendary);                     
+
+                        effectList.Add(new KeyValuePair<MagicItemEffect, EffectInformation>(effect, effectInformation));
                     }
                 }
             }
@@ -55,14 +88,14 @@ namespace EpicLoot
                 var effectDef = MagicItemEffectDefinitions.Get(effectType);
                 var sum = entry.Value.Sum(x => x.Key.EffectValue);
                 var totalEffectText = MagicItem.GetEffectText(effectDef, sum);
-                var highestRarity = (ItemRarity) entry.Value.Max(x => (int) x.Value.GetRarity());
+                var highestRarity = (ItemRarity) entry.Value.Max(x => (int) x.Value.Rarity);
 
                 t.AppendLine($"<size=20><color={EpicLoot.GetRarityColor(highestRarity)}>{totalEffectText}</color></size>");
                 foreach (var entry2 in entry.Value)
                 {
                     var effect = entry2.Key;
-                    var item = entry2.Value;
-                    t.AppendLine($" <color=silver>- {MagicItem.GetEffectText(effect, item.GetRarity(), false)} ({item.GetDecoratedName()})</color>");
+                    var effectInfo = entry2.Value;
+                    t.AppendLine($" <color=silver>- {MagicItem.GetEffectText(effect, effectInfo.Rarity, false)} ({effectInfo.Name})</color>");
                 }
 
                 t.AppendLine();
@@ -73,7 +106,7 @@ namespace EpicLoot
                     Localization.instance.Localize($"{EpicLoot.GetMagicEffectPip(false)} $mod_epicloot_active_magic_effects"), 
                     Localization.instance.Localize(t.ToString())));
         }
-        
+                
         public static void AddTreasureAndBountiesPage(TextsDialog textsDialog, Player player)
         {
             var t = new StringBuilder();
