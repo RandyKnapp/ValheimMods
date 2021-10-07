@@ -394,7 +394,7 @@ namespace EpicLoot.Crafting
             var rarity = recipe.FromItem.GetRarity();
             var startOffset = new Vector2(-330, -165);
 
-            var augmentableEffects = magicItem.Effects;
+            var augmentableEffects = magicItem.Effects.FindAll(e => e.Augmentable);
             var effectCount = augmentableEffects.Count;
 
             if (EffectSelectors.Count == 0 && EpicLoot.HasAuga)

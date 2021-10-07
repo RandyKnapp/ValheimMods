@@ -400,7 +400,7 @@ namespace EpicLoot
                             continue;
                         }
 
-                        var effect = RollEffect(effectDef, ItemRarity.Legendary, guaranteedMagicEffect.Values);
+                        var effect = RollEffect(effectDef, ItemRarity.Legendary, guaranteedMagicEffect.Augmentable, guaranteedMagicEffect.Values);
                         magicItem.Effects.Add(effect);
                         effectCount--;
                     }
@@ -464,22 +464,23 @@ namespace EpicLoot
             }
         }
 
-        public static MagicItemEffect RollEffect(MagicItemEffectDefinition effectDef, ItemRarity itemRarity, MagicItemEffectDefinition.ValueDef valuesOverride = null)
-        {
+        public static MagicItemEffect RollEffect(MagicItemEffectDefinition effectDef, ItemRarity itemRarity, bool augmentable, MagicItemEffectDefinition.ValueDef valuesOverride = null) {
             float value = 0;
             var valuesDef = valuesOverride ?? effectDef.GetValuesForRarity(itemRarity);
-            if (valuesDef != null)
-            {
+            if (valuesDef != null) {
                 value = valuesDef.MinValue;
-                if (valuesDef.Increment != 0)
-                {
+                if (valuesDef.Increment != 0) {
                     EpicLoot.Log($"RollEffect: {effectDef.Type} {itemRarity} value={value} (min={valuesDef.MinValue} max={valuesDef.MaxValue})");
                     var incrementCount = (int)((valuesDef.MaxValue - valuesDef.MinValue) / valuesDef.Increment);
                     value = valuesDef.MinValue + (Random.Range(0, incrementCount + 1) * valuesDef.Increment);
                 }
             }
+            return new MagicItemEffect(effectDef.Type, value, augmentable);
+        }
 
-            return new MagicItemEffect(effectDef.Type, value);
+        public static MagicItemEffect RollEffect(MagicItemEffectDefinition effectDef, ItemRarity itemRarity, MagicItemEffectDefinition.ValueDef valuesOverride = null)
+        {
+            return RollEffect(effectDef, itemRarity, true, valuesOverride);
         }
 
         public static List<MagicItemEffect> RollEffects(List<MagicItemEffectDefinition> availableEffects, ItemRarity itemRarity, int count, bool removeOnSelect = true)

@@ -21,15 +21,17 @@ namespace EpicLoot
         public int Version = 1;
         public string EffectType { get; set; }
         public float EffectValue;
+        public bool Augmentable;
 
         public MagicItemEffect()
         {
         }
 
-        public MagicItemEffect(string type, float value = 0)
+        public MagicItemEffect(string type, float value = 0, bool augmentable = true)
         {
             EffectType = type;
             EffectValue = value;
+            Augmentable = augmentable;
         }
     }
 

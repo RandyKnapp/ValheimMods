@@ -9,6 +9,7 @@ namespace EpicLoot.LegendarySystem
     {
         public string Type;
         public MagicItemEffectDefinition.ValueDef Values;
+        public bool Augmentable;
     }
 
     [Serializable]
