@@ -21,17 +21,17 @@ namespace EpicLoot
         public int Version = 1;
         public string EffectType { get; set; }
         public float EffectValue;
-        public bool Augmentable;
+        public bool NonAugmentable;
 
         public MagicItemEffect()
         {
         }
 
-        public MagicItemEffect(string type, float value = 0, bool augmentable = true)
+        public MagicItemEffect(string type, float value = 0, bool nonAugmentable = false)
         {
             EffectType = type;
             EffectValue = value;
-            Augmentable = augmentable;
+            NonAugmentable = nonAugmentable;
         }
     }
 
@@ -69,7 +69,7 @@ namespace EpicLoot
             {
                 var effect = Effects[index];
                 var pip = EpicLoot.GetMagicEffectPip(IsEffectAugmented(index));
-                tooltip += $"\n{pip} {GetEffectText(effect, Rarity, showRange)}";
+                tooltip += $"\n{pip} {GetEffectText(effect, Rarity, showRange, LegendaryID)}";
             }
 
             tooltip += "</color>";
@@ -121,7 +121,7 @@ namespace EpicLoot
         {
             var effectDef = MagicItemEffectDefinitions.Get(effect.EffectType);
             var result = GetEffectText(effectDef, effect.EffectValue);
-            var values = valuesOverride ?? (string.IsNullOrEmpty(legendaryID) ? effectDef.GetValuesForRarity(rarity) : UniqueLegendaryHelper.GetLegendaryEffectValues(legendaryID, effect.EffectType));
+            var values = effectDef.GetValuesForRarity(rarity,legendaryID);
             if (showRange && values != null)
             {
                 if (!Mathf.Approximately(values.MinValue, values.MaxValue))

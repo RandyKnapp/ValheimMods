@@ -394,7 +394,7 @@ namespace EpicLoot.Crafting
             var rarity = recipe.FromItem.GetRarity();
             var startOffset = new Vector2(-330, -165);
 
-            var augmentableEffects = magicItem.Effects.FindAll(e => e.Augmentable);
+            var augmentableEffects = magicItem.Effects.FindAll(e => e.NonAugmentable != true);
             var effectCount = augmentableEffects.Count;
 
             if (EffectSelectors.Count == 0 && EpicLoot.HasAuga)
@@ -477,7 +477,7 @@ namespace EpicLoot.Crafting
         {
             var pip = EpicLoot.GetMagicEffectPip(magicItem.IsEffectAugmented(i));
             bool free = EnchantCostsHelper.EffectIsDeprecated(augmentableEffects[i].EffectType);
-            return $"{pip} {Localization.instance.Localize(MagicItem.GetEffectText(augmentableEffects[i], rarity, true))}{(free ? " [FREE]" : "")}";
+            return $"{pip} {Localization.instance.Localize(MagicItem.GetEffectText(augmentableEffects[i], rarity, true, magicItem.LegendaryID))}{(free ? " [FREE]" : "")}";
         }
 
         private void OnSelectorValueChanged(int index, bool selected)

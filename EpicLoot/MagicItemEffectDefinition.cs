@@ -282,18 +282,22 @@ namespace EpicLoot
 
         public ValueDef GetValuesForRarity(ItemRarity itemRarity,string LegendaryID = null)
         {
+            ValueDef values = null;
             if (LegendaryID != null) {
-                return UniqueLegendaryHelper.GetLegendaryEffectValues(LegendaryID, Type);
-            } else {
+                values = UniqueLegendaryHelper.GetLegendaryEffectValues(LegendaryID, Type);
+            }
+
+            if(values == null){
                 switch (itemRarity) {
-                    case ItemRarity.Magic: return ValuesPerRarity.Magic;
-                    case ItemRarity.Rare: return ValuesPerRarity.Rare;
-                    case ItemRarity.Epic: return ValuesPerRarity.Epic;
-                    case ItemRarity.Legendary: return ValuesPerRarity.Legendary;
+                    case ItemRarity.Magic: values = ValuesPerRarity.Magic;break;
+                    case ItemRarity.Rare: values = ValuesPerRarity.Rare;break;
+                    case ItemRarity.Epic: values = ValuesPerRarity.Epic;break;
+                    case ItemRarity.Legendary: values = ValuesPerRarity.Legendary;break;
                     default:
                         throw new ArgumentOutOfRangeException(nameof(itemRarity), itemRarity, null);
                 }
             }
+            return values;
         }
     }
 

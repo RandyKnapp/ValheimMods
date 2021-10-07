@@ -400,7 +400,7 @@ namespace EpicLoot
                             continue;
                         }
 
-                        var effect = RollEffect(effectDef, ItemRarity.Legendary, guaranteedMagicEffect.Augmentable, guaranteedMagicEffect.Values);
+                        var effect = RollEffect(effectDef, ItemRarity.Legendary, guaranteedMagicEffect.NonAugmentable, guaranteedMagicEffect.Values);
                         magicItem.Effects.Add(effect);
                         effectCount--;
                     }
@@ -464,7 +464,7 @@ namespace EpicLoot
             }
         }
 
-        public static MagicItemEffect RollEffect(MagicItemEffectDefinition effectDef, ItemRarity itemRarity, bool augmentable, MagicItemEffectDefinition.ValueDef valuesOverride = null) {
+        public static MagicItemEffect RollEffect(MagicItemEffectDefinition effectDef, ItemRarity itemRarity, bool nonAugmentable, MagicItemEffectDefinition.ValueDef valuesOverride = null) {
             float value = 0;
             var valuesDef = valuesOverride ?? effectDef.GetValuesForRarity(itemRarity);
             if (valuesDef != null) {
@@ -475,7 +475,7 @@ namespace EpicLoot
                     value = valuesDef.MinValue + (Random.Range(0, incrementCount + 1) * valuesDef.Increment);
                 }
             }
-            return new MagicItemEffect(effectDef.Type, value, augmentable);
+            return new MagicItemEffect(effectDef.Type, value, nonAugmentable);
         }
 
         public static MagicItemEffect RollEffect(MagicItemEffectDefinition effectDef, ItemRarity itemRarity, MagicItemEffectDefinition.ValueDef valuesOverride = null)
