@@ -1,4 +1,7 @@
-﻿## Version 0.8.6
+﻿## Version 0.8.7
+  * Fixed Auga integration for crafting materials
+  * Fixed Auga integration for showing the full tooltip in the sacrifice panel
+## Version 0.8.6
   * Disabled water walking (won't fix), but made it free to augment off of existing gear.
 ## Version 0.8.5
   * Updated for H&H

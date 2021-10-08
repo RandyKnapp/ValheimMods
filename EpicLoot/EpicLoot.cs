@@ -78,9 +78,9 @@ namespace EpicLoot
     {
         public const string PluginId = "randyknapp.mods.epicloot";
         public const string DisplayName = "Epic Loot";
-        public const string Version = "0.8.6";
+        public const string Version = "0.8.7";
 
-        private readonly ConfigSync _configSync = new ConfigSync(PluginId) { DisplayName = DisplayName, CurrentVersion = Version, MinimumRequiredVersion = "0.8.6" };
+        private readonly ConfigSync _configSync = new ConfigSync(PluginId) { DisplayName = DisplayName, CurrentVersion = Version, MinimumRequiredVersion = "0.8.7" };
 
         private static ConfigEntry<string> _setItemColor;
         private static ConfigEntry<string> _magicRarityColor;
@@ -153,6 +153,7 @@ namespace EpicLoot
         public const Minimap.PinType BountyPinType = (Minimap.PinType) 800;
         public const Minimap.PinType TreasureMapPinType = (Minimap.PinType) 801;
         public static bool HasAuga;
+        public static bool AugaTooltipNoTextBoxes;
 
         public static event Action AbilitiesInitialized;
         public static event Action LootTableLoaded;
@@ -277,6 +278,12 @@ namespace EpicLoot
                 magicBG.gameObject.SetActive(isMagic);
             }
 
+            if (item.IsMagicCraftingMaterial())
+            {
+                var rarity = item.GetCraftingMaterialRarity();
+                Auga.API.ComplexTooltip_SetIcon(complexTooltip, item.m_shared.m_icons[GetRarityIconIndex(rarity)]);
+            }
+
             if (isMagic)
             {
                 var magicColor = magicItem.GetColorString();
@@ -287,6 +294,8 @@ namespace EpicLoot
                     magicBG.GetComponent<Image>().color = item.GetRarityColor();
                 }
 
+                Auga.API.ComplexTooltip_SetIcon(complexTooltip, item.GetIcon());
+
                 if (item.IsLegendarySetItem())
                 {
                     Auga.API.ComplexTooltip_SetSubtitle(complexTooltip, Localization.instance.Localize($"<color={GetSetItemColor()}>$mod_epicloot_legendarysetlabel</color>, {itemTypeName}\n"));
@@ -295,6 +304,9 @@ namespace EpicLoot
                 {
                     Auga.API.ComplexTooltip_SetSubtitle(complexTooltip, Localization.instance.Localize($"<color={magicColor}>{magicItem.GetRarityDisplay()} {itemTypeName}</color>"));
                 }
+
+                if (AugaTooltipNoTextBoxes)
+                    return;
 
                 Auga.API.ComplexTooltip_AddDivider(complexTooltip);
 

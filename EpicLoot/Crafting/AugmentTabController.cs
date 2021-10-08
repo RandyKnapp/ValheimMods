@@ -319,9 +319,11 @@ namespace EpicLoot.Crafting
                     AugaTabData.ItemInfoGO.SetActive(true);
                     AugaTabData.RequirementsPanelGO.SetActive(true);
 
+                    EpicLoot.AugaTooltipNoTextBoxes = true;
                     Auga.API.ComplexTooltip_SetItemNoTextBoxes(AugaTabData.ItemInfoGO, itemData, itemData.m_quality, itemData.m_variant);
                     Auga.API.ComplexTooltip_SetTopic(AugaTabData.ItemInfoGO, Localization.instance.Localize(itemData.GetDecoratedName()));
                     Auga.API.ComplexTooltip_SetDescription(AugaTabData.ItemInfoGO, Localization.instance.Localize("$mod_epicloot_augment_explain"));
+                    EpicLoot.AugaTooltipNoTextBoxes = false;
                     __instance.m_itemCraftType.text = "";
                 }
                 else
