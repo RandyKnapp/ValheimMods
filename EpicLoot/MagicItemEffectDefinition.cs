@@ -162,7 +162,10 @@ namespace EpicLoot
 
             if (AllowedItemNames?.Count > 0 && !AllowedItemNames.Contains(itemData.m_shared.m_name))
             {
-                return false;
+                if (!AllowedItemNames.Contains(itemData.m_dropPrefab.name))
+                {
+                    return false;
+                }
             }
 
             if (ExcludedItemNames?.Count > 0 && ExcludedItemNames.Contains(itemData.m_shared.m_name))
