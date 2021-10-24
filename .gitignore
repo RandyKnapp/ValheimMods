@@ -76,3 +76,7 @@ crashlytics-build.properties
 /valheim_Data/BepInEx-out/plugins/EpicLoot/enchantcosts.json
 /valheim_Data/BepInEx-out/plugins/EpicLoot/adventuredata.json
 /valheim_Data/BepInEx-out/plugins/EpicLoot/abilities.json
+
+#custom stuff...
+/Assemblies
+/Output

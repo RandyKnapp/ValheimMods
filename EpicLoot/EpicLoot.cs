@@ -114,6 +114,9 @@ namespace EpicLoot
         public static ConfigEntry<float> AbilityBarIconSpacing;
         public static ConfigEntry<float> SetItemDropChance;
 
+        private static ConfigEntry<bool> _customSerializeUsingCustom;
+        private static ConfigEntry<bool> _customEnableAutoConversion;
+
         public static readonly List<ItemDrop.ItemData.ItemType> AllowedMagicItemTypes = new List<ItemDrop.ItemData.ItemType>
         {
             ItemDrop.ItemData.ItemType.Helmet,
@@ -194,6 +197,11 @@ namespace EpicLoot
             _serverConfigLocked = SyncedConfig("Config Sync", "Lock Config", false, new ConfigDescription("[Server Only] The configuration is locked and may not be changed by clients once it has been synced from the server. Only valid for server config, will have no effect on clients."));
             SetItemDropChance = SyncedConfig("Balance", "Set Item Drop Chance", 0.15f, "The percent chance that a legendary item will be a set item. Min = 0, Max = 1");
 
+            // custom config stuff...
+            _customSerializeUsingCustom = SyncedConfig("CUSTOM", "Serialize Using Custom", false, "Serialize Magic Items using CUSTOM encoding...");
+            _customEnableAutoConversion = SyncedConfig("CUSTOM", "Enable Auto Conversion", false, "Enable auto-converting Magic Item serialization on Load event");
+
+
             AbilityKeyCodes[0] = Config.Bind("Abilities", "Ability Hotkey 1", "g", "Hotkey for Ability Slot 1.");
             AbilityKeyCodes[1] = Config.Bind("Abilities", "Ability Hotkey 2", "h", "Hotkey for Ability Slot 2.");
             AbilityKeyCodes[2] = Config.Bind("Abilities", "Ability Hotkey 3", "j", "Hotkey for Ability Slot 3.");
@@ -209,6 +217,15 @@ namespace EpicLoot
             InitializeAbilities();
             PrintInfo();
             //GenerateTranslations();
+
+            Log($"TEST New Config Values... {_customSerializeUsingCustom.Value}, {_customEnableAutoConversion.Value},");
+
+            // Initialize new stuff...
+            PacketOptimization.CustomSerialization.LogInfo = EpicLoot.Log;
+            PacketOptimization.CustomSerialization.LogWarning = EpicLoot.LogWarning;
+            PacketOptimization.CustomSerialization.LogError = EpicLoot.LogError;
+            PacketOptimization.CustomSerialization.Initialize(_customSerializeUsingCustom.Value);
+            PacketOptimization.CustomSerialization.InitializeConversion(_customEnableAutoConversion.Value);
 
             LoadAssets();
 

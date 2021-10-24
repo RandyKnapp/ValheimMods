@@ -7,6 +7,7 @@ using System.Text;
 using Common;
 using EpicLoot.Crafting;
 using EpicLoot.LegendarySystem;
+using EpicLoot.PacketOptimization;
 using ExtendedItemDataFramework;
 using fastJSON;
 using HarmonyLib;
@@ -35,19 +36,38 @@ namespace EpicLoot
             Save();
         }
 
-        public override string Serialize()
-        {
-            return JSON.ToJSON(MagicItem, _saveParams);
+        public override string Serialize() {
+            try {
+                //for now test that item can be serialized and deserialized correctly before using custom encoding...
+                if (CustomSerialization.SerializeUsingCustom && CustomSerialization.TestSerializeDeserialize(MagicItem)) {
+                    EpicLoot.Log("Serializing using new method...");
+                    return CustomSerialization.SerializeMagicItem(MagicItem);
+                } else {
+                    // fallback to old JSON encoding...
+                    EpicLoot.Log("Serializing using old json method...");
+                    return JSON.ToJSON(MagicItem, _saveParams);
+                }
+
+                //return JSON.ToJSON(MagicItem, _saveParams);
+            } catch (Exception ex) {
+                EpicLoot.LogError("Serializing... Unexpected error... This should never happen...");
+                EpicLoot.LogError(ex.ToString());
+                return JSON.ToJSON(MagicItem, _saveParams);
+            }
         }
 
-        public override void Deserialize(string data)
-        {
-            try
-            {
-                MagicItem = JSON.ToObject<MagicItem>(data, _saveParams);
-            }
-            catch (Exception)
-            {
+        public override void Deserialize(string data) {
+            try {
+                if (data.StartsWith("{")) {
+                    // data already saved in old JSON format
+                    EpicLoot.Log("Deserializing MagicItem from JSON");
+                    MagicItem = JSON.ToObject<MagicItem>(data, _saveParams);
+                } else {
+                    // data probably saved in custom optimized format
+                    EpicLoot.Log("Deserializing MagicItem from CUSTOM");
+                    MagicItem = CustomSerialization.DeserializeMagicItem(data);
+                }
+            } catch (Exception) {
                 EpicLoot.LogError($"[{nameof(MagicItemComponent)}] Could not deserialize MagicItem json data! ({ItemData?.m_shared?.m_name})");
                 throw;
             }
