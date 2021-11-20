@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using System;
+using HarmonyLib;
 using UnityEngine;
 
 namespace ExtendedItemDataFramework
@@ -20,18 +21,16 @@ namespace ExtendedItemDataFramework
                 ZLog.Log("Failed to find item prefab " + name);
                 return false;
             }
-            ZNetView.m_forceDisableInit = true;
-            GameObject gameObject = Object.Instantiate(itemPrefab);
-            ZNetView.m_forceDisableInit = false;
-            ItemDrop component = gameObject.GetComponent<ItemDrop>();
+            ItemDrop component = itemPrefab.GetComponent<ItemDrop>();
             if (component == null)
             {
                 ZLog.Log("Missing itemdrop in " + name);
-                Object.Destroy(gameObject);
                 return false;
             }
+            var itemDataClone = component.m_itemData.Clone();
+            itemDataClone.m_shared = (ItemDrop.ItemData.SharedData)AccessTools.Method(typeof(ItemDrop.ItemData), "MemberwiseClone").Invoke(itemDataClone.m_shared, Array.Empty<object>());
             var newItemData = new ExtendedItemData(
-                component.m_itemData,
+                itemDataClone,
                 stack, 
                 durability,
                 pos,
@@ -41,7 +40,6 @@ namespace ExtendedItemDataFramework
                 crafterID,
                 crafterName);
             __instance.AddItem(newItemData, newItemData.m_stack, pos.x, pos.y);
-            Object.Destroy(gameObject);
             __result = true;
             return false;
         }
@@ -78,29 +76,25 @@ namespace ExtendedItemDataFramework
             var a = stack;
             while (a > 0)
             {
-                ZNetView.m_forceDisableInit = true;
-                var gameObject = Object.Instantiate(itemPrefab);
-                ZNetView.m_forceDisableInit = false;
-                var component2 = gameObject.GetComponent<ItemDrop>();
+                var component2 = itemPrefab.GetComponent<ItemDrop>();
                 if (component2 == null)
                 {
                     ZLog.Log("Missing itemdrop in " + name);
-                    Object.Destroy(gameObject);
                     return false;
                 }
-                var num = Mathf.Min(a, component2.m_itemData.m_shared.m_maxStackSize);
+                itemData = component2.m_itemData.Clone();
+                itemData.m_shared = (ItemDrop.ItemData.SharedData)AccessTools.Method(typeof(ItemDrop.ItemData), "MemberwiseClone").Invoke(itemData.m_shared, Array.Empty<object>());
+                var num = Mathf.Min(a, itemData.m_shared.m_maxStackSize);
                 a -= num;
-                component2.m_itemData.m_stack = num;
-                component2.m_itemData.m_quality = quality;
-                component2.m_itemData.m_variant = variant;
-                component2.m_itemData.m_durability = component2.m_itemData.GetMaxDurability();
-                component2.m_itemData.m_crafterID = crafterID;
-                component2.m_itemData.m_crafterName = crafterName;
+                itemData.m_stack = num;
+                itemData.m_quality = quality;
+                itemData.m_variant = variant;
+                itemData.m_durability = itemData.GetMaxDurability();
+                itemData.m_crafterID = crafterID;
+                itemData.m_crafterName = crafterName;
 
-                component2.m_itemData = new ExtendedItemData(component2.m_itemData);
-                __instance.AddItem(component2.m_itemData);
-                itemData = component2.m_itemData;
-                Object.Destroy(gameObject);
+                component2.m_itemData = new ExtendedItemData(itemData);
+                __instance.AddItem(itemData);
             }
 
             __result = itemData;
