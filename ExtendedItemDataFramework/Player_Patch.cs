@@ -1,6 +1,5 @@
 ﻿using HarmonyLib;
 using JetBrains.Annotations;
-using UnityEngine;
 
 namespace ExtendedItemDataFramework
 {

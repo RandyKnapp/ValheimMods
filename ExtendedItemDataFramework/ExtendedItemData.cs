@@ -42,6 +42,21 @@ namespace ExtendedItemDataFramework
         public readonly List<BaseExtendedItemComponent> Components = new List<BaseExtendedItemComponent>();
         private readonly StringBuilder _sb = new StringBuilder();
 
+        private static readonly Dictionary<string, string> _customTypeRegistry = new Dictionary<string, string>();
+
+        public static void RegisterCustomTypeID(string typeId, Type componentType)
+        {
+            var fullAssemblyType = componentType.AssemblyQualifiedName;
+            if (!_customTypeRegistry.ContainsKey(typeId))
+            {
+                _customTypeRegistry.Add(typeId, fullAssemblyType);
+            }
+            else
+            {
+                _customTypeRegistry[typeId] = fullAssemblyType;
+            }
+        }
+
         // New item
         private ExtendedItemData()
         {
@@ -184,6 +199,11 @@ namespace ExtendedItemDataFramework
                     var data = parts.Length == 2 ? parts[1] : string.Empty;
                     ExtendedItemDataFramework.Log($"  Component: type: {typeString}, data: {data}");
 
+                    if (_customTypeRegistry.ContainsKey(typeString))
+                    {
+                        typeString = _customTypeRegistry[typeString];
+                    }
+
                     var type = Type.GetType(typeString);
                     if (type == null)
                     {
@@ -224,7 +244,7 @@ namespace ExtendedItemDataFramework
                 return;
             }
 
-            string data = equip ? m_crafterName : "";
+            var data = equip ? m_crafterName : "";
 
             if (m_shared.m_itemType == ItemType.Bow || m_shared.m_itemType == ItemType.OneHandedWeapon || m_shared.m_itemType == ItemType.TwoHandedWeapon || m_shared.m_itemType == ItemType.Shield)
             {

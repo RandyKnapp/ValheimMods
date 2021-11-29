@@ -20,12 +20,14 @@ namespace EpicLoot
 {
     public class MagicItemComponent : BaseExtendedItemComponent
     {
+        public const string TypeID = "rkel";
+
         public MagicItem MagicItem;
 
         private static readonly JSONParameters _saveParams = new JSONParameters { UseExtensions = false };
 
         public MagicItemComponent(ExtendedItemData parent)
-            : base(typeof(MagicItemComponent).AssemblyQualifiedName, parent)
+            : base(TypeID, parent)
         {
         }
 

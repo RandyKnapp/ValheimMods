@@ -30,6 +30,9 @@ namespace ExtendedItemDataFramework
             _loggingEnabled = Config.Bind("General", "Logging Enabled", false, "Enables log output from the mod.");
             DisplayUniqueItemIDInTooltip = Config.Bind("General", "Display UniqueItemID in Tooltip", false, "Displays the item's unique id in magenta text at the bottom of the tooltip.");
 
+            ExtendedItemData.RegisterCustomTypeID(CrafterNameData.TypeID, typeof(CrafterNameData));
+            ExtendedItemData.RegisterCustomTypeID(UniqueItemData.TypeID, typeof(UniqueItemData));
+
             ExtendedItemData.NewExtendedItemData += UniqueItemData.OnNewExtendedItemData;
             ExtendedItemData.LoadExtendedItemData += UniqueItemData.OnLoadExtendedItemData;
 

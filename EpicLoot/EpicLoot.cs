@@ -204,6 +204,8 @@ namespace EpicLoot
 
             _configSync.AddLockingConfigEntry(_serverConfigLocked);
 
+            ExtendedItemData.RegisterCustomTypeID(MagicItemComponent.TypeID, typeof(MagicItemComponent));
+
             LoadTranslations();
             InitializeConfig();
             InitializeAbilities();

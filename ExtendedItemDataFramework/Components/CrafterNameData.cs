@@ -2,10 +2,12 @@
 {
     public class CrafterNameData : BaseExtendedItemComponent
     {
+        public const string TypeID = "c";
+
         public string CrafterName = "";
 
         public CrafterNameData(ExtendedItemData parent) 
-            : base(typeof(CrafterNameData).AssemblyQualifiedName, parent)
+            : base(TypeID, parent)
         {
         }
 
