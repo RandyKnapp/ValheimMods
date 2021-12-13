@@ -1,0 +1,82 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>VNEI</name>
+    </assembly>
+    <members>
+        <member name="M:VNEI.UI.SelectUI.CreateSelection(UnityEngine.Transform,System.Action{System.String},UnityEngine.Vector2,VNEI.Logic.ItemType[],System.Int32,System.Int32)">
+            <summary>
+                Creates a Popup window to select an item. Only works after VNEI has indexed all items.
+            </summary>
+            <param name="parent"></param>
+            <param name="onSelect">
+                Callback of selection, returns a string with the internal name of the prefab.
+                If no items are indexed or section is aborted, it returns an empty string.
+            </param>
+            <param name="anchoredPosition"></param>
+            <param name="activeTypes">Default ItemTypes. If null all are shown</param>
+            <param name="itemsX">Visible columns</param>
+            <param name="itemsY">Visible rows</param>
+            <returns></returns>
+        </member>
+        <member name="T:VNEI.Log">
+            <summary>
+            Helper class for properly logging from static contexts.
+            </summary>
+        </member>
+        <member name="P:VNEI.Logic.Amount.Zero">
+            <summary>
+                min = 0, max = 0, chance = 0
+            </summary>
+        </member>
+        <member name="P:VNEI.Logic.Amount.One">
+            <summary>
+                min = 1, max = 1, chance = 1f
+            </summary>
+        </member>
+        <member name="E:VNEI.Logic.Indexing.OnIndexingItems">
+            <summary>
+                Called when trying to index new prefab names.
+                Usually use <see cref="M:VNEI.Logic.Indexing.AddItem(VNEI.Logic.Item)"/> to register a new item.
+                If two items have the same name only the first one is added.
+            </summary>
+        </member>
+        <member name="E:VNEI.Logic.Indexing.OnDisableItems">
+            <summary>
+                Called after added all items. Disabled items are not shown inside any UI.
+                Usually use <see cref="M:VNEI.Logic.Indexing.DisableItem(System.String,System.String)"/> to disable a given item.
+            </summary>
+        </member>
+        <member name="E:VNEI.Logic.Indexing.OnIndexingRecipes">
+            <summary>
+                Called after adding a Valheim <see cref="T:Recipe"/>.
+            </summary>
+        </member>
+        <member name="E:VNEI.Logic.Indexing.OnIndexingItemRecipes">
+            <summary>
+                Called when adding specific item recipes (like conversions or drops).
+                Usually use <see cref="M:VNEI.Logic.Indexing.AddRecipeToItems(VNEI.Logic.RecipeInfo)"/> with a new <see cref="T:VNEI.Logic.RecipeInfo"/>, see a full example here
+                <code>
+                Indexing.OnIndexingItemRecipes += (prefab) => {
+                    if (prefab.TryGetComponent(out CookingStation cookingStation)) {
+                        foreach (CookingStation.ItemConversion conversion in cookingStation.m_conversion) {
+                            RecipeInfo recipeInfo = new RecipeInfo();
+                            recipeInfo.SetStation(cookingStation, 1);
+                            recipeInfo.AddIngredient(conversion.m_from, Amount.One, Amount.One, 1, prefab.name);
+                            recipeInfo.AddResult(conversion.m_to, Amount.One, Amount.One, 1, prefab.name);
+                            Indexing.AddRecipeToItems(recipeInfo);
+                        }
+                    }
+                };
+                </code>
+            </summary>
+        </member>
+        <member name="M:VNEI.Logic.Indexing.SetModOfPrefab(System.String,BepInEx.BepInPlugin)">
+            <summary>
+                Register the mod of an item. Only needed if not using Jotunn.
+            </summary>
+            <param name="prefabName"></param>
+            <param name="mod"></param>
+        </member>
+    </members>
+</doc>

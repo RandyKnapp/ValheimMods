@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using BepInEx;
+using BepInEx.Bootstrap;
 using BepInEx.Configuration;
 using Common;
 using EpicLoot.Abilities;
@@ -20,6 +21,7 @@ using JetBrains.Annotations;
 using ServerSync;
 using UnityEngine;
 using UnityEngine.UI;
+using VNEI.Logic;
 using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
 
@@ -154,6 +156,7 @@ namespace EpicLoot
         public const Minimap.PinType TreasureMapPinType = (Minimap.PinType) 801;
         public static bool HasAuga;
         public static bool AugaTooltipNoTextBoxes;
+        public const string VNEIGUID = "com.maxsch.valheim.vnei";
 
         public static event Action AbilitiesInitialized;
         public static event Action LootTableLoaded;
@@ -576,6 +579,11 @@ namespace EpicLoot
             _harmony?.UnpatchAll(PluginId);
         }
 
+        private static void AddNameToVNEI(string prefabName) {
+            // this needs to be wrapped inside a method to not throw an error when VNEI is not present
+            Indexing.SetModOfPrefab(prefabName, _instance.Info.Metadata);
+        }
+
         public static void TryRegisterPrefabs(ZNetScene zNetScene)
         {
             if (zNetScene == null || zNetScene.m_prefabs == null || zNetScene.m_prefabs.Count <= 0)
@@ -588,6 +596,10 @@ namespace EpicLoot
                 if (!zNetScene.m_prefabs.Contains(prefab))
                 {
                     zNetScene.m_prefabs.Add(prefab);
+
+                    if (Chainloader.PluginInfos.ContainsKey(VNEIGUID)) {
+                        AddNameToVNEI(prefab.name);
+                    }
                 }
             }
         }
@@ -718,6 +730,10 @@ namespace EpicLoot
                     if (ObjectDB.instance.GetItemPrefab(prefab.name.GetStableHashCode()) == null)
                     {
                         ObjectDB.instance.m_items.Add(prefab);
+
+                        if (Chainloader.PluginInfos.ContainsKey(VNEIGUID)) {
+                            AddNameToVNEI(prefab.name);
+                        }
                     }
                 }
             }
