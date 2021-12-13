@@ -221,6 +221,10 @@ namespace EpicLoot
             _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), PluginId);
 
             LootTableLoaded?.Invoke();
+
+            if (Chainloader.PluginInfos.ContainsKey(VNEIGUID)) {
+                IndexDisenchantment();
+            }
         }
 
         public void Start()
@@ -577,6 +581,33 @@ namespace EpicLoot
         {
             _instance = null;
             _harmony?.UnpatchAll(PluginId);
+        }
+
+        private static void IndexDisenchantment() {
+            // this needs to be wrapped inside a method to not throw an error when VNEI is not present
+
+            Indexing.OnIndexingItemRecipes += (prefab) => {
+                // the prefab must be an item
+                if (!prefab.TryGetComponent(out ItemDrop itemDrop)) {
+                    return;
+                }
+
+                // the item must be able to disenchant
+                List<ItemAmountConfig> products = EnchantCostsHelper.GetDisenchantProducts(itemDrop.m_itemData);
+                if (products == null || products.Count <= 0) {
+                    return;
+                }
+
+                // create the recipe of disenchanting the item and its results
+                RecipeInfo recipeInfo = new RecipeInfo();
+                recipeInfo.AddIngredient(prefab, Amount.One, Amount.One, 1, "EpicLoot Disenchantment");
+                foreach (ItemAmountConfig itemAmountConfig in products) {
+                    recipeInfo.AddResult(itemAmountConfig.Item, Amount.One, new Amount(itemAmountConfig.Amount), 1);
+                }
+
+                // add the recipe
+                Indexing.AddRecipeToItems(recipeInfo);
+            };
         }
 
         private static void AddNameToVNEI(string prefabName) {
