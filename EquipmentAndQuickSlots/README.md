@@ -18,7 +18,7 @@ Give equipped items their own dedicated inventory slots, plus three more hotkeya
 
 Hotkeys must be assigned according to the conventions listed here: https://docs.unity3d.com/Manual/class-InputManager.html
 
-Source: [Github](https://github.com/RandyKnapp/ValheimMods/EquipmentAndQuickSlots/)
+Source: [Github](https://github.com/RandyKnapp/ValheimMods/tree/main/EquipmentAndQuickSlots)
 
 Install with [BepInEx](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim/)
 
