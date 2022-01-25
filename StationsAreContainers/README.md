@@ -1,4 +1,4 @@
-﻿# Stations Are Containers v1.0.0
+﻿# Stations Are Containers v1.0.1
 Author: RandyKnapp
 Source: [Github](https://github.com/RandyKnapp/ValheimMods/tree/main/StationsAreContainers)
 
@@ -16,3 +16,8 @@ BepInEx config includes:
 Installation:
 - Nexus: Drop the StationsAreContainers.dll right into your BepInEx/plugins folder
 - ThunderStore: Use r2modman to install, or manually drop the dll into your BepInEx/plugins folder
+
+### Changelist
+
+1.0.1
+- Minor changes to be more compatible with EpicLoot

@@ -1,6 +1,6 @@
 {
   "name": "StationsAreContainers",
-  "version_number": "1.0.0",
+  "version_number": "1.0.1",
   "website_url": "https://github.com/RandyKnapp/ValheimMods/tree/main/StationsAreContainers",
   "description": "Crafting stations now have a built in storage containers and can build from it.",
   "dependencies": []

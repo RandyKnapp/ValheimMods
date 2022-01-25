@@ -16,7 +16,7 @@ namespace StationsAreContainers
     {
         public const string PluginId = "randyknapp.mods.stationcontainers";
         public const string DisplayName = "Stations Are Containers";
-        public const string Version = "1.0.0";
+        public const string Version = "1.0.1";
 
         public static ConfigEntry<bool> Workbench_Enabled;
         public static ConfigEntry<int>  Workbench_Width;
