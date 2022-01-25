@@ -72,15 +72,15 @@ namespace EpicLoot
     }
 
     [BepInPlugin(PluginId, DisplayName, Version)]
-    [BepInDependency("randyknapp.mods.extendeditemdataframework", "1.0.5")]
+    [BepInDependency("randyknapp.mods.extendeditemdataframework", "1.0.7")]
     [BepInDependency("randyknapp.mods.auga", BepInDependency.DependencyFlags.SoftDependency)]
     public class EpicLoot : BaseUnityPlugin
     {
         public const string PluginId = "randyknapp.mods.epicloot";
         public const string DisplayName = "Epic Loot";
-        public const string Version = "0.8.7";
+        public const string Version = "0.8.8";
 
-        private readonly ConfigSync _configSync = new ConfigSync(PluginId) { DisplayName = DisplayName, CurrentVersion = Version, MinimumRequiredVersion = "0.8.7" };
+        private readonly ConfigSync _configSync = new ConfigSync(PluginId) { DisplayName = DisplayName, CurrentVersion = Version, MinimumRequiredVersion = "0.8.8" };
 
         private static ConfigEntry<string> _setItemColor;
         private static ConfigEntry<string> _magicRarityColor;

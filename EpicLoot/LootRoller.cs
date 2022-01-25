@@ -690,13 +690,27 @@ namespace EpicLoot
             if (players.Count > 0)
             {
                 var totalLuckFactor = players
-                    .Select(x => x.GetTotalActiveMagicEffectValue(MagicEffectType.Luck, 0.01f))
+                    .Select(x => x.m_nview.GetZDO().GetInt("el-luk") * 0.01f)
                     .DefaultIfEmpty(0)
                     .Sum();
                 luckFactor += totalLuckFactor;
             }
 
             return luckFactor;
+        }
+
+        public static void DebugLuckFactor()
+        {
+            var players = Player.m_players;
+            if (players != null)
+            {
+                Debug.LogWarning($"DebugLuckFactor ({players.Count} players)");
+                var index = 0;
+                foreach (var player in players)
+                {
+                    Debug.LogWarning($"{index++}: {player?.m_name}: {player?.m_nview?.GetZDO()?.GetInt("el-luk")}");
+                }
+            }
         }
 
         public static Dictionary<ItemRarity, float> ModifyRarityByLuck(IReadOnlyDictionary<ItemRarity, float> rarityWeights, float luckFactor = 0)

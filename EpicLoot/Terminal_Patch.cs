@@ -205,6 +205,9 @@ namespace EpicLoot
                     }
                 }
             }), true);
+            new Terminal.ConsoleCommand("debugluck", "", (args => {
+                LootRoller.DebugLuckFactor();
+            }));
         }
 
         private static void TestTreasureMap(string[] args)

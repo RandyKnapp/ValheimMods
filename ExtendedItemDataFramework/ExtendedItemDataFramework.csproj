@@ -67,13 +67,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Components\CrafterNameData.cs" />
-    <Compile Include="Humanoid_Patch.cs" />
     <Compile Include="ExtendedItemDataFramework.cs" />
     <Compile Include="Inventory_Patch.cs" />
     <Compile Include="ItemDataExtensions.cs" />
     <Compile Include="ItemDrop_Patch.cs" />
     <Compile Include="ItemStand_Patch.cs" />
-    <Compile Include="Player_Patch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ExtendedItemData.cs" />
     <Compile Include="Components\UniqueItemData.cs" />

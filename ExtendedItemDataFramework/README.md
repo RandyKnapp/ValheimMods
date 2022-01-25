@@ -1,4 +1,4 @@
-﻿# Extended Item Data Framework v1.0.6
+﻿# Extended Item Data Framework v1.0.7
 
 Author: Randy Knapp
 Source: [Github](https://github.com/RandyKnapp/ValheimMods/tree/main/ExtendedItemDataFramework)
@@ -77,6 +77,7 @@ Included in **Extended Item Data Framework** are two basic components: `CrafterN
     ```
     itemData.Extended()?.GetComponent<MyCoolItemComponent>()
     ```
-9. Some notes:
+9. As of version 1.0.7, the extended data of equipped items is no longer automatically replicated to other players by ZDO. You will be responsible for setting whatever data you need with your own custom ZDO/RPC code.
+10. Some notes:
 	* Extended Item Data Framework doesn't use json to serialize the components, but it does do some custom parsing. The custom delimiters are `"<|"` and `"|>"`. Technically you *can* use them in your serialized data, as the framework will escape them with a unique string, but the author recommends that you avoid it. For reference, the unique strings of the escaped delimiters are: `"randyknapp.mods.extendeditemdataframework.startdelimiter"` and `"randyknapp.mods.extendeditemdataframework.enddelimiter"`.
 	* If you have any questions or feedback, please post comments on the github or reach out directly to the author at randy.bravo2@gmail.com.

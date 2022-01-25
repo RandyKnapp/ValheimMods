@@ -35,6 +35,8 @@ namespace EpicLoot
         {
             MagicItem = magicItem;
             Save();
+            if (ItemData.m_equiped && Player.m_localPlayer.IsItemEquiped(ItemData))
+                Multiplayer_Player_Patch.UpdatePlayerZDOForEquipment(Player.m_localPlayer, ItemData, MagicItem != null);
         }
 
         public override string Serialize()
