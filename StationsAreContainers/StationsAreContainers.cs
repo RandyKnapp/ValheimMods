@@ -1,4 +1,6 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
 using BepInEx;
 using BepInEx.Configuration;
 using HarmonyLib;
@@ -192,6 +194,47 @@ namespace StationsAreContainers
                     }
 
                     __result = true;
+                }
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(Inventory), nameof(Inventory.GetAllItems), new Type[]{})]
+    public static class Inventory_GetAllItems_Patch
+    {
+        public static void Postfix(Inventory __instance, ref List<ItemDrop.ItemData> __result)
+        {
+            if (__instance == Player.m_localPlayer?.m_inventory)
+            {
+                var station = Player.m_localPlayer?.GetCurrentCraftingStation();
+                if (station != null)
+                {
+                    var stationContainer = station.GetComponent<Container>();
+                    if (stationContainer != null)
+                    {
+                        __result = new List<ItemDrop.ItemData>(__result);
+                        __result.AddRange(stationContainer.m_inventory.m_inventory);
+                    }
+                }
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(Inventory), nameof(Inventory.RemoveItem), new [] { typeof(ItemDrop.ItemData) })]
+    public static class Inventory_RemoveItem_Patch
+    {
+        public static void Postfix(Inventory __instance, ref bool __result, ItemDrop.ItemData item)
+        {
+            if (!__result && __instance == Player.m_localPlayer?.m_inventory)
+            {
+                var station = Player.m_localPlayer?.GetCurrentCraftingStation();
+                if (station != null)
+                {
+                    var stationContainer = station.GetComponent<Container>();
+                    if (stationContainer != null)
+                    {
+                        __result = stationContainer.m_inventory.RemoveItem(item);
+                    }
                 }
             }
         }
