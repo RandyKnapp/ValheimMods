@@ -44,9 +44,9 @@ namespace EpicLoot
             public class AttachExtendedDataToZDO_Humanoid_EquipItem_Patch
             {
                 [UsedImplicitly]
-                private static void Postfix(ItemDrop.ItemData item, Humanoid __instance)
+                private static void Postfix(ItemDrop.ItemData item, bool __result, Humanoid __instance)
                 {
-                    if (__instance == Player.m_localPlayer && item != null)
+                    if (__result && __instance == Player.m_localPlayer && item != null)
                         UpdatePlayerZDOForEquipment((Player)__instance, item, true);
                 }
             }
@@ -57,7 +57,7 @@ namespace EpicLoot
                 [UsedImplicitly]
                 private static void Prefix(Humanoid __instance, ItemDrop.ItemData item)
                 {
-                    if (__instance == Player.m_localPlayer && item != null)
+                    if (__instance == Player.m_localPlayer && item != null && Player.m_localPlayer.IsItemEquiped(item))
                         UpdatePlayerZDOForEquipment((Player)__instance, item, false);
                 }
             }
