@@ -72,7 +72,7 @@ namespace StationsAreContainers
         [UsedImplicitly]
         private void OnDestroy()
         {
-            _harmony?.UnpatchAll(PluginId);
+            _harmony?.UnpatchSelf();
         }
 
         public static void ImprovedBuildHud_GetAvailableItems_Patch(ref int __result, string itemName)
