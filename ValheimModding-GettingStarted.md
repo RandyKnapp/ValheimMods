@@ -149,25 +149,26 @@ Randy Knapp - 2/7/2022
 #### Debug Text:
 * If you want to write something out to the console you can do it a couple of ways:
   * Use the BepInEx logger and wrap it in the config var we created above
-        ```cs
-        public static void Log(string message)
-        {
-            if (_loggingEnabled.Value)
-                _instance.Logger.LogInfo(message);
-        }
 
-        public static void LogWarning(string message)
-        {
-            if (_loggingEnabled.Value)
-                _instance.Logger.LogWarning(message);
-        }
+    ```cs
+    public static void Log(string message)
+    {
+        if (_loggingEnabled.Value)
+            _instance.Logger.LogInfo(message);
+    }
 
-        public static void LogError(string message)
-        {
-            if (_loggingEnabled.Value)
-                _instance.Logger.LogError(message);
-        }
-        ```
+    public static void LogWarning(string message)
+    {
+        if (_loggingEnabled.Value)
+            _instance.Logger.LogWarning(message);
+    }
+
+    public static void LogError(string message)
+    {
+        if (_loggingEnabled.Value)
+            _instance.Logger.LogError(message);
+    }
+    ```
     * You can now write to the log by using `MyMod.Log("message");` anywhere in this project and turn it on or off via the config.
   * *Alternatively:* If you don't care about being able to toggle on and off logging, use `using UnityEngine;` and write `Debug.Log("my message");` (or `LogWarning` or `LogError`)
 
