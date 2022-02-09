@@ -42,6 +42,21 @@ namespace ExtendedItemDataFramework
         public readonly List<BaseExtendedItemComponent> Components = new List<BaseExtendedItemComponent>();
         private readonly StringBuilder _sb = new StringBuilder();
 
+        private static readonly Dictionary<string, string> _customTypeRegistry = new Dictionary<string, string>();
+
+        public static void RegisterCustomTypeID(string typeId, Type componentType)
+        {
+            var fullAssemblyType = componentType.AssemblyQualifiedName;
+            if (!_customTypeRegistry.ContainsKey(typeId))
+            {
+                _customTypeRegistry.Add(typeId, fullAssemblyType);
+            }
+            else
+            {
+                _customTypeRegistry[typeId] = fullAssemblyType;
+            }
+        }
+
         // New item
         private ExtendedItemData()
         {
@@ -162,11 +177,6 @@ namespace ExtendedItemDataFramework
             }
 
             m_crafterName = _sb.ToString();
-            if (m_equiped)
-            {
-                UpdatePlayerZDOForEquipment();
-            }
-
             ExtendedItemDataFramework.LogWarning($"Saved Extended Item ({m_shared.m_name}). Data: {m_crafterName}");
         }
 
@@ -183,6 +193,11 @@ namespace ExtendedItemDataFramework
                     var typeString = RestoreDataText(parts[0]);
                     var data = parts.Length == 2 ? parts[1] : string.Empty;
                     ExtendedItemDataFramework.Log($"  Component: type: {typeString}, data: {data}");
+
+                    if (_customTypeRegistry.ContainsKey(typeString))
+                    {
+                        typeString = _customTypeRegistry[typeString];
+                    }
 
                     var type = Type.GetType(typeString);
                     if (type == null)
@@ -205,41 +220,6 @@ namespace ExtendedItemDataFramework
             {
                 ExtendedItemDataFramework.Log($"Loaded item from data, but it was not extended. Initializing now ({m_shared.m_name})");
                 Initialize();
-            }
-        }
-
-        public static readonly Dictionary<ItemType, string> ZDOIdentifierMap = new Dictionary<ItemType, string>
-        {
-            { ItemType.Chest, "ChestItem ExtendedItemData" },
-            { ItemType.Legs, "LegItem ExtendedItemData" },
-            { ItemType.Helmet, "HelmetItem ExtendedItemData" },
-            { ItemType.Shoulder, "ShoulderItem ExtendedItemData" },
-            { ItemType.Utility, "UtilityItem ExtendedItemData" },
-        };
-
-        public void UpdatePlayerZDOForEquipment(bool equip = true)
-        {
-            if (!(Player.m_localPlayer is Player player) || !(player.m_nview?.GetZDO() is ZDO zdo))
-            {
-                return;
-            }
-
-            string data = equip ? m_crafterName : "";
-
-            if (m_shared.m_itemType == ItemType.Bow || m_shared.m_itemType == ItemType.OneHandedWeapon || m_shared.m_itemType == ItemType.TwoHandedWeapon || m_shared.m_itemType == ItemType.Shield)
-            {
-                if (player.m_leftItem?.m_dropPrefab.name == m_dropPrefab.name)
-                {
-                    zdo.Set("LeftItem ExtendedItemData", data);
-                }
-                if (player.m_rightItem?.m_dropPrefab.name == m_dropPrefab.name)
-                {
-                    zdo.Set("RightItem ExtendedItemData", data);
-                }
-            }
-            else if (ZDOIdentifierMap.TryGetValue(m_shared.m_itemType, out string zdoKey))
-            {
-                zdo.Set(zdoKey, data);
             }
         }
 

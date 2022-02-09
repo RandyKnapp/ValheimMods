@@ -5,6 +5,8 @@ namespace ExtendedItemDataFramework
 {
     public class UniqueItemData : BaseExtendedItemComponent
     {
+        public const string TypeID = "u";
+
         public static readonly List<ItemDrop.ItemData.ItemType> UniqueItemTypes = new List<ItemDrop.ItemData.ItemType>()
         {
             ItemDrop.ItemData.ItemType.OneHandedWeapon,
@@ -24,7 +26,7 @@ namespace ExtendedItemDataFramework
         public string Guid;
 
         public UniqueItemData(ExtendedItemData parent) 
-            : base(typeof(UniqueItemData).AssemblyQualifiedName, parent)
+            : base(TypeID, parent)
         {
         }
 

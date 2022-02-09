@@ -1,4 +1,4 @@
-# Epic Loot v0.8.6 - Legendary Sets Update!
+# Epic Loot v0.8.8 - Legendary Sets Update!
 Author: RandyKnapp
 Source: [Github](https://github.com/RandyKnapp/ValheimMods/blob/main/EpicLoot/)
 

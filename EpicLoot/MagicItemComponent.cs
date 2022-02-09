@@ -20,12 +20,14 @@ namespace EpicLoot
 {
     public class MagicItemComponent : BaseExtendedItemComponent
     {
+        public const string TypeID = "rkel";
+
         public MagicItem MagicItem;
 
         private static readonly JSONParameters _saveParams = new JSONParameters { UseExtensions = false };
 
         public MagicItemComponent(ExtendedItemData parent)
-            : base(typeof(MagicItemComponent).AssemblyQualifiedName, parent)
+            : base(TypeID, parent)
         {
         }
 
@@ -33,6 +35,8 @@ namespace EpicLoot
         {
             MagicItem = magicItem;
             Save();
+            if (ItemData.m_equiped && Player.m_localPlayer.IsItemEquiped(ItemData))
+                Multiplayer_Player_Patch.UpdatePlayerZDOForEquipment(Player.m_localPlayer, ItemData, MagicItem != null);
         }
 
         public override string Serialize()

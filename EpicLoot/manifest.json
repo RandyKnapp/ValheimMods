@@ -1,10 +1,10 @@
 {
   "name": "EpicLoot",
-  "version_number": "0.8.6",
+  "version_number": "0.8.8",
   "website_url": "https://github.com/RandyKnapp/ValheimMods/tree/main/EpicLoot",
   "description": "Adds loot drops, magic items, and enchanting to Valheim.",
   "dependencies": [
-    "RandyKnapp-ExtendedItemDataFramework-1.0.0",
-    "denikson-BepInExPack_Valheim-5.4.800"
+    "RandyKnapp-ExtendedItemDataFramework-1.0.7",
+    "denikson-BepInExPack_Valheim-5.4.1700"
   ]
 }
