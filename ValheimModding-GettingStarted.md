@@ -204,6 +204,28 @@ Randy Knapp - 2/7/2022
     ```
   * Go ahead and build, then run Valheim. Load up a game and test it out. If you don't have a container at hand, try using the console commands. Push F5 to open the console, type `-devcommands` and hit enter to enable dev commands. Then enter `spawn Hammer` and `spawn Wood 20`, which should give you enough to build a workbench and a chest. When you open the chest, the color of the label should have changed!
 * Congrats! Your first Valheim UI mod!
+#### Troubleshooting:
+* Your first best resource for troubleshooting issues is the Player.log file. You can find it at
+    ```
+    C:\Users\<yourusername>\AppData\LocalLow\IronGate\Valheim\Player.log
+    ```
+  * In it, you should make sure your mod loaded by seeing the BepInEx output:
+    `[Info   :   BepInEx] Loading [MyMod 1.0.0]`
+  * All your log output will appear in this file as well
+  * If your mod isn't working, check for exceptions thrown by the C# runtime
+* Help! My container text didn't turn green!
+  * Sometimes mods conflict with each other. If you have another mod that changes the UI by patching the same function (`InventoryGui.Awake`, like Project Auga does), and your mod loads before it, that other mod might stomp on your changes when its postfix runs after yours.
+  * By default, the priority of every patch is `Priority.Normal`, or 400 and patches of the same priority are run in the order in which they were patched.
+  * You can change the priority of postfix and prefix patches by adding the `[HarmonyPriority()]` attribute to the patch *function* (not the class).
+  * Low priority means "run later" and high priority means "run earlier". 
+    ```cs
+    [HarmonyPriority(Priority.Low)]
+    public static void Postfix(InventoryGui __instance)
+    {
+        __instance.m_containerName.color = Color.green;
+    }
+    ```
+  * In this specific case, where Auga destroys the UI and recreates it after you set the color, you can set your Postfix to Priority.Low and your function will run *after* Auga.
 #### More Resources:
 * HarmonyX Documentation: [https://github.com/BepInEx/HarmonyX/wiki](https://github.com/BepInEx/HarmonyX/wiki)
 * Join the Valheim Modding Discord: [Invite](https://discord.gg/Dft7SkYHEs)
