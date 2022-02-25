@@ -68,6 +68,7 @@
   <ItemGroup>
     <Compile Include="Components\CrafterNameData.cs" />
     <Compile Include="ExtendedItemDataFramework.cs" />
+    <Compile Include="InventoryGui_Patch.cs" />
     <Compile Include="Inventory_Patch.cs" />
     <Compile Include="ItemDataExtensions.cs" />
     <Compile Include="ItemDrop_Patch.cs" />

@@ -164,7 +164,6 @@
     <Compile Include="Terminal_Patch.cs" />
     <Compile Include="Container_Patch.cs" />
     <Compile Include="Crafting\DisenchantTabController.cs" />
-    <Compile Include="InventoryGui_Patch.cs" />
     <Compile Include="ItemDrop_Patch.cs" />
     <Compile Include="LootBeams\LootBeam.cs" />
     <Compile Include="LootConfig.cs" />

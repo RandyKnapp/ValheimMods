@@ -1,9 +1,8 @@
-﻿using HarmonyLib;
-using UnityEngine;
-
-namespace EpicLoot
+﻿namespace ExtendedItemDataFramework
 {
-    [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.DoCrafting))]
+    public class InventoryGui_Patch
+    {
+        [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.DoCrafting))]
     public static class InventoryGui_DoCrafting_Patch
     {
         public static bool Prefix(InventoryGui __instance, Player player, bool __runOriginal)
@@ -59,5 +58,6 @@ namespace EpicLoot
 
             return true;
         }
+    }
     }
 }
