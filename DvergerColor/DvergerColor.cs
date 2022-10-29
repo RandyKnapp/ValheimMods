@@ -54,7 +54,7 @@ namespace DvergerColor
 
         private void OnDestroy()
         {
-            _harmony.UnpatchAll(PluginId);
+            _harmony.UnpatchSelf();
         }
     }
 }

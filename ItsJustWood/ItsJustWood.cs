@@ -43,7 +43,7 @@ namespace ItsJustWood
         [UsedImplicitly]
         private void OnDestroy()
         {
-            _harmony?.UnpatchAll(PluginId);
+            _harmony?.UnpatchSelf();
         }
 
         public static bool IsObjectDBReady()

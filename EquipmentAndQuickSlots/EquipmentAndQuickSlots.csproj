@@ -100,7 +100,6 @@
     <Compile Include="Player_Patch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TextsDialog_Patch.cs" />
-    <Compile Include="Tombstone_Fix.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="..\ValheimUnity\AssetBundles\eaqs">

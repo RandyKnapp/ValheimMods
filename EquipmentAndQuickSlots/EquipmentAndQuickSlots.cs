@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace EquipmentAndQuickSlots
 {
-    [BepInPlugin(PluginId, "Equipment and Quick Slots", "2.0.14")]
+    [BepInPlugin(PluginId, "Equipment and Quick Slots", "2.0.15")]
     [BepInDependency("moreslots", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("randyknapp.mods.auga", BepInDependency.DependencyFlags.SoftDependency)]
     public class EquipmentAndQuickSlots : BaseUnityPlugin
@@ -84,7 +84,7 @@ namespace EquipmentAndQuickSlots
 
         private void OnDestroy()
         {
-            _harmony?.UnpatchAll(PluginId);
+            _harmony?.UnpatchSelf();
         }
 
         private void Update()

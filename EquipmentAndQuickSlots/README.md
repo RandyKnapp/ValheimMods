@@ -66,3 +66,5 @@ Copy EquipmentAndQuickSlots.dll into the BepInEx/plugins folder
     * Better Valheim+ and Auga positioning for the inventory
   * 2.0.14
     * Updated for H&H
+  * 2.0.15
+    * Yet Another Attempt at fixing the lost-equipment-on-death bug

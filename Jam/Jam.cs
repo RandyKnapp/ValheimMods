@@ -81,7 +81,7 @@ namespace Jam
 
         private void OnDestroy()
         {
-            _harmony?.UnpatchAll(PluginId);
+            _harmony?.UnpatchSelf();
             foreach (var prefab in Prefabs.Values)
             {
                 Destroy(prefab);

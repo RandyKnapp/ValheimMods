@@ -88,7 +88,7 @@ namespace EquipmentAndQuickSlots
 
                     if (containerInventory.GetItemAt(item.m_gridPos.x, item.m_gridPos.y) != null)
                     {
-                        var newSlot = containerInventory.FindEmptySlot(true);
+                        var newSlot = containerInventory.FindEmptySlot(false);
                         item.m_gridPos = newSlot;
                         EquipmentAndQuickSlots.LogWarning($"Adding item to tombstone [newslot]: {item.m_shared.m_name} ({newSlot})");
                         containerInventory.m_inventory.Add(item);
@@ -153,16 +153,23 @@ namespace EquipmentAndQuickSlots
             var droppedItems = new List<ItemDrop.ItemData>();
             foreach (var inventory in player.GetAllInventories())
             {
+                EquipmentAndQuickSlots.Log($"> Inventory ({inventory.m_name}) <{inventory.m_width}, {inventory.m_height}>:");
+                var currentItemPositions = new List<Vector2i>();
                 foreach (var itemData in inventory.m_inventory)
                 {
+                    var itemText = Localization.instance.Localize(itemData.m_shared.m_name) + (itemData.m_stack > 1 ? $" x{itemData.m_stack}" : "") + $" <{itemData.m_gridPos.x},{itemData.m_gridPos.y}>";
+                    EquipmentAndQuickSlots.Log($"  - {itemText}");
+                    var hasOverlap = currentItemPositions.Exists(pos => pos == itemData.m_gridPos);
+
                     var isOutsideInventoryGrid = itemData.m_gridPos.x < 0
                                              || itemData.m_gridPos.x >= inventory.m_width
                                              || itemData.m_gridPos.y < 0
                                              || itemData.m_gridPos.y >= inventory.m_height;
-                    if (isOutsideInventoryGrid)
+
+                    if (isOutsideInventoryGrid || hasOverlap)
                     {
-                        var itemText = Localization.instance.Localize(itemData.m_shared.m_name) + (itemData.m_stack > 1 ? $" x{itemData.m_stack}" : "");
-                        EquipmentAndQuickSlots.LogWarning($"> Item Outside Inventory Grid! ({itemText}, <{itemData.m_gridPos.x},{itemData.m_gridPos.y}>)");
+                        var errorType = isOutsideInventoryGrid ? "Item Outside Inventory Grid!" : "Item overlap!";
+                        EquipmentAndQuickSlots.LogWarning($"> {errorType} ({itemText}, <{itemData.m_gridPos.x},{itemData.m_gridPos.y}>, inv:{inventory.m_name})");
                         inventory.RemoveItem(itemData);
                         var addSuccess = inventory.AddItem(itemData);
                         if (!addSuccess)
@@ -172,6 +179,8 @@ namespace EquipmentAndQuickSlots
                             ItemDrop.DropItem(itemData, itemData.m_stack, player.transform.position + player.transform.forward * 2 + Vector3.up, Quaternion.identity);
                         }
                     }
+
+                    currentItemPositions.Add(itemData.m_gridPos);
                 }
             }
 

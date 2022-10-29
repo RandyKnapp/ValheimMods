@@ -1,4 +1,4 @@
-﻿# Extended Item Data Framework v1.0.7
+# Extended Item Data Framework v1.0.8
 
 Author: Randy Knapp
 Source: [Github](https://github.com/RandyKnapp/ValheimMods/tree/main/ExtendedItemDataFramework)

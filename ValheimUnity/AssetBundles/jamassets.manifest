@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 2520021890
+CRC: 2571897424
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: c5f246d03ce39a6358c69c06862301ff
+    Hash: 98466930cb4edf6e404736ec3f6e44f5
   TypeTreeHash:
     serializedVersion: 2
-    Hash: d6fb9254287632235d52238cf05cbe0b
+    Hash: 2e801ac0d6be8e3cbdfb262926dc17a4
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -30,11 +30,11 @@ ClassTypes:
 - Class: 65
   Script: {instanceID: 0}
 - Class: 114
-  Script: {fileID: 1109157524, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
-- Class: 114
   Script: {fileID: 825357479, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
 - Class: 114
   Script: {fileID: 1521249158, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
+- Class: 114
+  Script: {fileID: 1109157524, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
 - Class: 115
   Script: {instanceID: 0}
 - Class: 198
@@ -47,13 +47,13 @@ ClassTypes:
   Script: {instanceID: 0}
 SerializeReferenceClassIdentifiers: []
 Assets:
-- Assets/Jam/Prefabs/RaspberryJam.prefab
-- Assets/Jam/Prefabs/KingsJam.prefab
-- Assets/Jam/Prefabs/HoneyRaspberryJam.prefab
 - Assets/Jam/Prefabs/NordicJam.prefab
+- Assets/Jam/Prefabs/KingsJam.prefab
 - Assets/Jam/Prefabs/BaseJam.prefab
-- Assets/Jam/Prefabs/CloudberryJam.prefab
-- Assets/Jam/Prefabs/BlueberryJam.prefab
 - Assets/Jam/Prefabs/HoneyBlueberryJam.prefab
 - Assets/Jam/Prefabs/HoneyCloudberryJam.prefab
+- Assets/Jam/Prefabs/CloudberryJam.prefab
+- Assets/Jam/Prefabs/HoneyRaspberryJam.prefab
+- Assets/Jam/Prefabs/RaspberryJam.prefab
+- Assets/Jam/Prefabs/BlueberryJam.prefab
 Dependencies: []

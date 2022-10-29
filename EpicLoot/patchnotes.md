@@ -1,4 +1,8 @@
-﻿## Version 0.8.8
+﻿## Version 0.8.10
+  * Update for Valheim 0.211.11 and ServerSync 1.13
+## Version 0.8.9
+  * Compatibility fix for the Auga version of the merchant panel.
+## Version 0.8.8
   * Fixed an issue with multiplayer that was causing too much data to be sent across the wire. Lag and desync issues should be minimal now.
 ## Version 0.8.7
   * Fixed Auga integration for crafting materials
