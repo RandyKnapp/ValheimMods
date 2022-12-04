@@ -335,7 +335,8 @@ namespace EpicLoot
             if (isMundane)
             {
                 var setEffectColor = currentSetEquipped.Count == setSize ? EpicLoot.GetSetItemColor() : "grey";
-                text.Append($"\n<color={setEffectColor}>({setSize}) ‣ {item.GetSetStatusEffectTooltip().Replace("\n", " ")}</color>");
+                var skillLevel = Player.m_localPlayer.GetSkillLevel(item.m_shared.m_skillType);
+                text.Append($"\n<color={setEffectColor}>({setSize}) ‣ {item.GetSetStatusEffectTooltip(item.m_quality, skillLevel).Replace("\n", " ")}</color>");
             }
             else
             {
@@ -743,12 +744,15 @@ namespace EpicLoot
     {
         public static void Postfix(Player __instance, ref string name)
         {
-            if (__instance.m_equipQueue.Count > 0)
+            if (__instance.m_actionQueue.Count > 0)
             {
-                Player.EquipQueueData equip = __instance.m_equipQueue[0];
-                if (equip.m_duration > 0.5f)
+                var equip = __instance.m_actionQueue[0];
+                if (equip.m_type != Player.MinorActionData.ActionType.Reload)
                 {
-                    name = !equip.m_equip ? "$hud_unequipping " + equip.m_item.GetDecoratedName() : "$hud_equipping " + equip.m_item.GetDecoratedName();
+                    if (equip.m_duration > 0.5f)
+                    {
+                        name = equip.m_type == Player.MinorActionData.ActionType.Unequip ? "$hud_unequipping " + equip.m_item.GetDecoratedName() : "$hud_equipping " + equip.m_item.GetDecoratedName();
+                    }
                 }
             }
         }

@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using System.Collections.Generic;
+using HarmonyLib;
 using UnityEngine;
 
 namespace ExtendedItemDataFramework
@@ -7,11 +8,11 @@ namespace ExtendedItemDataFramework
     //public bool MoveItemToThis(Inventory fromInventory, ItemDrop.ItemData item, int amount, int x, int y)
 
     // Add from load:
-    //public bool AddItem(string name, int stack, float durability, Vector2i pos, bool equiped, int quality, int variant, long crafterID, string crafterName)
-    [HarmonyPatch(typeof(Inventory), "AddItem", new[] { typeof(string), typeof(int), typeof(float), typeof(Vector2i), typeof(bool), typeof(int), typeof(int), typeof(long), typeof(string) })]
+    //public bool AddItem(string name, int stack, float durability, Vector2i pos, bool equiped, int quality, int variant, long crafterID, string crafterName, Dictionary<string, string> customData)
+    [HarmonyPatch(typeof(Inventory), "AddItem", new[] { typeof(string), typeof(int), typeof(float), typeof(Vector2i), typeof(bool), typeof(int), typeof(int), typeof(long), typeof(string), typeof(Dictionary<string, string>) })]
     public static class Inventory_AddItemFromLoad_Patch
     {
-        public static bool Prefix(Inventory __instance, ref bool __result, string name, int stack, float durability, Vector2i pos, bool equiped, int quality, int variant, long crafterID, string crafterName)
+        public static bool Prefix(Inventory __instance, ref bool __result, string name, int stack, float durability, Vector2i pos, bool equiped, int quality, int variant, long crafterID, string crafterName, Dictionary<string, string> customData)
         {
             __result = false;
             GameObject itemPrefab = ObjectDB.instance.GetItemPrefab(name);
@@ -40,6 +41,7 @@ namespace ExtendedItemDataFramework
                 variant,
                 crafterID,
                 crafterName);
+            newItemData.m_customData = customData;
             __instance.AddItem(newItemData, newItemData.m_stack, pos.x, pos.y);
             Object.Destroy(gameObject);
             __result = true;

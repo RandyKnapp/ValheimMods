@@ -285,7 +285,7 @@ namespace StationsAreContainers
             var amountText = elementRoot.transform.Find("res_amount").GetComponent<Text>();
             if (req.m_resItem != null)
             {
-                if (!player.HaveRequirements(new [] { req }, false, quality))
+                if (!HaveRequirements(player, new [] { req }, quality))
                 {
                     amountText.color = Mathf.Sin(Time.time * 10f) > 0.0 ? Color.red : Color.white;
                 }
@@ -294,6 +294,21 @@ namespace StationsAreContainers
                     amountText.color = Color.white;
                 }
             }
+        }
+
+        public static bool HaveRequirements(Player player, Piece.Requirement[] requirements, int qualityLevel)
+        {
+            foreach (var resource in requirements)
+            {
+                if (resource.m_resItem)
+                {
+                    var amount = resource.GetAmount(qualityLevel);
+                    var num = player.m_inventory.CountItems(resource.m_resItem.m_itemData.m_shared.m_name);
+                    if (num < amount)
+                        return false;
+                }
+            }
+            return true;
         }
     }
 }

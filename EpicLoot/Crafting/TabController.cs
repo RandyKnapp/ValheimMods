@@ -236,7 +236,7 @@ namespace EpicLoot.Crafting
                 }
                 amountText.text = amount.ToString();
 
-                haveMaterials = player.HaveRequirements(new []{ new Piece.Requirement() { m_resItem = item, m_amount = amount } }, false, 1);
+                haveMaterials = CraftingTabs.HaveRequirementsHelper(player, new[]{ new Piece.Requirement { m_resItem = item, m_amount = amount } }, 1);
                 if (showOutOfMaterials && !haveMaterials)
                 {
                     amountText.color = Mathf.Sin(Time.time * 10.0f) > 0.0f ? Color.red : Color.white;

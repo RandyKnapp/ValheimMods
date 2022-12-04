@@ -50,6 +50,8 @@ namespace EpicLoot
             var magicColor = magicItem.GetColorString();
             var itemTypeName = magicItem.GetItemTypeName(item.Extended());
 
+            var skillLevel = Player.m_localPlayer.GetSkillLevel(item.m_shared.m_skillType);
+
             text.Append($"<color={magicColor}>{magicItem.GetRarityDisplay()} {itemTypeName}</color>\n");
             if (item.IsLegendarySetItem())
             {
@@ -133,7 +135,7 @@ namespace EpicLoot
                         text.AppendFormat("\n$item_food_regen: <color=orange>{0} hp/tick</color>", item.m_shared.m_foodRegen);
                     }
 
-                    var consumeStatusEffectTooltip = item.GetStatusEffectTooltip();
+                    var consumeStatusEffectTooltip = item.GetStatusEffectTooltip(qualityLevel, skillLevel);
                     if (consumeStatusEffectTooltip.Length > 0)
                     {
                         text.Append("\n\n");
@@ -179,7 +181,7 @@ namespace EpicLoot
                         text.Append(projectileTooltip);
                     }
 
-                    var statusEffectTooltip2 = item.GetStatusEffectTooltip();
+                    var statusEffectTooltip2 = item.GetStatusEffectTooltip(qualityLevel, skillLevel);
                     if (statusEffectTooltip2.Length > 0)
                     {
                         text.Append("\n\n");
@@ -220,7 +222,7 @@ namespace EpicLoot
                         text.Append(modifiersTooltipString);
                     }
 
-                    var statusEffectTooltip3 = item.GetStatusEffectTooltip();
+                    var statusEffectTooltip3 = item.GetStatusEffectTooltip(qualityLevel, skillLevel);
                     if (statusEffectTooltip3.Length > 0)
                     {
                         text.Append("\n");

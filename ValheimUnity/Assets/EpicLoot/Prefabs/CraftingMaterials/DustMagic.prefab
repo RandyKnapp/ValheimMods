@@ -19,9 +19,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 124223530235104039, guid: f8c9237298dab3a438c66dbedd157d72,
         type: 3}
+      propertyPath: m_itemData.m_shared.m_ammoType
+      value: Magic|MagicCraftingMaterial
+      objectReference: {fileID: 0}
+    - target: {fileID: 124223530235104039, guid: f8c9237298dab3a438c66dbedd157d72,
+        type: 3}
       propertyPath: m_itemData.m_shared.m_description
-      value: $mod_epicloot_assets_dust_introduce
-        
+      value: '$mod_epicloot_assets_dust_introduce
+
+'
       objectReference: {fileID: 0}
     - target: {fileID: 124223530235104039, guid: f8c9237298dab3a438c66dbedd157d72,
         type: 3}

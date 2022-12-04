@@ -30,7 +30,7 @@ namespace EpicLoot.MagicItemEffects
                 return true;
             }
 
-            __instance.AbortEquipQueue();
+            __instance.ClearActionQueue();
             if (__instance.InAttack() && !__instance.HaveQueuedChain() || __instance.InDodge() || !__instance.CanMove() || __instance.IsKnockedBack() || __instance.IsStaggering() || __instance.InMinorAction())
             {
                 return true;

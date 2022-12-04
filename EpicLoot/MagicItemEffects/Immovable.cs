@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using JetBrains.Annotations;
+using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects
 {
@@ -13,7 +14,7 @@ namespace EpicLoot.MagicItemEffects
 		}
 	}
 	
-	[HarmonyPatch(typeof(Character), nameof(Character.ApplyPushback))]
+	[HarmonyPatch(typeof(Character), nameof(Character.ApplyPushback), typeof(Vector3), typeof(float))]
 	public class Immovable_Character_ApplyPushback_Patch
 	{
 		[UsedImplicitly]

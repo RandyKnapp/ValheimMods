@@ -88,7 +88,7 @@ namespace EquipmentAndQuickSlots
                 var root = new GameObject("Root", typeof(RectTransform));
                 root.transform.SetParent(go.transform, false);
 
-                var rect = go.transform as RectTransform;
+                var rect = (RectTransform)go.transform;
                 rect.anchoredPosition = position;
 
                 grid.m_elementPrefab = inventoryGui.m_playerGrid.m_elementPrefab;
@@ -116,7 +116,7 @@ namespace EquipmentAndQuickSlots
                     var highlight = new GameObject("SelectedFrame", typeof(RectTransform));
                     highlight.transform.SetParent(go.transform, false);
                     highlight.AddComponent<Image>().color = Color.yellow;
-                    var highlightRT = highlight.transform as RectTransform;
+                    var highlightRT = (RectTransform)highlight.transform;
                     highlightRT.SetAsFirstSibling();
                     highlightRT.anchoredPosition = new Vector2(0, 0);
                     highlightRT.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, size.x + 2);
@@ -127,7 +127,7 @@ namespace EquipmentAndQuickSlots
                     var bkg = inventoryGui.m_player.Find("Bkg").gameObject;
                     var background = Object.Instantiate(bkg, go.transform);
                     background.name = name + "Bkg";
-                    var backgroundRT = background.transform as RectTransform;
+                    var backgroundRT = (RectTransform)background.transform;
                     backgroundRT.SetSiblingIndex(1);
                     backgroundRT.anchoredPosition = new Vector2(0, 0);
                     backgroundRT.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, size.x);
@@ -174,7 +174,7 @@ namespace EquipmentAndQuickSlots
                         && EquipmentAndQuickSlots.IsSlotEquippable(inventoryGui.m_dragItem)
                         && pos == EquipmentAndQuickSlots.GetEquipmentSlotForType(inventoryGui.m_dragItem.m_shared.m_itemType))
                     {
-                        player.QueueEquipItem(inventoryGui.m_dragItem);
+                        player.QueueEquipAction(inventoryGui.m_dragItem);
                         inventoryGui.SetupDragItem(null, null, 0);
                     }
                 };
@@ -192,7 +192,7 @@ namespace EquipmentAndQuickSlots
                         && player.IsItemEquiped(item)
                         && inventoryGui.m_dragItem == null)
                     {
-                        Player.m_localPlayer.QueueUnequipItem(item);
+                        Player.m_localPlayer.QueueUnequipAction(item);
                     }
                 };
             }

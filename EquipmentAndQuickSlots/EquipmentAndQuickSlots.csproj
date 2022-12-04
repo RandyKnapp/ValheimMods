@@ -131,4 +131,11 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\ILRepack.Lib.MSBuild.Task.2.0.18.2\build\ILRepack.Lib.MSBuild.Task.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\ILRepack.Lib.MSBuild.Task.2.0.18.2\build\ILRepack.Lib.MSBuild.Task.targets'))" />
   </Target>
+  <PropertyGroup>
+    <PostBuildEvent>if $(ConfigurationName) == Debug (
+  del "$(TargetPath).mdb"
+  $(SolutionDir)pdb2mdb.exe "$(TargetPath)"
+  xcopy "$(TargetDir)$(TargetFileName).mdb" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\" /q /y /i
+)</PostBuildEvent>
+  </PropertyGroup>
 </Project>

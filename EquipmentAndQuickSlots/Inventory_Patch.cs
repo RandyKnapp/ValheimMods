@@ -173,15 +173,15 @@ namespace EquipmentAndQuickSlots
         }
     }
 
-    //public void RemoveItem(string name, int amount)
-    [HarmonyPatch(typeof(Inventory), "RemoveItem", typeof(string), typeof(int))]
+    //public void RemoveItem(string name, int amount, int itemQuality = -1)
+    [HarmonyPatch(typeof(Inventory), "RemoveItem", typeof(string), typeof(int), typeof(int))]
     public static class Inventory_RemoveItem4_Patch
     {
-        public static bool Prefix(Inventory __instance, string name, int amount)
+        public static bool Prefix(Inventory __instance, string name, int amount, int itemQuality)
         {
             if (__instance.DoExtendedCall())
             {
-                __instance.Extended().OverrideRemoveItem(name, amount);
+                __instance.Extended().OverrideRemoveItem(name, amount, itemQuality);
                 return false;
             }
 
@@ -237,15 +237,15 @@ namespace EquipmentAndQuickSlots
         }
     }
 
-    //public ItemDrop.ItemData GetItem(string name)
-    [HarmonyPatch(typeof(Inventory), "GetItem", typeof(string))]
+    //public ItemDrop.ItemData GetItem(string name, int quality = -1, bool isPrefabName = false)
+    [HarmonyPatch(typeof(Inventory), "GetItem", typeof(string), typeof(int), typeof(bool))]
     public static class Inventory_GetItem2_Patch
     {
-        public static bool Prefix(Inventory __instance, ref ItemDrop.ItemData __result, string name)
+        public static bool Prefix(Inventory __instance, ref ItemDrop.ItemData __result, string name, int quality, bool isPrefabName)
         {
             if (__instance.DoExtendedCall())
             {
-                __result = __instance.Extended().OverrideGetItem(name);
+                __result = __instance.Extended().OverrideGetItem(name, quality, isPrefabName);
                 return false;
             }
 
@@ -253,15 +253,15 @@ namespace EquipmentAndQuickSlots
         }
     }
 
-    //public ItemDrop.ItemData GetAmmoItem(string ammoName)
-    [HarmonyPatch(typeof(Inventory), "GetAmmoItem", typeof(string))]
+    //public ItemDrop.ItemData GetAmmoItem(string ammoName, string matchPrefabName = null)
+    [HarmonyPatch(typeof(Inventory), "GetAmmoItem", typeof(string), typeof(string))]
     public static class Inventory_GetAmmoItem_Patch
     {
-        public static bool Prefix(Inventory __instance, ref ItemDrop.ItemData __result, string ammoName)
+        public static bool Prefix(Inventory __instance, ref ItemDrop.ItemData __result, string ammoName, string matchPrefabName)
         {
             if (__instance.DoExtendedCall())
             {
-                __result = __instance.Extended().OverrideGetAmmoItem(ammoName);
+                __result = __instance.Extended().OverrideGetAmmoItem(ammoName, matchPrefabName);
                 return false;
             }
 

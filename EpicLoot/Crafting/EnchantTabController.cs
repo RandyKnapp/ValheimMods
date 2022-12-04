@@ -276,7 +276,7 @@ namespace EpicLoot.Crafting
 
                 __instance.m_minStationLevelIcon.gameObject.SetActive(false);
 
-                var canCraft = Player.m_localPlayer.HaveRequirements(GetRecipeRequirementArray(recipe, SelectedRarity), false, 1);
+                var canCraft = RecipesHelper.HaveRequirements(Player.m_localPlayer, GetRecipeRequirementArray(recipe, SelectedRarity), 1);
                 __instance.m_craftButton.interactable = canCraft;
                 __instance.m_craftButton.GetComponent<UITooltip>().m_text = canCraft ? "" : Localization.instance.Localize("$msg_missingrequirement");
 

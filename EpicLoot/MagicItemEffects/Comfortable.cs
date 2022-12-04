@@ -3,7 +3,7 @@ using JetBrains.Annotations;
 
 namespace EpicLoot.MagicItemEffects
 {
-	[HarmonyPatch(typeof(SE_Rested), nameof(SE_Rested.CalculateComfortLevel))]
+	[HarmonyPatch(typeof(SE_Rested), nameof(SE_Rested.CalculateComfortLevel), typeof(Player))]
 	public class Comfortable_SE_Rested_CalculateComfortLevel_Patch
 	{
 		[UsedImplicitly]

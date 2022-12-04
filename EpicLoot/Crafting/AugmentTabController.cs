@@ -299,7 +299,7 @@ namespace EpicLoot.Crafting
 
                 __instance.m_minStationLevelIcon.gameObject.SetActive(false);
 
-                var canCraft = Player.m_localPlayer.HaveRequirements(GetRecipeRequirementArray(recipe), false, 1) || player.NoCostCheat();
+                var canCraft = CraftingTabs.HaveRequirementsHelper(player, GetRecipeRequirementArray(recipe), 1) || player.NoCostCheat();
                 var hasSelectedEffect = recipe.EffectIndex >= 0;
                 var hasAnyAvailableEnchants = GetAvailableAugments(recipe, recipe.FromItem, recipe.FromItem.GetMagicItem(), recipe.FromItem.GetRarity()).Count > 0;
                 __instance.m_craftButton.interactable = canCraft && hasSelectedEffect && hasAnyAvailableEnchants;

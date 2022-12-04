@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using HarmonyLib;
 using UnityEngine;
 
 namespace EquipmentAndQuickSlots
@@ -227,14 +225,14 @@ namespace EquipmentAndQuickSlots
             return result;
         }
 
-        public void OverrideRemoveItem(string name, int amount)
+        public void OverrideRemoveItem(string name, int amount, int itemQuality = -1)
         {
             CallBase = true;
             foreach (var inventory in _inventories)
             {
                 foreach (var itemData in inventory.m_inventory)
                 {
-                    if (itemData.m_shared.m_name == name)
+                    if (itemData.m_shared.m_name == name && (itemQuality < 0 || itemData.m_quality == itemQuality))
                     {
                         var num = Mathf.Min(itemData.m_stack, amount);
                         itemData.m_stack -= num;
@@ -275,13 +273,13 @@ namespace EquipmentAndQuickSlots
             return result;
         }
 
-        public ItemDrop.ItemData OverrideGetItem(string name)
+        public ItemDrop.ItemData OverrideGetItem(string name, int quality = -1, bool isPrefabName = false)
         {
             CallBase = true;
             ItemDrop.ItemData result = null;
             foreach (var inventory in _inventories)
             {
-                result = inventory.GetItem(name);
+                result = inventory.GetItem(name, quality, isPrefabName);
                 if (result != null)
                 {
                     break;
@@ -291,13 +289,13 @@ namespace EquipmentAndQuickSlots
             return result;
         }
 
-        public ItemDrop.ItemData OverrideGetAmmoItem(string ammoName)
+        public ItemDrop.ItemData OverrideGetAmmoItem(string ammoName, string matchPrefabName = null)
         {
             CallBase = true;
             ItemDrop.ItemData result = null;
             foreach (var inventory in _inventories)
             {
-                result = inventory.GetAmmoItem(ammoName);
+                result = inventory.GetAmmoItem(ammoName, matchPrefabName);
                 if (result != null)
                 {
                     break;
@@ -334,10 +332,10 @@ namespace EquipmentAndQuickSlots
         {
             CallBase = true;
             m_totalWeight = 0f;
-            float[] iWeight = new float[_inventories.Count()];
+            var iWeight = new float[_inventories.Count()];
             //EquipmentAndQuickSlots.LogWarning("Begin updating " + _inventories.Count() + " inventories of weights");
 
-            for (int i = 0; i < _inventories.Count(); i++)
+            for (var i = 0; i < _inventories.Count(); i++)
             {
                 //EquipmentAndQuickSlots.LogWarning("InventoryName: " + _inventories[i].m_name + " has " + _inventories[i].m_inventory.Count() + " items");
 
