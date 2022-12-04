@@ -399,8 +399,9 @@ namespace EpicLoot.Crafting
             var augmentableEffects = magicItem.Effects;
             var effectCount = augmentableEffects.Count;
 
-            if (EffectSelectors.Count == 0 && EpicLoot.HasAuga)
+            if (EpicLoot.HasAuga)
             {
+                EffectSelectors.Clear();
                 Auga.API.ComplexTooltip_ClearTextBoxes(AugaTabData.ItemInfoGO);
             }
 
@@ -458,6 +459,9 @@ namespace EpicLoot.Crafting
         private void SetSelectorValues(AugmentRecipe recipe, int i, MagicItem magicItem, ItemRarity rarity)
         {
             var selector = EffectSelectors[i];
+            if (selector == null)
+                return;
+
             var augmentableEffects = magicItem.Effects;
 
             if (EpicLoot.HasAuga)
