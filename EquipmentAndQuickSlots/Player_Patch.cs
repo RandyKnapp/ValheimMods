@@ -191,4 +191,70 @@ namespace EquipmentAndQuickSlots
             return false;
         }
     }*/
+
+    [HarmonyPatch(typeof(Player), nameof(Player.GetFirstRequiredItem))]
+    public static class Player_GetFirstRequiredItem_Patch
+    {
+        public static bool Prefix(Player __instance, ref ItemDrop.ItemData __result, Inventory inventory, Recipe recipe, int qualityLevel, object[] __args)
+        {
+            foreach (var resource in recipe.m_resources)
+            {
+                if (resource.m_resItem)
+                {
+                    var requiredAmount = resource.GetAmount(qualityLevel);
+                    for (var quality = 0; quality <= resource.m_resItem.m_itemData.m_shared.m_maxQuality; ++quality)
+                    {
+                        var count = CountItems(__instance, resource.m_resItem.m_itemData.m_shared.m_name, quality);
+                        if (count >= requiredAmount)
+                        {
+                            __args[3] = requiredAmount;
+                            __result = GetItem(__instance, resource.m_resItem.m_itemData.m_shared.m_name, quality);
+                            return false;
+                        }
+                    }
+                }
+            }
+
+            __args[3] = 0;
+            __result = null;
+            return false;
+        }
+
+        public static int CountItems(Player player, string name, int quality)
+        {
+            var count = 0;
+            var inventories = player.GetAllInventories();
+            foreach (var inventory in inventories)
+            {
+                if (inventory == player.GetEquipmentSlotInventory())
+                    continue;
+
+                foreach (var itemData in inventory.m_inventory)
+                {
+                    if (itemData.m_shared.m_name == name && (quality < 0 || quality == itemData.m_quality))
+                        count += itemData.m_stack;
+                }
+            }
+
+            return count;
+        }
+
+        public static ItemDrop.ItemData GetItem(Player player, string name, int quality)
+        {
+            var inventories = player.GetAllInventories();
+            foreach (var inventory in inventories)
+            {
+                if (inventory == player.GetEquipmentSlotInventory())
+                    continue;
+
+                foreach (var itemData in inventory.m_inventory)
+                {
+                    if (itemData.m_shared.m_name == name && (quality < 0 || quality == itemData.m_quality))
+                        return itemData;
+                }
+            }
+
+            return null;
+        }
+    }
 }
