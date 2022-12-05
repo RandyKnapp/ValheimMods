@@ -291,10 +291,11 @@ namespace EquipmentAndQuickSlots
     {
         public static bool Prefix(InventoryGui __instance, Player player, bool __runOriginal)
         {
-            if (!__runOriginal || __instance.m_craftRecipe == null)
-            {
+            if (!__runOriginal)
                 return false;
-            }
+
+            if (__instance.m_craftRecipe == null || __instance.m_craftRecipe.m_requireOnlyOneIngredient)
+                return true;
 
             var newQuality = __instance.m_craftUpgradeItem?.m_quality + 1 ?? 1;
             if (newQuality > __instance.m_craftRecipe.m_item.m_itemData.m_shared.m_maxQuality
@@ -341,6 +342,35 @@ namespace EquipmentAndQuickSlots
             }
 
             return true;
+        }
+    }
+
+    [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.UpdateContainer))]
+    public static class InventoryGui_UpdateContainer_Patch
+    {
+        public static bool Prefix(InventoryGui __instance)
+        {
+            if (!__instance.m_currentContainer || !__instance.m_currentContainer.IsOwner())
+            {
+                __instance.m_container.gameObject.SetActive(false);
+                if (__instance.m_dragInventory != null && !IsOneOfPlayersInventory(__instance.m_dragInventory))
+                    __instance.SetupDragItem(null, null, 1);
+
+                return false;
+            }
+
+            return true;
+        }
+
+        public static bool IsOneOfPlayersInventory(Inventory inventory)
+        {
+            foreach (var playerInventory in Player.m_localPlayer.GetAllInventories())
+            {
+                if (inventory == playerInventory)
+                    return true;
+            }
+
+            return false;
         }
     }
 }
