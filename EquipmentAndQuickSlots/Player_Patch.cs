@@ -53,7 +53,7 @@ namespace EquipmentAndQuickSlots
                 return false;
 
             EquipmentSlotHelper.AllowMove = false;
-            __instance.UnequipAllItems();
+            UnequipNonEAQSSlots(__instance);
 
             var tombstoneGameObject = Object.Instantiate(__instance.m_tombstone, __instance.GetCenterPoint() + Vector3.up + __instance.transform.forward * 0.5f, __instance.transform.rotation);
             var tombStone = tombstoneGameObject.GetComponent<TombStone>();
@@ -66,8 +66,20 @@ namespace EquipmentAndQuickSlots
 
             EquipmentAndQuickSlots.LogWarning("== PLAYER DIED ==");
             var containerInventory = container.GetInventory();
+            var equipSlotInventory = __instance.GetEquipmentSlotInventory();
             var quickSlotInventory = __instance.GetQuickSlotInventory();
-            var extraInventories = new[] { __instance.GetEquipmentSlotInventory(), quickSlotInventory };
+            var extraInventories = new List<Inventory>();
+            if (!EquipmentAndQuickSlots.DontDropEquipmentOnDeath.Value)
+            {
+                __instance.UnequipAllItems();
+                extraInventories.Add(equipSlotInventory);
+            }
+
+            if (!EquipmentAndQuickSlots.DontDropQuickslotsOnDeath.Value)
+            {
+                extraInventories.Add(quickSlotInventory);
+            }
+
             foreach (var inventory in extraInventories)
             {
 	            List<ItemDrop.ItemData> retainItems = new List<ItemDrop.ItemData>();
@@ -81,10 +93,14 @@ namespace EquipmentAndQuickSlots
 
                     var oldSlot = item.m_gridPos;
                     var newSlot = containerInventory.FindEmptySlot(false);
-                    containerInventory.AddItem(item, item.m_stack, newSlot.x, newSlot.y);
+
+                    if (inventory == equipSlotInventory && EquipmentAndQuickSlots.InstantlyReequipArmorOnPickup.Value)
+                        item.m_customData["eaqs-e"] = "1";
 
                     if (inventory == quickSlotInventory)
                         item.m_customData["eaqs-qs"] = $"{oldSlot.x},{oldSlot.y}";
+
+                    containerInventory.AddItem(item, item.m_stack, newSlot.x, newSlot.y);
                 }
 
                 inventory.m_inventory = retainItems;
@@ -92,10 +108,31 @@ namespace EquipmentAndQuickSlots
                 containerInventory.Changed();
             }
 
-            EquipmentSlotHelper.AllowMove = true;
-
             // Continue on making the regular tombstone
             return true;
+        }
+
+        public static void Postfix(Player __instance)
+        {
+            EquipmentSlotHelper.AllowMove = true;
+            if (EquipmentAndQuickSlots.DontDropEquipmentOnDeath.Value)
+            {
+                var equipSlotInventory = __instance.GetEquipmentSlotInventory();
+                foreach (var equipment in equipSlotInventory.m_inventory.ToArray())
+                {
+                    __instance.EquipItem(equipment);
+                }
+            }
+        }
+
+        public static void UnequipNonEAQSSlots(Player __instance)
+        {
+            if (__instance.m_rightItem != null)
+                __instance.UnequipItem(__instance.m_rightItem, false);
+            if (__instance.m_leftItem != null)
+                __instance.UnequipItem(__instance.m_leftItem, false);
+            if (__instance.m_ammoItem != null)
+                __instance.UnequipItem(__instance.m_ammoItem, false);
         }
     }
 
@@ -123,27 +160,8 @@ namespace EquipmentAndQuickSlots
     {
         public static void Postfix()
         {
-            var player = Player.m_localPlayer;
-            if (player == null)
-                return;
-
-            var inventory = player.GetInventory();
-            var originalQuickSlotItems = inventory.m_inventory.Where(itemData => itemData.m_customData.ContainsKey("eaqs-qs")).ToArray();
-            var quickSlotInventory = player.GetQuickSlotInventory();
-            EquipmentAndQuickSlots.Log($"> Inventory ({inventory.m_name}) <{inventory.m_width}, {inventory.m_height}>:");
-            for (var index = 0; index < originalQuickSlotItems.Length; index++)
-            {
-                var itemData = originalQuickSlotItems[index];
-                if (itemData.m_customData.ContainsKey("eaqs-qs"))
-                {
-                    Vector2i slot = ParseVector2i(itemData.m_customData["eaqs-qs"]);
-                    if (slot.x >= 0 && slot.y >= 0 && quickSlotInventory.GetItemAt(slot.x, slot.y) == null)
-                    {
-                        itemData.m_customData.Remove("eaqs-qs");
-                        quickSlotInventory.MoveItemToThis(inventory, itemData, itemData.m_stack, slot.x, slot.y);
-                    }
-                }
-            }
+            TryReequipQuickslotItems();
+            TryReequipEquipmentSlotItems(Player.m_localPlayer);
         }
 
         private static Vector2i ParseVector2i(string s)
@@ -157,6 +175,57 @@ namespace EquipmentAndQuickSlots
             int.TryParse(parts[1], out value.y);
             return value;
         }
+
+        public static void TryReequipQuickslotItems()
+        {
+            var player = Player.m_localPlayer;
+            if (player == null)
+                return;
+
+            var inventory = player.GetInventory();
+            var originalQuickSlotItems = inventory.m_inventory.Where(itemData => itemData.m_customData.ContainsKey("eaqs-qs")).ToArray();
+            var quickSlotInventory = player.GetQuickSlotInventory();
+            EquipmentAndQuickSlots.Log($"Found {originalQuickSlotItems.Length} original quick slot items");
+            for (var index = 0; index < originalQuickSlotItems.Length; index++)
+            {
+                var itemData = originalQuickSlotItems[index];
+                if (itemData.m_customData.ContainsKey("eaqs-qs"))
+                {
+                    Vector2i slot = ParseVector2i(itemData.m_customData["eaqs-qs"]);
+                    if (slot.x >= 0 && slot.y >= 0 && quickSlotInventory.GetItemAt(slot.x, slot.y) == null)
+                    {
+                        itemData.m_customData.Remove("eaqs-qs");
+                        if (EquipmentAndQuickSlots.InstantlyReequipQuickslotsOnPickup.Value)
+                        {
+                            EquipmentAndQuickSlots.Log($"Moving {itemData.m_shared.m_name} x{itemData.m_stack} back to {slot.x}, {slot.y}");
+                            quickSlotInventory.MoveItemToThis(inventory, itemData, itemData.m_stack, slot.x, slot.y);
+                        }
+                    }
+                }
+            }
+        }
+
+        public static void TryReequipEquipmentSlotItems(Player player)
+        {
+            if (player == null)
+                return;
+
+            var inventory = player.GetInventory();
+            var originalEquippedItems = inventory.m_inventory.Where(itemData => itemData.m_customData.ContainsKey("eaqs-e")).ToArray();
+            EquipmentAndQuickSlots.Log($"Found {originalEquippedItems.Length} original equip slot items");
+            foreach (var item in originalEquippedItems)
+            {
+                if (item.m_customData.ContainsKey("eaqs-e"))
+                {
+                    item.m_customData.Remove("eaqs-e");
+                    if (EquipmentAndQuickSlots.InstantlyReequipArmorOnPickup.Value)
+                    {
+                        EquipmentAndQuickSlots.Log($"Reequipping {item.m_shared.m_name}");
+                        player.EquipItem(item, false);
+                    }
+                }
+            }
+        }
     }
 
     //public bool Interact(Humanoid character, bool hold)
@@ -169,33 +238,23 @@ namespace EquipmentAndQuickSlots
         this.m_container.TakeAll(character);
         return true;
     }*/
-    /*[HarmonyPatch(typeof(TombStone), "Interact")]
+    [HarmonyPatch(typeof(TombStone), nameof(TombStone.Interact))]
     public static class Tombstone_Interact_Patch
     {
-        public static bool Prefix(TombStone __instance, ref bool __result, Humanoid character, bool hold)
+        public static bool Prefix(TombStone __instance, Humanoid character, bool hold)
         {
-            var containerInventory = __instance.m_container.GetInventory();
-            if (hold || containerInventory.NrOfItems() == 0)
-            {
-                return false;
-            }
+            if (hold)
+                return true;
 
-            EquipmentAndQuickSlots.LogWarning($"Interacting with tombstone for ({character.m_name})");
-            EquipmentAndQuickSlots.LogWarning($"== Container Inventory ({containerInventory.NrOfItems()}):");
-            foreach (var item in containerInventory.m_inventory)
-            {
-                EquipmentAndQuickSlots.LogWarning($"  - {item.m_shared.m_name} {item.m_stack}");
-            }
-
-            __result = __instance.m_container.Interact(character, false);
-            return false;
+            TombStone_OnTakeAllSuccess_Patch.TryReequipEquipmentSlotItems(character as Player);
+            return true;
         }
-    }*/
+    }
 
     [HarmonyPatch(typeof(Player), nameof(Player.GetFirstRequiredItem))]
     public static class Player_GetFirstRequiredItem_Patch
     {
-        public static bool Prefix(Player __instance, ref ItemDrop.ItemData __result, Inventory inventory, Recipe recipe, int qualityLevel, object[] __args)
+        public static bool Prefix(Player __instance, ref ItemDrop.ItemData __result, Recipe recipe, int qualityLevel, object[] __args)
         {
             foreach (var resource in recipe.m_resources)
             {
@@ -255,6 +314,16 @@ namespace EquipmentAndQuickSlots
             }
 
             return null;
+        }
+    }
+
+    [HarmonyPatch(typeof(ItemDrop.ItemData), nameof(ItemDrop.ItemData.Clone))]
+    public static class ItemData_Clone_Patch
+    {
+        public static void Postfix(ItemDrop.ItemData __instance, ref ItemDrop.ItemData __result)
+        {
+            // Fixes bug in vanilla valheim with cloning items with custom data
+            __result.m_customData = new Dictionary<string, string>(__instance.m_customData);
         }
     }
 }

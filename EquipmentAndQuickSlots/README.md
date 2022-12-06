@@ -68,3 +68,9 @@ Copy EquipmentAndQuickSlots.dll into the BepInEx/plugins folder
     * Updated for H&H
   * 2.0.15
     * Yet Another Attempt at fixing the lost-equipment-on-death bug
+  * 2.1.0
+    * Updated for Mistlands!
+    * Now uses player.m_customData instead of knownTexts
+    * On death, drops equipment in second gravestone
+    * Fixed bug where you couldn't move items out of your quickslots
+    * Added new config features: DontDropEquipmentOnDeath, DontDropQuickslotsOnDeath, InstantlyReequipArmorOnPickup, InstantlyReequipQuickslotsOnPickup

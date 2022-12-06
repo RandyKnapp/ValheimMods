@@ -41,7 +41,7 @@ namespace ExtendedItemDataFramework
                 variant,
                 crafterID,
                 crafterName);
-            newItemData.m_customData = customData;
+            newItemData.m_customData = new Dictionary<string, string>(customData);
             __instance.AddItem(newItemData, newItemData.m_stack, pos.x, pos.y);
             Object.Destroy(gameObject);
             __result = true;
