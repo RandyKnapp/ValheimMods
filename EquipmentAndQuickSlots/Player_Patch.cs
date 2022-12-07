@@ -50,22 +50,12 @@ namespace EquipmentAndQuickSlots
             var allInventories = __instance.GetAllInventories();
             var totalItemCount = allInventories.Sum(x => x.NrOfItems());
             if (totalItemCount == 0)
-                return false;
+                return true;
 
             EquipmentSlotHelper.AllowMove = false;
             UnequipNonEAQSSlots(__instance);
 
-            var tombstoneGameObject = Object.Instantiate(__instance.m_tombstone, __instance.GetCenterPoint() + Vector3.up + __instance.transform.forward * 0.5f, __instance.transform.rotation);
-            var tombStone = tombstoneGameObject.GetComponent<TombStone>();
-            var playerProfile = Game.instance.GetPlayerProfile();
-            var name = playerProfile.GetName();
-            var playerId = playerProfile.GetPlayerID();
-            tombStone.Setup($"{name}'s Equipment", playerId);
-
-            var container = tombstoneGameObject.GetComponent<Container>();
-
             EquipmentAndQuickSlots.LogWarning("== PLAYER DIED ==");
-            var containerInventory = container.GetInventory();
             var equipSlotInventory = __instance.GetEquipmentSlotInventory();
             var quickSlotInventory = __instance.GetQuickSlotInventory();
             var extraInventories = new List<Inventory>();
@@ -79,6 +69,19 @@ namespace EquipmentAndQuickSlots
             {
                 extraInventories.Add(quickSlotInventory);
             }
+
+            if (extraInventories.Count == 0)
+                return true;
+
+            var tombstoneGameObject = Object.Instantiate(__instance.m_tombstone, __instance.GetCenterPoint() + Vector3.up + __instance.transform.forward * 0.5f, __instance.transform.rotation);
+            var tombStone = tombstoneGameObject.GetComponent<TombStone>();
+            var playerProfile = Game.instance.GetPlayerProfile();
+            var name = playerProfile.GetName();
+            var playerId = playerProfile.GetPlayerID();
+            tombStone.Setup($"{name}'s Equipment", playerId);
+
+            var container = tombstoneGameObject.GetComponent<Container>();
+            var containerInventory = container.GetInventory();
 
             foreach (var inventory in extraInventories)
             {
@@ -158,10 +161,13 @@ namespace EquipmentAndQuickSlots
     [HarmonyPatch(typeof(TombStone), nameof(TombStone.OnTakeAllSuccess))]
     public static class TombStone_OnTakeAllSuccess_Patch
     {
-        public static void Postfix()
+        public static void Postfix(TombStone __instance)
         {
-            TryReequipQuickslotItems();
-            TryReequipEquipmentSlotItems(Player.m_localPlayer);
+            if (__instance.IsOwner())
+            {
+                TryReequipQuickslotItems();
+                TryReequipEquipmentSlotItems(Player.m_localPlayer);
+            }
         }
 
         private static Vector2i ParseVector2i(string s)
@@ -246,7 +252,8 @@ namespace EquipmentAndQuickSlots
             if (hold)
                 return true;
 
-            TombStone_OnTakeAllSuccess_Patch.TryReequipEquipmentSlotItems(character as Player);
+            if (__instance.IsOwner())
+                TombStone_OnTakeAllSuccess_Patch.TryReequipEquipmentSlotItems(character as Player);
             return true;
         }
     }
