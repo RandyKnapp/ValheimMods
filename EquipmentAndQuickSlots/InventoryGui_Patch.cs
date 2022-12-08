@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Reflection.Emit;
 using HarmonyLib;
 using UnityEngine;
 using UnityEngine.UI;
@@ -345,20 +348,31 @@ namespace EquipmentAndQuickSlots
         }
     }
 
-    [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.UpdateContainer))]
+    [HarmonyPatch]
     public static class InventoryGui_UpdateContainer_Patch
     {
-        public static bool Prefix(InventoryGui __instance)
+        public static int InUpdateContainerCall = 0;
+
+        [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.UpdateContainer))]
+        [HarmonyPrefix]
+        public static void InventoryGui_UpdateContainer_Prefix()
         {
-            if (!__instance.m_currentContainer || !__instance.m_currentContainer.IsOwner())
-            {
-                __instance.m_container.gameObject.SetActive(false);
-                if (__instance.m_dragInventory != null && !IsOneOfPlayersInventory(__instance.m_dragInventory))
-                    __instance.SetupDragItem(null, null, 1);
+            InUpdateContainerCall++;
+        }
 
+        [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.UpdateContainer))]
+        [HarmonyPostfix]
+        public static void InventoryGui_UpdateContainer_Postfix()
+        {
+            InUpdateContainerCall--;
+        }
+
+        [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.SetupDragItem))]
+        [HarmonyPrefix]
+        public static bool InventoryGui_SetupDragItem_Prefix(InventoryGui __instance, ItemDrop.ItemData item)
+        {
+            if (InUpdateContainerCall > 0 && item == null && __instance.m_dragInventory != null && IsOneOfPlayersInventory(__instance.m_dragInventory))
                 return false;
-            }
-
             return true;
         }
 

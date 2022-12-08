@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace EquipmentAndQuickSlots
 {
-    [BepInPlugin(PluginId, "Equipment and Quick Slots", "2.1.0")]
+    [BepInPlugin(PluginId, "Equipment and Quick Slots", "2.1.1")]
     [BepInDependency("moreslots", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("randyknapp.mods.auga", BepInDependency.DependencyFlags.SoftDependency)]
     public class EquipmentAndQuickSlots : BaseUnityPlugin
@@ -62,10 +62,10 @@ namespace EquipmentAndQuickSlots
             ViewDebugSaveData = Config.Bind("Toggles", "View Debug Save Data", false, "Enable to view the raw save data in the compendium.");
             QuickSlotsAnchor = Config.Bind("Quick Slots", "Quick Slots Anchor", TextAnchor.LowerLeft, "The point on the HUD to anchor the Quick Slots bar. Changing this also changes the pivot of the Quick Slots to that corner.");
             QuickSlotsPosition = Config.Bind("Quick Slots", "Quick Slots Position", new Vector2(216, 150), "The position offset from the Quick Slots Anchor at which to place the Quick Slots.");
-            DontDropEquipmentOnDeath = Config.Bind("Gravestone", "Dont drop equipment on death", false, "If set to true, your equipment will not be dropped when you die.");
-            DontDropQuickslotsOnDeath = Config.Bind("Gravestone", "Dont drop quickslot items on death", false, "If set to true, the items in the quickslots will not be dropped when you die.");
-            InstantlyReequipArmorOnPickup = Config.Bind("Gravestone", "Instantly re-equip armor on pickup", false, "If set to true, when you pickup your equipment gravestone your armor will be instantly re-equipped, if possible.");
-            InstantlyReequipQuickslotsOnPickup = Config.Bind("Gravestone", "Instantly re-equip quickslot items on pickup", true, "If set to true, when you pickup your equipment gravestone your quick slot items will be instantly re-equipped, if possible.");
+            DontDropEquipmentOnDeath = Config.Bind("Gravestone", "Dont drop equipment on death", false, "If set to true, your equipment will not be dropped when you die. Only valid when Equipment Slots are enabled.");
+            DontDropQuickslotsOnDeath = Config.Bind("Gravestone", "Dont drop quickslot items on death", false, "If set to true, the items in the quickslots will not be dropped when you die. Only valid when Quick Slots are enabled.");
+            InstantlyReequipArmorOnPickup = Config.Bind("Gravestone", "Instantly re-equip armor on pickup", false, "If set to true, when you pickup your equipment gravestone your armor will be instantly re-equipped, if possible. Only valid when Equipment Slots are enabled.");
+            InstantlyReequipQuickslotsOnPickup = Config.Bind("Gravestone", "Instantly re-equip quickslot items on pickup", true, "If set to true, when you pickup your equipment gravestone your quick slot items will be instantly re-equipped, if possible. Only valid when Quick Slots are enabled.");
 
             LoadAssets();
 
