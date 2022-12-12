@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using EpicLoot.PlayerKnown;
 
 namespace EpicLoot.GatedItemType
@@ -118,6 +119,18 @@ namespace EpicLoot.GatedItemType
                 case GatedItemTypeMode.MustHaveCrafted: return !PlayerKnownManager.IsItemKnown(itemName);
                 default: return false;
             }
+        }
+
+        public static string GetItemFromCategory(string itemCategory, GatedItemTypeMode mode)
+        {
+            var itemInfo = ItemInfos.FirstOrDefault(x => x.Type == itemCategory);
+            if (itemInfo == null)
+            {
+                EpicLoot.LogWarning($"Could not find item info category: {itemCategory}");
+                return "";
+            }
+
+            return GetGatedItemID(itemInfo.Items[itemInfo.Items.Count - 1], mode);
         }
     }
 }

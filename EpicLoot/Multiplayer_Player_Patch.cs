@@ -144,30 +144,42 @@ namespace EpicLoot
                     case ItemDrop.ItemData.ItemType.Helmet:             humanoid.m_visEquipment.m_currentHelmetItemHash = -1;   break;
                     case ItemDrop.ItemData.ItemType.Shoulder:           humanoid.m_visEquipment.m_currentShoulderItemHash = -1; break;
                     case ItemDrop.ItemData.ItemType.Utility:            humanoid.m_visEquipment.m_currentUtilityItemHash = -1;  break;
-                    case ItemDrop.ItemData.ItemType.Tool:               humanoid.m_visEquipment.m_currentRightItemHash = -1;    break;
+                    case ItemDrop.ItemData.ItemType.Tool:               humanoid.m_visEquipment.m_currentRightItemHash = -1; break;
+
+                    default:
+                        break;
                 }
             }
         }
 
-        [HarmonyPatch(typeof(Player), nameof(Player.Update))]
-        public static class WatchMultiplayerMagicEffects_Player_Update_Patch
+        [HarmonyPatch]
+        public static class WatchMultiplayerMagicEffects_Player_Patch
         {
-            public static int Timer;
-
-            public static void Postfix(Player __instance)
+            [HarmonyPatch(typeof(Humanoid), nameof(Humanoid.EquipItem))]
+            [HarmonyPostfix]
+            public static void EquipItem_Postfix(Humanoid __instance)
             {
-                Timer++;
-                if (Timer < 60)
-                    return;
-                Timer = 0;
+                if (__instance is Player player)
+                    UpdateRichesAndLuck(player);
+            }
 
-                if (__instance.m_nview?.GetZDO() is ZDO zdo)
+            [HarmonyPatch(typeof(Humanoid), nameof(Humanoid.UnequipItem))]
+            [HarmonyPostfix]
+            public static void UnequipItem_Postfix(Humanoid __instance)
+            {
+                if (__instance is Player player)
+                    UpdateRichesAndLuck(player);
+            }
+
+            public static void UpdateRichesAndLuck(Player player)
+            {
+                if (player == Player.m_localPlayer && player.m_nview?.GetZDO() is ZDO zdo)
                 {
                     var currentZdoLuck = zdo.GetInt("el-luk");
                     var currentZdoRiches = zdo.GetInt("el-rch");
 
-                    var currentLuck = (int)__instance.GetTotalActiveMagicEffectValue(MagicEffectType.Luck);
-                    var currentRiches = (int)__instance.GetTotalActiveMagicEffectValue(MagicEffectType.Riches);
+                    var currentLuck = (int)player.GetTotalActiveMagicEffectValue(MagicEffectType.Luck);
+                    var currentRiches = (int)player.GetTotalActiveMagicEffectValue(MagicEffectType.Riches);
 
                     if (currentLuck != currentZdoLuck)
                     {

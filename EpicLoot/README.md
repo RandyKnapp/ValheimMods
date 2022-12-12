@@ -1,8 +1,9 @@
-# Epic Loot v0.8.10 - Legendary Sets Update!
-Author: RandyKnapp
+# Epic Loot v0.9.0 - Mistlands Update!
+Author: [RandyKnapp](https://discord.gg/randyknappmods)
 Source: [Github](https://github.com/RandyKnapp/ValheimMods/blob/main/EpicLoot/)
-
-Patch notes: https://github.com/RandyKnapp/ValheimMods/blob/main/EpicLoot/patchnotes.md
+Patreon: [patreon.com/randyknapp](https://www.patreon.com/randyknapp)
+Discord: [RandyKnapp's Mod Community](https://discord.gg/randyknappmods)
+Patch notes: [Github Patchnotes](https://github.com/RandyKnapp/ValheimMods/blob/main/EpicLoot/patchnotes.md)
 
 This mod aims to add a loot drop experience to Valheim similar to Diablo or other RPGs. Monsters and chests can now drop Magic, Rare, Epic, or Legendary magic items. Each magic item has a number of magic effects on it, that give bonuses to the item or your character when that magic item is equipped.
 
@@ -29,12 +30,10 @@ Contibutions from the following modders was invaluable and appreciated:
   * LitanyOfFire - legendary definitions
   * [Digitalroot](https://github.com/Digitalroot) - Help with testing
 
-3D Models:
-  * "Fantasy Longsword" (https://skfb.ly/ontRY) by Faber is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
-
 ## Installation
 
-Copy the contents of "files" to a new folder called "EpicLoot" in your BepInEx/plugins directory.
+Extended Item Data Framework needs to be installed (on both client and dedicated servers).
+Copy the contents of "files" to a new folder called "EpicLoot" in your BepInEx/plugins directory (on both clients and dedicated servers).
 
 ## Cheats
 

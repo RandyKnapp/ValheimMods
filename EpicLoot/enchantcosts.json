@@ -86,12 +86,12 @@
     },
     {
       "ItemTypes" : [ "Trophie" ],
-      "ItemNames" : [ "$item_trophy_fenring", "$item_trophy_goblin", "$item_trophy_hatchling", "$item_trophy_lox", "$item_trophy_sgolem" ],
+      "ItemNames" : [ "$item_trophy_fenring", "$item_trophy_goblin", "$item_trophy_hatchling", "$item_trophy_lox", "$item_trophy_sgolem", "$item_trophy_abomination", "$item_trophy_cultist", "$item_trophy_ulv", "$item_trophy_growth", "$item_trophy_tick", "$item_trophy_hare" ],
       "Products" : [ { "Item": "ShardEpic", "Amount": 1 } ]
     },
     {
       "ItemTypes" : [ "Trophie" ],
-      "ItemNames" : [ "$item_trophy_deathsquito", "$item_trophy_goblinbrute", "$item_trophy_goblinshaman", "$item_trophy_serpent" ],
+      "ItemNames" : [ "$item_trophy_deathsquito", "$item_trophy_goblinbrute", "$item_trophy_goblinshaman", "$item_trophy_serpent", "$item_trophy_seeker", "$item_trophy_seeker_brute", "$item_trophy_gjall", "$item_trophy_dvergr" ],
       "Products" : [ { "Item": "ShardLegendary", "Amount": 1 } ]
     },
     {
@@ -120,6 +120,11 @@
       "Products" : [ { "Item": "RunestoneLegendary", "Amount": 4 } ]
     },
     {
+      "ItemTypes" : [ "Trophie" ],
+      "ItemNames" : [ "$item_trophy_seekerqueen" ],
+      "Products" : [ { "Item": "RunestoneLegendary", "Amount": 12 } ]
+    },
+    {
       "ItemNames" : [ "$item_cryptkey" ],
       "Products" : [
         { "Item": "DustRare",    "Amount": 2 },
@@ -144,11 +149,27 @@
       ]
     },
     {
-      "ItemNames" : [ "Yagluth thing" ],
+      "ItemNames" : [ "$item_yagluththing" ],
       "Products" : [
         { "Item": "DustLegendary",    "Amount": 6 },
         { "Item": "EssenceLegendary", "Amount": 3 },
         { "Item": "ReagentLegendary", "Amount": 3 }
+      ]
+    },
+    {
+      "ItemNames" : [ "$item_dvergrkeyfragment" ],
+      "Products" : [
+        { "Item": "DustLegendary",    "Amount": 2 },
+        { "Item": "EssenceLegendary", "Amount": 1 },
+        { "Item": "ReagentLegendary", "Amount": 1 }
+      ]
+    },
+    {
+      "ItemNames" : [ "$item_queen_drop" ],
+      "Products" : [
+        { "Item": "DustLegendary",    "Amount": 10 },
+        { "Item": "EssenceLegendary", "Amount": 5 },
+        { "Item": "ReagentLegendary", "Amount": 5 }
       ]
     }
   ],
@@ -314,6 +335,10 @@
     { "Item": "Coins", "Amount": 15000 },
     { "Item": "Coins", "Amount": 20000 },
     { "Item": "Coins", "Amount": 25000 },
-    { "Item": "Coins", "Amount": 30000 }
+    { "Item": "Coins", "Amount": 35000 },
+    { "Item": "Coins", "Amount": 40000 },
+    { "Item": "Coins", "Amount": 45000 },
+    { "Item": "Coins", "Amount": 50000 },
+    { "Item": "Coins", "Amount": 55000 }
   ] 
 }

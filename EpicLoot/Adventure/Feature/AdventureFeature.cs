@@ -250,12 +250,25 @@ namespace EpicLoot.Adventure.Feature
         private static Tuple<float, float> GetTreasureMapSpawnRadiusRange(Heightmap.Biome biome, AdventureSaveData saveData)
         {
             var biomeInfoConfig = GetBiomeInfoConfig(biome);
-            var minRadius = biomeInfoConfig?.MinRadius ?? 0;
-            var maxRadius = biomeInfoConfig?.MaxRadius ?? 6000;
+            if (biomeInfoConfig == null)
+            {
+                EpicLoot.LogError($"Could not get biome info for biome: {biome}!");
+                EpicLoot.LogWarning($"> Current BiomeInfo ({AdventureDataManager.Config.TreasureMap.BiomeInfo.Count}):");
+                foreach (var biomeInfo in AdventureDataManager.Config.TreasureMap.BiomeInfo)
+                {
+                    EpicLoot.Log($"- {biomeInfo.Biome}: min:{biomeInfo.MinRadius}, max:{biomeInfo.MaxRadius}");
+                }
+
+                return new Tuple<float, float>(-1, -1);
+            }
+
+            var minRadius = biomeInfoConfig.MinRadius;
+            var maxRadius = biomeInfoConfig.MaxRadius;
             var numberOfBounties = AdventureDataManager.CheatNumberOfBounties >= 0 ? AdventureDataManager.CheatNumberOfBounties : saveData.NumberOfTreasureMapsOrBountiesStarted;
             var increments = numberOfBounties / AdventureDataManager.Config.TreasureMap.IncreaseRadiusCount;
-            var min = Mathf.Min(AdventureDataManager.Config.TreasureMap.StartRadiusMin + increments * AdventureDataManager.Config.TreasureMap.RadiusInterval, minRadius);
-            var max = Mathf.Min(AdventureDataManager.Config.TreasureMap.StartRadiusMax + increments * AdventureDataManager.Config.TreasureMap.RadiusInterval, maxRadius);
+            var min = Mathf.Max(AdventureDataManager.Config.TreasureMap.StartRadiusMin + increments * AdventureDataManager.Config.TreasureMap.RadiusInterval, minRadius);
+            var max = Mathf.Max(AdventureDataManager.Config.TreasureMap.StartRadiusMax + increments * AdventureDataManager.Config.TreasureMap.RadiusInterval, maxRadius);
+            EpicLoot.Log($"Got biome info for biome ({biome}): {min}, {max}!");
             return new Tuple<float, float>(min, max);
         }
 

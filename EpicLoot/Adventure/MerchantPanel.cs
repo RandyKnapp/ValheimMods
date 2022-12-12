@@ -206,7 +206,7 @@ namespace EpicLoot.Adventure
             }
         }
 
-        private static void AugaReplaceBackground(GameObject obj, bool withCornerDecoration)
+        public static void AugaReplaceBackground(GameObject obj, bool withCornerDecoration)
         {
             var image = obj.GetComponent<Image>();
             Destroy(image);
@@ -219,7 +219,7 @@ namespace EpicLoot.Adventure
             rt.sizeDelta = new Vector2(40, 40);
         }
 
-        private static void AugaFixItemBG(GameObject obj)
+        public static void AugaFixItemBG(GameObject obj)
         {
             var magicBG = obj.transform.Find("MagicBG");
             if (magicBG != null)
@@ -242,7 +242,7 @@ namespace EpicLoot.Adventure
             }
         }
 
-        private static void AugaFixListElementColors(GameObject obj)
+        public static void AugaFixListElementColors(GameObject obj)
         {
             var selected = obj.transform.Find("Selected");
             if (selected != null)
@@ -272,7 +272,7 @@ namespace EpicLoot.Adventure
             }
         }
 
-        private static void AugaFixFonts(GameObject obj)
+        public static void AugaFixFonts(GameObject obj)
         {
             var texts = obj.GetComponentsInChildren<Text>(true);
             foreach (var text in texts)
@@ -294,10 +294,12 @@ namespace EpicLoot.Adventure
                     ColorUtility.TryParseHtmlString(Auga.API.BrightGold, out var color);
                     text.color = color;
                 }
+
+                text.text = text.text.Replace("<color=yellow>", $"<color={Auga.API.BrightGold}>");
             }
         }
 
-        private static void AugaReplaceButton(Button button, bool icon = false)
+        public static Button AugaReplaceButton(Button button, bool icon = false)
         {
             var newButton = Auga.API.MediumButton_Create(button.transform.parent, button.name, string.Empty);
             if (icon)
@@ -320,9 +322,10 @@ namespace EpicLoot.Adventure
             rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, oldRt.rect.width);
 
             Object.DestroyImmediate(button.gameObject);
+            return newButton;
         }
 
-        private static void AugaMakeSimpleTooltip(GameObject obj)
+        public static void AugaMakeSimpleTooltip(GameObject obj)
         {
             Auga.API.Tooltip_MakeSimpleTooltip(obj);
         }

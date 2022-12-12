@@ -61,6 +61,7 @@ namespace EpicLoot
         public AudioClip DoubleJumpSFX;
         public GameObject DebugTextPrefab;
         public GameObject AbilityBar;
+        public GameObject WelcomMessagePrefab;
     }
 
     public class PieceDef
@@ -72,15 +73,15 @@ namespace EpicLoot
     }
 
     [BepInPlugin(PluginId, DisplayName, Version)]
-    [BepInDependency("randyknapp.mods.extendeditemdataframework", "1.0.7")]
+    [BepInDependency("randyknapp.mods.extendeditemdataframework", "1.0.8")]
     [BepInDependency("randyknapp.mods.auga", BepInDependency.DependencyFlags.SoftDependency)]
     public class EpicLoot : BaseUnityPlugin
     {
         public const string PluginId = "randyknapp.mods.epicloot";
         public const string DisplayName = "Epic Loot";
-        public const string Version = "0.8.10";
+        public const string Version = "0.9.0";
 
-        private readonly ConfigSync _configSync = new ConfigSync(PluginId) { DisplayName = DisplayName, CurrentVersion = Version, MinimumRequiredVersion = "0.8.10" };
+        private readonly ConfigSync _configSync = new ConfigSync(PluginId) { DisplayName = DisplayName, CurrentVersion = Version, MinimumRequiredVersion = "0.9.0" };
 
         private static ConfigEntry<string> _setItemColor;
         private static ConfigEntry<string> _magicRarityColor;
@@ -113,6 +114,7 @@ namespace EpicLoot
         public static ConfigEntry<TextAnchor> AbilityBarLayoutAlignment;
         public static ConfigEntry<float> AbilityBarIconSpacing;
         public static ConfigEntry<float> SetItemDropChance;
+        public static ConfigEntry<bool> AlwaysShowWelcomeMessage;
 
         public static readonly List<ItemDrop.ItemData.ItemType> AllowedMagicItemTypes = new List<ItemDrop.ItemData.ItemType>
         {
@@ -193,6 +195,7 @@ namespace EpicLoot
             _andvaranautRange = SyncedConfig("Balance", "Andvaranaut Range", 20, "Sets the range that Andvaranaut will locate a treasure chest.");
             _serverConfigLocked = SyncedConfig("Config Sync", "Lock Config", false, new ConfigDescription("[Server Only] The configuration is locked and may not be changed by clients once it has been synced from the server. Only valid for server config, will have no effect on clients."));
             SetItemDropChance = SyncedConfig("Balance", "Set Item Drop Chance", 0.15f, "The percent chance that a legendary item will be a set item. Min = 0, Max = 1");
+            AlwaysShowWelcomeMessage = Config.Bind("Debug", "AlwaysShowWelcomeMessage", false, "Just a debug flag for testing the welcome message, do not use.");
 
             AbilityKeyCodes[0] = Config.Bind("Abilities", "Ability Hotkey 1", "g", "Hotkey for Ability Slot 1.");
             AbilityKeyCodes[1] = Config.Bind("Abilities", "Ability Hotkey 2", "h", "Hotkey for Ability Slot 2.");
@@ -456,6 +459,7 @@ namespace EpicLoot
             Assets.DoubleJumpSFX = assetBundle.LoadAsset<AudioClip>("DoubleJump");
             Assets.DebugTextPrefab = assetBundle.LoadAsset<GameObject>("DebugText");
             Assets.AbilityBar = assetBundle.LoadAsset<GameObject>("AbilityBar");
+            Assets.WelcomMessagePrefab = assetBundle.LoadAsset<GameObject>("WelcomeMessage");
 
             LoadCraftingMaterialAssets(assetBundle, "Runestone");
 

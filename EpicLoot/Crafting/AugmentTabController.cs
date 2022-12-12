@@ -228,14 +228,14 @@ namespace EpicLoot.Crafting
             else
             {
                 AvailableAugmentsButton.gameObject.SetActive(active);
-                if (AvailableAugmentsDialog.gameObject.activeSelf && !active)
-                {
+            }
+
+            if (!active)
+            {
+                if (AvailableAugmentsDialog != null && AvailableAugmentsDialog.gameObject.activeSelf)
                     AvailableAugmentsDialog.OnClose();
-                }
-                if (ChoiceDialog.gameObject.activeSelf && !active)
-                {
+                if (ChoiceDialog != null && ChoiceDialog.gameObject.activeSelf)
                     ChoiceDialog.OnClose();
-                }
             }
 
             base.SetActive(active);
@@ -279,7 +279,7 @@ namespace EpicLoot.Crafting
             }
 
             var isArtisan = station.m_name == "$piece_artisanstation";
-            var isForgeWithEnchanter = station.m_name == "$piece_forge" && station.m_attachedExtensions.Find(x => x.name.StartsWith("piece_augmenter"));
+            var isForgeWithEnchanter = station.m_name == "$piece_forge" && station.m_attachedExtensions.Find(x => x.name.StartsWith("piece_enchanter"));
             return isArtisan || isForgeWithEnchanter;
         }
 
@@ -313,6 +313,10 @@ namespace EpicLoot.Crafting
                         : Localization.instance.Localize("$mod_epicloot_augment_selecteffect");
 
                 SetupRequirementList(__instance, player, recipe, canCraft);
+                var selectedDeprecatedEffect = hasSelectedEffect && EnchantCostsHelper.EffectIsDeprecated(recipe.FromItem, recipe.EffectIndex);
+                __instance.m_itemCraftType.gameObject.SetActive(selectedDeprecatedEffect);
+                __instance.m_itemCraftType.text = selectedDeprecatedEffect ? Localization.instance.Localize("<color=yellow>$mod_epicloot_augment_deprecated</color>") : "";
+                __instance.m_itemCraftType.horizontalOverflow = HorizontalWrapMode.Wrap;
 
                 if (EpicLoot.HasAuga)
                 {
@@ -324,7 +328,7 @@ namespace EpicLoot.Crafting
                     Auga.API.ComplexTooltip_SetTopic(AugaTabData.ItemInfoGO, Localization.instance.Localize(itemData.GetDecoratedName()));
                     Auga.API.ComplexTooltip_SetDescription(AugaTabData.ItemInfoGO, Localization.instance.Localize("$mod_epicloot_augment_explain"));
                     EpicLoot.AugaTooltipNoTextBoxes = false;
-                    __instance.m_itemCraftType.text = "";
+
                 }
                 else
                 {
@@ -399,7 +403,7 @@ namespace EpicLoot.Crafting
             var augmentableEffects = magicItem.Effects;
             var effectCount = augmentableEffects.Count;
 
-            if (EpicLoot.HasAuga)
+            if (EpicLoot.HasAuga && (EffectSelectors.Count == 0 || EffectSelectors.Any(x => x == null)))
             {
                 EffectSelectors.Clear();
                 Auga.API.ComplexTooltip_ClearTextBoxes(AugaTabData.ItemInfoGO);
@@ -473,17 +477,20 @@ namespace EpicLoot.Crafting
                 selector.gameObject.SetActive(true);
             }
 
+            var effectDef = MagicItemEffectDefinitions.Get(augmentableEffects[i].EffectType);
+            selector.interactable = effectDef != null && effectDef.CanBeAugmented;
             selector.isOn = recipe.EffectIndex == i;
             var t = selector.GetComponentInChildren<Text>();
             t.text = GetAugmentSelectorText(magicItem, i, augmentableEffects, rarity);
-            t.color = EpicLoot.GetRarityColorARGB(rarity);
+            var color = EpicLoot.GetRarityColorARGB(rarity);
+            t.color = new Color(color.r, color.g, color.b, selector.interactable ? 1.0f : 0.5f);
         }
 
         private static string GetAugmentSelectorText(MagicItem magicItem, int i, IReadOnlyList<MagicItemEffect> augmentableEffects, ItemRarity rarity)
         {
             var pip = EpicLoot.GetMagicEffectPip(magicItem.IsEffectAugmented(i));
             bool free = EnchantCostsHelper.EffectIsDeprecated(augmentableEffects[i].EffectType);
-            return $"{pip} {Localization.instance.Localize(MagicItem.GetEffectText(augmentableEffects[i], rarity, true))}{(free ? " [FREE]" : "")}";
+            return $"{pip} {Localization.instance.Localize(MagicItem.GetEffectText(augmentableEffects[i], rarity, true))}{(free ? " [<color=yellow>*FREE</color>]" : "")}";
         }
 
         private void OnSelectorValueChanged(int index, bool selected)
@@ -592,8 +599,21 @@ namespace EpicLoot.Crafting
                         recipe.FromItem.m_durability = recipe.FromItem.GetMaxDurability();
                     }
                 }
-                
+
+                var oldEffects = magicItem.GetEffects();
+                var oldEffect = (recipe.EffectIndex >= 0 && recipe.EffectIndex < oldEffects.Count) ? oldEffects[recipe.EffectIndex] : null;
+                EpicLoot.LogWarning($"oldEffect: ({recipe.EffectIndex}) {oldEffect?.EffectType} {oldEffect?.EffectValue}");
+
                 magicItem.ReplaceEffect(recipe.EffectIndex, newEffect);
+
+                // Don't count this free augment as locking in an augment
+                if (oldEffect != null && EnchantCostsHelper.EffectIsDeprecated(oldEffect.EffectType))
+                {
+                    EpicLoot.LogWarning("Unaugmenting effect");
+                    EpicLoot.LogWarning($"Augmented indices before: {(string.Join(",", magicItem.AugmentedEffectIndices))}");
+                    magicItem.AugmentedEffectIndices.Remove(recipe.EffectIndex);
+                    EpicLoot.LogWarning($"Augmented indices after: {(string.Join(",", magicItem.AugmentedEffectIndices))}");
+                }
 
                 if (magicItem.Rarity == ItemRarity.Rare)
                 {
@@ -650,7 +670,6 @@ namespace EpicLoot.Crafting
             element.SetActive(true);
             element.RectTransform().anchoredPosition = new Vector2(0.0f, count * -__instance.m_recipeListSpace);
 
-           //var canCraft = Player.m_localPlayer.HaveRequirements(recipe.GetRequirementArray(), false, 1);
             var item = recipe.FromItem;
 
             var image = element.transform.Find("icon").GetComponent<Image>();
@@ -666,9 +685,9 @@ namespace EpicLoot.Crafting
             var nameText = element.transform.Find("name").GetComponent<Text>();
             nameText.text = Localization.instance.Localize(item.GetDecoratedName());
             if (item.GetMagicItem() != null && item.GetMagicItem().HasBeenAugmented())
-            {
                 nameText.text += $" {EpicLoot.GetMagicEffectPip(true)}";
-            }
+            if (EnchantCostsHelper.ItemHasDeprecatedEffect(item))
+                nameText.text = $"<color=yellow>*</color>{nameText.text}";
             nameText.color = Color.white;
 
             var durability = element.transform.Find("Durability").GetComponent<GuiBar>();

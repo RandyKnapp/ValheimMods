@@ -1,4 +1,26 @@
-﻿## Version 0.8.10
+﻿## Version 0.9.0
+  * Updated for Valheim version 0.212.7 (Mistlands Update)
+  * Augmenter no longer needed for augmenting (engage with augmenting far earlier in your playthrough)
+  * Updated loot tables, gambles, treasure maps, and bounties for Mistlands and H&H
+  * Added treasure chest loot for Mistlands dungeons
+  * Fixed some multiplayer issues with Riches/Luck (only update on client, only update when equipment changes)
+  * Updated FeatherFall to use vanilla effect
+  * Deprecated several magic effects:
+    * WaterWalking
+    * AddSpiritResistance (Player already immune)
+    * AddSpiritResistancePercentage
+    * ReduceWeight
+    * AddFireResistance (confusing overlap with the -X% Fire Damage effects)
+    * AddFrostResistance
+    * AddLightningResistance
+    * AddChoppingResistancePercentage
+    * NOTE: Deprecated effects can be augmented off of items for free, but cannot be kept. They may no longer function.
+  * CanBeAugmented feature of magic effects is now functional
+  * Reduced the possibility of recalling weapons getting too far away to recall (stop throwing them off mountains!)
+  * Fixed a bug with Indestructible items
+  * Bounty targets are sometimes named special names (join the Patreon to add your name!)
+  * Fixed a bug with magic effect requirements for or excluding Tower Shields
+## Version 0.8.10
   * Update for Valheim 0.211.11 and ServerSync 1.13
 ## Version 0.8.9
   * Compatibility fix for the Auga version of the merchant panel.
@@ -61,27 +83,27 @@
   * Config json files are now editable while the game is running and will automatically hot reload! (thanks blaxxun!)
   * New Magic Item Effects:
     * Water Walking
-	* Double Jump
-	* Quick Draw
-	* Explosive Arrows
-	* Skill Increase
-	* Increase Stagger Duration
-	* Quick Learner
-	* Feather Fall (with effect!)
-	* Thorns
-	* Stagger on hit
-	* Avoid damage on hit
-	* Auto-recall thrown weapon
-	* Bonus when health is low: Move Speed, Health Regen, Stamina Regen, Armor, Damage, Block Power, Parry, Attack Speed, Avoid Damage, Lifesteal
-	* Free Build (hammer)
-	* Comfortable
-	* Glowing
-	* Execution
-	* Riches
-	* Opportunist
-	* Duelist
-	* Increased Stagger Damage
-	* Immovable
+    * Double Jump
+    * Quick Draw
+    * Explosive Arrows
+    * Skill Increase
+    * Increase Stagger Duration
+    * Quick Learner
+    * Feather Fall (with effect!)
+    * Thorns
+    * Stagger on hit
+    * Avoid damage on hit
+    * Auto-recall thrown weapon
+    * Bonus when health is low: Move Speed, Health Regen, Stamina Regen, Armor, Damage, Block Power, Parry, Attack Speed, Avoid Damage, Lifesteal
+    * Free Build (hammer)
+    * Comfortable
+    * Glowing
+    * Execution
+    * Riches
+    * Opportunist
+    * Duelist
+    * Increased Stagger Damage
+    * Immovable
   * Overhaul of Resistances: removed Spirit, resistances now reduce damage by a set percent, and stack (fix existing resistances by using the console command: `fixresistances`)
   * Known items and recipes (for item gating) are now synced between all players on a server
   * Added "Sacrifice All" button to Sacrifice tab which sacrifices the whole stack of whatever you have selected
@@ -153,7 +175,7 @@
   * Small coin amounts added to conversion and upgrade recipes for crafting materials
   * Magic effect changes:
     * Parry now only rolls on two-handed weapons and shields
-	* Block now only rolls on shields
+    * Block now only rolls on shields
 ## Version 0.5.15
   * Loot tables now use a leveled format that can be extended beyond level 3
   * DLC Stuff allowed to enchant

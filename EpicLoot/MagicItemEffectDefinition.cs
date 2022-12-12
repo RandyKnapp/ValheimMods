@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using EpicLoot.Crafting;
+using EpicLoot.MagicItemEffects;
 using ExtendedItemDataFramework;
 using JetBrains.Annotations;
 
@@ -16,8 +18,8 @@ namespace EpicLoot
         public bool NoRoll;
         public bool ExclusiveSelf = true;
         public List<string> ExclusiveEffectTypes = new List<string>();
-        public List<ItemDrop.ItemData.ItemType> AllowedItemTypes = new List<ItemDrop.ItemData.ItemType>();
-        public List<ItemDrop.ItemData.ItemType> ExcludedItemTypes = new List<ItemDrop.ItemData.ItemType>();
+        public List<string> AllowedItemTypes = new List<string>();
+        public List<string> ExcludedItemTypes = new List<string>();
         public List<ItemRarity> AllowedRarities = new List<ItemRarity>();
         public List<ItemRarity> ExcludedRarities = new List<ItemRarity>();
         public List<Skills.SkillType> AllowedSkillTypes = new List<Skills.SkillType>();
@@ -113,6 +115,44 @@ namespace EpicLoot
             return _sb.ToString();
         }
 
+        public bool AllowByItemType([NotNull] ItemDrop.ItemData itemData)
+        {
+            if (AllowedItemTypes == null)
+                return true;
+
+            if (AllowedItemTypes.Count == 0)
+                return true;
+
+            var itemIsStaff = itemData.m_shared.m_itemType == ItemDrop.ItemData.ItemType.TwoHandedWeapon && itemData.m_shared.m_animationState == ItemDrop.ItemData.AnimationState.Staves;
+            if (itemIsStaff && AllowedItemTypes.Contains("Staff"))
+                return true;
+
+            //var itemIsTowerShield = itemData.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Shield && itemData.m_shared.m_timedBlockBonus <= 0;
+            //if (itemIsTowerShield && AllowedItemTypes.Contains("TowerShield"))
+            //    return true;
+
+            return AllowedItemTypes.Contains(itemData.m_shared.m_itemType.ToString());
+        }
+
+        public bool ExcludeByItemType([NotNull] ItemDrop.ItemData itemData)
+        {
+            if (ExcludedItemTypes == null)
+                return false;
+
+            if (ExcludedItemTypes.Count == 0)
+                return false;
+
+            var itemIsStaff = itemData.m_shared.m_itemType == ItemDrop.ItemData.ItemType.TwoHandedWeapon && itemData.m_shared.m_animationState == ItemDrop.ItemData.AnimationState.Staves;
+            if (itemIsStaff && ExcludedItemTypes.Contains("Staff"))
+                return true;
+
+            //var itemIsTowerShield = itemData.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Shield && itemData.m_shared.m_timedBlockBonus <= 0;
+            //if (itemIsTowerShield && ExcludedItemTypes.Contains("TowerShield"))
+            //    return true;
+
+            return ExcludedItemTypes.Contains(itemData.m_shared.m_itemType.ToString());
+        }
+
         public bool CheckRequirements([NotNull] ItemDrop.ItemData itemData, [NotNull] MagicItem magicItem, string magicEffectType = null)
         {
             if (NoRoll)
@@ -130,15 +170,11 @@ namespace EpicLoot
                 return false;
             }
 
-            if (AllowedItemTypes?.Count > 0 && !AllowedItemTypes.Contains(itemData.m_shared.m_itemType))
-            {
+            if (!AllowByItemType(itemData))
                 return false;
-            }
 
-            if (ExcludedItemTypes?.Count > 0 && ExcludedItemTypes.Contains(itemData.m_shared.m_itemType))
-            {
+            if (ExcludeByItemType(itemData))
                 return false;
-            }
 
             if (AllowedRarities?.Count > 0 && !AllowedRarities.Contains(magicItem.Rarity))
             {
@@ -195,12 +231,12 @@ namespace EpicLoot
                 return false;
             }
 
-            if (ItemHasParryPower && itemData.m_shared.m_deflectionForce <= 0)
+            if (ItemHasParryPower && itemData.m_shared.m_timedBlockBonus <= 0)
             {
                 return false;
             }
 
-            if (ItemHasNoParryPower && itemData.m_shared.m_deflectionForce > 0)
+            if (ItemHasNoParryPower && itemData.m_shared.m_timedBlockBonus > 0)
             {
                 return false;
             }
@@ -259,9 +295,9 @@ namespace EpicLoot
         public FxAttachMode EquipFxMode = FxAttachMode.Player;
         public string Ability;
 
-        public List<ItemDrop.ItemData.ItemType> GetAllowedItemTypes()
+        public List<string> GetAllowedItemTypes()
         {
-            return Requirements?.AllowedItemTypes ?? new List<ItemDrop.ItemData.ItemType>();
+            return Requirements?.AllowedItemTypes ?? new List<string>();
         }
 
         public bool CheckRequirements(ExtendedItemData itemData, MagicItem magicItem)
@@ -340,14 +376,14 @@ namespace EpicLoot
                 magicItem.Effects.RemoveAt(ignoreEffectIndex);
             }
 
-            var results = AllDefinitions.Values.Where(x => x.CheckRequirements(itemData, magicItem)).ToList();
+            var results = AllDefinitions.Values.Where(x => x.CheckRequirements(itemData, magicItem) && !EnchantCostsHelper.EffectIsDeprecated(x)).ToList();
 
             if (effect != null)
             {
                 magicItem.Effects.Insert(ignoreEffectIndex, effect);
                 if (AllDefinitions.TryGetValue(effect.EffectType, out var ignoredEffectDef))
                 {
-                    if (!results.Contains(ignoredEffectDef))
+                    if (!results.Contains(ignoredEffectDef) && !EnchantCostsHelper.EffectIsDeprecated(ignoredEffectDef))
                     {
                         results.Add(ignoredEffectDef);
                     }

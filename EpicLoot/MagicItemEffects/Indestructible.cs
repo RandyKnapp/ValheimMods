@@ -1,8 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Reflection;
+﻿using System.Reflection;
 using HarmonyLib;
 using JetBrains.Annotations;
-using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects
 {

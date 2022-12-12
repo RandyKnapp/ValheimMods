@@ -15,7 +15,7 @@ namespace EpicLoot.MagicItemEffects
         [UsedImplicitly]
 		private static void Postfix(Projectile __instance)
 		{
-			__instance.m_nview.Register<Vector3, float>("epic loot exploding arrow", RPC_ExplodingArrow);
+			__instance.m_nview.Register<Vector3, float>("el-aw", RPC_ExplodingArrow);
 		}
 			
 		private static void RPC_ExplodingArrow(long sender, Vector3 position, float explodingArrowStrength)
@@ -59,14 +59,17 @@ namespace EpicLoot.MagicItemEffects
 		
         [UsedImplicitly]
 		private static void Postfix(bool __state, Vector3 hitPoint, Projectile __instance)
-		{
-			if (__instance.m_didHit)
-			{
-				var explodingArrow = __instance.m_nview.GetZDO().GetFloat("epic loot exploding arrow", float.NaN);
+        {
+            if (__instance == null || __instance.m_nview == null || __instance.m_nview.GetZDO() == null)
+                return;
+
+            if (__instance.m_didHit)
+            {
+				var explodingArrow = __instance.m_nview.GetZDO().GetFloat("el-aw", float.NaN);
 				if (!float.IsNaN(explodingArrow))
 				{
 					var explodingArrowStrength = explodingArrow * __instance.m_damage.GetTotalDamage();
-					__instance.m_nview.InvokeRPC(ZRoutedRpc.Everybody, "epic loot exploding arrow", hitPoint, explodingArrowStrength);
+					__instance.m_nview.InvokeRPC(ZRoutedRpc.Everybody, "el-aw", hitPoint, explodingArrowStrength);
 				}
 
 				if (!__state)
@@ -96,7 +99,7 @@ namespace EpicLoot.MagicItemEffects
 		{
 			if (attack.m_character == Player.m_localPlayer && Player.m_localPlayer.GetTotalActiveMagicEffectValue(MagicEffectType.ExplosiveArrows, 0.01f) is float explosiveStrength && explosiveStrength > 0)
 			{
-				attackProjectile.GetComponent<ZNetView>().GetZDO().Set("epic loot exploding arrow", explosiveStrength);
+				attackProjectile.GetComponent<ZNetView>().GetZDO().Set("el-aw", explosiveStrength);
 			}
 
 			return attackProjectile;

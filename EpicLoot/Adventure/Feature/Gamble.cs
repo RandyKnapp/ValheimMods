@@ -75,7 +75,7 @@ namespace EpicLoot.Adventure.Feature
                     gatingMode = GatedItemTypeMode.MustKnowRecipe;
                 }
 
-                var itemId = GatedItemTypeHelper.GetGatedItemID(itemConfig, gatingMode);
+                var itemId = GatedItemTypeHelper.GetItemFromCategory(itemConfig, gatingMode);
                 var itemDrop = CreateItemDrop(itemId);
                 if (itemDrop == null)
                 {

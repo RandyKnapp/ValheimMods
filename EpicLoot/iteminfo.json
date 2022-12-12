@@ -1,24 +1,43 @@
 {
+  // This section defines how item gating works when the game decides to gate an item.
+  // First, it rolls on the loot table and determine which item ID it wants to drop. This item ID is the name of the prefab
+  //   that the itemData is loaded from.
+  // Second, it looks up that item in this big table, and sees what list it is in.
+  // Third, it walks backwards down the list from that item until it finds an item that meets the gating condition (like if
+  //   the player has crafted it or knows how to craft it)
+  // Last, it uses that item ID to spawn that item instead
+  // If it reaches the beginning of the list and there's no items in the whole list that the player is allowed to roll, then it
+  //   uses the Fallback item.
   "ItemInfo": [
     {
       "Type": "Swords",
       "Fallback": "AxeFlint",
-      "Items": [ "SwordBronze", "SwordIron", "SwordSilver", "SwordBlackmetal" ]
+      "Items": [ "SwordBronze", "SwordIron", "SwordSilver", "SwordBlackmetal", "SwordMistwalker", "THSwordKrom" ]
     },
     {
       "Type": "Axes",
       "Fallback": "Club",
-      "Items": [ "AxeStone", "AxeFlint", "AxeBronze", "AxeIron", "AxeBlackMetal" ]
+      "Items": [ "AxeStone", "AxeFlint", "AxeBronze", "AxeIron", "AxeBlackMetal", "AxeJotunBane" ]
     },
     {
       "Type": "TwoHandAxes",
-      "Fallback": "AxeIron",
-      "Items": [ "Battleaxe" ]
+      "Fallback": "AxeFlint",
+      "Items": [ "Battleaxe", "BattleaxeCrystal" ]
     },
     {
       "Type": "Knives",
       "Fallback": "Club",
-      "Items": [ "KnifeFlint", "KnifeCopper", "KnifeChitin", "KnifeBlackMetal" ]
+      "Items": [ "KnifeFlint", "KnifeCopper", "KnifeChitin", "KnifeSilver", "KnifeBlackMetal", "KnifeSkollAndHati" ]
+    },
+    {
+      "Type": "Fists",
+      "Fallback": "Club",
+      "Items": [ "FistFenrirClaw" ]
+    },
+    {
+      "Type": "Staffs",
+      "Fallback": "Club",
+      "Items": [ "StaffFireball", "StaffIceShards", "StaffShield", "StaffSkeleton" ]
     },
     {
       "Type": "Clubs",
@@ -28,57 +47,62 @@
     {
       "Type": "Sledges",
       "Fallback": "AxeFlint",
-      "Items": [ "SledgeStagbreaker", "SledgeIron" ]
+      "Items": [ "SledgeStagbreaker", "SledgeIron", "SledgeDemolisher" ]
     },
     {
       "Type": "Polearms",
-      "Fallback": "SpearBronze",
-      "Items": [ "AtgeirBronze", "AtgeirIron", "AtgeirBlackmetal" ]
+      "Fallback": "AxeFlint",
+      "Items": [ "AtgeirBronze", "AtgeirIron", "AtgeirBlackmetal", "AtgeirHimminAfl" ]
     },
     {
       "Type": "Spears",
       "Fallback": "Club",
-      "Items": [ "SpearFlint", "SpearBronze", "SpearElderbark", "SpearChitin", "SpearWolfFang" ]
+      "Items": [ "SpearFlint", "SpearBronze", "SpearElderbark", "SpearChitin", "SpearWolfFang", "SpearCarapace" ]
     },
     {
       "Type": "Pickaxes",
       "Fallback": "AxeFlint",
-      "Items": [ "PickaxeAntler", "PickaxeBronze", "PickaxeIron" ]
+      "Items": [ "PickaxeAntler", "PickaxeBronze", "PickaxeIron", "PickaxeBlackMetal" ]
     },
     {
       "Type": "Bows",
       "Fallback": "Club",
-      "Items": [ "Bow", "BowFineWood", "BowHuntsman", "BowDraugrFang" ]
+      "Items": [ "Bow", "BowFineWood", "BowHuntsman", "BowDraugrFang", "CrossbowArbalest", "BowSpineSnap" ]
+    },
+    {
+      "Type": "Bucklers",
+      "Fallback": "ShieldWood",
+      "Items": [ "ShieldBronzeBuckler", "ShieldIronBuckler", "ShieldCarapaceBuckler" ]
     },
     {
       "Type": "RoundShields",
-      "Fallback": "Club",
-      "Items": [ "ShieldWood", "ShieldBronzeBuckler", "ShieldBanded", "ShieldSilver", "ShieldBlackmetal" ]
+      "Fallback": "ShieldWood",
+      "Items": [ "ShieldWood", "ShieldBanded", "ShieldSilver", "ShieldBlackmetal", "ShieldCarapace" ]
     },
     {
       "Type": "TowerShields",
-      "Fallback": "Club",
-      "Items": [ "ShieldWoodTower", "ShieldIronTower", "ShieldSerpentscale", "ShieldBlackmetalTower" ]
+      "Fallback": "ShieldWoodTower",
+      "Items": [ "ShieldWoodTower", "ShieldBoneTower", "ShieldIronTower", "ShieldSerpentscale", "ShieldBlackmetalTower" ]
     },
     {
       "Type": "ChestArmor",
       "Fallback": "",
-      "Items": [ "ArmorRagsChest", "ArmorLeatherChest", "ArmorTrollLeatherChest", "ArmorBronzeChest", "ArmorIronChest", "ArmorWolfChest", "ArmorPaddedCuirass" ]
+      "Items": [ "ArmorRagsChest", "ArmorLeatherChest", "ArmorBronzeChest", "ArmorTrollLeatherChest", "ArmorIronChest", "ArmorRootChest", "ArmorWolfChest", "ArmorFenringChest", "ArmorPaddedCuirass", "ArmorCarapaceChest", "ArmorMageChest" ]
     },
     {
       "Type": "LegsArmor",
       "Fallback": "",
-      "Items": [ "ArmorRagsLegs", "ArmorLeatherLegs", "ArmorTrollLeatherLegs", "ArmorBronzeLegs", "ArmorIronLegs", "ArmorWolfLegs", "ArmorPaddedGreaves" ]
+      "Items": [ "ArmorRagsLegs", "ArmorLeatherLegs", "ArmorTrollLeatherLegs", "ArmorBronzeLegs", "ArmorIronLegs", "ArmorRootLegs", "ArmorWolfLegs", "ArmorFenringLegs", "ArmorPaddedGreaves", "ArmorCarapaceLegs", "ArmorMageLegs" ]
     },
     {
       "Type": "HeadArmor",
       "Fallback": "ArmorRagsChest",
-      "Items": [ "HelmetLeather", "HelmetTrollLeather", "HelmetBronze", "HelmetIron", "HelmetDrake", "HelmetPadded" ]
+      "Items": [ "HelmetLeather", "HelmetTrollLeather", "HelmetBronze", "HelmetIron", "HelmetRoot", "HelmetDrake", "HelmetFenring", "HelmetPadded", "HelmetCarapace", "HelmetMage" ]
     },
     {
       "Type": "ShouldersArmor",
       "Fallback": "ArmorRagsLegs",
-      "Items": [ "CapeDeerHide", "CapeTrollHide", "CapeWolf", "CapeLinen", "CapeLox" ]
+      "Items": [ "CapeDeerHide", "CapeTrollHide", "CapeWolf", "CapeLinen", "CapeLox", "CapeFeather" ]
     },
     {
       "Type": "Torches",
@@ -92,8 +116,9 @@
     },
     {
       "Type": "Utility",
-      "Fallback": "",
-      "Items": [ ]
+      "Fallback": "Club",
+      "Items": [ "LeatherBelt", "SilverRing", "GoldRubyRing"
+      ]
     }
   ]
 }

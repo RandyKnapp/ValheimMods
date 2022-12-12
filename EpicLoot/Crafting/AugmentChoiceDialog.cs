@@ -104,10 +104,18 @@ namespace EpicLoot.Crafting
                 }
 
                 button.onClick.RemoveAllListeners();
-                button.onClick.AddListener(() => {
-                    onCompleteCallback(recipe, effect);
-                    OnClose();
-                });
+                if (EnchantCostsHelper.EffectIsDeprecated(effect.EffectType))
+                {
+                    text.color = new Color(text.color.r, text.color.g, text.color.b, 0.5f);
+                    button.interactable = false;
+                }
+                else
+                {
+                    button.onClick.AddListener(() => {
+                        onCompleteCallback(recipe, effect);
+                        OnClose();
+                    });
+                }
             }
         }
 

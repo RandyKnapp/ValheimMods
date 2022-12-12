@@ -87,11 +87,18 @@ namespace EpicLoot.Adventure.Feature
 
         public static string GenerateTargetName(Random random)
         {
+            var specialNames = AdventureDataManager.Config.Bounties.Names.SpecialNames;
             var prefixes = AdventureDataManager.Config.Bounties.Names.Prefixes;
             var suffixes = AdventureDataManager.Config.Bounties.Names.Suffixes;
-            if (prefixes.Count == 0 || suffixes.Count == 0)
+            if (specialNames.Count == 0 && (prefixes.Count == 0 || suffixes.Count == 0))
             {
                 return string.Empty;
+            }
+
+            var useSpecialName = random.NextDouble() <= AdventureDataManager.Config.Bounties.Names.ChanceForSpecialName;
+            if (useSpecialName)
+            {
+                return RollOnList(random, specialNames);
             }
 
             var prefix = Localization.instance.Localize(RollOnList(random, prefixes));
@@ -149,24 +156,35 @@ namespace EpicLoot.Adventure.Feature
 
         private static void SpawnBountyTargets(BountyInfo bounty, Vector3 spawnPoint, Vector3 offset)
         {
-            var prefabNames = new List<string>() { bounty.Target.MonsterID };
+            var mainPrefab = ZNetScene.instance.GetPrefab(bounty.Target.MonsterID);
+            if (mainPrefab == null)
+            {
+                EpicLoot.LogError($"Could not find prefab for bounty target! BountyID: {bounty.ID}, MonsterID: {bounty.Target.MonsterID}");
+                return;
+            }
+
+            var prefabs = new List<GameObject>() { mainPrefab };
             foreach (var addConfig in bounty.Adds)
             {
                 for (var i = 0; i < addConfig.Count; i++)
                 {
-                    prefabNames.Add(addConfig.MonsterID);
+                    var prefab = ZNetScene.instance.GetPrefab(addConfig.MonsterID);
+                    if (prefab == null)
+                    {
+                        EpicLoot.LogError($"Could not find prefab for bounty add! BountyID: {bounty.ID}, MonsterID: {addConfig.MonsterID}");
+                        return;
+                    }
+                    prefabs.Add(prefab);
                 }
             }
-
-            for (var index = 0; index < prefabNames.Count; index++)
+            for (var index = 0; index < prefabs.Count; index++)
             {
-                var prefabName = prefabNames[index];
+                var prefab = prefabs[index];
                 var isAdd = index > 0;
 
-                var prefab = ZNetScene.instance.GetPrefab(prefabName);
                 var creature = Object.Instantiate(prefab, spawnPoint, Quaternion.identity);
                 var bountyTarget = creature.AddComponent<BountyTarget>();
-                bountyTarget.Initialize(bounty, prefabName, isAdd);
+                bountyTarget.Initialize(bounty, prefab.name, isAdd);
 
                 var randomSpacing = UnityEngine.Random.insideUnitSphere * 4;
                 spawnPoint += randomSpacing;

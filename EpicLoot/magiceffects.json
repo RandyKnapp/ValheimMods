@@ -425,6 +425,36 @@
       ]
     },
     {
+      "Type" : "IncreaseEitr",
+      "DisplayText" : "$mod_epicloot_me_increaseeitr_display",
+      "Description" : "$mod_epicloot_me_increaseeitr_desc",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "Helmet",
+          "Chest",
+          "Legs",
+          "Shoulder",
+          "Utility",
+          "Staff"
+        ],
+        "AllowedRarities" : [
+          "Epic",
+          "Legendary"
+        ]
+      },
+      "ValuesPerRarity" : {
+        "Epic" : { "MinValue" : 10, "MaxValue" : 25, "Increment" : 5 },
+        "Legendary" : { "MinValue" : 20, "MaxValue" : 35, "Increment" : 5 }
+      },
+      "SelectionWeight" : 1,
+      "Prefixes": [
+        "$mod_epicloot_me_increaseeitr_prefix1"
+      ],
+      "Suffixes": [
+        "$mod_epicloot_me_increaseeitr_suffix1"
+      ]
+    },
+    {
       "Type" : "ModifyHealthRegen",
       "DisplayText" : "$mod_epicloot_me_modifyhealthregen_display",
       "Description" : "$mod_epicloot_me_modifyhealthregen_desc",
@@ -508,6 +538,36 @@
       ]
     },
     {
+      "Type" : "ModifyEitrRegen",
+      "DisplayText" : "$mod_epicloot_me_modifyeitrregen_display",
+      "Description" : "$mod_epicloot_me_modifyeitrregen_desc",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "Helmet",
+          "Chest",
+          "Legs",
+          "Shoulder",
+          "Utility",
+          "Staff"
+        ],
+        "AllowedRarities" : [
+          "Epic",
+          "Legendary"
+        ] 
+      },
+      "ValuesPerRarity" : {
+        "Epic" : { "MinValue" : 10, "MaxValue" : 20, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15, "MaxValue" : 25, "Increment" : 1 }
+      },
+      "SelectionWeight" : 1,
+      "Prefixes": [
+        "$mod_epicloot_me_modifyeitrregen_prefix1"
+      ],
+      "Suffixes": [
+        "$mod_epicloot_me_modifyeitrregen_suffix1"
+      ]
+    },
+    {
       "Type" : "AddBluntDamage",
       "DisplayText" : "$mod_epicloot_me_addbluntdamage_display",
       "Description" : "$mod_epicloot_me_addbluntdamage_desc",
@@ -527,6 +587,9 @@
           "TwoHandedWeapon",
           "Bow",
           "Torch"
+        ],
+        "ExludedItemTypes" : [
+          "Staff"
         ],
         "ExcludedSkillTypes": [
           "Pickaxes"
@@ -566,6 +629,9 @@
           "TwoHandedWeapon",
           "Bow",
           "Torch"
+        ],
+        "ExludedItemTypes" : [
+          "Staff"
         ],
         "ExcludedSkillTypes": [
           "Pickaxes"
@@ -607,6 +673,9 @@
           "TwoHandedWeapon",
           "Bow",
           "Torch"
+        ],
+        "ExludedItemTypes" : [
+          "Staff"
         ]
       },
       "ValuesPerRarity" : {
@@ -2214,6 +2283,36 @@
       ],
       "Suffixes": [
         "$mod_epicloot_me_modifystaminaregenlowhealth_suffix1"
+      ]
+    },
+    {
+      "Type" : "ModifyEitrRegenLowHealth",
+      "DisplayText" : "$mod_epicloot_me_modifyeitrregenlowhealth_display",
+      "Description" : "$mod_epicloot_me_modifyeitrregenlowhealth_desc",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "Helmet",
+          "Chest",
+          "Legs",
+          "Shoulder",
+          "Utility",
+          "Staff"
+        ],
+        "AllowedRarities" : [
+          "Epic",
+          "Legendary"
+        ] 
+      },
+      "ValuesPerRarity" : {
+        "Epic" : { "MinValue" : 15, "MaxValue" : 25, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 25, "MaxValue" : 30, "Increment" : 1 }
+      },
+      "SelectionWeight" : 1,
+      "Prefixes": [
+        "$mod_epicloot_me_modifyeitrregenlowhealth_prefix1"
+      ],
+      "Suffixes": [
+        "$mod_epicloot_me_modifyeitrregenlowhealth_suffix1"
       ]
     },
     {

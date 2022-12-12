@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 2091357705
+CRC: 4016963124
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: a00d30db6231576d11e1e53e2fa7945b
+    Hash: e2ff254a4a305c108d8f8c410001de08
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 89b90d13fe62a89938c7c5b841c9e4d9
+    Hash: fa7bc0a8db53839d0a7a618080c025a4
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -142,7 +142,6 @@ Assets:
 - Assets/EpicLoot/Prefabs/CraftingMaterials/ReagentRare.prefab
 - Assets/EpicLoot/Prefabs/StationExtensions/piece_augmenter.prefab
 - Assets/EpicLoot/Sprites/Adventure/TreasureMapIcon.png
-- Assets/EpicLoot/Prefabs/ItemEffects/FeatherFallAura.prefab
 - Assets/EpicLoot/Texture2D/Equipment/PaddedArmorChest2_d.png
 - Assets/EpicLoot/Prefabs/Equipment/SilverRing.prefab
 - Assets/EpicLoot/Texture2D/Equipment/PaddedArmorMain_Heimdall.png
@@ -161,6 +160,7 @@ Assets:
 - Assets/EpicLoot/Sprites/Inventory/Auga/AugaSetItem.png
 - Assets/EpicLoot/Prefabs/Equipment/GoldRubyRing.prefab
 - Assets/EpicLoot/Sprites/Inventory/Auga/disenchant_tabicon.png
+- Assets/EpicLoot/Prefabs/UI/WelcomeMessage.prefab
 - Assets/EpicLoot/Sprites/Inventory/SmallButtonEnchantOverlay.png
 - Assets/EpicLoot/Prefabs/Equipment/Andvaranaut.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/ShardMagic.prefab

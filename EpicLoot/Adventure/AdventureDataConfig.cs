@@ -89,6 +89,8 @@ namespace EpicLoot.Adventure
     [Serializable]
     public class BountyTargetNameConfig
     {
+        public float ChanceForSpecialName;
+        public List<string> SpecialNames;
         public List<string> Prefixes;
         public List<string> Suffixes;
     }

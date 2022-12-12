@@ -7,6 +7,17 @@ namespace EpicLoot.Crafting
     public static class EnchantCostsHelper
     {
         public static EnchantingCostsConfig Config;
+        public static HashSet<string> DeprecatedMagicEffects = new HashSet<string>
+        {
+            MagicEffectType.WaterWalking,
+            MagicEffectType.AddSpiritResistance,
+            MagicEffectType.AddSpiritResistancePercentage,
+            MagicEffectType.ReduceWeight,
+            MagicEffectType.AddFireResistance,
+            MagicEffectType.AddFrostResistance,
+            MagicEffectType.AddLightningResistance,
+            MagicEffectType.AddChoppingResistancePercentage
+        };
 
         public static void Initialize(EnchantingCostsConfig config)
         {
@@ -133,14 +144,29 @@ namespace EpicLoot.Crafting
             return (effects != null && effectIndex >= 0 && effectIndex < effects.Count && EffectIsDeprecated(effects[effectIndex].EffectType));
         }
 
-        public static bool EffectIsDeprecated(string effectType)
+        public static bool ItemHasDeprecatedEffect(ItemDrop.ItemData item)
         {
-            if ( effectType == MagicEffectType.WaterWalking )
+            var effects = item?.GetMagicItem()?.GetEffects();
+            if (effects != null)
             {
-                    return true;
+                for (int index = 0; index < effects.Count; index++)
+                {
+                    if (EffectIsDeprecated(effects[index].EffectType))
+                        return true;
+                }
             }
 
             return false;
+        }
+
+        public static bool EffectIsDeprecated(string effectType)
+        {
+            return DeprecatedMagicEffects.Contains(effectType);
+        }
+
+        public static bool EffectIsDeprecated(MagicItemEffectDefinition def)
+        {
+            return DeprecatedMagicEffects.Contains(def.Type);
         }
     }
 }
