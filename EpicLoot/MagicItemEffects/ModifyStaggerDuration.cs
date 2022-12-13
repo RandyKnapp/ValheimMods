@@ -10,7 +10,7 @@ namespace EpicLoot.MagicItemEffects
 {
     public static class ModifyStaggerDuration
     {
-        public const string ZdoKey = "epic loot stagger duration";
+        public const string ZdoKey = "el-sd";
     }
 
     [HarmonyPatch(typeof(CharacterAnimEvent), nameof(CharacterAnimEvent.FixedUpdate))]
@@ -107,10 +107,14 @@ namespace EpicLoot.MagicItemEffects
     {
         private static GameObject MarkAttackProjectile(GameObject attackProjectile, Attack attack)
         {
-            if (attack.m_character == Player.m_localPlayer)
+            if (attack != null && attackProjectile != null && attack.m_character == Player.m_localPlayer)
             {
-                var staggerValue = 1f + Player.m_localPlayer.GetTotalActiveMagicEffectValue(MagicEffectType.ModifyStaggerDuration, 0.01f);
-                attackProjectile.GetComponent<ZNetView>().GetZDO().Set(ModifyStaggerDuration.ZdoKey, staggerValue);
+                var znetView = attackProjectile.GetComponent<ZNetView>();
+                if (znetView != null && znetView.GetZDO() != null)
+                {
+                    var staggerValue = 1f + Player.m_localPlayer.GetTotalActiveMagicEffectValue(MagicEffectType.ModifyStaggerDuration, 0.01f);
+                    znetView.GetZDO().Set(ModifyStaggerDuration.ZdoKey, staggerValue);
+                }
             }
 
             return attackProjectile;

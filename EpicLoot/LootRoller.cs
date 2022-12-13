@@ -646,6 +646,18 @@ namespace EpicLoot
         {
             var results = new List<MagicItemEffect>();
 
+            if (item == null || magicItem == null)
+            {
+                EpicLoot.LogError($"[RollAugmentEffects] Null inputs: item={item}, magicItem={magicItem}");
+                return results;
+            }
+
+            if (effectIndex < 0 || effectIndex >= magicItem.Effects.Count)
+            {
+                EpicLoot.LogError($"[RollAugmentEffects] Bad effect index ({effectIndex}), effects count: {magicItem.Effects.Count}");
+                return results;
+            }
+
             var rarity = magicItem.Rarity;
             var currentEffect = magicItem.Effects[effectIndex];
             results.Add(currentEffect);

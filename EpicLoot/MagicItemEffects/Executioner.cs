@@ -67,10 +67,14 @@ namespace EpicLoot.MagicItemEffects
 	{
 		private static GameObject MarkAttackProjectile(GameObject attackProjectile, Attack attack)
 		{
-			if (attack.m_character == Player.m_localPlayer)
-			{
-				attackProjectile.GetComponent<ZNetView>().GetZDO().Set("epic loot executioner multiplier", ExecutionerCheckDamage_Character_Damage_Patch.ReadExecutionerValue(Player.m_localPlayer));
-			}
+            if (attack != null && attackProjectile != null && attack.m_character == Player.m_localPlayer)
+            {
+                var znetView = attackProjectile.GetComponent<ZNetView>();
+                if (znetView != null && znetView.GetZDO() != null)
+                {
+                    znetView.GetZDO().Set("epic loot executioner multiplier", ExecutionerCheckDamage_Character_Damage_Patch.ReadExecutionerValue(Player.m_localPlayer));
+                }
+            }
 
 			return attackProjectile;
 		}
