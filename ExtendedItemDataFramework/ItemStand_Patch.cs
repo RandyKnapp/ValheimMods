@@ -12,6 +12,7 @@ namespace ExtendedItemDataFramework
             {
                 return false;
             }
+            int itemIndex = 0;
             GameObject itemPrefab = ObjectDB.instance.GetItemPrefab(__instance.m_nview.GetZDO().GetString("item"));
             if (itemPrefab != null)
             {
@@ -29,11 +30,13 @@ namespace ExtendedItemDataFramework
                     itemDrop.m_itemData.m_crafterID,
                     itemDrop.m_itemData.m_crafterName);
                 itemDrop.Save();
+                itemIndex = itemDrop.m_myIndex;
                 gameObject.GetComponent<Rigidbody>().velocity = Vector3.up * 4f;
                 __instance.m_effects.Create(__instance.m_dropSpawnPoint.position, Quaternion.identity);
+
             }
             __instance.m_nview.GetZDO().Set("item", "");
-            __instance.m_nview.InvokeRPC(ZNetView.Everybody, "SetVisualItem", "", 0);
+            __instance.m_nview.InvokeRPC(ZNetView.Everybody, "SetVisualItem", "", 0, 0);
             return false;
         }
     }
