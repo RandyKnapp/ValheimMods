@@ -158,7 +158,11 @@ namespace DvergerColor
             }
 
             var light = __result.GetComponentInChildren<Light>();
-            __result.AddComponent<LightChanger>().SetLight(light);
+
+            if (light != null)
+            {
+                __result.AddComponent<LightChanger>().SetLight(light);
+            }
         }
     }
 }
