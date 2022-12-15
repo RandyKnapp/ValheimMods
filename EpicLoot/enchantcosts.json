@@ -4,7 +4,7 @@
   "DisenchantProducts": [
     {
       "IsMagic": true, 
-      "ItemTypes" : [ "OneHandedWeapon", "Bow", "TwoHandedWeapon", "Torch", "Tool" ],
+      "ItemTypes" : [ "OneHandedWeapon", "Bow", "TwoHandedWeapon", "TwoHandedWeaponLeft", "Torch", "Tool" ],
       "Rarity": "Magic",
       "Products": [
         { "Item": "DustMagic",    "Amount": 1 },
@@ -13,7 +13,7 @@
     },
     {
       "IsMagic": true, 
-      "ItemTypes" : [ "OneHandedWeapon", "Bow", "TwoHandedWeapon", "Torch", "Tool" ],
+      "ItemTypes" : [ "OneHandedWeapon", "Bow", "TwoHandedWeapon", "TwoHandedWeaponLeft", "Torch", "Tool" ],
       "Rarity": "Rare",
       "Products": [
         { "Item": "DustRare",    "Amount": 1 },
@@ -22,7 +22,7 @@
     },
     {
       "IsMagic": true, 
-      "ItemTypes" : [ "OneHandedWeapon", "Bow", "TwoHandedWeapon", "Torch", "Tool" ],
+      "ItemTypes" : [ "OneHandedWeapon", "Bow", "TwoHandedWeapon", "TwoHandedWeaponLeft", "Torch", "Tool" ],
       "Rarity": "Epic",
       "Products": [
         { "Item": "DustEpic",    "Amount": 1 },
@@ -31,7 +31,7 @@
     },
     {
       "IsMagic": true, 
-      "ItemTypes" : [ "OneHandedWeapon", "Bow", "TwoHandedWeapon", "Torch", "Tool" ],
+      "ItemTypes" : [ "OneHandedWeapon", "Bow", "TwoHandedWeapon", "TwoHandedWeaponLeft", "Torch", "Tool" ],
       "Rarity": "Legendary",
       "Products": [
         { "Item": "DustLegendary",    "Amount": 1 },
@@ -179,7 +179,7 @@
   ///////////////////////////////////////////////////////////////////////////////////////////////
   "EnchantCosts": [
     {
-      "ItemTypes" : [ "OneHandedWeapon", "Bow", "TwoHandedWeapon", "Torch", "Tool" ],
+      "ItemTypes" : [ "OneHandedWeapon", "Bow", "TwoHandedWeapon", "TwoHandedWeaponLeft", "Torch", "Tool" ],
       "Rarity": "Magic",
       "Cost": [
         { "Item": "RunestoneMagic", "Amount": 1 },
@@ -188,7 +188,7 @@
       ]
     },
     {
-      "ItemTypes" : [ "OneHandedWeapon", "Bow", "TwoHandedWeapon", "Torch", "Tool" ],
+      "ItemTypes" : [ "OneHandedWeapon", "Bow", "TwoHandedWeapon", "TwoHandedWeaponLeft", "Torch", "Tool" ],
       "Rarity": "Rare",
       "Cost": [
         { "Item": "RunestoneRare", "Amount": 1 },
@@ -197,7 +197,7 @@
       ]
     },
     {
-      "ItemTypes" : [ "OneHandedWeapon", "Bow", "TwoHandedWeapon", "Torch", "Tool" ],
+      "ItemTypes" : [ "OneHandedWeapon", "Bow", "TwoHandedWeapon", "TwoHandedWeaponLeft", "Torch", "Tool" ],
       "Rarity": "Epic",
       "Cost": [
         { "Item": "RunestoneEpic", "Amount": 1 },
@@ -206,7 +206,7 @@
       ]
     },
     {
-      "ItemTypes" : [ "OneHandedWeapon", "Bow", "TwoHandedWeapon", "Torch", "Tool" ],
+      "ItemTypes" : [ "OneHandedWeapon", "Bow", "TwoHandedWeapon", "TwoHandedWeaponLeft", "Torch", "Tool" ],
       "Rarity": "Legendary",
       "Cost": [
         { "Item": "RunestoneLegendary", "Amount": 1 },
@@ -257,7 +257,7 @@
   ///////////////////////////////////////////////////////////////////////////////////////////////
   "AugmentCosts": [
     {
-      "ItemTypes" : [ "OneHandedWeapon", "Bow", "TwoHandedWeapon", "Torch", "Tool" ],
+      "ItemTypes" : [ "OneHandedWeapon", "Bow", "TwoHandedWeapon", "TwoHandedWeaponLeft", "Torch", "Tool" ],
       "Rarity": "Magic",
       "Cost": [
         { "Item": "ShardMagic",   "Amount": 1 },
@@ -266,7 +266,7 @@
       ]
     },
     {
-      "ItemTypes" : [ "OneHandedWeapon", "Bow", "TwoHandedWeapon", "Torch", "Tool" ],
+      "ItemTypes" : [ "OneHandedWeapon", "Bow", "TwoHandedWeapon", "TwoHandedWeaponLeft", "Torch", "Tool" ],
       "Rarity": "Rare",
       "Cost": [
         { "Item": "ShardRare",   "Amount": 1 },
@@ -275,7 +275,7 @@
       ]
     },
     {
-      "ItemTypes" : [ "OneHandedWeapon", "Bow", "TwoHandedWeapon", "Torch", "Tool" ],
+      "ItemTypes" : [ "OneHandedWeapon", "Bow", "TwoHandedWeapon", "TwoHandedWeaponLeft", "Torch", "Tool" ],
       "Rarity": "Epic",
       "Cost": [
         { "Item": "ShardEpic",   "Amount": 1 },
@@ -284,7 +284,7 @@
       ]
     },
     {
-      "ItemTypes" : [ "OneHandedWeapon", "Bow", "TwoHandedWeapon", "Torch", "Tool" ],
+      "ItemTypes" : [ "OneHandedWeapon", "Bow", "TwoHandedWeapon", "TwoHandedWeaponLeft", "Torch", "Tool" ],
       "Rarity": "Legendary",
       "Cost": [
         { "Item": "ShardLegendary",   "Amount": 1 },

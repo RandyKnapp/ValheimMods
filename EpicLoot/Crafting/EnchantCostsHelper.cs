@@ -57,6 +57,30 @@ namespace EpicLoot.Crafting
             return configEntry?.Products;
         }
 
+        public static List<ItemAmountConfig> GetDisenchantProducts(bool isMagic, ItemDrop.ItemData.ItemType type, ItemRarity rarity )
+        {
+            var configEntry = Config.DisenchantProducts.Find(x => {
+                if (x.IsMagic && !isMagic)
+                {
+                    return false;
+                }
+
+                if (isMagic && x.Rarity != rarity)
+                {
+                    return false;
+                }
+
+                if (x.ItemTypes?.Count > 0 && !x.ItemTypes.Contains(type.ToString()))
+                {
+                    return false;
+                }
+
+                return true;
+            });
+
+            return configEntry?.Products;
+        }
+
         public static List<ItemAmountConfig> GetEnchantCost(ItemDrop.ItemData item, ItemRarity rarity)
         {
             var type = item.m_shared.m_itemType;

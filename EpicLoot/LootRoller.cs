@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Common;
+using EpicLoot.Crafting;
 using EpicLoot.GatedItemType;
 using EpicLoot.LegendarySystem;
 using EpicLoot.MagicItemEffects;
@@ -28,6 +29,7 @@ namespace EpicLoot
         private static WeightedRandomCollection<KeyValuePair<int, float>> _weightedEffectCountTable;
         private static WeightedRandomCollection<KeyValuePair<ItemRarity, float>> _weightedRarityTable;
         private static WeightedRandomCollection<LegendaryInfo> _weightedLegendaryTable;
+        public static bool CheatRollingItem = false;
         public static int CheatEffectCount;
         public static bool CheatDisableGating;
         public static bool CheatForceMagicEffect;
@@ -182,6 +184,11 @@ namespace EpicLoot
             return results;
         }
 
+        public static bool AnyItemSpawnCheatsActive()
+        {
+            return CheatRollingItem || CheatDisableGating || CheatForceMagicEffect || !string.IsNullOrEmpty(CheatForceLegendary) || CheatEffectCount > 0;
+        }
+
         private static List<GameObject> RollLootTableInternal(LootTable lootTable, int level, string objectName, Vector3 dropPoint, bool initializeObject)
         {
             var results = new List<GameObject>();
@@ -201,6 +208,20 @@ namespace EpicLoot
             if (EpicLoot.AlwaysDropCheat)
             {
                 drops = drops.Where(x => x.Key > 0).ToList();
+            }
+            else if (!AnyItemSpawnCheatsActive() && Mathf.Abs(EpicLoot.GlobalDropRateModifier.Value - 1) > float.Epsilon)
+            {
+                var clampedDropRate = Mathf.Clamp(EpicLoot.GlobalDropRateModifier.Value, 0, 4);
+                var modifiedDrops = new List<KeyValuePair<int, float>>();
+                foreach (var dropPair in drops)
+                {
+                    if (dropPair.Key == 0)
+                        modifiedDrops.Add(new KeyValuePair<int, float>(dropPair.Key, dropPair.Value / clampedDropRate));
+                    else
+                        modifiedDrops.Add(new KeyValuePair<int, float>(dropPair.Key, dropPair.Value * clampedDropRate));
+                }
+
+                drops = modifiedDrops;
             }
 
             _weightedDropCountTable.Setup(drops, dropPair => dropPair.Value);
@@ -223,7 +244,39 @@ namespace EpicLoot
                     continue;
                 }
                 var lootDrop = ResolveLootDrop(ld);
-                var itemID = CheatDisableGating ? lootDrop.Item : GatedItemTypeHelper.GetGatedItemID(lootDrop.Item);
+                
+                if (EpicLoot.ItemsToMaterialsDropRatio.Value > 0)
+                {
+                    var clampedConvertRate = Mathf.Clamp(EpicLoot.ItemsToMaterialsDropRatio.Value, 0.0f, 1.0f);
+                    var replaceWithMats = Random.Range(0.0f, 1.0f) < clampedConvertRate;
+                    if (replaceWithMats)
+                    {
+                        var prefab = ObjectDB.instance.GetItemPrefab(lootDrop.Item);
+                        if (prefab != null)
+                        {
+                            var rarity = RollItemRarity(lootDrop, luckFactor);
+                            var itemType = prefab.GetComponent<ItemDrop>().m_itemData.m_shared.m_itemType;
+                            var disenchantProducts = EnchantCostsHelper.GetDisenchantProducts(true, itemType, rarity);
+                            if (disenchantProducts != null)
+                            {
+                                foreach (var itemAmountConfig in disenchantProducts)
+                                {
+                                    var materialPrefab = ObjectDB.instance.GetItemPrefab(itemAmountConfig.Item);
+                                    var materialItem = SpawnLootForDrop(materialPrefab, dropPoint, true);
+                                    var materialItemDrop = materialItem.GetComponent<ItemDrop>();
+                                    materialItemDrop.m_itemData.m_stack = itemAmountConfig.Amount;
+                                    if (materialItemDrop.m_itemData.IsMagicCraftingMaterial())
+                                        materialItemDrop.m_itemData.m_variant = EpicLoot.GetRarityIconIndex(rarity);
+                                    results.Add(materialItem);
+                                }
+                            }
+                        }
+
+                        continue;
+                    }
+                }
+
+                var itemID = (CheatDisableGating) ? lootDrop.Item : GatedItemTypeHelper.GetGatedItemID(lootDrop.Item);
 
                 var itemPrefab = ObjectDB.instance.GetItemPrefab(itemID);
                 if (itemPrefab == null)
@@ -232,10 +285,7 @@ namespace EpicLoot
                     continue;
                 }
 
-                var randomRotation = Quaternion.Euler(0.0f, Random.Range(0.0f, 360.0f), 0.0f);
-                ZNetView.m_forceDisableInit = !initializeObject;
-                var item = Object.Instantiate(itemPrefab, dropPoint, randomRotation);
-                ZNetView.m_forceDisableInit = false;
+                var item = SpawnLootForDrop(itemPrefab, dropPoint, initializeObject);
                 var itemDrop = item.GetComponent<ItemDrop>();
                 if (EpicLoot.CanBeMagicItem(itemDrop.m_itemData) && !ArrayUtils.IsNullOrEmpty(lootDrop.Rarity))
                 {
@@ -260,6 +310,15 @@ namespace EpicLoot
             }
 
             return results;
+        }
+
+        public static GameObject SpawnLootForDrop(GameObject itemPrefab, Vector3 dropPoint, bool initializeObject)
+        {
+            var randomRotation = Quaternion.Euler(0.0f, Random.Range(0.0f, 360.0f), 0.0f);
+            ZNetView.m_forceDisableInit = !initializeObject;
+            var item = Object.Instantiate(itemPrefab, dropPoint, randomRotation);
+            ZNetView.m_forceDisableInit = false;
+            return item;
         }
 
         private static LootDrop ResolveLootDrop(LootDrop lootDrop)

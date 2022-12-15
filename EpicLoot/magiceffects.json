@@ -66,6 +66,7 @@
         "AllowedItemTypes" : [
           "OneHandedWeapon",
           "TwoHandedWeapon",
+          "TwoHandedWeaponLeft",
           "Bow",
           "Torch"
         ],
@@ -109,8 +110,10 @@
         "AllowedItemTypes" : [
           "OneHandedWeapon",
           "TwoHandedWeapon",
+          "TwoHandedWeaponLeft",
           "Bow",
-          "Torch"
+          "Torch",
+          "Staff"
         ],
         "ExcludedSkillTypes": [
           "Pickaxes"
@@ -147,6 +150,7 @@
         "AllowedItemTypes" : [
           "OneHandedWeapon",
           "TwoHandedWeapon",
+          "TwoHandedWeaponLeft",
           "Bow",
           "Torch",
           "Shield",
@@ -192,6 +196,7 @@
         "AllowedItemTypes" : [
           "OneHandedWeapon",
           "TwoHandedWeapon",
+          "TwoHandedWeaponLeft",
           "Bow",
           "Torch",
           "Shield",
@@ -232,6 +237,7 @@
         "AllowedItemTypes" : [
           "OneHandedWeapon",
           "TwoHandedWeapon",
+          "TwoHandedWeaponLeft",
           "Bow",
           "Torch",
           "Shield",
@@ -711,8 +717,10 @@
         "AllowedItemTypes" : [
           "OneHandedWeapon",
           "TwoHandedWeapon",
+          "TwoHandedWeaponLeft",
           "Bow",
-          "Torch"
+          "Torch",
+          "Staff"
         ],
         "ExcludedSkillTypes": [
           "Pickaxes"
@@ -750,8 +758,10 @@
         "AllowedItemTypes" : [
           "OneHandedWeapon",
           "TwoHandedWeapon",
+          "TwoHandedWeaponLeft",
           "Bow",
-          "Torch"
+          "Torch",
+          "Staff"
         ],
         "ExcludedSkillTypes": [
           "Pickaxes"
@@ -789,8 +799,10 @@
         "AllowedItemTypes" : [
           "OneHandedWeapon",
           "TwoHandedWeapon",
+          "TwoHandedWeaponLeft",
           "Bow",
-          "Torch"
+          "Torch",
+          "Staff"
         ],
         "ExcludedSkillTypes": [
           "Pickaxes"
@@ -828,8 +840,10 @@
         "AllowedItemTypes" : [
           "OneHandedWeapon",
           "TwoHandedWeapon",
+          "TwoHandedWeaponLeft",
           "Bow",
-          "Torch"
+          "Torch",
+          "Staff"
         ],
         "ExcludedSkillTypes": [
           "Pickaxes"
@@ -867,8 +881,10 @@
         "AllowedItemTypes" : [
           "OneHandedWeapon",
           "TwoHandedWeapon",
+          "TwoHandedWeaponLeft",
           "Bow",
-          "Torch"
+          "Torch",
+          "Staff"
         ],
         "ExcludedSkillTypes": [
           "Pickaxes"
@@ -1396,6 +1412,7 @@
         "AllowedItemTypes" : [
           "OneHandedWeapon",
           "TwoHandedWeapon",
+          "TwoHandedWeaponLeft",
           "Bow",
           "Torch",
           "Tool"
@@ -1451,6 +1468,7 @@
         "AllowedItemTypes" : [
           "OneHandedWeapon",
           "TwoHandedWeapon",
+          "TwoHandedWeaponLeft",
           "Bow",
           "Torch",
           "Tool",
@@ -1484,6 +1502,7 @@
         "AllowedItemTypes" : [
           "OneHandedWeapon",
           "TwoHandedWeapon",
+          "TwoHandedWeaponLeft",
           "Bow",
           "Torch",
           "Tool",
@@ -1537,6 +1556,7 @@
         "AllowedItemTypes" : [
           "OneHandedWeapon",
           "TwoHandedWeapon",
+          "TwoHandedWeaponLeft",
           "Bow"
         ],
         "ExcludedSkillTypes": [
@@ -1570,6 +1590,7 @@
         "AllowedItemTypes" : [
           "OneHandedWeapon",
           "TwoHandedWeapon",
+          "TwoHandedWeaponLeft",
           "Bow",
           "Tool"
         ]
@@ -1596,6 +1617,9 @@
         "AllowedItemTypes" : [
           "OneHandedWeapon",
           "TwoHandedWeapon"
+        ],
+        "ExcludedItemTypes": [
+          "Staff"
         ],
         "ExcludedSkillTypes": [
           "Pickaxes",
@@ -2078,6 +2102,9 @@
         "AllowedItemTypes" : [
           "OneHandedWeapon",
           "TwoHandedWeapon"
+        ],
+        "ExcludedItemTypes": [
+          "Staff"
         ],
         "ExcludedSkillTypes": [
           "Pickaxes"

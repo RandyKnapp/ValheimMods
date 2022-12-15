@@ -20,6 +20,7 @@ namespace EpicLoot
                 case ItemDrop.ItemData.ItemType.Bow:
                 case ItemDrop.ItemData.ItemType.OneHandedWeapon:
                 case ItemDrop.ItemData.ItemType.TwoHandedWeapon:
+                case ItemDrop.ItemData.ItemType.TwoHandedWeaponLeft:
                 case ItemDrop.ItemData.ItemType.Shield:
                     if (player.m_leftItem?.m_dropPrefab.name == item.m_dropPrefab.name)
                         zdo.Set("lf-ell", data);
@@ -138,13 +139,18 @@ namespace EpicLoot
                         humanoid.m_visEquipment.m_currentLeftItemHash = -1;
                         break;
 
-                    case ItemDrop.ItemData.ItemType.TwoHandedWeapon:    humanoid.m_visEquipment.m_currentRightItemHash = -1;    break;
+                    case ItemDrop.ItemData.ItemType.TwoHandedWeapon:
+                    case ItemDrop.ItemData.ItemType.TwoHandedWeaponLeft:
+                        humanoid.m_visEquipment.m_currentRightItemHash = -1;
+                        humanoid.m_visEquipment.m_currentLeftItemHash = -1;
+                        break;
+
                     case ItemDrop.ItemData.ItemType.Chest:              humanoid.m_visEquipment.m_currentChestItemHash = -1;    break;
                     case ItemDrop.ItemData.ItemType.Legs:               humanoid.m_visEquipment.m_currentLegItemHash = -1;      break;
                     case ItemDrop.ItemData.ItemType.Helmet:             humanoid.m_visEquipment.m_currentHelmetItemHash = -1;   break;
                     case ItemDrop.ItemData.ItemType.Shoulder:           humanoid.m_visEquipment.m_currentShoulderItemHash = -1; break;
                     case ItemDrop.ItemData.ItemType.Utility:            humanoid.m_visEquipment.m_currentUtilityItemHash = -1;  break;
-                    case ItemDrop.ItemData.ItemType.Tool:               humanoid.m_visEquipment.m_currentRightItemHash = -1; break;
+                    case ItemDrop.ItemData.ItemType.Tool:               humanoid.m_visEquipment.m_currentRightItemHash = -1;    break;
 
                     default:
                         break;

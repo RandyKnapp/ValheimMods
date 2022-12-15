@@ -1,4 +1,7 @@
-﻿## Version 0.9.0
+﻿## Version 0.9.1
+  * Drop rates can now be globally scaled by using the "Global Drop Rate Modifier" config value
+  * Magic Materials can be dropped instead of enchanted items by using the "Items To Materials Drop Ratio" config value.
+    * The value goes from 0-1 where 0 is all items and 1 is all materials and any values in between is a random percentage of drops that will be materials instead of items.
   * Items are now gated by boss kills instead of player known recipes/items (this removes the PlayerKnown RPCs completely)
     * Server admins be sure to update your server configs
     * The older way of gating by player known recipes or player has crafted is recommended for local games only
@@ -8,8 +11,10 @@
   * Treasure map chests can be configured to contain Iron or Gold Bounty Tokens as well as coins. (Still defaults only to Forest Tokens, just adding more customizability for server admins)
   * Fixed visual issue with enchant success screen for Auga
   * Added support for storing enchanted items on Armor Stands
+  * Fixed tooltips missing stamina/health/eitr use
+  * Updated data to handle new item type TwoHandedWeaponLeft
   * Fixed various nullrefs
-## Version 0.9.1
+## Version 0.9.0
   * Updated for Valheim version 0.212.7 (Mistlands Update)
   * Augmenter no longer needed for augmenting (engage with augmenting far earlier in your playthrough)
   * Updated loot tables, gambles, treasure maps, and bounties for Mistlands and H&H
