@@ -38,11 +38,11 @@ namespace ExtendedItemDataFramework
             return true;
         }
 
-        public static void Postfix(ItemDrop.ItemData __instance, ref ItemDrop.ItemData __result)
-        {
-            // Fixes bug in vanilla valheim with cloning items with custom data
-            __result.m_customData = new Dictionary<string, string>(__instance.m_customData);
-        }
+        //public static void Postfix(ItemDrop.ItemData __instance, ref ItemDrop.ItemData __result)
+        //{
+        //    // Fixes bug in vanilla valheim with cloning items with custom data
+        //    __result.m_customData = new Dictionary<string, string>(__instance.m_customData);
+        //}
     }
 
     //public void Load() => ItemDrop.LoadFromZDO(this.m_itemData, this.m_nview.GetZDO());
