@@ -105,6 +105,13 @@ namespace EpicLoot.Adventure
         public int RewardCoins;
         public List<BountyTargetAddConfig> Adds = new List<BountyTargetAddConfig>();
     }
+    
+    [Serializable]
+    public class BountyBossConfig
+    {
+        public Heightmap.Biome Biome;
+        public string BossName;
+    }
 
     [Serializable]
     public class BountiesConfig
@@ -120,9 +127,10 @@ namespace EpicLoot.Adventure
         public int AddsMaxLevel = 1;
         public float AddsHealthMultiplier = 1.0f;
         public List<BountyTargetConfig> Targets = new List<BountyTargetConfig>();
+        public List<BountyBossConfig> Bosses = new List<BountyBossConfig>();
         public BountyTargetNameConfig Names;
     }
-
+        
     [Serializable]
     public class AdventureDataConfig
     {

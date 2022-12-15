@@ -39,6 +39,13 @@ namespace EpicLoot
         OnePerPlayerNearBoss
     }
 
+    public enum GatedBountyMode
+    {
+        Unlimited,
+        BossKillUnlocksCurrentBiomeBounties,
+        BossKillUnlocksNextBiomeBounties
+    }
+
     public class Assets
     {
         public AssetBundle AssetBundle;
@@ -102,6 +109,7 @@ namespace EpicLoot
         private static ConfigEntry<LogLevel> _logLevel;
         public static ConfigEntry<bool> UseGeneratedMagicItemNames;
         private static ConfigEntry<GatedItemTypeMode> _gatedItemTypeModeConfig;
+        public static ConfigEntry<GatedBountyMode> BossBountyMode;
         private static ConfigEntry<BossDropMode> _bossTrophyDropMode;
         private static ConfigEntry<float> _bossTrophyDropPlayerRange;
         private static ConfigEntry<int> _andvaranautRange;
@@ -189,6 +197,7 @@ namespace EpicLoot
             _logLevel = Config.Bind("Logging", "Log Level", LogLevel.Info, "Only log messages of the selected level or higher");
             UseGeneratedMagicItemNames = Config.Bind("General", "Use Generated Magic Item Names", true, "If true, magic items uses special, randomly generated names based on their rarity, type, and magic effects.");
             _gatedItemTypeModeConfig = SyncedConfig("Balance", "Item Drop Limits", GatedItemTypeMode.MustKnowRecipe, "Sets how the drop system limits what item types can drop. Unlimited: no limits, exactly what's in the loot table will drop. MustKnowRecipe: items will drop so long as the player has discovered their recipe. MustHaveCrafted: items will only drop once the player has crafted one or picked one up. If an item type cannot drop, it will downgrade to an item of the same type and skill that the player has unlocked (i.e. swords will stay swords)");
+            BossBountyMode = SyncedConfig("Balance", "Gated Bounty Mode", GatedBountyMode.Unlimited, "Sets whether available bounties are ungated or gated by boss kills.");
             _bossTrophyDropMode = SyncedConfig("Balance", "Boss Trophy Drop Mode", BossDropMode.OnePerPlayerNearBoss, "Sets bosses to drop a number of trophies equal to the number of players, similar to the way Wishbone works in vanilla. Optionally set it to only include players within a certain distance, use 'Boss Trophy Drop Player Range' to set the range.");
             _bossTrophyDropPlayerRange = SyncedConfig("Balance", "Boss Trophy Drop Player Range", 100.0f, "Sets the range that bosses check when dropping multiple trophies using the OnePerPlayerNearBoss drop mode.");
             _adventureModeEnabled = SyncedConfig("Balance", "Adventure Mode Enabled", true, "Set to true to enable all the adventure mode features: secret stash, gambling, treasure maps, and bounties. Set to false to disable. This will not actually remove active treasure maps or bounties from your save.");
