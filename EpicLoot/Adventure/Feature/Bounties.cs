@@ -27,12 +27,46 @@ namespace EpicLoot.Adventure.Feature
             return GetAvailableBounties(GetCurrentInterval());
         }
 
+        public bool BossBountiesGated()
+        {
+            switch (EpicLoot.BossBountyMode.Value) 
+            {
+                case GatedBountyMode.BossKillUnlocksCurrentBiomeBounties:
+                case GatedBountyMode.BossKillUnlocksNextBiomeBounties:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
         public List<BountyInfo> GetAvailableBounties(int interval, bool removeAcceptedBounties = true)
         {
             var player = Player.m_localPlayer;
             var random = GetRandomForInterval(interval, RefreshInterval);
 
             var bountiesPerBiome = new MultiValueDictionary<Heightmap.Biome, BountyTargetConfig>();
+            
+            var defeatedBossBiomes = new List<Heightmap.Biome>();
+            var biomeBosses = AdventureDataManager.Config.Bounties.Bosses;
+            var previousBossKilled = false;
+
+            if (BossBountiesGated())
+            {
+                foreach (var bossConfig in AdventureDataManager.Config.Bounties.Bosses)
+                {
+                    if (ZoneSystem.instance.GetGlobalKey($"defeated_{bossConfig.BossName}"))
+                    {
+                        defeatedBossBiomes.Add(bossConfig.Biome);
+                        previousBossKilled = true;
+                    }
+                    else if (previousBossKilled && EpicLoot.BossBountyMode.Value == GatedBountyMode.BossKillUnlocksNextBiomeBounties)
+                    {
+                        defeatedBossBiomes.Add(bossConfig.Biome);
+                        previousBossKilled = false;
+                    }
+                }
+            }
+
             foreach (var targetConfig in AdventureDataManager.Config.Bounties.Targets)
             {
                 bountiesPerBiome.Add(targetConfig.Biome, targetConfig);
@@ -44,9 +78,15 @@ namespace EpicLoot.Adventure.Feature
                 var targets = entry.Value;
                 RollOnListNTimes(random, targets, 1, selectedTargets);
             }
-
             // Remove the results that the player doesn't know about yet
             selectedTargets.RemoveAll(result => !player.m_knownBiome.Contains(result.Biome));
+
+            if (BossBountiesGated()) 
+            {
+                //Remove the results of undefeated biome bosses
+                selectedTargets.RemoveAll(result => !defeatedBossBiomes.Contains(result.Biome));
+            }
+
             var saveData = player.GetAdventureSaveData();
 
             var results = selectedTargets.Select(targetConfig => new BountyInfo()
