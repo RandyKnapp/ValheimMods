@@ -62,7 +62,7 @@ namespace EpicLoot.Adventure.Feature
                     {
                         defeatedBossBiomes.Add(bossConfig.Biome);
                         previousBossKilled = false;
-                    } 
+                    }
                 }
             }
 
@@ -83,7 +83,7 @@ namespace EpicLoot.Adventure.Feature
             if (BossBountiesGated()) 
             {
                 //Remove the results of undefeated biome bosses
-                selectedTargets.RemoveAll(result => !defeatedBossBiomes.Contains(result.Biome) && result.Biome.ToString() != "Ocean");
+                selectedTargets.RemoveAll(result => !defeatedBossBiomes.Contains(result.Biome));
             }
 
             var saveData = player.GetAdventureSaveData();
