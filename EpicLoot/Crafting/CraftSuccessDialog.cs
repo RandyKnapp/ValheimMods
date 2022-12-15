@@ -49,7 +49,6 @@ namespace EpicLoot.Crafting
             if (EpicLoot.HasAuga)
             {
                 Auga.API.ComplexTooltip_SetItem(gameObject, item);
-                EpicLoot.ExtendAugaTooltipForMagicItem(gameObject, item);
             }
 
             if (NameText != null)
