@@ -147,8 +147,23 @@ namespace EpicLoot
                 case ItemDrop.ItemData.ItemType.OneHandedWeapon:
                 case ItemDrop.ItemData.ItemType.Bow:
                 case ItemDrop.ItemData.ItemType.TwoHandedWeapon:
+                case ItemDrop.ItemData.ItemType.TwoHandedWeaponLeft:
                 case ItemDrop.ItemData.ItemType.Torch:
                     text.Append(GetDamageTooltipString(magicItem, item.GetDamage(qualityLevel), item.m_shared.m_skillType, magicColor));
+
+                    var magicAttackStamina = magicItem.HasEffect(MagicEffectType.ModifyAttackStaminaUse) || magicItem.HasEffect(MagicEffectType.ModifyBlockStaminaUse);
+                    var magicAttackStaminaColor = magicAttackStamina ? magicColor : "orange";
+                    if (item.m_shared.m_attack.m_attackStamina > 0.0)
+                        text.Append($"\n$item_staminause: <color={magicAttackStaminaColor}>{item.m_shared.m_attack.m_attackStamina}</color>");
+                    if (item.m_shared.m_attack.m_attackEitr > 0.0)
+                        text.Append($"\n$item_eitruse: <color=orange>{item.m_shared.m_attack.m_attackEitr}</color>");
+                    if (item.m_shared.m_attack.m_attackHealth > 0.0)
+                        text.Append($"\n$item_healthuse: <color=orange>{item.m_shared.m_attack.m_attackHealth}</color>");
+                    if (item.m_shared.m_attack.m_attackHealthPercentage > 0.0)
+                        text.Append($"\n$item_healthuse: <color=orange>{item.m_shared.m_attack.m_attackHealthPercentage:0.0}%</color>");
+                    if (item.m_shared.m_attack.m_drawStaminaDrain > 0.0)
+                        text.Append($"\n$item_staminahold: <color=orange>{item.m_shared.m_attack.m_drawStaminaDrain}</color>/s");
+
                     var baseBlockPower1 = item.GetBaseBlockPower(qualityLevel);
                     var blockPowerTooltipValue = item.GetBlockPowerTooltip(qualityLevel);
                     var blockPowerPercentageString = blockPowerTooltipValue.ToString("0");
@@ -368,7 +383,7 @@ namespace EpicLoot
             var num2 = Mathf.RoundToInt(damage * maxFactor);
             var color1 = magic ? magicColor : "orange";
             var color2 = magic ? magicColor : "yellow";
-            return $"<color={color1}>{(object) Mathf.RoundToInt(damage)}</color> <color={color2}>({num1}-{num2}) </color>";
+            return $"<color={color1}>{Mathf.RoundToInt(damage)}</color> <color={color2}>({num1}-{num2}) </color>";
         }
 
         public static string GetMovementModifier(ItemDrop.ItemData item, MagicItem magicItem, out bool magicMovement, out bool removePenalty)
@@ -525,6 +540,13 @@ namespace EpicLoot
 
                     case "$item_armor":
                         if (magicItem.HasEffect(MagicEffectType.ModifyArmor))
+                        {
+                            value = $"<color={magicColor}>{value}</color>";
+                        }
+                        break;
+
+                    case "$item_staminause":
+                        if (magicItem.HasEffect(MagicEffectType.ModifyAttackStaminaUse) || magicItem.HasEffect(MagicEffectType.ModifyBlockStaminaUse))
                         {
                             value = $"<color={magicColor}>{value}</color>";
                         }

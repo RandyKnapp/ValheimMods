@@ -344,7 +344,9 @@ namespace EpicLoot
 
                 var randomOffset = UnityEngine.Random.insideUnitSphere;
                 var dropPoint = Player.m_localPlayer.transform.position + Player.m_localPlayer.transform.forward * 3 + Vector3.up * 1.5f + randomOffset;
+                LootRoller.CheatRollingItem = true;
                 LootRoller.RollLootTableAndSpawnObjects(loot, 1, loot.Object, dropPoint);
+                LootRoller.CheatRollingItem = false;
             }
             LootRoller.CheatEffectCount = -1;
         }
@@ -403,11 +405,13 @@ namespace EpicLoot
 
             var randomOffset = UnityEngine.Random.insideUnitSphere;
             var dropPoint = Player.m_localPlayer.transform.position + Player.m_localPlayer.transform.forward * 3 + Vector3.up * 1.5f + randomOffset;
+            LootRoller.CheatRollingItem = true;
             LootRoller.CheatForceMagicEffect = true;
             LootRoller.ForcedMagicEffect = effectArg;
             LootRoller.RollLootTableAndSpawnObjects(loot, 1, loot.Object, dropPoint);
             LootRoller.CheatForceMagicEffect = false;
             LootRoller.ForcedMagicEffect = string.Empty;
+            LootRoller.CheatRollingItem = false;
         }
 
         private static float[] GetRarityTable(string rarityName)
@@ -511,7 +515,9 @@ namespace EpicLoot
 
             var randomOffset = UnityEngine.Random.insideUnitSphere;
             var dropPoint = Player.m_localPlayer.transform.position + Player.m_localPlayer.transform.forward * 3 + Vector3.up * 1.5f + randomOffset;
+            LootRoller.CheatRollingItem = true;
             LootRoller.RollLootTableAndSpawnObjects(loot, 1, loot.Object, dropPoint);
+            LootRoller.CheatRollingItem = false;
 
             LootRoller.CheatForceLegendary = null;
             LootRoller.CheatDisableGating = previousDisableGatingState;

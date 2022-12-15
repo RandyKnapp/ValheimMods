@@ -302,6 +302,11 @@ namespace EpicLoot
             {
                 __instance.m_visEquipment.m_currentRightItemHash = -1;
             }
+            else if (item.m_shared.m_itemType == ItemDrop.ItemData.ItemType.TwoHandedWeaponLeft)
+            {
+                __instance.m_visEquipment.m_currentLeftItemHash = -1;
+                __instance.m_visEquipment.m_currentRightItemHash = -1;
+            }
             else if (item.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Chest)
             {
                 __instance.m_visEquipment.m_currentChestItemHash = -1;

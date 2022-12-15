@@ -26,7 +26,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
   * **Requirements:** A set of requirements.
     * **Flags:** A set of predefined flags to check certain weapon properties. The list of flags is: `NoRoll, ExclusiveSelf, ItemHasPhysicalDamage, ItemHasElementalDamage, ItemUsesDurability, ItemHasNegativeMovementSpeedModifier, ItemHasBlockPower, ItemHasNoParryPower, ItemHasParryPower, ItemHasArmor, ItemHasBackstabBonus, ItemUsesStaminaOnAttack`
     * **ExclusiveEffectTypes:** This effect may not be rolled on an item that has already rolled on of these effects
-    * **AllowedItemTypes:** This effect may only be rolled on items of a the types in this list. When this list is empty, this is usually done because this is a special effect type added programmatically  or currently not allowed to roll. Options are: `Helmet, Chest, Legs, Shoulder, Utility, Bow, OneHandedWeapon, TwoHandedWeapon, Shield, Tool, Torch`
+    * **AllowedItemTypes:** This effect may only be rolled on items of a the types in this list. When this list is empty, this is usually done because this is a special effect type added programmatically  or currently not allowed to roll. Options are: `Helmet, Chest, Legs, Shoulder, Utility, Bow, OneHandedWeapon, TwoHandedWeapon, TwoHandedWeaponLeft, Shield, Tool, Torch`
     * **ExcludedItemTypes:** This effect may only be rolled on items that are not one of the types on this list.
     * **AllowedRarities:** This effect may only be rolled on an item of one of these rarities. Options are: `Magic, Rare, Epic, Legendary`
     * **ExcludedRarities:** This effect may only be rolled on an item that is not of one of these rarities.
@@ -108,12 +108,12 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > **Prefixes:** Strong, Powerful, Mighty, Heavy, Forceful, Wicked, Fighter's, Warrior
 > **Suffixes:** Strength, Power, Might, Force, the Warrior
 > 
-> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch
+> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, TwoHandedWeaponLeft, Bow, Torch
 > 
 > **Requirements:**
 > > **Flags:** `ExclusiveSelf, ItemHasPhysicalDamage`
 > > **ExclusiveEffectTypes:** `AddBluntDamage, AddSlashingDamage, AddPiercingDamage`
-> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow, Torch`
+> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, TwoHandedWeaponLeft, Bow, Torch`
 > 
 > **Value Per Rarity:**
 > 
@@ -131,12 +131,12 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > **Prefixes:** Energized, Empowered, Charged, Intensified
 > **Suffixes:** Energy, Intensity, Brilliance
 > 
-> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch
+> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, TwoHandedWeaponLeft, Bow, Torch, Staff
 > 
 > **Requirements:**
 > > **Flags:** `ExclusiveSelf, ItemHasElementalDamage`
 > > **ExclusiveEffectTypes:** `AddFireDamage, AddFrostDamage, AddLightningDamage`
-> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow, Torch`
+> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, TwoHandedWeaponLeft, Bow, Torch, Staff`
 > > **ExcludedSkillTypes:** `Pickaxes`
 > 
 > **Value Per Rarity:**
@@ -155,12 +155,12 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > **Prefixes:** Sturdy, Stout, Robust
 > **Suffixes:** Sturdiness, Robustness, Stability, the Ox
 > 
-> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Shield, Tool, Helmet, Chest, Legs, Shoulder
+> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, TwoHandedWeaponLeft, Bow, Torch, Shield, Tool, Helmet, Chest, Legs, Shoulder
 > 
 > **Requirements:**
 > > **Flags:** `ExclusiveSelf, ItemUsesDurability`
 > > **ExclusiveEffectTypes:** `Indestructible`
-> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Shield, Tool, Helmet, Chest, Legs, Shoulder`
+> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, TwoHandedWeaponLeft, Bow, Torch, Shield, Tool, Helmet, Chest, Legs, Shoulder`
 > > **AllowedRarities:** `Magic, Rare, Epic`
 
 ## ReduceWeight
@@ -170,12 +170,12 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > **Prefixes:** Light, Slender
 > **Suffixes:** the Feather
 > 
-> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Shield, Tool, Helmet, Chest, Legs, Shoulder
+> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, TwoHandedWeaponLeft, Bow, Torch, Shield, Tool, Helmet, Chest, Legs, Shoulder
 > 
 > **Requirements:**
 > > **Flags:** `ExclusiveSelf`
 > > **ExclusiveEffectTypes:** `Weightless`
-> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Shield, Tool, Helmet, Chest, Legs, Shoulder`
+> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, TwoHandedWeaponLeft, Bow, Torch, Shield, Tool, Helmet, Chest, Legs, Shoulder`
 > > **AllowedRarities:** `Magic, Rare, Epic`
 
 ## RemoveSpeedPenalty
@@ -185,12 +185,12 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > **Prefixes:** Agile, Easy, Graceful
 > **Suffixes:** Agility, Grace
 > 
-> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Shield, Tool, Helmet, Chest, Legs, Shoulder
+> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, TwoHandedWeaponLeft, Bow, Torch, Shield, Tool, Helmet, Chest, Legs, Shoulder
 > 
 > **Requirements:**
 > > **Flags:** `ExclusiveSelf, ItemHasNegativeMovementSpeedModifier`
 > > **ExclusiveEffectTypes:** `ModifyMovementSpeed`
-> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Shield, Tool, Helmet, Chest, Legs, Shoulder`
+> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, TwoHandedWeaponLeft, Bow, Torch, Shield, Tool, Helmet, Chest, Legs, Shoulder`
 
 ## ModifyBlockPower
 
@@ -498,12 +498,12 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > **Prefixes:** Blazing
 > **Suffixes:** Fire
 > 
-> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch
+> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, TwoHandedWeaponLeft, Bow, Torch, Staff
 > 
 > **Requirements:**
 > > **Flags:** `ExclusiveSelf`
 > > **ExclusiveEffectTypes:** `AddBluntDamage, AddSlashingDamage, AddPiercingDamage, AddFireDamage, AddFrostDamage, AddLightningDamage, AddPoisonDamage, AddSpiritDamage`
-> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow, Torch`
+> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, TwoHandedWeaponLeft, Bow, Torch, Staff`
 > > **ExcludedSkillTypes:** `Pickaxes`
 > 
 > **Value Per Rarity:**
@@ -522,12 +522,12 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > **Prefixes:** Frigid
 > **Suffixes:** Frost
 > 
-> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch
+> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, TwoHandedWeaponLeft, Bow, Torch, Staff
 > 
 > **Requirements:**
 > > **Flags:** `ExclusiveSelf`
 > > **ExclusiveEffectTypes:** `AddBluntDamage, AddSlashingDamage, AddPiercingDamage, AddFireDamage, AddFrostDamage, AddLightningDamage, AddPoisonDamage, AddSpiritDamage`
-> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow, Torch`
+> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, TwoHandedWeaponLeft, Bow, Torch, Staff`
 > > **ExcludedSkillTypes:** `Pickaxes`
 > 
 > **Value Per Rarity:**
@@ -546,12 +546,12 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > **Prefixes:** Shocking
 > **Suffixes:** Lightning
 > 
-> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch
+> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, TwoHandedWeaponLeft, Bow, Torch, Staff
 > 
 > **Requirements:**
 > > **Flags:** `ExclusiveSelf`
 > > **ExclusiveEffectTypes:** `AddBluntDamage, AddSlashingDamage, AddPiercingDamage, AddFireDamage, AddFrostDamage, AddLightningDamage, AddPoisonDamage, AddSpiritDamage`
-> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow, Torch`
+> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, TwoHandedWeaponLeft, Bow, Torch, Staff`
 > > **ExcludedSkillTypes:** `Pickaxes`
 > 
 > **Value Per Rarity:**
@@ -570,12 +570,12 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > **Prefixes:** Infected
 > **Suffixes:** Poison
 > 
-> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch
+> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, TwoHandedWeaponLeft, Bow, Torch, Staff
 > 
 > **Requirements:**
 > > **Flags:** `ExclusiveSelf`
 > > **ExclusiveEffectTypes:** `AddBluntDamage, AddSlashingDamage, AddPiercingDamage, AddFireDamage, AddFrostDamage, AddLightningDamage, AddPoisonDamage, AddSpiritDamage`
-> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow, Torch`
+> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, TwoHandedWeaponLeft, Bow, Torch, Staff`
 > > **ExcludedSkillTypes:** `Pickaxes`
 > 
 > **Value Per Rarity:**
@@ -594,12 +594,12 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > **Prefixes:** Spirit
 > **Suffixes:** the Spirits
 > 
-> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch
+> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, TwoHandedWeaponLeft, Bow, Torch, Staff
 > 
 > **Requirements:**
 > > **Flags:** `ExclusiveSelf`
 > > **ExclusiveEffectTypes:** `AddBluntDamage, AddSlashingDamage, AddPiercingDamage, AddFireDamage, AddFrostDamage, AddLightningDamage, AddPoisonDamage, AddSpiritDamage`
-> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow, Torch`
+> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, TwoHandedWeaponLeft, Bow, Torch, Staff`
 > > **ExcludedSkillTypes:** `Pickaxes`
 > 
 > **Value Per Rarity:**
@@ -992,11 +992,11 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > **Prefixes:** Gladiator's
 > **Suffixes:** the Gladiator
 > 
-> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Tool
+> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, TwoHandedWeaponLeft, Bow, Torch, Tool
 > 
 > **Requirements:**
 > > **Flags:** `ExclusiveSelf, ItemUsesStaminaOnAttack`
-> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Tool`
+> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, TwoHandedWeaponLeft, Bow, Torch, Tool`
 > 
 > **Value Per Rarity:**
 > 
@@ -1036,12 +1036,12 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > **Prefixes:** Indestructible
 > **Suffixes:** Indestructibility
 > 
-> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Tool, Shield, Helmet, Chest, Legs, Shoulder
+> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, TwoHandedWeaponLeft, Bow, Torch, Tool, Shield, Helmet, Chest, Legs, Shoulder
 > 
 > **Requirements:**
 > > **Flags:** `ExclusiveSelf`
 > > **ExclusiveEffectTypes:** `ModifyDurability`
-> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Tool, Shield, Helmet, Chest, Legs, Shoulder`
+> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, TwoHandedWeaponLeft, Bow, Torch, Tool, Shield, Helmet, Chest, Legs, Shoulder`
 > > **AllowedRarities:** `Epic, Legendary`
 
 ## Weightless
@@ -1051,12 +1051,12 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > **Prefixes:** Weightless
 > **Suffixes:** Weightlessness
 > 
-> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Tool, Shield, Helmet, Chest, Legs, Shoulder
+> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, TwoHandedWeaponLeft, Bow, Torch, Tool, Shield, Helmet, Chest, Legs, Shoulder
 > 
 > **Requirements:**
 > > **Flags:** `ExclusiveSelf`
 > > **ExclusiveEffectTypes:** `ReduceWeight`
-> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow, Torch, Tool, Shield, Helmet, Chest, Legs, Shoulder`
+> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, TwoHandedWeaponLeft, Bow, Torch, Tool, Shield, Helmet, Chest, Legs, Shoulder`
 
 ## AddCarryWeight
 
@@ -1087,11 +1087,11 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > **Prefixes:** Valravn's
 > **Suffixes:** Valravn
 > 
-> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow
+> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, TwoHandedWeaponLeft, Bow
 > 
 > **Requirements:**
 > > **Flags:** `ExclusiveSelf, ItemUsesStaminaOnAttack`
-> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow`
+> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, TwoHandedWeaponLeft, Bow`
 > > **AllowedRarities:** `Rare, Epic, Legendary`
 > > **ExcludedSkillTypes:** `Pickaxes`
 
@@ -1102,11 +1102,11 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > **Prefixes:** Striker's
 > **Suffixes:** Striking
 > 
-> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, Bow, Tool
+> **Allowed Item Types:** OneHandedWeapon, TwoHandedWeapon, TwoHandedWeaponLeft, Bow, Tool
 > 
 > **Requirements:**
 > > **Flags:** `ExclusiveSelf`
-> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, Bow, Tool`
+> > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon, TwoHandedWeaponLeft, Bow, Tool`
 > 
 > **Value Per Rarity:**
 > 
@@ -1129,6 +1129,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > **Requirements:**
 > > **Flags:** `ExclusiveSelf`
 > > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon`
+> > **ExcludedItemTypes:** `Staff`
 > > **ExcludedSkillTypes:** `Pickaxes, Spears`
 
 ## Waterproof
@@ -1553,6 +1554,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > **Requirements:**
 > > **Flags:** `ExclusiveSelf`
 > > **AllowedItemTypes:** `OneHandedWeapon, TwoHandedWeapon`
+> > **ExcludedItemTypes:** `Staff`
 > > **ExcludedSkillTypes:** `Pickaxes`
 
 ## ReflectDamage

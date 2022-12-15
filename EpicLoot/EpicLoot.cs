@@ -122,6 +122,8 @@ namespace EpicLoot
         public static ConfigEntry<TextAnchor> AbilityBarLayoutAlignment;
         public static ConfigEntry<float> AbilityBarIconSpacing;
         public static ConfigEntry<float> SetItemDropChance;
+        public static ConfigEntry<float> GlobalDropRateModifier;
+        public static ConfigEntry<float> ItemsToMaterialsDropRatio;
         public static ConfigEntry<bool> AlwaysShowWelcomeMessage;
 
         public static readonly List<ItemDrop.ItemData.ItemType> AllowedMagicItemTypes = new List<ItemDrop.ItemData.ItemType>
@@ -134,6 +136,7 @@ namespace EpicLoot
             ItemDrop.ItemData.ItemType.Bow,
             ItemDrop.ItemData.ItemType.OneHandedWeapon,
             ItemDrop.ItemData.ItemType.TwoHandedWeapon,
+            ItemDrop.ItemData.ItemType.TwoHandedWeaponLeft,
             ItemDrop.ItemData.ItemType.Shield,
             ItemDrop.ItemData.ItemType.Tool,
             ItemDrop.ItemData.ItemType.Torch,
@@ -204,6 +207,9 @@ namespace EpicLoot
             _andvaranautRange = SyncedConfig("Balance", "Andvaranaut Range", 20, "Sets the range that Andvaranaut will locate a treasure chest.");
             _serverConfigLocked = SyncedConfig("Config Sync", "Lock Config", false, new ConfigDescription("[Server Only] The configuration is locked and may not be changed by clients once it has been synced from the server. Only valid for server config, will have no effect on clients."));
             SetItemDropChance = SyncedConfig("Balance", "Set Item Drop Chance", 0.15f, "The percent chance that a legendary item will be a set item. Min = 0, Max = 1");
+            GlobalDropRateModifier = SyncedConfig("Balance", "Global Drop Rate Modifier", 1.0f, "A global percentage that modifies how likely items are to drop. 1 = Exactly what is in the loot tables will drop. 0 = Nothing will drop. 2 = The number of items in the drop table are twice as likely to drop (note, this doesn't double the number of items dropped, just doubles the relative chance for them to drop). Min = 0, Max = 4");
+            ItemsToMaterialsDropRatio = SyncedConfig("Balance", "Items To Materials Drop Ratio", 0.0f, "Sets the chance that item drops are instead dropped as magic crafting materials. 0 = all items, no materials. 1 = all materials, no items. Values between 0 and 1 change the ratio of items to materials that drop. At 0.5, half of everything that drops would be items and the other half would be materials. Min = 0, Max = 1");
+
             AlwaysShowWelcomeMessage = Config.Bind("Debug", "AlwaysShowWelcomeMessage", false, "Just a debug flag for testing the welcome message, do not use.");
 
             AbilityKeyCodes[0] = Config.Bind("Abilities", "Ability Hotkey 1", "g", "Hotkey for Ability Slot 1.");

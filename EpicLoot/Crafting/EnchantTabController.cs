@@ -582,6 +582,8 @@ namespace EpicLoot.Crafting
         public static Piece.Requirement[] GetRecipeRequirementArray(EnchantRecipe recipe, ItemRarity rarity)
         {
             var cost = GetRecipeCost(recipe, rarity);
+            if (cost == null)
+                return Array.Empty<Piece.Requirement>();
             return cost.Select(x => new Piece.Requirement() { m_amount = x.Value, m_resItem = x.Key }).ToArray();
         }
 
