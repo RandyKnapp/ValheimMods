@@ -1,32 +1,51 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using EpicLoot.PlayerKnown;
+using EpicLoot.Adventure.Feature;
 
 namespace EpicLoot.GatedItemType
 {
     public enum GatedItemTypeMode
     {
         Unlimited,
-        MustKnowRecipe,
-        MustHaveCrafted
+        BossKillUnlocksCurrentBiomeItems,
+        BossKillUnlocksNextBiomeItems,
+        PlayerMustKnowRecipe,
+        PlayerMustHaveCraftedItem
     }
 
     public static class GatedItemTypeHelper
     {
         public static readonly List<ItemTypeInfo> ItemInfos = new List<ItemTypeInfo>();
         public static readonly Dictionary<string, ItemTypeInfo> ItemInfoByID = new Dictionary<string, ItemTypeInfo>();
+        public static readonly Dictionary<string, List<string>> ItemsPerBoss = new Dictionary<string, List<string>>();
+        public static readonly Dictionary<string, string> BossPerItem = new Dictionary<string, string>();
 
         public static void Initialize(ItemInfoConfig config)
         {
             ItemInfos.Clear();
             ItemInfoByID.Clear();
+            ItemsPerBoss.Clear();
+            BossPerItem.Clear();
             foreach (var info in config.ItemInfo)
             {
                 ItemInfos.Add(info);
-                //EpicLoot.Log($"Adding ItemTypeInfo: {info.Type}, fallback={info.Fallback}, items={string.Join(",", info.Items)}");
+
                 foreach (var itemID in info.Items)
                 {
                     ItemInfoByID.Add(itemID, info);
+                }
+
+                foreach (var entry in info.ItemsByBoss)
+                {
+                    if (ItemsPerBoss.ContainsKey(entry.Key))
+                        ItemsPerBoss[entry.Key].AddRange(entry.Value);
+                    else
+                        ItemsPerBoss.Add(entry.Key, entry.Value.ToList());
+
+                    foreach (var itemID in entry.Value)
+                    {
+                        BossPerItem.Add(itemID, entry.Key);
+                    }
                 }
             }
         }
@@ -66,7 +85,7 @@ namespace EpicLoot.GatedItemType
                 return null;
             }
 
-            while (CheckIfItemNeedsGate(mode, itemName))
+            while (CheckIfItemNeedsGate(mode, itemID, itemName))
             {
                 //EpicLoot.Log("Yes...");
                 var index = info.Items.IndexOf(itemID);
@@ -110,13 +129,23 @@ namespace EpicLoot.GatedItemType
             return item.m_shared.m_name;
         }
 
-        private static bool CheckIfItemNeedsGate(GatedItemTypeMode mode, string itemName)
+        private static bool CheckIfItemNeedsGate(GatedItemTypeMode mode, string itemID, string itemName)
         {
-            //EpicLoot.Log($"Checking if item ({itemName}) needs gating...");
+            if (!BossPerItem.ContainsKey(itemID))
+            {
+                EpicLoot.LogWarning($"Item ({itemID}) was not registered in iteminfo.json with any particular boss");
+                return false;
+            }
+
+            var bossKeyForItem = BossPerItem[itemID];
+            var prevBossKey = Bosses.GetPrevBossKey(bossKeyForItem);
+            //EpicLoot.Log($"Checking if item ({itemID}) needs gating (boss: {bossKeyForItem}, prev boss: {prevBossKey}");
             switch (mode)
             {
-                case GatedItemTypeMode.MustKnowRecipe: return !PlayerKnownManager.IsRecipeKnown(itemName);
-                case GatedItemTypeMode.MustHaveCrafted: return !PlayerKnownManager.IsItemKnown(itemName);
+                case GatedItemTypeMode.BossKillUnlocksCurrentBiomeItems:    return !ZoneSystem.instance.GetGlobalKey(bossKeyForItem);
+                case GatedItemTypeMode.BossKillUnlocksNextBiomeItems:       return !(string.IsNullOrEmpty(prevBossKey) || ZoneSystem.instance.GetGlobalKey(prevBossKey));
+                case GatedItemTypeMode.PlayerMustKnowRecipe:                return Player.m_localPlayer != null && !Player.m_localPlayer.IsRecipeKnown(itemName);
+                case GatedItemTypeMode.PlayerMustHaveCraftedItem:           return Player.m_localPlayer != null && !Player.m_localPlayer.m_knownMaterial.Contains(itemName);
                 default: return false;
             }
         }

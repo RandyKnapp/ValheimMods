@@ -299,14 +299,6 @@
       { "Biome": "Mistlands",   "TargetID": "Seeker",           "RewardGold": 4, "RewardIron": 7, "RewardCoins": 1750,"Adds": [ { "ID": "SeekerBrood",  "Count": 10 } ] },
       { "Biome": "Mistlands",   "TargetID": "Gjall",            "RewardGold": 5, "RewardIron": 0, "RewardCoins": 1800 }
     ],
-    "Bosses": [
-		{"Biome": "Meadows", "BossName": "eikthyr"},
-		{"Biome": "BlackForest", "BossName": "gdking"},
-		{"Biome": "Swamp", "BossName": "bonemass"},
-		{"Biome": "Mountain", "BossName": "dragon"},
-		{"Biome": "Plains", "BossName": "goblinking"},
-		{"Biome": "Mistlands", "BossName": "queen"}
-    ],
     "Names": {
       "ChanceForSpecialName": 0.01,
       "SpecialNames": [
