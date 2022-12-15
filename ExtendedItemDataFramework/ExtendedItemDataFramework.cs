@@ -11,7 +11,7 @@ namespace ExtendedItemDataFramework
     public class ExtendedItemDataFramework : BaseUnityPlugin
     {
         public const string PluginId = "randyknapp.mods.extendeditemdataframework";
-        public const string Version = "1.0.9";
+        public const string Version = "1.0.10";
 
         private static ConfigEntry<bool> _enabledConfig;
         private static ConfigEntry<bool> _loggingEnabled;

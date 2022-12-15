@@ -47,14 +47,13 @@ namespace EpicLoot.Adventure.Feature
             var bountiesPerBiome = new MultiValueDictionary<Heightmap.Biome, BountyTargetConfig>();
             
             var defeatedBossBiomes = new List<Heightmap.Biome>();
-            var biomeBosses = AdventureDataManager.Config.Bounties.Bosses;
             var previousBossKilled = false;
 
             if (BossBountiesGated())
             {
-                foreach (var bossConfig in AdventureDataManager.Config.Bounties.Bosses)
+                foreach (var bossConfig in Bosses.BossData)
                 {
-                    if (ZoneSystem.instance.GetGlobalKey($"defeated_{bossConfig.BossName}"))
+                    if (ZoneSystem.instance.GetGlobalKey(bossConfig.BossDefeatedKey))
                     {
                         defeatedBossBiomes.Add(bossConfig.Biome);
                         previousBossKilled = true;

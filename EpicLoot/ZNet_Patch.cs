@@ -1,5 +1,4 @@
 ﻿using EpicLoot.Adventure;
-using EpicLoot.PlayerKnown;
 using HarmonyLib;
 
 namespace EpicLoot
@@ -10,7 +9,6 @@ namespace EpicLoot
         public static void Postfix(ZNet __instance)
         {
             AdventureDataManager.Bounties.RegisterRPC(__instance.m_routedRpc);
-            PlayerKnownManager.RegisterRPC(__instance.m_routedRpc);
         }
     }
 

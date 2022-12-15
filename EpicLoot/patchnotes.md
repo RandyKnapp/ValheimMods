@@ -1,4 +1,15 @@
 ﻿## Version 0.9.0
+  * Items are now gated by boss kills instead of player known recipes/items (this removes the PlayerKnown RPCs completely)
+    * Server admins be sure to update your server configs
+    * The older way of gating by player known recipes or player has crafted is recommended for local games only
+  * Bounties can now be gated by boss kills, see "Gated Bounty Mode" config option (credit: Vapok)
+  * Gambles are now only gated by the player's known recipes, not the server's
+  * Items in the RandomItems section of the SecretStash now only appear if the player knows the recipe (OtherItems still always appear)
+  * Treasure map chests can be configured to contain Iron or Gold Bounty Tokens as well as coins. (Still defaults only to Forest Tokens, just adding more customizability for server admins)
+  * Fixed visual issue with enchant success screen for Auga
+  * Added support for storing enchanted items on Armor Stands
+  * Fixed various nullrefs
+## Version 0.9.1
   * Updated for Valheim version 0.212.7 (Mistlands Update)
   * Augmenter no longer needed for augmenting (engage with augmenting far earlier in your playthrough)
   * Updated loot tables, gambles, treasure maps, and bounties for Mistlands and H&H
