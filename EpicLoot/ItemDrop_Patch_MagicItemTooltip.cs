@@ -260,7 +260,7 @@ namespace EpicLoot
                 var eitrRegenModifier = localPlayer.GetEquipmentEitrRegenModifier();
                 var totalEitrRegenModifier = eitrRegenModifier * 100f;
                 var color = (magicEitrRegen) ? magicColor : "orange";
-                text.Append($"\n$item_eitrregen_modifier: <color={color}>{itemEitrRegenModDisplay}</color> ($item_total:<color=yellow>{itemEitrRegenModDisplay:+0;-0}%</color>)");
+                text.Append($"\n$item_eitrregen_modifier: <color={color}>{itemEitrRegenModDisplay}</color> ($item_total:<color=yellow>{totalEitrRegenModifier:+0;-0}%</color>)");
             }
 
             var magicMovement = magicItem.HasEffect(MagicEffectType.ModifyMovementSpeed);
@@ -403,6 +403,7 @@ namespace EpicLoot
             
 
             var itemEitrRegenModifier = item.m_shared.m_eitrRegenModifier * 100f;
+
             if (magicEitrRegen)
             {
                 itemEitrRegenModifier += magicItem.GetTotalEffectValue(MagicEffectType.ModifyEitrRegen);
@@ -445,7 +446,7 @@ namespace EpicLoot
                 var lightningMagic = magicItem.HasEffect(MagicEffectType.AddLightningDamage);
                 var poisonMagic = magicItem.HasEffect(MagicEffectType.AddPoisonDamage);
                 var spiritMagic = magicItem.HasEffect(MagicEffectType.AddSpiritDamage);
-
+                var skip = false;
                 switch (label)
                 {
                     case "$item_durability":
@@ -576,6 +577,64 @@ namespace EpicLoot
                             value = $"<color={magicColor}>{value}</color>";
                         }
                         break;
+                    case "$item_eitrregen_modifier":
+                        if (magicItem.HasEffect(MagicEffectType.ModifyEitrRegen))
+                        {
+                            var itemEitrRegenModDisplay = MagicItemTooltip_ItemDrop_Patch.GetEitrRegenModifier(item, magicItem, out _);
+                            var totalEitrRegenModifier = magicItem.GetTotalEffectValue(MagicEffectType.ModifyEitrRegen);
+                            label = $"$item_eitrregen_modifier: <color={magicColor}>{itemEitrRegenModDisplay}</color> ($item_total:<color=yellow>{totalEitrRegenModifier:+0;-0}%</color>)";
+                        }
+                        else
+                        {
+                            label = string.Empty;
+                        }
+                        skip = true;
+                        break;
+                }
+
+                if (label.StartsWith("$item_eitrregen_modifier") && !skip)
+                {
+                    var sb = new StringBuilder(label);
+                    var colorIndex = label.IndexOf("<color", StringComparison.Ordinal);
+                    if (colorIndex >= 0)
+                    {
+                        
+                        sb.Remove(colorIndex, "<color=#XXXXXX>".Length);
+                        sb.Insert(colorIndex, $"<color={magicColor}>");
+
+                        var itemEitrRegenModDisplay = MagicItemTooltip_ItemDrop_Patch.GetEitrRegenModifier(item, magicItem, out _);
+                        var valueIndex = colorIndex + "<color=#XXXXXX>".Length;
+                        var percentIndex = label.IndexOf("%", valueIndex, StringComparison.Ordinal);
+                        sb.Remove(valueIndex, percentIndex - valueIndex + 1);
+                        sb.Insert(valueIndex, itemEitrRegenModDisplay);
+
+                        var color2Index = label.IndexOf("<color", percentIndex, StringComparison.Ordinal);
+                        if (color2Index > percentIndex)
+                        {
+                            sb.Remove(color2Index, "<color=#A39689>".Length);
+                            float totalEitrRegenModifier = magicItem.GetTotalEffectValue(MagicEffectType.ModifyEitrRegen);
+                            if (totalEitrRegenModifier > 0)
+                                sb.Insert(color2Index, $"<color=yellow>");
+                            else
+                                sb.Insert(color2Index, $"<color=#A39689>");
+
+                            var value2Index = color2Index + "<color=#A39689>".Length + 1;
+                            var percentIndex2 = label.IndexOf("%", value2Index, StringComparison.Ordinal);
+                            float mundaneTotal = 0;
+                            float magicTotal = 0;
+                            if (float.TryParse(label.Substring(value2Index, percentIndex2 - value2Index),out mundaneTotal))
+                            {
+                                magicTotal = totalEitrRegenModifier + mundaneTotal;
+                            } else
+                            {
+                                magicTotal = mundaneTotal;
+                            }
+                            
+                            sb.Remove(value2Index-1, percentIndex2 - value2Index);
+                            sb.Insert(value2Index-1, magicTotal);
+                        }
+                    }
+                    label = sb.ToString();
                 }
 
                 if (label.StartsWith("$item_movement_modifier") && (magicItem.HasEffect(MagicEffectType.RemoveSpeedPenalty) || magicItem.HasEffect(MagicEffectType.ModifyMovementSpeed)))
