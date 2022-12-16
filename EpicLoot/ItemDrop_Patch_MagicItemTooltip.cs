@@ -252,6 +252,17 @@ namespace EpicLoot
                     break;
             }
 
+            var magicEitrRegen = magicItem.HasEffect(MagicEffectType.ModifyEitrRegen);
+            if ((magicEitrRegen || item.m_shared.m_eitrRegenModifier != 0) && localPlayer != null)
+            {
+                var itemEitrRegenModDisplay = GetEitrRegenModifier(item, magicItem, out _);
+
+                var eitrRegenModifier = localPlayer.GetEquipmentEitrRegenModifier();
+                var totalEitrRegenModifier = eitrRegenModifier * 100f;
+                var color = (magicEitrRegen) ? magicColor : "orange";
+                text.Append($"\n$item_eitrregen_modifier: <color={color}>{itemEitrRegenModDisplay}</color> ($item_total:<color=yellow>{itemEitrRegenModDisplay:+0;-0}%</color>)");
+            }
+
             var magicMovement = magicItem.HasEffect(MagicEffectType.ModifyMovementSpeed);
             if ((magicMovement || item.m_shared.m_movementModifier != 0) && localPlayer != null)
             {
@@ -384,6 +395,20 @@ namespace EpicLoot
             var color1 = magic ? magicColor : "orange";
             var color2 = magic ? magicColor : "yellow";
             return $"<color={color1}>{Mathf.RoundToInt(damage)}</color> <color={color2}>({num1}-{num2}) </color>";
+        }
+
+        public static string GetEitrRegenModifier(ItemDrop.ItemData item, MagicItem magicItem, out bool magicEitrRegen)
+        {
+            magicEitrRegen = magicItem.HasEffect(MagicEffectType.ModifyEitrRegen);
+            
+
+            var itemEitrRegenModifier = item.m_shared.m_eitrRegenModifier * 100f;
+            if (magicEitrRegen)
+            {
+                itemEitrRegenModifier += magicItem.GetTotalEffectValue(MagicEffectType.ModifyEitrRegen);
+            }
+
+            return (itemEitrRegenModifier == 0) ? "0%" : $"{itemEitrRegenModifier:+0;-0}%";
         }
 
         public static string GetMovementModifier(ItemDrop.ItemData item, MagicItem magicItem, out bool magicMovement, out bool removePenalty)
