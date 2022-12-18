@@ -150,8 +150,8 @@
         "defeated_gdking"     : [ "PickaxeBronze" ],
         "defeated_bonemass"   : [ "PickaxeIron" ],
         "defeated_dragon"     : [  ],
-        "defeated_goblinking" : [  ],
-        "defeated_queen"      : [ "PickaxeBlackMetal" ]
+        "defeated_goblinking" : [ "PickaxeBlackMetal" ],
+        "defeated_queen"      : [  ]
       }
     },
     {
