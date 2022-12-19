@@ -10,9 +10,16 @@ namespace EpicLoot
     [HarmonyPatch(typeof(CharacterDrop), nameof(CharacterDrop.OnDeath))]
     public static class CharacterDrop_OnDeath_Patch
     {
+        private static bool _originalDropsEnabled = false;
+
+        public static void Prefix(CharacterDrop __instance)
+        {
+            _originalDropsEnabled = __instance.m_dropsEnabled;
+        }
+
         public static void Postfix(CharacterDrop __instance)
         {
-            if (__instance.m_dropsEnabled)
+            if (_originalDropsEnabled)
             {
                 EpicLoot.OnCharacterDeath(__instance);
             }
