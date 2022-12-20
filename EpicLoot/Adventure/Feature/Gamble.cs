@@ -86,7 +86,7 @@ namespace EpicLoot.Adventure.Feature
                 var itemData = itemDrop.m_itemData;
                 var cost = GetGambleCost(itemId);
                 availableGambles.Add(new SecretStashItemInfo(itemId, itemData, cost, true));
-                Object.Destroy(itemDrop.gameObject);
+                ZNetScene.instance.Destroy(itemDrop.gameObject);
             }
 
             return availableGambles;
@@ -149,7 +149,9 @@ namespace EpicLoot.Adventure.Feature
 
             var previousDisabledState = LootRoller.CheatDisableGating;
             LootRoller.CheatDisableGating = true;
+            LootRoller.CheatRollingItem = true;
             var loot = LootRoller.RollLootTable(lootTable, 1, "Gamble", Player.m_localPlayer.transform.position);
+            LootRoller.CheatRollingItem = false;
             LootRoller.CheatDisableGating = previousDisabledState;
             return loot.Count > 0 ? loot[0] : null;
         }

@@ -152,7 +152,7 @@ namespace EpicLoot
             foreach (var itemObject in gameObjects)
             {
                 results.Add(itemObject.GetComponent<ItemDrop>().m_itemData.Clone());
-                Object.Destroy(itemObject);
+                ZNetScene.instance.Destroy(itemObject);
             }
 
             return results;

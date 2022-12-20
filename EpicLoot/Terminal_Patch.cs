@@ -23,8 +23,6 @@ namespace EpicLoot
 
         public static void Postfix()
         {
-            var player = Player.m_localPlayer;
-
             new Terminal.ConsoleCommand("magicitem", "", (args =>
             {
                 MagicItem(args.Context, args.Args);
@@ -84,6 +82,7 @@ namespace EpicLoot
             }), true);
             new Terminal.ConsoleCommand("resettreasuremap", "", (args =>
             {
+                var player = Player.m_localPlayer;
                 var saveData = player.GetAdventureSaveData();
                 saveData.TreasureMaps.Clear();
                 saveData.NumberOfTreasureMapsOrBountiesStarted = 0;
@@ -91,6 +90,7 @@ namespace EpicLoot
             }));
             new Terminal.ConsoleCommand("resettm", "", (args =>
             {
+                var player = Player.m_localPlayer;
                 var saveData = player.GetAdventureSaveData();
                 saveData.TreasureMaps.Clear();
                 saveData.NumberOfTreasureMapsOrBountiesStarted = 0;
@@ -108,6 +108,7 @@ namespace EpicLoot
             }));
             new Terminal.ConsoleCommand("resetbounties", "", (args =>
             {
+                var player = Player.m_localPlayer;
                 var saveData = player.GetAdventureSaveData();
                 saveData.Bounties.Clear();
                 player.SaveAdventureSaveData();
@@ -124,6 +125,7 @@ namespace EpicLoot
             }));
             new Terminal.ConsoleCommand("resetadventure", "", (args =>
             {
+                var player = Player.m_localPlayer;
                 var adventureComponent = player.GetComponent<AdventureComponent>();
                 adventureComponent.SaveData = new AdventureSaveDataList();
                 player.SaveAdventureSaveData();
@@ -136,6 +138,7 @@ namespace EpicLoot
             }));
             new Terminal.ConsoleCommand("playerbounties", "", (args =>
             {
+                var player = Player.m_localPlayer;
                 var availableBounties = player.GetAdventureSaveData().Bounties;
                 BountiesAdventureFeature.PrintBounties($"Player Bounties:", availableBounties);
             }));
@@ -151,16 +154,20 @@ namespace EpicLoot
             }), true);
             new Terminal.ConsoleCommand("gotomerchant", "", (args =>
             {
+                var player = Player.m_localPlayer;
                 if (ZoneSystem.instance.FindClosestLocation("Vendor_BlackForest", player.transform.position, out var location))
                 {
-                    player.TeleportTo(location.m_position + Vector3.right * 5, player.transform.rotation, true);
+                    Console.instance.AddString(location.m_position.ToString());
+                    //player.TeleportTo(location.m_position + Vector3.right * 5, player.transform.rotation, true);
                 }
             }), true);
             new Terminal.ConsoleCommand("gotom", "", (args =>
             {
+                var player = Player.m_localPlayer;
                 if (ZoneSystem.instance.FindClosestLocation("Vendor_BlackForest", player.transform.position, out var location))
                 {
-                    player.TeleportTo(location.m_position + Vector3.right * 5, player.transform.rotation, true);
+                    Console.instance.AddString(location.m_position.ToString());
+                    //player.TeleportTo(location.m_position + Vector3.right * 5, player.transform.rotation, true);
                 }
             }), true);
             new Terminal.ConsoleCommand("globalkeys", "", (args =>
@@ -176,6 +183,7 @@ namespace EpicLoot
             }));
             new Terminal.ConsoleCommand("fixresistances", "", (args =>
             {
+                var player = Player.m_localPlayer;
                 FixResistances(player);
             }));
             new Terminal.ConsoleCommand("lucktest", "", (args =>
@@ -193,6 +201,7 @@ namespace EpicLoot
             }));
             new Terminal.ConsoleCommand("resetcooldowns", "", (args =>
             {
+                var player = Player.m_localPlayer;
                 if (player != null)
                 {
                     var abilityController = player.GetComponent<AbilityController>();
@@ -282,7 +291,7 @@ namespace EpicLoot
                 }
                 else
                 {
-                    UnityEngine.Object.Destroy(itemDrop.gameObject);
+                    ZNetScene.instance.Destroy(itemDrop.gameObject);
                 }
             }
         }

@@ -6,13 +6,18 @@ using UnityEngine;
 
 namespace EpicLoot
 {
+    public static class EpicLootDropsHelper
+    {
+        public static bool DropsEnabled { get; set; } = false;
+    }
+
     //public void OnDeath()
     [HarmonyPatch(typeof(CharacterDrop), nameof(CharacterDrop.OnDeath))]
     public static class CharacterDrop_OnDeath_Patch
     {
         public static void Postfix(CharacterDrop __instance)
         {
-            if (EpicLoot.DropsEnabled)
+            if (EpicLootDropsHelper.DropsEnabled)
             {
                 EpicLoot.OnCharacterDeath(__instance);
             }
@@ -60,10 +65,10 @@ namespace EpicLoot
     public static class CharacterDrop_GenerateDropList_DropsEnabled
     {
         [HarmonyPriority(Priority.First)]
-        [HarmonyBefore(new string[] { "org.bepinex.plugins.creaturelevelcontrol" })]
-        public static void Postfix(CharacterDrop __instance, ref List<KeyValuePair<GameObject, int>> __result)
+        [HarmonyBefore(new [] { "org.bepinex.plugins.creaturelevelcontrol" })]
+        public static void Postfix(CharacterDrop __instance)
         {
-            EpicLoot.DropsEnabled = __instance.m_dropsEnabled ? true : false;
+            EpicLootDropsHelper.DropsEnabled = __instance.m_dropsEnabled;
         }
     }
 

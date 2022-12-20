@@ -187,7 +187,7 @@ namespace EpicLoot
                     return;
                 }
 
-                Object.Destroy(effect.gameObject);
+                ZNetScene.instance.Destroy(effect.gameObject);
             }
         }
 

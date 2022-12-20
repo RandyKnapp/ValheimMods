@@ -112,7 +112,7 @@ namespace EpicLoot.MagicItemEffects
                 var existingMesh = __instance.m_weapon.m_lastProjectile.transform.Find("spear");
                 if (existingMesh != null)
                 {
-                    Object.Destroy(existingMesh.gameObject);
+                    ZNetScene.instance.Destroy(existingMesh.gameObject);
                 }
 
                 var weaponMesh = __instance.m_weapon.m_dropPrefab.transform.Find("attach");

@@ -132,7 +132,7 @@ namespace EpicLoot.Adventure.Feature
                 {
                     results.Add(new SecretStashItemInfo(itemId, itemData, itemConfig.GetCost()));
                 }
-                Object.Destroy(itemDrop.gameObject);
+                ZNetScene.instance.Destroy(itemDrop.gameObject);
             }
 
             return results;

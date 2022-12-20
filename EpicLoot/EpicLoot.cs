@@ -167,7 +167,6 @@ namespace EpicLoot
         public const Minimap.PinType TreasureMapPinType = (Minimap.PinType) 801;
         public static bool HasAuga;
         public static bool AugaTooltipNoTextBoxes;
-        private static bool _dropsEnabled = false;
         
 
         public static event Action AbilitiesInitialized;
@@ -176,8 +175,6 @@ namespace EpicLoot
         private static EpicLoot _instance;
         private Harmony _harmony;
         private float _worldLuckFactor;
-
-        public static bool DropsEnabled { get => _dropsEnabled; set => _dropsEnabled = value; }
 
         [UsedImplicitly]
         private void Awake()
@@ -546,7 +543,10 @@ namespace EpicLoot
 
         private static void LoadItem(AssetBundle assetBundle, string assetName, Action<ItemDrop> customSetupAction = null)
         {
+            var prevForceDisable = ZNetView.m_forceDisableInit;
+            ZNetView.m_forceDisableInit = true;
             var prefab = assetBundle.LoadAsset<GameObject>(assetName);
+            ZNetView.m_forceDisableInit = prevForceDisable;
             RegisteredItemPrefabs.Add(prefab);
             RegisteredPrefabs.Add(prefab);
             if (customSetupAction != null)
