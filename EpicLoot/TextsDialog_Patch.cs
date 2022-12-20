@@ -16,9 +16,10 @@ namespace EpicLoot
         {
             var player = Player.m_localPlayer;
             if (player == null)
-            {
                 return;
-            }
+
+            if (EpicLoot.HasAuga && __instance.transform.parent.name == "Lore")
+                return;
 
             AddMagicEffectsPage(__instance, player);
             AddMagicEffectsExplainPage(__instance);
@@ -188,6 +189,9 @@ namespace EpicLoot
 
         public static bool Prefix(TextsDialog __instance, TextsDialog.TextInfo text)
         {
+            if (EpicLoot.HasAuga)
+                return true;
+
             if (TitleTextPrefab == null)
             {
                 TextContainer = __instance.m_textAreaTopic.transform.parent;

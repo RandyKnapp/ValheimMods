@@ -299,15 +299,15 @@
       { "Biome": "Mistlands",   "TargetID": "Seeker",           "RewardGold": 4, "RewardIron": 7, "RewardCoins": 1750,"Adds": [ { "ID": "SeekerBrood",  "Count": 10 } ] },
       { "Biome": "Mistlands",   "TargetID": "Gjall",            "RewardGold": 5, "RewardIron": 0, "RewardCoins": 1800 }
     ],
-	//To configure custom bosses, order them in the order of progression desired. 
+	  // To configure custom bosses, order them in the order of progression desired. 
     "Bosses": [
-		{"Biome": "Meadows",		"BossPrefab": "Eikthyr",		"BossDefeatedKey": "defeated_eikthyr"},
-		{"Biome": "BlackForest",	"BossPrefab": "gd_king",		"BossDefeatedKey": "defeated_gdking"},
-		{"Biome": "Ocean",			"BossPrefab": "gd_king",		"BossDefeatedKey": "defeated_gdking"}, 
-		{"Biome": "Swamp", 			"BossPrefab": "Bonemass",		"BossDefeatedKey": "defeated_bonemass"},
-		{"Biome": "Mountain", 		"BossPrefab": "Dragon",			"BossDefeatedKey": "defeated_dragon"},
-		{"Biome": "Plains", 		"BossPrefab": "GoblinKing",		"BossDefeatedKey": "defeated_goblinking"},
-		{"Biome": "Mistlands", 		"BossPrefab": "SeekerQueen",	"BossDefeatedKey": "defeated_queen"}
+		  {"Biome": "Meadows",		  "BossPrefab": "Eikthyr",		  "BossDefeatedKey": "defeated_eikthyr" },
+		  {"Biome": "BlackForest",	"BossPrefab": "gd_king",		  "BossDefeatedKey": "defeated_gdking" },
+		  {"Biome": "Ocean",			  "BossPrefab": "gd_king",		  "BossDefeatedKey": "defeated_gdking" }, 
+		  {"Biome": "Swamp", 			  "BossPrefab": "Bonemass",		  "BossDefeatedKey": "defeated_bonemass" },
+		  {"Biome": "Mountain", 		"BossPrefab": "Dragon",			  "BossDefeatedKey": "defeated_dragon" },
+		  {"Biome": "Plains", 		  "BossPrefab": "GoblinKing",		"BossDefeatedKey": "defeated_goblinking" },
+		  {"Biome": "Mistlands", 		"BossPrefab": "SeekerQueen",	"BossDefeatedKey": "defeated_queen" }
     ],
     "Names": {
       "ChanceForSpecialName": 0.01,
