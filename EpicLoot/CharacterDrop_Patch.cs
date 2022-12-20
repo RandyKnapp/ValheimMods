@@ -10,21 +10,15 @@ namespace EpicLoot
     [HarmonyPatch(typeof(CharacterDrop), nameof(CharacterDrop.OnDeath))]
     public static class CharacterDrop_OnDeath_Patch
     {
-        private static bool _originalDropsEnabled = false;
-
-        public static void Prefix(CharacterDrop __instance)
-        {
-            _originalDropsEnabled = __instance.m_dropsEnabled;
-        }
-
         public static void Postfix(CharacterDrop __instance)
         {
-            if (_originalDropsEnabled)
+            if (EpicLoot.DropsEnabled)
             {
                 EpicLoot.OnCharacterDeath(__instance);
             }
         }
     }
+
 
     [HarmonyPatch(typeof(Ragdoll), nameof(Ragdoll.Setup))]
     public static class Ragdoll_Setup_Patch
@@ -43,7 +37,6 @@ namespace EpicLoot
 
             var characterName = EpicLoot.GetCharacterCleanName(characterDrop.m_character);
             var level = characterDrop.m_character.GetLevel();
-
             __instance.m_nview.m_zdo.Set("characterName", characterName);
             __instance.m_nview.m_zdo.Set("level", level);
         }
@@ -56,10 +49,21 @@ namespace EpicLoot
         {
             var characterName = __instance.m_nview.m_zdo.GetString("characterName");
             var level = __instance.m_nview.m_zdo.GetInt("level");
+
             if (!string.IsNullOrEmpty(characterName))
             {
                 EpicLoot.OnCharacterDeath(characterName, level, center + Vector3.up * 0.75f);
             }
+        }
+    }
+    [HarmonyPatch(typeof(CharacterDrop), nameof(CharacterDrop.GenerateDropList))]
+    public static class CharacterDrop_GenerateDropList_DropsEnabled
+    {
+        [HarmonyPriority(Priority.First)]
+        [HarmonyBefore(new string[] { "org.bepinex.plugins.creaturelevelcontrol" })]
+        public static void Postfix(CharacterDrop __instance, ref List<KeyValuePair<GameObject, int>> __result)
+        {
+            EpicLoot.DropsEnabled = __instance.m_dropsEnabled ? true : false;
         }
     }
 
