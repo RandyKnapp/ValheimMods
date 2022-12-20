@@ -48,19 +48,28 @@ namespace EpicLoot.Adventure.Feature
             
             var defeatedBossBiomes = new List<Heightmap.Biome>();
             var previousBossKilled = false;
+            var previousBoss = "";
 
             if (BossBountiesGated())
             {
                 foreach (var bossConfig in Bosses.BossData)
                 {
+                    if (previousBoss == "" && EpicLoot.BossBountyMode.Value == GatedBountyMode.BossKillUnlocksNextBiomeBounties)
+                    {
+                        defeatedBossBiomes.Add(bossConfig.Biome);
+                        previousBoss = bossConfig.BossDefeatedKey;
+                    }
+
                     if (ZoneSystem.instance.GetGlobalKey(bossConfig.BossDefeatedKey))
                     {
                         defeatedBossBiomes.Add(bossConfig.Biome);
                         previousBossKilled = true;
+                        previousBoss = bossConfig.BossDefeatedKey;
                     }
-                    else if (previousBossKilled && EpicLoot.BossBountyMode.Value == GatedBountyMode.BossKillUnlocksNextBiomeBounties)
+                    else if ((previousBossKilled || previousBoss.Equals(bossConfig.BossDefeatedKey)) && EpicLoot.BossBountyMode.Value == GatedBountyMode.BossKillUnlocksNextBiomeBounties)
                     {
                         defeatedBossBiomes.Add(bossConfig.Biome);
+                        previousBoss = bossConfig.BossDefeatedKey;
                         previousBossKilled = false;
                     }
                 }
