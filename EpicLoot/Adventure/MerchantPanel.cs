@@ -377,8 +377,8 @@ namespace EpicLoot.Adventure
             else
             {
                 var itemDrop = AdventureFeature.CreateItemDrop(listItem.ItemInfo.ItemID);
-                item = itemDrop.m_itemData;
-                Destroy(itemDrop.gameObject);
+                item = itemDrop.m_itemData.Clone();
+                ZNetScene.instance.Destroy(itemDrop.gameObject);
             }
 
             var inventory = player.GetInventory();

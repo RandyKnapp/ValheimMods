@@ -8,7 +8,7 @@ namespace EpicLoot
 {
     public static class EpicLootDropsHelper
     {
-        public static bool DropsEnabled { get; set; } = false;
+        public static bool InstantDropsEnabled { get; set; } = false;
     }
 
     //public void OnDeath()
@@ -17,7 +17,7 @@ namespace EpicLoot
     {
         public static void Postfix(CharacterDrop __instance)
         {
-            if (EpicLootDropsHelper.DropsEnabled)
+            if (EpicLootDropsHelper.InstantDropsEnabled)
             {
                 EpicLoot.OnCharacterDeath(__instance);
             }
@@ -39,6 +39,8 @@ namespace EpicLoot
             {
                 return;
             }
+
+            EpicLootDropsHelper.InstantDropsEnabled = false;
 
             var characterName = EpicLoot.GetCharacterCleanName(characterDrop.m_character);
             var level = characterDrop.m_character.GetLevel();
@@ -68,7 +70,7 @@ namespace EpicLoot
         [HarmonyBefore(new [] { "org.bepinex.plugins.creaturelevelcontrol" })]
         public static void Postfix(CharacterDrop __instance)
         {
-            EpicLootDropsHelper.DropsEnabled = __instance.m_dropsEnabled;
+            EpicLootDropsHelper.InstantDropsEnabled = __instance.m_dropsEnabled;
         }
     }
 

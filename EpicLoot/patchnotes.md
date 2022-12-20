@@ -1,4 +1,10 @@
-﻿## Version 0.9.1
+﻿## Version 0.9.2
+  * Gambles won't drop mats when the ItemsToMaterialsRatio is set to materials
+  * Fixing a bunch of Object.Destroy calls that should be ZNetScene.instance.Destroy calls
+  * Preventing the rings and leather belt from spawning at 0,0,0 when players join a game
+  * Fixing the terminal to work for a ton of commands that were broken
+  * Added an asset for each of the crafting materials
+## Version 0.9.1
   * Drop rates can now be globally scaled by using the "Global Drop Rate Modifier" config value
   * Magic Materials can be dropped instead of enchanted items by using the "Items To Materials Drop Ratio" config value.
     * The value goes from 0-1 where 0 is all items and 1 is all materials and any values in between is a random percentage of drops that will be materials instead of items.

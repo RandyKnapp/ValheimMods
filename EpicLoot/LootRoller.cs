@@ -209,7 +209,7 @@ namespace EpicLoot
             {
                 drops = drops.Where(x => x.Key > 0).ToList();
             }
-            else if (!AnyItemSpawnCheatsActive() && Mathf.Abs(EpicLoot.GlobalDropRateModifier.Value - 1) > float.Epsilon)
+            else if (Mathf.Abs(EpicLoot.GlobalDropRateModifier.Value - 1) > float.Epsilon)
             {
                 var clampedDropRate = Mathf.Clamp(EpicLoot.GlobalDropRateModifier.Value, 0, 4);
                 var modifiedDrops = new List<KeyValuePair<int, float>>();
@@ -236,6 +236,7 @@ namespace EpicLoot
             _weightedLootTable.Setup(loot, x => x.Weight);
             var selectedDrops = _weightedLootTable.Roll(dropCount);
 
+            var cheatsActive = AnyItemSpawnCheatsActive();
             foreach (var ld in selectedDrops)
             {
                 if (ld == null)
@@ -245,7 +246,7 @@ namespace EpicLoot
                 }
                 var lootDrop = ResolveLootDrop(ld);
                 
-                if (EpicLoot.ItemsToMaterialsDropRatio.Value > 0)
+                if (!cheatsActive && EpicLoot.ItemsToMaterialsDropRatio.Value > 0)
                 {
                     var clampedConvertRate = Mathf.Clamp(EpicLoot.ItemsToMaterialsDropRatio.Value, 0.0f, 1.0f);
                     var replaceWithMats = Random.Range(0.0f, 1.0f) < clampedConvertRate;
