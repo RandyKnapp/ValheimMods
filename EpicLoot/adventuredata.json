@@ -208,7 +208,8 @@
     "RefreshInterval": 7,
     "BiomeInfo": [
       { "Biome": "Meadows",     "Cost": 100, "ForestTokens": 5,  "MinRadius": 0,    "MaxRadius": 3000 },
-      { "Biome": "BlackForest", "Cost": 200, "ForestTokens": 10, "MinRadius": 0,    "MaxRadius": 6000 },
+      { "Biome": "BlackForest", "Cost": 200, "ForestTokens": 10, "MinRadius": 500,  "MaxRadius": 6000 },
+      { "Biome": "Ocean",       "Cost": -1,  "ForestTokens": 0,  "MinRadius": 500,  "MaxRadius": 8000 },
       { "Biome": "Swamp",       "Cost": 300, "ForestTokens": 15, "MinRadius": 2000, "MaxRadius": 6000 },
       { "Biome": "Mountain",    "Cost": 400, "ForestTokens": 20, "MinRadius": 2000, "MaxRadius": 6000 },
       { "Biome": "Plains",      "Cost": 500, "ForestTokens": 25, "MinRadius": 3000, "MaxRadius": 6000 },
@@ -217,7 +218,7 @@
     "StartRadiusMin": 0,
     "StartRadiusMax": 500,
     "IncreaseRadiusCount": 3,
-    "RadiusInterval": 500,
+    "RadiusInterval": 100,
     "MinimapAreaRadius": 60,
     "SaleItems": [
       { "Item": "RunestoneMagic",     "ForestTokenCost": 5 },
@@ -299,15 +300,15 @@
       { "Biome": "Mistlands",   "TargetID": "Seeker",           "RewardGold": 4, "RewardIron": 7, "RewardCoins": 1750,"Adds": [ { "ID": "SeekerBrood",  "Count": 10 } ] },
       { "Biome": "Mistlands",   "TargetID": "Gjall",            "RewardGold": 5, "RewardIron": 0, "RewardCoins": 1800 }
     ],
-	  // To configure custom bosses, order them in the order of progression desired. 
+    // To configure custom bosses, order them in the order of progression desired. 
     "Bosses": [
-		  {"Biome": "Meadows",		  "BossPrefab": "Eikthyr",		  "BossDefeatedKey": "defeated_eikthyr" },
-		  {"Biome": "BlackForest",	"BossPrefab": "gd_king",		  "BossDefeatedKey": "defeated_gdking" },
-		  {"Biome": "Ocean",			  "BossPrefab": "gd_king",		  "BossDefeatedKey": "defeated_gdking" }, 
-		  {"Biome": "Swamp", 			  "BossPrefab": "Bonemass",		  "BossDefeatedKey": "defeated_bonemass" },
-		  {"Biome": "Mountain", 		"BossPrefab": "Dragon",			  "BossDefeatedKey": "defeated_dragon" },
-		  {"Biome": "Plains", 		  "BossPrefab": "GoblinKing",		"BossDefeatedKey": "defeated_goblinking" },
-		  {"Biome": "Mistlands", 		"BossPrefab": "SeekerQueen",	"BossDefeatedKey": "defeated_queen" }
+      {"Biome": "Meadows",		  "BossPrefab": "Eikthyr",		  "BossDefeatedKey": "defeated_eikthyr" },
+      {"Biome": "BlackForest",	"BossPrefab": "gd_king",		  "BossDefeatedKey": "defeated_gdking" },
+      {"Biome": "Ocean",			  "BossPrefab": "gd_king",		  "BossDefeatedKey": "defeated_gdking" }, 
+      {"Biome": "Swamp", 			  "BossPrefab": "Bonemass",		  "BossDefeatedKey": "defeated_bonemass" },
+      {"Biome": "Mountain", 		"BossPrefab": "Dragon",			  "BossDefeatedKey": "defeated_dragon" },
+      {"Biome": "Plains", 		  "BossPrefab": "GoblinKing",		"BossDefeatedKey": "defeated_goblinking" },
+      {"Biome": "Mistlands", 		"BossPrefab": "SeekerQueen",	"BossDefeatedKey": "defeated_queen" }
     ],
     "Names": {
       "ChanceForSpecialName": 0.01,
