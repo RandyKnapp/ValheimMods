@@ -52,7 +52,7 @@ namespace EpicLoot.Adventure.Feature
 
             if (BossBountiesGated())
             {
-                foreach (var bossConfig in Bosses.BossData)
+                foreach (var bossConfig in AdventureDataManager.Config.Bounties.Bosses)
                 {
                     if (previousBoss == "" && EpicLoot.BossBountyMode.Value == GatedBountyMode.BossKillUnlocksNextBiomeBounties)
                     {
