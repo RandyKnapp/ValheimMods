@@ -167,6 +167,8 @@ namespace EpicLoot
         public const Minimap.PinType TreasureMapPinType = (Minimap.PinType) 801;
         public static bool HasAuga;
         public static bool AugaTooltipNoTextBoxes;
+        private static bool _dropsEnabled = false;
+        
 
         public static event Action AbilitiesInitialized;
         public static event Action LootTableLoaded;
@@ -174,6 +176,8 @@ namespace EpicLoot
         private static EpicLoot _instance;
         private Harmony _harmony;
         private float _worldLuckFactor;
+
+        public static bool DropsEnabled { get => _dropsEnabled; set => _dropsEnabled = value; }
 
         [UsedImplicitly]
         private void Awake()
