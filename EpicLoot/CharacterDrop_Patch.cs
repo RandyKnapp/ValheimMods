@@ -34,6 +34,8 @@ namespace EpicLoot
             {
                 return;
             }
+            
+            EpicLoot.DropsEnabled = false;
 
             var characterName = EpicLoot.GetCharacterCleanName(characterDrop.m_character);
             var level = characterDrop.m_character.GetLevel();
