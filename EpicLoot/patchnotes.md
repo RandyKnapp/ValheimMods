@@ -1,4 +1,5 @@
 ﻿## Version 0.9.2
+  * When using CLLC, creatures now correctly drop Epic Loot items
   * Gambles won't drop mats when the ItemsToMaterialsRatio is set to materials
   * Fixing a bunch of Object.Destroy calls that should be ZNetScene.instance.Destroy calls
   * Preventing the rings and leather belt from spawning at 0,0,0 when players join a game
