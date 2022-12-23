@@ -8,9 +8,9 @@ using Common;
 using EpicLoot.Crafting;
 using EpicLoot.LegendarySystem;
 using ExtendedItemDataFramework;
-using fastJSON;
 using HarmonyLib;
 using JetBrains.Annotations;
+using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
@@ -23,8 +23,6 @@ namespace EpicLoot
         public const string TypeID = "rkel";
 
         public MagicItem MagicItem;
-
-        private static readonly JSONParameters _saveParams = new JSONParameters { UseExtensions = false };
 
         public MagicItemComponent(ExtendedItemData parent)
             : base(TypeID, parent)
@@ -41,14 +39,14 @@ namespace EpicLoot
 
         public override string Serialize()
         {
-            return JSON.ToJSON(MagicItem, _saveParams);
+            return JsonConvert.SerializeObject(MagicItem, Formatting.None);
         }
 
         public override void Deserialize(string data)
         {
             try
             {
-                MagicItem = JSON.ToObject<MagicItem>(data, _saveParams);
+                MagicItem = JsonConvert.DeserializeObject<MagicItem>(data);
             }
             catch (Exception)
             {

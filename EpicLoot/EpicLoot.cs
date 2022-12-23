@@ -13,10 +13,11 @@ using EpicLoot.Crafting;
 using EpicLoot.GatedItemType;
 using EpicLoot.LegendarySystem;
 using EpicLoot.MagicItemEffects;
+using EpicLoot.Patching;
 using ExtendedItemDataFramework;
-using fastJSON;
 using HarmonyLib;
 using JetBrains.Annotations;
+using Newtonsoft.Json;
 using ServerSync;
 using UnityEngine;
 using UnityEngine.UI;
@@ -125,6 +126,7 @@ namespace EpicLoot
         public static ConfigEntry<float> GlobalDropRateModifier;
         public static ConfigEntry<float> ItemsToMaterialsDropRatio;
         public static ConfigEntry<bool> AlwaysShowWelcomeMessage;
+        public static ConfigEntry<bool> OutputPatchedConfigFiles;
 
         public static readonly List<ItemDrop.ItemData.ItemType> AllowedMagicItemTypes = new List<ItemDrop.ItemData.ItemType>
         {
@@ -212,6 +214,7 @@ namespace EpicLoot
             ItemsToMaterialsDropRatio = SyncedConfig("Balance", "Items To Materials Drop Ratio", 0.0f, "Sets the chance that item drops are instead dropped as magic crafting materials. 0 = all items, no materials. 1 = all materials, no items. Values between 0 and 1 change the ratio of items to materials that drop. At 0.5, half of everything that drops would be items and the other half would be materials. Min = 0, Max = 1");
 
             AlwaysShowWelcomeMessage = Config.Bind("Debug", "AlwaysShowWelcomeMessage", false, "Just a debug flag for testing the welcome message, do not use.");
+            OutputPatchedConfigFiles = Config.Bind("Debug", "OutputPatchedConfigFiles", false, "Just a debug flag for testing the patching system, do not use.");
 
             AbilityKeyCodes[0] = Config.Bind("Abilities", "Ability Hotkey 1", "g", "Hotkey for Ability Slot 1.");
             AbilityKeyCodes[1] = Config.Bind("Abilities", "Ability Hotkey 2", "h", "Hotkey for Ability Slot 2.");
@@ -225,6 +228,7 @@ namespace EpicLoot
 
             ExtendedItemData.RegisterCustomTypeID(MagicItemComponent.TypeID, typeof(MagicItemComponent));
 
+            LoadPatches();
             LoadTranslations();
             InitializeConfig();
             InitializeAbilities();
@@ -358,10 +362,21 @@ namespace EpicLoot
             return configEntry;
         }
 
+        public static void LoadPatches()
+        {
+            FilePatching.LoadAllPatches();
+        }
+
         private static void LoadTranslations()
         {
             var translationsJsonText = LoadJsonText("translations.json");
-            var translations = (IDictionary<string, object>)JSON.Parse(translationsJsonText);
+            var translations = JsonConvert.DeserializeObject<IDictionary<string, object>>(translationsJsonText);
+            if (translations == null)
+            {
+                Debug.LogError("Could not parse translations.json!");
+                return;
+            }
+
             foreach (var translation in translations)
             {
                 //Log($"Translation: {translation.Key}, {translation.Value}");
@@ -415,6 +430,16 @@ namespace EpicLoot
             {
                 _instance.Logger.LogError(message);
             }
+        }
+
+        public static void LogWarningForce(string message)
+        {
+            _instance.Logger.LogWarning(message);
+        }
+
+        public static void LogErrorForce(string message)
+        {
+            _instance.Logger.LogError(message);
         }
 
         /*private void Update()
@@ -865,7 +890,7 @@ namespace EpicLoot
                 T result;
                 try
                 {
-                    result = string.IsNullOrEmpty(syncedValue.Value) ? null : JSON.ToObject<T>(syncedValue.Value);
+                    result = string.IsNullOrEmpty(syncedValue.Value) ? null : JsonConvert.DeserializeObject<T>(syncedValue.Value);
                 }
                 catch (Exception)
                 {
@@ -895,13 +920,18 @@ namespace EpicLoot
 
         public static string LoadJsonText(string filename)
         {
-            var jsonFileName = GetAssetPath(filename);
-            return !string.IsNullOrEmpty(jsonFileName) ? File.ReadAllText(jsonFileName) : null;
-        }
+            var jsonFilePath = GetAssetPath(filename);
+            if (string.IsNullOrEmpty(jsonFilePath))
+                return null;
 
-        public static T JsonToObject<T>(string jsonFile) where T : class
-        {
-            return JSON.ToObject<T>(jsonFile);
+            var jsonFileText = File.ReadAllText(jsonFilePath);
+            var patchedJsonFileText = FilePatching.ProcessConfigFile(filename, jsonFileText);
+            if (OutputPatchedConfigFiles.Value && jsonFileText != patchedJsonFileText)
+            {
+                var debugFilePath = jsonFilePath.Replace(".json", "_patched.json");
+                File.WriteAllText(debugFilePath, patchedJsonFileText);
+            }
+            return patchedJsonFileText;
         }
 
         public static AssetBundle LoadAssetBundle(string filename)
@@ -1439,7 +1469,7 @@ namespace EpicLoot
         private static void GenerateTranslations()
         {
             var jsonFile = LoadJsonText("magiceffects.json");
-            var config = JSON.ToObject<MagicItemEffectsList>(jsonFile);
+            var config = JsonConvert.DeserializeObject<MagicItemEffectsList>(jsonFile);
 
             var translations = new Dictionary<string, string>();
 

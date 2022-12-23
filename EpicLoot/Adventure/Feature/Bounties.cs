@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Common;
-using fastJSON;
 using HarmonyLib;
+using Newtonsoft.Json;
 using UnityEngine;
 using Object = UnityEngine.Object;
 using Random = System.Random;
@@ -16,7 +16,6 @@ namespace EpicLoot.Adventure.Feature
     {
         public BountyLedger BountyLedger;
 
-        private static readonly JSONParameters _saveLoadParams = new JSONParameters { UseExtensions = false };
         private const string LedgerIdentifier = "randyknapp.mods.epicloot.BountyLedger";
 
         public override AdventureFeatureType Type => AdventureFeatureType.Bounties;
@@ -276,7 +275,7 @@ namespace EpicLoot.Adventure.Feature
                 bountyInfo.Slain = true;
                 player.SaveAdventureSaveData();
             }
-
+            
             if (isAdd)
             {
                 foreach (var addConfig in bountyInfo.Adds)
@@ -457,7 +456,15 @@ namespace EpicLoot.Adventure.Feature
             }
             else
             {
-                BountyLedger = JSON.ToObject<BountyLedger>(ledgerData, _saveLoadParams);
+                try
+                {
+                    BountyLedger = JsonConvert.DeserializeObject<BountyLedger>(ledgerData);
+                }
+                catch (Exception)
+                {
+                    Debug.LogWarning("[EpicLoot] WARNING! Could not load bounty kill ledger, kills made by other players may not have counted towards your bounties.");
+                    BountyLedger = new BountyLedger { WorldID = ZNet.m_world.m_uid };
+                }
             }
         }
 
@@ -470,7 +477,7 @@ namespace EpicLoot.Adventure.Feature
 
             ZoneSystem.instance.m_globalKeys.RemoveWhere(x => x.StartsWith(LedgerIdentifier));
 
-            var ledgerData = JSON.ToJSON(BountyLedger, _saveLoadParams);
+            var ledgerData = JsonConvert.SerializeObject(BountyLedger, Formatting.None);
             ledgerData = LedgerIdentifier + ledgerData;
             ZoneSystem.instance.SetGlobalKey(ledgerData);
         }
@@ -504,7 +511,7 @@ namespace EpicLoot.Adventure.Feature
             if (BountyLedger != null)
             {
                 var logs = BountyLedger.GetAllKillLogs(playerID);
-                results = JSON.ToNiceJSON(logs, _saveLoadParams);
+                results = JsonConvert.SerializeObject(logs, Formatting.Indented);
             }
 
             ZRoutedRpc.instance.InvokeRoutedRPC(sender, "SendKillLogs", results);
@@ -512,7 +519,10 @@ namespace EpicLoot.Adventure.Feature
 
         private void RPC_Client_ReceiveKillLogs(long sender, string logData)
         {
-            var logs = JSON.ToObject<List<BountyKillLog>>(logData);
+            var logs = JsonConvert.DeserializeObject<BountyKillLog[]>(logData);
+            if (logs == null)
+                return;
+
             foreach (var killLog in logs)
             {
                 OnBountyTargetSlain(killLog.BountyID, killLog.MonsterID, killLog.IsAdd);

@@ -50,9 +50,9 @@
     <Reference Include="BepInEx">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\core\BepInEx.dll</HintPath>
     </Reference>
-    <Reference Include="fastJSON, Version=2.4.0.0, Culture=neutral, PublicKeyToken=6b75a806b86095cd, processorArchitecture=MSIL">
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Libs\fastJSON.dll</HintPath>
+      <HintPath>..\Libs\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="ServerSync, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\Libs\ServerSync.dll</HintPath>
@@ -164,6 +164,7 @@
     <Compile Include="MagicItemEffects\IncreaseEitr.cs" />
     <Compile Include="MagicItemEffects\ModifyEitrRegen.cs" />
     <Compile Include="Multiplayer_Player_Patch.cs" />
+    <Compile Include="Patching\FilePatching.cs" />
     <Compile Include="Terminal_Patch.cs" />
     <Compile Include="Container_Patch.cs" />
     <Compile Include="Crafting\DisenchantTabController.cs" />
@@ -254,6 +255,7 @@
     <None Include="itemnames.json" />
     <None Include="legendaries.json" />
     <None Include="packages.config" />
+    <None Include="Patching\testpatches.json" />
     <None Include="translations.json" />
     <None Include="loottables.json" />
     <None Include="magiceffects.json" />
@@ -270,9 +272,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="..\Libs\fastJSON.dll">
-      <Link>fastJSON.dll</Link>
-    </EmbeddedResource>
     <EmbeddedResource Include="..\Libs\ServerSync.dll">
       <Link>ServerSync.dll</Link>
     </EmbeddedResource>
@@ -280,6 +279,9 @@
   <ItemGroup>
     <EmbeddedResource Include="..\Libs\AugaAPI.dll">
       <Link>AugaAPI.dll</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\Libs\Newtonsoft.Json.dll">
+      <Link>Newtonsoft.Json.dll</Link>
     </EmbeddedResource>
     <Content Include="ILRepack.targets">
       <SubType>Designer</SubType>
@@ -303,6 +305,7 @@ xcopy "$(ProjectDir)itemnames.json" "C:\Program Files (x86)\Steam\steamapps\comm
 xcopy "$(ProjectDir)adventuredata.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
 xcopy "$(ProjectDir)legendaries.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
 xcopy "$(ProjectDir)abilities.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
+xcopy "$(ProjectDir)\Patching\testpatches.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\patches\test\" /q /y /i
 
 xcopy "$(ProjectDir)translations.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim_Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
 xcopy "$(ProjectDir)loottables.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim_Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
