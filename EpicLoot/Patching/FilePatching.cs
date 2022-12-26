@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using BepInEx;
 using Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using UnityEngine;
 
 namespace EpicLoot.Patching
 {
@@ -22,14 +20,6 @@ namespace EpicLoot.Patching
         InsertBefore,   // Insert the provided value into the array containing the selected token, before the token
         InsertAfter,    // Insert the provided value into the array containing the selected token, after the token
         RemoveAll,      // Remove all elements of an array or all properties of an object
-    }
-
-    public enum FileAction
-    {
-        Changed, //Patchfile was Changed
-        Deleted, //Patchfile was Deleted
-        Renamed, //Patchfile was Renamed
-        Created, //Patchfile was Created
     }
 
     [Serializable]
@@ -81,13 +71,7 @@ namespace EpicLoot.Patching
 
         public static void RemoveFilePatches(string fileName, string patchFile)
         {
-            var filePatches = PatchesPerFile.GetValues(fileName,true).Where(y => y.SourceFile.Equals(patchFile)).ToList();
-
-            for (var index = 0; index < filePatches.Count; index++)
-            {
-                var patch = filePatches[index];
-                PatchesPerFile.Remove(fileName, patch);
-            }
+            PatchesPerFile.GetValues(fileName,true).RemoveAll(y => y.SourceFile.Equals(patchFile));
         }
 
         public static void GetAllConfigFileNames(DirectoryInfo pluginFolder)

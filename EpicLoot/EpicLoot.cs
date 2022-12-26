@@ -409,7 +409,7 @@ namespace EpicLoot
         public static void WatchNewPatchConfig()
         {
 
-            Debug.Log($"Watching For Files");
+            Log($"Watching For Files");
             //Patch JSON Watcher
 
             void ConsumeNewPatchFile(object s, FileSystemEventArgs e)
