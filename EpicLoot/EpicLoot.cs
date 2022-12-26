@@ -181,7 +181,6 @@ namespace EpicLoot
         private float _worldLuckFactor;
 
         [UsedImplicitly]
-        [HarmonyPriority(Priority.VeryLow)]
         private void Awake()
         {
             _instance = this;
