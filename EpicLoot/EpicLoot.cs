@@ -423,7 +423,7 @@ namespace EpicLoot
                         if (!fileInfo.Exists) return;
 
                         FilePatching.ProcessPatchFile(fileInfo);
-                        var sourceFile = fileInfo.FullName.Replace(FilePatching.PatchesDirPath, "");
+                        var sourceFile = fileInfo.Name;
 
                         foreach (var fileName in FilePatching.PatchesPerFile.Values.SelectMany(l => l).ToList()
                                      .Where(u => u.SourceFile.Equals(sourceFile)).Select(p => p.TargetFile).Distinct()
@@ -988,8 +988,8 @@ namespace EpicLoot
 
         private static void AddPatchFileWatcher(string fileName, string patchFile)
         {
-            var fullPatchFilename = string.Concat(FilePatching.PatchesDirPath, patchFile);
-
+            var fullPatchFilename = Path.Combine(FilePatching.PatchesDirPath, patchFile);
+            Log($"[AddPatchFileWatcher] Full Patch File Name = {fullPatchFilename}");
             void ConsumePatchFileEvent(object s, FileSystemEventArgs e)
             {
                 FileInfo fileInfo = null;

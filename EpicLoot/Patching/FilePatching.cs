@@ -193,7 +193,7 @@ namespace EpicLoot.Patching
                 if (patch.Priority < 0)
                     patch.Priority = defaultPriority;
 
-                patch.SourceFile = file.FullName.Replace(PatchesDirPath, "");
+                patch.SourceFile = file.Name;
                 EpicLoot.Log($"Adding Patch from {patch.SourceFile} to file {patch.TargetFile} with {patch.Path}");
                 PatchesPerFile.Add(patch.TargetFile, patch);
             }
