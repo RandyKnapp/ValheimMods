@@ -196,12 +196,12 @@ namespace EpicLoot
                 return false;
             }
 
-            if (AllowedItemNames?.Count > 0 && !AllowedItemNames.Contains(itemData.m_shared.m_name))
+            if (AllowedItemNames?.Count > 0 && !(AllowedItemNames.Contains(itemData.m_shared.m_name) || AllowedItemNames.Contains(itemData.m_dropPrefab?.name)))
             {
                 return false;
             }
 
-            if (ExcludedItemNames?.Count > 0 && ExcludedItemNames.Contains(itemData.m_shared.m_name))
+            if (ExcludedItemNames?.Count > 0 && (ExcludedItemNames.Contains(itemData.m_shared.m_name) || ExcludedItemNames.Contains(itemData.m_dropPrefab?.name)))
             {
                 return false;
             }

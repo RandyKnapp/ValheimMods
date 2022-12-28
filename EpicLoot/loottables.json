@@ -258,8 +258,9 @@
         { "Item": "SledgeIron",     "Weight": 1, "Rarity": [ 38, 50, 8, 4 ] },
         { "Item": "MaceIron",       "Weight": 1, "Rarity": [ 38, 50, 8, 4 ] },
         { "Item": "AtgeirIron",     "Weight": 1, "Rarity": [ 38, 50, 8, 4 ] },
-        { "Item": "SpearElderbark", "Weight": 1, "Rarity": [ 38, 50, 8, 4 ] }
-      ]
+        { "Item": "SpearElderbark", "Weight": 1, "Rarity": [ 38, 50, 8, 4 ] },
+        { "Item": "BowHuntsman",    "Weight": 1, "Rarity": [ 38, 50, 8, 4 ] }
+  ]
     },
     {
       "Name": "Tier3Armor",
@@ -414,11 +415,18 @@
       ]
     },
     {
+      "Name": "Tier6Tools",
+      "Loot": [
+        { "Item": "PickaxeBlackmetal", "Weight": 1, "Rarity": [ 0, 10, 50, 40 ] }
+      ]
+    },
+    {
       "Name": "Tier6Everything",
       "Loot": [
         { "Item": "Tier6Weapons" },
         { "Item": "Tier6Armor"   },
-        { "Item": "Tier6Shields" }
+        { "Item": "Tier6Shields" },
+        { "Item": "Tier6Tools"   }
       ]
     }
   ],
