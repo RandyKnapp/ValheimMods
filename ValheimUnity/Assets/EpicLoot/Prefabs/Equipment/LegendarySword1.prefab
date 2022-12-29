@@ -31,6 +31,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
+  - {fileID: 4551577774257583800}
   - {fileID: 6848782070499122573}
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -111,8 +112,11 @@ MonoBehaviour:
       m_attachOverride: 0
       m_description: 
       m_maxStackSize: 1
+      m_autoStack: 1
       m_maxQuality: 1
+      m_scaleByQuality: 0
       m_weight: 1
+      m_scaleWeightByQuality: 0
       m_value: 0
       m_teleportable: 1
       m_questItem: 0
@@ -126,13 +130,15 @@ MonoBehaviour:
       m_setStatusEffect: {fileID: 0}
       m_equipStatusEffect: {fileID: 0}
       m_movementModifier: 0
+      m_eitrRegenModifier: 0
       m_food: 0
       m_foodStamina: 0
+      m_foodEitr: 0
       m_foodBurnTime: 0
       m_foodRegen: 0
-      m_foodColor: {r: 1, g: 1, b: 1, a: 1}
       m_armorMaterial: {fileID: 0}
       m_helmetHideHair: 1
+      m_helmetHideBeard: 0
       m_armor: 10
       m_armorPerLevel: 1
       m_damageModifiers: []
@@ -172,17 +178,25 @@ MonoBehaviour:
       m_backstabBonus: 4
       m_dodgeable: 0
       m_blockable: 0
+      m_tamedOnly: 0
+      m_alwaysRotate: 0
       m_attackStatusEffect: {fileID: 0}
       m_spawnOnHit: {fileID: 0}
       m_spawnOnHitTerrain: {fileID: 0}
+      m_projectileToolTip: 1
+      m_ammoType: 
       m_attack:
         m_attackType: 0
         m_attackAnimation: 
         m_attackRandomAnimations: 0
         m_attackChainLevels: 0
+        m_loopingAttack: 0
         m_consumeItem: 0
         m_hitTerrain: 1
         m_attackStamina: 20
+        m_attackEitr: 0
+        m_attackHealth: 0
+        m_attackHealthPercentage: 0
         m_speedFactor: 0.2
         m_speedFactorRotation: 0.2
         m_attackStartNoise: 10
@@ -190,11 +204,24 @@ MonoBehaviour:
         m_damageMultiplier: 1
         m_forceMultiplier: 1
         m_staggerMultiplier: 1
+        m_recoilPushback: 0
+        m_selfDamage: 0
         m_attackOriginJoint: 
         m_attackRange: 1.5
         m_attackHeight: 0.6
         m_attackOffset: 0
         m_spawnOnTrigger: {fileID: 0}
+        m_toggleFlying: 0
+        m_attach: 0
+        m_detachChance: 1
+        m_requiresReload: 0
+        m_reloadAnimation: 
+        m_reloadTime: 2
+        m_reloadStaminaDrain: 0
+        m_bowDraw: 0
+        m_drawDurationMin: 0
+        m_drawStaminaDrain: 0
+        m_drawAnimationState: 
         m_attackAngle: 90
         m_attackRayWidth: 0
         m_maxYAngle: 0
@@ -202,8 +229,11 @@ MonoBehaviour:
         m_hitPointtype: 0
         m_hitThroughWalls: 0
         m_multiHit: 1
+        m_pickaxeSpecial: 0
         m_lastChainDamageMultiplier: 2
         m_resetChainIfHit: 0
+        m_raiseSkillAmount: 1
+        m_skillHitType: 4
         m_specialHitSkill: 0
         m_specialHitType: 0
         m_attackProjectile: {fileID: 0}
@@ -211,6 +241,7 @@ MonoBehaviour:
         m_projectileVelMin: 2
         m_projectileAccuracy: 10
         m_projectileAccuracyMin: 20
+        m_skillAccuracy: 0
         m_useCharacterFacing: 0
         m_useCharacterFacingYAim: 0
         m_launchAngle: 0
@@ -218,6 +249,7 @@ MonoBehaviour:
         m_projectileBursts: 1
         m_burstInterval: 0
         m_destroyPreviousProjectile: 0
+        m_perBurstResourceUsage: 0
         m_hitEffect:
           m_effectPrefabs: []
         m_hitTerrainEffect:
@@ -227,15 +259,21 @@ MonoBehaviour:
         m_triggerEffect:
           m_effectPrefabs: []
         m_trailStartEffect:
+          m_effectPrefabs: []
+        m_burstEffect:
           m_effectPrefabs: []
       m_secondaryAttack:
         m_attackType: 0
         m_attackAnimation: 
         m_attackRandomAnimations: 0
         m_attackChainLevels: 0
+        m_loopingAttack: 0
         m_consumeItem: 0
         m_hitTerrain: 1
         m_attackStamina: 20
+        m_attackEitr: 0
+        m_attackHealth: 0
+        m_attackHealthPercentage: 0
         m_speedFactor: 0.2
         m_speedFactorRotation: 0.2
         m_attackStartNoise: 10
@@ -243,11 +281,24 @@ MonoBehaviour:
         m_damageMultiplier: 1
         m_forceMultiplier: 1
         m_staggerMultiplier: 1
+        m_recoilPushback: 0
+        m_selfDamage: 0
         m_attackOriginJoint: 
         m_attackRange: 1.5
         m_attackHeight: 0.6
         m_attackOffset: 0
         m_spawnOnTrigger: {fileID: 0}
+        m_toggleFlying: 0
+        m_attach: 0
+        m_detachChance: 1
+        m_requiresReload: 0
+        m_reloadAnimation: 
+        m_reloadTime: 2
+        m_reloadStaminaDrain: 0
+        m_bowDraw: 0
+        m_drawDurationMin: 0
+        m_drawStaminaDrain: 0
+        m_drawAnimationState: 
         m_attackAngle: 90
         m_attackRayWidth: 0
         m_maxYAngle: 0
@@ -255,8 +306,11 @@ MonoBehaviour:
         m_hitPointtype: 0
         m_hitThroughWalls: 0
         m_multiHit: 1
+        m_pickaxeSpecial: 0
         m_lastChainDamageMultiplier: 2
         m_resetChainIfHit: 0
+        m_raiseSkillAmount: 1
+        m_skillHitType: 4
         m_specialHitSkill: 0
         m_specialHitType: 0
         m_attackProjectile: {fileID: 0}
@@ -264,6 +318,7 @@ MonoBehaviour:
         m_projectileVelMin: 2
         m_projectileAccuracy: 10
         m_projectileAccuracyMin: 20
+        m_skillAccuracy: 0
         m_useCharacterFacing: 0
         m_useCharacterFacingYAim: 0
         m_launchAngle: 0
@@ -271,6 +326,7 @@ MonoBehaviour:
         m_projectileBursts: 1
         m_burstInterval: 0
         m_destroyPreviousProjectile: 0
+        m_perBurstResourceUsage: 0
         m_hitEffect:
           m_effectPrefabs: []
         m_hitTerrainEffect:
@@ -280,6 +336,8 @@ MonoBehaviour:
         m_triggerEffect:
           m_effectPrefabs: []
         m_trailStartEffect:
+          m_effectPrefabs: []
+        m_burstEffect:
           m_effectPrefabs: []
       m_useDurability: 0
       m_destroyBroken: 1
@@ -288,18 +346,19 @@ MonoBehaviour:
       m_durabilityPerLevel: 50
       m_useDurabilityDrain: 1
       m_durabilityDrain: 0
-      m_holdDurationMin: 0
-      m_holdStaminaDrain: 0
-      m_holdAnimationState: 
-      m_ammoType: 
       m_aiAttackRange: 2
       m_aiAttackRangeMin: 0
       m_aiAttackInterval: 2
       m_aiAttackMaxAngle: 5
       m_aiWhenFlying: 1
+      m_aiWhenFlyingAltitudeMin: 0
+      m_aiWhenFlyingAltitudeMax: 999999
       m_aiWhenWalking: 1
       m_aiWhenSwiming: 1
       m_aiPrioritized: 0
+      m_aiInDungeonOnly: 0
+      m_aiInMistOnly: 0
+      m_aiMaxHealthPercentage: 1
       m_aiTargetType: 0
       m_hitEffect:
         m_effectPrefabs: []
@@ -316,6 +375,126 @@ MonoBehaviour:
       m_trailStartEffect:
         m_effectPrefabs: []
       m_consumeStatusEffect: {fileID: 0}
+--- !u!1 &5545919842947012755
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4551577774257583800}
+  - component: {fileID: 2785897395060939693}
+  - component: {fileID: 5265614348090793397}
+  - component: {fileID: 798748728021110016}
+  - component: {fileID: 2774044087696017513}
+  m_Layer: 12
+  m_Name: attach
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4551577774257583800
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5545919842947012755}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
+  m_Children: []
+  m_Father: {fileID: 7709922720830567651}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!33 &2785897395060939693
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5545919842947012755}
+  m_Mesh: {fileID: 2534964839176971238, guid: fa57c81ad8078e64b8ea5a20072d2ea5, type: 3}
+--- !u!23 &5265614348090793397
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5545919842947012755}
+  m_Enabled: 0
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: b0c42d8b041027e4f88073c8646c9fda, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &798748728021110016
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5545919842947012755}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!205 &2774044087696017513
+LODGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5545919842947012755}
+  serializedVersion: 2
+  m_LocalReferencePoint: {x: 0, y: 0, z: 0}
+  m_Size: 1
+  m_FadeMode: 0
+  m_AnimateCrossFading: 0
+  m_LastLODIsBillboard: 0
+  m_LODs:
+  - screenRelativeHeight: 0.6
+    fadeTransitionWidth: 0
+    renderers: []
+  - screenRelativeHeight: 0.3
+    fadeTransitionWidth: 0
+    renderers: []
+  - screenRelativeHeight: 0.1
+    fadeTransitionWidth: 0
+    renderers: []
+  m_Enabled: 1
 --- !u!1001 &6853157044002585781
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -329,7 +508,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4658648577433912, guid: 9263103b62da5fd4db4055635b37650d, type: 3}
       propertyPath: m_RootOrder
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4658648577433912, guid: 9263103b62da5fd4db4055635b37650d, type: 3}
       propertyPath: m_LocalPosition.x
