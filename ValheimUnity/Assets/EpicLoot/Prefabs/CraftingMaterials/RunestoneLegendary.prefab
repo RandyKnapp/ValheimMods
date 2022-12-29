@@ -15,7 +15,7 @@ PrefabInstance:
     - target: {fileID: 198913167976628282, guid: 2240de27b5e08e845b1b823b1e94dfa8,
         type: 3}
       propertyPath: m_itemData.m_shared.m_name
-      value: Legendary $mod_epicloot_assets_runestone
+      value: $mod_epicloot_legendary $mod_epicloot_assets_runestone
       objectReference: {fileID: 0}
     - target: {fileID: 198913167976628282, guid: 2240de27b5e08e845b1b823b1e94dfa8,
         type: 3}
