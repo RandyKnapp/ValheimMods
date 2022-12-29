@@ -165,6 +165,7 @@
     <Compile Include="MagicItemEffects\ModifyEitrRegen.cs" />
     <Compile Include="Multiplayer_Player_Patch.cs" />
     <Compile Include="Patching\FilePatching.cs" />
+    <Compile Include="PlayerData\Player_Patch.cs" />
     <Compile Include="Terminal_Patch.cs" />
     <Compile Include="Container_Patch.cs" />
     <Compile Include="Crafting\DisenchantTabController.cs" />
