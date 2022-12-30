@@ -1,4 +1,4 @@
-﻿## Version 0.9.3 - Release Candidate 1 (loads as version 0.9.2)
+﻿## Version 0.9.3 - Release Candidate 2 (loads as version 0.9.2)
   * Introduction of the JSON Configuration Patching System. 
     * Please reference https://github.com/RandyKnapp/ValheimMods/wiki/Config-Patching-%280.9.3-or-newer%29 for information.
     * Example Patch Configs and Additional Information to be made available Soon(tm)
@@ -13,6 +13,10 @@
     * In `iteminfo.json`, "Fallback" can now be a specific prefab name (for a single item), or the **Type** of a different group.
       * For example: Instead of Staff's falling back to a single Club, Staff's now fall back to Spears, and based on Gating preferences, can spawn different levels of Spears.
       * This is also changed for Fist weapons, and some other balance changes.
+  * Fixed Cultist and Growth Bounties Prefab Names which were incorrect and preventing Bounty from spawning.
+  * Fixed Missing Mistland items from loottables
+  * Added in ability to use prefab names in AllowedItemNames/ExcludedItemNames
+  * Now showing modified attack stamina in Epic Loot tooltip.
 ## Version 0.9.2
   * When using CLLC, creatures now correctly drop Epic Loot items
   * Gambles won't drop mats when the ItemsToMaterialsRatio is set to materials
