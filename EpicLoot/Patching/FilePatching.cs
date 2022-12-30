@@ -69,6 +69,11 @@ namespace EpicLoot.Patching
             ProcessPatchDirectory(patchesFolder);
         }
 
+        public static void RemoveFilePatches(string fileName, string patchFile)
+        {
+            PatchesPerFile.GetValues(fileName,true).RemoveAll(y => y.SourceFile.Equals(patchFile));
+        }
+
         public static void GetAllConfigFileNames(DirectoryInfo pluginFolder)
         {
             ConfigFileNames.Clear();
@@ -188,8 +193,8 @@ namespace EpicLoot.Patching
                 if (patch.Priority < 0)
                     patch.Priority = defaultPriority;
 
-                patch.SourceFile = file.FullName.Replace(PatchesDirPath, "");
-
+                patch.SourceFile = file.Name;
+                EpicLoot.Log($"Adding Patch from {patch.SourceFile} to file {patch.TargetFile} with {patch.Path}");
                 PatchesPerFile.Add(patch.TargetFile, patch);
             }
         }
@@ -203,7 +208,7 @@ namespace EpicLoot.Patching
                 patchesFolderPath = Path.Combine(Path.GetDirectoryName(assembly.Location) ?? string.Empty, "patches");
                 if (!Directory.Exists(patchesFolderPath))
                 {
-                    return null;
+                    Directory.CreateDirectory(patchesFolderPath);
                 }
             }
 
