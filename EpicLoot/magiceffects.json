@@ -45,10 +45,10 @@
         "NoRoll": true
       },
       "ValuesPerRarity" : {
-        "Magic" : { "MinValue" : 10, "MaxValue" : 20, "Increment" : 1 },
-        "Rare" : { "MinValue" : 10, "MaxValue" : 20, "Increment" : 1 },
-        "Epic" : { "MinValue" : 10, "MaxValue" : 20, "Increment" : 1 },
-        "Legendary" : { "MinValue" : 15, "MaxValue" : 25, "Increment" : 1 }
+        "Magic" : { "MinValue" : 10, "MaxValue" : 20, "Increment" : 5 },
+        "Rare" : { "MinValue" : 15, "MaxValue" : 25, "Increment" : 5 },
+        "Epic" : { "MinValue" : 20, "MaxValue" : 30, "Increment" : 5 },
+        "Legendary" : { "MinValue" : 25, "MaxValue" : 40, "Increment" : 5 }
       },
       "SelectionWeight" : 1,
       "Comment" : "Can't be rolled. Too powerful?"
