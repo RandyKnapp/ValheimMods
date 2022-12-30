@@ -110,6 +110,11 @@ namespace EpicLoot
             return itemData.IsMagic() || itemData.IsRunestone();
         }
 
+        public static bool HasRarity(this ItemDrop.ItemData itemData)
+        {
+            return itemData.IsMagic() || itemData.IsMagicCraftingMaterial() || itemData.IsRunestone();
+        }
+
         public static ItemRarity GetRarity(this ItemDrop.ItemData itemData)
         {
             if (itemData.IsMagic())
@@ -157,28 +162,34 @@ namespace EpicLoot
             return itemData.Extended()?.GetComponent<MagicItemComponent>()?.MagicItem;
         }
 
+        public static string GetDisplayName(this ItemDrop.ItemData itemData)
+        {
+            var name = itemData.m_shared.m_name;
+
+            if (itemData.IsMagic(out var magicItem) && !string.IsNullOrEmpty(magicItem.DisplayName))
+            {
+                name = magicItem.DisplayName;
+            }
+
+            return name;
+        }
+
         public static string GetDecoratedName(this ItemDrop.ItemData itemData, string colorOverride = null)
         {
             var color = "white";
-            var name = itemData.m_shared.m_name;
-
-            if (itemData.IsMagic())
-            {
-                var magicItem = itemData.GetMagicItem();
-                color = magicItem.GetColorString();
-                if (!string.IsNullOrEmpty(magicItem.DisplayName))
-                {
-                    name = magicItem.DisplayName;
-                }
-            }
-            else if (itemData.IsMagicCraftingMaterial() || itemData.IsRunestone())
-            {
-                color = itemData.GetCraftingMaterialRarityColor();
-            }
+            var name = GetDisplayName(itemData);
 
             if (!string.IsNullOrEmpty(colorOverride))
             {
                 color = colorOverride;
+            }
+            else if (itemData.IsMagic(out var magicItem))
+            {
+                color = magicItem.GetColorString();
+            }
+            else if (itemData.IsMagicCraftingMaterial() || itemData.IsRunestone())
+            {
+                color = itemData.GetCraftingMaterialRarityColor();
             }
 
             return $"<color={color}>{name}</color>";

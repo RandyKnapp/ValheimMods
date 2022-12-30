@@ -10,6 +10,7 @@ using Common;
 using EpicLoot.Abilities;
 using EpicLoot.Adventure;
 using EpicLoot.Crafting;
+using EpicLoot.CraftingV2;
 using EpicLoot.GatedItemType;
 using EpicLoot.LegendarySystem;
 using EpicLoot.MagicItemEffects;
@@ -228,6 +229,9 @@ namespace EpicLoot
 
             ExtendedItemData.RegisterCustomTypeID(MagicItemComponent.TypeID, typeof(MagicItemComponent));
 
+            var assembly = Assembly.GetExecutingAssembly();
+            LoadEmbeddedAssembly(assembly, "EpicLoot-UnityLib.dll");
+
             LoadPatches();
             LoadTranslations();
             InitializeConfig();
@@ -237,12 +241,30 @@ namespace EpicLoot
 
             LoadAssets();
 
+            EnchantingUIController.Initialize();
             ExtendedItemData.LoadExtendedItemData += MagicItemComponent.OnNewExtendedItemData;
             ExtendedItemData.NewExtendedItemData += MagicItemComponent.OnNewExtendedItemData;
 
             _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), PluginId);
 
             LootTableLoaded?.Invoke();
+        }
+
+        private static void LoadEmbeddedAssembly(Assembly assembly, string assemblyName)
+        {
+            var stream = assembly.GetManifestResourceStream($"{assembly.GetName().Name}.{assemblyName}");
+            if (stream == null)
+            {
+                LogError($"Could not load embedded assembly ({assemblyName})!");
+                return;
+            }
+
+            using (stream)
+            {
+                var data = new byte[stream.Length];
+                stream.Read(data, 0, data.Length);
+                Assembly.Load(data);
+            }
         }
 
         public void Start()
@@ -509,7 +531,7 @@ namespace EpicLoot
             LoadCraftingMaterialAssets(assetBundle, "Reagent");
             LoadCraftingMaterialAssets(assetBundle, "Essence");
 
-            LoadStationExtension(assetBundle, "piece_enchanter", new PieceDef()
+            LoadBuildPiece(assetBundle, "piece_enchanter", new PieceDef()
             {
                 Table = "_HammerPieceTable",
                 CraftingStation = "piece_workbench",
@@ -521,7 +543,7 @@ namespace EpicLoot
                     new RecipeRequirementConfig { item = "Copper", amount = 3 },
                 }
             });
-            LoadStationExtension(assetBundle, "piece_augmenter", new PieceDef()
+            LoadBuildPiece(assetBundle, "piece_augmenter", new PieceDef()
             {
                 Table = "_HammerPieceTable",
                 CraftingStation = "piece_workbench",
@@ -531,6 +553,15 @@ namespace EpicLoot
                     new RecipeRequirementConfig { item = "Obsidian", amount = 10 },
                     new RecipeRequirementConfig { item = "Crystal", amount = 3 },
                     new RecipeRequirementConfig { item = "Bronze", amount = 3 },
+                }
+            });
+            LoadBuildPiece(assetBundle, "piece_enchantingtable", new PieceDef() {
+                Table = "_HammerPieceTable",
+                CraftingStation = "piece_workbench",
+                Resources = new List<RecipeRequirementConfig>
+                {
+                    new RecipeRequirementConfig { item = "FineWood", amount = 10 },
+                    new RecipeRequirementConfig { item = "SurtlingCore", amount = 1 }
                 }
             });
 
@@ -580,7 +611,7 @@ namespace EpicLoot
             }
         }
 
-        private static void LoadStationExtension(AssetBundle assetBundle, string assetName, PieceDef pieceDef)
+        private static void LoadBuildPiece(AssetBundle assetBundle, string assetName, PieceDef pieceDef)
         {
             var prefab = assetBundle.LoadAsset<GameObject>(assetName);
             RegisteredPieces.Add(prefab, pieceDef);
@@ -719,7 +750,7 @@ namespace EpicLoot
                 else
                 {
                     var otherPiece = pieceTable.m_pieces.Find(x => x.GetComponent<Piece>() != null).GetComponent<Piece>();
-                    piece.m_placeEffect.m_effectPrefabs.AddRangeToArray(otherPiece.m_placeEffect.m_effectPrefabs);
+                    piece.m_placeEffect.m_effectPrefabs = otherPiece.m_placeEffect.m_effectPrefabs.ToArray();
                 }
             }
         }

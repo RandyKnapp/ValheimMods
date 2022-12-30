@@ -111,6 +111,8 @@
     <Compile Include="Abilities\PlayerExtensions_Abilities.cs" />
     <Compile Include="Adventure\Feature\Bosses.cs" />
     <Compile Include="Adventure\Feature\BountyLedger.cs" />
+    <Compile Include="CraftingV2\EnchantingUIController.cs" />
+    <Compile Include="CraftingV2\EnchantingUI_Patches.cs" />
     <Compile Include="DebugText.cs" />
     <Compile Include="GameCamera_Patch.cs" />
     <Compile Include="Healing\AddHealingQueueToPlayerPatch.cs" />
@@ -266,6 +268,10 @@
     <None Include="recipes.json" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\EpicLoot-UnityLib\EpicLoot-UnityLib.csproj">
+      <Project>{8daba031-aea4-472f-a9aa-de8b1aa69de5}</Project>
+      <Name>EpicLoot-UnityLib</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ExtendedItemDataFramework\ExtendedItemDataFramework.csproj">
       <Project>{2f61a8ab-bf4d-4e0c-9b90-4b2ba74438c5}</Project>
       <Name>ExtendedItemDataFramework</Name>
@@ -282,6 +288,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="..\Libs\Newtonsoft.Json.dll">
       <Link>Newtonsoft.Json.dll</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\ValheimUnity\Assets\ExternalLibraries\EpicLoot-UnityLib.dll">
+      <Link>EpicLoot-UnityLib.dll</Link>
     </EmbeddedResource>
     <Content Include="ILRepack.targets">
       <SubType>Designer</SubType>

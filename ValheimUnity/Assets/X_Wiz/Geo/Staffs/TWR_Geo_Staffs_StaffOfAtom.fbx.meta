@@ -1,0 +1,1276 @@
+fileFormatVersion: 2
+guid: 933177cf107a9f6468bd61203e81e0af
+timeCreated: 1539878111
+licenseType: Store
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: //RootNode
+    100002: TWR_Staffs_StaffOfAtom_Body
+    100004: TWR_Staffs_StaffOfAtom_CenterSphere
+    100006: TWR_Staffs_StaffOfAtom_CenterSphereGrp
+    100008: TWR_Staffs_StaffOfAtom_CenterSphereShellBottomGrp
+    100010: TWR_Staffs_StaffOfAtom_CenterSphereShellBottomLeft_01
+    100012: TWR_Staffs_StaffOfAtom_CenterSphereShellBottomLeft_02
+    100014: TWR_Staffs_StaffOfAtom_CenterSphereShellBottomLeftGrp
+    100016: TWR_Staffs_StaffOfAtom_CenterSphereShellBottomRight_01
+    100018: TWR_Staffs_StaffOfAtom_CenterSphereShellBottomRight_02
+    100020: TWR_Staffs_StaffOfAtom_CenterSphereShellBottomRightGrp
+    100022: TWR_Staffs_StaffOfAtom_CenterSphereShellGrp
+    100024: TWR_Staffs_StaffOfAtom_CenterSphereShellTopGrp
+    100026: TWR_Staffs_StaffOfAtom_CenterSphereShellTopLeft_01
+    100028: TWR_Staffs_StaffOfAtom_CenterSphereShellTopLeft_02
+    100030: TWR_Staffs_StaffOfAtom_CenterSphereShellTopLeftGrp
+    100032: TWR_Staffs_StaffOfAtom_CenterSphereShellTopRight_01
+    100034: TWR_Staffs_StaffOfAtom_CenterSphereShellTopRight_02
+    100036: TWR_Staffs_StaffOfAtom_CenterSphereShellTopRightGrp
+    100038: TWR_Staffs_StaffOfAtom_Rings_01
+    100040: TWR_Staffs_StaffOfAtom_Rings_02
+    100042: TWR_Staffs_StaffOfAtom_Rings_03
+    100044: TWR_Geo_Sta_StaffOfAtom_Body
+    100046: TWR_Geo_Sta_StaffOfAtom_CenterSphere
+    100048: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp
+    100050: TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp
+    100052: TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeft_01
+    100054: TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeft_02
+    100056: TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeftGrp
+    100058: TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRight_01
+    100060: TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRight_02
+    100062: TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRightGrp
+    100064: TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp
+    100066: TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp
+    100068: TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeft_01
+    100070: TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeft_02
+    100072: TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeftGrp
+    100074: TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRight_01
+    100076: TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRight_02
+    100078: TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRightGrp
+    100080: TWR_Geo_Sta_StaffOfAtom_Rings_01
+    100082: TWR_Geo_Sta_StaffOfAtom_Rings_02
+    100084: TWR_Geo_Sta_StaffOfAtom_Rings_03
+    400000: //RootNode
+    400002: TWR_Staffs_StaffOfAtom_Body
+    400004: TWR_Staffs_StaffOfAtom_CenterSphere
+    400006: TWR_Staffs_StaffOfAtom_CenterSphereGrp
+    400008: TWR_Staffs_StaffOfAtom_CenterSphereShellBottomGrp
+    400010: TWR_Staffs_StaffOfAtom_CenterSphereShellBottomLeft_01
+    400012: TWR_Staffs_StaffOfAtom_CenterSphereShellBottomLeft_02
+    400014: TWR_Staffs_StaffOfAtom_CenterSphereShellBottomLeftGrp
+    400016: TWR_Staffs_StaffOfAtom_CenterSphereShellBottomRight_01
+    400018: TWR_Staffs_StaffOfAtom_CenterSphereShellBottomRight_02
+    400020: TWR_Staffs_StaffOfAtom_CenterSphereShellBottomRightGrp
+    400022: TWR_Staffs_StaffOfAtom_CenterSphereShellGrp
+    400024: TWR_Staffs_StaffOfAtom_CenterSphereShellTopGrp
+    400026: TWR_Staffs_StaffOfAtom_CenterSphereShellTopLeft_01
+    400028: TWR_Staffs_StaffOfAtom_CenterSphereShellTopLeft_02
+    400030: TWR_Staffs_StaffOfAtom_CenterSphereShellTopLeftGrp
+    400032: TWR_Staffs_StaffOfAtom_CenterSphereShellTopRight_01
+    400034: TWR_Staffs_StaffOfAtom_CenterSphereShellTopRight_02
+    400036: TWR_Staffs_StaffOfAtom_CenterSphereShellTopRightGrp
+    400038: TWR_Staffs_StaffOfAtom_Rings_01
+    400040: TWR_Staffs_StaffOfAtom_Rings_02
+    400042: TWR_Staffs_StaffOfAtom_Rings_03
+    400044: TWR_Geo_Sta_StaffOfAtom_Body
+    400046: TWR_Geo_Sta_StaffOfAtom_CenterSphere
+    400048: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp
+    400050: TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp
+    400052: TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeft_01
+    400054: TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeft_02
+    400056: TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeftGrp
+    400058: TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRight_01
+    400060: TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRight_02
+    400062: TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRightGrp
+    400064: TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp
+    400066: TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp
+    400068: TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeft_01
+    400070: TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeft_02
+    400072: TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeftGrp
+    400074: TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRight_01
+    400076: TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRight_02
+    400078: TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRightGrp
+    400080: TWR_Geo_Sta_StaffOfAtom_Rings_01
+    400082: TWR_Geo_Sta_StaffOfAtom_Rings_02
+    400084: TWR_Geo_Sta_StaffOfAtom_Rings_03
+    2300000: TWR_Staffs_StaffOfAtom_Body
+    2300002: TWR_Staffs_StaffOfAtom_CenterSphere
+    2300004: TWR_Staffs_StaffOfAtom_CenterSphereShellBottomLeft_01
+    2300006: TWR_Staffs_StaffOfAtom_CenterSphereShellBottomLeft_02
+    2300008: TWR_Staffs_StaffOfAtom_CenterSphereShellBottomRight_01
+    2300010: TWR_Staffs_StaffOfAtom_CenterSphereShellBottomRight_02
+    2300012: TWR_Staffs_StaffOfAtom_CenterSphereShellTopLeft_01
+    2300014: TWR_Staffs_StaffOfAtom_CenterSphereShellTopLeft_02
+    2300016: TWR_Staffs_StaffOfAtom_CenterSphereShellTopRight_01
+    2300018: TWR_Staffs_StaffOfAtom_CenterSphereShellTopRight_02
+    2300020: TWR_Staffs_StaffOfAtom_Rings_01
+    2300022: TWR_Staffs_StaffOfAtom_Rings_02
+    2300024: TWR_Staffs_StaffOfAtom_Rings_03
+    2300026: TWR_Geo_Sta_StaffOfAtom_Body
+    2300028: TWR_Geo_Sta_StaffOfAtom_CenterSphere
+    2300030: TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeft_01
+    2300032: TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeft_02
+    2300034: TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRight_01
+    2300036: TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRight_02
+    2300038: TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeft_01
+    2300040: TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeft_02
+    2300042: TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRight_01
+    2300044: TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRight_02
+    2300046: TWR_Geo_Sta_StaffOfAtom_Rings_01
+    2300048: TWR_Geo_Sta_StaffOfAtom_Rings_02
+    2300050: TWR_Geo_Sta_StaffOfAtom_Rings_03
+    3300000: TWR_Staffs_StaffOfAtom_Body
+    3300002: TWR_Staffs_StaffOfAtom_CenterSphere
+    3300004: TWR_Staffs_StaffOfAtom_CenterSphereShellBottomLeft_01
+    3300006: TWR_Staffs_StaffOfAtom_CenterSphereShellBottomLeft_02
+    3300008: TWR_Staffs_StaffOfAtom_CenterSphereShellBottomRight_01
+    3300010: TWR_Staffs_StaffOfAtom_CenterSphereShellBottomRight_02
+    3300012: TWR_Staffs_StaffOfAtom_CenterSphereShellTopLeft_01
+    3300014: TWR_Staffs_StaffOfAtom_CenterSphereShellTopLeft_02
+    3300016: TWR_Staffs_StaffOfAtom_CenterSphereShellTopRight_01
+    3300018: TWR_Staffs_StaffOfAtom_CenterSphereShellTopRight_02
+    3300020: TWR_Staffs_StaffOfAtom_Rings_01
+    3300022: TWR_Staffs_StaffOfAtom_Rings_02
+    3300024: TWR_Staffs_StaffOfAtom_Rings_03
+    3300026: TWR_Geo_Sta_StaffOfAtom_Body
+    3300028: TWR_Geo_Sta_StaffOfAtom_CenterSphere
+    3300030: TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeft_01
+    3300032: TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeft_02
+    3300034: TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRight_01
+    3300036: TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRight_02
+    3300038: TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeft_01
+    3300040: TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeft_02
+    3300042: TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRight_01
+    3300044: TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRight_02
+    3300046: TWR_Geo_Sta_StaffOfAtom_Rings_01
+    3300048: TWR_Geo_Sta_StaffOfAtom_Rings_02
+    3300050: TWR_Geo_Sta_StaffOfAtom_Rings_03
+    4300000: TWR_Staffs_StaffOfAtom_CenterSphereShellTopRight_01
+    4300002: TWR_Staffs_StaffOfAtom_CenterSphereShellTopRight_02
+    4300004: TWR_Staffs_StaffOfAtom_CenterSphereShellTopLeft_01
+    4300006: TWR_Staffs_StaffOfAtom_CenterSphereShellTopLeft_02
+    4300008: TWR_Staffs_StaffOfAtom_CenterSphereShellBottomRight_02
+    4300010: TWR_Staffs_StaffOfAtom_CenterSphereShellBottomRight_01
+    4300012: TWR_Staffs_StaffOfAtom_CenterSphereShellBottomLeft_02
+    4300014: TWR_Staffs_StaffOfAtom_CenterSphereShellBottomLeft_01
+    4300016: TWR_Staffs_StaffOfAtom_CenterSphere
+    4300018: TWR_Staffs_StaffOfAtom_Rings_01
+    4300020: TWR_Staffs_StaffOfAtom_Rings_02
+    4300022: TWR_Staffs_StaffOfAtom_Rings_03
+    4300024: TWR_Staffs_StaffOfAtom_Body
+    4300026: TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRight_01
+    4300028: TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRight_02
+    4300030: TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeft_01
+    4300032: TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeft_02
+    4300034: TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRight_02
+    4300036: TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRight_01
+    4300038: TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeft_02
+    4300040: TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeft_01
+    4300042: TWR_Geo_Sta_StaffOfAtom_CenterSphere
+    4300044: TWR_Geo_Sta_StaffOfAtom_Rings_01
+    4300046: TWR_Geo_Sta_StaffOfAtom_Rings_02
+    4300048: TWR_Geo_Sta_StaffOfAtom_Rings_03
+    4300050: TWR_Geo_Sta_StaffOfAtom_Body
+    6400000: TWR_Geo_Sta_StaffOfAtom_Body
+    6400002: TWR_Geo_Sta_StaffOfAtom_CenterSphere
+    6400004: TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeft_01
+    6400006: TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeft_02
+    6400008: TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRight_01
+    6400010: TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRight_02
+    6400012: TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeft_01
+    6400014: TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeft_02
+    6400016: TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRight_01
+    6400018: TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRight_02
+    6400020: TWR_Geo_Sta_StaffOfAtom_Rings_01
+    6400022: TWR_Geo_Sta_StaffOfAtom_Rings_02
+    6400024: TWR_Geo_Sta_StaffOfAtom_Rings_03
+    7400000: TWR_AniClip_Sta_StaffOfAtom_Static
+    7400002: TWR_AniClip_Sta_StaffOfAtom_SlowIdle
+    7400004: TWR_AniClip_Sta_StaffOfAtom_FastIdle
+    7400006: TWR_AniClip_Sta_StaffOfAtom_HalfShellOpen
+    7400008: TWR_AniClip_Sta_StaffOfAtom_HalfShellRotate
+    7400010: TWR_AniClip_Sta_StaffOfAtom_HalfShellClose
+    7400012: TWR_AniClip_Sta_StaffOfAtom_QuarterShellOpen
+    7400014: TWR_AniClip_Sta_StaffOfAtom_QuarterShellRotate
+    7400016: TWR_AniClip_Sta_StaffOfAtom_EighthShellClose
+    7400018: TWR_AniClip_Sta_StaffOfAtom_EighthShellOpen
+    7400020: TWR_AniClip_Sta_StaffOfAtom_EighthShellRotate_Alt1
+    7400022: TWR_AniClip_Sta_StaffOfAtom_EighthShellRotate_Alt2
+    7400024: TWR_AniClip_Sta_StaffOfAtom_QuarterShellClose
+    7400026: TWR_AniClip_Sta_StaffOfAtom_ShowcaseAllAnimations
+    7400028: Take 001
+    9500000: //RootNode
+  materials:
+    importMaterials: 0
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: TWR_AniClip_Sta_StaffOfAtom_Static
+      takeName: Take 001
+      firstFrame: 0
+      lastFrame: 19
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_Body
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphere
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeftGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeftGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeft_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeftGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeft_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRightGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRightGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRight_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRightGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRight_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeftGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeftGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeft_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeftGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeft_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRightGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRightGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRight_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRightGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRight_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_Rings_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_Rings_01/TWR_Geo_Sta_StaffOfAtom_Rings_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_Rings_01/TWR_Geo_Sta_StaffOfAtom_Rings_02/TWR_Geo_Sta_StaffOfAtom_Rings_03
+        weight: 1
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: TWR_AniClip_Sta_StaffOfAtom_SlowIdle
+      takeName: Take 001
+      firstFrame: 20
+      lastFrame: 259
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_Body
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphere
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeftGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeftGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeft_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeftGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeft_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRightGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRightGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRight_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRightGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRight_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeftGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeftGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeft_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeftGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeft_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRightGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRightGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRight_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRightGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRight_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_Rings_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_Rings_01/TWR_Geo_Sta_StaffOfAtom_Rings_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_Rings_01/TWR_Geo_Sta_StaffOfAtom_Rings_02/TWR_Geo_Sta_StaffOfAtom_Rings_03
+        weight: 1
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: TWR_AniClip_Sta_StaffOfAtom_FastIdle
+      takeName: Take 001
+      firstFrame: 260
+      lastFrame: 379
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_Body
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphere
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeftGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeftGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeft_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeftGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeft_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRightGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRightGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRight_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRightGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRight_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeftGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeftGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeft_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeftGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeft_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRightGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRightGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRight_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRightGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRight_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_Rings_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_Rings_01/TWR_Geo_Sta_StaffOfAtom_Rings_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_Rings_01/TWR_Geo_Sta_StaffOfAtom_Rings_02/TWR_Geo_Sta_StaffOfAtom_Rings_03
+        weight: 1
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: TWR_AniClip_Sta_StaffOfAtom_HalfShellOpen
+      takeName: Take 001
+      firstFrame: 380
+      lastFrame: 499
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_Body
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphere
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeftGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeftGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeft_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeftGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeft_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRightGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRightGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRight_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRightGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRight_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeftGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeftGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeft_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeftGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeft_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRightGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRightGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRight_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRightGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRight_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_Rings_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_Rings_01/TWR_Geo_Sta_StaffOfAtom_Rings_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_Rings_01/TWR_Geo_Sta_StaffOfAtom_Rings_02/TWR_Geo_Sta_StaffOfAtom_Rings_03
+        weight: 1
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: TWR_AniClip_Sta_StaffOfAtom_HalfShellRotate
+      takeName: Take 001
+      firstFrame: 500
+      lastFrame: 559
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_Body
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphere
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeftGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeftGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeft_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeftGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeft_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRightGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRightGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRight_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRightGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRight_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeftGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeftGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeft_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeftGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeft_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRightGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRightGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRight_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRightGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRight_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_Rings_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_Rings_01/TWR_Geo_Sta_StaffOfAtom_Rings_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_Rings_01/TWR_Geo_Sta_StaffOfAtom_Rings_02/TWR_Geo_Sta_StaffOfAtom_Rings_03
+        weight: 1
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: TWR_AniClip_Sta_StaffOfAtom_HalfShellClose
+      takeName: Take 001
+      firstFrame: 560
+      lastFrame: 679
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_Body
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphere
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeftGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeftGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeft_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeftGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeft_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRightGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRightGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRight_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRightGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRight_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeftGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeftGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeft_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeftGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeft_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRightGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRightGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRight_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRightGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRight_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_Rings_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_Rings_01/TWR_Geo_Sta_StaffOfAtom_Rings_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_Rings_01/TWR_Geo_Sta_StaffOfAtom_Rings_02/TWR_Geo_Sta_StaffOfAtom_Rings_03
+        weight: 1
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: TWR_AniClip_Sta_StaffOfAtom_QuarterShellOpen
+      takeName: Take 001
+      firstFrame: 680
+      lastFrame: 799
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_Body
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphere
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeftGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeftGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeft_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeftGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeft_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRightGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRightGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRight_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRightGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRight_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeftGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeftGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeft_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeftGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeft_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRightGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRightGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRight_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRightGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRight_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_Rings_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_Rings_01/TWR_Geo_Sta_StaffOfAtom_Rings_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_Rings_01/TWR_Geo_Sta_StaffOfAtom_Rings_02/TWR_Geo_Sta_StaffOfAtom_Rings_03
+        weight: 1
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: TWR_AniClip_Sta_StaffOfAtom_QuarterShellRotate
+      takeName: Take 001
+      firstFrame: 800
+      lastFrame: 919
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_Body
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphere
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeftGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeftGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeft_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeftGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeft_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRightGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRightGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRight_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRightGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRight_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeftGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeftGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeft_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeftGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeft_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRightGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRightGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRight_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRightGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRight_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_Rings_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_Rings_01/TWR_Geo_Sta_StaffOfAtom_Rings_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_Rings_01/TWR_Geo_Sta_StaffOfAtom_Rings_02/TWR_Geo_Sta_StaffOfAtom_Rings_03
+        weight: 1
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: TWR_AniClip_Sta_StaffOfAtom_QuarterShellClose
+      takeName: Take 001
+      firstFrame: 920
+      lastFrame: 1039
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_Body
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphere
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeftGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeftGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeft_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeftGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeft_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRightGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRightGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRight_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRightGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRight_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeftGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeftGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeft_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeftGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeft_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRightGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRightGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRight_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRightGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRight_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_Rings_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_Rings_01/TWR_Geo_Sta_StaffOfAtom_Rings_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_Rings_01/TWR_Geo_Sta_StaffOfAtom_Rings_02/TWR_Geo_Sta_StaffOfAtom_Rings_03
+        weight: 1
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: TWR_AniClip_Sta_StaffOfAtom_EighthShellOpen
+      takeName: Take 001
+      firstFrame: 1040
+      lastFrame: 1159
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_Body
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphere
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeftGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeftGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeft_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeftGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeft_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRightGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRightGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRight_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRightGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRight_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeftGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeftGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeft_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeftGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeft_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRightGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRightGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRight_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRightGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRight_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_Rings_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_Rings_01/TWR_Geo_Sta_StaffOfAtom_Rings_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_Rings_01/TWR_Geo_Sta_StaffOfAtom_Rings_02/TWR_Geo_Sta_StaffOfAtom_Rings_03
+        weight: 1
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: TWR_AniClip_Sta_StaffOfAtom_EighthShellRotate_Alt1
+      takeName: Take 001
+      firstFrame: 1160
+      lastFrame: 1219
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_Body
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphere
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeftGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeftGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeft_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeftGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeft_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRightGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRightGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRight_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRightGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRight_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeftGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeftGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeft_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeftGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeft_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRightGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRightGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRight_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRightGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRight_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_Rings_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_Rings_01/TWR_Geo_Sta_StaffOfAtom_Rings_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_Rings_01/TWR_Geo_Sta_StaffOfAtom_Rings_02/TWR_Geo_Sta_StaffOfAtom_Rings_03
+        weight: 1
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: TWR_AniClip_Sta_StaffOfAtom_EighthShellRotate_Alt2
+      takeName: Take 001
+      firstFrame: 1220
+      lastFrame: 1279
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_Body
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphere
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeftGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeftGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeft_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeftGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeft_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRightGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRightGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRight_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRightGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRight_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeftGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeftGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeft_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeftGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeft_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRightGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRightGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRight_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRightGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRight_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_Rings_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_Rings_01/TWR_Geo_Sta_StaffOfAtom_Rings_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_Rings_01/TWR_Geo_Sta_StaffOfAtom_Rings_02/TWR_Geo_Sta_StaffOfAtom_Rings_03
+        weight: 1
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: TWR_AniClip_Sta_StaffOfAtom_EighthShellClose
+      takeName: Take 001
+      firstFrame: 1280
+      lastFrame: 1399
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_Body
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphere
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeftGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeftGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeft_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeftGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeft_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRightGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRightGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRight_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRightGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRight_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeftGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeftGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeft_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeftGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeft_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRightGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRightGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRight_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRightGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRight_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_Rings_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_Rings_01/TWR_Geo_Sta_StaffOfAtom_Rings_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_Rings_01/TWR_Geo_Sta_StaffOfAtom_Rings_02/TWR_Geo_Sta_StaffOfAtom_Rings_03
+        weight: 1
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: TWR_AniClip_Sta_StaffOfAtom_ShowcaseAllAnimations
+      takeName: Take 001
+      firstFrame: 0
+      lastFrame: 1399
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_Body
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphere
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeftGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeftGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeft_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeftGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomLeft_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRightGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRightGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRight_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRightGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellBottomRight_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeftGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeftGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeft_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeftGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopLeft_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRightGrp
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRightGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRight_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_CenterSphereGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRightGrp/TWR_Geo_Sta_StaffOfAtom_CenterSphereShellTopRight_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_Rings_01
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_Rings_01/TWR_Geo_Sta_StaffOfAtom_Rings_02
+        weight: 1
+      - path: TWR_Geo_Sta_StaffOfAtom_Rings_01/TWR_Geo_Sta_StaffOfAtom_Rings_02/TWR_Geo_Sta_StaffOfAtom_Rings_03
+        weight: 1
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 1
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 1
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

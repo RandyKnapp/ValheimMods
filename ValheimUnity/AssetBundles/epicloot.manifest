@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 4288333293
+CRC: 4243109795
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 46166618f10d184a6f2ff2e1a52eb553
+    Hash: 765b507511bb9484f03ce5d409c488ce
   TypeTreeHash:
     serializedVersion: 2
-    Hash: c597d87baada4f4fcf41c9c6f582014d
+    Hash: 18a93c0aa776829bec18cac5216390cc
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -60,17 +60,25 @@ ClassTypes:
 - Class: 114
   Script: {fileID: 11500000, guid: e19747de3f5aca642ab2be37e372fb86, type: 3}
 - Class: 114
+  Script: {fileID: 11500000, guid: 9085046f02f69544eb97fd06b6048fe2, type: 3}
+- Class: 114
   Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 30649d3a9faa99c48a7b1166b86bf2a0, type: 3}
 - Class: 114
+  Script: {fileID: 11500000, guid: 0d0b652f32a2cc243917e4028fa0f046, type: 3}
+- Class: 114
   Script: {fileID: -1593939647, guid: d920e4723ba2566674efb2f0c3eb6edb, type: 3}
 - Class: 114
   Script: {fileID: 182242463, guid: d920e4723ba2566674efb2f0c3eb6edb, type: 3}
 - Class: 114
+  Script: {fileID: -259742986, guid: d920e4723ba2566674efb2f0c3eb6edb, type: 3}
+- Class: 114
   Script: {fileID: 438561839, guid: d920e4723ba2566674efb2f0c3eb6edb, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 31a19414c41e5ae4aae2af33fee712f6, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 1aa08ab6e0800fa44ae55d278d1423e3, type: 3}
 - Class: 114
@@ -88,7 +96,19 @@ ClassTypes:
 - Class: 114
   Script: {fileID: 1521249158, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
 - Class: 114
+  Script: {fileID: 11500000, guid: d199490a83bb2b844b9695cbf13b01ef, type: 3}
+- Class: 114
   Script: {fileID: 11500000, guid: 2a4db7a114972834c8e4117be1d82ba3, type: 3}
+- Class: 114
+  Script: {fileID: 1254579870, guid: 2f9828d4dfcaa584280fbdd93cb3976a, type: 3}
+- Class: 114
+  Script: {fileID: 1179097507, guid: 2f9828d4dfcaa584280fbdd93cb3976a, type: 3}
+- Class: 114
+  Script: {fileID: 2002944390, guid: 2f9828d4dfcaa584280fbdd93cb3976a, type: 3}
+- Class: 114
+  Script: {fileID: 1999227660, guid: 2f9828d4dfcaa584280fbdd93cb3976a, type: 3}
+- Class: 114
+  Script: {fileID: 1284466352, guid: 2f9828d4dfcaa584280fbdd93cb3976a, type: 3}
 - Class: 115
   Script: {instanceID: 0}
 - Class: 120
@@ -138,6 +158,7 @@ Assets:
 - Assets/EpicLoot/Prefabs/CraftingMaterials/EssenceEpic.prefab
 - Assets/EpicLoot/Sprites/Inventory/LegendaryItemBg.png
 - Assets/EpicLoot/Sprites/Inventory/Auga/AugaItemBG.png
+- Assets/EpicLoot/Prefabs/StationExtensions/piece_enchantingtable.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/DustRare.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/ReagentRare.prefab
 - Assets/EpicLoot/Prefabs/StationExtensions/piece_augmenter.prefab
@@ -150,6 +171,7 @@ Assets:
 - Assets/EpicLoot/Prefabs/ItemEffects/GlowingAura.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/RunestoneRare.prefab
 - Assets/EpicLoot/ScriptableObjects/BerserkerStatusEffect.asset
+- Assets/EpicLoot/Prefabs/Enchanting/EnchantingUI.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/EssenceRare.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/DustEpic.prefab
 - Assets/EpicLoot/Prefabs/VFX/Berserker.prefab

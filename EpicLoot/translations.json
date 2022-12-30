@@ -28,6 +28,8 @@
   "mod_epicloot_assets_enchanter_introduce": "Allows Sacrificing, Enchanting, and Augmenting magic items at a Forge.  (Does not upgrade the forge's level)",
   "mod_epicloot_assets_augmenter": "Augmenter <color=yellow>(OBSOLETE)</color>",
   "mod_epicloot_assets_augmenter_introduce": "<color=yellow>[THIS DOESN'T DO ANYTHING ANYMORE]</color> Allows Augmenting magic items at a Forge.  (Does not upgrade the forge's level)",
+  "mod_epicloot_assets_enchantingtable": "Enchanting Table",
+  "mod_epicloot_assets_enchantingtable_desc": "Allows Sacrificing, Enchanting, and Augmenting magic items.",
   "mod_epicloot_assets_foresttoken": "Forest Token",
   "mod_epicloot_assets_foresttoken_introduce": "A small metal token bearing a brilliant green leaf insignia.",
   "mod_epicloot_assets_goldbountytoken": "Gold Bounty Token",
@@ -35,10 +37,11 @@
   "mod_epicloot_assets_ironbountytoken": "Iron Bounty Token",
   "mod_epicloot_assets_ironbountytoken_introduce": "A toothy iron skull that commemorates your deeds.",
   "mod_epicloot_assets_coins": "Coins",
-  
+
   "mod_epicloot_sacrifice": "Sacrifice",
   "mod_epicloot_sacrifice_warning": "This item will be DESTROYED as a SACRIFICE to the gods.", 
   "mod_epicloot_sacrifice_explanation": "Destroy this item and get:", 
+  "mod_epicloot_sacrifice_explanation_multi": "Destroy the selected items and receive:", 
   "mod_epicloot_sacrifice_equipped": "Item is currently equipped", 
   "mod_epicloot_sacrifice_inventoryfullexplanation": "(Inventory was full when crafting)", 
   "mod_epicloot_sacrificeall": "Sacrifice All",
@@ -54,6 +57,19 @@
   "mod_epicloot_enchant": "Enchant",
   "mod_epicloot_enchant_effect": "effect",
   "mod_epicloot_enchant_effects": "effects",
+
+  "mod_epicloot_convertmaterials": "Convert Materials",
+  
+  "mod_epicloot_disenchant": "Disenchant",
+
+  "mod_epicloot_upgradetable": "Upgrade Table",
+
+  "mod_epicloot_enchanting_sortby": "Sort By:",
+  "mod_epicloot_enchanting_rarity": "Rarity",
+  "mod_epicloot_enchanting_name": "Name",
+  "mod_epicloot_enchanting_quantity": "Quantity",
+  "mod_epicloot_enchanting_selectall": "Select All",
+  "mod_epicloot_enchanting_filter": "Filter...",
 
   "mod_epicloot_active_magic_effects": "Active Magic Effects",
   "mod_epicloot_activebounties_classification": "Classification",

@@ -2380,13 +2380,14 @@ Sets of loot drop data that can be referenced in the loot tables
 
 > | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
-> | Battleaxe | 1 (14.3%) | 38 (38%) | 50 (50%) | 8 (8%) | 4 (4%) |
-> | SwordIron | 1 (14.3%) | 38 (38%) | 50 (50%) | 8 (8%) | 4 (4%) |
-> | AxeIron | 1 (14.3%) | 38 (38%) | 50 (50%) | 8 (8%) | 4 (4%) |
-> | SledgeIron | 1 (14.3%) | 38 (38%) | 50 (50%) | 8 (8%) | 4 (4%) |
-> | MaceIron | 1 (14.3%) | 38 (38%) | 50 (50%) | 8 (8%) | 4 (4%) |
-> | AtgeirIron | 1 (14.3%) | 38 (38%) | 50 (50%) | 8 (8%) | 4 (4%) |
-> | SpearElderbark | 1 (14.3%) | 38 (38%) | 50 (50%) | 8 (8%) | 4 (4%) |
+> | Battleaxe | 1 (12.5%) | 38 (38%) | 50 (50%) | 8 (8%) | 4 (4%) |
+> | SwordIron | 1 (12.5%) | 38 (38%) | 50 (50%) | 8 (8%) | 4 (4%) |
+> | AxeIron | 1 (12.5%) | 38 (38%) | 50 (50%) | 8 (8%) | 4 (4%) |
+> | SledgeIron | 1 (12.5%) | 38 (38%) | 50 (50%) | 8 (8%) | 4 (4%) |
+> | MaceIron | 1 (12.5%) | 38 (38%) | 50 (50%) | 8 (8%) | 4 (4%) |
+> | AtgeirIron | 1 (12.5%) | 38 (38%) | 50 (50%) | 8 (8%) | 4 (4%) |
+> | SpearElderbark | 1 (12.5%) | 38 (38%) | 50 (50%) | 8 (8%) | 4 (4%) |
+> | BowHuntsman | 1 (12.5%) | 38 (38%) | 50 (50%) | 8 (8%) | 4 (4%) |
 
 
 ## Tier3Armor
@@ -2547,13 +2548,21 @@ Sets of loot drop data that can be referenced in the loot tables
 > | ShieldCarapaceBuckler | 1 (50%) | 0 (0%) | 10 (10%) | 50 (50%) | 40 (40%) |
 
 
+## Tier6Tools
+
+> | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | PickaxeBlackmetal | 1 (100%) | 0 (0%) | 10 (10%) | 50 (50%) | 40 (40%) |
+
+
 ## Tier6Everything
 
 > | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
-> | Tier6Weapons | 1 (33.3%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
-> | Tier6Armor | 1 (33.3%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
-> | Tier6Shields | 1 (33.3%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
+> | Tier6Weapons | 1 (25%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
+> | Tier6Armor | 1 (25%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
+> | Tier6Shields | 1 (25%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
+> | Tier6Tools | 1 (25%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
 
 
 # Loot Tables

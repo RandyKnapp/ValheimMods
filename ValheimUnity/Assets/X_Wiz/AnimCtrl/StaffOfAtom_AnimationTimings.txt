@@ -1,0 +1,14 @@
+StaffOfAtom Animation
+0-19:Default Static
+20-259: Slow Idle
+260-379:Fast Idle
+380-499:Half Shell open
+500-559:Half shell rotate
+560-679:Half Shell close
+680-799:Quarter Shell open
+800-919:Quarter Shell Rotate
+920-1039:Quarter Shell Close
+1040-1159:1/8th Shell Open
+1160-1219:1/8th Shell Rotation 1
+1220-1279:1/8th Shell Rotation 2
+1280-1399:1/8th Shell Closing
