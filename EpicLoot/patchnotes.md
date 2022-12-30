@@ -13,10 +13,11 @@
     * In `iteminfo.json`, "Fallback" can now be a specific prefab name (for a single item), or the **Type** of a different group.
       * For example: Instead of Staff's falling back to a single Club, Staff's now fall back to Spears, and based on Gating preferences, can spawn different levels of Spears.
       * This is also changed for Fist weapons, and some other balance changes.
-  * Fixed Cultist and Growth Bounties Prefab Names which were incorrect and preventing Bounty from spawning.
-  * Fixed Missing Mistland items from loottables
+  * Fixed Cultist and Growth Bounties Prefab Names which were incorrect and preventing Bounty from spawning.  (This will require you to update your adventuredata.json)
+  * Fixed Missing Mistland items from loottables. (This will require you to update your loottables.json)
   * Added in ability to use prefab names in AllowedItemNames/ExcludedItemNames
   * Now showing modified attack stamina in Epic Loot tooltip.
+  * Added in MountainCave TreasureChest to Loot Tables. (This will require you to update your loottables.json)
 ## Version 0.9.2
   * When using CLLC, creatures now correctly drop Epic Loot items
   * Gambles won't drop mats when the ItemsToMaterialsRatio is set to materials
