@@ -1,4 +1,4 @@
-﻿## Version 0.9.3 - Release Candidate 2 (loads as version 0.9.2)
+﻿## Version 0.9.3
   * Introduction of the JSON Configuration Patching System. 
     * Please reference https://github.com/RandyKnapp/ValheimMods/wiki/Config-Patching-%280.9.3-or-newer%29 for information.
     * Example Patch Configs and Additional Information to be made available Soon(tm)
