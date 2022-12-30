@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 4288333293
+CRC: 1953409206
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 46166618f10d184a6f2ff2e1a52eb553
+    Hash: 354c784fc75aefaac8aff8a45587ede4
   TypeTreeHash:
     serializedVersion: 2
     Hash: c597d87baada4f4fcf41c9c6f582014d
@@ -111,6 +111,7 @@ SerializeReferenceClassIdentifiers: []
 Assets:
 - Assets/EpicLoot/Sprites/Abilities/BulwarkIcon.png
 - Assets/EpicLoot/Prefabs/CraftingMaterials/DustMagic.prefab
+- Assets/EpicLoot/Sprites/Inventory/sacrifice_tabicon.png
 - Assets/EpicLoot/Sounds/Disenchant.wav
 - Assets/EpicLoot/Sprites/Adventure/BountyTokenGold.png
 - Assets/EpicLoot/Prefabs/ItemEffects/LightningAuraSledge.prefab
@@ -153,12 +154,14 @@ Assets:
 - Assets/EpicLoot/Prefabs/CraftingMaterials/EssenceRare.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/DustEpic.prefab
 - Assets/EpicLoot/Prefabs/VFX/Berserker.prefab
+- Assets/EpicLoot/Sprites/Inventory/augment_tabicon.png
 - Assets/EpicLoot/Prefabs/ItemEffects/WhiteAura.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/ShardEpic.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/EssenceMagic.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/ReagentMagic.prefab
 - Assets/EpicLoot/Sprites/Inventory/Auga/AugaSetItem.png
 - Assets/EpicLoot/Prefabs/Equipment/GoldRubyRing.prefab
+- Assets/EpicLoot/Sprites/Inventory/enchant_tabicon.png
 - Assets/EpicLoot/Sprites/Inventory/Auga/disenchant_tabicon.png
 - Assets/EpicLoot/Prefabs/UI/WelcomeMessage.prefab
 - Assets/EpicLoot/Sprites/Inventory/SmallButtonEnchantOverlay.png
