@@ -18,6 +18,8 @@
   * Added in ability to use prefab names in AllowedItemNames/ExcludedItemNames
   * Now showing modified attack stamina in Epic Loot tooltip.
   * Added in MountainCave TreasureChest to Loot Tables. (This will require you to update your loottables.json)
+  * Changing "Modify Damage" enchant to be a Scaling Percetage based Damage Addition.  This will allow scaling to be better between lower and higher tiered players/weapons.
+  * Adding in Dvergers and DvergerMage's to Loot Table, whom were left out. 
 ## Version 0.9.2
   * When using CLLC, creatures now correctly drop Epic Loot items
   * Gambles won't drop mats when the ItemsToMaterialsRatio is set to materials
