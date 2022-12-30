@@ -1106,6 +1106,28 @@
       "Object": "SeekerBrute",
       "RefObject": "Tier7Mob"
     },
+    // Dvergers (Dverger, DvergerMage)
+    ////////////////////////////////////////////////////////////////////////////////////
+    {
+      "Object": "Dverger",
+      "RefObject": "Tier7Mob"
+    },
+    {
+      "Object": "DvergerMage",
+      "RefObject": "Tier7Mob"
+    },
+    {
+      "Object": "DvergerMageFire",
+      "RefObject": "Tier7Mob"
+    },
+    {
+      "Object": "DvergerMageIce",
+      "RefObject": "Tier7Mob"
+    },
+    {
+      "Object": "DvergerMageSupport",
+      "RefObject": "Tier7Mob"
+    },
     // Gjall (Gjall)
     ////////////////////////////////////////////////////////////////////////////////////
     {
