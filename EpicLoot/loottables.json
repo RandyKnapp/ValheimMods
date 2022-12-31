@@ -1106,6 +1106,28 @@
       "Object": "SeekerBrute",
       "RefObject": "Tier7Mob"
     },
+    // Dvergers (Dverger, DvergerMage)
+    ////////////////////////////////////////////////////////////////////////////////////
+    {
+      "Object": "Dverger",
+      "RefObject": "Tier7Mob"
+    },
+    {
+      "Object": "DvergerMage",
+      "RefObject": "Tier7Mob"
+    },
+    {
+      "Object": "DvergerMageFire",
+      "RefObject": "Tier7Mob"
+    },
+    {
+      "Object": "DvergerMageIce",
+      "RefObject": "Tier7Mob"
+    },
+    {
+      "Object": "DvergerMageSupport",
+      "RefObject": "Tier7Mob"
+    },
     // Gjall (Gjall)
     ////////////////////////////////////////////////////////////////////////////////////
     {
@@ -1515,6 +1537,16 @@
     ////////////////////////////////////////////////////////////////////////////////////
     {
       "Object": "TreasureChest_mountains",
+      "Drops": [ [0, 58], [1, 30], [2, 20], [3, 2] ],
+      "Loot": [
+        { "Item": "Tier3Everything", "Weight": 4 },
+        { "Item": "Tier4Everything", "Weight": 1 }
+      ]
+    },
+    // TreasureChest_mountaincave
+    ////////////////////////////////////////////////////////////////////////////////////
+    {
+      "Object": "TreasureChest_mountaincave",
       "Drops": [ [0, 58], [1, 30], [2, 20], [3, 2] ],
       "Loot": [
         { "Item": "Tier3Everything", "Weight": 4 },

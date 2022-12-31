@@ -707,25 +707,14 @@ namespace EpicLoot
                 return;
             }
 
-            Dictionary<int, ItemDrop.ItemData> itemPosition = new Dictionary<int, ItemDrop.ItemData>();
-            foreach (ItemDrop.ItemData itemData in ___m_items)
+            foreach (var itemData in __instance.m_items)
             {
-                if (GetElementIndexForItem(___m_elements, itemData) is int elementIndex)
-                {
-                    itemPosition[elementIndex] = itemData;
-                }
-                else
-                {
-                    EpicLoot.LogWarning($"Tried to get element for {itemData.m_shared.m_name} at {itemData.m_gridPos}, but element was null (total elements = {___m_elements.Count})");
-                }
-            }
+                if (itemData.m_gridPos.x < 0 || itemData.m_gridPos.x >= __instance.m_elements.Count) continue;
 
-            for (var index = 0; index < ___m_elements.Count; index++)
-            {
-                var element = ___m_elements[index];
+                var element = __instance.m_elements[itemData.m_gridPos.x];
 
                 var magicItem = ItemBackgroundHelper.CreateAndGetMagicItemBackgroundImage(element.m_go, element.m_equiped, false);
-                if (itemPosition.TryGetValue(index, out ItemDrop.ItemData itemData) && itemData.UseMagicBackground())
+                if (itemData.UseMagicBackground())
                 {
                     magicItem.enabled = true;
                     magicItem.sprite = EpicLoot.GetMagicItemBgSprite();
@@ -736,15 +725,6 @@ namespace EpicLoot
                     magicItem.enabled = false;
                 }
             }
-        }
-
-        private static int? GetElementIndexForItem(List<HotkeyBar.ElementData> elements, ItemDrop.ItemData item)
-        {
-            var index = item.m_gridPos.y == 0
-                ? item.m_gridPos.x
-                : Player.m_localPlayer.GetInventory().m_width + item.m_gridPos.x - 5;
-
-            return index >= 0 && index < elements.Count ? (int?) index : null;
         }
     }
 

@@ -88,9 +88,9 @@ namespace EpicLoot
     {
         public const string PluginId = "randyknapp.mods.epicloot";
         public const string DisplayName = "Epic Loot";
-        public const string Version = "0.9.2";
+        public const string Version = "0.9.3";
 
-        private readonly ConfigSync _configSync = new ConfigSync(PluginId) { DisplayName = DisplayName, CurrentVersion = Version, MinimumRequiredVersion = "0.9.2" };
+        private readonly ConfigSync _configSync = new ConfigSync(PluginId) { DisplayName = DisplayName, CurrentVersion = Version, MinimumRequiredVersion = "0.9.3" };
 
         private static ConfigEntry<string> _setItemColor;
         private static ConfigEntry<string> _magicRarityColor;
@@ -101,10 +101,6 @@ namespace EpicLoot
         private static ConfigEntry<int> _rareMaterialIconColor;
         private static ConfigEntry<int> _epicMaterialIconColor;
         private static ConfigEntry<int> _legendaryMaterialIconColor;
-        private static ConfigEntry<string> _magicRarityDisplayName;
-        private static ConfigEntry<string> _rareRarityDisplayName;
-        private static ConfigEntry<string> _epicRarityDisplayName;
-        private static ConfigEntry<string> _legendaryRarityDisplayName;
         public static ConfigEntry<bool> UseScrollingCraftDescription;
         public static ConfigEntry<CraftingTabStyle> CraftingTabStyle;
         private static ConfigEntry<bool> _loggingEnabled;
@@ -128,6 +124,8 @@ namespace EpicLoot
         public static ConfigEntry<float> ItemsToMaterialsDropRatio;
         public static ConfigEntry<bool> AlwaysShowWelcomeMessage;
         public static ConfigEntry<bool> OutputPatchedConfigFiles;
+
+        public static Dictionary<string, CustomSyncedValue<string>> SyncedJsonFiles = new Dictionary<string, CustomSyncedValue<string>>();
 
         public static readonly List<ItemDrop.ItemData.ItemType> AllowedMagicItemTypes = new List<ItemDrop.ItemData.ItemType>
         {
@@ -193,10 +191,6 @@ namespace EpicLoot
             _legendaryRarityColor = Config.Bind("Item Colors", "Legendary Rarity Color", "Teal", "The color of Legendary rarity items, the highest magic item tier. (Optional, use an HTML hex color starting with # to have a custom color.) Available options: Red, Orange, Yellow, Green, Teal, Blue, Indigo, Purple, Pink, Gray");
             _legendaryMaterialIconColor = Config.Bind("Item Colors", "Legendary Crafting Material Icon Index", 4, "Indicates the color of the icon used for legendary crafting materials. A number between 0 and 9. Available options: 0=Red, 1=Orange, 2=Yellow, 3=Green, 4=Teal, 5=Blue, 6=Indigo, 7=Purple, 8=Pink, 9=Gray");
             _setItemColor = Config.Bind("Item Colors", "Set Item Color", "#26ffff", "The color of set item text and the set item icon. Use a hex color, default is cyan");
-            _magicRarityDisplayName = Config.Bind("Rarity", "Magic Rarity Display Name", "$mod_epicloot_magic", "The name of the lowest rarity.");
-            _rareRarityDisplayName = Config.Bind("Rarity", "Rare Rarity Display Name", "$mod_epicloot_rare", "The name of the second rarity.");
-            _epicRarityDisplayName = Config.Bind("Rarity", "Epic Rarity Display Name", "$mod_epicloot_epic", "The name of the third rarity.");
-            _legendaryRarityDisplayName = Config.Bind("Rarity", "Legendary Rarity Display Name", "$mod_epicloot_legendary", "The name of the highest rarity.");
             UseScrollingCraftDescription = Config.Bind("Crafting UI", "Use Scrolling Craft Description", true, "Changes the item description in the crafting panel to scroll instead of scale when it gets too long for the space.");
             CraftingTabStyle = Config.Bind("Crafting UI", "Crafting Tab Style", Crafting.CraftingTabStyle.HorizontalSquish, "Sets the layout style for crafting tabs, if you've got too many. Horizontal is the vanilla method, but might overlap other mods or run off the screen. HorizontalSquish makes the buttons narrower, works okay with 6 or 7 buttons. Vertical puts the tabs in a column to the left the crafting window. Angled tries to make more room at the top of the crafting panel by angling the tabs, works okay with 6 or 7 tabs.");
             ShowEquippedAndHotbarItemsInSacrificeTab = Config.Bind("Crafting UI", "ShowEquippedAndHotbarItemsInSacrificeTab", false, "If set to false, hides the items that are equipped or on your hotbar in the Sacrifice items list.");
@@ -422,6 +416,50 @@ namespace EpicLoot
             LoadJsonFile<AdventureDataConfig>("adventuredata.json", AdventureDataManager.Initialize);
             LoadJsonFile<LegendaryItemConfig>("legendaries.json", UniqueLegendaryHelper.Initialize);
             LoadJsonFile<AbilityConfig>("abilities.json", AbilityDefinitions.Initialize);
+            WatchNewPatchConfig();
+        }
+
+        public static void WatchNewPatchConfig()
+        {
+
+            Log($"Watching For Files");
+            //Patch JSON Watcher
+
+            void ConsumeNewPatchFile(object s, FileSystemEventArgs e)
+            {
+                FileInfo fileInfo = null;
+
+                switch (e.ChangeType)
+                {
+                    case WatcherChangeTypes.Created:
+                        //File Created
+                        fileInfo = new FileInfo(e.FullPath);
+                        if (!fileInfo.Exists) return;
+
+                        FilePatching.ProcessPatchFile(fileInfo);
+                        var sourceFile = fileInfo.Name;
+
+                        foreach (var fileName in FilePatching.PatchesPerFile.Values.SelectMany(l => l).ToList()
+                                     .Where(u => u.SourceFile.Equals(sourceFile)).Select(p => p.TargetFile).Distinct()
+                                     .ToArray())
+                        {
+                            SyncedJsonFiles[fileName].AssignLocalValue(LoadJsonText(fileName));
+                            AddPatchFileWatcher(fileName, sourceFile);
+                        }
+                        
+                        break;
+                }
+
+            }
+
+            var newPatchWatcher = new FileSystemWatcher(FilePatching.PatchesDirPath, "*.json");
+
+            newPatchWatcher.Created += ConsumeNewPatchFile;
+            newPatchWatcher.IncludeSubdirectories = true;
+            newPatchWatcher.SynchronizingObject = ThreadingHelper.SynchronizingObject;
+            newPatchWatcher.EnableRaisingEvents = true;
+
+
         }
 
         private static void InitializeAbilities()
@@ -768,21 +806,18 @@ namespace EpicLoot
                 return;
             }
 
-            // Fix custom name and icons for crafting materials
+            
             foreach (var prefab in RegisteredItemPrefabs)
             {
                 var itemDrop = prefab.GetComponent<ItemDrop>();
                 if (itemDrop != null)
                 {
+                    //Set icons for crafting materials
+
                     if (itemDrop.m_itemData.IsMagicCraftingMaterial() || itemDrop.m_itemData.IsRunestone())
                     {
                         var rarity = itemDrop.m_itemData.GetRarity();
-                        var correctName = GetRarityDisplayName(rarity);
-                        if (!itemDrop.m_itemData.m_shared.m_name.StartsWith(correctName))
-                        {
-                            itemDrop.m_itemData.m_shared.m_name = itemDrop.m_itemData.m_shared.m_name.Replace(rarity.ToString(), correctName);
-                        }
-
+                        
                         if (itemDrop.m_itemData.IsMagicCraftingMaterial())
                         {
                             itemDrop.m_itemData.m_variant = GetRarityIconIndex(rarity);
@@ -912,16 +947,22 @@ namespace EpicLoot
             ObjectDB.instance.m_StatusEffects.Add(paralyzed);
         }
 
-        public static void LoadJsonFile<T>(string filename, Action<T> onFileLoad) where T : class
+        public static void LoadJsonFile<T>(string filename, Action<T> onFileLoad, bool update = false) where T : class
         {
+            
             var jsonFile = LoadJsonText(filename);
-            var syncedValue = new CustomSyncedValue<string>(_instance._configSync, filename, jsonFile);
+
+            if (!update)
+            {
+                SyncedJsonFiles.Add(filename, new CustomSyncedValue<string>(_instance._configSync, filename, jsonFile));
+            }
+            
             void Process()
             {
                 T result;
                 try
                 {
-                    result = string.IsNullOrEmpty(syncedValue.Value) ? null : JsonConvert.DeserializeObject<T>(syncedValue.Value);
+                    result = string.IsNullOrEmpty(SyncedJsonFiles[filename].Value) ? null : JsonConvert.DeserializeObject<T>(SyncedJsonFiles[filename].Value);
                 }
                 catch (Exception)
                 {
@@ -932,12 +973,14 @@ namespace EpicLoot
                 onFileLoad(result);
             }
 
-            syncedValue.ValueChanged += Process;
+            SyncedJsonFiles[filename].ValueChanged += Process;
             Process();
 
             if (jsonFile != null)
             {
-	            void ConsumeConfigFileEvent(object s, FileSystemEventArgs e) => syncedValue.AssignLocalValue(LoadJsonText(filename));
+                //Primary JSON Watcher
+	            void ConsumeConfigFileEvent(object s, FileSystemEventArgs e) => SyncedJsonFiles[filename].AssignLocalValue(LoadJsonText(filename));
+
 	            var filePath = GetAssetPath(filename);
 	            FileSystemWatcher watcher = new FileSystemWatcher(Path.GetDirectoryName(filePath), Path.GetFileName(filePath));
 	            watcher.Changed += ConsumeConfigFileEvent;
@@ -946,8 +989,62 @@ namespace EpicLoot
 	            watcher.IncludeSubdirectories = true;
 	            watcher.SynchronizingObject = ThreadingHelper.SynchronizingObject;
 	            watcher.EnableRaisingEvents = true;
+
+                //Patch JSON Watcher
+                for (var i = 0; i < FilePatching.PatchesPerFile.Where(y => y.Key.Equals(filename)).ToList().Count; i++)
+                {
+                    var configFile = FilePatching.PatchesPerFile.Where(y => y.Key.Equals(filename)).ToList()[i];
+                    var lists = configFile.Value.Select(p => p.SourceFile).Distinct().ToList();
+
+                    for (var index = 0; index < lists.Count; index++)
+                    {
+                        var patchfile = lists[index];
+                        AddPatchFileWatcher(filename,patchfile);
+                        
+                    }
+                }
             }
         }
+
+        private static void AddPatchFileWatcher(string fileName, string patchFile)
+        {
+            var fullPatchFilename = Path.Combine(FilePatching.PatchesDirPath, patchFile);
+            Log($"[AddPatchFileWatcher] Full Patch File Name = {fullPatchFilename}");
+            void ConsumePatchFileEvent(object s, FileSystemEventArgs e)
+            {
+                FileInfo fileInfo = null;
+
+                switch (e.ChangeType)
+                {
+                    case WatcherChangeTypes.Deleted:
+                        //File Deleted
+                        Debug.Log($"Function Deleted");
+                        FilePatching.RemoveFilePatches(fileName, patchFile);
+                        break;
+                    case WatcherChangeTypes.Changed:
+                        //File Changed
+                        Debug.Log($"Function Changed");
+                        FilePatching.RemoveFilePatches(fileName, patchFile);
+                        fileInfo = new FileInfo(fullPatchFilename);
+                        break;
+                }
+
+                if (fileInfo != null && fileInfo.Exists)
+                    FilePatching.ProcessPatchFile(fileInfo);
+
+                SyncedJsonFiles[fileName].AssignLocalValue(LoadJsonText(fileName));
+            }
+
+            var patchWatcher = new FileSystemWatcher(Path.GetDirectoryName(fullPatchFilename), Path.GetFileName(fullPatchFilename));
+
+            patchWatcher.Changed += ConsumePatchFileEvent;
+            patchWatcher.Deleted += ConsumePatchFileEvent;
+            patchWatcher.IncludeSubdirectories = true;
+            patchWatcher.SynchronizingObject = ThreadingHelper.SynchronizingObject;
+            patchWatcher.EnableRaisingEvents = true;
+
+        }
+
 
         public static string LoadJsonText(string filename)
         {
@@ -1146,8 +1243,6 @@ namespace EpicLoot
             foreach (Skills.SkillType value in Enum.GetValues(typeof(Skills.SkillType)))
             {
                 if (value == Skills.SkillType.None
-                    || value == Skills.SkillType.ElementalMagic
-                    || value == Skills.SkillType.BloodMagic
                     || value == Skills.SkillType.WoodCutting
                     || value == Skills.SkillType.Jump
                     || value == Skills.SkillType.Sneak
@@ -1399,13 +1494,13 @@ namespace EpicLoot
             switch (rarity)
             {
                 case ItemRarity.Magic:
-                    return _magicRarityDisplayName.Value;
+                    return "$mod_epicloot_magic";
                 case ItemRarity.Rare:
-                    return _rareRarityDisplayName.Value;
+                    return "$mod_epicloot_rare";
                 case ItemRarity.Epic:
-                    return _epicRarityDisplayName.Value;
+                    return "$mod_epicloot_epic";
                 case ItemRarity.Legendary:
-                    return _legendaryRarityDisplayName.Value;
+                    return "$mod_epicloot_legendary";
                 default:
                     throw new ArgumentOutOfRangeException(nameof(rarity), rarity, null);
             }

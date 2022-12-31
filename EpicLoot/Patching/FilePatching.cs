@@ -17,6 +17,7 @@ namespace EpicLoot.Patching
         Overwrite,      // Replace the selected token's value with the provided value
         Remove,         // Remove the selected token from the array or object
         Append,         // Append the provided value to the end of the selected array
+        AppendAll,      // Append the provided array to the end of the selected array.
         InsertBefore,   // Insert the provided value into the array containing the selected token, before the token
         InsertAfter,    // Insert the provided value into the array containing the selected token, after the token
         RemoveAll,      // Remove all elements of an array or all properties of an object
@@ -67,6 +68,11 @@ namespace EpicLoot.Patching
             var pluginFolder = patchesFolder.Parent;
             GetAllConfigFileNames(pluginFolder);
             ProcessPatchDirectory(patchesFolder);
+        }
+
+        public static void RemoveFilePatches(string fileName, string patchFile)
+        {
+            PatchesPerFile.GetValues(fileName, true).RemoveAll(y => y.SourceFile.Equals(patchFile));
         }
 
         public static void GetAllConfigFileNames(DirectoryInfo pluginFolder)
@@ -188,8 +194,8 @@ namespace EpicLoot.Patching
                 if (patch.Priority < 0)
                     patch.Priority = defaultPriority;
 
-                patch.SourceFile = file.FullName.Replace(PatchesDirPath, "");
-
+                patch.SourceFile = file.Name;
+                EpicLoot.Log($"Adding Patch from {patch.SourceFile} to file {patch.TargetFile} with {patch.Path}");
                 PatchesPerFile.Add(patch.TargetFile, patch);
             }
         }
@@ -203,7 +209,7 @@ namespace EpicLoot.Patching
                 patchesFolderPath = Path.Combine(Path.GetDirectoryName(assembly.Location) ?? string.Empty, "patches");
                 if (!Directory.Exists(patchesFolderPath))
                 {
-                    return null;
+                    Directory.CreateDirectory(patchesFolderPath);
                 }
             }
 
@@ -249,14 +255,15 @@ namespace EpicLoot.Patching
             {
                 switch (patch.Action)
                 {
-                    case PatchAction.Add:           ApplyPatch_Add(token, patch);           break;
-                    case PatchAction.Overwrite:     ApplyPatch_Overwrite(token, patch);     break;
-                    case PatchAction.Remove:        ApplyPatch_Remove(token, patch);        break;
-                    case PatchAction.Append:        ApplyPatch_Append(token, patch);        break;
-                    case PatchAction.InsertBefore:  ApplyPatch_Insert(token, patch, false); break;
-                    case PatchAction.InsertAfter:   ApplyPatch_Insert(token, patch, true);  break;
-                    case PatchAction.RemoveAll:     ApplyPatch_RemoveAll(token, patch);     break;
-                    default:                                                                break;
+                    case PatchAction.Add: ApplyPatch_Add(token, patch); break;
+                    case PatchAction.Overwrite: ApplyPatch_Overwrite(token, patch); break;
+                    case PatchAction.Remove: ApplyPatch_Remove(token, patch); break;
+                    case PatchAction.Append: ApplyPatch_Append(token, patch); break;
+                    case PatchAction.AppendAll: ApplyPatch_Append(token, patch, true); break;
+                    case PatchAction.InsertBefore: ApplyPatch_Insert(token, patch, false); break;
+                    case PatchAction.InsertAfter: ApplyPatch_Insert(token, patch, true); break;
+                    case PatchAction.RemoveAll: ApplyPatch_RemoveAll(token, patch); break;
+                    default: break;
                 }
             }
         }
@@ -326,21 +333,45 @@ namespace EpicLoot.Patching
             token.Remove();
         }
 
-        public static void ApplyPatch_Append(JToken token, Patch patch)
+        public static void ApplyPatch_Append(JToken token, Patch patch, bool appendAll = false)
         {
+            var actionName = appendAll ? "AppendAll" : "Append";
+
             if (patch.Value == null)
             {
-                EpicLoot.LogErrorForce($"Patch ({patch.SourceFile}, {patch.Path}) has action 'Append' but has not supplied a json Value! This patch will be ignored!");
+                EpicLoot.LogErrorForce($"Patch ({patch.SourceFile}, {patch.Path}) has action '{actionName}' but has not supplied a json Value! This patch will be ignored!");
                 return;
             }
 
             if (token.Type == JTokenType.Array)
             {
-                ((JArray)token).Add(patch.Value);
+                if (appendAll)
+                {
+                    if (patch.Value.Type == JTokenType.Array)
+                    {
+                        var mergeSettings = new JsonMergeSettings
+                        {
+                            MergeArrayHandling = MergeArrayHandling.Concat,
+                            MergeNullValueHandling = MergeNullValueHandling.Ignore
+                        };
+                        ((JArray)token).Merge(patch.Value, mergeSettings);
+
+                    }
+                    else
+                    {
+                        EpicLoot.LogErrorForce($"Patch ({patch.SourceFile}, {patch.Path}) has action 'AppendAll' but has provided a value in the source file that is not a json Array!");
+                    }
+                }
+                else
+                {
+                    ((JArray)token).Add(patch.Value);
+                }
+
             }
             else
             {
-                EpicLoot.LogErrorForce($"Patch ({patch.SourceFile}, {patch.Path}) has action 'Append' but has selected a token in the target file that is not a json Array!");
+
+                EpicLoot.LogErrorForce($"Patch ({patch.SourceFile}, {patch.Path}) has action {actionName} but has selected a token in the target file that is not a json Array!");
             }
         }
 
