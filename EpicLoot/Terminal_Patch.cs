@@ -142,16 +142,6 @@ namespace EpicLoot
                 var availableBounties = player.GetAdventureSaveData().Bounties;
                 BountiesAdventureFeature.PrintBounties($"Player Bounties:", availableBounties);
             }));
-            new Terminal.ConsoleCommand("timescale", "", (args =>
-            {
-                var timeScale = (args.Length >= 2) ? float.Parse(args[1]) : 1;
-                Time.timeScale = timeScale;
-            }), true);
-            new Terminal.ConsoleCommand("ts", "", (args =>
-            {
-                var timeScale = (args.Length >= 2) ? float.Parse(args[1]) : 1;
-                Time.timeScale = timeScale;
-            }), true);
             new Terminal.ConsoleCommand("gotomerchant", "", (args =>
             {
                 var player = Player.m_localPlayer;
