@@ -18,9 +18,10 @@
   * Added in ability to use prefab names in AllowedItemNames/ExcludedItemNames
   * Now showing modified attack stamina in Epic Loot tooltip.
   * Added in MountainCave TreasureChest to Loot Tables. (This will require you to update your loottables.json)
-  * Changing "Modify Damage" enchant to be a Scaling Percentage based Damage Addition.  This will allow scaling to be better between lower and higher tiered players/weapons.
+  * Changing "Modify Damage" enchant to be a Scaling Percetage based Damage Addition.  This will allow scaling to be better between lower and higher tiered players/weapons.
   * Adding in Dvergers and DvergerMage's to Loot Table, whom were left out. 
-  * Removing Timescale console command which was not working and preventing vanilla timescale command from functioning.
+  * Removing Timescale which was not working and preventing vanilla timescale from functioning.
+  * Adding Blood Magic and Elemental Magic Skills to available Skill Effect options.
 ## Version 0.9.2
   * When using CLLC, creatures now correctly drop Epic Loot items
   * Gambles won't drop mats when the ItemsToMaterialsRatio is set to materials

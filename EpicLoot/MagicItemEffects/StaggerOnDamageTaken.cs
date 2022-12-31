@@ -10,7 +10,7 @@ namespace EpicLoot.MagicItemEffects
 		[UsedImplicitly]
 		private static void Postfix(Character __instance, HitData hit)
 		{
-			var attacker = hit.GetAttacker();
+			var attacker = hit?.GetAttacker();
 			if (__instance is Player player && player.HasActiveMagicEffect(MagicEffectType.StaggerOnDamageTaken) && attacker != null && attacker != __instance && !attacker.IsStaggering())
 			{
 				var staggerChance = player.GetTotalActiveMagicEffectValue(MagicEffectType.StaggerOnDamageTaken, 0.01f);
