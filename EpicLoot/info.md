@@ -1417,6 +1417,52 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > |Epic|7|15|1|
 > |Legendary|15|20|1|
 
+## AddBloodMagicSkill
+
+> **Display Text:** Blood Magic Skill +{0}
+> 
+> **Prefixes:** Summoner's
+> **Suffixes:** the Summoner
+> 
+> **Allowed Item Types:** *None*
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **Allowed Item Types:** Chest, Legs, Shoulder, Utility, Staffs
+> > **AllowedSkillTypes:** `Staff`
+> 
+> **Value Per Rarity:**
+> 
+> |Rarity|Min|Max|Increment|
+> |--|--|--|--|
+> |Magic|1|4|1|
+> |Rare|3|8|1|
+> |Epic|7|15|1|
+> |Legendary|15|20|1|
+
+## AddElementalMagicSkill
+
+> **Display Text:** Elemental Magic Skill +{0}
+> 
+> **Prefixes:** Sorceror's
+> **Suffixes:** the Sorceror
+> 
+> **Allowed Item Types:** *None*
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **Allowed Item Types:** Chest, Legs, Shoulder, Utility, Staffs
+> > **AllowedSkillTypes:** `Staff`
+> 
+> **Value Per Rarity:**
+> 
+> |Rarity|Min|Max|Increment|
+> |--|--|--|--|
+> |Magic|1|4|1|
+> |Rare|3|8|1|
+> |Epic|7|15|1|
+> |Legendary|15|20|1|
+
 ## AddUnarmedSkill
 
 > **Display Text:** Unarmed Skill +{0}

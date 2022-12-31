@@ -1958,6 +1958,66 @@
       ]
     },
     {
+      "Type" : "AddBloodMagicSkill",
+      "DisplayText" : "$mod_epicloot_me_addbloodmagicskill_display",
+      "Description" : "$mod_epicloot_me_addbloodmagicskill_desc",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "Chest",
+          "Legs",
+          "Shoulder",
+          "Utility",
+		  "Staffs"
+        ],
+        "AllowedSkillTypes" : [
+          "BloodMagic"
+        ]
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 1, "MaxValue" : 4, "Increment" : 1 },
+        "Rare" : { "MinValue" : 3, "MaxValue" : 8, "Increment" : 1 },
+        "Epic" : { "MinValue" : 7, "MaxValue" : 15, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15, "MaxValue" : 20, "Increment" : 1 }
+      },
+      "SelectionWeight" : 1,
+      "Prefixes": [
+        "$mod_epicloot_me_addbloodmagicskill_prefix1"
+      ],
+      "Suffixes": [
+        "$mod_epicloot_me_addbloodmagicskill_suffix1"
+      ]
+    },
+    {
+      "Type" : "AddElementalMagicSkill",
+      "DisplayText" : "$mod_epicloot_me_addelementalmagicskill_display",
+      "Description" : "$mod_epicloot_me_addelementalmagicskill_desc",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "Chest",
+          "Legs",
+          "Shoulder",
+          "Utility",
+		  "Staffs"
+        ],
+        "AllowedSkillTypes" : [
+          "ElementalMagic"
+        ]
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 1, "MaxValue" : 4, "Increment" : 1 },
+        "Rare" : { "MinValue" : 3, "MaxValue" : 8, "Increment" : 1 },
+        "Epic" : { "MinValue" : 7, "MaxValue" : 15, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15, "MaxValue" : 20, "Increment" : 1 }
+      },
+      "SelectionWeight" : 1,
+      "Prefixes": [
+        "$mod_epicloot_me_addelementalmagicskill_prefix1"
+      ],
+      "Suffixes": [
+        "$mod_epicloot_me_addelementalmagicskill_suffix1"
+      ]
+    },
+    {
       "Type" : "AddUnarmedSkill",
       "DisplayText" : "$mod_epicloot_me_addunarmedskill_display",
       "Description" : "$mod_epicloot_me_addunarmedskill_desc",

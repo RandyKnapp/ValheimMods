@@ -1212,8 +1212,6 @@ namespace EpicLoot
             foreach (Skills.SkillType value in Enum.GetValues(typeof(Skills.SkillType)))
             {
                 if (value == Skills.SkillType.None
-                    || value == Skills.SkillType.ElementalMagic
-                    || value == Skills.SkillType.BloodMagic
                     || value == Skills.SkillType.WoodCutting
                     || value == Skills.SkillType.Jump
                     || value == Skills.SkillType.Sneak
