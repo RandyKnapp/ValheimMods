@@ -1428,6 +1428,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > 
 > **Requirements:**
 > > **Flags:** `ExclusiveSelf`
+> > **Allowed Item Types:** Chest, Legs, Shoulder, Utility, Staffs
 > > **AllowedSkillTypes:** `Staff`
 > 
 > **Value Per Rarity:**
@@ -1450,6 +1451,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > 
 > **Requirements:**
 > > **Flags:** `ExclusiveSelf`
+> > **Allowed Item Types:** Chest, Legs, Shoulder, Utility, Staffs
 > > **AllowedSkillTypes:** `Staff`
 > 
 > **Value Per Rarity:**
