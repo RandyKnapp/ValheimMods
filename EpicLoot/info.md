@@ -94,10 +94,10 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > 
 > |Rarity|Min|Max|Increment|
 > |--|--|--|--|
-> |Magic|10|20|1|
-> |Rare|10|20|1|
-> |Epic|10|20|1|
-> |Legendary|15|25|1|
+> |Magic|10|20|5|
+> |Rare|15|25|5|
+> |Epic|20|30|5|
+> |Legendary|25|40|5|
 > 
 > ***Notes:*** *Can't be rolled. Too powerful?*
 
@@ -422,7 +422,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## AddBluntDamage
 
-> **Display Text:** Blunt Damage +{0:0.#}
+> **Display Text:** Add Blunt +{0:0.#}%
 > 
 > **Prefixes:** Brute
 > **Suffixes:** Bludgeoning
@@ -446,7 +446,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## AddSlashingDamage
 
-> **Display Text:** Slash Damage +{0:0.#}
+> **Display Text:** Add Slash +{0:0.#}%
 > 
 > **Prefixes:** Sharp, Keen
 > **Suffixes:** Slashing, Cutting
@@ -470,7 +470,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## AddPiercingDamage
 
-> **Display Text:** Pierce Damage +{0:0.#}
+> **Display Text:** Add Pierce +{0:0.#}%
 > 
 > **Prefixes:** Spiked, Barbed
 > **Suffixes:** Piercing
@@ -493,7 +493,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## AddFireDamage
 
-> **Display Text:** Fire Damage +{0:0.#}
+> **Display Text:** Imbue Fire +{0:0.#}%
 > 
 > **Prefixes:** Blazing
 > **Suffixes:** Fire
@@ -517,7 +517,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## AddFrostDamage
 
-> **Display Text:** Frost Damage +{0:0.#}
+> **Display Text:** Imbue Frost +{0:0.#}%
 > 
 > **Prefixes:** Frigid
 > **Suffixes:** Frost
@@ -541,7 +541,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## AddLightningDamage
 
-> **Display Text:** Lightning Damage +{0:0.#}
+> **Display Text:** Imbue Lightning +{0:0.#}%
 > 
 > **Prefixes:** Shocking
 > **Suffixes:** Lightning
@@ -565,7 +565,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## AddPoisonDamage
 
-> **Display Text:** Poison Damage +{0:0.#}
+> **Display Text:** Imbue Poison +{0:0.#}%
 > 
 > **Prefixes:** Infected
 > **Suffixes:** Poison
@@ -589,7 +589,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
 ## AddSpiritDamage
 
-> **Display Text:** Spirit Damage +{0:0.#}
+> **Display Text:** Imbue Spirit +{0:0.#}%
 > 
 > **Prefixes:** Spirit
 > **Suffixes:** the Spirits
@@ -2380,13 +2380,14 @@ Sets of loot drop data that can be referenced in the loot tables
 
 > | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
-> | Battleaxe | 1 (14.3%) | 38 (38%) | 50 (50%) | 8 (8%) | 4 (4%) |
-> | SwordIron | 1 (14.3%) | 38 (38%) | 50 (50%) | 8 (8%) | 4 (4%) |
-> | AxeIron | 1 (14.3%) | 38 (38%) | 50 (50%) | 8 (8%) | 4 (4%) |
-> | SledgeIron | 1 (14.3%) | 38 (38%) | 50 (50%) | 8 (8%) | 4 (4%) |
-> | MaceIron | 1 (14.3%) | 38 (38%) | 50 (50%) | 8 (8%) | 4 (4%) |
-> | AtgeirIron | 1 (14.3%) | 38 (38%) | 50 (50%) | 8 (8%) | 4 (4%) |
-> | SpearElderbark | 1 (14.3%) | 38 (38%) | 50 (50%) | 8 (8%) | 4 (4%) |
+> | Battleaxe | 1 (12.5%) | 38 (38%) | 50 (50%) | 8 (8%) | 4 (4%) |
+> | SwordIron | 1 (12.5%) | 38 (38%) | 50 (50%) | 8 (8%) | 4 (4%) |
+> | AxeIron | 1 (12.5%) | 38 (38%) | 50 (50%) | 8 (8%) | 4 (4%) |
+> | SledgeIron | 1 (12.5%) | 38 (38%) | 50 (50%) | 8 (8%) | 4 (4%) |
+> | MaceIron | 1 (12.5%) | 38 (38%) | 50 (50%) | 8 (8%) | 4 (4%) |
+> | AtgeirIron | 1 (12.5%) | 38 (38%) | 50 (50%) | 8 (8%) | 4 (4%) |
+> | SpearElderbark | 1 (12.5%) | 38 (38%) | 50 (50%) | 8 (8%) | 4 (4%) |
+> | BowHuntsman | 1 (12.5%) | 38 (38%) | 50 (50%) | 8 (8%) | 4 (4%) |
 
 
 ## Tier3Armor
@@ -2547,13 +2548,21 @@ Sets of loot drop data that can be referenced in the loot tables
 > | ShieldCarapaceBuckler | 1 (50%) | 0 (0%) | 10 (10%) | 50 (50%) | 40 (40%) |
 
 
+## Tier6Tools
+
+> | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | PickaxeBlackmetal | 1 (100%) | 0 (0%) | 10 (10%) | 50 (50%) | 40 (40%) |
+
+
 ## Tier6Everything
 
 > | Items | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
-> | Tier6Weapons | 1 (33.3%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
-> | Tier6Armor | 1 (33.3%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
-> | Tier6Shields | 1 (33.3%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
+> | Tier6Weapons | 1 (25%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
+> | Tier6Armor | 1 (25%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
+> | Tier6Shields | 1 (25%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
+> | Tier6Tools | 1 (25%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
 
 
 # Loot Tables
@@ -3836,6 +3845,45 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 
 
 ## TreasureChest_mountains
+
+> | Drops (lvl 1) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 58 (52.7%) |
+> | 1 | 30 (27.3%) |
+> | 2 | 20 (18.2%) |
+> | 3 | 2 (1.8%) |
+
+> | Drops (lvl 2) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 58 (52.7%) |
+> | 1 | 30 (27.3%) |
+> | 2 | 20 (18.2%) |
+> | 3 | 2 (1.8%) |
+
+> | Drops (lvl 3) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 58 (52.7%) |
+> | 1 | 30 (27.3%) |
+> | 2 | 20 (18.2%) |
+> | 3 | 2 (1.8%) |
+
+> | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier3Everything | 4 (80%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
+> | Tier4Everything | 1 (20%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
+
+> | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier3Everything | 4 (80%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
+> | Tier4Everything | 1 (20%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
+
+> | Items (lvl 3) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier3Everything | 4 (80%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
+> | Tier4Everything | 1 (20%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |
+
+
+## TreasureChest_mountaincave
 
 > | Drops (lvl 1) | Weight (Chance) |
 > | -- | -- |
@@ -6589,6 +6637,346 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 
 
 ## SeekerBrute
+
+> | Drops (lvl 1) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 70 (70%) |
+> | 1 | 28 (28%) |
+> | 2 | 2 (2%) |
+
+> | Drops (lvl 2) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 50 (50%) |
+> | 1 | 46 (46%) |
+> | 2 | 3 (3%) |
+> | 3 | 1 (1%) |
+
+> | Drops (lvl 3) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 30 (30%) |
+> | 1 | 64 (64%) |
+> | 2 | 4 (4%) |
+> | 3 | 2 (2%) |
+
+> | Drops (lvl 4) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 5 (5%) |
+> | 1 | 87 (87%) |
+> | 2 | 5 (5%) |
+> | 3 | 3 (3%) |
+
+> | Drops (lvl 5) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 0 (0%) |
+> | 1 | 86 (86%) |
+> | 2 | 10 (10%) |
+> | 3 | 4 (4%) |
+
+> | Drops (lvl 6) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 0 (0%) |
+> | 1 | 80 (80%) |
+> | 2 | 15 (15%) |
+> | 3 | 5 (5%) |
+
+> | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier6Everything | 1 (100%) | 0 (0%) | 25 (25%) | 65 (65%) | 10 (10%) |
+
+> | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier6Everything | 1 (100%) | 0 (0%) | 0 (0%) | 85 (85%) | 15 (15%) |
+
+> | Items (lvl 3) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier6Everything | 1 (100%) | 0 (0%) | 0 (0%) | 80 (80%) | 20 (20%) |
+
+> | Items (lvl 4) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier6Everything | 1 (100%) | 0 (0%) | 0 (0%) | 75 (75%) | 25 (25%) |
+
+> | Items (lvl 5) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier6Everything | 1 (100%) | 0 (0%) | 0 (0%) | 70 (70%) | 30 (30%) |
+
+> | Items (lvl 6) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier6Everything | 1 (100%) | 0 (0%) | 0 (0%) | 65 (65%) | 35 (35%) |
+
+
+## Dverger
+
+> | Drops (lvl 1) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 70 (70%) |
+> | 1 | 28 (28%) |
+> | 2 | 2 (2%) |
+
+> | Drops (lvl 2) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 50 (50%) |
+> | 1 | 46 (46%) |
+> | 2 | 3 (3%) |
+> | 3 | 1 (1%) |
+
+> | Drops (lvl 3) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 30 (30%) |
+> | 1 | 64 (64%) |
+> | 2 | 4 (4%) |
+> | 3 | 2 (2%) |
+
+> | Drops (lvl 4) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 5 (5%) |
+> | 1 | 87 (87%) |
+> | 2 | 5 (5%) |
+> | 3 | 3 (3%) |
+
+> | Drops (lvl 5) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 0 (0%) |
+> | 1 | 86 (86%) |
+> | 2 | 10 (10%) |
+> | 3 | 4 (4%) |
+
+> | Drops (lvl 6) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 0 (0%) |
+> | 1 | 80 (80%) |
+> | 2 | 15 (15%) |
+> | 3 | 5 (5%) |
+
+> | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier6Everything | 1 (100%) | 0 (0%) | 25 (25%) | 65 (65%) | 10 (10%) |
+
+> | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier6Everything | 1 (100%) | 0 (0%) | 0 (0%) | 85 (85%) | 15 (15%) |
+
+> | Items (lvl 3) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier6Everything | 1 (100%) | 0 (0%) | 0 (0%) | 80 (80%) | 20 (20%) |
+
+> | Items (lvl 4) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier6Everything | 1 (100%) | 0 (0%) | 0 (0%) | 75 (75%) | 25 (25%) |
+
+> | Items (lvl 5) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier6Everything | 1 (100%) | 0 (0%) | 0 (0%) | 70 (70%) | 30 (30%) |
+
+> | Items (lvl 6) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier6Everything | 1 (100%) | 0 (0%) | 0 (0%) | 65 (65%) | 35 (35%) |
+
+
+## DvergerMage
+
+> | Drops (lvl 1) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 70 (70%) |
+> | 1 | 28 (28%) |
+> | 2 | 2 (2%) |
+
+> | Drops (lvl 2) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 50 (50%) |
+> | 1 | 46 (46%) |
+> | 2 | 3 (3%) |
+> | 3 | 1 (1%) |
+
+> | Drops (lvl 3) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 30 (30%) |
+> | 1 | 64 (64%) |
+> | 2 | 4 (4%) |
+> | 3 | 2 (2%) |
+
+> | Drops (lvl 4) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 5 (5%) |
+> | 1 | 87 (87%) |
+> | 2 | 5 (5%) |
+> | 3 | 3 (3%) |
+
+> | Drops (lvl 5) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 0 (0%) |
+> | 1 | 86 (86%) |
+> | 2 | 10 (10%) |
+> | 3 | 4 (4%) |
+
+> | Drops (lvl 6) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 0 (0%) |
+> | 1 | 80 (80%) |
+> | 2 | 15 (15%) |
+> | 3 | 5 (5%) |
+
+> | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier6Everything | 1 (100%) | 0 (0%) | 25 (25%) | 65 (65%) | 10 (10%) |
+
+> | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier6Everything | 1 (100%) | 0 (0%) | 0 (0%) | 85 (85%) | 15 (15%) |
+
+> | Items (lvl 3) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier6Everything | 1 (100%) | 0 (0%) | 0 (0%) | 80 (80%) | 20 (20%) |
+
+> | Items (lvl 4) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier6Everything | 1 (100%) | 0 (0%) | 0 (0%) | 75 (75%) | 25 (25%) |
+
+> | Items (lvl 5) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier6Everything | 1 (100%) | 0 (0%) | 0 (0%) | 70 (70%) | 30 (30%) |
+
+> | Items (lvl 6) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier6Everything | 1 (100%) | 0 (0%) | 0 (0%) | 65 (65%) | 35 (35%) |
+
+
+## DvergerMageFire
+
+> | Drops (lvl 1) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 70 (70%) |
+> | 1 | 28 (28%) |
+> | 2 | 2 (2%) |
+
+> | Drops (lvl 2) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 50 (50%) |
+> | 1 | 46 (46%) |
+> | 2 | 3 (3%) |
+> | 3 | 1 (1%) |
+
+> | Drops (lvl 3) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 30 (30%) |
+> | 1 | 64 (64%) |
+> | 2 | 4 (4%) |
+> | 3 | 2 (2%) |
+
+> | Drops (lvl 4) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 5 (5%) |
+> | 1 | 87 (87%) |
+> | 2 | 5 (5%) |
+> | 3 | 3 (3%) |
+
+> | Drops (lvl 5) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 0 (0%) |
+> | 1 | 86 (86%) |
+> | 2 | 10 (10%) |
+> | 3 | 4 (4%) |
+
+> | Drops (lvl 6) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 0 (0%) |
+> | 1 | 80 (80%) |
+> | 2 | 15 (15%) |
+> | 3 | 5 (5%) |
+
+> | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier6Everything | 1 (100%) | 0 (0%) | 25 (25%) | 65 (65%) | 10 (10%) |
+
+> | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier6Everything | 1 (100%) | 0 (0%) | 0 (0%) | 85 (85%) | 15 (15%) |
+
+> | Items (lvl 3) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier6Everything | 1 (100%) | 0 (0%) | 0 (0%) | 80 (80%) | 20 (20%) |
+
+> | Items (lvl 4) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier6Everything | 1 (100%) | 0 (0%) | 0 (0%) | 75 (75%) | 25 (25%) |
+
+> | Items (lvl 5) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier6Everything | 1 (100%) | 0 (0%) | 0 (0%) | 70 (70%) | 30 (30%) |
+
+> | Items (lvl 6) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier6Everything | 1 (100%) | 0 (0%) | 0 (0%) | 65 (65%) | 35 (35%) |
+
+
+## DvergerMageIce
+
+> | Drops (lvl 1) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 70 (70%) |
+> | 1 | 28 (28%) |
+> | 2 | 2 (2%) |
+
+> | Drops (lvl 2) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 50 (50%) |
+> | 1 | 46 (46%) |
+> | 2 | 3 (3%) |
+> | 3 | 1 (1%) |
+
+> | Drops (lvl 3) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 30 (30%) |
+> | 1 | 64 (64%) |
+> | 2 | 4 (4%) |
+> | 3 | 2 (2%) |
+
+> | Drops (lvl 4) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 5 (5%) |
+> | 1 | 87 (87%) |
+> | 2 | 5 (5%) |
+> | 3 | 3 (3%) |
+
+> | Drops (lvl 5) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 0 (0%) |
+> | 1 | 86 (86%) |
+> | 2 | 10 (10%) |
+> | 3 | 4 (4%) |
+
+> | Drops (lvl 6) | Weight (Chance) |
+> | -- | -- |
+> | 0 | 0 (0%) |
+> | 1 | 80 (80%) |
+> | 2 | 15 (15%) |
+> | 3 | 5 (5%) |
+
+> | Items (lvl 1) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier6Everything | 1 (100%) | 0 (0%) | 25 (25%) | 65 (65%) | 10 (10%) |
+
+> | Items (lvl 2) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier6Everything | 1 (100%) | 0 (0%) | 0 (0%) | 85 (85%) | 15 (15%) |
+
+> | Items (lvl 3) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier6Everything | 1 (100%) | 0 (0%) | 0 (0%) | 80 (80%) | 20 (20%) |
+
+> | Items (lvl 4) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier6Everything | 1 (100%) | 0 (0%) | 0 (0%) | 75 (75%) | 25 (25%) |
+
+> | Items (lvl 5) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier6Everything | 1 (100%) | 0 (0%) | 0 (0%) | 70 (70%) | 30 (30%) |
+
+> | Items (lvl 6) | Weight (Chance) | Magic | Rare | Epic | Legendary |
+> | -- | -- | -- | -- | -- | -- |
+> | Tier6Everything | 1 (100%) | 0 (0%) | 0 (0%) | 65 (65%) | 35 (35%) |
+
+
+## DvergerMageSupport
 
 > | Drops (lvl 1) | Weight (Chance) |
 > | -- | -- |
