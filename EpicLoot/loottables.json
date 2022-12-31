@@ -1521,6 +1521,16 @@
         { "Item": "Tier4Everything", "Weight": 1 }
       ]
     },
+    // TreasureChest_mountaincave
+    ////////////////////////////////////////////////////////////////////////////////////
+    {
+      "Object": "TreasureChest_mountaincave",
+      "Drops": [ [0, 58], [1, 30], [2, 20], [3, 2] ],
+      "Loot": [
+        { "Item": "Tier3Everything", "Weight": 4 },
+        { "Item": "Tier4Everything", "Weight": 1 }
+      ]
+    },
     // TreasureChest_plains_stone
     ////////////////////////////////////////////////////////////////////////////////////
     {
