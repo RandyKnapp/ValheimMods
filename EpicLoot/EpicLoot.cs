@@ -128,6 +128,8 @@ namespace EpicLoot
         public static ConfigEntry<bool> AlwaysShowWelcomeMessage;
         public static ConfigEntry<bool> OutputPatchedConfigFiles;
 
+        public static Dictionary<string, CustomSyncedValue<string>> SyncedJsonFiles = new Dictionary<string, CustomSyncedValue<string>>();
+
         public static readonly List<ItemDrop.ItemData.ItemType> AllowedMagicItemTypes = new List<ItemDrop.ItemData.ItemType>
         {
             ItemDrop.ItemData.ItemType.Helmet,
@@ -400,6 +402,50 @@ namespace EpicLoot
             LoadJsonFile<AdventureDataConfig>("adventuredata.json", AdventureDataManager.Initialize);
             LoadJsonFile<LegendaryItemConfig>("legendaries.json", UniqueLegendaryHelper.Initialize);
             LoadJsonFile<AbilityConfig>("abilities.json", AbilityDefinitions.Initialize);
+            WatchNewPatchConfig();
+        }
+
+        public static void WatchNewPatchConfig()
+        {
+
+            Log($"Watching For Files");
+            //Patch JSON Watcher
+
+            void ConsumeNewPatchFile(object s, FileSystemEventArgs e)
+            {
+                FileInfo fileInfo = null;
+
+                switch (e.ChangeType)
+                {
+                    case WatcherChangeTypes.Created:
+                        //File Created
+                        fileInfo = new FileInfo(e.FullPath);
+                        if (!fileInfo.Exists) return;
+
+                        FilePatching.ProcessPatchFile(fileInfo);
+                        var sourceFile = fileInfo.Name;
+
+                        foreach (var fileName in FilePatching.PatchesPerFile.Values.SelectMany(l => l).ToList()
+                                     .Where(u => u.SourceFile.Equals(sourceFile)).Select(p => p.TargetFile).Distinct()
+                                     .ToArray())
+                        {
+                            SyncedJsonFiles[fileName].AssignLocalValue(LoadJsonText(fileName));
+                            AddPatchFileWatcher(fileName, sourceFile);
+                        }
+                        
+                        break;
+                }
+
+            }
+
+            var newPatchWatcher = new FileSystemWatcher(FilePatching.PatchesDirPath, "*.json");
+
+            newPatchWatcher.Created += ConsumeNewPatchFile;
+            newPatchWatcher.IncludeSubdirectories = true;
+            newPatchWatcher.SynchronizingObject = ThreadingHelper.SynchronizingObject;
+            newPatchWatcher.EnableRaisingEvents = true;
+
+
         }
 
         private static void InitializeAbilities()
@@ -881,16 +927,22 @@ namespace EpicLoot
             ObjectDB.instance.m_StatusEffects.Add(paralyzed);
         }
 
-        public static void LoadJsonFile<T>(string filename, Action<T> onFileLoad) where T : class
+        public static void LoadJsonFile<T>(string filename, Action<T> onFileLoad, bool update = false) where T : class
         {
+            
             var jsonFile = LoadJsonText(filename);
-            var syncedValue = new CustomSyncedValue<string>(_instance._configSync, filename, jsonFile);
+
+            if (!update)
+            {
+                SyncedJsonFiles.Add(filename, new CustomSyncedValue<string>(_instance._configSync, filename, jsonFile));
+            }
+            
             void Process()
             {
                 T result;
                 try
                 {
-                    result = string.IsNullOrEmpty(syncedValue.Value) ? null : JsonConvert.DeserializeObject<T>(syncedValue.Value);
+                    result = string.IsNullOrEmpty(SyncedJsonFiles[filename].Value) ? null : JsonConvert.DeserializeObject<T>(SyncedJsonFiles[filename].Value);
                 }
                 catch (Exception)
                 {
@@ -901,12 +953,14 @@ namespace EpicLoot
                 onFileLoad(result);
             }
 
-            syncedValue.ValueChanged += Process;
+            SyncedJsonFiles[filename].ValueChanged += Process;
             Process();
 
             if (jsonFile != null)
             {
-	            void ConsumeConfigFileEvent(object s, FileSystemEventArgs e) => syncedValue.AssignLocalValue(LoadJsonText(filename));
+                //Primary JSON Watcher
+	            void ConsumeConfigFileEvent(object s, FileSystemEventArgs e) => SyncedJsonFiles[filename].AssignLocalValue(LoadJsonText(filename));
+
 	            var filePath = GetAssetPath(filename);
 	            FileSystemWatcher watcher = new FileSystemWatcher(Path.GetDirectoryName(filePath), Path.GetFileName(filePath));
 	            watcher.Changed += ConsumeConfigFileEvent;
@@ -915,8 +969,62 @@ namespace EpicLoot
 	            watcher.IncludeSubdirectories = true;
 	            watcher.SynchronizingObject = ThreadingHelper.SynchronizingObject;
 	            watcher.EnableRaisingEvents = true;
+
+                //Patch JSON Watcher
+                for (var i = 0; i < FilePatching.PatchesPerFile.Where(y => y.Key.Equals(filename)).ToList().Count; i++)
+                {
+                    var configFile = FilePatching.PatchesPerFile.Where(y => y.Key.Equals(filename)).ToList()[i];
+                    var lists = configFile.Value.Select(p => p.SourceFile).Distinct().ToList();
+
+                    for (var index = 0; index < lists.Count; index++)
+                    {
+                        var patchfile = lists[index];
+                        AddPatchFileWatcher(filename,patchfile);
+                        
+                    }
+                }
             }
         }
+
+        private static void AddPatchFileWatcher(string fileName, string patchFile)
+        {
+            var fullPatchFilename = Path.Combine(FilePatching.PatchesDirPath, patchFile);
+            Log($"[AddPatchFileWatcher] Full Patch File Name = {fullPatchFilename}");
+            void ConsumePatchFileEvent(object s, FileSystemEventArgs e)
+            {
+                FileInfo fileInfo = null;
+
+                switch (e.ChangeType)
+                {
+                    case WatcherChangeTypes.Deleted:
+                        //File Deleted
+                        Debug.Log($"Function Deleted");
+                        FilePatching.RemoveFilePatches(fileName, patchFile);
+                        break;
+                    case WatcherChangeTypes.Changed:
+                        //File Changed
+                        Debug.Log($"Function Changed");
+                        FilePatching.RemoveFilePatches(fileName, patchFile);
+                        fileInfo = new FileInfo(fullPatchFilename);
+                        break;
+                }
+
+                if (fileInfo != null && fileInfo.Exists)
+                    FilePatching.ProcessPatchFile(fileInfo);
+
+                SyncedJsonFiles[fileName].AssignLocalValue(LoadJsonText(fileName));
+            }
+
+            var patchWatcher = new FileSystemWatcher(Path.GetDirectoryName(fullPatchFilename), Path.GetFileName(fullPatchFilename));
+
+            patchWatcher.Changed += ConsumePatchFileEvent;
+            patchWatcher.Deleted += ConsumePatchFileEvent;
+            patchWatcher.IncludeSubdirectories = true;
+            patchWatcher.SynchronizingObject = ThreadingHelper.SynchronizingObject;
+            patchWatcher.EnableRaisingEvents = true;
+
+        }
+
 
         public static string LoadJsonText(string filename)
         {
