@@ -45,6 +45,9 @@
   "mod_epicloot_sacrifice_equipped": "Item is currently equipped", 
   "mod_epicloot_sacrifice_inventoryfullexplanation": "(Inventory was full when crafting)", 
   "mod_epicloot_sacrificeall": "Sacrifice All",
+  "mod_epicloot_sacrifice_progress": "Sacrificing...",
+  "mod_epicloot_sacrifice_productfitwarning": "Items produced by this sacrifice do not fit in inventory.", 
+  "mod_epicloot_sacrifice_successmsg": "Items produced by this sacrifice do not fit in inventory.", 
 
   "mod_epicloot_augment": "Augment",
   "mod_epicloot_augment_availableeffects": "Available Effects",

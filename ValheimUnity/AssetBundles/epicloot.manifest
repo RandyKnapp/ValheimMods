@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 4243109795
+CRC: 3277886376
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 765b507511bb9484f03ce5d409c488ce
+    Hash: 3923f2e8f403ceb3ea3e2d11bd36316c
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 18a93c0aa776829bec18cac5216390cc
+    Hash: a8354b0623955c8aa84d18d508adf791
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -50,17 +50,21 @@ ClassTypes:
 - Class: 114
   Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
 - Class: 114
+  Script: {fileID: 11500000, guid: 9085046f02f69544eb97fd06b6048fe2, type: 3}
+- Class: 114
   Script: {fileID: 2094620348, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+- Class: 114
+  Script: {fileID: 1254579870, guid: 2f9828d4dfcaa584280fbdd93cb3976a, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: d199490a83bb2b844b9695cbf13b01ef, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: e19747de3f5aca642ab2be37e372fb86, type: 3}
-- Class: 114
-  Script: {fileID: 11500000, guid: 9085046f02f69544eb97fd06b6048fe2, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
 - Class: 114
@@ -71,6 +75,8 @@ ClassTypes:
   Script: {fileID: 11500000, guid: 0d0b652f32a2cc243917e4028fa0f046, type: 3}
 - Class: 114
   Script: {fileID: -1593939647, guid: d920e4723ba2566674efb2f0c3eb6edb, type: 3}
+- Class: 114
+  Script: {fileID: -481414458, guid: d920e4723ba2566674efb2f0c3eb6edb, type: 3}
 - Class: 114
   Script: {fileID: 182242463, guid: d920e4723ba2566674efb2f0c3eb6edb, type: 3}
 - Class: 114
@@ -96,19 +102,15 @@ ClassTypes:
 - Class: 114
   Script: {fileID: 1521249158, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
 - Class: 114
-  Script: {fileID: 11500000, guid: d199490a83bb2b844b9695cbf13b01ef, type: 3}
-- Class: 114
-  Script: {fileID: 11500000, guid: 2a4db7a114972834c8e4117be1d82ba3, type: 3}
-- Class: 114
-  Script: {fileID: 1254579870, guid: 2f9828d4dfcaa584280fbdd93cb3976a, type: 3}
+  Script: {fileID: 1999227660, guid: 2f9828d4dfcaa584280fbdd93cb3976a, type: 3}
 - Class: 114
   Script: {fileID: 1179097507, guid: 2f9828d4dfcaa584280fbdd93cb3976a, type: 3}
 - Class: 114
   Script: {fileID: 2002944390, guid: 2f9828d4dfcaa584280fbdd93cb3976a, type: 3}
 - Class: 114
-  Script: {fileID: 1999227660, guid: 2f9828d4dfcaa584280fbdd93cb3976a, type: 3}
-- Class: 114
   Script: {fileID: 1284466352, guid: 2f9828d4dfcaa584280fbdd93cb3976a, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 2a4db7a114972834c8e4117be1d82ba3, type: 3}
 - Class: 115
   Script: {instanceID: 0}
 - Class: 120
@@ -150,7 +152,7 @@ Assets:
 - Assets/EpicLoot/Prefabs/SFX/sfx_frostcone.prefab
 - Assets/EpicLoot/Sprites/Inventory/GenericItemBg.png
 - Assets/EpicLoot/Sprites/Inventory/Auga/enchant_tabicon.png
-- Assets/Hovl Studio/Auras pack/Prefabs/FireAura 1.prefab
+- Assets/X_RPGVFX/Auras pack/Prefabs/FireAura 1.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/RunestoneLegendary.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/EssenceLegendary.prefab
 - Assets/EpicLoot/Prefabs/Collision/IceSpikesCollider.prefab

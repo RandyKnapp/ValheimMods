@@ -328,6 +328,9 @@
     <Reference Include="assembly_sunshafts">
       <HintPath>Packages\valheim\assembly_sunshafts.dll</HintPath>
     </Reference>
+    <Reference Include="EpicLoot-UnityLib">
+      <HintPath>Assets\ExternalLibraries\EpicLoot-UnityLib.dll</HintPath>
+    </Reference>
     <Reference Include="System.Configuration">
       <HintPath>Packages\valheim\System.Configuration.dll</HintPath>
     </Reference>
@@ -345,9 +348,6 @@
     </Reference>
     <Reference Include="PlayFab">
       <HintPath>Packages\valheim\PlayFab.dll</HintPath>
-    </Reference>
-    <Reference Include="EpicLoot-UnityLib">
-      <HintPath>Assets\ExternalLibraries\EpicLoot-UnityLib.dll</HintPath>
     </Reference>
     <Reference Include="netstandard">
       <HintPath>C:\Program Files\Unity\Hub\Editor\2020.3.6f1\Editor\Data\NetStandard\ref\2.0.0\netstandard.dll</HintPath>

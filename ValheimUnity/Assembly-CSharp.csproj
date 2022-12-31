@@ -96,7 +96,7 @@
     <None Include="Assets\X_RPGVFX\Auras pack\Shaders\Add_CenterGlow.shader" />
     <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Demo scenes\Demo AOE skills\HDRP and URP(LWRP).txt" />
     <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Scripts\Readme.txt" />
-    <None Include="Assets\X_Lib\EpicLoot-UnityLib.dll" />
+    <None Include="Assets\ExternalLibraries\EpicLoot-UnityLib.dll" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">
@@ -348,6 +348,9 @@
     <Reference Include="assembly_sunshafts">
       <HintPath>Packages\valheim\assembly_sunshafts.dll</HintPath>
     </Reference>
+    <Reference Include="EpicLoot-UnityLib">
+      <HintPath>Assets\ExternalLibraries\EpicLoot-UnityLib.dll</HintPath>
+    </Reference>
     <Reference Include="System.Configuration">
       <HintPath>Packages\valheim\System.Configuration.dll</HintPath>
     </Reference>
@@ -365,9 +368,6 @@
     </Reference>
     <Reference Include="PlayFab">
       <HintPath>Packages\valheim\PlayFab.dll</HintPath>
-    </Reference>
-    <Reference Include="EpicLoot-UnityLib">
-      <HintPath>Assets\X_Lib\EpicLoot-UnityLib.dll</HintPath>
     </Reference>
     <Reference Include="netstandard">
       <HintPath>C:\Program Files\Unity\Hub\Editor\2020.3.6f1\Editor\Data\NetStandard\ref\2.0.0\netstandard.dll</HintPath>

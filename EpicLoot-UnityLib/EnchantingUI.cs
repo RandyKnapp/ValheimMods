@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Linq;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace EpicLoot_UnityLib
@@ -8,6 +9,10 @@ namespace EpicLoot_UnityLib
         public GameObject Root;
         public GameObject Scrim;
         public SacrificeUI Sacrifice;
+        public TabHandler TabHandler;
+        public GameObject TabScrim;
+        public AudioSource Audio;
+        public AudioClip TabClickSFX;
 
         public static EnchantingUI instance { get; set; }
 
@@ -17,6 +22,15 @@ namespace EpicLoot_UnityLib
         {
             instance = this;
             Localization.instance.Localize(transform);
+
+            var uiSFX = GameObject.Find("sfx_gui_button");
+            if (uiSFX)
+                Audio.outputAudioMixerGroup = uiSFX.GetComponent<AudioSource>().outputAudioMixerGroup;
+
+            foreach (var button in TabHandler.m_tabs.Select(x => x.m_button))
+            {
+                button.onClick.AddListener(PlayTabSelectSFX);
+            }
         }
 
         public static void Show(GameObject enchantingUiPrefab)
@@ -101,6 +115,21 @@ namespace EpicLoot_UnityLib
                     Hide();
                 }
             }
+        }
+
+        public void LockTabs()
+        {
+            TabScrim.SetActive(true);
+        }
+
+        public void UnlockTabs()
+        {
+            TabScrim.SetActive(false);
+        }
+
+        public void PlayTabSelectSFX()
+        {
+            Audio.PlayOneShot(TabClickSFX);
         }
     }
 }

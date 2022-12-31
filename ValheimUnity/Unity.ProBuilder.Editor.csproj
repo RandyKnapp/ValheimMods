@@ -479,6 +479,9 @@
     <Reference Include="assembly_sunshafts">
       <HintPath>Packages\valheim\assembly_sunshafts.dll</HintPath>
     </Reference>
+    <Reference Include="EpicLoot-UnityLib">
+      <HintPath>Assets\ExternalLibraries\EpicLoot-UnityLib.dll</HintPath>
+    </Reference>
     <Reference Include="System.Configuration">
       <HintPath>Packages\valheim\System.Configuration.dll</HintPath>
     </Reference>
@@ -496,9 +499,6 @@
     </Reference>
     <Reference Include="PlayFab">
       <HintPath>Packages\valheim\PlayFab.dll</HintPath>
-    </Reference>
-    <Reference Include="EpicLoot-UnityLib">
-      <HintPath>Assets\ExternalLibraries\EpicLoot-UnityLib.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework">
       <HintPath>Library\PackageCache\com.unity.ext.nunit@1.0.6\net35\unity-custom\nunit.framework.dll</HintPath>

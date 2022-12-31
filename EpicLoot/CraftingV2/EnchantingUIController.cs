@@ -108,6 +108,7 @@ namespace EpicLoot.CraftingV2
                 if (availableSpace == 0)
                 {
                     var itemData = itemDrop.m_itemData.Clone();
+                    itemData.m_dropPrefab = prefab;
                     itemData.m_stack = 0;
                     availableSpace = itemData.m_shared.m_maxStackSize;
                     itemList.Add(itemData);

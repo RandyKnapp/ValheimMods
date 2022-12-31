@@ -9,6 +9,7 @@ namespace EpicLoot_UnityLib
         public const string TotalQuantityFormat = "/ {0}";
         public const string ReadOnlyQuantityFormat = "{0}";
 
+        public Button MainButton;
         public Toggle SelectedToggle;
         public GameObject SelectedBackground;
         public Text ItemName;
@@ -20,6 +21,8 @@ namespace EpicLoot_UnityLib
         public Button QuantityDownButton;
         public UITooltip Tooltip;
         public bool ReadOnly;
+        public AudioSource Audio;
+        public AudioClip OnClickSFX;
 
         [NonSerialized]
         public bool SuppressEvents;
@@ -30,7 +33,6 @@ namespace EpicLoot_UnityLib
 
         public static SetMagicItemDelegate SetMagicItem;
 
-        private Button _button;
         private ItemDrop.ItemData _item;
         private int _selectedQuantity;
         private bool _locked;
@@ -47,11 +49,13 @@ namespace EpicLoot_UnityLib
             var storeItemTooltip = StoreGui.instance.m_listElement.GetComponent<UITooltip>().m_tooltipPrefab;
             Tooltip.m_tooltipPrefab = storeItemTooltip;
 
-            _button = GetComponent<Button>();
+            var uiSFX = GameObject.Find("sfx_gui_button");
+            if (uiSFX != null)
+                Audio.outputAudioMixerGroup = uiSFX.GetComponent<AudioSource>().outputAudioMixerGroup;
 
             if (!ReadOnly)
             {
-                _button.onClick.AddListener(OnClicked);
+                MainButton.onClick.AddListener(OnClicked);
                 ItemSelectedQuantity.onEndEdit.AddListener(OnSelectedAmountChanged);
                 SelectedToggle.onValueChanged.AddListener(OnSelectedToggleChanged);
                 QuantityUpButton.onClick.AddListener(OnQuantityUpButtonClicked);
@@ -63,19 +67,16 @@ namespace EpicLoot_UnityLib
 
         private void OnClicked()
         {
-            if (_item?.m_shared.m_maxStackSize == 1 && IsSelected())
-                Deselect();
-            else if (!IsSelected())
-                SelectMaxQuantity();
+            if (IsSelected())
+                Deselect(false);
+            else
+                SelectMaxQuantity(false);
         }
 
-        public void SelectMaxQuantity()
+        public void SelectMaxQuantity(bool noSound)
         {
             var maxSelectedAmount = _item?.m_stack ?? 0;
-            _selectedQuantity = maxSelectedAmount;
-            if (!SuppressEvents)
-                OnSelectionChanged?.Invoke(this, IsSelected(), _selectedQuantity);
-            Refresh();
+            SelectQuantity(maxSelectedAmount, noSound);
         }
 
         public bool IsSelected()
@@ -92,27 +93,27 @@ namespace EpicLoot_UnityLib
         {
             var successParse = int.TryParse(typedInAmount, out var result);
             if (!successParse)
-                Deselect();
+                Deselect(false);
             else
-                SelectQuantity(result);
+                SelectQuantity(result, false);
         }
 
         private void OnSelectedToggleChanged(bool _)
         {
             if (SelectedToggle.isOn)
-                SelectMaxQuantity();
+                SelectMaxQuantity(true);
             else
-                Deselect();
+                Deselect(true);
         }
 
         private void OnQuantityUpButtonClicked()
         {
-            SelectQuantity(_selectedQuantity + 1);
+            SelectQuantity(_selectedQuantity + 1, false);
         }
 
         private void OnQuantityDownButtonClicked()
         {
-            SelectQuantity(_selectedQuantity - 1);
+            SelectQuantity(_selectedQuantity - 1, false);
         }
 
         public void SetItem(ItemDrop.ItemData item)
@@ -145,40 +146,31 @@ namespace EpicLoot_UnityLib
                 }
             }
 
-            Deselect();
+            Deselect(true);
         }
 
-        public void Select()
+        public void Deselect(bool noSound)
+        {
+            SelectQuantity(0, noSound);
+        }
+
+        public void SelectQuantity(int quantity, bool noSound)
         {
             if (_item == null)
                 return;
 
-            if (IsSelected() && _item.m_shared.m_maxStackSize == 1)
-                Deselect();
-            else
-                SelectQuantity(_item.m_shared.m_maxStackSize);
-        }
-
-        public void Deselect()
-        {
-            _selectedQuantity = 0;
-            if (!SuppressEvents)
-                OnSelectionChanged?.Invoke(this, IsSelected(), _selectedQuantity);
-            Refresh();
-        }
-
-        public void SelectQuantity(int quantity)
-        {
-            if (_item == null)
-                return;
-
+            var prevQuantity = _selectedQuantity;
             if (_item.m_shared.m_maxStackSize == 1)
                 _selectedQuantity = Mathf.Clamp(quantity, 0, 1);
             else
                 _selectedQuantity = Mathf.Clamp(quantity, 0, _item.m_stack);
 
-            if (!SuppressEvents)
+            if (!SuppressEvents && prevQuantity != _selectedQuantity)
                 OnSelectionChanged?.Invoke(this, IsSelected(), _selectedQuantity);
+
+            if (!ReadOnly && !noSound && prevQuantity != _selectedQuantity)
+                Audio.PlayOneShot(OnClickSFX);
+
             Refresh();
         }
 
@@ -187,7 +179,7 @@ namespace EpicLoot_UnityLib
             if (_item == null)
                 return;
 
-            _button.interactable = !_locked;
+            MainButton.interactable = !_locked;
             SelectedToggle.interactable = !_locked;
             ItemSelectedQuantity.interactable = !_locked;
             QuantityUpButton.interactable = !_locked;
@@ -195,14 +187,14 @@ namespace EpicLoot_UnityLib
 
             var stackItem = _item.m_shared.m_maxStackSize > 1;
             SelectedToggle.gameObject.SetActive(!ReadOnly);
-            SelectedToggle.isOn = _selectedQuantity > 0;
+            SelectedToggle.SetIsOnWithoutNotify(_selectedQuantity > 0);
             SelectedBackground.SetActive(!ReadOnly && _selectedQuantity > 0);
             ItemSelectedQuantity.gameObject.SetActive(!ReadOnly && stackItem);
             ItemSelectedQuantity.text = _selectedQuantity.ToString();
             ItemTotalQuantity.gameObject.SetActive(ReadOnly || stackItem);
             ItemTotalQuantity.text = string.Format(ReadOnly ? ReadOnlyQuantityFormat : TotalQuantityFormat, _item.m_stack);
-            QuantityUpButton.gameObject.SetActive(ReadOnly || stackItem);
-            QuantityDownButton.gameObject.SetActive(ReadOnly || stackItem);
+            QuantityUpButton.gameObject.SetActive(!ReadOnly && stackItem);
+            QuantityDownButton.gameObject.SetActive(!ReadOnly && stackItem);
 
             Localization.instance.Localize(transform);
         }

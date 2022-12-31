@@ -132,9 +132,9 @@ namespace EpicLoot_UnityLib
                 return;
 
             if (SelectAllToggle.isOn)
-                ForeachElement((_, x) => x.SelectMaxQuantity());
+                ForeachElement((_, x) => x.SelectMaxQuantity(true));
             else
-                ForeachElement((_, x) => x.Deselect());
+                ForeachElement((_, x) => x.Deselect(true));
         }
 
         private void OnSortModeChanged(int sortModeValue)
@@ -155,7 +155,7 @@ namespace EpicLoot_UnityLib
                 var element = childToSet.GetComponent<MultiSelectItemListElement>();
                 element.SetItem(itemToSet);
                 if (previousSelectionAmounts.TryGetValue(itemToSet, out var previousQuantity))
-                    element.SelectQuantity(previousQuantity);
+                    element.SelectQuantity(previousQuantity, true);
             }
         }
 
@@ -216,7 +216,7 @@ namespace EpicLoot_UnityLib
                 element.SuppressEvents = true;
                 element.SetItem(itemToSet);
                 if (previousSelectionAmounts.TryGetValue(itemToSet, out var previousQuantity))
-                    element.SelectQuantity(previousQuantity);
+                    element.SelectQuantity(previousQuantity, true);
                 element.SuppressEvents = false;
             }
 
@@ -261,7 +261,9 @@ namespace EpicLoot_UnityLib
             {
                 var childToCache = ListContainer.GetChild(i);
                 var element = childToCache.GetComponent<MultiSelectItemListElement>();
-                result.Add(new Tuple<ItemDrop.ItemData, int>(element.GetItem(), element.GetSelectedQuantity()));
+                var quantity = element.GetSelectedQuantity();
+                if (quantity > 0)
+                    result.Add(new Tuple<ItemDrop.ItemData, int>(element.GetItem(), quantity));
             }
 
             return result;
@@ -269,11 +271,23 @@ namespace EpicLoot_UnityLib
 
         public void Lock()
         {
+            if (SortByDropdown != null)
+                SortByDropdown.interactable = false;
+            if (FilterByText != null)
+                FilterByText.interactable = false;
+            if (SelectAllToggle != null)
+                SelectAllToggle.interactable = false;
             ForeachElement((_, e) => e.Lock());
         }
 
         public void Unlock()
         {
+            if (SortByDropdown != null)
+                SortByDropdown.interactable = Sortable && !ReadOnly;
+            if (FilterByText != null)
+                FilterByText.interactable = Filterable && !ReadOnly;
+            if (SelectAllToggle != null)
+                SelectAllToggle.interactable = Multiselect && !ReadOnly;
             ForeachElement((_, e) => e.Unlock());
         }
 
@@ -290,7 +304,7 @@ namespace EpicLoot_UnityLib
 
         public void DeselectAll()
         {
-            ForeachElement((_, e) => e.Deselect());
+            ForeachElement((_, e) => e.Deselect(true));
         }
     }
 }
