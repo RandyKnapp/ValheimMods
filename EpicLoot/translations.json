@@ -46,8 +46,7 @@
   "mod_epicloot_sacrifice_inventoryfullexplanation": "(Inventory was full when crafting)", 
   "mod_epicloot_sacrificeall": "Sacrifice All",
   "mod_epicloot_sacrifice_progress": "Sacrificing...",
-  "mod_epicloot_sacrifice_productfitwarning": "Items produced by this sacrifice do not fit in inventory.", 
-  "mod_epicloot_sacrifice_successmsg": "Items produced by this sacrifice do not fit in inventory.", 
+  "mod_epicloot_sacrifice_productsexplainer": "Destroy the selected items and receive:", 
 
   "mod_epicloot_augment": "Augment",
   "mod_epicloot_augment_availableeffects": "Available Effects",
@@ -62,7 +61,21 @@
   "mod_epicloot_enchant_effects": "effects",
 
   "mod_epicloot_convertmaterials": "Convert Materials",
-  
+  "mod_epicloot_products": "Items Produced:",
+  "mod_epicloot_yourcoins": "Your coins:",
+  "mod_epicloot_upgrade": "Upgrade",
+  "mod_epicloot_upgradedesc": "Upgrade Material Rarity",
+  "mod_epicloot_upgradeprogress": "Upgrading materials...",
+  "mod_epicloot_upgradecost": "Upgrade Cost:",
+  "mod_epicloot_convert": "Convert",
+  "mod_epicloot_convertdesc": "Convert Shards",
+  "mod_epicloot_convertprogress": "Converting shards...",
+  "mod_epicloot_convertcost": "Conversion Cost:",
+  "mod_epicloot_junk": "Salvage",
+  "mod_epicloot_junkdesc": "Salvage Junk",
+  "mod_epicloot_junkprogress": "Salvaging items from junk...",
+  "mod_epicloot_junkcost": "Salvage Cost:",
+
   "mod_epicloot_disenchant": "Disenchant",
 
   "mod_epicloot_upgradetable": "Upgrade Table",

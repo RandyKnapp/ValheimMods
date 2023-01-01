@@ -7,6 +7,20 @@ using UnityEngine.UI;
 
 namespace EpicLoot_UnityLib
 {
+    public interface IListElement
+    {
+        ItemDrop.ItemData GetItem();
+        string GetDisplayNameSuffix();
+    }
+
+    public class InventoryItemListElement : IListElement
+    {
+        public ItemDrop.ItemData Item;
+
+        public ItemDrop.ItemData GetItem() => Item;
+        public string GetDisplayNameSuffix() => string.Empty;
+    }
+
     public class MultiSelectItemList : MonoBehaviour
     {
         public enum SortMode { Rarity, Name, Quantity }
@@ -23,8 +37,8 @@ namespace EpicLoot_UnityLib
 
         public event Action OnSelectedItemsChanged;
 
-        public delegate List<ItemDrop.ItemData> SortByRarityDelegate(List<ItemDrop.ItemData> items);
-        public delegate List<ItemDrop.ItemData> SortByNameDelegate(List<ItemDrop.ItemData> items);
+        public delegate List<IListElement> SortByRarityDelegate(List<IListElement> items);
+        public delegate List<IListElement> SortByNameDelegate(List<IListElement> items);
 
         public static SortByRarityDelegate SortByRarity;
         public static SortByNameDelegate SortByName;
@@ -159,28 +173,24 @@ namespace EpicLoot_UnityLib
             }
         }
 
-        public Dictionary<ItemDrop.ItemData, int> GetCurrentSelectionAmounts()
+        public Dictionary<IListElement, int> GetCurrentSelectionAmounts()
         {
-            var selectionAmounts = new Dictionary<ItemDrop.ItemData, int>();
+            var selectionAmounts = new Dictionary<IListElement, int>();
             var elementCount = ListContainer.childCount;
             for (var i = 0; i < elementCount; ++i)
             {
                 var childToCache = ListContainer.GetChild(i);
                 var element = childToCache.GetComponent<MultiSelectItemListElement>();
                 if (element != null && element.GetItem() != null)
-                    selectionAmounts.Add(element.GetItem(), element.GetSelectedQuantity());
+                    selectionAmounts.Add(new InventoryItemListElement() { Item = element.GetItem() }, element.GetSelectedQuantity());
             }
 
             return selectionAmounts;
         }
 
-        public void SetItems(List<ItemDrop.ItemData> items)
+        private void MakeEnoughElements(int itemCount)
         {
             var elementCount = ListContainer.childCount;
-            var itemCount = items.Count;
-
-            var previousSelectionAmounts = GetCurrentSelectionAmounts();
-
             if (elementCount > itemCount)
             {
                 for (var i = elementCount - 1; i >= itemCount; --i)
@@ -200,6 +210,15 @@ namespace EpicLoot_UnityLib
                     newElement.OnSelectionChanged += OnElementSelectionChanged;
                 }
             }
+        }
+
+        public void SetItems(List<IListElement> items)
+        {
+            var itemCount = items.Count;
+
+            var previousSelectionAmounts = GetCurrentSelectionAmounts();
+
+            MakeEnoughElements(itemCount);
 
             var sortedItems = items;
             if (Sortable && SortByDropdown != null)
@@ -228,7 +247,7 @@ namespace EpicLoot_UnityLib
             OnSelectedItemsChanged?.Invoke();
         }
 
-        public List<ItemDrop.ItemData> SortItems(SortMode mode, List<ItemDrop.ItemData> items)
+        public List<IListElement> SortItems(SortMode mode, List<IListElement> items)
         {
             switch (mode)
             {
@@ -241,10 +260,10 @@ namespace EpicLoot_UnityLib
                     if (SortByName != null)
                         return SortByName(items);
                     else
-                        return items.OrderBy(x => Localization.instance.Localize(x.m_shared.m_name)).ThenByDescending(x => x.m_stack).ToList();
+                        return items.OrderBy(x => Localization.instance.Localize(x.GetItem().m_shared.m_name)).ThenByDescending(x => x.GetItem().m_stack).ToList();
 
                 case SortMode.Quantity: 
-                    return items.OrderByDescending(x => x.m_stack).ThenBy(x => Localization.instance.Localize(x.m_shared.m_name)).ToList();
+                    return items.OrderByDescending(x => x.GetItem().m_stack).ThenBy(x => Localization.instance.Localize(x.GetItem().m_shared.m_name)).ToList();
 
                 default:
                     throw new ArgumentOutOfRangeException(nameof(mode), mode, null);
@@ -253,9 +272,9 @@ namespace EpicLoot_UnityLib
             return items.ToList();
         }
 
-        public List<Tuple<ItemDrop.ItemData, int>> GetSelectedItems()
+        public List<Tuple<T, int>> GetSelectedItems<T>()
         {
-            var result = new List<Tuple<ItemDrop.ItemData, int>>();
+            var result = new List<Tuple<T, int>>();
             var elementCount = ListContainer.childCount;
             for (var i = 0; i < elementCount; ++i)
             {
@@ -263,7 +282,7 @@ namespace EpicLoot_UnityLib
                 var element = childToCache.GetComponent<MultiSelectItemListElement>();
                 var quantity = element.GetSelectedQuantity();
                 if (quantity > 0)
-                    result.Add(new Tuple<ItemDrop.ItemData, int>(element.GetItem(), quantity));
+                    result.Add(new Tuple<T, int>((T)element.GetListElement(), quantity));
             }
 
             return result;

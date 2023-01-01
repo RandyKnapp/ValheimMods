@@ -17,44 +17,53 @@ namespace EpicLoot.CraftingV2
             MultiSelectItemListElement.SetMagicItem = SetMagicItem;
             SacrificeUI.GetSacrificeItems = GetSacrificeItems;
             SacrificeUI.GetSacrificeProducts = GetSacrificeProducts;
+            ConvertUI.GetConversionRecipes = GetConversionRecipes;
         }
 
         private static void SetMagicItem(MultiSelectItemListElement element, ItemDrop.ItemData item, UITooltip tooltip)
         {
-            element.ItemIcon.sprite = item.GetIcon();
-            element.ItemName.text = item.GetDecoratedName();
+            if (element.ItemIcon != null)
+                element.ItemIcon.sprite = item.GetIcon();
+            if (element.ItemName != null)
+                element.ItemName.text = item.GetDecoratedName();
 
-            var useMagicBG = item.UseMagicBackground();
-            element.MagicBG.enabled = useMagicBG;
-
-            if (useMagicBG)
-                element.MagicBG.color = item.GetRarityColor();
-
-            if (EpicLoot.HasAuga)
+            if (element.MagicBG != null)
             {
-                Auga.API.Tooltip_MakeItemTooltip(element.gameObject, item);
+                var useMagicBG = item.UseMagicBackground();
+                element.MagicBG.enabled = useMagicBG;
+
+                if (useMagicBG)
+                    element.MagicBG.color = item.GetRarityColor();
             }
-            else
+
+            if (tooltip)
             {
-                tooltip.m_topic = Localization.instance.Localize(item.GetDecoratedName());
-                tooltip.m_text = Localization.instance.Localize(item.GetTooltip());
+                if (EpicLoot.HasAuga)
+                {
+                    Auga.API.Tooltip_MakeItemTooltip(element.gameObject, item);
+                }
+                else
+                {
+                    tooltip.m_topic = Localization.instance.Localize(item.GetDecoratedName());
+                    tooltip.m_text = Localization.instance.Localize(item.GetTooltip());
+                }
             }
         }
 
-        private static List<ItemDrop.ItemData> SortByRarity(List<ItemDrop.ItemData> items)
+        private static List<IListElement> SortByRarity(List<IListElement> items)
         {
-            return items.OrderBy(x => x.HasRarity() ? x.GetRarity() : (ItemRarity)(-1)).ThenBy(x => Localization.instance.Localize(x.GetDecoratedName())).ToList();
+            return items.OrderBy(x => x.GetItem().HasRarity() ? x.GetItem().GetRarity() : (ItemRarity)(-1)).ThenBy(x => Localization.instance.Localize(x.GetItem().GetDecoratedName())).ToList();
         }
 
-        private static List<ItemDrop.ItemData> SortByName(List<ItemDrop.ItemData> items)
+        private static List<IListElement> SortByName(List<IListElement> items)
         {
-            return items.OrderBy(x => Localization.instance.Localize(x.GetDecoratedName())).ThenByDescending(x => x.m_stack).ToList();
+            return items.OrderBy(x => Localization.instance.Localize(x.GetItem().GetDecoratedName())).ThenByDescending(x => x.GetItem().m_stack).ToList();
         }
 
-        private static List<ItemDrop.ItemData> GetSacrificeItems()
+        private static List<InventoryItemListElement> GetSacrificeItems()
         {
             var player = Player.m_localPlayer;
-            var result = new List<ItemDrop.ItemData>();
+            var result = new List<InventoryItemListElement>();
 
             var inventory = player.GetInventory();
             var boundItems = new List<ItemDrop.ItemData>();
@@ -69,7 +78,7 @@ namespace EpicLoot.CraftingV2
 
                 var products = EnchantCostsHelper.GetDisenchantProducts(item);
                 if (products != null)
-                    result.Add(item);
+                    result.Add(new InventoryItemListElement() { Item = item });
             }
 
             return result;
@@ -121,7 +130,7 @@ namespace EpicLoot.CraftingV2
             }
         }
 
-        private static List<ItemDrop.ItemData> GetSacrificeProducts(List<Tuple<ItemDrop.ItemData, int>> items)
+        private static List<InventoryItemListElement> GetSacrificeProducts(List<Tuple<ItemDrop.ItemData, int>> items)
         {
             var productsSet = new MultiValueDictionary<string, ItemDrop.ItemData>();
             foreach (var entry in items)
@@ -142,7 +151,90 @@ namespace EpicLoot.CraftingV2
             }
 
             var productsList = productsSet.Values.SelectMany(x => x).ToList();
-            return productsList.OrderByDescending(x => x.HasRarity() ? x.GetRarity() : (ItemRarity)(-1)).ThenBy(x => Localization.instance.Localize(x.GetDecoratedName())).ToList();
+            return productsList.OrderByDescending(x => x.HasRarity() ? x.GetRarity() : (ItemRarity)(-1))
+                .ThenBy(x => Localization.instance.Localize(x.GetDecoratedName()))
+                .Select(x => new InventoryItemListElement() { Item = x })
+                .ToList();
+        }
+
+        private static List<ConversionRecipeUnity> GetConversionRecipes(int mode)
+        {
+            var conversionType = (MaterialConversionType)mode;
+            var conversions = MaterialConversions.Conversions.GetValues(conversionType, true);
+
+            var player = Player.m_localPlayer;
+            var result = new List<ConversionRecipeUnity>();
+
+            var inventory = player.GetInventory();
+            var boundItems = new List<ItemDrop.ItemData>();
+            inventory.GetBoundItems(boundItems);
+            foreach (var item in inventory.GetAllItems())
+            {
+                if (item == null)
+                    continue;
+
+                if (!EpicLoot.ShowEquippedAndHotbarItemsInSacrificeTab.Value)
+                {
+                    if (item.m_equiped || boundItems.Contains(item))
+                        continue;
+                }
+
+                var itemName = item.m_dropPrefab.name;
+                if (itemName == "Coins")
+                    continue;
+
+                var itemIsUsedInConversion = conversions.Where(x => x.Resources.Any(r => r.Item == itemName));
+                foreach (var conversion in itemIsUsedInConversion)
+                {
+                    var prefab = ObjectDB.instance.GetItemPrefab(conversion.Product);
+                    if (prefab == null)
+                    {
+                        EpicLoot.LogWarning($"Could not find conversion product ({conversion.Product})!");
+                        continue;
+                    }
+
+                    var itemDrop = prefab.GetComponent<ItemDrop>();
+                    if (itemDrop == null)
+                    {
+                        EpicLoot.LogWarning($"Conversion product ({conversion.Product}) is not an ItemDrop!");
+                        continue;
+                    }
+
+                    var recipe = new ConversionRecipeUnity()
+                    {
+                        Product = itemDrop.m_itemData.Clone(),
+                        Amount = conversion.Amount,
+                        Cost = new List<ConversionRecipeCostUnity>()
+                    };
+
+                    foreach (var requirement in conversion.Resources)
+                    {
+                        var reqPrefab = ObjectDB.instance.GetItemPrefab(requirement.Item);
+                        if (reqPrefab == null)
+                        {
+                            EpicLoot.LogWarning($"Could not find conversion requirement ({requirement.Item})!");
+                            continue;
+                        }
+
+                        var reqItemDrop = reqPrefab.GetComponent<ItemDrop>();
+                        if (reqItemDrop == null)
+                        {
+                            EpicLoot.LogWarning($"Conversion requirement ({requirement.Item}) is not an ItemDrop!");
+                            continue;
+                        }
+
+                        recipe.Cost.Add(new ConversionRecipeCostUnity
+                        {
+                            Item = reqItemDrop.m_itemData.Clone(),
+                            Amount = requirement.Amount
+                        });
+                    }
+                    
+                    result.Add(recipe);
+                }  
+            }
+
+            return result;
         }
     }
 }

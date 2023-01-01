@@ -14,13 +14,12 @@ namespace EpicLoot_UnityLib
         public MultiSelectItemList SacrificeProducts;
         public Button PerformSacrificeButton;
         public GuiBar ProgressBar;
-        public Text ProductsFitWarning;
         public AudioSource Audio;
         public AudioClip ProgressLoopSFX;
         public AudioClip CompleteSFX;
 
-        public delegate List<ItemDrop.ItemData> GetSacrificeItemsDelegate();
-        public delegate List<ItemDrop.ItemData> GetSacrificeProductsDelegate(List<Tuple<ItemDrop.ItemData, int>> items);
+        public delegate List<InventoryItemListElement> GetSacrificeItemsDelegate();
+        public delegate List<InventoryItemListElement> GetSacrificeProductsDelegate(List<Tuple<ItemDrop.ItemData, int>> items);
 
         public static GetSacrificeItemsDelegate GetSacrificeItems;
         public static GetSacrificeProductsDelegate GetSacrificeProducts;
@@ -38,15 +37,13 @@ namespace EpicLoot_UnityLib
             var uiSFX = GameObject.Find("sfx_gui_button");
             if (uiSFX)
                 Audio.outputAudioMixerGroup = uiSFX.GetComponent<AudioSource>().outputAudioMixerGroup;
-
-            if (ProductsFitWarning != null)
-                ProductsFitWarning.gameObject.SetActive(false);
         }
 
         public void OnEnable()
         {
             var items = GetSacrificeItems();
-            AvailableItems.SetItems(items);
+            AvailableItems.SetItems(items.Cast<IListElement>().ToList());
+            AvailableItems.DeselectAll();
         }
 
         public void Update()
@@ -54,9 +51,6 @@ namespace EpicLoot_UnityLib
             ProgressBar.gameObject.SetActive(_inProgress);
             if (_inProgress)
             {
-                if (ProductsFitWarning != null)
-                    ProductsFitWarning.gameObject.SetActive(false);
-
                 ProgressBar.SetValue(SacrificeCountdownTime - _countdown);
 
                 _countdown -= Time.deltaTime;
@@ -69,31 +63,32 @@ namespace EpicLoot_UnityLib
 
         private void DoSacrifice()
         {
+            var selectedItems = AvailableItems.GetSelectedItems<IListElement>();
+            var sacrificeProducts = GetSacrificeProducts(selectedItems.Select(x => new Tuple<ItemDrop.ItemData, int>(x.Item1.GetItem(), x.Item2)).ToList());
+
             // Doesn't really cancel, just does all the same stuff
             Cancel();
 
             Audio.PlayOneShot(CompleteSFX);
 
-            var selectedItems = AvailableItems.GetSelectedItems();
-            var sacrificeProducts = GetSacrificeProducts(selectedItems);
-
             var player = Player.m_localPlayer;
             var inventory = player.GetInventory();
             foreach (var selectedItem in selectedItems)
             {
-                inventory.RemoveItem(selectedItem.Item1, selectedItem.Item2);
+                inventory.RemoveItem(selectedItem.Item1.GetItem(), selectedItem.Item2);
             }
 
             foreach (var sacrificeProduct in sacrificeProducts)
             {
-                if (inventory.CanAddItem(sacrificeProduct))
+                var item = sacrificeProduct.GetItem();
+                if (inventory.CanAddItem(item))
                 {
-                    inventory.AddItem(sacrificeProduct);
-                    player.Message(MessageHud.MessageType.TopLeft, $"$msg_added {sacrificeProduct.m_shared.m_name}", sacrificeProduct.m_stack, sacrificeProduct.GetIcon());
+                    inventory.AddItem(item);
+                    player.Message(MessageHud.MessageType.TopLeft, $"$msg_added {item.m_shared.m_name}", item.m_stack, item.GetIcon());
                 }
                 else
                 {
-                    var itemDrop = ItemDrop.DropItem(sacrificeProduct, sacrificeProduct.m_stack, player.transform.position + player.transform.forward + player.transform.up, player.transform.rotation);
+                    var itemDrop = ItemDrop.DropItem(item, item.m_stack, player.transform.position + player.transform.forward + player.transform.up, player.transform.rotation);
                     itemDrop.GetComponent<Rigidbody>().velocity = Vector3.up * 5f;
                     player.Message(MessageHud.MessageType.TopLeft, $"$msg_dropped {itemDrop.m_itemData.m_shared.m_name} $mod_epicloot_sacrifice_inventoryfullexplanation", itemDrop.m_itemData.m_stack, itemDrop.m_itemData.GetIcon());
                 }
@@ -105,16 +100,16 @@ namespace EpicLoot_UnityLib
         private void RefreshAvailableItems()
         {
             var items = GetSacrificeItems();
-            AvailableItems.SetItems(items);
+            AvailableItems.SetItems(items.Cast<IListElement>().ToList());
             AvailableItems.DeselectAll();
             OnSelectedItemsChanged();
         }
 
         private void OnSelectedItemsChanged()
         {
-            var selectedItems = AvailableItems.GetSelectedItems();
-            var sacrificeProducts = GetSacrificeProducts(selectedItems);
-            SacrificeProducts.SetItems(sacrificeProducts);
+            var selectedItems = AvailableItems.GetSelectedItems<IListElement>();
+            var sacrificeProducts = GetSacrificeProducts(selectedItems.Select(x => new Tuple<ItemDrop.ItemData, int>(x.Item1.GetItem(), x.Item2)).ToList());
+            SacrificeProducts.SetItems(sacrificeProducts.Cast<IListElement>().ToList());
 
             Debug.LogWarning($"Selected Items: {selectedItems.Count}");
             PerformSacrificeButton.interactable = selectedItems.Count > 0;

@@ -416,40 +416,35 @@ namespace EpicLoot
             LoadJsonFile<AdventureDataConfig>("adventuredata.json", AdventureDataManager.Initialize);
             LoadJsonFile<LegendaryItemConfig>("legendaries.json", UniqueLegendaryHelper.Initialize);
             LoadJsonFile<AbilityConfig>("abilities.json", AbilityDefinitions.Initialize);
+            LoadJsonFile<MaterialConversionsConfig>("materialconversions.json", MaterialConversions.Initialize);
             WatchNewPatchConfig();
         }
 
         public static void WatchNewPatchConfig()
         {
+            Log("Watching For Files");
 
-            Log($"Watching For Files");
             //Patch JSON Watcher
-
             void ConsumeNewPatchFile(object s, FileSystemEventArgs e)
             {
-                FileInfo fileInfo = null;
-
-                switch (e.ChangeType)
+                if (e.ChangeType == WatcherChangeTypes.Created)
                 {
-                    case WatcherChangeTypes.Created:
-                        //File Created
-                        fileInfo = new FileInfo(e.FullPath);
-                        if (!fileInfo.Exists) return;
+                    //File Created
+                    var fileInfo = new FileInfo(e.FullPath);
+                    if (!fileInfo.Exists)
+                        return;
 
-                        FilePatching.ProcessPatchFile(fileInfo);
-                        var sourceFile = fileInfo.Name;
+                    FilePatching.ProcessPatchFile(fileInfo);
+                    var sourceFile = fileInfo.Name;
 
-                        foreach (var fileName in FilePatching.PatchesPerFile.Values.SelectMany(l => l).ToList()
-                                     .Where(u => u.SourceFile.Equals(sourceFile)).Select(p => p.TargetFile).Distinct()
-                                     .ToArray())
-                        {
-                            SyncedJsonFiles[fileName].AssignLocalValue(LoadJsonText(fileName));
-                            AddPatchFileWatcher(fileName, sourceFile);
-                        }
-                        
-                        break;
+                    foreach (var fileName in FilePatching.PatchesPerFile.Values.SelectMany(l => l).ToList()
+                        .Where(u => u.SourceFile.Equals(sourceFile)).Select(p => p.TargetFile).Distinct()
+                        .ToArray())
+                    {
+                        SyncedJsonFiles[fileName].AssignLocalValue(LoadJsonText(fileName));
+                        AddPatchFileWatcher(fileName, sourceFile);
+                    }
                 }
-
             }
 
             var newPatchWatcher = new FileSystemWatcher(FilePatching.PatchesDirPath, "*.json");
@@ -458,8 +453,6 @@ namespace EpicLoot
             newPatchWatcher.IncludeSubdirectories = true;
             newPatchWatcher.SynchronizingObject = ThreadingHelper.SynchronizingObject;
             newPatchWatcher.EnableRaisingEvents = true;
-
-
         }
 
         private static void InitializeAbilities()
@@ -949,7 +942,6 @@ namespace EpicLoot
 
         public static void LoadJsonFile<T>(string filename, Action<T> onFileLoad, bool update = false) where T : class
         {
-            
             var jsonFile = LoadJsonText(filename);
 
             if (!update)

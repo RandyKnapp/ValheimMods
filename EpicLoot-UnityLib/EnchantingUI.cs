@@ -8,9 +8,14 @@ namespace EpicLoot_UnityLib
     {
         public GameObject Root;
         public GameObject Scrim;
-        public SacrificeUI Sacrifice;
         public TabHandler TabHandler;
         public GameObject TabScrim;
+
+        [Header("Content")]
+        public SacrificeUI Sacrifice;
+        public ConvertUI Conversion;
+
+        [Header("Audio")]
         public AudioSource Audio;
         public AudioClip TabClickSFX;
 
@@ -53,6 +58,7 @@ namespace EpicLoot_UnityLib
             instance.Scrim.SetActive(true);
 
             instance.Sacrifice.DeselectAll();
+            instance.Conversion.DeselectAll();
         }
 
         public static void Hide()
@@ -101,7 +107,7 @@ namespace EpicLoot_UnityLib
             if (disallowClose)
                 return;
 
-            var gotCloseInput = ZInput.GetButtonDown("JoyButtonB") || Input.GetKeyDown(KeyCode.Escape);
+            var gotCloseInput = ZInput.GetButtonDown("JoyButtonB") || Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.Tab);
             if (gotCloseInput)
             {
                 ZInput.ResetButtonStatus("JoyButtonB");
@@ -109,6 +115,10 @@ namespace EpicLoot_UnityLib
                 if (Sacrifice.isActiveAndEnabled && Sacrifice.CanCancel())
                 {
                     Sacrifice.Cancel();
+                }
+                else if (Conversion.isActiveAndEnabled && Conversion.CanCancel())
+                {
+                    Conversion.Cancel();
                 }
                 else
                 {
