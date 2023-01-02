@@ -2,11 +2,12 @@
 %TAG !u! tag:unity3d.com,2011:
 --- !u!43 &4300000
 Mesh:
+  serializedVersion: 10
+  m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: longsword_Cube
-  serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
     firstByte: 0
@@ -16,19 +17,19 @@ Mesh:
     firstVertex: 0
     vertexCount: 184
     localAABB:
-      m_Center: {x: 0, y: 1.857427, z: 0}
-      m_Extent: {x: 0.239983, y: 2.115511, z: 0.090133}
+      m_Center: {x: 0, y: 1.8574275, z: 0}
+      m_Extent: {x: 0.239983, y: 2.1155114, z: 0.090133}
   m_Shapes:
     vertices: []
     shapes: []
     channels: []
     fullWeights: []
   m_BindPose: []
-  m_BoneNameHashes:
+  m_BoneNameHashes: []
   m_RootBoneNameHash: 0
   m_BonesAABB: []
   m_VariableBoneCountWeights:
-    m_Data:
+    m_Data: []
   m_MeshCompression: 0
   m_IsReadable: 1
   m_KeepVertices: 1
@@ -150,15 +151,16 @@ Mesh:
       m_BitSize: 0
     m_UVInfo: 0
   m_LocalAABB:
-    m_Center: {x: 0, y: 1.857427, z: 0}
-    m_Extent: {x: 0.239983, y: 2.115511, z: 0.090133}
+    m_Center: {x: 0, y: 1.8574275, z: 0}
+    m_Extent: {x: 0.239983, y: 2.1155114, z: 0.090133}
   m_MeshUsageFlags: 0
   m_BakedConvexCollisionMesh:
   m_BakedTriangleCollisionMesh:
-  m_MeshMetrics[0]: 1210.631
+  m_MeshMetrics[0]: 1206.8418
   m_MeshMetrics[1]: 1
   m_MeshOptimizationFlags: -1
   m_StreamData:
+    serializedVersion: 2
     offset: 0
     size: 0
     path:
