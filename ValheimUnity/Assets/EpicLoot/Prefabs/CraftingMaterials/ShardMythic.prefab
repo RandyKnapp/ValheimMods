@@ -7,6 +7,81 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 198913167976628282, guid: 9046a1555ecc77c49bfbb53b59967c45,
+        type: 3}
+      propertyPath: m_itemData.m_variant
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 198913167976628282, guid: 9046a1555ecc77c49bfbb53b59967c45,
+        type: 3}
+      propertyPath: m_itemData.m_shared.m_ammoType
+      value: Mythic|MagicCraftingMaterial
+      objectReference: {fileID: 0}
+    - target: {fileID: 198913167976628282, guid: 9046a1555ecc77c49bfbb53b59967c45,
+        type: 3}
+      propertyPath: m_itemData.m_shared.m_description
+      value: $mod_epicloot_assets_shard_introduce
+      objectReference: {fileID: 0}
+    - target: {fileID: 198913167976628282, guid: 9046a1555ecc77c49bfbb53b59967c45,
+        type: 3}
+      propertyPath: m_itemData.m_shared.m_icons.Array.data[0]
+      value: 
+      objectReference: {fileID: 21300000, guid: 391f7b4cfab841f4abfd28a599254293,
+        type: 3}
+    - target: {fileID: 198913167976628282, guid: 9046a1555ecc77c49bfbb53b59967c45,
+        type: 3}
+      propertyPath: m_itemData.m_shared.m_icons.Array.data[1]
+      value: 
+      objectReference: {fileID: 21300000, guid: 38f4365f6d771254a9d51ca654448719,
+        type: 3}
+    - target: {fileID: 198913167976628282, guid: 9046a1555ecc77c49bfbb53b59967c45,
+        type: 3}
+      propertyPath: m_itemData.m_shared.m_icons.Array.data[2]
+      value: 
+      objectReference: {fileID: 21300000, guid: 707e1d7b523d94149a6a3f7cec68fc8b,
+        type: 3}
+    - target: {fileID: 198913167976628282, guid: 9046a1555ecc77c49bfbb53b59967c45,
+        type: 3}
+      propertyPath: m_itemData.m_shared.m_icons.Array.data[3]
+      value: 
+      objectReference: {fileID: 21300000, guid: 521cd639d0f0daa4f80b0013122f09c5,
+        type: 3}
+    - target: {fileID: 198913167976628282, guid: 9046a1555ecc77c49bfbb53b59967c45,
+        type: 3}
+      propertyPath: m_itemData.m_shared.m_icons.Array.data[4]
+      value: 
+      objectReference: {fileID: 21300000, guid: c6ed66f87ee8b1348a16c03add79f6ef,
+        type: 3}
+    - target: {fileID: 198913167976628282, guid: 9046a1555ecc77c49bfbb53b59967c45,
+        type: 3}
+      propertyPath: m_itemData.m_shared.m_icons.Array.data[5]
+      value: 
+      objectReference: {fileID: 21300000, guid: 9cce11475081e2e46ab47257644727e1,
+        type: 3}
+    - target: {fileID: 198913167976628282, guid: 9046a1555ecc77c49bfbb53b59967c45,
+        type: 3}
+      propertyPath: m_itemData.m_shared.m_icons.Array.data[6]
+      value: 
+      objectReference: {fileID: 21300000, guid: 37d97869b979b4e43adc3146801cf3c8,
+        type: 3}
+    - target: {fileID: 198913167976628282, guid: 9046a1555ecc77c49bfbb53b59967c45,
+        type: 3}
+      propertyPath: m_itemData.m_shared.m_icons.Array.data[7]
+      value: 
+      objectReference: {fileID: 21300000, guid: 538f26e02732d854ab37844a8dbb5641,
+        type: 3}
+    - target: {fileID: 198913167976628282, guid: 9046a1555ecc77c49bfbb53b59967c45,
+        type: 3}
+      propertyPath: m_itemData.m_shared.m_icons.Array.data[8]
+      value: 
+      objectReference: {fileID: 21300000, guid: 0dc8ec327b34a9744a82ab058a4487b8,
+        type: 3}
+    - target: {fileID: 198913167976628282, guid: 9046a1555ecc77c49bfbb53b59967c45,
+        type: 3}
+      propertyPath: m_itemData.m_shared.m_icons.Array.data[9]
+      value: 
+      objectReference: {fileID: 21300000, guid: 75fa8b502d30e984db5d9adbb8babfca,
+        type: 3}
     - target: {fileID: 1192879630087343390, guid: 9046a1555ecc77c49bfbb53b59967c45,
         type: 3}
       propertyPath: m_Enabled
