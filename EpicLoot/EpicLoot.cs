@@ -315,14 +315,25 @@ namespace EpicLoot
 
                 Auga.API.ComplexTooltip_SetIcon(complexTooltip, item.GetIcon());
 
+                string localizedSubtitle;
                 if (item.IsLegendarySetItem())
                 {
-                    Auga.API.ComplexTooltip_SetSubtitle(complexTooltip, Localization.instance.Localize($"<color={GetSetItemColor()}>$mod_epicloot_legendarysetlabel</color>, {itemTypeName}\n"));
+                    localizedSubtitle = $"<color={GetSetItemColor()}>$mod_epicloot_legendarysetlabel</color>, {itemTypeName}\n";
                 }
                 else
                 {
-                    Auga.API.ComplexTooltip_SetSubtitle(complexTooltip, Localization.instance.Localize($"<color={magicColor}>{magicItem.GetRarityDisplay()} {itemTypeName}</color>"));
+                    localizedSubtitle = $"<color={magicColor}>{magicItem.GetRarityDisplay()} {itemTypeName}</color>";
                 }
+
+                try
+                {
+                    Auga.API.ComplexTooltip_SetSubtitle(complexTooltip, Localization.instance.Localize(localizedSubtitle));
+                }
+                catch (Exception)
+                {
+                    Auga.API.ComplexTooltip_SetSubtitle(complexTooltip, localizedSubtitle);
+                }
+
 
                 if (AugaTooltipNoTextBoxes)
                     return;
@@ -340,7 +351,15 @@ namespace EpicLoot
                     Auga.API.TooltipTextBox_AddLine(textBox2, item.GetSetTooltip());
                 }
 
-                Auga.API.ComplexTooltip_SetDescription(complexTooltip, Localization.instance.Localize(item.GetDescription()));
+                try
+                {
+                    Auga.API.ComplexTooltip_SetDescription(complexTooltip, Localization.instance.Localize(item.GetDescription()));
+                }
+                catch (Exception)
+                {
+                    Auga.API.ComplexTooltip_SetDescription(complexTooltip, item.GetDescription());
+                }
+                
             }
         }
 
