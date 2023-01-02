@@ -452,6 +452,7 @@ namespace EpicLoot
 
         private static void SpawnLegendaryItemHelper(string legendaryID, string itemType, Terminal context)
         {
+           
             if (!UniqueLegendaryHelper.TryGetLegendaryInfo(legendaryID, out var legendaryInfo))
             {
                 if (context != null)
@@ -467,10 +468,11 @@ namespace EpicLoot
                 var allowedItems = new List<ItemDrop>();
                 foreach (var itemName in GatedItemTypeHelper.ItemInfoByID.Keys)
                 {
+
                     var itemPrefab = ObjectDB.instance.GetItemPrefab(itemName);
                     if (itemPrefab == null)
                     {
-                        continue;
+                       continue;
                     }
 
                     var itemDrop = itemPrefab.GetComponent<ItemDrop>();
@@ -480,10 +482,14 @@ namespace EpicLoot
                     }
 
                     var itemData = itemDrop.m_itemData;
-                    if (legendaryInfo.Requirements.CheckRequirements(itemData, dummyMagicItem))
+                    itemData.m_customData.Add($"PrefabName{itemData.m_shared.m_name}",itemPrefab.name);
+                    var checkRequirements = legendaryInfo.Requirements.CheckRequirements(itemData, dummyMagicItem);
+
+                    if (checkRequirements)
                     {
                         allowedItems.Add(itemDrop);
                     }
+                    itemData.m_customData.Remove($"PrefabName{itemData.m_shared.m_name}");
                 }
 
                 itemType = allowedItems.LastOrDefault()?.name;
@@ -491,7 +497,8 @@ namespace EpicLoot
             
             if (string.IsNullOrEmpty(itemType))
             {
-                itemType = "Club";
+                EpicLoot.LogWarning($"No Item Type Found for LegendaryID {legendaryID} - This would've made a Club.");
+                return;
             }
 
             var loot = new LootTable
