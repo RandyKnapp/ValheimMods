@@ -57,6 +57,9 @@
   "mod_epicloot_augment_deprecated": "This effect is a deprecated effect. The augment is free, but you will not be able to keep the effect.",
 
   "mod_epicloot_enchant": "Enchant",
+  "mod_epicloot_enchantcost": "Enchant Cost:",
+  "mod_epicloot_enchantexplain": "Enchant Probabilities:",
+  "mod_epicloot_enchantprogress": "Enchanting item...",
   "mod_epicloot_enchant_effect": "effect",
   "mod_epicloot_enchant_effects": "effects",
 
@@ -1203,5 +1206,7 @@
   "mod_epicloot_rare": "Rare",
   "mod_epicloot_epic": "Epic",
   "mod_epicloot_legendary": "Legendary",
-  "mod_epicloot_legendarysetlabel": "Legendary Set Item"
+  "mod_epicloot_legendarysetlabel": "Legendary Set Item",
+  "mod_epicloot_mythic": "Mythic",
+  "mod_epicloot_mythicsetlabel": "Mythic Favor Item"
 }

@@ -14,7 +14,7 @@ namespace EpicLoot_UnityLib
             if (repeat || user != Player.m_localPlayer || !InUseDistance(user))
                 return false;
 
-            EnchantingUI.Show(EnchantingUIPrefab);
+            EnchantingTableUI.Show(EnchantingUIPrefab);
 
             return false;
         }

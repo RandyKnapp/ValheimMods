@@ -144,7 +144,8 @@ namespace EpicLoot.Adventure
                 EpicLoot.GetRarityDisplayName(ItemRarity.Magic),
                 EpicLoot.GetRarityDisplayName(ItemRarity.Rare),
                 EpicLoot.GetRarityDisplayName(ItemRarity.Epic),
-                EpicLoot.GetRarityDisplayName(ItemRarity.Legendary)
+                EpicLoot.GetRarityDisplayName(ItemRarity.Legendary),
+                EpicLoot.GetRarityDisplayName(ItemRarity.Mythic),
             };
 
             var totalWeight = (float)AdventureDataManager.Config.Gamble.GambleRarityChance.Sum();

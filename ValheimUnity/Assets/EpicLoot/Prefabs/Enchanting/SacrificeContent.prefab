@@ -1004,7 +1004,6 @@ MonoBehaviour:
   SacrificeProducts: {fileID: 86619866252108025}
   PerformSacrificeButton: {fileID: 4641492501365227927}
   ProgressBar: {fileID: 7422130952140303983}
-  ProductsFitWarning: {fileID: 0}
   Audio: {fileID: 4228516352388214512}
   ProgressLoopSFX: {fileID: 8300000, guid: 7aa3a5fae64dc1146a2331ae90754e4f, type: 3}
   CompleteSFX: {fileID: 8300000, guid: bcd8894e91bae9545bb89851b8629cef, type: 3}
@@ -1250,16 +1249,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: SacrificeItemList
-      objectReference: {fileID: 0}
-    - target: {fileID: 7604203894527701663, guid: d9faa635a033505458f87ef0043b6a22,
-        type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 121.2259
-      objectReference: {fileID: 0}
-    - target: {fileID: 7604203894527701663, guid: d9faa635a033505458f87ef0043b6a22,
-        type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 81.81006
       objectReference: {fileID: 0}
     - target: {fileID: 9019018929042659395, guid: d9faa635a033505458f87ef0043b6a22,
         type: 3}

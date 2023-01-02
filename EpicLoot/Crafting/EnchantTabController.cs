@@ -337,7 +337,7 @@ namespace EpicLoot.Crafting
 
         public static bool CanEnchantRarity(Player player, ItemRarity rarity)
         {
-            return true;
+            return rarity != ItemRarity.Mythic;
         }
 
         private string GenerateEnchantTooltip(EnchantRecipe recipe)
@@ -589,13 +589,13 @@ namespace EpicLoot.Crafting
 
         public static List<KeyValuePair<ItemDrop, int>> GetEnchantCosts(ItemDrop.ItemData item, ItemRarity rarity)
         {
+            var costList = new List<KeyValuePair<ItemDrop, int>>();
+
             var enchantCostDef = EnchantCostsHelper.GetEnchantCost(item, rarity);
             if (enchantCostDef == null)
             {
-                return null;
+                return costList;
             }
-
-            var costList = new List<KeyValuePair<ItemDrop, int>>();
 
             foreach (var itemAmountConfig in enchantCostDef)
             {

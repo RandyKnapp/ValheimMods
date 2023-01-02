@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace EpicLoot_UnityLib
 {
-    public class EnchantingUI : MonoBehaviour
+    public class EnchantingTableUI : MonoBehaviour
     {
         public GameObject Root;
         public GameObject Scrim;
@@ -14,12 +14,13 @@ namespace EpicLoot_UnityLib
         [Header("Content")]
         public SacrificeUI Sacrifice;
         public ConvertUI Conversion;
+        public EnchantUI Enchant;
 
         [Header("Audio")]
         public AudioSource Audio;
         public AudioClip TabClickSFX;
 
-        public static EnchantingUI instance { get; set; }
+        public static EnchantingTableUI instance { get; set; }
 
         private int _hiddenFrames;
 
@@ -119,6 +120,10 @@ namespace EpicLoot_UnityLib
                 else if (Conversion.isActiveAndEnabled && Conversion.CanCancel())
                 {
                     Conversion.Cancel();
+                }
+                else if (Enchant.isActiveAndEnabled && Enchant.CanCancel())
+                {
+                    Enchant.Cancel();
                 }
                 else
                 {

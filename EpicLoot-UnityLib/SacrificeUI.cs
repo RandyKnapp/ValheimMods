@@ -158,14 +158,14 @@ namespace EpicLoot_UnityLib
         {
             AvailableItems.Lock();
             SacrificeProducts.Lock();
-            EnchantingUI.instance.LockTabs();
+            EnchantingTableUI.instance.LockTabs();
         }
 
         private void UnlockSelector()
         {
             AvailableItems.Unlock();
             SacrificeProducts.Unlock();
-            EnchantingUI.instance.UnlockTabs();
+            EnchantingTableUI.instance.UnlockTabs();
         }
 
         public void DeselectAll()

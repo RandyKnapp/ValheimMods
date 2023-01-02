@@ -10,7 +10,7 @@ namespace EpicLoot.CraftingV2
         [HarmonyPrefix]
         public static bool Minimap_IsOpen_Prefix(ref bool __result)
         {
-            if (EnchantingUI.IsVisible())
+            if (EnchantingTableUI.IsVisible())
             {
                 __result = true;
                 return false;
@@ -23,7 +23,7 @@ namespace EpicLoot.CraftingV2
         [HarmonyPostfix]
         public static void Minimap_InTextInput_Postfix(ref bool __result)
         {
-            if (EnchantingUI.IsVisible() && EnchantingUI.IsInTextInput())
+            if (EnchantingTableUI.IsVisible() && EnchantingTableUI.IsInTextInput())
             {
                 __result = true;
             }
@@ -33,7 +33,7 @@ namespace EpicLoot.CraftingV2
         [HarmonyPrefix]
         public static bool Menu_Show_Prefix()
         {
-            if (EnchantingUI.IsVisible())
+            if (EnchantingTableUI.IsVisible())
                 return false;
 
             return true;

@@ -278,6 +278,7 @@ namespace EpicLoot
             public ValueDef Rare;
             public ValueDef Epic;
             public ValueDef Legendary;
+            public ValueDef Mythic;
         }
 
         public string Type { get; set; }
@@ -319,10 +320,11 @@ namespace EpicLoot
         {
             switch (itemRarity)
             {
-                case ItemRarity.Magic: return ValuesPerRarity.Magic;
-                case ItemRarity.Rare: return ValuesPerRarity.Rare;
-                case ItemRarity.Epic: return ValuesPerRarity.Epic;
-                case ItemRarity.Legendary: return ValuesPerRarity.Legendary;
+                case ItemRarity.Magic:      return ValuesPerRarity.Magic;
+                case ItemRarity.Rare:       return ValuesPerRarity.Rare;
+                case ItemRarity.Epic:       return ValuesPerRarity.Epic;
+                case ItemRarity.Legendary:  return ValuesPerRarity.Legendary;
+                case ItemRarity.Mythic:     return ValuesPerRarity.Mythic;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(itemRarity), itemRarity, null);
             }

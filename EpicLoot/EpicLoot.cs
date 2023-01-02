@@ -57,10 +57,10 @@ namespace EpicLoot
         public Sprite AugaSetItemSprite;
         public Sprite GenericItemBgSprite;
         public Sprite AugaItemBgSprite;
-        public GameObject[] MagicItemLootBeamPrefabs = new GameObject[4];
+        public GameObject[] MagicItemLootBeamPrefabs = new GameObject[5];
         public readonly Dictionary<string, GameObject[]> CraftingMaterialPrefabs = new Dictionary<string, GameObject[]>();
         public Sprite SmallButtonEnchantOverlay;
-        public AudioClip[] MagicItemDropSFX = new AudioClip[4];
+        public AudioClip[] MagicItemDropSFX = new AudioClip[5];
         public AudioClip ItemLoopSFX;
         public AudioClip AugmentItemSFX;
         public GameObject MerchantPanel;
@@ -97,10 +97,12 @@ namespace EpicLoot
         private static ConfigEntry<string> _rareRarityColor;
         private static ConfigEntry<string> _epicRarityColor;
         private static ConfigEntry<string> _legendaryRarityColor;
+        private static ConfigEntry<string> _mythicRarityColor;
         private static ConfigEntry<int> _magicMaterialIconColor;
         private static ConfigEntry<int> _rareMaterialIconColor;
         private static ConfigEntry<int> _epicMaterialIconColor;
         private static ConfigEntry<int> _legendaryMaterialIconColor;
+        private static ConfigEntry<int> _mythicMaterialIconColor;
         public static ConfigEntry<bool> UseScrollingCraftDescription;
         public static ConfigEntry<CraftingTabStyle> CraftingTabStyle;
         private static ConfigEntry<bool> _loggingEnabled;
@@ -190,6 +192,8 @@ namespace EpicLoot
             _epicMaterialIconColor = Config.Bind("Item Colors", "Epic Crafting Material Icon Index", 7, "Indicates the color of the icon used for epic crafting materials. A number between 0 and 9. Available options: 0=Red, 1=Orange, 2=Yellow, 3=Green, 4=Teal, 5=Blue, 6=Indigo, 7=Purple, 8=Pink, 9=Gray");
             _legendaryRarityColor = Config.Bind("Item Colors", "Legendary Rarity Color", "Teal", "The color of Legendary rarity items, the highest magic item tier. (Optional, use an HTML hex color starting with # to have a custom color.) Available options: Red, Orange, Yellow, Green, Teal, Blue, Indigo, Purple, Pink, Gray");
             _legendaryMaterialIconColor = Config.Bind("Item Colors", "Legendary Crafting Material Icon Index", 4, "Indicates the color of the icon used for legendary crafting materials. A number between 0 and 9. Available options: 0=Red, 1=Orange, 2=Yellow, 3=Green, 4=Teal, 5=Blue, 6=Indigo, 7=Purple, 8=Pink, 9=Gray");
+            _mythicRarityColor = Config.Bind("Item Colors", "Mythic Rarity Color", "Orange", "The color of Legendary rarity items, the highest magic item tier. (Optional, use an HTML hex color starting with # to have a custom color.) Available options: Red, Orange, Yellow, Green, Teal, Blue, Indigo, Purple, Pink, Gray");
+            _mythicMaterialIconColor = Config.Bind("Item Colors", "Mythic Crafting Material Icon Index", 1, "Indicates the color of the icon used for legendary crafting materials. A number between 0 and 9. Available options: 0=Red, 1=Orange, 2=Yellow, 3=Green, 4=Teal, 5=Blue, 6=Indigo, 7=Purple, 8=Pink, 9=Gray");
             _setItemColor = Config.Bind("Item Colors", "Set Item Color", "#26ffff", "The color of set item text and the set item icon. Use a hex color, default is cyan");
             UseScrollingCraftDescription = Config.Bind("Crafting UI", "Use Scrolling Craft Description", true, "Changes the item description in the crafting panel to scroll instead of scale when it gets too long for the space.");
             CraftingTabStyle = Config.Bind("Crafting UI", "Crafting Tab Style", Crafting.CraftingTabStyle.HorizontalSquish, "Sets the layout style for crafting tabs, if you've got too many. Horizontal is the vanilla method, but might overlap other mods or run off the screen. HorizontalSquish makes the buttons narrower, works okay with 6 or 7 buttons. Vertical puts the tabs in a column to the left the crafting window. Angled tries to make more room at the top of the crafting panel by angling the tabs, works okay with 6 or 7 tabs.");
@@ -538,11 +542,13 @@ namespace EpicLoot
             Assets.MagicItemLootBeamPrefabs[(int)ItemRarity.Rare] = assetBundle.LoadAsset<GameObject>("RareLootBeam");
             Assets.MagicItemLootBeamPrefabs[(int)ItemRarity.Epic] = assetBundle.LoadAsset<GameObject>("EpicLootBeam");
             Assets.MagicItemLootBeamPrefabs[(int)ItemRarity.Legendary] = assetBundle.LoadAsset<GameObject>("LegendaryLootBeam");
+            Assets.MagicItemLootBeamPrefabs[(int)ItemRarity.Mythic] = assetBundle.LoadAsset<GameObject>("MythicLootBeam");
 
             Assets.MagicItemDropSFX[(int)ItemRarity.Magic] = assetBundle.LoadAsset<AudioClip>("MagicItemDrop");
             Assets.MagicItemDropSFX[(int)ItemRarity.Rare] = assetBundle.LoadAsset<AudioClip>("RareItemDrop");
             Assets.MagicItemDropSFX[(int)ItemRarity.Epic] = assetBundle.LoadAsset<AudioClip>("EpicItemDrop");
             Assets.MagicItemDropSFX[(int)ItemRarity.Legendary] = assetBundle.LoadAsset<AudioClip>("LegendaryItemDrop");
+            Assets.MagicItemDropSFX[(int)ItemRarity.Mythic] = assetBundle.LoadAsset<AudioClip>("MythicItemDrop");
             Assets.ItemLoopSFX = assetBundle.LoadAsset<AudioClip>("ItemLoop");
             Assets.AugmentItemSFX = assetBundle.LoadAsset<AudioClip>("AugmentItem");
 
@@ -651,7 +657,7 @@ namespace EpicLoot
 
         private static void LoadCraftingMaterialAssets(AssetBundle assetBundle, string type)
         {
-            var prefabs = new GameObject[4];
+            var prefabs = new GameObject[5];
             foreach (ItemRarity rarity in Enum.GetValues(typeof(ItemRarity)))
             {
                 var assetName = $"{type}{rarity}";
@@ -1223,6 +1229,7 @@ namespace EpicLoot
             t.AppendLine(GetMagicEffectCountTableLine(ItemRarity.Rare));
             t.AppendLine(GetMagicEffectCountTableLine(ItemRarity.Epic));
             t.AppendLine(GetMagicEffectCountTableLine(ItemRarity.Legendary));
+            t.AppendLine(GetMagicEffectCountTableLine(ItemRarity.Mythic));
             t.AppendLine();
 
             var rarities = new List<ItemRarity>();
@@ -1493,8 +1500,10 @@ namespace EpicLoot
                     return "$mod_epicloot_epic";
                 case ItemRarity.Legendary:
                     return "$mod_epicloot_legendary";
+                case ItemRarity.Mythic:
+                    return "$mod_epicloot_mythic";
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(rarity), rarity, null);
+                    return "<non magic>";
             }
         }
 
@@ -1510,8 +1519,10 @@ namespace EpicLoot
                     return GetColor(_epicRarityColor.Value);
                 case ItemRarity.Legendary:
                     return GetColor(_legendaryRarityColor.Value);
+                case ItemRarity.Mythic:
+                    return GetColor(_mythicRarityColor.Value);
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(rarity), rarity, null);
+                    return "#FFFFFF";
             }
         }
 
@@ -1549,6 +1560,8 @@ namespace EpicLoot
                     return Mathf.Clamp(_epicMaterialIconColor.Value, 0, 9);
                 case ItemRarity.Legendary:
                     return Mathf.Clamp(_legendaryMaterialIconColor.Value, 0, 9);
+                case ItemRarity.Mythic:
+                    return Mathf.Clamp(_mythicMaterialIconColor.Value, 0, 9);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(rarity), rarity, null);
             }

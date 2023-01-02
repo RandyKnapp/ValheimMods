@@ -244,6 +244,19 @@ namespace EpicLoot_UnityLib
 
         private void OnElementSelectionChanged(MultiSelectItemListElement element, bool isSelected, int selectedQuantity)
         {
+            if (!Multiselect)
+            {
+                ForeachElement((_, x) =>
+                {
+                    if (x != element)
+                    {
+                        x.SuppressEvents = true;
+                        x.Deselect(true);
+                        x.SuppressEvents = false;
+                    }
+                });
+            }
+
             OnSelectedItemsChanged?.Invoke();
         }
 
@@ -286,6 +299,21 @@ namespace EpicLoot_UnityLib
             }
 
             return result;
+        }
+
+        public Tuple<T, int> GetSingleSelectedItem<T>()
+        {
+            var elementCount = ListContainer.childCount;
+            for (var i = 0; i < elementCount; ++i)
+            {
+                var childToCache = ListContainer.GetChild(i);
+                var element = childToCache.GetComponent<MultiSelectItemListElement>();
+                var quantity = element.GetSelectedQuantity();
+                if (quantity > 0)
+                    return new Tuple<T, int>((T)element.GetListElement(), quantity);
+            }
+
+            return null;
         }
 
         public void Lock()

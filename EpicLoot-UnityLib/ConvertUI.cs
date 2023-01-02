@@ -63,7 +63,7 @@ namespace EpicLoot_UnityLib
         public void Awake()
         {
             AvailableRecipes.OnSelectedItemsChanged += OnSelectedRecipesChanged;
-            MainButton.onClick.AddListener(OnSacrificeButtonClicked);
+            MainButton.onClick.AddListener(OnMainButtonClicked);
             _buttonLabel = MainButton.GetComponentInChildren<Text>();
             _progressLabel = ProgressBar.gameObject.GetComponentInChildren<Text>();
 
@@ -299,7 +299,7 @@ namespace EpicLoot_UnityLib
             OnModeChanged();
         }
 
-        public void OnSacrificeButtonClicked()
+        public void OnMainButtonClicked()
         {
             if (_inProgress)
                 Cancel();
@@ -325,7 +325,7 @@ namespace EpicLoot_UnityLib
         {
             AvailableRecipes.Lock();
             Products.Lock();
-            EnchantingUI.instance.LockTabs();
+            EnchantingTableUI.instance.LockTabs();
             foreach (var modeButton in ModeButtons)
             {
                 modeButton.interactable = false;
@@ -336,7 +336,7 @@ namespace EpicLoot_UnityLib
         {
             AvailableRecipes.Unlock();
             Products.Unlock();
-            EnchantingUI.instance.UnlockTabs();
+            EnchantingTableUI.instance.UnlockTabs();
             foreach (var modeButton in ModeButtons)
             {
                 modeButton.interactable = true;

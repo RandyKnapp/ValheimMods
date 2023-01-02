@@ -47,6 +47,7 @@ namespace EpicLoot
         public float[][] Rare;
         public float[][] Epic;
         public float[][] Legendary;
+        public float[][] Mythic;
     }
 
     [Serializable]
