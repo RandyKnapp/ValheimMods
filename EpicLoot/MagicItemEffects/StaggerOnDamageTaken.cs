@@ -27,7 +27,7 @@ namespace EpicLoot.MagicItemEffects
                     }
                 }
 
-			}
+            }
             catch (NullReferenceException)
             {
                 EpicLoot.LogWarning($"[StaggerOnDamageTaken] Caught null exception. Everything is fine.");
