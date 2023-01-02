@@ -12,9 +12,10 @@ namespace EpicLoot.MagicItemEffects
 		private static void Postfix(Character __instance, HitData hit)
         {
             if (hit == null || __instance == null)
-                return;
+                return; 
 
-			var attacker = hit.GetAttacker();
+            var attacker = hit.GetAttacker();
+
             try
             {
                 if (__instance is Player player && player.HasActiveMagicEffect(MagicEffectType.StaggerOnDamageTaken) && attacker != null && attacker != __instance && !attacker.IsStaggering())
