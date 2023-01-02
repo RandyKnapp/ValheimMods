@@ -223,7 +223,6 @@ namespace EpicLoot
             ExtendedItemData.RegisterCustomTypeID(MagicItemComponent.TypeID, typeof(MagicItemComponent));
 
             LoadPatches();
-            LoadTranslations();
             InitializeConfig();
             InitializeAbilities();
             PrintInfo();
@@ -361,20 +360,30 @@ namespace EpicLoot
             FilePatching.LoadAllPatches();
         }
 
-        private static void LoadTranslations()
+        private static void LoadTranslations(IDictionary<string, object> translations)
         {
-            var translationsJsonText = LoadJsonText("translations.json");
-            var translations = JsonConvert.DeserializeObject<IDictionary<string, object>>(translationsJsonText);
+            const string translationPrefix = "mod_epicloot_";
+
             if (translations == null)
             {
                 Debug.LogError("Could not parse translations.json!");
                 return;
             }
 
+            var oldEntries = Localization.instance.m_translations.Where(instanceMTranslation => instanceMTranslation.Key.StartsWith(translationPrefix)).ToList();
+
+            //Clean Translations
+            foreach (var entry in oldEntries)
+            {
+                Localization.instance.m_translations.Remove(entry.Key);
+            }
+            
+            //Load New Translations
             foreach (var translation in translations)
             {
-                //Log($"Translation: {translation.Key}, {translation.Value}");
-                Localization.instance.AddWord(translation.Key, translation.Value.ToString());
+                var keyName = translation.Key.StartsWith(translationPrefix) ? translation.Key : $"{translationPrefix}{translation.Key}";
+
+                Localization.instance.AddWord(keyName, translation.Value.ToString());
             }
         }
 
@@ -385,6 +394,7 @@ namespace EpicLoot
 
         public static void InitializeConfig()
         {
+            LoadJsonFile<IDictionary<string, object>>("translations.json", LoadTranslations);
             LoadJsonFile<LootConfig>("loottables.json", LootRoller.Initialize);
             LoadJsonFile<MagicItemEffectsList>("magiceffects.json", MagicItemEffectDefinitions.Initialize);
             LoadJsonFile<ItemInfoConfig>("iteminfo.json", GatedItemTypeHelper.Initialize);
@@ -969,7 +979,6 @@ namespace EpicLoot
                     {
                         var patchfile = lists[index];
                         AddPatchFileWatcher(filename,patchfile);
-                        
                     }
                 }
             }
