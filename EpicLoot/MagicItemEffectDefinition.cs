@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using EpicLoot.Crafting;
 using EpicLoot.GatedItemType;
-using EpicLoot.MagicItemEffects;
 using ExtendedItemDataFramework;
 using JetBrains.Annotations;
 
@@ -136,7 +135,6 @@ namespace EpicLoot
 
         public bool AllowedByItemInfoType(ItemDrop.ItemData itemData)
         {
-
             string prefabName = "";
             if (itemData.m_dropPrefab?.name != null)
                 prefabName = itemData.m_dropPrefab.name;

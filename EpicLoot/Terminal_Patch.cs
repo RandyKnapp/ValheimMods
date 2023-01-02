@@ -452,7 +452,6 @@ namespace EpicLoot
 
         private static void SpawnLegendaryItemHelper(string legendaryID, string itemType, Terminal context)
         {
-           
             if (!UniqueLegendaryHelper.TryGetLegendaryInfo(legendaryID, out var legendaryInfo))
             {
                 if (context != null)
@@ -490,7 +489,6 @@ namespace EpicLoot
                         allowedItems.Add(itemDrop);
                     }
                 }
-
                 itemType = allowedItems.LastOrDefault()?.name;
             }
             
