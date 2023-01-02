@@ -482,14 +482,13 @@ namespace EpicLoot
                     }
 
                     var itemData = itemDrop.m_itemData;
-                    itemData.m_customData.Add($"PrefabName{itemData.m_shared.m_name}",itemPrefab.name);
+                    itemData.m_dropPrefab = itemPrefab;
                     var checkRequirements = legendaryInfo.Requirements.CheckRequirements(itemData, dummyMagicItem);
 
                     if (checkRequirements)
                     {
                         allowedItems.Add(itemDrop);
                     }
-                    itemData.m_customData.Remove($"PrefabName{itemData.m_shared.m_name}");
                 }
 
                 itemType = allowedItems.LastOrDefault()?.name;
