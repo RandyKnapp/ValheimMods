@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using EpicLoot.Crafting;
 using EpicLoot.GatedItemType;
-using ExtendedItemDataFramework;
 using JetBrains.Annotations;
 
 namespace EpicLoot
@@ -323,7 +322,7 @@ namespace EpicLoot
             return Requirements?.AllowedItemTypes ?? new List<string>();
         }
 
-        public bool CheckRequirements(ExtendedItemData itemData, MagicItem magicItem)
+        public bool CheckRequirements(ItemDrop.ItemData itemData, MagicItem magicItem)
         {
             if (Requirements == null)
             {
@@ -390,7 +389,7 @@ namespace EpicLoot
             return effectDef;
         }
 
-        public static List<MagicItemEffectDefinition> GetAvailableEffects(ExtendedItemData itemData, MagicItem magicItem, int ignoreEffectIndex = -1)
+        public static List<MagicItemEffectDefinition> GetAvailableEffects(ItemDrop.ItemData itemData, MagicItem magicItem, int ignoreEffectIndex = -1)
         {
             MagicItemEffect effect = null;
             if (ignoreEffectIndex >= 0 && ignoreEffectIndex < magicItem.Effects.Count)

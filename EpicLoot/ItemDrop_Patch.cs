@@ -1,5 +1,5 @@
-﻿using EpicLoot.LootBeams;
-using ExtendedItemDataFramework;
+﻿using EpicLoot.Data;
+using EpicLoot.LootBeams;
 using HarmonyLib;
 
 namespace EpicLoot
@@ -11,14 +11,28 @@ namespace EpicLoot
         {
             __instance.gameObject.AddComponent<LootBeam>();
 
-            // This code probably needs to go into EIDF
+
             var prefab = __instance.m_itemData.m_dropPrefab;
+
+
             if (prefab != null)
             {
                 var itemDropPrefab = prefab.GetComponent<ItemDrop>();
-                if (itemDropPrefab != null && itemDropPrefab.m_itemData.IsExtended() && !__instance.m_itemData.IsExtended())
+
+                if ((__instance.m_itemData.IsLegacyEIDFItem() || itemDropPrefab.m_itemData.IsExtended()) && !__instance.m_itemData.IsExtended())
                 {
-                    __instance.m_itemData = new ExtendedItemData(itemDropPrefab.m_itemData);
+                        var instanceData = __instance.m_itemData.Data().Add<MagicItemComponent>();
+
+                    if (itemDropPrefab.m_itemData.IsExtended())
+                    {
+                        var prefabData = itemDropPrefab.m_itemData.Data().Get<MagicItemComponent>();
+
+                        if (instanceData != null && prefabData != null)
+                        {
+                            instanceData.Save(prefabData.MagicItem);
+                        }
+                    }
+
                     __instance.m_itemData.m_dropPrefab = itemDropPrefab.gameObject;
                 }
             }

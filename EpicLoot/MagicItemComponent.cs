@@ -6,8 +6,8 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using Common;
 using EpicLoot.Crafting;
+using EpicLoot.Data;
 using EpicLoot.LegendarySystem;
-using ExtendedItemDataFramework;
 using HarmonyLib;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
@@ -18,77 +18,106 @@ using Object = UnityEngine.Object;
 
 namespace EpicLoot
 {
-    public class MagicItemComponent : BaseExtendedItemComponent
+    public class MagicItemComponent : ItemData
     {
         public const string TypeID = "rkel";
 
         public MagicItem MagicItem;
 
-        public MagicItemComponent(ExtendedItemData parent)
-            : base(TypeID, parent)
-        {
-        }
 
         public void SetMagicItem(MagicItem magicItem)
         {
             MagicItem = magicItem;
+            Value = Serialize();
             Save();
-            if (ItemData.m_equiped && Player.m_localPlayer.IsItemEquiped(ItemData))
-                Multiplayer_Player_Patch.UpdatePlayerZDOForEquipment(Player.m_localPlayer, ItemData, MagicItem != null);
+            if (Item.m_equiped && Player.m_localPlayer.IsItemEquiped(Item))
+                Multiplayer_Player_Patch.UpdatePlayerZDOForEquipment(Player.m_localPlayer, Item, MagicItem != null);
         }
 
-        public override string Serialize()
+        public string Serialize()
         {
             return JsonConvert.SerializeObject(MagicItem, Formatting.None);
         }
 
-        public override void Deserialize(string data)
+        public void Deserialize()
         {
             try
             {
-                MagicItem = JsonConvert.DeserializeObject<MagicItem>(data);
+                MagicItem = JsonConvert.DeserializeObject<MagicItem>(Value);
             }
             catch (Exception)
             {
-                EpicLoot.LogError($"[{nameof(MagicItemComponent)}] Could not deserialize MagicItem json data! ({ItemData?.m_shared?.m_name})");
+                EpicLoot.LogError($"[{nameof(MagicItemComponent)}] Could not deserialize MagicItem json data! ({Item?.m_shared?.m_name})"); 
                 throw;
             }
         }
 
-        public override BaseExtendedItemComponent Clone()
+        public ItemData Clone()
         {
-            return MemberwiseClone() as BaseExtendedItemComponent;
+            return MemberwiseClone() as ItemData;
         }
 
-        public static void OnNewExtendedItemData(ExtendedItemData itemdata)
+        public override void FirstLoad()
         {
-            if (itemdata.m_shared.m_name == "$item_helmet_dverger")
+            if (Item.m_shared.m_name == "$item_helmet_dverger")
             {
                 var magicItem = new MagicItem();
                 magicItem.Rarity = ItemRarity.Rare;
                 magicItem.Effects.Add(new MagicItemEffect(MagicEffectType.DvergerCirclet));
                 magicItem.TypeNameOverride = "$mod_epicloot_circlet";
 
-                itemdata.ReplaceComponent<MagicItemComponent>().MagicItem = magicItem;
+                MagicItem = magicItem;
             }
-            else if (itemdata.m_shared.m_name == "$item_beltstrength")
+            else if (Item.m_shared.m_name == "$item_beltstrength")
             {
                 var magicItem = new MagicItem();
                 magicItem.Rarity = ItemRarity.Rare;
                 magicItem.Effects.Add(new MagicItemEffect(MagicEffectType.Megingjord));
                 magicItem.TypeNameOverride = "$mod_epicloot_belt";
 
-                itemdata.ReplaceComponent<MagicItemComponent>().MagicItem = magicItem;
+                MagicItem = magicItem;
             }
-            else if (itemdata.m_shared.m_name == "$item_wishbone")
+            else if (Item.m_shared.m_name == "$item_wishbone")
             {
                 var magicItem = new MagicItem();
                 magicItem.Rarity = ItemRarity.Epic;
                 magicItem.Effects.Add(new MagicItemEffect(MagicEffectType.Wishbone));
                 magicItem.TypeNameOverride = "$mod_epicloot_remains";
 
-                itemdata.ReplaceComponent<MagicItemComponent>().MagicItem = magicItem;
+                MagicItem = magicItem;
             }
+        }
+
+        public override void Load()
+        {
+            if (Item.IsLegacyEIDFItem() && Item.IsLegacyMagicItem() && MagicItem == null)
+            {
+                var serializedComponents = Item.m_crafterName.Split(new[] { EIDFLegacy.StartDelimiter }, StringSplitOptions.RemoveEmptyEntries);
+
+                foreach (var component in serializedComponents)
+                {
+                    var parts = component.Split(new[] { EIDFLegacy.EndDelimiter }, StringSplitOptions.None);
+                    var typeString = EIDFLegacy.RestoreDataText(parts[0]);
+
+                    if (typeString.Equals(TypeID))
+                    {
+                        var data = parts.Length == 2 ? parts[1] : string.Empty;
+                        if (string.IsNullOrEmpty(data))
+                            continue;
+
+                        Value = EIDFLegacy.RestoreDataText(data);
+                    }
+                }
+            }
+
+            if (!string.IsNullOrEmpty(Value))
+                Deserialize();
+        }
+
+        public void Save(MagicItem magicItem)
+        {
+            MagicItem = magicItem;
+            Serialize();
         }
     }
 
@@ -96,7 +125,8 @@ namespace EpicLoot
     {
         public static bool IsMagic(this ItemDrop.ItemData itemData)
         {
-            return itemData.Extended()?.GetComponent<MagicItemComponent>() != null;
+            var magicData = itemData.Data().Get<MagicItemComponent>();
+            return magicData != null && magicData.MagicItem != null;
         }
 
         public static bool IsMagic(this ItemDrop.ItemData itemData, out MagicItem magicItem)
@@ -152,9 +182,27 @@ namespace EpicLoot
             return itemData.GetMagicItem()?.HasEffect(effectType) ?? false;
         }
 
+        public static void SaveMagicItem(this ItemDrop.ItemData itemData, MagicItem magicItem)
+        {
+
+            itemData.Data().Get<MagicItemComponent>()?.Save(magicItem);
+            return;
+        }
+
+        public static bool IsExtended(this ItemDrop.ItemData itemData)
+        {
+            return itemData.Data().Get<MagicItemComponent>() != null;
+        }
+
+        public static ItemDrop.ItemData Extended(this ItemDrop.ItemData itemData)
+        {
+            var value = itemData.Data().Get<MagicItemComponent>();
+            return value?.Item;
+        }
+
         public static MagicItem GetMagicItem(this ItemDrop.ItemData itemData)
         {
-            return itemData.Extended()?.GetComponent<MagicItemComponent>()?.MagicItem;
+            return itemData.Data().Get<MagicItemComponent>()?.MagicItem;
         }
 
         public static string GetDecoratedName(this ItemDrop.ItemData itemData, string colorOverride = null)
@@ -316,7 +364,7 @@ namespace EpicLoot
             var setID = item.GetSetID(out var isMundane);
             var setSize = item.GetSetSize();
 
-            var setPieces = ItemDataExtensions.GetSetPieces(setID);
+            var setPieces = GetSetPieces(setID);
             var currentSetEquipped = Player.m_localPlayer.GetEquippedSetPieces(setID);
 
             var setDisplayName = GetSetDisplayName(item, isMundane);

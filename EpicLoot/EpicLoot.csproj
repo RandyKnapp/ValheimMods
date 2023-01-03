@@ -114,6 +114,8 @@
     <Compile Include="Adventure\Feature\Bosses.cs" />
     <Compile Include="Adventure\Feature\BountyLedger.cs" />
     <Compile Include="Data\ConfigValue.cs" />
+    <Compile Include="Data\EIDFLegacy.cs" />
+    <Compile Include="Data\ItemDataManager.cs" />
     <Compile Include="DebugText.cs" />
     <Compile Include="GameCamera_Patch.cs" />
     <Compile Include="Healing\AddHealingQueueToPlayerPatch.cs" />
@@ -267,12 +269,6 @@
     <None Include="todo.md" />
     <None Include="README.md" />
     <None Include="recipes.json" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ExtendedItemDataFramework\ExtendedItemDataFramework.csproj">
-      <Project>{2f61a8ab-bf4d-4e0c-9b90-4b2ba74438c5}</Project>
-      <Name>ExtendedItemDataFramework</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="..\Libs\ServerSync.dll">

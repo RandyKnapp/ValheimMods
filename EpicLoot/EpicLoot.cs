@@ -15,7 +15,6 @@ using EpicLoot.GatedItemType;
 using EpicLoot.LegendarySystem;
 using EpicLoot.MagicItemEffects;
 using EpicLoot.Patching;
-using ExtendedItemDataFramework;
 using HarmonyLib;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
@@ -82,7 +81,6 @@ namespace EpicLoot
     }
 
     [BepInPlugin(PluginId, DisplayName, Version)]
-    [BepInDependency("randyknapp.mods.extendeditemdataframework", "1.0.10")]
     [BepInDependency("randyknapp.mods.auga", BepInDependency.DependencyFlags.SoftDependency)]
     public class EpicLoot : BaseUnityPlugin
     {
@@ -222,7 +220,9 @@ namespace EpicLoot
 
             _configSync.AddLockingConfigEntry(_serverConfigLocked);
 
-            ExtendedItemData.RegisterCustomTypeID(MagicItemComponent.TypeID, typeof(MagicItemComponent));
+            ItemInfo.ForceLoadTypes.Add(typeof(MagicItemComponent));
+
+            //ExtendedItemData.RegisterCustomTypeID(MagicItemComponent.TypeID, typeof(MagicItemComponent));
 
             LoadPatches();
             InitializeConfig();
@@ -232,8 +232,8 @@ namespace EpicLoot
 
             LoadAssets();
 
-            ExtendedItemData.LoadExtendedItemData += MagicItemComponent.OnNewExtendedItemData;
-            ExtendedItemData.NewExtendedItemData += MagicItemComponent.OnNewExtendedItemData;
+            //ExtendedItemData.LoadExtendedItemData += MagicItemComponent.OnNewExtendedItemData;
+            //ExtendedItemData.NewExtendedItemData += MagicItemComponent.OnNewExtendedItemData;
 
             _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), PluginId);
 
@@ -934,8 +934,7 @@ namespace EpicLoot
             };
             magicItem.Effects.Add(new MagicItemEffect(MagicEffectType.Andvaranaut));
 
-            prefab.m_itemData = new ExtendedItemData(prefab.m_itemData);
-            prefab.m_itemData.Extended().ReplaceComponent<MagicItemComponent>().MagicItem = magicItem;
+            prefab.m_itemData.SaveMagicItem(magicItem);
         }
 
         private static void SetupStatusEffects()

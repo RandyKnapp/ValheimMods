@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Common;
-using ExtendedItemDataFramework;
 using UnityEngine;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
@@ -576,10 +575,9 @@ namespace EpicLoot.Crafting
                 // Set as augmented
                 var magicItem = recipe.FromItem.GetMagicItem();
                 magicItem.SetEffectAsAugmented(recipe.EffectIndex);
-                // Note: I do not know why I have to do this, but this is the only thing that causes this item to save correctly
-                recipe.FromItem.Extended().RemoveComponent<MagicItemComponent>();
-                recipe.FromItem.Extended().AddComponent<MagicItemComponent>().SetMagicItem(magicItem);
-
+                
+                recipe.FromItem.SaveMagicItem(magicItem);
+                
                 ChoiceDialog.Show(recipe, OnAugmentComplete);
             }
         }
@@ -620,9 +618,9 @@ namespace EpicLoot.Crafting
                     magicItem.DisplayName = MagicItemNames.GetNameForItem(recipe.FromItem, magicItem);
                 }
 
-                // Note: I do not know why I have to do this, but this is the only thing that causes this item to save correctly
-                recipe.FromItem.Extended().RemoveComponent<MagicItemComponent>();
-                recipe.FromItem.Extended().AddComponent<MagicItemComponent>().SetMagicItem(magicItem);
+                
+                recipe.FromItem.SaveMagicItem(magicItem);
+                
 
                 InventoryGui.instance?.UpdateCraftingPanel();
 
