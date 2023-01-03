@@ -1,29 +1,22 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace EpicLoot_UnityLib
 {
-    public class EnchantUI : MonoBehaviour
+    public class EnchantUI : EnchantingTableUIPanelBase
     {
-        public const float CountdownTime = 0.8f;
-
-        public MultiSelectItemList AvailableItems;
         public Text EnchantInfo;
         public Scrollbar EnchantInfoScrollbar;
-        public Button MainButton;
-        public GuiBar ProgressBar;
         public List<Toggle> RarityButtons;
 
         [Header("Cost")]
         public Text CostLabel;
         public MultiSelectItemList CostList;
 
-        [Header("Audio")]
-        public AudioSource Audio;
-        public AudioClip ProgressLoopSFX;
-        public AudioClip[] CompleteSFX;
+        public AudioClip[] EnchantCompleteSFX;
 
         public delegate List<InventoryItemListElement> GetEnchantableItemsDelegate();
         public delegate string GetEnchantInfoDelegate(ItemDrop.ItemData item, MagicRarityUnity rarity);
@@ -36,24 +29,13 @@ namespace EpicLoot_UnityLib
         public static GetEnchantCostDelegate GetEnchantCost;
         public static EnchantItemDelegate EnchantItem;
 
-        private bool _inProgress;
-        private float _countdown;
-        private Text _buttonLabel;
-        private Text _progressLabel;
         private ToggleGroup _toggleGroup;
         private MagicRarityUnity _rarity;
         private GameObject _successDialog;
 
-        public void Awake()
+        public override void Awake()
         {
-            AvailableItems.OnSelectedItemsChanged += OnSelectedItemChanged;
-            MainButton.onClick.AddListener(OnMainButtonClicked);
-            _buttonLabel = MainButton.GetComponentInChildren<Text>();
-            _progressLabel = ProgressBar.gameObject.GetComponentInChildren<Text>();
-
-            var uiSFX = GameObject.Find("sfx_gui_button");
-            if (uiSFX)
-                Audio.outputAudioMixerGroup = uiSFX.GetComponent<AudioSource>().outputAudioMixerGroup;
+            base.Awake();
 
             if (RarityButtons.Count > 0)
             {
@@ -71,6 +53,7 @@ namespace EpicLoot_UnityLib
             }
         }
 
+        [UsedImplicitly]
         public void OnEnable()
         {
             _rarity = MagicRarityUnity.Magic;
@@ -80,23 +63,13 @@ namespace EpicLoot_UnityLib
             AvailableItems.SetItems(items.Cast<IListElement>().ToList());
         }
 
-        public void Update()
+        public override void Update()
         {
-            ProgressBar.gameObject.SetActive(_inProgress);
-            if (_inProgress)
-            {
-                ProgressBar.SetValue(CountdownTime - _countdown);
-
-                _countdown -= Time.deltaTime;
-                if (_countdown < 0)
-                {
-                    DoEnchant();
-                }
-            }
+            base.Update();
 
             if (_successDialog != null && !_successDialog.activeSelf)
             {
-                UnlockSelector();
+                Unlock();
                 Destroy(_successDialog);
                 _successDialog = null;
             }
@@ -149,7 +122,7 @@ namespace EpicLoot_UnityLib
             EnchantInfoScrollbar.value = 1;
         }
 
-        public void DoEnchant()
+        protected override void DoMainAction()
         {
             var selectedItem = AvailableItems.GetSelectedItems<InventoryItemListElement>().FirstOrDefault();
             if (selectedItem?.Item1.GetItem() == null)
@@ -158,30 +131,31 @@ namespace EpicLoot_UnityLib
             var item = selectedItem.Item1.GetItem();
             var cost = GetEnchantCost(item, _rarity);
 
-            // Doesn't really cancel, just does all the same stuff
-            Cancel();
-
-            var completeSFX = CompleteSFX[(int)_rarity];
-            if (Audio != null && completeSFX != null)
-                Audio.PlayOneShot(completeSFX);
-
             var player = Player.m_localPlayer;
-            var inventory = player.GetInventory();
-            foreach (var costElement in cost)
+            if (!player.NoCostCheat())
             {
-                var costItem = costElement.GetItem();
-                inventory.RemoveItem(costItem.m_shared.m_name, costItem.m_stack);
+                var inventory = player.GetInventory();
+                foreach (var costElement in cost)
+                {
+                    var costItem = costElement.GetItem();
+                    inventory.RemoveItem(costItem.m_shared.m_name, costItem.m_stack);
+                }
             }
 
             if (_successDialog != null)
                 Destroy(_successDialog);
 
             DeselectAll();
-            LockSelector();
+            Lock();
 
             _successDialog = EnchantItem(item, _rarity);
 
             RefreshAvailableItems();
+        }
+
+        protected override AudioClip GetCompleteAudioClip()
+        {
+            return EnchantCompleteSFX[(int)_rarity];
         }
 
         public void RefreshAvailableItems()
@@ -189,10 +163,10 @@ namespace EpicLoot_UnityLib
             var items = GetEnchantableItems();
             AvailableItems.SetItems(items.Cast<IListElement>().ToList());
             AvailableItems.DeselectAll();
-            OnSelectedItemChanged();
+            OnSelectedItemsChanged();
         }
 
-        public void OnSelectedItemChanged()
+        protected override void OnSelectedItemsChanged()
         {
             OnRarityChanged();
         }
@@ -200,6 +174,9 @@ namespace EpicLoot_UnityLib
         private bool LocalPlayerCanAffordCost(List<InventoryItemListElement> cost)
         {
             var player = Player.m_localPlayer;
+            if (player.NoCostCheat())
+                return true;
+
             var inventory = player.GetInventory();
             foreach (var element in cost)
             {
@@ -210,73 +187,46 @@ namespace EpicLoot_UnityLib
 
             return true;
         }
-
-        public bool CanCancel()
+        
+        public override bool CanCancel()
         {
-            return _inProgress || (_successDialog != null && _successDialog.activeSelf);
+            return base.CanCancel() || (_successDialog != null && _successDialog.activeSelf);
         }
 
-        public void Cancel()
+        public override void Cancel()
         {
+            base.Cancel();
+
             if (_successDialog != null && _successDialog.activeSelf)
             {
                 Destroy(_successDialog);
                 _successDialog = null;
             }
 
-            _inProgress = false;
-            _countdown = 0;
-
-            Audio.loop = false;
-            Audio.Stop();
-
-            UnlockSelector();
             OnRarityChanged();
         }
 
-        public void OnMainButtonClicked()
+        public override void Lock()
         {
-            if (_inProgress)
-                Cancel();
-            else
-                StartCountdown();
-        }
+            base.Lock();
 
-        public void StartCountdown()
-        {
-            _buttonLabel.text = Localization.instance.Localize("$menu_cancel");
-            _inProgress = true;
-            _countdown = CountdownTime;
-            ProgressBar.SetMaxValue(CountdownTime);
-
-            Audio.loop = true;
-            Audio.clip = ProgressLoopSFX;
-            Audio.Play();
-
-            LockSelector();
-        }
-
-        public void LockSelector()
-        {
-            AvailableItems.Lock();
-            EnchantingTableUI.instance.LockTabs();
             foreach (var modeButton in RarityButtons)
             {
                 modeButton.interactable = false;
             }
         }
 
-        public void UnlockSelector()
+        public override void Unlock()
         {
-            AvailableItems.Unlock();
-            EnchantingTableUI.instance.UnlockTabs();
+            base.Unlock();
+
             foreach (var modeButton in RarityButtons)
             {
                 modeButton.interactable = true;
             }
         }
 
-        public void DeselectAll()
+        public override void DeselectAll()
         {
             AvailableItems.DeselectAll();
         }

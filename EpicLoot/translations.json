@@ -55,6 +55,8 @@
   "mod_epicloot_augment_noeffects": "No available effects",
   "mod_epicloot_augment_selecteffect": "Select an effect to augment",
   "mod_epicloot_augment_deprecated": "This effect is a deprecated effect. The augment is free, but you will not be able to keep the effect.",
+  "mod_epicloot_augmentcost": "Augment Cost:",
+  "mod_epicloot_augmentprogress": "Augmenting item...",
 
   "mod_epicloot_enchant": "Enchant",
   "mod_epicloot_enchantcost": "Enchant Cost:",

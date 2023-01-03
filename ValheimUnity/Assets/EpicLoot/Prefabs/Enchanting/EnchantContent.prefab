@@ -1409,10 +1409,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   AvailableItems: {fileID: 5147903806483154344}
-  EnchantInfo: {fileID: 13169488238357334}
-  EnchantInfoScrollbar: {fileID: 8804013919072147002}
   MainButton: {fileID: 2054427516855851412}
   ProgressBar: {fileID: 3674262933963196719}
+  Audio: {fileID: 3999165617330130774}
+  ProgressLoopSFX: {fileID: 8300000, guid: cc6f29ca51c890747814b719c744a182, type: 3}
+  CompleteSFX: {fileID: 8300000, guid: d0840e236cbf1ae45b3dab75671bca34, type: 3}
+  EnchantInfo: {fileID: 13169488238357334}
+  EnchantInfoScrollbar: {fileID: 8804013919072147002}
   RarityButtons:
   - {fileID: 6482986452482644360}
   - {fileID: 8959856896920251802}
@@ -1421,9 +1424,7 @@ MonoBehaviour:
   - {fileID: 445939863795870204}
   CostLabel: {fileID: 7120975919381119269}
   CostList: {fileID: 1488874307653889688}
-  Audio: {fileID: 3999165617330130774}
-  ProgressLoopSFX: {fileID: 8300000, guid: cc6f29ca51c890747814b719c744a182, type: 3}
-  CompleteSFX:
+  EnchantCompleteSFX:
   - {fileID: 8300000, guid: d0840e236cbf1ae45b3dab75671bca34, type: 3}
   - {fileID: 8300000, guid: 83572316b4e148c4daacde21ea29060a, type: 3}
   - {fileID: 8300000, guid: 1f8c2c84e1b21ef48a70cf462354cfd6, type: 3}
@@ -1440,7 +1441,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 0
@@ -1455,7 +1456,7 @@ AudioSource:
   rolloffMode: 0
   BypassEffects: 0
   BypassListenerEffects: 0
-  BypassReverbZones: 0
+  BypassReverbZones: 1
   rolloffCustomCurve:
     serializedVersion: 2
     m_Curve:

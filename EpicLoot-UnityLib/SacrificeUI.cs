@@ -1,22 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace EpicLoot_UnityLib
 {
-    public class SacrificeUI : MonoBehaviour
+    public class SacrificeUI : EnchantingTableUIPanelBase
     {
-        public const float SacrificeCountdownTime = 0.8f;
-
-        public MultiSelectItemList AvailableItems;
         public MultiSelectItemList SacrificeProducts;
-        public Button PerformSacrificeButton;
-        public GuiBar ProgressBar;
-        public AudioSource Audio;
-        public AudioClip ProgressLoopSFX;
-        public AudioClip CompleteSFX;
 
         public delegate List<InventoryItemListElement> GetSacrificeItemsDelegate();
         public delegate List<InventoryItemListElement> GetSacrificeProductsDelegate(List<Tuple<ItemDrop.ItemData, int>> items);
@@ -24,21 +17,7 @@ namespace EpicLoot_UnityLib
         public static GetSacrificeItemsDelegate GetSacrificeItems;
         public static GetSacrificeProductsDelegate GetSacrificeProducts;
 
-        private bool _inProgress;
-        private float _countdown;
-        private Text _buttonLabel;
-
-        public void Awake()
-        {
-            AvailableItems.OnSelectedItemsChanged += OnSelectedItemsChanged;
-            PerformSacrificeButton.onClick.AddListener(OnSacrificeButtonClicked);
-            _buttonLabel = PerformSacrificeButton.GetComponentInChildren<Text>();
-
-            var uiSFX = GameObject.Find("sfx_gui_button");
-            if (uiSFX)
-                Audio.outputAudioMixerGroup = uiSFX.GetComponent<AudioSource>().outputAudioMixerGroup;
-        }
-
+        [UsedImplicitly]
         public void OnEnable()
         {
             var items = GetSacrificeItems();
@@ -46,30 +25,10 @@ namespace EpicLoot_UnityLib
             AvailableItems.DeselectAll();
         }
 
-        public void Update()
-        {
-            ProgressBar.gameObject.SetActive(_inProgress);
-            if (_inProgress)
-            {
-                ProgressBar.SetValue(SacrificeCountdownTime - _countdown);
-
-                _countdown -= Time.deltaTime;
-                if (_countdown < 0)
-                {
-                    DoSacrifice();
-                }
-            }
-        }
-
-        private void DoSacrifice()
+        protected override void DoMainAction()
         {
             var selectedItems = AvailableItems.GetSelectedItems<IListElement>();
             var sacrificeProducts = GetSacrificeProducts(selectedItems.Select(x => new Tuple<ItemDrop.ItemData, int>(x.Item1.GetItem(), x.Item2)).ToList());
-
-            // Doesn't really cancel, just does all the same stuff
-            Cancel();
-
-            Audio.PlayOneShot(CompleteSFX);
 
             var player = Player.m_localPlayer;
             var inventory = player.GetInventory();
@@ -105,70 +64,21 @@ namespace EpicLoot_UnityLib
             OnSelectedItemsChanged();
         }
 
-        private void OnSelectedItemsChanged()
+        protected override void OnSelectedItemsChanged()
         {
             var selectedItems = AvailableItems.GetSelectedItems<IListElement>();
             var sacrificeProducts = GetSacrificeProducts(selectedItems.Select(x => new Tuple<ItemDrop.ItemData, int>(x.Item1.GetItem(), x.Item2)).ToList());
             SacrificeProducts.SetItems(sacrificeProducts.Cast<IListElement>().ToList());
-
-            Debug.LogWarning($"Selected Items: {selectedItems.Count}");
-            PerformSacrificeButton.interactable = selectedItems.Count > 0;
+            MainButton.interactable = selectedItems.Count > 0;
         }
-
-        public bool CanCancel()
+        
+        public override void Cancel()
         {
-            return _inProgress;
-        }
-
-        public void Cancel()
-        {
-            _inProgress = false;
-            _countdown = 0;
             _buttonLabel.text = Localization.instance.Localize("$mod_epicloot_sacrifice");
-
-            Audio.loop = false;
-            Audio.Stop();
-
-            UnlockSelector();
+            base.Cancel();
         }
-
-        private void OnSacrificeButtonClicked()
-        {
-            if (_inProgress)
-                Cancel();
-            else
-                StartCountdown();
-        }
-
-        private void StartCountdown()
-        {
-            _buttonLabel.text = Localization.instance.Localize("$menu_cancel");
-            _inProgress = true;
-            _countdown = SacrificeCountdownTime;
-            ProgressBar.SetMaxValue(SacrificeCountdownTime);
-
-            Audio.loop = true;
-            Audio.clip = ProgressLoopSFX;
-            Audio.Play();
-
-            LockSelector();
-        }
-
-        private void LockSelector()
-        {
-            AvailableItems.Lock();
-            SacrificeProducts.Lock();
-            EnchantingTableUI.instance.LockTabs();
-        }
-
-        private void UnlockSelector()
-        {
-            AvailableItems.Unlock();
-            SacrificeProducts.Unlock();
-            EnchantingTableUI.instance.UnlockTabs();
-        }
-
-        public void DeselectAll()
+        
+        public override void DeselectAll()
         {
             AvailableItems.DeselectAll();
         }

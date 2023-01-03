@@ -12,9 +12,7 @@ namespace EpicLoot_UnityLib
         public GameObject TabScrim;
 
         [Header("Content")]
-        public SacrificeUI Sacrifice;
-        public ConvertUI Conversion;
-        public EnchantUI Enchant;
+        public EnchantingTableUIPanelBase[] Panels;
 
         [Header("Audio")]
         public AudioSource Audio;
@@ -58,8 +56,10 @@ namespace EpicLoot_UnityLib
             instance.Root.SetActive(true);
             instance.Scrim.SetActive(true);
 
-            instance.Sacrifice.DeselectAll();
-            instance.Conversion.DeselectAll();
+            foreach (var panel in instance.Panels)
+            {
+                panel.DeselectAll();
+            }
         }
 
         public static void Hide()
@@ -113,22 +113,19 @@ namespace EpicLoot_UnityLib
             {
                 ZInput.ResetButtonStatus("JoyButtonB");
 
-                if (Sacrifice.isActiveAndEnabled && Sacrifice.CanCancel())
+                var panelCapturedInput = false;
+                foreach (var panel in Panels)
                 {
-                    Sacrifice.Cancel();
+                    if (panel.isActiveAndEnabled && panel.CanCancel())
+                    {
+                        panel.Cancel();
+                        panelCapturedInput = true;
+                        break;
+                    }
                 }
-                else if (Conversion.isActiveAndEnabled && Conversion.CanCancel())
-                {
-                    Conversion.Cancel();
-                }
-                else if (Enchant.isActiveAndEnabled && Enchant.CanCancel())
-                {
-                    Enchant.Cancel();
-                }
-                else
-                {
+
+                if (!panelCapturedInput)
                     Hide();
-                }
             }
         }
 

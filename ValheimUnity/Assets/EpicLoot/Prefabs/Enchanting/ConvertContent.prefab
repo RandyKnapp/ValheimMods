@@ -1200,19 +1200,19 @@ MonoBehaviour:
   m_Script: {fileID: -592852342, guid: 2f9828d4dfcaa584280fbdd93cb3976a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AvailableRecipes: {fileID: 7169210917977774383}
-  Products: {fileID: 5098210734663984754}
+  AvailableItems: {fileID: 7169210917977774383}
   MainButton: {fileID: 5776529664568845065}
   ProgressBar: {fileID: 6212530595958607897}
+  Audio: {fileID: 3945010393761910688}
+  ProgressLoopSFX: {fileID: 8300000, guid: cc6f29ca51c890747814b719c744a182, type: 3}
+  CompleteSFX: {fileID: 8300000, guid: 2a69c09ba2c556145b187cc60068dded, type: 3}
+  Products: {fileID: 5098210734663984754}
   ModeButtons:
   - {fileID: 4508422266207416202}
   - {fileID: 2026437494872467033}
   - {fileID: 1971997444221504892}
   CostLabel: {fileID: 5941757644887029495}
   CostList: {fileID: 6756581182419673183}
-  Audio: {fileID: 3945010393761910688}
-  ProgressLoopSFX: {fileID: 8300000, guid: cc6f29ca51c890747814b719c744a182, type: 3}
-  CompleteSFX: {fileID: 8300000, guid: 2a69c09ba2c556145b187cc60068dded, type: 3}
 --- !u!82 &3945010393761910688
 AudioSource:
   m_ObjectHideFlags: 0

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -30,46 +31,28 @@ namespace EpicLoot_UnityLib
         public string GetDisplayNameSuffix() => Amount > 1 ? $" x{Amount}" : string.Empty;
     }
 
-    public class ConvertUI : MonoBehaviour
+    public class ConvertUI : EnchantingTableUIPanelBase
     {
-        public const float CountdownTime = 0.8f;
-
-        public MultiSelectItemList AvailableRecipes;
         public MultiSelectItemList Products;
-        public Button MainButton;
-        public GuiBar ProgressBar;
         public List<Toggle> ModeButtons;
 
         [Header("Cost")]
         public Text CostLabel;
         public MultiSelectItemList CostList;
 
-        [Header("Audio")]
-        public AudioSource Audio;
-        public AudioClip ProgressLoopSFX;
-        public AudioClip CompleteSFX;
-
         public delegate List<ConversionRecipeUnity> GetConversionRecipesDelegate(int mode);
 
         public static GetConversionRecipesDelegate GetConversionRecipes;
 
-        private bool _inProgress;
-        private float _countdown;
-        private Text _buttonLabel;
         private Text _progressLabel;
         private ToggleGroup _toggleGroup;
         private MaterialConversionMode _mode;
 
-        public void Awake()
+        public override void Awake()
         {
-            AvailableRecipes.OnSelectedItemsChanged += OnSelectedRecipesChanged;
-            MainButton.onClick.AddListener(OnMainButtonClicked);
-            _buttonLabel = MainButton.GetComponentInChildren<Text>();
-            _progressLabel = ProgressBar.gameObject.GetComponentInChildren<Text>();
+            base.Awake();
 
-            var uiSFX = GameObject.Find("sfx_gui_button");
-            if (uiSFX)
-                Audio.outputAudioMixerGroup = uiSFX.GetComponent<AudioSource>().outputAudioMixerGroup;
+            _progressLabel = ProgressBar.gameObject.GetComponentInChildren<Text>();
 
             if (ModeButtons.Count > 0)
             {
@@ -88,27 +71,13 @@ namespace EpicLoot_UnityLib
             }
         }
 
+        [UsedImplicitly]
         public void OnEnable()
         {
             _mode = 0;
             RefreshMode();
             var items = GetConversionRecipes((int)_mode);
-            AvailableRecipes.SetItems(items.Cast<IListElement>().ToList());
-        }
-
-        public void Update()
-        {
-            ProgressBar.gameObject.SetActive(_inProgress);
-            if (_inProgress)
-            {
-                ProgressBar.SetValue(CountdownTime - _countdown);
-
-                _countdown -= Time.deltaTime;
-                if (_countdown < 0)
-                {
-                    DoConversion();
-                }
-            }
+            AvailableItems.SetItems(items.Cast<IListElement>().ToList());
         }
 
         public void RefreshMode()
@@ -157,16 +126,11 @@ namespace EpicLoot_UnityLib
             }
         }
 
-        public void DoConversion()
+        protected override void DoMainAction()
         {
-            var selectedRecipes = AvailableRecipes.GetSelectedItems<ConversionRecipeUnity>();
+            var selectedRecipes = AvailableItems.GetSelectedItems<ConversionRecipeUnity>();
             var allProducts = GetConversionProducts(selectedRecipes);
             var cost = GetConversionCost(selectedRecipes);
-
-            // Doesn't really cancel, just does all the same stuff
-            Cancel();
-
-            Audio.PlayOneShot(CompleteSFX);
 
             var player = Player.m_localPlayer;
             var inventory = player.GetInventory();
@@ -250,14 +214,14 @@ namespace EpicLoot_UnityLib
         public void RefreshAvailableItems()
         {
             var items = GetConversionRecipes((int)_mode);
-            AvailableRecipes.SetItems(items.Cast<IListElement>().ToList());
-            AvailableRecipes.DeselectAll();
-            OnSelectedRecipesChanged();
+            AvailableItems.SetItems(items.Cast<IListElement>().ToList());
+            AvailableItems.DeselectAll();
+            OnSelectedItemsChanged();
         }
 
-        public void OnSelectedRecipesChanged()
+        protected override void OnSelectedItemsChanged()
         {
-            var selectedRecipes = AvailableRecipes.GetSelectedItems<ConversionRecipeUnity>();
+            var selectedRecipes = AvailableItems.GetSelectedItems<ConversionRecipeUnity>();
             var allProducts = GetConversionProducts(selectedRecipes);
             Products.SetItems(allProducts.Cast<IListElement>().ToList());
 
@@ -281,71 +245,16 @@ namespace EpicLoot_UnityLib
 
             return true;
         }
-
-        public bool CanCancel()
+        
+        public override void Cancel()
         {
-            return _inProgress;
-        }
-
-        public void Cancel()
-        {
-            _inProgress = false;
-            _countdown = 0;
-
-            Audio.loop = false;
-            Audio.Stop();
-
-            UnlockSelector();
+            base.Cancel();
             OnModeChanged();
         }
 
-        public void OnMainButtonClicked()
+        public override void DeselectAll()
         {
-            if (_inProgress)
-                Cancel();
-            else
-                StartCountdown();
-        }
-
-        public void StartCountdown()
-        {
-            _buttonLabel.text = Localization.instance.Localize("$menu_cancel");
-            _inProgress = true;
-            _countdown = CountdownTime;
-            ProgressBar.SetMaxValue(CountdownTime);
-
-            Audio.loop = true;
-            Audio.clip = ProgressLoopSFX;
-            Audio.Play();
-
-            LockSelector();
-        }
-
-        public void LockSelector()
-        {
-            AvailableRecipes.Lock();
-            Products.Lock();
-            EnchantingTableUI.instance.LockTabs();
-            foreach (var modeButton in ModeButtons)
-            {
-                modeButton.interactable = false;
-            }
-        }
-
-        public void UnlockSelector()
-        {
-            AvailableRecipes.Unlock();
-            Products.Unlock();
-            EnchantingTableUI.instance.UnlockTabs();
-            foreach (var modeButton in ModeButtons)
-            {
-                modeButton.interactable = true;
-            }
-        }
-
-        public void DeselectAll()
-        {
-            AvailableRecipes.DeselectAll();
+            AvailableItems.DeselectAll();
         }
     }
 }

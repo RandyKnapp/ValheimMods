@@ -1001,12 +1001,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   AvailableItems: {fileID: 9071002900010440813}
-  SacrificeProducts: {fileID: 86619866252108025}
-  PerformSacrificeButton: {fileID: 4641492501365227927}
+  MainButton: {fileID: 4641492501365227927}
   ProgressBar: {fileID: 7422130952140303983}
   Audio: {fileID: 4228516352388214512}
   ProgressLoopSFX: {fileID: 8300000, guid: 7aa3a5fae64dc1146a2331ae90754e4f, type: 3}
   CompleteSFX: {fileID: 8300000, guid: bcd8894e91bae9545bb89851b8629cef, type: 3}
+  SacrificeProducts: {fileID: 86619866252108025}
+  PerformSacrificeButton: {fileID: 4641492501365227927}
 --- !u!82 &4228516352388214512
 AudioSource:
   m_ObjectHideFlags: 0

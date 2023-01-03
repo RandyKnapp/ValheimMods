@@ -340,18 +340,34 @@ namespace EpicLoot_UnityLib
 
         public void ForeachElement(Action<int, MultiSelectItemListElement> func)
         {
+            if (ListContainer == null)
+                return;
+
             var elementCount = ListContainer.childCount;
             for (var i = 0; i < elementCount; ++i)
             {
-                var childToCache = ListContainer.GetChild(i);
-                var element = childToCache.GetComponent<MultiSelectItemListElement>();
-                func(i, element);
+                var child = ListContainer.GetChild(i);
+                if (child == null)
+                    continue;
+
+                var element = child.GetComponent<MultiSelectItemListElement>();
+                if (element != null)
+                    func(i, element);
             }
         }
 
         public void DeselectAll()
         {
+            SuppressEvents(true);
             ForeachElement((_, e) => e.Deselect(true));
+            SuppressEvents(false);
+
+            OnSelectedItemsChanged?.Invoke();
+        }
+
+        public void SuppressEvents(bool suppress)
+        {
+            ForeachElement((_, e) => e.SuppressEvents = suppress);
         }
     }
 }

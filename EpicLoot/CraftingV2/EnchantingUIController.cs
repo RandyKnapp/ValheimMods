@@ -26,6 +26,11 @@ namespace EpicLoot.CraftingV2
             EnchantUI.GetEnchantInfo = GetEnchantInfo;
             EnchantUI.GetEnchantCost = GetEnchantCost;
             EnchantUI.EnchantItem = EnchantItemAndReturnSuccessDialog;
+            AugmentUI.GetAugmentableItems = GetAugmentableItems;
+            AugmentUI.GetAugmentableEffects = GetAugmentableEffects;
+            AugmentUI.GetAvailableEffects = GetAvailableAugmentEffects;
+            AugmentUI.GetAugmentCost = GetAugmentCost;
+            AugmentUI.AugmentItem = AugmentItem;
         }
 
         private static void SetMagicItem(MultiSelectItemListElement element, ItemDrop.ItemData item, UITooltip tooltip)
@@ -359,12 +364,190 @@ namespace EpicLoot.CraftingV2
             rt.anchorMin = new Vector2(0.5f, 0.5f);
             rt.anchoredPosition = new Vector2(0, 0);
 
+            if (!EpicLoot.HasAuga)
+            {
+                var frame = successDialog.transform.Find("Frame");
+                if (frame != null)
+                {
+                    var frameRT = (RectTransform)frame;
+                    frameRT.pivot = new Vector2(0.5f, 0.5f);
+                    frameRT.anchorMax = new Vector2(0.5f, 0.5f);
+                    frameRT.anchorMin = new Vector2(0.5f, 0.5f);
+                    frameRT.anchoredPosition = new Vector2(0, 0);
+                }
+            }
+
             MagicItemEffects.Indestructible.MakeItemIndestructible(item);
 
             Game.instance.GetPlayerProfile().m_playerStats.m_crafts++;
             Gogan.LogEvent("Game", "Enchanted", item.m_shared.m_name, 1);
 
             return successDialog.gameObject;
+        }
+
+        private static List<InventoryItemListElement> GetAugmentableItems()
+        {
+            return Player.m_localPlayer.GetInventory().GetAllItems()
+                .Where(item => item.CanBeAugmented())
+                .Select(item => new InventoryItemListElement() { Item = item })
+                .ToList();
+        }
+
+        private static List<Tuple<string, bool>> GetAugmentableEffects(ItemDrop.ItemData item)
+        {
+            var result = new List<Tuple<string, bool>>();
+
+            var magicItem = item?.GetMagicItem();
+            if (magicItem != null)
+            {
+                var rarity = magicItem.Rarity;
+                var augmentableEffects = magicItem.Effects;
+
+                for (var index = 0; index < augmentableEffects.Count; index++)
+                {
+                    var augmentableEffect = augmentableEffects[index];
+                    var effectDef = MagicItemEffectDefinitions.Get(augmentableEffect.EffectType);
+                    var canAugment = effectDef != null && effectDef.CanBeAugmented;
+
+                    var text = AugmentTabController.GetAugmentSelectorText(magicItem, index, augmentableEffects, rarity);
+                    var color = EpicLoot.GetRarityColor(rarity);
+                    var alpha = canAugment ? "FF" : "7F";
+                    text = $"<color={color}{alpha}>{text}</color>";
+
+                    result.Add(new Tuple<string, bool>(text, canAugment));
+                }
+            }
+
+            return result;
+        }
+
+        private static string GetAvailableAugmentEffects(ItemDrop.ItemData item, int augmentindex)
+        {
+            var magicItem = item?.GetMagicItem();
+            if (magicItem == null)
+                return string.Empty;
+
+            var rarity = magicItem.Rarity;
+            var rarityColor = EpicLoot.GetRarityColor(rarity);
+
+            var valuelessEffect = false;
+            if (augmentindex >= 0 && augmentindex < magicItem.Effects.Count)
+            {
+                var currentEffectDef = MagicItemEffectDefinitions.Get(magicItem.Effects[augmentindex].EffectType);
+                valuelessEffect = currentEffectDef.GetValuesForRarity(rarity) == null;
+            }
+
+            var availableEffects = MagicItemEffectDefinitions.GetAvailableEffects(item.Extended(), item.GetMagicItem(), valuelessEffect ? -1 : augmentindex);
+            
+            var sb = new StringBuilder();
+            sb.Append($"<color={rarityColor}>");
+            foreach (var effectDef in availableEffects)
+            {
+                var values = effectDef.GetValuesForRarity(item.GetRarity());
+                var valueDisplay = values != null ? Mathf.Approximately(values.MinValue, values.MaxValue) ? $"{values.MinValue}" : $"({values.MinValue}-{values.MaxValue})" : "";
+                sb.AppendLine($"‣ {string.Format(Localization.instance.Localize(effectDef.DisplayText), valueDisplay)}");
+            }
+            sb.Append("</color>");
+
+            return sb.ToString();
+        }
+
+        private static List<InventoryItemListElement> GetAugmentCost(ItemDrop.ItemData item, int augmentindex)
+        {
+            return AugmentTabController.GetAugmentCosts(item, augmentindex)
+                .Select(x =>
+                {
+                    var itemData = x.Key.m_itemData.Clone();
+                    itemData.m_dropPrefab = x.Key.gameObject;
+                    itemData.m_stack = x.Value;
+                    return new InventoryItemListElement() { Item = itemData };
+                }).ToList();
+        }
+
+        private static GameObject AugmentItem(ItemDrop.ItemData item, int augmentindex)
+        {
+            // Set as augmented
+            var magicItem = item?.GetMagicItem();
+            if (magicItem == null)
+                return null;
+
+            magicItem.SetEffectAsAugmented(augmentindex);
+            // Note: I do not know why I have to do this, but this is the only thing that causes this item to save correctly
+            item.Extended().RemoveComponent<MagicItemComponent>();
+            item.Extended().AddComponent<MagicItemComponent>().SetMagicItem(magicItem);
+
+            var choiceDialog = AugmentTabController.CreateAugmentChoiceDialog();
+            choiceDialog.transform.SetParent(EnchantingTableUI.instance.transform);
+
+            var rt = (RectTransform)choiceDialog.transform;
+            rt.pivot = new Vector2(0.5f, 0.5f);
+            rt.anchorMax = new Vector2(0.5f, 0.5f);
+            rt.anchorMin = new Vector2(0.5f, 0.5f);
+            rt.anchoredPosition = new Vector2(0, 0);
+
+            if (!EpicLoot.HasAuga)
+            {
+                var frame = choiceDialog.transform.Find("Frame");
+                if (frame != null)
+                {
+                    var frameRT = (RectTransform)frame;
+                    frameRT.pivot = new Vector2(0.5f, 0.5f);
+                    frameRT.anchorMax = new Vector2(0.5f, 0.5f);
+                    frameRT.anchorMin = new Vector2(0.5f, 0.5f);
+                    frameRT.anchoredPosition = new Vector2(0, 0);
+                }
+            }
+
+            choiceDialog.Show(item, augmentindex, OnAugmentComplete);
+            return choiceDialog.gameObject;
+        }
+
+        private static void OnAugmentComplete(ItemDrop.ItemData item, int effectIndex, MagicItemEffect newEffect)
+        {
+            var magicItem = item?.GetMagicItem();
+            if (magicItem == null)
+                return;
+
+            if (magicItem.HasEffect(MagicEffectType.Indestructible))
+            {
+                item.m_shared.m_useDurability = item.m_dropPrefab?.GetComponent<ItemDrop>().m_itemData.m_shared.m_useDurability ?? false;
+
+                if (item.m_shared.m_useDurability)
+                {
+                    item.m_durability = item.GetMaxDurability();
+                }
+            }
+
+            var oldEffects = magicItem.GetEffects();
+            var oldEffect = (effectIndex >= 0 && effectIndex < oldEffects.Count) ? oldEffects[effectIndex] : null;
+            EpicLoot.LogWarning($"oldEffect: ({effectIndex}) {oldEffect?.EffectType} {oldEffect?.EffectValue}");
+
+            magicItem.ReplaceEffect(effectIndex, newEffect);
+
+            // Don't count this free augment as locking in an augment
+            if (oldEffect != null && EnchantCostsHelper.EffectIsDeprecated(oldEffect.EffectType))
+            {
+                EpicLoot.LogWarning("Unaugmenting effect");
+                EpicLoot.LogWarning($"Augmented indices before: {(string.Join(",", magicItem.AugmentedEffectIndices))}");
+                magicItem.AugmentedEffectIndices.Remove(effectIndex);
+                EpicLoot.LogWarning($"Augmented indices after: {(string.Join(",", magicItem.AugmentedEffectIndices))}");
+            }
+
+            if (magicItem.Rarity == ItemRarity.Rare)
+            {
+                magicItem.DisplayName = MagicItemNames.GetNameForItem(item, magicItem);
+            }
+
+            // Note: I do not know why I have to do this, but this is the only thing that causes this item to save correctly
+            item.Extended().RemoveComponent<MagicItemComponent>();
+            item.Extended().AddComponent<MagicItemComponent>().SetMagicItem(magicItem);
+
+            MagicItemEffects.Indestructible.MakeItemIndestructible(item);
+
+            Game.instance.GetPlayerProfile().m_playerStats.m_crafts++;
+            Gogan.LogEvent("Game", "Augmented", item.m_shared.m_name, 1);
+
+            EquipmentEffectCache.Reset(Player.m_localPlayer);
         }
     }
 }

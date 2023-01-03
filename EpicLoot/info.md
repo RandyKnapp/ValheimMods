@@ -1587,7 +1587,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > **Requirements:**
 > > **Flags:** `ExclusiveSelf`
 > > **AllowedRarities:** `Legendary`
-> > **AllowedItemNames:** `$item_hammer`
+> > **AllowedItemNames:** `$item_hammer, $item_hoe`
 
 ## RecallWeapon
 
