@@ -117,10 +117,13 @@ namespace EpicLoot.Crafting
                     AvailableAugmentsDialog.MagicBG.color = Color.white;
 
                     AvailableAugmentsDialog.NameText = Object.Instantiate(inventoryGui.m_recipeName, background);
+
                     AvailableAugmentsDialog.Description = Object.Instantiate(inventoryGui.m_recipeDecription, background);
-                    AvailableAugmentsDialog.Description.rectTransform.anchoredPosition += new Vector2(0, -110);
-                    AvailableAugmentsDialog.Description.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 460);
-                    AvailableAugmentsDialog.Description.resizeTextForBestFit = true;
+                    AvailableAugmentsDialog.Description.verticalOverflow = VerticalWrapMode.Overflow;
+                    AvailableAugmentsDialog.Description.horizontalOverflow = HorizontalWrapMode.Overflow;
+                    AvailableAugmentsDialog.Description.rectTransform.anchoredPosition += new Vector2(0, -100);
+                    AvailableAugmentsDialog.Description.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 480);
+
                     AvailableAugmentsDialog.Icon = Object.Instantiate(inventoryGui.m_recipeIcon, background);
 
                     var closeButton = AvailableAugmentsDialog.gameObject.GetComponentInChildren<Button>();
