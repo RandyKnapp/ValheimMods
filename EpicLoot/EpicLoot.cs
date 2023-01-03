@@ -10,6 +10,7 @@ using Common;
 using EpicLoot.Abilities;
 using EpicLoot.Adventure;
 using EpicLoot.Crafting;
+using EpicLoot.Data;
 using EpicLoot.GatedItemType;
 using EpicLoot.LegendarySystem;
 using EpicLoot.MagicItemEffects;
@@ -125,6 +126,7 @@ namespace EpicLoot
         public static ConfigEntry<bool> OutputPatchedConfigFiles;
 
         public static Dictionary<string, CustomSyncedValue<string>> SyncedJsonFiles = new Dictionary<string, CustomSyncedValue<string>>();
+        public static Dictionary<string, ConfigValue<string>> NonSyncedJsonFiles = new Dictionary<string, ConfigValue<string>>();
 
         public static readonly List<ItemDrop.ItemData.ItemType> AllowedMagicItemTypes = new List<ItemDrop.ItemData.ItemType>
         {
@@ -394,16 +396,16 @@ namespace EpicLoot
 
         public static void InitializeConfig()
         {
-            LoadJsonFile<IDictionary<string, object>>("translations.json", LoadTranslations);
-            LoadJsonFile<LootConfig>("loottables.json", LootRoller.Initialize);
-            LoadJsonFile<MagicItemEffectsList>("magiceffects.json", MagicItemEffectDefinitions.Initialize);
-            LoadJsonFile<ItemInfoConfig>("iteminfo.json", GatedItemTypeHelper.Initialize);
-            LoadJsonFile<RecipesConfig>("recipes.json", RecipesHelper.Initialize);
-            LoadJsonFile<EnchantingCostsConfig>("enchantcosts.json", EnchantCostsHelper.Initialize);
-            LoadJsonFile<ItemNameConfig>("itemnames.json", MagicItemNames.Initialize);
-            LoadJsonFile<AdventureDataConfig>("adventuredata.json", AdventureDataManager.Initialize);
-            LoadJsonFile<LegendaryItemConfig>("legendaries.json", UniqueLegendaryHelper.Initialize);
-            LoadJsonFile<AbilityConfig>("abilities.json", AbilityDefinitions.Initialize);
+            LoadJsonFile<IDictionary<string, object>>("translations.json", LoadTranslations, ConfigType.Nonsynced);
+            LoadJsonFile<LootConfig>("loottables.json", LootRoller.Initialize, ConfigType.Synced);
+            LoadJsonFile<MagicItemEffectsList>("magiceffects.json", MagicItemEffectDefinitions.Initialize, ConfigType.Synced);
+            LoadJsonFile<ItemInfoConfig>("iteminfo.json", GatedItemTypeHelper.Initialize, ConfigType.Synced);
+            LoadJsonFile<RecipesConfig>("recipes.json", RecipesHelper.Initialize, ConfigType.Synced);
+            LoadJsonFile<EnchantingCostsConfig>("enchantcosts.json", EnchantCostsHelper.Initialize, ConfigType.Synced);
+            LoadJsonFile<ItemNameConfig>("itemnames.json", MagicItemNames.Initialize, ConfigType.Synced);
+            LoadJsonFile<AdventureDataConfig>("adventuredata.json", AdventureDataManager.Initialize, ConfigType.Synced);
+            LoadJsonFile<LegendaryItemConfig>("legendaries.json", UniqueLegendaryHelper.Initialize, ConfigType.Synced);
+            LoadJsonFile<AbilityConfig>("abilities.json", AbilityDefinitions.Initialize, ConfigType.Synced);
             WatchNewPatchConfig();
         }
 
@@ -431,7 +433,11 @@ namespace EpicLoot
                                      .Where(u => u.SourceFile.Equals(sourceFile)).Select(p => p.TargetFile).Distinct()
                                      .ToArray())
                         {
-                            SyncedJsonFiles[fileName].AssignLocalValue(LoadJsonText(fileName));
+                            if (SyncedJsonFiles.ContainsKey(fileName))
+                                SyncedJsonFiles[fileName].AssignLocalValue(LoadJsonText(fileName));
+                            else
+                                NonSyncedJsonFiles[fileName].AssignValue(LoadJsonText(fileName));
+
                             AddPatchFileWatcher(fileName, sourceFile);
                         }
                         
@@ -926,14 +932,16 @@ namespace EpicLoot
             ObjectDB.instance.m_StatusEffects.Add(paralyzed);
         }
 
-        public static void LoadJsonFile<T>(string filename, Action<T> onFileLoad, bool update = false) where T : class
+        public static void LoadJsonFile<T>(string filename, Action<T> onFileLoad, ConfigType configType, bool update = false) where T : class
         {
-            
             var jsonFile = LoadJsonText(filename);
 
             if (!update)
             {
-                SyncedJsonFiles.Add(filename, new CustomSyncedValue<string>(_instance._configSync, filename, jsonFile));
+                if (configType == ConfigType.Synced)
+                    SyncedJsonFiles.Add(filename, new CustomSyncedValue<string>(_instance._configSync, filename, jsonFile));
+                else
+                    NonSyncedJsonFiles.Add(filename,new ConfigValue<string>(filename,jsonFile));
             }
             
             void Process()
@@ -941,7 +949,10 @@ namespace EpicLoot
                 T result;
                 try
                 {
-                    result = string.IsNullOrEmpty(SyncedJsonFiles[filename].Value) ? null : JsonConvert.DeserializeObject<T>(SyncedJsonFiles[filename].Value);
+                    if (configType == ConfigType.Synced)
+                        result = string.IsNullOrEmpty(SyncedJsonFiles[filename].Value) ? null : JsonConvert.DeserializeObject<T>(SyncedJsonFiles[filename].Value);
+                    else
+                        result = string.IsNullOrEmpty(NonSyncedJsonFiles[filename].Value) ? null : JsonConvert.DeserializeObject<T>(NonSyncedJsonFiles[filename].Value);
                 }
                 catch (Exception)
                 {
@@ -952,13 +963,24 @@ namespace EpicLoot
                 onFileLoad(result);
             }
 
-            SyncedJsonFiles[filename].ValueChanged += Process;
+            if (configType == ConfigType.Synced)
+                SyncedJsonFiles[filename].ValueChanged += Process;
+            else
+                NonSyncedJsonFiles[filename].ValueChanged += Process;
+
             Process();
 
             if (jsonFile != null)
             {
                 //Primary JSON Watcher
-	            void ConsumeConfigFileEvent(object s, FileSystemEventArgs e) => SyncedJsonFiles[filename].AssignLocalValue(LoadJsonText(filename));
+                void ConsumeConfigFileEvent(object s, FileSystemEventArgs e)
+                {
+                    if (configType == ConfigType.Synced)
+                        SyncedJsonFiles[filename].AssignLocalValue(LoadJsonText(filename));
+                    else
+                        NonSyncedJsonFiles[filename].AssignValue(LoadJsonText(filename));
+
+                }
 
 	            var filePath = GetAssetPath(filename);
 	            FileSystemWatcher watcher = new FileSystemWatcher(Path.GetDirectoryName(filePath), Path.GetFileName(filePath));
