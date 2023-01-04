@@ -208,12 +208,22 @@ namespace ExtendedItemDataFramework
                         continue;
                     }
 
-                    var newComponent = Activator.CreateInstance(type, this) as BaseExtendedItemComponent;
+                    BaseExtendedItemComponent newComponent = null;
+
+                    try
+                    {
+                        newComponent = Activator.CreateInstance(type, this) as BaseExtendedItemComponent;
+                    }
+                    catch (Exception e)
+                    {
+                        ExtendedItemDataFramework.LogWarning($"Unable to create type for {typeString}. {e.Message}.  Data might not be loaded for object {m_shared.m_name}.");
+                    }
+                    
                     if (newComponent == null)
                     {
-                        ExtendedItemDataFramework.LogError($"Could not instantiate extended item component type ({type}) while loading object ({m_shared.m_name})");
                         continue;
                     }
+
                     newComponent.Deserialize(RestoreDataText(data));
                     Components.Add(newComponent);
                 }

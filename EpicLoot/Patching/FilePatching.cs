@@ -94,7 +94,6 @@ namespace EpicLoot.Patching
 
             foreach (var file in files)
             {
-                EpicLoot.LogWarning($"ConfigFile: {file.Name}");
                 ConfigFileNames.Add(file.Name);
             }
         }
