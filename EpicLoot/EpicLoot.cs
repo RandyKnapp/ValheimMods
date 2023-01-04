@@ -11,6 +11,7 @@ using EpicLoot.Abilities;
 using EpicLoot.Adventure;
 using EpicLoot.Crafting;
 using EpicLoot.CraftingV2;
+using EpicLoot.Data;
 using EpicLoot.GatedItemType;
 using EpicLoot.LegendarySystem;
 using EpicLoot.MagicItemEffects;
@@ -128,6 +129,7 @@ namespace EpicLoot
         public static ConfigEntry<bool> OutputPatchedConfigFiles;
 
         public static Dictionary<string, CustomSyncedValue<string>> SyncedJsonFiles = new Dictionary<string, CustomSyncedValue<string>>();
+        public static Dictionary<string, ConfigValue<string>> NonSyncedJsonFiles = new Dictionary<string, ConfigValue<string>>();
 
         public static readonly List<ItemDrop.ItemData.ItemType> AllowedMagicItemTypes = new List<ItemDrop.ItemData.ItemType>
         {
@@ -231,7 +233,6 @@ namespace EpicLoot
             LoadEmbeddedAssembly(assembly, "EpicLoot-UnityLib.dll");
 
             LoadPatches();
-            LoadTranslations();
             InitializeConfig();
             InitializeAbilities();
             PrintInfo();
@@ -341,14 +342,25 @@ namespace EpicLoot
 
                 Auga.API.ComplexTooltip_SetIcon(complexTooltip, item.GetIcon());
 
+                string localizedSubtitle;
                 if (item.IsLegendarySetItem())
                 {
-                    Auga.API.ComplexTooltip_SetSubtitle(complexTooltip, Localization.instance.Localize($"<color={GetSetItemColor()}>$mod_epicloot_legendarysetlabel</color>, {itemTypeName}\n"));
+                    localizedSubtitle = $"<color={GetSetItemColor()}>$mod_epicloot_legendarysetlabel</color>, {itemTypeName}\n";
                 }
                 else
                 {
-                    Auga.API.ComplexTooltip_SetSubtitle(complexTooltip, Localization.instance.Localize($"<color={magicColor}>{magicItem.GetRarityDisplay()} {itemTypeName}</color>"));
+                    localizedSubtitle = $"<color={magicColor}>{magicItem.GetRarityDisplay()} {itemTypeName}</color>";
                 }
+
+                try
+                {
+                    Auga.API.ComplexTooltip_SetSubtitle(complexTooltip, Localization.instance.Localize(localizedSubtitle));
+                }
+                catch (Exception)
+                {
+                    Auga.API.ComplexTooltip_SetSubtitle(complexTooltip, localizedSubtitle);
+                }
+
 
                 if (AugaTooltipNoTextBoxes)
                     return;
@@ -366,7 +378,15 @@ namespace EpicLoot
                     Auga.API.TooltipTextBox_AddLine(textBox2, item.GetSetTooltip());
                 }
 
-                Auga.API.ComplexTooltip_SetDescription(complexTooltip, Localization.instance.Localize(item.GetDescription()));
+                try
+                {
+                    Auga.API.ComplexTooltip_SetDescription(complexTooltip, Localization.instance.Localize(item.GetDescription()));
+                }
+                catch (Exception)
+                {
+                    Auga.API.ComplexTooltip_SetDescription(complexTooltip, item.GetDescription());
+                }
+                
             }
         }
 
@@ -387,19 +407,27 @@ namespace EpicLoot
             FilePatching.LoadAllPatches();
         }
 
-        private static void LoadTranslations()
+        private static void LoadTranslations(IDictionary<string, object> translations)
         {
-            var translationsJsonText = LoadJsonText("translations.json");
-            var translations = JsonConvert.DeserializeObject<IDictionary<string, object>>(translationsJsonText);
+            const string translationPrefix = "mod_epicloot_";
+
             if (translations == null)
             {
                 Debug.LogError("Could not parse translations.json!");
                 return;
             }
 
+            var oldEntries = Localization.instance.m_translations.Where(instanceMTranslation => instanceMTranslation.Key.StartsWith(translationPrefix)).ToList();
+
+            //Clean Translations
+            foreach (var entry in oldEntries)
+            {
+                Localization.instance.m_translations.Remove(entry.Key);
+            }
+            
+            //Load New Translations
             foreach (var translation in translations)
             {
-                //Log($"Translation: {translation.Key}, {translation.Value}");
                 Localization.instance.AddWord(translation.Key, translation.Value.ToString());
             }
         }
@@ -411,6 +439,7 @@ namespace EpicLoot
 
         public static void InitializeConfig()
         {
+            LoadJsonFile<IDictionary<string, object>>("translations.json", LoadTranslations, ConfigType.Nonsynced);
             LoadJsonFile<LootConfig>("loottables.json", LootRoller.Initialize);
             LoadJsonFile<MagicItemEffectsList>("magiceffects.json", MagicItemEffectDefinitions.Initialize);
             LoadJsonFile<ItemInfoConfig>("iteminfo.json", GatedItemTypeHelper.Initialize);
@@ -421,6 +450,7 @@ namespace EpicLoot
             LoadJsonFile<LegendaryItemConfig>("legendaries.json", UniqueLegendaryHelper.Initialize);
             LoadJsonFile<AbilityConfig>("abilities.json", AbilityDefinitions.Initialize);
             LoadJsonFile<MaterialConversionsConfig>("materialconversions.json", MaterialConversions.Initialize);
+
             WatchNewPatchConfig();
         }
 
@@ -441,13 +471,19 @@ namespace EpicLoot
                     FilePatching.ProcessPatchFile(fileInfo);
                     var sourceFile = fileInfo.Name;
 
-                    foreach (var fileName in FilePatching.PatchesPerFile.Values.SelectMany(l => l).ToList()
-                        .Where(u => u.SourceFile.Equals(sourceFile)).Select(p => p.TargetFile).Distinct()
-                        .ToArray())
-                    {
-                        SyncedJsonFiles[fileName].AssignLocalValue(LoadJsonText(fileName));
-                        AddPatchFileWatcher(fileName, sourceFile);
-                    }
+                        foreach (var fileName in FilePatching.PatchesPerFile.Values.SelectMany(l => l).ToList()
+                                     .Where(u => u.SourceFile.Equals(sourceFile)).Select(p => p.TargetFile).Distinct()
+                                     .ToArray())
+                        {
+                            if (SyncedJsonFiles.ContainsKey(fileName))
+                                SyncedJsonFiles[fileName].AssignLocalValue(LoadJsonText(fileName));
+                            else
+                                NonSyncedJsonFiles[fileName].AssignValue(LoadJsonText(fileName));
+
+                            AddPatchFileWatcher(fileName, sourceFile);
+                        }
+                        
+                        break;
                 }
             }
 
@@ -946,13 +982,16 @@ namespace EpicLoot
             ObjectDB.instance.m_StatusEffects.Add(paralyzed);
         }
 
-        public static void LoadJsonFile<T>(string filename, Action<T> onFileLoad, bool update = false) where T : class
+        public static void LoadJsonFile<T>(string filename, Action<T> onFileLoad, ConfigType configType, bool update = false) where T : class
         {
             var jsonFile = LoadJsonText(filename);
 
             if (!update)
             {
-                SyncedJsonFiles.Add(filename, new CustomSyncedValue<string>(_instance._configSync, filename, jsonFile));
+                if (configType == ConfigType.Synced)
+                    SyncedJsonFiles.Add(filename, new CustomSyncedValue<string>(_instance._configSync, filename, jsonFile));
+                else
+                    NonSyncedJsonFiles.Add(filename,new ConfigValue<string>(filename,jsonFile));
             }
             
             void Process()
@@ -960,7 +999,10 @@ namespace EpicLoot
                 T result;
                 try
                 {
-                    result = string.IsNullOrEmpty(SyncedJsonFiles[filename].Value) ? null : JsonConvert.DeserializeObject<T>(SyncedJsonFiles[filename].Value);
+                    if (configType == ConfigType.Synced)
+                        result = string.IsNullOrEmpty(SyncedJsonFiles[filename].Value) ? null : JsonConvert.DeserializeObject<T>(SyncedJsonFiles[filename].Value);
+                    else
+                        result = string.IsNullOrEmpty(NonSyncedJsonFiles[filename].Value) ? null : JsonConvert.DeserializeObject<T>(NonSyncedJsonFiles[filename].Value);
                 }
                 catch (Exception)
                 {
@@ -971,13 +1013,24 @@ namespace EpicLoot
                 onFileLoad(result);
             }
 
-            SyncedJsonFiles[filename].ValueChanged += Process;
+            if (configType == ConfigType.Synced)
+                SyncedJsonFiles[filename].ValueChanged += Process;
+            else
+                NonSyncedJsonFiles[filename].ValueChanged += Process;
+
             Process();
 
             if (jsonFile != null)
             {
                 //Primary JSON Watcher
-	            void ConsumeConfigFileEvent(object s, FileSystemEventArgs e) => SyncedJsonFiles[filename].AssignLocalValue(LoadJsonText(filename));
+                void ConsumeConfigFileEvent(object s, FileSystemEventArgs e)
+                {
+                    if (configType == ConfigType.Synced)
+                        SyncedJsonFiles[filename].AssignLocalValue(LoadJsonText(filename));
+                    else
+                        NonSyncedJsonFiles[filename].AssignValue(LoadJsonText(filename));
+
+                }
 
 	            var filePath = GetAssetPath(filename);
 	            FileSystemWatcher watcher = new FileSystemWatcher(Path.GetDirectoryName(filePath), Path.GetFileName(filePath));
@@ -998,7 +1051,6 @@ namespace EpicLoot
                     {
                         var patchfile = lists[index];
                         AddPatchFileWatcher(filename,patchfile);
-                        
                     }
                 }
             }

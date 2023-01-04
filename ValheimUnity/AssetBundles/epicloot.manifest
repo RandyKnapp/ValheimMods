@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 3172605549
+CRC: 1808318017
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: d1654c0d8f335fb5a2adca74a6461e40
+    Hash: fecfc41876a98778edd327987fa78277
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 7af3d10d7cf02e0020600a1783f567bb
+    Hash: c597d87baada4f4fcf41c9c6f582014d
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -37,8 +37,6 @@ ClassTypes:
   Script: {instanceID: 0}
 - Class: 83
   Script: {instanceID: 0}
-- Class: 90
-  Script: {instanceID: 0}
 - Class: 91
   Script: {instanceID: 0}
 - Class: 95
@@ -52,15 +50,9 @@ ClassTypes:
 - Class: 114
   Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
 - Class: 114
-  Script: {fileID: 11500000, guid: 9085046f02f69544eb97fd06b6048fe2, type: 3}
-- Class: 114
   Script: {fileID: 2094620348, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-- Class: 114
-  Script: {fileID: 1254579870, guid: 2f9828d4dfcaa584280fbdd93cb3976a, type: 3}
-- Class: 114
-  Script: {fileID: 11500000, guid: d199490a83bb2b844b9695cbf13b01ef, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
 - Class: 114
@@ -70,25 +62,15 @@ ClassTypes:
 - Class: 114
   Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
 - Class: 114
-  Script: {fileID: 11500000, guid: 7a98125502f715b4b83cfb77b434e436, type: 3}
-- Class: 114
   Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 30649d3a9faa99c48a7b1166b86bf2a0, type: 3}
 - Class: 114
-  Script: {fileID: 11500000, guid: 0d0b652f32a2cc243917e4028fa0f046, type: 3}
-- Class: 114
   Script: {fileID: -1593939647, guid: d920e4723ba2566674efb2f0c3eb6edb, type: 3}
-- Class: 114
-  Script: {fileID: -481414458, guid: d920e4723ba2566674efb2f0c3eb6edb, type: 3}
 - Class: 114
   Script: {fileID: 182242463, guid: d920e4723ba2566674efb2f0c3eb6edb, type: 3}
 - Class: 114
-  Script: {fileID: -259742986, guid: d920e4723ba2566674efb2f0c3eb6edb, type: 3}
-- Class: 114
   Script: {fileID: 438561839, guid: d920e4723ba2566674efb2f0c3eb6edb, type: 3}
-- Class: 114
-  Script: {fileID: 11500000, guid: 31a19414c41e5ae4aae2af33fee712f6, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 1aa08ab6e0800fa44ae55d278d1423e3, type: 3}
 - Class: 114
@@ -106,29 +88,7 @@ ClassTypes:
 - Class: 114
   Script: {fileID: 1521249158, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
 - Class: 114
-  Script: {fileID: 1179097507, guid: 2f9828d4dfcaa584280fbdd93cb3976a, type: 3}
-- Class: 114
-  Script: {fileID: 2002944390, guid: 2f9828d4dfcaa584280fbdd93cb3976a, type: 3}
-- Class: 114
-  Script: {fileID: 1284466352, guid: 2f9828d4dfcaa584280fbdd93cb3976a, type: 3}
-- Class: 114
   Script: {fileID: 11500000, guid: 2a4db7a114972834c8e4117be1d82ba3, type: 3}
-- Class: 114
-  Script: {fileID: 11500000, guid: 2fafe2cfe61f6974895a912c3755e8f1, type: 3}
-- Class: 114
-  Script: {fileID: 11500000, guid: 8a8695521f0d02e499659fee002a26c2, type: 3}
-- Class: 114
-  Script: {fileID: -592852342, guid: 2f9828d4dfcaa584280fbdd93cb3976a, type: 3}
-- Class: 114
-  Script: {fileID: 1777640247, guid: 2f9828d4dfcaa584280fbdd93cb3976a, type: 3}
-- Class: 114
-  Script: {fileID: -753023686, guid: 2f9828d4dfcaa584280fbdd93cb3976a, type: 3}
-- Class: 114
-  Script: {fileID: 1971756623, guid: 2f9828d4dfcaa584280fbdd93cb3976a, type: 3}
-- Class: 114
-  Script: {fileID: -935680321, guid: 2f9828d4dfcaa584280fbdd93cb3976a, type: 3}
-- Class: 114
-  Script: {fileID: 641580585, guid: 2f9828d4dfcaa584280fbdd93cb3976a, type: 3}
 - Class: 115
   Script: {instanceID: 0}
 - Class: 120
@@ -149,8 +109,9 @@ ClassTypes:
   Script: {instanceID: 0}
 SerializeReferenceClassIdentifiers: []
 Assets:
-- Assets/EpicLoot/Sprites/Abilities/BerserkerIcon.png
+- Assets/EpicLoot/Sprites/Abilities/BulwarkIcon.png
 - Assets/EpicLoot/Prefabs/CraftingMaterials/DustMagic.prefab
+- Assets/EpicLoot/Sprites/Inventory/sacrifice_tabicon.png
 - Assets/EpicLoot/Sounds/Disenchant.wav
 - Assets/EpicLoot/Sprites/Adventure/BountyTokenGold.png
 - Assets/EpicLoot/Prefabs/ItemEffects/LightningAuraSledge.prefab
@@ -166,12 +127,11 @@ Assets:
 - Assets/EpicLoot/ScriptableObjects/BulwarkStatusEffect.asset
 - Assets/EpicLoot/Prefabs/CraftingMaterials/DustLegendary.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/ReagentEpic.prefab
-- Assets/EpicLoot/Prefabs/CraftingMaterials/ShardMythic.prefab
 - Assets/EpicLoot/Prefabs/LootBeams/MagicLootBeam.prefab
 - Assets/EpicLoot/Prefabs/SFX/sfx_frostcone.prefab
 - Assets/EpicLoot/Sprites/Inventory/GenericItemBg.png
 - Assets/EpicLoot/Sprites/Inventory/Auga/enchant_tabicon.png
-- Assets/X_RPGVFX/Auras pack/Prefabs/FireAura 1.prefab
+- Assets/Hovl Studio/Auras pack/Prefabs/FireAura 1.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/RunestoneLegendary.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/EssenceLegendary.prefab
 - Assets/EpicLoot/Prefabs/Collision/IceSpikesCollider.prefab
@@ -179,12 +139,9 @@ Assets:
 - Assets/EpicLoot/Prefabs/CraftingMaterials/EssenceEpic.prefab
 - Assets/EpicLoot/Sprites/Inventory/LegendaryItemBg.png
 - Assets/EpicLoot/Sprites/Inventory/Auga/AugaItemBG.png
-- Assets/EpicLoot/Prefabs/StationExtensions/piece_enchantingtable.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/DustRare.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/ReagentRare.prefab
 - Assets/EpicLoot/Prefabs/StationExtensions/piece_augmenter.prefab
-- Assets/EpicLoot/Prefabs/CraftingMaterials/ReagentMythic.prefab
-- Assets/EpicLoot/Prefabs/CraftingMaterials/DustMythic.prefab
 - Assets/EpicLoot/Sprites/Adventure/TreasureMapIcon.png
 - Assets/EpicLoot/Texture2D/Equipment/PaddedArmorChest2_d.png
 - Assets/EpicLoot/Prefabs/Equipment/SilverRing.prefab
@@ -194,18 +151,17 @@ Assets:
 - Assets/EpicLoot/Prefabs/ItemEffects/GlowingAura.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/RunestoneRare.prefab
 - Assets/EpicLoot/ScriptableObjects/BerserkerStatusEffect.asset
-- Assets/EpicLoot/Prefabs/Enchanting/EnchantingUI.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/EssenceRare.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/DustEpic.prefab
 - Assets/EpicLoot/Prefabs/VFX/Berserker.prefab
+- Assets/EpicLoot/Sprites/Inventory/augment_tabicon.png
 - Assets/EpicLoot/Prefabs/ItemEffects/WhiteAura.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/ShardEpic.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/EssenceMagic.prefab
-- Assets/EpicLoot/Prefabs/LootBeams/MythicLootBeam.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/ReagentMagic.prefab
 - Assets/EpicLoot/Sprites/Inventory/Auga/AugaSetItem.png
 - Assets/EpicLoot/Prefabs/Equipment/GoldRubyRing.prefab
-- Assets/EpicLoot/Prefabs/CraftingMaterials/RunestoneMythic.prefab
+- Assets/EpicLoot/Sprites/Inventory/enchant_tabicon.png
 - Assets/EpicLoot/Sprites/Inventory/Auga/disenchant_tabicon.png
 - Assets/EpicLoot/Prefabs/UI/WelcomeMessage.prefab
 - Assets/EpicLoot/Sprites/Inventory/SmallButtonEnchantOverlay.png
@@ -214,7 +170,6 @@ Assets:
 - Assets/EpicLoot/Prefabs/VFX/MagicShield.prefab
 - Assets/EpicLoot/Sprites/Abilities/UndyingIcon.png
 - Assets/EpicLoot/Prefabs/LootBeams/EpicLootBeam.prefab
-- Assets/EpicLoot/Prefabs/CraftingMaterials/EssenceMythic.prefab
 - Assets/EpicLoot/ScriptableObjects/UndyingStatusEffect.asset
 - Assets/EpicLoot/Prefabs/VFX/IceSpikes.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/ShardLegendary.prefab
@@ -225,7 +180,6 @@ Assets:
 - Assets/EpicLoot/Sprites/Inventory/EpicItemBg.png
 - Assets/EpicLoot/Sounds/MagicItemDrop.wav
 - Assets/EpicLoot/Sprites/Inventory/GenericSetItemMarker.png
-- Assets/EpicLoot/Sounds/MythicItemDrop.wav
 - Assets/EpicLoot/Prefabs/CraftingMaterials/RunestoneMagic.prefab
 - Assets/EpicLoot/Sounds/AbandonBounty.wav
 - Assets/EpicLoot/Sprites/Inventory/MagicItemBg.png
@@ -248,5 +202,5 @@ Assets:
 - Assets/EpicLoot/Prefabs/ItemEffects/FireAura.prefab
 - Assets/EpicLoot/Prefabs/VFX/Undying.prefab
 - Assets/EpicLoot/Prefabs/UI/AbilityBar.prefab
-- Assets/EpicLoot/Sprites/Abilities/BulwarkIcon.png
+- Assets/EpicLoot/Sprites/Abilities/BerserkerIcon.png
 Dependencies: []

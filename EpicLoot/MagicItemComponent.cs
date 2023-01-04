@@ -702,19 +702,20 @@ namespace EpicLoot
     {
         public static void Postfix(HotkeyBar __instance, List<HotkeyBar.ElementData> ___m_elements, List<ItemDrop.ItemData> ___m_items, Player player)
         {
-            if (player == null || player.IsDead())
+
+            if (!__instance.name.Equals("HotKeyBar") || player == null || player.IsDead()) return;
+
+            for (var index = 0; index < Player.m_localPlayer.GetInventory().m_width; index++)
             {
-                return;
-            }
+                var itemData = __instance.m_items.FirstOrDefault(x => x.m_gridPos.x.Equals(index));
 
-            foreach (var itemData in __instance.m_items)
-            {
-                if (itemData.m_gridPos.x < 0 || itemData.m_gridPos.x >= __instance.m_elements.Count) continue;
+                if (index < 0 || index >= __instance.m_elements.Count) continue;
 
-                var element = __instance.m_elements[itemData.m_gridPos.x];
+                var element = __instance.m_elements[index];
 
-                var magicItem = ItemBackgroundHelper.CreateAndGetMagicItemBackgroundImage(element.m_go, element.m_equiped, false);
-                if (itemData.UseMagicBackground())
+                var magicItem =
+                    ItemBackgroundHelper.CreateAndGetMagicItemBackgroundImage(element.m_go, element.m_equiped, false);
+                if (itemData != null && itemData.UseMagicBackground())
                 {
                     magicItem.enabled = true;
                     magicItem.sprite = EpicLoot.GetMagicItemBgSprite();
