@@ -86,10 +86,48 @@ namespace EpicLoot
 
                 MagicItem = magicItem;
             }
+            else
+            {
+                EpicLoot.Log($"[Load] Item Name: {Item.GetDecoratedName()}");
+                EpicLoot.Log($"[Load] Crafter Name: {Item.m_crafterName}");
+                EpicLoot.Log($"[Load] IsLegacyEIDFItem: {Item.IsLegacyEIDFItem()}");
+                EpicLoot.Log($"[Load] IsLegacyMagicItem: {Item.IsLegacyMagicItem()}");
+                EpicLoot.Log($"[Load] MagicItem is null: {MagicItem == null}");
+
+                if (Item.IsLegacyEIDFItem() && Item.IsLegacyMagicItem() && MagicItem == null)
+                {
+                    var serializedComponents = Item.m_crafterName.Split(new[] { EIDFLegacy.StartDelimiter }, StringSplitOptions.RemoveEmptyEntries);
+
+                    foreach (var component in serializedComponents)
+                    {
+                        var parts = component.Split(new[] { EIDFLegacy.EndDelimiter }, StringSplitOptions.None);
+                        var typeString = EIDFLegacy.RestoreDataText(parts[0]);
+
+                        if (typeString.Equals(TypeID))
+                        {
+                            var data = parts.Length == 2 ? parts[1] : string.Empty;
+                            if (string.IsNullOrEmpty(data))
+                                continue;
+
+                            Value = EIDFLegacy.RestoreDataText(data);
+                            Deserialize();
+                        }
+                    }
+                }
+            }
         }
 
         public override void Load()
         {
+            if (!string.IsNullOrEmpty(Value))
+                Deserialize();
+
+            EpicLoot.Log($"[Load] Item Name: {Item.GetDecoratedName()}");
+            EpicLoot.Log($"[Load] Crafter Name: {Item.m_crafterName}");
+            EpicLoot.Log($"[Load] IsLegacyEIDFItem: {Item.IsLegacyEIDFItem()}");
+            EpicLoot.Log($"[Load] IsLegacyMagicItem: {Item.IsLegacyMagicItem()}");
+            EpicLoot.Log($"[Load] MagicItem is null: {MagicItem == null}");
+
             if (Item.IsLegacyEIDFItem() && Item.IsLegacyMagicItem() && MagicItem == null)
             {
                 var serializedComponents = Item.m_crafterName.Split(new[] { EIDFLegacy.StartDelimiter }, StringSplitOptions.RemoveEmptyEntries);
@@ -109,9 +147,6 @@ namespace EpicLoot
                     }
                 }
             }
-
-            if (!string.IsNullOrEmpty(Value))
-                Deserialize();
         }
 
         public void Save(MagicItem magicItem)

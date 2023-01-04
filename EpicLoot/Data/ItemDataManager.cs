@@ -416,11 +416,6 @@ namespace EpicLoot.Data
 				}
 				RegisterForceLoadedTypes(food.m_item);
 			}
-
-            foreach (var inventoryItem in __instance.m_inventory.GetAllItems())
-            {
-				RegisterForceLoadedTypes(inventoryItem);
-			}
 		}
 
 		private static ItemDrop.ItemData? checkingForStackableItemData;

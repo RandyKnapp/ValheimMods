@@ -194,7 +194,6 @@ namespace EpicLoot
             {
                 return results;
             }
-
             var luckFactor = GetLuckFactor(dropPoint);
 
             var drops = GetDropsForLevel(lootTable, level);
@@ -202,7 +201,6 @@ namespace EpicLoot
             {
                 return results;
             }
-
             if (EpicLoot.AlwaysDropCheat)
             {
                 drops = drops.Where(x => x.Key > 0).ToList();
@@ -221,7 +219,6 @@ namespace EpicLoot
 
                 drops = modifiedDrops;
             }
-
             _weightedDropCountTable.Setup(drops, dropPair => dropPair.Value);
             var dropCountRollResult = _weightedDropCountTable.Roll();
             var dropCount = dropCountRollResult.Key;
@@ -229,11 +226,9 @@ namespace EpicLoot
             {
                 return results;
             }
-
             var loot = GetLootForLevel(lootTable, level);
             _weightedLootTable.Setup(loot, x => x.Weight);
             var selectedDrops = _weightedLootTable.Roll(dropCount);
-
             var cheatsActive = AnyItemSpawnCheatsActive();
             foreach (var ld in selectedDrops)
             {
@@ -260,6 +255,7 @@ namespace EpicLoot
                             {
                                 foreach (var itemAmountConfig in disenchantProducts)
                                 {
+                                    EpicLoot.Log($"[RollLootInternal] Step 9 - {ld.Item} - Amount: {itemAmountConfig.Amount}");
                                     var materialPrefab = ObjectDB.instance.GetItemPrefab(itemAmountConfig.Item);
                                     var materialItem = SpawnLootForDrop(materialPrefab, dropPoint, true);
                                     var materialItemDrop = materialItem.GetComponent<ItemDrop>();
@@ -274,7 +270,6 @@ namespace EpicLoot
                         continue;
                     }
                 }
-
                 var itemID = (CheatDisableGating) ? lootDrop.Item : GatedItemTypeHelper.GetGatedItemID(lootDrop.Item);
 
                 var itemPrefab = ObjectDB.instance.GetItemPrefab(itemID);
@@ -283,28 +278,25 @@ namespace EpicLoot
                     EpicLoot.LogError($"Tried to spawn loot ({itemID}) for ({objectName}), but the item prefab was not found!");
                     continue;
                 }
-
                 var item = SpawnLootForDrop(itemPrefab, dropPoint, initializeObject);
                 var itemDrop = item.GetComponent<ItemDrop>();
                 if (EpicLoot.CanBeMagicItem(itemDrop.m_itemData) && !ArrayUtils.IsNullOrEmpty(lootDrop.Rarity))
                 {
                     var itemData = itemDrop.m_itemData;
-                    var magicItemComponent = itemData.Data().Add<MagicItemComponent>();
+                    var magicItemComponent = itemData.Data().GetOrCreate<MagicItemComponent>();
                     var magicItem = RollMagicItem(lootDrop, itemData, luckFactor);
                     if (CheatForceMagicEffect)
                     {
                         AddDebugMagicEffects(magicItem);
                     }
-
                     magicItemComponent.SetMagicItem(magicItem);
-
+                    magicItemComponent.Save(magicItem);
                     itemDrop.m_itemData = itemData;
                     itemDrop.Save();
                     InitializeMagicItem(itemData);
 
                     //MagicItemGenerated?.Invoke(itemData, magicItem);
                 }
-
                 results.Add(item);
             }
 
