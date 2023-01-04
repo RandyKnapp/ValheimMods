@@ -16,7 +16,14 @@ namespace EpicLoot.MagicItemEffects
         {
             public static void Prefix(Attack __instance)
             {
+                if (__instance == null)
+                    return;
+                
                 var player = (Player)__instance.m_character;
+
+                if (__instance.GetWeapon() == null)
+                    return;
+
                 var weaponDamage = __instance.GetWeapon()?.GetDamage();
                 var ItemType = __instance.GetWeapon()?.m_shared.m_itemType;
                 var SkillType = __instance.GetWeapon()?.m_shared.m_skillType;
