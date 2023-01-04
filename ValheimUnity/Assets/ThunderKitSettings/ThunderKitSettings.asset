@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: ThunderKitSettings
   m_EditorClassIdentifier: 
   GameExecutable: valheim.exe
-  GamePath: C:\Program Files (x86)\Steam\steamapps\common\Valheim
+  GamePath: G:\Steam\steamapps\common\Valheim
   Is64Bit: 1

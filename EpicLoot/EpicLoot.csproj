@@ -35,22 +35,22 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="0Harmony">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\core\0Harmony.dll</HintPath>
+      <HintPath>G:\Steam\steamapps\common\Valheim\BepInEx\core\0Harmony.dll</HintPath>
     </Reference>
     <Reference Include="assembly_guiutils_publicized">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\valheim_Data\Managed\publicized_assemblies\assembly_guiutils_publicized.dll</HintPath>
+      <HintPath>G:\Steam\steamapps\common\Valheim\valheim_Data\Managed\publicized_assemblies\assembly_guiutils_publicized.dll</HintPath>
     </Reference>
     <Reference Include="assembly_utils_publicized">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\valheim_Data\Managed\publicized_assemblies\assembly_utils_publicized.dll</HintPath>
+      <HintPath>G:\Steam\steamapps\common\Valheim\valheim_Data\Managed\publicized_assemblies\assembly_utils_publicized.dll</HintPath>
     </Reference>
     <Reference Include="assembly_valheim_publicized">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\valheim_Data\Managed\publicized_assemblies\assembly_valheim_publicized.dll</HintPath>
+      <HintPath>G:\Steam\steamapps\common\Valheim\valheim_Data\Managed\publicized_assemblies\assembly_valheim_publicized.dll</HintPath>
     </Reference>
     <Reference Include="AugaAPI">
       <HintPath>..\Libs\AugaAPI.dll</HintPath>
     </Reference>
     <Reference Include="BepInEx">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\core\BepInEx.dll</HintPath>
+      <HintPath>G:\Steam\steamapps\common\Valheim\BepInEx\core\BepInEx.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -62,45 +62,45 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="UnityEngine">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\unstripped_corlib\UnityEngine.dll</HintPath>
+      <HintPath>G:\Steam\steamapps\common\Valheim\unstripped_corlib\UnityEngine.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AnimationModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\unstripped_corlib\UnityEngine.AnimationModule.dll</HintPath>
+      <HintPath>G:\Steam\steamapps\common\Valheim\unstripped_corlib\UnityEngine.AnimationModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AssetBundleModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\unstripped_corlib\UnityEngine.AssetBundleModule.dll</HintPath>
+      <HintPath>G:\Steam\steamapps\common\Valheim\unstripped_corlib\UnityEngine.AssetBundleModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AudioModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\unstripped_corlib\UnityEngine.AudioModule.dll</HintPath>
+      <HintPath>G:\Steam\steamapps\common\Valheim\unstripped_corlib\UnityEngine.AudioModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\unstripped_corlib\UnityEngine.CoreModule.dll</HintPath>
+      <HintPath>G:\Steam\steamapps\common\Valheim\unstripped_corlib\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.ImageConversionModule">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\unstripped_corlib\UnityEngine.ImageConversionModule.dll</HintPath>
+      <HintPath>G:\Steam\steamapps\common\Valheim\unstripped_corlib\UnityEngine.ImageConversionModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.InputLegacyModule">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\unstripped_corlib\UnityEngine.InputLegacyModule.dll</HintPath>
+      <HintPath>G:\Steam\steamapps\common\Valheim\unstripped_corlib\UnityEngine.InputLegacyModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.ParticleSystemModule">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\unstripped_corlib\UnityEngine.ParticleSystemModule.dll</HintPath>
+      <HintPath>G:\Steam\steamapps\common\Valheim\unstripped_corlib\UnityEngine.ParticleSystemModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.PhysicsModule">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\unstripped_corlib\UnityEngine.PhysicsModule.dll</HintPath>
+      <HintPath>G:\Steam\steamapps\common\Valheim\unstripped_corlib\UnityEngine.PhysicsModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.TextRenderingModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\unstripped_corlib\UnityEngine.TextRenderingModule.dll</HintPath>
+      <HintPath>G:\Steam\steamapps\common\Valheim\unstripped_corlib\UnityEngine.TextRenderingModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UI">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\unstripped_corlib\UnityEngine.UI.dll</HintPath>
+      <HintPath>G:\Steam\steamapps\common\Valheim\unstripped_corlib\UnityEngine.UI.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UIModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\unstripped_corlib\UnityEngine.UIModule.dll</HintPath>
+      <HintPath>G:\Steam\steamapps\common\Valheim\unstripped_corlib\UnityEngine.UIModule.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -303,34 +303,34 @@
   <Import Project="..\Common\Common.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="Copy" AfterTargets="ILRepack">
-    <Exec Command="xcopy &quot;$(TargetDir)$(TargetFileName)&quot; &quot;C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\&quot; /q /y /i" />
-    <Exec Command="xcopy &quot;$(TargetDir)$(TargetFileName)&quot; &quot;C:\Program Files (x86)\Steam\steamapps\common\Valheim_Dev\BepInEx\plugins\$(ProjectName)\&quot; /q /y /i" />
+    <Exec Command="xcopy &quot;$(TargetDir)$(TargetFileName)&quot; &quot;G:\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\&quot; /q /y /i" />
+    <Exec Command="xcopy &quot;$(TargetDir)$(TargetFileName)&quot; &quot;G:\Steam\steamapps\common\Valheim_Dev\BepInEx\plugins\$(ProjectName)\&quot; /q /y /i" />
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>xcopy "$(ProjectDir)translations.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
-xcopy "$(ProjectDir)loottables.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
-xcopy "$(ProjectDir)magiceffects.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
-xcopy "$(ProjectDir)iteminfo.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
-xcopy "$(ProjectDir)recipes.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
-xcopy "$(ProjectDir)enchantcosts.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
-xcopy "$(ProjectDir)itemnames.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
-xcopy "$(ProjectDir)adventuredata.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
-xcopy "$(ProjectDir)legendaries.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
-xcopy "$(ProjectDir)abilities.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
-xcopy "$(ProjectDir)materialconversions.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
-xcopy "$(ProjectDir)\Patching\testpatches.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\patches\test\" /q /y /i
+    <PostBuildEvent>xcopy "$(ProjectDir)translations.json" "G:\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
+xcopy "$(ProjectDir)loottables.json" "G:\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
+xcopy "$(ProjectDir)magiceffects.json" "G:\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
+xcopy "$(ProjectDir)iteminfo.json" "G:\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
+xcopy "$(ProjectDir)recipes.json" "G:\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
+xcopy "$(ProjectDir)enchantcosts.json" "G:\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
+xcopy "$(ProjectDir)itemnames.json" "G:\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
+xcopy "$(ProjectDir)adventuredata.json" "G:\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
+xcopy "$(ProjectDir)legendaries.json" "G:\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
+xcopy "$(ProjectDir)abilities.json" "G:\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
+xcopy "$(ProjectDir)materialconversions.json" "G:\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
+xcopy "$(ProjectDir)\Patching\testpatches.json" "G:\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\patches\test\" /q /y /i
 
-xcopy "$(ProjectDir)translations.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim_Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
-xcopy "$(ProjectDir)loottables.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim_Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
-xcopy "$(ProjectDir)magiceffects.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim_Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
-xcopy "$(ProjectDir)iteminfo.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim_Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
-xcopy "$(ProjectDir)recipes.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim_Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
-xcopy "$(ProjectDir)enchantcosts.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim_Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
-xcopy "$(ProjectDir)itemnames.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim_Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
-xcopy "$(ProjectDir)adventuredata.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim_Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
-xcopy "$(ProjectDir)legendaries.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim_Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
-xcopy "$(ProjectDir)abilities.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim_Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
-xcopy "$(ProjectDir)materialconversions.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim_Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i</PostBuildEvent>
+xcopy "$(ProjectDir)translations.json" "G:\Steam\steamapps\common\Valheim_Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
+xcopy "$(ProjectDir)loottables.json" "G:\Steam\steamapps\common\Valheim_Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
+xcopy "$(ProjectDir)magiceffects.json" "G:\Steam\steamapps\common\Valheim_Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
+xcopy "$(ProjectDir)iteminfo.json" "G:\Steam\steamapps\common\Valheim_Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
+xcopy "$(ProjectDir)recipes.json" "G:\Steam\steamapps\common\Valheim_Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
+xcopy "$(ProjectDir)enchantcosts.json" "G:\Steam\steamapps\common\Valheim_Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
+xcopy "$(ProjectDir)itemnames.json" "G:\Steam\steamapps\common\Valheim_Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
+xcopy "$(ProjectDir)adventuredata.json" "G:\Steam\steamapps\common\Valheim_Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
+xcopy "$(ProjectDir)legendaries.json" "G:\Steam\steamapps\common\Valheim_Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
+xcopy "$(ProjectDir)abilities.json" "G:\Steam\steamapps\common\Valheim_Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
+xcopy "$(ProjectDir)materialconversions.json" "G:\Steam\steamapps\common\Valheim_Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i</PostBuildEvent>
   </PropertyGroup>
   <Import Project="..\packages\ILRepack.Lib.MSBuild.Task.2.0.18.2\build\ILRepack.Lib.MSBuild.Task.targets" Condition="Exists('..\packages\ILRepack.Lib.MSBuild.Task.2.0.18.2\build\ILRepack.Lib.MSBuild.Task.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

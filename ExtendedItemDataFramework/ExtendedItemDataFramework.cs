@@ -52,7 +52,7 @@ namespace ExtendedItemDataFramework
             ExtendedItemData.NewExtendedItemData -= UniqueItemData.OnNewExtendedItemData;
             ExtendedItemData.LoadExtendedItemData -= UniqueItemData.OnLoadExtendedItemData;
 
-            _harmony?.UnpatchAll(PluginId);
+            _harmony?.UnpatchSelf();
             _instance = null;
         }
 
