@@ -127,7 +127,8 @@ namespace EpicLoot.Adventure.Feature
                 gambleRarity.Length > 1 ? gambleRarity[1] : 1,
                 gambleRarity.Length > 2 ? gambleRarity[2] : 1,
                 gambleRarity.Length > 3 ? gambleRarity[3] : 1,
-                gambleRarity.Length > 4 ? gambleRarity[4] : 1
+                gambleRarity.Length > 4 ? gambleRarity[4] : 1,
+                gambleRarity.Length > 5 ? gambleRarity[5] : 1
             };
             var lootTable = new LootTable()
             {

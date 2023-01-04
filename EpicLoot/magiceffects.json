@@ -2144,7 +2144,8 @@
       "Description" : "$mod_epicloot_me_freebuild_desc",
       "Requirements" : {
         "AllowedItemNames" : [
-          "$item_hammer"
+          "$item_hammer",
+          "$item_hoe"
         ],
         "AllowedRarities" : [
           "Legendary"

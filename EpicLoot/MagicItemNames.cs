@@ -71,6 +71,7 @@ namespace EpicLoot
                     return BuildEpicName(item, magicItem);
 
                 case ItemRarity.Legendary:
+                case ItemRarity.Mythic:
                     return GetLegendaryName(item, magicItem);
 
                 default:

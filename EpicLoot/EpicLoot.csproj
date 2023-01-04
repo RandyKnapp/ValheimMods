@@ -113,6 +113,9 @@
     <Compile Include="Abilities\PlayerExtensions_Abilities.cs" />
     <Compile Include="Adventure\Feature\Bosses.cs" />
     <Compile Include="Adventure\Feature\BountyLedger.cs" />
+    <Compile Include="CraftingV2\EnchantingUIController.cs" />
+    <Compile Include="CraftingV2\EnchantingUI_Patches.cs" />
+    <Compile Include="CraftingV2\MaterialConversions.cs" />
     <Compile Include="Data\ConfigValue.cs" />
     <Compile Include="Data\EIDFLegacy.cs" />
     <Compile Include="Data\ItemDataManager.cs" />
@@ -259,6 +262,7 @@
     <None Include="iteminfo.json" />
     <None Include="itemnames.json" />
     <None Include="legendaries.json" />
+    <None Include="materialconversions.json" />
     <None Include="packages.config" />
     <None Include="Patching\testpatches.json" />
     <None Include="translations.json" />
@@ -271,6 +275,12 @@
     <None Include="recipes.json" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\EpicLoot-UnityLib\EpicLoot-UnityLib.csproj">
+      <Project>{8daba031-aea4-472f-a9aa-de8b1aa69de5}</Project>
+      <Name>EpicLoot-UnityLib</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
     <EmbeddedResource Include="..\Libs\ServerSync.dll">
       <Link>ServerSync.dll</Link>
     </EmbeddedResource>
@@ -281,6 +291,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="..\Libs\Newtonsoft.Json.dll">
       <Link>Newtonsoft.Json.dll</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\ValheimUnity\Assets\ExternalLibraries\EpicLoot-UnityLib.dll">
+      <Link>EpicLoot-UnityLib.dll</Link>
     </EmbeddedResource>
     <Content Include="ILRepack.targets">
       <SubType>Designer</SubType>
@@ -304,6 +317,7 @@ xcopy "$(ProjectDir)itemnames.json" "C:\Program Files (x86)\Steam\steamapps\comm
 xcopy "$(ProjectDir)adventuredata.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
 xcopy "$(ProjectDir)legendaries.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
 xcopy "$(ProjectDir)abilities.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
+xcopy "$(ProjectDir)materialconversions.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
 xcopy "$(ProjectDir)\Patching\testpatches.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\patches\test\" /q /y /i
 
 xcopy "$(ProjectDir)translations.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim_Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
@@ -315,7 +329,8 @@ xcopy "$(ProjectDir)enchantcosts.json" "C:\Program Files (x86)\Steam\steamapps\c
 xcopy "$(ProjectDir)itemnames.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim_Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
 xcopy "$(ProjectDir)adventuredata.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim_Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
 xcopy "$(ProjectDir)legendaries.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim_Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
-xcopy "$(ProjectDir)abilities.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim_Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i</PostBuildEvent>
+xcopy "$(ProjectDir)abilities.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim_Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
+xcopy "$(ProjectDir)materialconversions.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim_Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i</PostBuildEvent>
   </PropertyGroup>
   <Import Project="..\packages\ILRepack.Lib.MSBuild.Task.2.0.18.2\build\ILRepack.Lib.MSBuild.Task.targets" Condition="Exists('..\packages\ILRepack.Lib.MSBuild.Task.2.0.18.2\build\ILRepack.Lib.MSBuild.Task.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

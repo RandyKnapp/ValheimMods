@@ -513,6 +513,10 @@ namespace EpicLoot
                     return Config.MagicEffectsCount.Epic.Select(x => new KeyValuePair<int, float>((int)x[0], x[1])).ToList();
                 case ItemRarity.Legendary:
                     return Config.MagicEffectsCount.Legendary.Select(x => new KeyValuePair<int, float>((int)x[0], x[1])).ToList();
+                case ItemRarity.Mythic:
+                    // TODO: Mythic Hookup
+                    return new List<KeyValuePair<int, float>>();//Config.MagicEffectsCount.Mythic.Select(x => new KeyValuePair<int, float>((int)x[0], x[1])).ToList();
+
                 default:
                     throw new ArgumentOutOfRangeException(nameof(rarity), rarity, null);
             }
@@ -799,6 +803,7 @@ namespace EpicLoot
                 case ItemRarity.Rare: return 0.0f;
                 case ItemRarity.Epic: return 0.2f;
                 case ItemRarity.Legendary: return 1;
+                case ItemRarity.Mythic: return 1.1f;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(rarity), rarity, null);
             }

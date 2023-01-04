@@ -37,7 +37,7 @@ namespace EpicLoot.Crafting
             }
         }
 
-        public void Show(AugmentTabController.AugmentRecipe recipe, Action<AugmentTabController.AugmentRecipe, MagicItemEffect> onCompleteCallback)
+        public void Show(ItemDrop.ItemData fromItem, int effectIndex, Action<ItemDrop.ItemData, int, MagicItemEffect> onCompleteCallback)
         {
             gameObject.SetActive(true);
 
@@ -46,7 +46,7 @@ namespace EpicLoot.Crafting
             _audioSource.volume = 0.5f;
             _audioSource.Play();
 
-            var item = recipe.FromItem;
+            var item = fromItem;
             var rarity = item.GetRarity();
             var magicItem = item.GetMagicItem();
             var rarityColor = item.GetRarityColor();
@@ -79,7 +79,7 @@ namespace EpicLoot.Crafting
                 button.gameObject.SetActive(false);
             }
 
-            var newEffectOptions = LootRoller.RollAugmentEffects(item, magicItem, recipe.EffectIndex);
+            var newEffectOptions = LootRoller.RollAugmentEffects(item, magicItem, effectIndex);
             for (var index = 0; index < newEffectOptions.Count; index++)
             {
                 var effect = newEffectOptions[index];
@@ -111,7 +111,7 @@ namespace EpicLoot.Crafting
                 else
                 {
                     button.onClick.AddListener(() => {
-                        onCompleteCallback(recipe, effect);
+                        onCompleteCallback(fromItem, effectIndex, effect);
                         OnClose();
                     });
                 }

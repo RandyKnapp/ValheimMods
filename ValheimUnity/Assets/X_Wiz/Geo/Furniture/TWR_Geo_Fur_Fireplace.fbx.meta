@@ -1,0 +1,183 @@
+fileFormatVersion: 2
+guid: 2274f010aa4aa6341a5300755f94e4a7
+timeCreated: 1540375459
+licenseType: Store
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: //RootNode
+    100002: TWR_Geo_Fur_Fireplace_Ash_Heap
+    100004: TWR_Geo_Fur_Fireplace_Body
+    100006: TWR_Geo_Fur_Fireplace_Body_Body
+    100008: TWR_Geo_Fur_Fireplace_Body_Cutout
+    100010: TWR_Geo_Fur_Fireplace_Body_Cutout 1
+    100012: TWR_Geo_Fur_Fireplace_Firewood
+    100014: TWR_Geo_Fur_Fireplace_Partition_01
+    100016: TWR_Geo_Fur_Fireplace_Partition_02
+    100018: TWR_Geo_Fur_Fireplace_Shavings_01
+    100020: TWR_Geo_Fur_Fireplace_Shavings_02
+    100022: TWR_Geo_Fur_Fireplace_Spark_Guard_01
+    100024: TWR_Geo_Fur_Fireplace_Spark_Guard_02
+    100026: TWR_Geo_Fur_Fireplace_Tool_01
+    100028: TWR_Geo_Fur_Fireplace_Tool_02
+    100030: TWR_Geo_Fur_Fireplace_Tool_03
+    100032: TWR_Geo_Fur_Fireplace_Top
+    100034: TWR_Geo_Fur_Fireplace_Top_Top
+    100036: TWR_Geo_Fur_Fireplace_Wood_Pile_Large
+    100038: TWR_Geo_Fur_Fireplace_Wood_Pile_Small
+    400000: //RootNode
+    400002: TWR_Geo_Fur_Fireplace_Ash_Heap
+    400004: TWR_Geo_Fur_Fireplace_Body
+    400006: TWR_Geo_Fur_Fireplace_Body_Body
+    400008: TWR_Geo_Fur_Fireplace_Body_Cutout
+    400010: TWR_Geo_Fur_Fireplace_Body_Cutout 1
+    400012: TWR_Geo_Fur_Fireplace_Firewood
+    400014: TWR_Geo_Fur_Fireplace_Partition_01
+    400016: TWR_Geo_Fur_Fireplace_Partition_02
+    400018: TWR_Geo_Fur_Fireplace_Shavings_01
+    400020: TWR_Geo_Fur_Fireplace_Shavings_02
+    400022: TWR_Geo_Fur_Fireplace_Spark_Guard_01
+    400024: TWR_Geo_Fur_Fireplace_Spark_Guard_02
+    400026: TWR_Geo_Fur_Fireplace_Tool_01
+    400028: TWR_Geo_Fur_Fireplace_Tool_02
+    400030: TWR_Geo_Fur_Fireplace_Tool_03
+    400032: TWR_Geo_Fur_Fireplace_Top
+    400034: TWR_Geo_Fur_Fireplace_Top_Top
+    400036: TWR_Geo_Fur_Fireplace_Wood_Pile_Large
+    400038: TWR_Geo_Fur_Fireplace_Wood_Pile_Small
+    2300000: TWR_Geo_Fur_Fireplace_Ash_Heap
+    2300002: TWR_Geo_Fur_Fireplace_Body_Body
+    2300004: TWR_Geo_Fur_Fireplace_Body_Cutout
+    2300006: TWR_Geo_Fur_Fireplace_Body_Cutout 1
+    2300008: TWR_Geo_Fur_Fireplace_Firewood
+    2300010: TWR_Geo_Fur_Fireplace_Partition_01
+    2300012: TWR_Geo_Fur_Fireplace_Partition_02
+    2300014: TWR_Geo_Fur_Fireplace_Shavings_01
+    2300016: TWR_Geo_Fur_Fireplace_Shavings_02
+    2300018: TWR_Geo_Fur_Fireplace_Spark_Guard_01
+    2300020: TWR_Geo_Fur_Fireplace_Spark_Guard_02
+    2300022: TWR_Geo_Fur_Fireplace_Tool_01
+    2300024: TWR_Geo_Fur_Fireplace_Tool_02
+    2300026: TWR_Geo_Fur_Fireplace_Tool_03
+    2300028: TWR_Geo_Fur_Fireplace_Top_Top
+    2300030: TWR_Geo_Fur_Fireplace_Wood_Pile_Large
+    2300032: TWR_Geo_Fur_Fireplace_Wood_Pile_Small
+    3300000: TWR_Geo_Fur_Fireplace_Ash_Heap
+    3300002: TWR_Geo_Fur_Fireplace_Body_Body
+    3300004: TWR_Geo_Fur_Fireplace_Body_Cutout
+    3300006: TWR_Geo_Fur_Fireplace_Body_Cutout 1
+    3300008: TWR_Geo_Fur_Fireplace_Firewood
+    3300010: TWR_Geo_Fur_Fireplace_Partition_01
+    3300012: TWR_Geo_Fur_Fireplace_Partition_02
+    3300014: TWR_Geo_Fur_Fireplace_Shavings_01
+    3300016: TWR_Geo_Fur_Fireplace_Shavings_02
+    3300018: TWR_Geo_Fur_Fireplace_Spark_Guard_01
+    3300020: TWR_Geo_Fur_Fireplace_Spark_Guard_02
+    3300022: TWR_Geo_Fur_Fireplace_Tool_01
+    3300024: TWR_Geo_Fur_Fireplace_Tool_02
+    3300026: TWR_Geo_Fur_Fireplace_Tool_03
+    3300028: TWR_Geo_Fur_Fireplace_Top_Top
+    3300030: TWR_Geo_Fur_Fireplace_Wood_Pile_Large
+    3300032: TWR_Geo_Fur_Fireplace_Wood_Pile_Small
+    4300000: TWR_Geo_Fur_Fireplace_Spark_Guard_01
+    4300002: TWR_Geo_Fur_Fireplace_Wood_Pile_Large
+    4300004: TWR_Geo_Fur_Fireplace_Wood_Pile_Small
+    4300006: TWR_Geo_Fur_Fireplace_Shavings_01
+    4300008: TWR_Geo_Fur_Fireplace_Ash_Heap
+    4300010: TWR_Geo_Fur_Fireplace_Tool_03
+    4300012: TWR_Geo_Fur_Fireplace_Tool_01
+    4300014: TWR_Geo_Fur_Fireplace_Tool_02
+    4300016: TWR_Geo_Fur_Fireplace_Firewood
+    4300018: TWR_Geo_Fur_Fireplace_Body_Body
+    4300020: TWR_Geo_Fur_Fireplace_Body_Cutout
+    4300022: TWR_Geo_Fur_Fireplace_Top_Top
+    4300024: TWR_Geo_Fur_Fireplace_Body_Cutout
+    4300026: TWR_Geo_Fur_Fireplace_Shavings_02
+    4300028: TWR_Geo_Fur_Fireplace_Spark_Guard_02
+    4300030: TWR_Geo_Fur_Fireplace_Partition_02
+    4300032: TWR_Geo_Fur_Fireplace_Partition_01
+    6400000: TWR_Geo_Fur_Fireplace_Ash_Heap
+    6400002: TWR_Geo_Fur_Fireplace_Body_Body
+    6400004: TWR_Geo_Fur_Fireplace_Body_Cutout
+    6400006: TWR_Geo_Fur_Fireplace_Body_Cutout 1
+    6400008: TWR_Geo_Fur_Fireplace_Firewood
+    6400010: TWR_Geo_Fur_Fireplace_Partition_01
+    6400012: TWR_Geo_Fur_Fireplace_Partition_02
+    6400014: TWR_Geo_Fur_Fireplace_Shavings_01
+    6400016: TWR_Geo_Fur_Fireplace_Shavings_02
+    6400018: TWR_Geo_Fur_Fireplace_Spark_Guard_01
+    6400020: TWR_Geo_Fur_Fireplace_Spark_Guard_02
+    6400022: TWR_Geo_Fur_Fireplace_Tool_01
+    6400024: TWR_Geo_Fur_Fireplace_Tool_02
+    6400026: TWR_Geo_Fur_Fireplace_Tool_03
+    6400028: TWR_Geo_Fur_Fireplace_Top_Top
+    6400030: TWR_Geo_Fur_Fireplace_Wood_Pile_Large
+    6400032: TWR_Geo_Fur_Fireplace_Wood_Pile_Small
+  materials:
+    importMaterials: 0
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 1
+    importBlendShapes: 0
+    swapUVChannels: 0
+    generateSecondaryUV: 1
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 0
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 0
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

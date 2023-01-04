@@ -1,0 +1,632 @@
+fileFormatVersion: 2
+guid: 454bcb789297d8b4fb8b918ffe9b7270
+timeCreated: 1532444398
+licenseType: Store
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: TWR_Dec_Pla_Cog_010
+    100002: TWR_Dec_Pla_Cog_011
+    100004: TWR_Dec_Pla_Cog_012
+    100006: TWR_Dec_Pla_Cog_013
+    100008: TWR_Dec_Pla_Cog_014
+    100010: TWR_Dec_Pla_Cog_015
+    100012: TWR_Dec_Pla_Cog_016
+    100014: TWR_Dec_Pla_Cog_017
+    100016: TWR_Dec_Pla_Cog_018
+    100018: TWR_Dec_Pla_Cog_019
+    100020: TWR_Dec_Pla_Cog_020
+    100022: TWR_Dec_Pla_Cog_021
+    100024: TWR_Dec_Pla_Cog_022
+    100026: TWR_Dec_Pla_Cog_023
+    100028: TWR_Dec_Pla_Cog_024
+    100030: TWR_Dec_Pla_Cog_025
+    100032: TWR_Dec_Pla_Cog_026
+    100034: TWR_Dec_Pla_Cog_027
+    100036: TWR_Dec_Pla_Cog_028
+    100038: TWR_Dec_Pla_Cog_029
+    100040: TWR_Dec_Pla_Cog_030
+    100042: TWR_Dec_Pla_Cog_031
+    100044: TWR_Geo_Dec_Pla_BrassParts
+    100046: TWR_Geo_Dec_Pla_Cogs
+    100048: TWR_Geo_Dec_Pla_DiskCog1
+    100050: TWR_Geo_Dec_Pla_DiskCog10
+    100052: TWR_Geo_Dec_Pla_DiskCog11
+    100054: TWR_Geo_Dec_Pla_DiskCog12
+    100056: TWR_Geo_Dec_Pla_DiskCog13
+    100058: TWR_Geo_Dec_Pla_DiskCog14
+    100060: TWR_Geo_Dec_Pla_DiskCog2
+    100062: TWR_Geo_Dec_Pla_DiskCog3
+    100064: TWR_Geo_Dec_Pla_DiskCog4
+    100066: TWR_Geo_Dec_Pla_DiskCog5
+    100068: TWR_Geo_Dec_Pla_DiskCog6
+    100070: TWR_Geo_Dec_Pla_DiskCog7
+    100072: TWR_Geo_Dec_Pla_DiskCog8
+    100074: TWR_Geo_Dec_Pla_DiskCog9
+    100076: TWR_Geo_Dec_Pla_Glass
+    100078: TWR_Geo_Dec_Pla_Planet_1
+    100080: TWR_Geo_Dec_Pla_Planet_2
+    100082: TWR_Geo_Dec_Pla_Planet_3
+    100084: TWR_Geo_Dec_Pla_Planet_4
+    100086: TWR_Geo_Dec_Pla_Planet_5
+    100088: TWR_Geo_Dec_Pla_Planet_6
+    100090: TWR_Geo_Dec_Pla_Planet_7
+    100092: TWR_Geo_Dec_Pla_Planet_8
+    100094: TWR_Geo_Dec_Pla_Star
+    100096: TWR_Geo_Dec_Pla_Starsystem
+    100098: TWR_Geo_Dec_Pla_WoodBody
+    100100: //RootNode
+    400000: TWR_Dec_Pla_Cog_010
+    400002: TWR_Dec_Pla_Cog_011
+    400004: TWR_Dec_Pla_Cog_012
+    400006: TWR_Dec_Pla_Cog_013
+    400008: TWR_Dec_Pla_Cog_014
+    400010: TWR_Dec_Pla_Cog_015
+    400012: TWR_Dec_Pla_Cog_016
+    400014: TWR_Dec_Pla_Cog_017
+    400016: TWR_Dec_Pla_Cog_018
+    400018: TWR_Dec_Pla_Cog_019
+    400020: TWR_Dec_Pla_Cog_020
+    400022: TWR_Dec_Pla_Cog_021
+    400024: TWR_Dec_Pla_Cog_022
+    400026: TWR_Dec_Pla_Cog_023
+    400028: TWR_Dec_Pla_Cog_024
+    400030: TWR_Dec_Pla_Cog_025
+    400032: TWR_Dec_Pla_Cog_026
+    400034: TWR_Dec_Pla_Cog_027
+    400036: TWR_Dec_Pla_Cog_028
+    400038: TWR_Dec_Pla_Cog_029
+    400040: TWR_Dec_Pla_Cog_030
+    400042: TWR_Dec_Pla_Cog_031
+    400044: TWR_Geo_Dec_Pla_BrassParts
+    400046: TWR_Geo_Dec_Pla_Cogs
+    400048: TWR_Geo_Dec_Pla_DiskCog1
+    400050: TWR_Geo_Dec_Pla_DiskCog10
+    400052: TWR_Geo_Dec_Pla_DiskCog11
+    400054: TWR_Geo_Dec_Pla_DiskCog12
+    400056: TWR_Geo_Dec_Pla_DiskCog13
+    400058: TWR_Geo_Dec_Pla_DiskCog14
+    400060: TWR_Geo_Dec_Pla_DiskCog2
+    400062: TWR_Geo_Dec_Pla_DiskCog3
+    400064: TWR_Geo_Dec_Pla_DiskCog4
+    400066: TWR_Geo_Dec_Pla_DiskCog5
+    400068: TWR_Geo_Dec_Pla_DiskCog6
+    400070: TWR_Geo_Dec_Pla_DiskCog7
+    400072: TWR_Geo_Dec_Pla_DiskCog8
+    400074: TWR_Geo_Dec_Pla_DiskCog9
+    400076: TWR_Geo_Dec_Pla_Glass
+    400078: TWR_Geo_Dec_Pla_Planet_1
+    400080: TWR_Geo_Dec_Pla_Planet_2
+    400082: TWR_Geo_Dec_Pla_Planet_3
+    400084: TWR_Geo_Dec_Pla_Planet_4
+    400086: TWR_Geo_Dec_Pla_Planet_5
+    400088: TWR_Geo_Dec_Pla_Planet_6
+    400090: TWR_Geo_Dec_Pla_Planet_7
+    400092: TWR_Geo_Dec_Pla_Planet_8
+    400094: TWR_Geo_Dec_Pla_Star
+    400096: TWR_Geo_Dec_Pla_Starsystem
+    400098: TWR_Geo_Dec_Pla_WoodBody
+    400100: //RootNode
+    2300000: TWR_Dec_Pla_Cog_010
+    2300002: TWR_Dec_Pla_Cog_011
+    2300004: TWR_Dec_Pla_Cog_012
+    2300006: TWR_Dec_Pla_Cog_013
+    2300008: TWR_Dec_Pla_Cog_014
+    2300010: TWR_Dec_Pla_Cog_015
+    2300012: TWR_Dec_Pla_Cog_016
+    2300014: TWR_Dec_Pla_Cog_017
+    2300016: TWR_Dec_Pla_Cog_018
+    2300018: TWR_Dec_Pla_Cog_019
+    2300020: TWR_Dec_Pla_Cog_020
+    2300022: TWR_Dec_Pla_Cog_021
+    2300024: TWR_Dec_Pla_Cog_022
+    2300026: TWR_Dec_Pla_Cog_023
+    2300028: TWR_Dec_Pla_Cog_024
+    2300030: TWR_Dec_Pla_Cog_025
+    2300032: TWR_Dec_Pla_Cog_026
+    2300034: TWR_Dec_Pla_Cog_027
+    2300036: TWR_Dec_Pla_Cog_028
+    2300038: TWR_Dec_Pla_Cog_029
+    2300040: TWR_Dec_Pla_Cog_030
+    2300042: TWR_Dec_Pla_Cog_031
+    2300044: TWR_Geo_Dec_Pla_BrassParts
+    2300046: TWR_Geo_Dec_Pla_DiskCog1
+    2300048: TWR_Geo_Dec_Pla_DiskCog10
+    2300050: TWR_Geo_Dec_Pla_DiskCog11
+    2300052: TWR_Geo_Dec_Pla_DiskCog12
+    2300054: TWR_Geo_Dec_Pla_DiskCog13
+    2300056: TWR_Geo_Dec_Pla_DiskCog14
+    2300058: TWR_Geo_Dec_Pla_DiskCog2
+    2300060: TWR_Geo_Dec_Pla_DiskCog3
+    2300062: TWR_Geo_Dec_Pla_DiskCog4
+    2300064: TWR_Geo_Dec_Pla_DiskCog5
+    2300066: TWR_Geo_Dec_Pla_DiskCog6
+    2300068: TWR_Geo_Dec_Pla_DiskCog7
+    2300070: TWR_Geo_Dec_Pla_DiskCog8
+    2300072: TWR_Geo_Dec_Pla_DiskCog9
+    2300074: TWR_Geo_Dec_Pla_Glass
+    2300076: TWR_Geo_Dec_Pla_Planet_1
+    2300078: TWR_Geo_Dec_Pla_Planet_2
+    2300080: TWR_Geo_Dec_Pla_Planet_3
+    2300082: TWR_Geo_Dec_Pla_Planet_4
+    2300084: TWR_Geo_Dec_Pla_Planet_5
+    2300086: TWR_Geo_Dec_Pla_Planet_6
+    2300088: TWR_Geo_Dec_Pla_Planet_7
+    2300090: TWR_Geo_Dec_Pla_Planet_8
+    2300092: TWR_Geo_Dec_Pla_Star
+    2300094: TWR_Geo_Dec_Pla_WoodBody
+    3300000: TWR_Dec_Pla_Cog_010
+    3300002: TWR_Dec_Pla_Cog_011
+    3300004: TWR_Dec_Pla_Cog_012
+    3300006: TWR_Dec_Pla_Cog_013
+    3300008: TWR_Dec_Pla_Cog_014
+    3300010: TWR_Dec_Pla_Cog_015
+    3300012: TWR_Dec_Pla_Cog_016
+    3300014: TWR_Dec_Pla_Cog_017
+    3300016: TWR_Dec_Pla_Cog_018
+    3300018: TWR_Dec_Pla_Cog_019
+    3300020: TWR_Dec_Pla_Cog_020
+    3300022: TWR_Dec_Pla_Cog_021
+    3300024: TWR_Dec_Pla_Cog_022
+    3300026: TWR_Dec_Pla_Cog_023
+    3300028: TWR_Dec_Pla_Cog_024
+    3300030: TWR_Dec_Pla_Cog_025
+    3300032: TWR_Dec_Pla_Cog_026
+    3300034: TWR_Dec_Pla_Cog_027
+    3300036: TWR_Dec_Pla_Cog_028
+    3300038: TWR_Dec_Pla_Cog_029
+    3300040: TWR_Dec_Pla_Cog_030
+    3300042: TWR_Dec_Pla_Cog_031
+    3300044: TWR_Geo_Dec_Pla_BrassParts
+    3300046: TWR_Geo_Dec_Pla_DiskCog1
+    3300048: TWR_Geo_Dec_Pla_DiskCog10
+    3300050: TWR_Geo_Dec_Pla_DiskCog11
+    3300052: TWR_Geo_Dec_Pla_DiskCog12
+    3300054: TWR_Geo_Dec_Pla_DiskCog13
+    3300056: TWR_Geo_Dec_Pla_DiskCog14
+    3300058: TWR_Geo_Dec_Pla_DiskCog2
+    3300060: TWR_Geo_Dec_Pla_DiskCog3
+    3300062: TWR_Geo_Dec_Pla_DiskCog4
+    3300064: TWR_Geo_Dec_Pla_DiskCog5
+    3300066: TWR_Geo_Dec_Pla_DiskCog6
+    3300068: TWR_Geo_Dec_Pla_DiskCog7
+    3300070: TWR_Geo_Dec_Pla_DiskCog8
+    3300072: TWR_Geo_Dec_Pla_DiskCog9
+    3300074: TWR_Geo_Dec_Pla_Glass
+    3300076: TWR_Geo_Dec_Pla_Planet_1
+    3300078: TWR_Geo_Dec_Pla_Planet_2
+    3300080: TWR_Geo_Dec_Pla_Planet_3
+    3300082: TWR_Geo_Dec_Pla_Planet_4
+    3300084: TWR_Geo_Dec_Pla_Planet_5
+    3300086: TWR_Geo_Dec_Pla_Planet_6
+    3300088: TWR_Geo_Dec_Pla_Planet_7
+    3300090: TWR_Geo_Dec_Pla_Planet_8
+    3300092: TWR_Geo_Dec_Pla_Star
+    3300094: TWR_Geo_Dec_Pla_WoodBody
+    4300000: TWR_Geo_Dec_Pla_WoodBody
+    4300002: TWR_Geo_Dec_Pla_Glass
+    4300004: TWR_Geo_Dec_Pla_DiskCog3
+    4300006: TWR_Dec_Pla_Cog_019
+    4300008: TWR_Dec_Pla_Cog_015
+    4300010: TWR_Dec_Pla_Cog_014
+    4300012: TWR_Geo_Dec_Pla_DiskCog10
+    4300014: TWR_Geo_Dec_Pla_DiskCog8
+    4300016: TWR_Geo_Dec_Pla_DiskCog2
+    4300018: TWR_Dec_Pla_Cog_013
+    4300020: TWR_Geo_Dec_Pla_DiskCog1
+    4300022: TWR_Dec_Pla_Cog_020
+    4300024: TWR_Dec_Pla_Cog_010
+    4300026: TWR_Dec_Pla_Cog_011
+    4300028: TWR_Dec_Pla_Cog_012
+    4300030: TWR_Dec_Pla_Cog_023
+    4300032: TWR_Dec_Pla_Cog_024
+    4300034: TWR_Geo_Dec_Pla_DiskCog4
+    4300036: TWR_Dec_Pla_Cog_025
+    4300038: TWR_Geo_Dec_Pla_DiskCog6
+    4300040: TWR_Geo_Dec_Pla_DiskCog7
+    4300042: TWR_Geo_Dec_Pla_DiskCog5
+    4300044: TWR_Geo_Dec_Pla_DiskCog11
+    4300046: TWR_Geo_Dec_Pla_DiskCog12
+    4300048: TWR_Dec_Pla_Cog_026
+    4300050: TWR_Dec_Pla_Cog_027
+    4300052: TWR_Dec_Pla_Cog_028
+    4300054: TWR_Dec_Pla_Cog_029
+    4300056: TWR_Dec_Pla_Cog_030
+    4300058: TWR_Dec_Pla_Cog_031
+    4300060: TWR_Geo_Dec_Pla_DiskCog9
+    4300062: TWR_Geo_Dec_Pla_DiskCog13
+    4300064: TWR_Geo_Dec_Pla_DiskCog14
+    4300066: TWR_Dec_Pla_Cog_022
+    4300068: TWR_Dec_Pla_Cog_021
+    4300070: TWR_Dec_Pla_Cog_018
+    4300072: TWR_Dec_Pla_Cog_017
+    4300074: TWR_Dec_Pla_Cog_016
+    4300076: TWR_Geo_Dec_Pla_BrassParts
+    4300078: TWR_Geo_Dec_Pla_Star
+    4300080: TWR_Geo_Dec_Pla_Planet_1
+    4300082: TWR_Geo_Dec_Pla_Planet_2
+    4300084: TWR_Geo_Dec_Pla_Planet_3
+    4300086: TWR_Geo_Dec_Pla_Planet_4
+    4300088: TWR_Geo_Dec_Pla_Planet_5
+    4300090: TWR_Geo_Dec_Pla_Planet_6
+    4300092: TWR_Geo_Dec_Pla_Planet_7
+    4300094: TWR_Geo_Dec_Pla_Planet_8
+    6400000: TWR_Dec_Pla_Cog_010
+    6400002: TWR_Dec_Pla_Cog_011
+    6400004: TWR_Dec_Pla_Cog_012
+    6400006: TWR_Dec_Pla_Cog_013
+    6400008: TWR_Dec_Pla_Cog_014
+    6400010: TWR_Dec_Pla_Cog_015
+    6400012: TWR_Dec_Pla_Cog_016
+    6400014: TWR_Dec_Pla_Cog_017
+    6400016: TWR_Dec_Pla_Cog_018
+    6400018: TWR_Dec_Pla_Cog_019
+    6400020: TWR_Dec_Pla_Cog_020
+    6400022: TWR_Dec_Pla_Cog_021
+    6400024: TWR_Dec_Pla_Cog_022
+    6400026: TWR_Dec_Pla_Cog_023
+    6400028: TWR_Dec_Pla_Cog_024
+    6400030: TWR_Dec_Pla_Cog_025
+    6400032: TWR_Dec_Pla_Cog_026
+    6400034: TWR_Dec_Pla_Cog_027
+    6400036: TWR_Dec_Pla_Cog_028
+    6400038: TWR_Dec_Pla_Cog_029
+    6400040: TWR_Dec_Pla_Cog_030
+    6400042: TWR_Dec_Pla_Cog_031
+    6400044: TWR_Geo_Dec_Pla_BrassParts
+    6400046: TWR_Geo_Dec_Pla_DiskCog1
+    6400048: TWR_Geo_Dec_Pla_DiskCog10
+    6400050: TWR_Geo_Dec_Pla_DiskCog11
+    6400052: TWR_Geo_Dec_Pla_DiskCog12
+    6400054: TWR_Geo_Dec_Pla_DiskCog13
+    6400056: TWR_Geo_Dec_Pla_DiskCog14
+    6400058: TWR_Geo_Dec_Pla_DiskCog2
+    6400060: TWR_Geo_Dec_Pla_DiskCog3
+    6400062: TWR_Geo_Dec_Pla_DiskCog4
+    6400064: TWR_Geo_Dec_Pla_DiskCog5
+    6400066: TWR_Geo_Dec_Pla_DiskCog6
+    6400068: TWR_Geo_Dec_Pla_DiskCog7
+    6400070: TWR_Geo_Dec_Pla_DiskCog8
+    6400072: TWR_Geo_Dec_Pla_DiskCog9
+    6400074: TWR_Geo_Dec_Pla_Glass
+    6400076: TWR_Geo_Dec_Pla_Planet_1
+    6400078: TWR_Geo_Dec_Pla_Planet_2
+    6400080: TWR_Geo_Dec_Pla_Planet_3
+    6400082: TWR_Geo_Dec_Pla_Planet_4
+    6400084: TWR_Geo_Dec_Pla_Planet_5
+    6400086: TWR_Geo_Dec_Pla_Planet_6
+    6400088: TWR_Geo_Dec_Pla_Planet_7
+    6400090: TWR_Geo_Dec_Pla_Planet_8
+    6400092: TWR_Geo_Dec_Pla_Star
+    6400094: TWR_Geo_Dec_Pla_WoodBody
+    7400000: TWR_Ani_Dec_Planetarium_Stop
+    7400002: TWR_Ani_Dec_Planetarium_CogsSpinning
+    9500000: //RootNode
+  materials:
+    importMaterials: 0
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: TWR_Ani_Dec_Planetarium_CogsSpinning
+      takeName: Take 001
+      firstFrame: 0
+      lastFrame: 240
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: TWR_Geo_Dec_Pla_BrassParts
+        weight: 1
+      - path: TWR_Geo_Dec_Pla_Cogs
+        weight: 1
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Dec_Pla_Cog_010
+        weight: 1
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Dec_Pla_Cog_011
+        weight: 1
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Dec_Pla_Cog_012
+        weight: 1
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Dec_Pla_Cog_013
+        weight: 1
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Dec_Pla_Cog_014
+        weight: 1
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Dec_Pla_Cog_015
+        weight: 1
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Dec_Pla_Cog_016
+        weight: 1
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Dec_Pla_Cog_017
+        weight: 1
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Dec_Pla_Cog_018
+        weight: 1
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Dec_Pla_Cog_019
+        weight: 1
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Dec_Pla_Cog_020
+        weight: 1
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Dec_Pla_Cog_021
+        weight: 1
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Dec_Pla_Cog_022
+        weight: 1
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Dec_Pla_Cog_023
+        weight: 1
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Dec_Pla_Cog_024
+        weight: 1
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Dec_Pla_Cog_025
+        weight: 1
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Dec_Pla_Cog_026
+        weight: 1
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Dec_Pla_Cog_027
+        weight: 1
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Dec_Pla_Cog_028
+        weight: 1
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Dec_Pla_Cog_029
+        weight: 1
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Dec_Pla_Cog_030
+        weight: 1
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Dec_Pla_Cog_031
+        weight: 1
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Geo_Dec_Pla_DiskCog1
+        weight: 1
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Geo_Dec_Pla_DiskCog2
+        weight: 1
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Geo_Dec_Pla_DiskCog3
+        weight: 1
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Geo_Dec_Pla_DiskCog4
+        weight: 1
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Geo_Dec_Pla_DiskCog5
+        weight: 1
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Geo_Dec_Pla_DiskCog6
+        weight: 1
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Geo_Dec_Pla_DiskCog7
+        weight: 1
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Geo_Dec_Pla_DiskCog8
+        weight: 1
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Geo_Dec_Pla_DiskCog9
+        weight: 1
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Geo_Dec_Pla_DiskCog10
+        weight: 1
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Geo_Dec_Pla_DiskCog11
+        weight: 1
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Geo_Dec_Pla_DiskCog12
+        weight: 1
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Geo_Dec_Pla_DiskCog13
+        weight: 1
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Geo_Dec_Pla_DiskCog14
+        weight: 1
+      - path: TWR_Geo_Dec_Pla_Glass
+        weight: 1
+      - path: TWR_Geo_Dec_Pla_Starsystem
+        weight: 1
+      - path: TWR_Geo_Dec_Pla_Starsystem/TWR_Geo_Dec_Pla_Planet_1
+        weight: 1
+      - path: TWR_Geo_Dec_Pla_Starsystem/TWR_Geo_Dec_Pla_Planet_2
+        weight: 1
+      - path: TWR_Geo_Dec_Pla_Starsystem/TWR_Geo_Dec_Pla_Planet_3
+        weight: 1
+      - path: TWR_Geo_Dec_Pla_Starsystem/TWR_Geo_Dec_Pla_Planet_4
+        weight: 1
+      - path: TWR_Geo_Dec_Pla_Starsystem/TWR_Geo_Dec_Pla_Planet_5
+        weight: 1
+      - path: TWR_Geo_Dec_Pla_Starsystem/TWR_Geo_Dec_Pla_Planet_6
+        weight: 1
+      - path: TWR_Geo_Dec_Pla_Starsystem/TWR_Geo_Dec_Pla_Planet_7
+        weight: 1
+      - path: TWR_Geo_Dec_Pla_Starsystem/TWR_Geo_Dec_Pla_Planet_8
+        weight: 1
+      - path: TWR_Geo_Dec_Pla_Starsystem/TWR_Geo_Dec_Pla_Star
+        weight: 1
+      - path: TWR_Geo_Dec_Pla_WoodBody
+        weight: 1
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: TWR_Ani_Dec_Planetarium_Stop
+      takeName: Take 001
+      firstFrame: 0
+      lastFrame: 1
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: TWR_Geo_Dec_Pla_BrassParts
+        weight: 0
+      - path: TWR_Geo_Dec_Pla_Cogs
+        weight: 0
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Dec_Pla_Cog_010
+        weight: 0
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Dec_Pla_Cog_011
+        weight: 0
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Dec_Pla_Cog_012
+        weight: 0
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Dec_Pla_Cog_013
+        weight: 0
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Dec_Pla_Cog_014
+        weight: 0
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Dec_Pla_Cog_015
+        weight: 0
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Dec_Pla_Cog_016
+        weight: 0
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Dec_Pla_Cog_017
+        weight: 0
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Dec_Pla_Cog_018
+        weight: 0
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Dec_Pla_Cog_019
+        weight: 0
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Dec_Pla_Cog_020
+        weight: 0
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Dec_Pla_Cog_021
+        weight: 0
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Dec_Pla_Cog_022
+        weight: 0
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Dec_Pla_Cog_023
+        weight: 0
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Dec_Pla_Cog_024
+        weight: 0
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Dec_Pla_Cog_025
+        weight: 0
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Dec_Pla_Cog_026
+        weight: 0
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Dec_Pla_Cog_027
+        weight: 0
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Dec_Pla_Cog_028
+        weight: 0
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Dec_Pla_Cog_029
+        weight: 0
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Dec_Pla_Cog_030
+        weight: 0
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Dec_Pla_Cog_031
+        weight: 0
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Geo_Dec_Pla_DiskCog1
+        weight: 0
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Geo_Dec_Pla_DiskCog2
+        weight: 0
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Geo_Dec_Pla_DiskCog3
+        weight: 0
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Geo_Dec_Pla_DiskCog4
+        weight: 0
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Geo_Dec_Pla_DiskCog5
+        weight: 0
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Geo_Dec_Pla_DiskCog6
+        weight: 0
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Geo_Dec_Pla_DiskCog7
+        weight: 0
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Geo_Dec_Pla_DiskCog8
+        weight: 0
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Geo_Dec_Pla_DiskCog9
+        weight: 0
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Geo_Dec_Pla_DiskCog10
+        weight: 0
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Geo_Dec_Pla_DiskCog11
+        weight: 0
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Geo_Dec_Pla_DiskCog12
+        weight: 0
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Geo_Dec_Pla_DiskCog13
+        weight: 0
+      - path: TWR_Geo_Dec_Pla_Cogs/TWR_Geo_Dec_Pla_DiskCog14
+        weight: 0
+      - path: TWR_Geo_Dec_Pla_Glass
+        weight: 0
+      - path: TWR_Geo_Dec_Pla_Starsystem
+        weight: 0
+      - path: TWR_Geo_Dec_Pla_Starsystem/TWR_Geo_Dec_Pla_Planet_1
+        weight: 0
+      - path: TWR_Geo_Dec_Pla_Starsystem/TWR_Geo_Dec_Pla_Planet_2
+        weight: 0
+      - path: TWR_Geo_Dec_Pla_Starsystem/TWR_Geo_Dec_Pla_Planet_3
+        weight: 0
+      - path: TWR_Geo_Dec_Pla_Starsystem/TWR_Geo_Dec_Pla_Planet_4
+        weight: 0
+      - path: TWR_Geo_Dec_Pla_Starsystem/TWR_Geo_Dec_Pla_Planet_5
+        weight: 0
+      - path: TWR_Geo_Dec_Pla_Starsystem/TWR_Geo_Dec_Pla_Planet_6
+        weight: 0
+      - path: TWR_Geo_Dec_Pla_Starsystem/TWR_Geo_Dec_Pla_Planet_7
+        weight: 0
+      - path: TWR_Geo_Dec_Pla_Starsystem/TWR_Geo_Dec_Pla_Planet_8
+        weight: 0
+      - path: TWR_Geo_Dec_Pla_Starsystem/TWR_Geo_Dec_Pla_Star
+        weight: 0
+      - path: TWR_Geo_Dec_Pla_WoodBody
+        weight: 0
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 1
+    importBlendShapes: 0
+    swapUVChannels: 0
+    generateSecondaryUV: 1
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

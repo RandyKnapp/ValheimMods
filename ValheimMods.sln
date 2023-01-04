@@ -29,6 +29,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EpicLoot-Addon-Helheim", "E
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StationsAreContainers", "StationsAreContainers\StationsAreContainers.csproj", "{1BC8AD7D-949C-41E5-A721-CB6CEB68871B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EpicLoot-UnityLib", "EpicLoot-UnityLib\EpicLoot-UnityLib.csproj", "{8DABA031-AEA4-472F-A9AA-DE8B1AA69DE5}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Common\Common.projitems*{08ed5bc9-9e0c-4343-90a5-92497be6e216}*SharedItemsImports = 4
@@ -85,6 +87,10 @@ Global
 		{1BC8AD7D-949C-41E5-A721-CB6CEB68871B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1BC8AD7D-949C-41E5-A721-CB6CEB68871B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1BC8AD7D-949C-41E5-A721-CB6CEB68871B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8DABA031-AEA4-472F-A9AA-DE8B1AA69DE5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8DABA031-AEA4-472F-A9AA-DE8B1AA69DE5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8DABA031-AEA4-472F-A9AA-DE8B1AA69DE5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8DABA031-AEA4-472F-A9AA-DE8B1AA69DE5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

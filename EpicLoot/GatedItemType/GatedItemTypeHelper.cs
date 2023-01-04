@@ -130,7 +130,7 @@ namespace EpicLoot.GatedItemType
 
                 itemID = info.Items[index - 1];
                 itemName = GetItemName(itemID);
-                EpicLoot.Log($"Next lower tier item is ({itemID} - {itemName})");
+                //EpicLoot.Log($"Next lower tier item is ({itemID} - {itemName})");
             }
 
             return itemID;

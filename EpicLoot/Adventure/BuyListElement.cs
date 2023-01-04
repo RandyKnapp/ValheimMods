@@ -144,10 +144,12 @@ namespace EpicLoot.Adventure
                 EpicLoot.GetRarityDisplayName(ItemRarity.Magic),
                 EpicLoot.GetRarityDisplayName(ItemRarity.Rare),
                 EpicLoot.GetRarityDisplayName(ItemRarity.Epic),
-                EpicLoot.GetRarityDisplayName(ItemRarity.Legendary)
+                EpicLoot.GetRarityDisplayName(ItemRarity.Legendary),
+                // TODO: Mythic Hookup
+                ""//EpicLoot.GetRarityDisplayName(ItemRarity.Mythic),
             };
 
-            var totalWeight = (float)AdventureDataManager.Config.Gamble.GambleRarityChance.Sum();
+            var totalWeight = AdventureDataManager.Config.Gamble.GambleRarityChance.Sum();
             for (var i = 0; i < 5; ++i)
             {
                 var color = i == 0 ? "white" : EpicLoot.GetRarityColor((ItemRarity) (i - 1));

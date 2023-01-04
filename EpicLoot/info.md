@@ -28,9 +28,9 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
     * **ExclusiveEffectTypes:** This effect may not be rolled on an item that has already rolled on of these effects
     * **AllowedItemTypes:** This effect may only be rolled on items of a the types in this list. When this list is empty, this is usually done because this is a special effect type added programmatically  or currently not allowed to roll. Options are: `Helmet, Chest, Legs, Shoulder, Utility, Bow, OneHandedWeapon, TwoHandedWeapon, TwoHandedWeaponLeft, Shield, Tool, Torch`
     * **ExcludedItemTypes:** This effect may only be rolled on items that are not one of the types on this list.
-    * **AllowedRarities:** This effect may only be rolled on an item of one of these rarities. Options are: `Magic, Rare, Epic, Legendary`
+    * **AllowedRarities:** This effect may only be rolled on an item of one of these rarities. Options are: `Magic, Rare, Epic, Legendary, Mythic`
     * **ExcludedRarities:** This effect may only be rolled on an item that is not of one of these rarities.
-    * **AllowedSkillTypes:** This effect may only be rolled on an item that uses one of these skill types. Options are: `Swords, Knives, Clubs, Polearms, Spears, Blocking, Axes, Bows, Unarmed, Pickaxes, Crossbows, Fishing, Ride`
+    * **AllowedSkillTypes:** This effect may only be rolled on an item that uses one of these skill types. Options are: `Swords, Knives, Clubs, Polearms, Spears, Blocking, Axes, Bows, ElementalMagic, BloodMagic, Unarmed, Pickaxes, Crossbows, Fishing, Ride`
     * **ExcludedSkillTypes:** This effect may only be rolled on an item that does not use one of these skill types.
     * **AllowedItemNames:** This effect may only be rolled on an item with one of these names. Use the unlocalized shared name, i.e.: `$item_sword_iron`
     * **ExcludedItemNames:** This effect may only be rolled on an item that does not have one of these names.
@@ -1424,12 +1424,12 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > **Prefixes:** Summoner's
 > **Suffixes:** the Summoner
 > 
-> **Allowed Item Types:** *None*
+> **Allowed Item Types:** Chest, Legs, Shoulder, Utility, Staffs
 > 
 > **Requirements:**
 > > **Flags:** `ExclusiveSelf`
-> > **Allowed Item Types:** Chest, Legs, Shoulder, Utility, Staffs
-> > **AllowedSkillTypes:** `Staff`
+> > **AllowedItemTypes:** `Chest, Legs, Shoulder, Utility, Staffs`
+> > **AllowedSkillTypes:** `BloodMagic`
 > 
 > **Value Per Rarity:**
 > 
@@ -1447,12 +1447,12 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > **Prefixes:** Sorceror's
 > **Suffixes:** the Sorceror
 > 
-> **Allowed Item Types:** *None*
+> **Allowed Item Types:** Chest, Legs, Shoulder, Utility, Staffs
 > 
 > **Requirements:**
 > > **Flags:** `ExclusiveSelf`
-> > **Allowed Item Types:** Chest, Legs, Shoulder, Utility, Staffs
-> > **AllowedSkillTypes:** `Staff`
+> > **AllowedItemTypes:** `Chest, Legs, Shoulder, Utility, Staffs`
+> > **AllowedSkillTypes:** `ElementalMagic`
 > 
 > **Value Per Rarity:**
 > 
@@ -1586,7 +1586,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > **Requirements:**
 > > **Flags:** `ExclusiveSelf`
 > > **AllowedRarities:** `Legendary`
-> > **AllowedItemNames:** `$item_hammer`
+> > **AllowedItemNames:** `$item_hammer, $item_hoe`
 
 ## RecallWeapon
 

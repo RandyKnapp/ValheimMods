@@ -11,7 +11,8 @@ namespace EpicLoot
         Magic,
         Rare,
         Epic,
-        Legendary
+        Legendary,
+        Mythic
     }
 
     [Serializable]
