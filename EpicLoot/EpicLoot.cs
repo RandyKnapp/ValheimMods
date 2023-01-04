@@ -383,9 +383,7 @@ namespace EpicLoot
             //Load New Translations
             foreach (var translation in translations)
             {
-                var keyName = translation.Key.StartsWith(translationPrefix) ? translation.Key : $"{translationPrefix}{translation.Key}";
-
-                Localization.instance.AddWord(keyName, translation.Value.ToString());
+                Localization.instance.AddWord(translation.Key, translation.Value.ToString());
             }
         }
 
