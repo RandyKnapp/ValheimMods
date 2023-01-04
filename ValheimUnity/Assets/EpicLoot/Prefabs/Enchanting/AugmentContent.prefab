@@ -345,121 +345,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: 'Enchant Info text
-
-    Enchant Info text
-
-    Enchant Info text
-
-    Enchant
-    Info text
-
-    Enchant Info text
-
-    Enchant Info text
-
-    Enchant Info text
-
-    Enchant
-    Info text
-
-    Enchant Info text
-
-    Enchant Info text
-
-    Enchant Info text
-
-    Enchant
-    Info text
-
-    Enchant Info text
-
-    Enchant Info text
-
-    Enchant Info text
-
-    Enchant
-    Info text
-
-    Enchant Info text
-
-    Enchant Info text
-
-    Enchant Info text
-
-    Enchant
-    Info text
-
-    Enchant Info text
-
-    Enchant Info text
-
-    Enchant Info text
-
-    Enchant
-    Info text
-
-    Enchant Info text
-
-    Enchant Info text
-
-    Enchant Info text
-
-    Enchant
-    Info text
-
-    Enchant Info text
-
-    Enchant Info text
-
-    Enchant Info text
-
-    Enchant
-    Info text
-
-    Enchant Info text
-
-    Enchant Info text
-
-    Enchant Info text
-
-    Enchant
-    Info text
-
-    Enchant Info text
-
-    Enchant Info text
-
-    Enchant Info text
-
-    Enchant
-    Info text
-
-    Enchant Info text
-
-    Enchant Info text
-
-    Enchant Info text
-
-    Enchant
-    Info text
-
-    Enchant Info text
-
-    Enchant Info text
-
-    Enchant Info text
-
-    Enchant
-    Info text
-
-    Enchant Info text
-
-    Enchant Info text
-
-    Enchant Info text
-
-'
+  m_Text: Available Augments Text
 --- !u!114 &3220505576115428587
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -596,6 +482,7 @@ GameObject:
   - component: {fileID: 4229582063119583632}
   - component: {fileID: 8695807197490694442}
   - component: {fileID: 5847074867610192624}
+  - component: {fileID: 6512871891153502203}
   m_Layer: 5
   m_Name: Bar
   m_TagString: Untagged
@@ -660,6 +547,21 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &6512871891153502203
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4134175776924265190}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -935680321, guid: 2f9828d4dfcaa584280fbdd93cb3976a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Rarity: 3
+  Graphics:
+  - {fileID: 5847074867610192624}
 --- !u!1 &4166519504165650023
 GameObject:
   m_ObjectHideFlags: 0
@@ -835,7 +737,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &8879310236359201144
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1981,7 +1883,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8827690873940520165}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
   m_Name: 
@@ -2144,8 +2046,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 6269071643704008431}
   m_HandleRect: {fileID: 565611358987984043}
   m_Direction: 2
-  m_Value: 1
-  m_Size: 0.48942307
+  m_Value: 0
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:

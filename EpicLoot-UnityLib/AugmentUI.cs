@@ -201,9 +201,7 @@ namespace EpicLoot_UnityLib
             }
 
             if (item == null)
-            {
                 AvailableEffectsText.text = string.Empty;
-            }
         }
 
         private bool LocalPlayerCanAffordCost(List<InventoryItemListElement> cost)

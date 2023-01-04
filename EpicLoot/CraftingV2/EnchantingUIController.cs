@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using Common;
 using EpicLoot.Crafting;
 using EpicLoot_UnityLib;
@@ -65,12 +66,17 @@ namespace EpicLoot.CraftingV2
 
         private static List<IListElement> SortByRarity(List<IListElement> items)
         {
-            return items.OrderBy(x => x.GetItem().HasRarity() ? x.GetItem().GetRarity() : (ItemRarity)(-1)).ThenBy(x => Localization.instance.Localize(x.GetItem().GetDecoratedName())).ToList();
+            return items.OrderBy(x => x.GetItem().HasRarity() ? x.GetItem().GetRarity() : (ItemRarity)(-1))
+                .ThenBy(x => Localization.instance.Localize(x.GetItem().GetDecoratedName()))
+                .ToList();
         }
 
         private static List<IListElement> SortByName(List<IListElement> items)
         {
-            return items.OrderBy(x => Localization.instance.Localize(x.GetItem().GetDecoratedName())).ThenByDescending(x => x.GetItem().m_stack).ToList();
+            var richTextRegex = new Regex(@"<[^>]*>");
+            return items.OrderBy(x => richTextRegex.Replace(Localization.instance.Localize(x.GetItem().GetDecoratedName()), string.Empty))
+                .ThenByDescending(x => x.GetItem().m_stack)
+                .ToList();
         }
 
         private static List<InventoryItemListElement> GetSacrificeItems()

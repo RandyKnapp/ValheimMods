@@ -563,6 +563,7 @@ GameObject:
   - component: {fileID: 4680207842796187214}
   - component: {fileID: 6615791615618222020}
   - component: {fileID: 8092766041584903158}
+  - component: {fileID: 4658164478538580367}
   m_Layer: 5
   m_Name: Bar
   m_TagString: Untagged
@@ -627,6 +628,21 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &4658164478538580367
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2918496624780763610}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -935680321, guid: 2f9828d4dfcaa584280fbdd93cb3976a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Rarity: 0
+  Graphics:
+  - {fileID: 8092766041584903158}
 --- !u!1 &2954520705897815106
 GameObject:
   m_ObjectHideFlags: 0
@@ -2743,7 +2759,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &8487957553665886539
 RectTransform:
   m_ObjectHideFlags: 0

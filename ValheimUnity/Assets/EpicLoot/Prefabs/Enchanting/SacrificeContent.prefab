@@ -111,7 +111,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &5334106228389938073
 RectTransform:
   m_ObjectHideFlags: 0
@@ -690,6 +690,7 @@ GameObject:
   - component: {fileID: 4391280220878323213}
   - component: {fileID: 1805178550851060749}
   - component: {fileID: 6690852437604119959}
+  - component: {fileID: 7039807642904329626}
   m_Layer: 5
   m_Name: Bar
   m_TagString: Untagged
@@ -754,6 +755,21 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &7039807642904329626
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5800758421682638242}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -935680321, guid: 2f9828d4dfcaa584280fbdd93cb3976a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Rarity: 1
+  Graphics:
+  - {fileID: 6690852437604119959}
 --- !u!1 &5823082206656432594
 GameObject:
   m_ObjectHideFlags: 0
@@ -1007,7 +1023,6 @@ MonoBehaviour:
   ProgressLoopSFX: {fileID: 8300000, guid: 7aa3a5fae64dc1146a2331ae90754e4f, type: 3}
   CompleteSFX: {fileID: 8300000, guid: bcd8894e91bae9545bb89851b8629cef, type: 3}
   SacrificeProducts: {fileID: 86619866252108025}
-  PerformSacrificeButton: {fileID: 4641492501365227927}
 --- !u!82 &4228516352388214512
 AudioSource:
   m_ObjectHideFlags: 0
