@@ -112,6 +112,8 @@ namespace EpicLoot
         public static string ModifyParryWindow = nameof(ModifyParryWindow);
         public static string Slow = nameof(Slow);
         public static string FrostDamageAOE = nameof(FrostDamageAOE);
+        public static string DoubleMagicShot = nameof(DoubleMagicShot);
+        public static string TripleBowShot = nameof(TripleBowShot);
 
         public static string Bulwark = nameof(Bulwark);
         public static string Undying = nameof(Undying);

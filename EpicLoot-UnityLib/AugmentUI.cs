@@ -39,12 +39,8 @@ namespace EpicLoot_UnityLib
 
             for (var index = 0; index < AugmentSelectors.Count; index++)
             {
-                int i = index;
                 var augmentSelector = AugmentSelectors[index];
-                augmentSelector.onValueChanged.AddListener((isOn) => {
-                    if (isOn)
-                        SelectAugmentIndex(i);
-                });
+                augmentSelector.onValueChanged.AddListener(OnAugmentSelectorToggled);
             }
         }
 
@@ -75,6 +71,27 @@ namespace EpicLoot_UnityLib
                 _choiceDialog = null;
                 Cancel();
                 OnSelectedItemsChanged();
+            }
+        }
+
+        public void OnAugmentSelectorToggled(bool isOn)
+        {
+            if (isOn)
+            {
+                for (var index = 0; index < AugmentSelectors.Count; index++)
+                {
+                    var selector = AugmentSelectors[index];
+                    if (selector.isOn)
+                    {
+                        SelectAugmentIndex(index);
+                        return;
+                    }
+                }
+            }
+            else
+            {
+                if (!AugmentSelectors.Any(x => x.isOn))
+                    SelectAugmentIndex(-1);
             }
         }
 

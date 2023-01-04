@@ -1339,6 +1339,7 @@ GameObject:
   - component: {fileID: 1971997444221504892}
   - component: {fileID: 6544568199282044433}
   - component: {fileID: 6239199323565079736}
+  - component: {fileID: 2262075258255390081}
   m_Layer: 5
   m_Name: ModeButton2
   m_TagString: Untagged
@@ -1563,6 +1564,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DisabledColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+--- !u!114 &2262075258255390081
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4260599485007523215}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 2091986947, guid: 2f9828d4dfcaa584280fbdd93cb3976a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Audio: {fileID: 2667807344737040533}
+  SFX: {fileID: 8300000, guid: 2172398bc32a1e741977becabd38ce2e, type: 3}
 --- !u!1 &4680465371476089608
 GameObject:
   m_ObjectHideFlags: 0
@@ -2023,6 +2038,7 @@ GameObject:
   - component: {fileID: 2026437494872467033}
   - component: {fileID: 3412317936243598360}
   - component: {fileID: 6509007310186174705}
+  - component: {fileID: 3672977666336168023}
   m_Layer: 5
   m_Name: ModeButton1
   m_TagString: Untagged
@@ -2247,6 +2263,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DisabledColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+--- !u!114 &3672977666336168023
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6218836648509268302}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 2091986947, guid: 2f9828d4dfcaa584280fbdd93cb3976a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Audio: {fileID: 2667807344737040533}
+  SFX: {fileID: 8300000, guid: 2172398bc32a1e741977becabd38ce2e, type: 3}
 --- !u!1 &6445130179946250522
 GameObject:
   m_ObjectHideFlags: 0
@@ -2813,6 +2843,7 @@ GameObject:
   - component: {fileID: 4508422266207416202}
   - component: {fileID: 2667807344737040533}
   - component: {fileID: 2201021963263692711}
+  - component: {fileID: 64839574456850587}
   m_Layer: 5
   m_Name: ModeButton0
   m_TagString: Untagged
@@ -3037,6 +3068,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DisabledColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+--- !u!114 &64839574456850587
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8332376062543468986}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 2091986947, guid: 2f9828d4dfcaa584280fbdd93cb3976a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Audio: {fileID: 2667807344737040533}
+  SFX: {fileID: 8300000, guid: 2172398bc32a1e741977becabd38ce2e, type: 3}
 --- !u!1 &8744757716452054364
 GameObject:
   m_ObjectHideFlags: 0
@@ -3138,7 +3183,7 @@ PrefabInstance:
         type: 3}
       propertyPath: ElementPrefab
       value: 
-      objectReference: {fileID: 3967830278599944847, guid: fc9588f3e9d190541966528c9c1e3737,
+      objectReference: {fileID: 5445252744049364932, guid: b70db57955f03ed46a692e3cb1ebb896,
         type: 3}
     - target: {fileID: 9019018929042659395, guid: d9faa635a033505458f87ef0043b6a22,
         type: 3}
@@ -3315,6 +3360,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e199d2bb4381b914b848d8a024745d64, type: 3}
+--- !u!224 &4727248411228727761 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 3467211631804375193, guid: e199d2bb4381b914b848d8a024745d64,
+    type: 3}
+  m_PrefabInstance: {fileID: 8179818926593280328}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &5098210734663984754 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3982578860316618554, guid: e199d2bb4381b914b848d8a024745d64,
@@ -3327,9 +3378,3 @@ MonoBehaviour:
   m_Script: {fileID: 1179097507, guid: 2f9828d4dfcaa584280fbdd93cb3976a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!224 &4727248411228727761 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 3467211631804375193, guid: e199d2bb4381b914b848d8a024745d64,
-    type: 3}
-  m_PrefabInstance: {fileID: 8179818926593280328}
-  m_PrefabAsset: {fileID: 0}

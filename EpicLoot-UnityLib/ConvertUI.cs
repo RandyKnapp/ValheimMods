@@ -29,6 +29,24 @@ namespace EpicLoot_UnityLib
 
         public ItemDrop.ItemData GetItem() => Product;
         public string GetDisplayNameSuffix() => Amount > 1 ? $" x{Amount}" : string.Empty;
+
+        public int GetMax()
+        {
+            var player = Player.m_localPlayer;
+            if (player == null)
+                return 0;
+
+            var inventory = player.GetInventory();
+            var min = int.MaxValue;
+            foreach (var cost in Cost)
+            {
+                var count = inventory.CountItems(cost.Item.m_shared.m_name);
+                var canMake = Mathf.FloorToInt(count / (float)cost.Amount);
+                min = Mathf.Min(min, canMake);
+            }
+
+            return min;
+        }
     }
 
     public class ConvertUI : EnchantingTableUIPanelBase

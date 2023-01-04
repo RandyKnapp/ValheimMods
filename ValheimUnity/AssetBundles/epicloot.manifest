@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 3165951855
+CRC: 2350171821
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 1ae2f0a203a0a78b4c268c89d736a2fc
+    Hash: 258c7f212e3ed1dba0058d7763f613e3
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 3f469c2a29916385bcd616c8fcaf90cd
+    Hash: c74546c152a1e52467e371f3cebda584
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -52,21 +52,25 @@ ClassTypes:
 - Class: 114
   Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
 - Class: 114
+  Script: {fileID: 11500000, guid: 9085046f02f69544eb97fd06b6048fe2, type: 3}
+- Class: 114
   Script: {fileID: 2094620348, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
 - Class: 114
+  Script: {fileID: 1254579870, guid: 2f9828d4dfcaa584280fbdd93cb3976a, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: d199490a83bb2b844b9695cbf13b01ef, type: 3}
+- Class: 114
   Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 7a98125502f715b4b83cfb77b434e436, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: e19747de3f5aca642ab2be37e372fb86, type: 3}
 - Class: 114
-  Script: {fileID: 11500000, guid: 9085046f02f69544eb97fd06b6048fe2, type: 3}
-- Class: 114
   Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
-- Class: 114
-  Script: {fileID: 11500000, guid: 7a98125502f715b4b83cfb77b434e436, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
 - Class: 114
@@ -102,13 +106,9 @@ ClassTypes:
 - Class: 114
   Script: {fileID: 1521249158, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
 - Class: 114
-  Script: {fileID: 11500000, guid: d199490a83bb2b844b9695cbf13b01ef, type: 3}
-- Class: 114
   Script: {fileID: 641580585, guid: 2f9828d4dfcaa584280fbdd93cb3976a, type: 3}
 - Class: 114
   Script: {fileID: -592852342, guid: 2f9828d4dfcaa584280fbdd93cb3976a, type: 3}
-- Class: 114
-  Script: {fileID: 1254579870, guid: 2f9828d4dfcaa584280fbdd93cb3976a, type: 3}
 - Class: 114
   Script: {fileID: -753023686, guid: 2f9828d4dfcaa584280fbdd93cb3976a, type: 3}
 - Class: 114
@@ -153,7 +153,6 @@ SerializeReferenceClassIdentifiers: []
 Assets:
 - Assets/EpicLoot/Sprites/Abilities/BerserkerIcon.png
 - Assets/EpicLoot/Prefabs/CraftingMaterials/DustMagic.prefab
-- Assets/EpicLoot/Sprites/Inventory/sacrifice_tabicon.png
 - Assets/EpicLoot/Sounds/Disenchant.wav
 - Assets/EpicLoot/Sprites/Adventure/BountyTokenGold.png
 - Assets/EpicLoot/Prefabs/ItemEffects/LightningAuraSledge.prefab
@@ -201,7 +200,6 @@ Assets:
 - Assets/EpicLoot/Prefabs/CraftingMaterials/EssenceRare.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/DustEpic.prefab
 - Assets/EpicLoot/Prefabs/VFX/Berserker.prefab
-- Assets/EpicLoot/Sprites/Inventory/augment_tabicon.png
 - Assets/EpicLoot/Prefabs/ItemEffects/WhiteAura.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/ShardEpic.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/EssenceMagic.prefab
@@ -209,7 +207,6 @@ Assets:
 - Assets/EpicLoot/Prefabs/CraftingMaterials/ReagentMagic.prefab
 - Assets/EpicLoot/Sprites/Inventory/Auga/AugaSetItem.png
 - Assets/EpicLoot/Prefabs/Equipment/GoldRubyRing.prefab
-- Assets/EpicLoot/Sprites/Inventory/enchant_tabicon.png
 - Assets/EpicLoot/Prefabs/CraftingMaterials/RunestoneMythic.prefab
 - Assets/EpicLoot/Sprites/Inventory/Auga/disenchant_tabicon.png
 - Assets/EpicLoot/Prefabs/UI/WelcomeMessage.prefab

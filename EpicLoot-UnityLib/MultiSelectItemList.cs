@@ -10,6 +10,7 @@ namespace EpicLoot_UnityLib
     public interface IListElement
     {
         ItemDrop.ItemData GetItem();
+        int GetMax();
         string GetDisplayNameSuffix();
     }
 
@@ -18,6 +19,7 @@ namespace EpicLoot_UnityLib
         public ItemDrop.ItemData Item;
 
         public ItemDrop.ItemData GetItem() => Item;
+        public int GetMax() => Item?.m_stack ?? 0;
         public string GetDisplayNameSuffix() => string.Empty;
     }
 
