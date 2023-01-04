@@ -2897,6 +2897,26 @@
         "NoRoll" :  true 
       },
       "Ability" : "Berserker"
+    },
+    {
+      "Type" : "DoubleMagicShot",
+      "DisplayText" : "$mod_epicloot_set_me_doublemagicshot",
+      "Requirements" : {
+        "NoRoll" :  true 
+      },
+      "ValuesPerRarity" : {
+        "Legendary" : { "MinValue" : 1, "MaxValue" : 1, "Increment" : 1 }
+      }
+    },
+    {
+      "Type" : "TripleBowShot",
+      "DisplayText" : "$mod_epicloot_set_me_triplebowshot",
+      "Requirements" : {
+        "NoRoll" :  true 
+      },
+      "ValuesPerRarity" : {
+        "Legendary" : { "MinValue" : 1, "MaxValue" : 1, "Increment" : 1 }
+      }
     }
   ]
 }
