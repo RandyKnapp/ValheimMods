@@ -410,18 +410,6 @@ namespace EpicLoot.Crafting
             {
                 var recipe = Recipes[SelectedRecipe];
 
-                /*
-                if (!recipe.FromItem.IsExtended())
-                {
-                    var inventory = player.GetInventory();
-                    inventory.RemoveItem(recipe.FromItem);
-                    var extendedItemData = new ExtendedItemData(recipe.FromItem);
-                    inventory.m_inventory.Add(extendedItemData);
-                    inventory.Changed();
-                    recipe.FromItem = extendedItemData;
-                }
-                */
-
                 float previousDurabilityPercent = 0;
                 if (recipe.FromItem.m_shared.m_useDurability)
                 {
@@ -429,7 +417,7 @@ namespace EpicLoot.Crafting
                 }
 
                 var luckFactor = player.GetTotalActiveMagicEffectValue(MagicEffectType.Luck, 0.01f);
-                var magicItemComponent = recipe.FromItem.Data().Add<MagicItemComponent>();
+                var magicItemComponent = recipe.FromItem.Data().GetOrCreate<MagicItemComponent>();
                 var magicItem = LootRoller.RollMagicItem(SelectedRarity, recipe.FromItem.Extended(), luckFactor);
                 magicItemComponent.SetMagicItem(magicItem);
 
@@ -453,6 +441,8 @@ namespace EpicLoot.Crafting
                 {
                     player.GetCurrentCraftingStation().m_craftItemDoneEffects.Create(player.transform.position, Quaternion.identity);
                 }
+
+                recipe.FromItem = magicItemComponent.Item;
 
                 SuccessDialog.Show(recipe.FromItem.Extended());
                 

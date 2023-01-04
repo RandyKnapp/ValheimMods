@@ -294,8 +294,6 @@ namespace EpicLoot
                     itemDrop.m_itemData = itemData;
                     itemDrop.Save();
                     InitializeMagicItem(itemData);
-
-                    //MagicItemGenerated?.Invoke(itemData, magicItem);
                 }
                 results.Add(item);
             }
