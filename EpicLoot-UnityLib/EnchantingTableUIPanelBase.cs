@@ -62,8 +62,8 @@ namespace EpicLoot_UnityLib
                     Audio.loop = false;
                     Audio.Stop();
 
-                    PlayCompleteSFX();
                     DoMainAction();
+                    PlayCompleteSFX();
                 }
             }
         }
