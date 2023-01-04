@@ -15,7 +15,7 @@ namespace EpicLoot.Data
 {
     #nullable enable
 	[PublicAPI]
-	public abstract class ItemData
+	public abstract class CustomItemData
 	{
 		public string CustomDataKey { get; private set; } = null!;
 
@@ -52,19 +52,19 @@ namespace EpicLoot.Data
 		public virtual void Unload() { }
 		public virtual void Upgraded() { }
 
-		// data arg is ItemData this ItemData is stacked with (identical Key) - if the other item has no such ItemData, null is passed
+		// data arg is CustomItemData this CustomItemData is stacked with (identical Key) - if the other item has no such CustomItemData, null is passed
 		// If null, stacking disallowed.
-		// If non-null, the new item will have ItemData with this new string-value
+		// If non-null, the new item will have CustomItemData with this new string-value
 		// By default stacking is disallowed. Set AllowStackingIdenticalValues property to true for trivial by Value comparisons.
-		public virtual string? TryStack(ItemData? data) => AllowStackingIdenticalValues && data?.Value == Value ? Value : null;
+		public virtual string? TryStack(CustomItemData? data) => AllowStackingIdenticalValues && data?.Value == Value ? Value : null;
 	}
 
-	public sealed class StringItemData : ItemData
+	public sealed class StringItemData : CustomItemData
 	{
 	}
 
 	[PublicAPI]
-	public class ItemInfo : IEnumerable<ItemData>
+	public class ItemInfo : IEnumerable<CustomItemData>
 	{
 		public static HashSet<Type> ForceLoadTypes = new();
 
@@ -91,7 +91,7 @@ namespace EpicLoot.Data
 		public string Mod => modGuid;
 		public ItemDrop.ItemData ItemData { get; private set; }
 
-		private Dictionary<string, ItemData> data = new();
+		private Dictionary<string, CustomItemData> data = new();
 		private WeakReference<ItemInfo>? selfReference = null;
 
 		internal HashSet<string> isCloned = new();
@@ -150,7 +150,7 @@ namespace EpicLoot.Data
 				{
 					string unprefixedKey = key.Substring(prefix.Length);
 					string[] keyParts = unprefixedKey.Split(new[] { '#' }, 2);
-					if (!knownTypes.Contains(keyParts[0]) && Type.GetType(keyParts[0]) is { } type && typeof(ItemData).IsAssignableFrom(type))
+					if (!knownTypes.Contains(keyParts[0]) && Type.GetType(keyParts[0]) is { } type && typeof(CustomItemData).IsAssignableFrom(type))
 					{
 						addTypeToInheritorsCache(type, keyParts[0]);
 					}
@@ -158,9 +158,9 @@ namespace EpicLoot.Data
 			}
 		}
 
-		public T GetOrCreate<T>(string key = "") where T : ItemData, new() => Add<T>(key) ?? Get<T>(key)!;
+		public T GetOrCreate<T>(string key = "") where T : CustomItemData, new() => Add<T>(key) ?? Get<T>(key)!;
 
-		public T? Add<T>(string key = "") where T : ItemData, new()
+		public T? Add<T>(string key = "") where T : CustomItemData, new()
 		{
 			string compoundKey = classKey(typeof(T), key);
 			string fullKey = dataKey(compoundKey);
@@ -181,7 +181,7 @@ namespace EpicLoot.Data
 		{
 			if (!typeInheritorsCache.TryGetValue(typeof(T), out HashSet<Type> inheritors))
 			{
-				if (!typeof(ItemData).IsAssignableFrom(typeof(T)) || typeof(T) == typeof(ItemData))
+				if (!typeof(CustomItemData).IsAssignableFrom(typeof(T)) || typeof(T) == typeof(CustomItemData))
 				{
 					throw new Exception("Trying to get value from ItemDataManager for class not inheriting from " + nameof(ItemData));
 				}
@@ -191,7 +191,7 @@ namespace EpicLoot.Data
 			foreach (Type inheritor in inheritors)
 			{
 				string compoundKey = classKey(inheritor, key);
-				if (data.TryGetValue(compoundKey, out ItemData dataObj))
+				if (data.TryGetValue(compoundKey, out CustomItemData dataObj))
 				{
 					return (T?)(object)dataObj;
 				}
@@ -206,7 +206,7 @@ namespace EpicLoot.Data
 			return null;
 		}
 
-		public Dictionary<string, T> GetAll<T>() where T : ItemData
+		public Dictionary<string, T> GetAll<T>() where T : CustomItemData
 		{
 			LoadAll();
 			return data.Values.Where(o => o is T).ToDictionary(o => o.Key, o => (T)o);
@@ -214,13 +214,13 @@ namespace EpicLoot.Data
 
 		public bool Remove(string key = "") => Remove<StringItemData>(key);
 
-		public bool Remove<T>(string key = "") where T : ItemData
+		public bool Remove<T>(string key = "") where T : CustomItemData
 		{
 			string compoundKey = classKey(typeof(T), key);
 			string fullKey = dataKey(compoundKey);
 			if (ItemData.m_customData.Remove(fullKey))
 			{
-				if (data.TryGetValue(compoundKey, out ItemData itemData))
+				if (data.TryGetValue(compoundKey, out CustomItemData itemData))
 				{
 					itemData.Unload();
 					data.Remove(compoundKey);
@@ -231,17 +231,17 @@ namespace EpicLoot.Data
 			return false;
 		}
 
-		public bool Remove<T>(T itemData) where T : ItemData => Remove<T>(itemData.Key);
+		public bool Remove<T>(T itemData) where T : CustomItemData => Remove<T>(itemData.Key);
 
-		private ItemData? constructDataObj(string key)
+		private CustomItemData? constructDataObj(string key)
 		{
 			string[] keyParts = key.Split(new[] { '#' }, 2);
-			if (Type.GetType(keyParts[0]) is not { } type || !typeof(ItemData).IsAssignableFrom(type))
+			if (Type.GetType(keyParts[0]) is not { } type || !typeof(CustomItemData).IsAssignableFrom(type))
 			{
 				return null;
 			}
 
-			ItemData obj = (ItemData)Activator.CreateInstance(type);
+			CustomItemData obj = (CustomItemData)Activator.CreateInstance(type);
 			data[key] = obj;
 			obj.info = selfReference ?? new WeakReference<ItemInfo>(this);
 			obj.Key = keyParts.Length > 1 ? keyParts[1] : "";
@@ -252,7 +252,7 @@ namespace EpicLoot.Data
 
 		public void Save()
 		{
-			foreach (ItemData itemData in data.Values)
+			foreach (CustomItemData itemData in data.Values)
 			{
 				itemData.Save();
 			}
@@ -274,7 +274,7 @@ namespace EpicLoot.Data
 			}
 		}
 
-		public IEnumerator<ItemData> GetEnumerator()
+		public IEnumerator<CustomItemData> GetEnumerator()
 		{
 			LoadAll();
 			return data.Values.GetEnumerator();
@@ -322,7 +322,7 @@ namespace EpicLoot.Data
 					newValues[key] = newData;
 				}
 
-				foreach (KeyValuePair<string, ItemData> kv in info.data)
+				foreach (KeyValuePair<string, CustomItemData> kv in info.data)
 				{
 					if (!newValues.ContainsKey(kv.Key))
 					{
@@ -336,7 +336,7 @@ namespace EpicLoot.Data
 				}
 			}
 
-			foreach (KeyValuePair<string, ItemData> kv in data)
+			foreach (KeyValuePair<string, CustomItemData> kv in data)
 			{
 				if (!newValues.ContainsKey(kv.Key))
 				{
@@ -615,7 +615,7 @@ namespace EpicLoot.Data
 					ItemExtensions.itemInfo.Remove(currentlyUpgradingItem);
 					ItemExtensions.itemInfo.Add(item.m_itemData, info);
 
-					foreach (ItemData itemData in info.data.Values)
+					foreach (CustomItemData itemData in info.data.Values)
 					{
 						itemData.Upgraded();
 					}
@@ -683,7 +683,7 @@ namespace EpicLoot.Data
 			{
 				harmony.Patch(method, postfix: new HarmonyMethod(AccessTools.DeclaredMethod(typeof(ItemInfo), nameof(RegisterForceLoadedTypes))));
 			}
-			// Note: Inventory load implicitly handled by ItemData.Clone() handling within AddItem
+			// Note: Inventory load implicitly handled by CustomItemData.Clone() handling within AddItem
 			harmony.Patch(AccessTools.DeclaredMethod(typeof(Player), nameof(Player.Load)), postfix: new HarmonyMethod(AccessTools.DeclaredMethod(typeof(ItemInfo), nameof(RegisterForceLoadedTypesOnPlayerLoaded)), Priority.VeryHigh));
 			harmony.Patch(AccessTools.DeclaredMethod(typeof(Inventory), nameof(Inventory.AddItem), new[] { typeof(string), typeof(int), typeof(int), typeof(int), typeof(long), typeof(string) }), postfix: new HarmonyMethod(AccessTools.DeclaredMethod(typeof(ItemInfo), nameof(RegisterForceLoadedTypesAddItem)), Priority.First));
 			harmony.Patch(AccessTools.DeclaredMethod(typeof(ItemDrop), nameof(ItemDrop.Awake)), transpiler: new HarmonyMethod(AccessTools.DeclaredMethod(typeof(ItemInfo), nameof(ImportCustomDataOnUpgrade)), Priority.First), postfix: new HarmonyMethod(AccessTools.DeclaredMethod(typeof(ItemInfo), nameof(ItemDropAwake)), Priority.First));
@@ -797,7 +797,7 @@ namespace EpicLoot.Data
 				return foreignInfos[mod] = new ForeignItemInfo(item, foreignItemData);
 			}
 
-			Debug.LogWarning($"Mod {mod} has an {typeof(ItemExtensions).FullName} class, but no Data(ItemDrop.ItemData) method could be called on it.");
+			Debug.LogWarning($"Mod {mod} has an {typeof(ItemExtensions).FullName} class, but no Data(ItemDrop.CustomItemData) method could be called on it.");
 			return foreignInfos[mod] = null;
 		}
 	}
