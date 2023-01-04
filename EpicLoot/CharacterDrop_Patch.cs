@@ -89,7 +89,7 @@ namespace EpicLoot
 
                     var itemDrop = prefab.GetComponent<ItemDrop>();
 
-                    if (itemDrop == null)
+                    if (itemDrop == null || itemDrop.m_itemData == null)
                     {
                         continue;
                     }
