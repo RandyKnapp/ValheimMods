@@ -198,6 +198,25 @@ namespace EpicLoot.CraftingV2
                         continue;
                 }
 
+                if (item.m_dropPrefab == null)
+                {
+                    foreach (var dbItem in ObjectDB.instance.m_items)
+                    {
+                        var itemDrop = dbItem.GetComponent<ItemDrop>();
+                        if (itemDrop.m_itemData.m_shared == item.m_shared)
+                        {
+                            item.m_dropPrefab = dbItem;
+                            break;
+                        }
+                    }
+                }
+
+                if (item.m_dropPrefab == null)
+                {
+                    EpicLoot.LogErrorForce($"Item ({item.m_shared.m_name}) in inventory has no drop prefab and is unknown prefab type.");
+                    continue;
+                }
+
                 var itemName = item.m_dropPrefab.name;
                 if (itemName == "Coins")
                     continue;
@@ -296,7 +315,7 @@ namespace EpicLoot.CraftingV2
             sb.AppendLine($"<color={rarityColor}>");
 
             var tempMagicItem = new MagicItem() { Rarity = rarity };
-            var availableEffects = MagicItemEffectDefinitions.GetAvailableEffects(item.Extended(), tempMagicItem);
+            var availableEffects = MagicItemEffectDefinitions.GetAvailableEffects(item, tempMagicItem);
             
             foreach (var effectDef in availableEffects)
             {
@@ -330,7 +349,7 @@ namespace EpicLoot.CraftingV2
 
             var luckFactor = player.GetTotalActiveMagicEffectValue(MagicEffectType.Luck, 0.01f);
             var magicItemComponent = item.Data().Add<MagicItemComponent>();
-            var magicItem = LootRoller.RollMagicItem((ItemRarity)rarity, item.Extended(), luckFactor);
+            var magicItem = LootRoller.RollMagicItem((ItemRarity)rarity, item, luckFactor);
             magicItemComponent?.SetMagicItem(magicItem);
 
             EquipmentEffectCache.Reset(player);

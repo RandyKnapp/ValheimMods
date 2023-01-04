@@ -110,8 +110,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 12.5, y: -5}
-  m_SizeDelta: {x: -25, y: -10}
+  m_AnchoredPosition: {x: 12.5, y: 0}
+  m_SizeDelta: {x: -25, y: 0.0000019073}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &9206490104412099966
 CanvasRenderer:
@@ -181,7 +181,7 @@ GameObject:
   - component: {fileID: 979239167183746578}
   - component: {fileID: 4231990201565766397}
   - component: {fileID: 4057761166636250359}
-  - component: {fileID: 2854781980655230986}
+  - component: {fileID: 5743026029973189579}
   m_Layer: 5
   m_Name: AugmentSelector
   m_TagString: Untagged
@@ -355,7 +355,7 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &2854781980655230986
+--- !u!114 &5743026029973189579
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -364,10 +364,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 4078071498024168942}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 1777640247, guid: 2f9828d4dfcaa584280fbdd93cb3976a, type: 3}
+  m_Script: {fileID: 2091986947, guid: 2f9828d4dfcaa584280fbdd93cb3976a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DisabledColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  Audio: {fileID: 4057761166636250359}
+  SFX: {fileID: 8300000, guid: 2172398bc32a1e741977becabd38ce2e, type: 3}
 --- !u!1 &5320558304178069903
 GameObject:
   m_ObjectHideFlags: 0

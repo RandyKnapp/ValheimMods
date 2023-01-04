@@ -202,8 +202,8 @@ namespace EpicLoot
 
         public static ItemDrop.ItemData Extended(this ItemDrop.ItemData itemData)
         {
-            var value = itemData.Data().Get<MagicItemComponent>();
-            return value?.Item;
+            var value = itemData.Data().GetOrCreate<MagicItemComponent>();
+            return value.Item;
         }
 
         public static MagicItem GetMagicItem(this ItemDrop.ItemData itemData)

@@ -98,6 +98,7 @@
     <Compile Include="EnchantUI.cs" />
     <Compile Include="MultiSelectItemList.cs" />
     <Compile Include="MultiSelectItemListElement.cs" />
+    <Compile Include="PlaySoundOnChecked.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ConvertUI.cs" />
     <Compile Include="SacrificeUI.cs" />

@@ -132,6 +132,8 @@ namespace EpicLoot_UnityLib
             var allProducts = GetConversionProducts(selectedRecipes);
             var cost = GetConversionCost(selectedRecipes);
 
+            Cancel();
+
             var player = Player.m_localPlayer;
             var inventory = player.GetInventory();
             foreach (var costElement in cost)

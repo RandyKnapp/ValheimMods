@@ -125,6 +125,9 @@ namespace EpicLoot_UnityLib
         protected override void DoMainAction()
         {
             var selectedItem = AvailableItems.GetSelectedItems<InventoryItemListElement>().FirstOrDefault();
+
+            Cancel();
+
             if (selectedItem?.Item1.GetItem() == null)
                 return;
 

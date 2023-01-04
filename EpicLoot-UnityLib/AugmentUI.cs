@@ -61,6 +61,7 @@ namespace EpicLoot_UnityLib
 
             var items = GetAugmentableItems();
             AvailableItems.SetItems(items.Cast<IListElement>().ToList());
+            DeselectAll();
         }
 
         public override void Update()
@@ -72,7 +73,7 @@ namespace EpicLoot_UnityLib
                 Unlock();
                 Destroy(_choiceDialog);
                 _choiceDialog = null;
-
+                Cancel();
             }
         }
 
@@ -122,7 +123,7 @@ namespace EpicLoot_UnityLib
                 CostList.SetItems(cost.Cast<IListElement>().ToList());
 
                 var canAfford = LocalPlayerCanAffordCost(cost);
-                MainButton.interactable = canAfford;
+                MainButton.interactable = canAfford && _augmentIndex >= 0;
             }
         }
 
@@ -135,8 +136,12 @@ namespace EpicLoot_UnityLib
         {
             var selectedItem = AvailableItems.GetSelectedItems<InventoryItemListElement>().FirstOrDefault();
             if (selectedItem?.Item1.GetItem() == null)
+            {
+                Cancel();
                 return;
+            }
 
+            Debug.LogWarning($"Augment: {_augmentIndex}");
             var item = selectedItem.Item1.GetItem();
             var cost = GetAugmentCost(item, _augmentIndex);
 
@@ -154,11 +159,9 @@ namespace EpicLoot_UnityLib
             if (_choiceDialog != null)
                 Destroy(_choiceDialog);
 
-            DeselectAll();
-            Lock();
-
             _choiceDialog = AugmentItem(item, _augmentIndex);
 
+            Lock();
             RefreshAvailableItems();
         }
 
@@ -166,8 +169,6 @@ namespace EpicLoot_UnityLib
         {
             var items = GetAugmentableItems();
             AvailableItems.SetItems(items.Cast<IListElement>().ToList());
-            AvailableItems.DeselectAll();
-            OnSelectedItemsChanged();
         }
 
         protected override void OnSelectedItemsChanged()
@@ -202,6 +203,8 @@ namespace EpicLoot_UnityLib
 
             if (item == null)
                 AvailableEffectsText.text = string.Empty;
+
+            OnAugmentIndexChanged();
         }
 
         private bool LocalPlayerCanAffordCost(List<InventoryItemListElement> cost)

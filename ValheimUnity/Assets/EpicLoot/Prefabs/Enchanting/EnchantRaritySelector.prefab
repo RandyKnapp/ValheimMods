@@ -89,6 +89,7 @@ GameObject:
   - component: {fileID: 8764666603419428437}
   - component: {fileID: 166747949556438590}
   - component: {fileID: 5447130755827112174}
+  - component: {fileID: 5303491956084132375}
   m_Layer: 5
   m_Name: EnchantRaritySelector
   m_TagString: Untagged
@@ -316,6 +317,20 @@ MonoBehaviour:
   Graphics:
   - {fileID: 2495945787080886843}
   - {fileID: 1382393653032223215}
+--- !u!114 &5303491956084132375
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3346659526286530004}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 2091986947, guid: 2f9828d4dfcaa584280fbdd93cb3976a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Audio: {fileID: 166747949556438590}
+  SFX: {fileID: 8300000, guid: 2172398bc32a1e741977becabd38ce2e, type: 3}
 --- !u!1 &7983557044497269023
 GameObject:
   m_ObjectHideFlags: 0

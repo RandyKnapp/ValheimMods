@@ -30,6 +30,8 @@ namespace EpicLoot_UnityLib
             var selectedItems = AvailableItems.GetSelectedItems<IListElement>();
             var sacrificeProducts = GetSacrificeProducts(selectedItems.Select(x => new Tuple<ItemDrop.ItemData, int>(x.Item1.GetItem(), x.Item2)).ToList());
 
+            Cancel();
+
             var player = Player.m_localPlayer;
             var inventory = player.GetInventory();
             foreach (var selectedItem in selectedItems)

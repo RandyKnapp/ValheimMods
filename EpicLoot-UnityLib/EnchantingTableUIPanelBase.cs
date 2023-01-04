@@ -17,6 +17,7 @@ namespace EpicLoot_UnityLib
         protected bool _inProgress;
         protected float _countdown;
         protected Text _buttonLabel;
+        protected string _defaultButtonLabelText;
 
         protected abstract void DoMainAction();
         protected abstract void OnSelectedItemsChanged();
@@ -26,6 +27,7 @@ namespace EpicLoot_UnityLib
             AvailableItems.OnSelectedItemsChanged += OnSelectedItemsChanged;
             MainButton.onClick.AddListener(OnMainButtonClicked);
             _buttonLabel = MainButton.GetComponentInChildren<Text>();
+            _defaultButtonLabelText = _buttonLabel.text;
 
             var uiSFX = GameObject.Find("sfx_gui_button");
             if (uiSFX)
@@ -60,7 +62,6 @@ namespace EpicLoot_UnityLib
                     Audio.loop = false;
                     Audio.Stop();
 
-                    Unlock();
                     PlayCompleteSFX();
                     DoMainAction();
                 }
@@ -100,6 +101,7 @@ namespace EpicLoot_UnityLib
 
         public virtual void Cancel()
         {
+            _buttonLabel.text = Localization.instance.Localize(_defaultButtonLabelText);
             _inProgress = false;
             _countdown = 0;
 
