@@ -9,7 +9,6 @@ using EpicLoot.Adventure.Feature;
 using EpicLoot.Crafting;
 using EpicLoot.GatedItemType;
 using EpicLoot.LegendarySystem;
-using ExtendedItemDataFramework;
 using HarmonyLib;
 using UnityEngine;
 using Random = System.Random;
@@ -620,7 +619,7 @@ namespace EpicLoot
 
             var replacementEffect = LootRoller.RollEffect(replacementEffectDef, magicItem.Rarity);
             magicItem.Effects[index] = replacementEffect;
-            itemData.Extended().Save();
+            itemData.SaveMagicItem(magicItem);
         }
 
         private static MagicItemEffectDefinition GetReplacementEffectDef(MagicItemEffect effect)

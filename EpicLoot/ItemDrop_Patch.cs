@@ -1,5 +1,4 @@
 ﻿using EpicLoot.LootBeams;
-using ExtendedItemDataFramework;
 using HarmonyLib;
 
 namespace EpicLoot
@@ -11,16 +10,25 @@ namespace EpicLoot
         {
             __instance.gameObject.AddComponent<LootBeam>();
 
-            // This code probably needs to go into EIDF
-            var prefab = __instance.m_itemData.m_dropPrefab;
-            if (prefab != null)
+            var prefabData = __instance.m_itemData.InitializeCustomData();
+            if (prefabData != null)
             {
-                var itemDropPrefab = prefab.GetComponent<ItemDrop>();
-                if (itemDropPrefab != null && itemDropPrefab.m_itemData.IsExtended() && !__instance.m_itemData.IsExtended())
-                {
-                    __instance.m_itemData = new ExtendedItemData(itemDropPrefab.m_itemData);
-                    __instance.m_itemData.m_dropPrefab = itemDropPrefab.gameObject;
-                }
+                __instance.m_itemData.m_dropPrefab = prefabData;
+                __instance.Save();
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(Inventory), nameof(Inventory.Load))]
+    public static class Inventory_Load_Patch
+    {
+        public static void Postfix(Inventory __instance)
+        {
+            foreach (var itemData in __instance.m_inventory)
+            {
+                var prefabData = itemData.InitializeCustomData();
+                if (prefabData != null)
+                    itemData.m_dropPrefab = prefabData;
             }
         }
     }

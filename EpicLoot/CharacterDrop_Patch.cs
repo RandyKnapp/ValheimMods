@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using EpicLoot.Data;
 using HarmonyLib;
 using UnityEngine;
 
@@ -85,13 +86,15 @@ namespace EpicLoot
                 {
                     var entry = __result[index];
                     var prefab = entry.Key;
+
                     var itemDrop = prefab.GetComponent<ItemDrop>();
-                    if (itemDrop == null)
+
+                    if (itemDrop == null || itemDrop.m_itemData == null)
                     {
                         continue;
                     }
 
-                    if (itemDrop.m_itemData?.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Trophie)
+                    if (itemDrop.m_itemData.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Trophie)
                     {
                         int dropCount;
                         var playerList = ZNet.instance.GetPlayerList();
