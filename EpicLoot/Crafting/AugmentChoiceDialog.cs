@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using ExtendedItemDataFramework;
 using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.UI;
@@ -47,7 +46,7 @@ namespace EpicLoot.Crafting
             _audioSource.volume = 0.5f;
             _audioSource.Play();
 
-            var item = fromItem.Extended();
+            var item = fromItem;
             var rarity = item.GetRarity();
             var magicItem = item.GetMagicItem();
             var rarityColor = item.GetRarityColor();

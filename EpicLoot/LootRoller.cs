@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using Common;
 using EpicLoot.Crafting;
+using EpicLoot.Data;
 using EpicLoot.GatedItemType;
 using EpicLoot.LegendarySystem;
 using EpicLoot.MagicItemEffects;
-using ExtendedItemDataFramework;
 using JetBrains.Annotations;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -20,8 +20,6 @@ namespace EpicLoot
         public static LootConfig Config;
         public static readonly Dictionary<string, LootItemSet> ItemSets = new Dictionary<string, LootItemSet>();
         public static readonly Dictionary<string, List<LootTable>> LootTables = new Dictionary<string, List<LootTable>>();
-
-        public static event Action<ExtendedItemData, MagicItem> MagicItemGenerated;
 
         private static WeightedRandomCollection<KeyValuePair<int, float>> _weightedDropCountTable;
         private static WeightedRandomCollection<LootDrop> _weightedLootTable;
@@ -204,7 +202,7 @@ namespace EpicLoot
             {
                 return results;
             }
-
+            
             if (EpicLoot.AlwaysDropCheat)
             {
                 drops = drops.Where(x => x.Key > 0).ToList();
@@ -223,15 +221,16 @@ namespace EpicLoot
 
                 drops = modifiedDrops;
             }
-
+            
             _weightedDropCountTable.Setup(drops, dropPair => dropPair.Value);
             var dropCountRollResult = _weightedDropCountTable.Roll();
             var dropCount = dropCountRollResult.Key;
+            
             if (dropCount == 0)
             {
                 return results;
             }
-
+            
             var loot = GetLootForLevel(lootTable, level);
             _weightedLootTable.Setup(loot, x => x.Weight);
             var selectedDrops = _weightedLootTable.Roll(dropCount);
@@ -241,7 +240,6 @@ namespace EpicLoot
             {
                 if (ld == null)
                 {
-                    EpicLoot.LogError($"Loot drop was null! RollLootTableInternal({lootTable.Object}, {level}, {objectName})");
                     continue;
                 }
                 var lootDrop = ResolveLootDrop(ld);
@@ -276,7 +274,6 @@ namespace EpicLoot
                         continue;
                     }
                 }
-
                 var itemID = (CheatDisableGating) ? lootDrop.Item : GatedItemTypeHelper.GetGatedItemID(lootDrop.Item);
 
                 var itemPrefab = ObjectDB.instance.GetItemPrefab(itemID);
@@ -285,28 +282,23 @@ namespace EpicLoot
                     EpicLoot.LogError($"Tried to spawn loot ({itemID}) for ({objectName}), but the item prefab was not found!");
                     continue;
                 }
-
                 var item = SpawnLootForDrop(itemPrefab, dropPoint, initializeObject);
                 var itemDrop = item.GetComponent<ItemDrop>();
                 if (EpicLoot.CanBeMagicItem(itemDrop.m_itemData) && !ArrayUtils.IsNullOrEmpty(lootDrop.Rarity))
                 {
-                    var itemData = new ExtendedItemData(itemDrop.m_itemData);
-                    var magicItemComponent = itemData.AddComponent<MagicItemComponent>();
+                    var itemData = itemDrop.m_itemData;
+                    var magicItemComponent = itemData.Data().GetOrCreate<MagicItemComponent>();
                     var magicItem = RollMagicItem(lootDrop, itemData, luckFactor);
                     if (CheatForceMagicEffect)
                     {
                         AddDebugMagicEffects(magicItem);
                     }
-
                     magicItemComponent.SetMagicItem(magicItem);
-
+                    magicItemComponent.Save(magicItem);
                     itemDrop.m_itemData = itemData;
                     itemDrop.Save();
                     InitializeMagicItem(itemData);
-
-                    MagicItemGenerated?.Invoke(itemData, magicItem);
                 }
-
                 results.Add(item);
             }
 
@@ -399,13 +391,13 @@ namespace EpicLoot
             return false;
         }
 
-        public static MagicItem RollMagicItem(LootDrop lootDrop, ExtendedItemData baseItem, float luckFactor)
+        public static MagicItem RollMagicItem(LootDrop lootDrop, ItemDrop.ItemData baseItem, float luckFactor)
         {
             var rarity = RollItemRarity(lootDrop, luckFactor);
             return RollMagicItem(rarity, baseItem, luckFactor);
         }
 
-        public static MagicItem RollMagicItem(ItemRarity rarity, ExtendedItemData baseItem, float luckFactor)
+        public static MagicItem RollMagicItem(ItemRarity rarity, ItemDrop.ItemData baseItem, float luckFactor)
         {
             var cheatLegendary = !string.IsNullOrEmpty(CheatForceLegendary);
             if (cheatLegendary)
@@ -493,7 +485,7 @@ namespace EpicLoot
             return magicItem;
         }
 
-        private static void InitializeMagicItem(ExtendedItemData baseItem)
+        private static void InitializeMagicItem(ItemDrop.ItemData baseItem)
         {
             Indestructible.MakeItemIndestructible(baseItem);
             if (baseItem.m_shared.m_useDurability)
@@ -705,7 +697,7 @@ namespace EpicLoot
             return null;
         }
 
-        public static List<MagicItemEffect> RollAugmentEffects(ExtendedItemData item, MagicItem magicItem, int effectIndex)
+        public static List<MagicItemEffect> RollAugmentEffects(ItemDrop.ItemData item, MagicItem magicItem, int effectIndex)
         {
             var results = new List<MagicItemEffect>();
 

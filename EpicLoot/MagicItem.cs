@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using EpicLoot.LegendarySystem;
-using ExtendedItemDataFramework;
 using UnityEngine;
 
 namespace EpicLoot
@@ -47,7 +46,7 @@ namespace EpicLoot
         public string LegendaryID;
         public string SetID;
 
-        public string GetItemTypeName(ExtendedItemData baseItem)
+        public string GetItemTypeName(ItemDrop.ItemData baseItem)
         {
             return string.IsNullOrEmpty(TypeNameOverride) ? Localization.instance.Localize(baseItem.m_shared.m_name).ToLowerInvariant() : TypeNameOverride;
         }

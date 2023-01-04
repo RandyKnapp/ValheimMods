@@ -117,6 +117,8 @@
     <Compile Include="CraftingV2\EnchantingUI_Patches.cs" />
     <Compile Include="CraftingV2\MaterialConversions.cs" />
     <Compile Include="Data\ConfigValue.cs" />
+    <Compile Include="Data\EIDFLegacy.cs" />
+    <Compile Include="Data\ItemDataManager.cs" />
     <Compile Include="DebugText.cs" />
     <Compile Include="GameCamera_Patch.cs" />
     <Compile Include="Healing\AddHealingQueueToPlayerPatch.cs" />
@@ -276,10 +278,6 @@
     <ProjectReference Include="..\EpicLoot-UnityLib\EpicLoot-UnityLib.csproj">
       <Project>{8daba031-aea4-472f-a9aa-de8b1aa69de5}</Project>
       <Name>EpicLoot-UnityLib</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ExtendedItemDataFramework\ExtendedItemDataFramework.csproj">
-      <Project>{2f61a8ab-bf4d-4e0c-9b90-4b2ba74438c5}</Project>
-      <Name>ExtendedItemDataFramework</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

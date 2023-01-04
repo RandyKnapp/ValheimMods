@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Text;
 using EpicLoot.Crafting;
-using ExtendedItemDataFramework;
 using HarmonyLib;
 using JetBrains.Annotations;
 using UnityEngine;

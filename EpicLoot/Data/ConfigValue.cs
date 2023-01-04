@@ -13,11 +13,14 @@ namespace EpicLoot.Data
     {
         public readonly string Identifier;
         public readonly Type Type;
+        #nullable enable
         private object? _boxedValue;
+        #nullable disable
 
         [CanBeNull] public event Action ValueChanged;
-
+        #nullable enable
         public object? BoxedValue
+        #nullable disable
         {
             get => _boxedValue;
             set

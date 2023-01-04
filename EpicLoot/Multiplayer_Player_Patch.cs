@@ -1,4 +1,4 @@
-﻿using ExtendedItemDataFramework;
+﻿using EpicLoot.Data;
 using HarmonyLib;
 using JetBrains.Annotations;
 
@@ -108,9 +108,9 @@ namespace EpicLoot
                 var itemPrefab = ObjectDB.instance.GetItemPrefab(itemHash);
                 if (itemPrefab?.GetComponent<ItemDrop>()?.m_itemData is ItemDrop.ItemData targetItemData)
                 {
-                    itemData = new ExtendedItemData(targetItemData);
+                    itemData = targetItemData;
                     itemData.m_durability = float.PositiveInfinity;
-                    var magicItemComponent = itemData.Extended().AddComponent<MagicItemComponent>();
+                    var magicItemComponent = itemData.Data().GetOrCreate<MagicItemComponent>();
                     var stubMagicItem = new MagicItem { Rarity = ItemRarity.Legendary, LegendaryID = zdoLegendaryID };
                     magicItemComponent.SetMagicItem(stubMagicItem);
 
