@@ -24,7 +24,7 @@ namespace EpicLoot
 
         public MagicItem MagicItem;
 
-
+        protected override bool AllowStackingIdenticalValues { get; set; } = true;
         public void SetMagicItem(MagicItem magicItem)
         {
             MagicItem = magicItem;
