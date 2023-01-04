@@ -16,8 +16,8 @@ namespace EpicLoot.Crafting
             public int EffectIndex = -1;
         }
         
-        public readonly List<AugmentRecipe> Recipes = new List<AugmentRecipe>();
-        public readonly List<Toggle> EffectSelectors = new List<Toggle>();
+        public readonly List<AugmentRecipe> Recipes = new();
+        public readonly List<Toggle> EffectSelectors = new();
         public AugmentChoiceDialog ChoiceDialog;
         public AugmentsAvailableDialog AvailableAugmentsDialog;
         public Button AvailableAugmentsButton;
@@ -84,7 +84,7 @@ namespace EpicLoot.Crafting
         public static AugmentChoiceDialog CreateAugmentChoiceDialog()
         {
             var inventoryGui = InventoryGui.instance;
-            AugmentChoiceDialog choiceDialog = null;
+            AugmentChoiceDialog choiceDialog;
             if (EpicLoot.HasAuga)
             {
                 var resultDialog = Auga.API.Workbench_CreateNewResultsPanel();
@@ -627,7 +627,7 @@ namespace EpicLoot.Crafting
                     magicItem.DisplayName = MagicItemNames.GetNameForItem(item, magicItem);
                 }
 
-                recipe.FromItem.SaveMagicItem(magicItem);
+                item.SaveMagicItem(magicItem);
 
                 InventoryGui.instance?.UpdateCraftingPanel();
 

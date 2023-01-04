@@ -5,8 +5,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Common;
 using EpicLoot.Crafting;
+using EpicLoot.Data;
 using EpicLoot_UnityLib;
-using ExtendedItemDataFramework;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -323,25 +323,15 @@ namespace EpicLoot.CraftingV2
         private static GameObject EnchantItemAndReturnSuccessDialog(ItemDrop.ItemData item, MagicRarityUnity rarity)
         {
             var player = Player.m_localPlayer;
-            
-            if (!item.IsExtended())
-            {
-                var inventory = player.GetInventory();
-                inventory.RemoveItem(item);
-                var extendedItemData = new ExtendedItemData(item);
-                inventory.m_inventory.Add(extendedItemData);
-                inventory.Changed();
-                item = extendedItemData;
-            }
-
+  
             float previousDurabilityPercent = 0;
             if (item.m_shared.m_useDurability)
                 previousDurabilityPercent = item.m_durability / item.GetMaxDurability();
 
             var luckFactor = player.GetTotalActiveMagicEffectValue(MagicEffectType.Luck, 0.01f);
-            var magicItemComponent = item.Extended().AddComponent<MagicItemComponent>();
+            var magicItemComponent = item.Data().Add<MagicItemComponent>();
             var magicItem = LootRoller.RollMagicItem((ItemRarity)rarity, item.Extended(), luckFactor);
-            magicItemComponent.SetMagicItem(magicItem);
+            magicItemComponent?.SetMagicItem(magicItem);
 
             EquipmentEffectCache.Reset(player);
 
@@ -478,9 +468,7 @@ namespace EpicLoot.CraftingV2
                 return null;
 
             magicItem.SetEffectAsAugmented(augmentindex);
-            // Note: I do not know why I have to do this, but this is the only thing that causes this item to save correctly
-            item.Extended().RemoveComponent<MagicItemComponent>();
-            item.Extended().AddComponent<MagicItemComponent>().SetMagicItem(magicItem);
+            item.SaveMagicItem(magicItem);
 
             var choiceDialog = AugmentTabController.CreateAugmentChoiceDialog();
             choiceDialog.transform.SetParent(EnchantingTableUI.instance.transform);
@@ -544,9 +532,7 @@ namespace EpicLoot.CraftingV2
                 magicItem.DisplayName = MagicItemNames.GetNameForItem(item, magicItem);
             }
 
-            // Note: I do not know why I have to do this, but this is the only thing that causes this item to save correctly
-            item.Extended().RemoveComponent<MagicItemComponent>();
-            item.Extended().AddComponent<MagicItemComponent>().SetMagicItem(magicItem);
+            item.SaveMagicItem(magicItem);
 
             MagicItemEffects.Indestructible.MakeItemIndestructible(item);
 
