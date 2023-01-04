@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using EpicLoot.Crafting;
-using EpicLoot.MagicItemEffects;
+using EpicLoot.GatedItemType;
 using ExtendedItemDataFramework;
 using JetBrains.Annotations;
 
@@ -123,15 +123,24 @@ namespace EpicLoot
             if (AllowedItemTypes.Count == 0)
                 return true;
 
+            if (AllowedByItemInfoType(itemData))
+                return true;
+
             var itemIsStaff = itemData.m_shared.m_itemType == ItemDrop.ItemData.ItemType.TwoHandedWeapon && itemData.m_shared.m_animationState == ItemDrop.ItemData.AnimationState.Staves;
             if (itemIsStaff && AllowedItemTypes.Contains("Staff"))
                 return true;
 
-            //var itemIsTowerShield = itemData.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Shield && itemData.m_shared.m_timedBlockBonus <= 0;
-            //if (itemIsTowerShield && AllowedItemTypes.Contains("TowerShield"))
-            //    return true;
-
             return AllowedItemTypes.Contains(itemData.m_shared.m_itemType.ToString());
+        }
+
+        public bool AllowedByItemInfoType(ItemDrop.ItemData itemData)
+        {
+            string prefabName = "";
+            if (itemData.m_dropPrefab?.name != null)
+                prefabName = itemData.m_dropPrefab.name;
+
+            var typeName = prefabName != null ? GatedItemTypeHelper.ItemInfoByID[prefabName]?.Type : null;
+            return !string.IsNullOrEmpty(typeName) && AllowedItemTypes.Contains(typeName);
         }
 
         public bool ExcludeByItemType([NotNull] ItemDrop.ItemData itemData)
@@ -140,6 +149,9 @@ namespace EpicLoot
                 return false;
 
             if (ExcludedItemTypes.Count == 0)
+                return false;
+
+            if (ExcludedByItemInfoType(itemData))
                 return false;
 
             var itemIsStaff = itemData.m_shared.m_itemType == ItemDrop.ItemData.ItemType.TwoHandedWeapon && itemData.m_shared.m_animationState == ItemDrop.ItemData.AnimationState.Staves;
@@ -151,6 +163,17 @@ namespace EpicLoot
             //    return true;
 
             return ExcludedItemTypes.Contains(itemData.m_shared.m_itemType.ToString());
+        }
+
+        public bool ExcludedByItemInfoType(ItemDrop.ItemData itemData)
+        {
+            string prefabName = "";
+            if (itemData.m_dropPrefab?.name != null)
+                prefabName = itemData.m_dropPrefab.name;
+
+            var typeName = prefabName != null ? GatedItemTypeHelper.ItemInfoByID[prefabName]?.Type : null;
+
+            return !string.IsNullOrEmpty(typeName) && ExcludedItemTypes.Contains(typeName);
         }
 
         public bool CheckRequirements([NotNull] ItemDrop.ItemData itemData, [NotNull] MagicItem magicItem, string magicEffectType = null)
