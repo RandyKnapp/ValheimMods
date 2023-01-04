@@ -134,11 +134,13 @@ namespace EpicLoot
 
         public bool AllowedByItemInfoType(ItemDrop.ItemData itemData)
         {
-            string prefabName = "";
+            var prefabName = string.Empty;
             if (itemData.m_dropPrefab?.name != null)
                 prefabName = itemData.m_dropPrefab.name;
 
-            var typeName = prefabName != null ? GatedItemTypeHelper.ItemInfoByID[prefabName]?.Type : null;
+            var typeName = string.Empty;
+            if (GatedItemTypeHelper.ItemInfoByID.TryGetValue(prefabName, out var itemTypeInfo))
+                typeName = itemTypeInfo.Type;
             return !string.IsNullOrEmpty(typeName) && AllowedItemTypes.Contains(typeName);
         }
 
@@ -346,7 +348,9 @@ namespace EpicLoot
                 case ItemRarity.Rare:       return ValuesPerRarity.Rare;
                 case ItemRarity.Epic:       return ValuesPerRarity.Epic;
                 case ItemRarity.Legendary:  return ValuesPerRarity.Legendary;
-                case ItemRarity.Mythic:     return ValuesPerRarity.Mythic;
+                case ItemRarity.Mythic:
+                    // TODO: Mythic Hookup
+                    return new ValueDef();//ValuesPerRarity.Mythic;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(itemRarity), itemRarity, null);
             }

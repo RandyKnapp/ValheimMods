@@ -215,15 +215,6 @@
       ]
     },
     {
-      "ItemTypes" : [ "OneHandedWeapon", "Bow", "TwoHandedWeapon", "TwoHandedWeaponLeft", "Torch", "Tool" ],
-      "Rarity": "Mythic",
-      "Cost": [
-        { "Item": "RunestoneMythic", "Amount": 1 },
-        { "Item": "DustMythic",      "Amount": 5 },
-        { "Item": "EssenceMythic",   "Amount": 5 }
-      ]
-    },
-    {
       "ItemTypes" : [ "Shield", "Helmet", "Chest", "Legs", "Shoulder", "Utility" ],
       "Rarity": "Magic",
       "Cost": [
@@ -257,15 +248,6 @@
         { "Item": "RunestoneLegendary", "Amount": 1 },
         { "Item": "DustLegendary",      "Amount": 5 },
         { "Item": "ReagentLegendary",   "Amount": 5 }
-      ]
-    },
-    {
-      "ItemTypes" : [ "Shield", "Helmet", "Chest", "Legs", "Shoulder", "Utility" ],
-      "Rarity": "Mythic",
-      "Cost": [
-        { "Item": "RunestoneMythic", "Amount": 1 },
-        { "Item": "DustMythic",      "Amount": 5 },
-        { "Item": "ReagentMythic",   "Amount": 5 }
       ]
     }
   ],
@@ -311,15 +293,6 @@
       ]
     },
     {
-      "ItemTypes" : [ "OneHandedWeapon", "Bow", "TwoHandedWeapon", "TwoHandedWeaponLeft", "Torch", "Tool" ],
-      "Rarity": "Mythic",
-      "Cost": [
-        { "Item": "ShardMythic",   "Amount": 1 },
-        { "Item": "DustMythic",    "Amount": 1 },
-        { "Item": "EssenceMythic", "Amount": 1 }
-      ]
-    },
-    {
       "ItemTypes" : [ "Shield", "Helmet", "Chest", "Legs", "Shoulder", "Utility" ],
       "Rarity": "Magic",
       "Cost": [
@@ -353,15 +326,6 @@
         { "Item": "ShardLegendary",   "Amount": 1 },
         { "Item": "DustLegendary",    "Amount": 1 },
         { "Item": "ReagentLegendary", "Amount": 1 }
-      ]
-    },
-    {
-      "ItemTypes" : [ "Shield", "Helmet", "Chest", "Legs", "Shoulder", "Utility" ],
-      "Rarity": "Mythic",
-      "Cost": [
-        { "Item": "ShardMythic",   "Amount": 1 },
-        { "Item": "DustMythic",    "Amount": 1 },
-        { "Item": "ReagentMythic", "Amount": 1 }
       ]
     }
   ],

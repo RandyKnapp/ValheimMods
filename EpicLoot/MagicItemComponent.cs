@@ -73,6 +73,7 @@ namespace EpicLoot
             }
             else if (Item.m_shared.m_name == "$item_beltstrength")
             {
+                Debug.LogWarning($"FirstLoad: {Item.m_shared.m_name}");
                 var magicItem = new MagicItem();
                 magicItem.Rarity = ItemRarity.Rare;
                 magicItem.Effects.Add(new MagicItemEffect(MagicEffectType.Megingjord));

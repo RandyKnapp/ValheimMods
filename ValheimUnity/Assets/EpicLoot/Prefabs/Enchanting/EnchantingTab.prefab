@@ -283,7 +283,7 @@ MonoBehaviour:
       type: 3}
     m_PressedSprite: {fileID: 21300000, guid: 9a64d05905dbd54478fc9cf4315dd013, type: 3}
     m_SelectedSprite: {fileID: 21300000, guid: 3aebe3d8675b115478ffe8654dadfa71, type: 3}
-    m_DisabledSprite: {fileID: 21300000, guid: 38b0f074a50b52042aeb5c169e6c00ae, type: 3}
+    m_DisabledSprite: {fileID: 21300000, guid: 3aebe3d8675b115478ffe8654dadfa71, type: 3}
   m_AnimationTriggers:
     m_NormalTrigger: Normal
     m_HighlightedTrigger: Highlighted
@@ -307,7 +307,7 @@ MonoBehaviour:
   m_Script: {fileID: -1593939647, guid: d920e4723ba2566674efb2f0c3eb6edb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_disabledColor: {r: 0.61960787, g: 0.61960787, b: 0.61960787, a: 1}
+  m_disabledColor: {r: 1, g: 0.6313726, b: 0.23529412, a: 1}
 --- !u!114 &970917765305893007
 MonoBehaviour:
   m_ObjectHideFlags: 0

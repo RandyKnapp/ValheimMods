@@ -2730,6 +2730,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: EnchantRaritySelector (4)
       objectReference: {fileID: 0}
+    - target: {fileID: 3346659526286530004, guid: 280a97c6e1516804dac16ab67455a8c8,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3892462310534268859, guid: 280a97c6e1516804dac16ab67455a8c8,
         type: 3}
       propertyPath: m_Pivot.x
@@ -2753,7 +2758,7 @@ PrefabInstance:
     - target: {fileID: 3892462310534268859, guid: 280a97c6e1516804dac16ab67455a8c8,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3892462310534268859, guid: 280a97c6e1516804dac16ab67455a8c8,
         type: 3}
@@ -2763,7 +2768,7 @@ PrefabInstance:
     - target: {fileID: 3892462310534268859, guid: 280a97c6e1516804dac16ab67455a8c8,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3892462310534268859, guid: 280a97c6e1516804dac16ab67455a8c8,
         type: 3}
@@ -2813,12 +2818,12 @@ PrefabInstance:
     - target: {fileID: 3892462310534268859, guid: 280a97c6e1516804dac16ab67455a8c8,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 105
       objectReference: {fileID: 0}
     - target: {fileID: 3892462310534268859, guid: 280a97c6e1516804dac16ab67455a8c8,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -215
       objectReference: {fileID: 0}
     - target: {fileID: 3892462310534268859, guid: 280a97c6e1516804dac16ab67455a8c8,
         type: 3}

@@ -1208,7 +1208,5 @@
   "mod_epicloot_rare": "Rare",
   "mod_epicloot_epic": "Epic",
   "mod_epicloot_legendary": "Legendary",
-  "mod_epicloot_legendarysetlabel": "Legendary Set Item",
-  "mod_epicloot_mythic": "Mythic",
-  "mod_epicloot_mythicsetlabel": "Mythic Favor Item"
+  "mod_epicloot_legendarysetlabel": "Legendary Set Item"
 }
