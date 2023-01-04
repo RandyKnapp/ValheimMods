@@ -2178,6 +2178,24 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > **Requirements:**
 > > **Flags:** `NoRoll, ExclusiveSelf`
 
+## DoubleMagicShot
+
+> **Display Text:** [mod_epicloot_set_me_doublemagicshot]
+> 
+> **Allowed Item Types:** *None*
+> 
+> **Requirements:**
+> > **Flags:** `NoRoll, ExclusiveSelf`
+
+## TripleBowShot
+
+> **Display Text:** [mod_epicloot_set_me_triplebowshot]
+> 
+> **Allowed Item Types:** *None*
+> 
+> **Requirements:**
+> > **Flags:** `NoRoll, ExclusiveSelf`
+
 # Item Sets
 
 Sets of loot drop data that can be referenced in the loot tables

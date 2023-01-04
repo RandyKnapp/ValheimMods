@@ -182,94 +182,65 @@ namespace EpicLoot.CraftingV2
             var conversions = MaterialConversions.Conversions.GetValues(conversionType, true);
 
             var player = Player.m_localPlayer;
+            var inventory = player.GetInventory();
+
             var result = new List<ConversionRecipeUnity>();
 
-            var inventory = player.GetInventory();
-            var boundItems = new List<ItemDrop.ItemData>();
-            inventory.GetBoundItems(boundItems);
-            foreach (var item in inventory.GetAllItems())
+            foreach (var conversion in conversions)
             {
-                if (item == null)
-                    continue;
-
-                if (!EpicLoot.ShowEquippedAndHotbarItemsInSacrificeTab.Value)
+                var prefab = ObjectDB.instance.GetItemPrefab(conversion.Product);
+                if (prefab == null)
                 {
-                    if (item.m_equiped || boundItems.Contains(item))
-                        continue;
-                }
-
-                if (item.m_dropPrefab == null)
-                {
-                    foreach (var dbItem in ObjectDB.instance.m_items)
-                    {
-                        var itemDrop = dbItem.GetComponent<ItemDrop>();
-                        if (itemDrop.m_itemData.m_shared == item.m_shared)
-                        {
-                            item.m_dropPrefab = dbItem;
-                            break;
-                        }
-                    }
-                }
-
-                if (item.m_dropPrefab == null)
-                {
-                    EpicLoot.LogErrorForce($"Item ({item.m_shared.m_name}) in inventory has no drop prefab and is unknown prefab type.");
+                    EpicLoot.LogWarning($"Could not find conversion product ({conversion.Product})!");
                     continue;
                 }
 
-                var itemName = item.m_dropPrefab.name;
-                if (itemName == "Coins")
-                    continue;
-
-                var itemIsUsedInConversion = conversions.Where(x => x.Resources.Any(r => r.Item == itemName));
-                foreach (var conversion in itemIsUsedInConversion)
+                var itemDrop = prefab.GetComponent<ItemDrop>();
+                if (itemDrop == null)
                 {
-                    var prefab = ObjectDB.instance.GetItemPrefab(conversion.Product);
-                    if (prefab == null)
+                    EpicLoot.LogWarning($"Conversion product ({conversion.Product}) is not an ItemDrop!");
+                    continue;
+                }
+
+                itemDrop.m_itemData.m_dropPrefab = prefab;
+
+                var recipe = new ConversionRecipeUnity()
+                {
+                    Product = itemDrop.m_itemData.Clone(),
+                    Amount = conversion.Amount,
+                    Cost = new List<ConversionRecipeCostUnity>()
+                };
+
+                var hasSomeItems = false;
+                foreach (var requirement in conversion.Resources)
+                {
+                    var reqPrefab = ObjectDB.instance.GetItemPrefab(requirement.Item);
+                    if (reqPrefab == null)
                     {
-                        EpicLoot.LogWarning($"Could not find conversion product ({conversion.Product})!");
+                        EpicLoot.LogWarning($"Could not find conversion requirement ({requirement.Item})!");
                         continue;
                     }
 
-                    var itemDrop = prefab.GetComponent<ItemDrop>();
-                    if (itemDrop == null)
+                    var reqItemDrop = reqPrefab.GetComponent<ItemDrop>();
+                    if (reqItemDrop == null)
                     {
-                        EpicLoot.LogWarning($"Conversion product ({conversion.Product}) is not an ItemDrop!");
+                        EpicLoot.LogWarning($"Conversion requirement ({requirement.Item}) is not an ItemDrop!");
                         continue;
                     }
 
-                    var recipe = new ConversionRecipeUnity()
-                    {
-                        Product = itemDrop.m_itemData.Clone(),
-                        Amount = conversion.Amount,
-                        Cost = new List<ConversionRecipeCostUnity>()
-                    };
+                    reqItemDrop.m_itemData.m_dropPrefab = reqPrefab;
 
-                    foreach (var requirement in conversion.Resources)
-                    {
-                        var reqPrefab = ObjectDB.instance.GetItemPrefab(requirement.Item);
-                        if (reqPrefab == null)
-                        {
-                            EpicLoot.LogWarning($"Could not find conversion requirement ({requirement.Item})!");
-                            continue;
-                        }
+                    recipe.Cost.Add(new ConversionRecipeCostUnity {
+                        Item = reqItemDrop.m_itemData.Clone(),
+                        Amount = requirement.Amount
+                    });
 
-                        var reqItemDrop = reqPrefab.GetComponent<ItemDrop>();
-                        if (reqItemDrop == null)
-                        {
-                            EpicLoot.LogWarning($"Conversion requirement ({requirement.Item}) is not an ItemDrop!");
-                            continue;
-                        }
+                    if (inventory.CountItems(reqItemDrop.m_itemData.m_shared.m_name) > 0)
+                        hasSomeItems = true;
+                }
 
-                        recipe.Cost.Add(new ConversionRecipeCostUnity
-                        {
-                            Item = reqItemDrop.m_itemData.Clone(),
-                            Amount = requirement.Amount
-                        });
-                    }
-                    
+                if (hasSomeItems)
                     result.Add(recipe);
-                }  
             }
 
             return result;
