@@ -221,9 +221,7 @@ namespace EpicLoot
             _configSync.AddLockingConfigEntry(_serverConfigLocked);
 
             ItemInfo.ForceLoadTypes.Add(typeof(MagicItemComponent));
-
-            //ExtendedItemData.RegisterCustomTypeID(MagicItemComponent.TypeID, typeof(MagicItemComponent));
-
+            
             LoadPatches();
             InitializeConfig();
             InitializeAbilities();
@@ -231,9 +229,6 @@ namespace EpicLoot
             //GenerateTranslations();
 
             LoadAssets();
-
-            //ExtendedItemData.LoadExtendedItemData += MagicItemComponent.OnNewExtendedItemData;
-            //ExtendedItemData.NewExtendedItemData += MagicItemComponent.OnNewExtendedItemData;
 
             _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), PluginId);
 
