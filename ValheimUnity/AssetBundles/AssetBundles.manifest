@@ -1,16 +1,16 @@
 ManifestFileVersion: 0
-CRC: 3586384330
+CRC: 1598645904
 AssetBundleManifest:
   AssetBundleInfos:
     Info_0:
-      Name: epicloot
-      Dependencies: {}
-    Info_1:
       Name: jamassets
       Dependencies: {}
+    Info_1:
+      Name: epicloot
+      Dependencies: {}
     Info_2:
-      Name: eaqs
+      Name: helheim
       Dependencies: {}
     Info_3:
-      Name: helheim
+      Name: eaqs
       Dependencies: {}

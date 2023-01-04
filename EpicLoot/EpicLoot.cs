@@ -440,16 +440,16 @@ namespace EpicLoot
         public static void InitializeConfig()
         {
             LoadJsonFile<IDictionary<string, object>>("translations.json", LoadTranslations, ConfigType.Nonsynced);
-            LoadJsonFile<LootConfig>("loottables.json", LootRoller.Initialize);
-            LoadJsonFile<MagicItemEffectsList>("magiceffects.json", MagicItemEffectDefinitions.Initialize);
-            LoadJsonFile<ItemInfoConfig>("iteminfo.json", GatedItemTypeHelper.Initialize);
-            LoadJsonFile<RecipesConfig>("recipes.json", RecipesHelper.Initialize);
-            LoadJsonFile<EnchantingCostsConfig>("enchantcosts.json", EnchantCostsHelper.Initialize);
-            LoadJsonFile<ItemNameConfig>("itemnames.json", MagicItemNames.Initialize);
-            LoadJsonFile<AdventureDataConfig>("adventuredata.json", AdventureDataManager.Initialize);
-            LoadJsonFile<LegendaryItemConfig>("legendaries.json", UniqueLegendaryHelper.Initialize);
-            LoadJsonFile<AbilityConfig>("abilities.json", AbilityDefinitions.Initialize);
-            LoadJsonFile<MaterialConversionsConfig>("materialconversions.json", MaterialConversions.Initialize);
+            LoadJsonFile<LootConfig>("loottables.json", LootRoller.Initialize, ConfigType.Synced);
+            LoadJsonFile<MagicItemEffectsList>("magiceffects.json", MagicItemEffectDefinitions.Initialize, ConfigType.Synced);
+            LoadJsonFile<ItemInfoConfig>("iteminfo.json", GatedItemTypeHelper.Initialize, ConfigType.Synced);
+            LoadJsonFile<RecipesConfig>("recipes.json", RecipesHelper.Initialize, ConfigType.Synced);
+            LoadJsonFile<EnchantingCostsConfig>("enchantcosts.json", EnchantCostsHelper.Initialize, ConfigType.Synced);
+            LoadJsonFile<ItemNameConfig>("itemnames.json", MagicItemNames.Initialize, ConfigType.Synced);
+            LoadJsonFile<AdventureDataConfig>("adventuredata.json", AdventureDataManager.Initialize, ConfigType.Synced);
+            LoadJsonFile<LegendaryItemConfig>("legendaries.json", UniqueLegendaryHelper.Initialize, ConfigType.Synced);
+            LoadJsonFile<AbilityConfig>("abilities.json", AbilityDefinitions.Initialize, ConfigType.Synced);
+            LoadJsonFile<MaterialConversionsConfig>("materialconversions.json", MaterialConversions.Initialize, ConfigType.Synced);
 
             WatchNewPatchConfig();
         }
@@ -461,19 +461,20 @@ namespace EpicLoot
             //Patch JSON Watcher
             void ConsumeNewPatchFile(object s, FileSystemEventArgs e)
             {
-                if (e.ChangeType == WatcherChangeTypes.Created)
+                switch (e.ChangeType)
                 {
-                    //File Created
-                    var fileInfo = new FileInfo(e.FullPath);
-                    if (!fileInfo.Exists)
-                        return;
+                    case WatcherChangeTypes.Created:
+                        //File Created
+                        var fileInfo = new FileInfo(e.FullPath);
+                        if (!fileInfo.Exists)
+                            return;
 
-                    FilePatching.ProcessPatchFile(fileInfo);
-                    var sourceFile = fileInfo.Name;
+                        FilePatching.ProcessPatchFile(fileInfo);
+                        var sourceFile = fileInfo.Name;
 
                         foreach (var fileName in FilePatching.PatchesPerFile.Values.SelectMany(l => l).ToList()
-                                     .Where(u => u.SourceFile.Equals(sourceFile)).Select(p => p.TargetFile).Distinct()
-                                     .ToArray())
+                            .Where(u => u.SourceFile.Equals(sourceFile)).Select(p => p.TargetFile).Distinct()
+                            .ToArray())
                         {
                             if (SyncedJsonFiles.ContainsKey(fileName))
                                 SyncedJsonFiles[fileName].AssignLocalValue(LoadJsonText(fileName));
@@ -482,7 +483,7 @@ namespace EpicLoot
 
                             AddPatchFileWatcher(fileName, sourceFile);
                         }
-                        
+
                         break;
                 }
             }
