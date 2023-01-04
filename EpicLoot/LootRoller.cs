@@ -194,6 +194,7 @@ namespace EpicLoot
             {
                 return results;
             }
+
             var luckFactor = GetLuckFactor(dropPoint);
 
             var drops = GetDropsForLevel(lootTable, level);
@@ -201,6 +202,7 @@ namespace EpicLoot
             {
                 return results;
             }
+            
             if (EpicLoot.AlwaysDropCheat)
             {
                 drops = drops.Where(x => x.Key > 0).ToList();
@@ -219,22 +221,25 @@ namespace EpicLoot
 
                 drops = modifiedDrops;
             }
+            
             _weightedDropCountTable.Setup(drops, dropPair => dropPair.Value);
             var dropCountRollResult = _weightedDropCountTable.Roll();
             var dropCount = dropCountRollResult.Key;
+            
             if (dropCount == 0)
             {
                 return results;
             }
+            
             var loot = GetLootForLevel(lootTable, level);
             _weightedLootTable.Setup(loot, x => x.Weight);
             var selectedDrops = _weightedLootTable.Roll(dropCount);
+
             var cheatsActive = AnyItemSpawnCheatsActive();
             foreach (var ld in selectedDrops)
             {
                 if (ld == null)
                 {
-                    EpicLoot.LogError($"Loot drop was null! RollLootTableInternal({lootTable.Object}, {level}, {objectName})");
                     continue;
                 }
                 var lootDrop = ResolveLootDrop(ld);
@@ -255,7 +260,6 @@ namespace EpicLoot
                             {
                                 foreach (var itemAmountConfig in disenchantProducts)
                                 {
-                                    EpicLoot.Log($"[RollLootInternal] Step 9 - {ld.Item} - Amount: {itemAmountConfig.Amount}");
                                     var materialPrefab = ObjectDB.instance.GetItemPrefab(itemAmountConfig.Item);
                                     var materialItem = SpawnLootForDrop(materialPrefab, dropPoint, true);
                                     var materialItemDrop = materialItem.GetComponent<ItemDrop>();
