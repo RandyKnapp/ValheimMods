@@ -43,6 +43,9 @@ namespace EpicLoot
         {
             try
             {
+                if (string.IsNullOrEmpty(Value))
+                    return;
+
                 MagicItem = JsonConvert.DeserializeObject<MagicItem>(Value);
             }
             catch (Exception)
@@ -88,32 +91,7 @@ namespace EpicLoot
             }
             else
             {
-                EpicLoot.Log($"[Load] Item Name: {Item.GetDecoratedName()}");
-                EpicLoot.Log($"[Load] Crafter Name: {Item.m_crafterName}");
-                EpicLoot.Log($"[Load] IsLegacyEIDFItem: {Item.IsLegacyEIDFItem()}");
-                EpicLoot.Log($"[Load] IsLegacyMagicItem: {Item.IsLegacyMagicItem()}");
-                EpicLoot.Log($"[Load] MagicItem is null: {MagicItem == null}");
-
-                if (Item.IsLegacyEIDFItem() && Item.IsLegacyMagicItem() && MagicItem == null)
-                {
-                    var serializedComponents = Item.m_crafterName.Split(new[] { EIDFLegacy.StartDelimiter }, StringSplitOptions.RemoveEmptyEntries);
-
-                    foreach (var component in serializedComponents)
-                    {
-                        var parts = component.Split(new[] { EIDFLegacy.EndDelimiter }, StringSplitOptions.None);
-                        var typeString = EIDFLegacy.RestoreDataText(parts[0]);
-
-                        if (typeString.Equals(TypeID))
-                        {
-                            var data = parts.Length == 2 ? parts[1] : string.Empty;
-                            if (string.IsNullOrEmpty(data))
-                                continue;
-
-                            Value = EIDFLegacy.RestoreDataText(data);
-                            Deserialize();
-                        }
-                    }
-                }
+                CheckForExtendedItemDataAndConvert();
             }
         }
 
@@ -122,37 +100,25 @@ namespace EpicLoot
             if (!string.IsNullOrEmpty(Value))
                 Deserialize();
 
-            EpicLoot.Log($"[Load] Item Name: {Item.GetDecoratedName()}");
-            EpicLoot.Log($"[Load] Crafter Name: {Item.m_crafterName}");
-            EpicLoot.Log($"[Load] IsLegacyEIDFItem: {Item.IsLegacyEIDFItem()}");
-            EpicLoot.Log($"[Load] IsLegacyMagicItem: {Item.IsLegacyMagicItem()}");
-            EpicLoot.Log($"[Load] MagicItem is null: {MagicItem == null}");
-
-            if (Item.IsLegacyEIDFItem() && Item.IsLegacyMagicItem() && MagicItem == null)
-            {
-                var serializedComponents = Item.m_crafterName.Split(new[] { EIDFLegacy.StartDelimiter }, StringSplitOptions.RemoveEmptyEntries);
-
-                foreach (var component in serializedComponents)
-                {
-                    var parts = component.Split(new[] { EIDFLegacy.EndDelimiter }, StringSplitOptions.None);
-                    var typeString = EIDFLegacy.RestoreDataText(parts[0]);
-
-                    if (typeString.Equals(TypeID))
-                    {
-                        var data = parts.Length == 2 ? parts[1] : string.Empty;
-                        if (string.IsNullOrEmpty(data))
-                            continue;
-
-                        Value = EIDFLegacy.RestoreDataText(data);
-                    }
-                }
-            }
+            CheckForExtendedItemDataAndConvert();
         }
 
         public void Save(MagicItem magicItem)
         {
             MagicItem = magicItem;
             Serialize();
+        }
+
+        private void CheckForExtendedItemDataAndConvert()
+        {
+            if (!Item.IsLegacyEIDFItem() || !Item.IsLegacyMagicItem() || MagicItem != null) return;
+
+            Value = EIDFLegacy.GetMagicItemFromCrafterName(Item);
+
+            if (string.IsNullOrEmpty(Value))
+                return;
+
+            Deserialize();
         }
     }
 
@@ -391,6 +357,32 @@ namespace EpicLoot
             }
 
             return results;
+        }
+
+        public static GameObject InitializeCustomData(this ItemDrop.ItemData itemData)
+        {
+            var prefab = itemData.m_dropPrefab;
+            if (prefab != null)
+            {
+                var itemDropPrefab = prefab.GetComponent<ItemDrop>();
+                if ((itemData.IsLegacyEIDFItem() || itemDropPrefab.m_itemData.IsExtended()) && !itemData.IsExtended())
+                {
+                    var instanceData = itemData.Data().Add<MagicItemComponent>();
+
+                    if (itemDropPrefab.m_itemData.IsExtended())
+                    {
+                        var prefabData = itemDropPrefab.m_itemData.Data().Get<MagicItemComponent>();
+
+                        if (instanceData != null && prefabData != null)
+                        {
+                            instanceData.Save(prefabData.MagicItem);
+                        }
+                    }
+                    return itemDropPrefab.gameObject;
+                }
+            }
+
+            return null;
         }
 
         public static string GetSetTooltip(this ItemDrop.ItemData item)

@@ -1,5 +1,4 @@
-﻿using EpicLoot.Data;
-using EpicLoot.LootBeams;
+﻿using EpicLoot.LootBeams;
 using HarmonyLib;
 
 namespace EpicLoot
@@ -11,34 +10,15 @@ namespace EpicLoot
         {
             __instance.gameObject.AddComponent<LootBeam>();
 
-
-            var prefab = __instance.m_itemData.m_dropPrefab;
-
-
-            if (prefab != null)
+            var prefabData = __instance.m_itemData.InitializeCustomData();
+            if (prefabData != null)
             {
-                var itemDropPrefab = prefab.GetComponent<ItemDrop>();
-
-                if ((__instance.m_itemData.IsLegacyEIDFItem() || itemDropPrefab.m_itemData.IsExtended()) && !__instance.m_itemData.IsExtended())
-                {
-                    var instanceData = __instance.m_itemData.Data().Add<MagicItemComponent>();
-
-                    if (itemDropPrefab.m_itemData.IsExtended())
-                    {
-                        var prefabData = itemDropPrefab.m_itemData.Data().Get<MagicItemComponent>();
-
-                        if (instanceData != null && prefabData != null)
-                        {
-                            instanceData.Save(prefabData.MagicItem);
-                        }
-                    }
-
-                    __instance.m_itemData.m_dropPrefab = itemDropPrefab.gameObject;
-                    __instance.Save();
-                }
+                __instance.m_itemData.m_dropPrefab = prefabData;
+                __instance.Save();
             }
         }
     }
+
     [HarmonyPatch(typeof(Inventory), nameof(Inventory.Load))]
     public static class Inventory_Load_Patch
     {
@@ -46,26 +26,9 @@ namespace EpicLoot
         {
             foreach (var itemData in __instance.m_inventory)
             {
-                var prefab = itemData.m_dropPrefab;
-                if (prefab != null)
-                {
-                    var itemDropPrefab = prefab.GetComponent<ItemDrop>();
-                    if ((itemData.IsLegacyEIDFItem() || itemDropPrefab.m_itemData.IsExtended()) && !itemData.IsExtended())
-                    {
-                        var instanceData = itemData.Data().Add<MagicItemComponent>();
-
-                        if (itemDropPrefab.m_itemData.IsExtended())
-                        {
-                            var prefabData = itemDropPrefab.m_itemData.Data().Get<MagicItemComponent>();
-
-                            if (instanceData != null && prefabData != null)
-                            {
-                                instanceData.Save(prefabData.MagicItem);
-                            }
-                        }
-                        itemData.m_dropPrefab = itemDropPrefab.gameObject;
-                    }
-                }
+                var prefabData = itemData.InitializeCustomData();
+                if (prefabData != null)
+                    itemData.m_dropPrefab = prefabData;
             }
         }
     }
