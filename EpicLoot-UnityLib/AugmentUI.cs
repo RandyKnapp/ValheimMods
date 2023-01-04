@@ -74,6 +74,7 @@ namespace EpicLoot_UnityLib
                 Destroy(_choiceDialog);
                 _choiceDialog = null;
                 Cancel();
+                OnSelectedItemsChanged();
             }
         }
 
@@ -134,14 +135,13 @@ namespace EpicLoot_UnityLib
 
         protected override void DoMainAction()
         {
-            var selectedItem = AvailableItems.GetSelectedItems<InventoryItemListElement>().FirstOrDefault();
+            var selectedItem = AvailableItems.GetSingleSelectedItem<InventoryItemListElement>();
             if (selectedItem?.Item1.GetItem() == null)
             {
                 Cancel();
                 return;
             }
 
-            Debug.LogWarning($"Augment: {_augmentIndex}");
             var item = selectedItem.Item1.GetItem();
             var cost = GetAugmentCost(item, _augmentIndex);
 
@@ -162,13 +162,6 @@ namespace EpicLoot_UnityLib
             _choiceDialog = AugmentItem(item, _augmentIndex);
 
             Lock();
-            RefreshAvailableItems();
-        }
-
-        public void RefreshAvailableItems()
-        {
-            var items = GetAugmentableItems();
-            AvailableItems.SetItems(items.Cast<IListElement>().ToList());
         }
 
         protected override void OnSelectedItemsChanged()

@@ -15,7 +15,6 @@ The raw weight value is shown first, followed by the calculated percentage chanc
 |Rare| |80 (80%)|18 (18%)|2 (2%)| | |
 |Epic| | |80 (80%)|18 (18%)|2 (2%)| |
 |Legendary| | | |80 (80%)|18 (18%)|2 (2%)|
-|Mythic| | | |50 (55.6%)|30 (33.3%)|10 (11.1%)|
 
 # MagicItemEffect List
 

@@ -1437,7 +1437,6 @@ MonoBehaviour:
   - {fileID: 8959856896920251802}
   - {fileID: 3490116647281828891}
   - {fileID: 1630704137487133594}
-  - {fileID: 445939863795870204}
   CostLabel: {fileID: 7120975919381119269}
   CostList: {fileID: 1488874307653889688}
   EnchantCompleteSFX:
@@ -2538,12 +2537,6 @@ PrefabInstance:
       objectReference: {fileID: 1095830340212917474}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 280a97c6e1516804dac16ab67455a8c8, type: 3}
---- !u!224 &9208162041244648949 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 3892462310534268859, guid: 280a97c6e1516804dac16ab67455a8c8,
-    type: 3}
-  m_PrefabInstance: {fileID: 5317971948811207246}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &3490116647281828891 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8764666603419428437, guid: 280a97c6e1516804dac16ab67455a8c8,
@@ -2556,6 +2549,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9085046f02f69544eb97fd06b6048fe2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!224 &9208162041244648949 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 3892462310534268859, guid: 280a97c6e1516804dac16ab67455a8c8,
+    type: 3}
+  m_PrefabInstance: {fileID: 5317971948811207246}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &7999295720457063887
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2863,15 +2862,3 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 9192429748854607785}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &445939863795870204 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8764666603419428437, guid: 280a97c6e1516804dac16ab67455a8c8,
-    type: 3}
-  m_PrefabInstance: {fileID: 9192429748854607785}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9085046f02f69544eb97fd06b6048fe2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
