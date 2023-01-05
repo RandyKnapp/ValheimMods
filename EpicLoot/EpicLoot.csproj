@@ -169,8 +169,10 @@
     <Compile Include="LootBeams\AlwaysPointUp.cs" />
     <Compile Include="LootBeams\BeamColorSetter.cs" />
     <Compile Include="CharacterDrop_Patch.cs" />
+    <Compile Include="MagicItemEffects\DoubleMagicShot.cs" />
     <Compile Include="MagicItemEffects\IncreaseEitr.cs" />
     <Compile Include="MagicItemEffects\ModifyEitrRegen.cs" />
+    <Compile Include="MagicItemEffects\TripleBowShot.cs" />
     <Compile Include="Multiplayer_Player_Patch.cs" />
     <Compile Include="Patching\FilePatching.cs" />
     <Compile Include="Terminal_Patch.cs" />
