@@ -171,6 +171,7 @@
     <Compile Include="CharacterDrop_Patch.cs" />
     <Compile Include="MagicItemEffects\IncreaseEitr.cs" />
     <Compile Include="MagicItemEffects\ModifyEitrRegen.cs" />
+    <Compile Include="MagicItemEffects\MultiShot.cs" />
     <Compile Include="Multiplayer_Player_Patch.cs" />
     <Compile Include="Patching\FilePatching.cs" />
     <Compile Include="Terminal_Patch.cs" />
