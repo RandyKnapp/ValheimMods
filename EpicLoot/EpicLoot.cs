@@ -230,8 +230,6 @@ namespace EpicLoot
 
             var assembly = Assembly.GetExecutingAssembly();
             LoadEmbeddedAssembly(assembly, "EpicLoot-UnityLib.dll");
-
-            ItemInfo.ForceLoadTypes.Add(typeof(MagicItemComponent));
             
             LoadPatches();
             InitializeConfig();
