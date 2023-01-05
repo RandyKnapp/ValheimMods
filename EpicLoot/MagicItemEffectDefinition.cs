@@ -138,9 +138,8 @@ namespace EpicLoot
             if (itemData.m_dropPrefab?.name != null)
                 prefabName = itemData.m_dropPrefab.name;
 
-            var typeName = string.Empty;
-            if (GatedItemTypeHelper.ItemInfoByID.TryGetValue(prefabName, out var itemTypeInfo))
-                typeName = itemTypeInfo.Type;
+            var typeName = !string.IsNullOrEmpty(prefabName) && GatedItemTypeHelper.ItemInfoByID.TryGetValue(prefabName, out var itemTypeInfo) ? itemTypeInfo.Type : null;
+
             return !string.IsNullOrEmpty(typeName) && AllowedItemTypes.Contains(typeName);
         }
 
@@ -159,10 +158,6 @@ namespace EpicLoot
             if (itemIsStaff && ExcludedItemTypes.Contains("Staff"))
                 return true;
 
-            //var itemIsTowerShield = itemData.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Shield && itemData.m_shared.m_timedBlockBonus <= 0;
-            //if (itemIsTowerShield && ExcludedItemTypes.Contains("TowerShield"))
-            //    return true;
-
             return ExcludedItemTypes.Contains(itemData.m_shared.m_itemType.ToString());
         }
 
@@ -172,7 +167,7 @@ namespace EpicLoot
             if (itemData.m_dropPrefab?.name != null)
                 prefabName = itemData.m_dropPrefab.name;
 
-            var typeName = prefabName != null ? GatedItemTypeHelper.ItemInfoByID[prefabName]?.Type : null;
+            var typeName = !string.IsNullOrEmpty(prefabName) && GatedItemTypeHelper.ItemInfoByID.TryGetValue(prefabName, out var itemTypeInfo) ? itemTypeInfo.Type : null;
 
             return !string.IsNullOrEmpty(typeName) && ExcludedItemTypes.Contains(typeName);
         }

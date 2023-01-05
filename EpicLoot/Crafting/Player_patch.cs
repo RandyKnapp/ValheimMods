@@ -2,7 +2,6 @@
 
 namespace EpicLoot.Crafting
 {
-    //public void AddKnownItem(ItemDrop.ItemData item)
     [HarmonyPatch(typeof(Player), nameof(Player.AddKnownItem))]
     public static class Player_AddKnownItem_Patch
     {

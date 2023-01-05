@@ -118,7 +118,7 @@
     <Compile Include="CraftingV2\MaterialConversions.cs" />
     <Compile Include="Data\ConfigValue.cs" />
     <Compile Include="Data\EIDFLegacy.cs" />
-    <Compile Include="Data\ItemDataManager.cs" />
+    <Compile Include="Data\CustomDataManager.cs" />
     <Compile Include="DebugText.cs" />
     <Compile Include="GameCamera_Patch.cs" />
     <Compile Include="Healing\AddHealingQueueToPlayerPatch.cs" />
@@ -163,7 +163,6 @@
     <Compile Include="GatedItemType\ItemInfoConfig.cs" />
     <Compile Include="Healing\HealingQueueMono.cs" />
     <Compile Include="Humanoid_Patch.cs" />
-    <Compile Include="LegacyMagicEffectType.cs" />
     <Compile Include="LegendarySystem\LegendaryItemConfig.cs" />
     <Compile Include="LegendarySystem\UniqueLegendaryHelper.cs" />
     <Compile Include="LootBeams\AlwaysPointUp.cs" />
@@ -235,7 +234,6 @@
     <Compile Include="MagicItemEffects\Throwable.cs" />
     <Compile Include="MagicItemEffects\Undying.cs" />
     <Compile Include="MagicItemEffects\Waterproof.cs" />
-    <Compile Include="MagicItemEffects\WaterWalking.cs" />
     <Compile Include="MagicItemNames.cs" />
     <Compile Include="Adventure\BountyListElement.cs" />
     <Compile Include="Adventure\BuyListElement.cs" />
