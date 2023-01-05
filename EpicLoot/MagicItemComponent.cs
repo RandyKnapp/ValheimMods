@@ -190,9 +190,7 @@ namespace EpicLoot
 
         public static void SaveMagicItem(this ItemDrop.ItemData itemData, MagicItem magicItem)
         {
-
             itemData.Data().GetOrCreate<MagicItemComponent>().SetMagicItem(magicItem);
-            return;
         }
 
         public static bool IsExtended(this ItemDrop.ItemData itemData)
@@ -491,13 +489,13 @@ namespace EpicLoot
 
     public static class EquipmentEffectCache
     {
-        public static ConditionalWeakTable<Player, Dictionary<string, float?>> Values = new ConditionalWeakTable<Player, Dictionary<string, float?>>();
+        public static ConditionalWeakTable<Player, Dictionary<string, float?>> EquippedValues = new ConditionalWeakTable<Player, Dictionary<string, float?>>();
 
         [HarmonyPatch(typeof(Humanoid), nameof(Humanoid.UnequipItem))]
         public static class EquipmentEffectCache_Humanoid_UnequipItem_Patch
         {
             [UsedImplicitly]
-            public static void Prefix(Humanoid __instance, ItemDrop.ItemData item)
+            public static void Prefix(Humanoid __instance)
             {
                 if (__instance is Player player)
                 {
@@ -510,7 +508,7 @@ namespace EpicLoot
         public static class EquipmentEffectCache_Humanoid_EquipItem_Patch
         {
             [UsedImplicitly]
-            public static void Prefix(Humanoid __instance, ItemDrop.ItemData item)
+            public static void Prefix(Humanoid __instance)
             {
                 if (__instance is Player player)
                 {
@@ -521,12 +519,12 @@ namespace EpicLoot
 
         public static void Reset(Player player)
         {
-            Values.Remove(player);
+            EquippedValues.Remove(player);
         }
 
         public static float? Get(Player player, string effect, Func<float?> calculate)
         {
-            var values = Values.GetOrCreateValue(player);
+            var values = EquippedValues.GetOrCreateValue(player);
             if (values.TryGetValue(effect, out float? value))
             {
                 return value;
@@ -558,14 +556,10 @@ namespace EpicLoot
             return results;
         }
 
-        private static List<ItemDrop.ItemData> GetMagicEquipmentWithEffect(this Player player, string effectType)
-        {
-            return player.GetEquipment().Where(x => x.HasMagicEffect(effectType)).ToList();
-        }
-
         public static List<MagicItemEffect> GetAllActiveMagicEffects(this Player player, string effectType = null)
         {
-            var equipEffects = player.GetEquipment().Where(x => x.IsMagic())
+            var equipEffects = player.GetEquipment()
+                .Where(x => x.IsMagic())
                 .SelectMany(x => x.GetMagicItem().GetEffects(effectType));
             var setEffects = player.GetAllActiveSetMagicEffects(effectType);
             return equipEffects.Concat(setEffects).ToList();
@@ -608,22 +602,25 @@ namespace EpicLoot
             return sets;
         }
 
-        public static float GetTotalActiveMagicEffectValue(this Player player, string effectType, float scale = 1.0f)
+        public static float GetTotalActiveMagicEffectValue(this Player player, string effectType, float scale = 1.0f, ItemDrop.ItemData ignoreThisItem = null)
         {
-            return scale * (EquipmentEffectCache.Get(player, effectType, () =>
+            var totalValue = scale * (EquipmentEffectCache.Get(player, effectType, () =>
             {
-                List<MagicItemEffect> allEffects = player.GetAllActiveMagicEffects(effectType);
-                return allEffects.Count > 0 ? (float?)allEffects.Select(x => x.EffectValue).Sum() : null;
+                var allEffects = player.GetAllActiveMagicEffects(effectType);
+                return allEffects.Count > 0 ? allEffects.Select(x => x.EffectValue).Sum() : null;
             }) ?? 0);
+
+            if (ignoreThisItem != null && player.IsItemEquiped(ignoreThisItem) && ignoreThisItem.IsMagic(out var magicItem))
+            {
+                totalValue -= magicItem.GetTotalEffectValue(effectType, scale);
+            }
+
+            return totalValue;
         }
 
-        public static bool HasActiveMagicEffect(this Player player, string effectType)
+        public static bool HasActiveMagicEffect(this Player player, string effectType, ItemDrop.ItemData ignoreThisItem = null)
         {
-            return null != EquipmentEffectCache.Get(player, effectType, () =>
-            {
-                List<MagicItemEffect> allEffects = player.GetAllActiveMagicEffects(effectType);
-                return allEffects.Count > 0 ? (float?)allEffects.Select(x => x.EffectValue).Sum() : null;
-            });
+            return GetTotalActiveMagicEffectValue(player, effectType, 1, ignoreThisItem) > 0;
         }
 
         public static List<ItemDrop.ItemData> GetEquippedSetPieces(this Player player, string setName)

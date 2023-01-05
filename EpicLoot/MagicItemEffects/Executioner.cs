@@ -56,9 +56,13 @@ namespace EpicLoot.MagicItemEffects
 		}
 
 		public static float ReadExecutionerValue(Player player)
-		{
-			var executionerValue = 1 + player.GetTotalActiveMagicEffectValue(MagicEffectType.Executioner, 0.01f);
-            return executionerValue;
+        {
+            float totalMagicEffect;
+            if (Attack_Patch.ActiveAttack != null)
+                totalMagicEffect = MagicEffectsHelper.GetTotalActiveMagicEffectValueForWeapon(player, Attack_Patch.ActiveAttack.m_weapon, MagicEffectType.Executioner, 0.01f);
+            else
+                totalMagicEffect = player.GetTotalActiveMagicEffectValue(MagicEffectType.Executioner, 0.01f);
+            return 1 + totalMagicEffect;
 		}
 	}
 

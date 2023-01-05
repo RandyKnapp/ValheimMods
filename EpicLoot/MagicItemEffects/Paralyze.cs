@@ -63,7 +63,11 @@ namespace EpicLoot.MagicItemEffects
                     main.startColor = Color.yellow;
                 }*/
 
-                var totalParalyzeTime = player.GetTotalActiveMagicEffectValue(MagicEffectType.Paralyze);
+                float totalParalyzeTime;
+                if (Attack_Patch.ActiveAttack != null)
+                    totalParalyzeTime = MagicEffectsHelper.GetTotalActiveMagicEffectValueForWeapon(player, Attack_Patch.ActiveAttack.m_weapon, MagicEffectType.Paralyze);
+                else
+                    totalParalyzeTime = player.GetTotalActiveMagicEffectValue(MagicEffectType.Paralyze);
                 seParalyze.Setup(totalParalyzeTime);
             }
         }

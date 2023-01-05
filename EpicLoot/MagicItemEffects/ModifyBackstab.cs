@@ -45,7 +45,7 @@ namespace EpicLoot.MagicItemEffects
                 Override = true;
                 OriginalValue = weapon.m_shared.m_backstabBonus;
 
-                var totalBackstabMod = player.GetTotalActiveMagicEffectValue(MagicEffectType.ModifyBackstab, 0.01f);
+                var totalBackstabMod = MagicEffectsHelper.GetTotalActiveMagicEffectValueForWeapon(player, __instance.m_weapon, MagicEffectType.ModifyBackstab, 0.01f);
                 weapon.m_shared.m_backstabBonus *= 1.0f + totalBackstabMod;
             }
 
