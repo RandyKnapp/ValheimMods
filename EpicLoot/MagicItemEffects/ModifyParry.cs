@@ -13,13 +13,13 @@ namespace EpicLoot.MagicItemEffects
             var totalParryMod = 0f;
 			ModifyWithLowHealth.Apply(player, MagicEffectType.ModifyParry, effect =>
             {
-                totalParryMod += MagicEffectsHelper.GetTotalActiveMagicEffectValue(player, __instance, effect, 0.01f);
+                totalParryMod += MagicEffectsHelper.GetTotalActiveMagicEffectValueForWeapon(player, __instance, effect, 0.01f);
             });
 
 			__result *= 1.0f + totalParryMod;
-            if (player != null && player.m_leftItem == null && player.HasActiveMagicEffect(MagicEffectType.Duelist))
+            if (player != null && player.m_leftItem == null && MagicEffectsHelper.HasActiveMagicEffect(player, __instance, MagicEffectType.Duelist))
 			{
-				__result += __instance.GetDamage().GetTotalDamage() / 2 * player.GetTotalActiveMagicEffectValue(MagicEffectType.Duelist, 0.01f);
+				__result += __instance.GetDamage().GetTotalDamage() / 2 * MagicEffectsHelper.GetTotalActiveMagicEffectValueForWeapon(player, __instance, MagicEffectType.Duelist, 0.01f);
 			}
 
 			__result = (float) Math.Round(__result, 1);

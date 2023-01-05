@@ -24,7 +24,10 @@ namespace EpicLoot.MagicItemEffects
 
 		public static float ReadStaggerDamageValue(Player player)
 		{
-            return 1 + player.GetTotalActiveMagicEffectValue(MagicEffectType.ModifyStaggerDamage, 0.01f);
+			if (Attack_Patch.ActiveAttack != null)
+				return 1 + MagicEffectsHelper.GetTotalActiveMagicEffectValueForWeapon(player, Attack_Patch.ActiveAttack.m_weapon, MagicEffectType.ModifyStaggerDamage, 0.01f);
+			else
+                return 1 + player.GetTotalActiveMagicEffectValue(MagicEffectType.ModifyStaggerDamage, 0.01f);
 		}
 	}
 
