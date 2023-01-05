@@ -107,7 +107,7 @@ namespace EpicLoot.MagicItemEffects
 
             if (_player == null)
             {
-                Destroy(gameObject);
+                ZNetScene.instance.Destroy(gameObject);
                 yield break;
             }
 
@@ -127,7 +127,7 @@ namespace EpicLoot.MagicItemEffects
                 characterCollider.Damage(hitData);
             }
 
-            Destroy(gameObject);
+            ZNetScene.instance.Destroy(gameObject);
         }
     }
 }
