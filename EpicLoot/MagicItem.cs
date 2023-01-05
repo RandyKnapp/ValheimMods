@@ -18,6 +18,8 @@ namespace EpicLoot
     [Serializable]
     public class MagicItemEffect
     {
+        public const float DefaultValue = 1;
+
         public int Version = 1;
         public string EffectType { get; set; }
         public float EffectValue;
@@ -26,7 +28,7 @@ namespace EpicLoot
         {
         }
 
-        public MagicItemEffect(string type, float value = 0)
+        public MagicItemEffect(string type, float value = DefaultValue)
         {
             EffectType = type;
             EffectValue = value;

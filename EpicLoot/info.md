@@ -1,4 +1,4 @@
-# EpicLoot Data v0.9.3
+# EpicLoot Data v0.9.4
 
 *Author: RandyKnapp*
 *Source: [Github](https://github.com/RandyKnapp/ValheimMods/tree/main/EpicLoot)*
@@ -2142,6 +2142,35 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 > |Epic|50|70|1|
 > |Legendary|60|80|1|
 
+## DoubleMagicShot
+
+> **Display Text:** Double Magic Shot
+> 
+> **Prefixes:** Elemental Doubling
+> **Suffixes:** of Elemental Doubling
+> 
+> **Allowed Item Types:** Staff
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedItemTypes:** `Staff`
+> > **AllowedRarities:** `Epic, Legendary`
+> > **AllowedSkillTypes:** `ElementalMagic`
+
+## TripleBowShot
+
+> **Display Text:** Triple Shot
+> 
+> **Prefixes:** Tripling
+> **Suffixes:** of Tripling
+> 
+> **Allowed Item Types:** Bow
+> 
+> **Requirements:**
+> > **Flags:** `ExclusiveSelf`
+> > **AllowedItemTypes:** `Bow`
+> > **AllowedRarities:** `Epic, Legendary`
+
 ## Bulwark
 
 > **Display Text:** Bulwark [Activated]: Prevent all damage for 5 seconds. Cooldown: 60 seconds.
@@ -2172,24 +2201,6 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 ## Berserker
 
 > **Display Text:** Berserker [Activated]: For 10 seconds, you cannot regenerate health, but you gain +50% to +200% damage based on health missing. Cooldown: 3 minutes.
-> 
-> **Allowed Item Types:** *None*
-> 
-> **Requirements:**
-> > **Flags:** `NoRoll, ExclusiveSelf`
-
-## DoubleMagicShot
-
-> **Display Text:** [mod_epicloot_set_me_doublemagicshot]
-> 
-> **Allowed Item Types:** *None*
-> 
-> **Requirements:**
-> > **Flags:** `NoRoll, ExclusiveSelf`
-
-## TripleBowShot
-
-> **Display Text:** [mod_epicloot_set_me_triplebowshot]
 > 
 > **Allowed Item Types:** *None*
 > 

@@ -2862,18 +2862,18 @@
     {
       "Type" : "DoubleMagicShot",
       "DisplayText" : "$mod_epicloot_me_doublemagicshot",
-	  "Description" : "$mod_epicloot_me_doublemagicshot_desc",
+      "Description" : "$mod_epicloot_me_doublemagicshot_desc",
       "Requirements" : {
         "AllowedItemTypes" : [
           "Staff"
-		],
+        ],
         "AllowedSkillTypes" : [
           "ElementalMagic"
+        ],
+        "AllowedRarities" : [
+          "Epic",
+          "Legendary"
         ]
-      },
-      "ValuesPerRarity" : {
-        "Epic"      : { "MinValue" : 1, "MaxValue" : 1, "Increment" : 1 },
-		"Legendary" : { "MinValue" : 1, "MaxValue" : 1, "Increment" : 1 }
       },
       "SelectionWeight" : 1,
       "Prefixes": [
@@ -2886,15 +2886,15 @@
     {
       "Type" : "TripleBowShot",
       "DisplayText" : "$mod_epicloot_me_triplebowshot",
-	  "Description" : "$mod_epicloot_me_triplebowshot_desc",
+      "Description" : "$mod_epicloot_me_triplebowshot_desc",
       "Requirements" : {
         "AllowedItemTypes" : [
           "Bow"
-		]
-      },
-      "ValuesPerRarity" : {
-        "Epic"      : { "MinValue" : 1, "MaxValue" : 1, "Increment" : 1 },
-		"Legendary" : { "MinValue" : 1, "MaxValue" : 1, "Increment" : 1 }
+        ],
+        "AllowedRarities" : [
+          "Epic",
+          "Legendary"
+        ]
       },
       "SelectionWeight" : 1,
       "Prefixes": [
@@ -2903,9 +2903,7 @@
       "Suffixes": [
         "$mod_epicloot_me_triplebowshot_suffix1"
       ]
-    }
-
-
+    },
 
     // Set Effects
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////

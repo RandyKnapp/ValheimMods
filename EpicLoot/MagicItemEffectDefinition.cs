@@ -345,7 +345,7 @@ namespace EpicLoot
                 case ItemRarity.Legendary:  return ValuesPerRarity.Legendary;
                 case ItemRarity.Mythic:
                     // TODO: Mythic Hookup
-                    return new ValueDef();//ValuesPerRarity.Mythic;
+                    return null;//ValuesPerRarity.Mythic;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(itemRarity), itemRarity, null);
             }

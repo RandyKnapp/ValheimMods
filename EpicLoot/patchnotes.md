@@ -1,23 +1,29 @@
 ﻿## Version 0.9.4
-  * New Features
-    * [Placeholder for Enchantment Table]
+  * **New Features:**
+    * Enchanting Table
+      * New build piece with custom crafting UI just for Epic Loot!
+      * Currently allows mass sacrificing, mass material conversions/upgrades/junk->trophy recipes, enchanting and augmenting (but more to come!)
+      * Item and recipe lists sortable and filterable
+      * Select many items or recipes and do them all at once
+      * The old way of enchanting at the forge will stay in the game for now, but will be removed in a future release
+      * A new config file (`materialconversions.json`) was added to facilitate the material conversion recipes at the new table
     * Added new Magic Effects: DoubleMagicShot and TripleBowShot (Credit: ploppy for the PR on this!)
-  * Changes
+  * **Changes:**
     * Converted EpicLoot to use the new Custom Data field provided in-game and REMOVED dependency on Extended Item Data Framework.
       * This means that **EpicLoot no longer requires Extended Item Data Framework**, in order to run.
       * EpicLoot is also fully compatible with OTHER mods still using Extended Item Data Framework without issue.
       * Mods that show as incompatible with EpicLoot or Extended Item Data Framework will need to be updated by their respective mod authors in order to remove the incompatibility.
-  * Bug Fixes
-    * Rare Reagent Localization was not correct.  Fixed to allow localization.
+  * **Bug Fixes:**
+    * Rare Reagent Localization was not correct. Fixed to allow localization.
     * Made AllowedItemTypes and ExcludedItemTypes to be flexible to be either a Game Item Type, or a configured Item Type grouping from the iteminfo.json.
-      * This allows for things like the StaffSkeleton to be included as AllowedItemTypes of "Staffs" where as "Staff" does not include StaffSkeleton.
+      * This allows for things like the StaffSkeleton to be included as AllowedItemTypes of "Staffs" where as "Staff" is not an in-game item type and does not include StaffSkeleton.
     * Fixed Auga Tool Tip fails when an item name does not reference a localizable string.
-    * Fixed issue with Magic Item background sticks to Hotkeybar and Quick Slots when items are moved around.
+    * Fixed issue with Magic Item backgrounds sticking to Hotkeybar and Quick Slots when items are moved around.
     * Adding vanilla sparkles to mundane items, such as RubyGold ring
     * Added the ability to patch translation.json using patch config without the need to restart the game or server.
-    * Added better null checking on Stagger functionality.
+    * Fixed errors with Stagger effect.
     * Items that have many Available Effects/Enchants were clipping when reviewing them in the Augment tab. Fixed to scale the font to a smaller size.
-      *This is not an issue in Auga.
+      * This is not an issue in Auga.
 ## Version 0.9.3
   * Introduction of the JSON Configuration Patching System. 
     * Please reference https://github.com/RandyKnapp/ValheimMods/wiki/Config-Patching-%280.9.3-or-newer%29 for information.

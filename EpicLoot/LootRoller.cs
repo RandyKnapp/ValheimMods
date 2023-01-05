@@ -523,7 +523,7 @@ namespace EpicLoot
 
         public static MagicItemEffect RollEffect(MagicItemEffectDefinition effectDef, ItemRarity itemRarity, MagicItemEffectDefinition.ValueDef valuesOverride = null)
         {
-            float value = 0;
+            float value = MagicItemEffect.DefaultValue;
             var valuesDef = valuesOverride ?? effectDef.GetValuesForRarity(itemRarity);
             if (valuesDef != null)
             {
