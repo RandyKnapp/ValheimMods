@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using HarmonyLib;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -16,11 +17,59 @@ namespace EpicLoot
     [HarmonyPatch]
     public static class VisEquipment_Patch
     {
+        //SetLeftHandEquiped
+        //SetRightHandEquiped
+        public enum ItemSettingSlot { None, Helmet, LeftHand, RightHand, Armor }
+
+        public static ItemSettingSlot AttachingItemSlot = ItemSettingSlot.None;
+
+        [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.SetLeftHandEquiped))]
+        [HarmonyPrefix]
+        public static void SetLeftHandEquiped_Prefix()
+        {
+            AttachingItemSlot = ItemSettingSlot.LeftHand;
+        }
+
+        [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.SetLeftHandEquiped))]
+        [HarmonyPostfix]
+        public static void SetLeftHandEquiped_Postfix()
+        {
+            AttachingItemSlot = ItemSettingSlot.None;
+        }
+
+        [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.SetRightHandEquiped))]
+        [HarmonyPrefix]
+        public static void SetRightHandEquiped_Prefix()
+        {
+            AttachingItemSlot = ItemSettingSlot.RightHand;
+        }
+
+        [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.SetRightHandEquiped))]
+        [HarmonyPostfix]
+        public static void SetRightHandEquiped_Postfix()
+        {
+            AttachingItemSlot = ItemSettingSlot.None;
+        }
+
+        [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.SetHelmetEquiped))]
+        [HarmonyPrefix]
+        public static void SetHelmetEquiped_Prefix()
+        {
+            AttachingItemSlot = ItemSettingSlot.Helmet;
+        }
+
+        [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.SetLeftHandEquiped))]
+        [HarmonyPostfix]
+        public static void SetHelmetEquiped_Postfix()
+        {
+            AttachingItemSlot = ItemSettingSlot.None;
+        }
+
         [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.AttachItem))]
         [HarmonyPostfix]
         public static void AttachItem_Postfix(VisEquipment __instance, GameObject __result, int itemHash)
         {
-            if (!CanCreateEffect(__instance, itemHash, out var player, out var equippedItem, out var itemID))
+            if (!CanCreateEffect(__instance, itemHash, AttachingItemSlot, out var player, out var equippedItem, out var itemID))
             {
                 return;
             }
@@ -33,7 +82,7 @@ namespace EpicLoot
         [HarmonyPostfix]
         public static void AttachArmor_Postfix(VisEquipment __instance, List<GameObject> __result, int itemHash)
         {
-            if (!CanCreateEffect(__instance, itemHash, out var player, out var equippedItem, out var itemID))
+            if (!CanCreateEffect(__instance, itemHash, ItemSettingSlot.Armor, out var player, out var equippedItem, out var itemID))
             {
                 return;
             }
@@ -215,7 +264,7 @@ namespace EpicLoot
             return false;
         }
 
-        public static bool CanCreateEffect(VisEquipment __instance, int itemHash, out Player player, out ItemDrop.ItemData equippedItem, out string itemID)
+        public static bool CanCreateEffect(VisEquipment __instance, int itemHash, ItemSettingSlot slot, out Player player, out ItemDrop.ItemData equippedItem, out string itemID)
         {
             equippedItem = null;
             itemID = null;
@@ -238,8 +287,16 @@ namespace EpicLoot
                 return false;
             }
 
-            var itemData = itemDrop.m_itemData;
-            equippedItem = player.GetEquipmentOfType(itemData.m_shared.m_itemType);
+            switch (slot)
+            {
+                case ItemSettingSlot.None:      equippedItem = null;                break;
+                case ItemSettingSlot.Helmet:    equippedItem = player.m_helmetItem; break;
+                case ItemSettingSlot.LeftHand:  equippedItem = player.m_leftItem;   break;
+                case ItemSettingSlot.RightHand: equippedItem = player.m_rightItem;  break;
+                case ItemSettingSlot.Armor:     equippedItem = player.GetEquipmentOfType(itemDrop.m_itemData.m_shared.m_itemType); break;
+                default: throw new ArgumentOutOfRangeException();
+            }
+
             return equippedItem != null;
         }
 

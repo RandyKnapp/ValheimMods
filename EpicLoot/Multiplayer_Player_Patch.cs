@@ -35,7 +35,7 @@ namespace EpicLoot
                 case ItemDrop.ItemData.ItemType.Utility: zdo.Set("ut-ell", data); break;
             }
 
-            EpicLoot.LogWarning($"Setting Equipment ZDO: {itemType}='{data}'");
+            //EpicLoot.Log($"Setting Equipment ZDO: {itemType}='{data}'");
         }
 
         [HarmonyPatch]
