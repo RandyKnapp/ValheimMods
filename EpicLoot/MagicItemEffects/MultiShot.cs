@@ -1,10 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using HarmonyLib;
-using JetBrains.Annotations;
-using UnityEngine;
-using Object = UnityEngine.Object;
+﻿using HarmonyLib;
 
 namespace EpicLoot.MagicItemEffects
 {
@@ -21,7 +15,10 @@ namespace EpicLoot.MagicItemEffects
                 
                 var player = (Player)__instance.m_character;
 
-                if (__instance.GetWeapon() == null)
+                if (__instance.GetWeapon() == null || player == null)
+                    return;
+
+                if (!player.HasActiveMagicEffect(MagicEffectType.DoubleMagicShot) && !player.HasActiveMagicEffect(MagicEffectType.TripleBowShot)) 
                     return;
 
                 var weaponDamage = __instance.GetWeapon()?.GetDamage();
