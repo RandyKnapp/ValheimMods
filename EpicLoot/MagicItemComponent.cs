@@ -712,7 +712,6 @@ namespace EpicLoot
         }
     }
 
-    //public void UpdateGui(Player player, ItemDrop.CustomItemData dragItem)
     [HarmonyPatch(typeof(InventoryGrid), nameof(InventoryGrid.UpdateGui))]
     public static class InventoryGrid_UpdateGui_MagicItemComponent_Patch
     {

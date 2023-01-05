@@ -158,10 +158,6 @@ namespace EpicLoot
             if (itemIsStaff && ExcludedItemTypes.Contains("Staff"))
                 return true;
 
-            //var itemIsTowerShield = itemData.m_shared.m_itemType == ItemDrop.CustomItemData.ItemType.Shield && itemData.m_shared.m_timedBlockBonus <= 0;
-            //if (itemIsTowerShield && ExcludedItemTypes.Contains("TowerShield"))
-            //    return true;
-
             return ExcludedItemTypes.Contains(itemData.m_shared.m_itemType.ToString());
         }
 
