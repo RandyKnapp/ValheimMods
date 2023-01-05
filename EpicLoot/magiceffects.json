@@ -2866,10 +2866,14 @@
       "Requirements" : {
         "AllowedItemTypes" : [
           "Staff"
-		]
+		],
+        "AllowedSkillTypes" : [
+          "ElementalMagic"
+        ]
       },
       "ValuesPerRarity" : {
-        "Legendary" : { "MinValue" : 1, "MaxValue" : 1, "Increment" : 1 }
+        "Epic"      : { "MinValue" : 1, "MaxValue" : 1, "Increment" : 1 },
+		"Legendary" : { "MinValue" : 1, "MaxValue" : 1, "Increment" : 1 }
       },
       "SelectionWeight" : 1,
       "Prefixes": [
@@ -2889,7 +2893,8 @@
 		]
       },
       "ValuesPerRarity" : {
-        "Legendary" : { "MinValue" : 1, "MaxValue" : 1, "Increment" : 1 }
+        "Epic"      : { "MinValue" : 1, "MaxValue" : 1, "Increment" : 1 },
+		"Legendary" : { "MinValue" : 1, "MaxValue" : 1, "Increment" : 1 }
       },
       "SelectionWeight" : 1,
       "Prefixes": [
