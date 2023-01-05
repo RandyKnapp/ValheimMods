@@ -237,8 +237,8 @@ namespace EpicLoot_UnityLib
 
             if (ItemTotalQuantity != null)
             {
-                ItemTotalQuantity.gameObject.SetActive(!NoMax && (ReadOnly || stackItem));
-                var quantityText = string.Format(ReadOnly ? ReadOnlyQuantityFormat : TotalQuantityFormat, _item.GetItem().m_stack);
+                ItemTotalQuantity.gameObject.SetActive(ReadOnly || stackItem);
+                var quantityText = string.Format(ReadOnly ? ReadOnlyQuantityFormat : TotalQuantityFormat, _item.GetMax());
                 if (CheckPlayerInventory)
                 {
                     var inventory = Player.m_localPlayer.GetInventory();

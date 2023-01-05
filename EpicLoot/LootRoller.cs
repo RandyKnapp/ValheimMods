@@ -294,7 +294,6 @@ namespace EpicLoot
                         AddDebugMagicEffects(magicItem);
                     }
                     magicItemComponent.SetMagicItem(magicItem);
-                    magicItemComponent.Save(magicItem);
                     itemDrop.m_itemData = itemData;
                     itemDrop.Save();
                     InitializeMagicItem(itemData);

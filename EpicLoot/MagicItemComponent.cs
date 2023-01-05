@@ -18,7 +18,7 @@ using Object = UnityEngine.Object;
 
 namespace EpicLoot
 {
-    public class MagicItemComponent : ItemData
+    public class MagicItemComponent : CustomItemData
     {
         public const string TypeID = "rkel";
 
@@ -27,6 +27,9 @@ namespace EpicLoot
         protected override bool AllowStackingIdenticalValues { get; set; } = true;
         public void SetMagicItem(MagicItem magicItem)
         {
+            if (magicItem == null)
+                return;
+
             MagicItem = magicItem;
             Value = Serialize();
             Save();
@@ -55,9 +58,9 @@ namespace EpicLoot
             }
         }
 
-        public ItemData Clone()
+        public CustomItemData Clone()
         {
-            return MemberwiseClone() as ItemData;
+            return MemberwiseClone() as CustomItemData;
         }
 
         public override void FirstLoad()
@@ -94,6 +97,8 @@ namespace EpicLoot
             {
                 CheckForExtendedItemDataAndConvert();
             }
+
+            SetMagicItem(MagicItem);
         }
 
         public override void Load()
@@ -102,12 +107,6 @@ namespace EpicLoot
                 Deserialize();
 
             CheckForExtendedItemDataAndConvert();
-        }
-
-        public void Save(MagicItem magicItem)
-        {
-            MagicItem = magicItem;
-            Serialize();
         }
 
         private void CheckForExtendedItemDataAndConvert()
@@ -191,7 +190,7 @@ namespace EpicLoot
 
         public static void SaveMagicItem(this ItemDrop.ItemData itemData, MagicItem magicItem)
         {
-            itemData.Data().GetOrCreate<MagicItemComponent>().Save(magicItem);
+            itemData.Data().GetOrCreate<MagicItemComponent>().SetMagicItem(magicItem);
         }
 
         public static bool IsExtended(this ItemDrop.ItemData itemData)
@@ -375,17 +374,17 @@ namespace EpicLoot
             if (prefab != null)
             {
                 var itemDropPrefab = prefab.GetComponent<ItemDrop>();
-                if ((itemData.IsLegacyEIDFItem() || itemDropPrefab.m_itemData.IsExtended()) && !itemData.IsExtended())
+                if ((itemData.IsLegacyMagicItem() || EpicLoot.CanBeMagicItem(itemDropPrefab.m_itemData)) && !itemData.IsExtended())
                 {
                     var instanceData = itemData.Data().Add<MagicItemComponent>();
 
-                    if (itemDropPrefab.m_itemData.IsExtended())
+                    if (EpicLoot.CanBeMagicItem(itemDropPrefab.m_itemData))
                     {
                         var prefabData = itemDropPrefab.m_itemData.Data().Get<MagicItemComponent>();
 
                         if (instanceData != null && prefabData != null)
                         {
-                            instanceData.Save(prefabData.MagicItem);
+                            instanceData.SetMagicItem(prefabData.MagicItem);
                         }
                     }
                     return itemDropPrefab.gameObject;
@@ -710,7 +709,6 @@ namespace EpicLoot
         }
     }
 
-    //public void UpdateGui(Player player, ItemDrop.ItemData dragItem)
     [HarmonyPatch(typeof(InventoryGrid), nameof(InventoryGrid.UpdateGui))]
     public static class InventoryGrid_UpdateGui_MagicItemComponent_Patch
     {
