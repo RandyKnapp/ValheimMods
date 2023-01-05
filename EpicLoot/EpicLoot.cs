@@ -820,8 +820,9 @@ namespace EpicLoot
                 }
                 else
                 {
-                    var otherPiece = pieceTable.m_pieces.Find(x => x.GetComponent<Piece>() != null).GetComponent<Piece>();
-                    piece.m_placeEffect.m_effectPrefabs = otherPiece.m_placeEffect.m_effectPrefabs.ToArray();
+                    var workshopPrefab = pieceTable.m_pieces.FirstOrDefault(x => x.name == "piece_workshop");
+                    if (workshopPrefab != null && workshopPrefab.GetComponent<Piece>() is Piece otherPiece)
+                        piece.m_placeEffect.m_effectPrefabs = otherPiece.m_placeEffect.m_effectPrefabs.ToArray();
                 }
             }
         }

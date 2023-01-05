@@ -21,7 +21,19 @@ namespace EpicLoot_UnityLib
 
         public void Awake()
         {
-            
+            var wearTear = GetComponent<WearNTear>();
+            if (wearTear != null)
+            {
+                wearTear.m_destroyedEffect.m_effectPrefabs = new EffectList.EffectData[]
+                {
+                    new EffectList.EffectData() { m_prefab = ZNetScene.instance.GetPrefab("vfx_SawDust") },
+                    new EffectList.EffectData() { m_prefab = ZNetScene.instance.GetPrefab("sfx_wood_destroyed") }
+                };
+                wearTear.m_hitEffect.m_effectPrefabs = new EffectList.EffectData[1]
+                {
+                    new EffectList.EffectData() { m_prefab = ZNetScene.instance.GetPrefab("vfx_SawDust") }
+                };
+            }
         }
 
         public void Update()
