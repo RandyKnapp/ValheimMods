@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Security;
 using BepInEx;
 
 namespace EpicLoot.Data
@@ -44,31 +43,6 @@ namespace EpicLoot.Data
             return itemData.m_crafterName.Contains($"{StartDelimiter}{MagicItemComponent.TypeID}{EndDelimiter}");
         }
 
-        private static string _getEIDFTypeValue(string encodedCrafterName, string typeID)
-        {
-            if (string.IsNullOrEmpty(encodedCrafterName) || string.IsNullOrEmpty(typeID))
-                return null;
-
-            var serializedComponents = encodedCrafterName.Split(new[] { StartDelimiter }, StringSplitOptions.RemoveEmptyEntries);
-
-            foreach (var component in serializedComponents)
-            {
-                var parts = component.Split(new[] { EndDelimiter }, StringSplitOptions.None);
-                var typeString = RestoreDataText(parts[0]);
-
-                if (typeString.Equals(typeID))
-                {
-                    var data = parts.Length == 2 ? parts[1] : string.Empty;
-                    if (string.IsNullOrEmpty(data))
-                        continue;
-
-                    return RestoreDataText(data);
-                }
-            }
-
-            return null;
-        }
-
         public static string FormatCrafterName(string tooltipResult)
         {
             if (string.IsNullOrEmpty(tooltipResult) || !ContainsEncodedCrafterName(tooltipResult))
@@ -87,6 +61,7 @@ namespace EpicLoot.Data
 
             return tooltipResult;
         }
+
         public static string GetMagicItemFromCrafterName(ItemDrop.ItemData item)
         {
             if (item == null || string.IsNullOrEmpty(item.m_crafterName))
@@ -132,6 +107,30 @@ namespace EpicLoot.Data
             {
                 ExtendedItemFrameworkLoaded = true;
             }
+        }
+        private static string _getEIDFTypeValue(string encodedCrafterName, string typeID)
+        {
+            if (string.IsNullOrEmpty(encodedCrafterName) || string.IsNullOrEmpty(typeID))
+                return null;
+
+            var serializedComponents = encodedCrafterName.Split(new[] { StartDelimiter }, StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (var component in serializedComponents)
+            {
+                var parts = component.Split(new[] { EndDelimiter }, StringSplitOptions.None);
+                var typeString = RestoreDataText(parts[0]);
+
+                if (typeString.Equals(typeID))
+                {
+                    var data = parts.Length == 2 ? parts[1] : string.Empty;
+                    if (string.IsNullOrEmpty(data))
+                        continue;
+
+                    return RestoreDataText(data);
+                }
+            }
+
+            return null;
         }
     }
 }
