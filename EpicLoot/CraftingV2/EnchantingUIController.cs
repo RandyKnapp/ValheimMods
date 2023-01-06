@@ -319,9 +319,10 @@ namespace EpicLoot.CraftingV2
                 previousDurabilityPercent = item.m_durability / item.GetMaxDurability();
 
             var luckFactor = player.GetTotalActiveMagicEffectValue(MagicEffectType.Luck, 0.01f);
-            var magicItemComponent = item.Data().Add<MagicItemComponent>();
             var magicItem = LootRoller.RollMagicItem((ItemRarity)rarity, item, luckFactor);
-            magicItemComponent?.SetMagicItem(magicItem);
+
+            var magicItemComponent = item.Data().GetOrCreate<MagicItemComponent>();
+            magicItemComponent.SetMagicItem(magicItem);
 
             EquipmentEffectCache.Reset(player);
 
