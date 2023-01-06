@@ -55,7 +55,7 @@ namespace EpicLoot.Data
                 var eidfCrafterNameStopIndex = tooltipResult.IndexOf("</color>", eidfCrafterNameStartIndex);
                 var length = eidfCrafterNameStopIndex - eidfCrafterNameStartIndex;
                 var encodedCrafterName = tooltipResult.Substring(eidfCrafterNameStartIndex, length);
-                var formatedCrafterName = _getEIDFTypeValue(encodedCrafterName, CrafterNameType);
+                var formatedCrafterName = GetEIDFTypeData(encodedCrafterName, CrafterNameType);
                 tooltipResult = tooltipResult.Replace(encodedCrafterName, formatedCrafterName);
             }
 
@@ -67,7 +67,7 @@ namespace EpicLoot.Data
             if (item == null || string.IsNullOrEmpty(item.m_crafterName))
                 return null;
 
-            return _getEIDFTypeValue(item.m_crafterName, MagicItemComponent.TypeID);
+            return GetEIDFTypeData(item.m_crafterName, MagicItemComponent.TypeID);
         }
 
         public static string GetCrafterName(this ItemDrop.ItemData item)
@@ -78,14 +78,14 @@ namespace EpicLoot.Data
             if (!item.IsLegacyEIDFItem() || ExtendedItemFrameworkLoaded)
                 return item.m_crafterName;
 
-            return _getEIDFTypeValue(item.m_crafterName, CrafterNameType) ?? string.Empty;
+            return GetEIDFTypeData(item.m_crafterName, CrafterNameType) ?? string.Empty;
         }
         public static string GetCrafterName(string encodedCrafterName)
         {
             if (string.IsNullOrEmpty(encodedCrafterName) || !ContainsEncodedCrafterName(encodedCrafterName))
                 return encodedCrafterName;
 
-            return _getEIDFTypeValue(encodedCrafterName, CrafterNameType) ?? string.Empty;
+            return GetEIDFTypeData(encodedCrafterName, CrafterNameType) ?? string.Empty;
         }
 
         public static string GetUniqueId(this ItemDrop.ItemData item)
@@ -96,19 +96,14 @@ namespace EpicLoot.Data
             if (!item.IsLegacyEIDFItem()|| ExtendedItemFrameworkLoaded)
                 return item.m_crafterName;
 
-            return _getEIDFTypeValue(item.m_crafterName, UniqueIdType) ?? string.Empty;
+            return GetEIDFTypeData(item.m_crafterName, UniqueIdType) ?? string.Empty;
         }
 
-        public static void CheckForExtendedITemFrameworkLoaded()
+        public static void CheckForExtendedItemFrameworkLoaded(EpicLoot instance)
         {
-            var dirInfo = new DirectoryInfo(Paths.PluginPath);
-
-            if (dirInfo.GetFiles("ExtendedItemDataFramework.dll", SearchOption.AllDirectories).Any())
-            {
-                ExtendedItemFrameworkLoaded = true;
-            }
+            ExtendedItemFrameworkLoaded = instance.gameObject.GetComponent("ExtendedItemDataFramework") != null;
         }
-        private static string _getEIDFTypeValue(string encodedCrafterName, string typeID)
+        private static string GetEIDFTypeData(string encodedCrafterName, string typeID)
         {
             if (string.IsNullOrEmpty(encodedCrafterName) || string.IsNullOrEmpty(typeID))
                 return null;

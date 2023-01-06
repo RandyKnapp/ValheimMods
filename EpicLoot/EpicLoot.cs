@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -232,7 +231,8 @@ namespace EpicLoot
 
             var assembly = Assembly.GetExecutingAssembly();
 
-            EIDFLegacy.CheckForExtendedITemFrameworkLoaded();
+            
+            EIDFLegacy.CheckForExtendedItemFrameworkLoaded(_instance);
 
             LoadEmbeddedAssembly(assembly, "EpicLoot-UnityLib.dll");
             
