@@ -98,6 +98,7 @@ namespace EpicLoot
             }
 
             SetMagicItem(MagicItem);
+            FixupValuelessEffects();
         }
 
         public override void Load()
@@ -118,6 +119,21 @@ namespace EpicLoot
                 return;
 
             Deserialize();
+        }
+
+        private void FixupValuelessEffects()
+        {
+            if (MagicItem == null)
+                return;
+
+            foreach (var effect in MagicItem.Effects)
+            {
+                if (MagicItemEffectDefinitions.IsValuelessEffect(effect.EffectType, MagicItem.Rarity) && !Mathf.Approximately(effect.EffectValue, 1))
+                {
+                    EpicLoot.LogWarning($"Fixing up effect on {MagicItem.DisplayName}: effect={effect.EffectType}");
+                    effect.EffectValue = 1;
+                }
+            }
         }
     }
 
@@ -575,7 +591,7 @@ namespace EpicLoot
                 {
                     if (count >= setBonusInfo.Count && (effectType == null || setBonusInfo.Effect.Type == effectType))
                     {
-                        var effect = new MagicItemEffect(setBonusInfo.Effect.Type, setBonusInfo.Effect.Values?.MinValue ?? 0);
+                        var effect = new MagicItemEffect(setBonusInfo.Effect.Type, setBonusInfo.Effect.Values?.MinValue ?? MagicItemEffect.DefaultValue);
                         activeSetEffects.Add(effect);
                     }
                 }
