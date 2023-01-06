@@ -76,6 +76,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\unstripped_corlib\UnityEngine.AudioModule.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.ClothModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\ExtendedItemDataFramework\bin\Debug\UnityEngine.ClothModule.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\unstripped_corlib\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
@@ -164,6 +168,8 @@
     <Compile Include="GatedItemType\ItemInfoConfig.cs" />
     <Compile Include="Healing\HealingQueueMono.cs" />
     <Compile Include="Humanoid_Patch.cs" />
+    <Compile Include="Integrations\HarmonyPatches\ArmorStand_Patch.cs" />
+    <Compile Include="Integrations\HarmonyPatches\ItemStand_Patch.cs" />
     <Compile Include="LegendarySystem\LegendaryItemConfig.cs" />
     <Compile Include="LegendarySystem\UniqueLegendaryHelper.cs" />
     <Compile Include="LootBeams\AlwaysPointUp.cs" />

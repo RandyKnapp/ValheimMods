@@ -411,46 +411,57 @@ namespace EpicLoot
 
         public static string GetSetTooltip(this ItemDrop.ItemData item)
         {
+            if (item == null)
+                return String.Empty;
+
             var text = new StringBuilder();
-            var setID = item.GetSetID(out var isMundane);
-            var setSize = item.GetSetSize();
-
-            var setPieces = GetSetPieces(setID);
-            var currentSetEquipped = Player.m_localPlayer.GetEquippedSetPieces(setID);
-
-            var setDisplayName = GetSetDisplayName(item, isMundane);
-            text.Append($"\n\n<color={EpicLoot.GetSetItemColor()}> $mod_epicloot_set: {setDisplayName} ({currentSetEquipped.Count}/{setSize}):</color>");
-
-            foreach (var setItemName in setPieces)
+            try
             {
-                var isEquipped = IsSetItemEquipped(currentSetEquipped, setItemName, isMundane);
-                var color = isEquipped ? "white" : "grey";
-                var displayName = GetSetItemDisplayName(setItemName, isMundane);
-                text.Append($"\n  <color={color}>{displayName}</color>");
-            }
+                var setID = item.GetSetID(out var isMundane);
+                var setSize = item.GetSetSize();
 
-            if (isMundane)
-            {
-                var setEffectColor = currentSetEquipped.Count == setSize ? EpicLoot.GetSetItemColor() : "grey";
-                var skillLevel = Player.m_localPlayer.GetSkillLevel(item.m_shared.m_skillType);
-                text.Append($"\n<color={setEffectColor}>({setSize}) ‣ {item.GetSetStatusEffectTooltip(item.m_quality, skillLevel).Replace("\n", " ")}</color>");
-            }
-            else
-            {
-                var setInfo = item.GetLegendarySetInfo();
-                foreach (var setBonusInfo in setInfo.SetBonuses.OrderBy(x => x.Count))
+                var setPieces = GetSetPieces(setID);
+                var currentSetEquipped = Player.m_localPlayer.GetEquippedSetPieces(setID);
+
+                var setDisplayName = GetSetDisplayName(item, isMundane);
+                text.Append($"\n\n<color={EpicLoot.GetSetItemColor()}> $mod_epicloot_set: {setDisplayName} ({currentSetEquipped.Count}/{setSize}):</color>");
+
+                foreach (var setItemName in setPieces)
                 {
-                    var hasEquipped = currentSetEquipped.Count >= setBonusInfo.Count;
-                    var effectDef = MagicItemEffectDefinitions.Get(setBonusInfo.Effect.Type);
-                    if (effectDef == null)
-                    {
-                        EpicLoot.LogError($"Set Tooltip: Could not find effect ({setBonusInfo.Effect.Type}) for set ({setInfo.ID}) bonus ({setBonusInfo.Count})!");
-                        continue;
-                    }
-
-                    var display = MagicItem.GetEffectText(effectDef, setBonusInfo.Effect.Values?.MinValue ?? 0);
-                    text.Append($"\n<color={(hasEquipped ? EpicLoot.GetSetItemColor() : "grey")}>({setBonusInfo.Count}) ‣ {display}</color>");
+                    var isEquipped = IsSetItemEquipped(currentSetEquipped, setItemName, isMundane);
+                    var color = isEquipped ? "white" : "grey";
+                    var displayName = GetSetItemDisplayName(setItemName, isMundane);
+                    text.Append($"\n  <color={color}>{displayName}</color>");
                 }
+
+                if (isMundane)
+                {
+                    var setEffectColor = currentSetEquipped.Count == setSize ? EpicLoot.GetSetItemColor() : "grey";
+                    var skillLevel = Player.m_localPlayer.GetSkillLevel(item.m_shared.m_skillType);
+                    text.Append($"\n<color={setEffectColor}>({setSize}) ‣ {item.GetSetStatusEffectTooltip(item.m_quality, skillLevel).Replace("\n", " ")}</color>");
+                }
+                else
+                {
+                    var setInfo = item.GetLegendarySetInfo();
+                    foreach (var setBonusInfo in setInfo.SetBonuses.OrderBy(x => x.Count))
+                    {
+                        var hasEquipped = currentSetEquipped.Count >= setBonusInfo.Count;
+                        var effectDef = MagicItemEffectDefinitions.Get(setBonusInfo.Effect.Type);
+                        if (effectDef == null)
+                        {
+                            EpicLoot.LogError($"Set Tooltip: Could not find effect ({setBonusInfo.Effect.Type}) for set ({setInfo.ID}) bonus ({setBonusInfo.Count})!");
+                            continue;
+                        }
+
+                        var display = MagicItem.GetEffectText(effectDef, setBonusInfo.Effect.Values?.MinValue ?? 0);
+                        text.Append($"\n<color={(hasEquipped ? EpicLoot.GetSetItemColor() : "grey")}>({setBonusInfo.Count}) ‣ {display}</color>");
+                    }
+                }
+
+            }
+            catch (Exception e)
+            {
+                EpicLoot.LogWarning($"[GetSetTooltip] Error on item {item.m_shared?.m_name} - {e.Message}");
             }
 
             return text.ToString();
