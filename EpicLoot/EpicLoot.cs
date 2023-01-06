@@ -22,6 +22,7 @@ using Newtonsoft.Json;
 using ServerSync;
 using UnityEngine;
 using UnityEngine.UI;
+using Debug = UnityEngine.Debug;
 using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
 
@@ -229,6 +230,10 @@ namespace EpicLoot
             _configSync.AddLockingConfigEntry(_serverConfigLocked);
 
             var assembly = Assembly.GetExecutingAssembly();
+
+            
+            EIDFLegacy.CheckForExtendedItemFrameworkLoaded(_instance);
+
             LoadEmbeddedAssembly(assembly, "EpicLoot-UnityLib.dll");
             
             LoadPatches();
