@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using EpicLoot.Crafting;
+using EpicLoot.Data;
 using HarmonyLib;
 using JetBrains.Annotations;
 using UnityEngine;
@@ -35,15 +36,17 @@ namespace EpicLoot
         [UsedImplicitly]
         private static bool Prefix(ref string __result, ItemDrop.ItemData item, int qualityLevel, bool crafting)
         {
-            if (!item.IsMagic())
-            {
+            if (item == null)
                 return true;
-            }
 
             var localPlayer = Player.m_localPlayer;
             var text = new StringBuilder(256);
 
             var magicItem = item.GetMagicItem();
+
+            if (magicItem == null)
+                return true;
+
             var magicColor = magicItem.GetColorString();
             var itemTypeName = magicItem.GetItemTypeName(item.Extended());
 
@@ -65,7 +68,7 @@ namespace EpicLoot
             ItemDrop.ItemData.AddHandedTip(item, text);
             if (item.m_crafterID != 0L)
             {
-                text.AppendFormat("\n$item_crafter: <color=orange>{0}</color>", item.m_crafterName);
+                text.AppendFormat("\n$item_crafter: <color=orange>{0}</color>", item.GetCrafterName());
             }
 
             if (!item.m_shared.m_teleportable)
@@ -286,15 +289,19 @@ namespace EpicLoot
             return false;
         }
 
+        [UsedImplicitly]
         public static void Postfix(ref string __result, ItemDrop.ItemData item)
         {
-            if (item != null && (item.IsMagicCraftingMaterial() || item.IsRunestone()))
+            if (item == null)
+                return;
+
+            if (item.IsMagicCraftingMaterial() || item.IsRunestone())
             {
                 var rarityDisplay = EpicLoot.GetRarityDisplayName(item.GetCraftingMaterialRarity());
                 __result = $"<color={item.GetCraftingMaterialRarityColor()}>{rarityDisplay} $mod_epicloot_craftingmaterial\n</color>" + __result;
             }
 
-            if (item != null && !item.IsMagic())
+            if (!item.IsMagic())
             {
                 var text = new StringBuilder();
 
