@@ -286,14 +286,18 @@ namespace EpicLoot
             }
 
             __result = text.ToString();
+
             return false;
         }
 
         [UsedImplicitly]
+        [HarmonyPriority(Priority.Last)]
         public static void Postfix(ref string __result, ItemDrop.ItemData item)
         {
             if (item == null)
                 return;
+
+            __result = EIDFLegacy.FormatCrafterName(__result);
 
             if (item.IsMagicCraftingMaterial() || item.IsRunestone())
             {
@@ -583,6 +587,9 @@ namespace EpicLoot
                             value = $"<color={magicColor}>{value}</color>";
                         }
                         break;
+                    case "$item_crafter":
+                        value = EIDFLegacy.GetCrafterName(value);
+                        break;
                     case "$item_eitrregen_modifier":
                         if (magicItem.HasEffect(MagicEffectType.ModifyEitrRegen))
                         {
@@ -662,7 +669,14 @@ namespace EpicLoot
                     }
                 }
             }
-            
+
+            switch (label)
+            {
+                case "$item_crafter":
+                    value = EIDFLegacy.GetCrafterName(value);
+                    break;
+            }
+
             return new Tuple<string, string>(label, value);
         }
     }

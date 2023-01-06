@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Security;
 using BepInEx;
 
 namespace EpicLoot.Data
@@ -27,8 +28,14 @@ namespace EpicLoot.Data
             if (itemData == null || string.IsNullOrEmpty(itemData.m_crafterName))
                 return false;
 
-            return itemData.m_crafterName.StartsWith(StartDelimiter);
+            return ContainsEncodedCrafterName(itemData.m_crafterName);
         }
+
+        public static bool ContainsEncodedCrafterName(string value)
+        {
+            return value.Contains($"{StartDelimiter}{CrafterNameType}{EndDelimiter}");
+        }
+
         public static bool IsLegacyMagicItem(this ItemDrop.ItemData itemData)
         {
             if (itemData == null || string.IsNullOrEmpty(itemData.m_crafterName))
@@ -62,6 +69,24 @@ namespace EpicLoot.Data
             return null;
         }
 
+        public static string FormatCrafterName(string tooltipResult)
+        {
+            if (string.IsNullOrEmpty(tooltipResult) || !ContainsEncodedCrafterName(tooltipResult))
+                return tooltipResult;
+
+            //Check for EIDF Usage
+            if (tooltipResult.Contains($"{StartDelimiter}{CrafterNameType}{EndDelimiter}"))
+            {
+                var eidfCrafterNameStartIndex = tooltipResult.IndexOf($"{StartDelimiter}{CrafterNameType}{EndDelimiter}");
+                var eidfCrafterNameStopIndex = tooltipResult.IndexOf("</color>", eidfCrafterNameStartIndex);
+                var length = eidfCrafterNameStopIndex - eidfCrafterNameStartIndex;
+                var encodedCrafterName = tooltipResult.Substring(eidfCrafterNameStartIndex, length);
+                var formatedCrafterName = _getEIDFTypeValue(encodedCrafterName, CrafterNameType);
+                tooltipResult = tooltipResult.Replace(encodedCrafterName, formatedCrafterName);
+            }
+
+            return tooltipResult;
+        }
         public static string GetMagicItemFromCrafterName(ItemDrop.ItemData item)
         {
             if (item == null || string.IsNullOrEmpty(item.m_crafterName))
@@ -79,6 +104,13 @@ namespace EpicLoot.Data
                 return item.m_crafterName;
 
             return _getEIDFTypeValue(item.m_crafterName, CrafterNameType) ?? string.Empty;
+        }
+        public static string GetCrafterName(string encodedCrafterName)
+        {
+            if (string.IsNullOrEmpty(encodedCrafterName) || !ContainsEncodedCrafterName(encodedCrafterName))
+                return encodedCrafterName;
+
+            return _getEIDFTypeValue(encodedCrafterName, CrafterNameType) ?? string.Empty;
         }
 
         public static string GetUniqueId(this ItemDrop.ItemData item)
