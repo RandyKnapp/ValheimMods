@@ -76,9 +76,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>G:\Steam\steamapps\common\Valheim\unstripped_corlib\UnityEngine.AudioModule.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine.ClothModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\ExtendedItemDataFramework\bin\Debug\UnityEngine.ClothModule.dll</HintPath>
+    <Reference Include="UnityEngine.ClothModule">
+      <HintPath>G:\Steam\steamapps\common\Valheim\unstripped_corlib\UnityEngine.ClothModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>G:\Steam\steamapps\common\Valheim\unstripped_corlib\UnityEngine.CoreModule.dll</HintPath>

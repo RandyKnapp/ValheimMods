@@ -36,7 +36,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="0Harmony">
-      <HintPath>..\valheim_Data\BepInEx\core\0Harmony.dll</HintPath>
+      <HintPath>G:\Steam\steamapps\common\Valheim\BepInEx\core\0Harmony.dll</HintPath>
     </Reference>
     <Reference Include="assembly_utils_publicized, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -51,21 +51,21 @@
       <HintPath>..\Libs\AugaAPI.dll</HintPath>
     </Reference>
     <Reference Include="BepInEx">
-      <HintPath>..\valheim_Data\BepInEx\core\BepInEx.dll</HintPath>
+      <HintPath>G:\Steam\steamapps\common\Valheim\BepInEx\core\BepInEx.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="UnityEngine">
-      <HintPath>..\valheim_Data\2019.4.20f1\Editor\Data\Managed\UnityEngine\UnityEngine.dll</HintPath>
+      <HintPath>G:\Steam\steamapps\common\Valheim\unstripped_corlib\UnityEngine.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.ClothModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>G:\Steam\steamapps\common\Valheim\unstripped_corlib\UnityEngine.ClothModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
-      <HintPath>..\valheim_Data\2019.4.20f1\Editor\Data\Managed\UnityEngine\UnityEngine.CoreModule.dll</HintPath>
+      <HintPath>G:\Steam\steamapps\common\Valheim\unstripped_corlib\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.PhysicsModule">
-      <HintPath>..\valheim_Data\2019.4.20f1\Editor\Data\Managed\UnityEngine\UnityEngine.PhysicsModule.dll</HintPath>
+      <HintPath>G:\Steam\steamapps\common\Valheim\unstripped_corlib\UnityEngine.PhysicsModule.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
