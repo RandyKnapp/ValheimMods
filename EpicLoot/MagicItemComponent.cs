@@ -800,7 +800,7 @@ namespace EpicLoot
         public static void Postfix(HotkeyBar __instance, List<HotkeyBar.ElementData> ___m_elements, List<ItemDrop.ItemData> ___m_items, Player player)
         {
 
-            if (!__instance.name.Equals("HotKeyBar") || player == null || player.IsDead()) return;
+            if ( player == null || player.IsDead()) return;
 
             for (var index = 0; index < Player.m_localPlayer.GetInventory().m_width; index++)
             {
