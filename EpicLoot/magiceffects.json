@@ -2887,13 +2887,16 @@
       "Type" : "TripleBowShot",
       "DisplayText" : "$mod_epicloot_me_triplebowshot",
       "Description" : "$mod_epicloot_me_triplebowshot_desc",
-      "Requirements" : {
-        "AllowedItemTypes" : [
+      "Requirements": {
+        "AllowedItemTypes": [
           "Bow"
         ],
-        "AllowedRarities" : [
+        "AllowedRarities": [
           "Epic",
           "Legendary"
+        ],
+        "ExcludedItemNames": [
+          "$item_crossbow_arbalest"
         ]
       },
       "SelectionWeight" : 1,
