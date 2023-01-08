@@ -18,6 +18,7 @@ namespace EpicLoot_UnityLib
         protected float _countdown;
         protected Text _buttonLabel;
         protected string _defaultButtonLabelText;
+        protected bool _locked;
 
         protected abstract void DoMainAction();
         protected abstract void OnSelectedItemsChanged();
@@ -32,6 +33,8 @@ namespace EpicLoot_UnityLib
             var uiSFX = GameObject.Find("sfx_gui_button");
             if (uiSFX)
                 Audio.outputAudioMixerGroup = uiSFX.GetComponent<AudioSource>().outputAudioMixerGroup;
+
+            AvailableItems.GiveFocus(true, 0);
         }
 
         protected virtual void OnMainButtonClicked()
@@ -113,6 +116,7 @@ namespace EpicLoot_UnityLib
 
         public virtual void Lock()
         {
+            _locked = true;
             var lists = GetComponentsInChildren<MultiSelectItemList>();
             foreach (var list in lists)
             {
@@ -124,6 +128,7 @@ namespace EpicLoot_UnityLib
 
         public virtual void Unlock()
         {
+            _locked = false;
             var lists = GetComponentsInChildren<MultiSelectItemList>();
             foreach (var list in lists)
             {

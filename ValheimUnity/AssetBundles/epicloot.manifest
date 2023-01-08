@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 3594408851
+CRC: 2409429027
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 74453797cc8816266954de1e10a9e244
+    Hash: fa855a3c8cbd16bf1c1f1205e00a5b61
   TypeTreeHash:
     serializedVersion: 2
-    Hash: fe7115ba760d1141de5f266c8f38f7bf
+    Hash: 7e1ad92ba444a4f08b840ddaf5571f59
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -86,6 +86,8 @@ ClassTypes:
 - Class: 114
   Script: {fileID: -259742986, guid: d920e4723ba2566674efb2f0c3eb6edb, type: 3}
 - Class: 114
+  Script: {fileID: 702673311, guid: d920e4723ba2566674efb2f0c3eb6edb, type: 3}
+- Class: 114
   Script: {fileID: 438561839, guid: d920e4723ba2566674efb2f0c3eb6edb, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 31a19414c41e5ae4aae2af33fee712f6, type: 3}
@@ -133,6 +135,8 @@ ClassTypes:
   Script: {fileID: 11500000, guid: 2fafe2cfe61f6974895a912c3755e8f1, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 8a8695521f0d02e499659fee002a26c2, type: 3}
+- Class: 114
+  Script: {fileID: 1829327813, guid: 2f9828d4dfcaa584280fbdd93cb3976a, type: 3}
 - Class: 115
   Script: {instanceID: 0}
 - Class: 120
@@ -162,17 +166,17 @@ Assets:
 - Assets/EpicLoot/Sprites/Adventure/ForestToken.png
 - Assets/EpicLoot/Prefabs/LootBeams/LegendaryLootBeam.prefab
 - Assets/EpicLoot/Prefabs/UI/DebugText.prefab
-- Assets/EpicLoot/Sprites/Inventory/Auga/augment_tabicon.png
 - Assets/EpicLoot/Prefabs/Adventure/IronBountyToken.prefab
+- Assets/EpicLoot/Sprites/Inventory/Auga/augment_tabicon.png
 - Assets/EpicLoot/Sprites/Inventory/RareItemBg.png
 - Assets/EpicLoot/Prefabs/CraftingMaterials/RunestoneEpic.prefab
 - Assets/EpicLoot/Sprites/Adventure/MapIconBounty.png
 - Assets/EpicLoot/ScriptableObjects/BulwarkStatusEffect.asset
 - Assets/EpicLoot/Prefabs/CraftingMaterials/DustLegendary.prefab
-- Assets/EpicLoot/Prefabs/CraftingMaterials/ReagentEpic.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/ShardMythic.prefab
 - Assets/EpicLoot/Prefabs/LootBeams/MagicLootBeam.prefab
 - Assets/EpicLoot/Prefabs/SFX/sfx_frostcone.prefab
+- Assets/EpicLoot/Prefabs/CraftingMaterials/ReagentEpic.prefab
 - Assets/EpicLoot/Sprites/Inventory/GenericItemBg.png
 - Assets/EpicLoot/Sprites/Inventory/Auga/enchant_tabicon.png
 - Assets/X_RPGVFX/Auras pack/Prefabs/FireAura 1.prefab
@@ -183,6 +187,7 @@ Assets:
 - Assets/EpicLoot/Prefabs/CraftingMaterials/EssenceEpic.prefab
 - Assets/EpicLoot/Sprites/Inventory/LegendaryItemBg.png
 - Assets/EpicLoot/Sprites/Inventory/Auga/AugaItemBG.png
+- Assets/EpicLoot/Sprites/Adventure/button_glow.png
 - Assets/EpicLoot/Prefabs/StationExtensions/piece_enchantingtable.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/DustRare.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/ReagentRare.prefab
@@ -211,6 +216,7 @@ Assets:
 - Assets/EpicLoot/Prefabs/Equipment/GoldRubyRing.prefab
 - Assets/EpicLoot/Prefabs/CraftingMaterials/RunestoneMythic.prefab
 - Assets/EpicLoot/Sprites/Inventory/Auga/disenchant_tabicon.png
+- Assets/EpicLoot/Prefabs/Enchanting/ButtonFocusAuga.prefab
 - Assets/EpicLoot/Prefabs/UI/WelcomeMessage.prefab
 - Assets/EpicLoot/Sprites/Inventory/SmallButtonEnchantOverlay.png
 - Assets/EpicLoot/Prefabs/Equipment/Andvaranaut.prefab
@@ -231,6 +237,7 @@ Assets:
 - Assets/EpicLoot/Sprites/Inventory/GenericSetItemMarker.png
 - Assets/EpicLoot/Sounds/MythicItemDrop.wav
 - Assets/EpicLoot/Prefabs/CraftingMaterials/RunestoneMagic.prefab
+- Assets/EpicLoot/Prefabs/Enchanting/ButtonFocus.prefab
 - Assets/EpicLoot/Sounds/AbandonBounty.wav
 - Assets/EpicLoot/Sprites/Inventory/MagicItemBg.png
 - Assets/EpicLoot/Prefabs/Adventure/GoldBountyToken.prefab

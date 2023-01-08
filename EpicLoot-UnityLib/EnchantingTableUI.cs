@@ -73,7 +73,7 @@ namespace EpicLoot_UnityLib
 
         public static bool IsVisible()
         {
-            return instance != null && instance.Root != null && instance.Root.activeSelf && instance._hiddenFrames <= 2;
+            return instance != null && instance.Root != null && instance.Root.activeSelf && instance._hiddenFrames <= 4;
         }
 
         public static bool IsInTextInput()
@@ -112,6 +112,7 @@ namespace EpicLoot_UnityLib
             if (gotCloseInput)
             {
                 ZInput.ResetButtonStatus("JoyButtonB");
+                ZInput.ResetButtonStatus("JoyJump");
 
                 var panelCapturedInput = false;
                 foreach (var panel in Panels)

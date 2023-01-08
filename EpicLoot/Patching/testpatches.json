@@ -4,11 +4,6 @@
   "RequireAll": true, 
   "Patches": [
     {
-      "Path": "$.SecretStash.OtherItems", 
-      "Action": "Append",
-      "Value": { "Item": "SwordIron", "CoinsCost": 123 } 
-    },
-    {
       "Path": "$.SecretStash.OtherItems[0]", 
       "Action": "InsertBefore",
       "Value": { "Item": "SwordBronze", "CoinsCost": 234 } 

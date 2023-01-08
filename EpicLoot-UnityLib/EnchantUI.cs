@@ -67,6 +67,23 @@ namespace EpicLoot_UnityLib
         {
             base.Update();
 
+            if (!_locked && ZInput.IsGamepadActive())
+            {
+                if (ZInput.GetButtonDown("JoyButtonY"))
+                {
+                    var nextModeIndex = ((int)_rarity + 1) % RarityButtons.Count;
+                    RarityButtons[nextModeIndex].isOn = true;
+                    ZInput.ResetButtonStatus("JoyButtonY");
+                }
+
+                if (EnchantInfoScrollbar != null)
+                {
+                    var rightStickAxis = ZInput.GetJoyRightStickY();
+                    if (Mathf.Abs(rightStickAxis) > 0.5f)
+                        EnchantInfoScrollbar.value = Mathf.Clamp01(EnchantInfoScrollbar.value + rightStickAxis * -0.1f);
+                }
+            }
+
             if (_successDialog != null && !_successDialog.activeSelf)
             {
                 Unlock();
@@ -137,6 +154,12 @@ namespace EpicLoot_UnityLib
             var player = Player.m_localPlayer;
             if (!player.NoCostCheat())
             {
+                if (!LocalPlayerCanAffordCost(cost))
+                {
+                    Debug.LogError("[Enchant Item] Tried to enchant item but could not afford the cost. This should not happen!");
+                    return;
+                }
+
                 var inventory = player.GetInventory();
                 foreach (var costElement in cost)
                 {
