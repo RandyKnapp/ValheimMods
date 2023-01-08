@@ -194,7 +194,7 @@ namespace EpicLoot_UnityLib
             {
                 if (!LocalPlayerCanAffordCost(cost))
                 {
-                    Debug.LogError("[Augment Item] Tried to augment item but could not afford the cost. This should not happen!");
+                    Debug.LogError("[Augment Item] ERROR: Tried to augment item but could not afford the cost. This should not happen!");
                     return;
                 }
 

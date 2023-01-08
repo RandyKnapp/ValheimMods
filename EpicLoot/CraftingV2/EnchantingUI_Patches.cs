@@ -16,21 +16,11 @@ namespace EpicLoot.CraftingV2
             }
         }
 
-        [HarmonyPatch(typeof(Player), nameof(Player.TakeInput))]
-        [HarmonyPostfix]
-        public static void Player_TakeInput_Postfix(ref bool __result)
-        {
-            if (EnchantingTableUI.IsVisible())
-            {
-                __result = false;
-            }
-        }
-
         [HarmonyPatch(typeof(Minimap), nameof(Minimap.InTextInput))]
         [HarmonyPostfix]
         public static void Minimap_InTextInput_Postfix(ref bool __result)
         {
-            if (EnchantingTableUI.IsVisible() && EnchantingTableUI.IsInTextInput())
+            if (EnchantingTableUI.IsVisible())
             {
                 __result = true;
             }

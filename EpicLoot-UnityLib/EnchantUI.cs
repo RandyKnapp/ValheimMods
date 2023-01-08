@@ -156,7 +156,7 @@ namespace EpicLoot_UnityLib
             {
                 if (!LocalPlayerCanAffordCost(cost))
                 {
-                    Debug.LogError("[Enchant Item] Tried to enchant item but could not afford the cost. This should not happen!");
+                    Debug.LogError("[Enchant Item] ERROR: Tried to enchant item but could not afford the cost. This should not happen!");
                     return;
                 }
 
