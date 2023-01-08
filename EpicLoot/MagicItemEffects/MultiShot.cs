@@ -33,7 +33,7 @@ namespace EpicLoot.MagicItemEffects
                     __instance.m_projectileAccuracy = 2;
                 __instance.m_projectiles = 2;
             }
-            else if (tripleShot && itemType == ItemDrop.ItemData.ItemType.Bow && skillType == Skills.SkillType.Bows)
+            else if (tripleShot && itemType == ItemDrop.ItemData.ItemType.Bow && (skillType == Skills.SkillType.Bows || skillType == Skills.SkillType.Crossbows))
             {
                 __instance.m_projectiles = 3;
             }
