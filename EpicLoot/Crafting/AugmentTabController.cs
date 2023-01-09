@@ -153,9 +153,14 @@ namespace EpicLoot.Crafting
                 for (var i = 0; i < 3; i++)
                 {
                     var button = Object.Instantiate(inventoryGui.m_craftButton, background);
+                    button.interactable = true;
+                    Object.Destroy(button.GetComponent<UITooltip>());
                     var uiGamePad = button.GetComponent<UIGamePad>();
                     if (uiGamePad)
+                    {
+                        Object.Destroy(uiGamePad.m_hint);
                         Object.Destroy(uiGamePad);
+                    }
                     var focus = Object.Instantiate(EpicLoot.LoadAsset<GameObject>("ButtonFocus"), button.transform);
                     focus.SetActive(false);
                     focus.name = "ButtonFocus";

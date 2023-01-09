@@ -26,7 +26,7 @@
       * This is not an issue in Auga.
 ## Version 0.9.3
   * Introduction of the JSON Configuration Patching System. 
-    * Please reference https://github.com/RandyKnapp/ValheimMods/wiki/Config-Patching-%280.9.3-or-newer%29 for information.
+    * Please reference https://github.com/RandyKnapp/ValheimMods/wiki/Config-Patching for information.
     * Example Patch Configs and Additional Information to be made available Soon(tm)
   * Localized Asset Names
     * This has removed all elements of hardcoded names in the Unity Prefabs and have replaced with localizable strings.
