@@ -324,7 +324,6 @@ xcopy "$(ProjectDir)adventuredata.json" "C:\Program Files (x86)\Steam\steamapps\
 xcopy "$(ProjectDir)legendaries.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
 xcopy "$(ProjectDir)abilities.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
 xcopy "$(ProjectDir)materialconversions.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
-xcopy "$(ProjectDir)\Patching\testpatches.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\patches\test\" /q /y /i
 
 xcopy "$(ProjectDir)translations.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim_Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
 xcopy "$(ProjectDir)loottables.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim_Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
