@@ -15,6 +15,7 @@ namespace EpicLoot.Crafting
         public List<Button> EffectChoiceButtons = new List<Button>();
 
         private AudioSource _audioSource;
+        private int _choiceIndex = 0;
 
         [UsedImplicitly]
         public void Awake()
@@ -30,10 +31,51 @@ namespace EpicLoot.Crafting
         [UsedImplicitly]
         public void Update()
         {
-            // Not all of these inputs work and I do not know why, only Escape works
-            if (ZInput.GetButtonDown("Inventory") || ZInput.GetButtonDown("JoyButtonB") || (ZInput.GetButtonDown("JoyButtonY") || Input.GetKeyDown(KeyCode.Escape)) || ZInput.GetButtonDown("Use"))
+            if (ZInput.IsGamepadActive())
+            {
+                if (_choiceIndex > 0 && ZInput.GetButtonDown("JoyLStickUp"))
+                {
+                    _choiceIndex--;
+                    ZInput.ResetButtonStatus("JoyLStickUp");
+                }
+                else if (_choiceIndex < EffectChoiceButtons.Count - 1 && ZInput.GetButtonDown("JoyLStickDown"))
+                {
+                    _choiceIndex++;
+                    ZInput.ResetButtonStatus("JoyLStickDown");
+                }
+                else if (ZInput.GetButtonDown("JoyLStickLeft"))
+                {
+                    ZInput.ResetButtonStatus("JoyLStickLeft");
+                }
+                else if (ZInput.GetButtonDown("JoyLStickRight"))
+                {
+                    ZInput.ResetButtonStatus("JoyLStickRight");
+                }
+
+                if (_choiceIndex >= 0 && _choiceIndex < EffectChoiceButtons.Count && ZInput.GetButton("JoyButtonA"))
+                {
+                    var button = EffectChoiceButtons[_choiceIndex];
+                    button.OnSubmit(null);
+                    ZInput.ResetButtonStatus("JoyButtonA");
+                }
+            }
+
+            for (var index = 0; index < EffectChoiceButtons.Count; index++)
+            {
+                var button = EffectChoiceButtons[index];
+                var focus = button.transform.Find("ButtonFocus");
+                if (focus != null)
+                    focus.gameObject.SetActive(ZInput.IsGamepadActive() && index == _choiceIndex);
+            }
+
+            if (ZInput.GetButtonDown("Inventory") || ZInput.GetButtonDown("JoyButtonB") || Input.GetKeyDown(KeyCode.Escape))
             {
                 EffectChoiceButtons[0].onClick.Invoke();
+            }
+
+            if (ZInput.IsGamepadActive() && ZInput.GetButtonDown("JoyButtonA"))
+            {
+                EffectChoiceButtons[_choiceIndex].onClick.Invoke();
             }
         }
 

@@ -120,6 +120,11 @@ namespace EpicLoot.Crafting
                     var button = Auga.API.MediumButton_Create(resultDialog.transform, $"AugmentButton{i}", string.Empty);
                     Auga.API.Button_SetTextColors(button, Color.white, Color.white, Color.white, Color.white, Color.white, Color.white);
                     button.navigation = new Navigation { mode = Navigation.Mode.None };
+
+                    var focus = Object.Instantiate(EpicLoot.LoadAsset<GameObject>("ButtonFocusAuga"), button.transform);
+                    focus.SetActive(false);
+                    focus.name = "ButtonFocus";
+
                     var rt = (RectTransform)button.transform;
                     rt.anchoredPosition = new Vector2(0, -220 - (i * 40));
                     rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 295);
@@ -148,6 +153,12 @@ namespace EpicLoot.Crafting
                 for (var i = 0; i < 3; i++)
                 {
                     var button = Object.Instantiate(inventoryGui.m_craftButton, background);
+                    var uiGamePad = button.GetComponent<UIGamePad>();
+                    if (uiGamePad)
+                        Object.Destroy(uiGamePad);
+                    var focus = Object.Instantiate(EpicLoot.LoadAsset<GameObject>("ButtonFocus"), button.transform);
+                    focus.SetActive(false);
+                    focus.name = "ButtonFocus";
                     var rt = button.gameObject.RectTransform();
                     rt.anchoredPosition = new Vector2(0, -155 - (i * 45));
                     rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 40);

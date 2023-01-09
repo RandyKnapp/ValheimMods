@@ -98,6 +98,21 @@ namespace EpicLoot_UnityLib
             AvailableItems.SetItems(items.Cast<IListElement>().ToList());
         }
 
+        public override void Update()
+        {
+            base.Update();
+
+            if (!_locked && ZInput.IsGamepadActive())
+            {
+                if (ZInput.GetButtonDown("JoyButtonY"))
+                {
+                    var nextModeIndex = ((int)_mode + 1) % ModeButtons.Count;
+                    ModeButtons[nextModeIndex].isOn = true;
+                    ZInput.ResetButtonStatus("JoyButtonY");
+                }
+            }
+        }
+
         public void RefreshMode()
         {
             var prevMode = _mode;

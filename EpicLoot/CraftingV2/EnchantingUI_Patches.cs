@@ -7,23 +7,20 @@ namespace EpicLoot.CraftingV2
     public static class EnchantingUI_Patches
     {
         [HarmonyPatch(typeof(Minimap), nameof(Minimap.IsOpen))]
-        [HarmonyPrefix]
-        public static bool Minimap_IsOpen_Prefix(ref bool __result)
+        [HarmonyPostfix]
+        public static void Minimap_IsOpen_Postfix(ref bool __result)
         {
             if (EnchantingTableUI.IsVisible())
             {
                 __result = true;
-                return false;
             }
-
-            return true;
         }
 
         [HarmonyPatch(typeof(Minimap), nameof(Minimap.InTextInput))]
         [HarmonyPostfix]
         public static void Minimap_InTextInput_Postfix(ref bool __result)
         {
-            if (EnchantingTableUI.IsVisible() && EnchantingTableUI.IsInTextInput())
+            if (EnchantingTableUI.IsVisible())
             {
                 __result = true;
             }

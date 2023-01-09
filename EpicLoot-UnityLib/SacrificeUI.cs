@@ -56,6 +56,7 @@ namespace EpicLoot_UnityLib
             }
 
             RefreshAvailableItems();
+            AvailableItems.GiveFocus(true, 0);
         }
 
         private void RefreshAvailableItems()

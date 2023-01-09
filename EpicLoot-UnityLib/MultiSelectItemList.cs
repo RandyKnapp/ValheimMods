@@ -38,6 +38,7 @@ namespace EpicLoot_UnityLib
         public Toggle SelectAllToggle;
 
         public event Action OnSelectedItemsChanged;
+        public event Action OnItemsChanged;
 
         public delegate List<IListElement> SortByRarityDelegate(List<IListElement> items);
         public delegate List<IListElement> SortByNameDelegate(List<IListElement> items);
@@ -45,8 +46,15 @@ namespace EpicLoot_UnityLib
         public static SortByRarityDelegate SortByRarity;
         public static SortByNameDelegate SortByName;
 
+        private bool _locked;
+        private bool _hasGamepadFocus;
+        private ScrollRectEnsureVisible _scrollRectEnsureVisible;
+
         public void Awake()
         {
+            var scrollRect = GetComponentInChildren<ScrollRect>();
+            _scrollRectEnsureVisible = scrollRect != null ? scrollRect.GetComponent<ScrollRectEnsureVisible>() : null;
+
             if (SelectAllToggle != null)
                 SelectAllToggle.onValueChanged.AddListener(OnSelectAllToggled);
             
@@ -66,6 +74,111 @@ namespace EpicLoot_UnityLib
             }
 
             Refresh();
+        }
+
+        public void Update()
+        {
+            if (_locked || !HasGamepadFocus() || !ZInput.IsGamepadActive() || ListContainer == null)
+                return;
+
+            var elementCount = ListContainer.childCount;
+            var focusedElement = GetFocusedElement();
+            if (focusedElement == null)
+                return;
+
+            var focusedElementIndex = focusedElement.transform.GetSiblingIndex();
+            var grid = ListContainer.GetComponent<GridLayoutGroup>();
+            if (ListContainer.GetComponent<VerticalLayoutGroup>() != null)
+            {
+                if (focusedElementIndex > 0 && ZInput.GetButtonDown("JoyLStickUp"))
+                {
+                    focusedElement.GiveFocus(false);
+                    var newElement = GetElement(focusedElementIndex - 1);
+                    newElement.GiveFocus(true);
+                    CenterOnItem(newElement);
+                    ZInput.ResetButtonStatus("JoyLStickUp");
+                }
+                else if (focusedElementIndex < elementCount - 1 && ZInput.GetButtonDown("JoyLStickDown"))
+                {
+                    focusedElement.GiveFocus(false);
+                    var newElement = GetElement(focusedElementIndex + 1);
+                    newElement.GiveFocus(true);
+                    CenterOnItem(newElement);
+                    ZInput.ResetButtonStatus("JoyLStickDown");
+                }
+                else if (ZInput.GetButtonDown("JoyLStickLeft"))
+                {
+                    ZInput.ResetButtonStatus("JoyLStickLeft");
+                }
+                else if (ZInput.GetButtonDown("JoyLStickRight"))
+                {
+                    ZInput.ResetButtonStatus("JoyLStickRight");
+                }
+            }
+            else if (grid != null)
+            {
+                var columnCount = grid.constraintCount;
+
+                if (focusedElementIndex >= columnCount && ZInput.GetButtonDown("JoyLStickUp"))
+                {
+                    focusedElement.GiveFocus(false);
+                    var newElement = GetElement(focusedElementIndex - columnCount);
+                    newElement.GiveFocus(true);
+                    CenterOnItem(newElement);
+                    ZInput.ResetButtonStatus("JoyLStickUp");
+                }
+                else if (focusedElementIndex < elementCount - columnCount && ZInput.GetButtonDown("JoyLStickDown"))
+                {
+                    focusedElement.GiveFocus(false);
+                    var newElement = GetElement(focusedElementIndex + columnCount);
+                    newElement.GiveFocus(true);
+                    CenterOnItem(newElement);
+                    ZInput.ResetButtonStatus("JoyLStickDown");
+                }
+                else if ((focusedElementIndex % columnCount) > 0 && ZInput.GetButtonDown("JoyLStickLeft"))
+                {
+                    focusedElement.GiveFocus(false);
+                    var newElement = GetElement(focusedElementIndex - 1);
+                    newElement.GiveFocus(true);
+                    CenterOnItem(newElement);
+                    ZInput.ResetButtonStatus("JoyLStickLeft");
+                }
+                else if ((focusedElementIndex % columnCount) < columnCount - 1 && focusedElementIndex < elementCount - 1 && ZInput.GetButtonDown("JoyLStickRight"))
+                {
+                    focusedElement.GiveFocus(false);
+                    var newElement = GetElement(focusedElementIndex + 1);
+                    newElement.GiveFocus(true);
+                    CenterOnItem(newElement);
+                    ZInput.ResetButtonStatus("JoyLStickRight");
+                }
+            }
+
+            if (Multiselect && SelectAllToggle != null)
+            {
+                if (ZInput.GetButtonDown("JoyLStick"))
+                {
+                    SelectAllToggle.isOn = !SelectAllToggle.isOn;
+                    ZInput.ResetButtonStatus("JoyLStick");
+                }
+            }
+
+            if (Sortable && SortByDropdown != null)
+            {
+                if (ZInput.GetButtonDown("JoyRStick"))
+                {
+                    var currentSortMode = SortByDropdown.value;
+                    var sortModeCount = SortByDropdown.options.Count;
+                    currentSortMode = ((currentSortMode + 1) % sortModeCount);
+                    SortByDropdown.value = currentSortMode;
+                    ZInput.ResetButtonStatus("JoyRStick");
+                }
+            }
+        }
+
+        private void CenterOnItem(MultiSelectItemListElement element)
+        {
+            if (_scrollRectEnsureVisible != null)
+                _scrollRectEnsureVisible.CenterOnItem((RectTransform)element.transform);
         }
 
         private void OnFilterChanged(string _)
@@ -138,11 +251,11 @@ namespace EpicLoot_UnityLib
                         allAreSelected = false;
                 }
 
-                SelectAllToggle.isOn = allAreSelected;
+                SelectAllToggle.SetIsOnWithoutNotify(allAreSelected);
             }
         }
 
-        private void OnSelectAllToggled(bool selectAll)
+        private void OnSelectAllToggled(bool _ = true)
         {
             if (SelectAllToggle == null)
                 return;
@@ -151,6 +264,7 @@ namespace EpicLoot_UnityLib
                 ForeachElement((_, x) => x.SelectMaxQuantity(true));
             else
                 ForeachElement((_, x) => x.Deselect(true));
+            RefreshSelectAllToggle();
         }
 
         private void OnSortModeChanged(int sortModeValue)
@@ -169,10 +283,14 @@ namespace EpicLoot_UnityLib
                 var childToSet = ListContainer.GetChild(i);
                 var itemToSet = sortedItems[i];
                 var element = childToSet.GetComponent<MultiSelectItemListElement>();
+                element.SuppressEvents = true;
                 element.SetItem(itemToSet);
                 if (previousSelectionAmounts.TryGetValue(itemToSet, out var previousQuantity))
                     element.SelectQuantity(previousQuantity, true);
+                element.SuppressEvents = false;
             }
+
+            RefreshSelectAllToggle();
         }
 
         public Dictionary<IListElement, int> GetCurrentSelectionAmounts()
@@ -184,7 +302,7 @@ namespace EpicLoot_UnityLib
                 var childToCache = ListContainer.GetChild(i);
                 var element = childToCache.GetComponent<MultiSelectItemListElement>();
                 if (element != null && element.GetItem() != null)
-                    selectionAmounts.Add(new InventoryItemListElement() { Item = element.GetItem() }, element.GetSelectedQuantity());
+                    selectionAmounts.Add(element.GetListElement(), element.GetSelectedQuantity());
             }
 
             return selectionAmounts;
@@ -200,7 +318,7 @@ namespace EpicLoot_UnityLib
                     var childToDestroy = ListContainer.GetChild(i);
                     var element = childToDestroy.GetComponent<MultiSelectItemListElement>();
                     element.OnSelectionChanged -= OnElementSelectionChanged;
-                    Destroy(childToDestroy.gameObject);
+                    DestroyImmediate(childToDestroy.gameObject);
                 }
             }
             else if (elementCount < itemCount)
@@ -219,6 +337,7 @@ namespace EpicLoot_UnityLib
             var itemCount = items.Count;
 
             var previousSelectionAmounts = GetCurrentSelectionAmounts();
+            var focusedElement = GetFocusedElement();
 
             MakeEnoughElements(itemCount);
 
@@ -229,6 +348,7 @@ namespace EpicLoot_UnityLib
                 sortedItems = SortItems(sortMode, items);
             }
 
+            var didFocus = false;
             for (var i = 0; i < itemCount; ++i)
             {
                 var childToSet = ListContainer.GetChild(i);
@@ -239,9 +359,26 @@ namespace EpicLoot_UnityLib
                 if (previousSelectionAmounts.TryGetValue(itemToSet, out var previousQuantity))
                     element.SelectQuantity(previousQuantity, true);
                 element.SuppressEvents = false;
+                var shouldFocus = HasGamepadFocus() && ((focusedElement == null && i == 0) || element == focusedElement);
+                element.GiveFocus(shouldFocus);
+                if (shouldFocus)
+                {
+                    didFocus = true;
+                    CenterOnItem(element);
+                }
             }
 
+            if (HasGamepadFocus() && !didFocus && ListContainer.childCount > 0)
+            {
+                // Force GiveFocus to fire
+                _hasGamepadFocus = false;
+                GiveFocus(true, 0);
+                CenterOnItem(GetElement(0));
+            }
+
+            OnItemsChanged?.Invoke();
             OnSelectedItemsChanged?.Invoke();
+            RefreshSelectAllToggle();
         }
 
         private void OnElementSelectionChanged(MultiSelectItemListElement element, bool isSelected, int selectedQuantity)
@@ -260,6 +397,7 @@ namespace EpicLoot_UnityLib
             }
 
             OnSelectedItemsChanged?.Invoke();
+            RefreshSelectAllToggle();
         }
 
         public List<IListElement> SortItems(SortMode mode, List<IListElement> items)
@@ -320,6 +458,7 @@ namespace EpicLoot_UnityLib
 
         public void Lock()
         {
+            _locked = true;
             if (SortByDropdown != null)
                 SortByDropdown.interactable = false;
             if (FilterByText != null)
@@ -331,6 +470,7 @@ namespace EpicLoot_UnityLib
 
         public void Unlock()
         {
+            _locked = false;
             if (SortByDropdown != null)
                 SortByDropdown.interactable = Sortable && !ReadOnly;
             if (FilterByText != null)
@@ -338,6 +478,12 @@ namespace EpicLoot_UnityLib
             if (SelectAllToggle != null)
                 SelectAllToggle.interactable = Multiselect && !ReadOnly;
             ForeachElement((_, e) => e.Unlock());
+        }
+
+        private MultiSelectItemListElement GetElement(int index)
+        {
+            var child = ListContainer.GetChild(index);
+            return child == null ? null : child.GetComponent<MultiSelectItemListElement>();
         }
 
         public void ForeachElement(Action<int, MultiSelectItemListElement> func)
@@ -348,11 +494,7 @@ namespace EpicLoot_UnityLib
             var elementCount = ListContainer.childCount;
             for (var i = 0; i < elementCount; ++i)
             {
-                var child = ListContainer.GetChild(i);
-                if (child == null)
-                    continue;
-
-                var element = child.GetComponent<MultiSelectItemListElement>();
+                var element = GetElement(i);
                 if (element != null)
                     func(i, element);
             }
@@ -365,11 +507,76 @@ namespace EpicLoot_UnityLib
             SuppressEvents(false);
 
             OnSelectedItemsChanged?.Invoke();
+            RefreshSelectAllToggle();
         }
 
         public void SuppressEvents(bool suppress)
         {
             ForeachElement((_, e) => e.SuppressEvents = suppress);
+        }
+
+        public void GiveFocus(bool focused, int tryFocusIndex)
+        {
+            if (_hasGamepadFocus != focused)
+            {
+                _hasGamepadFocus = focused;
+
+                var focusIndex = focused ? Mathf.Clamp(tryFocusIndex, 0, ListContainer.childCount - 1) : -1;
+                ForeachElement((i, e) =>
+                {
+                    var shouldFocus = i == focusIndex;
+                    e.GiveFocus(shouldFocus);
+                    if (shouldFocus)
+                        CenterOnItem(e);
+                });
+            }
+        }
+
+        public bool HasGamepadFocus()
+        {
+            return _hasGamepadFocus;
+        }
+
+        public MultiSelectItemListElement GetFocusedElement()
+        {
+            if (ListContainer == null || !ZInput.IsGamepadActive())
+                return null;
+
+            var elementCount = ListContainer.childCount;
+            for (var i = 0; i < elementCount; ++i)
+            {
+                var child = ListContainer.GetChild(i);
+                if (child == null)
+                    continue;
+
+                var element = child.GetComponent<MultiSelectItemListElement>();
+                if (element != null && element.HasGamepadFocus())
+                    return element;
+            }
+
+            return null;
+        }
+
+        public int GetItemCount()
+        {
+            if (ListContainer == null)
+                return 0;
+
+            var elementCount = ListContainer.childCount;
+            var activeChildCount = 0;
+            for (var i = 0; i < elementCount; ++i)
+            {
+                var child = ListContainer.GetChild(i);
+                if (child != null && child.gameObject.activeSelf)
+                    activeChildCount++;
+            }
+
+            return activeChildCount;
+        }
+
+        public bool IsGrid()
+        {
+            return ListContainer != null && ListContainer.GetComponent<GridLayoutGroup>() != null;
         }
     }
 }

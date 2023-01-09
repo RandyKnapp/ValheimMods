@@ -31,9 +31,9 @@ namespace EpicLoot_UnityLib
             if (uiSFX)
                 Audio.outputAudioMixerGroup = uiSFX.GetComponent<AudioSource>().outputAudioMixerGroup;
 
-            foreach (var button in TabHandler.m_tabs.Select(x => x.m_button))
+            foreach (var tanData in TabHandler.m_tabs)
             {
-                button.onClick.AddListener(PlayTabSelectSFX);
+                tanData.m_onClick.AddListener(PlayTabSelectSFX);
             }
         }
 
@@ -73,7 +73,7 @@ namespace EpicLoot_UnityLib
 
         public static bool IsVisible()
         {
-            return instance != null && instance.Root != null && instance.Root.activeSelf && instance._hiddenFrames <= 2;
+            return instance != null && ((instance._hiddenFrames <= 2) || (instance.Root != null && instance.Root.activeSelf));
         }
 
         public static bool IsInTextInput()
@@ -112,6 +112,7 @@ namespace EpicLoot_UnityLib
             if (gotCloseInput)
             {
                 ZInput.ResetButtonStatus("JoyButtonB");
+                ZInput.ResetButtonStatus("JoyJump");
 
                 var panelCapturedInput = false;
                 foreach (var panel in Panels)
