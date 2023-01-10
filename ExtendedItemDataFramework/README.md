@@ -1,7 +1,14 @@
-# Extended Item Data Framework v1.0.10
+# Extended Item Data Framework v1.0.11
 
 Author: Randy Knapp
 Source: [Github](https://github.com/RandyKnapp/ValheimMods/tree/main/ExtendedItemDataFramework)
+
+** AS OF 1.0.11, THIS MOD IS BEING SUNSETTED. IF ANOTHER MOD REQUIRES THIS MOD, ASK THE AUTHOR TO CONVERT TO USING CUSTOM ITEMDATA. **
+
+This final version of EIDF adds stability support and prevents character load errors from occurring when 3rd party mods remove EIDF compatibility.  Please update to this final version to prevent errors.
+
+
+## Old README for posterity:
 
 Provides a way to easily modify items, consistently and losslessly save their data, uniquely identify item instances, and extend item functionality.
 
