@@ -104,7 +104,7 @@ namespace EpicLoot.CraftingV2
             return result;
         }
 
-        private static void AddItemToProductSet(MultiValueDictionary<string, ItemDrop.ItemData> productSet, string itemID, int amount)
+        private static void AddItemToProductSet(Dictionary<string, ItemDrop.ItemData> productSet, string itemID, int amount)
         {
             if (amount <= 0)
             {
@@ -126,33 +126,23 @@ namespace EpicLoot.CraftingV2
                 return;
             }
 
-            if (!productSet.ContainsKey(itemID))
-                productSet.Add(itemID, new List<ItemDrop.ItemData>());
-
-            var itemList = productSet.GetValues(itemID);
-            var last = itemList.LastOrDefault();
-            while (amount > 0)
+            ItemDrop.ItemData itemData;
+            if (productSet.TryGetValue(itemID, out itemData))
             {
-                var availableSpace = last == null ? 0 : last.m_shared.m_maxStackSize - last.m_stack;
-                if (availableSpace == 0)
-                {
-                    var itemData = itemDrop.m_itemData.Clone();
-                    itemData.m_dropPrefab = prefab;
-                    itemData.m_stack = 0;
-                    availableSpace = itemData.m_shared.m_maxStackSize;
-                    itemList.Add(itemData);
-                    last = itemData;
-                }
-
-                var toAdd = Mathf.Min(amount, availableSpace);
-                last.m_stack += toAdd;
-                amount -= last.m_stack;
+                itemData.m_stack += amount;
+            }
+            else
+            {
+                itemData = itemDrop.m_itemData.Clone();
+                itemData.m_dropPrefab = prefab;
+                itemData.m_stack = amount;
+                productSet.Add(itemID, itemData);
             }
         }
 
         private static List<InventoryItemListElement> GetSacrificeProducts(List<Tuple<ItemDrop.ItemData, int>> items)
         {
-            var productsSet = new MultiValueDictionary<string, ItemDrop.ItemData>();
+            var productsSet = new Dictionary<string, ItemDrop.ItemData>();
             foreach (var entry in items)
             {
                 var item = entry.Item1;
@@ -170,8 +160,7 @@ namespace EpicLoot.CraftingV2
                 }
             }
 
-            var productsList = productsSet.Values.SelectMany(x => x).ToList();
-            return productsList.OrderByDescending(x => x.HasRarity() ? x.GetRarity() : (ItemRarity)(-1))
+            return productsSet.Values.OrderByDescending(x => x.HasRarity() ? x.GetRarity() : (ItemRarity)(-1))
                 .ThenBy(x => Localization.instance.Localize(x.GetDecoratedName()))
                 .Select(x => new InventoryItemListElement() { Item = x })
                 .ToList();
