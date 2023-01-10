@@ -310,33 +310,33 @@
   <Import Project="..\Common\Common.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="Copy" AfterTargets="ILRepack">
+    <Exec Command="xcopy &quot;$(TargetDir)$(TargetFileName)&quot; &quot;G:\Steam\steamapps\common\Valheim-Dev\BepInEx\plugins\$(ProjectName)\&quot; /q /y /i" />
     <Exec Command="xcopy &quot;$(TargetDir)$(TargetFileName)&quot; &quot;G:\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\&quot; /q /y /i" />
-    <Exec Command="xcopy &quot;$(TargetDir)$(TargetFileName)&quot; &quot;G:\Steam\steamapps\common\Valheim_Dev\BepInEx\plugins\$(ProjectName)\&quot; /q /y /i" />
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>xcopy "$(ProjectDir)translations.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
-xcopy "$(ProjectDir)loottables.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
-xcopy "$(ProjectDir)magiceffects.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
-xcopy "$(ProjectDir)iteminfo.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
-xcopy "$(ProjectDir)recipes.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
-xcopy "$(ProjectDir)enchantcosts.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
-xcopy "$(ProjectDir)itemnames.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
-xcopy "$(ProjectDir)adventuredata.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
-xcopy "$(ProjectDir)legendaries.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
-xcopy "$(ProjectDir)abilities.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
-xcopy "$(ProjectDir)materialconversions.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
+    <PostBuildEvent>xcopy "$(ProjectDir)translations.json" "6\BepInEx\plugins\$(ProjectName)\" /q /y /i
+xcopy "$(ProjectDir)loottables.json" "G:\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
+xcopy "$(ProjectDir)magiceffects.json" "G:\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
+xcopy "$(ProjectDir)iteminfo.json" "G:\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
+xcopy "$(ProjectDir)recipes.json" "G:\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
+xcopy "$(ProjectDir)enchantcosts.json" "G:\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
+xcopy "$(ProjectDir)itemnames.json" "G:\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
+xcopy "$(ProjectDir)adventuredata.json" "G:\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
+xcopy "$(ProjectDir)legendaries.json" "G:\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
+xcopy "$(ProjectDir)abilities.json" "G:\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
+xcopy "$(ProjectDir)materialconversions.json" "G:\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
 
-xcopy "$(ProjectDir)translations.json" "G:\Steam\steamapps\common\Valheim_Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
-xcopy "$(ProjectDir)loottables.json" "G:\Steam\steamapps\common\Valheim_Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
-xcopy "$(ProjectDir)magiceffects.json" "G:\Steam\steamapps\common\Valheim_Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
-xcopy "$(ProjectDir)iteminfo.json" "G:\Steam\steamapps\common\Valheim_Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
-xcopy "$(ProjectDir)recipes.json" "G:\Steam\steamapps\common\Valheim_Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
-xcopy "$(ProjectDir)enchantcosts.json" "G:\Steam\steamapps\common\Valheim_Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
-xcopy "$(ProjectDir)itemnames.json" "G:\Steam\steamapps\common\Valheim_Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
-xcopy "$(ProjectDir)adventuredata.json" "G:\Steam\steamapps\common\Valheim_Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
-xcopy "$(ProjectDir)legendaries.json" "G:\Steam\steamapps\common\Valheim_Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
-xcopy "$(ProjectDir)abilities.json" "G:\Steam\steamapps\common\Valheim_Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
-xcopy "$(ProjectDir)materialconversions.json" "G:\Steam\steamapps\common\Valheim_Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i</PostBuildEvent>
+xcopy "$(ProjectDir)translations.json" "G:\Steam\steamapps\common\Valheim-Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
+xcopy "$(ProjectDir)loottables.json" "G:\Steam\steamapps\common\Valheim-Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
+xcopy "$(ProjectDir)magiceffects.json" "G:\Steam\steamapps\common\Valheim-Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
+xcopy "$(ProjectDir)iteminfo.json" "G:\Steam\steamapps\common\Valheim-Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
+xcopy "$(ProjectDir)recipes.json" "G:\Steam\steamapps\common\Valheim-Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
+xcopy "$(ProjectDir)enchantcosts.json" "G:\Steam\steamapps\common\Valheim-Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
+xcopy "$(ProjectDir)itemnames.json" "G:\Steam\steamapps\common\Valheim-Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
+xcopy "$(ProjectDir)adventuredata.json" "G:\Steam\steamapps\common\Valheim-Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
+xcopy "$(ProjectDir)legendaries.json" "G:\Steam\steamapps\common\Valheim-Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
+xcopy "$(ProjectDir)abilities.json" "G:\Steam\steamapps\common\Valheim-Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
+xcopy "$(ProjectDir)materialconversions.json" "G:\Steam\steamapps\common\Valheim-Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i</PostBuildEvent>
   </PropertyGroup>
   <Import Project="..\packages\ILRepack.Lib.MSBuild.Task.2.0.18.2\build\ILRepack.Lib.MSBuild.Task.targets" Condition="Exists('..\packages\ILRepack.Lib.MSBuild.Task.2.0.18.2\build\ILRepack.Lib.MSBuild.Task.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
