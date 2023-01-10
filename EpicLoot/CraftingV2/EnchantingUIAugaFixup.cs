@@ -49,11 +49,7 @@ namespace EpicLoot.CraftingV2
 
                 foreach (var scrollbar in panelBase.GetComponentsInChildren<Scrollbar>())
                 {
-                    Object.Destroy(scrollbar.GetComponent<Image>());
-                    scrollbar.colors = ColorBlock.defaultColorBlock;
-                    var scrollbarImage = scrollbar.handleRect.GetComponent<Image>();
-                    if (ColorUtility.TryParseHtmlString("#8B7C6A", out var brown))
-                        scrollbarImage.color = new Color(brown.r, brown.g, brown.b, 1.0f);
+                    EpicLootAuga.FixupScrollbar(scrollbar);
                 }
 
                 if (panelBase is SacrificeUI sacrificeUI)

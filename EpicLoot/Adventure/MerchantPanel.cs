@@ -202,6 +202,11 @@ namespace EpicLoot.Adventure
                 EpicLootAuga.MakeSimpleTooltip(treasureMapElementPrefab.gameObject);
                 EpicLootAuga.MakeSimpleTooltip(bountyElementPrefab.gameObject);
                 EpicLootAuga.MakeSimpleTooltip(activeBountyElementPrefab.gameObject);
+
+                foreach (var scrollbar in GetComponentsInChildren<Scrollbar>())
+                {
+                    EpicLootAuga.FixupScrollbar(scrollbar);
+                }
             }
         }
 
