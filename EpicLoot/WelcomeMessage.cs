@@ -28,14 +28,14 @@ namespace EpicLoot
 
             if (EpicLoot.HasAuga)
             {
-                MerchantPanel.AugaReplaceBackground(gameObject, true);
-                MerchantPanel.AugaFixFonts(gameObject);
+                EpicLootAuga.ReplaceBackground(gameObject, true);
+                EpicLootAuga.FixFonts(gameObject);
                 if (discordButton != null)
-                    discordButton = MerchantPanel.AugaReplaceButton(discordButton);
+                    discordButton = EpicLootAuga.ReplaceButton(discordButton);
                 if (patchNotesButton != null)
-                    patchNotesButton = MerchantPanel.AugaReplaceButton(patchNotesButton);
+                    patchNotesButton = EpicLootAuga.ReplaceButton(patchNotesButton);
                 if (closeButton != null)
-                    closeButton = MerchantPanel.AugaReplaceButton(closeButton);
+                    closeButton = EpicLootAuga.ReplaceButton(closeButton);
             }
 
             if (discordButton != null)

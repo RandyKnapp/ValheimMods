@@ -64,13 +64,40 @@ namespace EpicLoot_UnityLib
         {
             base.Update();
 
+            if (!_locked && ZInput.IsGamepadActive())
+            {
+                if (ZInput.GetButtonDown("JoyButtonY"))
+                {
+                    var activeAugmentCount = AugmentSelectors.Count(x => x.isActiveAndEnabled);
+                    var nextAugmentIndex = (_augmentIndex + 1) % activeAugmentCount;
+                    AugmentSelectors[nextAugmentIndex].isOn = true;
+                    ZInput.ResetButtonStatus("JoyButtonY");
+                }
+
+                if (AvailableEffectsScrollbar != null)
+                {
+                    var rightStickAxis = ZInput.GetJoyRightStickY();
+                    if (Mathf.Abs(rightStickAxis) > 0.5f)
+                        AvailableEffectsScrollbar.value = Mathf.Clamp01(AvailableEffectsScrollbar.value + rightStickAxis * -0.1f);
+                }
+            }
+
             if (_choiceDialog != null && !_choiceDialog.activeSelf)
             {
                 Unlock();
                 Destroy(_choiceDialog);
                 _choiceDialog = null;
                 Cancel();
-                OnSelectedItemsChanged();
+
+                AvailableItems.ForeachElement((i, e) =>
+                {
+                    if (!e.IsSelected())
+                        return;
+                    e.SetItem(e.GetListElement());
+                    e.Refresh();
+                });
+                RefreshAugmentSelectors();
+                OnAugmentIndexChanged();
             }
         }
 
@@ -165,6 +192,12 @@ namespace EpicLoot_UnityLib
             var player = Player.m_localPlayer;
             if (!player.NoCostCheat())
             {
+                if (!LocalPlayerCanAffordCost(cost))
+                {
+                    Debug.LogError("[Augment Item] ERROR: Tried to augment item but could not afford the cost. This should not happen!");
+                    return;
+                }
+
                 var inventory = player.GetInventory();
                 foreach (var costElement in cost)
                 {
@@ -198,7 +231,7 @@ namespace EpicLoot_UnityLib
                 if (selector == null)
                     continue;
 
-                selector.isOn = false;
+                selector.SetIsOnWithoutNotify(index == 0);
                 selector.gameObject.SetActive(item != null && index < augmentableEffects.Count);
                 if (!selector.gameObject.activeSelf)
                     continue;
@@ -214,7 +247,34 @@ namespace EpicLoot_UnityLib
             if (item == null)
                 AvailableEffectsText.text = string.Empty;
 
+            _augmentIndex = 0;
             OnAugmentIndexChanged();
+        }
+
+        private void RefreshAugmentSelectors()
+        {
+            var entry = AvailableItems.GetSingleSelectedItem<InventoryItemListElement>();
+            var item = entry?.Item1.GetItem();
+            var augmentableEffects = GetAugmentableEffects(item);
+
+            for (var index = 0; index < AugmentSelectors.Count; index++)
+            {
+                var selector = AugmentSelectors[index];
+                if (selector == null)
+                    continue;
+
+                selector.SetIsOnWithoutNotify(index == _augmentIndex);
+                selector.gameObject.SetActive(item != null && index < augmentableEffects.Count);
+                if (!selector.gameObject.activeSelf)
+                    continue;
+
+                var selectorText = selector.GetComponentInChildren<Text>();
+                if (selectorText != null)
+                {
+                    selectorText.text = augmentableEffects[index].Item1;
+                    selector.interactable = augmentableEffects[index].Item2;
+                }
+            }
         }
 
         private bool LocalPlayerCanAffordCost(List<InventoryItemListElement> cost)

@@ -25,6 +25,7 @@ namespace EpicLoot_UnityLib
         public bool NoMax;
         public AudioSource Audio;
         public AudioClip OnClickSFX;
+        public GameObject GamepadFocusIndicator;
 
         [NonSerialized]
         public bool SuppressEvents;
@@ -38,6 +39,7 @@ namespace EpicLoot_UnityLib
         private IListElement _item;
         private int _selectedQuantity;
         private bool _locked;
+        private bool _hasGamepadFocus;
 
         public void Awake()
         {
@@ -81,6 +83,38 @@ namespace EpicLoot_UnityLib
             }
 
             Refresh();
+        }
+
+        public void Update()
+        {
+            if (!_locked && ZInput.IsGamepadActive() && HasGamepadFocus() && !ReadOnly)
+            {
+                if (ZInput.GetButtonDown("JoyButtonA"))
+                {
+                    OnClicked();
+                    ZInput.ResetButtonStatus("JoyButtonA");
+                }
+                else if (ZInput.GetButtonDown("JoyDPadUp"))
+                {
+                    SelectQuantity(_selectedQuantity + 1, false);
+                    ZInput.ResetButtonStatus("JoyDPadUp");
+                }
+                else if (ZInput.GetButtonDown("JoyDPadDown"))
+                {
+                    SelectQuantity(_selectedQuantity - 1, false);
+                    ZInput.ResetButtonStatus("JoyDPadDown");
+                }
+                else if (ZInput.GetButtonDown("JoyDPadLeft"))
+                {
+                    ZInput.ResetButtonStatus("JoyDPadLeft");
+                }
+                else if (ZInput.GetButtonDown("JoyDPadRight"))
+                {
+                    ZInput.ResetButtonStatus("JoyDPadRight");
+                }
+            }
+
+            RefreshGamepadFocusIndicator();
         }
 
         private void OnClicked()
@@ -136,6 +170,7 @@ namespace EpicLoot_UnityLib
 
         public void SetItem(IListElement item)
         {
+            var sameItem = _item == item;
             _item = item;
 
             if (_item?.GetItem() == null)
@@ -179,7 +214,9 @@ namespace EpicLoot_UnityLib
                     ItemName.text += _item.GetDisplayNameSuffix();
             }
 
-            Deselect(true);
+            if (!sameItem)
+                Deselect(true);
+            RefreshGamepadFocusIndicator();
         }
 
         public void Deselect(bool noSound)
@@ -211,6 +248,8 @@ namespace EpicLoot_UnityLib
 
         public void Refresh()
         {
+            RefreshGamepadFocusIndicator();
+
             if (_item?.GetItem() == null)
                 return;
 
@@ -294,6 +333,25 @@ namespace EpicLoot_UnityLib
         {
             _locked = false;
             Refresh();
+        }
+
+        public void GiveFocus(bool focused)
+        {
+            _hasGamepadFocus = focused;
+            RefreshGamepadFocusIndicator();
+        }
+
+        private void RefreshGamepadFocusIndicator()
+        {
+            if (GamepadFocusIndicator == null)
+                return;
+
+            GamepadFocusIndicator.SetActive(ZInput.IsGamepadActive() && _item != null && _hasGamepadFocus);
+        }
+
+        public bool HasGamepadFocus()
+        {
+            return _hasGamepadFocus;
         }
     }
 }
