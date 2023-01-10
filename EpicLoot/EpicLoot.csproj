@@ -118,6 +118,7 @@
     <Compile Include="Adventure\Feature\Bosses.cs" />
     <Compile Include="Adventure\Feature\BountyLedger.cs" />
     <Compile Include="Attack_Patch.cs" />
+    <Compile Include="CraftingV2\EnchantingUIAugaFixup.cs" />
     <Compile Include="CraftingV2\EnchantingUIController.cs" />
     <Compile Include="CraftingV2\EnchantingUI_Patches.cs" />
     <Compile Include="CraftingV2\MaterialConversions.cs" />
@@ -125,6 +126,7 @@
     <Compile Include="Data\EIDFLegacy.cs" />
     <Compile Include="Data\CustomDataManager.cs" />
     <Compile Include="DebugText.cs" />
+    <Compile Include="EpicLootAuga.cs" />
     <Compile Include="GameCamera_Patch.cs" />
     <Compile Include="Healing\AddHealingQueueToPlayerPatch.cs" />
     <Compile Include="Adventure\AbandonBountyDialog.cs" />

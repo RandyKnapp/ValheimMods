@@ -16,6 +16,7 @@ namespace EpicLoot.CraftingV2
     {
         public static void Initialize()
         {
+            EnchantingTableUI.AugaFixup = EnchantingUIAugaFixup.AugaFixup;
             MultiSelectItemList.SortByRarity = SortByRarity;
             MultiSelectItemList.SortByName = SortByName;
             MultiSelectItemListElement.SetMagicItem = SetMagicItem;

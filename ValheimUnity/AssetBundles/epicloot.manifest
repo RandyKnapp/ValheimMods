@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 2946173700
+CRC: 540393867
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 17ceed220edf6b02c3e0809075fbafe2
+    Hash: e1c4fda8796feba55964419d87457169
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 9f2dad593e1aaacb8b6baf146c9ceb19
+    Hash: cfc15dcf79844c605119b037c2200dfd
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -124,6 +124,8 @@ ClassTypes:
 - Class: 114
   Script: {fileID: 2002944390, guid: 2f9828d4dfcaa584280fbdd93cb3976a, type: 3}
 - Class: 114
+  Script: {fileID: 1829327813, guid: 2f9828d4dfcaa584280fbdd93cb3976a, type: 3}
+- Class: 114
   Script: {fileID: 2091986947, guid: 2f9828d4dfcaa584280fbdd93cb3976a, type: 3}
 - Class: 114
   Script: {fileID: 1284466352, guid: 2f9828d4dfcaa584280fbdd93cb3976a, type: 3}
@@ -137,8 +139,6 @@ ClassTypes:
   Script: {fileID: 11500000, guid: 2fafe2cfe61f6974895a912c3755e8f1, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 8a8695521f0d02e499659fee002a26c2, type: 3}
-- Class: 114
-  Script: {fileID: 1829327813, guid: 2f9828d4dfcaa584280fbdd93cb3976a, type: 3}
 - Class: 115
   Script: {instanceID: 0}
 - Class: 120
@@ -236,6 +236,7 @@ Assets:
 - Assets/EpicLoot/Prefabs/UI/MerchantPanel.prefab
 - Assets/EpicLoot/Sprites/Inventory/EpicItemBg.png
 - Assets/EpicLoot/Sounds/MagicItemDrop.wav
+- Assets/EpicLoot/Prefabs/Enchanting/EnchantingTabAuga.prefab
 - Assets/EpicLoot/Sprites/Inventory/GenericSetItemMarker.png
 - Assets/EpicLoot/Sounds/MythicItemDrop.wav
 - Assets/EpicLoot/Prefabs/CraftingMaterials/RunestoneMagic.prefab

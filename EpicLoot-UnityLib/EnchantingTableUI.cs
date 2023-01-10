@@ -20,6 +20,10 @@ namespace EpicLoot_UnityLib
 
         public static EnchantingTableUI instance { get; set; }
 
+        public delegate void AugaFixupDelegate(EnchantingTableUI ui);
+
+        public static AugaFixupDelegate AugaFixup;
+
         private int _hiddenFrames;
 
         public void Awake()
@@ -35,6 +39,8 @@ namespace EpicLoot_UnityLib
             {
                 tanData.m_onClick.AddListener(PlayTabSelectSFX);
             }
+
+            AugaFixup(this);
         }
 
         public static void Show(GameObject enchantingUiPrefab)
