@@ -1,5 +1,5 @@
 ManifestFileVersion: 0
-CRC: 3362224606
+CRC: 3793131989
 AssetBundleManifest:
   AssetBundleInfos:
     Info_0:
@@ -13,4 +13,7 @@ AssetBundleManifest:
       Dependencies: {}
     Info_3:
       Name: eaqs
+      Dependencies: {}
+    Info_4:
+      Name: advancedportals
       Dependencies: {}
