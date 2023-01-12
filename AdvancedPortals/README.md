@@ -1,4 +1,4 @@
-# AdvancedPortals v1.0.0
+# AdvancedPortals v1.0.1
 Author: RandyKnapp
 Source: [Github](https://github.com/RandyKnapp/ValheimMods/tree/main/AdvancedPortals)
 
@@ -44,6 +44,9 @@ Includes ServerSync.
 
 ### Changelist:
 
+#### 1.0.1
+  * Added compatibility with AnyPortal and TargetPortal
+  * Fixed a bug with Obsidian and Black Marble portal recipes
+  * Added 5 BlackMetal to the default recipe for Black Marble portals (delete your config to automatically use the new recipe)
 #### 1.0.0
-
   * Initial Release
