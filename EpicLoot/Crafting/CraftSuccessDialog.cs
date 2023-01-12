@@ -28,6 +28,14 @@ namespace EpicLoot.Crafting
         [UsedImplicitly]
         public void Update()
         {
+            var scrollBar = GetComponentInChildren<Scrollbar>();
+            if (scrollBar != null && ZInput.IsGamepadActive())
+            {
+                var rightStickAxis = ZInput.GetJoyRightStickY();
+                if (Mathf.Abs(rightStickAxis) > 0.5f)
+                    scrollBar.value = Mathf.Clamp01(scrollBar.value + rightStickAxis * -0.1f);
+            }
+
             if (ZInput.GetButtonDown("Inventory") || ZInput.GetButtonDown("JoyButtonB") || (ZInput.GetButtonDown("JoyButtonY") || Input.GetKeyDown(KeyCode.Escape)) || ZInput.GetButtonDown("JoyButtonA"))
             {
                 Close();
@@ -106,6 +114,15 @@ namespace EpicLoot.Crafting
             dialog.Description.rectTransform.anchoredPosition += new Vector2(0, -110);
             dialog.Description.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 460);
             dialog.Icon = Instantiate(inventoryGui.m_recipeIcon, dialog.Frame);
+
+            var scrollview = InventoryGui_UpdateRecipe_Patch.ConvertToScrollingDescription(dialog.Description, dialog.Frame);
+            var svrt = (RectTransform)scrollview.transform;
+            svrt.SetSiblingIndex(1);
+            svrt.anchorMin = new Vector2(0, 0);
+            svrt.anchorMax = new Vector2(1, 1);
+            svrt.pivot = new Vector2(0.5f, 0.5f);
+            svrt.offsetMin = new Vector2(10, 20);
+            svrt.offsetMax = new Vector2(-10, -80);
 
             var closeButton = dialog.gameObject.GetComponentInChildren<Button>();
             closeButton.onClick = new Button.ButtonClickedEvent();

@@ -147,6 +147,15 @@ namespace EpicLoot.Crafting
                 choiceDialog.Description.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 340);
                 choiceDialog.Icon = Object.Instantiate(inventoryGui.m_recipeIcon, background);
 
+                var scrollview = InventoryGui_UpdateRecipe_Patch.ConvertToScrollingDescription(choiceDialog.Description, background);
+                var svrt = (RectTransform)scrollview.transform;
+                svrt.SetSiblingIndex(1);
+                svrt.anchorMin = new Vector2(0, 0);
+                svrt.anchorMax = new Vector2(1, 1);
+                svrt.pivot = new Vector2(0.5f, 0.5f);
+                svrt.anchoredPosition = new Vector2(0, 50);
+                svrt.sizeDelta = new Vector2(-20, -265);
+
                 var closeButton = choiceDialog.gameObject.GetComponentInChildren<Button>();
                 Object.Destroy(closeButton.gameObject);
 
@@ -165,7 +174,10 @@ namespace EpicLoot.Crafting
                     focus.SetActive(false);
                     focus.name = "ButtonFocus";
                     var rt = button.gameObject.RectTransform();
-                    rt.anchoredPosition = new Vector2(0, -155 - (i * 45));
+                    rt.anchorMin = new Vector2(0.5f, 0);
+                    rt.anchorMax = new Vector2(0.5f, 0);
+                    rt.anchoredPosition = new Vector2(0, 55 + ((2 - i) * 45));
+                    rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 300);
                     rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 40);
                     choiceDialog.EffectChoiceButtons.Add(button);
                 }
