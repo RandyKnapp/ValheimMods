@@ -58,6 +58,14 @@ namespace EpicLoot.Crafting
                     button.OnSubmit(null);
                     ZInput.ResetButtonStatus("JoyButtonA");
                 }
+
+                var scrollBar = GetComponentInChildren<Scrollbar>();
+                if (scrollBar != null)
+                {
+                    var rightStickAxis = ZInput.GetJoyRightStickY();
+                    if (Mathf.Abs(rightStickAxis) > 0.5f)
+                        scrollBar.value = Mathf.Clamp01(scrollBar.value + rightStickAxis * -0.1f);
+                }
             }
 
             for (var index = 0; index < EffectChoiceButtons.Count; index++)
@@ -88,32 +96,31 @@ namespace EpicLoot.Crafting
             _audioSource.volume = 0.5f;
             _audioSource.Play();
 
-            var item = fromItem;
-            var rarity = item.GetRarity();
-            var magicItem = item.GetMagicItem();
-            var rarityColor = item.GetRarityColor();
+            var rarity = fromItem.GetRarity();
+            var magicItem = fromItem.GetMagicItem();
+            var rarityColor = fromItem.GetRarityColor();
             
-            MagicBG.enabled = item.IsMagic();
+            MagicBG.enabled = fromItem.IsMagic();
             MagicBG.color = rarityColor;
 
             if (EpicLoot.HasAuga)
             {
-                Auga.API.ComplexTooltip_SetItem(gameObject, item);
+                Auga.API.ComplexTooltip_SetItem(gameObject, fromItem);
             }
 
             if (NameText != null)
             {
-                NameText.text = Localization.instance.Localize(item.GetDecoratedName());
+                NameText.text = Localization.instance.Localize(fromItem.GetDecoratedName());
             }
 
             if (Description != null)
             {
-                Description.text = Localization.instance.Localize(item.GetTooltip());
+                Description.text = Localization.instance.Localize(fromItem.GetTooltip());
             }
 
             if (Icon != null)
             {
-                Icon.sprite = item.GetIcon();
+                Icon.sprite = fromItem.GetIcon();
             }
 
             foreach (var button in EffectChoiceButtons)
@@ -121,7 +128,7 @@ namespace EpicLoot.Crafting
                 button.gameObject.SetActive(false);
             }
 
-            var newEffectOptions = LootRoller.RollAugmentEffects(item, magicItem, effectIndex);
+            var newEffectOptions = LootRoller.RollAugmentEffects(fromItem, magicItem, effectIndex);
             for (var index = 0; index < newEffectOptions.Count; index++)
             {
                 var effect = newEffectOptions[index];
