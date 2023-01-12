@@ -31,10 +31,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StationsAreContainers", "St
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EpicLoot-UnityLib", "EpicLoot-UnityLib\EpicLoot-UnityLib.csproj", "{8DABA031-AEA4-472F-A9AA-DE8B1AA69DE5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdvancedPortals", "AdvancedPortals\AdvancedPortals.csproj", "{0DDDE55C-5DAF-4B53-B5E2-83B5C44C4682}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Common\Common.projitems*{08ed5bc9-9e0c-4343-90a5-92497be6e216}*SharedItemsImports = 4
 		Common\Common.projitems*{09bcfe16-0d69-481c-98c6-1090d78e3127}*SharedItemsImports = 13
+		Common\Common.projitems*{0ddde55c-5daf-4b53-b5e2-83b5c44c4682}*SharedItemsImports = 4
 		Common\Common.projitems*{6c679b7e-9f39-4df2-9f8a-717e68fbf0e3}*SharedItemsImports = 4
 		Common\Common.projitems*{70b6ed26-2afe-4e7a-a40f-cf187f14fca0}*SharedItemsImports = 4
 		Common\Common.projitems*{963cf4f8-ba02-49fc-8884-97e781e6bc18}*SharedItemsImports = 4
@@ -91,6 +94,10 @@ Global
 		{8DABA031-AEA4-472F-A9AA-DE8B1AA69DE5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8DABA031-AEA4-472F-A9AA-DE8B1AA69DE5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8DABA031-AEA4-472F-A9AA-DE8B1AA69DE5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0DDDE55C-5DAF-4B53-B5E2-83B5C44C4682}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0DDDE55C-5DAF-4B53-B5E2-83B5C44C4682}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0DDDE55C-5DAF-4B53-B5E2-83B5C44C4682}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0DDDE55C-5DAF-4B53-B5E2-83B5C44C4682}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
