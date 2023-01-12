@@ -7,6 +7,16 @@ namespace AdvancedPortals
     {
         public static AdvancedPortal CurrentAdvancedPortal;
 
+        public static void Generic_Prefix(TeleportWorld __instance)
+        {
+            CurrentAdvancedPortal = __instance.GetComponent<AdvancedPortal>();
+        }
+
+        public static void Generic_Postfix()
+        {
+            CurrentAdvancedPortal = null;
+        }
+
         [HarmonyPatch(typeof(TeleportWorld), nameof(TeleportWorld.UpdatePortal))]
         [HarmonyPrefix]
         public static void TeleportWorld_UpdatePortal_Prefix(TeleportWorld __instance)
@@ -16,7 +26,7 @@ namespace AdvancedPortals
 
         [HarmonyPatch(typeof(TeleportWorld), nameof(TeleportWorld.UpdatePortal))]
         [HarmonyPostfix]
-        public static void TeleportWorld_UpdatePortal_Postfix(TeleportWorld __instance)
+        public static void TeleportWorld_UpdatePortal_Postfix()
         {
             CurrentAdvancedPortal = null;
         }
@@ -30,7 +40,7 @@ namespace AdvancedPortals
 
         [HarmonyPatch(typeof(TeleportWorld), nameof(TeleportWorld.Teleport))]
         [HarmonyPostfix]
-        public static void TeleportWorld_Teleport_Postfix(TeleportWorld __instance)
+        public static void TeleportWorld_Teleport_Postfix()
         {
             CurrentAdvancedPortal = null;
         }

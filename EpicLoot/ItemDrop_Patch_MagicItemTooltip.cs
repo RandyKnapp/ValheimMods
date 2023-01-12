@@ -587,15 +587,17 @@ namespace EpicLoot
                             value = $"<color={magicColor}>{value}</color>";
                         }
                         break;
+
                     case "$item_crafter":
                         value = EIDFLegacy.GetCrafterName(value);
                         break;
+
                     case "$item_eitrregen_modifier":
                         if (magicItem.HasEffect(MagicEffectType.ModifyEitrRegen))
                         {
                             var itemEitrRegenModDisplay = MagicItemTooltip_ItemDrop_Patch.GetEitrRegenModifier(item, magicItem, out _);
-                            var totalEitrRegenModifier = magicItem.GetTotalEffectValue(MagicEffectType.ModifyEitrRegen);
-                            label = $"$item_eitrregen_modifier: <color={magicColor}>{itemEitrRegenModDisplay}</color> ($item_total:<color=yellow>{totalEitrRegenModifier:+0;-0}%</color>)";
+                            var totalEitrRegenModifier = Player.m_localPlayer.GetEquipmentEitrRegenModifier();
+                            label = $"$item_eitrregen_modifier: <color={magicColor}>{itemEitrRegenModDisplay}</color> ($item_total:<color={Auga.API.BrightGold}>{totalEitrRegenModifier:+0;-0}%</color>)";
                         }
                         else
                         {
@@ -611,7 +613,6 @@ namespace EpicLoot
                     var colorIndex = label.IndexOf("<color", StringComparison.Ordinal);
                     if (colorIndex >= 0)
                     {
-                        
                         sb.Remove(colorIndex, "<color=#XXXXXX>".Length);
                         sb.Insert(colorIndex, $"<color={magicColor}>");
 
@@ -627,7 +628,7 @@ namespace EpicLoot
                             sb.Remove(color2Index, "<color=#A39689>".Length);
                             float totalEitrRegenModifier = magicItem.GetTotalEffectValue(MagicEffectType.ModifyEitrRegen);
                             if (totalEitrRegenModifier > 0)
-                                sb.Insert(color2Index, $"<color=yellow>");
+                                sb.Insert(color2Index, $"<color={Auga.API.BrightGold}>");
                             else
                                 sb.Insert(color2Index, $"<color=#A39689>");
 
@@ -638,7 +639,8 @@ namespace EpicLoot
                             if (float.TryParse(label.Substring(value2Index, percentIndex2 - value2Index),out mundaneTotal))
                             {
                                 magicTotal = totalEitrRegenModifier + mundaneTotal;
-                            } else
+                            }
+                            else
                             {
                                 magicTotal = mundaneTotal;
                             }

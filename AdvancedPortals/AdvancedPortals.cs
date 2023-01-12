@@ -24,6 +24,7 @@ namespace AdvancedPortals
 
     [BepInPlugin(PluginId, DisplayName, Version)]
     [BepInIncompatibility("com.github.xafflict.UnrestrictedPortals")]
+    [BepInDependency("org.bepinex.plugins.targetportal", BepInDependency.DependencyFlags.SoftDependency)]
     public class AdvancedPortals : BaseUnityPlugin
     {
         public const string PluginId = "randyknapp.mods.advancedportals";
@@ -72,7 +73,7 @@ namespace AdvancedPortals
             _obsidianPortalAllowPreviousPortalItems = SyncedConfig("Portal 2 - Obsidian", "Obsidian Portal Use All Previous", true, "Additionally allow all items from the Ancient Portal");
 
             _blackMarblePortalEnabled = SyncedConfig("Portal 3 - Black Marble", "Black Marble Portal Enabled", true, "Enable the Black Marble Portal");
-            _blackMarblePortalRecipe = SyncedConfig("Portal 3 - Black Marble", "Black Marble Portal Recipe", "BlackMarble:20,Eitr:2", "The items needed to build the Black Marble Portal. A comma separated list of ITEM:QUANTITY pairs separated by a colon.");
+            _blackMarblePortalRecipe = SyncedConfig("Portal 3 - Black Marble", "Black Marble Portal Recipe", "BlackMarble:20,BlackMetal:5,Eitr:2", "The items needed to build the Black Marble Portal. A comma separated list of ITEM:QUANTITY pairs separated by a colon.");
             _blackMarblePortalAllowedItems = SyncedConfig("Portal 3 - Black Marble", "Black Marble Portal Allowed Items", "Silver, SilverOre", "A comma separated list of the item types allowed through the Black Marble Portal");
             _blackMarblePortalAllowEverything = SyncedConfig("Portal 3 - Black Marble", "Black Marble Portal Allow Everything", true, "Allow all items through the Black Marble Portal (overrides Allowed Items)");
             _blackMarblePortalAllowPreviousPortalItems = SyncedConfig("Portal 3 - Black Marble", "Black Marble Portal Use All Previous", true, "Additionally allow all items from the Obsidian and Ancient Portal");
@@ -109,12 +110,7 @@ namespace AdvancedPortals
                 LoadBuildPiece(assetBundle, "portal_obsidian", new PieceDef() {
                     Table = "_HammerPieceTable",
                     CraftingStation = "piece_workbench",
-                    Resources = new List<RecipeRequirementConfig>
-                    {
-                        new RecipeRequirementConfig { item = "Obsidian", amount = 20 },
-                        new RecipeRequirementConfig { item = "Silver", amount = 5 },
-                        new RecipeRequirementConfig { item = "SurtlingCore", amount = 2 }
-                    },
+                    Resources = MakeRecipeFromConfig("Obsidian Portal", _obsidianPortalRecipe.Value),
                     OnPrefabAdded = (prefab => {
                         var advPortal = prefab.AddComponent<AdvancedPortal>();
                         advPortal.AllowedItems = allowedTypesObsidian.ToList();
@@ -133,11 +129,7 @@ namespace AdvancedPortals
                 LoadBuildPiece(assetBundle, "portal_blackmarble", new PieceDef() {
                     Table = "_HammerPieceTable",
                     CraftingStation = "piece_workbench",
-                    Resources = new List<RecipeRequirementConfig>
-                    {
-                        new RecipeRequirementConfig { item = "BlackMarble", amount = 20 },
-                        new RecipeRequirementConfig { item = "Eitr", amount = 2 }
-                    },
+                    Resources = MakeRecipeFromConfig("Black Marble Portal", _blackMarblePortalRecipe.Value),
                     OnPrefabAdded = (prefab => {
                         var advPortal = prefab.AddComponent<AdvancedPortal>();
                         advPortal.AllowedItems = allowedTypesBlackMarble.ToList();
@@ -155,6 +147,50 @@ namespace AdvancedPortals
             }
 
             _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), PluginId);
+
+            // Patch TargetPortal's handle click method, since it does not directly call TeleportWorld.Teleport
+            var targetPortal = gameObject.GetComponent("TargetPortal.TargetPortal");
+            if (targetPortal)
+            {
+                var pluginType = targetPortal.GetType();
+                var mapType = pluginType.Assembly.GetType("TargetPortal.Map");
+                var handlePortalClickMethod = AccessTools.DeclaredMethod(mapType, "HandlePortalClick");
+                if (handlePortalClickMethod != null)
+                {
+                    _harmony.Patch(handlePortalClickMethod, new HarmonyMethod(typeof(AdvancedPortals), nameof(TargetPortal_HandlePortalClick_Prefix)));
+                    _harmony.Patch(handlePortalClickMethod, null, new HarmonyMethod(typeof(Teleport_Patch), nameof(Teleport_Patch.Generic_Postfix)));
+                }
+            }
+        }
+
+        private static void TargetPortal_HandlePortalClick_Prefix()
+        {
+            var playerPos = Player.m_localPlayer.transform.position;
+            const float searchRadius = 2.0f;
+            var colliders = Physics.OverlapSphere(playerPos, searchRadius);
+            TeleportWorld closestTeleport = null;
+            var minDistSquared = searchRadius * searchRadius + 1;
+            foreach (var collider in colliders)
+            {
+                var twt = collider.gameObject.GetComponent<TeleportWorldTrigger>();
+                if (twt == null)
+                    continue;
+
+                var tw = twt.GetComponentInParent<TeleportWorld>();
+                if (tw == null)
+                    continue;
+
+                var d = collider.transform.position - playerPos;
+                var distSquared = d.x * d.x + d.y * d.y + d.z * d.z;
+                if (distSquared < minDistSquared)
+                {
+                    closestTeleport = tw;
+                    minDistSquared = distSquared;
+                }
+            }
+
+            if (closestTeleport != null)
+                Teleport_Patch.Generic_Prefix(closestTeleport);
         }
 
         private static List<RecipeRequirementConfig> MakeRecipeFromConfig(string portalName, string configString)

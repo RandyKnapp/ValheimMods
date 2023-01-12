@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
+using UnityEngine;
 
 namespace AdvancedPortals
 {
@@ -21,6 +22,21 @@ namespace AdvancedPortals
                 return true;
 
             __result = GetAllZDOsWithMultiplePrefabsIterative(__instance, new []{ prefabPortalName, "portal_ancient", "portal_obsidian", "portal_blackmarble" }, zdos, ref index);
+            return false;
+        }
+
+        [HarmonyPatch(typeof(ZDOMan), nameof(ZDOMan.GetAllZDOsWithPrefab))]
+        [HarmonyPrefix]
+        public static bool GetPortalsZDOs_Prefix(ZDOMan __instance, string prefab, List<ZDO> zdos)
+        {
+            if (Game.instance == null || Game.instance.m_portalPrefab == null || __instance == null)
+                return true;
+
+            var prefabPortalName = Game.instance.m_portalPrefab.name;
+            if (prefab != prefabPortalName)
+                return true;
+
+            GetAllZDOsWithPrefab(__instance, new[] { prefabPortalName, "portal_ancient", "portal_obsidian", "portal_blackmarble" }, zdos);
             return false;
         }
 
@@ -70,6 +86,22 @@ namespace AdvancedPortals
                 ++index;
             }
             return false;
+        }
+
+        public static void GetAllZDOsWithPrefab(ZDOMan __instance, string[] prefabs, List<ZDO> zdos)
+        {
+            var stableHashCode = prefabs.Select(x => x.GetStableHashCode()).ToArray();
+            foreach (ZDO zdo in __instance.m_objectsByID.Values)
+            {
+                foreach (var nameHash in stableHashCode)
+                {
+                    if (zdo.GetPrefab() == nameHash)
+                    {
+                        zdos.Add(zdo);
+                        break;
+                    }
+                }
+            }
         }
     }
 }

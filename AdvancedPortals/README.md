@@ -9,7 +9,7 @@ Adds three new portals to provide a lore-friendly and balanced way to reduce the
   * **Obsidian Portal:** Allows teleporting Iron
     * *Requires:* 20 Obsidian, 5 Silver, 2 Surtling Cores
   * **Black Marble Portal:** Allows teleporting anything
-    * *Requires:* 20 Black Marble, 2 Refined Eitr
+    * *Requires:* 20 Black Marble, BlackMetal 5, 2 Refined Eitr
 
 Includes ServerSync.
 
