@@ -33,6 +33,10 @@ namespace EpicLoot
             MagicItem = magicItem;
             Value = Serialize();
             Save();
+
+            if (Player.m_localPlayer == null)
+                return;
+
             if (Item.m_equiped && Player.m_localPlayer.IsItemEquiped(Item))
                 Multiplayer_Player_Patch.UpdatePlayerZDOForEquipment(Player.m_localPlayer, Item, MagicItem != null);
         }

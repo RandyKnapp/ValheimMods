@@ -1,4 +1,9 @@
-﻿## Version 0.9.4
+﻿## Version 0.9.6
+  * Removed dependency on EIDF in the Thunderstore manifest
+## Version 0.9.5
+  * Fixed a bug where two enchanting tables next to each other could not be used
+  * Removed accidentally included "_patched.json" files
+## Version 0.9.4
   * **New Features:**
     * Enchanting Table
       * New build piece with custom crafting UI just for Epic Loot!

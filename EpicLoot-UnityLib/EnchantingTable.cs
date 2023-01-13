@@ -9,13 +9,15 @@ namespace EpicLoot_UnityLib
 
         public GameObject EnchantingUIPrefab;
 
+        private Player _interactingPlayer;
+
         public bool Interact(Humanoid user, bool repeat, bool alt)
         {
             if (repeat || user != Player.m_localPlayer || !InUseDistance(user))
                 return false;
 
             EnchantingTableUI.Show(EnchantingUIPrefab);
-
+            _interactingPlayer = Player.m_localPlayer;
             return false;
         }
 
@@ -38,8 +40,11 @@ namespace EpicLoot_UnityLib
 
         public void Update()
         {
-            if (Player.m_localPlayer != null && EnchantingTableUI.instance != null && EnchantingTableUI.instance.isActiveAndEnabled && !InUseDistance(Player.m_localPlayer))
+            if (_interactingPlayer != null && EnchantingTableUI.instance != null && EnchantingTableUI.instance.isActiveAndEnabled && !InUseDistance(_interactingPlayer))
+            {
                 EnchantingTableUI.Hide();
+                _interactingPlayer = null;
+            }
         }
 
         public bool UseItem(Humanoid user, ItemDrop.ItemData item)
