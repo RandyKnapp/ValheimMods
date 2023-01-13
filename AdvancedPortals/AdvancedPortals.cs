@@ -63,7 +63,7 @@ namespace AdvancedPortals
 
             _ancientPortalEnabled = SyncedConfig("Portal 1 - Ancient", "Ancient Portal Enabled", true, "Enable the Ancient Portal");
             _ancientPortalRecipe = SyncedConfig("Portal 1 - Ancient", "Ancient Portal Recipe", "ElderBark:20,Iron:5,SurtlingCore:2", "The items needed to build the Ancient Portal. A comma separated list of ITEM:QUANTITY pairs separated by a colon.");
-            _ancientPortalAllowedItems = SyncedConfig("Portal 1 - Ancient", "Ancient Portal Allowed Items", "Copper, CopperOre, CopperScrap, Tin, TinOre", "A comma separated list of the item types allowed through the Ancient Portal");
+            _ancientPortalAllowedItems = SyncedConfig("Portal 1 - Ancient", "Ancient Portal Allowed Items", "Copper, CopperOre, CopperScrap, Tin, TinOre, Bronze", "A comma separated list of the item types allowed through the Ancient Portal");
             _ancientPortalAllowEverything = SyncedConfig("Portal 1 - Ancient", "Ancient Portal Allow Everything", false, "Allow all items through the Ancient Portal (overrides Allowed Items)");
 
             _obsidianPortalEnabled = SyncedConfig("Portal 2 - Obsidian", "Obsidian Portal Enabled", true, "Enable the Obsidian Portal");
