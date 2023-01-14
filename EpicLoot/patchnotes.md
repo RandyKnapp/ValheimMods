@@ -1,4 +1,8 @@
-﻿## Version 0.9.6
+﻿## Version 0.9.7
+  * Fixed an unfortunate amount of bugs:
+    * Feather Falling, Indestructible, and Free Build (among others) not loading correctly.
+    * Old Items Created in an extremely old version of EIDF were not converting to Custom Data.
+## Version 0.9.6
   * Removed dependency on EIDF in the Thunderstore manifest
 ## Version 0.9.5
   * Fixed a bug where two enchanting tables next to each other could not be used

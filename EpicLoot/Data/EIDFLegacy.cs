@@ -1,7 +1,4 @@
 ﻿using System;
-using System.IO;
-using System.Linq;
-using BepInEx;
 
 namespace EpicLoot.Data
 {
@@ -14,6 +11,10 @@ namespace EpicLoot.Data
 
         public const string CrafterNameType = "c";
         public const string UniqueIdType = "u";
+                                                 
+        public const string OldCrafterNameType = "ExtendedItemDataFramework.CrafterNameData";
+        public const string OldUniqueIdType = "ExtendedItemDataFramework.UniqueItemData";
+        public const string OldComponentType = "EpicLoot.MagicItemComponent";
 
         public static bool ExtendedItemFrameworkLoaded = false;
 
@@ -32,7 +33,18 @@ namespace EpicLoot.Data
 
         public static bool ContainsEncodedCrafterName(string value)
         {
-            return value.Contains($"{StartDelimiter}{CrafterNameType}{EndDelimiter}");
+            var containsCrafterName = value.Contains($"{StartDelimiter}{CrafterNameType}{EndDelimiter}");
+
+            if (!containsCrafterName)
+                containsCrafterName = value.Contains($"{StartDelimiter}{OldCrafterNameType}");
+
+            return containsCrafterName;
+        }
+        public static bool ContainsEncodedCrafterName(string value, out bool oldName)
+        {
+            oldName = value.Contains($"{StartDelimiter}{OldCrafterNameType}");
+
+            return  value.Contains($"{StartDelimiter}{CrafterNameType}{EndDelimiter}"); ;
         }
 
         public static bool IsLegacyMagicItem(this ItemDrop.ItemData itemData)
@@ -40,8 +52,9 @@ namespace EpicLoot.Data
             if (itemData == null || string.IsNullOrEmpty(itemData.m_crafterName))
                 return false;
 
-            return itemData.m_crafterName.Contains($"{StartDelimiter}{MagicItemComponent.TypeID}{EndDelimiter}");
+            return itemData.m_crafterName.Contains($"{StartDelimiter}{MagicItemComponent.TypeID}{EndDelimiter}") || itemData.m_crafterName.Contains($"{StartDelimiter}{OldComponentType}");
         }
+
 
         public static string FormatCrafterName(string tooltipResult)
         {
@@ -49,13 +62,21 @@ namespace EpicLoot.Data
                 return tooltipResult;
 
             //Check for EIDF Usage
-            if (tooltipResult.Contains($"{StartDelimiter}{CrafterNameType}{EndDelimiter}"))
+            if (ContainsEncodedCrafterName(tooltipResult, out var containsOldName))
             {
                 var eidfCrafterNameStartIndex = tooltipResult.IndexOf($"{StartDelimiter}{CrafterNameType}{EndDelimiter}");
                 var eidfCrafterNameStopIndex = tooltipResult.IndexOf("</color>", eidfCrafterNameStartIndex);
                 var length = eidfCrafterNameStopIndex - eidfCrafterNameStartIndex;
                 var encodedCrafterName = tooltipResult.Substring(eidfCrafterNameStartIndex, length);
                 var formatedCrafterName = GetEIDFTypeData(encodedCrafterName, CrafterNameType);
+                tooltipResult = tooltipResult.Replace(encodedCrafterName, formatedCrafterName);
+            } else if (containsOldName)
+            {
+                var eidfCrafterNameStartIndex = tooltipResult.IndexOf($"{StartDelimiter}{OldCrafterNameType}");
+                var eidfCrafterNameStopIndex = tooltipResult.IndexOf("</color>", eidfCrafterNameStartIndex);
+                var length = eidfCrafterNameStopIndex - eidfCrafterNameStartIndex;
+                var encodedCrafterName = tooltipResult.Substring(eidfCrafterNameStartIndex, length);
+                var formatedCrafterName = GetEIDFTypeData(encodedCrafterName, OldCrafterNameType, true);
                 tooltipResult = tooltipResult.Replace(encodedCrafterName, formatedCrafterName);
             }
 
@@ -67,7 +88,10 @@ namespace EpicLoot.Data
             if (item == null || string.IsNullOrEmpty(item.m_crafterName))
                 return null;
 
-            return GetEIDFTypeData(item.m_crafterName, MagicItemComponent.TypeID);
+            if (item.m_crafterName.Contains($"{StartDelimiter}{MagicItemComponent.TypeID}{EndDelimiter}"))
+                return GetEIDFTypeData(item.m_crafterName, MagicItemComponent.TypeID, false);
+
+            return GetEIDFTypeData(item.m_crafterName, OldComponentType, true);
         }
 
         public static string GetCrafterName(this ItemDrop.ItemData item)
@@ -85,6 +109,7 @@ namespace EpicLoot.Data
             if (string.IsNullOrEmpty(encodedCrafterName) || !ContainsEncodedCrafterName(encodedCrafterName))
                 return encodedCrafterName;
 
+            
             return GetEIDFTypeData(encodedCrafterName, CrafterNameType) ?? string.Empty;
         }
 
@@ -103,7 +128,7 @@ namespace EpicLoot.Data
         {
             ExtendedItemFrameworkLoaded = instance.gameObject.GetComponent("ExtendedItemDataFramework") != null;
         }
-        private static string GetEIDFTypeData(string encodedCrafterName, string typeID)
+        private static string GetEIDFTypeData(string encodedCrafterName, string typeID, bool fuzzySearch = false)
         {
             if (string.IsNullOrEmpty(encodedCrafterName) || string.IsNullOrEmpty(typeID))
                 return null;
@@ -115,7 +140,7 @@ namespace EpicLoot.Data
                 var parts = component.Split(new[] { EndDelimiter }, StringSplitOptions.None);
                 var typeString = RestoreDataText(parts[0]);
 
-                if (typeString.Equals(typeID))
+                if ((fuzzySearch && typeString.Contains(typeID)) || (typeString.Equals(typeID) && !fuzzySearch))
                 {
                     var data = parts.Length == 2 ? parts[1] : string.Empty;
                     if (string.IsNullOrEmpty(data))
@@ -123,6 +148,7 @@ namespace EpicLoot.Data
 
                     return RestoreDataText(data);
                 }
+                
             }
 
             return null;

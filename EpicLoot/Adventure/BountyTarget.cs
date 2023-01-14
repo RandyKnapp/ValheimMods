@@ -161,7 +161,7 @@ namespace EpicLoot.Adventure
     {
         public static void Postfix(Character __instance)
         {
-            var zdo = __instance.m_nview?.GetZDO();
+            var zdo = __instance.m_nview != null ? __instance.m_nview.GetZDO() : null;
             if (zdo != null && zdo.IsValid())
             {
                 var old = !string.IsNullOrEmpty(zdo.GetString("BountyTarget"));
