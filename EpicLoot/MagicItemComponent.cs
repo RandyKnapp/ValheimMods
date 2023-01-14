@@ -4,10 +4,12 @@ using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using BepInEx;
 using Common;
 using EpicLoot.Crafting;
 using EpicLoot.Data;
 using EpicLoot.LegendarySystem;
+using EpicLoot.MagicItemEffects;
 using HarmonyLib;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
@@ -100,9 +102,9 @@ namespace EpicLoot
             {
                 CheckForExtendedItemDataAndConvert();
             }
-
-            SetMagicItem(MagicItem);
+            
             FixupValuelessEffects();
+            SetMagicItem(MagicItem);
         }
 
         public override void Load()
@@ -111,6 +113,12 @@ namespace EpicLoot
                 Deserialize();
 
             CheckForExtendedItemDataAndConvert();
+            FixupValuelessEffects();
+
+            //Check Indestructible on Item
+            Indestructible.MakeItemIndestructible(Item);
+
+            SetMagicItem(MagicItem);
         }
 
         private void CheckForExtendedItemDataAndConvert()
@@ -134,7 +142,7 @@ namespace EpicLoot
             {
                 if (MagicItemEffectDefinitions.IsValuelessEffect(effect.EffectType, MagicItem.Rarity) && !Mathf.Approximately(effect.EffectValue, 1))
                 {
-                    EpicLoot.LogWarning($"Fixing up effect on {MagicItem.DisplayName}: effect={effect.EffectType}");
+                    EpicLoot.Log($"Fixing up effect on {MagicItem.DisplayName}: effect={effect.EffectType}");
                     effect.EffectValue = 1;
                 }
             }
