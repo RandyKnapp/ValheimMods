@@ -9,6 +9,7 @@ using Common;
 using EpicLoot.Crafting;
 using EpicLoot.Data;
 using EpicLoot.LegendarySystem;
+using EpicLoot.MagicItemEffects;
 using HarmonyLib;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
@@ -113,6 +114,10 @@ namespace EpicLoot
 
             CheckForExtendedItemDataAndConvert();
             FixupValuelessEffects();
+
+            //Check Indestructible on Item
+            Indestructible.MakeItemIndestructible(Item);
+
             SetMagicItem(MagicItem);
         }
 
