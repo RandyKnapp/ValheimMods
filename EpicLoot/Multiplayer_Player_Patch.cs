@@ -70,7 +70,7 @@ namespace EpicLoot
             [UsedImplicitly]
             public static void Postfix(Player __instance)
             {
-                if (__instance != Player.m_localPlayer && __instance.m_nview?.GetZDO() is ZDO zdo)
+                if (__instance != null && __instance != Player.m_localPlayer && __instance.m_nview != null && __instance.m_nview.GetZDO() is ZDO zdo)
                 {
                     var changed = DoCheck(__instance, zdo, "LeftItem", "lf-ell", ref __instance.m_leftItem);
                     changed = changed || DoCheck(__instance, zdo, "RightItem", "ri-ell", ref __instance.m_rightItem);

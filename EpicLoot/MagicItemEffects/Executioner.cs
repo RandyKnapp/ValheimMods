@@ -14,7 +14,7 @@ namespace EpicLoot.MagicItemEffects
 		[UsedImplicitly]
 		private static void Prefix(Projectile __instance)
 		{
-			if (__instance.m_nview?.GetZDO() is ZDO zdo)
+			if (__instance != null && __instance.m_nview != null && __instance.m_nview.GetZDO() is ZDO zdo)
 			{
 				ExecutionerCheckDamage_Character_Damage_Patch.ExecutionerMultiplier = zdo.GetFloat("epic loot executioner multiplier", 1f);
 			}
@@ -30,26 +30,38 @@ namespace EpicLoot.MagicItemEffects
 	{
 		public static float? ExecutionerMultiplier;
 
-		[UsedImplicitly]
-		private static void Prefix(Character __instance, HitData hit)
-		{
-			if (hit?.GetAttacker() is Player player && __instance != null)
+        [UsedImplicitly]
+        private static void Prefix(Character __instance, HitData hit)
+        {
+            if (__instance == null || hit == null || hit.GetAttacker() == null || !hit.GetAttacker().IsPlayer())
+            {
+                ExecutionerMultiplier = null;
+                return;
+            }
+
+            var player = (Player)hit.GetAttacker();
+            var znetView = __instance.GetComponent<ZNetView>();
+            if (znetView == null)
+                return;
+
+            var zdo = znetView.GetZDO();
+            if (zdo == null)
+                return;
+
+			if (zdo.GetBool("epic loot executioner flag " + player.GetZDO().m_uid))
 			{
-				if (__instance.GetComponent<ZNetView>().GetZDO().GetBool("epic loot executioner flag " + player.GetZDO().m_uid))
-				{
-					return;
-				}
+				return;
+			}
 
-				if (ExecutionerMultiplier == null)
-				{
-					ExecutionerMultiplier = ReadExecutionerValue(player);
-				}
+			if (ExecutionerMultiplier == null)
+			{
+				ExecutionerMultiplier = ReadExecutionerValue(player);
+			}
 
-				if (ExecutionerMultiplier is float multiplier && __instance.GetHealth() / __instance.GetMaxHealth() < 0.2f)
-				{
-					hit.m_damage.Modify(multiplier);
-					__instance.GetComponent<ZNetView>().GetZDO().Set("epic loot executioner flag " + player.GetZDO().m_uid, true);
-				}
+			if (ExecutionerMultiplier is float multiplier && __instance.GetHealth() / __instance.GetMaxHealth() < 0.2f)
+			{
+				hit.m_damage.Modify(multiplier);
+				__instance.GetComponent<ZNetView>().GetZDO().Set("epic loot executioner flag " + player.GetZDO().m_uid, true);
 			}
             
 			ExecutionerMultiplier = null;
