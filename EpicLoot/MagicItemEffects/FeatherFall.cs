@@ -19,6 +19,8 @@ namespace EpicLoot.MagicItemEffects
                     EpicLoot.LogError("Could not find SlowFall status effect!");
                     return;
                 }
+                
+                EquipmentEffectCache.Reset(player);
 
                 var shouldHaveFeatherFall = player.HasActiveMagicEffect(MagicEffectType.FeatherFall);
                 var hasFeatherFall = player.m_eqipmentStatusEffects.Contains(slowFall);
