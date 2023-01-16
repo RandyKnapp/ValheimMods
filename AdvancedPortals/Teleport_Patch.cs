@@ -69,7 +69,6 @@ namespace AdvancedPortals
 
             __result = true;
             return false;
-
         }
     }
 }
