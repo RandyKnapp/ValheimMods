@@ -139,6 +139,33 @@
           "amount": 8
         }
       ]
+    },
+    {
+      "name": "Recipe_MushroomJam",
+      "item": "MushroomJam",
+      "amount": 4,
+      "craftingStation": "piece_cauldron",
+      "minStationLevel": 2,
+      "enabled": true,
+      "repairStation": "",
+      "resources": [
+        {
+          "item": "MushroomMagecap",
+          "amount": 8
+        },
+        {
+          "item": "MushroomJotunPuffs",
+          "amount": 8
+        },
+        {
+          "item": "Onion",
+          "amount": 2
+        },
+        {
+          "item": "Honey",
+          "amount": 8
+        }
+      ]
     }
   ]
 }
