@@ -7,9 +7,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("EpicLoot")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Randy Knapp Mods")]
 [assembly: AssemblyProduct("EpicLoot")]
-[assembly: AssemblyCopyright("Copyright © RandyKnapp 2021")]
+[assembly: AssemblyCopyright("Copyright © Randy Knapp 2023")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

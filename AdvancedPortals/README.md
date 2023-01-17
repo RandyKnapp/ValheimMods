@@ -1,6 +1,8 @@
 # AdvancedPortals v1.0.1
 Author: RandyKnapp
 Source: [Github](https://github.com/RandyKnapp/ValheimMods/tree/main/AdvancedPortals)
+Discord: [RandyKnapp's Mod Community](https://discord.gg/randyknappmods)
+Patreon: [Randy's Patreon](https://www.patreon.com/randyknapp)
 
 Adds three new portals to provide a lore-friendly and balanced way to reduce the item-transport slog!
 
@@ -44,6 +46,9 @@ Includes ServerSync.
 
 ### Changelist:
 
+#### 1.0.2
+  * Added bronze to Ancient portal transport list (how could I forget?)
+  * Updated to support other mods that extend the inventory (Thanks Vapok)
 #### 1.0.1
   * Added compatibility with AnyPortal and TargetPortal
   * Fixed a bug with Obsidian and Black Marble portal recipes

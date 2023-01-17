@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
+using BepInEx.Logging;
 using UnityEngine;
 
 namespace Common
 {
     public static class PrefabCreator
     {
+        public static ManualLogSource Logger;
         public static Dictionary<string, CraftingStation> CraftingStations;
 
         public static T RequireComponent<T>(GameObject go) where T:Component
@@ -45,7 +47,7 @@ namespace Common
             var itemPrefab = ObjectDB.instance.GetItemPrefab(itemId);
             if (itemPrefab == null)
             {
-                Debug.LogWarning($"[PrefabCreator] Could not find item prefab ({itemId})");
+                Logger?.LogWarning($"[PrefabCreator] Could not find item prefab ({itemId})");
                 return null;
             }
 
@@ -61,9 +63,9 @@ namespace Common
                 var craftingStationExists = CraftingStations.ContainsKey(recipeConfig.craftingStation);
                 if (!craftingStationExists)
                 {
-                    Debug.LogWarning($"[PrefabCreator] Could not find crafting station ({itemId}): {recipeConfig.craftingStation}");
+                    Logger?.LogWarning($"[PrefabCreator] Could not find crafting station ({itemId}): {recipeConfig.craftingStation}");
                     var stationList = string.Join(", ", CraftingStations.Keys);
-                    Debug.Log($"[PrefabCreator] Available Stations: {stationList}");
+                    Logger?.LogInfo($"[PrefabCreator] Available Stations: {stationList}");
                 }
                 else
                 {
@@ -76,9 +78,9 @@ namespace Common
                 var repairStationExists = CraftingStations.ContainsKey(recipeConfig.repairStation);
                 if (!repairStationExists)
                 {
-                    Debug.LogWarning($"[PrefabCreator] Could not find repair station ({itemId}): {recipeConfig.repairStation}");
+                    Logger?.LogWarning($"[PrefabCreator] Could not find repair station ({itemId}): {recipeConfig.repairStation}");
                     var stationList = string.Join(", ", CraftingStations.Keys);
-                    Debug.Log($"[PrefabCreator] Available Stations: {stationList}");
+                    Logger?.LogInfo($"[PrefabCreator] Available Stations: {stationList}");
                 }
                 else
                 {
@@ -92,7 +94,7 @@ namespace Common
                 var reqPrefab = ObjectDB.instance.GetItemPrefab(requirement.item);
                 if (reqPrefab == null)
                 {
-                    Debug.LogError($"[PrefabCreator] Could not find requirement item ({itemId}): {requirement.item}");
+                    Logger?.LogError($"[PrefabCreator] Could not find requirement item ({itemId}): {requirement.item}");
                     continue;
                 }
 
@@ -112,7 +114,7 @@ namespace Common
             var recipe = CreateRecipe(name, itemId, recipeConfig);
             if (recipe == null)
             {
-                Debug.LogError($"[PrefabCreator] Failed to create recipe ({name})");
+                Logger?.LogError($"[PrefabCreator] Failed to create recipe ({name})");
                 return null;
             }
             return AddNewRecipe(recipe);
@@ -123,11 +125,11 @@ namespace Common
             var removed = ObjectDB.instance.m_recipes.RemoveAll(x => x.name == recipe.name);
             if (removed > 0)
             {
-                Debug.Log($"[PrefabCreator] Removed recipe ({recipe.name}): {removed}");
+                Logger?.LogInfo($"[PrefabCreator] Removed recipe ({recipe.name}): {removed}");
             }
 
             ObjectDB.instance.m_recipes.Add(recipe);
-            Debug.Log($"[PrefabCreator] Added recipe: {recipe.name}");
+            Logger?.LogInfo($"[PrefabCreator] Added recipe: {recipe.name}");
 
             return recipe;
         }
