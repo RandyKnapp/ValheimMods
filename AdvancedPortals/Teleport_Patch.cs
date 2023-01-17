@@ -45,9 +45,9 @@ namespace AdvancedPortals
             CurrentAdvancedPortal = null;
         }
 
-        [HarmonyPatch(typeof(Humanoid), nameof(Humanoid.IsTeleportable))]
+        [HarmonyPatch(typeof(Inventory), nameof(Inventory.IsTeleportable))]
         [HarmonyPrefix]
-        public static bool Humanoid_IsTeleportable_Prefix(Humanoid __instance, ref bool __result)
+        public static bool Inventory_IsTeleportable_Pretfix(Inventory __instance, ref bool __result)
         {
             if (CurrentAdvancedPortal == null)
                 return true;
@@ -58,7 +58,7 @@ namespace AdvancedPortals
                 return false;
             }
 
-            foreach (var itemData in __instance.GetInventory().GetAllItems())
+            foreach (var itemData in __instance.GetAllItems())
             {
                 if (!itemData.m_shared.m_teleportable && itemData.m_dropPrefab != null && !CurrentAdvancedPortal.AllowedItems.Contains(itemData.m_dropPrefab.name))
                 {
