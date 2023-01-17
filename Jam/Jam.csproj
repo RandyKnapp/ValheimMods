@@ -88,7 +88,6 @@
       <Link>jamassets</Link>
     </EmbeddedResource>
     <None Include="manifest.json" />
-    <None Include="packages.config" />
     <None Include="README.md" />
     <None Include="recipes.json" />
   </ItemGroup>

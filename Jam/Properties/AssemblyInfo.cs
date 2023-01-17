@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Jam")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Randy Knapp Mods")]
 [assembly: AssemblyProduct("Jam")]
-[assembly: AssemblyCopyright("Copyright © RandyKnapp 2021")]
+[assembly: AssemblyCopyright("Copyright © RandyKnapp 2023")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
