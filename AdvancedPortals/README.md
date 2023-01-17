@@ -44,6 +44,9 @@ Includes ServerSync.
 
 ### Changelist:
 
+#### 1.0.2
+  * Added bronze to Ancient portal transport list (how could I forget?)
+  * Updated to support other mods that extend the inventory (Thanks Vapok)
 #### 1.0.1
   * Added compatibility with AnyPortal and TargetPortal
   * Fixed a bug with Obsidian and Black Marble portal recipes
