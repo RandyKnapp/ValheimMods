@@ -1,6 +1,8 @@
 # AdvancedPortals v1.0.1
 Author: RandyKnapp
 Source: [Github](https://github.com/RandyKnapp/ValheimMods/tree/main/AdvancedPortals)
+Discord: [RandyKnapp's Mod Community](https://discord.gg/randyknappmods)
+Patreon: [Randy's Patreon](https://www.patreon.com/randyknapp)
 
 Adds three new portals to provide a lore-friendly and balanced way to reduce the item-transport slog!
 
