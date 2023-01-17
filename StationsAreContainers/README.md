@@ -1,4 +1,4 @@
-﻿# Stations Are Containers v1.0.1
+# Stations Are Containers v1.0.1
 ##### by RandyKnapp
 Source: [Github](https://github.com/RandyKnapp/ValheimMods/tree/main/StationsAreContainers)
 Discord: [RandyKnapp's Mod Community](https://discord.gg/randyknappmods)
