@@ -84,7 +84,7 @@ namespace EpicLoot.Patching
                     EpicLoot.LogWarningForce($"***************************************************");
                     EpicLoot.LogWarningForce($"Epic Loot Patch Folder Has Moved To:");
                     EpicLoot.LogWarningForce($"{PatchesDirPath}");
-                    EpicLoot.LogWarningForce($"Please Move Your Patches. Patches Found Not Loaded.");
+                    EpicLoot.LogWarningForce($"Please move your patch files. Patch files found in this folder will not be loaded");
                     EpicLoot.LogWarningForce($"***************************************************");
                 }
             }
