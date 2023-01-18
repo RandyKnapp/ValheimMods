@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using BepInEx;
 using Common;
 using Newtonsoft.Json;
@@ -65,8 +66,8 @@ namespace EpicLoot.Patching
             if (!patchesFolder.Exists)
                 return;
 
-            var pluginFolder = patchesFolder.Parent;
-            GetAllConfigFileNames(pluginFolder);
+            var pluginFolder = new DirectoryInfo(Assembly.GetExecutingAssembly().Location);
+            GetAllConfigFileNames(pluginFolder.Parent);
             ProcessPatchDirectory(patchesFolder);
         }
 
@@ -189,7 +190,7 @@ namespace EpicLoot.Patching
                     EpicLoot.LogErrorForce($"Patch ({index}) in file ({file.Name}) has unknown specified source file ({patch.TargetFile})!");
                     continue;
                 }
-
+                
                 if (patch.Priority < 0)
                     patch.Priority = defaultPriority;
 
@@ -201,18 +202,10 @@ namespace EpicLoot.Patching
 
         public static string GetPatchesDirectoryPath()
         {
-            var patchesFolderPath = Path.Combine(Paths.PluginPath, "EpicLoot", "patches");
-            if (!Directory.Exists(patchesFolderPath))
-            {
-                var assembly = typeof(EpicLoot).Assembly;
-                patchesFolderPath = Path.Combine(Path.GetDirectoryName(assembly.Location) ?? string.Empty, "patches");
-                if (!Directory.Exists(patchesFolderPath))
-                {
-                    Directory.CreateDirectory(patchesFolderPath);
-                }
-            }
+            var patchesFolderPath = Path.Combine(Paths.ConfigPath, "EpicLoot", "patches");
+            var dirInfo = Directory.CreateDirectory(patchesFolderPath);
 
-            return patchesFolderPath;
+            return dirInfo.FullName;
         }
 
         public static string ProcessConfigFile(string fileName, string fileText)
