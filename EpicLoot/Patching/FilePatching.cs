@@ -57,7 +57,7 @@ namespace EpicLoot.Patching
         public static void LoadAllPatches()
         {
             PatchesDirPath = GetPatchesDirectoryPath();
-
+            
             // If the folder does not exist, there are no patches
             if (string.IsNullOrEmpty(PatchesDirPath))
                 return;
@@ -67,10 +67,28 @@ namespace EpicLoot.Patching
                 return;
 
             var pluginFolder = new DirectoryInfo(Assembly.GetExecutingAssembly().Location);
+
+            CheckForOldPatches(pluginFolder.Parent);
             GetAllConfigFileNames(pluginFolder.Parent);
             ProcessPatchDirectory(patchesFolder);
         }
 
+        public static void CheckForOldPatches(DirectoryInfo pluginFolder)
+        {
+            var oldPatchFolder = Path.Combine(pluginFolder.FullName, "patches");
+            
+            if (Directory.Exists(oldPatchFolder))
+            {
+                if (Directory.GetFiles(oldPatchFolder, "*.json", SearchOption.AllDirectories).Length > 0)
+                {
+                    EpicLoot.LogWarningForce($"***************************************************");
+                    EpicLoot.LogWarningForce($"Epic Loot Patch Folder Has Moved To:");
+                    EpicLoot.LogWarningForce($"{PatchesDirPath}");
+                    EpicLoot.LogWarningForce($"Please Move Your Patches. Patches Found Not Loaded.");
+                    EpicLoot.LogWarningForce($"***************************************************");
+                }
+            }
+        }
         public static void RemoveFilePatches(string fileName, string patchFile)
         {
             PatchesPerFile.GetValues(fileName, true).RemoveAll(y => y.SourceFile.Equals(patchFile));
