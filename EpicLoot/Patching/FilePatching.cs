@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using BepInEx;
 using Common;
 using Newtonsoft.Json;
@@ -56,7 +57,7 @@ namespace EpicLoot.Patching
         public static void LoadAllPatches()
         {
             PatchesDirPath = GetPatchesDirectoryPath();
-
+            
             // If the folder does not exist, there are no patches
             if (string.IsNullOrEmpty(PatchesDirPath))
                 return;
@@ -65,11 +66,29 @@ namespace EpicLoot.Patching
             if (!patchesFolder.Exists)
                 return;
 
-            var pluginFolder = patchesFolder.Parent;
-            GetAllConfigFileNames(pluginFolder);
+            var pluginFolder = new DirectoryInfo(Assembly.GetExecutingAssembly().Location);
+
+            CheckForOldPatches(pluginFolder.Parent);
+            GetAllConfigFileNames(pluginFolder.Parent);
             ProcessPatchDirectory(patchesFolder);
         }
 
+        public static void CheckForOldPatches(DirectoryInfo pluginFolder)
+        {
+            var oldPatchFolder = Path.Combine(pluginFolder.FullName, "patches");
+            
+            if (Directory.Exists(oldPatchFolder))
+            {
+                if (Directory.GetFiles(oldPatchFolder, "*.json", SearchOption.AllDirectories).Length > 0)
+                {
+                    EpicLoot.LogWarningForce($"***************************************************");
+                    EpicLoot.LogWarningForce($"Epic Loot Patch Folder Has Moved To:");
+                    EpicLoot.LogWarningForce($"{PatchesDirPath}");
+                    EpicLoot.LogWarningForce($"Please move your patch files. Patch files found in this folder will not be loaded");
+                    EpicLoot.LogWarningForce($"***************************************************");
+                }
+            }
+        }
         public static void RemoveFilePatches(string fileName, string patchFile)
         {
             PatchesPerFile.GetValues(fileName, true).RemoveAll(y => y.SourceFile.Equals(patchFile));
@@ -189,7 +208,7 @@ namespace EpicLoot.Patching
                     EpicLoot.LogErrorForce($"Patch ({index}) in file ({file.Name}) has unknown specified source file ({patch.TargetFile})!");
                     continue;
                 }
-
+                
                 if (patch.Priority < 0)
                     patch.Priority = defaultPriority;
 
@@ -201,18 +220,10 @@ namespace EpicLoot.Patching
 
         public static string GetPatchesDirectoryPath()
         {
-            var patchesFolderPath = Path.Combine(Paths.PluginPath, "EpicLoot", "patches");
-            if (!Directory.Exists(patchesFolderPath))
-            {
-                var assembly = typeof(EpicLoot).Assembly;
-                patchesFolderPath = Path.Combine(Path.GetDirectoryName(assembly.Location) ?? string.Empty, "patches");
-                if (!Directory.Exists(patchesFolderPath))
-                {
-                    Directory.CreateDirectory(patchesFolderPath);
-                }
-            }
+            var patchesFolderPath = Path.Combine(Paths.ConfigPath, "EpicLoot", "patches");
+            var dirInfo = Directory.CreateDirectory(patchesFolderPath);
 
-            return patchesFolderPath;
+            return dirInfo.FullName;
         }
 
         public static string ProcessConfigFile(string fileName, string fileText)

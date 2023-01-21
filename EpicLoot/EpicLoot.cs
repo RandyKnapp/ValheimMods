@@ -1108,8 +1108,8 @@ namespace EpicLoot
             var jsonFileText = File.ReadAllText(jsonFilePath);
             var patchedJsonFileText = FilePatching.ProcessConfigFile(filename, jsonFileText);
             if (OutputPatchedConfigFiles.Value && jsonFileText != patchedJsonFileText)
-            {
-                var debugFilePath = jsonFilePath.Replace(".json", "_patched.json");
+            { 
+                var debugFilePath = Path.Combine(Paths.ConfigPath, "EpicLoot", filename.Replace(".json", "_patched.json"));
                 File.WriteAllText(debugFilePath, patchedJsonFileText);
             }
             return patchedJsonFileText;
