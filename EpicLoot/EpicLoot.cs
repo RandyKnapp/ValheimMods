@@ -88,9 +88,9 @@ namespace EpicLoot
     {
         public const string PluginId = "randyknapp.mods.epicloot";
         public const string DisplayName = "Epic Loot";
-        public const string Version = "0.9.7";
+        public const string Version = "0.9.8";
 
-        private readonly ConfigSync _configSync = new ConfigSync(PluginId) { DisplayName = DisplayName, CurrentVersion = Version, MinimumRequiredVersion = "0.9.7" };
+        private readonly ConfigSync _configSync = new ConfigSync(PluginId) { DisplayName = DisplayName, CurrentVersion = Version, MinimumRequiredVersion = "0.9.8" };
 
         private static ConfigEntry<string> _setItemColor;
         private static ConfigEntry<string> _magicRarityColor;
@@ -256,7 +256,7 @@ namespace EpicLoot
             var stream = assembly.GetManifestResourceStream($"{assembly.GetName().Name}.{assemblyName}");
             if (stream == null)
             {
-                LogError($"Could not load embedded assembly ({assemblyName})!");
+                LogErrorForce($"Could not load embedded assembly ({assemblyName})!");
                 return;
             }
 
@@ -415,7 +415,7 @@ namespace EpicLoot
 
             if (translations == null)
             {
-                Debug.LogError("Could not parse translations.json!");
+                LogErrorForce("Could not parse translations.json!");
                 return;
             }
 
@@ -668,7 +668,7 @@ namespace EpicLoot
             }
             catch (Exception e)
             {
-                LogError($"Error loading asset ({assetName}): {e.Message}");
+                LogErrorForce($"Error loading asset ({assetName}): {e.Message}");
                 return null;
             }
         }
@@ -703,7 +703,7 @@ namespace EpicLoot
                 var prefab = assetBundle.LoadAsset<GameObject>(assetName);
                 if (prefab == null)
                 {
-                    LogError($"Tried to load asset {assetName} but it does not exist in the asset bundle!");
+                    LogErrorForce($"Tried to load asset {assetName} but it does not exist in the asset bundle!");
                     continue;
                 }
                 prefabs[(int) rarity] = prefab;
@@ -1009,7 +1009,7 @@ namespace EpicLoot
                 }
                 catch (Exception)
                 {
-                    LogError($"Could not parse file '{filename}'! Errors in JSON!");
+                    LogErrorForce($"Could not parse file '{filename}'! Errors in JSON!");
                     throw;
                 }
 
@@ -1137,7 +1137,7 @@ namespace EpicLoot
                 assetFileName = GenerateAssetPathAtAssembly(assetName);
                 if (!File.Exists(assetFileName))
                 {
-                    LogError($"Could not find asset ({assetName})");
+                    LogErrorForce($"Could not find asset ({assetName})");
                     return null;
                 }
             }

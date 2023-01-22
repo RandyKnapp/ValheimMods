@@ -17,10 +17,17 @@ The mod is currently in ***Early Access***! That means it's **not done**! Be pat
 
 ***EpicLoot works in multiplayer and on dedicated servers!*** The server and all players should have the mod and its dependencies installed.
 
-Information about every magic effect and loot drop table can be found in [info.md](https://github.com/RandyKnapp/ValheimMods/blob/main/EpicLoot/info.md).
+## Documentation
+
+**Magic Effects:** [Magic Effects Wiki](https://github.com/RandyKnapp/ValheimMods/wiki/Magic-Effects)
+**Loot Drops:** [info.md](https://github.com/RandyKnapp/ValheimMods/blob/main/EpicLoot/info.md)
+**Patching System:** [Config Patching](https://github.com/RandyKnapp/ValheimMods/wiki/Config-Patching)
 
 ## Credits
-Contibutions from the following modders was invaluable and appreciated: 
+Epic Loot Team Members:
+  * [Vapok](https://github.com/Vapok) - Joined in Dec 2022, made hundreds of changes and bugfixes since.
+
+Contibutions from the following modders were invaluable and appreciated: 
   * [blaxxun (CLLC)](https://www.nexusmods.com/valheim/mods/495) - bugfixes, config sync, various magic item effects
   * [M3TO](https://github.com/M3TO) - bugfixes
   * [jsza](https://github.com/jsza) - bugfixes

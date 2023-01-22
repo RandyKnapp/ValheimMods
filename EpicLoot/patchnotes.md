@@ -1,4 +1,10 @@
-﻿## Version 0.9.7
+﻿## Version 0.9.8
+  * Patch Config File location moved. Patch files have been moved outside of the Epic Loot Plugin Folder to prevent mod managers from deleting patch files.
+    * Patch files are now located in BepInEx\config\EpicLoot\patches folder.
+    * This folder will automatically be created upon first run of Epic Loot.
+    * Debug Merged Output Files (if set to output) will be located in BepInEx\config\EpicLoot
+  * Fix for "craftable legendary with no effects" bug
+## Version 0.9.7
   * Fixed an unfortunate amount of bugs:
     * Feather Falling, Indestructible, and Free Build (among others) not loading correctly.
     * Old Items Created in an extremely old version of EIDF were not converting to Custom Data.
