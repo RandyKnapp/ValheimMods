@@ -50,7 +50,8 @@ namespace EpicLoot
             LootTables.Clear();
             if (Config == null)
             {
-                EpicLoot.LogWarning("Initialized LootRoller with null");
+                Config = new LootConfig();
+                EpicLoot.LogErrorForce("Could not load loottables.json! Verify that your json files are installed correctly alongside the EpicLoot.dll file.");
                 return;
             }
           
