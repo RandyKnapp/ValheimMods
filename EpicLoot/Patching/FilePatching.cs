@@ -22,6 +22,7 @@ namespace EpicLoot.Patching
         InsertBefore,   // Insert the provided value into the array containing the selected token, before the token
         InsertAfter,    // Insert the provided value into the array containing the selected token, after the token
         RemoveAll,      // Remove all elements of an array or all properties of an object
+        Merge,          // Use property values in the provided object to add or overwrite property values on the selected object
     }
 
     [Serializable]
@@ -273,6 +274,7 @@ namespace EpicLoot.Patching
                     case PatchAction.InsertBefore: ApplyPatch_Insert(token, patch, false); break;
                     case PatchAction.InsertAfter: ApplyPatch_Insert(token, patch, true); break;
                     case PatchAction.RemoveAll: ApplyPatch_RemoveAll(token, patch); break;
+                    case PatchAction.Merge: ApplyPatch_Merge(token, patch); break;
                     default: break;
                 }
             }
@@ -442,6 +444,54 @@ namespace EpicLoot.Patching
             else
             {
                 EpicLoot.LogErrorForce($"Patch ({patch.SourceFile}, {patch.Path}) has action '{actionName}' but selected token is not an Array or Object! This patch will be ignored!");
+            }
+        }
+
+        public static void ApplyPatch_Merge(JToken token, Patch patch)
+        {
+            if (patch.Value == null)
+            {
+                EpicLoot.LogErrorForce($"Patch ({patch.SourceFile}, {patch.Path}) has action 'Merge' but has not supplied a json Value! This patch will be ignored!");
+                return;
+            }
+
+            if (patch.Value.Type != JTokenType.Object)
+            {
+                EpicLoot.LogErrorForce($"Patch ({patch.SourceFile}, {patch.Path}) has action 'Merge' but has supplied a json Value that is not an Object! This patch will be ignored!");
+                return;
+            }
+
+            if (token.Type != JTokenType.Object)
+            {
+                EpicLoot.LogErrorForce($"Patch ({patch.SourceFile}, {patch.Path}) has action 'Merge' but has selected a token that is not a json Object! This patch will be ignored!");
+                return;
+            }
+            
+            var baseObject = ((JObject)token);
+            var partialObject = ((JObject)patch.Value);
+
+            MergeObject(baseObject, partialObject);            
+        }
+
+        private static void MergeObject(JObject baseObject, JObject partialObject)
+        {
+            foreach (JProperty partialProperty in partialObject.Properties())
+            {
+                if (baseObject.ContainsKey(partialProperty.Name) && baseObject.Property(partialProperty.Name) is JProperty baseProperty)
+                {
+                    if (baseProperty.Value.Type == JTokenType.Object && partialProperty.Value.Type == JTokenType.Object)
+                    {
+                        MergeObject((JObject)baseProperty.Value, (JObject)partialProperty.Value);
+                    }
+                    else
+                    {
+                        baseProperty.Value = partialProperty.Value;
+                    }
+                }
+                else
+                {
+                    baseObject.Add(partialProperty.Name, partialProperty.Value);
+                }
             }
         }
     }
