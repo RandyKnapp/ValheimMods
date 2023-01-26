@@ -110,6 +110,11 @@ namespace EpicLoot
             return Effects.Any(x => effectTypes.Contains(x.EffectType));
         }
 
+        public bool CanBeDisenchanted()
+        {
+            return !Effects.Any(x => !MagicItemEffectDefinitions.Get(x.EffectType)?.CanBeDisenchanted ?? false);
+        }
+
         public static string GetEffectText(MagicItemEffectDefinition effectDef, float value)
         {
             var localizedDisplayText = Localization.instance.Localize(effectDef.DisplayText);

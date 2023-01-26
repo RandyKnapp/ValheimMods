@@ -82,6 +82,9 @@
   "mod_epicloot_junkcost": "Salvage Cost:",
 
   "mod_epicloot_disenchant": "Disenchant",
+  "mod_epicloot_disenchantprogress": "Disenchanting...",
+  "mod_epicloot_disenchantcost": "Disenchant Cost:",
+  "mod_epicloot_disenchantexplain": "Disenchant an item, returning it to its non-magical state, ready to be enchanted again.",
 
   "mod_epicloot_upgradetable": "Upgrade Table",
 

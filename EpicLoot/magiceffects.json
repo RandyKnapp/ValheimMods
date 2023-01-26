@@ -4,6 +4,7 @@
       "Type" : "DvergerCirclet",
       "DisplayText" : "$mod_epicloot_me_dvergercirclet_display",
       "CanBeAugmented": false, 
+      "CanBeDisenchanted": false, 
       "Requirements" : {
         "NoRoll": true
       },
@@ -13,6 +14,7 @@
       "Type" : "Megingjord",
       "DisplayText" : "$mod_epicloot_me_megingjord_display",
       "CanBeAugmented": false, 
+      "CanBeDisenchanted": false, 
       "Requirements" : {
         "NoRoll": true
       },
@@ -22,6 +24,7 @@
       "Type" : "Wishbone",
       "DisplayText" : "$mod_epicloot_me_wishbone_display",
       "CanBeAugmented": false, 
+      "CanBeDisenchanted": false, 
       "Requirements" : {
         "NoRoll": true
       },
@@ -31,6 +34,7 @@
       "Type": "Andvaranaut",
       "DisplayText" : "$mod_epicloot_me_andvaranaut_display",
       "CanBeAugmented": false, 
+      "CanBeDisenchanted": false, 
       "Requirements" : {
         "NoRoll": true
       },

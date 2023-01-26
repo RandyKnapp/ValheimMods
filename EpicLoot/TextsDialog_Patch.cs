@@ -98,7 +98,7 @@ namespace EpicLoot
             var sortedBounties = saveData.Bounties.OrderBy(x => x.State);
             foreach (var bounty in sortedBounties)
             {
-                if (bounty.State == BountyState.Claimed)
+                if (bounty.State != BountyState.InProgress && bounty.State != BountyState.Complete)
                 {
                     continue;
                 }

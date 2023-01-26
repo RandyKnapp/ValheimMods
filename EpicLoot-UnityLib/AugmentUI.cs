@@ -277,23 +277,6 @@ namespace EpicLoot_UnityLib
             }
         }
 
-        private bool LocalPlayerCanAffordCost(List<InventoryItemListElement> cost)
-        {
-            var player = Player.m_localPlayer;
-            if (player.NoCostCheat())
-                return true;
-
-            var inventory = player.GetInventory();
-            foreach (var element in cost)
-            {
-                var item = element.GetItem();
-                if (inventory.CountItems(item.m_shared.m_name) < item.m_stack)
-                    return false;
-            }
-
-            return true;
-        }
-
         public override bool CanCancel()
         {
             return base.CanCancel() || (_choiceDialog != null && _choiceDialog.activeSelf);
