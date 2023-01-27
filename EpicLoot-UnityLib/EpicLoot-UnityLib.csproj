@@ -106,6 +106,7 @@
     <Compile Include="SacrificeUI.cs" />
     <Compile Include="SelectableTextColor.cs" />
     <Compile Include="SetRarityColor.cs" />
+    <Compile Include="UpgradeTableUI.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
