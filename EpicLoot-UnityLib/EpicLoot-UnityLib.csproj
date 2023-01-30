@@ -53,6 +53,10 @@
     <Reference Include="BepInEx">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\core\BepInEx.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libs\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="UnityEngine">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\unstripped_corlib\UnityEngine.dll</HintPath>
@@ -92,10 +96,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AugmentUI.cs" />
+    <Compile Include="FeatureStatus.cs" />
     <Compile Include="DisenchantUI.cs" />
     <Compile Include="EnchantingTable.cs" />
     <Compile Include="EnchantingTableUI.cs" />
     <Compile Include="EnchantingTableUIPanelBase.cs" />
+    <Compile Include="EnchantingTableUpgrades.cs" />
     <Compile Include="EnchantUI.cs" />
     <Compile Include="MultiSelectItemList.cs" />
     <Compile Include="MultiSelectItemListElement.cs" />

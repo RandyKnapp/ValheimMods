@@ -456,6 +456,21 @@ namespace EpicLoot_UnityLib
             return null;
         }
 
+        public int GetFirstSelectedIndex()
+        {
+            var elementCount = ListContainer.childCount;
+            for (var i = 0; i < elementCount; ++i)
+            {
+                var childToCache = ListContainer.GetChild(i);
+                var element = childToCache.GetComponent<MultiSelectItemListElement>();
+                var quantity = element.GetSelectedQuantity();
+                if (quantity > 0)
+                    return i;
+            }
+
+            return -1;
+        }
+
         public void Lock()
         {
             _locked = true;
@@ -577,6 +592,21 @@ namespace EpicLoot_UnityLib
         public bool IsGrid()
         {
             return ListContainer != null && ListContainer.GetComponent<GridLayoutGroup>() != null;
+        }
+
+        public void InitWithExistingItems()
+        {
+            for (var i = 0; i < ListContainer.childCount; ++i)
+            {
+                var childToSet = ListContainer.GetChild(i);
+                var element = childToSet.GetComponent<MultiSelectItemListElement>();
+                element.OnSelectionChanged += OnElementSelectionChanged;
+            }
+            DeselectAll();
+
+            OnItemsChanged?.Invoke();
+            OnSelectedItemsChanged?.Invoke();
+            RefreshSelectAllToggle();
         }
     }
 }

@@ -1,0 +1,65 @@
+﻿{
+  "DefaultFeatureLevels": {
+    "Sacrifice": 0,
+    "ConvertMaterials": 0,
+    "Enchant": -1,
+    "Augment": -1,
+    "Disenchant": -1
+  },
+  "MaximumFeatureLevels": {
+    "Sacrifice": 5,
+    "ConvertMaterials": 5,
+    "Enchant": 5,
+    "Augment": 4,
+    "Disenchant": 5
+  },
+  "UpgradeCosts": {
+    "Sacrifice": [
+      null,
+      [],
+      [],
+      [],
+      [],
+      []
+    ],
+    "ConvertMaterials": [
+      null,
+      [],
+      [],
+      [],
+      [],
+      []
+    ],
+    "Enchant": [
+      [ { "Item": "SurtlingCore", "Amount": 2 }, { "Item": "Copper", "Amount": 1 }, { "Item": "DustMagic", "Amount": 5 } ],
+      [],
+      [],
+      [],
+      [],
+      []
+    ],
+    "Augment": [
+      [ { "Item": "SurtlingCore", "Amount": 2 }, { "Item": "Bronze", "Amount": 1 },  { "Item": "ShardMagic", "Amount": 5 } ],
+      [],
+      [],
+      [],
+      [],
+      []
+    ],
+    "Disenchant": [
+      [ { "Item": "SurtlingCore", "Amount": 5 }, { "Item": "IronBountyToken", "Amount": 3 } ],
+      [],
+      [],
+      [],
+      [],
+      []
+    ]
+  },
+  "UpgradeValues": {
+    "Sacrifice": [ [0], [3], [6], [10], [15], [20] ],
+    "ConvertMaterials": [ [5, 5], [4, 5], [4, 4], [3, 4], [3, 3], [2, 3] ],
+    "Enchant": [ [0, 0], [1, 2], [2, 4], [3, 6], [4, 8], [5, 10] ],
+    "Augment": [ [3, 0], [4, 0], [5, 0], [5, 25], [5, 50] ],
+    "Disenchant": [ [0], [3], [6], [10], [15], [20] ]
+  }
+}

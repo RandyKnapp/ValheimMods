@@ -39,14 +39,14 @@
   "mod_epicloot_assets_coins": "Coins",
 
   "mod_epicloot_sacrifice": "Sacrifice",
-  "mod_epicloot_sacrifice_warning": "This item will be DESTROYED as a SACRIFICE to the gods.", 
-  "mod_epicloot_sacrifice_explanation": "Destroy this item and get:", 
-  "mod_epicloot_sacrifice_explanation_multi": "Destroy the selected items and receive:", 
-  "mod_epicloot_sacrifice_equipped": "Item is currently equipped", 
-  "mod_epicloot_sacrifice_inventoryfullexplanation": "(Inventory was full when crafting)", 
+  "mod_epicloot_sacrifice_warning": "This item will be DESTROYED as a SACRIFICE to the gods.",
+  "mod_epicloot_sacrifice_explanation": "Destroy this item and get:",
+  "mod_epicloot_sacrifice_explanation_multi": "Destroy the selected items and receive:",
+  "mod_epicloot_sacrifice_equipped": "Item is currently equipped",
+  "mod_epicloot_sacrifice_inventoryfullexplanation": "(Inventory was full when crafting)",
   "mod_epicloot_sacrificeall": "Sacrifice All",
   "mod_epicloot_sacrifice_progress": "Sacrificing...",
-  "mod_epicloot_sacrifice_productsexplainer": "Destroy the selected items and receive:", 
+  "mod_epicloot_sacrifice_productsexplainer": "Destroy the selected items and receive:",
 
   "mod_epicloot_augment": "Augment",
   "mod_epicloot_augment_availableeffects": "Available Effects",
@@ -88,6 +88,28 @@
 
   "mod_epicloot_upgradetable": "Upgrade Table",
   "mod_epicloot_upgradetableprogress": "Upgrading feature...",
+  "mod_epicloot_featurelocked": "Locked",
+  "mod_epicloot_featureunlocked": "Unlocked",
+  "mod_epicloot_featureunlock": "Unlock",
+  "mod_epicloot_featuremaxlevel": "Max Level",
+  "mod_epicloot_currentlevel": "Current level",
+  "mod_epicloot_unlockcost": "Unlock Cost:",
+  "mod_epicloot_effectsperlevel": "Upgrades:",
+
+  "mod_epicloot_featureinfo_none": "Select a feature from the list to the left to view upgrade options.",
+  "mod_epicloot_featureinfo_sacrifice": "Sacrifice magic items and trophies, destroying them to produce enchanting materials.\n\nWhen upgraded, gain a chance to recieve double the items normally gained from the sacrifice.",
+  "mod_epicloot_featureinfo_convertmaterials": "Upgrade enchanting materials to higher rarity, convert shards to enchanting materials of equal rarity, and salvage other materials from junk.\n\nWhen upgraded, improve the item ratio when upgrading runestons and other crafting materials.",
+  "mod_epicloot_featureinfo_enchant": "Spend enchanting materials to add magic effects to non-magic gear. Requires runestones.\n\nWhen upgraded, gain an improved chance to roll more magic effects on an enchanted item.",
+  "mod_epicloot_featureinfo_augment": "Spend enchanting materials to re-roll individual magic effects on magic gear.\n\nWhen upgraded, gain additional choices when agumenting, and have a reduced cost for multiple augments.",
+  "mod_epicloot_featureinfo_disenchant": "Spend materials to remove the magic effects from an item, returning it to its non-magical state.\n\nWhen upgraded, gain a chance to recover sacrifice materials when disenchanting (not affected by Sacrifice feature level).",
+  "mod_epicloot_featureinfo_helheim": "Plunge the realm of Valheim into Helheim, making creatures dangerous but increasing the drop rate of magic items.\n\nWhen upgraded, ????????",
+
+  "mod_epicloot_featureupgrade_sacrifice": "$1% double item chance",
+  "mod_epicloot_featureupgrade_convertmaterials": "$2:1 runestones, $1:1 others",
+  "mod_epicloot_featureupgrade_enchant": "+$1%/+$2% chance of extra effects",
+  "mod_epicloot_featureupgrade_augment": "$1 choices, -$2% reaugment cost",
+  "mod_epicloot_featureupgrade_disenchant": "$1% chance for bonus materials",
+  "mod_epicloot_featureupgrade_helheim": "???",
 
   "mod_epicloot_helheim": "Helheim",
 
@@ -953,7 +975,7 @@
   "mod_epicloot_me_triplebowshot_desc": "Bow attacks fire 3x ammo, instead of one.",
   "mod_epicloot_me_triplebowshot_prefix1": "Tripling",
   "mod_epicloot_me_triplebowshot_suffix1": "of Tripling",
-  
+
   "mod_epicloot_set_me_bulwark": "Bulwark [Activated]: Prevent all damage for 5 seconds. Cooldown: 60 seconds.",
   "mod_epicloot_set_me_undying": "Undying [Passive]: On death, regain full health. Cooldown: 20 minutes.",
   "mod_epicloot_set_me_frostdamageaoe_display": "Melee attacks that deal frost damage deal an additional 50% of weapon damage as frost in a cone in front of the attacker.",
