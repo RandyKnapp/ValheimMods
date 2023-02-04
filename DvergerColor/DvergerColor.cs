@@ -38,8 +38,8 @@ namespace DvergerColor
             MaxSteps = Config.Bind("General", "Max Steps", 3, "Define how many steps of focus the Dverger light beam has. Must be at least 2.");
             MinAngle = Config.Bind("General", "Min Angle", 30.0f, "The angle of the beam at the narrowest setting.");
             MaxAngle = Config.Bind("General", "Max Angle", 110.0f, "The angle of the beam at the widest setting.");
-            MinIntensity = Config.Bind("General", "Min Intensity", 2.0f, "The intensity of the beam at the narrowest setting.");
-            MaxIntensity = Config.Bind("General", "Max Intensity", 1.4f, "The intensity of the beam at the widest setting");
+            MinIntensity = Config.Bind("General", "Min Intensity", 1.2f, "The intensity of the beam at the widest setting.");
+            MaxIntensity = Config.Bind("General", "Max Intensity", 1.8f, "The intensity of the beam at the narrowest setting");
             MinRange = Config.Bind("General", "Min Range", 45.0f, "The range of the beam at the narrowest setting.");
             MaxRange = Config.Bind("General", "Max Range", 15.0f, "The range of the beam at the widest setting");
             PointIntensity = Config.Bind("General", "Point Intensity", 1.1f, "The intensity of the Dverger light pool on the point light setting.");
