@@ -29,7 +29,7 @@ Randy Knapp - 2/7/2022
     
 * Create a new C# Class Library Project in a new solution
   * In that project’s properties, set the following:
-    * Application > Target Framework: .NET Framework 4.6.1 (this is what Valheim uses)
+    * Application > Target Framework: .NET Framework 4.6.2 (this is what Valheim uses)
     * Build > Allow Unsafe Code: true (this lets us use the publicized dlls)
     * Build Events > Post-build event command line (use your valheim install dir): 
     This will automatically install your new mod after a successful build. As you add assets, you’ll need to modify this command to include copying your assets over as well.

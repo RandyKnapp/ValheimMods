@@ -33,6 +33,9 @@ namespace EpicLoot.CraftingV2
             AugmentUI.GetAvailableEffects = GetAvailableAugmentEffects;
             AugmentUI.GetAugmentCost = GetAugmentCost;
             AugmentUI.AugmentItem = AugmentItem;
+            DisenchantUI.GetDisenchantItems = GetDisenchantItems;
+            DisenchantUI.GetDisenchantCost = GetDisenchantCost;
+            DisenchantUI.DisenchantItem = DisenchantItem;
         }
 
         private static void SetMagicItem(MultiSelectItemListElement element, ItemDrop.ItemData item, UITooltip tooltip)
@@ -522,6 +525,85 @@ namespace EpicLoot.CraftingV2
             Gogan.LogEvent("Game", "Augmented", item.m_shared.m_name, 1);
 
             EquipmentEffectCache.Reset(Player.m_localPlayer);
+        }
+
+        private static List<InventoryItemListElement> GetDisenchantItems()
+        {
+            var player = Player.m_localPlayer;
+            var inventory = player.GetInventory();
+            var boundItems = new List<ItemDrop.ItemData>();
+            inventory.GetBoundItems(boundItems);
+            return Player.m_localPlayer.GetInventory().GetAllItems()
+                .Where(item => !item.m_equiped && (EpicLoot.ShowEquippedAndHotbarItemsInSacrificeTab.Value || !boundItems.Contains(item)))
+                .Where(item => item.IsMagic(out var magicItem) && magicItem.CanBeDisenchanted())
+                .Select(item => new InventoryItemListElement() { Item = item })
+                .ToList();
+        }
+
+        private static List<InventoryItemListElement> GetDisenchantCost(ItemDrop.ItemData item)
+        {
+            var result = new List<InventoryItemListElement>();
+            if (item == null || !item.IsMagic())
+                return result;
+
+            var rarity = item.GetRarity();
+            List<ItemAmountConfig> costList;
+            switch (rarity)
+            {
+                case ItemRarity.Magic:
+                    costList = EnchantCostsHelper.Config.DisenchantCosts.Magic;
+                    break;
+
+                case ItemRarity.Rare:
+                    costList = EnchantCostsHelper.Config.DisenchantCosts.Rare;
+                    break;
+
+                case ItemRarity.Epic:
+                    costList = EnchantCostsHelper.Config.DisenchantCosts.Epic;
+                    break;
+
+                case ItemRarity.Legendary:
+                    costList = EnchantCostsHelper.Config.DisenchantCosts.Legendary;
+                    break;
+
+                // TODO: Mythic Hookup
+                case ItemRarity.Mythic:
+                    return result;
+
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+            
+            foreach (var itemAmountConfig in costList)
+            {
+                var prefab = ObjectDB.instance.GetItemPrefab(itemAmountConfig.Item);
+                if (prefab == null)
+                {
+                    EpicLoot.LogWarning($"Tried to add unknown item ({itemAmountConfig.Item}) to disenchant cost for item ({item.m_shared.m_name})");
+                    continue;
+                }
+
+                var itemDrop = prefab.GetComponent<ItemDrop>();
+                if (itemDrop == null)
+                {
+                    EpicLoot.LogWarning($"Tried to add item without ItemDrop ({itemAmountConfig.Item}) to disenchant cost for item ({item.m_shared.m_name})");
+                    continue;
+                }
+
+                var costItem = itemDrop.m_itemData.Clone();
+                costItem.m_stack = itemAmountConfig.Amount;
+                result.Add(new InventoryItemListElement() { Item = costItem });
+            }
+
+            return result;
+        }
+
+        private static void DisenchantItem(ItemDrop.ItemData item)
+        {
+            if (item.IsMagic(out var magicItem) && magicItem.CanBeDisenchanted())
+            {
+                item.Data().Remove<MagicItemComponent>();
+            }
         }
     }
 }

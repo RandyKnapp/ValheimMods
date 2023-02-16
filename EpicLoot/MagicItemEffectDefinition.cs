@@ -308,6 +308,7 @@ namespace EpicLoot
         public ValuesPerRarityDef ValuesPerRarity = new ValuesPerRarityDef();
         public float SelectionWeight = 1;
         public bool CanBeAugmented = true;
+        public bool CanBeDisenchanted = true;
         public string Comment;
         public List<string> Prefixes = new List<string>();
         public List<string> Suffixes = new List<string>();

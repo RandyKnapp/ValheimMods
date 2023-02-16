@@ -266,20 +266,6 @@ namespace EpicLoot_UnityLib
             var canAfford = LocalPlayerCanAffordCost(cost);
             MainButton.interactable = canAfford && selectedRecipes.Count > 0;
         }
-
-        private bool LocalPlayerCanAffordCost(List<InventoryItemListElement> cost)
-        {
-            var player = Player.m_localPlayer;
-            var inventory = player.GetInventory();
-            foreach (var element in cost)
-            {
-                var item = element.GetItem();
-                if (inventory.CountItems(item.m_shared.m_name) < item.m_stack)
-                    return false;
-            }
-
-            return true;
-        }
         
         public override void Cancel()
         {
