@@ -39,6 +39,7 @@ namespace EpicLoot_UnityLib
                 }
             }
 
+            EnchantingTableUpgrades.OnAnyFeatureLevelChanged += Refresh;
             Refresh();
         }
 
@@ -152,56 +153,27 @@ namespace EpicLoot_UnityLib
 
             var sb = new StringBuilder();
 
-            var featureNames = new []
-            {
-                "$mod_epicloot_sacrifice",
-                "$mod_epicloot_convertmaterials",
-                "$mod_epicloot_enchant",
-                "$mod_epicloot_augment",
-                "$mod_epicloot_disenchant",
-                "$mod_epicloot_helheim",
-            };
-
             var feature = (EnchantingFeature)_selectedFeature;
             var locked = EnchantingTableUpgrades.IsFeatureLocked(feature);
             var currentLevel = EnchantingTableUpgrades.GetFeatureLevel(feature);
             var maxLevel = EnchantingTableUpgrades.GetFeatureMaxLevel(feature);
-            sb.AppendLine(Localization.instance.Localize($"<size=26>{featureNames[_selectedFeature]}</size>"));
+            sb.AppendLine(Localization.instance.Localize($"<size=26>{EnchantingTableUpgrades.GetFeatureName(feature)}</size>"));
             sb.AppendLine();
             if (locked)
                 sb.AppendLine(Localization.instance.Localize("$mod_epicloot_currentlevel: <color=#AD1616><b>$mod_epicloot_featurelocked</b></color>"));
             else if (currentLevel == 0)
-                sb.AppendLine(Localization.instance.Localize($"$mod_epicloot_currentlevel: <color=gray><b>$mod_epicloot_featureunlocked</b></color> / {maxLevel}"));
+                sb.AppendLine(Localization.instance.Localize($"$mod_epicloot_currentlevel: <color=#1AACEF><b>$mod_epicloot_featureunlocked</b></color> / {maxLevel}"));
             else
                 sb.AppendLine(Localization.instance.Localize($"$mod_epicloot_currentlevel: <color=#EAA800><b>{currentLevel}</b></color> / {maxLevel}"));
             sb.AppendLine();
 
-            var featureDescriptions = new []
-            {
-                "$mod_epicloot_featureinfo_sacrifice",
-                "$mod_epicloot_featureinfo_convertmaterials",
-                "$mod_epicloot_featureinfo_enchant",
-                "$mod_epicloot_featureinfo_augment",
-                "$mod_epicloot_featureinfo_disenchant",
-                "$mod_epicloot_featureinfo_helheim",
-            };
-            sb.AppendLine(Localization.instance.Localize(featureDescriptions[_selectedFeature]));
+            sb.AppendLine(Localization.instance.Localize(EnchantingTableUpgrades.GetFeatureDescription(feature)));
             sb.AppendLine();
             sb.AppendLine(Localization.instance.Localize("$mod_epicloot_effectsperlevel"));
 
-            var featureUpgradeDescriptions = new []
-            {
-                "$mod_epicloot_featureupgrade_sacrifice",
-                "$mod_epicloot_featureupgrade_convertmaterials",
-                "$mod_epicloot_featureupgrade_enchant",
-                "$mod_epicloot_featureupgrade_augment",
-                "$mod_epicloot_featureupgrade_disenchant",
-                "$mod_epicloot_featureupgrade_helheim",
-            };
             for (var i = 1; i <= maxLevel; ++i)
             {
-                var values = EnchantingTableUpgrades.GetFeatureValue(feature, i);
-                var text = Localization.instance.Localize(featureUpgradeDescriptions[_selectedFeature], values.Item1.ToString("0.#"), values.Item2.ToString("0.#"));
+                var text = EnchantingTableUpgrades.GetFeatureUpgradeLevelDescription(feature, i);
                 sb.AppendLine($"<color=gray>{i}:</color> " + (i == currentLevel ? $"<color=#EAA800>{text}</color>" : text));
             }
 
@@ -213,6 +185,45 @@ namespace EpicLoot_UnityLib
             Cancel();
             if (_selectedFeature < 0)
                 return;
+
+            var feature = (EnchantingFeature)_selectedFeature;
+            var maxLevel = EnchantingTableUpgrades.IsFeatureMaxLevel(feature);
+            if (maxLevel)
+                return;
+
+            var cost = EnchantingTableUpgrades.IsFeatureLocked(feature) ? EnchantingTableUpgrades.GetUnlockCost(feature) : EnchantingTableUpgrades.GetUpgradeCost(feature);
+            var canAfford = LocalPlayerCanAffordCost(cost);
+            if (canAfford)
+            {
+                var currentLevel = EnchantingTableUpgrades.GetFeatureLevel(feature);
+                EnchantingTableUpgrades.RequestEnchantingUpgrade(feature, currentLevel + 1, (success) =>
+                {
+                    if (!success)
+                    {
+                        Debug.LogError($"[Enchanting Upgrade] ERROR: Tried to upgrade ({feature}) to level ({currentLevel + 1}) but it failed!");
+                        return;
+                    }
+
+                    var player = Player.m_localPlayer;
+                    if (!player.NoCostCheat())
+                    {
+                        if (!LocalPlayerCanAffordCost(cost))
+                        {
+                            Debug.LogError("[Augment Item] ERROR: Tried to augment item but could not afford the cost. This should not happen!");
+                            return;
+                        }
+
+                        var inventory = player.GetInventory();
+                        foreach (var costElement in cost)
+                        {
+                            var costItem = costElement.GetItem();
+                            inventory.RemoveItem(costItem.m_shared.m_name, costItem.m_stack);
+                        }
+                    }
+
+                    Refresh();
+                });
+            }
         }
 
         public override void Lock()

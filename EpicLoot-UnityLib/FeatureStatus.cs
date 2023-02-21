@@ -15,6 +15,15 @@ namespace EpicLoot_UnityLib
         public void Awake()
         {
             EnchantingTableUpgrades.OnFeatureLevelChanged += OnFeatureLevelChanged;
+        }
+
+        public void OnDestroy()
+        {
+            EnchantingTableUpgrades.OnFeatureLevelChanged -= OnFeatureLevelChanged;
+        }
+
+        public void OnEnable()
+        {
             Refresh();
         }
 
@@ -27,24 +36,31 @@ namespace EpicLoot_UnityLib
             }
         }
 
-        private void Refresh()
+        public void Refresh()
         {
             if (!EnchantingTableUpgrades.IsFeatureAvailable(Feature))
             {
-                UnlockedContainer.gameObject.SetActive(false);
-                LockedContainer.gameObject.SetActive(false);
+                if (UnlockedContainer != null)
+                    UnlockedContainer.gameObject.SetActive(false);
+                if (LockedContainer != null)
+                    LockedContainer.gameObject.SetActive(false);
                 return;
             }
 
             if (EnchantingTableUpgrades.IsFeatureLocked(Feature))
             {
-                UnlockedContainer.gameObject.SetActive(false);
-                LockedContainer.gameObject.SetActive(true);
+                if (UnlockedContainer != null)
+                    UnlockedContainer.gameObject.SetActive(false);
+                if (LockedContainer != null)
+                    LockedContainer.gameObject.SetActive(true);
             }
             else
             {
-                UnlockedContainer.gameObject.SetActive(true);
-                LockedContainer.gameObject.SetActive(false);
+                if (UnlockedContainer != null)
+                    UnlockedContainer.gameObject.SetActive(true);
+                if (LockedContainer != null)
+                    LockedContainer.gameObject.SetActive(false);
+
                 var level = EnchantingTableUpgrades.GetFeatureLevel(Feature);
                 if (level > Stars.Length)
                 {
@@ -54,26 +70,32 @@ namespace EpicLoot_UnityLib
                         star.enabled = index == 0;
                     }
 
-                    ManyStarsLabel.enabled = true;
-                    ManyStarsLabel.text = $"×{level}";
+                    if (ManyStarsLabel != null)
+                    {
+                        ManyStarsLabel.enabled = true;
+                        ManyStarsLabel.text = $"×{level}";
+                    }
                 }
                 else
                 {
                     for (var index = 0; index < Stars.Length; index++)
                     {
                         var star = Stars[index];
-                        star.enabled = level > index;
+                        star.gameObject.SetActive(level > index);
                     }
-                    ManyStarsLabel.enabled = false;
+
+                    if (ManyStarsLabel != null)
+                        ManyStarsLabel.enabled = false;
                 }
 
-                UnlockedLabel.SetActive(level == 0);
+                if (UnlockedLabel != null)
+                    UnlockedLabel.SetActive(level == 0);
             }
         }
 
         private void OnFeatureLevelChanged(EnchantingFeature feature, int _)
         {
-            if (feature == Feature)
+            if (isActiveAndEnabled && feature == Feature)
                 Refresh();
         }
     }

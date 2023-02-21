@@ -78,7 +78,8 @@ namespace EpicLoot_UnityLib
             var selectedItems = AvailableItems.GetSelectedItems<IListElement>();
             var sacrificeProducts = GetSacrificeProducts(selectedItems.Select(x => new Tuple<ItemDrop.ItemData, int>(x.Item1.GetItem(), x.Item2)).ToList());
             SacrificeProducts.SetItems(sacrificeProducts.Cast<IListElement>().ToList());
-            MainButton.interactable = selectedItems.Count > 0;
+            var featureUnlocked = EnchantingTableUpgrades.IsFeatureUnlocked(EnchantingFeature.Sacrifice);
+            MainButton.interactable = featureUnlocked && selectedItems.Count > 0;
         }
         
         public override void Cancel()

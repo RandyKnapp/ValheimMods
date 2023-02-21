@@ -70,7 +70,8 @@ namespace EpicLoot_UnityLib
                 var cost = GetDisenchantCost(selectedItem.Item1.GetItem());
                 CostList.SetItems(cost.Cast<IListElement>().ToList());
                 var canAfford = LocalPlayerCanAffordCost(cost);
-                MainButton.interactable = canAfford;
+                var featureUnlocked = EnchantingTableUpgrades.IsFeatureUnlocked(EnchantingFeature.Disenchant);
+                MainButton.interactable = featureUnlocked && canAfford;
             }
             else
             {

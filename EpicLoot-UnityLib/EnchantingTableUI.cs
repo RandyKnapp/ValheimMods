@@ -35,9 +35,13 @@ namespace EpicLoot_UnityLib
             if (uiSFX)
                 Audio.outputAudioMixerGroup = uiSFX.GetComponent<AudioSource>().outputAudioMixerGroup;
 
-            foreach (var tanData in TabHandler.m_tabs)
+            for (var index = 0; index < TabHandler.m_tabs.Count; index++)
             {
-                tanData.m_onClick.AddListener(PlayTabSelectSFX);
+                var tabData = TabHandler.m_tabs[index];
+                tabData.m_onClick.AddListener(PlayTabSelectSFX);
+                var featureStatus = tabData.m_button.gameObject.GetComponent<FeatureStatus>();
+                if (featureStatus != null)
+                    featureStatus.SetFeature((EnchantingFeature)index);
             }
 
             AugaFixup(this);

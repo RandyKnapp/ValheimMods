@@ -168,7 +168,8 @@ namespace EpicLoot_UnityLib
                 CostList.SetItems(cost.Cast<IListElement>().ToList());
 
                 var canAfford = LocalPlayerCanAffordCost(cost);
-                MainButton.interactable = canAfford && _augmentIndex >= 0;
+                var featureUnlocked = EnchantingTableUpgrades.IsFeatureUnlocked(EnchantingFeature.Augment);
+                MainButton.interactable = featureUnlocked && canAfford && _augmentIndex >= 0;
             }
         }
 
