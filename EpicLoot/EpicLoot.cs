@@ -1175,6 +1175,8 @@ namespace EpicLoot
 
         private static bool IsNotRestrictedItem(ItemDrop.ItemData item)
         {
+            if (item.m_dropPrefab != null && LootRoller.Config.RestrictedItems.Contains(item.m_dropPrefab.name))
+                return false;
             return !LootRoller.Config.RestrictedItems.Contains(item.m_shared.m_name);
         }
 

@@ -9,10 +9,11 @@ namespace EpicLoot_UnityLib
     {
         public Text CostLabel;
         public MultiSelectItemList CostList;
+        public EnchantBonus BonusPanel;
 
         public delegate List<InventoryItemListElement> GetDisenchantItemsDelegate();
         public delegate List<InventoryItemListElement> GetDisenchantCostDelegate(ItemDrop.ItemData item);
-        public delegate void DisenchantItemDelegate(ItemDrop.ItemData item);
+        public delegate List<InventoryItemListElement> DisenchantItemDelegate(ItemDrop.ItemData item);
 
         public static GetDisenchantItemsDelegate GetDisenchantItems;
         public static GetDisenchantCostDelegate GetDisenchantCost;
@@ -47,7 +48,15 @@ namespace EpicLoot_UnityLib
                 inventory.RemoveItem(costItem.m_shared.m_name, costItem.m_stack);
             }
 
-            DisenchantItem(item);
+            var bonusItems = DisenchantItem(item);
+
+            if (bonusItems.Count > 0)
+            {
+                EnchantingTableUI.instance.PlayEnchantBonusSFX();
+                BonusPanel.Show();
+
+                GiveItemsToPlayer(bonusItems);
+            }
 
             RefreshAvailableItems();
         }
@@ -69,6 +78,15 @@ namespace EpicLoot_UnityLib
                 CostLabel.enabled = true;
                 var cost = GetDisenchantCost(selectedItem.Item1.GetItem());
                 CostList.SetItems(cost.Cast<IListElement>().ToList());
+
+                var featureValues = EnchantingTableUpgrades.GetFeatureCurrentValue(EnchantingFeature.Disenchant);
+                var costReduction = float.IsNaN(featureValues.Item2) ? 0 : (int)featureValues.Item2;
+
+                if (costReduction > 0 && cost.Count > 0)
+                    CostLabel.text = Localization.instance.Localize("$mod_epicloot_disenchantcost <color=#EAA800>($mod_epicloot_disenchantcostreduction)</color>", costReduction.ToString());
+                else
+                    CostLabel.text = Localization.instance.Localize("$mod_epicloot_disenchantcost");
+
                 var canAfford = LocalPlayerCanAffordCost(cost);
                 var featureUnlocked = EnchantingTableUpgrades.IsFeatureUnlocked(EnchantingFeature.Disenchant);
                 MainButton.interactable = featureUnlocked && canAfford;

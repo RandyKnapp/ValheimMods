@@ -429,5 +429,28 @@ namespace EpicLoot_UnityLib
                 return new Tuple<float, float>(levelValues[0], levelValues[1]);
             return new Tuple<float, float>(float.NaN, float.NaN);
         }
+
+        public static Tuple<float, float> GetFeatureCurrentValue(EnchantingFeature feature)
+        {
+            return GetFeatureValue(feature, GetFeatureLevel(feature));
+        }
+
+        public static void Reset()
+        {
+            if (!_isServer)
+                return;
+
+            foreach (EnchantingFeature feature in Enum.GetValues(typeof(EnchantingFeature)))
+            {
+                if (IsFeatureAvailable(feature))
+                {
+                    Ledger.SetLevel(feature, EnchantingTableUpgradeLedger.FeatureLockedSentinel);
+                    Ledger.Save();
+                    OnFeatureLevelChanged?.Invoke(feature, EnchantingTableUpgradeLedger.FeatureLockedSentinel);
+                    OnAnyFeatureLevelChanged?.Invoke();
+                }
+            }
+            
+        }
     }
 }

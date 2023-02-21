@@ -21,7 +21,9 @@
     "CAPE TEST",
     "Cheat sword",
     "$item_sword_fire",
-    "$item_shield_iron_square"
+    "$item_shield_iron_square",
+    "$item_knife_butcher",
+    "$item_pickaxe_stone"
   ], 
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

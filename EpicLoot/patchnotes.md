@@ -1,4 +1,6 @@
-﻿## Version 0.9.8
+﻿## Version 0.9.9
+  * Removed butcher knife from the allowed to enchant list
+## Version 0.9.8
   * Patch Config File location moved. Patch files have been moved outside of the Epic Loot Plugin Folder to prevent mod managers from deleting patch files.
     * Patch files are now located in BepInEx\config\EpicLoot\patches folder.
     * This folder will automatically be created upon first run of Epic Loot.
