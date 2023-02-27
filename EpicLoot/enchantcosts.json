@@ -1,16 +1,16 @@
 {
   "DisenchantCosts": {
     "Magic": [ 
-      { "Item": "IronBountyToken", "Amount": 1 }
-    ],
-    "Rare": [ 
       { "Item": "IronBountyToken", "Amount": 2 }
     ],
-    "Epic": [ 
+    "Rare": [ 
       { "Item": "IronBountyToken", "Amount": 3 }
     ],
+    "Epic": [ 
+      { "Item": "IronBountyToken", "Amount": 5 }
+    ],
     "Legendary": [ 
-      { "Item": "IronBountyToken", "Amount": 4 }
+      { "Item": "IronBountyToken", "Amount": 7 }
     ]
   },
   // Sacrifice Products

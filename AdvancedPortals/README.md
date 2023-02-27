@@ -1,4 +1,4 @@
-# AdvancedPortals v1.0.1
+# AdvancedPortals v1.0.3
 Author: RandyKnapp
 Source: [Github](https://github.com/RandyKnapp/ValheimMods/tree/main/AdvancedPortals)
 Discord: [RandyKnapp's Mod Community](https://discord.gg/randyknappmods)
@@ -46,6 +46,8 @@ Includes ServerSync.
 
 ### Changelist:
 
+#### 1.0.3
+  * Vapok fixed a bug that makes Adventure Backpacks work with Advanced Portals
 #### 1.0.2
   * Added bronze to Ancient portal transport list (how could I forget?)
   * Updated to support other mods that extend the inventory (Thanks Vapok)

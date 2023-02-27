@@ -1,4 +1,13 @@
-﻿## Version 0.9.8
+﻿## Version 0.9.9
+  * Removed butcher knife and stone axe from the allowed to enchant list
+  * New Feature: Disenchant - remove the enchant from an item at the cost of iron bounty tokens
+  * New Feature: Enchanting Table upgrades
+    * Upgrade each of the enchanting table features: sacrifice, convert materials, enchant, augment, and disenchant
+    * Some features start locked: enchant, augment, disenchant
+    * Upgrading features provides bonuses, upgrades locked behind biome specific materials for progression
+    * Upgrades are fully configurable in `enchantingupgrades.json`
+  * Merge Patching: Enabled "Merge" patch action, adds or overwrites all named properties in the target object (Thanks @nelson-saldanha) 
+## Version 0.9.8
   * Patch Config File location moved. Patch files have been moved outside of the Epic Loot Plugin Folder to prevent mod managers from deleting patch files.
     * Patch files are now located in BepInEx\config\EpicLoot\patches folder.
     * This folder will automatically be created upon first run of Epic Loot.

@@ -10,6 +10,7 @@ namespace EpicLoot_UnityLib
 
         public MultiSelectItemList AvailableItems;
         public Button MainButton;
+        public GameObject LevelDisplay;
         public GuiBar ProgressBar;
         public AudioSource Audio;
         public AudioClip ProgressLoopSFX;
@@ -26,16 +27,22 @@ namespace EpicLoot_UnityLib
 
         public virtual void Awake()
         {
-            AvailableItems.OnSelectedItemsChanged += OnSelectedItemsChanged;
-            MainButton.onClick.AddListener(OnMainButtonClicked);
-            _buttonLabel = MainButton.GetComponentInChildren<Text>();
-            _defaultButtonLabelText = _buttonLabel.text;
+            if (AvailableItems != null)
+            {
+                AvailableItems.OnSelectedItemsChanged += OnSelectedItemsChanged;
+                AvailableItems.GiveFocus(true, 0);
+            }
+
+            if (MainButton != null)
+            {
+                MainButton.onClick.AddListener(OnMainButtonClicked);
+                _buttonLabel = MainButton.GetComponentInChildren<Text>();
+                _defaultButtonLabelText = _buttonLabel.text;
+            }
 
             var uiSFX = GameObject.Find("sfx_gui_button");
-            if (uiSFX)
+            if (uiSFX && Audio != null)
                 Audio.outputAudioMixerGroup = uiSFX.GetComponent<AudioSource>().outputAudioMixerGroup;
-
-            AvailableItems.GiveFocus(true, 0);
         }
 
         protected virtual void OnMainButtonClicked()
@@ -52,10 +59,15 @@ namespace EpicLoot_UnityLib
 
         public virtual void Update()
         {
-            ProgressBar.gameObject.SetActive(_inProgress);
+            if (ProgressBar != null)
+                ProgressBar.gameObject.SetActive(_inProgress);
+            if (LevelDisplay != null)
+                LevelDisplay.gameObject.SetActive(!_inProgress);
+
             if (_inProgress)
             {
-                ProgressBar.SetValue(CountdownTime - _countdown);
+                if (ProgressBar != null)
+                    ProgressBar.SetValue(CountdownTime - _countdown);
 
                 _countdown -= Time.deltaTime;
                 if (_countdown < 0)
@@ -63,8 +75,11 @@ namespace EpicLoot_UnityLib
                     _inProgress = false;
                     _countdown = 0;
 
-                    Audio.loop = false;
-                    Audio.Stop();
+                    if (Audio != null)
+                    {
+                        Audio.loop = false;
+                        Audio.Stop();
+                    }
 
                     DoMainAction();
                     PlayCompleteSFX();
@@ -75,7 +90,7 @@ namespace EpicLoot_UnityLib
         private void PlayCompleteSFX()
         {
             var clip = GetCompleteAudioClip();
-            if (clip)
+            if (Audio != null && clip != null)
                 Audio.PlayOneShot(clip);
         }
 
@@ -89,11 +104,16 @@ namespace EpicLoot_UnityLib
             _buttonLabel.text = Localization.instance.Localize("$menu_cancel");
             _inProgress = true;
             _countdown = CountdownTime;
-            ProgressBar.SetMaxValue(CountdownTime);
 
-            Audio.loop = true;
-            Audio.clip = ProgressLoopSFX;
-            Audio.Play();
+            if (ProgressBar != null)
+                ProgressBar.SetMaxValue(CountdownTime);
+
+            if (Audio != null)
+            {
+                Audio.loop = true;
+                Audio.clip = ProgressLoopSFX;
+                Audio.Play();
+            }
 
             Lock();
         }
@@ -109,8 +129,11 @@ namespace EpicLoot_UnityLib
             _inProgress = false;
             _countdown = 0;
 
-            Audio.loop = false;
-            Audio.Stop();
+            if (Audio != null)
+            {
+                Audio.loop = false;
+                Audio.Stop();
+            }
 
             Unlock();
         }
@@ -154,6 +177,35 @@ namespace EpicLoot_UnityLib
             }
 
             return true;
+        }
+
+        protected static void GiveItemsToPlayer(List<InventoryItemListElement> sacrificeProducts)
+        {
+            var player = Player.m_localPlayer;
+            var inventory = player.GetInventory();
+
+            foreach (var sacrificeProduct in sacrificeProducts)
+            {
+                var item = sacrificeProduct.GetItem();
+                do
+                {
+                    var itemToAdd = item.Clone();
+                    itemToAdd.m_stack = Mathf.Min(item.m_stack, item.m_shared.m_maxStackSize);
+                    item.m_stack -= itemToAdd.m_stack;
+                    //Debug.LogWarning($"Adding item: {itemToAdd.m_shared.m_name} x{itemToAdd.m_stack} (remaining:{item.m_stack})");
+                    if (inventory.CanAddItem(itemToAdd))
+                    {
+                        inventory.AddItem(itemToAdd);
+                        player.Message(MessageHud.MessageType.TopLeft, $"$msg_added {itemToAdd.m_shared.m_name}", itemToAdd.m_stack, itemToAdd.GetIcon());
+                    }
+                    else
+                    {
+                        var itemDrop = ItemDrop.DropItem(itemToAdd, itemToAdd.m_stack, player.transform.position + player.transform.forward + player.transform.up, player.transform.rotation);
+                        itemDrop.GetComponent<Rigidbody>().velocity = Vector3.up * 5f;
+                        player.Message(MessageHud.MessageType.TopLeft, $"$msg_dropped {itemDrop.m_itemData.m_shared.m_name} $mod_epicloot_sacrifice_inventoryfullexplanation", itemDrop.m_itemData.m_stack, itemDrop.m_itemData.GetIcon());
+                    }
+                } while (item.m_stack > 0);
+            }
         }
     }
 }

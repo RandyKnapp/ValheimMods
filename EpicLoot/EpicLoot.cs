@@ -16,6 +16,7 @@ using EpicLoot.GatedItemType;
 using EpicLoot.LegendarySystem;
 using EpicLoot.MagicItemEffects;
 using EpicLoot.Patching;
+using EpicLoot_UnityLib;
 using HarmonyLib;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
@@ -88,9 +89,9 @@ namespace EpicLoot
     {
         public const string PluginId = "randyknapp.mods.epicloot";
         public const string DisplayName = "Epic Loot";
-        public const string Version = "0.9.8";
+        public const string Version = "0.9.9";
 
-        private readonly ConfigSync _configSync = new ConfigSync(PluginId) { DisplayName = DisplayName, CurrentVersion = Version, MinimumRequiredVersion = "0.9.8" };
+        private readonly ConfigSync _configSync = new ConfigSync(PluginId) { DisplayName = DisplayName, CurrentVersion = Version, MinimumRequiredVersion = "0.9.9" };
 
         private static ConfigEntry<string> _setItemColor;
         private static ConfigEntry<string> _magicRarityColor;
@@ -234,8 +235,9 @@ namespace EpicLoot
             
             EIDFLegacy.CheckForExtendedItemFrameworkLoaded(_instance);
 
+            LoadEmbeddedAssembly(assembly, "Newtonsoft.Json.dll");
             LoadEmbeddedAssembly(assembly, "EpicLoot-UnityLib.dll");
-            
+
             LoadPatches();
             InitializeConfig();
             InitializeAbilities();
@@ -452,6 +454,7 @@ namespace EpicLoot
             LoadJsonFile<LegendaryItemConfig>("legendaries.json", UniqueLegendaryHelper.Initialize, ConfigType.Synced);
             LoadJsonFile<AbilityConfig>("abilities.json", AbilityDefinitions.Initialize, ConfigType.Synced);
             LoadJsonFile<MaterialConversionsConfig>("materialconversions.json", MaterialConversions.Initialize, ConfigType.Synced);
+            LoadJsonFile<EnchantingUpgradesConfig>("enchantingupgrades.json", EnchantingTableUpgrades.InitializeConfig, ConfigType.Synced);
 
             WatchNewPatchConfig();
         }
@@ -1172,6 +1175,8 @@ namespace EpicLoot
 
         private static bool IsNotRestrictedItem(ItemDrop.ItemData item)
         {
+            if (item.m_dropPrefab != null && LootRoller.Config.RestrictedItems.Contains(item.m_dropPrefab.name))
+                return false;
             return !LootRoller.Config.RestrictedItems.Contains(item.m_shared.m_name);
         }
 

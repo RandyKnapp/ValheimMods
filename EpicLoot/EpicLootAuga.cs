@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using EpicLoot_UnityLib;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -191,6 +192,18 @@ namespace EpicLoot
 
             newButton.transform.Find("Text").GetComponent<Text>().text = button.transform.Find("Text").GetComponent<Text>().text;
             newButton.transform.Find("Image").GetComponent<Image>().sprite = button.transform.Find("Image").GetComponent<Image>().sprite;
+            var featureStatus = newButton.GetComponent<FeatureStatus>();
+            var otherFeatureStatus = button.GetComponent<FeatureStatus>();
+            if (otherFeatureStatus == null && featureStatus != null)
+            {
+                Object.DestroyImmediate(featureStatus);
+            }
+
+            if (featureStatus != null && otherFeatureStatus != null)
+            {
+                featureStatus.Feature = otherFeatureStatus.Feature;
+                featureStatus.Refresh();
+            }
 
             Object.DestroyImmediate(button.gameObject);
             newButton.transform.SetSiblingIndex(siblingIndex);
