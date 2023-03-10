@@ -34,16 +34,16 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="0Harmony">
-      <HintPath>G:\Steam\steamapps\common\Valheim-Dev\BepInEx\core\0Harmony.dll</HintPath>
+      <HintPath>M:\Code\VapokModBase\References\BepInEx\5.4.1901\BepInEx\core\0Harmony.dll</HintPath>
     </Reference>
     <Reference Include="assembly_utils_publicized">
-      <HintPath>M:\Code\References\publicized_assemblies\assembly_utils_publicized.dll</HintPath>
+      <HintPath>M:\Code\VapokModBase\References\Valheim\0.214.2\assembly_utils_publicized.dll</HintPath>
     </Reference>
     <Reference Include="assembly_valheim_publicized">
-      <HintPath>M:\Code\References\publicized_assemblies\assembly_valheim_publicized.dll</HintPath>
+      <HintPath>M:\Code\VapokModBase\References\Valheim\0.214.2\assembly_valheim_publicized.dll</HintPath>
     </Reference>
     <Reference Include="BepInEx">
-      <HintPath>G:\Steam\steamapps\common\Valheim-Dev\BepInEx\core\BepInEx.dll</HintPath>
+      <HintPath>M:\Code\VapokModBase\References\BepInEx\5.4.1901\BepInEx\core\BepInEx.dll</HintPath>
     </Reference>
     <Reference Include="ServerSync">
       <HintPath>..\Libs\ServerSync.dll</HintPath>
@@ -57,28 +57,28 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
     <Reference Include="UnityEngine">
-      <HintPath>G:\Steam\steamapps\common\Valheim-Dev\unstripped_corlib\UnityEngine.dll</HintPath>
+      <HintPath>M:\Code\VapokModBase\References\BepInEx\5.4.1901\unstripped_corlib\UnityEngine.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AssetBundleModule">
-      <HintPath>G:\Steam\steamapps\common\Valheim-Dev\unstripped_corlib\UnityEngine.AssetBundleModule.dll</HintPath>
+      <HintPath>M:\Code\VapokModBase\References\BepInEx\5.4.1901\unstripped_corlib\UnityEngine.AssetBundleModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AudioModule">
-      <HintPath>G:\Steam\steamapps\common\Valheim-Dev\unstripped_corlib\UnityEngine.AudioModule.dll</HintPath>
+      <HintPath>M:\Code\VapokModBase\References\BepInEx\5.4.1901\unstripped_corlib\UnityEngine.AudioModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
-      <HintPath>G:\Steam\steamapps\common\Valheim-Dev\unstripped_corlib\UnityEngine.CoreModule.dll</HintPath>
+      <HintPath>M:\Code\VapokModBase\References\BepInEx\5.4.1901\unstripped_corlib\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.ImageConversionModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>G:\Steam\steamapps\common\Valheim-Dev\unstripped_corlib\UnityEngine.ImageConversionModule.dll</HintPath>
+      <HintPath>M:\Code\VapokModBase\References\BepInEx\5.4.1901\unstripped_corlib\UnityEngine.ImageConversionModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.PhysicsModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>G:\Steam\steamapps\common\Valheim-Dev\unstripped_corlib\UnityEngine.PhysicsModule.dll</HintPath>
+      <HintPath>M:\Code\VapokModBase\References\BepInEx\5.4.1901\unstripped_corlib\UnityEngine.PhysicsModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.TextRenderingModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>G:\Steam\steamapps\common\Valheim-Dev\unstripped_corlib\UnityEngine.TextRenderingModule.dll</HintPath>
+      <HintPath>M:\Code\VapokModBase\References\BepInEx\5.4.1901\unstripped_corlib\UnityEngine.TextRenderingModule.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
