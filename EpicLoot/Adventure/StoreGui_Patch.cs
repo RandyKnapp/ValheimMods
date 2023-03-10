@@ -12,8 +12,14 @@ namespace EpicLoot.Adventure
         [HarmonyPostfix]
         public static void Show_Postfix(StoreGui __instance)
         {
-            if (!EpicLoot.IsAdventureModeEnabled())
+            if (!EpicLoot.IsAdventureModeEnabled() || __instance == null)
             {
+                return;
+            }
+
+            if (__instance.m_trader.m_name != "$npc_haldor")
+            {
+                //Adds compatibility for other mods that may add other trader NPC's that are not Haldor.
                 return;
             }
 
