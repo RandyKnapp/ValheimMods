@@ -214,9 +214,9 @@ namespace EpicLoot
 
         [HarmonyPatch(typeof(Humanoid), nameof(Humanoid.UnequipItem))]
         [HarmonyPrefix]
-        public static void Humanoid_UnequipItem_Prefix(Humanoid __instance, ItemDrop.ItemData item)
+        public static void Humanoid_UnequipItem_Prefix(Humanoid __instance, ItemDrop.ItemData item, bool triggerEquipEffects)
         {
-            if (item == null || !item.m_equiped)
+            if (item == null || !item.m_equiped || !triggerEquipEffects)
             {
                 return;
             }
