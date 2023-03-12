@@ -10,8 +10,8 @@ namespace DvergerColor
         private int _maxSteps = 3;
         private float _minAngle = 30;
         private float _maxAngle = 110;
-        private float _minIntensity = 2.0f;
-        private float _maxIntensity = 1.4f;
+        private float _minIntensity = 1.4f;
+        private float _maxIntensity = 2.2f;
         private float _minRange = 45;
         private float _maxRange = 15;
         private float _pointIntensity = 1.1f;
