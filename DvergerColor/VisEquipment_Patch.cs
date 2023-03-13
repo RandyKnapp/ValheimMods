@@ -10,13 +10,14 @@ namespace DvergerColor
         private int _maxSteps = 3;
         private float _minAngle = 30;
         private float _maxAngle = 110;
-        private float _minIntensity = 2.0f;
-        private float _maxIntensity = 1.4f;
+        private float _minIntensity = 1.4f;
+        private float _maxIntensity = 2.2f;
         private float _minRange = 45;
         private float _maxRange = 15;
         private float _pointIntensity = 1.1f;
         private float _pointRange = 10;
         private Light _light;
+        private Light[] _lights;
 
         public int Step;
         public bool On;
@@ -91,19 +92,22 @@ namespace DvergerColor
 
             var inBed = player.InBed();
             var turnOffInBed = DvergerColor.TurnOffInBed.Value;
-            if (turnOffInBed && inBed)
-            {
-                _light.enabled = false;
-            }
-            else
-            {
-                _light.enabled = On;
+            foreach (Light light in _lights) {
+                if (turnOffInBed && inBed)
+                {
+                    light.enabled = false;
+                }
+                else
+                {
+                    light.enabled = On;
+                }
             }
         }
 
-        public void SetLight(Light light)
+        public void SetLights(Light[] lights)
         {
-            _light = light;
+            _lights = lights;
+            _light = lights[0];
             if (_light != null)
             {
                 _light.color = DvergerColor.Color.Value;
@@ -157,11 +161,11 @@ namespace DvergerColor
                 Object.Destroy(__result.GetComponent<LightChanger>());
             }
 
-            var light = __result.GetComponentInChildren<Light>();
+            var lights = __result.GetComponentsInChildren<Light>();
 
-            if (light != null)
+            if (lights.Length > 0)
             {
-                __result.AddComponent<LightChanger>().SetLight(light);
+                __result.AddComponent<LightChanger>().SetLights(lights);
             }
         }
     }

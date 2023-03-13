@@ -144,7 +144,8 @@ namespace EpicLoot.Data
 			ItemData = itemData;
 
 			string prefix = dataKey("");
-			foreach (string key in ItemData.m_customData.Keys)
+			List<string> keys = ItemData.m_customData.Keys.ToList();
+			foreach (string key in keys)
 			{
 				if (key.StartsWith(prefix))
 				{
@@ -261,7 +262,8 @@ namespace EpicLoot.Data
 		public void LoadAll()
 		{
 			string prefix = dataKey("");
-			foreach (string key in ItemData.m_customData.Keys)
+			List<string> keys = ItemData.m_customData.Keys.ToList();
+			foreach (string key in keys)
 			{
 				if (key.StartsWith(prefix))
 				{
