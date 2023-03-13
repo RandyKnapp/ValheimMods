@@ -250,7 +250,7 @@ namespace EquipmentAndQuickSlots
         {
             public static bool Prefix(InventoryGui __instance)
             {
-                if (!__instance.m_inventoryGroup.IsActive)
+                if (!__instance.m_inventoryGroup.IsActive())
                 {
                     return false;
                 }
