@@ -6,7 +6,8 @@
     * Some features start locked: enchant, augment, disenchant
     * Upgrading features provides bonuses, upgrades locked behind biome specific materials for progression
     * Upgrades are fully configurable in `enchantingupgrades.json`
-  * Merge Patching: Enabled "Merge" patch action, adds or overwrites all named properties in the target object (Thanks @nelson-saldanha) 
+  * Merge Patching: Enabled "Merge" patch action, adds or overwrites all named properties in the target object (Thanks @nelson-saldanha)
+  * Updating for Valheim 0.214.2 Patch
 ## Version 0.9.8
   * Patch Config File location moved. Patch files have been moved outside of the Epic Loot Plugin Folder to prevent mod managers from deleting patch files.
     * Patch files are now located in BepInEx\config\EpicLoot\patches folder.
