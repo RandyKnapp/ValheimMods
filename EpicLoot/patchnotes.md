@@ -1,11 +1,6 @@
 ﻿## Version 0.9.9
   * Removed butcher knife and stone axe from the allowed to enchant list
   * New Feature: Disenchant - remove the enchant from an item at the cost of iron bounty tokens
-  * New Feature: Enchanting Table upgrades
-    * Upgrade each of the enchanting table features: sacrifice, convert materials, enchant, augment, and disenchant
-    * Some features start locked: enchant, augment, disenchant
-    * Upgrading features provides bonuses, upgrades locked behind biome specific materials for progression
-    * Upgrades are fully configurable in `enchantingupgrades.json`
   * Merge Patching: Enabled "Merge" patch action, adds or overwrites all named properties in the target object (Thanks @nelson-saldanha)
   * Updating for Valheim 0.214.2 Patch
 ## Version 0.9.8
