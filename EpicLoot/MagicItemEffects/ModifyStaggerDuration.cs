@@ -96,8 +96,7 @@ namespace EpicLoot.MagicItemEffects
                 if (character != null && __instance != null && __instance.m_nview != null && __instance.m_nview.GetZDO() is ZDO zdo)
                 {
                     var staggerValue = zdo.GetFloat(ModifyStaggerDuration.ZdoKey, 1f);
-                    if (character.m_nview != null && character.m_nview.GetZDO() != null)
-                        character.m_nview.GetZDO().Set(ModifyStaggerDuration.ZdoKey, staggerValue);
+                    character.m_nview.GetZDO().Set(ModifyStaggerDuration.ZdoKey, staggerValue);
                 }
             }
         }
