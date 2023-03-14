@@ -9,10 +9,10 @@
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace></RootNamespace>
-    <ProjectGuid>{4F36CE63-FC64-3551-8CB6-37895B314EA8}</ProjectGuid>
+    <ProjectGuid>{B414D795-F2CA-FEA3-74E0-6DEB50194D8E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <AssemblyName>Assembly-CSharp</AssemblyName>
+    <AssemblyName>Unity.ProBuilder</AssemblyName>
     <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <BaseDirectory>.</BaseDirectory>
@@ -22,7 +22,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>Temp\Bin\Debug\</OutputPath>
-    <DefineConstants>UNITY_2020_3_6;UNITY_2020_3;UNITY_2020;UNITY_5_3_OR_NEWER;UNITY_5_4_OR_NEWER;UNITY_5_5_OR_NEWER;UNITY_5_6_OR_NEWER;UNITY_2017_1_OR_NEWER;UNITY_2017_2_OR_NEWER;UNITY_2017_3_OR_NEWER;UNITY_2017_4_OR_NEWER;UNITY_2018_1_OR_NEWER;UNITY_2018_2_OR_NEWER;UNITY_2018_3_OR_NEWER;UNITY_2018_4_OR_NEWER;UNITY_2019_1_OR_NEWER;UNITY_2019_2_OR_NEWER;UNITY_2019_3_OR_NEWER;UNITY_2019_4_OR_NEWER;UNITY_2020_1_OR_NEWER;UNITY_2020_2_OR_NEWER;UNITY_2020_3_OR_NEWER;UNITY_INCLUDE_TESTS;USE_SEARCH_ENGINE_API;SCENE_TEMPLATE_MODULE;ENABLE_AR;ENABLE_AUDIO;ENABLE_CACHING;ENABLE_CLOTH;ENABLE_EVENT_QUEUE;ENABLE_MICROPHONE;ENABLE_MULTIPLE_DISPLAYS;ENABLE_PHYSICS;ENABLE_TEXTURE_STREAMING;ENABLE_VIRTUALTEXTURING;ENABLE_UNET;ENABLE_LZMA;ENABLE_UNITYEVENTS;ENABLE_VR;ENABLE_WEBCAM;ENABLE_UNITYWEBREQUEST;ENABLE_WWW;ENABLE_CLOUD_SERVICES;ENABLE_CLOUD_SERVICES_COLLAB;ENABLE_CLOUD_SERVICES_COLLAB_SOFTLOCKS;ENABLE_CLOUD_SERVICES_ADS;ENABLE_CLOUD_SERVICES_USE_WEBREQUEST;ENABLE_CLOUD_SERVICES_CRASH_REPORTING;ENABLE_CLOUD_SERVICES_PURCHASING;ENABLE_CLOUD_SERVICES_ANALYTICS;ENABLE_CLOUD_SERVICES_UNET;ENABLE_CLOUD_SERVICES_BUILD;ENABLE_CLOUD_LICENSE;ENABLE_EDITOR_HUB_LICENSE;ENABLE_WEBSOCKET_CLIENT;ENABLE_DIRECTOR_AUDIO;ENABLE_DIRECTOR_TEXTURE;ENABLE_MANAGED_JOBS;ENABLE_MANAGED_TRANSFORM_JOBS;ENABLE_MANAGED_ANIMATION_JOBS;ENABLE_MANAGED_AUDIO_JOBS;INCLUDE_DYNAMIC_GI;ENABLE_MONO_BDWGC;ENABLE_SCRIPTING_GC_WBARRIERS;PLATFORM_SUPPORTS_MONO;RENDER_SOFTWARE_CURSOR;ENABLE_VIDEO;PLATFORM_STANDALONE;PLATFORM_STANDALONE_WIN;UNITY_STANDALONE_WIN;UNITY_STANDALONE;ENABLE_RUNTIME_GI;ENABLE_MOVIES;ENABLE_NETWORK;ENABLE_CRUNCH_TEXTURE_COMPRESSION;ENABLE_OUT_OF_PROCESS_CRASH_HANDLER;ENABLE_CLUSTER_SYNC;ENABLE_CLUSTERINPUT;PLATFORM_UPDATES_TIME_OUTSIDE_OF_PLAYER_LOOP;GFXDEVICE_WAITFOREVENT_MESSAGEPUMP;ENABLE_WEBSOCKET_HOST;ENABLE_MONO;NET_STANDARD_2_0;ENABLE_PROFILER;DEBUG;TRACE;UNITY_ASSERTIONS;UNITY_EDITOR;UNITY_EDITOR_64;UNITY_EDITOR_WIN;ENABLE_UNITY_COLLECTIONS_CHECKS;ENABLE_BURST_AOT;UNITY_TEAM_LICENSE;ENABLE_CUSTOM_RENDER_TEXTURE;ENABLE_DIRECTOR;ENABLE_LOCALIZATION;ENABLE_SPRITES;ENABLE_TERRAIN;ENABLE_TILEMAP;ENABLE_TIMELINE;ENABLE_LEGACY_INPUT_MANAGER;system_io_compression;thunderkit;CSHARP_7_OR_LATER;CSHARP_7_3_OR_NEWER</DefineConstants>
+    <DefineConstants>UNITY_2020_3_6;UNITY_2020_3;UNITY_2020;UNITY_5_3_OR_NEWER;UNITY_5_4_OR_NEWER;UNITY_5_5_OR_NEWER;UNITY_5_6_OR_NEWER;UNITY_2017_1_OR_NEWER;UNITY_2017_2_OR_NEWER;UNITY_2017_3_OR_NEWER;UNITY_2017_4_OR_NEWER;UNITY_2018_1_OR_NEWER;UNITY_2018_2_OR_NEWER;UNITY_2018_3_OR_NEWER;UNITY_2018_4_OR_NEWER;UNITY_2019_1_OR_NEWER;UNITY_2019_2_OR_NEWER;UNITY_2019_3_OR_NEWER;UNITY_2019_4_OR_NEWER;UNITY_2020_1_OR_NEWER;UNITY_2020_2_OR_NEWER;UNITY_2020_3_OR_NEWER;PLATFORM_ARCH_64;UNITY_64;UNITY_INCLUDE_TESTS;USE_SEARCH_ENGINE_API;SCENE_TEMPLATE_MODULE;ENABLE_AR;ENABLE_AUDIO;ENABLE_CACHING;ENABLE_CLOTH;ENABLE_EVENT_QUEUE;ENABLE_MICROPHONE;ENABLE_MULTIPLE_DISPLAYS;ENABLE_PHYSICS;ENABLE_TEXTURE_STREAMING;ENABLE_VIRTUALTEXTURING;ENABLE_UNET;ENABLE_LZMA;ENABLE_UNITYEVENTS;ENABLE_VR;ENABLE_WEBCAM;ENABLE_UNITYWEBREQUEST;ENABLE_WWW;ENABLE_CLOUD_SERVICES;ENABLE_CLOUD_SERVICES_COLLAB;ENABLE_CLOUD_SERVICES_COLLAB_SOFTLOCKS;ENABLE_CLOUD_SERVICES_ADS;ENABLE_CLOUD_SERVICES_USE_WEBREQUEST;ENABLE_CLOUD_SERVICES_CRASH_REPORTING;ENABLE_CLOUD_SERVICES_PURCHASING;ENABLE_CLOUD_SERVICES_ANALYTICS;ENABLE_CLOUD_SERVICES_UNET;ENABLE_CLOUD_SERVICES_BUILD;ENABLE_CLOUD_LICENSE;ENABLE_EDITOR_HUB_LICENSE;ENABLE_WEBSOCKET_CLIENT;ENABLE_DIRECTOR_AUDIO;ENABLE_DIRECTOR_TEXTURE;ENABLE_MANAGED_JOBS;ENABLE_MANAGED_TRANSFORM_JOBS;ENABLE_MANAGED_ANIMATION_JOBS;ENABLE_MANAGED_AUDIO_JOBS;INCLUDE_DYNAMIC_GI;ENABLE_MONO_BDWGC;ENABLE_SCRIPTING_GC_WBARRIERS;PLATFORM_SUPPORTS_MONO;RENDER_SOFTWARE_CURSOR;ENABLE_VIDEO;PLATFORM_STANDALONE;PLATFORM_STANDALONE_WIN;UNITY_STANDALONE_WIN;UNITY_STANDALONE;ENABLE_RUNTIME_GI;ENABLE_MOVIES;ENABLE_NETWORK;ENABLE_CRUNCH_TEXTURE_COMPRESSION;ENABLE_OUT_OF_PROCESS_CRASH_HANDLER;ENABLE_CLUSTER_SYNC;ENABLE_CLUSTERINPUT;PLATFORM_UPDATES_TIME_OUTSIDE_OF_PLAYER_LOOP;GFXDEVICE_WAITFOREVENT_MESSAGEPUMP;ENABLE_WEBSOCKET_HOST;ENABLE_MONO;NET_STANDARD_2_0;ENABLE_PROFILER;DEBUG;TRACE;UNITY_ASSERTIONS;UNITY_EDITOR;UNITY_EDITOR_64;UNITY_EDITOR_WIN;ENABLE_UNITY_COLLECTIONS_CHECKS;ENABLE_BURST_AOT;UNITY_TEAM_LICENSE;ENABLE_CUSTOM_RENDER_TEXTURE;ENABLE_DIRECTOR;ENABLE_LOCALIZATION;ENABLE_SPRITES;ENABLE_TERRAIN;ENABLE_TILEMAP;ENABLE_TIMELINE;ENABLE_LEGACY_INPUT_MANAGER;system_io_compression;thunderkit;CSHARP_7_OR_LATER;CSHARP_7_3_OR_NEWER</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <NoWarn>0169</NoWarn>
@@ -49,57 +49,113 @@
     <UnityProjectGenerator>Package</UnityProjectGenerator>
     <UnityProjectGeneratorVersion>2.0.16</UnityProjectGeneratorVersion>
     <UnityProjectType>Game:1</UnityProjectType>
-    <UnityBuildTarget>StandaloneWindows:5</UnityBuildTarget>
+    <UnityBuildTarget>StandaloneWindows64:19</UnityBuildTarget>
     <UnityVersion>2020.3.6f1</UnityVersion>
   </PropertyGroup>
   <ItemGroup>
     <Analyzer Include="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\Extensions\Microsoft\Visual Studio Tools for Unity\Analyzers\Microsoft.Unity.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\X_RPGVFX\RPG VFX Bundle\Scripts\Hovl_Laser2.cs" />
-    <Compile Include="Assets\X_RPGVFX\RPG VFX Bundle\Scripts\Hovl_Laser.cs" />
-    <Compile Include="Assets\X_RPGVFX\RPG VFX Bundle\Scripts\ProjectileMover.cs" />
-    <Compile Include="Assets\X_LootBeams\Scripts\BeamSelector.cs" />
-    <Compile Include="Assets\X_RPGVFX\RPG VFX Bundle\Scripts\Hovl_DemoLasers.cs" />
-    <Compile Include="Assets\X_RPGVFX\RPG VFX Bundle\Scripts\ParticleCollisionInstance.cs" />
-    <Compile Include="Assets\X_LootBeams\Scripts\CameraOrbit.cs" />
-    <Compile Include="Assets\X_RPGVFX\RPG VFX Bundle\Demo scenes\Demo magic circles Vol 1\CameraHolder.cs" />
-    <Compile Include="Assets\X_RPGVFX\RPG VFX Bundle\Scripts\Rotator.cs" />
-    <Compile Include="Assets\X_RPGVFX\RPG VFX Bundle\Scripts\EGA_EffectSound.cs" />
-    <Compile Include="Assets\X_RPGVFX\RPG VFX Bundle\Demo scenes\Demo projectiles\DemoShooting.cs" />
-    <Compile Include="Assets\X_RPGVFX\RPG VFX Bundle\Demo scenes\Demo track markers\RaycastInstance.cs" />
-    <Compile Include="Assets\X_RPGVFX\RPG VFX Bundle\Scripts\AutoDestroyPS.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\ColliderBehaviour.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\Projection.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\ActionResult.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\SelectionPickerRenderer.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\PreferenceDictionary.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\Transform2D.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\TransformUtility.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\IHasDefault.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\SelectionPickerSettings.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\ProBuilderMeshFunction.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\ProBuilderSnapping.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\SimpleTuple.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\MeshUtility.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\IntVec2.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\Submesh.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\Triangle.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\MeshOperations\UV\TextureStitching.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\ShapeGenerator.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\IntVec3.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\ProBuilderMeshSelection.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\MeshOperations\MeshImporter.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\EdgeUtility.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\AutoUnwrapSettings.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\BezierPoint.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\Math.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\Face.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\MaterialUtility.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\Vertex.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\PolyShape.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\Normals.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\UnwrapParameters.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\MeshOperations\Triangulation.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\WingedEdge.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\MeshOperations\Bevel.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\ArrayUtility.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\VectorHash.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\MeshOperations\ConnectElements.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\Edge.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\MeshOperations\UV\AutoUvConversion.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\MeshOperations\MeshValidation.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\PreferenceKeys.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\ProGridsIgnoreSnap.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\SerializationUtility.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\BuiltinMaterials.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\ProBuilderEnum.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\MeshHandles.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\MeshOperations\MergeElements.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\MeshOperations\AssemblyInfo.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\MeshOperations\AppendElements.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\MeshOperations\CombineMeshes.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\MeshOperations\UV\UvUnwrapping.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\MeshOperations\InternalMeshUtility.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\ObjectPool.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\SelectionModifierBehaviour.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\SelectionPickerRendererHDRP.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\MeshHandle.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\FaceRebuildData.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\Log.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\EntityBehaviour.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\VertexPositioning.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\HandleOrientation.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\InternalUtility.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\MeshOperations\DeleteElements.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\SelectionPicker.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\Changelog.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\HandleConstraint2D.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\SemVer.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\VectorMask.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\ColorPalette.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\SharedVertex.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\Normal.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\MeshOperations\UV\UVEditing.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\Shortcut.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\MeshOperations\Subdivision.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\Entity.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\EdgeLookup.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\MeshOperations\ElementSelection.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\WingedEdgeEnumerator.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\Bounds2D.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\MeshOperations\ExtrudeElements.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\HandleUtility.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\MeshOperations\MeshTransform.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\ColorUtility.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\Smoothing.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\MeshOperations\VertexEditing.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\BezierShape.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\SelectPathFaces.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\SelectionPickerRendererStandard.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\RaycastHit.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\MeshOperations\SurfaceTopology.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\ProBuilderMesh.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\AssemblyInfo.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\Clipping.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\PivotPoint.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\Spline.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\IntVec4.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\Runtime\Core\TriggerBehaviour.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Demo scenes\Demo projectiles\Readme.txt" />
-    <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Prefabs\Projectiles\Readme.txt" />
-    <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Demo scenes\Demo AOE skills\Readme.txt" />
-    <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Shaders\Lit_CenterGlow.shader" />
-    <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Shaders\SmoothSmoke.shader" />
-    <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Prefabs\HDRP and URP(LWRP).txt" />
-    <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Demo scenes\Demo magic circles Vol 1\Readme.txt" />
-    <None Include="Assets\X_Wiz\AnimCtrl\OrganJarAnimationTiming.txt" />
-    <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Shaders\DissolveNoise.shader" />
-    <None Include="Assets\X_Wiz\AnimCtrl\StaffOfAtom_AnimationTimings.txt" />
-    <None Include="Assets\X_LootBeams\Shaders\Beams\Beam AlphaBlended.shader" />
-    <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Demo scenes\Demo scene lasers\If you want to use lasers in 2D.txt" />
-    <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Shaders\Distortion.shader" />
-    <None Include="Assets\X_LootBeams\Shaders\Beams\Beam Additive.shader" />
-    <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Shaders\Blend_TwoSides.shader" />
-    <None Include="Assets\X_LootBeams\Readme.txt" />
-    <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Shaders\Electricity.shader" />
-    <None Include="Assets\X_RPGVFX\Auras pack\Shaders\Blend_CenterGlow.shader" />
-    <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Shaders\Blend_Normals.shader" />
-    <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Prefabs\AOE spells\Readme.txt" />
-    <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Demo scenes\Demo scene lasers\Readme.txt" />
-    <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Shaders\LightGlow.shader" />
-    <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Prefabs\Magic circles\Loop version\How to use.txt" />
-    <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Shaders\BlendDistort.shader" />
-    <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Shaders\AddTrail.shader" />
-    <None Include="Assets\X_RPGVFX\Auras pack\Shaders\Add_CenterGlow.shader" />
-    <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Demo scenes\Demo AOE skills\HDRP and URP(LWRP).txt" />
-    <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Scripts\Readme.txt" />
-    <None Include="Assets\ExternalLibraries\EpicLoot-UnityLib.dll" />
+    <None Include="Packages\com.unity.probuilder@4.4.0\Runtime\Unity.ProBuilder.asmdef" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">
@@ -324,29 +380,32 @@
     <Reference Include="UnityEditor.UnityConnectModule">
       <HintPath>C:\Program Files\Unity\Hub\Editor\2020.3.6f1\Editor\Data\Managed\UnityEngine\UnityEditor.UnityConnectModule.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEditor.Graphs">
+      <HintPath>C:\Program Files\Unity\Hub\Editor\2020.3.6f1\Editor\Data\Managed\UnityEditor.Graphs.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.WindowsStandalone.Extensions">
+      <HintPath>C:\Program Files\Unity\Hub\Editor\2020.3.6f1\Editor\Data\PlaybackEngines\WindowsStandaloneSupport\UnityEditor.WindowsStandalone.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="SyntaxTree.VisualStudio.Unity.Bridge">
+      <HintPath>C:\Program Files (x86)\Microsoft Visual Studio Tools for Unity\16.0\Editor\SyntaxTree.VisualStudio.Unity.Bridge.dll</HintPath>
+    </Reference>
     <Reference Include="assembly_utils">
       <HintPath>Packages\valheim\assembly_utils.dll</HintPath>
     </Reference>
     <Reference Include="System.IO.Compression">
       <HintPath>Packages\Compression\System.IO.Compression.dll</HintPath>
     </Reference>
-    <Reference Include="ConnectedStorage">
-      <HintPath>Packages\valheim\ConnectedStorage.dll</HintPath>
+    <Reference Include="System.IO.Compression.FileSystem">
+      <HintPath>Packages\Compression\System.IO.Compression.FileSystem.dll</HintPath>
     </Reference>
     <Reference Include="assembly_valheim">
       <HintPath>Packages\valheim\assembly_valheim.dll</HintPath>
-    </Reference>
-    <Reference Include="System.IO.Compression.FileSystem">
-      <HintPath>Packages\Compression\System.IO.Compression.FileSystem.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Security">
       <HintPath>Packages\valheim\Mono.Security.dll</HintPath>
     </Reference>
     <Reference Include="assembly_guiutils">
       <HintPath>Packages\valheim\assembly_guiutils.dll</HintPath>
-    </Reference>
-    <Reference Include="Fishlabs.Common">
-      <HintPath>Packages\valheim\Fishlabs.Common.dll</HintPath>
     </Reference>
     <Reference Include="assembly_googleanalytics">
       <HintPath>Packages\valheim\assembly_googleanalytics.dll</HintPath>
@@ -374,9 +433,6 @@
     </Reference>
     <Reference Include="assembly_steamworks">
       <HintPath>Packages\valheim\assembly_steamworks.dll</HintPath>
-    </Reference>
-    <Reference Include="Fishlabs.Core">
-      <HintPath>Packages\valheim\Fishlabs.Core.dll</HintPath>
     </Reference>
     <Reference Include="PlayFab">
       <HintPath>Packages\valheim\PlayFab.dll</HintPath>
@@ -726,33 +782,6 @@
     <Reference Include="System.Xml.Serialization">
       <HintPath>C:\Program Files\Unity\Hub\Editor\2020.3.6f1\Editor\Data\NetStandard\compat\2.0.0\shims\netfx\System.Xml.Serialization.dll</HintPath>
     </Reference>
-    <Reference Include="ThunderKit.Common">
-      <HintPath>Library\ScriptAssemblies\ThunderKit.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.TextMeshPro.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.TextMeshPro.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="ThunderKit.Core">
-      <HintPath>Library\ScriptAssemblies\ThunderKit.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.VisualStudio.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.VisualStudio.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="ThunderKit.Thunderstore">
-      <HintPath>Library\ScriptAssemblies\ThunderKit.Thunderstore.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Timeline.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.Timeline.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Timeline">
-      <HintPath>Library\ScriptAssemblies\Unity.Timeline.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.TextMeshPro">
-      <HintPath>Library\ScriptAssemblies\Unity.TextMeshPro.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.2D.Sprite.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.2D.Sprite.Editor.dll</HintPath>
-    </Reference>
     <Reference Include="UnityEditor.UI">
       <HintPath>Library\ScriptAssemblies\UnityEditor.UI.dll</HintPath>
     </Reference>
@@ -761,21 +790,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="Unity.ProBuilder.AssetIdRemapUtility.csproj">
-      <Project>{E1B48015-8024-6F34-E415-235560B08AF0}</Project>
-      <Name>Unity.ProBuilder.AssetIdRemapUtility</Name>
+    <ProjectReference Include="Unity.ProBuilder.Poly2Tri.csproj">
+      <Project>{A8AF3274-9905-36F2-4D75-1F4DB6EFD5DA}</Project>
+      <Name>Unity.ProBuilder.Poly2Tri</Name>
     </ProjectReference>
-    <ProjectReference Include="Unity.ProBuilder.AddOns.Editor.csproj">
-      <Project>{6A197754-C5B1-8C69-4DAC-0637497E238A}</Project>
-      <Name>Unity.ProBuilder.AddOns.Editor</Name>
-    </ProjectReference>
-    <ProjectReference Include="Unity.ProBuilder.csproj">
-      <Project>{B414D795-F2CA-FEA3-74E0-6DEB50194D8E}</Project>
-      <Name>Unity.ProBuilder</Name>
-    </ProjectReference>
-    <ProjectReference Include="Unity.ProBuilder.Editor.csproj">
-      <Project>{5C0652AB-9175-F4EE-E1EB-A2AD3C3AF493}</Project>
-      <Name>Unity.ProBuilder.Editor</Name>
+    <ProjectReference Include="Unity.ProBuilder.KdTree.csproj">
+      <Project>{A63DFCB5-9D79-612F-D819-5BB374698A53}</Project>
+      <Name>Unity.ProBuilder.KdTree</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
