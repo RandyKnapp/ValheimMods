@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Common;
-using EpicLoot_UnityLib;
 using UnityEngine;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
@@ -87,11 +86,6 @@ namespace EpicLoot.Crafting
 
         public static AugmentChoiceDialog CreateAugmentChoiceDialog()
         {
-            var augmentChoices = 3;
-            var featureValues = EnchantingTableUpgrades.GetFeatureCurrentValue(EnchantingFeature.Augment);
-            if (!float.IsNaN(featureValues.Item1))
-                augmentChoices = (int)featureValues.Item1 + 1;
-
             var inventoryGui = InventoryGui.instance;
             AugmentChoiceDialog choiceDialog;
             if (EpicLoot.HasAuga)
@@ -116,21 +110,12 @@ namespace EpicLoot.Crafting
                 var closeButton = choiceDialog.gameObject.GetComponentInChildren<Button>();
                 Object.Destroy(closeButton.gameObject);
 
-                var tooltipHeight = 360;
-                var buttonStart = -220;
-                if (augmentChoices > 3)
-                {
-                    var extra = augmentChoices - 3;
-                    tooltipHeight -= extra * 40;
-                    buttonStart += extra * 40;
-                }
-
                 var tooltip = (RectTransform)choiceDialog.transform.Find("TooltipScrollContainer");
-                tooltip.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, tooltipHeight);
+                tooltip.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 360);
                 var scrollbar = (RectTransform)choiceDialog.transform.Find("ScrollBar");
-                scrollbar.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, tooltipHeight);
+                scrollbar.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 360);
 
-                for (var i = 0; i < augmentChoices; i++)
+                for (var i = 0; i < 3; i++)
                 {
                     var button = Auga.API.MediumButton_Create(resultDialog.transform, $"AugmentButton{i}", string.Empty);
                     Auga.API.Button_SetTextColors(button, Color.white, Color.white, Color.white, Color.white, Color.white, Color.white);
@@ -141,20 +126,14 @@ namespace EpicLoot.Crafting
                     focus.name = "ButtonFocus";
 
                     var rt = (RectTransform)button.transform;
-                    rt.anchoredPosition = new Vector2(0, buttonStart - (i * 40));
+                    rt.anchoredPosition = new Vector2(0, -220 - (i * 40));
                     rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 295);
                     choiceDialog.EffectChoiceButtons.Add(button);
                 }
             }
             else
             {
-                var height = 550.0f;
-                if (augmentChoices > 3)
-                {
-                    var extra = augmentChoices - 3;
-                    height += extra * 45;
-                }
-                choiceDialog = CreateDialog<AugmentChoiceDialog>(inventoryGui, "AugmentChoiceDialog", height);
+                choiceDialog = CreateDialog<AugmentChoiceDialog>(inventoryGui, "AugmentChoiceDialog");
 
                 var background = choiceDialog.gameObject.transform.Find("Frame").gameObject.RectTransform();
                 choiceDialog.MagicBG = Object.Instantiate(inventoryGui.m_recipeIcon, background);
@@ -175,13 +154,12 @@ namespace EpicLoot.Crafting
                 svrt.anchorMax = new Vector2(1, 1);
                 svrt.pivot = new Vector2(0.5f, 0.5f);
                 svrt.anchoredPosition = new Vector2(0, 50);
-                svrt.sizeDelta = new Vector2(-20, -300);
-                svrt.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Top, 74, 300);
+                svrt.sizeDelta = new Vector2(-20, -265);
 
                 var closeButton = choiceDialog.gameObject.GetComponentInChildren<Button>();
                 Object.Destroy(closeButton.gameObject);
 
-                for (var i = 0; i < augmentChoices; i++)
+                for (var i = 0; i < 3; i++)
                 {
                     var button = Object.Instantiate(inventoryGui.m_craftButton, background);
                     button.interactable = true;
@@ -198,7 +176,7 @@ namespace EpicLoot.Crafting
                     var rt = button.gameObject.RectTransform();
                     rt.anchorMin = new Vector2(0.5f, 0);
                     rt.anchorMax = new Vector2(0.5f, 0);
-                    rt.anchoredPosition = new Vector2(0, 55 + ((augmentChoices - 1 - i) * 45));
+                    rt.anchoredPosition = new Vector2(0, 55 + ((2 - i) * 45));
                     rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 300);
                     rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 40);
                     choiceDialog.EffectChoiceButtons.Add(button);
@@ -208,7 +186,7 @@ namespace EpicLoot.Crafting
             return choiceDialog;
         }
 
-        public static T CreateDialog<T>(InventoryGui inventoryGui, string name, float height = 550) where T : Component
+        public static T CreateDialog<T>(InventoryGui inventoryGui, string name) where T : Component
         {
             var newDialog = Object.Instantiate(inventoryGui.m_variantDialog, inventoryGui.m_variantDialog.transform.parent);
             T newDialogT = newDialog.gameObject.AddComponent<T>();
@@ -223,7 +201,7 @@ namespace EpicLoot.Crafting
                 Object.Destroy(child.gameObject);
             }
             background.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 380);
-            background.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
+            background.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 550);
             background.anchoredPosition += new Vector2(20, -270);
             
             return newDialogT;
@@ -389,6 +367,7 @@ namespace EpicLoot.Crafting
                     Auga.API.ComplexTooltip_SetTopic(AugaTabData.ItemInfoGO, Localization.instance.Localize(itemData.GetDecoratedName()));
                     Auga.API.ComplexTooltip_SetDescription(AugaTabData.ItemInfoGO, Localization.instance.Localize("$mod_epicloot_augment_explain"));
                     EpicLoot.AugaTooltipNoTextBoxes = false;
+
                 }
                 else
                 {

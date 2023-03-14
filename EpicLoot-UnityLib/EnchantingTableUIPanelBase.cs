@@ -10,7 +10,6 @@ namespace EpicLoot_UnityLib
 
         public MultiSelectItemList AvailableItems;
         public Button MainButton;
-        public GameObject LevelDisplay;
         public GuiBar ProgressBar;
         public AudioSource Audio;
         public AudioClip ProgressLoopSFX;
@@ -61,8 +60,6 @@ namespace EpicLoot_UnityLib
         {
             if (ProgressBar != null)
                 ProgressBar.gameObject.SetActive(_inProgress);
-            if (LevelDisplay != null)
-                LevelDisplay.gameObject.SetActive(!_inProgress);
 
             if (_inProgress)
             {
@@ -177,35 +174,6 @@ namespace EpicLoot_UnityLib
             }
 
             return true;
-        }
-
-        protected static void GiveItemsToPlayer(List<InventoryItemListElement> sacrificeProducts)
-        {
-            var player = Player.m_localPlayer;
-            var inventory = player.GetInventory();
-
-            foreach (var sacrificeProduct in sacrificeProducts)
-            {
-                var item = sacrificeProduct.GetItem();
-                do
-                {
-                    var itemToAdd = item.Clone();
-                    itemToAdd.m_stack = Mathf.Min(item.m_stack, item.m_shared.m_maxStackSize);
-                    item.m_stack -= itemToAdd.m_stack;
-                    //Debug.LogWarning($"Adding item: {itemToAdd.m_shared.m_name} x{itemToAdd.m_stack} (remaining:{item.m_stack})");
-                    if (inventory.CanAddItem(itemToAdd))
-                    {
-                        inventory.AddItem(itemToAdd);
-                        player.Message(MessageHud.MessageType.TopLeft, $"$msg_added {itemToAdd.m_shared.m_name}", itemToAdd.m_stack, itemToAdd.GetIcon());
-                    }
-                    else
-                    {
-                        var itemDrop = ItemDrop.DropItem(itemToAdd, itemToAdd.m_stack, player.transform.position + player.transform.forward + player.transform.up, player.transform.rotation);
-                        itemDrop.GetComponent<Rigidbody>().velocity = Vector3.up * 5f;
-                        player.Message(MessageHud.MessageType.TopLeft, $"$msg_dropped {itemDrop.m_itemData.m_shared.m_name} $mod_epicloot_sacrifice_inventoryfullexplanation", itemDrop.m_itemData.m_stack, itemDrop.m_itemData.GetIcon());
-                    }
-                } while (item.m_stack > 0);
-            }
         }
     }
 }

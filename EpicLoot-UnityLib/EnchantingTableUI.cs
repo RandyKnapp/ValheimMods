@@ -17,7 +17,6 @@ namespace EpicLoot_UnityLib
         [Header("Audio")]
         public AudioSource Audio;
         public AudioClip TabClickSFX;
-        public AudioClip EnchantBonusSFX;
 
         public static EnchantingTableUI instance { get; set; }
 
@@ -154,11 +153,6 @@ namespace EpicLoot_UnityLib
         public void PlayTabSelectSFX()
         {
             Audio.PlayOneShot(TabClickSFX);
-        }
-
-        public void PlayEnchantBonusSFX()
-        {
-            Audio.PlayOneShot(EnchantBonusSFX);
         }
     }
 }

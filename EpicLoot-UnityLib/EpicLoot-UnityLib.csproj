@@ -96,7 +96,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AugmentUI.cs" />
-    <Compile Include="EnchantBonus.cs" />
     <Compile Include="FeatureStatus.cs" />
     <Compile Include="DisenchantUI.cs" />
     <Compile Include="EnchantingTable.cs" />

@@ -1,5 +1,4 @@
-﻿using System.Text;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 namespace EpicLoot_UnityLib
@@ -12,18 +11,10 @@ namespace EpicLoot_UnityLib
         public GameObject UnlockedLabel;
         public Image[] Stars;
         public Text ManyStarsLabel;
-        public UITooltip Tooltip;
-
-        public delegate void MakeFeatureUnlockTooltipDelegate(GameObject obj);
-
-        public static MakeFeatureUnlockTooltipDelegate MakeFeatureUnlockTooltip;
 
         public void Awake()
         {
             EnchantingTableUpgrades.OnFeatureLevelChanged += OnFeatureLevelChanged;
-
-            if (Tooltip != null)
-                MakeFeatureUnlockTooltip(Tooltip.gameObject);
         }
 
         public void OnDestroy()
@@ -99,33 +90,6 @@ namespace EpicLoot_UnityLib
 
                 if (UnlockedLabel != null)
                     UnlockedLabel.SetActive(level == 0);
-            }
-
-            if (Tooltip != null)
-            {
-                Tooltip.m_topic = Localization.instance.Localize(EnchantingTableUpgrades.GetFeatureName(Feature));
-
-                var sb = new StringBuilder();
-                var locked = EnchantingTableUpgrades.IsFeatureLocked(Feature);
-                var currentLevel = EnchantingTableUpgrades.GetFeatureLevel(Feature);
-                var maxLevel = EnchantingTableUpgrades.GetFeatureMaxLevel(Feature);
-                if (locked)
-                    sb.AppendLine(Localization.instance.Localize("$mod_epicloot_currentlevel: <color=#AD1616><b>$mod_epicloot_featurelocked</b></color>"));
-                else if (currentLevel == 0)
-                    sb.AppendLine(Localization.instance.Localize($"$mod_epicloot_currentlevel: <color=#1AACEF><b>$mod_epicloot_featureunlocked</b></color> / {maxLevel}"));
-                else
-                    sb.AppendLine(Localization.instance.Localize($"$mod_epicloot_currentlevel: <color=#EAA800><b>{currentLevel}</b></color> / {maxLevel}"));
-
-                if (!locked && currentLevel > 0)
-                {
-                    var text = EnchantingTableUpgrades.GetFeatureUpgradeLevelDescription(Feature, currentLevel);
-                    sb.AppendLine($"<color=#EAA800>{text}</color>");
-                }
-
-                sb.AppendLine();
-                sb.AppendLine(Localization.instance.Localize(EnchantingTableUpgrades.GetFeatureDescription(Feature)));
-
-                Tooltip.m_text = Localization.instance.Localize(sb.ToString());
             }
         }
 
