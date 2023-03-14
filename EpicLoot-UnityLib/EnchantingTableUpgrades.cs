@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Newtonsoft.Json;
 using UnityEngine;
 
@@ -61,7 +60,6 @@ namespace EpicLoot_UnityLib
         public const int FeatureLockedSentinel = -1;
 
         public event Action<EnchantingFeature, int> OnFeatureLevelChanged;
-        public event Action OnAnyFeatureLevelChanged;
 
         private Dictionary<EnchantingFeature, int> _featureLevels = new();
 
@@ -98,8 +96,6 @@ namespace EpicLoot_UnityLib
                 _featureLevels[feature] = defaultLevel;
                 OnFeatureLevelChanged?.Invoke(feature, defaultLevel);
             }
-
-            OnAnyFeatureLevelChanged?.Invoke();
         }
 
         public void Save()
@@ -118,18 +114,13 @@ namespace EpicLoot_UnityLib
         {
             var previousValues = new Dictionary<EnchantingFeature, int>(_featureLevels);
             Load();
-            var anyFeatureChanged = false;
             foreach (var entry in _featureLevels)
             {
                 if (entry.Value != (previousValues.TryGetValue(entry.Key, out var previousLevel) ? previousLevel : FeatureUnavailableSentinel))
                 {
                     OnFeatureLevelChanged?.Invoke(entry.Key, entry.Value);
-                    anyFeatureChanged = true;
                 }
             }
-
-            if (anyFeatureChanged)
-                OnAnyFeatureLevelChanged?.Invoke();
         }
 
         public int GetLevel(EnchantingFeature feature)
@@ -149,28 +140,18 @@ namespace EpicLoot_UnityLib
         }
     }
 
-    public class EnchantingFeatureUpgradeRequest
-    {
-        public EnchantingFeature Feature;
-        public int ToLevel;
-        public Action<bool> ResponseCallback;
-    }
-
     public static class EnchantingTableUpgrades
     {
         public static readonly EnchantingTableUpgradeLedger Ledger = new();
         public static EnchantingUpgradesConfig Config;
 
         public static event Action<EnchantingFeature, int> OnFeatureLevelChanged;
-        public static event Action OnAnyFeatureLevelChanged;
 
         private static bool _isServer;
-        private static readonly List<EnchantingFeatureUpgradeRequest> _upgradeRequests = new();
 
         public static void InitializeConfig(EnchantingUpgradesConfig config)
         {
-            Ledger.OnFeatureLevelChanged += (feature, i) => OnFeatureLevelChanged?.Invoke(feature, i);
-            Ledger.OnAnyFeatureLevelChanged += () => OnAnyFeatureLevelChanged?.Invoke();
+            Ledger.OnFeatureLevelChanged += OnFeatureLevelChanged;
             Config = config;
         }
 
@@ -178,106 +159,18 @@ namespace EpicLoot_UnityLib
         {
             _isServer = isServer;
             if (_isServer)
-                routedRpc.Register<int, int>("RequestEnchantingUpgrade", RPC_RequestEnchantingUpgrade);
-
-            routedRpc.Register<int, int, bool>("EnchantingUpgradeResponse", RPC_EnchantingUpgradeResponse);
-        }
-
-        public static void RPC_RequestEnchantingUpgrade(long sender, int featureI, int toLevel)
-        {
-            if (!_isServer)
-                return;
-            
-            var feature = (EnchantingFeature)featureI;
-            if (IsFeatureAvailable(feature) && toLevel == GetFeatureLevel(feature) + 1)
             {
-                Ledger.SetLevel(feature, toLevel);
-                Ledger.Save();
-                ZRoutedRpc.instance.InvokeRoutedRPC(sender, "EnchantingUpgradeResponse", featureI, toLevel, true);
-                OnFeatureLevelChanged?.Invoke(feature, toLevel);
-                OnAnyFeatureLevelChanged?.Invoke();
+                routedRpc.Register<EnchantingFeature, int>("RequestEnchantingUpgrade", RPC_RequestEnchantingUpgrade);
             }
             else
             {
-                ZRoutedRpc.instance.InvokeRoutedRPC(sender, "EnchantingUpgradeResponse", featureI, toLevel, false);
             }
         }
 
-        public static string GetFeatureName(EnchantingFeature feature)
+        public static void RPC_RequestEnchantingUpgrade(long sender, EnchantingFeature feature, int toLevel)
         {
-            var featureNames = new []
-            {
-                "$mod_epicloot_sacrifice",
-                "$mod_epicloot_convertmaterials",
-                "$mod_epicloot_enchant",
-                "$mod_epicloot_augment",
-                "$mod_epicloot_disenchant",
-                "$mod_epicloot_helheim",
-            };
-            return featureNames[(int)feature];
-        }
-
-        public static string GetFeatureDescription(EnchantingFeature feature)
-        {
-            var featureDescriptions = new []
-            {
-                "$mod_epicloot_featureinfo_sacrifice",
-                "$mod_epicloot_featureinfo_convertmaterials",
-                "$mod_epicloot_featureinfo_enchant",
-                "$mod_epicloot_featureinfo_augment",
-                "$mod_epicloot_featureinfo_disenchant",
-                "$mod_epicloot_featureinfo_helheim",
-            };
-            return featureDescriptions[(int)feature];
-        }
-
-        public static string GetFeatureUpgradeLevelDescription(EnchantingFeature feature, int level)
-        {
-            var featureUpgradeDescriptions = new []
-            {
-                "$mod_epicloot_featureupgrade_sacrifice",
-                "$mod_epicloot_featureupgrade_convertmaterials",
-                "$mod_epicloot_featureupgrade_enchant",
-                "$mod_epicloot_featureupgrade_augment",
-                "$mod_epicloot_featureupgrade_disenchant",
-                "$mod_epicloot_featureupgrade_helheim",
-            };
-
-            var values = EnchantingTableUpgrades.GetFeatureValue(feature, level);
-            return Localization.instance.Localize(featureUpgradeDescriptions[(int)feature], values.Item1.ToString("0.#"), values.Item2.ToString("0.#"));
-        }
-
-        private static void RPC_EnchantingUpgradeResponse(long sender, int featureI, int toLevel, bool success)
-        {
-            var feature = (EnchantingFeature)featureI;
-            var listCopy = _upgradeRequests.ToList();
-            foreach (var request in listCopy)
-            {
-                if (request.Feature == feature && request.ToLevel == toLevel)
-                {
-                    request.ResponseCallback.Invoke(success);
-                    _upgradeRequests.Remove(request);
-
-                    if (Player.m_localPlayer != null)
-                    {
-                        if (toLevel == 0)
-                            Player.m_localPlayer.Message(MessageHud.MessageType.Center, Localization.instance.Localize("$mod_epicloot_unlockmessage", GetFeatureName(feature)));
-                        else
-                            Player.m_localPlayer.Message(MessageHud.MessageType.Center, Localization.instance.Localize("$mod_epicloot_upgrademessage", GetFeatureName(feature), toLevel.ToString()));
-                    }
-                }
-            }
-        }
-
-        public static void RequestEnchantingUpgrade(EnchantingFeature feature, int toLevel, Action<bool> responseCallback)
-        {
-            _upgradeRequests.Add(new EnchantingFeatureUpgradeRequest()
-            {
-                Feature = feature,
-                ToLevel = toLevel,
-                ResponseCallback = responseCallback
-            });
-            ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.Everybody, "RequestEnchantingUpgrade", (int)feature, toLevel);
+            if (!_isServer)
+                return;
         }
 
         public static void OnZNetStart()

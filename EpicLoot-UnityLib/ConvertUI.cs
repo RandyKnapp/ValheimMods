@@ -263,8 +263,7 @@ namespace EpicLoot_UnityLib
             CostList.SetItems(cost.Cast<IListElement>().ToList());
 
             var canAfford = LocalPlayerCanAffordCost(cost);
-            var featureUnlocked = EnchantingTableUpgrades.IsFeatureUnlocked(EnchantingFeature.ConvertMaterials);
-            MainButton.interactable = featureUnlocked && canAfford && selectedRecipes.Count > 0;
+            MainButton.interactable = canAfford && selectedRecipes.Count > 0;
         }
         
         public override void Cancel()
