@@ -58,13 +58,13 @@
   <ItemGroup>
     <Compile Include="Packages\com.unity.probuilder@4.4.0\External\CSG\Classes\Model.cs" />
     <Compile Include="Packages\com.unity.probuilder@4.4.0\External\CSG\CSG.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\External\CSG\Classes\VertexUtility.cs" />
     <Compile Include="Packages\com.unity.probuilder@4.4.0\External\CSG\Classes\VertexAttributes.cs" />
     <Compile Include="Packages\com.unity.probuilder@4.4.0\External\CSG\AssemblyInfo.cs" />
     <Compile Include="Packages\com.unity.probuilder@4.4.0\External\CSG\Classes\Vertex.cs" />
     <Compile Include="Packages\com.unity.probuilder@4.4.0\External\CSG\Classes\Polygon.cs" />
     <Compile Include="Packages\com.unity.probuilder@4.4.0\External\CSG\Classes\Plane.cs" />
     <Compile Include="Packages\com.unity.probuilder@4.4.0\External\CSG\Classes\Node.cs" />
-    <Compile Include="Packages\com.unity.probuilder@4.4.0\External\CSG\Classes\VertexUtility.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Packages\com.unity.probuilder@4.4.0\External\CSG\Unity.ProBuilder.Csg.asmdef" />
@@ -307,17 +307,23 @@
     <Reference Include="System.IO.Compression">
       <HintPath>Packages\Compression\System.IO.Compression.dll</HintPath>
     </Reference>
-    <Reference Include="System.IO.Compression.FileSystem">
-      <HintPath>Packages\Compression\System.IO.Compression.FileSystem.dll</HintPath>
+    <Reference Include="ConnectedStorage">
+      <HintPath>Packages\valheim\ConnectedStorage.dll</HintPath>
     </Reference>
     <Reference Include="assembly_valheim">
       <HintPath>Packages\valheim\assembly_valheim.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO.Compression.FileSystem">
+      <HintPath>Packages\Compression\System.IO.Compression.FileSystem.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Security">
       <HintPath>Packages\valheim\Mono.Security.dll</HintPath>
     </Reference>
     <Reference Include="assembly_guiutils">
       <HintPath>Packages\valheim\assembly_guiutils.dll</HintPath>
+    </Reference>
+    <Reference Include="Fishlabs.Common">
+      <HintPath>Packages\valheim\Fishlabs.Common.dll</HintPath>
     </Reference>
     <Reference Include="assembly_googleanalytics">
       <HintPath>Packages\valheim\assembly_googleanalytics.dll</HintPath>
@@ -345,6 +351,9 @@
     </Reference>
     <Reference Include="assembly_steamworks">
       <HintPath>Packages\valheim\assembly_steamworks.dll</HintPath>
+    </Reference>
+    <Reference Include="Fishlabs.Core">
+      <HintPath>Packages\valheim\Fishlabs.Core.dll</HintPath>
     </Reference>
     <Reference Include="PlayFab">
       <HintPath>Packages\valheim\PlayFab.dll</HintPath>

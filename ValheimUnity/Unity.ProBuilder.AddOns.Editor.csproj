@@ -299,17 +299,23 @@
     <Reference Include="System.IO.Compression">
       <HintPath>Packages\Compression\System.IO.Compression.dll</HintPath>
     </Reference>
-    <Reference Include="System.IO.Compression.FileSystem">
-      <HintPath>Packages\Compression\System.IO.Compression.FileSystem.dll</HintPath>
+    <Reference Include="ConnectedStorage">
+      <HintPath>Packages\valheim\ConnectedStorage.dll</HintPath>
     </Reference>
     <Reference Include="assembly_valheim">
       <HintPath>Packages\valheim\assembly_valheim.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO.Compression.FileSystem">
+      <HintPath>Packages\Compression\System.IO.Compression.FileSystem.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Security">
       <HintPath>Packages\valheim\Mono.Security.dll</HintPath>
     </Reference>
     <Reference Include="assembly_guiutils">
       <HintPath>Packages\valheim\assembly_guiutils.dll</HintPath>
+    </Reference>
+    <Reference Include="Fishlabs.Common">
+      <HintPath>Packages\valheim\Fishlabs.Common.dll</HintPath>
     </Reference>
     <Reference Include="assembly_googleanalytics">
       <HintPath>Packages\valheim\assembly_googleanalytics.dll</HintPath>
@@ -337,6 +343,9 @@
     </Reference>
     <Reference Include="assembly_steamworks">
       <HintPath>Packages\valheim\assembly_steamworks.dll</HintPath>
+    </Reference>
+    <Reference Include="Fishlabs.Core">
+      <HintPath>Packages\valheim\Fishlabs.Core.dll</HintPath>
     </Reference>
     <Reference Include="PlayFab">
       <HintPath>Packages\valheim\PlayFab.dll</HintPath>

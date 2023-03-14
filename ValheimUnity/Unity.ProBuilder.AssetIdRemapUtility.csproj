@@ -56,13 +56,13 @@
     <Analyzer Include="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\Extensions\Microsoft\Visual Studio Tools for Unity\Analyzers\Microsoft.Unity.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Packages\com.unity.probuilder@4.4.0\AssetIdRemapUtility\Editor\PackageImporter.cs" />
     <Compile Include="Packages\com.unity.probuilder@4.4.0\AssetIdRemapUtility\Editor\AssetIdRemapBuilderEditor.cs" />
     <Compile Include="Packages\com.unity.probuilder@4.4.0\AssetIdRemapUtility\Editor\AssetIdRemapBuilderTreeView.cs" />
-    <Compile Include="Packages\com.unity.probuilder@4.4.0\AssetIdRemapUtility\Editor\AssemblyInfo.cs" />
-    <Compile Include="Packages\com.unity.probuilder@4.4.0\AssetIdRemapUtility\Editor\AssetId.cs" />
     <Compile Include="Packages\com.unity.probuilder@4.4.0\AssetIdRemapUtility\Editor\AssetTreeView.cs" />
     <Compile Include="Packages\com.unity.probuilder@4.4.0\AssetIdRemapUtility\Editor\AssetIdRemapEditor.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\AssetIdRemapUtility\Editor\PackageImporter.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\AssetIdRemapUtility\Editor\AssemblyInfo.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\AssetIdRemapUtility\Editor\AssetId.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Packages\com.unity.probuilder@4.4.0\AssetIdRemapUtility\Editor\Unity.ProBuilder.AssetIdRemapUtility.asmdef" />
@@ -305,17 +305,23 @@
     <Reference Include="System.IO.Compression">
       <HintPath>Packages\Compression\System.IO.Compression.dll</HintPath>
     </Reference>
-    <Reference Include="System.IO.Compression.FileSystem">
-      <HintPath>Packages\Compression\System.IO.Compression.FileSystem.dll</HintPath>
+    <Reference Include="ConnectedStorage">
+      <HintPath>Packages\valheim\ConnectedStorage.dll</HintPath>
     </Reference>
     <Reference Include="assembly_valheim">
       <HintPath>Packages\valheim\assembly_valheim.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO.Compression.FileSystem">
+      <HintPath>Packages\Compression\System.IO.Compression.FileSystem.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Security">
       <HintPath>Packages\valheim\Mono.Security.dll</HintPath>
     </Reference>
     <Reference Include="assembly_guiutils">
       <HintPath>Packages\valheim\assembly_guiutils.dll</HintPath>
+    </Reference>
+    <Reference Include="Fishlabs.Common">
+      <HintPath>Packages\valheim\Fishlabs.Common.dll</HintPath>
     </Reference>
     <Reference Include="assembly_googleanalytics">
       <HintPath>Packages\valheim\assembly_googleanalytics.dll</HintPath>
@@ -343,6 +349,9 @@
     </Reference>
     <Reference Include="assembly_steamworks">
       <HintPath>Packages\valheim\assembly_steamworks.dll</HintPath>
+    </Reference>
+    <Reference Include="Fishlabs.Core">
+      <HintPath>Packages\valheim\Fishlabs.Core.dll</HintPath>
     </Reference>
     <Reference Include="PlayFab">
       <HintPath>Packages\valheim\PlayFab.dll</HintPath>

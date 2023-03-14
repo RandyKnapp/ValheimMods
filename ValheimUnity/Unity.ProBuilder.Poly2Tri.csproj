@@ -56,28 +56,30 @@
     <Analyzer Include="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\Extensions\Microsoft\Visual Studio Tools for Unity\Analyzers\Microsoft.Unity.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Packages\com.unity.probuilder@4.4.0\External\Poly2Tri\Triangulation\Delaunay\Sweep\DTSweepEdgeEvent.cs" />
     <Compile Include="Packages\com.unity.probuilder@4.4.0\External\Poly2Tri\Triangulation\TriangulationConstraint.cs" />
     <Compile Include="Packages\com.unity.probuilder@4.4.0\External\Poly2Tri\Polygon\Polygon.cs" />
     <Compile Include="Packages\com.unity.probuilder@4.4.0\External\Poly2Tri\Triangulation\Delaunay\Sweep\DTSweepPointComparator.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\External\Poly2Tri\Triangulation\Delaunay\DelaunayTriangle.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\External\Poly2Tri\Triangulation\Orientation.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\External\Poly2Tri\Triangulation\Util\PolygonGenerator.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\External\Poly2Tri\Triangulation\TriangulationMode.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\External\Poly2Tri\Triangulation\TriangulationDebugContext.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\External\Poly2Tri\Triangulation\Sets\PointSet.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\External\Poly2Tri\Triangulation\TriangulationUtil.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\External\Poly2Tri\Triangulation\Delaunay\Sweep\AdvancingFrontNode.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\External\Poly2Tri\Triangulation\Delaunay\Sweep\DTSweepEdgeEvent.cs" />
     <Compile Include="Packages\com.unity.probuilder@4.4.0\External\Poly2Tri\Triangulation\Delaunay\Sweep\DTSweepContext.cs" />
     <Compile Include="Packages\com.unity.probuilder@4.4.0\External\Poly2Tri\Utility\FixedArray3.cs" />
-    <Compile Include="Packages\com.unity.probuilder@4.4.0\External\Poly2Tri\Triangulation\Delaunay\DelaunayTriangle.cs" />
     <Compile Include="Packages\com.unity.probuilder@4.4.0\External\Poly2Tri\Triangulation\Delaunay\Sweep\DTSweep.cs" />
     <Compile Include="Packages\com.unity.probuilder@4.4.0\External\Poly2Tri\Triangulation\Sets\ConstrainedPointSet.cs" />
     <Compile Include="Packages\com.unity.probuilder@4.4.0\External\Poly2Tri\Triangulation\Util\PointGenerator.cs" />
-    <Compile Include="Packages\com.unity.probuilder@4.4.0\External\Poly2Tri\Triangulation\Orientation.cs" />
     <Compile Include="Packages\com.unity.probuilder@4.4.0\External\Poly2Tri\Triangulation\Delaunay\Sweep\DTSweepBasin.cs" />
     <Compile Include="Packages\com.unity.probuilder@4.4.0\External\Poly2Tri\Triangulation\ITriangulatable.cs" />
     <Compile Include="Packages\com.unity.probuilder@4.4.0\External\Poly2Tri\Triangulation\Delaunay\Sweep\PointOnEdgeException.cs" />
     <Compile Include="Packages\com.unity.probuilder@4.4.0\External\Poly2Tri\Triangulation\TriangulationAlgorithm.cs" />
-    <Compile Include="Packages\com.unity.probuilder@4.4.0\External\Poly2Tri\Triangulation\Util\PolygonGenerator.cs" />
     <Compile Include="Packages\com.unity.probuilder@4.4.0\External\Poly2Tri\Utility\FixedBitArray3.cs" />
-    <Compile Include="Packages\com.unity.probuilder@4.4.0\External\Poly2Tri\Triangulation\TriangulationMode.cs" />
-    <Compile Include="Packages\com.unity.probuilder@4.4.0\External\Poly2Tri\Triangulation\TriangulationDebugContext.cs" />
     <Compile Include="Packages\com.unity.probuilder@4.4.0\External\Poly2Tri\AssemblyInfo.cs" />
     <Compile Include="Packages\com.unity.probuilder@4.4.0\External\Poly2Tri\Triangulation\TriangulationContext.cs" />
-    <Compile Include="Packages\com.unity.probuilder@4.4.0\External\Poly2Tri\Triangulation\Sets\PointSet.cs" />
     <Compile Include="Packages\com.unity.probuilder@4.4.0\External\Poly2Tri\Triangulation\Delaunay\Sweep\DTSweepDebugContext.cs" />
     <Compile Include="Packages\com.unity.probuilder@4.4.0\External\Poly2Tri\Triangulation\TriangulationPoint.cs" />
     <Compile Include="Packages\com.unity.probuilder@4.4.0\External\Poly2Tri\Triangulation\Delaunay\Sweep\DTSweepConstraint.cs" />
@@ -85,8 +87,6 @@
     <Compile Include="Packages\com.unity.probuilder@4.4.0\External\Poly2Tri\Polygon\PolygonPoint.cs" />
     <Compile Include="Packages\com.unity.probuilder@4.4.0\External\Poly2Tri\P2T.cs" />
     <Compile Include="Packages\com.unity.probuilder@4.4.0\External\Poly2Tri\Polygon\PolygonSet.cs" />
-    <Compile Include="Packages\com.unity.probuilder@4.4.0\External\Poly2Tri\Triangulation\TriangulationUtil.cs" />
-    <Compile Include="Packages\com.unity.probuilder@4.4.0\External\Poly2Tri\Triangulation\Delaunay\Sweep\AdvancingFrontNode.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Packages\com.unity.probuilder@4.4.0\External\Poly2Tri\Unity.ProBuilder.Poly2Tri.asmdef" />
@@ -329,17 +329,23 @@
     <Reference Include="System.IO.Compression">
       <HintPath>Packages\Compression\System.IO.Compression.dll</HintPath>
     </Reference>
-    <Reference Include="System.IO.Compression.FileSystem">
-      <HintPath>Packages\Compression\System.IO.Compression.FileSystem.dll</HintPath>
+    <Reference Include="ConnectedStorage">
+      <HintPath>Packages\valheim\ConnectedStorage.dll</HintPath>
     </Reference>
     <Reference Include="assembly_valheim">
       <HintPath>Packages\valheim\assembly_valheim.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO.Compression.FileSystem">
+      <HintPath>Packages\Compression\System.IO.Compression.FileSystem.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Security">
       <HintPath>Packages\valheim\Mono.Security.dll</HintPath>
     </Reference>
     <Reference Include="assembly_guiutils">
       <HintPath>Packages\valheim\assembly_guiutils.dll</HintPath>
+    </Reference>
+    <Reference Include="Fishlabs.Common">
+      <HintPath>Packages\valheim\Fishlabs.Common.dll</HintPath>
     </Reference>
     <Reference Include="assembly_googleanalytics">
       <HintPath>Packages\valheim\assembly_googleanalytics.dll</HintPath>
@@ -367,6 +373,9 @@
     </Reference>
     <Reference Include="assembly_steamworks">
       <HintPath>Packages\valheim\assembly_steamworks.dll</HintPath>
+    </Reference>
+    <Reference Include="Fishlabs.Core">
+      <HintPath>Packages\valheim\Fishlabs.Core.dll</HintPath>
     </Reference>
     <Reference Include="PlayFab">
       <HintPath>Packages\valheim\PlayFab.dll</HintPath>

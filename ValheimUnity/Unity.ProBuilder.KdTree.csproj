@@ -56,18 +56,18 @@
     <Analyzer Include="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\Extensions\Microsoft\Visual Studio Tools for Unity\Analyzers\Microsoft.Unity.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Packages\com.unity.probuilder@4.4.0\External\KdTree\KdTreeLib\Math\FloatMath.cs" />
-    <Compile Include="Packages\com.unity.probuilder@4.4.0\External\KdTree\KdTreeLib\IPriorityQueue.cs" />
-    <Compile Include="Packages\com.unity.probuilder@4.4.0\External\KdTree\KdTreeLib\Math\ITypeMath.cs" />
-    <Compile Include="Packages\com.unity.probuilder@4.4.0\External\KdTree\KdTreeLib\KdTree.cs" />
-    <Compile Include="Packages\com.unity.probuilder@4.4.0\External\KdTree\KdTreeLib\KdTreeNode.cs" />
-    <Compile Include="Packages\com.unity.probuilder@4.4.0\External\KdTree\KdTreeLib\Math\DoubleMath.cs" />
     <Compile Include="Packages\com.unity.probuilder@4.4.0\External\KdTree\KdTreeLib\NearestNeighbourList.cs" />
     <Compile Include="Packages\com.unity.probuilder@4.4.0\External\KdTree\KdTreeLib\AssemblyInfo.cs" />
     <Compile Include="Packages\com.unity.probuilder@4.4.0\External\KdTree\KdTreeLib\PriorityQueue.cs" />
     <Compile Include="Packages\com.unity.probuilder@4.4.0\External\KdTree\KdTreeLib\HyperRect.cs" />
     <Compile Include="Packages\com.unity.probuilder@4.4.0\External\KdTree\KdTreeLib\IKdTree.cs" />
     <Compile Include="Packages\com.unity.probuilder@4.4.0\External\KdTree\KdTreeLib\Math\TypeMath.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\External\KdTree\KdTreeLib\Math\FloatMath.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\External\KdTree\KdTreeLib\IPriorityQueue.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\External\KdTree\KdTreeLib\Math\ITypeMath.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\External\KdTree\KdTreeLib\KdTree.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\External\KdTree\KdTreeLib\KdTreeNode.cs" />
+    <Compile Include="Packages\com.unity.probuilder@4.4.0\External\KdTree\KdTreeLib\Math\DoubleMath.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Packages\com.unity.probuilder@4.4.0\External\KdTree\Unity.ProBuilder.KdTree.asmdef" />
@@ -310,17 +310,23 @@
     <Reference Include="System.IO.Compression">
       <HintPath>Packages\Compression\System.IO.Compression.dll</HintPath>
     </Reference>
-    <Reference Include="System.IO.Compression.FileSystem">
-      <HintPath>Packages\Compression\System.IO.Compression.FileSystem.dll</HintPath>
+    <Reference Include="ConnectedStorage">
+      <HintPath>Packages\valheim\ConnectedStorage.dll</HintPath>
     </Reference>
     <Reference Include="assembly_valheim">
       <HintPath>Packages\valheim\assembly_valheim.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO.Compression.FileSystem">
+      <HintPath>Packages\Compression\System.IO.Compression.FileSystem.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Security">
       <HintPath>Packages\valheim\Mono.Security.dll</HintPath>
     </Reference>
     <Reference Include="assembly_guiutils">
       <HintPath>Packages\valheim\assembly_guiutils.dll</HintPath>
+    </Reference>
+    <Reference Include="Fishlabs.Common">
+      <HintPath>Packages\valheim\Fishlabs.Common.dll</HintPath>
     </Reference>
     <Reference Include="assembly_googleanalytics">
       <HintPath>Packages\valheim\assembly_googleanalytics.dll</HintPath>
@@ -348,6 +354,9 @@
     </Reference>
     <Reference Include="assembly_steamworks">
       <HintPath>Packages\valheim\assembly_steamworks.dll</HintPath>
+    </Reference>
+    <Reference Include="Fishlabs.Core">
+      <HintPath>Packages\valheim\Fishlabs.Core.dll</HintPath>
     </Reference>
     <Reference Include="PlayFab">
       <HintPath>Packages\valheim\PlayFab.dll</HintPath>
