@@ -26,22 +26,16 @@ namespace EpicLoot_UnityLib
 
         public virtual void Awake()
         {
-            if (AvailableItems != null)
-            {
-                AvailableItems.OnSelectedItemsChanged += OnSelectedItemsChanged;
-                AvailableItems.GiveFocus(true, 0);
-            }
-
-            if (MainButton != null)
-            {
-                MainButton.onClick.AddListener(OnMainButtonClicked);
-                _buttonLabel = MainButton.GetComponentInChildren<Text>();
-                _defaultButtonLabelText = _buttonLabel.text;
-            }
+            AvailableItems.OnSelectedItemsChanged += OnSelectedItemsChanged;
+            MainButton.onClick.AddListener(OnMainButtonClicked);
+            _buttonLabel = MainButton.GetComponentInChildren<Text>();
+            _defaultButtonLabelText = _buttonLabel.text;
 
             var uiSFX = GameObject.Find("sfx_gui_button");
-            if (uiSFX && Audio != null)
+            if (uiSFX)
                 Audio.outputAudioMixerGroup = uiSFX.GetComponent<AudioSource>().outputAudioMixerGroup;
+
+            AvailableItems.GiveFocus(true, 0);
         }
 
         protected virtual void OnMainButtonClicked()
@@ -58,13 +52,10 @@ namespace EpicLoot_UnityLib
 
         public virtual void Update()
         {
-            if (ProgressBar != null)
-                ProgressBar.gameObject.SetActive(_inProgress);
-
+            ProgressBar.gameObject.SetActive(_inProgress);
             if (_inProgress)
             {
-                if (ProgressBar != null)
-                    ProgressBar.SetValue(CountdownTime - _countdown);
+                ProgressBar.SetValue(CountdownTime - _countdown);
 
                 _countdown -= Time.deltaTime;
                 if (_countdown < 0)
@@ -72,11 +63,8 @@ namespace EpicLoot_UnityLib
                     _inProgress = false;
                     _countdown = 0;
 
-                    if (Audio != null)
-                    {
-                        Audio.loop = false;
-                        Audio.Stop();
-                    }
+                    Audio.loop = false;
+                    Audio.Stop();
 
                     DoMainAction();
                     PlayCompleteSFX();
@@ -87,7 +75,7 @@ namespace EpicLoot_UnityLib
         private void PlayCompleteSFX()
         {
             var clip = GetCompleteAudioClip();
-            if (Audio != null && clip != null)
+            if (clip)
                 Audio.PlayOneShot(clip);
         }
 
@@ -101,16 +89,11 @@ namespace EpicLoot_UnityLib
             _buttonLabel.text = Localization.instance.Localize("$menu_cancel");
             _inProgress = true;
             _countdown = CountdownTime;
+            ProgressBar.SetMaxValue(CountdownTime);
 
-            if (ProgressBar != null)
-                ProgressBar.SetMaxValue(CountdownTime);
-
-            if (Audio != null)
-            {
-                Audio.loop = true;
-                Audio.clip = ProgressLoopSFX;
-                Audio.Play();
-            }
+            Audio.loop = true;
+            Audio.clip = ProgressLoopSFX;
+            Audio.Play();
 
             Lock();
         }
@@ -126,11 +109,8 @@ namespace EpicLoot_UnityLib
             _inProgress = false;
             _countdown = 0;
 
-            if (Audio != null)
-            {
-                Audio.loop = false;
-                Audio.Stop();
-            }
+            Audio.loop = false;
+            Audio.Stop();
 
             Unlock();
         }
