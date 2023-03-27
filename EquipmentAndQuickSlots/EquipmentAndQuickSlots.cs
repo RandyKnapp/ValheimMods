@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
+using System.Reflection.Emit;
 using BepInEx;
 using BepInEx.Configuration;
 using HarmonyLib;
@@ -16,7 +17,7 @@ namespace EquipmentAndQuickSlots
 
         public const int QuickSlotCount = 3;
         public static int EquipSlotCount => EquipSlotTypes.Count;
-        public static readonly ConfigEntry<string>[] KeyCodes = new ConfigEntry<string>[QuickSlotCount];
+        public static readonly ConfigEntry<KeyboardShortcut>[] KeyCodes = new ConfigEntry<KeyboardShortcut>[QuickSlotCount];
         public static readonly ConfigEntry<string>[] HotkeyLabels = new ConfigEntry<string>[QuickSlotCount];
         public static readonly List<ItemDrop.ItemData.ItemType> EquipSlotTypes = new List<ItemDrop.ItemData.ItemType>() {
             ItemDrop.ItemData.ItemType.Helmet,
@@ -51,9 +52,9 @@ namespace EquipmentAndQuickSlots
             _instance = this;
 
             _loggingEnabled = Config.Bind("Logging", "Logging Enabled", false, "Enable logging");
-            KeyCodes[0] = Config.Bind("Hotkeys", "Quick slot hotkey 1", "z", "Hotkey for Quick Slot 1.");
-            KeyCodes[1] = Config.Bind("Hotkeys", "Quick slot hotkey 2", "v", "Hotkey for Quick Slot 2.");
-            KeyCodes[2] = Config.Bind("Hotkeys", "Quick slot hotkey 3", "b", "Hotkey for Quick Slot 3.");
+            KeyCodes[0] = Config.Bind("Hotkeys", "Quick slot hotkey 1", new KeyboardShortcut(KeyCode.Z), "Hotkey for Quick Slot 1.");
+            KeyCodes[1] = Config.Bind("Hotkeys", "Quick slot hotkey 2", new KeyboardShortcut(KeyCode.V), "Hotkey for Quick Slot 2.");
+            KeyCodes[2] = Config.Bind("Hotkeys", "Quick slot hotkey 3", new KeyboardShortcut(KeyCode.B), "Hotkey for Quick Slot 3.");
             HotkeyLabels[0] = Config.Bind("Hotkeys", "Quick slot hotkey label 1", "", "Hotkey Label for Quick Slot 1. Leave blank to use the hotkey itself.");
             HotkeyLabels[1] = Config.Bind("Hotkeys", "Quick slot hotkey label 2", "", "Hotkey Label for Quick Slot 2. Leave blank to use the hotkey itself.");
             HotkeyLabels[2] = Config.Bind("Hotkeys", "Quick slot hotkey label 3", "", "Hotkey Label for Quick Slot 3. Leave blank to use the hotkey itself.");
@@ -137,24 +138,17 @@ namespace EquipmentAndQuickSlots
         public static string GetBindingLabel(int index)
         {
             index = Mathf.Clamp(index, 0, QuickSlotCount - 1);
+            
             var keycode = GetBindingKeycode(index);
             var label = HotkeyLabels[index]?.Value;
-            if (string.IsNullOrEmpty(label))
-            {
-                return string.IsNullOrEmpty(keycode) ? "" : keycode.ToUpperInvariant();
-            }
-            else
-            {
-                return label;
-            }
+            
+            return string.IsNullOrEmpty(label) ? keycode.ToString() : label;
         }
 
-        public static string GetBindingKeycode(int index)
+        public static KeyCode GetBindingKeycode(int index)
         {
             index = Mathf.Clamp(index, 0, QuickSlotCount - 1);
-            var keycodeValue = KeyCodes[index].Value.ToLowerInvariant();
-            if (keycodeValue.IsNullOrWhiteSpace())
-                return null;
+            var keycodeValue = KeyCodes[index].Value.MainKey;
 
             return keycodeValue;
         }
@@ -162,7 +156,7 @@ namespace EquipmentAndQuickSlots
         public static void CheckQuickUseInput(Player player, int index)
         {
             var keyCode = GetBindingKeycode(index);
-            if (keyCode != null && Input.GetKeyDown(keyCode))
+            if (ZInput.GetKeyDown(keyCode))
             {
                 var item = player.GetQuickSlotItem(index);
                 if (item != null)
@@ -191,5 +185,23 @@ namespace EquipmentAndQuickSlots
         {
             return EquipSlotTypes.Contains(item.m_shared.m_itemType);
         }
+        
+        public static CodeInstruction LogMessage(CodeInstruction instruction, int counter)
+        {
+            EquipmentAndQuickSlots.Log($"IL_{counter}: Opcode: {instruction.opcode} Operand: {instruction.operand}");
+            return instruction;
+        }
+            
+        public static CodeInstruction FindInstructionWithLabel(List<CodeInstruction> codeInstructions, int index, Label label)
+        {
+            if (index >= codeInstructions.Count)
+                return null;
+                
+            if (codeInstructions[index].labels.Contains(label))
+                return codeInstructions[index];
+                
+            return FindInstructionWithLabel(codeInstructions, index + 1, label);
+        }
+
     }
 }
