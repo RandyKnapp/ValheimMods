@@ -294,16 +294,6 @@ namespace EquipmentAndQuickSlots
                 return instance.m_activeGroup != instance.m_uiGroups.Length - 1;
             }
         }
-
-        //public void UpdateRecipeGamepadInput()
-        [HarmonyPatch(typeof(InventoryGui), "UpdateRecipeGamepadInput")]
-        public static class InventoryGui_UpdateRecipeGamepadInput_Patch
-        {
-            public static bool Prefix(InventoryGui __instance)
-            {
-                return __instance.m_activeGroup == __instance.m_uiGroups.Length - 1;
-            }
-        }
     }
 
     // Bugfix: Upgrading doesn't properly check if you have an empty space, so no more unequipping
