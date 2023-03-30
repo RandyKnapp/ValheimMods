@@ -157,7 +157,7 @@ namespace EpicLoot
                     text.font = Auga.API.GetBoldFont();
                     ColorUtility.TryParseHtmlString(Auga.API.Brown1, out var color);
                     text.color = color;
-                    text.text = text.text.ToUpperInvariant();
+                    text.text = Localization.instance.Localize(text.text).ToUpperInvariant();
                 }
                 else
                 {
