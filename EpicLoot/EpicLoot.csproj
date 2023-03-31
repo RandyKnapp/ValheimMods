@@ -278,7 +278,7 @@
     <None Include="loottables.json" />
     <None Include="magiceffects.json" />
     <None Include="manifest.json" />
-    <None Include="patchnotes.md" />
+    <None Include="CHANGELOG.md" />
     <None Include="todo.md" />
     <None Include="README.md" />
     <None Include="recipes.json" />
