@@ -1,8 +1,17 @@
-﻿## Version 0.9.10
+﻿## Version 0.9.11 - Performance Improvements
+* Rebuilt the way Map Pins are maintained for Treasures and Bounties.
+  * This should no long cause a slow down in FPS just because you have a bunch of bounties.
+* Rebuilt InventoryGui.UpdateGui Methods which were drawing Magic Item backgrounds.
+  * Removed Postfix Patches and Loops
+  * Used Tranpilers instead
+* Changed the Location of Where Adventure Saved Data is stored.
+  * Cleaned up KnownTexts and now saves in Player Custom Data
+
+## Version 0.9.10
 * Udpated for Valheim 0.214.305
 * Added Merchant Fix for Auga 1.2.0
 * Added Changelog.md for Thunderstore
- 
+
 ## Version 0.9.9
 * Removed butcher knife and stone axe from the allowed to enchant list
 * New Feature: Disenchant - remove the enchant from an item at the cost of iron bounty tokens
