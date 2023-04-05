@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Policy;
 using System.Text;
 using Common;
 using HarmonyLib;
@@ -294,6 +295,18 @@ namespace EpicLoot.Adventure.Feature
             {
                 MessageHud.instance.ShowBiomeFoundMsg("$mod_epicloot_bounties_completemsg", true);
                 bountyInfo.State = BountyState.Complete;
+                
+                if (!MinimapController.BountyPins.ContainsKey(bountyInfo.ID)) return;
+                
+                var pinJob = new PinJob
+                {
+                    Task = MinimapPinQueueTask.RemoveBountyPin,
+                    DebugMode = MinimapController.DebugMode,
+                    BountyPin = new KeyValuePair<string, AreaPinInfo>(bountyInfo.ID, MinimapController.BountyPins[bountyInfo.ID])
+                };
+
+                MinimapController.AddPinJobToQueue(pinJob);
+
                 player.SaveAdventureSaveData();
             }
         }
@@ -445,7 +458,7 @@ namespace EpicLoot.Adventure.Feature
             {
                 return;
             }
-
+            
             var globalKeys = ZoneSystem.instance.GetGlobalKeys();
             var ledgerGlobalKey = globalKeys.Find(x => x.StartsWith(LedgerIdentifier));
             var ledgerData = ledgerGlobalKey?.Substring(LedgerIdentifier.Length);
