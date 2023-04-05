@@ -98,13 +98,13 @@ namespace EpicLoot
             }));
             new Terminal.ConsoleCommand("debugtreasuremap", "", (args =>
             {
-                Minimap_Patch.DebugMode = !Minimap_Patch.DebugMode;
-                args.Context.AddString($"> Treasure Map Debug Mode: {Minimap_Patch.DebugMode}");
+                MinimapController.DebugMode = !MinimapController.DebugMode;
+                args.Context.AddString($"> Treasure Map Debug Mode: {MinimapController.DebugMode}");
             }));
             new Terminal.ConsoleCommand("debugtm", "", (args =>
             {
-                Minimap_Patch.DebugMode = !Minimap_Patch.DebugMode;
-                args.Context.AddString($"> Treasure Map Debug Mode: {Minimap_Patch.DebugMode}");
+                MinimapController.DebugMode = !MinimapController.DebugMode;
+                args.Context.AddString($"> Treasure Map Debug Mode: {MinimapController.DebugMode}");
             }));
             new Terminal.ConsoleCommand("resetbounties", "", (args =>
             {

@@ -1,13 +1,24 @@
-﻿## Version 0.9.9
-  * Removed butcher knife and stone axe from the allowed to enchant list
-  * New Feature: Disenchant - remove the enchant from an item at the cost of iron bounty tokens
-  * New Feature: Enchanting Table upgrades
-    * Upgrade each of the enchanting table features: sacrifice, convert materials, enchant, augment, and disenchant
-    * Some features start locked: enchant, augment, disenchant
-    * Upgrading features provides bonuses, upgrades locked behind biome specific materials for progression
-    * Upgrades are fully configurable in `enchantingupgrades.json`
-  * Merge Patching: Enabled "Merge" patch action, adds or overwrites all named properties in the target object (Thanks @nelson-saldanha)
-  * Updating for Valheim 0.214.2 Patch
+﻿## Version 0.9.11 - Performance Improvements
+* Rebuilt the way Map Pins are maintained for Treasures and Bounties.
+  * This should no longer cause a slow down in FPS just because you have a bunch of bounties.
+* Rebuilt InventoryGui.UpdateGui Methods which were drawing Magic Item backgrounds.
+  * Removed Postfix Patches and Loops
+  * Used Transpilers instead
+* Rebuilt HotKeyBar Updates
+  * Removed Postfixes and implemented Transpiler instead.
+* Changed the Location of Where Adventure Saved Data is stored.
+  * Cleaned up KnownTexts and now saves in Player Custom Data
+
+## Version 0.9.10
+* Udpated for Valheim 0.214.305
+* Added Merchant Fix for Auga 1.2.0
+* Added Changelog.md for Thunderstore
+
+## Version 0.9.9
+* Removed butcher knife and stone axe from the allowed to enchant list
+* New Feature: Disenchant - remove the enchant from an item at the cost of iron bounty tokens
+* Merge Patching: Enabled "Merge" patch action, adds or overwrites all named properties in the target object (Thanks @nelson-saldanha)
+* Updating for Valheim 0.214.2 Patch
 ## Version 0.9.8
   * Patch Config File location moved. Patch files have been moved outside of the Epic Loot Plugin Folder to prevent mod managers from deleting patch files.
     * Patch files are now located in BepInEx\config\EpicLoot\patches folder.
