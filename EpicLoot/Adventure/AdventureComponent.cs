@@ -21,7 +21,7 @@ namespace EpicLoot.Adventure
 
         public void Load()
         {
-            if (_player.m_knownTexts.TryGetValue(SaveDataKey, out var oldData))
+            if (_player.m_knownTexts.TryGetValue(SaveDataKey, out var oldData) && !_player.m_customData.ContainsKey(SaveDataKey))
             {
                 _player.m_customData[SaveDataKey] = oldData;
                 _player.m_knownTexts.Remove(SaveDataKey);

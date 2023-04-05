@@ -810,7 +810,7 @@ namespace EpicLoot
 
             CodeInstruction LogMessage(CodeInstruction instruction)
             {
-                EpicLoot.Log($"IL_{counter}: Opcode: {instruction.opcode} Operand: {instruction.operand}");
+                //EpicLoot.Log($"IL_{counter}: Opcode: {instruction.opcode} Operand: {instruction.operand}");
                 return instruction;
             }
 
@@ -898,7 +898,7 @@ namespace EpicLoot
 
             CodeInstruction LogMessage(CodeInstruction instruction)
             {
-                EpicLoot.Log($"IL_{counter}: Opcode: {instruction.opcode} Operand: {instruction.operand}");
+                //EpicLoot.Log($"IL_{counter}: Opcode: {instruction.opcode} Operand: {instruction.operand}");
                 return instruction;
             }
 
