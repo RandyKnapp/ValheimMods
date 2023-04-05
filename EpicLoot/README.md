@@ -1,4 +1,4 @@
-# Epic Loot v0.9.9 - Config Patching System and Various Bug Fixes
+# Epic Loot v0.9.11 - Config Patching System and Various Bug Fixes
 Author: [RandyKnapp](https://discord.gg/randyknappmods)
 Source: [Github](https://github.com/RandyKnapp/ValheimMods/blob/main/EpicLoot/)
 Patreon: [patreon.com/randyknapp](https://www.patreon.com/randyknapp)
@@ -38,8 +38,6 @@ Contibutions from the following modders were invaluable and appreciated:
   * [Digitalroot](https://github.com/Digitalroot) - Help with testing
 
 ## Installation
-
-Extended Item Data Framework needs to be installed (on both client and dedicated servers).
 Copy the contents of "files" to a new folder called "EpicLoot" in your BepInEx/plugins directory (on both clients and dedicated servers).
 
 ## Cheats
