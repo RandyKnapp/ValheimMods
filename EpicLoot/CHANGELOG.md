@@ -1,9 +1,9 @@
 ﻿## Version 0.9.11 - Performance Improvements
 * Rebuilt the way Map Pins are maintained for Treasures and Bounties.
-  * This should no long cause a slow down in FPS just because you have a bunch of bounties.
+  * This should no longer cause a slow down in FPS just because you have a bunch of bounties.
 * Rebuilt InventoryGui.UpdateGui Methods which were drawing Magic Item backgrounds.
   * Removed Postfix Patches and Loops
-  * Used Tranpilers instead
+  * Used Transpilers instead
 * Rebuilt HotKeyBar Updates
   * Removed Postfixes and implemented Transpiler instead.
 * Changed the Location of Where Adventure Saved Data is stored.
