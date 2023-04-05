@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 using System.Text;
 using BepInEx;
@@ -809,28 +810,73 @@ namespace EpicLoot
     [HarmonyPatch(typeof(HotkeyBar), nameof(HotkeyBar.UpdateIcons), typeof(Player))]
     public static class HotkeyBar_UpdateIcons_Patch
     {
-        public static void Postfix(HotkeyBar __instance, List<HotkeyBar.ElementData> ___m_elements, List<ItemDrop.ItemData> ___m_items, Player player)
+        public static HotkeyBar.ElementData UpdateIcons(HotkeyBar.ElementData element, ItemDrop.ItemData itemData)
         {
-            if ( player == null || player.IsDead()) return;
-
-            for (var index = 0; index < Player.m_localPlayer.GetInventory().m_width; index++)
+            var magicItem = ItemBackgroundHelper.CreateAndGetMagicItemBackgroundImage(element.m_go, element.m_equiped, false);
+            if (itemData != null && itemData.UseMagicBackground())
             {
-                var itemData = __instance.m_items.FirstOrDefault(x => x.m_gridPos.x.Equals(index));
+                magicItem.enabled = true;
+                magicItem.sprite = EpicLoot.GetMagicItemBgSprite();
+                magicItem.color = itemData.GetRarityColor();
+            }
+            else
+            {
+                magicItem.enabled = false;
+            }
 
-                if (index < 0 || index >= __instance.m_elements.Count)
-                    continue;
+            return element;
+        }
+        
+        [UsedImplicitly]
+        public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        {
+            var instrs = instructions.ToList();
 
-                var element = __instance.m_elements[index];
-                var magicItem = ItemBackgroundHelper.CreateAndGetMagicItemBackgroundImage(element.m_go, element.m_equiped, false);
-                if (itemData != null && itemData.UseMagicBackground())
+            var counter = 0;
+
+            CodeInstruction LogMessage(CodeInstruction instruction)
+            {
+                EpicLoot.Log($"IL_{counter}: Opcode: {instruction.opcode} Operand: {instruction.operand}");
+                return instruction;
+            }
+
+            var elementDataEquipedField = AccessTools.DeclaredField(typeof(HotkeyBar.ElementData), "m_equiped"); 
+            var itemDataEquipedField = AccessTools.DeclaredField(typeof(ItemDrop.ItemData), "m_equiped");
+            var setActiveMethod = AccessTools.DeclaredMethod(typeof(GameObject), nameof(GameObject.SetActive));
+
+            for (int i = 0; i < instrs.Count; ++i)
+            {
+
+                yield return LogMessage(instrs[i]);
+                counter++;
+
+                if (i > 6 && instrs[i].opcode == OpCodes.Callvirt && instrs[i].operand.Equals(setActiveMethod) && instrs[i-1].opcode == OpCodes.Ldfld
+                    && instrs[i-1].operand.Equals(itemDataEquipedField) && instrs[i-2].opcode == OpCodes.Ldloc_S && instrs[i-3].opcode == OpCodes.Ldfld
+                    && instrs[i-3].operand.Equals(elementDataEquipedField) && instrs[i-4].opcode == OpCodes.Ldloc_S)
                 {
-                    magicItem.enabled = true;
-                    magicItem.sprite = EpicLoot.GetMagicItemBgSprite();
-                    magicItem.color = itemData.GetRarityColor();
-                }
-                else
-                {
-                    magicItem.enabled = false;
+                    var elementOperand = instrs[i - 4].operand;
+                    var itemDataOperand = instrs[i - 2].operand;
+                    
+                    var ldLocInstruction = new CodeInstruction(OpCodes.Ldloc_S,elementOperand);
+                    //Move Any Labels from the instruction position being patched to new instruction.
+                    if (instrs[i].labels.Count > 0)
+                        instrs[i].MoveLabelsTo(ldLocInstruction);
+
+                    //Get Element
+                    yield return LogMessage(ldLocInstruction);
+                    counter++;
+                    
+                    //Get Item Data
+                    yield return LogMessage(new CodeInstruction(OpCodes.Ldloc_S,itemDataOperand));
+                    counter++;
+          
+                    //Patch Calling Method
+                    yield return LogMessage(new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(HotkeyBar_UpdateIcons_Patch), nameof(UpdateIcons))));
+                    counter++;
+
+                    //Save output of calling method to local variable
+                    yield return LogMessage(new CodeInstruction(OpCodes.Stloc_S, elementOperand));
+                    counter++;
                 }
             }
         }
