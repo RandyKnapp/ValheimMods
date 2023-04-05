@@ -4,6 +4,8 @@
 * Rebuilt InventoryGui.UpdateGui Methods which were drawing Magic Item backgrounds.
   * Removed Postfix Patches and Loops
   * Used Tranpilers instead
+* Rebuilt HotKeyBar Updates
+  * Removed Postfixes and implemented Transpiler instead.
 * Changed the Location of Where Adventure Saved Data is stored.
   * Cleaned up KnownTexts and now saves in Player Custom Data
 
