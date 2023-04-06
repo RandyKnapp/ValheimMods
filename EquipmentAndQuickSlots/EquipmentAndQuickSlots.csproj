@@ -115,6 +115,7 @@
       <Link>AugaAPI.dll</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
+    <Content Include="CHANGELOG.md" />
     <Content Include="ILRepack.targets">
       <SubType>Designer</SubType>
     </Content>
