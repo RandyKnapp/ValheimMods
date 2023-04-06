@@ -1,4 +1,4 @@
-﻿## Version 0.9.12 - More Performance Improvements and Bugfixes
+## Version 0.9.12 - More Performance Improvements and Bugfixes
 * Reduced the frequency that Multiplayer send Legendary Info
   * Improves frame rates when near others.
 * Slightly improved performance of Loot Beams
