@@ -9,25 +9,32 @@ namespace EpicLoot.LootBeams
 
         private ItemDrop _itemDrop;
         private GameObject _beam;
+        private MagicItem _magicItem;
+        private bool _isMagic;
 
         private void Awake()
         {
             _itemDrop = GetComponent<ItemDrop>();
         }
 
+        private void Start()
+        {
+            _magicItem = _itemDrop.m_itemData.GetMagicItem();
+            _isMagic = _itemDrop.m_itemData.IsMagic();
+        }
+
         private void Update()
         {
             if (ShouldShowBeam())
             {
-                var magicItem = _itemDrop.m_itemData.GetMagicItem();
 
-                if (magicItem == null)
+                if (_magicItem == null)
                     return;
 
-                _beam = Instantiate(EpicLoot.Assets.MagicItemLootBeamPrefabs[(int) magicItem.Rarity], transform);
+                _beam = Instantiate(EpicLoot.Assets.MagicItemLootBeamPrefabs[(int) _magicItem.Rarity], transform);
                 _beam.transform.localPosition = Vector3.up * HeightOffset;
                 var beamColorSetter = _beam.AddComponent<BeamColorSetter>();
-                beamColorSetter.SetColor(magicItem.GetColor());
+                beamColorSetter.SetColor(_magicItem.GetColor());
                 _beam.GetComponent<Animator>().Play("Show");
                 _beam.AddComponent<AlwaysPointUp>();
 
@@ -47,12 +54,12 @@ namespace EpicLoot.LootBeams
 
         public bool ShouldShowBeam()
         {
-            return _beam == null && _itemDrop != null && _itemDrop.m_itemData != null && _itemDrop.m_itemData.IsMagic();
+            return _beam == null && _itemDrop != null && _itemDrop.m_itemData != null && _isMagic;
         }
 
         public bool ShouldHideBeam()
         {
-            return _beam != null && (_itemDrop == null || _itemDrop.m_itemData == null || !_itemDrop.m_itemData.IsMagic());
+            return _beam != null && (_itemDrop == null || _itemDrop.m_itemData == null || !_isMagic);
         }
     }
 }
