@@ -5,7 +5,6 @@ using System.Linq;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 using System.Text;
-using BepInEx;
 using Common;
 using EpicLoot.Crafting;
 using EpicLoot.Data;
@@ -874,6 +873,20 @@ namespace EpicLoot
     [HarmonyPatch(typeof(HotkeyBar), nameof(HotkeyBar.UpdateIcons), typeof(Player))]
     public static class HotkeyBar_UpdateIcons_Patch
     {
+        public static void UpdateElements(HotkeyBar.ElementData element, bool used)
+        {
+            element.m_used = used;
+            var magicItemTransform = element.m_go.transform.Find("magicItem");
+            if (magicItemTransform != null)
+            {
+                var magicItem = magicItemTransform.GetComponent<Image>();
+                if (magicItem != null)
+                {
+                    magicItem.enabled = false;
+                }
+            }
+        }
+
         public static void UpdateIcons(HotkeyBar.ElementData element, ItemDrop.ItemData itemData)
         {
             var magicItem = ItemBackgroundHelper.CreateAndGetMagicItemBackgroundImage(element.m_go, element.m_equiped, false);
@@ -905,10 +918,31 @@ namespace EpicLoot
             var elementDataEquipedField = AccessTools.DeclaredField(typeof(HotkeyBar.ElementData), "m_equiped"); 
             var itemDataEquipedField = AccessTools.DeclaredField(typeof(ItemDrop.ItemData), "m_equiped");
             var setActiveMethod = AccessTools.DeclaredMethod(typeof(GameObject), nameof(GameObject.SetActive));
+            var elementUsedField = AccessTools.DeclaredField(typeof(HotkeyBar.ElementData), "m_used"); 
 
             for (int i = 0; i < instrs.Count; ++i)
             {
 
+                if (i > 6 && instrs[i].opcode == OpCodes.Stfld && instrs[i].operand.Equals(elementUsedField) && instrs[i-1].opcode == OpCodes.Ldc_I4_0
+                    && instrs[i-2].opcode == OpCodes.Call && instrs[i-3].opcode == OpCodes.Ldloca_S)
+                {
+                    //Element Spot
+                    var callInstruction = new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(HotkeyBar_UpdateIcons_Patch), nameof(UpdateElements)));
+                    //Move Any Labels from the instruction position being patched to new instruction.
+                    if (instrs[i].labels.Count > 0)
+                    {
+                        instrs[i].MoveLabelsTo(callInstruction);
+                    }
+
+                    //Get Element variable
+                    yield return LogMessage(callInstruction);
+                    counter++;
+                    
+                    //Skip Stfld Instruction
+                    i++;
+
+                }
+                
                 yield return LogMessage(instrs[i]);
                 counter++;
 
