@@ -3,7 +3,7 @@ The new, v2.1 of Equipment and Quick Slots does not need to be installed on serv
 
 Please report bugs on our discord: https://discord.gg/ZNhYeavv3C
 
-# Equipment and Quick Slots v2.1.1
+# Equipment and Quick Slots v2.1.3
 ##### by RandyKnapp
 Give equipped items their own dedicated inventory slots, plus three more hotkeyable quick slots.
 
