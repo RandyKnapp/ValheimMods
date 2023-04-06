@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using EpicLoot.Data;
 using HarmonyLib;
 using UnityEngine;
 

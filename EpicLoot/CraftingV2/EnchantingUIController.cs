@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using Common;
 using EpicLoot.Crafting;
 using EpicLoot.Data;
 using EpicLoot_UnityLib;
