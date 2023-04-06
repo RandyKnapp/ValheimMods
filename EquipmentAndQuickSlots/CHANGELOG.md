@@ -1,6 +1,7 @@
 ## Release 2.1.3
-  * Improved Controller Support Between Windows
+  * Improved Controller Support Between Hotbars/Inventories
     * Known Bug: The weight calculation is still not working when using controller to transfer items.
+  * Updated Keybindings to Support Controllers
   * Rebuilt QuickSlotHotkeyBar from the Ground Up
     * No longer a Prefix that blocks UpdateIcons
     * Allows other mods to affect item icons in the Hotkeybar (like EpicLoot)
