@@ -152,7 +152,11 @@ namespace EquipmentAndQuickSlots
         public static string GetBindingKeycode(int index)
         {
             index = Mathf.Clamp(index, 0, QuickSlotCount - 1);
-            return KeyCodes[index] == null ? null : KeyCodes[index].Value.ToLowerInvariant();
+            var keycodeValue = KeyCodes[index].Value.ToLowerInvariant();
+            if (keycodeValue.IsNullOrWhiteSpace())
+                return null;
+
+            return keycodeValue;
         }
 
         public static void CheckQuickUseInput(Player player, int index)

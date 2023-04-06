@@ -21,7 +21,13 @@ namespace EpicLoot.Adventure
 
         public void Load()
         {
-            if (_player.m_knownTexts.TryGetValue(SaveDataKey, out var data))
+            if (_player.m_knownTexts.TryGetValue(SaveDataKey, out var oldData) && !_player.m_customData.ContainsKey(SaveDataKey))
+            {
+                _player.m_customData[SaveDataKey] = oldData;
+                _player.m_knownTexts.Remove(SaveDataKey);
+            }
+            
+            if (_player.m_customData.TryGetValue(SaveDataKey, out var data))
             {
                 try
                 {
@@ -54,7 +60,7 @@ namespace EpicLoot.Adventure
         public void Save()
         {
             var data = JsonConvert.SerializeObject(SaveData, Formatting.None);
-            _player.m_knownTexts[SaveDataKey] = data;
+            _player.m_customData[SaveDataKey] = data;
         }
     }
 

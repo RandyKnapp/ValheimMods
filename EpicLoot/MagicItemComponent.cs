@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 using System.Text;
 using BepInEx;
@@ -15,6 +16,7 @@ using JetBrains.Annotations;
 using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.UI;
+using CodeInstruction = HarmonyLib.CodeInstruction;
 using Object = UnityEngine.Object;
 // ReSharper disable RedundantAssignment
 
@@ -750,57 +752,120 @@ namespace EpicLoot
     [HarmonyPatch(typeof(InventoryGrid), nameof(InventoryGrid.UpdateGui))]
     public static class InventoryGrid_UpdateGui_MagicItemComponent_Patch
     {
-        public static void Postfix(InventoryGrid __instance, Player player, ItemDrop.ItemData dragItem)
+        public static void UpdateGuiElements(InventoryGrid.Element element, bool used)
         {
-            foreach (var element in __instance.m_elements)
+            element.m_used = used;
+            var magicItemTransform = element.m_go.transform.Find("magicItem");
+            if (magicItemTransform != null)
             {
-                var magicItemTransform = element.m_go.transform.Find("magicItem");
-                if (magicItemTransform != null)
+                var magicItem = magicItemTransform.GetComponent<Image>();
+                if (magicItem != null)
                 {
-                    var magicItem = magicItemTransform.GetComponent<Image>();
-                    if (magicItem != null)
-                    {
-                        magicItem.enabled = false;
-                    }
-                }
-
-                var setItemTransform = element.m_go.transform.Find("setItem");
-                if (setItemTransform != null)
-                {
-                    var setItem = setItemTransform.GetComponent<Image>();
-                    if (setItem != null)
-                    {
-                        setItem.enabled = false;
-                    }
+                    magicItem.enabled = false;
                 }
             }
 
-            foreach (var item in __instance.m_inventory.m_inventory)
+            var setItemTransform = element.m_go.transform.Find("setItem");
+            if (setItemTransform != null)
             {
-                var element = __instance.GetElement(item.m_gridPos.x, item.m_gridPos.y, __instance.m_inventory.GetWidth());
-                if (element == null)
+                var setItem = setItemTransform.GetComponent<Image>();
+                if (setItem != null)
                 {
-                    EpicLoot.LogError($"Could not find element for item ({item.m_shared.m_name}: {item.m_gridPos}) in inventory: {__instance.m_inventory.m_name}");
-                    continue;
+                    setItem.enabled = false;
                 }
+            }
+        }
+   
+        public static void UpdateGuiItems(ItemDrop.ItemData itemData, InventoryGrid.Element element)
+        {
+            var magicItem = ItemBackgroundHelper.CreateAndGetMagicItemBackgroundImage(element.m_go, element.m_equiped.gameObject, true);
+            if (itemData.UseMagicBackground())
+            {
+                magicItem.enabled = true;
+                magicItem.sprite = EpicLoot.GetMagicItemBgSprite();
+                magicItem.color = itemData.GetRarityColor();
+            }
+            else
+            {
+                magicItem.enabled = false;
+            }
 
-                var magicItem = ItemBackgroundHelper.CreateAndGetMagicItemBackgroundImage(element.m_go, element.m_equiped.gameObject, true);
-                if (item.UseMagicBackground())
+            var setItemTransform = element.m_go.transform.Find("setItem");
+            if (setItemTransform != null)
+            {
+                var setItem = setItemTransform.GetComponent<Image>();
+                if (setItem != null)
                 {
-                    magicItem.enabled = true;
-                    magicItem.sprite = EpicLoot.GetMagicItemBgSprite();
-                    magicItem.color = item.GetRarityColor();
+                    setItem.enabled = itemData.IsSetItem();
                 }
+            }
+        }
+   
+        [UsedImplicitly]
+        public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        {
+            var instrs = instructions.ToList();
 
-                var setItemTransform = element.m_go.transform.Find("setItem");
-                if (setItemTransform != null)
+            var counter = 0;
+
+            CodeInstruction LogMessage(CodeInstruction instruction)
+            {
+                //EpicLoot.Log($"IL_{counter}: Opcode: {instruction.opcode} Operand: {instruction.operand}");
+                return instruction;
+            }
+
+            var elementUsedField = AccessTools.DeclaredField(typeof(InventoryGrid.Element), "m_used"); 
+            var elementQueuedField = AccessTools.DeclaredField(typeof(InventoryGrid.Element), "m_queued");
+
+            for (int i = 0; i < instrs.Count; ++i)
+            {
+                if (i > 6 && instrs[i].opcode == OpCodes.Stfld && instrs[i].operand.Equals(elementUsedField) && instrs[i-1].opcode == OpCodes.Ldc_I4_0
+                    && instrs[i-2].opcode == OpCodes.Call && instrs[i-3].opcode == OpCodes.Ldloca_S)
                 {
-                    var setItem = setItemTransform.GetComponent<Image>();
-                    if (setItem != null)
+                    //Element Spot
+                    var callInstruction = new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(InventoryGrid_UpdateGui_MagicItemComponent_Patch), nameof(UpdateGuiElements)));
+                    //Move Any Labels from the instruction position being patched to new instruction.
+                    if (instrs[i].labels.Count > 0)
                     {
-                        setItem.enabled = item.IsSetItem();
+                        instrs[i].MoveLabelsTo(callInstruction);
                     }
+
+                    //Get Element variable
+                    yield return LogMessage(callInstruction);
+                    counter++;
+                    
+                    //Skip Stfld Instruction
+                    i++;
+
+                }else if (i > 6 && instrs[i].opcode == OpCodes.Ldloc_S && instrs[i+1].opcode == OpCodes.Ldfld && instrs[i+1].operand.Equals(elementQueuedField)
+                          && instrs[i+2].opcode == OpCodes.Ldarg_1 && instrs[i+3].opcode == OpCodes.Call)
+                {
+                    //Item Spot
+                    var elementOperand = instrs[i].operand;
+                    var itemDataOperand = instrs[i - 5].operand;
+
+                    var ldLocsInstruction = new CodeInstruction(OpCodes.Ldloc_S, itemDataOperand);
+                    //Move Any Labels from the instruction position being patched to new instruction.
+                    if (instrs[i].labels.Count > 0)
+                    {
+                        instrs[i].MoveLabelsTo(ldLocsInstruction);
+                    }
+
+                    //Get Item variable
+                    yield return LogMessage(ldLocsInstruction);
+                    counter++;
+        
+                    //Get Element variable
+                    yield return LogMessage(new CodeInstruction(OpCodes.Ldloc_S,elementOperand));
+                    counter++;
+        
+                    //Patch Calling Method
+                    yield return LogMessage(new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(InventoryGrid_UpdateGui_MagicItemComponent_Patch), nameof(UpdateGuiItems))));
+                    counter++;
                 }
+                
+                yield return LogMessage(instrs[i]);
+                counter++;
             }
         }
     }
@@ -809,28 +874,67 @@ namespace EpicLoot
     [HarmonyPatch(typeof(HotkeyBar), nameof(HotkeyBar.UpdateIcons), typeof(Player))]
     public static class HotkeyBar_UpdateIcons_Patch
     {
-        public static void Postfix(HotkeyBar __instance, List<HotkeyBar.ElementData> ___m_elements, List<ItemDrop.ItemData> ___m_items, Player player)
+        public static void UpdateIcons(HotkeyBar.ElementData element, ItemDrop.ItemData itemData)
         {
-            if ( player == null || player.IsDead()) return;
-
-            for (var index = 0; index < Player.m_localPlayer.GetInventory().m_width; index++)
+            var magicItem = ItemBackgroundHelper.CreateAndGetMagicItemBackgroundImage(element.m_go, element.m_equiped, false);
+            if (itemData != null && itemData.UseMagicBackground())
             {
-                var itemData = __instance.m_items.FirstOrDefault(x => x.m_gridPos.x.Equals(index));
+                magicItem.enabled = true;
+                magicItem.sprite = EpicLoot.GetMagicItemBgSprite();
+                magicItem.color = itemData.GetRarityColor();
+            }
+            else
+            {
+                magicItem.enabled = false;
+            }
+        }
+        
+        [UsedImplicitly]
+        public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        {
+            var instrs = instructions.ToList();
 
-                if (index < 0 || index >= __instance.m_elements.Count)
-                    continue;
+            var counter = 0;
 
-                var element = __instance.m_elements[index];
-                var magicItem = ItemBackgroundHelper.CreateAndGetMagicItemBackgroundImage(element.m_go, element.m_equiped, false);
-                if (itemData != null && itemData.UseMagicBackground())
+            CodeInstruction LogMessage(CodeInstruction instruction)
+            {
+                //EpicLoot.Log($"IL_{counter}: Opcode: {instruction.opcode} Operand: {instruction.operand}");
+                return instruction;
+            }
+
+            var elementDataEquipedField = AccessTools.DeclaredField(typeof(HotkeyBar.ElementData), "m_equiped"); 
+            var itemDataEquipedField = AccessTools.DeclaredField(typeof(ItemDrop.ItemData), "m_equiped");
+            var setActiveMethod = AccessTools.DeclaredMethod(typeof(GameObject), nameof(GameObject.SetActive));
+
+            for (int i = 0; i < instrs.Count; ++i)
+            {
+
+                yield return LogMessage(instrs[i]);
+                counter++;
+
+                if (i > 6 && instrs[i].opcode == OpCodes.Callvirt && instrs[i].operand.Equals(setActiveMethod) && instrs[i-1].opcode == OpCodes.Ldfld
+                    && instrs[i-1].operand.Equals(itemDataEquipedField) && instrs[i-2].opcode == OpCodes.Ldloc_S && instrs[i-3].opcode == OpCodes.Ldfld
+                    && instrs[i-3].operand.Equals(elementDataEquipedField) && instrs[i-4].opcode == OpCodes.Ldloc_S)
                 {
-                    magicItem.enabled = true;
-                    magicItem.sprite = EpicLoot.GetMagicItemBgSprite();
-                    magicItem.color = itemData.GetRarityColor();
-                }
-                else
-                {
-                    magicItem.enabled = false;
+                    var elementOperand = instrs[i - 4].operand;
+                    var itemDataOperand = instrs[i - 2].operand;
+                    
+                    var ldLocInstruction = new CodeInstruction(OpCodes.Ldloc_S,elementOperand);
+                    //Move Any Labels from the instruction position being patched to new instruction.
+                    if (instrs[i].labels.Count > 0)
+                        instrs[i].MoveLabelsTo(ldLocInstruction);
+
+                    //Get Element
+                    yield return LogMessage(ldLocInstruction);
+                    counter++;
+                    
+                    //Get Item Data
+                    yield return LogMessage(new CodeInstruction(OpCodes.Ldloc_S,itemDataOperand));
+                    counter++;
+          
+                    //Patch Calling Method
+                    yield return LogMessage(new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(HotkeyBar_UpdateIcons_Patch), nameof(UpdateIcons))));
+                    counter++;
                 }
             }
         }

@@ -116,6 +116,7 @@
     <Compile Include="Abilities\PlayerExtensions_Abilities.cs" />
     <Compile Include="Adventure\Feature\Bosses.cs" />
     <Compile Include="Adventure\Feature\BountyLedger.cs" />
+    <Compile Include="Adventure\MinimapController.cs" />
     <Compile Include="Attack_Patch.cs" />
     <Compile Include="CraftingV2\EnchantingUIAugaFixup.cs" />
     <Compile Include="CraftingV2\EnchantingUIController.cs" />
@@ -145,7 +146,6 @@
     <Compile Include="Adventure\Feature\TreasureMapListPanel.cs" />
     <Compile Include="Adventure\Feature\TreasureMaps.cs" />
     <Compile Include="Adventure\MessageHud_Patch.cs" />
-    <Compile Include="Adventure\Minimap_Patch.cs" />
     <Compile Include="Adventure\PlayerExtensions_Adventure.cs" />
     <Compile Include="Adventure\SE_CustomFinder.cs" />
     <Compile Include="Adventure\TreasureMapChest.cs" />
@@ -277,7 +277,7 @@
     <None Include="loottables.json" />
     <None Include="magiceffects.json" />
     <None Include="manifest.json" />
-    <None Include="patchnotes.md" />
+    <None Include="CHANGELOG.md" />
     <None Include="todo.md" />
     <None Include="README.md" />
     <None Include="recipes.json" />

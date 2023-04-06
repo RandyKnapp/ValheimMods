@@ -153,8 +153,8 @@ namespace EpicLoot.Adventure
     {
         public long WorldID;
         public int NumberOfTreasureMapsOrBountiesStarted;
-        public List<TreasureMapChestInfo> TreasureMaps = new List<TreasureMapChestInfo>();
-        public List<BountyInfo> Bounties = new List<BountyInfo>();
+        public List<TreasureMapChestInfo> TreasureMaps = new();
+        public List<BountyInfo> Bounties = new();
 
         [NonSerialized] public bool DebugMode;
         [NonSerialized] public int IntervalOverride;
@@ -174,17 +174,39 @@ namespace EpicLoot.Adventure
                 interval = IntervalOverride;
             }
 
-            TreasureMaps.Add(new TreasureMapChestInfo()
+            var chestInfo = new TreasureMapChestInfo()
             {
                 Interval = interval,
                 Biome = biome,
                 State = TreasureMapState.Purchased,
                 Position = position,
                 MinimapCircleOffset = circleOffset,
-            });
+            };
+
+            TreasureMaps.Add(chestInfo);
 
             NumberOfTreasureMapsOrBountiesStarted++;
 
+            var key = new Tuple<int, Heightmap.Biome>(chestInfo.Interval, chestInfo.Biome);
+            if (!MinimapController.TreasureMapPins.ContainsKey(key))
+            {
+                var pinInfo = new AreaPinInfo
+                {
+                    Position = chestInfo.Position + chestInfo.MinimapCircleOffset,
+                    Type = EpicLoot.TreasureMapPinType,
+                    Name = Localization.instance.Localize("$mod_epicloot_treasurechest_minimappin", Localization.instance.Localize($"$biome_{chestInfo.Biome.ToString().ToLowerInvariant()}"), (chestInfo.Interval + 1).ToString())
+                };
+
+                var pinJob = new PinJob
+                {
+                    Task = MinimapPinQueueTask.AddTreasurePin,
+                    DebugMode = DebugMode,
+                    TreasurePin = new KeyValuePair<Tuple<int, Heightmap.Biome>, AreaPinInfo>(key, pinInfo)
+                };
+
+                MinimapController.AddPinJobToQueue(pinJob);
+            }
+            
             return true;
         }
 
@@ -194,6 +216,18 @@ namespace EpicLoot.Adventure
             if (treasureMap != null && treasureMap.State == TreasureMapState.Purchased)
             {
                 treasureMap.State = TreasureMapState.Found;
+                
+                var key = new Tuple<int, Heightmap.Biome>(treasureMap.Interval, treasureMap.Biome);
+
+                if (!MinimapController.TreasureMapPins.ContainsKey(key)) return true;
+                
+                var pinJob = new PinJob
+                {
+                    Task = MinimapPinQueueTask.RemoveTreasurePin,
+                    DebugMode = DebugMode,
+                    TreasurePin = new KeyValuePair<Tuple<int, Heightmap.Biome>, AreaPinInfo>(key, MinimapController.TreasureMapPins[key])
+                };
+                MinimapController.AddPinJobToQueue(pinJob);
                 return true;
             }
 
@@ -238,6 +272,27 @@ namespace EpicLoot.Adventure
             bounty.Position = spawnPoint;
             bounty.MinimapCircleOffset = offset;
             Bounties.Add(bounty);
+            
+            var key = bounty.ID;
+            if (!MinimapController.BountyPins.ContainsKey(key))
+            {
+                var pinInfo = new AreaPinInfo
+                {
+                    Position = bounty.Position + bounty.MinimapCircleOffset,
+                    Type = EpicLoot.BountyPinType,
+                    Name = Localization.instance.Localize("$mod_epicloot_bounties_minimappin", AdventureDataManager.GetBountyName(bounty))
+                };
+
+                var pinJob = new PinJob
+                {
+                    Task = MinimapPinQueueTask.AddBountyPin,
+                    DebugMode = DebugMode,
+                    BountyPin = new KeyValuePair<string, AreaPinInfo>(key, pinInfo)
+                };
+
+                MinimapController.AddPinJobToQueue(pinJob);
+            }
+
 
             return true;
         }
@@ -248,6 +303,7 @@ namespace EpicLoot.Adventure
             if (bounty != null && bounty.State == BountyState.InProgress)
             {
                 bounty.State = BountyState.Complete;
+
                 return true;
             }
 

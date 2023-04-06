@@ -1,9 +1,9 @@
-# Epic Loot v0.9.7 - Config Patching System and Various Bug Fixes
+# Epic Loot v0.9.11 - Config Patching System and Various Bug Fixes
 Author: [RandyKnapp](https://discord.gg/randyknappmods)
 Source: [Github](https://github.com/RandyKnapp/ValheimMods/blob/main/EpicLoot/)
 Patreon: [patreon.com/randyknapp](https://www.patreon.com/randyknapp)
 Discord: [RandyKnapp's Mod Community](https://discord.gg/randyknappmods)
-Patch notes: [Github Patchnotes](https://github.com/RandyKnapp/ValheimMods/blob/main/EpicLoot/patchnotes.md)
+Patch notes: [Github Patchnotes](https://github.com/RandyKnapp/ValheimMods/blob/main/EpicLoot/CHANGELOG.md)
 
 This mod aims to add a loot drop experience to Valheim similar to Diablo or other RPGs. Monsters and chests can now drop Magic, Rare, Epic, or Legendary magic items. Each magic item has a number of magic effects on it, that give bonuses to the item or your character when that magic item is equipped.
 
@@ -38,8 +38,6 @@ Contibutions from the following modders were invaluable and appreciated:
   * [Digitalroot](https://github.com/Digitalroot) - Help with testing
 
 ## Installation
-
-Extended Item Data Framework needs to be installed (on both client and dedicated servers).
 Copy the contents of "files" to a new folder called "EpicLoot" in your BepInEx/plugins directory (on both clients and dedicated servers).
 
 ## Cheats
