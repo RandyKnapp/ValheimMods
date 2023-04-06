@@ -3,7 +3,7 @@
     * Known Bug: The weight calculation is still not working when using controller to transfer items.
   * Rebuilt QuickSlotHotkeyBar from the Ground Up
     * No longer a Prefix that blocks UpdateIcons
-    * Allows other mods to affect item icons in the Hotkeybar
+    * Allows other mods to affect item icons in the Hotkeybar (like EpicLoot)
     * Potential for Performance Improvement
 ## Release 2.1.2
   * Updated for Valheim 0.214.2 Patch
