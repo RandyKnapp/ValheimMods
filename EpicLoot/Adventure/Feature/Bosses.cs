@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace EpicLoot.Adventure.Feature
+﻿namespace EpicLoot.Adventure.Feature
 {
     public static class Bosses
     {

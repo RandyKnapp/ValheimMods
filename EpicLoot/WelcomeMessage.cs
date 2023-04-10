@@ -1,5 +1,4 @@
-﻿using EpicLoot.Adventure;
-using HarmonyLib;
+﻿using HarmonyLib;
 using UnityEngine;
 using UnityEngine.UI;
 

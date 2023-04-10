@@ -1,6 +1,7 @@
 ﻿using EpicLoot.Data;
 using HarmonyLib;
 using JetBrains.Annotations;
+using UnityEngine;
 
 namespace EpicLoot
 {
@@ -67,9 +68,17 @@ namespace EpicLoot
         [HarmonyPatch(typeof(Player), nameof(Player.Update))]
         public static class WatchLegendaryEquipment_Player_Update_Patch
         {
+            private static float _updateEventTime;
+            
             [UsedImplicitly]
             public static void Postfix(Player __instance)
             {
+                _updateEventTime -= Time.deltaTime;
+                if (_updateEventTime > 0.0)
+                    return;
+
+                _updateEventTime = 10f;
+                
                 if (__instance != null && __instance != Player.m_localPlayer && __instance.m_nview != null && __instance.m_nview.GetZDO() is ZDO zdo)
                 {
                     var changed = DoCheck(__instance, zdo, "LeftItem", "lf-ell", ref __instance.m_leftItem);
@@ -103,7 +112,6 @@ namespace EpicLoot
                 var currentLegendaryID = itemData?.GetMagicItem()?.LegendaryID;
                 if (currentLegendaryID == zdoLegendaryID)
                     return false;
-
                 var itemHash = zdo.GetInt(equipKey);
                 var itemPrefab = ObjectDB.instance.GetItemPrefab(itemHash);
                 if (itemPrefab?.GetComponent<ItemDrop>()?.m_itemData is ItemDrop.ItemData targetItemData)
@@ -125,7 +133,6 @@ namespace EpicLoot
                 if (humanoid == null || humanoid.m_visEquipment == null || item == null)
                     return;
 
-                EpicLoot.LogWarning($"Force Reset VisEquip: {item.m_shared.m_itemType}");
                 switch (item.m_shared.m_itemType)
                 {
                     case ItemDrop.ItemData.ItemType.OneHandedWeapon:

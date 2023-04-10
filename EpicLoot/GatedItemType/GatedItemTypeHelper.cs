@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Text;
 using BepInEx;
 using Common;
 using EpicLoot.Adventure.Feature;
