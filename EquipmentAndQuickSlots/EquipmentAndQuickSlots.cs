@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace EquipmentAndQuickSlots
 {
-    [BepInPlugin(PluginId, "Equipment and Quick Slots", "2.1.4")]
+    [BepInPlugin(PluginId, "Equipment and Quick Slots", "2.1.5")]
     [BepInDependency("moreslots", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("randyknapp.mods.auga", BepInDependency.DependencyFlags.SoftDependency)]
     public class EquipmentAndQuickSlots : BaseUnityPlugin
@@ -53,8 +53,17 @@ namespace EquipmentAndQuickSlots
 
             _loggingEnabled = Config.Bind("Logging", "Logging Enabled", false, "Enable logging");
             KeyCodes[0] = Config.Bind("Hotkeys", "Quick slot hotkey 1", new KeyboardShortcut(KeyCode.Z), "Hotkey for Quick Slot 1.");
+            if (KeyCodes[0].Value.MainKey == KeyCode.None)
+                KeyCodes[0].Value = new KeyboardShortcut(KeyCode.Z);
+            
             KeyCodes[1] = Config.Bind("Hotkeys", "Quick slot hotkey 2", new KeyboardShortcut(KeyCode.V), "Hotkey for Quick Slot 2.");
+            if (KeyCodes[1].Value.MainKey == KeyCode.None)
+                KeyCodes[1].Value = new KeyboardShortcut(KeyCode.V);
+            
             KeyCodes[2] = Config.Bind("Hotkeys", "Quick slot hotkey 3", new KeyboardShortcut(KeyCode.B), "Hotkey for Quick Slot 3.");
+            if (KeyCodes[2].Value.MainKey == KeyCode.None)
+                KeyCodes[2].Value = new KeyboardShortcut(KeyCode.B);
+            
             HotkeyLabels[0] = Config.Bind("Hotkeys", "Quick slot hotkey label 1", "", "Hotkey Label for Quick Slot 1. Leave blank to use the hotkey itself.");
             HotkeyLabels[1] = Config.Bind("Hotkeys", "Quick slot hotkey label 2", "", "Hotkey Label for Quick Slot 2. Leave blank to use the hotkey itself.");
             HotkeyLabels[2] = Config.Bind("Hotkeys", "Quick slot hotkey label 3", "", "Hotkey Label for Quick Slot 3. Leave blank to use the hotkey itself.");
