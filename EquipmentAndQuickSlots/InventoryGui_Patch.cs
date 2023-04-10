@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Linq;
 using HarmonyLib;
+using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
@@ -242,43 +243,52 @@ namespace EquipmentAndQuickSlots
             }
         }
 
-        [HarmonyPatch(typeof(InventoryGui), "UpdateGamepad")]
+        
+        [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.UpdateGamepad))]
         public static class InventoryGui_UpdateGamepad_Patch
         {
-            public static bool Prefix(InventoryGui __instance)
+            [UsedImplicitly]
+            public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator ilGenerator)
             {
-                if (!__instance.m_inventoryGroup.IsActive)
-                {
-                    return false;
-                }
-                if (ZInput.GetButtonDown("JoyTabLeft"))
-                {
-                    __instance.SetActiveGroup(__instance.m_activeGroup - 1);
-                }
-                if (ZInput.GetButtonDown("JoyTabRight"))
-                {
-                    __instance.SetActiveGroup(__instance.m_activeGroup + 1);
-                }
-                if (__instance.m_activeGroup == 0 && !__instance.IsContainerOpen())
-                {
-                    __instance.SetActiveGroup(1);
-                }
-                if (__instance.m_activeGroup == __instance.m_uiGroups.Length - 1)
-                {
-                    __instance.UpdateRecipeGamepadInput();
-                }
+                var activeGroupField = AccessTools.DeclaredField(typeof(InventoryGui), "m_activeGroup" );
+                
+                var instrs = instructions.ToList();
 
-                return false;
+                var counter = 0;
+                var skipLines = 0;
+
+                for (int i = 0; i < instrs.Count; ++i)
+                {
+                    if (i > 5 && instrs[i].opcode == OpCodes.Ldfld 
+                        && instrs[i].operand.Equals(activeGroupField) && instrs[i + 1].opcode == OpCodes.Ldc_I4_3 
+                        && instrs[i + 2].opcode == OpCodes.Bne_Un)
+                    {
+                        //Replace Field with Call
+                        yield return EquipmentAndQuickSlots.LogMessage(new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(InventoryGui_UpdateGamepad_Patch), nameof(GetMaxUiGroups))),counter);
+                        counter++;
+                        
+                        //Remove ldc_i4.3
+                        skipLines++;
+                        
+                        //Create new BrTrue
+                        yield return EquipmentAndQuickSlots.LogMessage(new CodeInstruction(OpCodes.Brtrue, instrs[i +2].operand), counter);
+                        
+                        //Remove Bne
+                        skipLines++;
+
+                        i += skipLines;
+                    }
+                    else
+                    {
+                        yield return EquipmentAndQuickSlots.LogMessage(instrs[i], counter);
+                        counter++;
+                    }
+                }
             }
-        }
 
-        //public void UpdateRecipeGamepadInput()
-        [HarmonyPatch(typeof(InventoryGui), "UpdateRecipeGamepadInput")]
-        public static class InventoryGui_UpdateRecipeGamepadInput_Patch
-        {
-            public static bool Prefix(InventoryGui __instance)
+            public static bool GetMaxUiGroups(InventoryGui instance)
             {
-                return __instance.m_activeGroup == __instance.m_uiGroups.Length - 1;
+                return instance.m_activeGroup != instance.m_uiGroups.Length - 1;
             }
         }
     }

@@ -37,7 +37,7 @@ namespace EquipmentAndQuickSlots
                 return;
             }
 
-            EquipmentAndQuickSlots.LogWarning("Saving ExtendedPlayerData");
+            //EquipmentAndQuickSlots.LogWarning("Saving ExtendedPlayerData");
             SaveValue(_player, "ExtendedPlayerData", "This player is using ExtendedPlayerData!");
 
             var pkg = new ZPackage();
@@ -59,7 +59,7 @@ namespace EquipmentAndQuickSlots
 
             _player = fromPlayer;
             LoadValue(fromPlayer, "ExtendedPlayerData", out var init);
-            EquipmentAndQuickSlots.LogWarning("Loaded ExtendedPlayerData");
+            //EquipmentAndQuickSlots.LogWarning("Loaded ExtendedPlayerData");
 
             if (LoadValue(fromPlayer, nameof(QuickSlotInventory), out var quickSlotData))
             {
