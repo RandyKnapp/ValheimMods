@@ -241,6 +241,7 @@ namespace EpicLoot_UnityLib
                 }
 
                 var costItem = itemDrop.m_itemData.Clone();
+                costItem.m_dropPrefab = prefab;
                 costItem.m_stack = itemAmountConfig.Amount;
                 result.Add(new InventoryItemListElement() { Item = costItem });
             }
