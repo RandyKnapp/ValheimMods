@@ -36,7 +36,7 @@
       [ { "Item": "DustRare", "Amount": 5 }, { "Item": "Ooze", "Amount": 20 }, { "Item": "Iron", "Amount": 2 } ],
       [ { "Item": "DustRare", "Amount": 5 }, { "Item": "Crystal", "Amount": 20 }, { "Item": "Silver", "Amount": 2 } ],
       [ { "Item": "DustEpic", "Amount": 5 }, { "Item": "DragonTear", "Amount": 5 }, { "Item": "BlackMetal", "Amount": 2 } ],
-      [ { "Item": "DustLegendary", "Amount": 5 }, { "Item": "eitr", "Amount": 10 }, { "Item": "Bilebag", "Amount": 2 } ]
+      [ { "Item": "DustLegendary", "Amount": 5 }, { "Item": "Eitr", "Amount": 10 }, { "Item": "Bilebag", "Amount": 2 } ]
     ],
     "Augment": [
       [ { "Item": "ShardMagic", "Amount": 3 }, { "Item": "SurtlingCore", "Amount": 3 }, { "Item": "Coins", "Amount": 200 } ],

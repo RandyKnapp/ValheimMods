@@ -20,7 +20,6 @@ namespace EpicLoot
         public static void Postfix(ZNet __instance)
         {
             AdventureDataManager.OnZNetStart();
-            EnchantingTableUpgrades.OnZNetStart();
         }
     }
 
@@ -30,7 +29,6 @@ namespace EpicLoot
         public static void Postfix(ZNet __instance)
         {
             AdventureDataManager.OnZNetDestroyed();
-            EnchantingTableUpgrades.OnZNetDestroyed();
         }
     }
 
@@ -40,18 +38,7 @@ namespace EpicLoot
         public static bool Prefix(ZNet __instance)
         {
             AdventureDataManager.OnWorldSave();
-            EnchantingTableUpgrades.OnWorldSave();
             return true;
-        }
-    }
-
-    //ZoneSystem.RPC_GlobalKeys
-    [HarmonyPatch(typeof(ZoneSystem), nameof(ZoneSystem.RPC_GlobalKeys))]
-    public static class ZoneSystem_RPC_GlobalKeys_Patch
-    {
-        public static void Postfix()
-        {
-            EnchantingTableUpgrades.NewGlobalKeys();
         }
     }
 }

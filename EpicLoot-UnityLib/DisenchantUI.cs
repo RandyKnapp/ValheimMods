@@ -79,7 +79,7 @@ namespace EpicLoot_UnityLib
                 var cost = GetDisenchantCost(selectedItem.Item1.GetItem());
                 CostList.SetItems(cost.Cast<IListElement>().ToList());
 
-                var featureValues = EnchantingTableUpgrades.GetFeatureCurrentValue(EnchantingFeature.Disenchant);
+                var featureValues = EnchantingTableUI.instance.SourceTable.GetFeatureCurrentValue(EnchantingFeature.Disenchant);
                 var costReduction = float.IsNaN(featureValues.Item2) ? 0 : (int)featureValues.Item2;
 
                 if (costReduction > 0 && cost.Count > 0)
@@ -88,7 +88,7 @@ namespace EpicLoot_UnityLib
                     CostLabel.text = Localization.instance.Localize("$mod_epicloot_disenchantcost");
 
                 var canAfford = LocalPlayerCanAffordCost(cost);
-                var featureUnlocked = EnchantingTableUpgrades.IsFeatureUnlocked(EnchantingFeature.Disenchant);
+                var featureUnlocked = EnchantingTableUI.instance.SourceTable.IsFeatureUnlocked(EnchantingFeature.Disenchant);
                 MainButton.interactable = featureUnlocked && canAfford;
             }
             else

@@ -21,8 +21,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EpicLoot", "EpicLoot\EpicLo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExtendedItemDataFramework", "ExtendedItemDataFramework\ExtendedItemDataFramework.csproj", "{2F61A8AB-BF4D-4E0C-9B90-4B2BA74438C5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EpicLoot-Addon-MCE", "EpicLoot-Addon-MCE\EpicLoot-Addon-MCE.csproj", "{8B9A7665-F688-4E13-B62A-F62DB7E065C4}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleHelper", "ConsoleHelper\ConsoleHelper.csproj", "{815F37D9-CEEA-4CDA-ABFB-C62FEA26B5F1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EpicLoot-Addon-Helheim", "EpicLoot-Addon-Helheim\EpicLoot-Addon-Helheim.csproj", "{FB508E8D-0C64-4EC6-B746-F668F510295F}"
@@ -32,8 +30,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EpicLoot-UnityLib", "EpicLoot-UnityLib\EpicLoot-UnityLib.csproj", "{8DABA031-AEA4-472F-A9AA-DE8B1AA69DE5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdvancedPortals", "AdvancedPortals\AdvancedPortals.csproj", "{0DDDE55C-5DAF-4B53-B5E2-83B5C44C4682}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EpicLoot-Addon-AddonTest", "EpicLoot-Addon-AddonTest\EpicLoot-Addon-AddonTest.csproj", "{3F98C47A-5899-40DF-AA2A-1097A2290D62}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -78,10 +74,6 @@ Global
 		{2F61A8AB-BF4D-4E0C-9B90-4B2BA74438C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2F61A8AB-BF4D-4E0C-9B90-4B2BA74438C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2F61A8AB-BF4D-4E0C-9B90-4B2BA74438C5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8B9A7665-F688-4E13-B62A-F62DB7E065C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8B9A7665-F688-4E13-B62A-F62DB7E065C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8B9A7665-F688-4E13-B62A-F62DB7E065C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8B9A7665-F688-4E13-B62A-F62DB7E065C4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{815F37D9-CEEA-4CDA-ABFB-C62FEA26B5F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{815F37D9-CEEA-4CDA-ABFB-C62FEA26B5F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{815F37D9-CEEA-4CDA-ABFB-C62FEA26B5F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -100,10 +92,6 @@ Global
 		{0DDDE55C-5DAF-4B53-B5E2-83B5C44C4682}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0DDDE55C-5DAF-4B53-B5E2-83B5C44C4682}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0DDDE55C-5DAF-4B53-B5E2-83B5C44C4682}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3F98C47A-5899-40DF-AA2A-1097A2290D62}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3F98C47A-5899-40DF-AA2A-1097A2290D62}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3F98C47A-5899-40DF-AA2A-1097A2290D62}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3F98C47A-5899-40DF-AA2A-1097A2290D62}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

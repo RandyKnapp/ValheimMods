@@ -262,8 +262,8 @@ namespace EpicLoot_UnityLib
             var cost = GetConversionCost(selectedRecipes);
             CostList.SetItems(cost.Cast<IListElement>().ToList());
 
-            var baseFeatureValues = EnchantingTableUpgrades.GetFeatureValue(EnchantingFeature.ConvertMaterials, 0);
-            var currentFeatureValues = EnchantingTableUpgrades.GetFeatureCurrentValue(EnchantingFeature.ConvertMaterials);
+            var baseFeatureValues = EnchantingTableUI.instance.SourceTable.GetFeatureValue(EnchantingFeature.ConvertMaterials, 0);
+            var currentFeatureValues = EnchantingTableUI.instance.SourceTable.GetFeatureCurrentValue(EnchantingFeature.ConvertMaterials);
             var isBonusCost = false;
             if (_mode == MaterialConversionMode.Upgrade)
             {
@@ -279,7 +279,7 @@ namespace EpicLoot_UnityLib
             }
 
             var canAfford = LocalPlayerCanAffordCost(cost);
-            var featureUnlocked = EnchantingTableUpgrades.IsFeatureUnlocked(EnchantingFeature.ConvertMaterials);
+            var featureUnlocked = EnchantingTableUI.instance.SourceTable.IsFeatureUnlocked(EnchantingFeature.ConvertMaterials);
             MainButton.interactable = featureUnlocked && canAfford && selectedRecipes.Count > 0;
         }
         

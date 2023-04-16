@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 2521448713
+CRC: 3778305014
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 6aab33bef7da917330cecd55889b3c61
+    Hash: 916b23b335f9784072939fdd812d7085
   TypeTreeHash:
     serializedVersion: 2
-    Hash: d3098d8568e713086601bc9166514d4e
+    Hash: b649f9e0c695d1cc1c7bd33406b96f4f
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -36,15 +36,13 @@ ClassTypes:
 - Class: 108
   Script: {instanceID: 0}
 - Class: 114
-  Script: {fileID: 313648218, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
-- Class: 114
   Script: {fileID: 130663047, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
-- Class: 114
-  Script: {fileID: 2094620348, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
 - Class: 114
   Script: {fileID: 1598045939, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
 - Class: 114
   Script: {fileID: 2053127972, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
+- Class: 114
+  Script: {fileID: 2094620348, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
 - Class: 114
   Script: {fileID: -804021021, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
 - Class: 114
@@ -55,6 +53,8 @@ ClassTypes:
   Script: {fileID: 895252998, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
 - Class: 114
   Script: {fileID: 1521249158, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
+- Class: 114
+  Script: {fileID: 313648218, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
 - Class: 115
   Script: {instanceID: 0}
 - Class: 135
@@ -73,7 +73,13 @@ ClassTypes:
   Script: {instanceID: 0}
 - Class: 245
   Script: {instanceID: 0}
-SerializeReferenceClassIdentifiers: []
+SerializeReferenceClassIdentifiers:
+- AssemblyName: assembly_valheim
+  ClassName: EffectList
+- AssemblyName: assembly_valheim
+  ClassName: EffectList/EffectData
+- AssemblyName: assembly_valheim
+  ClassName: HitData/DamageModifiers
 Assets:
 - Assets/AdvancedPortals/Prefabs/portal_blackmarble.prefab
 - Assets/AdvancedPortals/Prefabs/portal_ancient.prefab
