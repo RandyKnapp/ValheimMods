@@ -81,7 +81,6 @@ namespace EpicLoot_UnityLib
                 var button = _featureButtons[index];
                 var featureIsEnabled = EnchantingTableUI.instance.SourceTable.IsFeatureAvailable((EnchantingFeature)index);
                 button.gameObject.SetActive(featureIsEnabled);
-                Debug.Log("1" + index);
             }
 
             if (_selectedFeature >= 0)
