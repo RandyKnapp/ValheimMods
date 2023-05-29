@@ -140,7 +140,7 @@ namespace EquipmentAndQuickSlots
         {
             CallBase = true;
             var result = new List<ItemDrop.ItemData>();
-            _inventories.ForEach(x => result.AddRange(x.GetEquipedtems()));
+            _inventories.ForEach(x => result.AddRange(x.GetEquippedItems()));
             CallBase = false;
             return result;
         }

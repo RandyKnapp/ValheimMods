@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using HarmonyLib;
 using UnityEngine;
 
@@ -36,7 +37,13 @@ namespace EquipmentAndQuickSlots
         {
             var inv = __instance.m_inventory;
             inv.m_onChanged = null;
-            __instance.m_inventory = new ExtendedInventory(__instance, inv.m_name, inv.m_bkg, inv.m_width, inv.m_height);
+            
+            //__instance.m_inventory = new ExtendedInventory(__instance, inv.m_name, inv.m_bkg, inv.m_width, inv.m_height);
+
+            var t = typeof(Humanoid).GetField(nameof(Humanoid.m_inventory),
+                BindingFlags.Instance | BindingFlags.NonPublic);
+            t.SetValue(__instance,new ExtendedInventory(__instance, inv.m_name, inv.m_bkg, inv.m_width, inv.m_height));
+            
             __instance.m_inventory.Extended().OverrideAwake();
         }
     }
