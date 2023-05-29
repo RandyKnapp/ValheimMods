@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects
 {
-    [HarmonyPatch(typeof(CharacterAnimEvent), nameof(CharacterAnimEvent.FixedUpdate))]
+    [HarmonyPatch(typeof(CharacterAnimEvent), nameof(CharacterAnimEvent.CustomFixedUpdate))]
     public static class ModifyAttackSpeed_CharacterAnimEvent_FixedUpdate_Patch
     {
         [UsedImplicitly]

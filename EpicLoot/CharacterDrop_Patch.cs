@@ -93,7 +93,7 @@ namespace EpicLoot
                         continue;
                     }
 
-                    if (itemDrop.m_itemData.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Trophie)
+                    if (itemDrop.m_itemData.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Trophy)
                     {
                         int dropCount;
                         var playerList = ZNet.instance.GetPlayerList();

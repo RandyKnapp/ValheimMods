@@ -109,7 +109,7 @@ namespace EpicLoot.CraftingV2
             {
                 if (!EpicLoot.ShowEquippedAndHotbarItemsInSacrificeTab.Value)
                 {
-                    if (item != null && item.m_equiped || boundItems.Contains(item))
+                    if (item != null && item.m_equipped || boundItems.Contains(item))
                         continue;
                 }
 
@@ -570,7 +570,7 @@ namespace EpicLoot.CraftingV2
             var boundItems = new List<ItemDrop.ItemData>();
             inventory.GetBoundItems(boundItems);
             return Player.m_localPlayer.GetInventory().GetAllItems()
-                .Where(item => !item.m_equiped && (EpicLoot.ShowEquippedAndHotbarItemsInSacrificeTab.Value || !boundItems.Contains(item)))
+                .Where(item => !item.m_equipped && (EpicLoot.ShowEquippedAndHotbarItemsInSacrificeTab.Value || !boundItems.Contains(item)))
                 .Where(item => item.IsMagic(out var magicItem) && magicItem.CanBeDisenchanted())
                 .Select(item => new InventoryItemListElement() { Item = item })
                 .ToList();

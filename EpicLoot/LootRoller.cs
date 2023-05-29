@@ -806,7 +806,7 @@ namespace EpicLoot
 
         public static void DebugLuckFactor()
         {
-            var players = Player.m_players;
+            var players = Player.s_players;
             if (players != null)
             {
                 Debug.LogWarning($"DebugLuckFactor ({players.Count} players)");

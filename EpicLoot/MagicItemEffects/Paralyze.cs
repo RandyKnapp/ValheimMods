@@ -43,10 +43,10 @@ namespace EpicLoot.MagicItemEffects
                     return;
                 }
 
-                var seParalyze = __instance.m_seman.GetStatusEffect("Paralyze") as SE_Paralyzed;
+                var seParalyze = __instance.m_seman.GetStatusEffect("Paralyze".GetHashCode()) as SE_Paralyzed;
                 if (seParalyze == null)
                 {
-                    seParalyze = __instance.m_seman.AddStatusEffect("Paralyze") as SE_Paralyzed;
+                    seParalyze = __instance.m_seman.AddStatusEffect("Paralyze".GetHashCode()) as SE_Paralyzed;
                     if (seParalyze == null)
                     {
                         EpicLoot.LogError("Could not add paralyze effect");

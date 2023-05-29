@@ -42,7 +42,7 @@ namespace EpicLoot.Adventure
                     if (characterDrop != null)
                     {
                         var drops = characterDrop.m_drops.Select(x => x.m_prefab.GetComponent<ItemDrop>());
-                        var trophyPrefab = drops.FirstOrDefault(x => x.m_itemData.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Trophie);
+                        var trophyPrefab = drops.FirstOrDefault(x => x.m_itemData.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Trophy);
                         if (trophyPrefab != null)
                         {
                             sprite = trophyPrefab.m_itemData.GetIcon();

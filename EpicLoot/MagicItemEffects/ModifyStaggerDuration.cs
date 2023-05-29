@@ -13,7 +13,7 @@ namespace EpicLoot.MagicItemEffects
         public const string ZdoKey = "el-sd";
     }
 
-    [HarmonyPatch(typeof(CharacterAnimEvent), nameof(CharacterAnimEvent.FixedUpdate))]
+    [HarmonyPatch(typeof(CharacterAnimEvent), nameof(CharacterAnimEvent.CustomFixedUpdate))]
     public static class ModifyStaggerDuration_CharacterAnimEvent_FixedUpdate_Patch
     {
         [UsedImplicitly]
