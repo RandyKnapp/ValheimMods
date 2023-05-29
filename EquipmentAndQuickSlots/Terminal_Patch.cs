@@ -20,7 +20,7 @@ namespace EquipmentAndQuickSlots
                 {
                     foreach (var item in inventory.m_inventory)
                     {
-                        if (item.m_equiped && item.m_shared.m_useDurability)
+                        if (item.m_equipped && item.m_shared.m_useDurability)
                         {
                             item.m_durability = 0;
                         }

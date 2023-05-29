@@ -70,7 +70,7 @@ namespace EquipmentAndQuickSlots
                 {
                     foreach (var item in inventory.m_inventory)
                     {
-                        if (item.m_equiped && EquipmentAndQuickSlots.IsSlotEquippable(item))
+                        if (item.m_equipped && EquipmentAndQuickSlots.IsSlotEquippable(item))
                         {
                             var equipSlot = EquipmentAndQuickSlots.GetEquipmentSlotForType(item.m_shared.m_itemType);
                             if (equipSlot.x < 0 || equipSlot.y < 0)
@@ -93,7 +93,7 @@ namespace EquipmentAndQuickSlots
             // Swap out unequipped items and incorrectly added
             foreach (var item in equipSlotInventory.m_inventory)
             {
-                if (!item.m_equiped || !EquipmentAndQuickSlots.IsSlotEquippable(item))
+                if (!item.m_equipped || !EquipmentAndQuickSlots.IsSlotEquippable(item))
                 {
                     var destInventories = player.GetAllInventories();
                     bool moved = false;
@@ -168,7 +168,7 @@ namespace EquipmentAndQuickSlots
                 || (player.InAttack() || player.InDodge()) 
                 || player.IsPlayer() 
                 && !player.IsDead() 
-                && (player.IsSwiming() && !player.IsOnGround()) 
+                && (player.IsSwimming() && !player.IsOnGround()) 
                 || item.m_shared.m_useDurability && item.m_durability <= 0.0f)
                 return false;
             return true;
