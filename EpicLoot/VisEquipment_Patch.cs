@@ -23,42 +23,42 @@ namespace EpicLoot
 
         public static ItemSettingSlot AttachingItemSlot = ItemSettingSlot.None;
 
-        [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.SetLeftHandEquiped))]
+        [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.SetLeftHandEquipped))]
         [HarmonyPrefix]
         public static void SetLeftHandEquiped_Prefix()
         {
             AttachingItemSlot = ItemSettingSlot.LeftHand;
         }
 
-        [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.SetLeftHandEquiped))]
+        [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.SetLeftHandEquipped))]
         [HarmonyPostfix]
         public static void SetLeftHandEquiped_Postfix()
         {
             AttachingItemSlot = ItemSettingSlot.None;
         }
 
-        [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.SetRightHandEquiped))]
+        [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.SetRightHandEquipped))]
         [HarmonyPrefix]
         public static void SetRightHandEquiped_Prefix()
         {
             AttachingItemSlot = ItemSettingSlot.RightHand;
         }
 
-        [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.SetRightHandEquiped))]
+        [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.SetRightHandEquipped))]
         [HarmonyPostfix]
         public static void SetRightHandEquiped_Postfix()
         {
             AttachingItemSlot = ItemSettingSlot.None;
         }
 
-        [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.SetHelmetEquiped))]
+        [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.SetHelmetEquipped))]
         [HarmonyPrefix]
         public static void SetHelmetEquiped_Prefix()
         {
             AttachingItemSlot = ItemSettingSlot.Helmet;
         }
 
-        [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.SetLeftHandEquiped))]
+        [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.SetLeftHandEquipped))]
         [HarmonyPostfix]
         public static void SetHelmetEquiped_Postfix()
         {
@@ -216,7 +216,7 @@ namespace EpicLoot
         [HarmonyPrefix]
         public static void Humanoid_UnequipItem_Prefix(Humanoid __instance, ItemDrop.ItemData item, bool triggerEquipEffects)
         {
-            if (item == null || !item.m_equiped || !triggerEquipEffects)
+            if (item == null || !item.m_equipped || !triggerEquipEffects)
             {
                 return;
             }

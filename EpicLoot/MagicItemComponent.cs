@@ -40,7 +40,7 @@ namespace EpicLoot
             if (Player.m_localPlayer == null)
                 return;
 
-            if (Item.m_equiped && Player.m_localPlayer.IsItemEquiped(Item))
+            if (Item.m_equipped && Player.m_localPlayer.IsItemEquiped(Item))
                 Multiplayer_Player_Patch.UpdatePlayerZDOForEquipment(Player.m_localPlayer, Item, MagicItem != null);
         }
 
@@ -679,7 +679,7 @@ namespace EpicLoot
 
         public static Player GetPlayerWithEquippedItem(ItemDrop.ItemData itemData)
         {
-            return Player.m_players.FirstOrDefault(player => player.IsItemEquiped(itemData));
+            return Player.s_players.FirstOrDefault(player => player.IsItemEquiped(itemData));
         }
     }
 

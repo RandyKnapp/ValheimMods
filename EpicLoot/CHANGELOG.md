@@ -1,9 +1,12 @@
-﻿## Version 0.9.12 - More Performance Improvements and Bugfixes
+﻿## Version 0.9.13 - Valheim Update 0.216.7
+* Required updates for Valheim version 0.216.7
+
+## Version 0.9.12 - More Performance Improvements and Bugfixes
 * Reduced the frequency that Multiplayer send Legendary Info
-  * Improves frame rates when near others.
+    * Improves frame rates when near others.
 * Slightly improved performance of Loot Beams
 * Fixed HotkeyBar Icons Updating
-  * Now updates background when items removed.
+    * Now updates background when items removed.
 
 ## Version 0.9.11 - Performance Improvements
 * Rebuilt the way Map Pins are maintained for Treasures and Bounties.
