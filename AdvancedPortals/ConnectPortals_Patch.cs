@@ -24,21 +24,6 @@ namespace AdvancedPortals
             return false;
         }
 
-        [HarmonyPatch(typeof(ZDOMan), nameof(ZDOMan.GetAllZDOsWithPrefab))]
-        [HarmonyPrefix]
-        public static bool GetPortalsZDOs_Prefix(ZDOMan __instance, string prefab, List<ZDO> zdos)
-        {
-            if (Game.instance == null || Game.instance.m_portalPrefab == null || __instance == null)
-                return true;
-
-            var prefabPortalName = Game.instance.m_portalPrefab.name;
-            if (prefab != prefabPortalName)
-                return true;
-
-            GetAllZDOsWithPrefab(__instance, new[] { prefabPortalName, "portal_ancient", "portal_obsidian", "portal_blackmarble" }, zdos);
-            return false;
-        }
-
         public static bool GetAllZDOsWithMultiplePrefabsIterative(ZDOMan __instance, string[] prefabs, List<ZDO> zdos, ref int index)
         {
             var stableHashCode = prefabs.Select(x => x.GetStableHashCode()).ToArray();
