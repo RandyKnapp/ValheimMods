@@ -915,10 +915,10 @@ namespace EpicLoot
                 return instruction;
             }
 
-            var elementDataEquipedField = AccessTools.DeclaredField(typeof(HotkeyBar.ElementData), "m_equiped"); 
-            var itemDataEquipedField = AccessTools.DeclaredField(typeof(ItemDrop.ItemData), "m_equiped");
+            var elementDataEquipedField = AccessTools.DeclaredField(typeof(HotkeyBar.ElementData), nameof(HotkeyBar.ElementData.m_equiped)); 
+            var itemDataEquipedField = AccessTools.DeclaredField(typeof(ItemDrop.ItemData), nameof(ItemDrop.ItemData.m_equipped));
             var setActiveMethod = AccessTools.DeclaredMethod(typeof(GameObject), nameof(GameObject.SetActive));
-            var elementUsedField = AccessTools.DeclaredField(typeof(HotkeyBar.ElementData), "m_used"); 
+            var elementUsedField = AccessTools.DeclaredField(typeof(HotkeyBar.ElementData), nameof(HotkeyBar.ElementData.m_used)); 
 
             for (int i = 0; i < instrs.Count; ++i)
             {
