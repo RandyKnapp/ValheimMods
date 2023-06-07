@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>disable</Nullable>
+        <AssemblyName>CreatureLevelControlAPI</AssemblyName>
+        <RootNamespace>CreatureLevelControl</RootNamespace>
+        <LangVersion>latestmajor</LangVersion>
+        <TargetFrameworks>net461;net462</TargetFrameworks>
+    </PropertyGroup>
+    <ItemGroup>
+        <Reference Include="0Harmony">
+            <HintPath>M:\Code\VapokModBase\References\BepInEx\5.4.2101\BepInEx\core\0Harmony.dll</HintPath>
+        </Reference>
+        <Reference Include="assembly_guiutils_publicized">
+            <HintPath>M:\Code\VapokModBase\References\Valheim\0.216.8\assembly_guiutils_publicized.dll</HintPath>
+        </Reference>
+        <Reference Include="assembly_utils_publicized">
+            <HintPath>M:\Code\VapokModBase\References\Valheim\0.216.8\assembly_utils_publicized.dll</HintPath>
+        </Reference>
+        <Reference Include="assembly_valheim_publicized">
+            <HintPath>M:\Code\VapokModBase\References\Valheim\0.216.8\assembly_valheim_publicized.dll</HintPath>
+        </Reference>
+        <Reference Include="CreatureLevelControl">
+          <HintPath>..\..\VapokModBase\References\CLLC\CreatureLevelControl.dll</HintPath>
+        </Reference>
+        <Reference Include="System.Net" />
+        <Reference Include="System.Net.Http" />
+        <Reference Include="UnityEngine">
+            <HintPath>M:\Code\VapokModBase\References\BepInEx\5.4.2101\unstripped_corlib\UnityEngine.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.CoreModule">
+            <HintPath>M:\Code\VapokModBase\References\BepInEx\5.4.2101\unstripped_corlib\UnityEngine.CoreModule.dll</HintPath>
+        </Reference>
+    </ItemGroup>
+</Project>
