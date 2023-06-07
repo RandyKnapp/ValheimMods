@@ -35,6 +35,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdvancedPortals", "Advanced
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EpicLoot-Addon-AddonTest", "EpicLoot-Addon-AddonTest\EpicLoot-Addon-AddonTest.csproj", "{3F98C47A-5899-40DF-AA2A-1097A2290D62}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CreatureLevelAndLootControl", "CreatureLevelAndLootControl\CreatureLevelAndLootControl.csproj", "{39F2EDDE-D0CA-4CAD-8C51-5DBDF52A419A}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Common\Common.projitems*{08ed5bc9-9e0c-4343-90a5-92497be6e216}*SharedItemsImports = 4
@@ -104,6 +106,10 @@ Global
 		{3F98C47A-5899-40DF-AA2A-1097A2290D62}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3F98C47A-5899-40DF-AA2A-1097A2290D62}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3F98C47A-5899-40DF-AA2A-1097A2290D62}.Release|Any CPU.Build.0 = Release|Any CPU
+		{39F2EDDE-D0CA-4CAD-8C51-5DBDF52A419A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{39F2EDDE-D0CA-4CAD-8C51-5DBDF52A419A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{39F2EDDE-D0CA-4CAD-8C51-5DBDF52A419A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{39F2EDDE-D0CA-4CAD-8C51-5DBDF52A419A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
