@@ -1,5 +1,5 @@
-﻿## Version 0.9.13 - Valheim Update 0.216.7
-* Required updates for Valheim version 0.216.7
+﻿## Version 0.9.13 - Valheim Update 0.216.9
+* Required updates for Valheim version 0.216.9
 
 ## Version 0.9.12 - More Performance Improvements and Bugfixes
 * Reduced the frequency that Multiplayer send Legendary Info
