@@ -1,4 +1,4 @@
-﻿## Version 0.9.14 - Valheim Update 0.216.9 - Part 2
+## Version 0.9.14 - Valheim Update 0.216.9 - Part 2
 * Left a piece out that needed to be updated with regards to `CopyCustomDataFromUpgradedItem`
 
 ## Version 0.9.13 - Valheim Update 0.216.9
