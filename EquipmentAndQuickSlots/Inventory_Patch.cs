@@ -350,7 +350,7 @@ namespace EquipmentAndQuickSlots
     }
 
     //public List<ItemDrop.ItemData> GetEquipedtems()
-    [HarmonyPatch(typeof(Inventory), "GetEquipedtems")]
+    [HarmonyPatch(typeof(Inventory), nameof(Inventory.GetEquippedItems))]
     public static class Inventory_GetEquipedtems_Patch
     {
         public static bool Prefix(Inventory __instance, ref List<ItemDrop.ItemData> __result)
@@ -366,7 +366,7 @@ namespace EquipmentAndQuickSlots
     }
 
     //public void GetWornItems(List<ItemDrop.ItemData> worn)
-    [HarmonyPatch(typeof(Inventory), "GetWornItems")]
+    [HarmonyPatch(typeof(Inventory), nameof(Inventory.GetWornItems))]
     public static class Inventory_GetWornItems_Patch
     {
         public static bool Prefix(Inventory __instance, List<ItemDrop.ItemData> worn)
@@ -382,7 +382,7 @@ namespace EquipmentAndQuickSlots
     }
 
     //public void GetValuableItems(List<ItemDrop.ItemData> items)
-    [HarmonyPatch(typeof(Inventory), "GetValuableItems")]
+    [HarmonyPatch(typeof(Inventory), nameof(Inventory.GetValuableItems))]
     public static class Inventory_GetValuableItems_Patch
     {
         public static bool Prefix(Inventory __instance, List<ItemDrop.ItemData> items)
@@ -398,7 +398,7 @@ namespace EquipmentAndQuickSlots
     }
 
     //public List<ItemDrop.ItemData> GetAllItems() => this.m_inventory;
-    [HarmonyPatch(typeof(Inventory), "GetAllItems", new Type[] {})]
+    [HarmonyPatch(typeof(Inventory), nameof(Inventory.GetAllItems), new Type[] {})]
     public static class Inventory_GetAllItems_Patch
     {
         public static bool Prefix(Inventory __instance, ref List<ItemDrop.ItemData> __result)
@@ -414,7 +414,7 @@ namespace EquipmentAndQuickSlots
     }
 
     //public void GetAllItems(string name, List<ItemDrop.ItemData> items)
-    [HarmonyPatch(typeof(Inventory), "GetAllItems", typeof(string), typeof(List<ItemDrop.ItemData>))]
+    [HarmonyPatch(typeof(Inventory), nameof(Inventory.GetAllItems), typeof(string), typeof(List<ItemDrop.ItemData>))]
     public static class Inventory_GetAllItems2_Patch
     {
         public static bool Prefix(Inventory __instance, string name, List<ItemDrop.ItemData> items)
@@ -430,7 +430,7 @@ namespace EquipmentAndQuickSlots
     }
 
     //public void GetAllItems(ItemDrop.ItemData.ItemType type, List<ItemDrop.ItemData> items)
-    [HarmonyPatch(typeof(Inventory), "GetAllItems", typeof(ItemDrop.ItemData.ItemType), typeof(List<ItemDrop.ItemData>))]
+    [HarmonyPatch(typeof(Inventory), nameof(Inventory.GetAllItems), typeof(ItemDrop.ItemData.ItemType), typeof(List<ItemDrop.ItemData>))]
     public static class Inventory_GetAllItems3_Patch
     {
         public static bool Prefix(Inventory __instance, ItemDrop.ItemData.ItemType type, List<ItemDrop.ItemData> items)
@@ -446,7 +446,7 @@ namespace EquipmentAndQuickSlots
     }
 
     //public void UpdateTotalWeight()
-    [HarmonyPatch(typeof(Inventory), "UpdateTotalWeight")]
+    [HarmonyPatch(typeof(Inventory), nameof(Inventory.UpdateTotalWeight))]
     public static class Inventory_UpdateTotalWeight_Patch
     {
         public static bool Prefix(Inventory __instance)
@@ -462,7 +462,7 @@ namespace EquipmentAndQuickSlots
     }
 
     //public bool IsTeleportable()
-    [HarmonyPatch(typeof(Inventory), "IsTeleportable")]
+    [HarmonyPatch(typeof(Inventory), nameof(Inventory.IsTeleportable))]
     public static class Inventory_IsTeleportable_Patch
     {
         public static bool Prefix(Inventory __instance, ref bool __result)
