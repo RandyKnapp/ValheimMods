@@ -124,7 +124,6 @@ namespace EpicLoot.Adventure
             }
 
             result.Slain = pkg.ReadBool();
-
             return result;
         }
 
