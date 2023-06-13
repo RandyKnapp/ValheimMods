@@ -40,7 +40,7 @@ namespace EpicLoot
             if (Player.m_localPlayer == null)
                 return;
 
-            if (Item.m_equiped && Player.m_localPlayer.IsItemEquiped(Item))
+            if (Item.m_equipped && Player.m_localPlayer.IsItemEquiped(Item))
                 Multiplayer_Player_Patch.UpdatePlayerZDOForEquipment(Player.m_localPlayer, Item, MagicItem != null);
         }
 
@@ -679,7 +679,7 @@ namespace EpicLoot
 
         public static Player GetPlayerWithEquippedItem(ItemDrop.ItemData itemData)
         {
-            return Player.m_players.FirstOrDefault(player => player.IsItemEquiped(itemData));
+            return Player.s_players.FirstOrDefault(player => player.IsItemEquiped(itemData));
         }
     }
 
@@ -915,10 +915,10 @@ namespace EpicLoot
                 return instruction;
             }
 
-            var elementDataEquipedField = AccessTools.DeclaredField(typeof(HotkeyBar.ElementData), "m_equiped"); 
-            var itemDataEquipedField = AccessTools.DeclaredField(typeof(ItemDrop.ItemData), "m_equiped");
+            var elementDataEquipedField = AccessTools.DeclaredField(typeof(HotkeyBar.ElementData), nameof(HotkeyBar.ElementData.m_equiped)); 
+            var itemDataEquipedField = AccessTools.DeclaredField(typeof(ItemDrop.ItemData), nameof(ItemDrop.ItemData.m_equipped));
             var setActiveMethod = AccessTools.DeclaredMethod(typeof(GameObject), nameof(GameObject.SetActive));
-            var elementUsedField = AccessTools.DeclaredField(typeof(HotkeyBar.ElementData), "m_used"); 
+            var elementUsedField = AccessTools.DeclaredField(typeof(HotkeyBar.ElementData), nameof(HotkeyBar.ElementData.m_used)); 
 
             for (int i = 0; i < instrs.Count; ++i)
             {

@@ -29,7 +29,7 @@ namespace AdvancedPortals
     {
         public const string PluginId = "randyknapp.mods.advancedportals";
         public const string DisplayName = "Advanced Portals";
-        public const string Version = "1.0.3";
+        public const string Version = "1.0.5";
 
         public static readonly List<GameObject> RegisteredPrefabs = new List<GameObject>();
         public static readonly Dictionary<GameObject, PieceDef> RegisteredPieces = new Dictionary<GameObject, PieceDef>();
