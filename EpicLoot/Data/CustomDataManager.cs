@@ -630,6 +630,11 @@ namespace EpicLoot.Data
 				ZDO? zdo = netView && netView.IsValid() ? netView.GetZDO() : null;
 				if (zdo == null) return;
 				
+				if (!ZDOExtraData.s_ints.ContainsKey(zdo.m_uid))
+				{
+					ZDOExtraData.s_ints.Add(zdo.m_uid,new BinarySearchDictionary<int, int>());
+				}
+				
 				var containsDataCount = ZDOExtraData.s_ints[zdo.m_uid].ContainsKey("dataCount".GetStableHashCode());
 				
 				if (containsDataCount != true)
