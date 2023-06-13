@@ -1,9 +1,19 @@
+## Version 0.9.15 - Valheim Update 0.216.9 - Part 3
+* Updated `enchantcosts.json` with the corrected spelling of Trophy (from Trophie).
+* Fixed issue with bounties not working correctly after update to 0.9.14.
+
+## Version 0.9.14 - Valheim Update 0.216.9 - Part 2
+* Left a piece out that needed to be updated with regards to `CopyCustomDataFromUpgradedItem`
+
+## Version 0.9.13 - Valheim Update 0.216.9
+* Required updates for Valheim version 0.216.9
+
 ## Version 0.9.12 - More Performance Improvements and Bugfixes
 * Reduced the frequency that Multiplayer send Legendary Info
-  * Improves frame rates when near others.
+    * Improves frame rates when near others.
 * Slightly improved performance of Loot Beams
 * Fixed HotkeyBar Icons Updating
-  * Now updates background when items removed.
+    * Now updates background when items removed.
 
 ## Version 0.9.11 - Performance Improvements
 * Rebuilt the way Map Pins are maintained for Treasures and Bounties.

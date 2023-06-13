@@ -628,18 +628,20 @@ namespace EpicLoot.Data
 			{
 				ZNetView netView = item.GetComponent<ZNetView>();
 				ZDO? zdo = netView && netView.IsValid() ? netView.GetZDO() : null;
-				if (zdo?.m_ints?.ContainsKey("dataCount".GetStableHashCode()) != true)
+				if (zdo == null) return;
+				
+				var containsDataCount = ZDOExtraData.s_ints[zdo.m_uid].ContainsKey("dataCount".GetStableHashCode());
+				
+				if (containsDataCount != true)
 				{
 					item.m_itemData.m_customData = new Dictionary<string, string>(prefab.GetComponent<ItemDrop>().m_itemData.m_customData);
-					if (zdo is not null)
+
+					int num = 0;
+					zdo.Set("dataCount", item.m_itemData.m_customData.Count);
+					foreach (KeyValuePair<string, string> keyValuePair in item.m_itemData.m_customData)
 					{
-						int num = 0;
-						zdo.Set("dataCount", item.m_itemData.m_customData.Count);
-						foreach (KeyValuePair<string, string> keyValuePair in item.m_itemData.m_customData)
-						{
-							zdo.Set($"data_{num}", keyValuePair.Key);
-							zdo.Set($"data__{num++}", keyValuePair.Value);
-						}
+						zdo.Set($"data_{num}", keyValuePair.Key);
+						zdo.Set($"data__{num++}", keyValuePair.Value);
 					}
 				}
 			}
