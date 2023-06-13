@@ -1,6 +1,10 @@
+## Release 2.1.5
+* Fixing Keybinds to defaults if config is messed up and showing None.
+  * This was caused by a change in how keybinds are stored.
+* Tooltips when using Controllers are now visible and not hiding behind the Equipment Slots
 ## Release 2.1.4
-  * DLL packaged with 2.1.3 was incorrectly built as 2.1.2 and might not have had all the changes in it.
-  * Bumping version by 1 and reuploading correct version.
+* DLL packaged with 2.1.3 was incorrectly built as 2.1.2 and might not have had all the changes in it.
+* Bumping version by 1 and reuploading correct version.
 ## Release 2.1.3
   * Improved Controller Support Between Hotbars/Inventories
     * Known Bug: The weight calculation is still not working when using controller to transfer items.
