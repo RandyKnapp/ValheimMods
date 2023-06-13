@@ -33,16 +33,16 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="0Harmony">
-      <HintPath>G:\Steam\steamapps\common\Valheim\BepInEx\core\0Harmony.dll</HintPath>
+      <HintPath>M:\Code\VapokModBase\References\BepInEx\5.4.2101\BepInEx\core\0Harmony.dll</HintPath>
     </Reference>
     <Reference Include="assembly_utils_publicized">
-      <HintPath>G:\Steam\steamapps\common\Valheim\valheim_Data\Managed\publicized_assemblies\assembly_utils_publicized.dll</HintPath>
+      <HintPath>M:\Code\VapokModBase\References\Valheim\0.216.9\assembly_utils_publicized.dll</HintPath>
     </Reference>
     <Reference Include="assembly_valheim_publicized">
-      <HintPath>G:\Steam\steamapps\common\Valheim\valheim_Data\Managed\publicized_assemblies\assembly_valheim_publicized.dll</HintPath>
+      <HintPath>M:\Code\VapokModBase\References\Valheim\0.216.9\assembly_valheim_publicized.dll</HintPath>
     </Reference>
     <Reference Include="BepInEx">
-      <HintPath>G:\Steam\steamapps\common\Valheim\BepInEx\core\BepInEx.dll</HintPath>
+      <HintPath>M:\Code\VapokModBase\References\BepInEx\5.4.2101\BepInEx\core\BepInEx.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -53,21 +53,21 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="UnityEngine">
-      <HintPath>G:\Steam\steamapps\common\Valheim\unstripped_corlib\UnityEngine.dll</HintPath>
+      <HintPath>M:\Code\VapokModBase\References\BepInEx\5.4.2101\unstripped_corlib\UnityEngine.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AssetBundleModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>G:\Steam\steamapps\common\Valheim\unstripped_corlib\UnityEngine.AssetBundleModule.dll</HintPath>
+      <HintPath>M:\Code\VapokModBase\References\BepInEx\5.4.2101\unstripped_corlib\UnityEngine.AssetBundleModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
-      <HintPath>G:\Steam\steamapps\common\Valheim\unstripped_corlib\UnityEngine.CoreModule.dll</HintPath>
+      <HintPath>M:\Code\VapokModBase\References\BepInEx\5.4.2101\unstripped_corlib\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.ImageConversionModule">
-      <HintPath>G:\Steam\steamapps\common\Valheim\unstripped_corlib\UnityEngine.ImageConversionModule.dll</HintPath>
+      <HintPath>M:\Code\VapokModBase\References\BepInEx\5.4.2101\unstripped_corlib\UnityEngine.ImageConversionModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.TextRenderingModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>G:\Steam\steamapps\common\Valheim\unstripped_corlib\UnityEngine.TextRenderingModule.dll</HintPath>
+      <HintPath>M:\Code\VapokModBase\References\BepInEx\5.4.2101\unstripped_corlib\UnityEngine.TextRenderingModule.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

@@ -110,7 +110,7 @@ namespace EpicLoot.Crafting
                 var itemData = recipe.FromItem;
 
                 var canPutProductsInInventory = CanAddItems(player.GetInventory(), recipe.Products, 1);
-                var isEquipped = recipe.FromItem.m_equiped;
+                var isEquipped = recipe.FromItem.m_equipped;
                 var canCraft = canPutProductsInInventory && !isEquipped;
                 var tooltip = Localization.instance.Localize(canPutProductsInInventory ? (isEquipped ? "$mod_epicloot_sacrifice_equipped" : "") : "$inventory_full");
 
@@ -431,7 +431,7 @@ namespace EpicLoot.Crafting
                 {
                     if (!EpicLoot.ShowEquippedAndHotbarItemsInSacrificeTab.Value)
                     {
-                        if (item != null && item.m_equiped || boundItems.Contains(item))
+                        if (item != null && item.m_equipped || boundItems.Contains(item))
                         {
                             continue;
                         }
@@ -455,7 +455,7 @@ namespace EpicLoot.Crafting
                 return 3;
             }
 
-            if (recipe.FromItem.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Trophie)
+            if (recipe.FromItem.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Trophy)
             {
                 return recipe.Products.Exists(x => x.Key.m_itemData.IsRunestone()) ? 1 : 0;
             }

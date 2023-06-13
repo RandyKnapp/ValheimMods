@@ -23,12 +23,12 @@ namespace EpicLoot.MagicItemEffects
                 EquipmentEffectCache.Reset(player);
 
                 var shouldHaveFeatherFall = player.HasActiveMagicEffect(MagicEffectType.FeatherFall);
-                var hasFeatherFall = player.m_eqipmentStatusEffects.Contains(slowFall);
+                var hasFeatherFall = player.m_equipmentStatusEffects.Contains(slowFall);
                 if (!hasFeatherFall && shouldHaveFeatherFall)
                 {
-                    player.m_eqipmentStatusEffects.Add(slowFall);
+                    player.m_equipmentStatusEffects.Add(slowFall);
                     player.m_seman.AddStatusEffect(slowFall);
-                    var equipEffectsList = string.Join(", ", player.m_eqipmentStatusEffects.Select(x => x.name));
+                    var equipEffectsList = string.Join(", ", player.m_equipmentStatusEffects.Select(x => x.name));
                     EpicLoot.Log($"Adding feather fall. Current equip effects: {equipEffectsList}");
                 }
             }
