@@ -259,7 +259,7 @@ namespace EquipmentAndQuickSlots
         {
             player.InitializeExtendedPlayer();
             player.Extended().Load(player);
-            player.EquipIventoryItems();
+            player.EquipInventoryItems();
         }
     }
 }
