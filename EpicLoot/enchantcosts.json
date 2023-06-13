@@ -89,52 +89,52 @@
       ]
     },
     {
-      "ItemTypes" : [ "Trophie" ],
+      "ItemTypes" : [ "Trophy" ],
       "ItemNames" : [ "$item_trophy_boar", "$item_trophy_deer", "$item_trophy_greydwarf", "$item_trophy_neck", "$item_trophy_skeleton", "$item_trophy_skeletonpoison" ],
       "Products" : [ { "Item": "ShardMagic", "Amount": 1 } ]
     },
     {
-      "ItemTypes" : [ "Trophie" ],
+      "ItemTypes" : [ "Trophy" ],
       "ItemNames" : [ "$item_trophy_troll", "$item_trophy_greydwarfbrute", "$item_trophy_greydwarfshaman", "$item_trophy_blob", "$item_trophy_draugr", "$item_trophy_draugrelite", "$item_trophy_draugrfem", "$item_trophy_foresttroll", "$item_trophy_leech", "$item_trophy_surtling", "$item_trophy_wolf", "$item_trophy_wraith" ],
       "Products" : [ { "Item": "ShardRare", "Amount": 1 } ]
     },
     {
-      "ItemTypes" : [ "Trophie" ],
+      "ItemTypes" : [ "Trophy" ],
       "ItemNames" : [ "$item_trophy_fenring", "$item_trophy_goblin", "$item_trophy_hatchling", "$item_trophy_lox", "$item_trophy_sgolem", "$item_trophy_abomination", "$item_trophy_cultist", "$item_trophy_ulv", "$item_trophy_growth", "$item_trophy_tick", "$item_trophy_hare" ],
       "Products" : [ { "Item": "ShardEpic", "Amount": 1 } ]
     },
     {
-      "ItemTypes" : [ "Trophie" ],
+      "ItemTypes" : [ "Trophy" ],
       "ItemNames" : [ "$item_trophy_deathsquito", "$item_trophy_goblinbrute", "$item_trophy_goblinshaman", "$item_trophy_serpent", "$item_trophy_seeker", "$item_trophy_seeker_brute", "$item_trophy_gjall", "$item_trophy_dvergr" ],
       "Products" : [ { "Item": "ShardLegendary", "Amount": 1 } ]
     },
     {
-      "ItemTypes" : [ "Trophie" ],
+      "ItemTypes" : [ "Trophy" ],
       "ItemNames" : [ "$item_trophy_eikthyr" ],
       "Products" : [ { "Item": "RunestoneMagic", "Amount": 1 } ]
     },
     {
-      "ItemTypes" : [ "Trophie" ],
+      "ItemTypes" : [ "Trophy" ],
       "ItemNames" : [ "$item_trophy_elder" ],
       "Products" : [ { "Item": "RunestoneRare", "Amount": 1 } ]
     },
     {
-      "ItemTypes" : [ "Trophie" ],
+      "ItemTypes" : [ "Trophy" ],
       "ItemNames" : [ "$item_trophy_bonemass" ],
       "Products" : [ { "Item": "RunestoneEpic", "Amount": 1 } ]
     },
     {
-      "ItemTypes" : [ "Trophie" ],
+      "ItemTypes" : [ "Trophy" ],
       "ItemNames" : [ "$item_trophy_dragonqueen" ],
       "Products" : [ { "Item": "RunestoneLegendary", "Amount": 2 } ]
     },
     {
-      "ItemTypes" : [ "Trophie" ],
+      "ItemTypes" : [ "Trophy" ],
       "ItemNames" : [ "$item_trophy_goblinking" ],
       "Products" : [ { "Item": "RunestoneLegendary", "Amount": 4 } ]
     },
     {
-      "ItemTypes" : [ "Trophie" ],
+      "ItemTypes" : [ "Trophy" ],
       "ItemNames" : [ "$item_trophy_seekerqueen" ],
       "Products" : [ { "Item": "RunestoneLegendary", "Amount": 12 } ]
     },
