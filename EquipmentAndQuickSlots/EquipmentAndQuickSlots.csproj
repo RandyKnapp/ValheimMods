@@ -101,6 +101,7 @@
     <Compile Include="Player_Patch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TextsDialog_Patch.cs" />
+    <Compile Include="UIToolTip_Patch.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="..\ValheimUnity\AssetBundles\eaqs">
@@ -115,6 +116,7 @@
       <Link>AugaAPI.dll</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
+    <Content Include="CHANGELOG.md" />
     <Content Include="ILRepack.targets">
       <SubType>Designer</SubType>
     </Content>

@@ -1,6 +1,5 @@
 ﻿using Common;
 using System;
-using Auga;
 using UnityEngine;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;

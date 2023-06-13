@@ -35,7 +35,7 @@ namespace EquipmentAndQuickSlots
 
         public ExtendedInventory(Player player, string name, Sprite bkg, int w, int h) : base(name, bkg, w, h)
         {
-            EquipmentAndQuickSlots.LogWarning("New Extended Inventory for Player");
+            //EquipmentAndQuickSlots.LogWarning("New Extended Inventory for Player");
             _player = player;
         }
 
@@ -75,7 +75,7 @@ namespace EquipmentAndQuickSlots
 
                 if (inventory.AddItem(item))
                 {
-                    EquipmentAndQuickSlots.LogWarning($"Added item ({item.m_shared.m_name}) to ({inventory.m_name}) at ({item.m_gridPos})");
+                    //EquipmentAndQuickSlots.LogWarning($"Added item ({item.m_shared.m_name}) to ({inventory.m_name}) at ({item.m_gridPos})");
                     OverrideUpdateTotalWeight();
                     result = true;
                     break;

@@ -1,13 +1,20 @@
-﻿## Version 0.9.11 - Performance Improvements
+## Version 0.9.12 - More Performance Improvements and Bugfixes
+* Reduced the frequency that Multiplayer send Legendary Info
+  * Improves frame rates when near others.
+* Slightly improved performance of Loot Beams
+* Fixed HotkeyBar Icons Updating
+  * Now updates background when items removed.
+
+## Version 0.9.11 - Performance Improvements
 * Rebuilt the way Map Pins are maintained for Treasures and Bounties.
-  * This should no longer cause a slow down in FPS just because you have a bunch of bounties.
+    * This should no longer cause a slow down in FPS just because you have a bunch of bounties.
 * Rebuilt InventoryGui.UpdateGui Methods which were drawing Magic Item backgrounds.
-  * Removed Postfix Patches and Loops
-  * Used Transpilers instead
+    * Removed Postfix Patches and Loops
+    * Used Transpilers instead
 * Rebuilt HotKeyBar Updates
-  * Removed Postfixes and implemented Transpiler instead.
+    * Removed Postfixes and implemented Transpiler instead.
 * Changed the Location of Where Adventure Saved Data is stored.
-  * Cleaned up KnownTexts and now saves in Player Custom Data
+    * Cleaned up KnownTexts and now saves in Player Custom Data
 
 ## Version 0.9.10
 * Udpated for Valheim 0.214.305
