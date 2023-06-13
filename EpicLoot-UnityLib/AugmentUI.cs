@@ -10,7 +10,6 @@ namespace EpicLoot_UnityLib
     public class AugmentUI : EnchantingTableUIPanelBase
     {
         public Text AvailableEffectsText;
-        public Text AvailableEffectsHeader;
         public Scrollbar AvailableEffectsScrollbar;
         public List<Toggle> AugmentSelectors;
 
@@ -52,18 +51,6 @@ namespace EpicLoot_UnityLib
             foreach (var augmentSelector in AugmentSelectors)
             {
                 augmentSelector.isOn = false;
-            }
-
-            if (AvailableEffectsHeader != null)
-            {
-                var augmentChoices = 2;
-                var featureValues = EnchantingTableUpgrades.GetFeatureCurrentValue(EnchantingFeature.Augment);
-                if (!float.IsNaN(featureValues.Item1))
-                    augmentChoices = (int)featureValues.Item1;
-
-                var colorPre = augmentChoices > 2 ? "<color=#EAA800>" : "";
-                var colorPost = augmentChoices > 2 ? "</color>" : "";
-                AvailableEffectsHeader.text = Localization.instance.Localize($"$mod_epicloot_augment_availableeffects {colorPre}($mod_epicloot_augment_choices){colorPost}", augmentChoices.ToString());
             }
 
             OnAugmentIndexChanged();
@@ -180,16 +167,8 @@ namespace EpicLoot_UnityLib
                 var cost = GetAugmentCost(item, _augmentIndex);
                 CostList.SetItems(cost.Cast<IListElement>().ToList());
 
-                var featureValues = EnchantingTableUpgrades.GetFeatureCurrentValue(EnchantingFeature.Augment);
-                var reenchantCostReduction = float.IsNaN(featureValues.Item2) ? 0 : featureValues.Item2;
-                if (reenchantCostReduction > 0)
-                    CostLabel.text = Localization.instance.Localize($"$mod_epicloot_augmentcost <color=#EAA800>(-{reenchantCostReduction}% $item_coins!)</color>");
-                else
-                    CostLabel.text = Localization.instance.Localize("$mod_epicloot_augmentcost");
-
                 var canAfford = LocalPlayerCanAffordCost(cost);
-                var featureUnlocked = EnchantingTableUpgrades.IsFeatureUnlocked(EnchantingFeature.Augment);
-                MainButton.interactable = featureUnlocked && canAfford && _augmentIndex >= 0;
+                MainButton.interactable = canAfford && _augmentIndex >= 0;
             }
         }
 

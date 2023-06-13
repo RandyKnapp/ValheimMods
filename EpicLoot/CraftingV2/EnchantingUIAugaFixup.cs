@@ -41,14 +41,7 @@ namespace EpicLoot.CraftingV2
 
                 panelBase.MainButton = EpicLootAuga.ReplaceButtonFancy(panelBase.MainButton, false, true);
                 
-                if (panelBase.AvailableItems != null)
-                    AugaFixupMultiselectPrefab(panelBase.AvailableItems.ElementPrefab.gameObject);
-
-                var existingListElements = panelBase.GetComponentsInChildren<MultiSelectItemListElement>();
-                foreach (var multiSelectItemListElement in existingListElements)
-                {
-                    AugaFixupMultiselectPrefab(multiSelectItemListElement.gameObject);
-                }
+                AugaFixupMultiselectPrefab(panelBase.AvailableItems.ElementPrefab.gameObject);
 
                 var bottomRowHints = (RectTransform)panelBase.transform.Find("GamepadHints/BottomRow");
                 if (bottomRowHints)

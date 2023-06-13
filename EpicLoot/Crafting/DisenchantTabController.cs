@@ -465,7 +465,7 @@ namespace EpicLoot.Crafting
         
         public static DisenchantRecipe GenerateDisenchantRecipe(ItemDrop.ItemData item)
         {
-            var products = GetSacrificeProducts(item);
+            var products = GetDisenchantProducts(item);
             if (products == null)
             {
                 return null;
@@ -478,9 +478,9 @@ namespace EpicLoot.Crafting
             return recipe;
         }
 
-        public static List<KeyValuePair<ItemDrop, int>> GetSacrificeProducts(ItemDrop.ItemData item)
+        public static List<KeyValuePair<ItemDrop, int>> GetDisenchantProducts(ItemDrop.ItemData item)
         {
-            var productsDef = EnchantCostsHelper.GetSacrificeProducts(item);
+            var productsDef = EnchantCostsHelper.GetDisenchantProducts(item);
             if (productsDef == null)
             {
                 return null;

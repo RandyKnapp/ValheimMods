@@ -56,16 +56,16 @@
     <Analyzer Include="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\Extensions\Microsoft\Visual Studio Tools for Unity\Analyzers\Microsoft.Unity.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\X_LootBeams\Scripts\CameraOrbit.cs" />
     <Compile Include="Assets\X_RPGVFX\RPG VFX Bundle\Scripts\Hovl_Laser2.cs" />
-    <Compile Include="Assets\X_RPGVFX\RPG VFX Bundle\Demo scenes\Demo magic circles Vol 1\CameraHolder.cs" />
     <Compile Include="Assets\X_RPGVFX\RPG VFX Bundle\Scripts\Hovl_Laser.cs" />
     <Compile Include="Assets\X_RPGVFX\RPG VFX Bundle\Scripts\ProjectileMover.cs" />
     <Compile Include="Assets\X_LootBeams\Scripts\BeamSelector.cs" />
     <Compile Include="Assets\X_RPGVFX\RPG VFX Bundle\Scripts\Hovl_DemoLasers.cs" />
+    <Compile Include="Assets\X_RPGVFX\RPG VFX Bundle\Scripts\ParticleCollisionInstance.cs" />
+    <Compile Include="Assets\X_LootBeams\Scripts\CameraOrbit.cs" />
+    <Compile Include="Assets\X_RPGVFX\RPG VFX Bundle\Demo scenes\Demo magic circles Vol 1\CameraHolder.cs" />
     <Compile Include="Assets\X_RPGVFX\RPG VFX Bundle\Scripts\Rotator.cs" />
     <Compile Include="Assets\X_RPGVFX\RPG VFX Bundle\Scripts\EGA_EffectSound.cs" />
-    <Compile Include="Assets\X_RPGVFX\RPG VFX Bundle\Scripts\ParticleCollisionInstance.cs" />
     <Compile Include="Assets\X_RPGVFX\RPG VFX Bundle\Demo scenes\Demo projectiles\DemoShooting.cs" />
     <Compile Include="Assets\X_RPGVFX\RPG VFX Bundle\Demo scenes\Demo track markers\RaycastInstance.cs" />
     <Compile Include="Assets\X_RPGVFX\RPG VFX Bundle\Scripts\AutoDestroyPS.cs" />
@@ -330,17 +330,23 @@
     <Reference Include="System.IO.Compression">
       <HintPath>Packages\Compression\System.IO.Compression.dll</HintPath>
     </Reference>
-    <Reference Include="System.IO.Compression.FileSystem">
-      <HintPath>Packages\Compression\System.IO.Compression.FileSystem.dll</HintPath>
+    <Reference Include="ConnectedStorage">
+      <HintPath>Packages\valheim\ConnectedStorage.dll</HintPath>
     </Reference>
     <Reference Include="assembly_valheim">
       <HintPath>Packages\valheim\assembly_valheim.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO.Compression.FileSystem">
+      <HintPath>Packages\Compression\System.IO.Compression.FileSystem.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Security">
       <HintPath>Packages\valheim\Mono.Security.dll</HintPath>
     </Reference>
     <Reference Include="assembly_guiutils">
       <HintPath>Packages\valheim\assembly_guiutils.dll</HintPath>
+    </Reference>
+    <Reference Include="Fishlabs.Common">
+      <HintPath>Packages\valheim\Fishlabs.Common.dll</HintPath>
     </Reference>
     <Reference Include="assembly_googleanalytics">
       <HintPath>Packages\valheim\assembly_googleanalytics.dll</HintPath>
@@ -368,6 +374,9 @@
     </Reference>
     <Reference Include="assembly_steamworks">
       <HintPath>Packages\valheim\assembly_steamworks.dll</HintPath>
+    </Reference>
+    <Reference Include="Fishlabs.Core">
+      <HintPath>Packages\valheim\Fishlabs.Core.dll</HintPath>
     </Reference>
     <Reference Include="PlayFab">
       <HintPath>Packages\valheim\PlayFab.dll</HintPath>
@@ -720,6 +729,9 @@
     <Reference Include="ThunderKit.Common">
       <HintPath>Library\ScriptAssemblies\ThunderKit.Common.dll</HintPath>
     </Reference>
+    <Reference Include="Unity.TextMeshPro.Editor">
+      <HintPath>Library\ScriptAssemblies\Unity.TextMeshPro.Editor.dll</HintPath>
+    </Reference>
     <Reference Include="ThunderKit.Core">
       <HintPath>Library\ScriptAssemblies\ThunderKit.Core.dll</HintPath>
     </Reference>
@@ -734,6 +746,9 @@
     </Reference>
     <Reference Include="Unity.Timeline">
       <HintPath>Library\ScriptAssemblies\Unity.Timeline.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.TextMeshPro">
+      <HintPath>Library\ScriptAssemblies\Unity.TextMeshPro.dll</HintPath>
     </Reference>
     <Reference Include="Unity.2D.Sprite.Editor">
       <HintPath>Library\ScriptAssemblies\Unity.2D.Sprite.Editor.dll</HintPath>

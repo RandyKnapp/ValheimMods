@@ -127,18 +127,18 @@ namespace EpicLoot_UnityLib
 
         public void SelectMaxQuantity(bool noSound)
         {
-            var maxSelectedAmount = NoMax || _item == null ? 1 : (_item?.GetItem()?.m_stack ?? 0);
+            var maxSelectedAmount = NoMax ? 1 : (_item?.GetItem()?.m_stack ?? 0);
             SelectQuantity(maxSelectedAmount, noSound);
         }
 
         public bool IsSelected()
         {
-            return _selectedQuantity > 0;
+            return _item != null && _selectedQuantity > 0;
         }
 
         public bool IsMaxSelected()
         {
-            return _item == null ? _selectedQuantity > 0 : _selectedQuantity >= _item.GetItem().m_stack;
+            return _item != null && _selectedQuantity >= _item.GetItem().m_stack;
         }
 
         private void OnSelectedAmountChanged(string typedInAmount)
@@ -226,20 +226,16 @@ namespace EpicLoot_UnityLib
 
         public void SelectQuantity(int quantity, bool noSound)
         {
-            var prevQuantity = _selectedQuantity;
             if (_item == null)
-            {
-                _selectedQuantity = quantity;
-            }
+                return;
+
+            var prevQuantity = _selectedQuantity;
+            if (NoMax)
+                _selectedQuantity = Mathf.Clamp(quantity, 0, 999);
+            else if (_item.GetItem().m_shared.m_maxStackSize == 1)
+                _selectedQuantity = Mathf.Clamp(quantity, 0, 1);
             else
-            {
-                if (NoMax)
-                    _selectedQuantity = Mathf.Clamp(quantity, 0, 999);
-                else if (_item.GetItem().m_shared.m_maxStackSize == 1)
-                    _selectedQuantity = Mathf.Clamp(quantity, 0, 1);
-                else
-                    _selectedQuantity = Mathf.Clamp(quantity, 0, _item.GetItem().m_stack);
-            }
+                _selectedQuantity = Mathf.Clamp(quantity, 0, _item.GetItem().m_stack);
 
             if (!SuppressEvents && prevQuantity != _selectedQuantity)
                 OnSelectionChanged?.Invoke(this, IsSelected(), _selectedQuantity);
@@ -254,7 +250,10 @@ namespace EpicLoot_UnityLib
         {
             RefreshGamepadFocusIndicator();
 
-            var stackItem = _item != null && _item.GetItem().m_shared.m_maxStackSize > 1;
+            if (_item?.GetItem() == null)
+                return;
+
+            var stackItem = _item.GetItem().m_shared.m_maxStackSize > 1;
 
             if (MainButton != null)
             {
@@ -275,7 +274,7 @@ namespace EpicLoot_UnityLib
                 ItemSelectedQuantity.text = _selectedQuantity.ToString();
             }
 
-            if (ItemTotalQuantity != null && _item != null)
+            if (ItemTotalQuantity != null)
             {
                 ItemTotalQuantity.gameObject.SetActive(ReadOnly || stackItem);
                 var quantityText = string.Format(ReadOnly ? ReadOnlyQuantityFormat : TotalQuantityFormat, _item.GetMax());
@@ -347,7 +346,7 @@ namespace EpicLoot_UnityLib
             if (GamepadFocusIndicator == null)
                 return;
 
-            GamepadFocusIndicator.SetActive(ZInput.IsGamepadActive() && _hasGamepadFocus);
+            GamepadFocusIndicator.SetActive(ZInput.IsGamepadActive() && _item != null && _hasGamepadFocus);
         }
 
         public bool HasGamepadFocus()

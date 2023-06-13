@@ -157,7 +157,9 @@ namespace EquipmentAndQuickSlots
         public static KeyCode GetBindingKeycode(int index)
         {
             index = Mathf.Clamp(index, 0, QuickSlotCount - 1);
-            var keycodeValue = KeyCodes[index].Value.MainKey;
+            var keycodeValue = KeyCodes[index].Value.ToLowerInvariant();
+            if (keycodeValue.IsNullOrWhiteSpace())
+                return null;
 
             return keycodeValue;
         }

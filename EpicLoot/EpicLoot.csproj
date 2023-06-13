@@ -265,7 +265,6 @@
     <None Include="abilities.json" />
     <None Include="adventuredata.json" />
     <None Include="enchantcosts.json" />
-    <None Include="enchantingupgrades.json" />
     <None Include="info.md" />
     <None Include="iteminfo.json" />
     <None Include="itemnames.json" />
@@ -326,7 +325,6 @@ xcopy "$(ProjectDir)adventuredata.json" "G:\Steam\steamapps\common\Valheim-Dev\B
 xcopy "$(ProjectDir)legendaries.json" "G:\Steam\steamapps\common\Valheim-Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
 xcopy "$(ProjectDir)abilities.json" "G:\Steam\steamapps\common\Valheim-Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
 xcopy "$(ProjectDir)materialconversions.json" "G:\Steam\steamapps\common\Valheim-Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
-xcopy "$(ProjectDir)enchantingupgrades.json" "G:\Steam\steamapps\common\Valheim-Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
 </PostBuildEvent>
   </PropertyGroup>
   <Import Project="..\packages\ILRepack.Lib.MSBuild.Task.2.0.18.2\build\ILRepack.Lib.MSBuild.Task.targets" Condition="Exists('..\packages\ILRepack.Lib.MSBuild.Task.2.0.18.2\build\ILRepack.Lib.MSBuild.Task.targets')" />
@@ -336,4 +334,9 @@ xcopy "$(ProjectDir)enchantingupgrades.json" "G:\Steam\steamapps\common\Valheim-
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\ILRepack.Lib.MSBuild.Task.2.0.18.2\build\ILRepack.Lib.MSBuild.Task.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\ILRepack.Lib.MSBuild.Task.2.0.18.2\build\ILRepack.Lib.MSBuild.Task.targets'))" />
   </Target>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties manifest_1json__JsonSchema="" />
+    </VisualStudio>
+  </ProjectExtensions>
 </Project>
