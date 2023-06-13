@@ -46,8 +46,10 @@ Includes ServerSync.
 
 ### Changelist:
 
-#### 1.0.4
-  * Updates for Valheim 0.216.7 
+#### 1.0.5
+  * Updated Portal Connection logic which was preventing Advanced Portals from connecting
+#### 1.0.4 
+  * Updates for Valheim 0.216.9
 #### 1.0.3
   * Vapok fixed a bug that makes Adventure Backpacks work with Advanced Portals
 #### 1.0.2
