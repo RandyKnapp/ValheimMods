@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Reflection.Emit;
 using HarmonyLib;
 using JetBrains.Annotations;
 using UnityEngine;
@@ -189,7 +190,7 @@ namespace EquipmentAndQuickSlots
                     EquipmentAndQuickSlots.Log($"OnEquipmentRightClicked: inventoryGrid={inventoryGrid}, item={item?.m_shared.m_name}, pos={pos}");
                     if (item != null 
                         && player != null 
-                        && item.m_equiped 
+                        && item.m_equipped 
                         && player.IsItemEquiped(item)
                         && inventoryGui.m_dragItem == null)
                     {

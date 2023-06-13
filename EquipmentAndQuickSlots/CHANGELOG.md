@@ -1,3 +1,5 @@
+## Release 2.1.6
+* Updates needed for Valheim 0.216.7
 ## Release 2.1.5
 * Fixing Keybinds to defaults if config is messed up and showing None.
   * This was caused by a change in how keybinds are stored.
