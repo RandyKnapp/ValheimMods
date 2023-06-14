@@ -497,12 +497,12 @@ namespace EpicLoot
 
         public static int RollEffectCountPerRarity(ItemRarity rarity)
         {
-            var countPercents = GetEffectCountsPerRarity(rarity);
+            var countPercents = GetEffectCountsPerRarity(rarity, true);
             _weightedEffectCountTable.Setup(countPercents, x => x.Value);
             return _weightedEffectCountTable.Roll().Key;
         }
 
-        public static List<KeyValuePair<int, float>> GetEffectCountsPerRarity(ItemRarity rarity)
+        public static List<KeyValuePair<int, float>> GetEffectCountsPerRarity(ItemRarity rarity, bool useEnchantingUpgrades)
         {
             List<KeyValuePair<int, float>> result;
             switch (rarity)
@@ -528,7 +528,9 @@ namespace EpicLoot
                     throw new ArgumentOutOfRangeException(nameof(rarity), rarity, null);
             }
 
-            var featureValues = EnchantingTableUpgrades.GetFeatureCurrentValue(EnchantingFeature.Enchant);
+            var featureValues = useEnchantingUpgrades && EnchantingTableUI.instance && EnchantingTableUI.instance.SourceTable
+                ? EnchantingTableUI.instance.SourceTable.GetFeatureCurrentValue(EnchantingFeature.Enchant)
+                : new Tuple<float, float>(float.NaN, float.NaN);
             var highValueBonus = float.IsNaN(featureValues.Item1) ? 0 : featureValues.Item1;
             var midValueBonus = float.IsNaN(featureValues.Item2) ? 0 : featureValues.Item2;
             if (result.Count > 0)
@@ -752,7 +754,7 @@ namespace EpicLoot
             var availableEffects = MagicItemEffectDefinitions.GetAvailableEffects(item, magicItem, valuelessEffect ? -1 : effectIndex);
 
             var augmentChoices = 2;
-            var featureValues = EnchantingTableUpgrades.GetFeatureCurrentValue(EnchantingFeature.Augment);
+            var featureValues = EnchantingTableUI.instance.SourceTable.GetFeatureCurrentValue(EnchantingFeature.Augment);
             if (!float.IsNaN(featureValues.Item1))
                 augmentChoices = (int)featureValues.Item1;
 
