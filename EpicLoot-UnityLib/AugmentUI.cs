@@ -57,7 +57,7 @@ namespace EpicLoot_UnityLib
             if (AvailableEffectsHeader != null)
             {
                 var augmentChoices = 2;
-                var featureValues = EnchantingTableUpgrades.GetFeatureCurrentValue(EnchantingFeature.Augment);
+                var featureValues = EnchantingTableUI.instance.SourceTable.GetFeatureCurrentValue(EnchantingFeature.Augment);
                 if (!float.IsNaN(featureValues.Item1))
                     augmentChoices = (int)featureValues.Item1;
 
@@ -180,7 +180,7 @@ namespace EpicLoot_UnityLib
                 var cost = GetAugmentCost(item, _augmentIndex);
                 CostList.SetItems(cost.Cast<IListElement>().ToList());
 
-                var featureValues = EnchantingTableUpgrades.GetFeatureCurrentValue(EnchantingFeature.Augment);
+                var featureValues = EnchantingTableUI.instance.SourceTable.GetFeatureCurrentValue(EnchantingFeature.Augment);
                 var reenchantCostReduction = float.IsNaN(featureValues.Item2) ? 0 : featureValues.Item2;
                 if (reenchantCostReduction > 0)
                     CostLabel.text = Localization.instance.Localize($"$mod_epicloot_augmentcost <color=#EAA800>(-{reenchantCostReduction}% $item_coins!)</color>");
@@ -188,7 +188,7 @@ namespace EpicLoot_UnityLib
                     CostLabel.text = Localization.instance.Localize("$mod_epicloot_augmentcost");
 
                 var canAfford = LocalPlayerCanAffordCost(cost);
-                var featureUnlocked = EnchantingTableUpgrades.IsFeatureUnlocked(EnchantingFeature.Augment);
+                var featureUnlocked = EnchantingTableUI.instance.SourceTable.IsFeatureUnlocked(EnchantingFeature.Augment);
                 MainButton.interactable = featureUnlocked && canAfford && _augmentIndex >= 0;
             }
         }

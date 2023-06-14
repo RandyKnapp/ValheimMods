@@ -15,25 +15,27 @@ namespace EpicLoot_UnityLib
         public UITooltip Tooltip;
 
         public delegate void MakeFeatureUnlockTooltipDelegate(GameObject obj);
-
         public static MakeFeatureUnlockTooltipDelegate MakeFeatureUnlockTooltip;
+
+        public delegate bool UpgradesActiveDelegate(EnchantingFeature feature, out bool featureActive);
+        public static UpgradesActiveDelegate UpgradesActive;
+
 
         public void Awake()
         {
-            EnchantingTableUpgrades.OnFeatureLevelChanged += OnFeatureLevelChanged;
-
             if (Tooltip != null)
                 MakeFeatureUnlockTooltip(Tooltip.gameObject);
         }
 
-        public void OnDestroy()
-        {
-            EnchantingTableUpgrades.OnFeatureLevelChanged -= OnFeatureLevelChanged;
-        }
-
         public void OnEnable()
         {
+            EnchantingTableUI.instance.SourceTable.OnFeatureLevelChanged += OnFeatureLevelChanged;
             Refresh();
+        }
+
+        public void OnDisable()
+        {
+            EnchantingTableUI.instance.SourceTable.OnFeatureLevelChanged -= OnFeatureLevelChanged;
         }
 
         public void SetFeature(EnchantingFeature feature)
@@ -47,7 +49,10 @@ namespace EpicLoot_UnityLib
 
         public void Refresh()
         {
-            if (!EnchantingTableUpgrades.IsFeatureAvailable(Feature))
+            if (EnchantingTableUI.instance == null || EnchantingTableUI.instance.SourceTable == null)
+                return;
+
+            if (!EnchantingTableUI.instance.SourceTable.IsFeatureAvailable(Feature))
             {
                 if (UnlockedContainer != null)
                     UnlockedContainer.gameObject.SetActive(false);
@@ -56,7 +61,7 @@ namespace EpicLoot_UnityLib
                 return;
             }
 
-            if (EnchantingTableUpgrades.IsFeatureLocked(Feature))
+            if (EnchantingTableUI.instance.SourceTable.IsFeatureLocked(Feature))
             {
                 if (UnlockedContainer != null)
                     UnlockedContainer.gameObject.SetActive(false);
@@ -70,7 +75,7 @@ namespace EpicLoot_UnityLib
                 if (LockedContainer != null)
                     LockedContainer.gameObject.SetActive(false);
 
-                var level = EnchantingTableUpgrades.GetFeatureLevel(Feature);
+                var level = EnchantingTableUI.instance.SourceTable.GetFeatureLevel(Feature);
                 if (level > Stars.Length)
                 {
                     for (var index = 0; index < Stars.Length; index++)
@@ -90,7 +95,7 @@ namespace EpicLoot_UnityLib
                     for (var index = 0; index < Stars.Length; index++)
                     {
                         var star = Stars[index];
-                        star.gameObject.SetActive(level > index);
+                        star.gameObject.SetActive(level > index && UpgradesActive(Feature,out _));
                     }
 
                     if (ManyStarsLabel != null)
@@ -101,13 +106,13 @@ namespace EpicLoot_UnityLib
                     UnlockedLabel.SetActive(level == 0);
             }
 
-            if (Tooltip != null)
+            if (Tooltip != null && UpgradesActive(Feature,out _))
             {
                 Tooltip.m_topic = Localization.instance.Localize(EnchantingTableUpgrades.GetFeatureName(Feature));
 
                 var sb = new StringBuilder();
-                var locked = EnchantingTableUpgrades.IsFeatureLocked(Feature);
-                var currentLevel = EnchantingTableUpgrades.GetFeatureLevel(Feature);
+                var locked = EnchantingTableUI.instance.SourceTable.IsFeatureLocked(Feature);
+                var currentLevel = EnchantingTableUI.instance.SourceTable.GetFeatureLevel(Feature);
                 var maxLevel = EnchantingTableUpgrades.GetFeatureMaxLevel(Feature);
                 if (locked)
                     sb.AppendLine(Localization.instance.Localize("$mod_epicloot_currentlevel: <color=#AD1616><b>$mod_epicloot_featurelocked</b></color>"));
@@ -118,7 +123,7 @@ namespace EpicLoot_UnityLib
 
                 if (!locked && currentLevel > 0)
                 {
-                    var text = EnchantingTableUpgrades.GetFeatureUpgradeLevelDescription(Feature, currentLevel);
+                    var text = EnchantingTableUpgrades.GetFeatureUpgradeLevelDescription(EnchantingTableUI.instance.SourceTable, Feature, currentLevel);
                     sb.AppendLine($"<color=#EAA800>{text}</color>");
                 }
 

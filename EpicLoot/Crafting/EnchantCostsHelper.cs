@@ -160,7 +160,7 @@ namespace EpicLoot.Crafting
                 return null;
             }
 
-            var featureValues = EnchantingTableUpgrades.GetFeatureCurrentValue(EnchantingFeature.Augment);
+            var featureValues = EnchantingTableUI.instance.SourceTable.GetFeatureCurrentValue(EnchantingFeature.Augment);
             var reenchantCostReduction = float.IsNaN(featureValues.Item2) ? 0 : (featureValues.Item2 / 100.0f);
 
             var reaugmentCostIndex = Mathf.Clamp(totalAugments - 1, 0, Config.ReAugmentCosts.Count - 1);

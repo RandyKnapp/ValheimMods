@@ -735,6 +735,10 @@ Shader:
         m_Tags:
           tags:
             LIGHTMODE: ALWAYS
+        m_PackageRequirements:
+          m_Requirements: []
+          m_StatusMessage: 
+          m_CombinedStatus: 0
       - m_EditorDataHash:
         - serializedVersion: 2
           Hash: 17ddb4db78528031161740df1930e98f
@@ -3253,6 +3257,10 @@ Shader:
         m_TextureName: 
         m_Tags:
           tags: {}
+        m_PackageRequirements:
+          m_Requirements: []
+          m_StatusMessage: 
+          m_CombinedStatus: 0
       - m_EditorDataHash:
         - serializedVersion: 2
           Hash: 01e915d6c20a4f22710ab0f5329bb9c0
@@ -11485,6 +11493,10 @@ Shader:
         m_TextureName: 
         m_Tags:
           tags: {}
+        m_PackageRequirements:
+          m_Requirements: []
+          m_StatusMessage: 
+          m_CombinedStatus: 0
       m_Tags:
         tags:
           IGNOREPROJECTOR: true
@@ -11492,6 +11504,10 @@ Shader:
           PreviewType: Plane
           RenderType: Opaque
       m_LOD: 0
+      m_PackageRequirements:
+        m_Requirements: []
+        m_StatusMessage: 
+        m_CombinedStatus: 0
     m_Name: Particles/Standard Unlit2
     m_CustomEditorName: StandardParticlesShaderGUI
     m_FallbackName: VertexLit
@@ -11549,7 +11565,7 @@ Shader:
         m_TypesMask: 3
         m_IncludesHash:
           serializedVersion: 2
-          Hash: 3595cdbe6097e1012549d196b0d1afbc
+          Hash: 180ce29dd324d73f778afd59952c77b1
         m_CodeHash:
           serializedVersion: 2
           Hash: 2040a31d09488559562943b79dd3230f
@@ -11627,7 +11643,7 @@ Shader:
         m_TypesMask: 3
         m_IncludesHash:
           serializedVersion: 2
-          Hash: 3595cdbe6097e1012549d196b0d1afbc
+          Hash: 180ce29dd324d73f778afd59952c77b1
         m_CodeHash:
           serializedVersion: 2
           Hash: f0025afd400e6b75c5a3b1560c7a9f5e

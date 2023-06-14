@@ -18,11 +18,14 @@ namespace EpicLoot_UnityLib
         public AudioClip TabClickSFX;
         public AudioClip EnchantBonusSFX;
 
+        public EnchantingTable SourceTable { get; private set; }
+
         public static EnchantingTableUI instance { get; set; }
 
         public delegate void AugaFixupDelegate(EnchantingTableUI ui);
-
         public static AugaFixupDelegate AugaFixup;
+        public delegate void TabActivationDelegate(EnchantingTableUI ui);
+        public static TabActivationDelegate TabActivation;
 
         private int _hiddenFrames;
 
@@ -45,9 +48,10 @@ namespace EpicLoot_UnityLib
             }
 
             AugaFixup(this);
+            TabActivation(this);
         }
 
-        public static void Show(GameObject enchantingUiPrefab)
+        public static void Show(GameObject enchantingUiPrefab, EnchantingTable source)
         {
             if (instance == null)
             {
@@ -62,6 +66,8 @@ namespace EpicLoot_UnityLib
 
             if (instance == null)
                 return;
+
+            instance.SourceTable = source;
 
             instance.Root.SetActive(true);
             instance.Scrim.SetActive(true);
@@ -79,6 +85,7 @@ namespace EpicLoot_UnityLib
 
             instance.Root.SetActive(false);
             instance.Scrim.SetActive(false);
+            instance.SourceTable = null;
         }
 
         public static bool IsVisible()
@@ -138,6 +145,16 @@ namespace EpicLoot_UnityLib
                 if (!panelCapturedInput)
                     Hide();
             }
+        }
+
+        public static void UpdateTabActivation()
+        {
+            TabActivation(instance);
+        }
+
+        public static void UpdateUpgradeActivation()
+        {
+            TabActivation(instance);
         }
 
         public void LockTabs()

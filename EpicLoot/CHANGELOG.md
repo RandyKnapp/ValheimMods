@@ -1,3 +1,23 @@
+## Version 0.9.16 - New Feature: Enchanting Table Upgrades
+* The Enchanting Table now allows for Table Upgrades which can increase various modifiers. 
+  * Upgrades are now available individually for each Enchanting Table Feature:
+    * Sacrificing
+    * Enchanting
+    * Converting Materials
+    * Disenchanting
+    * Augmenting
+  * In addition, Enchanting Table Features are now gated and need unlocking before using.
+  * Each Enchanting Table maintains their own upgraded state.
+  * Epic Loot configuration adds a new Config Section called "Enchating Table" and two new settings that apply to ALL ENCHANTING TABLES:
+    * Upgrades Active
+      * When enabled, table features are locked and must be unlocked and upgraded. 
+      * When disabled, all table features are unlocked, and set to be Level 1, with no upgrades available.
+    * Features Active
+      * Allows Specifying which Enchanting Table Features are enabled.
+        * Select the features desired and unselect the features not desired.
+  * Enchanting Table Upgrade Costs are JSON configurable, and can be patched like other JSON's
+    * The `enchantingupgrades.json` provides adjustment for upgrade costs and upgrade benefit adjustments.
+
 ## Version 0.9.15 - Valheim Update 0.216.9 - Part 3
 * Updated `enchantcosts.json` with the corrected spelling of Trophy (from Trophie).
 * Fixed issue with bounties not working correctly after update to 0.9.14.

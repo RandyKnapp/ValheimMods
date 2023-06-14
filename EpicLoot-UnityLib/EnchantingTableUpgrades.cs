@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json;
 using UnityEngine;
 
 namespace EpicLoot_UnityLib
@@ -54,103 +53,9 @@ namespace EpicLoot_UnityLib
         public EnchantingFeatureValues UpgradeValues;
     }
 
-    public class EnchantingTableUpgradeLedger
-    {
-        public const string LedgerIdentifier = "randyknapp.mods.epicloot.EnchantingUpgradeLedger";
-        public const int FeatureUnavailableSentinel = -2;
-        public const int FeatureLockedSentinel = -1;
-
-        public event Action<EnchantingFeature, int> OnFeatureLevelChanged;
-        public event Action OnAnyFeatureLevelChanged;
-
-        private Dictionary<EnchantingFeature, int> _featureLevels = new();
-
-        public void Load()
-        {
-            var globalKeys = ZoneSystem.instance.GetGlobalKeys();
-            var ledgerGlobalKey = globalKeys.Find(x => x.StartsWith(LedgerIdentifier));
-            var ledgerData = ledgerGlobalKey?.Substring(LedgerIdentifier.Length);
-
-            if (string.IsNullOrEmpty(ledgerData))
-            {
-                Reset();
-            }
-            else
-            {
-                try
-                {
-                    _featureLevels = JsonConvert.DeserializeObject<Dictionary<EnchantingFeature, int>>(ledgerData);
-                }
-                catch (Exception)
-                {
-                    Debug.LogError("[EpicLoot] WARNING! Could not load enchanting ledger, enchanting upgrades will not work!");
-                    Reset();
-                }
-            }
-        }
-
-        public void Reset()
-        {
-            _featureLevels.Clear();
-            foreach (EnchantingFeature feature in Enum.GetValues(typeof(EnchantingFeature)))
-            {
-                var defaultLevel = EnchantingTableUpgrades.Config.DefaultFeatureLevels.TryGetValue(feature, out var level) ? level : FeatureUnavailableSentinel;
-                _featureLevels[feature] = defaultLevel;
-                OnFeatureLevelChanged?.Invoke(feature, defaultLevel);
-            }
-
-            OnAnyFeatureLevelChanged?.Invoke();
-        }
-
-        public void Save()
-        {
-            if (ZoneSystem.instance == null)
-                return;
-
-            ZoneSystem.instance.m_globalKeys.RemoveWhere(x => x.StartsWith(LedgerIdentifier));
-
-            var ledgerData = JsonConvert.SerializeObject(_featureLevels, Formatting.None);
-            ledgerData = LedgerIdentifier + ledgerData;
-            ZoneSystem.instance.SetGlobalKey(ledgerData);
-        }
-
-        public void RefreshFromGlobalKeys()
-        {
-            var previousValues = new Dictionary<EnchantingFeature, int>(_featureLevels);
-            Load();
-            var anyFeatureChanged = false;
-            foreach (var entry in _featureLevels)
-            {
-                if (entry.Value != (previousValues.TryGetValue(entry.Key, out var previousLevel) ? previousLevel : FeatureUnavailableSentinel))
-                {
-                    OnFeatureLevelChanged?.Invoke(entry.Key, entry.Value);
-                    anyFeatureChanged = true;
-                }
-            }
-
-            if (anyFeatureChanged)
-                OnAnyFeatureLevelChanged?.Invoke();
-        }
-
-        public int GetLevel(EnchantingFeature feature)
-        {
-            return _featureLevels.TryGetValue(feature, out var level) ? level : -1;
-        }
-
-        public void SetLevel(EnchantingFeature feature, int level)
-        {
-            if (level > (EnchantingTableUpgrades.Config.MaximumFeatureLevels.TryGetValue(feature, out var maxLevel) ? maxLevel : 1))
-            {
-                Debug.LogWarning($"[EpicLoot] Tried to set enchanting feature ({feature}) higher than max level!");
-                return;
-            }
-
-            _featureLevels[feature] = level;
-        }
-    }
-
     public class EnchantingFeatureUpgradeRequest
     {
+        public ZDOID TableZDO;
         public EnchantingFeature Feature;
         public int ToLevel;
         public Action<bool> ResponseCallback;
@@ -158,7 +63,6 @@ namespace EpicLoot_UnityLib
 
     public static class EnchantingTableUpgrades
     {
-        public static readonly EnchantingTableUpgradeLedger Ledger = new();
         public static EnchantingUpgradesConfig Config;
 
         public static event Action<EnchantingFeature, int> OnFeatureLevelChanged;
@@ -169,8 +73,6 @@ namespace EpicLoot_UnityLib
 
         public static void InitializeConfig(EnchantingUpgradesConfig config)
         {
-            Ledger.OnFeatureLevelChanged += (feature, i) => OnFeatureLevelChanged?.Invoke(feature, i);
-            Ledger.OnAnyFeatureLevelChanged += () => OnAnyFeatureLevelChanged?.Invoke();
             Config = config;
         }
 
@@ -178,22 +80,29 @@ namespace EpicLoot_UnityLib
         {
             _isServer = isServer;
             if (_isServer)
-                routedRpc.Register<int, int>("RequestEnchantingUpgrade", RPC_RequestEnchantingUpgrade);
+                routedRpc.Register<ZDOID, int, int>("RequestEnchantingUpgrade", RPC_RequestEnchantingUpgrade);
 
-            routedRpc.Register<int, int, bool>("EnchantingUpgradeResponse", RPC_EnchantingUpgradeResponse);
+            routedRpc.Register<ZDOID, int, int, bool>("EnchantingUpgradeResponse", RPC_EnchantingUpgradeResponse);
         }
 
-        public static void RPC_RequestEnchantingUpgrade(long sender, int featureI, int toLevel)
+        public static void RPC_RequestEnchantingUpgrade(long sender, ZDOID tableZDO, int featureI, int toLevel)
         {
             if (!_isServer)
                 return;
-            
+
+            var instance = ZNetScene.instance.FindInstance(tableZDO);
+            if (instance == null)
+                return;
+
+            var table = instance.GetComponent<EnchantingTable>();
+            if (table == null)
+                return;
+
             var feature = (EnchantingFeature)featureI;
-            if (IsFeatureAvailable(feature) && toLevel == GetFeatureLevel(feature) + 1)
+            if (table.IsFeatureAvailable(feature) && toLevel == table.GetFeatureLevel(feature) + 1)
             {
-                Ledger.SetLevel(feature, toLevel);
-                Ledger.Save();
-                ZRoutedRpc.instance.InvokeRoutedRPC(sender, "EnchantingUpgradeResponse", featureI, toLevel, true);
+                table.SetFeatureLevel(feature, toLevel);
+                ZRoutedRpc.instance.InvokeRoutedRPC(sender, "EnchantingUpgradeResponse", tableZDO, featureI, toLevel, true);
                 OnFeatureLevelChanged?.Invoke(feature, toLevel);
                 OnAnyFeatureLevelChanged?.Invoke();
             }
@@ -231,7 +140,7 @@ namespace EpicLoot_UnityLib
             return featureDescriptions[(int)feature];
         }
 
-        public static string GetFeatureUpgradeLevelDescription(EnchantingFeature feature, int level)
+        public static string GetFeatureUpgradeLevelDescription(EnchantingTable table, EnchantingFeature feature, int level)
         {
             var featureUpgradeDescriptions = new []
             {
@@ -243,11 +152,11 @@ namespace EpicLoot_UnityLib
                 "$mod_epicloot_featureupgrade_helheim",
             };
 
-            var values = EnchantingTableUpgrades.GetFeatureValue(feature, level);
+            var values = table.GetFeatureValue(feature, level);
             return Localization.instance.Localize(featureUpgradeDescriptions[(int)feature], values.Item1.ToString("0.#"), values.Item2.ToString("0.#"));
         }
 
-        private static void RPC_EnchantingUpgradeResponse(long sender, int featureI, int toLevel, bool success)
+        private static void RPC_EnchantingUpgradeResponse(long sender, ZDOID tableZDO, int featureI, int toLevel, bool success)
         {
             var feature = (EnchantingFeature)featureI;
             var listCopy = _upgradeRequests.ToList();
@@ -269,56 +178,17 @@ namespace EpicLoot_UnityLib
             }
         }
 
-        public static void RequestEnchantingUpgrade(EnchantingFeature feature, int toLevel, Action<bool> responseCallback)
+        public static void RequestEnchantingUpgrade(EnchantingFeature feature, EnchantingTable table, int toLevel, Action<bool> responseCallback)
         {
+            var tableZDO = table.GetComponent<ZNetView>().GetZDO().m_uid;
             _upgradeRequests.Add(new EnchantingFeatureUpgradeRequest()
             {
+                TableZDO = tableZDO,
                 Feature = feature,
                 ToLevel = toLevel,
                 ResponseCallback = responseCallback
             });
-            ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.Everybody, "RequestEnchantingUpgrade", (int)feature, toLevel);
-        }
-
-        public static void OnZNetStart()
-        {
-            Ledger.RefreshFromGlobalKeys();
-        }
-
-        public static void OnZNetDestroyed()
-        {
-            Ledger.Reset();
-        }
-
-        public static void OnWorldSave()
-        {
-            if (_isServer)
-                Ledger.Save();
-        }
-
-        public static void NewGlobalKeys()
-        {
-            Ledger.RefreshFromGlobalKeys();
-        }
-
-        public static bool IsFeatureAvailable(EnchantingFeature feature)
-        {
-            return Ledger.GetLevel(feature) > EnchantingTableUpgradeLedger.FeatureUnavailableSentinel;
-        }
-
-        public static bool IsFeatureLocked(EnchantingFeature feature)
-        {
-            return Ledger.GetLevel(feature) == EnchantingTableUpgradeLedger.FeatureLockedSentinel;
-        }
-
-        public static bool IsFeatureUnlocked(EnchantingFeature feature)
-        {
-            return Ledger.GetLevel(feature) > EnchantingTableUpgradeLedger.FeatureLockedSentinel;
-        }
-
-        public static int GetFeatureLevel(EnchantingFeature feature)
-        {
-            return Ledger.GetLevel(feature);
+            ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.Everybody, "RequestEnchantingUpgrade", tableZDO, (int)feature, toLevel);
         }
 
         public static int GetFeatureMaxLevel(EnchantingFeature feature)
@@ -326,29 +196,7 @@ namespace EpicLoot_UnityLib
             return Config.MaximumFeatureLevels.TryGetValue(feature, out var maxLevel) ? maxLevel : 1;
         }
 
-        public static bool IsFeatureMaxLevel(EnchantingFeature feature)
-        {
-            return GetFeatureLevel(feature) == GetFeatureMaxLevel(feature);
-        }
-
-        public static List<InventoryItemListElement> GetUnlockCost(EnchantingFeature feature)
-        {
-            if (IsFeatureUnlocked(feature))
-                Debug.LogWarning($"[EpicLoot] Warning: tried to get unlock cost for a feature that is already unlocked! ({feature})");
-
-            return GetUpgradeCostInternal(feature, 0);
-        }
-
-        public static List<InventoryItemListElement> GetUpgradeCost(EnchantingFeature feature)
-        {
-            if (IsFeatureLocked(feature) || !IsFeatureAvailable(feature))
-                Debug.LogWarning($"[EpicLoot] Warning: tried to get enchanting feature unlock cost for a feature that is locked or unavailable! ({feature})");
-
-            var currentLevel = GetFeatureLevel(feature);
-            return GetUpgradeCostInternal(feature, currentLevel + 1);
-        }
-
-        private static List<InventoryItemListElement> GetUpgradeCostInternal(EnchantingFeature feature, int level)
+        public static List<InventoryItemListElement> GetUpgradeCost(EnchantingFeature feature, int level)
         {
             var result = new List<InventoryItemListElement>();
 
@@ -393,64 +241,12 @@ namespace EpicLoot_UnityLib
                 }
 
                 var costItem = itemDrop.m_itemData.Clone();
+                costItem.m_dropPrefab = prefab;
                 costItem.m_stack = itemAmountConfig.Amount;
                 result.Add(new InventoryItemListElement() { Item = costItem });
             }
 
             return result;
-        }
-
-        public static Tuple<float, float> GetFeatureValue(EnchantingFeature feature, int level)
-        {
-            if (!IsFeatureAvailable(feature))
-                return new Tuple<float, float>(float.NaN, float.NaN);
-
-            if (level < 0 || level > GetFeatureMaxLevel(feature))
-                return new Tuple<float, float>(float.NaN, float.NaN);
-
-            var values = feature switch
-            {
-                EnchantingFeature.Sacrifice => Config.UpgradeValues.Sacrifice,
-                EnchantingFeature.ConvertMaterials => Config.UpgradeValues.ConvertMaterials,
-                EnchantingFeature.Enchant => Config.UpgradeValues.Enchant,
-                EnchantingFeature.Augment => Config.UpgradeValues.Augment,
-                EnchantingFeature.Disenchant => Config.UpgradeValues.Disenchant,
-                EnchantingFeature.Helheim => Config.UpgradeValues.Helheim,
-                _ => throw new ArgumentOutOfRangeException(nameof(feature), feature, null)
-            };
-
-            if (level >= values.Count)
-                return new Tuple<float, float>(float.NaN, float.NaN);
-
-            var levelValues = values[level];
-            if (levelValues.Length == 1)
-                return new Tuple<float, float>(levelValues[0], float.NaN);
-            if (levelValues.Length >= 2)
-                return new Tuple<float, float>(levelValues[0], levelValues[1]);
-            return new Tuple<float, float>(float.NaN, float.NaN);
-        }
-
-        public static Tuple<float, float> GetFeatureCurrentValue(EnchantingFeature feature)
-        {
-            return GetFeatureValue(feature, GetFeatureLevel(feature));
-        }
-
-        public static void Reset()
-        {
-            if (!_isServer)
-                return;
-
-            foreach (EnchantingFeature feature in Enum.GetValues(typeof(EnchantingFeature)))
-            {
-                if (IsFeatureAvailable(feature))
-                {
-                    Ledger.SetLevel(feature, EnchantingTableUpgradeLedger.FeatureLockedSentinel);
-                    Ledger.Save();
-                    OnFeatureLevelChanged?.Invoke(feature, EnchantingTableUpgradeLedger.FeatureLockedSentinel);
-                    OnAnyFeatureLevelChanged?.Invoke();
-                }
-            }
-            
         }
     }
 }

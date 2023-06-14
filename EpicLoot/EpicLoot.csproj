@@ -119,6 +119,7 @@
     <Compile Include="Adventure\Feature\BountyLedger.cs" />
     <Compile Include="Adventure\MinimapController.cs" />
     <Compile Include="Attack_Patch.cs" />
+    <Compile Include="CraftingV2\EnchantingTable_Patch.cs" />
     <Compile Include="CraftingV2\EnchantingUIAugaFixup.cs" />
     <Compile Include="CraftingV2\EnchantingUIController.cs" />
     <Compile Include="CraftingV2\EnchantingUI_Patches.cs" />
