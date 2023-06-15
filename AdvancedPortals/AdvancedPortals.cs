@@ -29,7 +29,7 @@ namespace AdvancedPortals
     {
         public const string PluginId = "randyknapp.mods.advancedportals";
         public const string DisplayName = "Advanced Portals";
-        public const string Version = "1.0.5";
+        public const string Version = "1.0.6";
 
         public static readonly List<GameObject> RegisteredPrefabs = new List<GameObject>();
         public static readonly Dictionary<GameObject, PieceDef> RegisteredPieces = new Dictionary<GameObject, PieceDef>();
@@ -95,7 +95,12 @@ namespace AdvancedPortals
                     Resources = MakeRecipeFromConfig("Ancient Portal", _ancientPortalRecipe.Value),
                     OnPrefabAdded = (prefab =>
                     {
+                        if (!prefab.TryGetComponent<TeleportWorld>(out var teleport))
+                        {
+                            teleport = prefab.AddComponent<TeleportWorld>();
+                        }
                         var advPortal = prefab.AddComponent<AdvancedPortal>();
+                        advPortal.DefaultName = "ancient";
                         advPortal.AllowedItems = allowedTypesAncient;
                         advPortal.AllowEverything = _ancientPortalAllowEverything.Value;
 
@@ -112,7 +117,13 @@ namespace AdvancedPortals
                     CraftingStation = "piece_workbench",
                     Resources = MakeRecipeFromConfig("Obsidian Portal", _obsidianPortalRecipe.Value),
                     OnPrefabAdded = (prefab => {
+                        if (!prefab.TryGetComponent<TeleportWorld>(out var teleport))
+                        {
+                            teleport = prefab.AddComponent<TeleportWorld>();
+                        }
+                        
                         var advPortal = prefab.AddComponent<AdvancedPortal>();
+                        advPortal.DefaultName = "obsidian"; 
                         advPortal.AllowedItems = allowedTypesObsidian.ToList();
                         if (_obsidianPortalAllowPreviousPortalItems.Value)
                             advPortal.AllowedItems.AddRange(allowedTypesAncient);
@@ -131,7 +142,12 @@ namespace AdvancedPortals
                     CraftingStation = "piece_workbench",
                     Resources = MakeRecipeFromConfig("Black Marble Portal", _blackMarblePortalRecipe.Value),
                     OnPrefabAdded = (prefab => {
+                        if (!prefab.TryGetComponent<TeleportWorld>(out var teleport))
+                        {
+                            teleport = prefab.AddComponent<TeleportWorld>();
+                        }
                         var advPortal = prefab.AddComponent<AdvancedPortal>();
+                        advPortal.DefaultName = "blackmarble"; 
                         advPortal.AllowedItems = allowedTypesBlackMarble.ToList();
                         if (_blackMarblePortalAllowPreviousPortalItems.Value)
                         {
