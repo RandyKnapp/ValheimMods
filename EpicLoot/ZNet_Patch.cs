@@ -1,4 +1,5 @@
 ﻿using EpicLoot.Adventure;
+using EpicLoot_UnityLib;
 using HarmonyLib;
 
 namespace EpicLoot

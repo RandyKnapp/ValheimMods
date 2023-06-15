@@ -79,7 +79,7 @@
     </Reference>
     <Reference Include="UnityEngine.ParticleSystemModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>M:\Code\VapokModBase\References\BepInEx\5.4.2101\unstripped_corlib\UnityEngine.ParticleSystemModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\unstripped_corlib\UnityEngine.ParticleSystemModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.PhysicsModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -100,10 +100,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AugmentUI.cs" />
+    <Compile Include="EnchantBonus.cs" />
+    <Compile Include="FeatureStatus.cs" />
     <Compile Include="DisenchantUI.cs" />
     <Compile Include="EnchantingTable.cs" />
     <Compile Include="EnchantingTableUI.cs" />
     <Compile Include="EnchantingTableUIPanelBase.cs" />
+    <Compile Include="EnchantingTableUpgrades.cs" />
     <Compile Include="EnchantUI.cs" />
     <Compile Include="FeatureStatus3D.cs" />
     <Compile Include="MultiSelectItemList.cs" />

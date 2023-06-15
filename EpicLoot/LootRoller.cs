@@ -8,6 +8,7 @@ using EpicLoot.Data;
 using EpicLoot.GatedItemType;
 using EpicLoot.LegendarySystem;
 using EpicLoot.MagicItemEffects;
+using EpicLoot_UnityLib;
 using JetBrains.Annotations;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -256,7 +257,7 @@ namespace EpicLoot
                         {
                             var rarity = RollItemRarity(lootDrop, luckFactor);
                             var itemType = prefab.GetComponent<ItemDrop>().m_itemData.m_shared.m_itemType;
-                            var disenchantProducts = EnchantCostsHelper.GetDisenchantProducts(true, itemType, rarity);
+                            var disenchantProducts = EnchantCostsHelper.GetSacrificeProducts(true, itemType, rarity);
                             if (disenchantProducts != null)
                             {
                                 foreach (var itemAmountConfig in disenchantProducts)
@@ -503,16 +504,22 @@ namespace EpicLoot
 
         public static List<KeyValuePair<int, float>> GetEffectCountsPerRarity(ItemRarity rarity, bool useEnchantingUpgrades)
         {
+            List<KeyValuePair<int, float>> result;
             switch (rarity)
             {
                 case ItemRarity.Magic:
-                    return Config.MagicEffectsCount.Magic.Select(x => new KeyValuePair<int, float>((int)x[0], x[1])).ToList();
+                    result = Config.MagicEffectsCount.Magic.Select(x => new KeyValuePair<int, float>((int)x[0], x[1])).ToList();
+                    break;
                 case ItemRarity.Rare:
-                    return Config.MagicEffectsCount.Rare.Select(x => new KeyValuePair<int, float>((int)x[0], x[1])).ToList();
+                    result = Config.MagicEffectsCount.Rare.Select(x => new KeyValuePair<int, float>((int)x[0], x[1])).ToList();
+                    break;
                 case ItemRarity.Epic:
-                    return Config.MagicEffectsCount.Epic.Select(x => new KeyValuePair<int, float>((int)x[0], x[1])).ToList();
+                    result = Config.MagicEffectsCount.Epic.Select(x => new KeyValuePair<int, float>((int)x[0], x[1])).ToList();
+                    break;
                 case ItemRarity.Legendary:
-                    return Config.MagicEffectsCount.Legendary.Select(x => new KeyValuePair<int, float>((int)x[0], x[1])).ToList();
+                    result = Config.MagicEffectsCount.Legendary.Select(x => new KeyValuePair<int, float>((int)x[0], x[1])).ToList();
+                    break;
+
                 case ItemRarity.Mythic:
                     // TODO: Mythic Hookup
                     return new List<KeyValuePair<int, float>>();//Config.MagicEffectsCount.Mythic.Select(x => new KeyValuePair<int, float>((int)x[0], x[1])).ToList();

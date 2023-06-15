@@ -10,6 +10,7 @@ namespace EpicLoot_UnityLib
     public class AugmentUI : EnchantingTableUIPanelBase
     {
         public Text AvailableEffectsText;
+        public Text AvailableEffectsHeader;
         public Scrollbar AvailableEffectsScrollbar;
         public List<Toggle> AugmentSelectors;
 

@@ -9,10 +9,11 @@ namespace EpicLoot_UnityLib
     {
         public Text CostLabel;
         public MultiSelectItemList CostList;
+        public EnchantBonus BonusPanel;
 
         public delegate List<InventoryItemListElement> GetDisenchantItemsDelegate();
         public delegate List<InventoryItemListElement> GetDisenchantCostDelegate(ItemDrop.ItemData item);
-        public delegate void DisenchantItemDelegate(ItemDrop.ItemData item);
+        public delegate List<InventoryItemListElement> DisenchantItemDelegate(ItemDrop.ItemData item);
 
         public static GetDisenchantItemsDelegate GetDisenchantItems;
         public static GetDisenchantCostDelegate GetDisenchantCost;
@@ -47,7 +48,15 @@ namespace EpicLoot_UnityLib
                 inventory.RemoveItem(costItem.m_shared.m_name, costItem.m_stack);
             }
 
-            DisenchantItem(item);
+            var bonusItems = DisenchantItem(item);
+
+            if (bonusItems.Count > 0)
+            {
+                EnchantingTableUI.instance.PlayEnchantBonusSFX();
+                BonusPanel.Show();
+
+                GiveItemsToPlayer(bonusItems);
+            }
 
             RefreshAvailableItems();
         }
