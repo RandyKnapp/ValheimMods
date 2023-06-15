@@ -10,7 +10,6 @@ namespace EpicLoot
         public static void Postfix(ZNet __instance)
         {
             AdventureDataManager.Bounties.RegisterRPC(__instance.m_routedRpc);
-            EnchantingTableUpgrades.RegisterRPC(__instance.m_routedRpc, Common.Utils.IsServer());
         }
     }
 
