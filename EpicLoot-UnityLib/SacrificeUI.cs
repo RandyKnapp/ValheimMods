@@ -31,6 +31,20 @@ namespace EpicLoot_UnityLib
 
             Cancel();
 
+            var chanceToDoubleEntry = EnchantingTableUI.instance.SourceTable.GetFeatureCurrentValue(EnchantingFeature.Sacrifice);
+            var chanceToDouble = float.IsNaN(chanceToDoubleEntry.Item1) ? 0.0f : chanceToDoubleEntry.Item1 / 100.0f;
+
+            if (Random.Range(0.0f, 1.0f) < chanceToDouble)
+            {
+                EnchantingTableUI.instance.PlayEnchantBonusSFX();
+                BonusPanel.Show();
+
+                foreach (var sacrificeProduct in sacrificeProducts)
+                {
+                    sacrificeProduct.Item.m_stack *= 2;
+                }
+            }
+
             var player = Player.m_localPlayer;
             var inventory = player.GetInventory();
             foreach (var selectedItem in selectedItems)
@@ -78,7 +92,8 @@ namespace EpicLoot_UnityLib
             var selectedItems = AvailableItems.GetSelectedItems<IListElement>();
             var sacrificeProducts = GetSacrificeProducts(selectedItems.Select(x => new Tuple<ItemDrop.ItemData, int>(x.Item1.GetItem(), x.Item2)).ToList());
             SacrificeProducts.SetItems(sacrificeProducts.Cast<IListElement>().ToList());
-            MainButton.interactable = selectedItems.Count > 0;
+            var featureUnlocked = EnchantingTableUI.instance.SourceTable.IsFeatureUnlocked(EnchantingFeature.Sacrifice);
+            MainButton.interactable = featureUnlocked && selectedItems.Count > 0;
         }
         
         public override void Cancel()

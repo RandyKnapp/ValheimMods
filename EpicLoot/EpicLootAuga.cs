@@ -178,6 +178,7 @@ namespace EpicLoot
         {
             var newButtonPrefab = EpicLoot.LoadAsset<GameObject>("EnchantingTabAuga");
             var newButton = Object.Instantiate(newButtonPrefab, button.transform.parent);
+            newButton.name = button.name;
             FixFonts(newButton);
             var siblingIndex = button.transform.GetSiblingIndex();
 

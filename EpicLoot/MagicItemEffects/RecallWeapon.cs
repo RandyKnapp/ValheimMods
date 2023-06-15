@@ -73,8 +73,16 @@ namespace EpicLoot.MagicItemEffects
 		}
 
 		private static void RPC_WeaponRecall(Player player, ZDOID item)
-		{
-			ZNetScene.instance.FindInstance(item)?.GetComponent<ItemDrop>()?.Pickup(player);
+        {
+            var instance = ZNetScene.instance.FindInstance(item);
+            if (instance == null)
+                return;
+
+            var itemDrop = instance.GetComponent<ItemDrop>();
+            if (itemDrop == null)
+                return;
+
+            itemDrop.Pickup(player);
 		}
 	}
 }

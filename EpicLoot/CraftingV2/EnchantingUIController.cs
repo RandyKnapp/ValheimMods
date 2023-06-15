@@ -11,11 +11,25 @@ using UnityEngine.UI;
 
 namespace EpicLoot.CraftingV2
 {
+    [Flags]
+    public enum EnchantingTabs : uint
+    {
+        None = 0,
+        Sacrifice = 1 << 0,
+        ConvertMaterials = 1 << 1,
+        Enchant = 1 << 2,
+        Augment = 1 << 3,
+        Disenchant = 1 << 4,
+        //Helheim = 1 << 5,
+        Upgrade = 1 << 6
+    }
+
     public class EnchantingUIController : MonoBehaviour
     {
         public static void Initialize()
         {
             EnchantingTableUI.AugaFixup = EnchantingUIAugaFixup.AugaFixup;
+            EnchantingTableUI.TabActivation = TabActivation;
             MultiSelectItemList.SortByRarity = SortByRarity;
             MultiSelectItemList.SortByName = SortByName;
             MultiSelectItemListElement.SetMagicItem = SetMagicItem;
@@ -32,9 +46,78 @@ namespace EpicLoot.CraftingV2
             AugmentUI.GetAvailableEffects = GetAvailableAugmentEffects;
             AugmentUI.GetAugmentCost = GetAugmentCost;
             AugmentUI.AugmentItem = AugmentItem;
+            EnchantingTable.UpgradesActive = UpgradesActive;
+            FeatureStatus.UpgradesActive = UpgradesActive;
             DisenchantUI.GetDisenchantItems = GetDisenchantItems;
             DisenchantUI.GetDisenchantCost = GetDisenchantCost;
             DisenchantUI.DisenchantItem = DisenchantItem;
+            FeatureStatus.MakeFeatureUnlockTooltip = MakeFeatureUnlockTooltip;
+        }
+
+        private static bool UpgradesActive(EnchantingFeature feature, out bool featureActive)
+        {
+            featureActive = false;
+
+            var tabEnum = EnchantingTabs.None;
+
+            switch (feature)
+            {
+                case EnchantingFeature.Augment:
+                    tabEnum = EnchantingTabs.Augment;
+                    break;
+                case EnchantingFeature.Enchant:
+                    tabEnum = EnchantingTabs.Enchant;
+                    break;
+                case EnchantingFeature.Disenchant:
+                    tabEnum = EnchantingTabs.Disenchant;
+                    break;
+                case EnchantingFeature.ConvertMaterials:
+                    tabEnum = EnchantingTabs.ConvertMaterials;
+                    break;
+                case EnchantingFeature.Sacrifice:
+                    tabEnum = EnchantingTabs.Sacrifice;
+                    break;
+            }
+
+            featureActive = (tabEnum & EpicLoot.EnchantingTableActivatedTabs.Value) != 0;
+            
+            return EpicLoot.EnchantingTableUpgradesActive.Value;
+        }
+
+        private static void TabActivation(EnchantingTableUI ui)
+        {
+            if (ui == null || ui.TabHandler == null)
+                return;
+            
+            for (int i = 0; i < ui.TabHandler.transform.childCount; i++)
+            {
+                var tabGo = ui.TabHandler.transform.GetChild(i).gameObject;
+                var tabBitwise = 1 << i;
+                switch ((EnchantingTabs)tabBitwise)
+                {
+                    case EnchantingTabs.Upgrade:
+                            tabGo.SetActive(EpicLoot.EnchantingTableUpgradesActive.Value);
+                        break;
+                    case EnchantingTabs.None:
+                        break;
+                    default:
+                        tabGo.SetActive((EpicLoot.EnchantingTableActivatedTabs.Value & (EnchantingTabs)tabBitwise) != 0);
+                        break;
+                }
+            }
+        }
+
+        private static void MakeFeatureUnlockTooltip(GameObject obj)
+        {
+            if (EpicLoot.HasAuga)
+            {
+                Auga.API.Tooltip_MakeSimpleTooltip(obj);
+            }
+            else
+            {
+                var uiTooltip = obj.GetComponent<UITooltip>();
+                uiTooltip.m_tooltipPrefab = InventoryGui.instance.m_playerGrid.m_elementPrefab.GetComponent<UITooltip>().m_tooltipPrefab;
+            }
         }
 
         private static void SetMagicItem(MultiSelectItemListElement element, ItemDrop.ItemData item, UITooltip tooltip)
@@ -173,6 +256,10 @@ namespace EpicLoot.CraftingV2
             var conversionType = (MaterialConversionType)mode;
             var conversions = MaterialConversions.Conversions.GetValues(conversionType, true);
 
+            var featureValues = EnchantingTableUI.instance.SourceTable.GetFeatureCurrentValue(EnchantingFeature.ConvertMaterials);
+            var materialConversionAmount = float.IsNaN(featureValues.Item1) ? -1 : featureValues.Item1;
+            var runestoneConversionAmount = float.IsNaN(featureValues.Item2) ? -1 : featureValues.Item2;
+
             var player = Player.m_localPlayer;
             var inventory = player.GetInventory();
 
@@ -260,7 +347,11 @@ namespace EpicLoot.CraftingV2
             sb.AppendLine($"{item.m_shared.m_name} \u2794 <color={rarityColor}>{rarityDisplay}</color> {item.GetDecoratedName(rarityColor)}");
             sb.AppendLine($"<color={rarityColor}>");
 
-            var effectCountWeights = LootRoller.GetEffectCountsPerRarity(rarity);
+            var featureValues = EnchantingTableUI.instance.SourceTable.GetFeatureCurrentValue(EnchantingFeature.Enchant);
+            var highValueBonus = float.IsNaN(featureValues.Item1) ? 0 : featureValues.Item1;
+            var midValueBonus = float.IsNaN(featureValues.Item2) ? 0 : featureValues.Item2;
+
+            var effectCountWeights = LootRoller.GetEffectCountsPerRarity(rarity, true);
             float totalWeight = effectCountWeights.Sum(x => x.Value);
             foreach (var effectCountEntry in effectCountWeights)
             {
@@ -454,7 +545,7 @@ namespace EpicLoot.CraftingV2
             magicItem.SetEffectAsAugmented(augmentindex);
             item.SaveMagicItem(magicItem);
 
-            var choiceDialog = AugmentTabController.CreateAugmentChoiceDialog();
+            var choiceDialog = AugmentTabController.CreateAugmentChoiceDialog(true);
             choiceDialog.transform.SetParent(EnchantingTableUI.instance.transform);
 
             var rt = (RectTransform)choiceDialog.transform;
@@ -572,7 +663,12 @@ namespace EpicLoot.CraftingV2
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-            
+
+            var featureValues = EnchantingTableUI.instance.SourceTable.GetFeatureCurrentValue(EnchantingFeature.Disenchant);
+            var reducedCost = 0;
+            if (!float.IsNaN(featureValues.Item2))
+                reducedCost = (int)featureValues.Item2;
+
             foreach (var itemAmountConfig in costList)
             {
                 var prefab = ObjectDB.instance.GetItemPrefab(itemAmountConfig.Item);
@@ -597,10 +693,23 @@ namespace EpicLoot.CraftingV2
             return result;
         }
 
-        private static void DisenchantItem(ItemDrop.ItemData item)
+
+        private static List<InventoryItemListElement> DisenchantItem(ItemDrop.ItemData item)
         {
             if (item.IsMagic(out var magicItem) && magicItem.CanBeDisenchanted())
             {
+                var featureValues = EnchantingTableUI.instance.SourceTable.GetFeatureCurrentValue(EnchantingFeature.Disenchant);
+                var bonusItemChance = 0;
+                if (!float.IsNaN(featureValues.Item1))
+                    bonusItemChance = (int)featureValues.Item1;
+
+                if (Random.Range(0, 99) < bonusItemChance)
+                {
+                    EnchantingTableUI.instance.PlayEnchantBonusSFX();
+
+                    bonusItems = GetSacrificeProducts(new List<Tuple<ItemDrop.ItemData, int>>() { new(item, 1) });
+                }
+
                 item.Data().Remove<MagicItemComponent>();
             }
         }

@@ -262,8 +262,25 @@ namespace EpicLoot_UnityLib
             var cost = GetConversionCost(selectedRecipes);
             CostList.SetItems(cost.Cast<IListElement>().ToList());
 
+            var baseFeatureValues = EnchantingTableUI.instance.SourceTable.GetFeatureValue(EnchantingFeature.ConvertMaterials, 0);
+            var currentFeatureValues = EnchantingTableUI.instance.SourceTable.GetFeatureCurrentValue(EnchantingFeature.ConvertMaterials);
+            var isBonusCost = false;
+            if (_mode == MaterialConversionMode.Upgrade)
+            {
+                if (currentFeatureValues.Item1 < baseFeatureValues.Item1 && allProducts.Any(x => x.Item.m_shared.m_ammoType.EndsWith("MagicCraftingMaterial")))
+                    isBonusCost = true;
+                if (currentFeatureValues.Item2 < baseFeatureValues.Item2 && allProducts.Any(x => x.Item.m_shared.m_ammoType.EndsWith("Runestone")))
+                    isBonusCost = true;
+
+                if (isBonusCost && cost.Count > 0)
+                    CostLabel.text = Localization.instance.Localize("<color=#EAA800>($mod_epicloot_bonus)</color> $mod_epicloot_upgradecost");
+                else
+                    CostLabel.text = Localization.instance.Localize("$mod_epicloot_upgradecost");
+            }
+
             var canAfford = LocalPlayerCanAffordCost(cost);
-            MainButton.interactable = canAfford && selectedRecipes.Count > 0;
+            var featureUnlocked = EnchantingTableUI.instance.SourceTable.IsFeatureUnlocked(EnchantingFeature.ConvertMaterials);
+            MainButton.interactable = featureUnlocked && canAfford && selectedRecipes.Count > 0;
         }
         
         public override void Cancel()

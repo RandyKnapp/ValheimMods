@@ -35,7 +35,7 @@ namespace EpicLoot.Crafting
 
             if (ChoiceDialog == null)
             {
-                ChoiceDialog = CreateAugmentChoiceDialog();
+                ChoiceDialog = CreateAugmentChoiceDialog(false);
             }
 
             if (!EpicLoot.HasAuga)
@@ -84,8 +84,16 @@ namespace EpicLoot.Crafting
             }
         }
 
-        public static AugmentChoiceDialog CreateAugmentChoiceDialog()
+        public static AugmentChoiceDialog CreateAugmentChoiceDialog(bool useEnchantingUpgrades)
         {
+            var augmentChoices = 3;
+            if (useEnchantingUpgrades && EnchantingTableUI.instance && EnchantingTableUI.instance.SourceTable)
+            {
+                var featureValues = EnchantingTableUI.instance.SourceTable.GetFeatureCurrentValue(EnchantingFeature.Augment);
+                if (!float.IsNaN(featureValues.Item1))
+                    augmentChoices = (int)featureValues.Item1 + 1;
+            }
+
             var inventoryGui = InventoryGui.instance;
             AugmentChoiceDialog choiceDialog;
             if (EpicLoot.HasAuga)

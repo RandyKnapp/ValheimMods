@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 328576619
+CRC: 3778305014
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 1aebf6ccb191b289fbee1d2d1a3e9ca2
+    Hash: 916b23b335f9784072939fdd812d7085
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 6dfa5ebf6c8e30e0f534e8e03e1ee8cf
+    Hash: b649f9e0c695d1cc1c7bd33406b96f4f
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -73,7 +73,13 @@ ClassTypes:
   Script: {instanceID: 0}
 - Class: 245
   Script: {instanceID: 0}
-SerializeReferenceClassIdentifiers: []
+SerializeReferenceClassIdentifiers:
+- AssemblyName: assembly_valheim
+  ClassName: EffectList
+- AssemblyName: assembly_valheim
+  ClassName: EffectList/EffectData
+- AssemblyName: assembly_valheim
+  ClassName: HitData/DamageModifiers
 Assets:
 - Assets/AdvancedPortals/Prefabs/portal_blackmarble.prefab
 - Assets/AdvancedPortals/Prefabs/portal_ancient.prefab

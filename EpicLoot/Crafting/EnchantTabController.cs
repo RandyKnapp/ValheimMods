@@ -350,7 +350,7 @@ namespace EpicLoot.Crafting
             sb.AppendLine($"{recipe.FromItem.m_shared.m_name} \u2794 <color={rarityColor}>{rarityDisplay}</color> {recipe.FromItem.GetDecoratedName(rarityColor)}");
             sb.AppendLine($"<color={rarityColor}>");
 
-            var effectCountWeights = LootRoller.GetEffectCountsPerRarity(SelectedRarity);
+            var effectCountWeights = LootRoller.GetEffectCountsPerRarity(SelectedRarity, false);
             float totalWeight = effectCountWeights.Sum(x => x.Value);
             foreach (var effectCountEntry in effectCountWeights)
             {

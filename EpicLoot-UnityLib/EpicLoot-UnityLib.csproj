@@ -53,6 +53,10 @@
     <Reference Include="BepInEx">
       <HintPath>M:\Code\VapokModBase\References\BepInEx\5.4.2101\BepInEx\core\BepInEx.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libs\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="UnityEngine">
       <HintPath>M:\Code\VapokModBase\References\BepInEx\5.4.2101\unstripped_corlib\UnityEngine.dll</HintPath>
@@ -72,6 +76,10 @@
     </Reference>
     <Reference Include="UnityEngine.InputLegacyModule">
       <HintPath>M:\Code\VapokModBase\References\BepInEx\5.4.2101\unstripped_corlib\UnityEngine.InputLegacyModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ParticleSystemModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\unstripped_corlib\UnityEngine.ParticleSystemModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.PhysicsModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -97,6 +105,7 @@
     <Compile Include="EnchantingTableUI.cs" />
     <Compile Include="EnchantingTableUIPanelBase.cs" />
     <Compile Include="EnchantUI.cs" />
+    <Compile Include="FeatureStatus3D.cs" />
     <Compile Include="MultiSelectItemList.cs" />
     <Compile Include="MultiSelectItemListElement.cs" />
     <Compile Include="MultiSelectListFocusController.cs" />
@@ -106,6 +115,8 @@
     <Compile Include="SacrificeUI.cs" />
     <Compile Include="SelectableTextColor.cs" />
     <Compile Include="SetRarityColor.cs" />
+    <Compile Include="TableUpgradeDecorations.cs" />
+    <Compile Include="UpgradeTableUI.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

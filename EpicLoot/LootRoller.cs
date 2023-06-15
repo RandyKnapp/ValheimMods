@@ -496,12 +496,12 @@ namespace EpicLoot
 
         public static int RollEffectCountPerRarity(ItemRarity rarity)
         {
-            var countPercents = GetEffectCountsPerRarity(rarity);
+            var countPercents = GetEffectCountsPerRarity(rarity, true);
             _weightedEffectCountTable.Setup(countPercents, x => x.Value);
             return _weightedEffectCountTable.Roll().Key;
         }
 
-        public static List<KeyValuePair<int, float>> GetEffectCountsPerRarity(ItemRarity rarity)
+        public static List<KeyValuePair<int, float>> GetEffectCountsPerRarity(ItemRarity rarity, bool useEnchantingUpgrades)
         {
             switch (rarity)
             {
@@ -520,6 +520,31 @@ namespace EpicLoot
                 default:
                     throw new ArgumentOutOfRangeException(nameof(rarity), rarity, null);
             }
+
+            var featureValues = useEnchantingUpgrades && EnchantingTableUI.instance && EnchantingTableUI.instance.SourceTable
+                ? EnchantingTableUI.instance.SourceTable.GetFeatureCurrentValue(EnchantingFeature.Enchant)
+                : new Tuple<float, float>(float.NaN, float.NaN);
+            var highValueBonus = float.IsNaN(featureValues.Item1) ? 0 : featureValues.Item1;
+            var midValueBonus = float.IsNaN(featureValues.Item2) ? 0 : featureValues.Item2;
+            if (result.Count > 0)
+            {
+                var entry = result[result.Count - 1];
+                result[result.Count - 1] = new KeyValuePair<int, float>(entry.Key, entry.Value + highValueBonus);
+            }
+
+            if (result.Count > 1)
+            {
+                var entry = result[result.Count - 2];
+                result[result.Count - 2] = new KeyValuePair<int, float>(entry.Key, entry.Value + midValueBonus);
+            }
+
+            if (result.Count > 2)
+            {
+                var entry = result[0];
+                result[0] = new KeyValuePair<int, float>(entry.Key, entry.Value - highValueBonus - midValueBonus);
+            }
+
+            return result;
         }
 
         public static MagicItemEffect RollEffect(MagicItemEffectDefinition effectDef, ItemRarity itemRarity, MagicItemEffectDefinition.ValueDef valuesOverride = null)
@@ -721,7 +746,12 @@ namespace EpicLoot
             var valuelessEffect = MagicItemEffectDefinitions.IsValuelessEffect(currentEffect.EffectType, rarity);
             var availableEffects = MagicItemEffectDefinitions.GetAvailableEffects(item, magicItem, valuelessEffect ? -1 : effectIndex);
 
-            for (var i = 0; i < 2 && i < availableEffects.Count; i++)
+            var augmentChoices = 2;
+            var featureValues = EnchantingTableUI.instance.SourceTable.GetFeatureCurrentValue(EnchantingFeature.Augment);
+            if (!float.IsNaN(featureValues.Item1))
+                augmentChoices = (int)featureValues.Item1;
+
+            for (var i = 0; i < augmentChoices && i < availableEffects.Count; i++)
             {
                 var newEffect = RollEffects(availableEffects, rarity, 1, false).FirstOrDefault();
                 if (newEffect == null)

@@ -13,10 +13,10 @@
 - [X] Unique legendary system
 - [ ] Create effects for in-game models of magic items
 - [X] Custom item sets (~replace troll too~ Left vanilla set system intact for Terraheim compatibility)
-- [ ] Create activated ability system
+- [X] Create activated ability system
 - [ ] Move tooltip code to postfix, parse and inject rather than redo from scratch
 - [X] Rename item if magic ~(Legendary still to-do)~
-- [ ] Custom crafting station for enchanting
+- [X] Custom crafting station for enchanting
 - [ ] Distinguish utility items (max enchantable rarity)
 - [ ] New Runes skill (enchanting)
 - [ ] New Seidr skill (for what?)
@@ -32,10 +32,10 @@
 - [ ] Blink (bow or spear, teleport to impact point)
 - [X] Life steal
 - [X] Exploding shot (bows, deal aoe damage on arrow impact)
-- [ ] Multishot (bows, shoot multiple arrows from one)
+- [X] Multishot (bows, shoot multiple arrows from one)
 - [X] Quick draw (bows, draw speed dramatically increased)
 - [X] Recall (spear, automatically pick up spear after throwing)
-- [ ] Immobilize
+- [ ] ~Immobilize~
 - [X] Modify Attack Speed (fixed now)
 - [X] Increase damage vs staggered enemies
 - [X] Duelist (sword, when off hand is empty, increase parry and block power by a lot)
@@ -80,7 +80,7 @@
 - [X] Sleipnir's Hoof (Club, increase move speed)
 - [X] Gungnir (Ancient Bark Spear)
 - [X] Mjolnir (Iron Sledge)
-- [ ] Skofnung (Iron Sword)
+- [X] Skofnung (Iron Sword)
 - [ ] Dainslief (Silver Sword)
 - [X] Angurvadal (Sword)
 - [ ] Vidar's Shoes (Iron Legs, huge kick damage boost?)
