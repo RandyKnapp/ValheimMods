@@ -89,9 +89,9 @@ namespace EpicLoot
     {
         public const string PluginId = "randyknapp.mods.epicloot";
         public const string DisplayName = "Epic Loot";
-        public const string Version = "0.9.16";
+        public const string Version = "0.9.17";
 
-        private readonly ConfigSync _configSync = new ConfigSync(PluginId) { DisplayName = DisplayName, CurrentVersion = Version, MinimumRequiredVersion = "0.9.11" };
+        private readonly ConfigSync _configSync = new ConfigSync(PluginId) { DisplayName = DisplayName, CurrentVersion = Version, MinimumRequiredVersion = "0.9.17" };
 
         private static ConfigEntry<string> _setItemColor;
         private static ConfigEntry<string> _magicRarityColor;
@@ -232,7 +232,7 @@ namespace EpicLoot
 
             //Enchanting Table
             EnchantingTableUpgradesActive = SyncedConfig("Enchanting Table", "Upgrades Active", true, "Toggles Enchanting Table Upgrade Capabilities. If false, enchanting table features will be unlocked set to Level 1");
-            EnchantingTableActivatedTabs = SyncedConfig("Enchanting Table", $"Features Active", EnchantingTabs.Sacrifice | EnchantingTabs.Augment, $"Toggles Enchanting Table Feature on and off completely.");
+            EnchantingTableActivatedTabs = SyncedConfig("Enchanting Table", $"Table Features Active", EnchantingTabs.Sacrifice | EnchantingTabs.Augment | EnchantingTabs.Enchant | EnchantingTabs.Disenchant | EnchantingTabs.Upgrade | EnchantingTabs.ConvertMaterials, $"Toggles Enchanting Table Feature on and off completely.");
             
             
             _configSync.AddLockingConfigEntry(_serverConfigLocked);
