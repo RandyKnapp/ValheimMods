@@ -39,7 +39,7 @@ namespace EpicLoot_UnityLib
                 }
             }
 
-            EnchantingTableUpgrades.OnAnyFeatureLevelChanged += Refresh;
+            EnchantingTableUI.instance.SourceTable.OnAnyFeatureLevelChanged += Refresh;
             Refresh();
         }
 
@@ -199,7 +199,7 @@ namespace EpicLoot_UnityLib
             if (canAfford)
             {
                 var currentLevel = EnchantingTableUI.instance.SourceTable.GetFeatureLevel(feature);
-                EnchantingTableUpgrades.RequestEnchantingUpgrade(feature, EnchantingTableUI.instance.SourceTable, currentLevel + 1, (success) =>
+                EnchantingTableUI.instance.SourceTable.RequestTableUpgrade(feature, currentLevel +1, (success)=>
                 {
                     if (!success)
                     {

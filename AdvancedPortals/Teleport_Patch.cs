@@ -24,6 +24,14 @@ namespace AdvancedPortals
             CurrentAdvancedPortal = __instance.GetComponent<AdvancedPortal>();
         }
 
+        [HarmonyPatch(typeof(TeleportWorld), nameof(TeleportWorld.SetText))]
+        [HarmonyPostfix]
+        public static void TeleportWorld_SetText_Postfix()
+        {
+            Game.instance.ConnectPortals();
+        }
+
+        
         [HarmonyPatch(typeof(TeleportWorld), nameof(TeleportWorld.UpdatePortal))]
         [HarmonyPostfix]
         public static void TeleportWorld_UpdatePortal_Postfix()

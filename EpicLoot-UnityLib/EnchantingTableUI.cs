@@ -63,10 +63,10 @@ namespace EpicLoot_UnityLib
                 return;
 
             instance.SourceTable = source;
-
             instance.Root.SetActive(true);
             instance.Scrim.SetActive(true);
-
+            instance.SourceTable.Refresh();
+            
             foreach (var panel in instance.Panels)
             {
                 panel.DeselectAll();

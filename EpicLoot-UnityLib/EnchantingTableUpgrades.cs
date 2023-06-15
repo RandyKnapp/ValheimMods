@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 namespace EpicLoot_UnityLib
@@ -65,51 +66,10 @@ namespace EpicLoot_UnityLib
     {
         public static EnchantingUpgradesConfig Config;
 
-        public static event Action<EnchantingFeature, int> OnFeatureLevelChanged;
-        public static event Action OnAnyFeatureLevelChanged;
-
-        private static bool _isServer;
-        private static readonly List<EnchantingFeatureUpgradeRequest> _upgradeRequests = new();
 
         public static void InitializeConfig(EnchantingUpgradesConfig config)
         {
             Config = config;
-        }
-
-        public static void RegisterRPC(ZRoutedRpc routedRpc, bool isServer)
-        {
-            _isServer = isServer;
-            if (_isServer)
-                routedRpc.Register<ZDOID, int, int>("RequestEnchantingUpgrade", RPC_RequestEnchantingUpgrade);
-
-            routedRpc.Register<ZDOID, int, int, bool>("EnchantingUpgradeResponse", RPC_EnchantingUpgradeResponse);
-        }
-
-        public static void RPC_RequestEnchantingUpgrade(long sender, ZDOID tableZDO, int featureI, int toLevel)
-        {
-            if (!_isServer)
-                return;
-
-            var instance = ZNetScene.instance.FindInstance(tableZDO);
-            if (instance == null)
-                return;
-
-            var table = instance.GetComponent<EnchantingTable>();
-            if (table == null)
-                return;
-
-            var feature = (EnchantingFeature)featureI;
-            if (table.IsFeatureAvailable(feature) && toLevel == table.GetFeatureLevel(feature) + 1)
-            {
-                table.SetFeatureLevel(feature, toLevel);
-                ZRoutedRpc.instance.InvokeRoutedRPC(sender, "EnchantingUpgradeResponse", tableZDO, featureI, toLevel, true);
-                OnFeatureLevelChanged?.Invoke(feature, toLevel);
-                OnAnyFeatureLevelChanged?.Invoke();
-            }
-            else
-            {
-                ZRoutedRpc.instance.InvokeRoutedRPC(sender, "EnchantingUpgradeResponse", featureI, toLevel, false);
-            }
         }
 
         public static string GetFeatureName(EnchantingFeature feature)
@@ -154,41 +114,6 @@ namespace EpicLoot_UnityLib
 
             var values = table.GetFeatureValue(feature, level);
             return Localization.instance.Localize(featureUpgradeDescriptions[(int)feature], values.Item1.ToString("0.#"), values.Item2.ToString("0.#"));
-        }
-
-        private static void RPC_EnchantingUpgradeResponse(long sender, ZDOID tableZDO, int featureI, int toLevel, bool success)
-        {
-            var feature = (EnchantingFeature)featureI;
-            var listCopy = _upgradeRequests.ToList();
-            foreach (var request in listCopy)
-            {
-                if (request.Feature == feature && request.ToLevel == toLevel)
-                {
-                    request.ResponseCallback.Invoke(success);
-                    _upgradeRequests.Remove(request);
-
-                    if (Player.m_localPlayer != null)
-                    {
-                        if (toLevel == 0)
-                            Player.m_localPlayer.Message(MessageHud.MessageType.Center, Localization.instance.Localize("$mod_epicloot_unlockmessage", GetFeatureName(feature)));
-                        else
-                            Player.m_localPlayer.Message(MessageHud.MessageType.Center, Localization.instance.Localize("$mod_epicloot_upgrademessage", GetFeatureName(feature), toLevel.ToString()));
-                    }
-                }
-            }
-        }
-
-        public static void RequestEnchantingUpgrade(EnchantingFeature feature, EnchantingTable table, int toLevel, Action<bool> responseCallback)
-        {
-            var tableZDO = table.GetComponent<ZNetView>().GetZDO().m_uid;
-            _upgradeRequests.Add(new EnchantingFeatureUpgradeRequest()
-            {
-                TableZDO = tableZDO,
-                Feature = feature,
-                ToLevel = toLevel,
-                ResponseCallback = responseCallback
-            });
-            ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.Everybody, "RequestEnchantingUpgrade", tableZDO, (int)feature, toLevel);
         }
 
         public static int GetFeatureMaxLevel(EnchantingFeature feature)
