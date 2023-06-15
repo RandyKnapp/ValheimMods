@@ -79,7 +79,7 @@ namespace EpicLoot_UnityLib
             for (var index = 0; index < _featureButtons.Count; index++)
             {
                 var button = _featureButtons[index];
-                var featureIsEnabled = EnchantingTableUpgrades.IsFeatureAvailable((EnchantingFeature)index);
+                var featureIsEnabled = EnchantingTableUI.instance.SourceTable.IsFeatureAvailable((EnchantingFeature)index);
                 button.gameObject.SetActive(featureIsEnabled);
             }
 
@@ -115,7 +115,7 @@ namespace EpicLoot_UnityLib
 
             var feature = (EnchantingFeature)_selectedFeature;
             CostLabel.enabled = true;
-            var maxLevel = EnchantingTableUpgrades.IsFeatureMaxLevel(feature);
+            var maxLevel = EnchantingTableUI.instance.SourceTable.IsFeatureMaxLevel(feature);
             var canAfford = true;
             if (maxLevel)
             {
@@ -124,9 +124,9 @@ namespace EpicLoot_UnityLib
             }
             else
             {
-                if (EnchantingTableUpgrades.IsFeatureLocked(feature))
+                if (EnchantingTableUI.instance.SourceTable.IsFeatureLocked(feature))
                 {
-                    var cost = EnchantingTableUpgrades.GetUnlockCost(feature);
+                    var cost = EnchantingTableUI.instance.SourceTable.GetFeatureUnlockCost(feature);
                     CostLabel.text = Localization.instance.Localize("$mod_epicloot_unlockcost");
                     CostList.SetItems(cost.Cast<IListElement>().ToList());
                     canAfford = LocalPlayerCanAffordCost(cost);
@@ -134,7 +134,7 @@ namespace EpicLoot_UnityLib
                 }
                 else
                 {
-                    var cost = EnchantingTableUpgrades.GetUpgradeCost(feature);
+                    var cost = EnchantingTableUI.instance.SourceTable.GetFeatureUpgradeCost(feature);
                     CostLabel.text = Localization.instance.Localize("$mod_epicloot_upgradecost");
                     CostList.SetItems(cost.Cast<IListElement>().ToList());
                     canAfford = LocalPlayerCanAffordCost(cost);
@@ -154,8 +154,8 @@ namespace EpicLoot_UnityLib
             var sb = new StringBuilder();
 
             var feature = (EnchantingFeature)_selectedFeature;
-            var locked = EnchantingTableUpgrades.IsFeatureLocked(feature);
-            var currentLevel = EnchantingTableUpgrades.GetFeatureLevel(feature);
+            var locked = EnchantingTableUI.instance.SourceTable.IsFeatureLocked(feature);
+            var currentLevel = EnchantingTableUI.instance.SourceTable.GetFeatureLevel(feature);
             var maxLevel = EnchantingTableUpgrades.GetFeatureMaxLevel(feature);
             sb.AppendLine(Localization.instance.Localize($"<size=26>{EnchantingTableUpgrades.GetFeatureName(feature)}</size>"));
             sb.AppendLine();
@@ -173,7 +173,7 @@ namespace EpicLoot_UnityLib
 
             for (var i = 1; i <= maxLevel; ++i)
             {
-                var text = EnchantingTableUpgrades.GetFeatureUpgradeLevelDescription(feature, i);
+                var text = EnchantingTableUpgrades.GetFeatureUpgradeLevelDescription(EnchantingTableUI.instance.SourceTable, feature, i);
                 sb.AppendLine($"<color=gray>{i}:</color> " + (i == currentLevel ? $"<color=#EAA800>{text}</color>" : text));
             }
 
@@ -187,16 +187,19 @@ namespace EpicLoot_UnityLib
                 return;
 
             var feature = (EnchantingFeature)_selectedFeature;
-            var maxLevel = EnchantingTableUpgrades.IsFeatureMaxLevel(feature);
+            var maxLevel = EnchantingTableUI.instance.SourceTable.IsFeatureMaxLevel(feature);
             if (maxLevel)
                 return;
 
-            var cost = EnchantingTableUpgrades.IsFeatureLocked(feature) ? EnchantingTableUpgrades.GetUnlockCost(feature) : EnchantingTableUpgrades.GetUpgradeCost(feature);
+            var cost = EnchantingTableUI.instance.SourceTable.IsFeatureLocked(feature) 
+                ? EnchantingTableUI.instance.SourceTable.GetFeatureUnlockCost(feature) 
+                : EnchantingTableUI.instance.SourceTable.GetFeatureUpgradeCost(feature);
+
             var canAfford = LocalPlayerCanAffordCost(cost);
             if (canAfford)
             {
-                var currentLevel = EnchantingTableUpgrades.GetFeatureLevel(feature);
-                EnchantingTableUpgrades.RequestEnchantingUpgrade(feature, currentLevel + 1, (success) =>
+                var currentLevel = EnchantingTableUI.instance.SourceTable.GetFeatureLevel(feature);
+                EnchantingTableUpgrades.RequestEnchantingUpgrade(feature, EnchantingTableUI.instance.SourceTable, currentLevel + 1, (success) =>
                 {
                     if (!success)
                     {

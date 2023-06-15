@@ -228,6 +228,7 @@ namespace EpicLoot.Adventure.Feature
             {
                 var prefab = prefabs[index];
                 var isAdd = index > 0;
+
                 var creature = Object.Instantiate(prefab, spawnPoint, Quaternion.identity);
                 var bountyTarget = creature.AddComponent<BountyTarget>();
                 bountyTarget.Initialize(bounty, prefab.name, isAdd);

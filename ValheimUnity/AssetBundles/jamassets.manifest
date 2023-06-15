@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 23491293
+CRC: 3999364241
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 927559352f161a6943decbfb5822ce9a
+    Hash: 8d831e9ac67285667eb6b1ef5705e684
   TypeTreeHash:
     serializedVersion: 2
-    Hash: affd788752098ba040bd8e87507ae2d6
+    Hash: 2d5e66af8f7faefba2cefc23022e47e2
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -30,11 +30,11 @@ ClassTypes:
 - Class: 65
   Script: {instanceID: 0}
 - Class: 114
-  Script: {fileID: 1109157524, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
-- Class: 114
   Script: {fileID: 825357479, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
 - Class: 114
   Script: {fileID: 1521249158, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
+- Class: 114
+  Script: {fileID: 1109157524, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
 - Class: 115
   Script: {instanceID: 0}
 - Class: 198
@@ -45,7 +45,17 @@ ClassTypes:
   Script: {instanceID: 0}
 - Class: 213
   Script: {instanceID: 0}
-SerializeReferenceClassIdentifiers: []
+SerializeReferenceClassIdentifiers:
+- AssemblyName: assembly_valheim
+  ClassName: Attack
+- AssemblyName: assembly_valheim
+  ClassName: EffectList
+- AssemblyName: assembly_valheim
+  ClassName: HitData/DamageTypes
+- AssemblyName: assembly_valheim
+  ClassName: ItemDrop/ItemData
+- AssemblyName: assembly_valheim
+  ClassName: ItemDrop/ItemData/SharedData
 Assets:
 - Assets/Jam/Prefabs/MushroomJam.prefab
 - Assets/Jam/Prefabs/NordicJam.prefab

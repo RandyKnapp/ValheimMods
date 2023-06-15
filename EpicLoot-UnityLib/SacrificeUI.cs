@@ -34,7 +34,7 @@ namespace EpicLoot_UnityLib
 
             Cancel();
 
-            var chanceToDoubleEntry = EnchantingTableUpgrades.GetFeatureCurrentValue(EnchantingFeature.Sacrifice);
+            var chanceToDoubleEntry = EnchantingTableUI.instance.SourceTable.GetFeatureCurrentValue(EnchantingFeature.Sacrifice);
             var chanceToDouble = float.IsNaN(chanceToDoubleEntry.Item1) ? 0.0f : chanceToDoubleEntry.Item1 / 100.0f;
 
             if (Random.Range(0.0f, 1.0f) < chanceToDouble)
@@ -74,7 +74,7 @@ namespace EpicLoot_UnityLib
             var selectedItems = AvailableItems.GetSelectedItems<IListElement>();
             var sacrificeProducts = GetSacrificeProducts(selectedItems.Select(x => new Tuple<ItemDrop.ItemData, int>(x.Item1.GetItem(), x.Item2)).ToList());
             SacrificeProducts.SetItems(sacrificeProducts.Cast<IListElement>().ToList());
-            var featureUnlocked = EnchantingTableUpgrades.IsFeatureUnlocked(EnchantingFeature.Sacrifice);
+            var featureUnlocked = EnchantingTableUI.instance.SourceTable.IsFeatureUnlocked(EnchantingFeature.Sacrifice);
             MainButton.interactable = featureUnlocked && selectedItems.Count > 0;
         }
         
