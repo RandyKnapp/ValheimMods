@@ -1,3 +1,13 @@
+## Version 0.9.17 - New Feature: Enchanting Table Upgrades (Take 2)
+* Fixed the config where it was defaulting only two features. Whoops.
+  * All features will be enabled by default.
+  * Use config to adjust appropriately.
+* Completely re-engineered how the client/server relationship works.
+  * Notes: Any table upgrades done in 0.9.16 **will be reset**. This was unavoidable.
+  * Table Upgrades are now sticky on save.
+* Updated UI Refresh to refresh information on interaction.
+  * This should result in ingredients being updated properly in most cases.
+
 ## Version 0.9.16 - New Feature: Enchanting Table Upgrades
 * The Enchanting Table now allows for Table Upgrades which can increase various modifiers. 
   * Upgrades are now available individually for each Enchanting Table Feature:

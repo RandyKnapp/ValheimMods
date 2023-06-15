@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace EpicLoot_UnityLib
@@ -20,9 +21,9 @@ namespace EpicLoot_UnityLib
         public delegate bool UpgradesActiveDelegate(EnchantingFeature feature, out bool featureActive);
         public static UpgradesActiveDelegate UpgradesActive;
 
-
+        private static readonly List<EnchantingFeatureUpgradeRequest> _upgradeRequests = new();
+        private ZNetView _nview;
         private Player _interactingPlayer;
-        private ZDO _zdo;
 
         public bool Interact(Humanoid user, bool repeat, bool alt)
         {
@@ -36,21 +37,98 @@ namespace EpicLoot_UnityLib
 
         public void Awake()
         {
+            _nview = GetComponent<ZNetView>();
+            
+            if (_nview == null || _nview.GetZDO() == null)
+                return;
+            
             var wearTear = GetComponent<WearNTear>();
             if (wearTear != null)
             {
                 wearTear.m_destroyedEffect.m_effectPrefabs = new EffectList.EffectData[]
                 {
-                    new EffectList.EffectData() { m_prefab = ZNetScene.instance.GetPrefab("vfx_SawDust") },
-                    new EffectList.EffectData() { m_prefab = ZNetScene.instance.GetPrefab("sfx_wood_destroyed") }
+                    new() { m_prefab = ZNetScene.instance.GetPrefab("vfx_SawDust") },
+                    new() { m_prefab = ZNetScene.instance.GetPrefab("sfx_wood_destroyed") }
                 };
                 wearTear.m_hitEffect.m_effectPrefabs = new EffectList.EffectData[1]
                 {
-                    new EffectList.EffectData() { m_prefab = ZNetScene.instance.GetPrefab("vfx_SawDust") }
+                    new() { m_prefab = ZNetScene.instance.GetPrefab("vfx_SawDust") }
                 };
             }
-
+            
+            _nview.Register<ZDOID, int, int>("el.TableUpgradeRequest", RPC_TableUpgradeRequest);
+            _nview.Register<ZDOID, int, int, bool>("el.TableUpgradeResponse", RPC_TableUpgradeResponse);
+            
             InitFeatureLevels();
+        }
+
+        //Function RequestTableUpgrade
+        public void RequestTableUpgrade(EnchantingFeature feature, int toLevel, Action<bool> responseCallback)
+        {
+            var tableZDO = _nview.GetZDO().m_uid;
+            _upgradeRequests.Add(new EnchantingFeatureUpgradeRequest()
+            {
+                TableZDO = tableZDO,
+                Feature = feature,
+                ToLevel = toLevel,
+                ResponseCallback = responseCallback
+            });
+            _nview.InvokeRPC("el.TableUpgradeRequest",tableZDO, (int)feature, toLevel);
+
+        }
+           
+        //Function for RPC_TableUpgradeRequest
+        private void RPC_TableUpgradeRequest(long sender, ZDOID tableZDO, int featureI, int toLevel)
+        {
+            if (!_nview.IsOwner())
+                return;
+            
+            var instance = ZNetScene.instance.FindInstance(tableZDO);
+            if (instance == null)
+                return;
+
+            var table = instance.GetComponent<EnchantingTable>();
+            if (table == null)
+                return;
+
+            var feature = (EnchantingFeature)featureI;
+            if (table.IsFeatureAvailable(feature) && toLevel == table.GetFeatureLevel(feature) + 1)
+            {
+                table.SetFeatureLevel(feature, toLevel);
+                _nview.InvokeRPC(sender,"el.TableUpgradeResponse",tableZDO, featureI, toLevel, true);
+                OnFeatureLevelChanged?.Invoke(feature, toLevel);
+                OnAnyFeatureLevelChanged?.Invoke();
+            }
+            else
+            {
+                _nview.InvokeRPC(sender,"el.TableUpgradeResponse",tableZDO, featureI, toLevel, false);
+            }
+        }
+        
+        //FUnction for RPC_TableUpgradeResponse
+        private void RPC_TableUpgradeResponse(long sender, ZDOID tableZDO, int featureI, int toLevel, bool success)
+        {
+            //Only sent to Sender of Request.
+            //Performs checks,
+            //Calls OnTableUpgradeResponse
+            var feature = (EnchantingFeature)featureI;
+            var listCopy = _upgradeRequests.ToList();
+            foreach (var request in listCopy)
+            {
+                if (request.TableZDO == tableZDO && request.Feature == feature && request.ToLevel == toLevel)
+                {
+                    request.ResponseCallback.Invoke(success);
+                    _upgradeRequests.Remove(request);
+                    if (Player.m_localPlayer != null)
+                    {
+                        if (toLevel == 0)
+                            Player.m_localPlayer.Message(MessageHud.MessageType.Center, Localization.instance.Localize("$mod_epicloot_unlockmessage", EnchantingTableUpgrades.GetFeatureName(feature)));
+                        else
+                            Player.m_localPlayer.Message(MessageHud.MessageType.Center, Localization.instance.Localize("$mod_epicloot_upgrademessage", EnchantingTableUpgrades.GetFeatureName(feature), toLevel.ToString()));
+                    }
+                }
+            }
+
         }
 
         public void Update()
@@ -62,6 +140,10 @@ namespace EpicLoot_UnityLib
             }
         }
 
+        public void Refresh()
+        {
+            OnAnyFeatureLevelChanged?.Invoke();
+        }
         public bool UseItem(Humanoid user, ItemDrop.ItemData item)
         {
             return false;
@@ -84,22 +166,21 @@ namespace EpicLoot_UnityLib
             return DisplayNameLocID;
         }
 
+        private string FormatFeatureName(string featureName)
+        {
+            return string.Format($"el.et.v1.{featureName}");
+        }
+
         private void InitFeatureLevels()
         {
-            var nview = GetComponent<ZNetView>();
-            if (nview == null)
-                return;
-
-            _zdo = nview.GetZDO();
-            if (_zdo == null)
-                return;
-
             const int uninitializedSentinel = -888;
             foreach (EnchantingFeature feature in Enum.GetValues(typeof(EnchantingFeature)))
             {
                 var featureName = feature.ToString();
-                if (_zdo.GetInt(featureName, uninitializedSentinel) == uninitializedSentinel)
-                    _zdo.Set(featureName, GetDefaultFeatureLevel(feature));
+                if (_nview.GetZDO().GetInt(FormatFeatureName(featureName), uninitializedSentinel) == uninitializedSentinel)
+                    _nview.GetZDO().Set(FormatFeatureName(featureName), GetDefaultFeatureLevel(feature)+1);
+                //For those that travel here from afar, you might be asking yourself why I'm adding and subtracting 1 to the level.
+                //It's because Iron Gate decided that 0 value ZDO's should be removed when world save occurs........
             }
         }
 
@@ -124,7 +205,7 @@ namespace EpicLoot_UnityLib
 
         public int GetFeatureLevel(EnchantingFeature feature)
         {
-            if (_zdo == null)
+            if (_nview == null)
                 return FeatureUnavailableSentinel;
 
             if (!UpgradesActive(feature, out var featureActive))
@@ -134,12 +215,15 @@ namespace EpicLoot_UnityLib
                 return FeatureUnavailableSentinel;
             
             var featureName = feature.ToString();
-            return _zdo.GetInt(featureName, FeatureUnavailableSentinel);
+            var level = _nview.GetZDO().GetInt(FormatFeatureName(featureName), FeatureUnavailableSentinel);
+            //For those that travel here from afar, you might be asking yourself why I'm adding and subtracting 1 to the level.
+            //It's because Iron Gate decided that 0 value ZDO's should be removed when world save occurs........
+            return level == FeatureUnavailableSentinel ? FeatureUnavailableSentinel : level - 1;
         }
 
         public void SetFeatureLevel(EnchantingFeature feature, int level)
         {
-            if (_zdo == null)
+            if (_nview == null)
                 return;
 
             if (!UpgradesActive(feature, out var featureActive))
@@ -150,13 +234,11 @@ namespace EpicLoot_UnityLib
             {
                 if (level > (EnchantingTableUpgrades.Config.MaximumFeatureLevels.TryGetValue(feature, out var maxLevel) ? maxLevel : 1))
                 {
-                    Debug.LogWarning($"[EpicLoot] Tried to set enchanting feature ({feature}) higher than max level!");
                     return;
                 }
             }
-
             var featureName = feature.ToString();
-            _zdo.Set(featureName, level);
+            _nview.GetZDO().Set(FormatFeatureName(featureName), level+1);
             OnFeatureLevelChanged?.Invoke(feature, level);
             OnAnyFeatureLevelChanged?.Invoke();
         }
