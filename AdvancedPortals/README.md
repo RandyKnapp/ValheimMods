@@ -46,6 +46,8 @@ Includes ServerSync.
 
 ### Changelist:
 
+#### 1.0.6
+* Restored Portal Connections on Dedicated Servers.
 #### 1.0.5
   * Updated Portal Connection logic which was preventing Advanced Portals from connecting
 #### 1.0.4 
