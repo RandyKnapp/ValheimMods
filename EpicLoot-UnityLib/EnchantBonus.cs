@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
-
+ 
 namespace EpicLoot_UnityLib
 {
     [RequireComponent(typeof(CanvasGroup))]
