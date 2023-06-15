@@ -1,3 +1,6 @@
+## Version 0.9.18 - New Feature: Enchanting Table Upgrades (Take 3)
+* Fixed an issue where when placing a table down, can cause an error.
+
 ## Version 0.9.17 - New Feature: Enchanting Table Upgrades (Take 2)
 * Fixed the config where it was defaulting only two features. Whoops.
   * All features will be enabled by default.
