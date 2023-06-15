@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using EpicLoot_UnityLib;
 using UnityEngine;
 
 namespace EpicLoot.Crafting
@@ -24,7 +26,7 @@ namespace EpicLoot.Crafting
             Config = config;
         }
 
-        public static List<ItemAmountConfig> GetDisenchantProducts(ItemDrop.ItemData item)
+        public static List<ItemAmountConfig> GetSacrificeProducts(ItemDrop.ItemData item)
         {
             var isMagic = item.IsMagic();
             var type = item.m_shared.m_itemType;
@@ -57,7 +59,7 @@ namespace EpicLoot.Crafting
             return configEntry?.Products;
         }
 
-        public static List<ItemAmountConfig> GetDisenchantProducts(bool isMagic, ItemDrop.ItemData.ItemType type, ItemRarity rarity )
+        public static List<ItemAmountConfig> GetSacrificeProducts(bool isMagic, ItemDrop.ItemData.ItemType type, ItemRarity rarity )
         {
             var configEntry = Config.DisenchantProducts.Find(x => {
                 if (x.IsMagic && !isMagic)
@@ -162,7 +164,12 @@ namespace EpicLoot.Crafting
             var reenchantCostReduction = float.IsNaN(featureValues.Item2) ? 0 : (featureValues.Item2 / 100.0f);
 
             var reaugmentCostIndex = Mathf.Clamp(totalAugments - 1, 0, Config.ReAugmentCosts.Count - 1);
-            return Config.ReAugmentCosts[reaugmentCostIndex];
+            var baseCost = Config.ReAugmentCosts[reaugmentCostIndex];
+            return new ItemAmountConfig()
+            {
+                Item = baseCost.Item,
+                Amount = Mathf.CeilToInt(baseCost.Amount * (1.0f - Mathf.Clamp01(reenchantCostReduction)))
+            };
         }
 
         public static bool EffectIsDeprecated(ItemDrop.ItemData item, int effectIndex)

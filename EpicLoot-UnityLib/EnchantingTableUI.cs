@@ -16,6 +16,7 @@ namespace EpicLoot_UnityLib
         [Header("Audio")]
         public AudioSource Audio;
         public AudioClip TabClickSFX;
+        public AudioClip EnchantBonusSFX;
 
         public EnchantingTable SourceTable { get; private set; }
 
@@ -37,9 +38,13 @@ namespace EpicLoot_UnityLib
             if (uiSFX)
                 Audio.outputAudioMixerGroup = uiSFX.GetComponent<AudioSource>().outputAudioMixerGroup;
 
-            foreach (var tanData in TabHandler.m_tabs)
+            for (var index = 0; index < TabHandler.m_tabs.Count; index++)
             {
-                tanData.m_onClick.AddListener(PlayTabSelectSFX);
+                var tabData = TabHandler.m_tabs[index];
+                tabData.m_onClick.AddListener(PlayTabSelectSFX);
+                var featureStatus = tabData.m_button.gameObject.GetComponent<FeatureStatus>();
+                if (featureStatus != null)
+                    featureStatus.SetFeature((EnchantingFeature)index);
             }
 
             AugaFixup(this);
@@ -165,6 +170,11 @@ namespace EpicLoot_UnityLib
         public void PlayTabSelectSFX()
         {
             Audio.PlayOneShot(TabClickSFX);
+        }
+
+        public void PlayEnchantBonusSFX()
+        {
+            Audio.PlayOneShot(EnchantBonusSFX);
         }
     }
 }

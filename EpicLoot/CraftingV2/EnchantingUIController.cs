@@ -8,6 +8,7 @@ using EpicLoot.Data;
 using EpicLoot_UnityLib;
 using UnityEngine;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 namespace EpicLoot.CraftingV2
 {
@@ -181,7 +182,7 @@ namespace EpicLoot.CraftingV2
                         continue;
                 }
 
-                var products = EnchantCostsHelper.GetDisenchantProducts(item);
+                var products = EnchantCostsHelper.GetSacrificeProducts(item);
                 if (products != null)
                     result.Add(new InventoryItemListElement() { Item = item });
             }
@@ -235,7 +236,7 @@ namespace EpicLoot.CraftingV2
                 if (amount <= 0)
                     continue;
 
-                var products = EnchantCostsHelper.GetDisenchantProducts(item);
+                var products = EnchantCostsHelper.GetSacrificeProducts(item);
                 if (products == null)
                     continue;
 
@@ -309,9 +310,15 @@ namespace EpicLoot.CraftingV2
 
                     reqItemDrop.m_itemData.m_dropPrefab = reqPrefab;
 
+                    var requiredAmount = requirement.Amount;
+                    if (runestoneConversionAmount > 0 && conversion.Type == MaterialConversionType.Upgrade && recipe.Product.IsRunestone() && reqItemDrop.m_itemData.IsRunestone())
+                        requiredAmount = Mathf.CeilToInt(runestoneConversionAmount * recipe.Amount);
+                    else if (materialConversionAmount > 0 && conversion.Type == MaterialConversionType.Upgrade && recipe.Product.IsMagicCraftingMaterial() && reqItemDrop.m_itemData.IsMagicCraftingMaterial())
+                        requiredAmount = Mathf.CeilToInt(materialConversionAmount * recipe.Amount);
+
                     recipe.Cost.Add(new ConversionRecipeCostUnity {
                         Item = reqItemDrop.m_itemData.Clone(),
-                        Amount = requirement.Amount
+                        Amount = requiredAmount
                     });
 
                     if (inventory.CountItems(reqItemDrop.m_itemData.m_shared.m_name) > 0)
@@ -353,14 +360,22 @@ namespace EpicLoot.CraftingV2
 
             var effectCountWeights = LootRoller.GetEffectCountsPerRarity(rarity, true);
             float totalWeight = effectCountWeights.Sum(x => x.Value);
-            foreach (var effectCountEntry in effectCountWeights)
+            for (var index = 0; index < effectCountWeights.Count; index++)
             {
+                var effectCountEntry = effectCountWeights[index];
                 var count = effectCountEntry.Key;
                 var weight = effectCountEntry.Value;
                 var percent = (int)(weight / totalWeight * 100.0f);
                 var label = count == 1 ? $"{count} $mod_epicloot_enchant_effect" : $"{count} $mod_epicloot_enchant_effects";
-                sb.AppendLine($"‣ {label} {percent}%");
+
+                if (index == effectCountWeights.Count - 1 && highValueBonus > 0)
+                    sb.AppendLine($"‣ {label} {percent}% <color=#EAA800>(+{highValueBonus}% $mod_epicloot_bonus)</color>");
+                else if (index == effectCountWeights.Count - 2 && midValueBonus > 0)
+                    sb.AppendLine($"‣ {label} {percent}% <color=#EAA800>(+{midValueBonus}% $mod_epicloot_bonus)</color>");
+                else
+                    sb.AppendLine($"‣ {label} {percent}%");
             }
+
             sb.Append("</color>");
 
             sb.AppendLine();
@@ -686,7 +701,7 @@ namespace EpicLoot.CraftingV2
                 }
 
                 var costItem = itemDrop.m_itemData.Clone();
-                costItem.m_stack = itemAmountConfig.Amount;
+                costItem.m_stack = itemAmountConfig.Amount - reducedCost;
                 result.Add(new InventoryItemListElement() { Item = costItem });
             }
 
@@ -696,6 +711,7 @@ namespace EpicLoot.CraftingV2
 
         private static List<InventoryItemListElement> DisenchantItem(ItemDrop.ItemData item)
         {
+            List<InventoryItemListElement> bonusItems = new List<InventoryItemListElement>();
             if (item.IsMagic(out var magicItem) && magicItem.CanBeDisenchanted())
             {
                 var featureValues = EnchantingTableUI.instance.SourceTable.GetFeatureCurrentValue(EnchantingFeature.Disenchant);
@@ -712,6 +728,8 @@ namespace EpicLoot.CraftingV2
 
                 item.Data().Remove<MagicItemComponent>();
             }
+
+            return bonusItems;
         }
     }
 }
