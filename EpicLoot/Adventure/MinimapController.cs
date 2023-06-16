@@ -179,10 +179,10 @@ namespace EpicLoot.Adventure
             {
                     
                 case MinimapPinQueueTask.AddBountyPin:
-                    BountyPins.Add(pinJob.BountyPin.Key,pinJob.BountyPin.Value);
+                    BountyPins[pinJob.BountyPin.Key] = pinJob.BountyPin.Value;
                     break;
                 case MinimapPinQueueTask.AddTreasurePin:
-                    TreasureMapPins.Add(pinJob.TreasurePin.Key,pinJob.TreasurePin.Value);
+                    TreasureMapPins[pinJob.TreasurePin.Key] = pinJob.TreasurePin.Value;
                     break;
             }
         }
