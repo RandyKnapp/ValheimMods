@@ -299,14 +299,23 @@
     <Reference Include="System.IO.Compression">
       <HintPath>Packages\Compression\System.IO.Compression.dll</HintPath>
     </Reference>
-    <Reference Include="ConnectedStorage">
-      <HintPath>Packages\valheim\ConnectedStorage.dll</HintPath>
+    <Reference Include="System.IO.Compression.FileSystem">
+      <HintPath>Packages\Compression\System.IO.Compression.FileSystem.dll</HintPath>
+    </Reference>
+    <Reference Include="Fishlabs.Common">
+      <HintPath>Packages\valheim\Fishlabs.Common.dll</HintPath>
     </Reference>
     <Reference Include="assembly_valheim">
       <HintPath>Packages\valheim\assembly_valheim.dll</HintPath>
     </Reference>
-    <Reference Include="System.IO.Compression.FileSystem">
-      <HintPath>Packages\Compression\System.IO.Compression.FileSystem.dll</HintPath>
+    <Reference Include="XGamingRuntime">
+      <HintPath>Packages\valheim\XGamingRuntime.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.TextMeshPro">
+      <HintPath>Packages\valheim\Unity.TextMeshPro.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.InputSystem">
+      <HintPath>Packages\valheim\Unity.InputSystem.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Security">
       <HintPath>Packages\valheim\Mono.Security.dll</HintPath>
@@ -314,11 +323,14 @@
     <Reference Include="assembly_guiutils">
       <HintPath>Packages\valheim\assembly_guiutils.dll</HintPath>
     </Reference>
-    <Reference Include="Fishlabs.Common">
-      <HintPath>Packages\valheim\Fishlabs.Common.dll</HintPath>
+    <Reference Include="Fishlabs.Core">
+      <HintPath>Packages\valheim\Fishlabs.Core.dll</HintPath>
     </Reference>
     <Reference Include="assembly_googleanalytics">
       <HintPath>Packages\valheim\assembly_googleanalytics.dll</HintPath>
+    </Reference>
+    <Reference Include="ui_lib">
+      <HintPath>Packages\valheim\ui_lib.dll</HintPath>
     </Reference>
     <Reference Include="PlayFabParty">
       <HintPath>Packages\valheim\PlayFabParty.dll</HintPath>
@@ -335,6 +347,9 @@
     <Reference Include="assembly_lux">
       <HintPath>Packages\valheim\assembly_lux.dll</HintPath>
     </Reference>
+    <Reference Include="PlayFab">
+      <HintPath>Packages\valheim\PlayFab.dll</HintPath>
+    </Reference>
     <Reference Include="assembly_postprocessing">
       <HintPath>Packages\valheim\assembly_postprocessing.dll</HintPath>
     </Reference>
@@ -344,11 +359,11 @@
     <Reference Include="assembly_steamworks">
       <HintPath>Packages\valheim\assembly_steamworks.dll</HintPath>
     </Reference>
-    <Reference Include="Fishlabs.Core">
-      <HintPath>Packages\valheim\Fishlabs.Core.dll</HintPath>
+    <Reference Include="ConnectedStorage">
+      <HintPath>Packages\valheim\ConnectedStorage.dll</HintPath>
     </Reference>
-    <Reference Include="PlayFab">
-      <HintPath>Packages\valheim\PlayFab.dll</HintPath>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>Packages\valheim\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework">
       <HintPath>Library\PackageCache\com.unity.ext.nunit@1.0.6\net35\unity-custom\nunit.framework.dll</HintPath>
@@ -710,9 +725,6 @@
     <Reference Include="ThunderKit.Common">
       <HintPath>Library\ScriptAssemblies\ThunderKit.Common.dll</HintPath>
     </Reference>
-    <Reference Include="Unity.TextMeshPro.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.TextMeshPro.Editor.dll</HintPath>
-    </Reference>
     <Reference Include="ThunderKit.Core">
       <HintPath>Library\ScriptAssemblies\ThunderKit.Core.dll</HintPath>
     </Reference>
@@ -727,9 +739,6 @@
     </Reference>
     <Reference Include="Unity.Timeline">
       <HintPath>Library\ScriptAssemblies\Unity.Timeline.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.TextMeshPro">
-      <HintPath>Library\ScriptAssemblies\Unity.TextMeshPro.dll</HintPath>
     </Reference>
     <Reference Include="Unity.2D.Sprite.Editor">
       <HintPath>Library\ScriptAssemblies\Unity.2D.Sprite.Editor.dll</HintPath>
