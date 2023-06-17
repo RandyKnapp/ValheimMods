@@ -989,7 +989,7 @@ namespace EpicLoot
 
         private static void SetupStatusEffects()
         {
-            var lightning = ObjectDB.instance.GetStatusEffect("Lightning");
+            var lightning = ObjectDB.instance.GetStatusEffect("Lightning".GetHashCode());
             var paralyzed = ScriptableObject.CreateInstance<SE_Paralyzed>();
             Common.Utils.CopyFields(lightning, paralyzed, typeof(StatusEffect));
             paralyzed.name = "Paralyze";

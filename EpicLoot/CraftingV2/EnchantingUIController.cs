@@ -465,7 +465,7 @@ namespace EpicLoot.CraftingV2
 
             MagicItemEffects.Indestructible.MakeItemIndestructible(item);
 
-            Game.instance.GetPlayerProfile().m_playerStats.m_crafts++;
+            Game.instance.GetPlayerProfile().m_playerStats.m_stats[PlayerStatType.Crafts]++;
             Gogan.LogEvent("Game", "Enchanted", item.m_shared.m_name, 1);
 
             return successDialog.gameObject;
@@ -626,7 +626,7 @@ namespace EpicLoot.CraftingV2
 
             MagicItemEffects.Indestructible.MakeItemIndestructible(item);
 
-            Game.instance.GetPlayerProfile().m_playerStats.m_crafts++;
+            Game.instance.GetPlayerProfile().m_playerStats.m_stats[PlayerStatType.Crafts]++;
             Gogan.LogEvent("Game", "Augmented", item.m_shared.m_name, 1);
 
             EquipmentEffectCache.Reset(Player.m_localPlayer);

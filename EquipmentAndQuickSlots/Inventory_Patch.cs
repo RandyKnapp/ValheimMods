@@ -87,14 +87,14 @@ namespace EquipmentAndQuickSlots
     {
         private static bool DoExtended = true;
 
-        public static bool Prefix(Inventory __instance, string name, int quality, ref ItemDrop.ItemData __result, out bool __state)
+        public static bool Prefix(Inventory __instance, string name, int quality, float worldLevel, ref ItemDrop.ItemData __result, out bool __state)
         {
             __state = false;
             if (DoExtended && Inventory_AddItem2_Patch.CallingExtended && __instance.IsExtended())
             {
                 __state = true;
                 DoExtended = false;
-                __result = __instance.Extended().OverrideFindFreeStackItem(name, quality);
+                __result = __instance.Extended().OverrideFindFreeStackItem(name, quality, worldLevel);
                 return false;
             }
             return true;
@@ -174,14 +174,14 @@ namespace EquipmentAndQuickSlots
     }
 
     //public void RemoveItem(string name, int amount, int itemQuality = -1)
-    [HarmonyPatch(typeof(Inventory), "RemoveItem", typeof(string), typeof(int), typeof(int))]
+    [HarmonyPatch(typeof(Inventory), nameof(Inventory.RemoveItem), typeof(string), typeof(int), typeof(int), typeof(bool))]
     public static class Inventory_RemoveItem4_Patch
     {
-        public static bool Prefix(Inventory __instance, string name, int amount, int itemQuality)
+        public static bool Prefix(Inventory __instance, string name, int amount, int itemQuality, bool worldLevelBased)
         {
             if (__instance.DoExtendedCall())
             {
-                __instance.Extended().OverrideRemoveItem(name, amount, itemQuality);
+                __instance.Extended().OverrideRemoveItem(name, amount, itemQuality, worldLevelBased);
                 return false;
             }
 
@@ -190,14 +190,14 @@ namespace EquipmentAndQuickSlots
     }
 
     //public bool HaveItem(string name)
-    [HarmonyPatch(typeof(Inventory), "HaveItem")]
+    [HarmonyPatch(typeof(Inventory), nameof(Inventory.HaveItem))]
     public static class Inventory_HaveItem_Patch
     {
-        public static bool Prefix(Inventory __instance, ref bool __result, string name)
+        public static bool Prefix(Inventory __instance, ref bool __result, string name, bool matchWorldLevel = true)
         {
             if (__instance.DoExtendedCall())
             {
-                __result = __instance.Extended().OverrideHaveItem(name);
+                __result = __instance.Extended().OverrideHaveItem(name, matchWorldLevel);
                 return false;
             }
 
@@ -222,14 +222,14 @@ namespace EquipmentAndQuickSlots
     }
 
     //public int CountItems(string name)
-    [HarmonyPatch(typeof(Inventory), "CountItems")]
+    [HarmonyPatch(typeof(Inventory), nameof(Inventory.CountItems))]
     public static class Inventory_CountItems_Patch
     {
-        public static bool Prefix(Inventory __instance, ref int __result, string name)
+        public static bool Prefix(Inventory __instance, ref int __result, string name, bool matchWorldLevel = true)
         {
             if (__instance.DoExtendedCall())
             {
-                __result = __instance.Extended().OverrideCountItems(name);
+                __result = __instance.Extended().OverrideCountItems(name, matchWorldLevel);
                 return false;
             }
 
@@ -270,14 +270,14 @@ namespace EquipmentAndQuickSlots
     }
 
     //public int FindFreeStackSpace(string name)
-    [HarmonyPatch(typeof(Inventory), "FindFreeStackSpace")]
+    [HarmonyPatch(typeof(Inventory), nameof(Inventory.FindFreeStackSpace))]
     public static class Inventory_FindFreeStackSpace_Patch
     {
-        public static bool Prefix(Inventory __instance, ref int __result, string name)
+        public static bool Prefix(Inventory __instance, ref int __result, string name, float worldLevel)
         {
             if (__instance.DoExtendedCall())
             {
-                __result = __instance.Extended().OverrideFindFreeStackSpace(name);
+                __result = __instance.Extended().OverrideFindFreeStackSpace(name, worldLevel);
                 return false;
             }
 
