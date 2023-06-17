@@ -821,13 +821,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 1346414788118160809}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 702673311, guid: d920e4723ba2566674efb2f0c3eb6edb, type: 3}
+  m_Script: {fileID: 702673311, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_keyCode: 0
   m_zinputKey: JoyButtonX
   m_hint: {fileID: 2859511914149340248}
   m_blockingElements: []
+  alternativeGroupHandler: {fileID: 0}
 --- !u!1 &1418623162586019817
 GameObject:
   m_ObjectHideFlags: 0
@@ -1938,13 +1939,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 3789161828951690199}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 702673311, guid: d920e4723ba2566674efb2f0c3eb6edb, type: 3}
+  m_Script: {fileID: 702673311, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_keyCode: 0
   m_zinputKey: 
   m_hint: {fileID: 6900139563150269124}
   m_blockingElements: []
+  alternativeGroupHandler: {fileID: 0}
 --- !u!1 &3844860124302043218
 GameObject:
   m_ObjectHideFlags: 0
@@ -2155,13 +2157,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 3844860124302043218}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 702673311, guid: d920e4723ba2566674efb2f0c3eb6edb, type: 3}
+  m_Script: {fileID: 702673311, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_keyCode: 0
   m_zinputKey: 
   m_hint: {fileID: 6376211781938646128}
   m_blockingElements: []
+  alternativeGroupHandler: {fileID: 0}
 --- !u!1 &4052957040936013685
 GameObject:
   m_ObjectHideFlags: 0
@@ -3618,7 +3621,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 4561106268795205872}
   m_HandleRect: {fileID: 1573427715690991418}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
