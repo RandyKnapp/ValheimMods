@@ -214,7 +214,11 @@ namespace EpicLoot
 
             for (var i = 0; i < TextContainer.childCount; i++)
             {
-                Object.Destroy(TextContainer.GetChild(i).gameObject);
+                var child = TextContainer.GetChild(i);
+                if (child != __instance.m_textArea.transform)
+                {
+                    Object.Destroy(child.gameObject);
+                }
             }
 
             var description = Object.Instantiate(TitleTextPrefab, TextContainer);
