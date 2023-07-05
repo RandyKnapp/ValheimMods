@@ -124,6 +124,9 @@
     <Compile Include="CraftingV2\EnchantingUIController.cs" />
     <Compile Include="CraftingV2\EnchantingUI_Patches.cs" />
     <Compile Include="CraftingV2\MaterialConversions.cs" />
+    <Compile Include="Crafting\AugmentHelper.cs" />
+    <Compile Include="Crafting\CraftSuccessDialog.cs" />
+    <Compile Include="Crafting\EnchantHelper.cs" />
     <Compile Include="Data\ConfigValue.cs" />
     <Compile Include="Data\EIDFLegacy.cs" />
     <Compile Include="Data\CustomDataManager.cs" />
@@ -154,19 +157,13 @@
     <Compile Include="Adventure\TreasureMapListElement.cs" />
     <Compile Include="Crafting\AugmentsAvailableDialog.cs" />
     <Compile Include="Crafting\CraftingItemExtensions.cs" />
-    <Compile Include="Crafting\CraftingStation_Patch.cs" />
     <Compile Include="Crafting\CraftingTabs.cs" />
     <Compile Include="Crafting\AugmentChoiceDialog.cs" />
-    <Compile Include="Crafting\CraftSuccessDialog.cs" />
     <Compile Include="Crafting\EnchantCostsConfig.cs" />
     <Compile Include="Crafting\EnchantCostsHelper.cs" />
-    <Compile Include="Crafting\EnchantTabController.cs" />
-    <Compile Include="Crafting\AugmentTabController.cs" />
-    <Compile Include="Crafting\InventoryGui_Patch.cs" />
     <Compile Include="Crafting\ItemDrop_Patch.cs" />
     <Compile Include="Crafting\Player_Patch.cs" />
     <Compile Include="Crafting\RecipesHelper.cs" />
-    <Compile Include="Crafting\TabController.cs" />
     <Compile Include="GatedItemType\GatedItemTypeHelper.cs" />
     <Compile Include="GatedItemType\ItemInfoConfig.cs" />
     <Compile Include="Healing\HealingQueueMono.cs" />
@@ -185,7 +182,6 @@
     <Compile Include="Patching\FilePatching.cs" />
     <Compile Include="Terminal_Patch.cs" />
     <Compile Include="Container_Patch.cs" />
-    <Compile Include="Crafting\DisenchantTabController.cs" />
     <Compile Include="ItemDrop_Patch.cs" />
     <Compile Include="LootBeams\LootBeam.cs" />
     <Compile Include="LootConfig.cs" />
