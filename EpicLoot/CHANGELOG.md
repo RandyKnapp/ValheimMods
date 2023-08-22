@@ -1,3 +1,9 @@
+## Version 0.9.19 - Hildir's Request Update
+* Provides Compatibility with Hildir's Request
+* Removes Legacy Workbench Functions
+  * To perform Enchanting, please use Enchanting Table
+* Fix for Map Pins
+
 ## Version 0.9.18 - New Feature: Enchanting Table Upgrades (Take 3)
 * Fixed an issue where when placing a table down, can cause an error.
 
