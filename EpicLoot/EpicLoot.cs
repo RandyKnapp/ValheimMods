@@ -89,9 +89,9 @@ namespace EpicLoot
     {
         public const string PluginId = "randyknapp.mods.epicloot";
         public const string DisplayName = "Epic Loot";
-        public const string Version = "0.9.18";
+        public const string Version = "0.9.19";
 
-        private readonly ConfigSync _configSync = new ConfigSync(PluginId) { DisplayName = DisplayName, CurrentVersion = Version, MinimumRequiredVersion = "0.9.17" };
+        private readonly ConfigSync _configSync = new ConfigSync(PluginId) { DisplayName = DisplayName, CurrentVersion = Version, MinimumRequiredVersion = "0.9.19" };
 
         private static ConfigEntry<string> _setItemColor;
         private static ConfigEntry<string> _magicRarityColor;
@@ -989,7 +989,7 @@ namespace EpicLoot
 
         private static void SetupStatusEffects()
         {
-            var lightning = ObjectDB.instance.GetStatusEffect("Lightning");
+            var lightning = ObjectDB.instance.GetStatusEffect("Lightning".GetHashCode());
             var paralyzed = ScriptableObject.CreateInstance<SE_Paralyzed>();
             Common.Utils.CopyFields(lightning, paralyzed, typeof(StatusEffect));
             paralyzed.name = "Paralyze";

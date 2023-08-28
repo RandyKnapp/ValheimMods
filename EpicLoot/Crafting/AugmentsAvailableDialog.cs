@@ -30,7 +30,7 @@ namespace EpicLoot.Crafting
             }
         }
 
-        public void Show(AugmentTabController.AugmentRecipe recipe)
+        public void Show(AugmentHelper.AugmentRecipe recipe)
         {
             gameObject.SetActive(true);
 
@@ -57,7 +57,7 @@ namespace EpicLoot.Crafting
 
             if (Description != null)
             {
-                var availableEffects = AugmentTabController.GetAvailableAugments(recipe, item, magicItem, rarity);
+                var availableEffects = AugmentHelper.GetAvailableAugments(recipe, item, magicItem, rarity);
                 var t = new StringBuilder();
                 if (availableEffects.Count < 20)
                 {

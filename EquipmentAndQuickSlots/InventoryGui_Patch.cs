@@ -346,12 +346,12 @@ namespace EquipmentAndQuickSlots
                     __instance.m_craftItemDoneEffects.Create(player.transform.position, Quaternion.identity);
                 }
 
-                ++Game.instance.GetPlayerProfile().m_playerStats.m_crafts;
+                ++Game.instance.GetPlayerProfile().m_playerStats.m_stats[PlayerStatType.Crafts];
                 Gogan.LogEvent("Game", "Crafted", __instance.m_craftRecipe.m_item.m_itemData.m_shared.m_name, (long)newQuality);
 
                 return false;
             }
-
+            
             return true;
         }
     }

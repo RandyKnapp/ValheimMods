@@ -19663,6 +19663,10 @@ Shader:
         m_TextureName: 
         m_Tags:
           tags: {}
+        m_PackageRequirements:
+          m_Requirements: []
+          m_StatusMessage: 
+          m_CombinedStatus: 0
       - m_EditorDataHash:
         - serializedVersion: 2
           Hash: 60f9ea108a7e102afdddb48202b14bd6
@@ -31808,6 +31812,10 @@ Shader:
         m_TextureName: 
         m_Tags:
           tags: {}
+        m_PackageRequirements:
+          m_Requirements: []
+          m_StatusMessage: 
+          m_CombinedStatus: 0
       - m_EditorDataHash:
         - serializedVersion: 2
           Hash: ee9be7a9e56539c010f8faeed88c4fc9
@@ -32978,6 +32986,10 @@ Shader:
         m_TextureName: 
         m_Tags:
           tags: {}
+        m_PackageRequirements:
+          m_Requirements: []
+          m_StatusMessage: 
+          m_CombinedStatus: 0
       - m_EditorDataHash:
         - serializedVersion: 2
           Hash: c90b2ed21b304d2a410b6c38b13a66fb
@@ -38760,11 +38772,19 @@ Shader:
         m_TextureName: 
         m_Tags:
           tags: {}
+        m_PackageRequirements:
+          m_Requirements: []
+          m_StatusMessage: 
+          m_CombinedStatus: 0
       m_Tags:
         tags:
           PerformanceChecks: False
           RenderType: Opaque
       m_LOD: 300
+      m_PackageRequirements:
+        m_Requirements: []
+        m_StatusMessage: 
+        m_CombinedStatus: 0
     - m_Passes:
       - m_EditorDataHash:
         - serializedVersion: 2
@@ -48633,6 +48653,10 @@ Shader:
         m_TextureName: 
         m_Tags:
           tags: {}
+        m_PackageRequirements:
+          m_Requirements: []
+          m_StatusMessage: 
+          m_CombinedStatus: 0
       - m_EditorDataHash:
         - serializedVersion: 2
           Hash: 95da4cb81bb02f7fe389781da001c995
@@ -58037,6 +58061,10 @@ Shader:
         m_TextureName: 
         m_Tags:
           tags: {}
+        m_PackageRequirements:
+          m_Requirements: []
+          m_StatusMessage: 
+          m_CombinedStatus: 0
       - m_EditorDataHash:
         - serializedVersion: 2
           Hash: cc5d2e648345d2cfcfefc16d34daa901
@@ -58808,11 +58836,19 @@ Shader:
         m_TextureName: 
         m_Tags:
           tags: {}
+        m_PackageRequirements:
+          m_Requirements: []
+          m_StatusMessage: 
+          m_CombinedStatus: 0
       m_Tags:
         tags:
           PerformanceChecks: False
           RenderType: Opaque
       m_LOD: 150
+      m_PackageRequirements:
+        m_Requirements: []
+        m_StatusMessage: 
+        m_CombinedStatus: 0
     m_Name: Standard TwoSided
     m_CustomEditorName: StandardShaderGUI
     m_FallbackName: VertexLit
@@ -58870,7 +58906,7 @@ Shader:
         m_TypesMask: 3
         m_IncludesHash:
           serializedVersion: 2
-          Hash: 3595cdbe6097e1012549d196b0d1afbc
+          Hash: 180ce29dd324d73f778afd59952c77b1
         m_CodeHash:
           serializedVersion: 2
           Hash: 2040a31d09488559562943b79dd3230f
@@ -58948,7 +58984,7 @@ Shader:
         m_TypesMask: 3
         m_IncludesHash:
           serializedVersion: 2
-          Hash: 3595cdbe6097e1012549d196b0d1afbc
+          Hash: 180ce29dd324d73f778afd59952c77b1
         m_CodeHash:
           serializedVersion: 2
           Hash: f0025afd400e6b75c5a3b1560c7a9f5e

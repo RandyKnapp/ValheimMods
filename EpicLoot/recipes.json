@@ -358,7 +358,7 @@
     {
       "name": "Recipe_DragonTearRunestone",
       "item": "RunestoneLegendary",
-      "craftingStation": "piece_workbench",
+      "craftingStation": "",
       "resources": [
         { "item": "DragonTear", "amount": 3 }
       ]
@@ -366,7 +366,7 @@
     {
       "name": "Recipe_YagluthThingRunestone",
       "item": "RunestoneLegendary",
-      "craftingStation": "piece_workbench",
+      "craftingStation": "",
       "resources": [
         { "item": "YagluthDrop", "amount": 1 }
       ]
