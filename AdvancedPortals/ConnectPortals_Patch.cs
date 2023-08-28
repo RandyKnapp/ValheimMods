@@ -20,7 +20,7 @@ namespace AdvancedPortals
 
         public static bool IsPortalPrefabHash(int zdoPrefabHash, bool checkDefaultHash)
         {
-            if (checkDefaultHash && (zdoPrefabHash == Game.instance.PortalPrefabHash))
+            if (checkDefaultHash && (Game.instance.PortalPrefabHash.Contains(zdoPrefabHash)))
                 return true;
             
             var stableHashCodes = _portalPrefabs.Select(x => x.GetStableHashCode()).ToArray();

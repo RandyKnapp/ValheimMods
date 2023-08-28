@@ -4,7 +4,7 @@ using UnityEngine;
 namespace EpicLoot.MagicItemEffects
 {
     //public HitData.DamageTypes GetDamage(int quality)
-    [HarmonyPatch(typeof(ItemDrop.ItemData), nameof(ItemDrop.ItemData.GetDamage), typeof(int))]
+    [HarmonyPatch(typeof(ItemDrop.ItemData), nameof(ItemDrop.ItemData.GetDamage), typeof(int), typeof(float))]
     public class ModifyDamage_ItemData_GetDamage_Patch
     {
         public static void Postfix(ItemDrop.ItemData __instance, ref HitData.DamageTypes __result)

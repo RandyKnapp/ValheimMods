@@ -1,3 +1,9 @@
+## Version 0.9.19 - Hildir's Request Update
+* Provides Compatibility with Hildir's Request
+* Removes Legacy Workbench Functions
+  * To perform Enchanting, please use Enchanting Table
+* Fix for Map Pins
+
 ## Version 0.9.18 - New Feature: Enchanting Table Upgrades (Take 3)
 * Fixed an issue where when placing a table down, can cause an error.
 
@@ -31,15 +37,15 @@
   * Enchanting Table Upgrade Costs are JSON configurable, and can be patched like other JSON's
     * The `enchantingupgrades.json` provides adjustment for upgrade costs and upgrade benefit adjustments.
 
-## Version 0.9.15 - Valheim Update 0.216.9 - Part 3
+## Version 0.9.15 - Valheim Update 0.217.5 - Part 3
 * Updated `enchantcosts.json` with the corrected spelling of Trophy (from Trophie).
 * Fixed issue with bounties not working correctly after update to 0.9.14.
 
-## Version 0.9.14 - Valheim Update 0.216.9 - Part 2
+## Version 0.9.14 - Valheim Update 0.217.5 - Part 2
 * Left a piece out that needed to be updated with regards to `CopyCustomDataFromUpgradedItem`
 
-## Version 0.9.13 - Valheim Update 0.216.9
-* Required updates for Valheim version 0.216.9
+## Version 0.9.13 - Valheim Update 0.217.5
+* Required updates for Valheim version 0.217.5
 
 ## Version 0.9.12 - More Performance Improvements and Bugfixes
 * Reduced the frequency that Multiplayer send Legendary Info

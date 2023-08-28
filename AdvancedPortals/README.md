@@ -1,4 +1,4 @@
-# AdvancedPortals v1.0.4
+# AdvancedPortals
 Author: RandyKnapp
 Source: [Github](https://github.com/RandyKnapp/ValheimMods/tree/main/AdvancedPortals)
 Discord: [RandyKnapp's Mod Community](https://discord.gg/randyknappmods)
@@ -51,7 +51,7 @@ Includes ServerSync.
 #### 1.0.5
   * Updated Portal Connection logic which was preventing Advanced Portals from connecting
 #### 1.0.4 
-  * Updates for Valheim 0.216.9
+  * Updates for Valheim 0.217.5
 #### 1.0.3
   * Vapok fixed a bug that makes Adventure Backpacks work with Advanced Portals
 #### 1.0.2
