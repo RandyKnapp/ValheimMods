@@ -27,7 +27,7 @@ namespace EpicLoot.Adventure.Feature
         public override void RefreshButton(Currencies playerCurrencies)
         {
             var selectedItem = GetSelectedItem();
-            var haveSpace = Player.m_localPlayer.GetInventory().FindEmptySlot(false).x >= 0 || Player.m_localPlayer.GetInventory().FindFreeStackSpace(selectedItem?.ItemInfo.Item.m_shared.m_name) > 0;
+            var haveSpace = Player.m_localPlayer.GetInventory().FindEmptySlot(false).x >= 0 || Player.m_localPlayer.GetInventory().FindFreeStackSpace(selectedItem?.ItemInfo.Item.m_shared.m_name, default) > 0;
             MainButton.interactable = selectedItem != null && selectedItem.CanAfford(playerCurrencies) && haveSpace;
             var tooltip = MainButton.GetComponent<UITooltip>();
             if (tooltip != null)

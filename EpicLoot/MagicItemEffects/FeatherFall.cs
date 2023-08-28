@@ -13,7 +13,7 @@ namespace EpicLoot.MagicItemEffects
         {
             if (__instance is Player player)
             {
-                var slowFall = ObjectDB.instance.GetStatusEffect("SlowFall");
+                var slowFall = ObjectDB.instance.GetStatusEffect("SlowFall".GetHashCode());
                 if (slowFall == null)
                 {
                     EpicLoot.LogError("Could not find SlowFall status effect!");

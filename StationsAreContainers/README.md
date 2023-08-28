@@ -1,4 +1,4 @@
-# Stations Are Containers v1.0.1
+# Stations Are Containers v1.0.3
 ##### by RandyKnapp
 Source: [Github](https://github.com/RandyKnapp/ValheimMods/tree/main/StationsAreContainers)
 Discord: [RandyKnapp's Mod Community](https://discord.gg/randyknappmods)
@@ -22,7 +22,8 @@ Uses ServerSync.
   * ThunderStore: Use r2modman to install, or manually drop the dll into your BepInEx/plugins folder
 
 ### Changelist
-
+1.0.3
+  * Updated for Hildir's Request
 1.0.2
   * Updated for Mistlands crafting stations
   * Allows for modded crafting stations (automatically creates a 3x6 container for modded stations, once you have placed the station, it will appear with its own section in the config file)

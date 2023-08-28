@@ -30,7 +30,7 @@ namespace EpicLoot
     }
 
     // Set the content of the tooltip
-    [HarmonyPatch(typeof(ItemDrop.ItemData), nameof(ItemDrop.ItemData.GetTooltip), typeof(ItemDrop.ItemData), typeof(int), typeof(bool))]
+    [HarmonyPatch(typeof(ItemDrop.ItemData), nameof(ItemDrop.ItemData.GetTooltip), typeof(ItemDrop.ItemData), typeof(int), typeof(bool), typeof(float))]
     public static class MagicItemTooltip_ItemDrop_Patch
     {
         [UsedImplicitly]
@@ -149,7 +149,7 @@ namespace EpicLoot
                 case ItemDrop.ItemData.ItemType.TwoHandedWeapon:
                 case ItemDrop.ItemData.ItemType.TwoHandedWeaponLeft:
                 case ItemDrop.ItemData.ItemType.Torch:
-                    text.Append(GetDamageTooltipString(magicItem, item.GetDamage(qualityLevel), item.m_shared.m_skillType, magicColor));
+                    text.Append(GetDamageTooltipString(magicItem, item.GetDamage(qualityLevel,Game.m_worldLevel), item.m_shared.m_skillType, magicColor));
 
                     var magicAttackStamina = magicItem.HasEffect(MagicEffectType.ModifyAttackStaminaUse) || magicItem.HasEffect(MagicEffectType.ModifyBlockStaminaUse);
                     var magicAttackStaminaColor = magicAttackStamina ? magicColor : "orange";
@@ -232,7 +232,7 @@ namespace EpicLoot
                 case ItemDrop.ItemData.ItemType.Legs:
                 case ItemDrop.ItemData.ItemType.Shoulder:
                     var magicArmorColor = magicItem.HasEffect(MagicEffectType.ModifyArmor) ? magicColor : "orange";
-                    text.Append($"\n$item_armor: <color={magicArmorColor}>{item.GetArmor(qualityLevel):0.#}</color>");
+                    text.Append($"\n$item_armor: <color={magicArmorColor}>{item.GetArmor(qualityLevel,Game.m_worldLevel):0.#}</color>");
                     var modifiersTooltipString = SE_Stats.GetDamageModifiersTooltipString(item.m_shared.m_damageModifiers);
                     if (modifiersTooltipString.Length > 0)
                     {
@@ -249,7 +249,7 @@ namespace EpicLoot
                     break;
 
                 case ItemDrop.ItemData.ItemType.Ammo:
-                    text.Append(item.GetDamage(qualityLevel).GetTooltipString(item.m_shared.m_skillType));
+                    text.Append(item.GetDamage(qualityLevel,Game.m_worldLevel).GetTooltipString(item.m_shared.m_skillType));
                     text.AppendFormat("\n$item_knockback: <color=orange>{0}</color>", item.m_shared.m_attackForce);
                     break;
             }

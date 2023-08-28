@@ -400,7 +400,7 @@ namespace EpicLoot.CraftingV2
 
         private static List<InventoryItemListElement> GetEnchantCost(ItemDrop.ItemData item, MagicRarityUnity _rarity)
         {
-            return EnchantTabController.GetEnchantCosts(item, (ItemRarity)_rarity).Select(entry =>
+            return EnchantHelper.GetEnchantCosts(item, (ItemRarity)_rarity).Select(entry =>
             {
                 var itemData = entry.Key.m_itemData.Clone();
                 itemData.m_dropPrefab = entry.Key.gameObject;
@@ -465,7 +465,7 @@ namespace EpicLoot.CraftingV2
 
             MagicItemEffects.Indestructible.MakeItemIndestructible(item);
 
-            Game.instance.GetPlayerProfile().m_playerStats.m_crafts++;
+            Game.instance.GetPlayerProfile().m_playerStats.m_stats[PlayerStatType.Crafts]++;
             Gogan.LogEvent("Game", "Enchanted", item.m_shared.m_name, 1);
 
             return successDialog.gameObject;
@@ -495,7 +495,7 @@ namespace EpicLoot.CraftingV2
                     var effectDef = MagicItemEffectDefinitions.Get(augmentableEffect.EffectType);
                     var canAugment = effectDef != null && effectDef.CanBeAugmented;
 
-                    var text = AugmentTabController.GetAugmentSelectorText(magicItem, index, augmentableEffects, rarity);
+                    var text = AugmentHelper.GetAugmentSelectorText(magicItem, index, augmentableEffects, rarity);
                     var color = EpicLoot.GetRarityColor(rarity);
                     var alpha = canAugment ? "FF" : "7F";
                     text = $"<color={color}{alpha}>{text}</color>";
@@ -540,7 +540,7 @@ namespace EpicLoot.CraftingV2
 
         private static List<InventoryItemListElement> GetAugmentCost(ItemDrop.ItemData item, int augmentindex)
         {
-            return AugmentTabController.GetAugmentCosts(item, augmentindex)
+            return AugmentHelper.GetAugmentCosts(item, augmentindex)
                 .Select(x =>
                 {
                     var itemData = x.Key.m_itemData.Clone();
@@ -560,7 +560,7 @@ namespace EpicLoot.CraftingV2
             magicItem.SetEffectAsAugmented(augmentindex);
             item.SaveMagicItem(magicItem);
 
-            var choiceDialog = AugmentTabController.CreateAugmentChoiceDialog(true);
+            var choiceDialog = AugmentHelper.CreateAugmentChoiceDialog(true);
             choiceDialog.transform.SetParent(EnchantingTableUI.instance.transform);
 
             var rt = (RectTransform)choiceDialog.transform;
@@ -626,7 +626,7 @@ namespace EpicLoot.CraftingV2
 
             MagicItemEffects.Indestructible.MakeItemIndestructible(item);
 
-            Game.instance.GetPlayerProfile().m_playerStats.m_crafts++;
+            Game.instance.GetPlayerProfile().m_playerStats.m_stats[PlayerStatType.Crafts]++;
             Gogan.LogEvent("Game", "Augmented", item.m_shared.m_name, 1);
 
             EquipmentEffectCache.Reset(Player.m_localPlayer);

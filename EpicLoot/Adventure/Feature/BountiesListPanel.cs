@@ -145,7 +145,7 @@ namespace EpicLoot.Adventure.Feature
 
             if (selectedItem.BountyInfo.RewardIron > 0)
             {
-                var haveSpace = Player.m_localPlayer.GetInventory().FindFreeStackSpace(MerchantPanel.GetIronBountyTokenName()) > selectedItem.BountyInfo.RewardIron;
+                var haveSpace = Player.m_localPlayer.GetInventory().FindFreeStackSpace(MerchantPanel.GetIronBountyTokenName(), Game.m_worldLevel) > selectedItem.BountyInfo.RewardIron;
                 if (!haveSpace)
                 {
                     return false;
@@ -154,7 +154,7 @@ namespace EpicLoot.Adventure.Feature
 
             if (selectedItem.BountyInfo.RewardGold > 0)
             {
-                var haveSpace = Player.m_localPlayer.GetInventory().FindFreeStackSpace(MerchantPanel.GetGoldBountyTokenName()) > selectedItem.BountyInfo.RewardGold;
+                var haveSpace = Player.m_localPlayer.GetInventory().FindFreeStackSpace(MerchantPanel.GetGoldBountyTokenName(), Game.m_worldLevel) > selectedItem.BountyInfo.RewardGold;
                 if (!haveSpace)
                 {
                     return false;
@@ -163,7 +163,7 @@ namespace EpicLoot.Adventure.Feature
 
             if (selectedItem.BountyInfo.RewardCoins > 0)
             {
-                var haveSpace = Player.m_localPlayer.GetInventory().FindFreeStackSpace(MerchantPanel.GetCoinsName()) > selectedItem.BountyInfo.RewardCoins;
+                var haveSpace = Player.m_localPlayer.GetInventory().FindFreeStackSpace(MerchantPanel.GetCoinsName(), Game.m_worldLevel) > selectedItem.BountyInfo.RewardCoins;
                 if (!haveSpace)
                 {
                     return false;

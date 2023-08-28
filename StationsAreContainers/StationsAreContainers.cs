@@ -15,7 +15,7 @@ namespace StationsAreContainers
     {
         public const string PluginId = "randyknapp.mods.stationcontainers";
         public const string DisplayName = "Stations Are Containers";
-        public const string Version = "1.0.2";
+        public const string Version = "1.0.3";
 
         public class StationConfig
         {
@@ -241,7 +241,7 @@ namespace StationsAreContainers
 
         [HarmonyPatch(typeof(Inventory), nameof(Inventory.CountItems))]
         [HarmonyPostfix]
-        public static void InventoryGui_SetupRequirement_Postfix(Inventory __instance, ref int __result, string name, int quality = -1)
+        public static void InventoryGui_SetupRequirement_Postfix(Inventory __instance, ref int __result, string name, int quality = -1, bool matchWorldLevel = true)
         {
             if (SettingUpRequirement > 0 && __instance != null && Player.m_localPlayer != null && __instance == Player.m_localPlayer.m_inventory)
             {
@@ -251,7 +251,7 @@ namespace StationsAreContainers
                     var stationContainer = station.GetComponent<Container>();
                     if (stationContainer != null)
                     {
-                        __result += stationContainer.GetInventory().CountItems(name, quality);
+                        __result += stationContainer.GetInventory().CountItems(name, quality, matchWorldLevel);
                     }
                 }
             }
