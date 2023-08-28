@@ -1,7 +1,14 @@
+## Version 0.9.20 - Hildir's Request Bug Fixes
+* Added null checking to the Gated Items to prevent patches from causing errors.
+* Fixed Map Pins going away when logging in and out
+* Extensively tested the Sacrifice process on the Enchanting Table.
+  * The change here is that stuff will sacrifice if you have it in your inventory, instead of showing the full list of sacrifices.
+    * If this still doesn't work for you, please ensure all your JSON's are updated correctly.
+
 ## Version 0.9.19 - Hildir's Request Update
 * Provides Compatibility with Hildir's Request
 * Removes Legacy Workbench Functions
-  * To perform Enchanting, please use Enchanting Table
+    * To perform Enchanting, please use Enchanting Table
 * Fix for Map Pins
 
 ## Version 0.9.18 - New Feature: Enchanting Table Upgrades (Take 3)
