@@ -1,4 +1,4 @@
-# Epic Loot v0.9.11 - Config Patching System and Various Bug Fixes
+# Epic Loot - Config Patching System and Various Bug Fixes
 Author: [RandyKnapp](https://discord.gg/randyknappmods)
 Source: [Github](https://github.com/RandyKnapp/ValheimMods/blob/main/EpicLoot/)
 Patreon: [patreon.com/randyknapp](https://www.patreon.com/randyknapp)

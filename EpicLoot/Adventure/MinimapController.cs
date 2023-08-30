@@ -76,6 +76,9 @@ namespace EpicLoot.Adventure
 
         private void Start()
         {
+            TreasureMapPins.Clear();
+            BountyPins.Clear();
+            
             if (_minimap.m_visibleIconTypes.Length < (int)EpicLoot.TreasureMapPinType + 1)
             {
                 _minimap.m_visibleIconTypes = new bool[(int)EpicLoot.TreasureMapPinType + 1];
@@ -107,6 +110,8 @@ namespace EpicLoot.Adventure
         {
             TreasureMapPins.Clear();
             BountyPins.Clear();
+
+            _enabled = false;
         }
         
         //Static Methods
