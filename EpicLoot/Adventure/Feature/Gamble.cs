@@ -68,6 +68,11 @@ namespace EpicLoot.Adventure.Feature
             var availableGambles = new List<SecretStashItemInfo>();
             foreach (var itemConfig in AdventureDataManager.Config.Gamble.Gambles)
             {
+                if (string.IsNullOrEmpty(itemConfig))
+                {
+                    EpicLoot.LogWarning($"Found empty itemConfig.. skipping.");
+                    continue;
+                }
                 var gatingMode = EpicLoot.GetGatedItemTypeMode();
                 if (gatingMode == GatedItemTypeMode.Unlimited)
                 {
@@ -75,6 +80,11 @@ namespace EpicLoot.Adventure.Feature
                 }
 
                 var itemId = GatedItemTypeHelper.GetItemFromCategory(itemConfig, gatingMode);
+                if (string.IsNullOrEmpty(itemId))
+                {
+                    EpicLoot.LogWarning($"[AdventureData] Could not find item id from Category (orig={itemConfig})!");
+                    continue;
+                }
                 var itemDrop = CreateItemDrop(itemId);
                 if (itemDrop == null)
                 {

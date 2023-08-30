@@ -179,7 +179,13 @@ namespace EpicLoot.GatedItemType
         {
             var itemInfo = ItemInfos.FirstOrDefault(x => x.Type == itemCategory);
 
-            return itemInfo == null ? "" : GetGatedItemID(itemInfo.Items[itemInfo.Items.Count - 1], mode, usedTypes);
+            if (itemInfo == null)
+            {
+                EpicLoot.LogWarning($"Item Info for Category [{itemCategory}] not found in ItemInfo.json");
+                return string.Empty;
+            }
+            
+            return GetGatedItemID(itemInfo.Items[itemInfo.Items.Count - 1], mode, usedTypes);
         }
     }
 }
