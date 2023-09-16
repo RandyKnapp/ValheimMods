@@ -4,23 +4,19 @@ using UnityEngine;
 
 namespace ItsJustWood
 {
-    [HarmonyPatch(typeof(Fireplace), nameof(Fireplace.Interact))]
-    public static class Fireplace_Interact_Patch
+    [HarmonyPatch(typeof(CookingStation), nameof(CookingStation.OnAddFuelSwitch))]
+    public static class CookingStation_OnAddFuelSwitch_Patch
     {
         [HarmonyPriority(Priority.Last)]
-        private static void Prefix(Fireplace __instance, Humanoid user, ref ItemDrop __state)
+        private static void Prefix(CookingStation __instance, Humanoid user, ItemDrop.ItemData item, ref ItemDrop __state)
         {
             if (!ItsJustWood.modEnabled.Value)
                 return;
 
-            if (__instance.m_fuelItem != ItsJustWood.wood)
+            if (item != null && item.m_shared.m_name == __instance.m_fuelItem.m_itemData.m_shared.m_name)
                 return;
 
-            Inventory inventory = user.GetInventory();
-            if (inventory.HaveItem(__instance.m_fuelItem.m_itemData.m_shared.m_name))
-                return;
-
-            ItemDrop itemFuelReplacement = ItsJustWood.GetReplacementFuelItem(inventory, __instance.m_fuelItem);
+            ItemDrop itemFuelReplacement = ItsJustWood.GetReplacementFuelItem(user.GetInventory(), __instance.m_fuelItem);
             if (itemFuelReplacement == null)
                 return;
 
@@ -30,7 +26,7 @@ namespace ItsJustWood
         }
 
         [HarmonyPriority(Priority.First)]
-        private static void Postfix(Fireplace __instance, ItemDrop __state)
+        private static void Postfix(CookingStation __instance, ItemDrop __state)
         {
             if (!ItsJustWood.modEnabled.Value)
                 return;
@@ -40,5 +36,6 @@ namespace ItsJustWood
 
             __instance.m_fuelItem = __state;
         }
+
     }
 }

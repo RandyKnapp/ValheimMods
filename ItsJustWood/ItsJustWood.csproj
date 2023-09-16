@@ -84,6 +84,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CookingStation_Patch.cs" />
     <Compile Include="Fireplace_Patch.cs" />
     <Compile Include="ItsJustWood.cs" />
     <Compile Include="ObjectDB_Patch.cs" />
