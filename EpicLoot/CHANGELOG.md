@@ -1,3 +1,8 @@
+## Version 0.9.22 - Bounty System Improvements Part 2
+* Would help if I included the translations in the Module Zip
+  * Also, when Auga is NOT installed, have to forcably localize the strings.
+* Added the new trophies to the Enchantcosts
+
 ## Version 0.9.21 - Bounty System Improvements
 * Completely Overhauled how the Bounty Ledger is stored.
   * No longer using GlobalKeys when playing.
