@@ -1,3 +1,23 @@
+## Version 0.9.22 - Bounty System Improvements Part 2
+* Would help if I included the translations in the Module Zip
+  * Also, when Auga is NOT installed, have to forcably localize the strings.
+* Added the new trophies to the Enchantcosts
+
+## Version 0.9.21 - Bounty System Improvements
+* Completely Overhauled how the Bounty Ledger is stored.
+  * No longer using GlobalKeys when playing.
+  * Saves to a data file in config folder.
+  * Saves a backup to World File on Shutdown.
+  * Restores from World File is data file is missing.
+  * Tested on Single Player, P2P, and Dedicated Server
+    * Tested Bounty Kills without Issue
+* Added a Bounty Limiter to the Config
+  * When enabled, and set to a max, prevents players from purchasing more bounties if they are at max In-Progress bounties.
+  * These are per-player maximums.
+* Revamped how Attack Speed modifications are handled using the AnimationSpeedManager
+  * Thanks to Wacky for the assistance in the Discord getting it setup.
+  * Thanks to Smoothbrain for their community contributions.
+  * This should allow Wacky's EpicMMO and Duel Wield to adjust attack speeds accordingly with Epic Loot
 ## Version 0.9.20 - Hildir's Request Bug Fixes
 * Added null checking to the Gated Items to prevent patches from causing errors.
 * Fixed Map Pins going away when logging in and out

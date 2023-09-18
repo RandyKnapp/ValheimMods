@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>EpicLoot</RootNamespace>
     <AssemblyName>EpicLoot</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
   </PropertyGroup>
@@ -36,6 +36,9 @@
   <ItemGroup>
     <Reference Include="0Harmony">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\core\0Harmony.dll</HintPath>
+    </Reference>
+    <Reference Include="AnimationSpeedManager">
+      <HintPath>..\Libs\AnimationSpeedManager.dll</HintPath>
     </Reference>
     <Reference Include="assembly_guiutils_publicized">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\valheim_Data\Managed\publicized_assemblies\assembly_guiutils_publicized.dll</HintPath>
@@ -115,8 +118,10 @@
     <Compile Include="Abilities\AbilityDefinitions.cs" />
     <Compile Include="Abilities\AbilityFactory.cs" />
     <Compile Include="Abilities\PlayerExtensions_Abilities.cs" />
+    <Compile Include="Adventure\BountyManagmentSystem.cs" />
     <Compile Include="Adventure\Feature\Bosses.cs" />
     <Compile Include="Adventure\Feature\BountyLedger.cs" />
+    <Compile Include="Adventure\Game_Patch.cs" />
     <Compile Include="Adventure\MinimapController.cs" />
     <Compile Include="Attack_Patch.cs" />
     <Compile Include="CraftingV2\EnchantingTable_Patch.cs" />
