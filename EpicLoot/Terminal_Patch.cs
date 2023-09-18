@@ -9,7 +9,6 @@ using EpicLoot.Adventure.Feature;
 using EpicLoot.Crafting;
 using EpicLoot.GatedItemType;
 using EpicLoot.LegendarySystem;
-using EpicLoot_UnityLib;
 using HarmonyLib;
 using UnityEngine;
 using Random = System.Random;

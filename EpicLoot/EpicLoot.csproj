@@ -118,8 +118,10 @@
     <Compile Include="Abilities\AbilityDefinitions.cs" />
     <Compile Include="Abilities\AbilityFactory.cs" />
     <Compile Include="Abilities\PlayerExtensions_Abilities.cs" />
+    <Compile Include="Adventure\BountyManagmentSystem.cs" />
     <Compile Include="Adventure\Feature\Bosses.cs" />
     <Compile Include="Adventure\Feature\BountyLedger.cs" />
+    <Compile Include="Adventure\Game_Patch.cs" />
     <Compile Include="Adventure\MinimapController.cs" />
     <Compile Include="Attack_Patch.cs" />
     <Compile Include="CraftingV2\EnchantingTable_Patch.cs" />

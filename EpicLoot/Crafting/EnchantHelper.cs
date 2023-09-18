@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Common;
-using EpicLoot.Data;
-using UnityEngine;
-using UnityEngine.UI;
-using Object = UnityEngine.Object;
+﻿using System.Collections.Generic;
 
 namespace EpicLoot.Crafting
 {

@@ -14,7 +14,7 @@ namespace EpicLoot.Adventure.Feature
 {
     public class BountiesAdventureFeature : AdventureFeature
     {
-        public BountyLedger BountyLedger;
+        public BountyLedger BountyLedger => BountyManagmentSystem.Instance.BountyLedger;
 
         private const string LedgerIdentifier = "randyknapp.mods.epicloot.BountyLedger";
 
@@ -448,68 +448,18 @@ namespace EpicLoot.Adventure.Feature
             }
 
             BountyLedger.AddKillLog(bounty.PlayerID, bounty.ID, monsterID, isAdd);
-            SaveBountyLedger();
-        }
-
-        public void LoadBountyLedger()
-        {
-            if (!Common.Utils.IsServer() || ZoneSystem.instance == null)
-            {
-                return;
-            }
-            
-            var globalKeys = ZoneSystem.instance.GetGlobalKeys();
-            var ledgerGlobalKey = globalKeys.Find(x => x.StartsWith(LedgerIdentifier));
-            var ledgerData = ledgerGlobalKey?.Substring(LedgerIdentifier.Length);
-
-            if (string.IsNullOrEmpty(ledgerData))
-            {
-                BountyLedger = new BountyLedger { WorldID = ZNet.m_world.m_uid };
-            }
-            else
-            {
-                try
-                {
-                    BountyLedger = JsonConvert.DeserializeObject<BountyLedger>(ledgerData);
-                }
-                catch (Exception)
-                {
-                    Debug.LogWarning("[EpicLoot] WARNING! Could not load bounty kill ledger, kills made by other players may not have counted towards your bounties.");
-                    BountyLedger = new BountyLedger { WorldID = ZNet.m_world.m_uid };
-                }
-            }
-        }
-
-        public void SaveBountyLedger()
-        {
-            if (!Common.Utils.IsServer() || ZoneSystem.instance == null || BountyLedger == null)
-            {
-                return;
-            }
-
-            ZoneSystem.instance.m_globalKeys.RemoveWhere(x => x.StartsWith(LedgerIdentifier));
-
-            var ledgerData = JsonConvert.SerializeObject(BountyLedger, Formatting.None);
-            ledgerData = LedgerIdentifier + ledgerData;
-            ZoneSystem.instance.SetGlobalKey(ledgerData);
         }
 
         public override void OnZNetStart()
         {
-            if (Common.Utils.IsServer())
-            {
-                LoadBountyLedger();
-            }
         }
 
         public override void OnZNetDestroyed()
         {
-            BountyLedger = null;
         }
 
         public override void OnWorldSave()
         {
-            SaveBountyLedger();
         }
 
         private void RPC_Server_RequestKillLogs(long sender, long playerID)
@@ -552,7 +502,6 @@ namespace EpicLoot.Adventure.Feature
             }
 
             BountyLedger?.RemoveKillLogsForPlayer(playerID);
-            SaveBountyLedger();
         }
     }
 
