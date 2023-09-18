@@ -6,6 +6,7 @@
             <InputAssemblies Include="$(OutputPath)\ServerSync.dll" />
             <InputAssemblies Include="$(OutputPath)\Newtonsoft.Json.dll" />
             <InputAssemblies Include="$(OutputPath)\AugaAPI.dll" />
+            <InputAssemblies Include="$(OutputPath)\AnimationSpeedManager.dll" />
             <LibraryPath Include="$(OutputPath)" />
             <LibraryPath Include="G:\Steam\steamapps\common\Valheim\valheim_Data\Managed" />
         </ItemGroup>

@@ -16,6 +16,7 @@ namespace EpicLoot.Adventure.Feature
     public class BountyLedger
     {
         public long WorldID;
+        public bool ConvertedGlobalKeys;
         public Dictionary<long, List<BountyKillLog>> KillLogsPerPlayer = new Dictionary<long, List<BountyKillLog>>();
 
         public List<BountyKillLog> GetAllKillLogs(long playerID)

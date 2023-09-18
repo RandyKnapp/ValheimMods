@@ -500,6 +500,7 @@
   "mod_epicloot_merchant_abandonbountyconfirm": "Abandon Bounty?",
   "mod_epicloot_merchant_abandonbountydesc": "It may not be accepted again",
   "mod_epicloot_merchant_acceptbounty": "Accept Bounty",
+  "mod_epicloot_merchant_max_bounties": "Max Bounties Reached",
   "mod_epicloot_merchant_bounties": "Bounties",
   "mod_epicloot_merchant_bountiesactive": "Active",
   "mod_epicloot_merchant_bountiesavailable": "Available",

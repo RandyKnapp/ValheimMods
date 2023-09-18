@@ -89,9 +89,9 @@ namespace EpicLoot
     {
         public const string PluginId = "randyknapp.mods.epicloot";
         public const string DisplayName = "Epic Loot";
-        public const string Version = "0.9.20";
+        public const string Version = "0.9.22";
 
-        private readonly ConfigSync _configSync = new ConfigSync(PluginId) { DisplayName = DisplayName, CurrentVersion = Version, MinimumRequiredVersion = "0.9.19" };
+        private readonly ConfigSync _configSync = new ConfigSync(PluginId) { DisplayName = DisplayName, CurrentVersion = Version, MinimumRequiredVersion = "0.9.22" };
 
         private static ConfigEntry<string> _setItemColor;
         private static ConfigEntry<string> _magicRarityColor;
@@ -130,6 +130,8 @@ namespace EpicLoot
         public static ConfigEntry<bool> AlwaysShowWelcomeMessage;
         public static ConfigEntry<bool> OutputPatchedConfigFiles;
         public static ConfigEntry<bool> EnchantingTableUpgradesActive;
+        public static ConfigEntry<bool> EnableLimitedBountiesInProgress;
+        public static ConfigEntry<int> MaxInProgressBounties;
         public static ConfigEntry<EnchantingTabs> EnchantingTableActivatedTabs;
         
         public static Dictionary<string, CustomSyncedValue<string>> SyncedJsonFiles = new Dictionary<string, CustomSyncedValue<string>>();
@@ -234,6 +236,9 @@ namespace EpicLoot
             EnchantingTableUpgradesActive = SyncedConfig("Enchanting Table", "Upgrades Active", true, "Toggles Enchanting Table Upgrade Capabilities. If false, enchanting table features will be unlocked set to Level 1");
             EnchantingTableActivatedTabs = SyncedConfig("Enchanting Table", $"Table Features Active", EnchantingTabs.Sacrifice | EnchantingTabs.Augment | EnchantingTabs.Enchant | EnchantingTabs.Disenchant | EnchantingTabs.Upgrade | EnchantingTabs.ConvertMaterials, $"Toggles Enchanting Table Feature on and off completely.");
             
+            //Limiting Bounties
+            EnableLimitedBountiesInProgress = SyncedConfig("Bounty Management", "Enable Bounty Limit", false, "Toggles limiting bounties. Players unable to purchase if enabled and maximum bounty in-progress count is met");
+            MaxInProgressBounties = SyncedConfig("Bounty Management", "Max Bounties Per Player", 5, "Max amount of in-progress bounties allowed per player.");
             
             _configSync.AddLockingConfigEntry(_serverConfigLocked);
 

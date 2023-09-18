@@ -1,5 +1,4 @@
 ﻿using EpicLoot.Adventure;
-using EpicLoot_UnityLib;
 using HarmonyLib;
 
 namespace EpicLoot
@@ -9,6 +8,9 @@ namespace EpicLoot
     {
         public static void Postfix(ZNet __instance)
         {
+            if (__instance.IsServer())
+                __instance.gameObject.AddComponent<BountyManagmentSystem>();
+            
             AdventureDataManager.Bounties.RegisterRPC(__instance.m_routedRpc);
         }
     }
