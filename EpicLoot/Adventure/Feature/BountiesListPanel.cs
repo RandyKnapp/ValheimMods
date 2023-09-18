@@ -26,7 +26,18 @@ namespace EpicLoot.Adventure.Feature
         public override void RefreshButton(Currencies playerCurrencies)
         {
             var selectedItem = GetSelectedItem();
-            MainButton.interactable = selectedItem != null && selectedItem.CanAccept;
+            
+            var saveData = Player.m_localPlayer.GetAdventureSaveData();
+            var bountyInProgressCount = saveData.GetInProgressBounties().Count;
+            bool allowedToBuy = !(EpicLoot.EnableLimitedBountiesInProgress.Value &&
+                                  bountyInProgressCount >= EpicLoot.MaxInProgressBounties.Value);
+
+            if (MerchantPanel.AcceptBountyText != null)
+            {
+                MerchantPanel.AcceptBountyText.text = !allowedToBuy ? string.Format("$mod_epicloot_merchant_max_bounties ({0})", EpicLoot.MaxInProgressBounties.Value): "$mod_epicloot_merchant_acceptbounty";
+            }
+            
+            MainButton.interactable = selectedItem != null && selectedItem.CanAccept && allowedToBuy;
         }
 
         protected override void OnMainButtonClicked()
