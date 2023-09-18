@@ -328,8 +328,8 @@ namespace EpicLoot
                 __result += text.ToString();
             }
             
-            __result = __result.Replace("<color=orange>", "<color=lightblue>");
-            __result = __result.Replace("<color=yellow>", "<color=lightblue>");
+            __result = __result.Replace("<color=orange>", "<color=#add8e6ff>");
+            __result = __result.Replace("<color=yellow>", "<color=#add8e6ff>");
             __result = __result.Replace("\n\n\n", "\n\n");
         }
 

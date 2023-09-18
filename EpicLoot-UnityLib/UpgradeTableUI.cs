@@ -174,7 +174,7 @@ namespace EpicLoot_UnityLib
             for (var i = 1; i <= maxLevel; ++i)
             {
                 var text = EnchantingTableUpgrades.GetFeatureUpgradeLevelDescription(EnchantingTableUI.instance.SourceTable, feature, i);
-                sb.AppendLine($"<color=gray>{i}:</color> " + (i == currentLevel ? $"<color=#EAA800>{text}</color>" : text));
+                sb.AppendLine($"<color=#808080ff>{i}:</color> " + (i == currentLevel ? $"<color=#EAA800>{text}</color>" : text));
             }
 
             return sb.ToString();

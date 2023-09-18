@@ -467,7 +467,7 @@ namespace EpicLoot
                         }
 
                         var display = MagicItem.GetEffectText(effectDef, setBonusInfo.Effect.Values?.MinValue ?? 0);
-                        text.Append($"\n<color={(hasEquipped ? EpicLoot.GetSetItemColor() : "grey")}>({setBonusInfo.Count}) ‣ {display}</color>");
+                        text.Append($"\n<color={(hasEquipped ? EpicLoot.GetSetItemColor() : "#808080ff")}>({setBonusInfo.Count}) ‣ {display}</color>");
                     }
                 }
 

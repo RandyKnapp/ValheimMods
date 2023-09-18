@@ -312,7 +312,7 @@ namespace EpicLoot.Adventure
             var message = refreshInterval > 1 ?
                 Localization.instance.Localize("$mod_epicloot_merchant_refreshdays", refreshInterval.ToString()) : 
                 "$mod_epicloot_merchant_refreshday";
-            return $"<color=lightblue>{message}</color>";
+            return $"<color=#add8e6ff>{message}</color>";
         }
 
         public void Update()

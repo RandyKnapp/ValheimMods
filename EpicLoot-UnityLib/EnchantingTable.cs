@@ -157,7 +157,7 @@ namespace EpicLoot_UnityLib
         public string GetHoverText()
         {
             return !InUseDistance(Player.m_localPlayer)
-                ? Localization.instance.Localize("<color=grey>$piece_toofar</color>")
+                ? Localization.instance.Localize("<color=#808080ff>$piece_toofar</color>")
                 : Localization.instance.Localize($"${DisplayNameLocID}\n[<color=yellow><b>$KEY_Use</b></color>] $piece_use");
         }
 

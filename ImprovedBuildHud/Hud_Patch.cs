@@ -1,13 +1,14 @@
-﻿using System;
-using HarmonyLib;
+﻿using HarmonyLib;
+using TMPro;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace ImprovedBuildHud
 {
-    [HarmonyPatch(typeof(Hud), "SetupPieceInfo", new Type[] {typeof(Piece)})]
+    [HarmonyPatch(typeof(Hud), nameof(Hud.SetupPieceInfo), typeof(Piece))]
     public static class Hud_Patch
     {
-        private static void Postfix(Piece piece, Text ___m_buildSelection)
+        private static void Postfix(Piece piece, TMP_Text ___m_buildSelection)
         {
             if (piece != null && !string.IsNullOrEmpty(ImprovedBuildHudConfig.CanBuildAmountFormat.Value))
             {
@@ -33,6 +34,7 @@ namespace ImprovedBuildHud
                 {
                     canBuildDisplay = $"<color={ImprovedBuildHudConfig.CanBuildAmountColor.Value}>{canBuildDisplay}</color>";
                 }
+
                 ___m_buildSelection.text = $"{displayName} {canBuildDisplay}";
             }
         }

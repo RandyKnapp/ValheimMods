@@ -11,10 +11,10 @@ namespace ImprovedBuildHud
     {
         static bool Prefix(ref bool __result, Transform elementRoot, Piece.Requirement req, Player player, bool craft, int quality)
         {
-            Image icon = elementRoot.transform.Find("res_icon").GetComponent<Image>();
-            TMP_Text nameText = elementRoot.transform.Find("res_name").GetComponent<TMP_Text>();
-            TMP_Text amountText = elementRoot.transform.Find("res_amount").GetComponent<TMP_Text>();
-            UITooltip tooltip = elementRoot.GetComponent<UITooltip>();
+            var icon = elementRoot.transform.Find("res_icon").GetComponent<Image>();
+            var nameText = elementRoot.transform.Find("res_name").GetComponent<TMP_Text>();
+            var amountText = elementRoot.transform.Find("res_amount").GetComponent<TMP_Text>();
+            var tooltip = elementRoot.GetComponent<UITooltip>();
             if (req.m_resItem != null)
             {
                 icon.gameObject.SetActive(true);
@@ -24,8 +24,8 @@ namespace ImprovedBuildHud
                 icon.color = Color.white;
                 tooltip.m_text = Localization.instance.Localize(req.m_resItem.m_itemData.m_shared.m_name);
                 nameText.text = Localization.instance.Localize(req.m_resItem.m_itemData.m_shared.m_name);
-                int num = ImprovedBuildHud.GetAvailableItems(req.m_resItem.m_itemData.m_shared.m_name);
-                int amount = req.GetAmount(quality);
+                var num = ImprovedBuildHud.GetAvailableItems(req.m_resItem.m_itemData.m_shared.m_name);
+                var amount = req.GetAmount(quality);
                 if (amount <= 0)
                 {
                     InventoryGui.HideRequirement(elementRoot);
