@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using HarmonyLib;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -35,11 +36,10 @@ namespace MinimalStatusEffects
                 var name = statusEffectObject.Find("Name") as RectTransform;
                 if (name != null)
                 {
-                    var nameText = name.GetComponent<Text>();
-                    nameText.alignment = TextAnchor.MiddleLeft;
-                    nameText.supportRichText = true;
-                    nameText.horizontalOverflow = HorizontalWrapMode.Wrap;
-                    nameText.resizeTextForBestFit = false;
+                    var nameText = name.GetComponent<TMP_Text>();
+                    nameText.alignment = TextAlignmentOptions.MidlineLeft;
+                    nameText.richText = true;
+                    nameText.textWrappingMode = TextWrappingModes.Normal;
                     nameText.fontSize = MinimalStatusEffectConfig.FontSize.Value;
                     name.anchorMin = new Vector2(0, 0.5f);
                     name.anchorMax = new Vector2(1, 0.5f);
