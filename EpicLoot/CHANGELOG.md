@@ -1,3 +1,6 @@
+## Version 0.9.23 - Updates for 0.217.19
+* Updated code to reflect new version of Valheim.
+
 ## Version 0.9.22 - Bounty System Improvements Part 2
 * Would help if I included the translations in the Module Zip
   * Also, when Auga is NOT installed, have to forcably localize the strings.

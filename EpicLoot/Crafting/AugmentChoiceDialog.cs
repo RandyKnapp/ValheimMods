@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,8 +9,8 @@ namespace EpicLoot.Crafting
 {
     public class AugmentChoiceDialog : MonoBehaviour
     {
-        public Text NameText;
-        public Text Description;
+        public TMP_Text NameText;
+        public TMP_Text Description;
         public Image Icon;
         public Image MagicBG;
         public List<Button> EffectChoiceButtons = new List<Button>();

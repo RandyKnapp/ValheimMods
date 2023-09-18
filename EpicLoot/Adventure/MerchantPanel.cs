@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using EpicLoot.Adventure.Feature;
 using EpicLoot.Crafting;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -75,7 +76,7 @@ namespace EpicLoot.Adventure
                     resultsPanel.SetActive(false);
                     resultsPanel.transform.SetParent(transform);
                     GambleSuccessDialog = resultsPanel.gameObject.AddComponent<CraftSuccessDialog>();
-                    GambleSuccessDialog.NameText = GambleSuccessDialog.transform.Find("Topic").GetComponent<Text>();
+                    GambleSuccessDialog.NameText = GambleSuccessDialog.transform.Find("Topic").GetComponent<TMP_Text>();
                     GambleSuccessDialog.Frame = (RectTransform)GambleSuccessDialog.transform;
                     GambleSuccessDialog.Frame.anchoredPosition = new Vector2(0, 0);
                 }

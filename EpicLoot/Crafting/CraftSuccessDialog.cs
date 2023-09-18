@@ -1,5 +1,6 @@
 ﻿using Common;
 using JetBrains.Annotations;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,8 +9,8 @@ namespace EpicLoot.Crafting
     public class CraftSuccessDialog : MonoBehaviour
     {
         public RectTransform Frame;
-        public Text NameText;
-        public Text Description;
+        public TMP_Text NameText;
+        public TMP_Text Description;
         public Image Icon;
         public Image MagicBG;
 
@@ -84,17 +85,17 @@ namespace EpicLoot.Crafting
         {
             gameObject.SetActive(false);
         }
-        public static ScrollRect ConvertToScrollingDescription(Text recipeDesc, Transform parent)
+        public static ScrollRect ConvertToScrollingDescription(TMP_Text recipeDesc, Transform parent)
         {
             var contentSizeFitter = recipeDesc.gameObject.AddComponent<ContentSizeFitter>();
             contentSizeFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
-            recipeDesc.resizeTextForBestFit = false;
             recipeDesc.fontSize = 18;
             recipeDesc.rectTransform.anchorMin = new Vector2(0, 1);
             recipeDesc.rectTransform.anchorMax = new Vector2(1, 1); // pin top, stretch horiz
             recipeDesc.rectTransform.pivot = new Vector2(0, 1);
-            recipeDesc.horizontalOverflow = HorizontalWrapMode.Wrap;
+            recipeDesc.textWrappingMode = TextWrappingModes.Normal;
+            recipeDesc.overflowMode = TextOverflowModes.Overflow;
             recipeDesc.rectTransform.anchoredPosition = new Vector2(4, 4);
             recipeDesc.raycastTarget = false;
 

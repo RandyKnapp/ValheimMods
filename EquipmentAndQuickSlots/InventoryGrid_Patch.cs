@@ -1,5 +1,6 @@
 ﻿using Common;
 using HarmonyLib;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -54,9 +55,10 @@ namespace EquipmentAndQuickSlots
                 for (var i = 0; i < EquipmentAndQuickSlots.QuickSlotCount; ++i)
                 {
                     var element = __instance.m_elements[i];
-                    var bindingText = element.m_go.transform.Find("binding").GetComponent<Text>();
+                    var bindingText = element.m_go.transform.Find("binding").GetComponent<TMP_Text>();
                     bindingText.enabled = true;
-                    bindingText.horizontalOverflow = HorizontalWrapMode.Overflow;
+                    bindingText.overflowMode = TextOverflowModes.Overflow;
+                    bindingText.textWrappingMode = TextWrappingModes.NoWrap;
                     bindingText.text = EquipmentAndQuickSlots.GetBindingLabel(i);
                 }
             }
@@ -86,11 +88,12 @@ namespace EquipmentAndQuickSlots
                 {
                     var element = __instance.m_elements[i];
 
-                    var bindingText = element.m_go.transform.Find("binding").GetComponent<Text>();
+                    var bindingText = element.m_go.transform.Find("binding").GetComponent<TMP_Text>();
                     bindingText.enabled = !EquipmentAndQuickSlots.HasAuga;
                     if (!EquipmentAndQuickSlots.HasAuga)
                     {
-                        bindingText.horizontalOverflow = HorizontalWrapMode.Overflow;
+                        bindingText.overflowMode = TextOverflowModes.Overflow;
+                        bindingText.textWrappingMode = TextWrappingModes.NoWrap;
                         bindingText.text = equipNames[i];
                         bindingText.rectTransform.anchoredPosition = new Vector2(32, 5);
                     }

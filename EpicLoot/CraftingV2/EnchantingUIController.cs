@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using EpicLoot.Crafting;
 using EpicLoot.Data;
 using EpicLoot_UnityLib;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
@@ -436,7 +437,7 @@ namespace EpicLoot.CraftingV2
                 resultsPanel.transform.SetParent(EnchantingTableUI.instance.transform);
                 resultsPanel.SetActive(false);
                 successDialog = resultsPanel.gameObject.AddComponent<CraftSuccessDialog>();
-                successDialog.NameText = successDialog.transform.Find("Topic").GetComponent<Text>();
+                successDialog.NameText = successDialog.transform.Find("Topic").GetComponent<TMP_Text>();
             }
             else
             {

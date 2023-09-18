@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text;
 using EpicLoot.Adventure;
 using HarmonyLib;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
@@ -184,8 +185,8 @@ namespace EpicLoot
     public static class TextsDialog_ShowText_Patch
     {
         public static Transform TextContainer;
-        public static Text TitleTextPrefab;
-        public static Text DescriptionTextPrefab;
+        public static TMP_Text TitleTextPrefab;
+        public static TMP_Text DescriptionTextPrefab;
 
         public static bool Prefix(TextsDialog __instance, TextsDialog.TextInfo text)
         {

@@ -4,6 +4,7 @@ using System.Reflection.Emit;
 using Common;
 using HarmonyLib;
 using JetBrains.Annotations;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
@@ -12,7 +13,7 @@ namespace EquipmentAndQuickSlots
 {
     public static class CustomHotkeyBar
     {
-        [HarmonyPatch(typeof(HotkeyBar), "UpdateIcons")]
+        [HarmonyPatch(typeof(HotkeyBar), nameof(HotkeyBar.UpdateIcons))]
         public static class HotkeyBar_UpdateIcons_Patch
         {
             public static void UpdateIcons(HotkeyBar instance, Player player, List<ItemDrop.ItemData> m_items)
@@ -40,9 +41,10 @@ namespace EquipmentAndQuickSlots
                     return;
                 }
                 
-                var bindingText = elementData.m_go.transform.Find("binding").GetComponent<Text>();
+                var bindingText = elementData.m_go.transform.Find("binding").GetComponent<TMP_Text>();
                 bindingText.enabled = true;
-                bindingText.horizontalOverflow = HorizontalWrapMode.Overflow;
+                bindingText.overflowMode = TextOverflowModes.Overflow;
+                bindingText.textWrappingMode = TextWrappingModes.NoWrap;
                 bindingText.text = EquipmentAndQuickSlots.GetBindingLabel(index);
             }
             [UsedImplicitly]
@@ -142,7 +144,7 @@ namespace EquipmentAndQuickSlots
         }
     }
 
-    [HarmonyPatch(typeof(Hud), "Awake")]
+    [HarmonyPatch(typeof(Hud), nameof(Hud.Awake))]
     public static class Hud_Awake_Patch
     {
         public static void Postfix(Hud __instance)

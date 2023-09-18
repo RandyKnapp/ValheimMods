@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Common;
 using EpicLoot_UnityLib;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
@@ -44,7 +45,7 @@ namespace EpicLoot.Crafting
                 choiceDialog.MagicBG.rectTransform.sizeDelta = new Vector2(0, 0);
                 choiceDialog.MagicBG.rectTransform.anchoredPosition = new Vector2(0, 0);
 
-                choiceDialog.NameText = choiceDialog.transform.Find("Topic").GetComponent<Text>();
+                choiceDialog.NameText = choiceDialog.transform.Find("Topic").GetComponent<TMP_Text>();
 
                 var closeButton = choiceDialog.gameObject.GetComponentInChildren<Button>();
                 Object.Destroy(closeButton.gameObject);

@@ -55,6 +55,9 @@
       <HintPath>..\Libs\CreatureLevelControlAPI.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="Unity.TextMeshPro">
+      <HintPath>..\..\VapokModBase\References\BepInEx\5.4.2200\unstripped_corlib\Unity.TextMeshPro.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine">
       <HintPath>M:\Code\VapokModBase\References\BepInEx\5.4.2200\unstripped_corlib\UnityEngine.dll</HintPath>
     </Reference>
