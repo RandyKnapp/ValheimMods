@@ -29,8 +29,9 @@ namespace AdvancedPortals
     {
         public const string PluginId = "randyknapp.mods.advancedportals";
         public const string DisplayName = "Advanced Portals";
-        public const string Version = "1.0.7";
-
+        public const string Version = "1.0.8";
+        public static readonly string[] _portalPrefabs = { "portal_ancient", "portal_obsidian", "portal_blackmarble" };
+        
         public static readonly List<GameObject> RegisteredPrefabs = new List<GameObject>();
         public static readonly Dictionary<GameObject, PieceDef> RegisteredPieces = new Dictionary<GameObject, PieceDef>();
 
@@ -164,6 +165,12 @@ namespace AdvancedPortals
 
             _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), PluginId);
 
+            //Add Prefabs to Portal Connections
+            foreach (var portalPrefab in _portalPrefabs)
+            {
+                AddPortal.Hashes.Add(portalPrefab.GetStableHashCode());    
+            }
+            
             // Patch TargetPortal's handle click method, since it does not directly call TeleportWorld.Teleport
             var targetPortal = gameObject.GetComponent("TargetPortal.TargetPortal");
             if (targetPortal)
