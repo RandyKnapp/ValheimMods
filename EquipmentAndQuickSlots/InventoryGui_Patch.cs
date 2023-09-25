@@ -201,7 +201,7 @@ namespace EquipmentAndQuickSlots
             }
         }
 
-        [HarmonyPatch(typeof(InventoryGui), "UpdateInventory")]
+        [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.UpdateInventory))]
         public static class InventoryGui_UpdateInventory_Patch
         {
             public static bool Prefix(InventoryGui __instance, Player player)

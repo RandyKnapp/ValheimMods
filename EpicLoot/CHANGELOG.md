@@ -1,4 +1,4 @@
-## Version 0.9.23 - Updates for 0.217.19
+## Version 0.9.23 - Updates for 0.217.20
 * Updated code to reflect new version of Valheim.
 
 ## Version 0.9.22 - Bounty System Improvements Part 2
