@@ -82,9 +82,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AddPortals.cs" />
     <Compile Include="AdvancedPortal.cs" />
     <Compile Include="AdvancedPortals.cs" />
-    <Compile Include="ConnectPortals_Patch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Teleport_Patch.cs" />
   </ItemGroup>
