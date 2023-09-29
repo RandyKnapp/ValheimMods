@@ -1,7 +1,8 @@
 ## Version 0.9.23 - Crafting with Enchanted Components
 * Recipes built with items that are Enchanted will now carry over their magical properties to the new item.
+    * The highest magical rarity will carry over if more than one magical item is consumed.
 * Server-Synced Configuration is available toggle the enablement of this functionality.
-  * Default will leave this functionality Disabled.
+    * Default will leave this functionality Disabled.
 
 ## Version 0.9.22 - Bounty System Improvements Part 2
 * Would help if I included the translations in the Module Zip
