@@ -91,7 +91,7 @@ namespace EpicLoot
         public const string DisplayName = "Epic Loot";
         public const string Version = "0.9.23";
 
-        private readonly ConfigSync _configSync = new ConfigSync(PluginId) { DisplayName = DisplayName, CurrentVersion = Version, MinimumRequiredVersion = "0.9.22" };
+        private readonly ConfigSync _configSync = new ConfigSync(PluginId) { DisplayName = DisplayName, CurrentVersion = Version, MinimumRequiredVersion = "0.9.23" };
 
         private static ConfigEntry<string> _setItemColor;
         private static ConfigEntry<string> _magicRarityColor;
@@ -107,6 +107,7 @@ namespace EpicLoot
         // TODO: Mythic Hookup
         //private static ConfigEntry<int> _mythicMaterialIconColor;
         public static ConfigEntry<bool> UseScrollingCraftDescription;
+        public static ConfigEntry<bool> TransferMagicItemToCrafts;
         public static ConfigEntry<CraftingTabStyle> CraftingTabStyle;
         private static ConfigEntry<bool> _loggingEnabled;
         private static ConfigEntry<LogLevel> _logLevel;
@@ -220,6 +221,7 @@ namespace EpicLoot
             SetItemDropChance = SyncedConfig("Balance", "Set Item Drop Chance", 0.15f, "The percent chance that a legendary item will be a set item. Min = 0, Max = 1");
             GlobalDropRateModifier = SyncedConfig("Balance", "Global Drop Rate Modifier", 1.0f, "A global percentage that modifies how likely items are to drop. 1 = Exactly what is in the loot tables will drop. 0 = Nothing will drop. 2 = The number of items in the drop table are twice as likely to drop (note, this doesn't double the number of items dropped, just doubles the relative chance for them to drop). Min = 0, Max = 4");
             ItemsToMaterialsDropRatio = SyncedConfig("Balance", "Items To Materials Drop Ratio", 0.0f, "Sets the chance that item drops are instead dropped as magic crafting materials. 0 = all items, no materials. 1 = all materials, no items. Values between 0 and 1 change the ratio of items to materials that drop. At 0.5, half of everything that drops would be items and the other half would be materials. Min = 0, Max = 1");
+            TransferMagicItemToCrafts = SyncedConfig("Balance", "Transfer Enchants to Crafted Items", false, "When enchanted items are used as ingredients in recipes, transfer the highest enchant to the newly crafted item. Default: False.");
 
             AlwaysShowWelcomeMessage = Config.Bind("Debug", "AlwaysShowWelcomeMessage", false, "Just a debug flag for testing the welcome message, do not use.");
             OutputPatchedConfigFiles = Config.Bind("Debug", "OutputPatchedConfigFiles", false, "Just a debug flag for testing the patching system, do not use.");
