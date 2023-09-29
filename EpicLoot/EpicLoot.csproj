@@ -131,6 +131,7 @@
     <Compile Include="Crafting\AugmentHelper.cs" />
     <Compile Include="Crafting\CraftSuccessDialog.cs" />
     <Compile Include="Crafting\EnchantHelper.cs" />
+    <Compile Include="Crafting\TransferMagicalEffects.cs" />
     <Compile Include="Data\ConfigValue.cs" />
     <Compile Include="Data\EIDFLegacy.cs" />
     <Compile Include="Data\CustomDataManager.cs" />
