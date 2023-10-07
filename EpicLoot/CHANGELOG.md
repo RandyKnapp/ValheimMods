@@ -1,11 +1,16 @@
-## Version 0.9.24 - Updates for 0.217.20
-* Updated code to reflect new version of Valheim.
+## Version 0.9.24/25 - Fixing Bounties
+* Fixed: Some bounties would spawn without name plate and would not register as a kill.
+* Slightly changed the logic to hopefully prevent underwater bounty spawns that shouldn't be underwater.
+* 0.9.25 - is a recompile to up the version after the zip got messed up.
 
 ## Version 0.9.23 - Crafting with Enchanted Components
 * Recipes built with items that are Enchanted will now carry over their magical properties to the new item.
     * The highest magical rarity will carry over if more than one magical item is consumed.
 * Server-Synced Configuration is available toggle the enablement of this functionality.
     * Default will leave this functionality Disabled.
+
+<details>
+<summary><b>Changelog History</b> (<i>click to expand</i>)</summary>
 
 ## Version 0.9.22 - Bounty System Improvements Part 2
 * Would help if I included the translations in the Module Zip
@@ -461,3 +466,5 @@
   * Fixed never respawning after dying	
   * Fixed a bug where a whole stack of trophies would be disenchanted for a single crafting material	
   * Updated correct ## Version number everywhere
+
+</details>
