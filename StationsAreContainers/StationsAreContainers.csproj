@@ -39,13 +39,13 @@
       <HintPath>M:\Code\VapokModBase\References\BepInEx\5.4.2200\BepInEx\core\0Harmony.dll</HintPath>
     </Reference>
     <Reference Include="assembly_guiutils_publicized">
-      <HintPath>M:\Code\VapokModBase\References\Valheim\0.217.20\assembly_guiutils_publicized.dll</HintPath>
+      <HintPath>M:\Code\VapokModBase\References\Valheim\0.217.24\assembly_guiutils_publicized.dll</HintPath>
     </Reference>
     <Reference Include="assembly_utils_publicized">
-      <HintPath>M:\Code\VapokModBase\References\Valheim\0.217.20\assembly_utils_publicized.dll</HintPath>
+      <HintPath>M:\Code\VapokModBase\References\Valheim\0.217.24\assembly_utils_publicized.dll</HintPath>
     </Reference>
     <Reference Include="assembly_valheim_publicized">
-      <HintPath>M:\Code\VapokModBase\References\Valheim\0.217.20\assembly_valheim_publicized.dll</HintPath>
+      <HintPath>M:\Code\VapokModBase\References\Valheim\0.217.24\assembly_valheim_publicized.dll</HintPath>
     </Reference>
     <Reference Include="BepInEx">
       <HintPath>M:\Code\VapokModBase\References\BepInEx\5.4.2200\BepInEx\core\BepInEx.dll</HintPath>
