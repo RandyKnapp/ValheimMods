@@ -1,3 +1,6 @@
+## Version 0.9.28 - Augmenting Menu Issue
+* Missed a spot where I needed to update to TMP_Text
+
 ## Version 0.9.27 - Fixing Server Sync
 * Had to update server sync correctly.
 
