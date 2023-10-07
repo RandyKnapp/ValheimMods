@@ -44,7 +44,7 @@ namespace EquipmentAndQuickSlots
     }
 
     //private void UpdateGui(Player player, ItemDrop.ItemData dragItem)
-    [HarmonyPatch(typeof(InventoryGrid), "UpdateGui", typeof(Player), typeof(ItemDrop.ItemData))]
+    [HarmonyPatch(typeof(InventoryGrid), nameof(InventoryGrid.UpdateGui), typeof(Player), typeof(ItemDrop.ItemData))]
     public static class InventoryGrid_UpdateGui_Patch
     {
         private static void Postfix(InventoryGrid __instance)

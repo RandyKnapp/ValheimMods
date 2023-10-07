@@ -1,3 +1,10 @@
+## Version 0.9.27 - Fixing Server Sync
+* Had to update server sync correctly.
+
+## Version 0.9.26 - Valheim Update 0.217.24
+* Updated for Valheim 0.217.24
+* Adjust Swamp Bounties to have better chance to spawn. Looking at you Leeches!
+
 ## Version 0.9.24/25 - Fixing Bounties
 * Fixed: Some bounties would spawn without name plate and would not register as a kill.
 * Slightly changed the logic to hopefully prevent underwater bounty spawns that shouldn't be underwater.
