@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace DvergerColor
 {
-    [BepInPlugin(PluginId, "Dverger Color", "1.0.5")]
+    [BepInPlugin(PluginId, "Dverger Color", "1.0.6")]
     [BepInProcess("valheim.exe")]
     public class DvergerColor : BaseUnityPlugin
     {

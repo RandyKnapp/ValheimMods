@@ -229,9 +229,12 @@ namespace EpicLoot.Adventure.Feature
                     var groundHeightWaterOffset = 5.0f;
                     if (biome != Heightmap.Biome.Ocean && waterLevel > groundHeight - groundHeightWaterOffset)
                     {
-                        // Too deep, try again
-                        EpicLoot.Log($"Spawn Point rejected: too deep underwater (waterLevel:{waterLevel}, groundHeight:{groundHeight}, groundoffset:{groundHeight - groundHeightWaterOffset})");
-                        continue;
+                        if (!(biome == Heightmap.Biome.Swamp && waterLevel < groundHeight))
+                        {
+                            // Too deep, try again
+                            EpicLoot.Log($"Spawn Point rejected: too deep underwater (waterLevel:{waterLevel}, groundHeight:{groundHeight}, groundoffset:{groundHeight - groundHeightWaterOffset})");
+                            continue;
+                        }
                     }
 
                     EpicLoot.Log($"Success! (ground={groundHeight} water={waterLevel} placed={spawnPoint.y})");
