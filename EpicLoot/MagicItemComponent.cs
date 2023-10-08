@@ -443,14 +443,14 @@ namespace EpicLoot
                 foreach (var setItemName in setPieces)
                 {
                     var isEquipped = IsSetItemEquipped(currentSetEquipped, setItemName, isMundane);
-                    var color = isEquipped ? "white" : "grey";
+                    var color = isEquipped ? "white" : "#808080ff";
                     var displayName = GetSetItemDisplayName(setItemName, isMundane);
                     text.Append($"\n  <color={color}>{displayName}</color>");
                 }
 
                 if (isMundane)
                 {
-                    var setEffectColor = currentSetEquipped.Count == setSize ? EpicLoot.GetSetItemColor() : "grey";
+                    var setEffectColor = currentSetEquipped.Count == setSize ? EpicLoot.GetSetItemColor() : "#808080ff";
                     var skillLevel = Player.m_localPlayer.GetSkillLevel(item.m_shared.m_skillType);
                     text.Append($"\n<color={setEffectColor}>({setSize}) ‣ {item.GetSetStatusEffectTooltip(item.m_quality, skillLevel).Replace("\n", " ")}</color>");
                 }
