@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Emit;
+using System.Threading;
 using Common;
 using HarmonyLib;
 using JetBrains.Annotations;
@@ -51,6 +52,9 @@ namespace EquipmentAndQuickSlots
             public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
             {
                 var instrs = instructions.ToList();
+                var patched1 = false;
+                var patched2 = false;
+                var patched3 = false;
 
                 var counter = 0;
 
@@ -62,7 +66,7 @@ namespace EquipmentAndQuickSlots
 
                 var boundItemsMethod = AccessTools.DeclaredMethod(typeof(Inventory), nameof(Inventory.GetBoundItems));
                 var itemsListField = AccessTools.DeclaredField(typeof(HotkeyBar), nameof(HotkeyBar.m_items));
-                var setTextProperty = AccessTools.PropertySetter(typeof(Text), "text");
+                var setTextProperty = AccessTools.PropertySetter(typeof(TMP_Text), "text");
 
                 for (int i = 0; i < instrs.Count; ++i)
                 {
@@ -99,6 +103,8 @@ namespace EquipmentAndQuickSlots
                         //Call Method
                         yield return LogMessage(new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(HotkeyBar_UpdateIcons_Patch), nameof(UpdateIcons))));
                         counter++;
+
+                        patched1 = true;
                     } 
                     else if (i > 6 && instrs[i].opcode == OpCodes.Ldc_I4_0 && instrs[i+1].opcode == OpCodes.Stloc_0)
                     {
@@ -109,6 +115,7 @@ namespace EquipmentAndQuickSlots
                         //Call Method
                         yield return LogMessage(new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(HotkeyBar_UpdateIcons_Patch), nameof(UpdateIconCount))));
                         counter++;
+                        patched2 = true;
                     }
                     else if (i > 6 && instrs[i].opcode == OpCodes.Callvirt && instrs[i].operand.Equals(setTextProperty) 
                              && instrs[i-1].opcode == OpCodes.Call && instrs[i-9].opcode == OpCodes.Ldstr && instrs[i-9].operand.Equals("binding"))
@@ -133,12 +140,22 @@ namespace EquipmentAndQuickSlots
                             //Call Method
                             yield return LogMessage(new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(HotkeyBar_UpdateIcons_Patch), nameof(UpdateIconBinding))));
                             counter++;
+                            patched3 = true;
                         }
                         else
                         {
                             EquipmentAndQuickSlots.LogError($"Can't Find Index Operand !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                         }
                     }
+                }
+
+                if (!patched1 || !patched2 || !patched3)
+                {
+                    EquipmentAndQuickSlots.LogWarning($"Not all Transpilers for UpdateIcons worked.");
+                    EquipmentAndQuickSlots.LogWarning($"patched1: {patched1}");
+                    EquipmentAndQuickSlots.LogWarning($"patched2: {patched2}");
+                    EquipmentAndQuickSlots.LogWarning($"patched3: {patched3}");
+                    Thread.Sleep(5000);
                 }
             }
         }
