@@ -62,7 +62,7 @@ namespace EpicLoot.Adventure
 
             Icon.sprite = ItemInfo.Item.GetIcon();
             Icon.color = canAfford ? Color.white : new Color(1.0f, 0.0f, 1.0f, 0.0f);
-            NameText.text = Localization.instance.Localize(ItemInfo.Item.GetDecoratedName(canAfford ? null : "grey"));
+            NameText.text = Localization.instance.Localize(ItemInfo.Item.GetDecoratedName(canAfford ? null : "#808080ff"));
 
             CoinsCostText.text = ItemInfo.Cost.Coins.ToString();
             CoinsCostText.transform.parent.gameObject.SetActive(ItemInfo.Cost.Coins > 0);
@@ -98,7 +98,7 @@ namespace EpicLoot.Adventure
 
             if (ItemInfo.IsGamble)
             {
-                var color = canAfford ? (itemInfo.GuaranteedRarity ? EpicLoot.GetRarityColor(itemInfo.Rarity) : "white") : "grey";
+                var color = canAfford ? (itemInfo.GuaranteedRarity ? EpicLoot.GetRarityColor(itemInfo.Rarity) : "white") : "#808080ff";
                 var rarityDisplay = itemInfo.GuaranteedRarity ? EpicLoot.GetRarityDisplayName(itemInfo.Rarity) : "$mod_epicloot_merchant_unknown";
                 NameText.text = Localization.instance.Localize($"<color={color}>{rarityDisplay} {ItemInfo.Item.m_shared.m_name}</color>");
 
