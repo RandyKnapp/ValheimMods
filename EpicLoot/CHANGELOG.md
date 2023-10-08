@@ -1,3 +1,9 @@
+## Version 0.9.29 - Bug Fixes
+* Changed original augmenter and enchanter to be furniture and updated descriptions
+* Updated Unity Project to 0.217.24 and TMP 3.2.0 -preview5
+* Updated a few places where colors were not hex values.
+* 
+
 ## Version 0.9.28 - Augmenting Menu Issue
 * Missed a spot where I needed to update to TMP_Text
 

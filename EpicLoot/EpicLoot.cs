@@ -631,7 +631,6 @@ namespace EpicLoot
             {
                 Table = "_HammerPieceTable",
                 CraftingStation = "piece_workbench",
-                ExtendStation = "forge",
                 Resources = new List<RecipeRequirementConfig>
                 {
                     new RecipeRequirementConfig { item = "Stone", amount = 10 },
@@ -643,7 +642,6 @@ namespace EpicLoot
             {
                 Table = "_HammerPieceTable",
                 CraftingStation = "piece_workbench",
-                ExtendStation = "forge",
                 Resources = new List<RecipeRequirementConfig>
                 {
                     new RecipeRequirementConfig { item = "Obsidian", amount = 10 },
