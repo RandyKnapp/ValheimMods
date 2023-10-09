@@ -307,6 +307,9 @@
     <EmbeddedResource Include="..\ValheimUnity\Assets\ExternalLibraries\EpicLoot-UnityLib.dll">
       <Link>EpicLoot-UnityLib.dll</Link>
     </EmbeddedResource>
+    <EmbeddedResource Include="..\ValheimUnity\AssetBundles\epiclootpieces">
+      <Link>epiclootpieces</Link>
+    </EmbeddedResource>
     <Content Include="ILRepack.targets">
       <SubType>Designer</SubType>
     </Content>
