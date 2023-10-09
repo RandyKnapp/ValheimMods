@@ -1,5 +1,5 @@
 ManifestFileVersion: 0
-CRC: 457174499
+CRC: 4176451001
 AssetBundleManifest:
   AssetBundleInfos:
     Info_0:
@@ -16,7 +16,4 @@ AssetBundleManifest:
       Dependencies: {}
     Info_4:
       Name: helheim
-      Dependencies: {}
-    Info_5:
-      Name: epiclootpieces
       Dependencies: {}

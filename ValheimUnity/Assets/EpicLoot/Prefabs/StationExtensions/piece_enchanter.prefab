@@ -105,7 +105,7 @@ GameObject:
   - component: {fileID: 5025989791668976993}
   - component: {fileID: 2531013302555889047}
   m_Layer: 10
-  m_Name: piece_enchanter2
+  m_Name: piece_enchanter
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
