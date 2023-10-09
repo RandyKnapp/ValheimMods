@@ -1,8 +1,13 @@
 ## Version 0.9.29 - Bug Fixes
+* Tooltips when only one effect was present were getting cut off.
+  * This is fixed by adding some text after the effects.
+* Added Rarity and Effect Count to Tooltips.
+* Fixed a display issue on Skills when a +Skills Effect is equipped.
+* Fixed a long term display issue where additional skill bar wouldn't disappear after unequipping a weapon
+* Added a null check to the Loot Roller in rare cases where an item is configured, but doesn't exist in game.
 * Changed original augmenter and enchanter to be furniture and updated descriptions
 * Updated Unity Project to 0.217.24 and TMP 3.2.0 -preview5
 * Updated a few places where colors were not hex values.
-* 
 
 ## Version 0.9.28 - Augmenting Menu Issue
 * Missed a spot where I needed to update to TMP_Text
