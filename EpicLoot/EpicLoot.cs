@@ -589,7 +589,7 @@ namespace EpicLoot
         private void LoadAssets()
         {
             var assetBundle = LoadAssetBundle("epicloot");
-            var pieceBundle = LoadAssetBundle("epiclootpieces");
+
             Assets.AssetBundle = assetBundle;
             Assets.EquippedSprite = assetBundle.LoadAsset<Sprite>("Equipped");
             Assets.AugaEquippedSprite = assetBundle.LoadAsset<Sprite>("AugaEquipped");
@@ -628,7 +628,7 @@ namespace EpicLoot
             LoadCraftingMaterialAssets(assetBundle, "Reagent");
             LoadCraftingMaterialAssets(assetBundle, "Essence");
 
-            LoadBuildPiece(pieceBundle, "piece_enchanter2", new PieceDef()
+            LoadBuildPiece(assetBundle, "piece_enchanter", new PieceDef()
             {
                 Table = "_HammerPieceTable",
                 CraftingStation = "piece_workbench",
@@ -639,7 +639,7 @@ namespace EpicLoot
                     new RecipeRequirementConfig { item = "Copper", amount = 3 },
                 }
             });
-            LoadBuildPiece(pieceBundle, "piece_augmenter2", new PieceDef()
+            LoadBuildPiece(assetBundle, "piece_augmenter", new PieceDef()
             {
                 Table = "_HammerPieceTable",
                 CraftingStation = "piece_workbench",
@@ -670,7 +670,6 @@ namespace EpicLoot
             LoadItem(assetBundle, "GoldBountyToken");
 
             LoadAllZNetAssets(assetBundle);
-            LoadAllZNetAssets(pieceBundle);
         }
 
         public static T LoadAsset<T>(string assetName) where T : Object
