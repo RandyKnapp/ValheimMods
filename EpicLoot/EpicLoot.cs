@@ -589,6 +589,7 @@ namespace EpicLoot
         private void LoadAssets()
         {
             var assetBundle = LoadAssetBundle("epicloot");
+            var pieceBundle = LoadAssetBundle("epiclootpieces");
             Assets.AssetBundle = assetBundle;
             Assets.EquippedSprite = assetBundle.LoadAsset<Sprite>("Equipped");
             Assets.AugaEquippedSprite = assetBundle.LoadAsset<Sprite>("AugaEquipped");
@@ -627,11 +628,10 @@ namespace EpicLoot
             LoadCraftingMaterialAssets(assetBundle, "Reagent");
             LoadCraftingMaterialAssets(assetBundle, "Essence");
 
-            LoadBuildPiece(assetBundle, "piece_enchanter", new PieceDef()
+            LoadBuildPiece(pieceBundle, "piece_enchanter2", new PieceDef()
             {
                 Table = "_HammerPieceTable",
                 CraftingStation = "piece_workbench",
-                ExtendStation = "forge",
                 Resources = new List<RecipeRequirementConfig>
                 {
                     new RecipeRequirementConfig { item = "Stone", amount = 10 },
@@ -639,11 +639,10 @@ namespace EpicLoot
                     new RecipeRequirementConfig { item = "Copper", amount = 3 },
                 }
             });
-            LoadBuildPiece(assetBundle, "piece_augmenter", new PieceDef()
+            LoadBuildPiece(pieceBundle, "piece_augmenter2", new PieceDef()
             {
                 Table = "_HammerPieceTable",
                 CraftingStation = "piece_workbench",
-                ExtendStation = "forge",
                 Resources = new List<RecipeRequirementConfig>
                 {
                     new RecipeRequirementConfig { item = "Obsidian", amount = 10 },
@@ -671,6 +670,7 @@ namespace EpicLoot
             LoadItem(assetBundle, "GoldBountyToken");
 
             LoadAllZNetAssets(assetBundle);
+            LoadAllZNetAssets(pieceBundle);
         }
 
         public static T LoadAsset<T>(string assetName) where T : Object
@@ -740,8 +740,11 @@ namespace EpicLoot
             {
                 if (asset is GameObject assetGo && assetGo.GetComponent<ZNetView>() != null)
                 {
-                    _assetCache.Add(asset.name, assetGo);
-                    RegisteredPrefabs.Add(assetGo);
+                    if (!_assetCache.ContainsKey(asset.name))
+                        _assetCache.Add(asset.name, assetGo);
+                    
+                    if (!RegisteredPrefabs.Contains(assetGo))
+                        RegisteredPrefabs.Add(assetGo);
                 }
             }
         }
