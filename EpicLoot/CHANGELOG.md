@@ -1,6 +1,10 @@
 ## Version 0.9.30 - Bug Fixes
 * Updated a couple entries in loottables.json that were typos or incorrectly tiered.
 * Updated ServerSync to current community standard.
+  * Will need to update SERVERS to this version.
+* Updated EpicLoot Unity
+* Made a change to Augmenter/Enchanter Furniture that may cause errors from the previous version.
+  * Dismantle the augmenter/enchanter created from 0.9.29 and recreate.
 
 ## Version 0.9.29 - Bug Fixes
 * Tooltips when only one effect was present were getting cut off.
