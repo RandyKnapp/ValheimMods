@@ -263,6 +263,7 @@ namespace EpicLoot
                                 foreach (var itemAmountConfig in disenchantProducts)
                                 {
                                     var materialPrefab = ObjectDB.instance.GetItemPrefab(itemAmountConfig.Item);
+                                    if (materialPrefab == null) continue;
                                     var materialItem = SpawnLootForDrop(materialPrefab, dropPoint, true);
                                     var materialItemDrop = materialItem.GetComponent<ItemDrop>();
                                     materialItemDrop.m_itemData.m_stack = itemAmountConfig.Amount;
