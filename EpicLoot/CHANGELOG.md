@@ -1,3 +1,7 @@
+## Version 0.9.30 - Bug Fixes
+* Updated a couple entries in loottables.json that were typos or incorrectly tiered.
+* Updated ServerSync to current community standard.
+
 ## Version 0.9.29 - Bug Fixes
 * Tooltips when only one effect was present were getting cut off.
   * This is fixed by adding some text after the effects.
