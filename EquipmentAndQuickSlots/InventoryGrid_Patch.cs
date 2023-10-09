@@ -1,7 +1,6 @@
 ﻿using Common;
 using HarmonyLib;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace EquipmentAndQuickSlots
 {

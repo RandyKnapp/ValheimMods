@@ -6,7 +6,6 @@ using Common;
 using HarmonyLib;
 using JetBrains.Annotations;
 using UnityEngine;
-using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
 namespace EquipmentAndQuickSlots
