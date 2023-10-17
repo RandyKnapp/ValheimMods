@@ -62,7 +62,7 @@ namespace EpicLoot
             text.Append("\n");
             if (item.m_shared.m_dlc.Length > 0)
             {
-                text.Append("\n<color=aqua>$item_dlc</color>");
+                text.Append("\n<color=#00ffffff>$item_dlc</color>");
             }
 
             ItemDrop.ItemData.AddHandedTip(item, text);
