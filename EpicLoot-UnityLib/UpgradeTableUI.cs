@@ -26,6 +26,7 @@ namespace EpicLoot_UnityLib
         {
             base.Awake();
             _featureButtons.Clear();
+            
             for (var i = 0; i < ListContainer.childCount; ++ i)
             {
                 var child = ListContainer.GetChild(i);
@@ -130,7 +131,11 @@ namespace EpicLoot_UnityLib
                     CostLabel.text = Localization.instance.Localize("$mod_epicloot_unlockcost");
                     CostList.SetItems(cost.Cast<IListElement>().ToList());
                     canAfford = LocalPlayerCanAffordCost(cost);
-                    _buttonLabel.text = Localization.instance.Localize("$mod_epicloot_featureunlock");
+                    var buttonText = Localization.instance.Localize("$mod_epicloot_featureunlock");
+                    if (_useTMP)
+                        _tmpButtonLabel.text = buttonText;
+                    else
+                        _buttonLabel.text = buttonText;
                 }
                 else
                 {
@@ -138,7 +143,11 @@ namespace EpicLoot_UnityLib
                     CostLabel.text = Localization.instance.Localize("$mod_epicloot_upgradecost");
                     CostList.SetItems(cost.Cast<IListElement>().ToList());
                     canAfford = LocalPlayerCanAffordCost(cost);
-                    _buttonLabel.text = Localization.instance.Localize("$mod_epicloot_upgrade");
+                    var buttonText = Localization.instance.Localize("$mod_epicloot_upgrade");
+                    if (_useTMP)
+                        _tmpButtonLabel.text = buttonText;
+                    else
+                        _buttonLabel.text = buttonText;
                 }
             }
 

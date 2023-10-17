@@ -152,7 +152,7 @@ namespace EpicLoot.Adventure
                 $"$mod_epicloot_merchant_gamble: {gambleRefreshTooltip}\n" +
                 $"$mod_epicloot_merchant_treasuremaps: {treasureMapRefreshTooltip}\n" +
                 $"$mod_epicloot_merchant_bounties: {bountiesRefreshTooltip}\n\n" +
-                $"<color=silver>$mod_epicloot_merchant_rollovertime</color>";
+                $"<color=#c0c0c0ff>$mod_epicloot_merchant_rollovertime</color>";
 
             var buyListPrefab = transform.Find("SecretStash/Panel/ItemElement").gameObject.AddComponent<BuyListElement>();
             buyListPrefab.gameObject.SetActive(false);

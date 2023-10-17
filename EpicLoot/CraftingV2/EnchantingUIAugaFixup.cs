@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using EpicLoot_UnityLib;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -145,7 +146,7 @@ namespace EpicLoot.CraftingV2
             rt.sizeDelta = new Vector2(0, 0);
 
             var rarityColor = toggle.GetComponent<SetRarityColor>();
-            rarityColor.Graphics[0] = newButton.GetComponentInChildren<Text>();
+            rarityColor.Graphics[0] = newButton.GetComponentInChildren<TMP_Text>();
             rarityColor.Refresh();
 
             var border = toggle.transform.Find("Border").GetComponent<Image>();
