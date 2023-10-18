@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using HarmonyLib;
 using JetBrains.Annotations;
 using TMPro;
@@ -81,26 +82,84 @@ namespace EpicLoot.MagicItemEffects
 		private static void Postfix(SkillsDialog __instance, Player player)
 		{
 			var allSkills = player.m_skills.GetSkillList();
-			foreach (var element in __instance.m_elements)
+			var elementList = new List<GameObject>();
+			if (EpicLoot.HasAuga)
 			{
-				var skill = allSkills.Find(s => s.m_info.m_description == element.GetComponentInChildren<UITooltip>().m_text);
+				var inventoryGuiRoot = __instance.gameObject.GetComponentInParent<InventoryGui>();
+
+				if (inventoryGuiRoot == null)
+					return;
+
+				var skillContainer = Utils.FindChild(inventoryGuiRoot.transform, "SkillElementsContainer");
+
+				if (skillContainer == null)
+					return;
+				
+				for (int i = 0; i < skillContainer.childCount; i++)
+					elementList.Add(skillContainer.GetChild(i).gameObject);
+			}
+			else
+			{
+				elementList = __instance.m_elements;
+			}
+			
+			foreach (var element in elementList)
+			{
+				var tooltipComponent = element.GetComponentInChildren<UITooltip>();
+				
+				if (EpicLoot.HasAuga)
+					tooltipComponent.m_topic = string.Empty;
+				
+				var skill = allSkills.Find(s => s.m_info.m_description == tooltipComponent.m_text);
+				
+				if (skill == null)
+					continue;
+				
 				var extraSkill = AddSkillLevel_Skills_GetSkillFactor_Patch.SkillIncrease(player, skill.m_info.m_skill);
+
 				if (extraSkill > 0)
-				{
+				{ 
 					var levelbar = Utils.FindChild(element.transform, "bar");
+					
+					if (EpicLoot.HasAuga) 
+						levelbar = Utils.FindChild(element.transform, "ProgressBarLevel");
+					
 					var extraLevelbar = Utils.FindChild(element.transform, "extrabar")?.gameObject;
+					
 					if (extraLevelbar == null)
 					{
 						extraLevelbar = Object.Instantiate(levelbar.gameObject, levelbar.parent);
+						extraLevelbar.transform.SetSiblingIndex(levelbar.GetSiblingIndex());
 						extraLevelbar.name = "extrabar";
 					}
+					
 					extraLevelbar.SetActive(true);
-					var rect = extraLevelbar.GetComponent<RectTransform>();
-					rect.sizeDelta = new Vector2((skill.m_level + extraSkill) * 1.6f, rect.sizeDelta.y);
-                    extraLevelbar.GetComponent<Image>().color = EpicLoot.GetRarityColorARGB(ItemRarity.Magic);
-					extraLevelbar.transform.SetSiblingIndex(levelbar.GetSiblingIndex());
+					
+					if (EpicLoot.HasAuga)
+					{
+						var fillBarImage = extraLevelbar.GetComponent<Image>();
+						fillBarImage.color = EpicLoot.GetRarityColorARGB(ItemRarity.Magic);
+						fillBarImage.fillAmount = Mathf.Lerp(0.0f, 0.75f, (skill.m_level  + extraSkill) / 100f);
+					}
+					else
+					{
+						var rect = extraLevelbar.GetComponent<RectTransform>();
+						rect.sizeDelta = new Vector2((skill.m_level + extraSkill) * 1.6f, rect.sizeDelta.y);
+						extraLevelbar.GetComponent<Image>().color = EpicLoot.GetRarityColorARGB(ItemRarity.Magic);
+					}
+
 					var levelText = Utils.FindChild(element.transform, "leveltext");
-					levelText.GetComponent<TMP_Text>().text += $" <color={EpicLoot.GetRarityColor(ItemRarity.Magic)}>+{extraSkill}</color>";
+
+					if (EpicLoot.HasAuga)
+					{
+						levelText = Utils.FindChild(element.transform, "SkillLevel");
+						tooltipComponent.m_topic = $" <color={EpicLoot.GetRarityColor(ItemRarity.Magic)}>+{extraSkill}</color>";
+						levelText.GetComponent<Text>().text += tooltipComponent.m_topic;
+					}
+					else
+					{
+						levelText.GetComponent<TMP_Text>().text += $" <color={EpicLoot.GetRarityColor(ItemRarity.Magic)}>+{extraSkill}</color>";	
+					}
 				}
 				else
 				{

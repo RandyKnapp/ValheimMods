@@ -1,9 +1,12 @@
-## Version 0.9.31 - Auga Compatibility
-* In preparation for Auga Update, this adds changes needed to support Auga interfaces for the Enchanting Table and Tooltips
-* Various bug fixes
+## Version 0.9.32 - Auga Compatibility Part 2
+* Now updating Skills in Auga when Magic Effects give Bonus to Skills.
 
 <details>
 <summary><b>Changelog History</b> (<i>click to expand</i>)</summary>
+
+## Version 0.9.31 - Auga Compatibility
+* In preparation for Auga Update, this adds changes needed to support Auga interfaces for the Enchanting Table and Tooltips
+* Various bug fixes
 
 ## Version 0.9.30 - Bug Fixes
 * Updated a couple entries in loottables.json that were typos or incorrectly tiered.
