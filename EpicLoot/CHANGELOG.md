@@ -1,3 +1,10 @@
+## Version 0.9.31 - Auga Compatibility
+* In preparation for Auga Update, this adds changes needed to support Auga interfaces for the Enchanting Table and Tooltips
+* Various bug fixes
+
+<details>
+<summary><b>Changelog History</b> (<i>click to expand</i>)</summary>
+
 ## Version 0.9.30 - Bug Fixes
 * Updated a couple entries in loottables.json that were typos or incorrectly tiered.
 * Updated ServerSync to current community standard.
@@ -37,9 +44,6 @@
     * The highest magical rarity will carry over if more than one magical item is consumed.
 * Server-Synced Configuration is available toggle the enablement of this functionality.
     * Default will leave this functionality Disabled.
-
-<details>
-<summary><b>Changelog History</b> (<i>click to expand</i>)</summary>
 
 ## Version 0.9.22 - Bounty System Improvements Part 2
 * Would help if I included the translations in the Module Zip
