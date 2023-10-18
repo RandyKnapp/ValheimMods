@@ -56,50 +56,73 @@
     <Analyzer Include="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\Extensions\Microsoft\Visual Studio Tools for Unity\Analyzers\Microsoft.Unity.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\X_LootBeams\Scripts\CameraOrbit.cs" />
     <Compile Include="Assets\X_RPGVFX\RPG VFX Bundle\Scripts\Hovl_Laser2.cs" />
-    <Compile Include="Assets\X_RPGVFX\RPG VFX Bundle\Demo scenes\Demo magic circles Vol 1\CameraHolder.cs" />
     <Compile Include="Assets\X_RPGVFX\RPG VFX Bundle\Scripts\Hovl_Laser.cs" />
     <Compile Include="Assets\X_RPGVFX\RPG VFX Bundle\Scripts\ProjectileMover.cs" />
     <Compile Include="Assets\X_LootBeams\Scripts\BeamSelector.cs" />
     <Compile Include="Assets\X_RPGVFX\RPG VFX Bundle\Scripts\Hovl_DemoLasers.cs" />
+    <Compile Include="Assets\X_RPGVFX\RPG VFX Bundle\Scripts\ParticleCollisionInstance.cs" />
+    <Compile Include="Assets\X_LootBeams\Scripts\CameraOrbit.cs" />
+    <Compile Include="Assets\X_RPGVFX\RPG VFX Bundle\Demo scenes\Demo magic circles Vol 1\CameraHolder.cs" />
     <Compile Include="Assets\X_RPGVFX\RPG VFX Bundle\Scripts\Rotator.cs" />
     <Compile Include="Assets\X_RPGVFX\RPG VFX Bundle\Scripts\EGA_EffectSound.cs" />
-    <Compile Include="Assets\X_RPGVFX\RPG VFX Bundle\Scripts\ParticleCollisionInstance.cs" />
     <Compile Include="Assets\X_RPGVFX\RPG VFX Bundle\Demo scenes\Demo projectiles\DemoShooting.cs" />
     <Compile Include="Assets\X_RPGVFX\RPG VFX Bundle\Demo scenes\Demo track markers\RaycastInstance.cs" />
     <Compile Include="Assets\X_RPGVFX\RPG VFX Bundle\Scripts\AutoDestroyPS.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
     <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Demo scenes\Demo projectiles\Readme.txt" />
+    <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Overlay.shader" />
+    <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile-2-Pass.shader" />
+    <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap.shader" />
     <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Prefabs\Projectiles\Readme.txt" />
     <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Demo scenes\Demo AOE skills\Readme.txt" />
     <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Shaders\Lit_CenterGlow.shader" />
     <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Shaders\SmoothSmoke.shader" />
     <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Prefabs\HDRP and URP(LWRP).txt" />
+    <None Include="Assets\TextMesh Pro\Shaders\TMPro_Mobile.cginc" />
     <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Demo scenes\Demo magic circles Vol 1\Readme.txt" />
     <None Include="Assets\X_Wiz\AnimCtrl\OrganJarAnimationTiming.txt" />
     <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Shaders\DissolveNoise.shader" />
+    <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF SSD.shader" />
     <None Include="Assets\X_Wiz\AnimCtrl\StaffOfAtom_AnimationTimings.txt" />
     <None Include="Assets\X_LootBeams\Shaders\Beams\Beam AlphaBlended.shader" />
     <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Demo scenes\Demo scene lasers\If you want to use lasers in 2D.txt" />
+    <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Surface-Mobile.shader" />
     <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Shaders\Distortion.shader" />
     <None Include="Assets\X_LootBeams\Shaders\Beams\Beam Additive.shader" />
     <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Shaders\Blend_TwoSides.shader" />
     <None Include="Assets\X_LootBeams\Readme.txt" />
     <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Shaders\Electricity.shader" />
+    <None Include="Assets\TextMesh Pro\Shaders\SDFFunctions.hlsl" />
     <None Include="Assets\X_RPGVFX\Auras pack\Shaders\Blend_CenterGlow.shader" />
     <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Shaders\Blend_Normals.shader" />
     <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Prefabs\AOE spells\Readme.txt" />
+    <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Surface.shader" />
     <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Demo scenes\Demo scene lasers\Readme.txt" />
+    <None Include="Assets\TextMesh Pro\Sprites\EmojiOne Attribution.txt" />
+    <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap-Custom-Atlas.shader" />
     <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Shaders\LightGlow.shader" />
+    <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF.shader" />
+    <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile SSD.shader" />
+    <None Include="Assets\TextMesh Pro\Resources\LineBreaking Leading Characters.txt" />
     <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Prefabs\Magic circles\Loop version\How to use.txt" />
+    <None Include="Assets\TextMesh Pro\Shaders\TMPro_Properties.cginc" />
+    <None Include="Assets\TextMesh Pro\Shaders\TMPro_Surface.cginc" />
     <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Shaders\BlendDistort.shader" />
+    <None Include="Assets\TextMesh Pro\Resources\LineBreaking Following Characters.txt" />
     <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Shaders\AddTrail.shader" />
+    <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Masking.shader" />
     <None Include="Assets\X_RPGVFX\Auras pack\Shaders\Add_CenterGlow.shader" />
+    <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF Overlay.shader" />
+    <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap-Mobile.shader" />
+    <None Include="Assets\TextMesh Pro\Fonts\LiberationSans - OFL.txt" />
     <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Demo scenes\Demo AOE skills\HDRP and URP(LWRP).txt" />
     <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Scripts\Readme.txt" />
+    <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile.shader" />
     <None Include="Assets\ExternalLibraries\EpicLoot-UnityLib.dll" />
+    <None Include="Assets\TextMesh Pro\Shaders\TMP_Sprite.shader" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">
@@ -345,14 +368,8 @@
     <Reference Include="XGamingRuntime">
       <HintPath>Packages\valheim\XGamingRuntime.dll</HintPath>
     </Reference>
-    <Reference Include="Unity.TextMeshPro">
-      <HintPath>Packages\valheim\Unity.TextMeshPro.dll</HintPath>
-    </Reference>
     <Reference Include="Unity.InputSystem">
       <HintPath>Packages\valheim\Unity.InputSystem.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Security">
-      <HintPath>Packages\valheim\Mono.Security.dll</HintPath>
     </Reference>
     <Reference Include="assembly_guiutils">
       <HintPath>Packages\valheim\assembly_guiutils.dll</HintPath>
@@ -375,9 +392,6 @@
     <Reference Include="EpicLoot-UnityLib">
       <HintPath>Assets\ExternalLibraries\EpicLoot-UnityLib.dll</HintPath>
     </Reference>
-    <Reference Include="System.Configuration">
-      <HintPath>Packages\valheim\System.Configuration.dll</HintPath>
-    </Reference>
     <Reference Include="assembly_lux">
       <HintPath>Packages\valheim\assembly_lux.dll</HintPath>
     </Reference>
@@ -395,9 +409,6 @@
     </Reference>
     <Reference Include="ConnectedStorage">
       <HintPath>Packages\valheim\ConnectedStorage.dll</HintPath>
-    </Reference>
-    <Reference Include="Assembly-CSharp">
-      <HintPath>Packages\valheim\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="netstandard">
       <HintPath>C:\Program Files\Unity\Hub\Editor\2020.3.45f1\Editor\Data\NetStandard\ref\2.0.0\netstandard.dll</HintPath>
@@ -747,6 +758,9 @@
     <Reference Include="ThunderKit.Common">
       <HintPath>Library\ScriptAssemblies\ThunderKit.Common.dll</HintPath>
     </Reference>
+    <Reference Include="Unity.TextMeshPro.Editor">
+      <HintPath>Library\ScriptAssemblies\Unity.TextMeshPro.Editor.dll</HintPath>
+    </Reference>
     <Reference Include="ThunderKit.Core">
       <HintPath>Library\ScriptAssemblies\ThunderKit.Core.dll</HintPath>
     </Reference>
@@ -761,6 +775,9 @@
     </Reference>
     <Reference Include="Unity.Timeline">
       <HintPath>Library\ScriptAssemblies\Unity.Timeline.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.TextMeshPro">
+      <HintPath>Library\ScriptAssemblies\Unity.TextMeshPro.dll</HintPath>
     </Reference>
     <Reference Include="Unity.2D.Sprite.Editor">
       <HintPath>Library\ScriptAssemblies\Unity.2D.Sprite.Editor.dll</HintPath>

@@ -138,19 +138,28 @@ namespace EpicLoot_UnityLib
                 case MaterialConversionMode.Upgrade:
                     CostLabel.text = Localization.instance.Localize("$mod_epicloot_upgradecost");
                     _progressLabel.text = Localization.instance.Localize("$mod_epicloot_upgradeprogress");
-                    _buttonLabel.text = Localization.instance.Localize("$mod_epicloot_upgrade");
+                    if (_useTMP)
+                        _tmpButtonLabel.text = Localization.instance.Localize("$mod_epicloot_upgrade");
+                    else
+                        _buttonLabel.text = Localization.instance.Localize("$mod_epicloot_upgrade");
                     break;
 
                 case MaterialConversionMode.Convert:
                     CostLabel.text = Localization.instance.Localize("$mod_epicloot_convertcost");
                     _progressLabel.text = Localization.instance.Localize("$mod_epicloot_convertprogress");
-                    _buttonLabel.text = Localization.instance.Localize("$mod_epicloot_convert");
+                    if (_useTMP)
+                        _tmpButtonLabel.text = Localization.instance.Localize("$mod_epicloot_convert");
+                    else
+                        _buttonLabel.text = Localization.instance.Localize("$mod_epicloot_convert");
                     break;
 
                 case MaterialConversionMode.Junk:
                     CostLabel.text = Localization.instance.Localize("$mod_epicloot_junkcost");
                     _progressLabel.text = Localization.instance.Localize("$mod_epicloot_junkprogress");
-                    _buttonLabel.text = Localization.instance.Localize("$mod_epicloot_junk");
+                    if (_useTMP)
+                        _tmpButtonLabel.text = Localization.instance.Localize("$mod_epicloot_junk");
+                    else
+                        _buttonLabel.text = Localization.instance.Localize("$mod_epicloot_junk");
                     break;
 
                 default:

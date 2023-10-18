@@ -89,9 +89,9 @@ namespace EpicLoot
     {
         public const string PluginId = "randyknapp.mods.epicloot";
         public const string DisplayName = "Epic Loot";
-        public const string Version = "0.9.23";
+        public const string Version = "0.9.31";
 
-        private readonly ConfigSync _configSync = new ConfigSync(PluginId) { DisplayName = DisplayName, CurrentVersion = Version, MinimumRequiredVersion = "0.9.23" };
+        private readonly ConfigSync _configSync = new ConfigSync(PluginId) { DisplayName = DisplayName, CurrentVersion = Version, MinimumRequiredVersion = "0.9.30" };
 
         private static ConfigEntry<string> _setItemColor;
         private static ConfigEntry<string> _magicRarityColor;
@@ -589,6 +589,7 @@ namespace EpicLoot
         private void LoadAssets()
         {
             var assetBundle = LoadAssetBundle("epicloot");
+
             Assets.AssetBundle = assetBundle;
             Assets.EquippedSprite = assetBundle.LoadAsset<Sprite>("Equipped");
             Assets.AugaEquippedSprite = assetBundle.LoadAsset<Sprite>("AugaEquipped");
@@ -631,7 +632,6 @@ namespace EpicLoot
             {
                 Table = "_HammerPieceTable",
                 CraftingStation = "piece_workbench",
-                ExtendStation = "forge",
                 Resources = new List<RecipeRequirementConfig>
                 {
                     new RecipeRequirementConfig { item = "Stone", amount = 10 },
@@ -643,7 +643,6 @@ namespace EpicLoot
             {
                 Table = "_HammerPieceTable",
                 CraftingStation = "piece_workbench",
-                ExtendStation = "forge",
                 Resources = new List<RecipeRequirementConfig>
                 {
                     new RecipeRequirementConfig { item = "Obsidian", amount = 10 },
@@ -740,8 +739,11 @@ namespace EpicLoot
             {
                 if (asset is GameObject assetGo && assetGo.GetComponent<ZNetView>() != null)
                 {
-                    _assetCache.Add(asset.name, assetGo);
-                    RegisteredPrefabs.Add(assetGo);
+                    if (!_assetCache.ContainsKey(asset.name))
+                        _assetCache.Add(asset.name, assetGo);
+                    
+                    if (!RegisteredPrefabs.Contains(assetGo))
+                        RegisteredPrefabs.Add(assetGo);
                 }
             }
         }

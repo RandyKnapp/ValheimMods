@@ -63,7 +63,7 @@ namespace EpicLoot
                 {
                     var effect = entry2.Key;
                     var item = entry2.Value;
-                    t.AppendLine($" <color=silver>- {MagicItem.GetEffectText(effect, item.GetRarity(), false)} ({item.GetDecoratedName()})</color>");
+                    t.AppendLine($" <color=#c0c0c0ff>- {MagicItem.GetEffectText(effect, item.GetRarity(), false)} ({item.GetDecoratedName()})</color>");
                 }
 
                 t.AppendLine();
@@ -105,7 +105,7 @@ namespace EpicLoot
 
                 var targetName = AdventureDataManager.GetBountyName(bounty);
                 t.AppendLine($"<size=24>{targetName}</size>");
-                t.Append($"  <color=silver>$mod_epicloot_activebounties_classification: <color=#d66660>{AdventureDataManager.GetMonsterName(bounty.Target.MonsterID)}</color>, ");
+                t.Append($"  <color=#c0c0c0ff>$mod_epicloot_activebounties_classification: <color=#d66660>{AdventureDataManager.GetMonsterName(bounty.Target.MonsterID)}</color>, ");
                 t.AppendLine($" $mod_epicloot_activebounties_biome: <color={GetBiomeColor(bounty.Biome)}>$biome_{bounty.Biome.ToString().ToLower()}</color></color>");
 
                 var status = "";
@@ -119,7 +119,7 @@ namespace EpicLoot
                         break;
                 }
 
-                t.Append($"  <color=silver>$mod_epicloot_bounties_tooltip_status {status}");
+                t.Append($"  <color=#c0c0c0ff>$mod_epicloot_bounties_tooltip_status {status}");
 
                 var iron = bounty.RewardIron;
                 var gold = bounty.RewardGold;
@@ -169,7 +169,7 @@ namespace EpicLoot
             foreach (var effectEntry in sortedMagicEffects)
             {
                 t.AppendLine($"<size=24>{effectEntry.Key}</size>");
-                t.AppendLine($"<color=silver>{effectEntry.Value}</color>");
+                t.AppendLine($"<color=#c0c0c0ff>{effectEntry.Value}</color>");
                 t.AppendLine();
             }
 

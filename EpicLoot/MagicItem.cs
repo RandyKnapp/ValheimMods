@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using EpicLoot.LegendarySystem;
 using UnityEngine;
 
@@ -64,16 +65,20 @@ namespace EpicLoot
             var showRange = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
 
             var color = GetColorString();
-            var tooltip = $"<color={color}>\n";
+            var tooltip = new StringBuilder();
+            tooltip.AppendLine($"\n<color={color}>");
             for (var index = 0; index < Effects.Count; index++)
             {
                 var effect = Effects[index];
                 var pip = EpicLoot.GetMagicEffectPip(IsEffectAugmented(index));
-                tooltip += $"\n{pip} {GetEffectText(effect, Rarity, showRange)}";
+                tooltip.AppendLine($"{pip} {GetEffectText(effect, Rarity, showRange)}");
             }
 
-            tooltip += "</color>";
-            return tooltip;
+            tooltip.AppendLine($"</color>");
+            
+            tooltip.AppendLine($"Rarity: {GetRarityDisplay()}<pos=75%>Effects: <color={color}>{Effects.Count}</color>");
+            
+            return tooltip.ToString();
         }
 
         public Color GetColor()

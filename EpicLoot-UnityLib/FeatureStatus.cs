@@ -29,13 +29,15 @@ namespace EpicLoot_UnityLib
 
         public void OnEnable()
         {
-            EnchantingTableUI.instance.SourceTable.OnFeatureLevelChanged += OnFeatureLevelChanged;
+            if (EnchantingTableUI.instance != null && EnchantingTableUI.instance.SourceTable != null)
+                EnchantingTableUI.instance.SourceTable.OnFeatureLevelChanged += OnFeatureLevelChanged;
             Refresh();
         }
 
         public void OnDisable()
         {
-            EnchantingTableUI.instance.SourceTable.OnFeatureLevelChanged -= OnFeatureLevelChanged;
+            if (EnchantingTableUI.instance != null && EnchantingTableUI.instance.SourceTable != null)
+                EnchantingTableUI.instance.SourceTable.OnFeatureLevelChanged -= OnFeatureLevelChanged;
         }
 
         public void SetFeature(EnchantingFeature feature)
@@ -102,7 +104,7 @@ namespace EpicLoot_UnityLib
                         ManyStarsLabel.enabled = false;
                 }
 
-                if (UnlockedLabel != null)
+                if (UnlockedLabel != null )
                     UnlockedLabel.SetActive(level == 0);
             }
 

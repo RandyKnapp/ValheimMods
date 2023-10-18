@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using HarmonyLib;
 using JetBrains.Annotations;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
@@ -87,13 +88,25 @@ namespace EpicLoot.MagicItemEffects
 				if (extraSkill > 0)
 				{
 					var levelbar = Utils.FindChild(element.transform, "bar");
-					var extraLevelbar = Object.Instantiate(levelbar.gameObject, levelbar.parent);
+					var extraLevelbar = Utils.FindChild(element.transform, "extrabar")?.gameObject;
+					if (extraLevelbar == null)
+					{
+						extraLevelbar = Object.Instantiate(levelbar.gameObject, levelbar.parent);
+						extraLevelbar.name = "extrabar";
+					}
+					extraLevelbar.SetActive(true);
 					var rect = extraLevelbar.GetComponent<RectTransform>();
 					rect.sizeDelta = new Vector2((skill.m_level + extraSkill) * 1.6f, rect.sizeDelta.y);
                     extraLevelbar.GetComponent<Image>().color = EpicLoot.GetRarityColorARGB(ItemRarity.Magic);
 					extraLevelbar.transform.SetSiblingIndex(levelbar.GetSiblingIndex());
 					var levelText = Utils.FindChild(element.transform, "leveltext");
-					levelText.GetComponent<Text>().text += $" <color={EpicLoot.GetRarityColor(ItemRarity.Magic)}>+{extraSkill}</color>";
+					levelText.GetComponent<TMP_Text>().text += $" <color={EpicLoot.GetRarityColor(ItemRarity.Magic)}>+{extraSkill}</color>";
+				}
+				else
+				{
+					var extralevelbar = Utils.FindChild(element.transform, "extrabar");
+					if (extralevelbar != null)
+						extralevelbar.gameObject.SetActive(false);
 				}
 			}
 		}

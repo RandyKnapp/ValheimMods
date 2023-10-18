@@ -1,6 +1,5 @@
 ﻿using HarmonyLib;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace EpicLoot.Adventure
 {

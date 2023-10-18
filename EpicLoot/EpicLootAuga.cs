@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using EpicLoot_UnityLib;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -23,14 +24,14 @@ namespace EpicLoot
         {
             if (icon)
             {
-                Object.Destroy(newButton.GetComponentInChildren<Text>().gameObject);
+                Object.Destroy(newButton.GetComponentInChildren<TMP_Text>().gameObject);
                 var newIcon = Object.Instantiate(button.transform.Find("Icon"), newButton.transform);
                 newIcon.name = "Icon";
             }
             else
             {
                 var newLabel = button.GetComponentInChildren<Text>().text;
-                newButton.GetComponentInChildren<Text>().text = newLabel;
+                newButton.GetComponentInChildren<TMP_Text>().text = newLabel;
             }
             var oldRt = (RectTransform)button.transform;
             var rt = (RectTransform)newButton.transform;
@@ -150,19 +151,19 @@ namespace EpicLoot
 
         public static void FixFonts(GameObject obj)
         {
-            var texts = obj.GetComponentsInChildren<Text>(true);
+            var texts = obj.GetComponentsInChildren<TMP_Text>(true);
             foreach (var text in texts)
             {
                 if (text.font.name == "Norsebold")
                 {
-                    text.font = Auga.API.GetBoldFont();
+                    //text.font = Auga.API.GetBoldFont();
                     ColorUtility.TryParseHtmlString(Auga.API.Brown1, out var color);
                     text.color = color;
                     text.text = Localization.instance.Localize(text.text).ToUpperInvariant();
                 }
                 else
                 {
-                    text.font = Auga.API.GetSemiBoldFont();
+                    //text.font = Auga.API.GetSemiBoldFont();
                 }
 
                 if (text.name == "Count" || text.name == "RewardLabel" || text.name.EndsWith("Count"))
@@ -191,7 +192,7 @@ namespace EpicLoot
             rt.anchoredPosition = oldRt.anchoredPosition;
             rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, oldRt.rect.width);
 
-            newButton.transform.Find("Text").GetComponent<Text>().text = button.transform.Find("Text").GetComponent<Text>().text;
+            newButton.transform.Find("Text").GetComponent<TMP_Text>().text = button.transform.Find("Text").GetComponent<TMP_Text>().text;
             newButton.transform.Find("Image").GetComponent<Image>().sprite = button.transform.Find("Image").GetComponent<Image>().sprite;
             var featureStatus = newButton.GetComponent<FeatureStatus>();
             var otherFeatureStatus = button.GetComponent<FeatureStatus>();

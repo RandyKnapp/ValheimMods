@@ -345,7 +345,6 @@
       "Name": "Tier5Weapons",
       "Loot": [
         { "Item": "AtgeirBlackmetal", "Weight": 3, "Rarity": [ 0, 15, 60, 25 ] },
-        { "Item": "CrossbowArbalest", "Weight": 3, "Rarity": [ 0, 15, 60, 25 ] },
         { "Item": "AxeBlackMetal",    "Weight": 3, "Rarity": [ 0, 15, 60, 25 ] },
         { "Item": "KnifeBlackMetal",  "Weight": 3, "Rarity": [ 0, 15, 60, 25 ] },
         { "Item": "SwordBlackmetal",  "Weight": 3, "Rarity": [ 0, 15, 60, 25 ] },
@@ -394,6 +393,7 @@
         { "Item": "AxeJotunBane",       "Weight": 1, "Rarity": [ 0, 10, 50, 40 ] },
         { "Item": "SpearCarapace",      "Weight": 1, "Rarity": [ 0, 10, 50, 40 ] },
         { "Item": "SledgeDemolisher",   "Weight": 1, "Rarity": [ 0, 10, 50, 40 ] },
+        { "Item": "CrossbowArbalest", "Weight": 3, "Rarity": [ 0, 15, 60, 25 ] },
         { "Item": "BowSpineSnap",       "Weight": 1, "Rarity": [ 0, 10, 50, 40 ] }
       ]
     },
@@ -419,7 +419,7 @@
     {
       "Name": "Tier6Tools",
       "Loot": [
-        { "Item": "PickaxeBlackmetal", "Weight": 1, "Rarity": [ 0, 10, 50, 40 ] }
+        { "Item": "PickaxeBlackMetal", "Weight": 1, "Rarity": [ 0, 10, 50, 40 ] }
       ]
     },
     {

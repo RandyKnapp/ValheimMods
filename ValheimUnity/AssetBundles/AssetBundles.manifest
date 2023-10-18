@@ -1,5 +1,5 @@
 ManifestFileVersion: 0
-CRC: 2245661288
+CRC: 3915648442
 AssetBundleManifest:
   AssetBundleInfos:
     Info_0:
@@ -9,11 +9,11 @@ AssetBundleManifest:
       Name: jamassets
       Dependencies: {}
     Info_2:
-      Name: helheim
-      Dependencies: {}
-    Info_3:
       Name: eaqs
       Dependencies: {}
-    Info_4:
+    Info_3:
       Name: advancedportals
+      Dependencies: {}
+    Info_4:
+      Name: helheim
       Dependencies: {}

@@ -1,11 +1,43 @@
 ﻿using HarmonyLib;
 using System.Reflection;
 using System.Reflection.Emit;
+using CreatureLevelControl;
 
 
 #nullable enable
 namespace CreatureLevelControl
 {
+  public enum CreatureInfusion
+  {
+    None,
+    Lightning,
+    Fire,
+    Frost,
+    Poison,
+    Chaos,
+    Spirit,
+  }
+  public enum CreatureExtraEffect
+  {
+    None,
+    Aggressive,
+    Quick,
+    Regenerating,
+    Curious,
+    Splitting,
+    Armored,
+  }
+  public enum BossAffix
+  {
+    None,
+    Reflective,
+    Shielded,
+    Mending,
+    Summoner,
+    Elementalist,
+    Enraged,
+    Twin,
+  }
   public static class API
   {
     private static readonly Assembly? targetAssembly;

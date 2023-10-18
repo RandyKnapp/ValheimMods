@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -19,6 +20,8 @@ namespace EpicLoot_UnityLib
         protected bool _inProgress;
         protected float _countdown;
         protected Text _buttonLabel;
+        protected TMP_Text _tmpButtonLabel;
+        protected bool _useTMP = false;
         protected string _defaultButtonLabelText;
         protected bool _locked;
 
@@ -37,7 +40,13 @@ namespace EpicLoot_UnityLib
             {
                 MainButton.onClick.AddListener(OnMainButtonClicked);
                 _buttonLabel = MainButton.GetComponentInChildren<Text>();
-                _defaultButtonLabelText = _buttonLabel.text;
+                if (_buttonLabel == null)
+                {
+                    _tmpButtonLabel = MainButton.GetComponentInChildren<TMP_Text>();
+                    _useTMP = true;
+                }
+                
+                _defaultButtonLabelText = _useTMP ? _tmpButtonLabel.text : _buttonLabel.text;
             }
 
             var uiSFX = GameObject.Find("sfx_gui_button");
@@ -101,7 +110,10 @@ namespace EpicLoot_UnityLib
 
         public virtual void StartProgress()
         {
-            _buttonLabel.text = Localization.instance.Localize("$menu_cancel");
+            if (_useTMP)
+                _tmpButtonLabel.text = Localization.instance.Localize("$menu_cancel");
+            else
+                _buttonLabel.text = Localization.instance.Localize("$menu_cancel");
             _inProgress = true;
             _countdown = CountdownTime;
 
@@ -125,7 +137,11 @@ namespace EpicLoot_UnityLib
 
         public virtual void Cancel()
         {
-            _buttonLabel.text = Localization.instance.Localize(_defaultButtonLabelText);
+            if (_useTMP)
+                _tmpButtonLabel.text = Localization.instance.Localize(_defaultButtonLabelText);
+            else
+                _buttonLabel.text = Localization.instance.Localize(_defaultButtonLabelText);
+
             _inProgress = false;
             _countdown = 0;
 
