@@ -85,6 +85,7 @@ namespace EquipmentAndQuickSlots
                 }
 
                 var go = new GameObject(name, typeof(RectTransform));
+                go.SetActive(false);
                 go.transform.SetParent(EAQSPanel.transform, false);
 
                 grid = go.AddComponent<InventoryGrid>();
@@ -97,6 +98,7 @@ namespace EquipmentAndQuickSlots
                 grid.m_elementPrefab = inventoryGui.m_playerGrid.m_elementPrefab;
                 grid.m_gridRoot = root.transform as RectTransform;
                 grid.m_elementSpace = inventoryGui.m_playerGrid.m_elementSpace;
+                go.SetActive(true);
                 grid.ResetView();
 
                 if (name == "EquipmentSlotGrid")
