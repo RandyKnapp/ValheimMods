@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Threading;
+using Auga;
 using BepInEx;
 using BepInEx.Configuration;
 using HarmonyLib;
@@ -82,6 +84,8 @@ namespace EquipmentAndQuickSlots
             _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), PluginId);
 
             HasAuga = Auga.API.IsLoaded();
+            Debug.LogWarning($"Auga Loaded: {Auga.API.IsLoaded()}");
+            Thread.Sleep(15000);
         }
 
         private static void LoadAssets()

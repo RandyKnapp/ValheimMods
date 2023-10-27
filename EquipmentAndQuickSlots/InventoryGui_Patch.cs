@@ -68,6 +68,7 @@ namespace EquipmentAndQuickSlots
                         paperdolls.name = "Paperdolls";
 
                         var divider = Auga.API.Divider_CreateSmall(EAQSPanel.transform, "Divider", 255 - 40);
+
                         rt = (RectTransform)divider.transform;
                         rt.anchoredPosition = new Vector2(0, -157);
                     }

@@ -6,7 +6,7 @@
         <AssemblyName>CreatureLevelControlAPI</AssemblyName>
         <RootNamespace>CreatureLevelControl</RootNamespace>
         <LangVersion>latestmajor</LangVersion>
-        <TargetFrameworks>net461;net462</TargetFrameworks>
+        <TargetFrameworks>net461;net462;net472</TargetFrameworks>
     </PropertyGroup>
     <ItemGroup>
         <Reference Include="0Harmony">
