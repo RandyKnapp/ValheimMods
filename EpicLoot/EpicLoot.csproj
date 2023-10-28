@@ -55,15 +55,17 @@
     <Reference Include="BepInEx">
       <HintPath>M:\Code\VapokModBase\References\BepInEx\5.4.2200\BepInEx\core\BepInEx.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Libs\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="ServerSync, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\Libs\ServerSync.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization">
+      <HintPath>..\Libs\System.Runtime.Serialization.dll</HintPath>
+    </Reference>
     <Reference Include="Unity.TextMeshPro">
       <HintPath>..\..\VapokModBase\References\BepInEx\5.4.2200\unstripped_corlib\Unity.TextMeshPro.dll</HintPath>
     </Reference>
@@ -302,9 +304,6 @@
   <ItemGroup>
     <EmbeddedResource Include="..\Libs\AugaAPI.dll">
       <Link>AugaAPI.dll</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="..\Libs\Newtonsoft.Json.dll">
-      <Link>Newtonsoft.Json.dll</Link>
     </EmbeddedResource>
     <EmbeddedResource Include="..\ValheimUnity\Assets\ExternalLibraries\EpicLoot-UnityLib.dll">
       <Link>EpicLoot-UnityLib.dll</Link>

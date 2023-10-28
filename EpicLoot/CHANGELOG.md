@@ -1,8 +1,12 @@
-## Version 0.9.32 - Auga Compatibility Part 2
-* Now updating Skills in Auga when Magic Effects give Bonus to Skills.
+## Version 0.9.33 - BepInEx 5.4.2201 Preparation
+* The removal of the doorstop corlib search path presented a dependency issue for EpicLoot
+  * Fixed the dependency issue by including missing DLL.
 
 <details>
 <summary><b>Changelog History</b> (<i>click to expand</i>)</summary>
+
+## Version 0.9.32 - Auga Compatibility Part 2
+* Now updating Skills in Auga when Magic Effects give Bonus to Skills.
 
 ## Version 0.9.31 - Auga Compatibility
 * In preparation for Auga Update, this adds changes needed to support Auga interfaces for the Enchanting Table and Tooltips
