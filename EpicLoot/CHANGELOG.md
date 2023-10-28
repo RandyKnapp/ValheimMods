@@ -1,9 +1,14 @@
-## Version 0.9.33 - Valheim Update 0.217.27
+
+## Version 0.9.34 - Valheim Update 0.217.27
 * Updated for 0.217.27 References
 * Added Brenna's Trophy to Sacrifice List
 
 <details>
 <summary><b>Changelog History</b> (<i>click to expand</i>)</summary>
+
+## Version 0.9.33 - BepInEx 5.4.2201 Preparation
+* The removal of the doorstop corlib search path presented a dependency issue for EpicLoot
+  * Fixed the dependency issue by including missing DLL.
 
 ## Version 0.9.32 - Auga Compatibility Part 2
 * Now updating Skills in Auga when Magic Effects give Bonus to Skills.

@@ -249,7 +249,6 @@ namespace EpicLoot
             
             EIDFLegacy.CheckForExtendedItemFrameworkLoaded(_instance);
 
-            LoadEmbeddedAssembly(assembly, "Newtonsoft.Json.dll");
             LoadEmbeddedAssembly(assembly, "EpicLoot-UnityLib.dll");
 
             EnchantingTableUpgradesActive.SettingChanged += (_, _) => EnchantingTableUI.UpdateUpgradeActivation();
