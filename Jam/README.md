@@ -20,9 +20,12 @@ Adds more jam to the game:
 
 **Savory Eitrian Jam **x4**:** (8 Magecap, 8 Jotunn Puffs, 2 Onions, 8 Honey) Lasts 1500 seconds, gives 50 max HP, 50 max stamina, 55 max Eitr and 2HP regen per second
 
-### New in 1.0.6 
+### New in 1.0.7
+* Hildr's Request - Updated for Valheim BepInEx 5.4.2022
+
+### New in 1.0.6
 * Hildr's Request - 0.217.24
-  
+
 
 ## Installation:
 Install with [BepInEx](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim/)

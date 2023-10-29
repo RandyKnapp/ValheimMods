@@ -1,9 +1,9 @@
 {
   "name": "Jam",
-  "version_number": "1.0.6",
+  "version_number": "1.0.7",
   "website_url": "https://github.com/RandyKnapp/ValheimMods/tree/main/Jam",
   "description": "Adds more jam to the game.",
   "dependencies": [
-    "denikson-BepInExPack_Valheim-5.4.2200"
+    "denikson-BepInExPack_Valheim-5.4.2201"
   ]
 }

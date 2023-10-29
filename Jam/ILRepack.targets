@@ -5,6 +5,7 @@
             <InputAssemblies Include="$(TargetPath)" />
             <InputAssemblies Include="$(OutputPath)\Newtonsoft.Json.dll" />
             <InputAssemblies Include="$(OutputPath)\ServerSync.dll" />
+            <InputAssemblies Include="$(OutputPath)\System.Runtime.Serialization.dll" />
             <LibraryPath Include="$(OutputPath)" />
             <LibraryPath Include="C:\Program Files (x86)\Steam\steamapps\common\Valheim\valheim_Data\Managed" />
         </ItemGroup>

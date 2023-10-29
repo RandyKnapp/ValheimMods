@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Jam</RootNamespace>
     <AssemblyName>Jam</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
   </PropertyGroup>
@@ -45,13 +45,15 @@
       <HintPath>M:\Code\VapokModBase\References\BepInEx\5.4.2200\BepInEx\core\BepInEx.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Libs\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="ServerSync">
       <HintPath>..\Libs\ServerSync.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Runtime.Serialization">
+      <HintPath>..\Libs\System.Runtime.Serialization.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine">
       <HintPath>M:\Code\VapokModBase\References\BepInEx\5.4.2200\unstripped_corlib\UnityEngine.dll</HintPath>
     </Reference>
@@ -88,13 +90,9 @@
       <Link>jamassets</Link>
     </EmbeddedResource>
     <None Include="manifest.json" />
+    <None Include="packages.config" />
     <None Include="README.md" />
     <None Include="recipes.json" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="..\Libs\Newtonsoft.Json.dll">
-      <Link>Newtonsoft.Json.dll</Link>
-    </EmbeddedResource>
   </ItemGroup>
   <Import Project="..\Common\Common.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
