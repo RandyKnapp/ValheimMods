@@ -84,8 +84,6 @@ namespace EquipmentAndQuickSlots
             _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), PluginId);
 
             HasAuga = Auga.API.IsLoaded();
-            Debug.LogWarning($"Auga Loaded: {Auga.API.IsLoaded()}");
-            Thread.Sleep(15000);
         }
 
         private static void LoadAssets()
