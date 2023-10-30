@@ -1,23 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using HarmonyLib;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace MinimalStatusEffects
 {
-    [HarmonyPatch(typeof(Hud), "UpdateStatusEffects", new Type[] {typeof(List<StatusEffect>) })]
+    [HarmonyPatch(typeof(Hud), nameof(Hud.UpdateStatusEffects), new Type[] { typeof(List<StatusEffect>) })]
     public static class Hud_UpdateStatusEffects_Patch
     {
         public static Sprite _sprite;
 
         static void Postfix(List<StatusEffect> statusEffects, List<RectTransform> ___m_statusEffects, RectTransform ___m_statusEffectListRoot)
         {
-            Vector2 screenPosition = MinimalStatusEffectConfig.ScreenPosition.Value;
-            float width = MinimalStatusEffectConfig.ListSize.Value.x;
-            float height = MinimalStatusEffectConfig.ListSize.Value.y;
-            float iconSize = MinimalStatusEffectConfig.IconSize.Value;
+            if (Game.m_noMap && !MinimalStatusEffectConfig.EnabledInNomap.Value) return;
+
+            Vector2 screenPosition = Game.m_noMap ? MinimalStatusEffectConfig.NomapScreenPosition.Value : MinimalStatusEffectConfig.ScreenPosition.Value;
+            float width = Game.m_noMap ? MinimalStatusEffectConfig.NomapListSize.Value.x : MinimalStatusEffectConfig.ListSize.Value.x;
+            float height = Game.m_noMap ? MinimalStatusEffectConfig.NomapListSize.Value.y : MinimalStatusEffectConfig.ListSize.Value.y;
+            float iconSize = Game.m_noMap ? MinimalStatusEffectConfig.NomapIconSize.Value : MinimalStatusEffectConfig.IconSize.Value;
 
             ___m_statusEffectListRoot.anchorMin = new Vector2(1, 1);
             ___m_statusEffectListRoot.anchorMax = new Vector2(1, 1);
@@ -31,16 +32,17 @@ namespace MinimalStatusEffects
                 StatusEffect statusEffect = statusEffects[index];
                 RectTransform statusEffectObject = ___m_statusEffects[index];
                 statusEffectObject.localPosition = new Vector3(0, yPos, 0);
-                yPos -= MinimalStatusEffectConfig.EntrySpacing.Value;
+                yPos -= Game.m_noMap ? MinimalStatusEffectConfig.NomapEntrySpacing.Value : MinimalStatusEffectConfig.EntrySpacing.Value;
 
                 var name = statusEffectObject.Find("Name") as RectTransform;
                 if (name != null)
                 {
-                    var nameText = name.GetComponent<TMP_Text>();
-                    nameText.alignment = TextAlignmentOptions.MidlineLeft;
-                    nameText.richText = true;
-                    nameText.textWrappingMode = TextWrappingModes.Normal;
-                    nameText.fontSize = MinimalStatusEffectConfig.FontSize.Value;
+                    var nameText = name.GetComponent<Text>();
+                    nameText.alignment = TextAnchor.MiddleLeft;
+                    nameText.supportRichText = true;
+                    nameText.horizontalOverflow = HorizontalWrapMode.Wrap;
+                    nameText.resizeTextForBestFit = false;
+                    nameText.fontSize = Game.m_noMap ? MinimalStatusEffectConfig.NomapFontSize.Value : MinimalStatusEffectConfig.FontSize.Value;
                     name.anchorMin = new Vector2(0, 0.5f);
                     name.anchorMax = new Vector2(1, 0.5f);
                     name.anchoredPosition = new Vector2(120 + iconSize, 2);
@@ -96,11 +98,13 @@ namespace MinimalStatusEffects
     {
         public static void Postfix(Hud __instance)
         {
-            var scale = MinimalStatusEffectConfig.SailingPowerIndicatorScale.Value;
+            if (Game.m_noMap && !MinimalStatusEffectConfig.EnabledInNomap.Value) return;
+
+            var scale = Game.m_noMap ? MinimalStatusEffectConfig.NomapSailingPowerIndicatorScale.Value : MinimalStatusEffectConfig.SailingPowerIndicatorScale.Value;
             var powerIcon = __instance.m_rudder.transform.parent as RectTransform;
             powerIcon.localScale = new Vector3(scale, scale, 1);
-            powerIcon.anchoredPosition = MinimalStatusEffectConfig.SailingPowerIndicatorPosition.Value;
-            __instance.m_shipWindIndicatorRoot.anchoredPosition = MinimalStatusEffectConfig.SailingWindIndicatorPosition.Value;
+            powerIcon.anchoredPosition = Game.m_noMap ? MinimalStatusEffectConfig.NomapSailingPowerIndicatorPosition.Value : MinimalStatusEffectConfig.SailingPowerIndicatorPosition.Value;
+            __instance.m_shipWindIndicatorRoot.anchoredPosition = Game.m_noMap ? MinimalStatusEffectConfig.NomapSailingWindIndicatorPosition.Value : MinimalStatusEffectConfig.SailingWindIndicatorPosition.Value;
         }
     }
 
