@@ -1,4 +1,4 @@
-# Jam v1.0.6
+# Jam v1.0.8
 ##### by RandyKnapp
 Source: [Github](https://github.com/RandyKnapp/ValheimMods)
 Discord: [RandyKnapp's Mod Community](https://discord.gg/randyknappmods)
@@ -19,6 +19,9 @@ Adds more jam to the game:
 **Nordic Jam **x4**:** (8 Blueberries, 8 Cloudberries) Lasts 1200 seconds, gives 30 max HP, 40 max stamina and 2HP regen per second
 
 **Savory Eitrian Jam **x4**:** (8 Magecap, 8 Jotunn Puffs, 2 Onions, 8 Honey) Lasts 1500 seconds, gives 50 max HP, 50 max stamina, 55 max Eitr and 2HP regen per second
+
+### New in 1.0.8
+* Hildr's Request - Updated for Valheim 0.217.27
 
 ### New in 1.0.7
 * Hildr's Request - Updated for Valheim BepInEx 5.4.2022

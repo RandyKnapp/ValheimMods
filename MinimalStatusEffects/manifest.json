@@ -1,9 +1,9 @@
 {
   "name": "MinimalStatusEffects",
-  "version_number": "1.0.5",
+  "version_number": "1.0.6",
   "website_url": "https://github.com/RandyKnapp/ValheimMods/tree/main/MinimalStatusEffects",
   "description": "Shrink the status effect list and put it in a vertical list below the minimap. Position and size is customizable.",
   "dependencies": [
-    "denikson-BepInExPack_Valheim-5.4.2200"
+    "denikson-BepInExPack_Valheim-5.4.2201"
   ]
 }

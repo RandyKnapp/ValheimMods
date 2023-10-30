@@ -1,10 +1,13 @@
-## Release 2.1.11
-* Adjusting InventoryGrid Initialization to prevent Awake from happening before variables are set.
-  * This has fixed a compatibility issue that was found with Jewelcrafting allowing EAQS to now be used with Smoothbrain's Jewelcrafting
+## Release 2.1.12
+* Updated for Valheim 0.217.27
+* Updated Auga and CLLC API's
 
 <details>
 <summary><b>Changelog History</b> (<i>click to expand</i>)</summary>
 
+## Release 2.1.11
+* Adjusting InventoryGrid Initialization to prevent Awake from happening before variables are set.
+  * This has fixed a compatibility issue that was found with Jewelcrafting allowing EAQS to now be used with Smoothbrain's Jewelcrafting
 ## Release 2.1.10
 * Fixing Hotkey Bar Binding Texts
 ## Release 2.1.8 & 2.1.9
