@@ -83,11 +83,8 @@ namespace EquipmentAndQuickSlots
 
             FixQuickSlotPositionForAuga((Vector2)QuickSlotsPosition.DefaultValue, QuickSlotsPosition.Value);
             LoadAssets();
-            
 
             _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), PluginId);
-
-            Debug.LogWarning($"Has Auga API: {HasAuga}");
         }
 
         private static Vector2 GetDefaultPosition(Vector2 defaultPosition)
