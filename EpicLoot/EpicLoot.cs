@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
+using AdventureBackpacks.API;
 using BepInEx;
 using BepInEx.Configuration;
 using Common;
@@ -85,6 +87,7 @@ namespace EpicLoot
 
     [BepInPlugin(PluginId, DisplayName, Version)]
     [BepInDependency("randyknapp.mods.auga", BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency("vapok.mods.adventurebackpacks", BepInDependency.DependencyFlags.SoftDependency)]
     public class EpicLoot : BaseUnityPlugin
     {
         public const string PluginId = "randyknapp.mods.epicloot";
@@ -178,6 +181,7 @@ namespace EpicLoot
         public const Minimap.PinType BountyPinType = (Minimap.PinType) 800;
         public const Minimap.PinType TreasureMapPinType = (Minimap.PinType) 801;
         public static bool HasAuga;
+        public static bool HasAdventureBackpacks;
         public static bool AugaTooltipNoTextBoxes;
         
 
@@ -245,7 +249,6 @@ namespace EpicLoot
             _configSync.AddLockingConfigEntry(_serverConfigLocked);
 
             var assembly = Assembly.GetExecutingAssembly();
-
             
             EIDFLegacy.CheckForExtendedItemFrameworkLoaded(_instance);
 
@@ -253,6 +256,8 @@ namespace EpicLoot
 
             EnchantingTableUpgradesActive.SettingChanged += (_, _) => EnchantingTableUI.UpdateUpgradeActivation();
             EnchantingTableActivatedTabs.SettingChanged += (_, _) => EnchantingTableUI.UpdateTabActivation();
+
+            HasAdventureBackpacks = ABAPI.IsLoaded();
 
             LoadPatches();
             InitializeConfig();

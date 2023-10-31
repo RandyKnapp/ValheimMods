@@ -7,6 +7,7 @@
             <InputAssemblies Include="$(OutputPath)\Newtonsoft.Json.dll" />
             <InputAssemblies Include="$(OutputPath)\AugaAPI.dll" />
             <InputAssemblies Include="$(OutputPath)\AnimationSpeedManager.dll" />
+            <InputAssemblies Include="$(OutputPath)\AdventureBackpacksAPI.dll" />
             <InputAssemblies Include="$(OutputPath)\System.Runtime.Serialization.dll" />
             <LibraryPath Include="$(OutputPath)" />
             <LibraryPath Include="G:\Steam\steamapps\common\Valheim\valheim_Data\Managed" />

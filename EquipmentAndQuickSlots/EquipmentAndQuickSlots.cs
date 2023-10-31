@@ -52,7 +52,9 @@ namespace EquipmentAndQuickSlots
         private void Awake()
         {
             _instance = this;
-
+            
+            HasAuga = Auga.API.IsLoaded();
+            
             _loggingEnabled = Config.Bind("Logging", "Logging Enabled", false, "Enable logging");
             KeyCodes[0] = Config.Bind("Hotkeys", "Quick slot hotkey 1", new KeyboardShortcut(KeyCode.Z), "Hotkey for Quick Slot 1.");
             if (KeyCodes[0].Value.MainKey == KeyCode.None)
@@ -73,17 +75,35 @@ namespace EquipmentAndQuickSlots
             QuickSlotsEnabled = Config.Bind("Toggles", "Enable Quick Slots", true, "Enable the quick slots. Disabling this while items are in the slots with attempt to move them to your inventory.");
             ViewDebugSaveData = Config.Bind("Toggles", "View Debug Save Data", false, "Enable to view the raw save data in the compendium.");
             QuickSlotsAnchor = Config.Bind("Quick Slots", "Quick Slots Anchor", TextAnchor.LowerLeft, "The point on the HUD to anchor the Quick Slots bar. Changing this also changes the pivot of the Quick Slots to that corner.");
-            QuickSlotsPosition = Config.Bind("Quick Slots", "Quick Slots Position", new Vector2(216, 150), "The position offset from the Quick Slots Anchor at which to place the Quick Slots.");
+            QuickSlotsPosition = Config.Bind("Quick Slots", "Quick Slots Position", GetDefaultPosition(new Vector2(216, 150)), "The position offset from the Quick Slots Anchor at which to place the Quick Slots.");
             DontDropEquipmentOnDeath = Config.Bind("Gravestone", "Dont drop equipment on death", false, "If set to true, your equipment will not be dropped when you die. Only valid when Equipment Slots are enabled.");
             DontDropQuickslotsOnDeath = Config.Bind("Gravestone", "Dont drop quickslot items on death", false, "If set to true, the items in the quickslots will not be dropped when you die. Only valid when Quick Slots are enabled.");
             InstantlyReequipArmorOnPickup = Config.Bind("Gravestone", "Instantly re-equip armor on pickup", false, "If set to true, when you pickup your equipment gravestone your armor will be instantly re-equipped, if possible. Only valid when Equipment Slots are enabled.");
             InstantlyReequipQuickslotsOnPickup = Config.Bind("Gravestone", "Instantly re-equip quickslot items on pickup", true, "If set to true, when you pickup your equipment gravestone your quick slot items will be instantly re-equipped, if possible. Only valid when Quick Slots are enabled.");
 
+            FixQuickSlotPositionForAuga((Vector2)QuickSlotsPosition.DefaultValue, QuickSlotsPosition.Value);
             LoadAssets();
+            
 
             _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), PluginId);
 
-            HasAuga = Auga.API.IsLoaded();
+            Debug.LogWarning($"Has Auga API: {HasAuga}");
+        }
+
+        private static Vector2 GetDefaultPosition(Vector2 defaultPosition)
+        {
+            return !HasAuga ? defaultPosition : new Vector2(defaultPosition.x, 86);
+        }
+
+        private static void FixQuickSlotPositionForAuga(Vector2 defaultPosition, Vector2 currentPosition)
+        {
+            if (!HasAuga)
+                return;
+
+            if (defaultPosition != currentPosition) return;
+            
+            var newPosition = GetDefaultPosition(currentPosition);
+            QuickSlotsPosition.Value = newPosition;
         }
 
         private static void LoadAssets()

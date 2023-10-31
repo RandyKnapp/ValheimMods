@@ -1,10 +1,10 @@
-
 ## Version 0.9.34 - Valheim Update 0.217.27
 * Updated for 0.217.27 References
 * Updated Unity for 2022.3.9
 * Added Mac/Linux Support
   * OpenGLCore and Metal Support are now bundled
 * Added Brenna's Trophy to Sacrifice List
+* Added in AdventureBackpacks API
 
 <details>
 <summary><b>Changelog History</b> (<i>click to expand</i>)</summary>

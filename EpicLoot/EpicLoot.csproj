@@ -37,6 +37,9 @@
     <Reference Include="0Harmony">
       <HintPath>M:\Code\VapokModBase\References\BepInEx\5.4.2201\BepInEx\core\0Harmony.dll</HintPath>
     </Reference>
+    <Reference Include="AdventureBackpacksAPI">
+      <HintPath>..\..\VapokModBase\References\ABAPI\AdventureBackpacksAPI.dll</HintPath>
+    </Reference>
     <Reference Include="AnimationSpeedManager">
       <HintPath>..\Libs\AnimationSpeedManager.dll</HintPath>
     </Reference>
