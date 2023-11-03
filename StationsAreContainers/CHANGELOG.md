@@ -1,3 +1,5 @@
+### 1.0.6
+* Updated for Hildir's Request - 0.217.27
 ### 1.0.5
 * ServerSync update
 ### 1.0.4
