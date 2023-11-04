@@ -51,7 +51,6 @@ namespace ImprovedBuildHud
         private void OnDestroy()
         {
             CraftFromContainersInstalledAndActive = false;
-            _harmony?.UnpatchSelf();
         }
 
         private void LateUpdate()

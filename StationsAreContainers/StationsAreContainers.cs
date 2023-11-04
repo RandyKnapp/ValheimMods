@@ -97,12 +97,6 @@ namespace StationsAreContainers
             }
         }
 
-        [UsedImplicitly]
-        private void OnDestroy()
-        {
-            _harmony?.UnpatchSelf();
-        }
-
         public static void ImprovedBuildHud_GetAvailableItems_Patch(ref int __result, string itemName)
         {
             if (Player.m_localPlayer != null)

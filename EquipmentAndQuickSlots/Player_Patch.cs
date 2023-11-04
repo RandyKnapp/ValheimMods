@@ -54,11 +54,24 @@ namespace EquipmentAndQuickSlots
     {
         public static bool Prefix(Player __instance)
         {
+            var keepEquipment = ZoneSystem.instance.GetGlobalKey(GlobalKeys.DeathKeepEquip);
+            var deleteItems = ZoneSystem.instance.GetGlobalKey(GlobalKeys.DeathDeleteItems);
+            var deleteUnequipped = ZoneSystem.instance.GetGlobalKey(GlobalKeys.DeathDeleteUnequipped);
+            var skillReset = ZoneSystem.instance.GetGlobalKey(GlobalKeys.DeathSkillsReset);
+
+            var hardMode = deleteItems || deleteUnequipped;
+            var normalMode = !keepEquipment && !deleteItems && !deleteUnequipped && !skillReset;
+            var casualMode = keepEquipment;
+
+            //If Casual Mode, Exit this method to vanilla and let it do it's thing.
+            if (casualMode)
+                return true;
+            
             var allInventories = __instance.GetAllInventories();
             var totalItemCount = allInventories.Sum(x => x.NrOfItems());
             if (totalItemCount == 0)
                 return true;
-
+            
             EquipmentSlotHelper.AllowMove = false;
             UnequipNonEAQSSlots(__instance);
 
@@ -66,13 +79,13 @@ namespace EquipmentAndQuickSlots
             var equipSlotInventory = __instance.GetEquipmentSlotInventory();
             var quickSlotInventory = __instance.GetQuickSlotInventory();
             var extraInventories = new List<Inventory>();
-            if (!EquipmentAndQuickSlots.DontDropEquipmentOnDeath.Value)
+            if (!EquipmentAndQuickSlots.DontDropEquipmentOnDeath.Value || (EquipmentAndQuickSlots.DontDropEquipmentOnDeath.Value && !hardMode))
             {
                 __instance.UnequipAllItems();
                 extraInventories.Add(equipSlotInventory);
             }
 
-            if (!EquipmentAndQuickSlots.DontDropQuickslotsOnDeath.Value)
+            if (!EquipmentAndQuickSlots.DontDropQuickslotsOnDeath.Value || (EquipmentAndQuickSlots.DontDropQuickslotsOnDeath.Value && !hardMode))
             {
                 extraInventories.Add(quickSlotInventory);
             }
@@ -80,42 +93,69 @@ namespace EquipmentAndQuickSlots
             if (extraInventories.Count == 0)
                 return true;
 
-            var tombstoneGameObject = Object.Instantiate(__instance.m_tombstone, __instance.GetCenterPoint() + Vector3.up + __instance.transform.forward * 0.5f, __instance.transform.rotation);
-            var tombStone = tombstoneGameObject.GetComponent<TombStone>();
-            var playerProfile = Game.instance.GetPlayerProfile();
-            var name = playerProfile.GetName();
-            var playerId = playerProfile.GetPlayerID();
-            tombStone.Setup($"{name}'s Equipment", playerId);
+            Container container = null;
+            Inventory containerInventory = null;
 
-            var container = tombstoneGameObject.GetComponent<Container>();
-            var containerInventory = container.GetInventory();
+            if (!deleteItems)
+            {
+                var tombstoneGameObject = Object.Instantiate(__instance.m_tombstone, __instance.GetCenterPoint() + Vector3.up + __instance.transform.forward * 0.5f, __instance.transform.rotation);
+                var tombStone = tombstoneGameObject.GetComponent<TombStone>();
+                var playerProfile = Game.instance.GetPlayerProfile();
+                var name = playerProfile.GetName();
+                var playerId = playerProfile.GetPlayerID();
+                tombStone.Setup($"{name}'s Equipment", playerId);
+                
+                container = tombstoneGameObject.GetComponent<Container>();
+                containerInventory = container.GetInventory();
+            }
 
             foreach (var inventory in extraInventories)
             {
 	            List<ItemDrop.ItemData> retainItems = new List<ItemDrop.ItemData>();
                 foreach (var item in inventory.m_inventory)
                 {
-                    if (!CreatureLevelControl.API.DropItemOnDeath(item))
+                    if (!CreatureLevelControl.API.DropItemOnDeath(item) && !deleteItems)
                     {
 	                    retainItems.Add(item);
 	                    continue;
                     }
 
-                    var oldSlot = item.m_gridPos;
-                    var newSlot = containerInventory.FindEmptySlot(false);
+                    if (containerInventory != null)
+                    {
+                        var oldSlot = item.m_gridPos;
+                        var newSlot = containerInventory.FindEmptySlot(false);
 
-                    if (inventory == equipSlotInventory && EquipmentAndQuickSlots.InstantlyReequipArmorOnPickup.Value)
-                        item.m_customData["eaqs-e"] = "1";
+                        if (inventory == equipSlotInventory)
+                        {
+                            if (EquipmentAndQuickSlots.InstantlyReequipArmorOnPickup.Value)
+                                item.m_customData["eaqs-e"] = "1";
+                        }
+                        
+                        if (inventory == quickSlotInventory)
+                        {
+                            if (hardMode)
+                            {
+                                quickSlotInventory = new Inventory(quickSlotInventory.m_name,quickSlotInventory.GetBkg(),quickSlotInventory.m_width,quickSlotInventory.m_height);
+                                continue;
+                            }
+                            else
+                                item.m_customData["eaqs-qs"] = $"{oldSlot.x},{oldSlot.y}";
+                        }
 
-                    if (inventory == quickSlotInventory)
-                        item.m_customData["eaqs-qs"] = $"{oldSlot.x},{oldSlot.y}";
-
-                    containerInventory.AddItem(item, item.m_stack, newSlot.x, newSlot.y);
+                        containerInventory.AddItem(item, item.m_stack, newSlot.x, newSlot.y);
+                    }
+                    else
+                    {
+                            equipSlotInventory = new Inventory(equipSlotInventory.m_name,equipSlotInventory.GetBkg(),equipSlotInventory.m_width,equipSlotInventory.m_height);
+                            quickSlotInventory = new Inventory(quickSlotInventory.m_name,quickSlotInventory.GetBkg(),quickSlotInventory.m_width,quickSlotInventory.m_height);
+                    }
                 }
-
+                
                 inventory.m_inventory = retainItems;
                 inventory.Changed();
-                containerInventory.Changed();
+                
+                if (containerInventory != null)
+                    containerInventory.Changed();
             }
 
             // Continue on making the regular tombstone

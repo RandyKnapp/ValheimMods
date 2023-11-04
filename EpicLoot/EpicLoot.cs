@@ -756,7 +756,6 @@ namespace EpicLoot
         private void OnDestroy()
         {
             _instance = null;
-            _harmony?.UnpatchSelf();
         }
 
         public static void TryRegisterPrefabs(ZNetScene zNetScene)

@@ -51,10 +51,5 @@ namespace DvergerColor
 
             _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), PluginId);
         }
-
-        private void OnDestroy()
-        {
-            _harmony.UnpatchSelf();
-        }
     }
 }

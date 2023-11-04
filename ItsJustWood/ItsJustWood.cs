@@ -56,12 +56,6 @@ namespace ItsJustWood
             _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), pluginID);
         }
 
-        [UsedImplicitly]
-        private void OnDestroy()
-        {
-            _harmony?.UnpatchSelf();
-        }
-
         public static bool IsObjectDBReady()
         {
             // Hack, just making sure the built-in items and prefabs have loaded

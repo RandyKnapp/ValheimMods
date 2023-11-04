@@ -119,11 +119,6 @@ namespace EquipmentAndQuickSlots
             return assetBundle;
         }
 
-        private void OnDestroy()
-        {
-            _harmony?.UnpatchSelf();
-        }
-
         private void Update()
         {
             if (QuickSlotsEnabled.Value)

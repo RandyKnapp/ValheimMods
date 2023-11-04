@@ -2,6 +2,7 @@
 * Updated for Valheim 0.217.27
 * Updated Auga and CLLC API's
 * If Auga is loaded, set the default position of Quick Slot Bar accordingly
+* Updated for World Modifiers and Hard/Hardcore Settings
 
 <details>
 <summary><b>Changelog History</b> (<i>click to expand</i>)</summary>
