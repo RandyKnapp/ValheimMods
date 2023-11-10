@@ -77,6 +77,23 @@ namespace EpicLoot
     [HarmonyPatch(typeof(CharacterDrop), nameof(CharacterDrop.GenerateDropList))]
     public static class CharacterDrop_GenerateDropList_Patch
     {
+        public static void Prefix(CharacterDrop __instance)
+        {
+            if (__instance.m_character != null && __instance.m_character.IsBoss() &&
+                EpicLoot.GetBossTrophyDropMode() != BossDropMode.Default)
+            {
+                foreach (var drop in __instance.m_drops)
+                {
+                    if (!(drop.m_prefab == null))
+                    {
+                        if ((drop.m_prefab.name.Equals("Wishbone") && EpicLoot.GetBossWishboneDropMode() != BossDropMode.Default) || 
+                            (drop.m_prefab.name.Equals("CryptKey") && EpicLoot.GetBossCryptKeyDropMode() != BossDropMode.Default))
+                            if (drop.m_onePerPlayer)
+                                drop.m_onePerPlayer = false;
+                    }
+                }
+            }
+        }
         public static void Postfix(CharacterDrop __instance, ref List<KeyValuePair<GameObject, int>> __result)
         {
             if (__instance.m_character != null && __instance.m_character.IsBoss() && EpicLoot.GetBossTrophyDropMode() != BossDropMode.Default)
@@ -93,7 +110,9 @@ namespace EpicLoot
                         continue;
                     }
 
-                    if (itemDrop.m_itemData.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Trophy)
+                    if (itemDrop.m_itemData.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Trophy ||
+                        prefab.name.Equals("Wishbone") || 
+                        prefab.name.Equals("CryptKey"))
                     {
                         int dropCount;
                         var playerList = ZNet.instance.GetPlayerList();

@@ -7,6 +7,7 @@ using BepInEx;
 using Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using UnityEngine;
 
 namespace EpicLoot.Patching
 {
@@ -57,21 +58,41 @@ namespace EpicLoot.Patching
 
         public static void LoadAllPatches()
         {
-            PatchesDirPath = GetPatchesDirectoryPath();
-            
-            // If the folder does not exist, there are no patches
-            if (string.IsNullOrEmpty(PatchesDirPath))
+            try
+            {
+                PatchesDirPath = GetPatchesDirectoryPath();
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning($"Unable to Get Patch Directory: {e.Message}");
+                var debugPath = GetPatchesDirectoryPath(true);
+                Debug.LogWarning($"Attempted path is [{debugPath}]");
                 return;
+            }
 
-            var patchesFolder = new DirectoryInfo(PatchesDirPath);
-            if (!patchesFolder.Exists)
-                return;
+            try
+            {
+                // If the folder does not exist, there are no patches
+                if (string.IsNullOrEmpty(PatchesDirPath))
+                    return;
 
-            var pluginFolder = new DirectoryInfo(Assembly.GetExecutingAssembly().Location);
+                var patchesFolder = new DirectoryInfo(PatchesDirPath);
+                if (!patchesFolder.Exists)
+                    return;
 
-            CheckForOldPatches(pluginFolder.Parent);
-            GetAllConfigFileNames(pluginFolder.Parent);
-            ProcessPatchDirectory(patchesFolder);
+                var pluginFolder = new DirectoryInfo(Assembly.GetExecutingAssembly().Location);
+
+                CheckForOldPatches(pluginFolder.Parent);
+                GetAllConfigFileNames(pluginFolder.Parent);
+                ProcessPatchDirectory(patchesFolder);
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning($"Unable to Get Patch Directory: {e.Message}");
+                var debugPath = GetPatchesDirectoryPath(true);
+                Debug.LogWarning($"Attempted PatchesDirPath is [{PatchesDirPath}]");
+                Debug.LogWarning($"Attempted debugPath is [{debugPath}]");
+            }
         }
 
         public static void CheckForOldPatches(DirectoryInfo pluginFolder)
@@ -219,9 +240,13 @@ namespace EpicLoot.Patching
             }
         }
 
-        public static string GetPatchesDirectoryPath()
+        public static string GetPatchesDirectoryPath(bool debug = false)
         {
             var patchesFolderPath = Path.Combine(Paths.ConfigPath, "EpicLoot", "patches");
+            
+            if (debug)
+                return patchesFolderPath;
+            
             var dirInfo = Directory.CreateDirectory(patchesFolderPath);
 
             return dirInfo.FullName;
