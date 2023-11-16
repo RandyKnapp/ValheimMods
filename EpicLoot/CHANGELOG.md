@@ -1,17 +1,23 @@
-## Version 0.9.35 - Various Clean Up
-* Added additional logging and break prevention for loot rolls
-  * This is to prevent loot roller from breaking because of bad patches.
-* Added additional logging and break prevention for patch files directory.
-  * This is to prevent bad BepInEx installs from crashing Epic Loot fully.
-  * Still need to ensure the BepInEx for Valheim is used from Thunderstore.
-* Added 4 new config settings that control additional items that bosses drop and to allow customization to drops in the same way that Trophies do.
-  * Crypt Key Drop Mode
-  * Crypt Key Drop Player Range
-  * Wishbone Drop Mode
-  * Wishbone Drop Player Range
+## Version 0.9.36 - Valheim Enchantment System Compatibility
+* Added compatibility with Valheim Enchantment System
+* Fixed bug that would occur if there was no rarity table in the loottable entry.
+* Added defensive coding around loot rolling to ensure no errors would occur.
+* Refactored Auga's EpicLoot tooltips for showing Magic Items.
 
 <details>
 <summary><b>Changelog History</b> (<i>click to expand</i>)</summary>
+
+## Version 0.9.35 - Various Clean Up
+* Added additional logging and break prevention for loot rolls
+    * This is to prevent loot roller from breaking because of bad patches.
+* Added additional logging and break prevention for patch files directory.
+    * This is to prevent bad BepInEx installs from crashing Epic Loot fully.
+    * Still need to ensure the BepInEx for Valheim is used from Thunderstore.
+* Added 4 new config settings that control additional items that bosses drop and to allow customization to drops in the same way that Trophies do.
+    * Crypt Key Drop Mode
+    * Crypt Key Drop Player Range
+    * Wishbone Drop Mode
+    * Wishbone Drop Player Range
 
 ## Version 0.9.34 - Valheim Update 0.217.27
 * Updated for 0.217.27 References

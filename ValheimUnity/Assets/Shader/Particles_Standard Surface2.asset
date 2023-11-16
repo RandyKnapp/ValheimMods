@@ -19919,8 +19919,6 @@ Shader:
           requirements: 227
         - keywordName: DIRLIGHTMAP_COMBINED
           requirements: 227
-        - keywordName: DIRLIGHTMAP_SEPARATE
-          requirements: 227
         - keywordName: DYNAMICLIGHTMAP_ON
           requirements: 227
         - keywordName: SHADOWS_SCREEN
@@ -19933,6 +19931,8 @@ Shader:
           requirements: 4075
         - keywordName: STEREO_INSTANCING_ON
           requirements: 4075
+        - keywordName: UNITY_DEVICE_SUPPORTS_NATIVE_16BIT
+          requirements: 536870912
         m_NonStrippedUserKeywords: FOG_LINEAR FOG_EXP FOG_EXP2
         m_BuiltinKeywords: 
       107013:
@@ -19999,8 +19999,6 @@ Shader:
           requirements: 227
         - keywordName: DIRLIGHTMAP_COMBINED
           requirements: 227
-        - keywordName: DIRLIGHTMAP_SEPARATE
-          requirements: 227
         - keywordName: DYNAMICLIGHTMAP_ON
           requirements: 227
         - keywordName: SHADOWS_SCREEN
@@ -20013,6 +20011,8 @@ Shader:
           requirements: 4075
         - keywordName: STEREO_INSTANCING_ON
           requirements: 4075
+        - keywordName: UNITY_DEVICE_SUPPORTS_NATIVE_16BIT
+          requirements: 536870912
         m_NonStrippedUserKeywords: INSTANCING_ON
         m_BuiltinKeywords: SHADOWS_DEPTH SHADOWS_CUBE
       176849:

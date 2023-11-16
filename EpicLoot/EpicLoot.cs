@@ -88,11 +88,12 @@ namespace EpicLoot
     [BepInPlugin(PluginId, DisplayName, Version)]
     [BepInDependency("randyknapp.mods.auga", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("vapok.mods.adventurebackpacks", BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency("kg.ValheimEnchantmentSystem", BepInDependency.DependencyFlags.SoftDependency)]
     public class EpicLoot : BaseUnityPlugin
     {
         public const string PluginId = "randyknapp.mods.epicloot";
         public const string DisplayName = "Epic Loot";
-        public const string Version = "0.9.35";
+        public const string Version = "0.9.36";
 
         private readonly ConfigSync _configSync = new ConfigSync(PluginId) { DisplayName = DisplayName, CurrentVersion = Version, MinimumRequiredVersion = "0.9.35" };
 
@@ -393,33 +394,6 @@ namespace EpicLoot
                 {
                     Auga.API.ComplexTooltip_SetSubtitle(complexTooltip, localizedSubtitle);
                 }
-
-
-                if (AugaTooltipNoTextBoxes)
-                    return;
-
-                Auga.API.ComplexTooltip_AddDivider(complexTooltip);
-
-                var magicItemText = magicItem.GetTooltip();
-                var textBox = Auga.API.ComplexTooltip_AddTwoColumnTextBox(complexTooltip);
-                magicItemText = magicItemText.Replace("\n\n", "");
-                Auga.API.TooltipTextBox_AddLine(textBox, magicItemText);
-
-                if (magicItem.IsLegendarySetItem())
-                {
-                    var textBox2 = Auga.API.ComplexTooltip_AddTwoColumnTextBox(complexTooltip);
-                    Auga.API.TooltipTextBox_AddLine(textBox2, item.GetSetTooltip());
-                }
-
-                try
-                {
-                    Auga.API.ComplexTooltip_SetDescription(complexTooltip, Localization.instance.Localize(item.GetDescription()));
-                }
-                catch (Exception)
-                {
-                    Auga.API.ComplexTooltip_SetDescription(complexTooltip, item.GetDescription());
-                }
-                
             }
         }
 

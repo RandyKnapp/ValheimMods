@@ -66,7 +66,7 @@ namespace EpicLoot
 
             var color = GetColorString();
             var tooltip = new StringBuilder();
-            tooltip.AppendLine($"\n<color={color}>");
+            tooltip.Append($"\n<color={color}>");
             for (var index = 0; index < Effects.Count; index++)
             {
                 var effect = Effects[index];
@@ -74,7 +74,7 @@ namespace EpicLoot
                 tooltip.AppendLine($"{pip} {GetEffectText(effect, Rarity, showRange)}");
             }
 
-            tooltip.AppendLine($"</color>");
+            tooltip.Append($"</color>");
             
             tooltip.AppendLine($"Rarity: {GetRarityDisplay()}<pos=75%>Effects: <color={color}>{Effects.Count}</color>");
             

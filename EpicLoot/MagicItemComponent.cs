@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using Common;
 using EpicLoot.Crafting;
@@ -244,7 +245,17 @@ namespace EpicLoot
 
             if (itemData.IsMagic(out var magicItem) && !string.IsNullOrEmpty(magicItem.DisplayName))
             {
-                name = magicItem.DisplayName;
+                const string pattern = @"\(.+?[+\-]\d+.+?\)";
+                var match = Regex.Match(itemData.m_shared.m_name, pattern);
+                var appendedText = string.Empty;
+
+                if (match.Success)
+                {
+                    var matchedValue = match.Value;
+                    appendedText = $" {matchedValue}";
+                }
+
+                name = magicItem.DisplayName + appendedText;
             }
 
             return name;

@@ -12,8 +12,10 @@ namespace EpicLoot
     [HarmonyPatch(typeof(InventoryGrid), nameof(InventoryGrid.CreateItemTooltip), typeof(ItemDrop.ItemData), typeof(UITooltip))]
     public static class InventoryGrid_CreateItemTooltip_MagicItemComponent_Patch
     {
-        public static bool Prefix(ItemDrop.ItemData item, UITooltip tooltip)
+        [HarmonyAfter(new []{"kg.ValheimEnchantmentSystem"})]
+        public static bool Prefix(ItemDrop.ItemData item, UITooltip tooltip, out string __state)
         {
+            __state = null;
             string tooltipText;
             if (item.IsEquipable() && !item.m_equipped && Player.m_localPlayer != null && Player.m_localPlayer.HasEquipmentOfType(item.m_shared.m_itemType) && Input.GetKey(KeyCode.LeftControl))
             {
