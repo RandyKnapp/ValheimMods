@@ -394,6 +394,36 @@ namespace EpicLoot
                 {
                     Auga.API.ComplexTooltip_SetSubtitle(complexTooltip, localizedSubtitle);
                 }
+                
+                if (AugaTooltipNoTextBoxes)
+                    return;
+                
+                //Don't need to process the InventoryTooltip Information.
+                if (complexTooltip.name.Contains("InventoryTooltip"))
+                    return;
+
+                //The following is used only for Crafting Result Panel.
+                Auga.API.ComplexTooltip_AddDivider(complexTooltip);
+
+                var magicItemText = magicItem.GetTooltip();
+                var textBox = Auga.API.ComplexTooltip_AddTwoColumnTextBox(complexTooltip);
+                magicItemText = magicItemText.Replace("\n\n", "");
+                Auga.API.TooltipTextBox_AddLine(textBox, magicItemText);
+                
+                if (magicItem.IsLegendarySetItem())
+                {
+                    var textBox2 = Auga.API.ComplexTooltip_AddTwoColumnTextBox(complexTooltip);
+                    Auga.API.TooltipTextBox_AddLine(textBox2, item.GetSetTooltip());
+                }
+                
+                try
+                {
+                    Auga.API.ComplexTooltip_SetDescription(complexTooltip, Localization.instance.Localize(item.GetDescription()));
+                }
+                catch (Exception)
+                {
+                    Auga.API.ComplexTooltip_SetDescription(complexTooltip, item.GetDescription());
+                }
             }
         }
 

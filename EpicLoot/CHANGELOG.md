@@ -1,11 +1,14 @@
+## Version 0.9.37 - Auga Tooltip Bug Fix
+* Auga Tooltip now populates correctly in the Crafting and Augmenting actions.
+
+<details>
+<summary><b>Changelog History</b> (<i>click to expand</i>)</summary>
+
 ## Version 0.9.36 - Valheim Enchantment System Compatibility
 * Added compatibility with Valheim Enchantment System
 * Fixed bug that would occur if there was no rarity table in the loottable entry.
 * Added defensive coding around loot rolling to ensure no errors would occur.
 * Refactored Auga's EpicLoot tooltips for showing Magic Items.
-
-<details>
-<summary><b>Changelog History</b> (<i>click to expand</i>)</summary>
 
 ## Version 0.9.35 - Various Clean Up
 * Added additional logging and break prevention for loot rolls
