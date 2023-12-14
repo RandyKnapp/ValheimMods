@@ -4,6 +4,7 @@ using System.Reflection.Emit;
 using Common;
 using HarmonyLib;
 using JetBrains.Annotations;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
@@ -32,18 +33,6 @@ namespace EquipmentAndQuickSlots
                 }
                 
                 return EquipmentAndQuickSlots.QuickSlotCount;
-            }
-            public static void UpdateIconBinding(HotkeyBar instance, int index, HotkeyBar.ElementData elementData)
-            {
-                if (instance.name != "QuickSlotsHotkeyBar")
-                {
-                    return;
-                }
-                
-                var bindingText = elementData.m_go.transform.Find("binding").GetComponent<Text>();
-                bindingText.enabled = true;
-                bindingText.horizontalOverflow = HorizontalWrapMode.Overflow;
-                bindingText.text = EquipmentAndQuickSlots.GetBindingLabel(index);
             }
             [UsedImplicitly]
             public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
@@ -108,35 +97,6 @@ namespace EquipmentAndQuickSlots
                         yield return LogMessage(new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(HotkeyBar_UpdateIcons_Patch), nameof(UpdateIconCount))));
                         counter++;
                     }
-                    else if (i > 6 && instrs[i].opcode == OpCodes.Callvirt && instrs[i].operand.Equals(setTextProperty) 
-                             && instrs[i-1].opcode == OpCodes.Call && instrs[i-9].opcode == OpCodes.Ldstr && instrs[i-9].operand.Equals("binding"))
-                    {
-                        var indexOperand = instrs[i-6].opcode == OpCodes.Ldloc_S ? instrs[i-6].operand : null;
-                        var elementDataOperand = instrs[i+1].opcode == OpCodes.Ldloc_S ? instrs[i+1].operand : null;
-
-                        if (indexOperand != null)
-                        {
-                            //this
-                            yield return LogMessage(new CodeInstruction(OpCodes.Ldarg_0));
-                            counter++;
-                        
-                            //index
-                            yield return LogMessage(new CodeInstruction(OpCodes.Ldloc_S, indexOperand));
-                            counter++;
-                        
-                            //elementData
-                            yield return LogMessage(new CodeInstruction(OpCodes.Ldloc_S, elementDataOperand));
-                            counter++;
-                        
-                            //Call Method
-                            yield return LogMessage(new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(HotkeyBar_UpdateIcons_Patch), nameof(UpdateIconBinding))));
-                            counter++;
-                        }
-                        else
-                        {
-                            EquipmentAndQuickSlots.LogError($"Can't Find Index Operand !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                        }
-                    }
                 }
             }
         }
@@ -152,8 +112,9 @@ namespace EquipmentAndQuickSlots
             if (EquipmentAndQuickSlots.QuickSlotsEnabled.Value && hotkeyBar.transform.parent.Find("QuickSlotsHotkeyBar") == null)
             {
                 var quickslotsHotkeyBar = Object.Instantiate(hotkeyBar.gameObject, __instance.m_rootObject.transform, true);
+                var hotkeyBarComponent = quickslotsHotkeyBar.GetComponent<HotkeyBar>();
+                hotkeyBarComponent.m_selected = -1;
                 quickslotsHotkeyBar.name = "QuickSlotsHotkeyBar";
-                quickslotsHotkeyBar.GetComponent<HotkeyBar>().m_selected = -1;
 
                 var configPositionedElement = quickslotsHotkeyBar.AddComponent<ConfigPositionedElement>();
                 configPositionedElement.PositionConfig = EquipmentAndQuickSlots.QuickSlotsPosition;
@@ -171,6 +132,21 @@ namespace EquipmentAndQuickSlots
         [HarmonyPatch(typeof(Hud), "Update")]
         public static class Hud_Update_Patch
         {
+            
+            private static HotkeyBar _quickSlotsHotkeyBar;
+
+            private static HotkeyBar HotkeyBar
+            {
+                get
+                {
+                    if (_quickSlotsHotkeyBar == null)
+                    {
+                        _quickSlotsHotkeyBar = GameObject.Find("QuickSlotsHotkeyBar").GetComponent<HotkeyBar>();
+                    }
+
+                    return _quickSlotsHotkeyBar;
+                }
+            }
             public static void Postfix(Hud __instance)
             {
                 var player = Player.m_localPlayer;
@@ -200,6 +176,21 @@ namespace EquipmentAndQuickSlots
                     }
 
                     hotkeyBar.UpdateIcons(player);
+                }
+                UpdateIconBinding();
+            }
+            
+            public static void UpdateIconBinding()
+            {
+                if (HotkeyBar == null) return;
+                
+                for (var i = 0; i < HotkeyBar.transform.childCount; i++)
+                {
+                    var hotkey = HotkeyBar.transform.GetChild(i);
+                    var bindingText = hotkey.Find("binding").GetComponent<TMP_Text>();
+                    bindingText.enabled = true;
+                    bindingText.overflowMode = TextOverflowModes.Overflow;
+                    bindingText.text = EquipmentAndQuickSlots.GetBindingLabel(i);
                 }
             }
 
