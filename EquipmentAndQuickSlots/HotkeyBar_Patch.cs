@@ -117,7 +117,7 @@ namespace EquipmentAndQuickSlots
                         patched2 = true;
                     }
                     else if (i > 6 && instrs[i].opcode == OpCodes.Callvirt && instrs[i].operand.Equals(setTextProperty) 
-                             && instrs[i-1].opcode == OpCodes.Call && instrs[i-9].opcode == OpCodes.Ldstr && instrs[i-9].operand.Equals("binding"))
+                             && instrs[i-1].opcode == OpCodes.Call && instrs[i-17].opcode == OpCodes.Ldstr && instrs[i-17].operand.Equals("binding"))
                     {
                         var indexOperand = instrs[i-6].opcode == OpCodes.Ldloc_S ? instrs[i-6].operand : null;
                         var elementDataOperand = instrs[i+1].opcode == OpCodes.Ldloc_S ? instrs[i+1].operand : null;

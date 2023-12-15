@@ -1,12 +1,14 @@
+## Release 2.1.13
+* Updated for Valheim 0.217.38 Patch
+
+<details>
+<summary><b>Changelog History</b> (<i>click to expand</i>)</summary>
+
 ## Release 2.1.12
 * Updated for Valheim 0.217.27
 * Updated Auga and CLLC API's
 * If Auga is loaded, set the default position of Quick Slot Bar accordingly
 * Updated for World Modifiers and Hard/Hardcore Settings
-
-<details>
-<summary><b>Changelog History</b> (<i>click to expand</i>)</summary>
-
 ## Release 2.1.11
 * Adjusting InventoryGrid Initialization to prevent Awake from happening before variables are set.
   * This has fixed a compatibility issue that was found with Jewelcrafting allowing EAQS to now be used with Smoothbrain's Jewelcrafting
