@@ -263,6 +263,23 @@
         { "Type": "Indestructible" }
       ]
     },
+    {
+      "ID": "BlackSunSpite",
+      "Name": "$mod_epicloot_l_spite",
+      "Description": "$mod_epicloot_l_spite_desc",
+      "Requirements" : {
+        "AllowedItemTypes": [ "OneHandedWeapon" ],
+        "AllowedSkillTypes": [ "Knives" ]
+      },
+      "GuaranteedEffectCount": 6, 
+      "GuaranteedMagicEffects": [
+        { "Type": "ModifyAttackStaminaUse", "Values": { "MinValue" : 30, "MaxValue" : 40, "Increment" : 1 } },
+        { "Type": "ModifyAttackSpeed", "Values": { "MinValue" : 25, "MaxValue" : 30, "Increment" : 1 } },
+        { "Type": "AddLightningDamage", "Values": { "MinValue" : 50, "MaxValue" : 60, "Increment" : 1 } },
+        { "Type": "AddPiercingDamage", "Values": { "MinValue" : 30, "MaxValue" : 35, "Increment" : 1 } },
+        { "Type": "ModifyMovementSpeed", "Values": { "MinValue" : 15, "MaxValue" : 20, "Increment" : 1 } }
+      ]
+    },
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Legendary Set Items

@@ -1,0 +1,65 @@
+﻿{
+  "DefaultFeatureLevels": {
+    "Sacrifice": 0,
+    "ConvertMaterials": -1,
+    "Enchant": -1,
+    "Augment": -1,
+    "Disenchant": -1
+  },
+  "MaximumFeatureLevels": {
+    "Sacrifice": 5,
+    "ConvertMaterials": 5,
+    "Enchant": 5,
+    "Augment": 5,
+    "Disenchant": 5
+  },
+  "UpgradeCosts": {
+    "Sacrifice": [
+      null,
+      [ { "Item": "SurtlingCore", "Amount": 4 }, { "Item": "TrophySkeleton", "Amount": 2 } ],
+      [ { "Item": "SurtlingCore", "Amount": 10 }, { "Item": "Bronze", "Amount": 4 }, { "Item": "TrophySurtling", "Amount": 4 } ],
+      [ { "Item": "SurtlingCore", "Amount": 16 }, { "Item": "Iron", "Amount": 4 }, { "Item": "TrophyLeech", "Amount": 3 } ],
+      [ { "Item": "SurtlingCore", "Amount": 20 }, { "Item": "Silver", "Amount": 4 }, { "Item": "TrophySGolem", "Amount": 1 } ],
+      [ { "Item": "SurtlingCore", "Amount": 20 }, { "Item": "BlackMetal", "Amount": 4 }, { "Item": "TrophyGoblinShaman", "Amount": 1 } ]
+    ],
+    "ConvertMaterials": [
+      [ { "Item": "Wood", "Amount": 20 }, { "Item": "BoneFragments", "Amount": 4 }, { "Item": "Resin", "Amount": 10 } ],
+      [ { "Item": "FineWood", "Amount": 20 }, { "Item": "Chitin", "Amount": 4 }, { "Item": "Resin", "Amount": 20 } ],
+      [ { "Item": "ElderBark", "Amount": 20 }, { "Item": "Root", "Amount": 5 }, { "Item": "Guck", "Amount": 20 } ],
+      [ { "Item": "Obsidian", "Amount": 10 }, { "Item": "SerpentScale", "Amount": 5 }, { "Item": "FreezeGland", "Amount": 5 } ],
+      [ { "Item": "LinenThread", "Amount": 30 }, { "Item": "Needle", "Amount": 8 }, { "Item": "Tar", "Amount": 20 } ],
+      [ { "Item": "YggdrasilWood", "Amount": 10 }, { "Item": "Mandible", "Amount": 8 }, { "Item": "GiantBloodSack", "Amount": 10 } ]
+    ],
+    "Enchant": [
+      [ { "Item": "DustMagic", "Amount": 5 }, { "Item": "SurtlingCore", "Amount": 3 }, { "Item": "Copper", "Amount": 2 } ],
+      [ { "Item": "DustMagic", "Amount": 5 }, { "Item": "GreydwarfEye", "Amount": 20 }, { "Item": "Bronze", "Amount": 2 } ],
+      [ { "Item": "DustRare", "Amount": 5 }, { "Item": "Ooze", "Amount": 20 }, { "Item": "Iron", "Amount": 2 } ],
+      [ { "Item": "DustRare", "Amount": 5 }, { "Item": "Crystal", "Amount": 20 }, { "Item": "Silver", "Amount": 2 } ],
+      [ { "Item": "DustEpic", "Amount": 5 }, { "Item": "DragonTear", "Amount": 5 }, { "Item": "BlackMetal", "Amount": 2 } ],
+      [ { "Item": "DustLegendary", "Amount": 5 }, { "Item": "Eitr", "Amount": 10 }, { "Item": "Bilebag", "Amount": 2 } ]
+    ],
+    "Augment": [
+      [ { "Item": "ShardMagic", "Amount": 3 }, { "Item": "SurtlingCore", "Amount": 3 }, { "Item": "Coins", "Amount": 200 } ],
+      [ { "Item": "ShardRare", "Amount": 3 }, { "Item": "SurtlingCore", "Amount": 10 }, { "Item": "Coins", "Amount": 100 } ],
+      [ { "Item": "ShardEpic", "Amount": 3 }, { "Item": "Thunderstone", "Amount": 20 }, { "Item": "Coins", "Amount": 200 } ],
+      [ { "Item": "ShardEpic", "Amount": 5 }, { "Item": "YmirRemains", "Amount": 20 }, { "Item": "Coins", "Amount": 300 } ],
+      [ { "Item": "ShardLegendary", "Amount": 3 }, { "Item": "GoblinTotem", "Amount": 5 }, { "Item": "Coins", "Amount": 500 } ],
+      [ { "Item": "ShardLegendary", "Amount": 8 }, { "Item": "BlackCore", "Amount": 5 }, { "Item": "Coins", "Amount": 600 } ]
+    ],
+    "Disenchant": [
+      [ { "Item": "SurtlingCore", "Amount": 5 }, { "Item": "IronBountyToken", "Amount": 3 } ],
+      [ { "Item": "ForestToken", "Amount": 10 }, { "Item": "Dandelion", "Amount": 100 } ],
+      [ { "Item": "ForestToken", "Amount": 30 }, { "Item": "MushroomYellow", "Amount": 100 } ],
+      [ { "Item": "ForestToken", "Amount": 60 }, { "Item": "FishRaw", "Amount": 60 } ],
+      [ { "Item": "ForestToken", "Amount": 100 }, { "Item": "Cloudberry", "Amount": 200 } ],
+      [ { "Item": "ForestToken", "Amount": 150 }, { "Item": "MushroomJotunPuffs", "Amount": 80 } ]
+    ]
+  },
+  "UpgradeValues": {
+    "Sacrifice": [ [0], [3], [6], [10], [15], [20] ],
+    "ConvertMaterials": [ [5, 5], [4, 5], [4, 4], [3, 4], [3, 3], [2, 3] ],
+    "Enchant": [ [0, 0], [1, 2], [2, 4], [3, 6], [4, 8], [5, 10] ],
+    "Augment": [ [2, 0], [3, 0], [4, 0], [4, 25], [4, 50], [5, 50] ],
+    "Disenchant": [ [0, 0], [3, 0], [6, 0], [10, 1], [15, 2], [20, 3] ]
+  }
+}

@@ -1,4 +1,5 @@
-﻿using Common;
+﻿using System;
+using Common;
 
 namespace EpicLoot.Crafting
 {
@@ -21,8 +22,26 @@ namespace EpicLoot.Crafting
             PrefabCreator.Reset();
             foreach (var recipe in Config.recipes)
             {
-                PrefabCreator.AddNewRecipe(recipe.name, recipe.item, recipe);
+                if (!String.IsNullOrEmpty(recipe.craftingStation))
+                {
+                    PrefabCreator.AddNewRecipe(recipe.name, recipe.item, recipe);                    
+                }
             }
+        }
+
+        public static bool HaveRequirements(Player player, Piece.Requirement[] requirements, int qualityLevel)
+        {
+            foreach (var resource in requirements)
+            {
+                if (resource.m_resItem)
+                {
+                    var amount = resource.GetAmount(qualityLevel);
+                    var num = player.m_inventory.CountItems(resource.m_resItem.m_itemData.m_shared.m_name);
+                    if (num < amount)
+                        return false;
+                }
+            }
+            return true;
         }
     }
 }

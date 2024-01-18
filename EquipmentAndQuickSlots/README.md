@@ -1,18 +1,9 @@
-# !! READ ME FIRST BEFORE UPGRADING !!
-The new, v2.0 of Equipment and Quick Slots uses a new system for saving and loading under the hood.
+# New for Mistlands
+The new, v2.1 of Equipment and Quick Slots does not need to be installed on servers.
 
-It is NOT compatible with 1.x versions and 1.x must be uninstalled correctly before upgrading to the 2.0 version!
+Please report bugs on our discord: https://discord.gg/ZNhYeavv3C
 
-### How to Upgrade Equipment and Quick Slots 1.x to 2.0.X
-1. Start the game with the old mod installed
-2. Find a safe place for your character
-3. Unequip all equipment and move everything out of the quick slots
-4. Quit the game using the menu
-5. Remove the old Equipment and Quick Slots dll and install the new version
-6. Run the game again
-7. You should see your new empty slots in the inventory and be able to re-equip your items
-
-# Equipment and Quick Slots v2.0.11
+# Equipment and Quick Slots v2.1.3
 ##### by RandyKnapp
 Give equipped items their own dedicated inventory slots, plus three more hotkeyable quick slots.
 
@@ -66,3 +57,13 @@ Copy EquipmentAndQuickSlots.dll into the BepInEx/plugins folder
     * Better Valheim+ and Auga positioning for the inventory
   * 2.0.14
     * Updated for H&H
+  * 2.0.15
+    * Yet Another Attempt at fixing the lost-equipment-on-death bug
+  * 2.1.0
+    * Updated for Mistlands!
+    * Now uses player.m_customData instead of knownTexts
+    * On death, drops equipment in second gravestone
+    * Fixed bug where you couldn't move items out of your quickslots
+    * Added new config features: DontDropEquipmentOnDeath, DontDropQuickslotsOnDeath, InstantlyReequipArmorOnPickup, InstantlyReequipQuickslotsOnPickup
+  * 2.1.1
+    * Fixed compatibility issues with JewelCrafting and MultiUserChest

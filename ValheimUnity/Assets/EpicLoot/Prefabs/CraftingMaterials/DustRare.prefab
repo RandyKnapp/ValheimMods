@@ -1,5 +1,49 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &2088317569569284847
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 8528142805035855175}
+    m_Modifications:
+    - target: {fileID: 1854609338385715262, guid: 26ac3efb77c408a40a6ca0eed694cf03,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1854609338385715262, guid: 26ac3efb77c408a40a6ca0eed694cf03,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1854609338385715262, guid: 26ac3efb77c408a40a6ca0eed694cf03,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1854609338385715262, guid: 26ac3efb77c408a40a6ca0eed694cf03,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1854609338385715262, guid: 26ac3efb77c408a40a6ca0eed694cf03,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1854609338385715262, guid: 26ac3efb77c408a40a6ca0eed694cf03,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.34999996
+      objectReference: {fileID: 0}
+    - target: {fileID: 1854609338385715262, guid: 26ac3efb77c408a40a6ca0eed694cf03,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 26ac3efb77c408a40a6ca0eed694cf03, type: 3}
 --- !u!1001 &5343288686951365520
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10,13 +54,19 @@ PrefabInstance:
     - target: {fileID: 4812765547126240509, guid: 6576477ba955d1d498e87413b5318733,
         type: 3}
       propertyPath: m_itemData.m_shared.m_name
-      value: Rare $mod_epicloot_assets_dust
+      value: $mod_epicloot_rare $mod_epicloot_assets_dust
+      objectReference: {fileID: 0}
+    - target: {fileID: 4812765547126240509, guid: 6576477ba955d1d498e87413b5318733,
+        type: 3}
+      propertyPath: m_itemData.m_shared.m_ammoType
+      value: Rare|MagicCraftingMaterial
       objectReference: {fileID: 0}
     - target: {fileID: 4812765547126240509, guid: 6576477ba955d1d498e87413b5318733,
         type: 3}
       propertyPath: m_itemData.m_shared.m_description
-      value: $mod_epicloot_assets_dust_introduce
-        
+      value: '$mod_epicloot_assets_dust_introduce
+
+'
       objectReference: {fileID: 0}
     - target: {fileID: 4812765547126240509, guid: 6576477ba955d1d498e87413b5318733,
         type: 3}
@@ -83,6 +133,11 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 21300000, guid: 6c27f33a47fd34841bb71f412795e2c4,
         type: 3}
+    - target: {fileID: 5802108604424157657, guid: 6576477ba955d1d498e87413b5318733,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7526082703919843583, guid: 6576477ba955d1d498e87413b5318733,
         type: 3}
       propertyPath: m_RootOrder
@@ -145,3 +200,9 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6576477ba955d1d498e87413b5318733, type: 3}
+--- !u!4 &8528142805035855175 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4358675689469007575, guid: 6576477ba955d1d498e87413b5318733,
+    type: 3}
+  m_PrefabInstance: {fileID: 5343288686951365520}
+  m_PrefabAsset: {fileID: 0}

@@ -43,10 +43,10 @@ namespace EpicLoot.MagicItemEffects
                     return;
                 }
 
-                var seParalyze = __instance.m_seman.GetStatusEffect("Paralyze") as SE_Paralyzed;
+                var seParalyze = __instance.m_seman.GetStatusEffect("Paralyze".GetHashCode()) as SE_Paralyzed;
                 if (seParalyze == null)
                 {
-                    seParalyze = __instance.m_seman.AddStatusEffect("Paralyze") as SE_Paralyzed;
+                    seParalyze = __instance.m_seman.AddStatusEffect("Paralyze".GetHashCode()) as SE_Paralyzed;
                     if (seParalyze == null)
                     {
                         EpicLoot.LogError("Could not add paralyze effect");
@@ -63,7 +63,11 @@ namespace EpicLoot.MagicItemEffects
                     main.startColor = Color.yellow;
                 }*/
 
-                var totalParalyzeTime = player.GetTotalActiveMagicEffectValue(MagicEffectType.Paralyze);
+                float totalParalyzeTime;
+                if (Attack_Patch.ActiveAttack != null)
+                    totalParalyzeTime = MagicEffectsHelper.GetTotalActiveMagicEffectValueForWeapon(player, Attack_Patch.ActiveAttack.m_weapon, MagicEffectType.Paralyze);
+                else
+                    totalParalyzeTime = player.GetTotalActiveMagicEffectValue(MagicEffectType.Paralyze);
                 seParalyze.Setup(totalParalyzeTime);
             }
         }

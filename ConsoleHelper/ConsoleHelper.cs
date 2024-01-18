@@ -17,7 +17,7 @@ namespace ConsoleHelper
 
         private void OnDestroy()
         {
-            _harmony.UnpatchAll(PluginId);
+            _harmony.UnpatchSelf();
         }
     }
 

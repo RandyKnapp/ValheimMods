@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 936891207
+CRC: 469027495
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 97df5e28e57b4f7707aa6e555c8fb643
+    Hash: 7e3db0770e00f29afd7b8afce5fde3f6
   TypeTreeHash:
     serializedVersion: 2
-    Hash: e57e4bf8eac47c7813637d1ff7b2f7c8
+    Hash: daf32ffaad9c3296faf1a4ae5c466994
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -29,7 +29,13 @@ ClassTypes:
   Script: {instanceID: 0}
 - Class: 224
   Script: {instanceID: 0}
-SerializeReferenceClassIdentifiers: []
+SerializeReferenceClassIdentifiers:
+- AssemblyName: UnityEngine.CoreModule
+  ClassName: UnityEngine.Events.PersistentCallGroup
+- AssemblyName: UnityEngine.UI
+  ClassName: UnityEngine.UI.FontData
+- AssemblyName: UnityEngine.UI
+  ClassName: UnityEngine.UI.MaskableGraphic/CullStateChangedEvent
 Assets:
 - Assets/Helheim/Prefabs/HelheimText.prefab
 Dependencies: []

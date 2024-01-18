@@ -1,8 +1,9 @@
-# Epic Loot v0.8.8 - Legendary Sets Update!
-Author: RandyKnapp
+# Epic Loot - Config Patching System and Various Bug Fixes
+Author: [RandyKnapp](https://discord.gg/randyknappmods)
 Source: [Github](https://github.com/RandyKnapp/ValheimMods/blob/main/EpicLoot/)
-
-Patch notes: https://github.com/RandyKnapp/ValheimMods/blob/main/EpicLoot/patchnotes.md
+Patreon: [patreon.com/randyknapp](https://www.patreon.com/randyknapp)
+Discord: [RandyKnapp's Mod Community](https://discord.gg/randyknappmods)
+Patch notes: [Github Patchnotes](https://github.com/RandyKnapp/ValheimMods/blob/main/EpicLoot/CHANGELOG.md)
 
 This mod aims to add a loot drop experience to Valheim similar to Diablo or other RPGs. Monsters and chests can now drop Magic, Rare, Epic, or Legendary magic items. Each magic item has a number of magic effects on it, that give bonuses to the item or your character when that magic item is equipped.
 
@@ -16,10 +17,17 @@ The mod is currently in ***Early Access***! That means it's **not done**! Be pat
 
 ***EpicLoot works in multiplayer and on dedicated servers!*** The server and all players should have the mod and its dependencies installed.
 
-Information about every magic effect and loot drop table can be found in [info.md](https://github.com/RandyKnapp/ValheimMods/blob/main/EpicLoot/info.md).
+## Documentation
+
+**Magic Effects:** [Magic Effects Wiki](https://github.com/RandyKnapp/ValheimMods/wiki/Magic-Effects)
+**Loot Drops:** [info.md](https://github.com/RandyKnapp/ValheimMods/blob/main/EpicLoot/info.md)
+**Patching System:** [Config Patching](https://github.com/RandyKnapp/ValheimMods/wiki/Config-Patching)
 
 ## Credits
-Contibutions from the following modders was invaluable and appreciated: 
+Epic Loot Team Members:
+  * [Vapok](https://github.com/Vapok) - Joined in Dec 2022, made hundreds of changes and bugfixes since.
+
+Contibutions from the following modders were invaluable and appreciated: 
   * [blaxxun (CLLC)](https://www.nexusmods.com/valheim/mods/495) - bugfixes, config sync, various magic item effects
   * [M3TO](https://github.com/M3TO) - bugfixes
   * [jsza](https://github.com/jsza) - bugfixes
@@ -29,12 +37,8 @@ Contibutions from the following modders was invaluable and appreciated:
   * LitanyOfFire - legendary definitions
   * [Digitalroot](https://github.com/Digitalroot) - Help with testing
 
-3D Models:
-  * "Fantasy Longsword" (https://skfb.ly/ontRY) by Faber is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
-
 ## Installation
-
-Copy the contents of "files" to a new folder called "EpicLoot" in your BepInEx/plugins directory.
+Copy the contents of "files" to a new folder called "EpicLoot" in your BepInEx/plugins directory (on both clients and dedicated servers).
 
 ## Cheats
 

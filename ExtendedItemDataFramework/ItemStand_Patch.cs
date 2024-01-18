@@ -12,6 +12,7 @@ namespace ExtendedItemDataFramework
             {
                 return false;
             }
+
             GameObject itemPrefab = ObjectDB.instance.GetItemPrefab(__instance.m_nview.GetZDO().GetString("item"));
             if (itemPrefab != null)
             {
@@ -31,9 +32,10 @@ namespace ExtendedItemDataFramework
                 itemDrop.Save();
                 gameObject.GetComponent<Rigidbody>().velocity = Vector3.up * 4f;
                 __instance.m_effects.Create(__instance.m_dropSpawnPoint.position, Quaternion.identity);
+
             }
             __instance.m_nview.GetZDO().Set("item", "");
-            __instance.m_nview.InvokeRPC(ZNetView.Everybody, "SetVisualItem", "", 0);
+            __instance.m_nview.InvokeRPC(ZNetView.Everybody, "SetVisualItem", "", 0, 0);
             return false;
         }
     }

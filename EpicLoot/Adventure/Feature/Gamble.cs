@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using EpicLoot.GatedItemType;
-using UnityEngine;
 using Random = System.Random;
 
 namespace EpicLoot.Adventure.Feature
@@ -69,13 +68,23 @@ namespace EpicLoot.Adventure.Feature
             var availableGambles = new List<SecretStashItemInfo>();
             foreach (var itemConfig in AdventureDataManager.Config.Gamble.Gambles)
             {
+                if (string.IsNullOrEmpty(itemConfig))
+                {
+                    EpicLoot.LogWarning($"Found empty itemConfig.. skipping.");
+                    continue;
+                }
                 var gatingMode = EpicLoot.GetGatedItemTypeMode();
                 if (gatingMode == GatedItemTypeMode.Unlimited)
                 {
-                    gatingMode = GatedItemTypeMode.MustKnowRecipe;
+                    gatingMode = GatedItemTypeMode.PlayerMustKnowRecipe;
                 }
 
-                var itemId = GatedItemTypeHelper.GetGatedItemID(itemConfig, gatingMode);
+                var itemId = GatedItemTypeHelper.GetItemFromCategory(itemConfig, gatingMode);
+                if (string.IsNullOrEmpty(itemId))
+                {
+                    EpicLoot.LogWarning($"[AdventureData] Could not find item id from Category (orig={itemConfig})!");
+                    continue;
+                }
                 var itemDrop = CreateItemDrop(itemId);
                 if (itemDrop == null)
                 {
@@ -86,7 +95,7 @@ namespace EpicLoot.Adventure.Feature
                 var itemData = itemDrop.m_itemData;
                 var cost = GetGambleCost(itemId);
                 availableGambles.Add(new SecretStashItemInfo(itemId, itemData, cost, true));
-                Object.Destroy(itemDrop.gameObject);
+                ZNetScene.instance.Destroy(itemDrop.gameObject);
             }
 
             return availableGambles;
@@ -127,7 +136,8 @@ namespace EpicLoot.Adventure.Feature
                 gambleRarity.Length > 1 ? gambleRarity[1] : 1,
                 gambleRarity.Length > 2 ? gambleRarity[2] : 1,
                 gambleRarity.Length > 3 ? gambleRarity[3] : 1,
-                gambleRarity.Length > 4 ? gambleRarity[4] : 1
+                gambleRarity.Length > 4 ? gambleRarity[4] : 1,
+                gambleRarity.Length > 5 ? gambleRarity[5] : 1
             };
             var lootTable = new LootTable()
             {
@@ -149,7 +159,9 @@ namespace EpicLoot.Adventure.Feature
 
             var previousDisabledState = LootRoller.CheatDisableGating;
             LootRoller.CheatDisableGating = true;
+            LootRoller.CheatRollingItem = true;
             var loot = LootRoller.RollLootTable(lootTable, 1, "Gamble", Player.m_localPlayer.transform.position);
+            LootRoller.CheatRollingItem = false;
             LootRoller.CheatDisableGating = previousDisabledState;
             return loot.Count > 0 ? loot[0] : null;
         }

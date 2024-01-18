@@ -84,6 +84,7 @@ namespace ExtendedItemDataFramework
             m_dropPrefab = from.m_dropPrefab;
             m_lastAttackTime = from.m_lastAttackTime;
             m_lastProjectile = from.m_lastProjectile;
+            m_customData = new Dictionary<string, string>(from.m_customData);
 
             if (from is ExtendedItemData fromExtendedItemData)
             {
@@ -117,6 +118,7 @@ namespace ExtendedItemDataFramework
             m_dropPrefab = prefab.m_dropPrefab;
             m_lastAttackTime = prefab.m_lastAttackTime;
             m_lastProjectile = prefab.m_lastProjectile;
+            m_customData = new Dictionary<string, string>(prefab.m_customData);
 
             Load();
             LoadExtendedItemData?.Invoke(this);
@@ -206,12 +208,22 @@ namespace ExtendedItemDataFramework
                         continue;
                     }
 
-                    var newComponent = Activator.CreateInstance(type, this) as BaseExtendedItemComponent;
+                    BaseExtendedItemComponent newComponent = null;
+
+                    try
+                    {
+                        newComponent = Activator.CreateInstance(type, this) as BaseExtendedItemComponent;
+                    }
+                    catch (Exception e)
+                    {
+                        ExtendedItemDataFramework.LogWarning($"Unable to create type for {typeString}. {e.Message}.  Data might not be loaded for object {m_shared.m_name}.");
+                    }
+                    
                     if (newComponent == null)
                     {
-                        ExtendedItemDataFramework.LogError($"Could not instantiate extended item component type ({type}) while loading object ({m_shared.m_name})");
                         continue;
                     }
+
                     newComponent.Deserialize(RestoreDataText(data));
                     Components.Add(newComponent);
                 }
@@ -248,6 +260,7 @@ namespace ExtendedItemDataFramework
             result.m_dropPrefab = m_dropPrefab;
             result.m_lastAttackTime = m_lastAttackTime;
             result.m_lastProjectile = m_lastProjectile;
+            result.m_customData = new Dictionary<string, string>(m_customData);
 
             foreach (var component in Components)
             {

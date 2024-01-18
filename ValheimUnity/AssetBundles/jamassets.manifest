@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 2520021890
+CRC: 2366224465
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: c5f246d03ce39a6358c69c06862301ff
+    Hash: 560916b99d62fdb7991f9d0953d00811
   TypeTreeHash:
     serializedVersion: 2
-    Hash: d6fb9254287632235d52238cf05cbe0b
+    Hash: 4b54cd8867227865c34424d352fdf2d7
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -45,15 +45,26 @@ ClassTypes:
   Script: {instanceID: 0}
 - Class: 213
   Script: {instanceID: 0}
-SerializeReferenceClassIdentifiers: []
+SerializeReferenceClassIdentifiers:
+- AssemblyName: assembly_valheim
+  ClassName: Attack
+- AssemblyName: assembly_valheim
+  ClassName: EffectList
+- AssemblyName: assembly_valheim
+  ClassName: HitData/DamageTypes
+- AssemblyName: assembly_valheim
+  ClassName: ItemDrop/ItemData
+- AssemblyName: assembly_valheim
+  ClassName: ItemDrop/ItemData/SharedData
 Assets:
-- Assets/Jam/Prefabs/RaspberryJam.prefab
-- Assets/Jam/Prefabs/KingsJam.prefab
-- Assets/Jam/Prefabs/HoneyRaspberryJam.prefab
+- Assets/Jam/Prefabs/MushroomJam.prefab
 - Assets/Jam/Prefabs/NordicJam.prefab
+- Assets/Jam/Prefabs/KingsJam.prefab
 - Assets/Jam/Prefabs/BaseJam.prefab
-- Assets/Jam/Prefabs/CloudberryJam.prefab
-- Assets/Jam/Prefabs/BlueberryJam.prefab
 - Assets/Jam/Prefabs/HoneyBlueberryJam.prefab
 - Assets/Jam/Prefabs/HoneyCloudberryJam.prefab
+- Assets/Jam/Prefabs/CloudberryJam.prefab
+- Assets/Jam/Prefabs/HoneyRaspberryJam.prefab
+- Assets/Jam/Prefabs/RaspberryJam.prefab
+- Assets/Jam/Prefabs/BlueberryJam.prefab
 Dependencies: []

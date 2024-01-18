@@ -31,9 +31,16 @@ namespace EpicLoot.Adventure
 
                 var biomeConfig = AdventureDataManager.Config.TreasureMap.BiomeInfo.Find(x => x.Biome == biome);
                 if (biomeConfig?.ForestTokens > 0)
-                {
-                    container.m_inventory.AddItem("ForestToken", biomeConfig.ForestTokens, 1, 0, 0, "");
-                }
+                    container.m_inventory.AddItem("ForestToken", biomeConfig.ForestTokens, 1, 0, 0, string.Empty);
+
+                if (biomeConfig?.IronTokens > 0)
+                    container.m_inventory.AddItem("IronBountyToken", biomeConfig.IronTokens, 1, 0, 0, string.Empty);
+
+                if (biomeConfig?.GoldTokens > 0)
+                    container.m_inventory.AddItem("GoldBountyToken", biomeConfig.GoldTokens, 1, 0, 0, string.Empty);
+
+                if (biomeConfig?.Coins > 0)
+                    container.m_inventory.AddItem("Coins", biomeConfig.Coins, 1, 0, 0, string.Empty);
 
                 container.Save();
             }

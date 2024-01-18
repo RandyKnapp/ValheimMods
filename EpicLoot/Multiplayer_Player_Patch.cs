@@ -1,6 +1,7 @@
-﻿using ExtendedItemDataFramework;
+﻿using EpicLoot.Data;
 using HarmonyLib;
 using JetBrains.Annotations;
+using UnityEngine;
 
 namespace EpicLoot
 {
@@ -20,6 +21,7 @@ namespace EpicLoot
                 case ItemDrop.ItemData.ItemType.Bow:
                 case ItemDrop.ItemData.ItemType.OneHandedWeapon:
                 case ItemDrop.ItemData.ItemType.TwoHandedWeapon:
+                case ItemDrop.ItemData.ItemType.TwoHandedWeaponLeft:
                 case ItemDrop.ItemData.ItemType.Shield:
                     if (player.m_leftItem?.m_dropPrefab.name == item.m_dropPrefab.name)
                         zdo.Set("lf-ell", data);
@@ -34,7 +36,7 @@ namespace EpicLoot
                 case ItemDrop.ItemData.ItemType.Utility: zdo.Set("ut-ell", data); break;
             }
 
-            EpicLoot.LogWarning($"Setting Equipment ZDO: {itemType}='{data}'");
+            //EpicLoot.Log($"Setting Equipment ZDO: {itemType}='{data}'");
         }
 
         [HarmonyPatch]
@@ -66,10 +68,18 @@ namespace EpicLoot
         [HarmonyPatch(typeof(Player), nameof(Player.Update))]
         public static class WatchLegendaryEquipment_Player_Update_Patch
         {
+            private static float _updateEventTime;
+            
             [UsedImplicitly]
             public static void Postfix(Player __instance)
             {
-                if (__instance != Player.m_localPlayer && __instance.m_nview?.GetZDO() is ZDO zdo)
+                _updateEventTime -= Time.deltaTime;
+                if (_updateEventTime > 0.0)
+                    return;
+
+                _updateEventTime = 10f;
+                
+                if (__instance != null && __instance != Player.m_localPlayer && __instance.m_nview != null && __instance.m_nview.GetZDO() is ZDO zdo)
                 {
                     var changed = DoCheck(__instance, zdo, "LeftItem", "lf-ell", ref __instance.m_leftItem);
                     changed = changed || DoCheck(__instance, zdo, "RightItem", "ri-ell", ref __instance.m_rightItem);
@@ -102,14 +112,13 @@ namespace EpicLoot
                 var currentLegendaryID = itemData?.GetMagicItem()?.LegendaryID;
                 if (currentLegendaryID == zdoLegendaryID)
                     return false;
-
                 var itemHash = zdo.GetInt(equipKey);
                 var itemPrefab = ObjectDB.instance.GetItemPrefab(itemHash);
                 if (itemPrefab?.GetComponent<ItemDrop>()?.m_itemData is ItemDrop.ItemData targetItemData)
                 {
-                    itemData = new ExtendedItemData(targetItemData);
+                    itemData = targetItemData.Clone();
                     itemData.m_durability = float.PositiveInfinity;
-                    var magicItemComponent = itemData.Extended().AddComponent<MagicItemComponent>();
+                    var magicItemComponent = itemData.Data().GetOrCreate<MagicItemComponent>();
                     var stubMagicItem = new MagicItem { Rarity = ItemRarity.Legendary, LegendaryID = zdoLegendaryID };
                     magicItemComponent.SetMagicItem(stubMagicItem);
 
@@ -124,7 +133,6 @@ namespace EpicLoot
                 if (humanoid == null || humanoid.m_visEquipment == null || item == null)
                     return;
 
-                EpicLoot.LogWarning($"Force Reset VisEquip: {item.m_shared.m_itemType}");
                 switch (item.m_shared.m_itemType)
                 {
                     case ItemDrop.ItemData.ItemType.OneHandedWeapon:
@@ -138,36 +146,53 @@ namespace EpicLoot
                         humanoid.m_visEquipment.m_currentLeftItemHash = -1;
                         break;
 
-                    case ItemDrop.ItemData.ItemType.TwoHandedWeapon:    humanoid.m_visEquipment.m_currentRightItemHash = -1;    break;
+                    case ItemDrop.ItemData.ItemType.TwoHandedWeapon:
+                    case ItemDrop.ItemData.ItemType.TwoHandedWeaponLeft:
+                        humanoid.m_visEquipment.m_currentRightItemHash = -1;
+                        humanoid.m_visEquipment.m_currentLeftItemHash = -1;
+                        break;
+
                     case ItemDrop.ItemData.ItemType.Chest:              humanoid.m_visEquipment.m_currentChestItemHash = -1;    break;
                     case ItemDrop.ItemData.ItemType.Legs:               humanoid.m_visEquipment.m_currentLegItemHash = -1;      break;
                     case ItemDrop.ItemData.ItemType.Helmet:             humanoid.m_visEquipment.m_currentHelmetItemHash = -1;   break;
                     case ItemDrop.ItemData.ItemType.Shoulder:           humanoid.m_visEquipment.m_currentShoulderItemHash = -1; break;
                     case ItemDrop.ItemData.ItemType.Utility:            humanoid.m_visEquipment.m_currentUtilityItemHash = -1;  break;
                     case ItemDrop.ItemData.ItemType.Tool:               humanoid.m_visEquipment.m_currentRightItemHash = -1;    break;
+
+                    default:
+                        break;
                 }
             }
         }
 
-        [HarmonyPatch(typeof(Player), nameof(Player.Update))]
-        public static class WatchMultiplayerMagicEffects_Player_Update_Patch
+        [HarmonyPatch]
+        public static class WatchMultiplayerMagicEffects_Player_Patch
         {
-            public static int Timer;
-
-            public static void Postfix(Player __instance)
+            [HarmonyPatch(typeof(Humanoid), nameof(Humanoid.EquipItem))]
+            [HarmonyPostfix]
+            public static void EquipItem_Postfix(Humanoid __instance)
             {
-                Timer++;
-                if (Timer < 60)
-                    return;
-                Timer = 0;
+                if (__instance is Player player)
+                    UpdateRichesAndLuck(player);
+            }
 
-                if (__instance.m_nview?.GetZDO() is ZDO zdo)
+            [HarmonyPatch(typeof(Humanoid), nameof(Humanoid.UnequipItem))]
+            [HarmonyPostfix]
+            public static void UnequipItem_Postfix(Humanoid __instance)
+            {
+                if (__instance is Player player)
+                    UpdateRichesAndLuck(player);
+            }
+
+            public static void UpdateRichesAndLuck(Player player)
+            {
+                if (player == Player.m_localPlayer && player.m_nview?.GetZDO() is ZDO zdo)
                 {
                     var currentZdoLuck = zdo.GetInt("el-luk");
                     var currentZdoRiches = zdo.GetInt("el-rch");
 
-                    var currentLuck = (int)__instance.GetTotalActiveMagicEffectValue(MagicEffectType.Luck);
-                    var currentRiches = (int)__instance.GetTotalActiveMagicEffectValue(MagicEffectType.Riches);
+                    var currentLuck = (int)player.GetTotalActiveMagicEffectValue(MagicEffectType.Luck);
+                    var currentRiches = (int)player.GetTotalActiveMagicEffectValue(MagicEffectType.Riches);
 
                     if (currentLuck != currentZdoLuck)
                     {

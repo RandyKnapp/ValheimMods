@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>EpicLoot</RootNamespace>
     <AssemblyName>EpicLoot</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
   </PropertyGroup>
@@ -22,6 +22,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -30,10 +31,14 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="0Harmony">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\core\0Harmony.dll</HintPath>
+    </Reference>
+    <Reference Include="AnimationSpeedManager">
+      <HintPath>..\Libs\AnimationSpeedManager.dll</HintPath>
     </Reference>
     <Reference Include="assembly_guiutils_publicized">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\valheim_Data\Managed\publicized_assemblies\assembly_guiutils_publicized.dll</HintPath>
@@ -50,9 +55,9 @@
     <Reference Include="BepInEx">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\core\BepInEx.dll</HintPath>
     </Reference>
-    <Reference Include="fastJSON, Version=2.4.0.0, Culture=neutral, PublicKeyToken=6b75a806b86095cd, processorArchitecture=MSIL">
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Libs\fastJSON.dll</HintPath>
+      <HintPath>..\Libs\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="ServerSync, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\Libs\ServerSync.dll</HintPath>
@@ -73,6 +78,10 @@
     <Reference Include="UnityEngine.AudioModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\unstripped_corlib\UnityEngine.AudioModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ClothModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\ExtendedItemDataFramework\bin\Debug\UnityEngine.ClothModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\unstripped_corlib\UnityEngine.CoreModule.dll</HintPath>
@@ -109,8 +118,26 @@
     <Compile Include="Abilities\AbilityDefinitions.cs" />
     <Compile Include="Abilities\AbilityFactory.cs" />
     <Compile Include="Abilities\PlayerExtensions_Abilities.cs" />
+    <Compile Include="Adventure\BountyManagmentSystem.cs" />
+    <Compile Include="Adventure\Feature\Bosses.cs" />
     <Compile Include="Adventure\Feature\BountyLedger.cs" />
+    <Compile Include="Adventure\Game_Patch.cs" />
+    <Compile Include="Adventure\MinimapController.cs" />
+    <Compile Include="Attack_Patch.cs" />
+    <Compile Include="CraftingV2\EnchantingTable_Patch.cs" />
+    <Compile Include="CraftingV2\EnchantingUIAugaFixup.cs" />
+    <Compile Include="CraftingV2\EnchantingUIController.cs" />
+    <Compile Include="CraftingV2\EnchantingUI_Patches.cs" />
+    <Compile Include="CraftingV2\MaterialConversions.cs" />
+    <Compile Include="Crafting\AugmentHelper.cs" />
+    <Compile Include="Crafting\CraftSuccessDialog.cs" />
+    <Compile Include="Crafting\EnchantHelper.cs" />
+    <Compile Include="Crafting\TransferMagicalEffects.cs" />
+    <Compile Include="Data\ConfigValue.cs" />
+    <Compile Include="Data\EIDFLegacy.cs" />
+    <Compile Include="Data\CustomDataManager.cs" />
     <Compile Include="DebugText.cs" />
+    <Compile Include="EpicLootAuga.cs" />
     <Compile Include="GameCamera_Patch.cs" />
     <Compile Include="Healing\AddHealingQueueToPlayerPatch.cs" />
     <Compile Include="Adventure\AbandonBountyDialog.cs" />
@@ -130,41 +157,37 @@
     <Compile Include="Adventure\Feature\TreasureMapListPanel.cs" />
     <Compile Include="Adventure\Feature\TreasureMaps.cs" />
     <Compile Include="Adventure\MessageHud_Patch.cs" />
-    <Compile Include="Adventure\Minimap_Patch.cs" />
     <Compile Include="Adventure\PlayerExtensions_Adventure.cs" />
     <Compile Include="Adventure\SE_CustomFinder.cs" />
     <Compile Include="Adventure\TreasureMapChest.cs" />
     <Compile Include="Adventure\TreasureMapListElement.cs" />
     <Compile Include="Crafting\AugmentsAvailableDialog.cs" />
     <Compile Include="Crafting\CraftingItemExtensions.cs" />
-    <Compile Include="Crafting\CraftingStation_Patch.cs" />
     <Compile Include="Crafting\CraftingTabs.cs" />
     <Compile Include="Crafting\AugmentChoiceDialog.cs" />
-    <Compile Include="Crafting\CraftSuccessDialog.cs" />
     <Compile Include="Crafting\EnchantCostsConfig.cs" />
     <Compile Include="Crafting\EnchantCostsHelper.cs" />
-    <Compile Include="Crafting\EnchantTabController.cs" />
-    <Compile Include="Crafting\AugmentTabController.cs" />
-    <Compile Include="Crafting\InventoryGui_Patch.cs" />
     <Compile Include="Crafting\ItemDrop_Patch.cs" />
     <Compile Include="Crafting\Player_Patch.cs" />
     <Compile Include="Crafting\RecipesHelper.cs" />
-    <Compile Include="Crafting\TabController.cs" />
     <Compile Include="GatedItemType\GatedItemTypeHelper.cs" />
     <Compile Include="GatedItemType\ItemInfoConfig.cs" />
     <Compile Include="Healing\HealingQueueMono.cs" />
     <Compile Include="Humanoid_Patch.cs" />
-    <Compile Include="LegacyMagicEffectType.cs" />
+    <Compile Include="Integrations\HarmonyPatches\ArmorStand_Patch.cs" />
+    <Compile Include="Integrations\HarmonyPatches\ItemStand_Patch.cs" />
     <Compile Include="LegendarySystem\LegendaryItemConfig.cs" />
     <Compile Include="LegendarySystem\UniqueLegendaryHelper.cs" />
     <Compile Include="LootBeams\AlwaysPointUp.cs" />
     <Compile Include="LootBeams\BeamColorSetter.cs" />
     <Compile Include="CharacterDrop_Patch.cs" />
+    <Compile Include="MagicItemEffects\IncreaseEitr.cs" />
+    <Compile Include="MagicItemEffects\ModifyEitrRegen.cs" />
+    <Compile Include="MagicItemEffects\MultiShot.cs" />
     <Compile Include="Multiplayer_Player_Patch.cs" />
+    <Compile Include="Patching\FilePatching.cs" />
     <Compile Include="Terminal_Patch.cs" />
     <Compile Include="Container_Patch.cs" />
-    <Compile Include="Crafting\DisenchantTabController.cs" />
-    <Compile Include="InventoryGui_Patch.cs" />
     <Compile Include="ItemDrop_Patch.cs" />
     <Compile Include="LootBeams\LootBeam.cs" />
     <Compile Include="LootConfig.cs" />
@@ -224,7 +247,6 @@
     <Compile Include="MagicItemEffects\Throwable.cs" />
     <Compile Include="MagicItemEffects\Undying.cs" />
     <Compile Include="MagicItemEffects\Waterproof.cs" />
-    <Compile Include="MagicItemEffects\WaterWalking.cs" />
     <Compile Include="MagicItemNames.cs" />
     <Compile Include="Adventure\BountyListElement.cs" />
     <Compile Include="Adventure\BuyListElement.cs" />
@@ -233,11 +255,10 @@
     <Compile Include="Adventure\MerchantPanel.cs" />
     <Compile Include="Adventure\StoreGui_Patch.cs" />
     <Compile Include="ObjectDB_Patch.cs" />
-    <Compile Include="PlayerKnown\PlayerKnownManager.cs" />
-    <Compile Include="PlayerKnown\PlayerKnownPatches.cs" />
     <Compile Include="TextsDialog_Patch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VisEquipment_Patch.cs" />
+    <Compile Include="WelcomeMessage.cs" />
     <Compile Include="ZNetScene_Patch.cs" />
     <Compile Include="ZNet_Patch.cs" />
   </ItemGroup>
@@ -248,30 +269,30 @@
     <None Include="abilities.json" />
     <None Include="adventuredata.json" />
     <None Include="enchantcosts.json" />
+    <None Include="enchantingupgrades.json" />
     <None Include="info.md" />
     <None Include="iteminfo.json" />
     <None Include="itemnames.json" />
     <None Include="legendaries.json" />
+    <None Include="materialconversions.json" />
     <None Include="packages.config" />
+    <None Include="Patching\testpatches.json" />
     <None Include="translations.json" />
     <None Include="loottables.json" />
     <None Include="magiceffects.json" />
     <None Include="manifest.json" />
-    <None Include="patchnotes.md" />
+    <None Include="CHANGELOG.md" />
     <None Include="todo.md" />
     <None Include="README.md" />
     <None Include="recipes.json" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ExtendedItemDataFramework\ExtendedItemDataFramework.csproj">
-      <Project>{2f61a8ab-bf4d-4e0c-9b90-4b2ba74438c5}</Project>
-      <Name>ExtendedItemDataFramework</Name>
+    <ProjectReference Include="..\EpicLoot-UnityLib\EpicLoot-UnityLib.csproj">
+      <Project>{8daba031-aea4-472f-a9aa-de8b1aa69de5}</Project>
+      <Name>EpicLoot-UnityLib</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="..\Libs\fastJSON.dll">
-      <Link>fastJSON.dll</Link>
-    </EmbeddedResource>
     <EmbeddedResource Include="..\Libs\ServerSync.dll">
       <Link>ServerSync.dll</Link>
     </EmbeddedResource>
@@ -279,6 +300,12 @@
   <ItemGroup>
     <EmbeddedResource Include="..\Libs\AugaAPI.dll">
       <Link>AugaAPI.dll</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\Libs\Newtonsoft.Json.dll">
+      <Link>Newtonsoft.Json.dll</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\ValheimUnity\Assets\ExternalLibraries\EpicLoot-UnityLib.dll">
+      <Link>EpicLoot-UnityLib.dll</Link>
     </EmbeddedResource>
     <Content Include="ILRepack.targets">
       <SubType>Designer</SubType>
@@ -302,17 +329,8 @@ xcopy "$(ProjectDir)itemnames.json" "C:\Program Files (x86)\Steam\steamapps\comm
 xcopy "$(ProjectDir)adventuredata.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
 xcopy "$(ProjectDir)legendaries.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
 xcopy "$(ProjectDir)abilities.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
-
-xcopy "$(ProjectDir)translations.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim_Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
-xcopy "$(ProjectDir)loottables.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim_Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
-xcopy "$(ProjectDir)magiceffects.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim_Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
-xcopy "$(ProjectDir)iteminfo.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim_Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
-xcopy "$(ProjectDir)recipes.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim_Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
-xcopy "$(ProjectDir)enchantcosts.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim_Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
-xcopy "$(ProjectDir)itemnames.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim_Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
-xcopy "$(ProjectDir)adventuredata.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim_Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
-xcopy "$(ProjectDir)legendaries.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim_Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
-xcopy "$(ProjectDir)abilities.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim_Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i</PostBuildEvent>
+xcopy "$(ProjectDir)materialconversions.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
+xcopy "$(ProjectDir)enchantingupgrades.json" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i</PostBuildEvent>
   </PropertyGroup>
   <Import Project="..\packages\ILRepack.Lib.MSBuild.Task.2.0.18.2\build\ILRepack.Lib.MSBuild.Task.targets" Condition="Exists('..\packages\ILRepack.Lib.MSBuild.Task.2.0.18.2\build\ILRepack.Lib.MSBuild.Task.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

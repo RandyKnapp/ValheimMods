@@ -21,9 +21,11 @@ namespace EpicLoot
         public static string ModifyBackstab = nameof(ModifyBackstab);
         public static string IncreaseHealth = nameof(IncreaseHealth);
         public static string IncreaseStamina = nameof(IncreaseStamina);
+        public static string IncreaseEitr = nameof(IncreaseEitr);
         public static string ModifyHealthRegen = nameof(ModifyHealthRegen);
         public static string AddHealthRegen = nameof(AddHealthRegen);
         public static string ModifyStaminaRegen = nameof(ModifyStaminaRegen);
+        public static string ModifyEitrRegen = nameof(ModifyEitrRegen);
         public static string AddBluntDamage = nameof(AddBluntDamage);
         public static string AddSlashingDamage = nameof(AddSlashingDamage);
         public static string AddPiercingDamage = nameof(AddPiercingDamage);
@@ -75,6 +77,8 @@ namespace EpicLoot
         public static string AddBowsSkill = nameof(AddBowsSkill);
         public static string AddUnarmedSkill = nameof(AddUnarmedSkill);
         public static string AddPickaxesSkill = nameof(AddPickaxesSkill);
+        public static string AddElementalMagicSkill = nameof(AddElementalMagicSkill);
+        public static string AddBloodMagicSkill = nameof(AddBloodMagicSkill);
         public static string AddMovementSkills = nameof(AddMovementSkills);
         public static string ModifyStaggerDuration = nameof(ModifyStaggerDuration);
         public static string QuickLearner = nameof(QuickLearner);
@@ -89,6 +93,7 @@ namespace EpicLoot
         public static string ModifyMovementSpeedLowHealth = nameof(ModifyMovementSpeedLowHealth);
         public static string ModifyHealthRegenLowHealth = nameof(ModifyHealthRegenLowHealth);
         public static string ModifyStaminaRegenLowHealth = nameof(ModifyStaminaRegenLowHealth);
+        public static string ModifyEitrRegenLowHealth = nameof(ModifyEitrRegenLowHealth);
         public static string ModifyArmorLowHealth = nameof(ModifyArmorLowHealth);
         public static string ModifyDamageLowHealth = nameof(ModifyDamageLowHealth);
         public static string ModifyBlockPowerLowHealth = nameof(ModifyBlockPowerLowHealth);
@@ -107,6 +112,8 @@ namespace EpicLoot
         public static string ModifyParryWindow = nameof(ModifyParryWindow);
         public static string Slow = nameof(Slow);
         public static string FrostDamageAOE = nameof(FrostDamageAOE);
+        public static string DoubleMagicShot = nameof(DoubleMagicShot);
+        public static string TripleBowShot = nameof(TripleBowShot);
 
         public static string Bulwark = nameof(Bulwark);
         public static string Undying = nameof(Undying);

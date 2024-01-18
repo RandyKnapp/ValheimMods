@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using EpicLoot_UnityLib;
 using UnityEngine;
 
 namespace EpicLoot.Crafting
@@ -7,13 +8,24 @@ namespace EpicLoot.Crafting
     public static class EnchantCostsHelper
     {
         public static EnchantingCostsConfig Config;
+        public static HashSet<string> DeprecatedMagicEffects = new HashSet<string>
+        {
+            MagicEffectType.WaterWalking,
+            MagicEffectType.AddSpiritResistance,
+            MagicEffectType.AddSpiritResistancePercentage,
+            MagicEffectType.ReduceWeight,
+            MagicEffectType.AddFireResistance,
+            MagicEffectType.AddFrostResistance,
+            MagicEffectType.AddLightningResistance,
+            MagicEffectType.AddChoppingResistancePercentage
+        };
 
         public static void Initialize(EnchantingCostsConfig config)
         {
             Config = config;
         }
 
-        public static List<ItemAmountConfig> GetDisenchantProducts(ItemDrop.ItemData item)
+        public static List<ItemAmountConfig> GetSacrificeProducts(ItemDrop.ItemData item)
         {
             var isMagic = item.IsMagic();
             var type = item.m_shared.m_itemType;
@@ -36,6 +48,30 @@ namespace EpicLoot.Crafting
                 }
 
                 if (x.ItemNames?.Count > 0 && !x.ItemNames.Contains(name))
+                {
+                    return false;
+                }
+
+                return true;
+            });
+
+            return configEntry?.Products;
+        }
+
+        public static List<ItemAmountConfig> GetSacrificeProducts(bool isMagic, ItemDrop.ItemData.ItemType type, ItemRarity rarity )
+        {
+            var configEntry = Config.DisenchantProducts.Find(x => {
+                if (x.IsMagic && !isMagic)
+                {
+                    return false;
+                }
+
+                if (isMagic && x.Rarity != rarity)
+                {
+                    return false;
+                }
+
+                if (x.ItemTypes?.Count > 0 && !x.ItemTypes.Contains(type.ToString()))
                 {
                     return false;
                 }
@@ -123,8 +159,16 @@ namespace EpicLoot.Crafting
                 return null;
             }
 
+            var featureValues = EnchantingTableUI.instance.SourceTable.GetFeatureCurrentValue(EnchantingFeature.Augment);
+            var reenchantCostReduction = float.IsNaN(featureValues.Item2) ? 0 : (featureValues.Item2 / 100.0f);
+
             var reaugmentCostIndex = Mathf.Clamp(totalAugments - 1, 0, Config.ReAugmentCosts.Count - 1);
-            return Config.ReAugmentCosts[reaugmentCostIndex];
+            var baseCost = Config.ReAugmentCosts[reaugmentCostIndex];
+            return new ItemAmountConfig()
+            {
+                Item = baseCost.Item,
+                Amount = Mathf.CeilToInt(baseCost.Amount * (1.0f - Mathf.Clamp01(reenchantCostReduction)))
+            };
         }
 
         public static bool EffectIsDeprecated(ItemDrop.ItemData item, int effectIndex)
@@ -133,14 +177,29 @@ namespace EpicLoot.Crafting
             return (effects != null && effectIndex >= 0 && effectIndex < effects.Count && EffectIsDeprecated(effects[effectIndex].EffectType));
         }
 
-        public static bool EffectIsDeprecated(string effectType)
+        public static bool ItemHasDeprecatedEffect(ItemDrop.ItemData item)
         {
-            if ( effectType == MagicEffectType.WaterWalking )
+            var effects = item?.GetMagicItem()?.GetEffects();
+            if (effects != null)
             {
-                    return true;
+                for (int index = 0; index < effects.Count; index++)
+                {
+                    if (EffectIsDeprecated(effects[index].EffectType))
+                        return true;
+                }
             }
 
             return false;
+        }
+
+        public static bool EffectIsDeprecated(string effectType)
+        {
+            return DeprecatedMagicEffects.Contains(effectType);
+        }
+
+        public static bool EffectIsDeprecated(MagicItemEffectDefinition def)
+        {
+            return DeprecatedMagicEffects.Contains(def.Type);
         }
     }
 }

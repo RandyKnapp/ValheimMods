@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Common;
-using ExtendedItemDataFramework;
 using HarmonyLib;
 using JetBrains.Annotations;
-using UnityEngine;
 
 namespace EpicLoot.LegendarySystem
 {
@@ -60,7 +58,7 @@ namespace EpicLoot.LegendarySystem
             return legendaryInfo == GenericLegendaryInfo;
         }
 
-        public static IList<LegendaryInfo> GetAvailableLegendaries(ExtendedItemData baseItem, MagicItem magicItem, bool rollSetItem)
+        public static IList<LegendaryInfo> GetAvailableLegendaries(ItemDrop.ItemData baseItem, MagicItem magicItem, bool rollSetItem)
         {
             var availableLegendaries = LegendaryInfo.Values.Where(x => x.IsSetItem == rollSetItem && x.Requirements.CheckRequirements(baseItem, magicItem)).AddItem(GenericLegendaryInfo).ToList();
             if (rollSetItem && availableLegendaries.Count > 1)

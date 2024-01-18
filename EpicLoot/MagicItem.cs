@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using EpicLoot.LegendarySystem;
-using ExtendedItemDataFramework;
 using UnityEngine;
 
 namespace EpicLoot
@@ -12,12 +11,15 @@ namespace EpicLoot
         Magic,
         Rare,
         Epic,
-        Legendary
+        Legendary,
+        Mythic
     }
 
     [Serializable]
     public class MagicItemEffect
     {
+        public const float DefaultValue = 1;
+
         public int Version = 1;
         public string EffectType { get; set; }
         public float EffectValue;
@@ -26,7 +28,7 @@ namespace EpicLoot
         {
         }
 
-        public MagicItemEffect(string type, float value = 0)
+        public MagicItemEffect(string type, float value = DefaultValue)
         {
             EffectType = type;
             EffectValue = value;
@@ -46,7 +48,7 @@ namespace EpicLoot
         public string LegendaryID;
         public string SetID;
 
-        public string GetItemTypeName(ExtendedItemData baseItem)
+        public string GetItemTypeName(ItemDrop.ItemData baseItem)
         {
             return string.IsNullOrEmpty(TypeNameOverride) ? Localization.instance.Localize(baseItem.m_shared.m_name).ToLowerInvariant() : TypeNameOverride;
         }
@@ -106,6 +108,11 @@ namespace EpicLoot
         public bool HasAnyEffect(IEnumerable<string> effectTypes)
         {
             return Effects.Any(x => effectTypes.Contains(x.EffectType));
+        }
+
+        public bool CanBeDisenchanted()
+        {
+            return !Effects.Any(x => !MagicItemEffectDefinitions.Get(x.EffectType)?.CanBeDisenchanted ?? false);
         }
 
         public static string GetEffectText(MagicItemEffectDefinition effectDef, float value)

@@ -1,6 +1,6 @@
 ﻿using System;
-using fastJSON;
 using HarmonyLib;
+using Newtonsoft.Json;
 using UnityEngine;
 
 namespace EpicLoot.Adventure
@@ -9,7 +9,6 @@ namespace EpicLoot.Adventure
     public class AdventureComponent : MonoBehaviour
     {
         public const string SaveDataKey = EpicLoot.PluginId + "+" + nameof(AdventureSaveData);
-        private static readonly JSONParameters _saveLoadParams = new JSONParameters { UseExtensions = false };
 
         private Player _player;
         public AdventureSaveDataList SaveData = new AdventureSaveDataList();
@@ -22,11 +21,17 @@ namespace EpicLoot.Adventure
 
         public void Load()
         {
-            if (_player.m_knownTexts.TryGetValue(SaveDataKey, out var data))
+            if (_player.m_knownTexts.TryGetValue(SaveDataKey, out var oldData) && !_player.m_customData.ContainsKey(SaveDataKey))
+            {
+                _player.m_customData[SaveDataKey] = oldData;
+                _player.m_knownTexts.Remove(SaveDataKey);
+            }
+            
+            if (_player.m_customData.TryGetValue(SaveDataKey, out var data))
             {
                 try
                 {
-                    SaveData = JSON.ToObject<AdventureSaveDataList>(data, _saveLoadParams);
+                    SaveData = JsonConvert.DeserializeObject<AdventureSaveDataList>(data);
 
                     // Clean up old bounties
                     var removed = 0;
@@ -54,8 +59,8 @@ namespace EpicLoot.Adventure
 
         public void Save()
         {
-            var data = JSON.ToJSON(SaveData, _saveLoadParams);
-            _player.m_knownTexts[SaveDataKey] = data;
+            var data = JsonConvert.SerializeObject(SaveData, Formatting.None);
+            _player.m_customData[SaveDataKey] = data;
         }
     }
 

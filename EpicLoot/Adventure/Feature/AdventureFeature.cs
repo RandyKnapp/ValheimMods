@@ -132,7 +132,7 @@ namespace EpicLoot.Adventure.Feature
                 {
                     results.Add(new SecretStashItemInfo(itemId, itemData, itemConfig.GetCost()));
                 }
-                Object.Destroy(itemDrop.gameObject);
+                ZNetScene.instance.Destroy(itemDrop.gameObject);
             }
 
             return results;
@@ -250,12 +250,28 @@ namespace EpicLoot.Adventure.Feature
         private static Tuple<float, float> GetTreasureMapSpawnRadiusRange(Heightmap.Biome biome, AdventureSaveData saveData)
         {
             var biomeInfoConfig = GetBiomeInfoConfig(biome);
-            var minRadius = biomeInfoConfig?.MinRadius ?? 0;
-            var maxRadius = biomeInfoConfig?.MaxRadius ?? 6000;
+            if (biomeInfoConfig == null)
+            {
+                EpicLoot.LogError($"Could not get biome info for biome: {biome}!");
+                EpicLoot.LogWarning($"> Current BiomeInfo ({AdventureDataManager.Config.TreasureMap.BiomeInfo.Count}):");
+                foreach (var biomeInfo in AdventureDataManager.Config.TreasureMap.BiomeInfo)
+                {
+                    EpicLoot.Log($"- {biomeInfo.Biome}: min:{biomeInfo.MinRadius}, max:{biomeInfo.MaxRadius}");
+                }
+
+                return new Tuple<float, float>(-1, -1);
+            }
+
+            var minSearchRange = biomeInfoConfig.MinRadius;
+            var maxSearchRange = biomeInfoConfig.MaxRadius;
+            var searchBandWidth = AdventureDataManager.Config.TreasureMap.StartRadiusMax - AdventureDataManager.Config.TreasureMap.StartRadiusMin;
             var numberOfBounties = AdventureDataManager.CheatNumberOfBounties >= 0 ? AdventureDataManager.CheatNumberOfBounties : saveData.NumberOfTreasureMapsOrBountiesStarted;
             var increments = numberOfBounties / AdventureDataManager.Config.TreasureMap.IncreaseRadiusCount;
-            var min = Mathf.Min(AdventureDataManager.Config.TreasureMap.StartRadiusMin + increments * AdventureDataManager.Config.TreasureMap.RadiusInterval, minRadius);
-            var max = Mathf.Min(AdventureDataManager.Config.TreasureMap.StartRadiusMax + increments * AdventureDataManager.Config.TreasureMap.RadiusInterval, maxRadius);
+            var min1 = minSearchRange + (AdventureDataManager.Config.TreasureMap.StartRadiusMin + increments * AdventureDataManager.Config.TreasureMap.RadiusInterval);
+            var max1 = min1 + searchBandWidth;
+            var min = Mathf.Clamp(min1, minSearchRange, maxSearchRange - searchBandWidth);
+            var max = Mathf.Clamp(max1, minSearchRange + searchBandWidth, maxSearchRange);
+            EpicLoot.Log($"Got biome info for biome ({biome}) - Overall search range: {minSearchRange}-{maxSearchRange}. Current increments: {increments}. Current search band: {min}-{max} (width={searchBandWidth})");
             return new Tuple<float, float>(min, max);
         }
 

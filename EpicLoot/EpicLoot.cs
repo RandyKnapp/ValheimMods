@@ -10,16 +10,20 @@ using Common;
 using EpicLoot.Abilities;
 using EpicLoot.Adventure;
 using EpicLoot.Crafting;
+using EpicLoot.CraftingV2;
+using EpicLoot.Data;
 using EpicLoot.GatedItemType;
 using EpicLoot.LegendarySystem;
 using EpicLoot.MagicItemEffects;
-using ExtendedItemDataFramework;
-using fastJSON;
+using EpicLoot.Patching;
+using EpicLoot_UnityLib;
 using HarmonyLib;
 using JetBrains.Annotations;
+using Newtonsoft.Json;
 using ServerSync;
 using UnityEngine;
 using UnityEngine.UI;
+using Debug = UnityEngine.Debug;
 using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
 
@@ -39,6 +43,13 @@ namespace EpicLoot
         OnePerPlayerNearBoss
     }
 
+    public enum GatedBountyMode
+    {
+        Unlimited,
+        BossKillUnlocksCurrentBiomeBounties,
+        BossKillUnlocksNextBiomeBounties
+    }
+
     public class Assets
     {
         public AssetBundle AssetBundle;
@@ -48,10 +59,10 @@ namespace EpicLoot
         public Sprite AugaSetItemSprite;
         public Sprite GenericItemBgSprite;
         public Sprite AugaItemBgSprite;
-        public GameObject[] MagicItemLootBeamPrefabs = new GameObject[4];
+        public GameObject[] MagicItemLootBeamPrefabs = new GameObject[5];
         public readonly Dictionary<string, GameObject[]> CraftingMaterialPrefabs = new Dictionary<string, GameObject[]>();
         public Sprite SmallButtonEnchantOverlay;
-        public AudioClip[] MagicItemDropSFX = new AudioClip[4];
+        public AudioClip[] MagicItemDropSFX = new AudioClip[5];
         public AudioClip ItemLoopSFX;
         public AudioClip AugmentItemSFX;
         public GameObject MerchantPanel;
@@ -61,6 +72,7 @@ namespace EpicLoot
         public AudioClip DoubleJumpSFX;
         public GameObject DebugTextPrefab;
         public GameObject AbilityBar;
+        public GameObject WelcomMessagePrefab;
     }
 
     public class PieceDef
@@ -72,35 +84,36 @@ namespace EpicLoot
     }
 
     [BepInPlugin(PluginId, DisplayName, Version)]
-    [BepInDependency("randyknapp.mods.extendeditemdataframework", "1.0.7")]
     [BepInDependency("randyknapp.mods.auga", BepInDependency.DependencyFlags.SoftDependency)]
     public class EpicLoot : BaseUnityPlugin
     {
         public const string PluginId = "randyknapp.mods.epicloot";
         public const string DisplayName = "Epic Loot";
-        public const string Version = "0.8.8";
+        public const string Version = "0.9.23";
 
-        private readonly ConfigSync _configSync = new ConfigSync(PluginId) { DisplayName = DisplayName, CurrentVersion = Version, MinimumRequiredVersion = "0.8.8" };
+        private readonly ConfigSync _configSync = new ConfigSync(PluginId) { DisplayName = DisplayName, CurrentVersion = Version, MinimumRequiredVersion = "0.9.23" };
 
         private static ConfigEntry<string> _setItemColor;
         private static ConfigEntry<string> _magicRarityColor;
         private static ConfigEntry<string> _rareRarityColor;
         private static ConfigEntry<string> _epicRarityColor;
         private static ConfigEntry<string> _legendaryRarityColor;
+        // TODO: Mythic Hookup
+        //private static ConfigEntry<string> _mythicRarityColor;
         private static ConfigEntry<int> _magicMaterialIconColor;
         private static ConfigEntry<int> _rareMaterialIconColor;
         private static ConfigEntry<int> _epicMaterialIconColor;
         private static ConfigEntry<int> _legendaryMaterialIconColor;
-        private static ConfigEntry<string> _magicRarityDisplayName;
-        private static ConfigEntry<string> _rareRarityDisplayName;
-        private static ConfigEntry<string> _epicRarityDisplayName;
-        private static ConfigEntry<string> _legendaryRarityDisplayName;
+        // TODO: Mythic Hookup
+        //private static ConfigEntry<int> _mythicMaterialIconColor;
         public static ConfigEntry<bool> UseScrollingCraftDescription;
+        public static ConfigEntry<bool> TransferMagicItemToCrafts;
         public static ConfigEntry<CraftingTabStyle> CraftingTabStyle;
         private static ConfigEntry<bool> _loggingEnabled;
         private static ConfigEntry<LogLevel> _logLevel;
         public static ConfigEntry<bool> UseGeneratedMagicItemNames;
         private static ConfigEntry<GatedItemTypeMode> _gatedItemTypeModeConfig;
+        public static ConfigEntry<GatedBountyMode> BossBountyMode;
         private static ConfigEntry<BossDropMode> _bossTrophyDropMode;
         private static ConfigEntry<float> _bossTrophyDropPlayerRange;
         private static ConfigEntry<int> _andvaranautRange;
@@ -113,6 +126,17 @@ namespace EpicLoot
         public static ConfigEntry<TextAnchor> AbilityBarLayoutAlignment;
         public static ConfigEntry<float> AbilityBarIconSpacing;
         public static ConfigEntry<float> SetItemDropChance;
+        public static ConfigEntry<float> GlobalDropRateModifier;
+        public static ConfigEntry<float> ItemsToMaterialsDropRatio;
+        public static ConfigEntry<bool> AlwaysShowWelcomeMessage;
+        public static ConfigEntry<bool> OutputPatchedConfigFiles;
+        public static ConfigEntry<bool> EnchantingTableUpgradesActive;
+        public static ConfigEntry<bool> EnableLimitedBountiesInProgress;
+        public static ConfigEntry<int> MaxInProgressBounties;
+        public static ConfigEntry<EnchantingTabs> EnchantingTableActivatedTabs;
+        
+        public static Dictionary<string, CustomSyncedValue<string>> SyncedJsonFiles = new Dictionary<string, CustomSyncedValue<string>>();
+        public static Dictionary<string, ConfigValue<string>> NonSyncedJsonFiles = new Dictionary<string, ConfigValue<string>>();
 
         public static readonly List<ItemDrop.ItemData.ItemType> AllowedMagicItemTypes = new List<ItemDrop.ItemData.ItemType>
         {
@@ -124,6 +148,7 @@ namespace EpicLoot
             ItemDrop.ItemData.ItemType.Bow,
             ItemDrop.ItemData.ItemType.OneHandedWeapon,
             ItemDrop.ItemData.ItemType.TwoHandedWeapon,
+            ItemDrop.ItemData.ItemType.TwoHandedWeaponLeft,
             ItemDrop.ItemData.ItemType.Shield,
             ItemDrop.ItemData.ItemType.Tool,
             ItemDrop.ItemData.ItemType.Torch,
@@ -154,6 +179,7 @@ namespace EpicLoot
         public const Minimap.PinType TreasureMapPinType = (Minimap.PinType) 801;
         public static bool HasAuga;
         public static bool AugaTooltipNoTextBoxes;
+        
 
         public static event Action AbilitiesInitialized;
         public static event Action LootTableLoaded;
@@ -175,24 +201,30 @@ namespace EpicLoot
             _epicMaterialIconColor = Config.Bind("Item Colors", "Epic Crafting Material Icon Index", 7, "Indicates the color of the icon used for epic crafting materials. A number between 0 and 9. Available options: 0=Red, 1=Orange, 2=Yellow, 3=Green, 4=Teal, 5=Blue, 6=Indigo, 7=Purple, 8=Pink, 9=Gray");
             _legendaryRarityColor = Config.Bind("Item Colors", "Legendary Rarity Color", "Teal", "The color of Legendary rarity items, the highest magic item tier. (Optional, use an HTML hex color starting with # to have a custom color.) Available options: Red, Orange, Yellow, Green, Teal, Blue, Indigo, Purple, Pink, Gray");
             _legendaryMaterialIconColor = Config.Bind("Item Colors", "Legendary Crafting Material Icon Index", 4, "Indicates the color of the icon used for legendary crafting materials. A number between 0 and 9. Available options: 0=Red, 1=Orange, 2=Yellow, 3=Green, 4=Teal, 5=Blue, 6=Indigo, 7=Purple, 8=Pink, 9=Gray");
+            // TODO: Mythic hookup
+            //_mythicRarityColor = Config.Bind("Item Colors", "Mythic Rarity Color", "Orange", "The color of Legendary rarity items, the highest magic item tier. (Optional, use an HTML hex color starting with # to have a custom color.) Available options: Red, Orange, Yellow, Green, Teal, Blue, Indigo, Purple, Pink, Gray");
+            //_mythicMaterialIconColor = Config.Bind("Item Colors", "Mythic Crafting Material Icon Index", 1, "Indicates the color of the icon used for legendary crafting materials. A number between 0 and 9. Available options: 0=Red, 1=Orange, 2=Yellow, 3=Green, 4=Teal, 5=Blue, 6=Indigo, 7=Purple, 8=Pink, 9=Gray");
             _setItemColor = Config.Bind("Item Colors", "Set Item Color", "#26ffff", "The color of set item text and the set item icon. Use a hex color, default is cyan");
-            _magicRarityDisplayName = Config.Bind("Rarity", "Magic Rarity Display Name", "$mod_epicloot_magic", "The name of the lowest rarity.");
-            _rareRarityDisplayName = Config.Bind("Rarity", "Rare Rarity Display Name", "$mod_epicloot_rare", "The name of the second rarity.");
-            _epicRarityDisplayName = Config.Bind("Rarity", "Epic Rarity Display Name", "$mod_epicloot_epic", "The name of the third rarity.");
-            _legendaryRarityDisplayName = Config.Bind("Rarity", "Legendary Rarity Display Name", "$mod_epicloot_legendary", "The name of the highest rarity.");
             UseScrollingCraftDescription = Config.Bind("Crafting UI", "Use Scrolling Craft Description", true, "Changes the item description in the crafting panel to scroll instead of scale when it gets too long for the space.");
             CraftingTabStyle = Config.Bind("Crafting UI", "Crafting Tab Style", Crafting.CraftingTabStyle.HorizontalSquish, "Sets the layout style for crafting tabs, if you've got too many. Horizontal is the vanilla method, but might overlap other mods or run off the screen. HorizontalSquish makes the buttons narrower, works okay with 6 or 7 buttons. Vertical puts the tabs in a column to the left the crafting window. Angled tries to make more room at the top of the crafting panel by angling the tabs, works okay with 6 or 7 tabs.");
             ShowEquippedAndHotbarItemsInSacrificeTab = Config.Bind("Crafting UI", "ShowEquippedAndHotbarItemsInSacrificeTab", false, "If set to false, hides the items that are equipped or on your hotbar in the Sacrifice items list.");
             _loggingEnabled = Config.Bind("Logging", "Logging Enabled", false, "Enable logging");
             _logLevel = Config.Bind("Logging", "Log Level", LogLevel.Info, "Only log messages of the selected level or higher");
             UseGeneratedMagicItemNames = Config.Bind("General", "Use Generated Magic Item Names", true, "If true, magic items uses special, randomly generated names based on their rarity, type, and magic effects.");
-            _gatedItemTypeModeConfig = SyncedConfig("Balance", "Item Drop Limits", GatedItemTypeMode.MustKnowRecipe, "Sets how the drop system limits what item types can drop. Unlimited: no limits, exactly what's in the loot table will drop. MustKnowRecipe: items will drop so long as the player has discovered their recipe. MustHaveCrafted: items will only drop once the player has crafted one or picked one up. If an item type cannot drop, it will downgrade to an item of the same type and skill that the player has unlocked (i.e. swords will stay swords)");
+            _gatedItemTypeModeConfig = SyncedConfig("Balance", "Item Drop Limits", GatedItemTypeMode.BossKillUnlocksCurrentBiomeItems, "Sets how the drop system limits what item types can drop. Unlimited: no limits, exactly what's in the loot table will drop. BossKillUnlocksCurrentBiomeItems: items will drop for the current biome if the that biome's boss has been killed (Leather gear will drop once Eikthyr is killed). BossKillUnlocksNextBiomeItems: items will only drop for the current biome if the previous biome's boss is killed (Bronze gear will drop once Eikthyr is killed). PlayerMustKnowRecipe: (local world only) the item can drop if the player can craft it. PlayerMustHaveCraftedItem: (local world only) the item can drop if the player has already crafted it or otherwise picked it up. If an item type cannot drop, it will downgrade to an item of the same type and skill that the player has unlocked (i.e. swords will stay swords) according to iteminfo.json.");
+            BossBountyMode = SyncedConfig("Balance", "Gated Bounty Mode", GatedBountyMode.Unlimited, "Sets whether available bounties are ungated or gated by boss kills.");
             _bossTrophyDropMode = SyncedConfig("Balance", "Boss Trophy Drop Mode", BossDropMode.OnePerPlayerNearBoss, "Sets bosses to drop a number of trophies equal to the number of players, similar to the way Wishbone works in vanilla. Optionally set it to only include players within a certain distance, use 'Boss Trophy Drop Player Range' to set the range.");
             _bossTrophyDropPlayerRange = SyncedConfig("Balance", "Boss Trophy Drop Player Range", 100.0f, "Sets the range that bosses check when dropping multiple trophies using the OnePerPlayerNearBoss drop mode.");
             _adventureModeEnabled = SyncedConfig("Balance", "Adventure Mode Enabled", true, "Set to true to enable all the adventure mode features: secret stash, gambling, treasure maps, and bounties. Set to false to disable. This will not actually remove active treasure maps or bounties from your save.");
             _andvaranautRange = SyncedConfig("Balance", "Andvaranaut Range", 20, "Sets the range that Andvaranaut will locate a treasure chest.");
             _serverConfigLocked = SyncedConfig("Config Sync", "Lock Config", false, new ConfigDescription("[Server Only] The configuration is locked and may not be changed by clients once it has been synced from the server. Only valid for server config, will have no effect on clients."));
             SetItemDropChance = SyncedConfig("Balance", "Set Item Drop Chance", 0.15f, "The percent chance that a legendary item will be a set item. Min = 0, Max = 1");
+            GlobalDropRateModifier = SyncedConfig("Balance", "Global Drop Rate Modifier", 1.0f, "A global percentage that modifies how likely items are to drop. 1 = Exactly what is in the loot tables will drop. 0 = Nothing will drop. 2 = The number of items in the drop table are twice as likely to drop (note, this doesn't double the number of items dropped, just doubles the relative chance for them to drop). Min = 0, Max = 4");
+            ItemsToMaterialsDropRatio = SyncedConfig("Balance", "Items To Materials Drop Ratio", 0.0f, "Sets the chance that item drops are instead dropped as magic crafting materials. 0 = all items, no materials. 1 = all materials, no items. Values between 0 and 1 change the ratio of items to materials that drop. At 0.5, half of everything that drops would be items and the other half would be materials. Min = 0, Max = 1");
+            TransferMagicItemToCrafts = SyncedConfig("Balance", "Transfer Enchants to Crafted Items", false, "When enchanted items are used as ingredients in recipes, transfer the highest enchant to the newly crafted item. Default: False.");
+
+            AlwaysShowWelcomeMessage = Config.Bind("Debug", "AlwaysShowWelcomeMessage", false, "Just a debug flag for testing the welcome message, do not use.");
+            OutputPatchedConfigFiles = Config.Bind("Debug", "OutputPatchedConfigFiles", false, "Just a debug flag for testing the patching system, do not use.");
 
             AbilityKeyCodes[0] = Config.Bind("Abilities", "Ability Hotkey 1", "g", "Hotkey for Ability Slot 1.");
             AbilityKeyCodes[1] = Config.Bind("Abilities", "Ability Hotkey 2", "h", "Hotkey for Ability Slot 2.");
@@ -202,11 +234,28 @@ namespace EpicLoot
             AbilityBarLayoutAlignment = Config.Bind("Abilities", "Ability Bar Layout Alignment", TextAnchor.LowerLeft, "The Ability Bar is a Horizontal Layout Group. This value indicates how the elements inside are aligned. Choices with 'Center' in them will keep the items centered on the bar, even if there are fewer than the maximum allowed. 'Left' will be left aligned, and similar for 'Right'.");
             AbilityBarIconSpacing = Config.Bind("Abilities", "Ability Bar Icon Spacing", 8.0f, "The number of units between the icons on the ability bar.");
 
+            //Enchanting Table
+            EnchantingTableUpgradesActive = SyncedConfig("Enchanting Table", "Upgrades Active", true, "Toggles Enchanting Table Upgrade Capabilities. If false, enchanting table features will be unlocked set to Level 1");
+            EnchantingTableActivatedTabs = SyncedConfig("Enchanting Table", $"Table Features Active", EnchantingTabs.Sacrifice | EnchantingTabs.Augment | EnchantingTabs.Enchant | EnchantingTabs.Disenchant | EnchantingTabs.Upgrade | EnchantingTabs.ConvertMaterials, $"Toggles Enchanting Table Feature on and off completely.");
+            
+            //Limiting Bounties
+            EnableLimitedBountiesInProgress = SyncedConfig("Bounty Management", "Enable Bounty Limit", false, "Toggles limiting bounties. Players unable to purchase if enabled and maximum bounty in-progress count is met");
+            MaxInProgressBounties = SyncedConfig("Bounty Management", "Max Bounties Per Player", 5, "Max amount of in-progress bounties allowed per player.");
+            
             _configSync.AddLockingConfigEntry(_serverConfigLocked);
 
-            ExtendedItemData.RegisterCustomTypeID(MagicItemComponent.TypeID, typeof(MagicItemComponent));
+            var assembly = Assembly.GetExecutingAssembly();
 
-            LoadTranslations();
+            
+            EIDFLegacy.CheckForExtendedItemFrameworkLoaded(_instance);
+
+            LoadEmbeddedAssembly(assembly, "Newtonsoft.Json.dll");
+            LoadEmbeddedAssembly(assembly, "EpicLoot-UnityLib.dll");
+
+            EnchantingTableUpgradesActive.SettingChanged += (_, _) => EnchantingTableUI.UpdateUpgradeActivation();
+            EnchantingTableActivatedTabs.SettingChanged += (_, _) => EnchantingTableUI.UpdateTabActivation();
+
+            LoadPatches();
             InitializeConfig();
             InitializeAbilities();
             PrintInfo();
@@ -214,12 +263,28 @@ namespace EpicLoot
 
             LoadAssets();
 
-            ExtendedItemData.LoadExtendedItemData += MagicItemComponent.OnNewExtendedItemData;
-            ExtendedItemData.NewExtendedItemData += MagicItemComponent.OnNewExtendedItemData;
+            EnchantingUIController.Initialize();
 
             _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), PluginId);
 
             LootTableLoaded?.Invoke();
+        }
+
+        private static void LoadEmbeddedAssembly(Assembly assembly, string assemblyName)
+        {
+            var stream = assembly.GetManifestResourceStream($"{assembly.GetName().Name}.{assemblyName}");
+            if (stream == null)
+            {
+                LogErrorForce($"Could not load embedded assembly ({assemblyName})!");
+                return;
+            }
+
+            using (stream)
+            {
+                var data = new byte[stream.Length];
+                stream.Read(data, 0, data.Length);
+                Assembly.Load(data);
+            }
         }
 
         public void Start()
@@ -298,14 +363,25 @@ namespace EpicLoot
 
                 Auga.API.ComplexTooltip_SetIcon(complexTooltip, item.GetIcon());
 
+                string localizedSubtitle;
                 if (item.IsLegendarySetItem())
                 {
-                    Auga.API.ComplexTooltip_SetSubtitle(complexTooltip, Localization.instance.Localize($"<color={GetSetItemColor()}>$mod_epicloot_legendarysetlabel</color>, {itemTypeName}\n"));
+                    localizedSubtitle = $"<color={GetSetItemColor()}>$mod_epicloot_legendarysetlabel</color>, {itemTypeName}\n";
                 }
                 else
                 {
-                    Auga.API.ComplexTooltip_SetSubtitle(complexTooltip, Localization.instance.Localize($"<color={magicColor}>{magicItem.GetRarityDisplay()} {itemTypeName}</color>"));
+                    localizedSubtitle = $"<color={magicColor}>{magicItem.GetRarityDisplay()} {itemTypeName}</color>";
                 }
+
+                try
+                {
+                    Auga.API.ComplexTooltip_SetSubtitle(complexTooltip, Localization.instance.Localize(localizedSubtitle));
+                }
+                catch (Exception)
+                {
+                    Auga.API.ComplexTooltip_SetSubtitle(complexTooltip, localizedSubtitle);
+                }
+
 
                 if (AugaTooltipNoTextBoxes)
                     return;
@@ -323,7 +399,15 @@ namespace EpicLoot
                     Auga.API.TooltipTextBox_AddLine(textBox2, item.GetSetTooltip());
                 }
 
-                Auga.API.ComplexTooltip_SetDescription(complexTooltip, Localization.instance.Localize(item.GetDescription()));
+                try
+                {
+                    Auga.API.ComplexTooltip_SetDescription(complexTooltip, Localization.instance.Localize(item.GetDescription()));
+                }
+                catch (Exception)
+                {
+                    Auga.API.ComplexTooltip_SetDescription(complexTooltip, item.GetDescription());
+                }
+                
             }
         }
 
@@ -339,13 +423,32 @@ namespace EpicLoot
             return configEntry;
         }
 
-        private static void LoadTranslations()
+        public static void LoadPatches()
         {
-            var translationsJsonText = LoadJsonText("translations.json");
-            var translations = (IDictionary<string, object>)JSON.Parse(translationsJsonText);
+            FilePatching.LoadAllPatches();
+        }
+
+        private static void LoadTranslations(IDictionary<string, object> translations)
+        {
+            const string translationPrefix = "mod_epicloot_";
+
+            if (translations == null)
+            {
+                LogErrorForce("Could not parse translations.json!");
+                return;
+            }
+
+            var oldEntries = Localization.instance.m_translations.Where(instanceMTranslation => instanceMTranslation.Key.StartsWith(translationPrefix)).ToList();
+
+            //Clean Translations
+            foreach (var entry in oldEntries)
+            {
+                Localization.instance.m_translations.Remove(entry.Key);
+            }
+            
+            //Load New Translations
             foreach (var translation in translations)
             {
-                //Log($"Translation: {translation.Key}, {translation.Value}");
                 Localization.instance.AddWord(translation.Key, translation.Value.ToString());
             }
         }
@@ -357,15 +460,62 @@ namespace EpicLoot
 
         public static void InitializeConfig()
         {
-            LoadJsonFile<LootConfig>("loottables.json", LootRoller.Initialize);
-            LoadJsonFile<MagicItemEffectsList>("magiceffects.json", MagicItemEffectDefinitions.Initialize);
-            LoadJsonFile<ItemInfoConfig>("iteminfo.json", GatedItemTypeHelper.Initialize);
-            LoadJsonFile<RecipesConfig>("recipes.json", RecipesHelper.Initialize);
-            LoadJsonFile<EnchantingCostsConfig>("enchantcosts.json", EnchantCostsHelper.Initialize);
-            LoadJsonFile<ItemNameConfig>("itemnames.json", MagicItemNames.Initialize);
-            LoadJsonFile<AdventureDataConfig>("adventuredata.json", AdventureDataManager.Initialize);
-            LoadJsonFile<LegendaryItemConfig>("legendaries.json", UniqueLegendaryHelper.Initialize);
-            LoadJsonFile<AbilityConfig>("abilities.json", AbilityDefinitions.Initialize);
+            LoadJsonFile<IDictionary<string, object>>("translations.json", LoadTranslations, ConfigType.Nonsynced);
+            LoadJsonFile<LootConfig>("loottables.json", LootRoller.Initialize, ConfigType.Synced);
+            LoadJsonFile<MagicItemEffectsList>("magiceffects.json", MagicItemEffectDefinitions.Initialize, ConfigType.Synced);
+            LoadJsonFile<ItemInfoConfig>("iteminfo.json", GatedItemTypeHelper.Initialize, ConfigType.Synced);
+            LoadJsonFile<RecipesConfig>("recipes.json", RecipesHelper.Initialize, ConfigType.Synced);
+            LoadJsonFile<EnchantingCostsConfig>("enchantcosts.json", EnchantCostsHelper.Initialize, ConfigType.Synced);
+            LoadJsonFile<ItemNameConfig>("itemnames.json", MagicItemNames.Initialize, ConfigType.Synced);
+            LoadJsonFile<AdventureDataConfig>("adventuredata.json", AdventureDataManager.Initialize, ConfigType.Synced);
+            LoadJsonFile<LegendaryItemConfig>("legendaries.json", UniqueLegendaryHelper.Initialize, ConfigType.Synced);
+            LoadJsonFile<AbilityConfig>("abilities.json", AbilityDefinitions.Initialize, ConfigType.Synced);
+            LoadJsonFile<MaterialConversionsConfig>("materialconversions.json", MaterialConversions.Initialize, ConfigType.Synced);
+            LoadJsonFile<EnchantingUpgradesConfig>("enchantingupgrades.json", EnchantingTableUpgrades.InitializeConfig, ConfigType.Synced);
+
+            WatchNewPatchConfig();
+        }
+
+        public static void WatchNewPatchConfig()
+        {
+            Log("Watching For Files");
+
+            //Patch JSON Watcher
+            void ConsumeNewPatchFile(object s, FileSystemEventArgs e)
+            {
+                switch (e.ChangeType)
+                {
+                    case WatcherChangeTypes.Created:
+                        //File Created
+                        var fileInfo = new FileInfo(e.FullPath);
+                        if (!fileInfo.Exists)
+                            return;
+
+                        FilePatching.ProcessPatchFile(fileInfo);
+                        var sourceFile = fileInfo.Name;
+
+                        foreach (var fileName in FilePatching.PatchesPerFile.Values.SelectMany(l => l).ToList()
+                            .Where(u => u.SourceFile.Equals(sourceFile)).Select(p => p.TargetFile).Distinct()
+                            .ToArray())
+                        {
+                            if (SyncedJsonFiles.ContainsKey(fileName))
+                                SyncedJsonFiles[fileName].AssignLocalValue(LoadJsonText(fileName));
+                            else
+                                NonSyncedJsonFiles[fileName].AssignValue(LoadJsonText(fileName));
+
+                            AddPatchFileWatcher(fileName, sourceFile);
+                        }
+
+                        break;
+                }
+            }
+
+            var newPatchWatcher = new FileSystemWatcher(FilePatching.PatchesDirPath, "*.json");
+
+            newPatchWatcher.Created += ConsumeNewPatchFile;
+            newPatchWatcher.IncludeSubdirectories = true;
+            newPatchWatcher.SynchronizingObject = ThreadingHelper.SynchronizingObject;
+            newPatchWatcher.EnableRaisingEvents = true;
         }
 
         private static void InitializeAbilities()
@@ -396,6 +546,16 @@ namespace EpicLoot
             {
                 _instance.Logger.LogError(message);
             }
+        }
+
+        public static void LogWarningForce(string message)
+        {
+            _instance.Logger.LogWarning(message);
+        }
+
+        public static void LogErrorForce(string message)
+        {
+            _instance.Logger.LogError(message);
         }
 
         /*private void Update()
@@ -441,11 +601,13 @@ namespace EpicLoot
             Assets.MagicItemLootBeamPrefabs[(int)ItemRarity.Rare] = assetBundle.LoadAsset<GameObject>("RareLootBeam");
             Assets.MagicItemLootBeamPrefabs[(int)ItemRarity.Epic] = assetBundle.LoadAsset<GameObject>("EpicLootBeam");
             Assets.MagicItemLootBeamPrefabs[(int)ItemRarity.Legendary] = assetBundle.LoadAsset<GameObject>("LegendaryLootBeam");
+            Assets.MagicItemLootBeamPrefabs[(int)ItemRarity.Mythic] = assetBundle.LoadAsset<GameObject>("MythicLootBeam");
 
             Assets.MagicItemDropSFX[(int)ItemRarity.Magic] = assetBundle.LoadAsset<AudioClip>("MagicItemDrop");
             Assets.MagicItemDropSFX[(int)ItemRarity.Rare] = assetBundle.LoadAsset<AudioClip>("RareItemDrop");
             Assets.MagicItemDropSFX[(int)ItemRarity.Epic] = assetBundle.LoadAsset<AudioClip>("EpicItemDrop");
             Assets.MagicItemDropSFX[(int)ItemRarity.Legendary] = assetBundle.LoadAsset<AudioClip>("LegendaryItemDrop");
+            Assets.MagicItemDropSFX[(int)ItemRarity.Mythic] = assetBundle.LoadAsset<AudioClip>("MythicItemDrop");
             Assets.ItemLoopSFX = assetBundle.LoadAsset<AudioClip>("ItemLoop");
             Assets.AugmentItemSFX = assetBundle.LoadAsset<AudioClip>("AugmentItem");
 
@@ -456,6 +618,7 @@ namespace EpicLoot
             Assets.DoubleJumpSFX = assetBundle.LoadAsset<AudioClip>("DoubleJump");
             Assets.DebugTextPrefab = assetBundle.LoadAsset<GameObject>("DebugText");
             Assets.AbilityBar = assetBundle.LoadAsset<GameObject>("AbilityBar");
+            Assets.WelcomMessagePrefab = assetBundle.LoadAsset<GameObject>("WelcomeMessage");
 
             LoadCraftingMaterialAssets(assetBundle, "Runestone");
 
@@ -464,7 +627,7 @@ namespace EpicLoot
             LoadCraftingMaterialAssets(assetBundle, "Reagent");
             LoadCraftingMaterialAssets(assetBundle, "Essence");
 
-            LoadStationExtension(assetBundle, "piece_enchanter", new PieceDef()
+            LoadBuildPiece(assetBundle, "piece_enchanter", new PieceDef()
             {
                 Table = "_HammerPieceTable",
                 CraftingStation = "piece_workbench",
@@ -476,7 +639,7 @@ namespace EpicLoot
                     new RecipeRequirementConfig { item = "Copper", amount = 3 },
                 }
             });
-            LoadStationExtension(assetBundle, "piece_augmenter", new PieceDef()
+            LoadBuildPiece(assetBundle, "piece_augmenter", new PieceDef()
             {
                 Table = "_HammerPieceTable",
                 CraftingStation = "piece_workbench",
@@ -486,6 +649,15 @@ namespace EpicLoot
                     new RecipeRequirementConfig { item = "Obsidian", amount = 10 },
                     new RecipeRequirementConfig { item = "Crystal", amount = 3 },
                     new RecipeRequirementConfig { item = "Bronze", amount = 3 },
+                }
+            });
+            LoadBuildPiece(assetBundle, "piece_enchantingtable", new PieceDef() {
+                Table = "_HammerPieceTable",
+                CraftingStation = "piece_workbench",
+                Resources = new List<RecipeRequirementConfig>
+                {
+                    new RecipeRequirementConfig { item = "FineWood", amount = 10 },
+                    new RecipeRequirementConfig { item = "SurtlingCore", amount = 1 }
                 }
             });
 
@@ -516,14 +688,17 @@ namespace EpicLoot
             }
             catch (Exception e)
             {
-                LogError($"Error loading asset ({assetName}): {e.Message}");
+                LogErrorForce($"Error loading asset ({assetName}): {e.Message}");
                 return null;
             }
         }
 
         private static void LoadItem(AssetBundle assetBundle, string assetName, Action<ItemDrop> customSetupAction = null)
         {
+            var prevForceDisable = ZNetView.m_forceDisableInit;
+            ZNetView.m_forceDisableInit = true;
             var prefab = assetBundle.LoadAsset<GameObject>(assetName);
+            ZNetView.m_forceDisableInit = prevForceDisable;
             RegisteredItemPrefabs.Add(prefab);
             RegisteredPrefabs.Add(prefab);
             if (customSetupAction != null)
@@ -532,7 +707,7 @@ namespace EpicLoot
             }
         }
 
-        private static void LoadStationExtension(AssetBundle assetBundle, string assetName, PieceDef pieceDef)
+        private static void LoadBuildPiece(AssetBundle assetBundle, string assetName, PieceDef pieceDef)
         {
             var prefab = assetBundle.LoadAsset<GameObject>(assetName);
             RegisteredPieces.Add(prefab, pieceDef);
@@ -541,14 +716,14 @@ namespace EpicLoot
 
         private static void LoadCraftingMaterialAssets(AssetBundle assetBundle, string type)
         {
-            var prefabs = new GameObject[4];
+            var prefabs = new GameObject[5];
             foreach (ItemRarity rarity in Enum.GetValues(typeof(ItemRarity)))
             {
                 var assetName = $"{type}{rarity}";
                 var prefab = assetBundle.LoadAsset<GameObject>(assetName);
                 if (prefab == null)
                 {
-                    LogError($"Tried to load asset {assetName} but it does not exist in the asset bundle!");
+                    LogErrorForce($"Tried to load asset {assetName} but it does not exist in the asset bundle!");
                     continue;
                 }
                 prefabs[(int) rarity] = prefab;
@@ -575,7 +750,7 @@ namespace EpicLoot
         private void OnDestroy()
         {
             _instance = null;
-            _harmony?.UnpatchAll(PluginId);
+            _harmony?.UnpatchSelf();
         }
 
         public static void TryRegisterPrefabs(ZNetScene zNetScene)
@@ -670,8 +845,9 @@ namespace EpicLoot
                 }
                 else
                 {
-                    var otherPiece = pieceTable.m_pieces.Find(x => x.GetComponent<Piece>() != null).GetComponent<Piece>();
-                    piece.m_placeEffect.m_effectPrefabs.AddRangeToArray(otherPiece.m_placeEffect.m_effectPrefabs);
+                    var workshopPrefab = pieceTable.m_pieces.FirstOrDefault(x => x.name == "piece_workshop");
+                    if (workshopPrefab != null && workshopPrefab.GetComponent<Piece>() is Piece otherPiece)
+                        piece.m_placeEffect.m_effectPrefabs = otherPiece.m_placeEffect.m_effectPrefabs.ToArray();
                 }
             }
         }
@@ -689,21 +865,18 @@ namespace EpicLoot
                 return;
             }
 
-            // Fix custom name and icons for crafting materials
+            
             foreach (var prefab in RegisteredItemPrefabs)
             {
                 var itemDrop = prefab.GetComponent<ItemDrop>();
                 if (itemDrop != null)
                 {
+                    //Set icons for crafting materials
+
                     if (itemDrop.m_itemData.IsMagicCraftingMaterial() || itemDrop.m_itemData.IsRunestone())
                     {
                         var rarity = itemDrop.m_itemData.GetRarity();
-                        var correctName = GetRarityDisplayName(rarity);
-                        if (!itemDrop.m_itemData.m_shared.m_name.StartsWith(correctName))
-                        {
-                            itemDrop.m_itemData.m_shared.m_name = itemDrop.m_itemData.m_shared.m_name.Replace(rarity.ToString(), correctName);
-                        }
-
+                        
                         if (itemDrop.m_itemData.IsMagicCraftingMaterial())
                         {
                             itemDrop.m_itemData.m_variant = GetRarityIconIndex(rarity);
@@ -818,13 +991,12 @@ namespace EpicLoot
             };
             magicItem.Effects.Add(new MagicItemEffect(MagicEffectType.Andvaranaut));
 
-            prefab.m_itemData = new ExtendedItemData(prefab.m_itemData);
-            prefab.m_itemData.Extended().ReplaceComponent<MagicItemComponent>().MagicItem = magicItem;
+            prefab.m_itemData.SaveMagicItem(magicItem);
         }
 
         private static void SetupStatusEffects()
         {
-            var lightning = ObjectDB.instance.GetStatusEffect("Lightning");
+            var lightning = ObjectDB.instance.GetStatusEffect("Lightning".GetHashCode());
             var paralyzed = ScriptableObject.CreateInstance<SE_Paralyzed>();
             Common.Utils.CopyFields(lightning, paralyzed, typeof(StatusEffect));
             paralyzed.name = "Paralyze";
@@ -833,32 +1005,56 @@ namespace EpicLoot
             ObjectDB.instance.m_StatusEffects.Add(paralyzed);
         }
 
-        public static void LoadJsonFile<T>(string filename, Action<T> onFileLoad) where T : class
+        public static void LoadJsonFile<T>(string filename, Action<T> onFileLoad, ConfigType configType, bool update = false) where T : class
         {
             var jsonFile = LoadJsonText(filename);
-            var syncedValue = new CustomSyncedValue<string>(_instance._configSync, filename, jsonFile);
+
+            if (!update)
+            {
+                if (configType == ConfigType.Synced)
+                    SyncedJsonFiles.Add(filename, new CustomSyncedValue<string>(_instance._configSync, filename, jsonFile));
+                else
+                    NonSyncedJsonFiles.Add(filename,new ConfigValue<string>(filename,jsonFile));
+            }
+            
             void Process()
             {
                 T result;
                 try
                 {
-                    result = string.IsNullOrEmpty(syncedValue.Value) ? null : JSON.ToObject<T>(syncedValue.Value);
+                    if (configType == ConfigType.Synced)
+                        result = string.IsNullOrEmpty(SyncedJsonFiles[filename].Value) ? null : JsonConvert.DeserializeObject<T>(SyncedJsonFiles[filename].Value);
+                    else
+                        result = string.IsNullOrEmpty(NonSyncedJsonFiles[filename].Value) ? null : JsonConvert.DeserializeObject<T>(NonSyncedJsonFiles[filename].Value);
                 }
                 catch (Exception)
                 {
-                    LogError($"Could not parse file '{filename}'! Errors in JSON!");
+                    LogErrorForce($"Could not parse file '{filename}'! Errors in JSON!");
                     throw;
                 }
 
                 onFileLoad(result);
             }
 
-            syncedValue.ValueChanged += Process;
+            if (configType == ConfigType.Synced)
+                SyncedJsonFiles[filename].ValueChanged += Process;
+            else
+                NonSyncedJsonFiles[filename].ValueChanged += Process;
+
             Process();
 
             if (jsonFile != null)
             {
-	            void ConsumeConfigFileEvent(object s, FileSystemEventArgs e) => syncedValue.AssignLocalValue(LoadJsonText(filename));
+                //Primary JSON Watcher
+                void ConsumeConfigFileEvent(object s, FileSystemEventArgs e)
+                {
+                    if (configType == ConfigType.Synced)
+                        SyncedJsonFiles[filename].AssignLocalValue(LoadJsonText(filename));
+                    else
+                        NonSyncedJsonFiles[filename].AssignValue(LoadJsonText(filename));
+
+                }
+
 	            var filePath = GetAssetPath(filename);
 	            FileSystemWatcher watcher = new FileSystemWatcher(Path.GetDirectoryName(filePath), Path.GetFileName(filePath));
 	            watcher.Changed += ConsumeConfigFileEvent;
@@ -867,18 +1063,76 @@ namespace EpicLoot
 	            watcher.IncludeSubdirectories = true;
 	            watcher.SynchronizingObject = ThreadingHelper.SynchronizingObject;
 	            watcher.EnableRaisingEvents = true;
+
+                //Patch JSON Watcher
+                for (var i = 0; i < FilePatching.PatchesPerFile.Where(y => y.Key.Equals(filename)).ToList().Count; i++)
+                {
+                    var configFile = FilePatching.PatchesPerFile.Where(y => y.Key.Equals(filename)).ToList()[i];
+                    var lists = configFile.Value.Select(p => p.SourceFile).Distinct().ToList();
+
+                    for (var index = 0; index < lists.Count; index++)
+                    {
+                        var patchfile = lists[index];
+                        AddPatchFileWatcher(filename,patchfile);
+                    }
+                }
             }
         }
 
-        public static string LoadJsonText(string filename)
+        private static void AddPatchFileWatcher(string fileName, string patchFile)
         {
-            var jsonFileName = GetAssetPath(filename);
-            return !string.IsNullOrEmpty(jsonFileName) ? File.ReadAllText(jsonFileName) : null;
+            var fullPatchFilename = Path.Combine(FilePatching.PatchesDirPath, patchFile);
+            Log($"[AddPatchFileWatcher] Full Patch File Name = {fullPatchFilename}");
+            void ConsumePatchFileEvent(object s, FileSystemEventArgs e)
+            {
+                FileInfo fileInfo = null;
+
+                switch (e.ChangeType)
+                {
+                    case WatcherChangeTypes.Deleted:
+                        //File Deleted
+                        Debug.Log($"Function Deleted");
+                        FilePatching.RemoveFilePatches(fileName, patchFile);
+                        break;
+                    case WatcherChangeTypes.Changed:
+                        //File Changed
+                        Debug.Log($"Function Changed");
+                        FilePatching.RemoveFilePatches(fileName, patchFile);
+                        fileInfo = new FileInfo(fullPatchFilename);
+                        break;
+                }
+
+                if (fileInfo != null && fileInfo.Exists)
+                    FilePatching.ProcessPatchFile(fileInfo);
+
+                SyncedJsonFiles[fileName].AssignLocalValue(LoadJsonText(fileName));
+            }
+
+            var patchWatcher = new FileSystemWatcher(Path.GetDirectoryName(fullPatchFilename), Path.GetFileName(fullPatchFilename));
+
+            patchWatcher.Changed += ConsumePatchFileEvent;
+            patchWatcher.Deleted += ConsumePatchFileEvent;
+            patchWatcher.IncludeSubdirectories = true;
+            patchWatcher.SynchronizingObject = ThreadingHelper.SynchronizingObject;
+            patchWatcher.EnableRaisingEvents = true;
+
         }
 
-        public static T JsonToObject<T>(string jsonFile) where T : class
+
+        public static string LoadJsonText(string filename)
         {
-            return JSON.ToObject<T>(jsonFile);
+            var jsonFilePath = GetAssetPath(filename);
+            if (string.IsNullOrEmpty(jsonFilePath))
+                return null;
+
+            var jsonFileText = File.ReadAllText(jsonFilePath);
+            var patchedJsonFileText = FilePatching.ProcessConfigFile(filename, jsonFileText);
+            if (OutputPatchedConfigFiles.Value && jsonFileText != patchedJsonFileText)
+            { 
+                var debugFilePath = Path.Combine(Paths.ConfigPath, "EpicLoot", filename.Replace(".json", "_patched.json"));
+                File.WriteAllText(debugFilePath, patchedJsonFileText);
+            }
+            return patchedJsonFileText;
         }
 
         public static AssetBundle LoadAssetBundle(string filename)
@@ -903,7 +1157,7 @@ namespace EpicLoot
                 assetFileName = GenerateAssetPathAtAssembly(assetName);
                 if (!File.Exists(assetFileName))
                 {
-                    LogError($"Could not find asset ({assetName})");
+                    LogErrorForce($"Could not find asset ({assetName})");
                     return null;
                 }
             }
@@ -938,6 +1192,8 @@ namespace EpicLoot
 
         private static bool IsNotRestrictedItem(ItemDrop.ItemData item)
         {
+            if (item.m_dropPrefab != null && LootRoller.Config.RestrictedItems.Contains(item.m_dropPrefab.name))
+                return false;
             return !LootRoller.Config.RestrictedItems.Contains(item.m_shared.m_name);
         }
 
@@ -1050,6 +1306,7 @@ namespace EpicLoot
             t.AppendLine(GetMagicEffectCountTableLine(ItemRarity.Rare));
             t.AppendLine(GetMagicEffectCountTableLine(ItemRarity.Epic));
             t.AppendLine(GetMagicEffectCountTableLine(ItemRarity.Legendary));
+            //t.AppendLine(GetMagicEffectCountTableLine(ItemRarity.Mythic));
             t.AppendLine();
 
             var rarities = new List<ItemRarity>();
@@ -1062,8 +1319,6 @@ namespace EpicLoot
             foreach (Skills.SkillType value in Enum.GetValues(typeof(Skills.SkillType)))
             {
                 if (value == Skills.SkillType.None
-                    || value == Skills.SkillType.FireMagic
-                    || value == Skills.SkillType.FrostMagic
                     || value == Skills.SkillType.WoodCutting
                     || value == Skills.SkillType.Jump
                     || value == Skills.SkillType.Sneak
@@ -1287,7 +1542,7 @@ namespace EpicLoot
 
         private static string GetMagicEffectCountTableLine(ItemRarity rarity)
         {
-            var effectCounts = LootRoller.GetEffectCountsPerRarity(rarity);
+            var effectCounts = LootRoller.GetEffectCountsPerRarity(rarity, false);
             float total = effectCounts.Sum(x => x.Value);
             var result = $"|{rarity}|";
             for (var i = 1; i <= 6; ++i)
@@ -1315,15 +1570,17 @@ namespace EpicLoot
             switch (rarity)
             {
                 case ItemRarity.Magic:
-                    return _magicRarityDisplayName.Value;
+                    return "$mod_epicloot_magic";
                 case ItemRarity.Rare:
-                    return _rareRarityDisplayName.Value;
+                    return "$mod_epicloot_rare";
                 case ItemRarity.Epic:
-                    return _epicRarityDisplayName.Value;
+                    return "$mod_epicloot_epic";
                 case ItemRarity.Legendary:
-                    return _legendaryRarityDisplayName.Value;
+                    return "$mod_epicloot_legendary";
+                case ItemRarity.Mythic:
+                    return "$mod_epicloot_mythic";
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(rarity), rarity, null);
+                    return "<non magic>";
             }
         }
 
@@ -1339,8 +1596,11 @@ namespace EpicLoot
                     return GetColor(_epicRarityColor.Value);
                 case ItemRarity.Legendary:
                     return GetColor(_legendaryRarityColor.Value);
+                case ItemRarity.Mythic:
+                    // TODO: Mythic Hookup
+                    return GetColor("Orange"/*_mythicRarityColor.Value*/);
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(rarity), rarity, null);
+                    return "#FFFFFF";
             }
         }
 
@@ -1378,6 +1638,9 @@ namespace EpicLoot
                     return Mathf.Clamp(_epicMaterialIconColor.Value, 0, 9);
                 case ItemRarity.Legendary:
                     return Mathf.Clamp(_legendaryMaterialIconColor.Value, 0, 9);
+                case ItemRarity.Mythic:
+                    // TODO: Mythic Hookup
+                    return 1; //Mathf.Clamp(_mythicMaterialIconColor.Value, 0, 9);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(rarity), rarity, null);
             }
@@ -1416,7 +1679,7 @@ namespace EpicLoot
         private static void GenerateTranslations()
         {
             var jsonFile = LoadJsonText("magiceffects.json");
-            var config = JSON.ToObject<MagicItemEffectsList>(jsonFile);
+            var config = JsonConvert.DeserializeObject<MagicItemEffectsList>(jsonFile);
 
             var translations = new Dictionary<string, string>();
 

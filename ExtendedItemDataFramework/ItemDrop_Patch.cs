@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using System.Collections.Generic;
+using HarmonyLib;
 
 namespace ExtendedItemDataFramework
 {
@@ -22,7 +23,7 @@ namespace ExtendedItemDataFramework
     }
 
     //public ItemDrop.ItemData Clone() => this.MemberwiseClone() as ItemDrop.ItemData;
-    [HarmonyPatch(typeof(ItemDrop.ItemData), "Clone")]
+    [HarmonyPatch(typeof(ItemDrop.ItemData), nameof(ItemDrop.ItemData.Clone))]
     public static class ItemData_Clone_Patch
     {
         public static bool Prefix(ItemDrop.ItemData __instance, ref ItemDrop.ItemData __result)
@@ -36,6 +37,12 @@ namespace ExtendedItemDataFramework
             ExtendedItemDataFramework.Log($"Cloning DEFAULT item {__instance.m_shared.m_name}");
             return true;
         }
+
+        //public static void Postfix(ItemDrop.ItemData __instance, ref ItemDrop.ItemData __result)
+        //{
+        //    // Fixes bug in vanilla valheim with cloning items with custom data
+        //    __result.m_customData = new Dictionary<string, string>(__instance.m_customData);
+        //}
     }
 
     //public void Load() => ItemDrop.LoadFromZDO(this.m_itemData, this.m_nview.GetZDO());

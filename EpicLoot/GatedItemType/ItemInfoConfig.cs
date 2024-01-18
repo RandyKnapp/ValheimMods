@@ -9,6 +9,7 @@ namespace EpicLoot.GatedItemType
         public string Type;
         public string Fallback;
         public List<string> Items = new List<string>();
+        public Dictionary<string, List<string>> ItemsByBoss = new Dictionary<string, List<string>>();
     }
 
     [Serializable]

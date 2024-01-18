@@ -3,7 +3,6 @@ using System.Reflection;
 using BepInEx;
 using BepInEx.Configuration;
 using HarmonyLib;
-using UnityEngine;
 
 namespace ImprovedBuildHud
 {
@@ -15,7 +14,7 @@ namespace ImprovedBuildHud
         public static ConfigEntry<string> CanBuildAmountColor;
     }
 
-    [BepInPlugin(PluginId, "Improved Build HUD", "1.0.3")]
+    [BepInPlugin(PluginId, "Improved Build HUD", "1.0.5")]
     [BepInProcess("valheim.exe")]
     [BepInDependency("aedenthorn.CraftFromContainers", BepInDependency.DependencyFlags.SoftDependency)]
     public class ImprovedBuildHud : BaseUnityPlugin
@@ -51,7 +50,7 @@ namespace ImprovedBuildHud
         private void OnDestroy()
         {
             CraftFromContainersInstalledAndActive = false;
-            _harmony?.UnpatchAll(PluginId);
+            _harmony?.UnpatchSelf();
         }
 
         private void LateUpdate()

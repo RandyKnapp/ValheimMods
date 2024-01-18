@@ -16,9 +16,10 @@ namespace EpicLoot
         {
             var player = Player.m_localPlayer;
             if (player == null)
-            {
                 return;
-            }
+
+            if (EpicLoot.HasAuga && __instance.transform.parent.name == "Lore")
+                return;
 
             AddMagicEffectsPage(__instance, player);
             AddMagicEffectsExplainPage(__instance);
@@ -97,7 +98,7 @@ namespace EpicLoot
             var sortedBounties = saveData.Bounties.OrderBy(x => x.State);
             foreach (var bounty in sortedBounties)
             {
-                if (bounty.State == BountyState.Claimed)
+                if (bounty.State != BountyState.InProgress && bounty.State != BountyState.Complete)
                 {
                     continue;
                 }
@@ -188,6 +189,9 @@ namespace EpicLoot
 
         public static bool Prefix(TextsDialog __instance, TextsDialog.TextInfo text)
         {
+            if (EpicLoot.HasAuga)
+                return true;
+
             if (TitleTextPrefab == null)
             {
                 TextContainer = __instance.m_textAreaTopic.transform.parent;

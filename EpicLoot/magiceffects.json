@@ -4,6 +4,7 @@
       "Type" : "DvergerCirclet",
       "DisplayText" : "$mod_epicloot_me_dvergercirclet_display",
       "CanBeAugmented": false, 
+      "CanBeDisenchanted": false, 
       "Requirements" : {
         "NoRoll": true
       },
@@ -13,6 +14,7 @@
       "Type" : "Megingjord",
       "DisplayText" : "$mod_epicloot_me_megingjord_display",
       "CanBeAugmented": false, 
+      "CanBeDisenchanted": false, 
       "Requirements" : {
         "NoRoll": true
       },
@@ -22,6 +24,7 @@
       "Type" : "Wishbone",
       "DisplayText" : "$mod_epicloot_me_wishbone_display",
       "CanBeAugmented": false, 
+      "CanBeDisenchanted": false, 
       "Requirements" : {
         "NoRoll": true
       },
@@ -31,6 +34,7 @@
       "Type": "Andvaranaut",
       "DisplayText" : "$mod_epicloot_me_andvaranaut_display",
       "CanBeAugmented": false, 
+      "CanBeDisenchanted": false, 
       "Requirements" : {
         "NoRoll": true
       },
@@ -45,10 +49,10 @@
         "NoRoll": true
       },
       "ValuesPerRarity" : {
-        "Magic" : { "MinValue" : 10, "MaxValue" : 20, "Increment" : 1 },
-        "Rare" : { "MinValue" : 10, "MaxValue" : 20, "Increment" : 1 },
-        "Epic" : { "MinValue" : 10, "MaxValue" : 20, "Increment" : 1 },
-        "Legendary" : { "MinValue" : 15, "MaxValue" : 25, "Increment" : 1 }
+        "Magic" : { "MinValue" : 10, "MaxValue" : 20, "Increment" : 5 },
+        "Rare" : { "MinValue" : 15, "MaxValue" : 25, "Increment" : 5 },
+        "Epic" : { "MinValue" : 20, "MaxValue" : 30, "Increment" : 5 },
+        "Legendary" : { "MinValue" : 25, "MaxValue" : 40, "Increment" : 5 }
       },
       "SelectionWeight" : 1,
       "Comment" : "Can't be rolled. Too powerful?"
@@ -66,6 +70,7 @@
         "AllowedItemTypes" : [
           "OneHandedWeapon",
           "TwoHandedWeapon",
+          "TwoHandedWeaponLeft",
           "Bow",
           "Torch"
         ],
@@ -109,8 +114,10 @@
         "AllowedItemTypes" : [
           "OneHandedWeapon",
           "TwoHandedWeapon",
+          "TwoHandedWeaponLeft",
           "Bow",
-          "Torch"
+          "Torch",
+          "Staff"
         ],
         "ExcludedSkillTypes": [
           "Pickaxes"
@@ -147,6 +154,7 @@
         "AllowedItemTypes" : [
           "OneHandedWeapon",
           "TwoHandedWeapon",
+          "TwoHandedWeaponLeft",
           "Bow",
           "Torch",
           "Shield",
@@ -192,6 +200,7 @@
         "AllowedItemTypes" : [
           "OneHandedWeapon",
           "TwoHandedWeapon",
+          "TwoHandedWeaponLeft",
           "Bow",
           "Torch",
           "Shield",
@@ -232,6 +241,7 @@
         "AllowedItemTypes" : [
           "OneHandedWeapon",
           "TwoHandedWeapon",
+          "TwoHandedWeaponLeft",
           "Bow",
           "Torch",
           "Shield",
@@ -425,6 +435,36 @@
       ]
     },
     {
+      "Type" : "IncreaseEitr",
+      "DisplayText" : "$mod_epicloot_me_increaseeitr_display",
+      "Description" : "$mod_epicloot_me_increaseeitr_desc",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "Helmet",
+          "Chest",
+          "Legs",
+          "Shoulder",
+          "Utility",
+          "Staff"
+        ],
+        "AllowedRarities" : [
+          "Epic",
+          "Legendary"
+        ]
+      },
+      "ValuesPerRarity" : {
+        "Epic" : { "MinValue" : 10, "MaxValue" : 25, "Increment" : 5 },
+        "Legendary" : { "MinValue" : 20, "MaxValue" : 35, "Increment" : 5 }
+      },
+      "SelectionWeight" : 1,
+      "Prefixes": [
+        "$mod_epicloot_me_increaseeitr_prefix1"
+      ],
+      "Suffixes": [
+        "$mod_epicloot_me_increaseeitr_suffix1"
+      ]
+    },
+    {
       "Type" : "ModifyHealthRegen",
       "DisplayText" : "$mod_epicloot_me_modifyhealthregen_display",
       "Description" : "$mod_epicloot_me_modifyhealthregen_desc",
@@ -508,6 +548,36 @@
       ]
     },
     {
+      "Type" : "ModifyEitrRegen",
+      "DisplayText" : "$mod_epicloot_me_modifyeitrregen_display",
+      "Description" : "$mod_epicloot_me_modifyeitrregen_desc",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "Helmet",
+          "Chest",
+          "Legs",
+          "Shoulder",
+          "Utility",
+          "Staff"
+        ],
+        "AllowedRarities" : [
+          "Epic",
+          "Legendary"
+        ] 
+      },
+      "ValuesPerRarity" : {
+        "Epic" : { "MinValue" : 10, "MaxValue" : 20, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15, "MaxValue" : 25, "Increment" : 1 }
+      },
+      "SelectionWeight" : 1,
+      "Prefixes": [
+        "$mod_epicloot_me_modifyeitrregen_prefix1"
+      ],
+      "Suffixes": [
+        "$mod_epicloot_me_modifyeitrregen_suffix1"
+      ]
+    },
+    {
       "Type" : "AddBluntDamage",
       "DisplayText" : "$mod_epicloot_me_addbluntdamage_display",
       "Description" : "$mod_epicloot_me_addbluntdamage_desc",
@@ -527,6 +597,9 @@
           "TwoHandedWeapon",
           "Bow",
           "Torch"
+        ],
+        "ExludedItemTypes" : [
+          "Staff"
         ],
         "ExcludedSkillTypes": [
           "Pickaxes"
@@ -566,6 +639,9 @@
           "TwoHandedWeapon",
           "Bow",
           "Torch"
+        ],
+        "ExludedItemTypes" : [
+          "Staff"
         ],
         "ExcludedSkillTypes": [
           "Pickaxes"
@@ -607,6 +683,9 @@
           "TwoHandedWeapon",
           "Bow",
           "Torch"
+        ],
+        "ExludedItemTypes" : [
+          "Staff"
         ]
       },
       "ValuesPerRarity" : {
@@ -642,8 +721,10 @@
         "AllowedItemTypes" : [
           "OneHandedWeapon",
           "TwoHandedWeapon",
+          "TwoHandedWeaponLeft",
           "Bow",
-          "Torch"
+          "Torch",
+          "Staff"
         ],
         "ExcludedSkillTypes": [
           "Pickaxes"
@@ -681,8 +762,10 @@
         "AllowedItemTypes" : [
           "OneHandedWeapon",
           "TwoHandedWeapon",
+          "TwoHandedWeaponLeft",
           "Bow",
-          "Torch"
+          "Torch",
+          "Staff"
         ],
         "ExcludedSkillTypes": [
           "Pickaxes"
@@ -720,8 +803,10 @@
         "AllowedItemTypes" : [
           "OneHandedWeapon",
           "TwoHandedWeapon",
+          "TwoHandedWeaponLeft",
           "Bow",
-          "Torch"
+          "Torch",
+          "Staff"
         ],
         "ExcludedSkillTypes": [
           "Pickaxes"
@@ -759,8 +844,10 @@
         "AllowedItemTypes" : [
           "OneHandedWeapon",
           "TwoHandedWeapon",
+          "TwoHandedWeaponLeft",
           "Bow",
-          "Torch"
+          "Torch",
+          "Staff"
         ],
         "ExcludedSkillTypes": [
           "Pickaxes"
@@ -798,8 +885,10 @@
         "AllowedItemTypes" : [
           "OneHandedWeapon",
           "TwoHandedWeapon",
+          "TwoHandedWeaponLeft",
           "Bow",
-          "Torch"
+          "Torch",
+          "Staff"
         ],
         "ExcludedSkillTypes": [
           "Pickaxes"
@@ -1327,6 +1416,7 @@
         "AllowedItemTypes" : [
           "OneHandedWeapon",
           "TwoHandedWeapon",
+          "TwoHandedWeaponLeft",
           "Bow",
           "Torch",
           "Tool"
@@ -1382,6 +1472,7 @@
         "AllowedItemTypes" : [
           "OneHandedWeapon",
           "TwoHandedWeapon",
+          "TwoHandedWeaponLeft",
           "Bow",
           "Torch",
           "Tool",
@@ -1415,6 +1506,7 @@
         "AllowedItemTypes" : [
           "OneHandedWeapon",
           "TwoHandedWeapon",
+          "TwoHandedWeaponLeft",
           "Bow",
           "Torch",
           "Tool",
@@ -1468,6 +1560,7 @@
         "AllowedItemTypes" : [
           "OneHandedWeapon",
           "TwoHandedWeapon",
+          "TwoHandedWeaponLeft",
           "Bow"
         ],
         "ExcludedSkillTypes": [
@@ -1501,6 +1594,7 @@
         "AllowedItemTypes" : [
           "OneHandedWeapon",
           "TwoHandedWeapon",
+          "TwoHandedWeaponLeft",
           "Bow",
           "Tool"
         ]
@@ -1527,6 +1621,9 @@
         "AllowedItemTypes" : [
           "OneHandedWeapon",
           "TwoHandedWeapon"
+        ],
+        "ExcludedItemTypes": [
+          "Staff"
         ],
         "ExcludedSkillTypes": [
           "Pickaxes",
@@ -1865,6 +1962,66 @@
       ]
     },
     {
+      "Type" : "AddBloodMagicSkill",
+      "DisplayText" : "$mod_epicloot_me_addbloodmagicskill_display",
+      "Description" : "$mod_epicloot_me_addbloodmagicskill_desc",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "Chest",
+          "Legs",
+          "Shoulder",
+          "Utility",
+		  "Staffs"
+        ],
+        "AllowedSkillTypes" : [
+          "BloodMagic"
+        ]
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 1, "MaxValue" : 4, "Increment" : 1 },
+        "Rare" : { "MinValue" : 3, "MaxValue" : 8, "Increment" : 1 },
+        "Epic" : { "MinValue" : 7, "MaxValue" : 15, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15, "MaxValue" : 20, "Increment" : 1 }
+      },
+      "SelectionWeight" : 1,
+      "Prefixes": [
+        "$mod_epicloot_me_addbloodmagicskill_prefix1"
+      ],
+      "Suffixes": [
+        "$mod_epicloot_me_addbloodmagicskill_suffix1"
+      ]
+    },
+    {
+      "Type" : "AddElementalMagicSkill",
+      "DisplayText" : "$mod_epicloot_me_addelementalmagicskill_display",
+      "Description" : "$mod_epicloot_me_addelementalmagicskill_desc",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "Chest",
+          "Legs",
+          "Shoulder",
+          "Utility",
+		  "Staffs"
+        ],
+        "AllowedSkillTypes" : [
+          "ElementalMagic"
+        ]
+      },
+      "ValuesPerRarity" : {
+        "Magic" : { "MinValue" : 1, "MaxValue" : 4, "Increment" : 1 },
+        "Rare" : { "MinValue" : 3, "MaxValue" : 8, "Increment" : 1 },
+        "Epic" : { "MinValue" : 7, "MaxValue" : 15, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15, "MaxValue" : 20, "Increment" : 1 }
+      },
+      "SelectionWeight" : 1,
+      "Prefixes": [
+        "$mod_epicloot_me_addelementalmagicskill_prefix1"
+      ],
+      "Suffixes": [
+        "$mod_epicloot_me_addelementalmagicskill_suffix1"
+      ]
+    },
+    {
       "Type" : "AddUnarmedSkill",
       "DisplayText" : "$mod_epicloot_me_addunarmedskill_display",
       "Description" : "$mod_epicloot_me_addunarmedskill_desc",
@@ -1991,7 +2148,8 @@
       "Description" : "$mod_epicloot_me_freebuild_desc",
       "Requirements" : {
         "AllowedItemNames" : [
-          "$item_hammer"
+          "$item_hammer",
+          "$item_hoe"
         ],
         "AllowedRarities" : [
           "Legendary"
@@ -2009,6 +2167,9 @@
         "AllowedItemTypes" : [
           "OneHandedWeapon",
           "TwoHandedWeapon"
+        ],
+        "ExcludedItemTypes": [
+          "Staff"
         ],
         "ExcludedSkillTypes": [
           "Pickaxes"
@@ -2214,6 +2375,36 @@
       ],
       "Suffixes": [
         "$mod_epicloot_me_modifystaminaregenlowhealth_suffix1"
+      ]
+    },
+    {
+      "Type" : "ModifyEitrRegenLowHealth",
+      "DisplayText" : "$mod_epicloot_me_modifyeitrregenlowhealth_display",
+      "Description" : "$mod_epicloot_me_modifyeitrregenlowhealth_desc",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "Helmet",
+          "Chest",
+          "Legs",
+          "Shoulder",
+          "Utility",
+          "Staff"
+        ],
+        "AllowedRarities" : [
+          "Epic",
+          "Legendary"
+        ] 
+      },
+      "ValuesPerRarity" : {
+        "Epic" : { "MinValue" : 15, "MaxValue" : 25, "Increment" : 1 },
+        "Legendary" : { "MinValue" : 25, "MaxValue" : 30, "Increment" : 1 }
+      },
+      "SelectionWeight" : 1,
+      "Prefixes": [
+        "$mod_epicloot_me_modifyeitrregenlowhealth_prefix1"
+      ],
+      "Suffixes": [
+        "$mod_epicloot_me_modifyeitrregenlowhealth_suffix1"
       ]
     },
     {
@@ -2670,6 +2861,51 @@
       ],
       "Suffixes": [
         "$mod_epicloot_me_slow_suffix1"
+      ]
+    },
+    {
+      "Type" : "DoubleMagicShot",
+      "DisplayText" : "$mod_epicloot_me_doublemagicshot",
+      "Description" : "$mod_epicloot_me_doublemagicshot_desc",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "Staff"
+        ],
+        "AllowedSkillTypes" : [
+          "ElementalMagic"
+        ],
+        "AllowedRarities" : [
+          "Epic",
+          "Legendary"
+        ]
+      },
+      "SelectionWeight" : 1,
+      "Prefixes": [
+        "$mod_epicloot_me_doublemagicshot_prefix1"
+      ],
+      "Suffixes": [
+        "$mod_epicloot_me_doublemagicshot_suffix1"
+      ]
+    },
+    {
+      "Type" : "TripleBowShot",
+      "DisplayText" : "$mod_epicloot_me_triplebowshot",
+      "Description" : "$mod_epicloot_me_triplebowshot_desc",
+      "Requirements" : {
+        "AllowedItemTypes" : [
+          "Bow"
+        ],
+        "AllowedRarities" : [
+          "Epic",
+          "Legendary"
+        ]
+      },
+      "SelectionWeight" : 1,
+      "Prefixes": [
+        "$mod_epicloot_me_triplebowshot_prefix1"
+      ],
+      "Suffixes": [
+        "$mod_epicloot_me_triplebowshot_suffix1"
       ]
     },
 

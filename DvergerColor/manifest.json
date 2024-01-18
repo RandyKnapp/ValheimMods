@@ -1,6 +1,6 @@
 {
   "name": "ImprovedDvergerCirclet",
-  "version_number": "1.0.2",
+  "version_number": "1.0.4",
   "website_url": "https://github.com/RandyKnapp/ValheimMods/tree/main/DvergerColor",
   "description": "Changes the color of the light emitted by the Dverger circlet to white. Adds several beam width options, and a pool of radiance (point light) option.",
   "dependencies": []

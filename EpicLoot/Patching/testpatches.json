@@ -1,0 +1,42 @@
+﻿{
+  "TargetFile": "adventuredata.json", 
+  "Author": "RandyKnapp",
+  "RequireAll": true, 
+  "Patches": [
+    {
+      "Path": "$.SecretStash.OtherItems[0]", 
+      "Action": "InsertBefore",
+      "Value": { "Item": "SwordBronze", "CoinsCost": 234 } 
+    },
+    {
+      "Path": "$.SecretStash.OtherItems[-1:]", 
+      "Action": "InsertAfter",
+      "Value": { "Item": "SwordBlackmetal", "CoinsCost": 345 } 
+    },
+    {
+      "Path": "$.SecretStash.OtherItems[?(@.Item == 'Andvaranaut')]", 
+      "Action": "Remove"
+    },
+    {
+      "Path": "$.SecretStash.Materials",
+      "Action": "RemoveAll"
+    },
+    {
+      "Path": "$.SecretStash.OtherItems[?(@.CoinsCost < 300)]",
+      "Action": "Add",
+      "PropertyName": "ForestTokenCost",
+      "Value": 10
+    },
+    {
+      "Path": "$.SecretStash.OtherItems[?(@.CoinsCost >= 300)]",
+      "Action": "Add",
+      "PropertyName": "CoinsCost",
+      "Value": 20
+    },
+    {
+      "Path": "$.SecretStash.OtherItems[?(@.Item == 'SwordBronze')].ForestTokenCost",
+      "Action": "Overwrite",
+      "Value": 22
+    }
+  ]
+}

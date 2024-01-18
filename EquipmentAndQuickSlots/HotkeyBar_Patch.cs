@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Emit;
 using Common;
 using HarmonyLib;
+using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
@@ -13,114 +15,129 @@ namespace EquipmentAndQuickSlots
         [HarmonyPatch(typeof(HotkeyBar), "UpdateIcons")]
         public static class HotkeyBar_UpdateIcons_Patch
         {
-            public static bool Prefix(HotkeyBar __instance, Player player)
+            public static void UpdateIcons(HotkeyBar instance, Player player, List<ItemDrop.ItemData> m_items)
             {
-                if (__instance.name != "QuickSlotsHotkeyBar")
+                if (instance.name != "QuickSlotsHotkeyBar")
                 {
-                    return true;
+                    return;
+                }
+                
+                player.GetQuickSlotInventory().GetBoundItems(m_items);
+            }
+            public static int UpdateIconCount(int defaultCount, HotkeyBar instance)
+            {
+                if (instance.name != "QuickSlotsHotkeyBar")
+                {
+                    return defaultCount;
+                }
+                
+                return EquipmentAndQuickSlots.QuickSlotCount;
+            }
+            public static void UpdateIconBinding(HotkeyBar instance, int index, HotkeyBar.ElementData elementData)
+            {
+                if (instance.name != "QuickSlotsHotkeyBar")
+                {
+                    return;
+                }
+                
+                var bindingText = elementData.m_go.transform.Find("binding").GetComponent<Text>();
+                bindingText.enabled = true;
+                bindingText.horizontalOverflow = HorizontalWrapMode.Overflow;
+                bindingText.text = EquipmentAndQuickSlots.GetBindingLabel(index);
+            }
+            [UsedImplicitly]
+            public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+            {
+                var instrs = instructions.ToList();
+
+                var counter = 0;
+
+                CodeInstruction LogMessage(CodeInstruction instruction)
+                {
+                    //EquipmentAndQuickSlots.LogWarning($"IL_{counter}: Opcode: {instruction.opcode} Operand: {instruction.operand}");
+                    return instruction;
                 }
 
-                if (player == null || player.IsDead())
+                var boundItemsMethod = AccessTools.DeclaredMethod(typeof(Inventory), nameof(Inventory.GetBoundItems));
+                var itemsListField = AccessTools.DeclaredField(typeof(HotkeyBar), nameof(HotkeyBar.m_items));
+                var setTextProperty = AccessTools.PropertySetter(typeof(Text), "text");
+
+                for (int i = 0; i < instrs.Count; ++i)
                 {
-                    foreach (var element in __instance.m_elements)
-                    {
-                        Object.Destroy(element.m_go);
-                    }
 
-                    __instance.m_elements.Clear();
-                }
-                else
-                {
-                    player.GetQuickSlotInventory().GetBoundItems(__instance.m_items);
-                    __instance.m_items.Sort((x, y) => x.m_gridPos.x.CompareTo(y.m_gridPos.x));
-                    const int showElementCount = EquipmentAndQuickSlots.QuickSlotCount;
-                    if (__instance.m_elements.Count != showElementCount)
+                    yield return LogMessage(instrs[i]);
+                    counter++;
+                    
+                    if (i > 6 && instrs[i].opcode == OpCodes.Callvirt && instrs[i].operand.Equals(boundItemsMethod))
                     {
-                        foreach (var element in __instance.m_elements)
+                        //Load LdArg0
+                        var ldArgInstruction = new CodeInstruction(OpCodes.Ldarg_0);
+                        //Move Any Labels from the instruction position being patched to new instruction.
+                        if (instrs[i].labels.Count > 0)
                         {
-                            Object.Destroy(element.m_go);
+                            instrs[i].MoveLabelsTo(ldArgInstruction);
                         }
 
-                        __instance.m_elements.Clear();
-                        for (var index = 0; index < showElementCount; ++index)
-                        {
-                            var elementData = new HotkeyBar.ElementData()
-                            {
-                                m_go = Object.Instantiate(__instance.m_elementPrefab, __instance.transform)
-                            };
-                            elementData.m_go.transform.localPosition = new Vector3(index * __instance.m_elementSpace, 0.0f, 0.0f);
-                            elementData.m_icon = elementData.m_go.transform.transform.Find("icon").GetComponent<Image>();
-                            elementData.m_durability = elementData.m_go.transform.Find("durability").GetComponent<GuiBar>();
-                            elementData.m_amount = elementData.m_go.transform.Find("amount").GetComponent<Text>();
-                            elementData.m_equiped = elementData.m_go.transform.Find("equiped").gameObject;
-                            elementData.m_queued = elementData.m_go.transform.Find("queued").gameObject;
-                            elementData.m_selection = elementData.m_go.transform.Find("selected").gameObject;
-
-                            var bindingText = elementData.m_go.transform.Find("binding").GetComponent<Text>();
-                            bindingText.enabled = true;
-                            bindingText.horizontalOverflow = HorizontalWrapMode.Overflow;
-                            bindingText.text = EquipmentAndQuickSlots.GetBindingLabel(index);
-
-                            __instance.m_elements.Add(elementData);
-                        }
-                    }
-
-                    foreach (var element in __instance.m_elements)
+                        //LdArg0
+                        yield return LogMessage(ldArgInstruction);
+                        counter++;
+                        
+                        //Player
+                        yield return LogMessage(new CodeInstruction(OpCodes.Ldarg_1));
+                        counter++;
+                        
+                        //this
+                        yield return LogMessage(new CodeInstruction(OpCodes.Ldarg_0));
+                        counter++;
+                        
+                        //this.m_items
+                        yield return LogMessage(new CodeInstruction(OpCodes.Ldfld, itemsListField));
+                        counter++;
+                        
+                        //Call Method
+                        yield return LogMessage(new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(HotkeyBar_UpdateIcons_Patch), nameof(UpdateIcons))));
+                        counter++;
+                    } 
+                    else if (i > 6 && instrs[i].opcode == OpCodes.Ldc_I4_0 && instrs[i+1].opcode == OpCodes.Stloc_0)
                     {
-                        element.m_used = false;
+                        //this
+                        yield return LogMessage(new CodeInstruction(OpCodes.Ldarg_0));
+                        counter++;
+                        
+                        //Call Method
+                        yield return LogMessage(new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(HotkeyBar_UpdateIcons_Patch), nameof(UpdateIconCount))));
+                        counter++;
                     }
-
-                    var isGamepadActive = ZInput.IsGamepadActive();
-                    foreach (var itemData in __instance.m_items)
+                    else if (i > 6 && instrs[i].opcode == OpCodes.Callvirt && instrs[i].operand.Equals(setTextProperty) 
+                             && instrs[i-1].opcode == OpCodes.Call && instrs[i-9].opcode == OpCodes.Ldstr && instrs[i-9].operand.Equals("binding"))
                     {
-                        var element = __instance.m_elements[itemData.m_gridPos.x];
-                        element.m_used = true;
-                        element.m_icon.gameObject.SetActive(true);
-                        element.m_icon.sprite = itemData.GetIcon();
-                        element.m_durability.gameObject.SetActive(itemData.m_shared.m_useDurability);
-                        if (itemData.m_shared.m_useDurability)
-                        {
-                            if (itemData.m_durability <= 0.0)
-                            {
-                                element.m_durability.SetValue(1f);
-                                element.m_durability.SetColor((double) Mathf.Sin(Time.time * 10f) > 0.0 ? Color.red : new Color(0.0f, 0.0f, 0.0f, 0.0f));
-                            }
-                            else
-                            {
-                                element.m_durability.SetValue(itemData.GetDurabilityPercentage());
-                                element.m_durability.ResetColor();
-                            }
-                        }
+                        var indexOperand = instrs[i-6].opcode == OpCodes.Ldloc_S ? instrs[i-6].operand : null;
+                        var elementDataOperand = instrs[i+1].opcode == OpCodes.Ldloc_S ? instrs[i+1].operand : null;
 
-                        element.m_equiped.SetActive(itemData.m_equiped);
-                        element.m_queued.SetActive(player.IsItemQueued(itemData));
-                        if (itemData.m_shared.m_maxStackSize > 1)
+                        if (indexOperand != null)
                         {
-                            element.m_amount.gameObject.SetActive(true);
-                            element.m_amount.text = itemData.m_stack.ToString() + "/" + itemData.m_shared.m_maxStackSize.ToString();
+                            //this
+                            yield return LogMessage(new CodeInstruction(OpCodes.Ldarg_0));
+                            counter++;
+                        
+                            //index
+                            yield return LogMessage(new CodeInstruction(OpCodes.Ldloc_S, indexOperand));
+                            counter++;
+                        
+                            //elementData
+                            yield return LogMessage(new CodeInstruction(OpCodes.Ldloc_S, elementDataOperand));
+                            counter++;
+                        
+                            //Call Method
+                            yield return LogMessage(new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(HotkeyBar_UpdateIcons_Patch), nameof(UpdateIconBinding))));
+                            counter++;
                         }
                         else
                         {
-                            element.m_amount.gameObject.SetActive(false);
-                        }
-                    }
-
-                    for (var index = 0; index < __instance.m_elements.Count; ++index)
-                    {
-                        var element = __instance.m_elements[index];
-                        element.m_selection.SetActive(isGamepadActive && index == __instance.m_selected);
-                        if (!element.m_used)
-                        {
-                            element.m_icon.gameObject.SetActive(false);
-                            element.m_durability.gameObject.SetActive(false);
-                            element.m_equiped.SetActive(false);
-                            element.m_queued.SetActive(false);
-                            element.m_amount.gameObject.SetActive(false);
+                            EquipmentAndQuickSlots.LogError($"Can't Find Index Operand !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                         }
                     }
                 }
-
-                return false;
             }
         }
     }

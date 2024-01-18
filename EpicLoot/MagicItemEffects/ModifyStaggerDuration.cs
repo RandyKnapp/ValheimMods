@@ -10,10 +10,10 @@ namespace EpicLoot.MagicItemEffects
 {
     public static class ModifyStaggerDuration
     {
-        public const string ZdoKey = "epic loot stagger duration";
+        public const string ZdoKey = "el-sd";
     }
 
-    [HarmonyPatch(typeof(CharacterAnimEvent), nameof(CharacterAnimEvent.FixedUpdate))]
+    [HarmonyPatch(typeof(CharacterAnimEvent), nameof(CharacterAnimEvent.CustomFixedUpdate))]
     public static class ModifyStaggerDuration_CharacterAnimEvent_FixedUpdate_Patch
     {
         [UsedImplicitly]
@@ -93,10 +93,11 @@ namespace EpicLoot.MagicItemEffects
             if (target != null)
             {
                 var character = target.GetComponent<Character>();
-                if (character != null && __instance.m_nview?.GetZDO() is ZDO zdo)
+                if (character != null && __instance != null && __instance.m_nview != null && __instance.m_nview.GetZDO() is ZDO zdo)
                 {
                     var staggerValue = zdo.GetFloat(ModifyStaggerDuration.ZdoKey, 1f);
-                    character.m_nview.GetZDO().Set(ModifyStaggerDuration.ZdoKey, staggerValue);
+                    if (character.m_nview != null && character.m_nview.GetZDO() != null)
+                        character.m_nview.GetZDO().Set(ModifyStaggerDuration.ZdoKey, staggerValue);
                 }
             }
         }
@@ -107,10 +108,14 @@ namespace EpicLoot.MagicItemEffects
     {
         private static GameObject MarkAttackProjectile(GameObject attackProjectile, Attack attack)
         {
-            if (attack.m_character == Player.m_localPlayer)
+            if (attack != null && attackProjectile != null && attack.m_character == Player.m_localPlayer)
             {
-                var staggerValue = 1f + Player.m_localPlayer.GetTotalActiveMagicEffectValue(MagicEffectType.ModifyStaggerDuration, 0.01f);
-                attackProjectile.GetComponent<ZNetView>().GetZDO().Set(ModifyStaggerDuration.ZdoKey, staggerValue);
+                var znetView = attackProjectile.GetComponent<ZNetView>();
+                if (znetView != null && znetView.GetZDO() != null)
+                {
+                    var staggerValue = 1f + Player.m_localPlayer.GetTotalActiveMagicEffectValue(MagicEffectType.ModifyStaggerDuration, 0.01f);
+                    znetView.GetZDO().Set(ModifyStaggerDuration.ZdoKey, staggerValue);
+                }
             }
 
             return attackProjectile;

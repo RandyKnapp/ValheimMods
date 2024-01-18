@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
+using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
@@ -88,7 +90,7 @@ namespace EquipmentAndQuickSlots
                 var root = new GameObject("Root", typeof(RectTransform));
                 root.transform.SetParent(go.transform, false);
 
-                var rect = go.transform as RectTransform;
+                var rect = (RectTransform)go.transform;
                 rect.anchoredPosition = position;
 
                 grid.m_elementPrefab = inventoryGui.m_playerGrid.m_elementPrefab;
@@ -116,7 +118,7 @@ namespace EquipmentAndQuickSlots
                     var highlight = new GameObject("SelectedFrame", typeof(RectTransform));
                     highlight.transform.SetParent(go.transform, false);
                     highlight.AddComponent<Image>().color = Color.yellow;
-                    var highlightRT = highlight.transform as RectTransform;
+                    var highlightRT = (RectTransform)highlight.transform;
                     highlightRT.SetAsFirstSibling();
                     highlightRT.anchoredPosition = new Vector2(0, 0);
                     highlightRT.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, size.x + 2);
@@ -127,7 +129,7 @@ namespace EquipmentAndQuickSlots
                     var bkg = inventoryGui.m_player.Find("Bkg").gameObject;
                     var background = Object.Instantiate(bkg, go.transform);
                     background.name = name + "Bkg";
-                    var backgroundRT = background.transform as RectTransform;
+                    var backgroundRT = (RectTransform)background.transform;
                     backgroundRT.SetSiblingIndex(1);
                     backgroundRT.anchoredPosition = new Vector2(0, 0);
                     backgroundRT.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, size.x);
@@ -174,7 +176,7 @@ namespace EquipmentAndQuickSlots
                         && EquipmentAndQuickSlots.IsSlotEquippable(inventoryGui.m_dragItem)
                         && pos == EquipmentAndQuickSlots.GetEquipmentSlotForType(inventoryGui.m_dragItem.m_shared.m_itemType))
                     {
-                        player.QueueEquipItem(inventoryGui.m_dragItem);
+                        player.QueueEquipAction(inventoryGui.m_dragItem);
                         inventoryGui.SetupDragItem(null, null, 0);
                     }
                 };
@@ -188,11 +190,11 @@ namespace EquipmentAndQuickSlots
                     EquipmentAndQuickSlots.Log($"OnEquipmentRightClicked: inventoryGrid={inventoryGrid}, item={item?.m_shared.m_name}, pos={pos}");
                     if (item != null 
                         && player != null 
-                        && item.m_equiped 
+                        && item.m_equipped 
                         && player.IsItemEquiped(item)
                         && inventoryGui.m_dragItem == null)
                     {
-                        Player.m_localPlayer.QueueUnequipItem(item);
+                        Player.m_localPlayer.QueueUnequipAction(item);
                     }
                 };
             }
@@ -242,43 +244,52 @@ namespace EquipmentAndQuickSlots
             }
         }
 
-        [HarmonyPatch(typeof(InventoryGui), "UpdateGamepad")]
+        
+        [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.UpdateGamepad))]
         public static class InventoryGui_UpdateGamepad_Patch
         {
-            public static bool Prefix(InventoryGui __instance)
+            [UsedImplicitly]
+            public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator ilGenerator)
             {
-                if (!__instance.m_inventoryGroup.IsActive())
-                {
-                    return false;
-                }
-                if (ZInput.GetButtonDown("JoyTabLeft"))
-                {
-                    __instance.SetActiveGroup(__instance.m_activeGroup - 1);
-                }
-                if (ZInput.GetButtonDown("JoyTabRight"))
-                {
-                    __instance.SetActiveGroup(__instance.m_activeGroup + 1);
-                }
-                if (__instance.m_activeGroup == 0 && !__instance.IsContainerOpen())
-                {
-                    __instance.SetActiveGroup(1);
-                }
-                if (__instance.m_activeGroup == __instance.m_uiGroups.Length - 1)
-                {
-                    __instance.UpdateRecipeGamepadInput();
-                }
+                var activeGroupField = AccessTools.DeclaredField(typeof(InventoryGui), "m_activeGroup" );
+                
+                var instrs = instructions.ToList();
 
-                return false;
+                var counter = 0;
+                var skipLines = 0;
+
+                for (int i = 0; i < instrs.Count; ++i)
+                {
+                    if (i > 5 && instrs[i].opcode == OpCodes.Ldfld 
+                        && instrs[i].operand.Equals(activeGroupField) && instrs[i + 1].opcode == OpCodes.Ldc_I4_3 
+                        && instrs[i + 2].opcode == OpCodes.Bne_Un)
+                    {
+                        //Replace Field with Call
+                        yield return EquipmentAndQuickSlots.LogMessage(new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(InventoryGui_UpdateGamepad_Patch), nameof(GetMaxUiGroups))),counter);
+                        counter++;
+                        
+                        //Remove ldc_i4.3
+                        skipLines++;
+                        
+                        //Create new BrTrue
+                        yield return EquipmentAndQuickSlots.LogMessage(new CodeInstruction(OpCodes.Brtrue, instrs[i +2].operand), counter);
+                        
+                        //Remove Bne
+                        skipLines++;
+
+                        i += skipLines;
+                    }
+                    else
+                    {
+                        yield return EquipmentAndQuickSlots.LogMessage(instrs[i], counter);
+                        counter++;
+                    }
+                }
             }
-        }
 
-        //public void UpdateRecipeGamepadInput()
-        [HarmonyPatch(typeof(InventoryGui), "UpdateRecipeGamepadInput")]
-        public static class InventoryGui_UpdateRecipeGamepadInput_Patch
-        {
-            public static bool Prefix(InventoryGui __instance)
+            public static bool GetMaxUiGroups(InventoryGui instance)
             {
-                return __instance.m_activeGroup == __instance.m_uiGroups.Length - 1;
+                return instance.m_activeGroup != instance.m_uiGroups.Length - 1;
             }
         }
     }
@@ -291,10 +302,11 @@ namespace EquipmentAndQuickSlots
     {
         public static bool Prefix(InventoryGui __instance, Player player, bool __runOriginal)
         {
-            if (!__runOriginal || __instance.m_craftRecipe == null)
-            {
+            if (!__runOriginal)
                 return false;
-            }
+
+            if (__instance.m_craftRecipe == null || __instance.m_craftRecipe.m_requireOnlyOneIngredient)
+                return true;
 
             var newQuality = __instance.m_craftUpgradeItem?.m_quality + 1 ?? 1;
             if (newQuality > __instance.m_craftRecipe.m_item.m_itemData.m_shared.m_maxQuality
@@ -334,13 +346,53 @@ namespace EquipmentAndQuickSlots
                     __instance.m_craftItemDoneEffects.Create(player.transform.position, Quaternion.identity);
                 }
 
-                ++Game.instance.GetPlayerProfile().m_playerStats.m_crafts;
+                ++Game.instance.GetPlayerProfile().m_playerStats.m_stats[PlayerStatType.Crafts];
                 Gogan.LogEvent("Game", "Crafted", __instance.m_craftRecipe.m_item.m_itemData.m_shared.m_name, (long)newQuality);
 
                 return false;
             }
-
+            
             return true;
+        }
+    }
+
+    [HarmonyPatch]
+    public static class InventoryGui_UpdateContainer_Patch
+    {
+        public static int InUpdateContainerCall = 0;
+
+        [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.UpdateContainer))]
+        [HarmonyPrefix]
+        public static void InventoryGui_UpdateContainer_Prefix()
+        {
+            InUpdateContainerCall++;
+        }
+
+        [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.UpdateContainer))]
+        [HarmonyPostfix]
+        public static void InventoryGui_UpdateContainer_Postfix()
+        {
+            InUpdateContainerCall--;
+        }
+
+        [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.SetupDragItem))]
+        [HarmonyPrefix]
+        public static bool InventoryGui_SetupDragItem_Prefix(InventoryGui __instance, ItemDrop.ItemData item)
+        {
+            if (InUpdateContainerCall > 0 && item == null && __instance.m_dragInventory != null && IsOneOfPlayersInventory(__instance.m_dragInventory))
+                return false;
+            return true;
+        }
+
+        public static bool IsOneOfPlayersInventory(Inventory inventory)
+        {
+            foreach (var playerInventory in Player.m_localPlayer.GetAllInventories())
+            {
+                if (inventory == playerInventory)
+                    return true;
+            }
+
+            return false;
         }
     }
 }

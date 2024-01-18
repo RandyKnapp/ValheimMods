@@ -37,13 +37,15 @@ namespace EpicLoot.Adventure.Feature
                     {
                         var purchased = saveData.HasPurchasedTreasureMap(currentInterval, biome);
                         var cost = AdventureDataManager.Config.TreasureMap.BiomeInfo.Find(x => x.Biome == biome);
-                        results.Add(new TreasureMapItemInfo()
+                        if (cost.Cost > 0)
                         {
-                            Biome = biome,
-                            Interval = currentInterval,
-                            Cost = cost?.Cost ?? 99,
-                            AlreadyPurchased = purchased
-                        });
+                            results.Add(new TreasureMapItemInfo() {
+                                Biome = biome,
+                                Interval = currentInterval,
+                                Cost = cost.Cost,
+                                AlreadyPurchased = purchased
+                            });
+                        }
                     }
                 }
             }

@@ -1,41 +1,36 @@
 ﻿using HarmonyLib;
 using JetBrains.Annotations;
-using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects
 {
-    [HarmonyPatch(typeof(CharacterAnimEvent), nameof(CharacterAnimEvent.FixedUpdate))]
-    public static class ModifyAttackSpeed_CharacterAnimEvent_FixedUpdate_Patch
+    [HarmonyPatch(typeof(Game), nameof(Game.Awake))]
+    public static class ModifyAttackSpeed_ApplyAnimationHandler_Patch
     {
-        [UsedImplicitly]
-        private static void Prefix(Character ___m_character, ref Animator ___m_animator)
+        public static double ModifyAttackSpeed(Character character, double speed)
         {
-            if (!___m_character.IsPlayer() || !___m_character.InAttack())
+            if (character is not Player player || !player.InAttack())
             {
-                return;
+                return speed;
             }
 
-            // check if our marker bit is present and not within float epsilon
-            var currentSpeedMarker = ___m_animator.speed * 1e7 % 100;
-            if ((currentSpeedMarker > 10 && currentSpeedMarker < 30) || ___m_animator.speed <= 0.001f)
-            {
-                return;
-            }
-
-            var player = (Player)___m_character;
             var currentAttack = player.m_currentAttack;
             if (currentAttack == null)
             {
-                return;
+                return speed;
             }
-
-            var animationSpeedup = 0.0f;
+            
             ModifyWithLowHealth.Apply(player, MagicEffectType.ModifyAttackSpeed, effect =>
             {
-                animationSpeedup += player.GetTotalActiveMagicEffectValue(effect, 0.01f);
+                
+                speed += player.GetTotalActiveMagicEffectValue(effect, 0.01f);
             });
-
-            ___m_animator.speed = ___m_animator.speed * (1 + animationSpeedup) + 19e-7f; // number with single bit in mantissa set
+            
+            return speed;
+        }
+        [UsedImplicitly]
+        private static void Postfix(Game __instance)
+        {
+            AnimationSpeedManager.Add((character, speed) => ModifyAttackSpeed(character,speed));
         }
     }
 }

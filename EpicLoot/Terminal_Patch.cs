@@ -9,7 +9,6 @@ using EpicLoot.Adventure.Feature;
 using EpicLoot.Crafting;
 using EpicLoot.GatedItemType;
 using EpicLoot.LegendarySystem;
-using ExtendedItemDataFramework;
 using HarmonyLib;
 using UnityEngine;
 using Random = System.Random;
@@ -23,8 +22,6 @@ namespace EpicLoot
 
         public static void Postfix()
         {
-            var player = Player.m_localPlayer;
-
             new Terminal.ConsoleCommand("magicitem", "", (args =>
             {
                 MagicItem(args.Context, args.Args);
@@ -84,6 +81,7 @@ namespace EpicLoot
             }), true);
             new Terminal.ConsoleCommand("resettreasuremap", "", (args =>
             {
+                var player = Player.m_localPlayer;
                 var saveData = player.GetAdventureSaveData();
                 saveData.TreasureMaps.Clear();
                 saveData.NumberOfTreasureMapsOrBountiesStarted = 0;
@@ -91,6 +89,7 @@ namespace EpicLoot
             }));
             new Terminal.ConsoleCommand("resettm", "", (args =>
             {
+                var player = Player.m_localPlayer;
                 var saveData = player.GetAdventureSaveData();
                 saveData.TreasureMaps.Clear();
                 saveData.NumberOfTreasureMapsOrBountiesStarted = 0;
@@ -98,16 +97,17 @@ namespace EpicLoot
             }));
             new Terminal.ConsoleCommand("debugtreasuremap", "", (args =>
             {
-                Minimap_Patch.DebugMode = !Minimap_Patch.DebugMode;
-                args.Context.AddString($"> Treasure Map Debug Mode: {Minimap_Patch.DebugMode}");
+                MinimapController.DebugMode = !MinimapController.DebugMode;
+                args.Context.AddString($"> Treasure Map Debug Mode: {MinimapController.DebugMode}");
             }));
             new Terminal.ConsoleCommand("debugtm", "", (args =>
             {
-                Minimap_Patch.DebugMode = !Minimap_Patch.DebugMode;
-                args.Context.AddString($"> Treasure Map Debug Mode: {Minimap_Patch.DebugMode}");
+                MinimapController.DebugMode = !MinimapController.DebugMode;
+                args.Context.AddString($"> Treasure Map Debug Mode: {MinimapController.DebugMode}");
             }));
             new Terminal.ConsoleCommand("resetbounties", "", (args =>
             {
+                var player = Player.m_localPlayer;
                 var saveData = player.GetAdventureSaveData();
                 saveData.Bounties.Clear();
                 player.SaveAdventureSaveData();
@@ -124,6 +124,7 @@ namespace EpicLoot
             }));
             new Terminal.ConsoleCommand("resetadventure", "", (args =>
             {
+                var player = Player.m_localPlayer;
                 var adventureComponent = player.GetComponent<AdventureComponent>();
                 adventureComponent.SaveData = new AdventureSaveDataList();
                 player.SaveAdventureSaveData();
@@ -136,31 +137,26 @@ namespace EpicLoot
             }));
             new Terminal.ConsoleCommand("playerbounties", "", (args =>
             {
+                var player = Player.m_localPlayer;
                 var availableBounties = player.GetAdventureSaveData().Bounties;
                 BountiesAdventureFeature.PrintBounties($"Player Bounties:", availableBounties);
             }));
-            new Terminal.ConsoleCommand("timescale", "", (args =>
-            {
-                var timeScale = (args.Length >= 2) ? float.Parse(args[1]) : 1;
-                Time.timeScale = timeScale;
-            }), true);
-            new Terminal.ConsoleCommand("ts", "", (args =>
-            {
-                var timeScale = (args.Length >= 2) ? float.Parse(args[1]) : 1;
-                Time.timeScale = timeScale;
-            }), true);
             new Terminal.ConsoleCommand("gotomerchant", "", (args =>
             {
+                var player = Player.m_localPlayer;
                 if (ZoneSystem.instance.FindClosestLocation("Vendor_BlackForest", player.transform.position, out var location))
                 {
-                    player.TeleportTo(location.m_position + Vector3.right * 5, player.transform.rotation, true);
+                    Console.instance.AddString(location.m_position.ToString());
+                    //player.TeleportTo(location.m_position + Vector3.right * 5, player.transform.rotation, true);
                 }
             }), true);
             new Terminal.ConsoleCommand("gotom", "", (args =>
             {
+                var player = Player.m_localPlayer;
                 if (ZoneSystem.instance.FindClosestLocation("Vendor_BlackForest", player.transform.position, out var location))
                 {
-                    player.TeleportTo(location.m_position + Vector3.right * 5, player.transform.rotation, true);
+                    Console.instance.AddString(location.m_position.ToString());
+                    //player.TeleportTo(location.m_position + Vector3.right * 5, player.transform.rotation, true);
                 }
             }), true);
             new Terminal.ConsoleCommand("globalkeys", "", (args =>
@@ -176,6 +172,7 @@ namespace EpicLoot
             }));
             new Terminal.ConsoleCommand("fixresistances", "", (args =>
             {
+                var player = Player.m_localPlayer;
                 FixResistances(player);
             }));
             new Terminal.ConsoleCommand("lucktest", "", (args =>
@@ -193,6 +190,7 @@ namespace EpicLoot
             }));
             new Terminal.ConsoleCommand("resetcooldowns", "", (args =>
             {
+                var player = Player.m_localPlayer;
                 if (player != null)
                 {
                     var abilityController = player.GetComponent<AbilityController>();
@@ -276,13 +274,14 @@ namespace EpicLoot
             foreach (var itemPrefab in EpicLoot.RegisteredItemPrefabs)
             {
                 var itemDrop = UnityEngine.Object.Instantiate(itemPrefab, Player.m_localPlayer.transform.position + Player.m_localPlayer.transform.forward * 2f + Vector3.up, Quaternion.identity).GetComponent<ItemDrop>();
-                if (itemDrop.m_itemData.IsMagicCraftingMaterial() || itemDrop.m_itemData.IsRunestone())
+                // TODO: Mythic Hookup
+                if (itemDrop.m_itemData.IsMagicCraftingMaterial() || itemDrop.m_itemData.IsRunestone() && itemDrop.m_itemData.GetCraftingMaterialRarity() != ItemRarity.Mythic)
                 {
                     itemDrop.m_itemData.m_stack = itemDrop.m_itemData.m_shared.m_maxStackSize / 2;
                 }
                 else
                 {
-                    UnityEngine.Object.Destroy(itemDrop.gameObject);
+                    ZNetScene.instance.Destroy(itemDrop.gameObject);
                 }
             }
         }
@@ -344,7 +343,9 @@ namespace EpicLoot
 
                 var randomOffset = UnityEngine.Random.insideUnitSphere;
                 var dropPoint = Player.m_localPlayer.transform.position + Player.m_localPlayer.transform.forward * 3 + Vector3.up * 1.5f + randomOffset;
+                LootRoller.CheatRollingItem = true;
                 LootRoller.RollLootTableAndSpawnObjects(loot, 1, loot.Object, dropPoint);
+                LootRoller.CheatRollingItem = false;
             }
             LootRoller.CheatEffectCount = -1;
         }
@@ -403,11 +404,13 @@ namespace EpicLoot
 
             var randomOffset = UnityEngine.Random.insideUnitSphere;
             var dropPoint = Player.m_localPlayer.transform.position + Player.m_localPlayer.transform.forward * 3 + Vector3.up * 1.5f + randomOffset;
+            LootRoller.CheatRollingItem = true;
             LootRoller.CheatForceMagicEffect = true;
             LootRoller.ForcedMagicEffect = effectArg;
             LootRoller.RollLootTableAndSpawnObjects(loot, 1, loot.Object, dropPoint);
             LootRoller.CheatForceMagicEffect = false;
             LootRoller.ForcedMagicEffect = string.Empty;
+            LootRoller.CheatRollingItem = false;
         }
 
         private static float[] GetRarityTable(string rarityName)
@@ -464,10 +467,11 @@ namespace EpicLoot
                 var allowedItems = new List<ItemDrop>();
                 foreach (var itemName in GatedItemTypeHelper.ItemInfoByID.Keys)
                 {
+
                     var itemPrefab = ObjectDB.instance.GetItemPrefab(itemName);
                     if (itemPrefab == null)
                     {
-                        continue;
+                       continue;
                     }
 
                     var itemDrop = itemPrefab.GetComponent<ItemDrop>();
@@ -477,18 +481,21 @@ namespace EpicLoot
                     }
 
                     var itemData = itemDrop.m_itemData;
-                    if (legendaryInfo.Requirements.CheckRequirements(itemData, dummyMagicItem))
+                    itemData.m_dropPrefab = itemPrefab;
+                    var checkRequirements = legendaryInfo.Requirements.CheckRequirements(itemData, dummyMagicItem);
+
+                    if (checkRequirements)
                     {
                         allowedItems.Add(itemDrop);
                     }
                 }
-
                 itemType = allowedItems.LastOrDefault()?.name;
             }
             
             if (string.IsNullOrEmpty(itemType))
             {
-                itemType = "Club";
+                EpicLoot.LogWarning($"No Item Type Found for LegendaryID {legendaryID} - This would've made a Club.");
+                return;
             }
 
             var loot = new LootTable
@@ -511,7 +518,9 @@ namespace EpicLoot
 
             var randomOffset = UnityEngine.Random.insideUnitSphere;
             var dropPoint = Player.m_localPlayer.transform.position + Player.m_localPlayer.transform.forward * 3 + Vector3.up * 1.5f + randomOffset;
+            LootRoller.CheatRollingItem = true;
             LootRoller.RollLootTableAndSpawnObjects(loot, 1, loot.Object, dropPoint);
+            LootRoller.CheatRollingItem = false;
 
             LootRoller.CheatForceLegendary = null;
             LootRoller.CheatDisableGating = previousDisableGatingState;
@@ -611,7 +620,7 @@ namespace EpicLoot
 
             var replacementEffect = LootRoller.RollEffect(replacementEffectDef, magicItem.Rarity);
             magicItem.Effects[index] = replacementEffect;
-            itemData.Extended().Save();
+            itemData.SaveMagicItem(magicItem);
         }
 
         private static MagicItemEffectDefinition GetReplacementEffectDef(MagicItemEffect effect)

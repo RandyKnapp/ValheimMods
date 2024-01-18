@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using ExtendedItemDataFramework;
+using EpicLoot.Crafting;
+using EpicLoot.GatedItemType;
 using JetBrains.Annotations;
 
 namespace EpicLoot
@@ -16,8 +17,8 @@ namespace EpicLoot
         public bool NoRoll;
         public bool ExclusiveSelf = true;
         public List<string> ExclusiveEffectTypes = new List<string>();
-        public List<ItemDrop.ItemData.ItemType> AllowedItemTypes = new List<ItemDrop.ItemData.ItemType>();
-        public List<ItemDrop.ItemData.ItemType> ExcludedItemTypes = new List<ItemDrop.ItemData.ItemType>();
+        public List<string> AllowedItemTypes = new List<string>();
+        public List<string> ExcludedItemTypes = new List<string>();
         public List<ItemRarity> AllowedRarities = new List<ItemRarity>();
         public List<ItemRarity> ExcludedRarities = new List<ItemRarity>();
         public List<Skills.SkillType> AllowedSkillTypes = new List<Skills.SkillType>();
@@ -113,6 +114,64 @@ namespace EpicLoot
             return _sb.ToString();
         }
 
+        public bool AllowByItemType([NotNull] ItemDrop.ItemData itemData)
+        {
+            if (AllowedItemTypes == null)
+                return true;
+
+            if (AllowedItemTypes.Count == 0)
+                return true;
+
+            if (AllowedByItemInfoType(itemData))
+                return true;
+
+            var itemIsStaff = itemData.m_shared.m_itemType == ItemDrop.ItemData.ItemType.TwoHandedWeapon && itemData.m_shared.m_animationState == ItemDrop.ItemData.AnimationState.Staves;
+            if (itemIsStaff && AllowedItemTypes.Contains("Staff"))
+                return true;
+
+            return AllowedItemTypes.Contains(itemData.m_shared.m_itemType.ToString());
+        }
+
+        public bool AllowedByItemInfoType(ItemDrop.ItemData itemData)
+        {
+            var prefabName = string.Empty;
+            if (itemData.m_dropPrefab?.name != null)
+                prefabName = itemData.m_dropPrefab.name;
+
+            var typeName = !string.IsNullOrEmpty(prefabName) && GatedItemTypeHelper.ItemInfoByID.TryGetValue(prefabName, out var itemTypeInfo) ? itemTypeInfo.Type : null;
+
+            return !string.IsNullOrEmpty(typeName) && AllowedItemTypes.Contains(typeName);
+        }
+
+        public bool ExcludeByItemType([NotNull] ItemDrop.ItemData itemData)
+        {
+            if (ExcludedItemTypes == null)
+                return false;
+
+            if (ExcludedItemTypes.Count == 0)
+                return false;
+
+            if (ExcludedByItemInfoType(itemData))
+                return false;
+
+            var itemIsStaff = itemData.m_shared.m_itemType == ItemDrop.ItemData.ItemType.TwoHandedWeapon && itemData.m_shared.m_animationState == ItemDrop.ItemData.AnimationState.Staves;
+            if (itemIsStaff && ExcludedItemTypes.Contains("Staff"))
+                return true;
+
+            return ExcludedItemTypes.Contains(itemData.m_shared.m_itemType.ToString());
+        }
+
+        public bool ExcludedByItemInfoType(ItemDrop.ItemData itemData)
+        {
+            string prefabName = "";
+            if (itemData.m_dropPrefab?.name != null)
+                prefabName = itemData.m_dropPrefab.name;
+
+            var typeName = !string.IsNullOrEmpty(prefabName) && GatedItemTypeHelper.ItemInfoByID.TryGetValue(prefabName, out var itemTypeInfo) ? itemTypeInfo.Type : null;
+
+            return !string.IsNullOrEmpty(typeName) && ExcludedItemTypes.Contains(typeName);
+        }
+
         public bool CheckRequirements([NotNull] ItemDrop.ItemData itemData, [NotNull] MagicItem magicItem, string magicEffectType = null)
         {
             if (NoRoll)
@@ -130,15 +189,11 @@ namespace EpicLoot
                 return false;
             }
 
-            if (AllowedItemTypes?.Count > 0 && !AllowedItemTypes.Contains(itemData.m_shared.m_itemType))
-            {
+            if (!AllowByItemType(itemData))
                 return false;
-            }
 
-            if (ExcludedItemTypes?.Count > 0 && ExcludedItemTypes.Contains(itemData.m_shared.m_itemType))
-            {
+            if (ExcludeByItemType(itemData))
                 return false;
-            }
 
             if (AllowedRarities?.Count > 0 && !AllowedRarities.Contains(magicItem.Rarity))
             {
@@ -160,12 +215,12 @@ namespace EpicLoot
                 return false;
             }
 
-            if (AllowedItemNames?.Count > 0 && !AllowedItemNames.Contains(itemData.m_shared.m_name))
+            if (AllowedItemNames?.Count > 0 && !(AllowedItemNames.Contains(itemData.m_shared.m_name) || AllowedItemNames.Contains(itemData.m_dropPrefab?.name)))
             {
                 return false;
             }
 
-            if (ExcludedItemNames?.Count > 0 && ExcludedItemNames.Contains(itemData.m_shared.m_name))
+            if (ExcludedItemNames?.Count > 0 && (ExcludedItemNames.Contains(itemData.m_shared.m_name) || ExcludedItemNames.Contains(itemData.m_dropPrefab?.name)))
             {
                 return false;
             }
@@ -195,12 +250,12 @@ namespace EpicLoot
                 return false;
             }
 
-            if (ItemHasParryPower && itemData.m_shared.m_deflectionForce <= 0)
+            if (ItemHasParryPower && itemData.m_shared.m_timedBlockBonus <= 0)
             {
                 return false;
             }
 
-            if (ItemHasNoParryPower && itemData.m_shared.m_deflectionForce > 0)
+            if (ItemHasNoParryPower && itemData.m_shared.m_timedBlockBonus > 0)
             {
                 return false;
             }
@@ -242,6 +297,7 @@ namespace EpicLoot
             public ValueDef Rare;
             public ValueDef Epic;
             public ValueDef Legendary;
+            public ValueDef Mythic;
         }
 
         public string Type { get; set; }
@@ -252,6 +308,7 @@ namespace EpicLoot
         public ValuesPerRarityDef ValuesPerRarity = new ValuesPerRarityDef();
         public float SelectionWeight = 1;
         public bool CanBeAugmented = true;
+        public bool CanBeDisenchanted = true;
         public string Comment;
         public List<string> Prefixes = new List<string>();
         public List<string> Suffixes = new List<string>();
@@ -259,12 +316,12 @@ namespace EpicLoot
         public FxAttachMode EquipFxMode = FxAttachMode.Player;
         public string Ability;
 
-        public List<ItemDrop.ItemData.ItemType> GetAllowedItemTypes()
+        public List<string> GetAllowedItemTypes()
         {
-            return Requirements?.AllowedItemTypes ?? new List<ItemDrop.ItemData.ItemType>();
+            return Requirements?.AllowedItemTypes ?? new List<string>();
         }
 
-        public bool CheckRequirements(ExtendedItemData itemData, MagicItem magicItem)
+        public bool CheckRequirements(ItemDrop.ItemData itemData, MagicItem magicItem)
         {
             if (Requirements == null)
             {
@@ -283,10 +340,13 @@ namespace EpicLoot
         {
             switch (itemRarity)
             {
-                case ItemRarity.Magic: return ValuesPerRarity.Magic;
-                case ItemRarity.Rare: return ValuesPerRarity.Rare;
-                case ItemRarity.Epic: return ValuesPerRarity.Epic;
-                case ItemRarity.Legendary: return ValuesPerRarity.Legendary;
+                case ItemRarity.Magic:      return ValuesPerRarity.Magic;
+                case ItemRarity.Rare:       return ValuesPerRarity.Rare;
+                case ItemRarity.Epic:       return ValuesPerRarity.Epic;
+                case ItemRarity.Legendary:  return ValuesPerRarity.Legendary;
+                case ItemRarity.Mythic:
+                    // TODO: Mythic Hookup
+                    return null;//ValuesPerRarity.Mythic;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(itemRarity), itemRarity, null);
             }
@@ -331,7 +391,7 @@ namespace EpicLoot
             return effectDef;
         }
 
-        public static List<MagicItemEffectDefinition> GetAvailableEffects(ExtendedItemData itemData, MagicItem magicItem, int ignoreEffectIndex = -1)
+        public static List<MagicItemEffectDefinition> GetAvailableEffects(ItemDrop.ItemData itemData, MagicItem magicItem, int ignoreEffectIndex = -1)
         {
             MagicItemEffect effect = null;
             if (ignoreEffectIndex >= 0 && ignoreEffectIndex < magicItem.Effects.Count)
@@ -340,14 +400,14 @@ namespace EpicLoot
                 magicItem.Effects.RemoveAt(ignoreEffectIndex);
             }
 
-            var results = AllDefinitions.Values.Where(x => x.CheckRequirements(itemData, magicItem)).ToList();
+            var results = AllDefinitions.Values.Where(x => x.CheckRequirements(itemData, magicItem) && !EnchantCostsHelper.EffectIsDeprecated(x)).ToList();
 
             if (effect != null)
             {
                 magicItem.Effects.Insert(ignoreEffectIndex, effect);
                 if (AllDefinitions.TryGetValue(effect.EffectType, out var ignoredEffectDef))
                 {
-                    if (!results.Contains(ignoredEffectDef))
+                    if (!results.Contains(ignoredEffectDef) && !EnchantCostsHelper.EffectIsDeprecated(ignoredEffectDef))
                     {
                         results.Add(ignoredEffectDef);
                     }

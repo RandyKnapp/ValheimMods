@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Common;
-using fastJSON;
 using HarmonyLib;
+using Newtonsoft.Json;
 using UnityEngine;
 using Object = UnityEngine.Object;
 using Random = System.Random;
@@ -14,9 +14,8 @@ namespace EpicLoot.Adventure.Feature
 {
     public class BountiesAdventureFeature : AdventureFeature
     {
-        public BountyLedger BountyLedger;
+        public BountyLedger BountyLedger => BountyManagmentSystem.Instance.BountyLedger;
 
-        private static readonly JSONParameters _saveLoadParams = new JSONParameters { UseExtensions = false };
         private const string LedgerIdentifier = "randyknapp.mods.epicloot.BountyLedger";
 
         public override AdventureFeatureType Type => AdventureFeatureType.Bounties;
@@ -27,12 +26,54 @@ namespace EpicLoot.Adventure.Feature
             return GetAvailableBounties(GetCurrentInterval());
         }
 
+        public bool BossBountiesGated()
+        {
+            switch (EpicLoot.BossBountyMode.Value) 
+            {
+                case GatedBountyMode.BossKillUnlocksCurrentBiomeBounties:
+                case GatedBountyMode.BossKillUnlocksNextBiomeBounties:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
         public List<BountyInfo> GetAvailableBounties(int interval, bool removeAcceptedBounties = true)
         {
             var player = Player.m_localPlayer;
             var random = GetRandomForInterval(interval, RefreshInterval);
 
             var bountiesPerBiome = new MultiValueDictionary<Heightmap.Biome, BountyTargetConfig>();
+            
+            var defeatedBossBiomes = new List<Heightmap.Biome>();
+            var previousBossKilled = false;
+            var previousBoss = "";
+
+            if (BossBountiesGated())
+            {
+                foreach (var bossConfig in AdventureDataManager.Config.Bounties.Bosses)
+                {
+                    if (previousBoss == "" && EpicLoot.BossBountyMode.Value == GatedBountyMode.BossKillUnlocksNextBiomeBounties)
+                    {
+                        defeatedBossBiomes.Add(bossConfig.Biome);
+                        previousBoss = bossConfig.BossDefeatedKey;
+                    }
+
+                    if (ZoneSystem.instance.GetGlobalKey(bossConfig.BossDefeatedKey))
+                    {
+                        defeatedBossBiomes.Add(bossConfig.Biome);
+                        previousBossKilled = true;
+                        previousBoss = bossConfig.BossDefeatedKey;
+                    }
+                    else if ((previousBossKilled || previousBoss.Equals(bossConfig.BossDefeatedKey)) && EpicLoot.BossBountyMode.Value == GatedBountyMode.BossKillUnlocksNextBiomeBounties)
+                    {
+                        defeatedBossBiomes.Add(bossConfig.Biome);
+                        previousBoss = bossConfig.BossDefeatedKey;
+                        previousBossKilled = false;
+                    }
+                }
+            }
+
             foreach (var targetConfig in AdventureDataManager.Config.Bounties.Targets)
             {
                 bountiesPerBiome.Add(targetConfig.Biome, targetConfig);
@@ -44,9 +85,15 @@ namespace EpicLoot.Adventure.Feature
                 var targets = entry.Value;
                 RollOnListNTimes(random, targets, 1, selectedTargets);
             }
-
             // Remove the results that the player doesn't know about yet
             selectedTargets.RemoveAll(result => !player.m_knownBiome.Contains(result.Biome));
+
+            if (BossBountiesGated()) 
+            {
+                //Remove the results of undefeated biome bosses
+                selectedTargets.RemoveAll(result => !defeatedBossBiomes.Contains(result.Biome));
+            }
+
             var saveData = player.GetAdventureSaveData();
 
             var results = selectedTargets.Select(targetConfig => new BountyInfo()
@@ -87,11 +134,18 @@ namespace EpicLoot.Adventure.Feature
 
         public static string GenerateTargetName(Random random)
         {
+            var specialNames = AdventureDataManager.Config.Bounties.Names.SpecialNames;
             var prefixes = AdventureDataManager.Config.Bounties.Names.Prefixes;
             var suffixes = AdventureDataManager.Config.Bounties.Names.Suffixes;
-            if (prefixes.Count == 0 || suffixes.Count == 0)
+            if (specialNames.Count == 0 && (prefixes.Count == 0 || suffixes.Count == 0))
             {
                 return string.Empty;
+            }
+
+            var useSpecialName = random.NextDouble() <= AdventureDataManager.Config.Bounties.Names.ChanceForSpecialName;
+            if (useSpecialName)
+            {
+                return RollOnList(random, specialNames);
             }
 
             var prefix = Localization.instance.Localize(RollOnList(random, prefixes));
@@ -149,24 +203,35 @@ namespace EpicLoot.Adventure.Feature
 
         private static void SpawnBountyTargets(BountyInfo bounty, Vector3 spawnPoint, Vector3 offset)
         {
-            var prefabNames = new List<string>() { bounty.Target.MonsterID };
+            var mainPrefab = ZNetScene.instance.GetPrefab(bounty.Target.MonsterID);
+            if (mainPrefab == null)
+            {
+                EpicLoot.LogError($"Could not find prefab for bounty target! BountyID: {bounty.ID}, MonsterID: {bounty.Target.MonsterID}");
+                return;
+            }
+
+            var prefabs = new List<GameObject>() { mainPrefab };
             foreach (var addConfig in bounty.Adds)
             {
                 for (var i = 0; i < addConfig.Count; i++)
                 {
-                    prefabNames.Add(addConfig.MonsterID);
+                    var prefab = ZNetScene.instance.GetPrefab(addConfig.MonsterID);
+                    if (prefab == null)
+                    {
+                        EpicLoot.LogError($"Could not find prefab for bounty add! BountyID: {bounty.ID}, MonsterID: {addConfig.MonsterID}");
+                        return;
+                    }
+                    prefabs.Add(prefab);
                 }
             }
-
-            for (var index = 0; index < prefabNames.Count; index++)
+            for (var index = 0; index < prefabs.Count; index++)
             {
-                var prefabName = prefabNames[index];
+                var prefab = prefabs[index];
                 var isAdd = index > 0;
 
-                var prefab = ZNetScene.instance.GetPrefab(prefabName);
                 var creature = Object.Instantiate(prefab, spawnPoint, Quaternion.identity);
                 var bountyTarget = creature.AddComponent<BountyTarget>();
-                bountyTarget.Initialize(bounty, prefabName, isAdd);
+                bountyTarget.Initialize(bounty, prefab.name, isAdd);
 
                 var randomSpacing = UnityEngine.Random.insideUnitSphere * 4;
                 spawnPoint += randomSpacing;
@@ -210,7 +275,7 @@ namespace EpicLoot.Adventure.Feature
                 bountyInfo.Slain = true;
                 player.SaveAdventureSaveData();
             }
-
+            
             if (isAdd)
             {
                 foreach (var addConfig in bountyInfo.Adds)
@@ -229,6 +294,18 @@ namespace EpicLoot.Adventure.Feature
             {
                 MessageHud.instance.ShowBiomeFoundMsg("$mod_epicloot_bounties_completemsg", true);
                 bountyInfo.State = BountyState.Complete;
+                
+                if (!MinimapController.BountyPins.ContainsKey(bountyInfo.ID)) return;
+                
+                var pinJob = new PinJob
+                {
+                    Task = MinimapPinQueueTask.RemoveBountyPin,
+                    DebugMode = MinimapController.DebugMode,
+                    BountyPin = new KeyValuePair<string, AreaPinInfo>(bountyInfo.ID, MinimapController.BountyPins[bountyInfo.ID])
+                };
+
+                MinimapController.AddPinJobToQueue(pinJob);
+
                 player.SaveAdventureSaveData();
             }
         }
@@ -371,60 +448,18 @@ namespace EpicLoot.Adventure.Feature
             }
 
             BountyLedger.AddKillLog(bounty.PlayerID, bounty.ID, monsterID, isAdd);
-            SaveBountyLedger();
-        }
-
-        public void LoadBountyLedger()
-        {
-            if (!Common.Utils.IsServer() || ZoneSystem.instance == null)
-            {
-                return;
-            }
-
-            var globalKeys = ZoneSystem.instance.GetGlobalKeys();
-            var ledgerGlobalKey = globalKeys.Find(x => x.StartsWith(LedgerIdentifier));
-            var ledgerData = ledgerGlobalKey?.Substring(LedgerIdentifier.Length);
-
-            if (string.IsNullOrEmpty(ledgerData))
-            {
-                BountyLedger = new BountyLedger { WorldID = ZNet.m_world.m_uid };
-            }
-            else
-            {
-                BountyLedger = JSON.ToObject<BountyLedger>(ledgerData, _saveLoadParams);
-            }
-        }
-
-        public void SaveBountyLedger()
-        {
-            if (!Common.Utils.IsServer() || ZoneSystem.instance == null || BountyLedger == null)
-            {
-                return;
-            }
-
-            ZoneSystem.instance.m_globalKeys.RemoveWhere(x => x.StartsWith(LedgerIdentifier));
-
-            var ledgerData = JSON.ToJSON(BountyLedger, _saveLoadParams);
-            ledgerData = LedgerIdentifier + ledgerData;
-            ZoneSystem.instance.SetGlobalKey(ledgerData);
         }
 
         public override void OnZNetStart()
         {
-            if (Common.Utils.IsServer())
-            {
-                LoadBountyLedger();
-            }
         }
 
         public override void OnZNetDestroyed()
         {
-            BountyLedger = null;
         }
 
         public override void OnWorldSave()
         {
-            SaveBountyLedger();
         }
 
         private void RPC_Server_RequestKillLogs(long sender, long playerID)
@@ -438,7 +473,7 @@ namespace EpicLoot.Adventure.Feature
             if (BountyLedger != null)
             {
                 var logs = BountyLedger.GetAllKillLogs(playerID);
-                results = JSON.ToNiceJSON(logs, _saveLoadParams);
+                results = JsonConvert.SerializeObject(logs, Formatting.Indented);
             }
 
             ZRoutedRpc.instance.InvokeRoutedRPC(sender, "SendKillLogs", results);
@@ -446,7 +481,10 @@ namespace EpicLoot.Adventure.Feature
 
         private void RPC_Client_ReceiveKillLogs(long sender, string logData)
         {
-            var logs = JSON.ToObject<List<BountyKillLog>>(logData);
+            var logs = JsonConvert.DeserializeObject<BountyKillLog[]>(logData);
+            if (logs == null)
+                return;
+
             foreach (var killLog in logs)
             {
                 OnBountyTargetSlain(killLog.BountyID, killLog.MonsterID, killLog.IsAdd);
@@ -464,7 +502,6 @@ namespace EpicLoot.Adventure.Feature
             }
 
             BountyLedger?.RemoveKillLogsForPlayer(playerID);
-            SaveBountyLedger();
         }
     }
 

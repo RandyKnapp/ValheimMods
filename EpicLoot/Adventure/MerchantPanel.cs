@@ -4,7 +4,6 @@ using EpicLoot.Adventure.Feature;
 using EpicLoot.Crafting;
 using UnityEngine;
 using UnityEngine.UI;
-using Object = UnityEngine.Object;
 
 namespace EpicLoot.Adventure
 {
@@ -50,6 +49,9 @@ namespace EpicLoot.Adventure
         public Text GoldBountyTokensCount;
 
         private readonly Currencies _currencies = new Currencies(-1);
+        public static MerchantPanel Instance => _instance;
+        public static Text AcceptBountyText => _acceptBountyText;
+        private static Text _acceptBountyText;
         private static MerchantPanel _instance;
         private AudioSource _audioSource;
 
@@ -88,8 +90,8 @@ namespace EpicLoot.Adventure
             {
                 if (EpicLoot.HasAuga)
                 {
-                    AugaReplaceButton(transform.Find("AbandonBountyDialog/YesButton").GetComponent<Button>());
-                    AugaReplaceButton(transform.Find("AbandonBountyDialog/NoButton").GetComponent<Button>());
+                    EpicLootAuga.ReplaceButton(transform.Find("AbandonBountyDialog/YesButton").GetComponent<Button>());
+                    EpicLootAuga.ReplaceButton(transform.Find("AbandonBountyDialog/NoButton").GetComponent<Button>());
                 }
 
                 AbandonBountyDialog = transform.Find("AbandonBountyDialog").gameObject.AddComponent<AbandonBountyDialog>();
@@ -162,13 +164,16 @@ namespace EpicLoot.Adventure
 
             if (EpicLoot.HasAuga)
             {
-                AugaReplaceButton(transform.Find("SecretStash/SecretStashBuyButton").GetComponent<Button>());
-                AugaReplaceButton(transform.Find("Gamble/GambleBuyButton").GetComponent<Button>());
-                AugaReplaceButton(transform.Find("TreasureMap/TreasureMapBuyButton").GetComponent<Button>());
-                AugaReplaceButton(transform.Find("Bounties/AcceptBountyButton").GetComponent<Button>());
-                AugaReplaceButton(transform.Find("Bounties/ClaimBountyButton").GetComponent<Button>());
-                AugaReplaceButton(transform.Find("Bounties/AbandonBountyButton").GetComponent<Button>(), true);
+                EpicLootAuga.ReplaceButton(transform.Find("SecretStash/SecretStashBuyButton").GetComponent<Button>());
+                EpicLootAuga.ReplaceButton(transform.Find("Gamble/GambleBuyButton").GetComponent<Button>());
+                EpicLootAuga.ReplaceButton(transform.Find("TreasureMap/TreasureMapBuyButton").GetComponent<Button>());
+                EpicLootAuga.ReplaceButton(transform.Find("Bounties/AcceptBountyButton").GetComponent<Button>());
+                EpicLootAuga.ReplaceButton(transform.Find("Bounties/ClaimBountyButton").GetComponent<Button>());
+                EpicLootAuga.ReplaceButton(transform.Find("Bounties/AbandonBountyButton").GetComponent<Button>(), true);
             }
+            
+            _acceptBountyText = transform.Find("Bounties/AcceptBountyButton").GetComponentInChildren<Text>();
+            
 
             Panels.Add(new SecretStashListPanel(this, buyListPrefab));
             Panels.Add(new GambleListPanel(this, buyListPrefab));
@@ -183,148 +188,32 @@ namespace EpicLoot.Adventure
 
             if (EpicLoot.HasAuga)
             {
-                AugaReplaceBackground(gameObject, true);
-                AugaReplaceBackground(AbandonBountyDialog.gameObject, false);
+                EpicLootAuga.ReplaceBackground(gameObject, true);
+                EpicLootAuga.ReplaceBackground(AbandonBountyDialog.gameObject, false);
 
-                AugaFixItemBG(buyListPrefab.gameObject);
-                AugaFixItemBG(treasureMapElementPrefab.gameObject);
-                AugaFixItemBG(bountyElementPrefab.gameObject);
-                AugaFixItemBG(activeBountyElementPrefab.gameObject);
-                AugaFixItemBG(AbandonBountyDialog.BountyDisplay.gameObject);
+                EpicLootAuga.FixItemBG(buyListPrefab.gameObject);
+                EpicLootAuga.FixItemBG(treasureMapElementPrefab.gameObject);
+                EpicLootAuga.FixItemBG(bountyElementPrefab.gameObject);
+                EpicLootAuga.FixItemBG(activeBountyElementPrefab.gameObject);
+                EpicLootAuga.FixItemBG(AbandonBountyDialog.BountyDisplay.gameObject);
 
-                AugaFixListElementColors(buyListPrefab.gameObject);
-                AugaFixListElementColors(treasureMapElementPrefab.gameObject);
-                AugaFixListElementColors(bountyElementPrefab.gameObject);
-                AugaFixListElementColors(activeBountyElementPrefab.gameObject);
-                AugaFixListElementColors(AbandonBountyDialog.BountyDisplay.gameObject);
+                EpicLootAuga.FixListElementColors(buyListPrefab.gameObject);
+                EpicLootAuga.FixListElementColors(treasureMapElementPrefab.gameObject);
+                EpicLootAuga.FixListElementColors(bountyElementPrefab.gameObject);
+                EpicLootAuga.FixListElementColors(activeBountyElementPrefab.gameObject);
+                EpicLootAuga.FixListElementColors(AbandonBountyDialog.BountyDisplay.gameObject);
 
-                AugaFixFonts(gameObject);
+                EpicLootAuga.FixFonts(gameObject);
 
-                AugaMakeSimpleTooltip(treasureMapElementPrefab.gameObject);
-                AugaMakeSimpleTooltip(bountyElementPrefab.gameObject);
-                AugaMakeSimpleTooltip(activeBountyElementPrefab.gameObject);
-            }
-        }
+                EpicLootAuga.MakeSimpleTooltip(treasureMapElementPrefab.gameObject);
+                EpicLootAuga.MakeSimpleTooltip(bountyElementPrefab.gameObject);
+                EpicLootAuga.MakeSimpleTooltip(activeBountyElementPrefab.gameObject);
 
-        private static void AugaReplaceBackground(GameObject obj, bool withCornerDecoration)
-        {
-            var image = obj.GetComponent<Image>();
-            Destroy(image);
-            var backgroundPanel = Auga.API.Panel_Create(obj.transform, Vector2.one, "AugaBackground", withCornerDecoration);
-            var rt = (RectTransform)backgroundPanel.transform;
-            rt.SetSiblingIndex(0);
-            rt.anchorMin = Vector2.zero;
-            rt.anchorMax = Vector2.one;
-            rt.pivot = new Vector2(0.5f, 0.5f);
-            rt.sizeDelta = new Vector2(40, 40);
-        }
-
-        private static void AugaFixItemBG(GameObject obj)
-        {
-            var magicBG = obj.transform.Find("MagicBG");
-            if (magicBG != null)
-            {
-                var image = magicBG.GetComponent<Image>();
-                if (image != null)
+                foreach (var scrollbar in GetComponentsInChildren<Scrollbar>())
                 {
-                    image.sprite = EpicLoot.GetMagicItemBgSprite();
+                    EpicLootAuga.FixupScrollbar(scrollbar);
                 }
             }
-
-            var icon = obj.transform.Find("Icon");
-            if (icon != null)
-            {
-                var iconBG = Object.Instantiate(icon, icon.parent);
-                iconBG.SetSiblingIndex(2);
-                var image = iconBG.GetComponent<Image>();
-                image.sprite = Auga.API.GetItemBackgroundSprite();
-                image.color = new Color(0, 0, 0, 0.5f);
-            }
-        }
-
-        private static void AugaFixListElementColors(GameObject obj)
-        {
-            var selected = obj.transform.Find("Selected");
-            if (selected != null)
-            {
-                var image = selected.GetComponent<Image>();
-                if (image != null)
-                {
-                    ColorUtility.TryParseHtmlString(Auga.API.Blue, out var color);
-                    image.color = color;
-                }
-            }
-
-            var background = obj.transform.Find("Background");
-            if (background != null)
-            {
-                var image = background.GetComponent<Image>();
-                if (image != null)
-                {
-                    image.color = new Color(0, 0, 0, 0.5f);
-                }
-            }
-
-            var button = obj.GetComponent<Button>();
-            if (button != null)
-            {
-                button.colors = ColorBlock.defaultColorBlock;
-            }
-        }
-
-        private static void AugaFixFonts(GameObject obj)
-        {
-            var texts = obj.GetComponentsInChildren<Text>(true);
-            foreach (var text in texts)
-            {
-                if (text.font.name == "Norsebold")
-                {
-                    text.font = Auga.API.GetBoldFont();
-                    ColorUtility.TryParseHtmlString(Auga.API.Brown1, out var color);
-                    text.color = color;
-                    text.text = text.text.ToUpperInvariant();
-                }
-                else
-                {
-                    text.font = Auga.API.GetSemiBoldFont();
-                }
-
-                if (text.name == "Count" || text.name == "RewardLabel" || text.name.EndsWith("Count"))
-                {
-                    ColorUtility.TryParseHtmlString(Auga.API.BrightGold, out var color);
-                    text.color = color;
-                }
-            }
-        }
-
-        private static void AugaReplaceButton(Button button, bool icon = false)
-        {
-            var newButton = Auga.API.MediumButton_Create(button.transform.parent, button.name, string.Empty);
-            if (icon)
-            {
-                Object.Destroy(newButton.GetComponentInChildren<Text>().gameObject);
-                var newIcon = Object.Instantiate(button.transform.Find("Icon"), newButton.transform);
-                newIcon.name = "Icon";
-            }
-            else
-            {
-                var newLabel = button.GetComponentInChildren<Text>().text;
-                newButton.GetComponentInChildren<Text>().text = newLabel;
-            }
-            var oldRt = (RectTransform)button.transform;
-            var rt = (RectTransform)newButton.transform;
-            rt.anchorMin = oldRt.anchorMin;
-            rt.anchorMax = oldRt.anchorMax;
-            rt.pivot = oldRt.pivot;
-            rt.anchoredPosition = oldRt.anchoredPosition;
-            rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, oldRt.rect.width);
-
-            Object.DestroyImmediate(button.gameObject);
-        }
-
-        private static void AugaMakeSimpleTooltip(GameObject obj)
-        {
-            Auga.API.Tooltip_MakeSimpleTooltip(obj);
         }
 
         public void OnEnable()
@@ -374,8 +263,8 @@ namespace EpicLoot.Adventure
             else
             {
                 var itemDrop = AdventureFeature.CreateItemDrop(listItem.ItemInfo.ItemID);
-                item = itemDrop.m_itemData;
-                Destroy(itemDrop.gameObject);
+                item = itemDrop.m_itemData.Clone();
+                ZNetScene.instance.Destroy(itemDrop.gameObject);
             }
 
             var inventory = player.GetInventory();

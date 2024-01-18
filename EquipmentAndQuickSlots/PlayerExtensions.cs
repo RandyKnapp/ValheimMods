@@ -37,7 +37,7 @@ namespace EquipmentAndQuickSlots
                 return;
             }
 
-            EquipmentAndQuickSlots.LogWarning("Saving ExtendedPlayerData");
+            //EquipmentAndQuickSlots.LogWarning("Saving ExtendedPlayerData");
             SaveValue(_player, "ExtendedPlayerData", "This player is using ExtendedPlayerData!");
 
             var pkg = new ZPackage();
@@ -59,7 +59,7 @@ namespace EquipmentAndQuickSlots
 
             _player = fromPlayer;
             LoadValue(fromPlayer, "ExtendedPlayerData", out var init);
-            EquipmentAndQuickSlots.LogWarning("Loaded ExtendedPlayerData");
+            //EquipmentAndQuickSlots.LogWarning("Loaded ExtendedPlayerData");
 
             if (LoadValue(fromPlayer, nameof(QuickSlotInventory), out var quickSlotData))
             {
@@ -102,27 +102,29 @@ namespace EquipmentAndQuickSlots
         {
             if (player.m_knownTexts.ContainsKey(key))
             {
+                EquipmentAndQuickSlots.LogWarning("Found KnownText for save data, converting to customData");
                 player.m_knownTexts.Remove(key);
             }
 
-            key = Sentinel + key;
-            if (player.m_knownTexts.ContainsKey(key))
-            {
-                player.m_knownTexts[key] = value;
-            }
+            if (player.m_customData.ContainsKey(key))
+                player.m_customData[key] = value;
             else
-            {
-                player.m_knownTexts.Add(key, value);
-            }
+                player.m_customData.Add(key, value);
         }
 
         private static bool LoadValue(Player player, string key, out string value)
         {
-            if (!player.m_knownTexts.TryGetValue(key, out value))
-            {
+            if (player.m_customData.TryGetValue(key, out value))
+                return true;
+
+            var foundInKnownTexts = player.m_knownTexts.TryGetValue(key, out value);
+            if (!foundInKnownTexts)
                 key = Sentinel + key;
-            }
-            return player.m_knownTexts.TryGetValue(key, out value);
+            foundInKnownTexts = player.m_knownTexts.TryGetValue(key, out value);
+            if (foundInKnownTexts)
+                EquipmentAndQuickSlots.LogWarning("Loaded data from knownTexts. Will be converted to customData on save.");
+
+            return foundInKnownTexts;
         }
     }
 
@@ -257,7 +259,7 @@ namespace EquipmentAndQuickSlots
         {
             player.InitializeExtendedPlayer();
             player.Extended().Load(player);
-            player.EquipIventoryItems();
+            player.EquipInventoryItems();
         }
     }
 }

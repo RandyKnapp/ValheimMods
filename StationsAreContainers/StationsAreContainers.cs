@@ -1,59 +1,51 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Reflection;
 using BepInEx;
 using BepInEx.Configuration;
 using HarmonyLib;
 using JetBrains.Annotations;
-using UnityEngine;
-using UnityEngine.UI;
+using ServerSync;
 
 namespace StationsAreContainers
 {
     [BepInPlugin(PluginId, DisplayName, Version)]
     [BepInDependency("randyknapp.mods.improvedbuildhud", BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency("randyknapp.mods.auga", BepInDependency.DependencyFlags.SoftDependency)]
     public class StationsAreContainers : BaseUnityPlugin
     {
         public const string PluginId = "randyknapp.mods.stationcontainers";
         public const string DisplayName = "Stations Are Containers";
-        public const string Version = "1.0.1";
+        public const string Version = "1.0.3";
 
-        public static ConfigEntry<bool> Workbench_Enabled;
-        public static ConfigEntry<int>  Workbench_Width;
-        public static ConfigEntry<int>  Workbench_Height;
-        public static ConfigEntry<bool> Forge_Enabled;
-        public static ConfigEntry<int>  Forge_Width;
-        public static ConfigEntry<int>  Forge_Height;
-        public static ConfigEntry<bool> Cauldron_Enabled;
-        public static ConfigEntry<int>  Cauldron_Width;
-        public static ConfigEntry<int>  Cauldron_Height;
-        public static ConfigEntry<bool> Stonecutter_Enabled;
-        public static ConfigEntry<int>  Stonecutter_Width;
-        public static ConfigEntry<int>  Stonecutter_Height;
-        public static ConfigEntry<bool> ArtisanTable_Enabled;
-        public static ConfigEntry<int>  ArtisanTable_Width;
-        public static ConfigEntry<int>  ArtisanTable_Height;
+        public class StationConfig
+        {
+            public ConfigEntry<bool> Enabled;
+            public ConfigEntry<int>  Width;
+            public ConfigEntry<int>  Height;
+        }
 
+        private static ConfigEntry<bool> _serverConfigLocked;
+        private readonly ConfigSync _configSync = new ConfigSync(PluginId) { DisplayName = DisplayName, CurrentVersion = Version, MinimumRequiredVersion = Version };
+
+        private static StationsAreContainers _instance;
         private Harmony _harmony;
+        private static readonly Dictionary<string, StationConfig> Configs = new Dictionary<string, StationConfig>();
 
         [UsedImplicitly]
         private void Awake()
         {
-            Workbench_Enabled = Config.Bind("Workbench", "Workbench Container Enabled", true);
-            Workbench_Width = Config.Bind("Workbench", "Workbench Container Width", 6);
-            Workbench_Height = Config.Bind("Workbench", "Workbench Container Height", 3);
-            Forge_Enabled = Config.Bind("Forge", "Forge Container Enabled", true);
-            Forge_Width = Config.Bind("Forge", "Forge Container Width", 6);
-            Forge_Height = Config.Bind("Forge", "Forge Container Height", 3);
-            Cauldron_Enabled = Config.Bind("Cauldron", "Cauldron Container Enabled", true);
-            Cauldron_Width = Config.Bind("Cauldron", "Cauldron Container Width", 6);
-            Cauldron_Height = Config.Bind("Cauldron", "Cauldron Container Height", 3);
-            Stonecutter_Enabled = Config.Bind("Stonecutter", "Stonecutter Container Enabled", true);
-            Stonecutter_Width = Config.Bind("Stonecutter", "Stonecutter Container Width", 6);
-            Stonecutter_Height = Config.Bind("Stonecutter", "Stonecutter Container Height", 3);
-            ArtisanTable_Enabled = Config.Bind("Artisan Table", "Artisan Table Container Enabled", true);
-            ArtisanTable_Width = Config.Bind("Artisan Table", "Artisan Table Container Width", 6);
-            ArtisanTable_Height = Config.Bind("Artisan Table", "Artisan Table Container Height", 3);
+            _instance = this;
+
+            InitConfigForStation("$piece_workbench", "Workbench");
+            InitConfigForStation("$piece_forge", "Forge");
+            InitConfigForStation("$piece_cauldron", "Cauldron");
+            InitConfigForStation("$piece_stonecutter", "Stonecutter");
+            InitConfigForStation("$piece_artisanstation", "Artisan Table");
+            InitConfigForStation("$piece_blackforge", "Black Forge");
+            InitConfigForStation("$piece_magetable", "Galdr Table");
+
+            _serverConfigLocked = SyncedConfig("Config Sync", "Lock Config", false, "[Server Only] The configuration is locked and may not be changed by clients once it has been synced from the server. Only valid for server config, will have no effect on clients.");
+            _configSync.AddLockingConfigEntry(_serverConfigLocked);
 
             _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), PluginId);
 
@@ -66,6 +58,42 @@ namespace StationsAreContainers
                 {
                     _harmony.Patch(getAvailableItemsMethod, null, new HarmonyMethod(typeof(StationsAreContainers), nameof(ImprovedBuildHud_GetAvailableItems_Patch)));
                 }
+            }
+        }
+
+        private ConfigEntry<T> SyncedConfig<T>(string group, string configName, T value, string description, bool synchronizedSetting = true)
+        {
+            var configEntry = Config.Bind(group, configName, value, new ConfigDescription(description));
+
+            var syncedConfigEntry = _configSync.AddConfigEntry(configEntry);
+            syncedConfigEntry.SynchronizedConfig = synchronizedSetting;
+
+            return configEntry;
+        }
+
+        public static StationConfig InitConfigForStation(string locID, string label)
+        {
+            var config = new StationConfig();
+
+            config.Enabled  = _instance.Config.Bind(label, $"{label} Container Enabled", true);
+            config.Width    = _instance.Config.Bind(label, $"{label} Container Width", 6);
+            config.Height   = _instance.Config.Bind(label, $"{label} Container Height", 3);
+
+            Configs.Add(locID, config);
+            return config;
+        }
+
+        public static StationConfig GetConfigForStation(CraftingStation station)
+        {
+            if (Configs.TryGetValue(station.m_name, out var config))
+            {
+                return config;
+            }
+            else
+            {
+                var label = station.m_name.Replace("$", "");
+                var newConfig = InitConfigForStation(station.m_name, label);
+                return newConfig;
             }
         }
 
@@ -114,43 +142,12 @@ namespace StationsAreContainers
             var container = craftingStation.gameObject.GetComponent<Container>();
             if (container == null)
             {
-                switch (craftingStation.m_name)
-                {
-                    case "$piece_workbench":
-                        return CreateConfiguredContainer(craftingStation,
-                            StationsAreContainers.Workbench_Enabled.Value,
-                            StationsAreContainers.Workbench_Width.Value,
-                            StationsAreContainers.Workbench_Height.Value
-                        );
-
-                    case "$piece_forge":
-                        return CreateConfiguredContainer(craftingStation,
-                            StationsAreContainers.Forge_Enabled.Value,
-                            StationsAreContainers.Forge_Width.Value,
-                            StationsAreContainers.Forge_Height.Value
-                        );
-
-                    case "$piece_cauldron":
-                        return CreateConfiguredContainer(craftingStation,
-                            StationsAreContainers.Cauldron_Enabled.Value,
-                            StationsAreContainers.Cauldron_Width.Value,
-                            StationsAreContainers.Cauldron_Height.Value
-                        );
-
-                    case "$piece_stonecutter":
-                        return CreateConfiguredContainer(craftingStation,
-                            StationsAreContainers.Stonecutter_Enabled.Value,
-                            StationsAreContainers.Stonecutter_Width.Value,
-                            StationsAreContainers.Stonecutter_Height.Value
-                        );
-
-                    case "$piece_artisanstation":
-                        return CreateConfiguredContainer(craftingStation,
-                            StationsAreContainers.ArtisanTable_Enabled.Value,
-                            StationsAreContainers.ArtisanTable_Width.Value,
-                            StationsAreContainers.ArtisanTable_Height.Value
-                        );
-                }
+                var config = StationsAreContainers.GetConfigForStation(craftingStation);
+                return CreateConfiguredContainer(craftingStation,
+                    config.Enabled.Value,
+                    config.Width.Value,
+                    config.Height.Value
+                );
             }
 
             return container;
@@ -170,24 +167,27 @@ namespace StationsAreContainers
         }
     }
 
-    [HarmonyPatch(typeof(Player), nameof(Player.HaveRequirements), new[] { typeof(Piece.Requirement[]), typeof(bool), typeof(int) })]
-    public static class Player_HaveRequirements_Patch
+    [HarmonyPatch(typeof(Player), nameof(Player.HaveRequirementItems), new[] { typeof(Recipe), typeof(bool), typeof(int) })]
+    public static class Player_HaveRequirementItems_Patch
     {
-        public static void Postfix(Player __instance, ref bool __result, Piece.Requirement[] resources, int qualityLevel)
+        public static void Postfix(Player __instance, ref bool __result, Recipe piece, int qualityLevel)
         {
+            if (__instance == null)
+                return;
+
             var station = __instance.GetCurrentCraftingStation();
             if (!__result && station != null)
             {
                 var container = station.GetComponent<Container>();
                 if (container != null)
                 {
-                    foreach (var resource in resources)
+                    foreach (var resource in piece.m_resources)
                     {
                         if (resource.m_resItem != null)
                         {
                             var itemName = resource.m_resItem.m_itemData.m_shared.m_name;
                             var amount = resource.GetAmount(qualityLevel);
-                            var totalPlayerHas = __instance.m_inventory.CountItems(itemName) + container.m_inventory.CountItems(itemName);
+                            var totalPlayerHas = __instance.GetInventory().CountItems(itemName) + container.GetInventory().CountItems(itemName);
                             if (totalPlayerHas < amount)
                                 return;
                         }
@@ -199,41 +199,59 @@ namespace StationsAreContainers
         }
     }
 
-    [HarmonyPatch(typeof(Inventory), nameof(Inventory.GetAllItems), new Type[]{})]
-    public static class Inventory_GetAllItems_Patch
-    {
-        public static void Postfix(Inventory __instance, ref List<ItemDrop.ItemData> __result)
-        {
-            if (__instance == Player.m_localPlayer?.m_inventory)
-            {
-                var station = Player.m_localPlayer?.GetCurrentCraftingStation();
-                if (station != null)
-                {
-                    var stationContainer = station.GetComponent<Container>();
-                    if (stationContainer != null)
-                    {
-                        __result = new List<ItemDrop.ItemData>(__result);
-                        __result.AddRange(stationContainer.m_inventory.m_inventory);
-                    }
-                }
-            }
-        }
-    }
-
     [HarmonyPatch(typeof(Inventory), nameof(Inventory.RemoveItem), new [] { typeof(ItemDrop.ItemData) })]
     public static class Inventory_RemoveItem_Patch
     {
         public static void Postfix(Inventory __instance, ref bool __result, ItemDrop.ItemData item)
         {
-            if (!__result && __instance == Player.m_localPlayer?.m_inventory)
+            if (!__result && __instance != null && Player.m_localPlayer != null && __instance == Player.m_localPlayer.m_inventory)
             {
-                var station = Player.m_localPlayer?.GetCurrentCraftingStation();
+                var station = Player.m_localPlayer.GetCurrentCraftingStation();
                 if (station != null)
                 {
                     var stationContainer = station.GetComponent<Container>();
                     if (stationContainer != null)
                     {
                         __result = stationContainer.m_inventory.RemoveItem(item);
+                    }
+                }
+            }
+        }
+    }
+
+    [HarmonyPatch]
+    public static class InventoryGui_SetupRequirement_Patch
+    {
+        public static int SettingUpRequirement;
+
+        [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.SetupRequirementList))]
+        [HarmonyPrefix]
+        public static void SetupRequirementsList_Prefix()
+        {
+            SettingUpRequirement++;
+        }
+
+        [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.SetupRequirementList))]
+        [HarmonyPostfix]
+        [HarmonyPriority(Priority.Last)]
+        public static void SetupRequirementsList_Postfix()
+        {
+            SettingUpRequirement--;
+        }
+
+        [HarmonyPatch(typeof(Inventory), nameof(Inventory.CountItems))]
+        [HarmonyPostfix]
+        public static void InventoryGui_SetupRequirement_Postfix(Inventory __instance, ref int __result, string name, int quality = -1, bool matchWorldLevel = true)
+        {
+            if (SettingUpRequirement > 0 && __instance != null && Player.m_localPlayer != null && __instance == Player.m_localPlayer.m_inventory)
+            {
+                var station = Player.m_localPlayer.GetCurrentCraftingStation();
+                if (station != null)
+                {
+                    var stationContainer = station.GetComponent<Container>();
+                    if (stationContainer != null)
+                    {
+                        __result += stationContainer.GetInventory().CountItems(name, quality, matchWorldLevel);
                     }
                 }
             }
@@ -273,27 +291,6 @@ namespace StationsAreContainers
             }
 
             return true;
-        }
-    }
-
-    [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.SetupRequirement))]
-    [HarmonyPriority(Priority.Low)]
-    public static class InventoryGui_SetupRequirement_Patch
-    {
-        public static void Postfix(Transform elementRoot, Piece.Requirement req, Player player, int quality)
-        {
-            var amountText = elementRoot.transform.Find("res_amount").GetComponent<Text>();
-            if (req.m_resItem != null)
-            {
-                if (!player.HaveRequirements(new [] { req }, false, quality))
-                {
-                    amountText.color = Mathf.Sin(Time.time * 10f) > 0.0 ? Color.red : Color.white;
-                }
-                else
-                {
-                    amountText.color = Color.white;
-                }
-            }
         }
     }
 }

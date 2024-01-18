@@ -77,20 +77,26 @@ namespace EpicLoot.MagicItemEffects
 		}
 	}
 
-	[HarmonyPatch(typeof(CharacterAnimEvent), nameof(CharacterAnimEvent.FixedUpdate))]
-	public static class ModifyEnemyAttackSpeed_CharacterAnimEvent_FixedUpdate_Patch
+	[HarmonyPatch(typeof(Game), nameof(Game.Awake))]
+	public static class ModifyEnemyAttackSpeed_AnimationHandler_Patch
 	{
-		[UsedImplicitly]
-		[HarmonyPriority(Priority.LowerThanNormal)]
-		private static void Prefix(Character ___m_character, ref Animator ___m_animator)
+		public static double ModifyAttackSpeed(Character character, double speed)
 		{
-			if (___m_character.InAttack() && ___m_character.GetComponent<Slow>()?.Multiplier is float slowMultiplier)
+			if (character.InAttack() && character.GetComponent<Slow>()?.Multiplier is { } slowMultiplier)
 			{
-				if (___m_animator.speed > 0.001f && (___m_animator.speed * 1e4f % 10 > 3 || ___m_animator.speed * 1e4f % 10 < 1))
+				if (speed > 0.001f && (speed * 1e4f % 10 > 3 || speed * 1e4f % 10 < 1))
 				{
-					___m_animator.speed = (float) Math.Round(___m_animator.speed * slowMultiplier, 3) + ___m_animator.speed % 1e-4f + 2e-4f;
+					speed = (float) Math.Round(speed * slowMultiplier, 3) + speed % 1e-4f + 2e-4f;
 				}
 			}
+
+			return speed;
+		}
+		
+		[UsedImplicitly]
+		private static void Postfix(Game __instance)
+		{
+			AnimationSpeedManager.Add((character, speed) => ModifyAttackSpeed(character,speed));
 		}
 	}
 }

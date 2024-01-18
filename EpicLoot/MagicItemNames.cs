@@ -71,6 +71,7 @@ namespace EpicLoot
                     return BuildEpicName(item, magicItem);
 
                 case ItemRarity.Legendary:
+                case ItemRarity.Mythic:
                     return GetLegendaryName(item, magicItem);
 
                 default:
@@ -243,6 +244,7 @@ namespace EpicLoot
         {
             return itemType == ItemDrop.ItemData.ItemType.OneHandedWeapon
                    || itemType == ItemDrop.ItemData.ItemType.TwoHandedWeapon
+                   || itemType == ItemDrop.ItemData.ItemType.TwoHandedWeaponLeft
                    || itemType == ItemDrop.ItemData.ItemType.Bow
                    || itemType == ItemDrop.ItemData.ItemType.Shield
                    || itemType == ItemDrop.ItemData.ItemType.Torch;

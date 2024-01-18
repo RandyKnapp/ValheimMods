@@ -25,11 +25,12 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
+    <Optimize>false</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="0Harmony">
@@ -103,7 +104,7 @@
     <Compile Include="Player_Patch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TextsDialog_Patch.cs" />
-    <Compile Include="Tombstone_Fix.cs" />
+    <Compile Include="UIToolTip_Patch.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="..\ValheimUnity\AssetBundles\eaqs">
@@ -118,6 +119,7 @@
       <Link>AugaAPI.dll</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
+    <Content Include="CHANGELOG.md" />
     <Content Include="ILRepack.targets">
       <SubType>Designer</SubType>
     </Content>
@@ -135,4 +137,11 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\ILRepack.Lib.MSBuild.Task.2.0.18.2\build\ILRepack.Lib.MSBuild.Task.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\ILRepack.Lib.MSBuild.Task.2.0.18.2\build\ILRepack.Lib.MSBuild.Task.targets'))" />
   </Target>
+  <PropertyGroup>
+    <PostBuildEvent>if $(ConfigurationName) == Debug (
+  del "$(TargetPath).mdb"
+  $(SolutionDir)pdb2mdb.exe "$(TargetPath)"
+  xcopy "$(TargetDir)$(TargetFileName).mdb" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\" /q /y /i
+)</PostBuildEvent>
+  </PropertyGroup>
 </Project>

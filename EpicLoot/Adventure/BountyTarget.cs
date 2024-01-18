@@ -51,7 +51,6 @@ namespace EpicLoot.Adventure
 
         private void OnDeath()
         {
-            EpicLoot.LogWarning("BountyTarget.OnDeath");
             if (ZNet.instance.IsServer() || !ZNet.instance.IsServer() && !ZNet.instance.IsDedicated())
             {
                 var pkg = new ZPackage();
@@ -156,15 +155,18 @@ namespace EpicLoot.Adventure
         }
     }
 
+    [HarmonyPatch(typeof(Humanoid), nameof(Humanoid.Start))]
     [HarmonyPatch(typeof(Character), nameof(Character.Start))]
     public static class Character_Start_Patch
     {
         public static void Postfix(Character __instance)
         {
-            var zdo = __instance.m_nview?.GetZDO();
+            var zdo = __instance.m_nview != null ? __instance.m_nview.GetZDO() : null;
+
             if (zdo != null && zdo.IsValid())
             {
                 var old = !string.IsNullOrEmpty(zdo.GetString("BountyTarget"));
+
                 if (old)
                 {
                     EpicLoot.LogWarning($"Destroying old bounty target: {__instance.name}");

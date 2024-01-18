@@ -1,31 +1,53 @@
 ﻿using System.Collections.Generic;
-using EpicLoot.PlayerKnown;
+using System.Linq;
+using BepInEx;
+using Common;
+using EpicLoot.Adventure.Feature;
 
 namespace EpicLoot.GatedItemType
 {
     public enum GatedItemTypeMode
     {
         Unlimited,
-        MustKnowRecipe,
-        MustHaveCrafted
+        BossKillUnlocksCurrentBiomeItems,
+        BossKillUnlocksNextBiomeItems,
+        PlayerMustKnowRecipe,
+        PlayerMustHaveCraftedItem
     }
 
     public static class GatedItemTypeHelper
     {
         public static readonly List<ItemTypeInfo> ItemInfos = new List<ItemTypeInfo>();
         public static readonly Dictionary<string, ItemTypeInfo> ItemInfoByID = new Dictionary<string, ItemTypeInfo>();
+        public static readonly Dictionary<string, List<string>> ItemsPerBoss = new Dictionary<string, List<string>>();
+        public static readonly Dictionary<string, string> BossPerItem = new Dictionary<string, string>();
 
         public static void Initialize(ItemInfoConfig config)
         {
             ItemInfos.Clear();
             ItemInfoByID.Clear();
+            ItemsPerBoss.Clear();
+            BossPerItem.Clear();
             foreach (var info in config.ItemInfo)
             {
                 ItemInfos.Add(info);
-                //EpicLoot.Log($"Adding ItemTypeInfo: {info.Type}, fallback={info.Fallback}, items={string.Join(",", info.Items)}");
+               
                 foreach (var itemID in info.Items)
                 {
                     ItemInfoByID.Add(itemID, info);
+                }
+
+                foreach (var entry in info.ItemsByBoss)
+                {
+                    if (ItemsPerBoss.ContainsKey(entry.Key))
+                        ItemsPerBoss[entry.Key].AddRange(entry.Value);
+                    else
+                        ItemsPerBoss.Add(entry.Key, entry.Value.ToList());
+
+                    foreach (var itemID in entry.Value)
+                    {
+                        BossPerItem.Add(itemID, entry.Key);
+                    }
                 }
             }
         }
@@ -35,7 +57,30 @@ namespace EpicLoot.GatedItemType
             return GetGatedItemID(itemID, EpicLoot.GetGatedItemTypeMode());
         }
 
-        public static string GetGatedItemID(string itemID, GatedItemTypeMode mode)
+        public static string GetGatedFallbackItem(string infoType, GatedItemTypeMode mode, string originalItemID, List<string> usedTypes = null)
+        {
+            ItemInfos.TryFind(x => x.Type.Equals(originalItemID), out var originalInfo);
+            var returnItem = originalItemID;
+
+            if (usedTypes == null)
+            {
+                usedTypes = new List<string>();
+            }
+
+            if (!ItemInfos.TryFind(x => x.Type.Equals(infoType), out var info)) return returnItem;
+            if (usedTypes.Contains(info.Type)) return returnItem;
+            
+            usedTypes.Add(info.Type);
+            var fallbackItem = GetItemFromCategory(info.Type, mode, usedTypes);
+            if (!fallbackItem.IsNullOrWhiteSpace())
+            {
+                returnItem = fallbackItem;
+            }
+
+            return returnItem;
+        }
+
+        public static string GetGatedItemID(string itemID, GatedItemTypeMode mode, List<string> usedTypes = null)
         {
             if (string.IsNullOrEmpty(itemID))
             {
@@ -54,20 +99,22 @@ namespace EpicLoot.GatedItemType
                 return null;
             }
 
+            //Gets Info Item for specific itemId
             if (!ItemInfoByID.TryGetValue(itemID, out var info))
             {
                 return itemID;
             }
-
+            
             var itemName = GetItemName(itemID);
             if (string.IsNullOrEmpty(itemName))
             {
                 return null;
             }
 
-            while (CheckIfItemNeedsGate(mode, itemName))
+            while (CheckIfItemNeedsGate(mode, itemID, itemName))
             {
                 //EpicLoot.Log("Yes...");
+
                 var index = info.Items.IndexOf(itemID);
                 if (index < 0)
                 {
@@ -76,16 +123,14 @@ namespace EpicLoot.GatedItemType
                 }
                 if (index == 0)
                 {
-                    //EpicLoot.Log($"Reached end of gated list. Fallback is ({info.Fallback}), returning ({(string.IsNullOrEmpty(info.Fallback) ? itemID : info.Fallback)}){(string.IsNullOrEmpty(info.Fallback) ? "" : " (fallback)")}");
-                    return string.IsNullOrEmpty(info.Fallback) ? itemID : info.Fallback;
+                    return string.IsNullOrEmpty(info.Fallback) ? itemID : GetGatedFallbackItem(info.Fallback, mode, itemID, usedTypes);
                 }
 
                 itemID = info.Items[index - 1];
                 itemName = GetItemName(itemID);
-                //EpicLoot.Log($"Next lower tier item is ({itemID})");
+                //EpicLoot.Log($"Next lower tier item is ({itemID} - {itemName})");
             }
 
-            //EpicLoot.Log($"No, return ({itemID})");
             return itemID;
         }
 
@@ -109,15 +154,38 @@ namespace EpicLoot.GatedItemType
             return item.m_shared.m_name;
         }
 
-        private static bool CheckIfItemNeedsGate(GatedItemTypeMode mode, string itemName)
+        private static bool CheckIfItemNeedsGate(GatedItemTypeMode mode, string itemID, string itemName)
         {
-            //EpicLoot.Log($"Checking if item ({itemName}) needs gating...");
+            if (!BossPerItem.ContainsKey(itemID))
+            {
+                EpicLoot.LogWarning($"Item ({itemID}) was not registered in iteminfo.json with any particular boss");
+                return false;
+            }
+
+            var bossKeyForItem = BossPerItem[itemID];
+            var prevBossKey = Bosses.GetPrevBossKey(bossKeyForItem);
+            //EpicLoot.Log($"Checking if item ({itemID}) needs gating (boss: {bossKeyForItem}, prev boss: {prevBossKey}");
             switch (mode)
             {
-                case GatedItemTypeMode.MustKnowRecipe: return !PlayerKnownManager.IsRecipeKnown(itemName);
-                case GatedItemTypeMode.MustHaveCrafted: return !PlayerKnownManager.IsItemKnown(itemName);
+                case GatedItemTypeMode.BossKillUnlocksCurrentBiomeItems:    return !ZoneSystem.instance.GetGlobalKey(bossKeyForItem);
+                case GatedItemTypeMode.BossKillUnlocksNextBiomeItems:       return !(string.IsNullOrEmpty(prevBossKey) || ZoneSystem.instance.GetGlobalKey(prevBossKey));
+                case GatedItemTypeMode.PlayerMustKnowRecipe:                return Player.m_localPlayer != null && !Player.m_localPlayer.IsRecipeKnown(itemName);
+                case GatedItemTypeMode.PlayerMustHaveCraftedItem:           return Player.m_localPlayer != null && !Player.m_localPlayer.m_knownMaterial.Contains(itemName);
                 default: return false;
             }
+        }
+
+        public static string GetItemFromCategory(string itemCategory, GatedItemTypeMode mode, List<string> usedTypes = null)
+        {
+            var itemInfo = ItemInfos.FirstOrDefault(x => x.Type == itemCategory);
+
+            if (itemInfo == null)
+            {
+                EpicLoot.LogWarning($"Item Info for Category [{itemCategory}] not found in ItemInfo.json");
+                return string.Empty;
+            }
+            
+            return GetGatedItemID(itemInfo.Items[itemInfo.Items.Count - 1], mode, usedTypes);
         }
     }
 }

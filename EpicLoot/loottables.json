@@ -3,10 +3,10 @@
   // MAGIC EFFECT COUNTS
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   "MagicEffectsCount": {
-    "Magic":     [ [1, 80], [2, 18], [3, 2] ],
-    "Rare":      [ [2, 80], [3, 18], [4, 2] ],
-    "Epic":      [ [3, 80], [4, 18], [5, 2] ],
-    "Legendary": [ [4, 80], [5, 18], [6, 2] ]
+    "Magic":     [ [1, 80], [2, 18], [3,  2] ],
+    "Rare":      [ [2, 80], [3, 18], [4,  2] ],
+    "Epic":      [ [3, 80], [4, 18], [5,  2] ],
+    "Legendary": [ [4, 80], [5, 18], [6,  2] ]
   },
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -21,8 +21,10 @@
     "CAPE TEST",
     "Cheat sword",
     "$item_sword_fire",
-    "$item_shield_iron_square"
-  ],
+    "$item_shield_iron_square",
+    "$item_knife_butcher",
+    "$item_pickaxe_stone"
+  ], 
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // ITEM SETS
@@ -113,7 +115,7 @@
       "Loot": [
         { "Item": "Club",     "Rarity": [ 97, 2, 1, 0 ] },
         { "Item": "AxeStone", "Rarity": [ 97, 2, 1, 0 ] },
-        { "Item": "Torch" ,   "Rarity": [ 97, 2, 1, 0 ] }
+        { "Item": "Torch",    "Rarity": [ 97, 2, 1, 0 ] }
       ]
     },
     {
@@ -174,9 +176,16 @@
       ]
     },
     {
+      "Name": "Tier1Shields",
+      "Loot": [
+        { "Item": "ShieldBoneTower", "Rarity": [ 94, 3, 2, 1 ] }
+      ]
+    },
+    {
       "Name": "Tier1Everything",
       "Loot": [
         { "Item": "Tier1Weapons" },
+        { "Item": "Tier1Shields" },
         { "Item": "Tier1Armor"   },
         { "Item": "Tier1Tools"   }
       ]
@@ -251,12 +260,16 @@
         { "Item": "SledgeIron",     "Weight": 1, "Rarity": [ 38, 50, 8, 4 ] },
         { "Item": "MaceIron",       "Weight": 1, "Rarity": [ 38, 50, 8, 4 ] },
         { "Item": "AtgeirIron",     "Weight": 1, "Rarity": [ 38, 50, 8, 4 ] },
-        { "Item": "SpearElderbark", "Weight": 1, "Rarity": [ 38, 50, 8, 4 ] }
-      ]
+        { "Item": "SpearElderbark", "Weight": 1, "Rarity": [ 38, 50, 8, 4 ] },
+        { "Item": "BowHuntsman",    "Weight": 1, "Rarity": [ 38, 50, 8, 4 ] }
+  ]
     },
     {
       "Name": "Tier3Armor",
       "Loot": [
+        { "Item": "ArmorRootChest", "Weight": 1, "Rarity": [ 38, 50, 8, 4] },
+        { "Item": "ArmorRootLegs",  "Weight": 1, "Rarity": [ 38, 50, 8, 4] },
+        { "Item": "HelmetRoot",     "Weight": 1, "Rarity": [ 38, 50, 8, 4] },
         { "Item": "ArmorIronLegs",  "Weight": 1, "Rarity": [ 38, 50, 8, 4 ] },
         { "Item": "ArmorIronChest", "Weight": 1, "Rarity": [ 38, 50, 8, 4 ] },
         { "Item": "HelmetIron",     "Weight": 1, "Rarity": [ 38, 50, 8, 4 ] }
@@ -290,19 +303,24 @@
     {
       "Name": "Tier4Weapons",
       "Loot": [
-        { "Item": "SwordSilver",   "Weight": 10, "Rarity": [ 5, 35, 50, 20 ] },
-        { "Item": "SpearWolfFang", "Weight": 10, "Rarity": [ 5, 35, 50, 20 ] },
-        { "Item": "MaceSilver",    "Weight": 1,  "Rarity": [ 5, 35, 50, 20 ] },
-        { "Item": "BowDraugrFang", "Weight": 1,  "Rarity": [ 5, 35, 50, 20 ] }
+        { "Item": "SwordSilver",   "Weight": 5, "Rarity": [ 5, 35, 50, 20 ] },
+        { "Item": "SpearWolfFang", "Weight": 5, "Rarity": [ 5, 35, 50, 20 ] },
+        { "Item": "MaceSilver",    "Weight": 1, "Rarity": [ 5, 35, 50, 20 ] },
+        { "Item": "KnifeSilver",   "Weight": 5, "Rarity": [ 5, 35, 50, 20 ] },
+        { "Item": "FistFenrirClaw","Weight": 1, "Rarity": [ 5, 35, 50, 20 ] },
+        { "Item": "BowDraugrFang", "Weight": 1, "Rarity": [ 5, 35, 50, 20 ] }
       ]
     },
     {
       "Name": "Tier4Armor",
       "Loot": [
-        { "Item": "ArmorWolfLegs",  "Weight": 1, "Rarity": [ 5, 35, 50, 20 ] },
-        { "Item": "ArmorWolfChest", "Weight": 1, "Rarity": [ 5, 35, 50, 20 ] },
-        { "Item": "HelmetDrake",    "Weight": 1, "Rarity": [ 5, 35, 50, 20 ] },
-        { "Item": "CapeWolf",       "Weight": 1, "Rarity": [ 5, 35, 50, 20 ] }
+        { "Item": "ArmorFenringChest",  "Weight": 1, "Rarity": [ 5, 35, 50, 20 ] },
+        { "Item": "ArmorFenringLegs",   "Weight": 1, "Rarity": [ 5, 35, 50, 20 ] },
+        { "Item": "HelmetFenring",      "Weight": 1, "Rarity": [ 5, 35, 50, 20 ] },
+        { "Item": "ArmorWolfLegs",      "Weight": 1, "Rarity": [ 5, 35, 50, 20 ] },
+        { "Item": "ArmorWolfChest",     "Weight": 1, "Rarity": [ 5, 35, 50, 20 ] },
+        { "Item": "HelmetDrake",        "Weight": 1, "Rarity": [ 5, 35, 50, 20 ] },
+        { "Item": "CapeWolf",           "Weight": 1, "Rarity": [ 5, 35, 50, 20 ] }
       ]
     },
     {
@@ -327,6 +345,7 @@
       "Name": "Tier5Weapons",
       "Loot": [
         { "Item": "AtgeirBlackmetal", "Weight": 3, "Rarity": [ 0, 15, 60, 25 ] },
+        { "Item": "CrossbowArbalest", "Weight": 3, "Rarity": [ 0, 15, 60, 25 ] },
         { "Item": "AxeBlackMetal",    "Weight": 3, "Rarity": [ 0, 15, 60, 25 ] },
         { "Item": "KnifeBlackMetal",  "Weight": 3, "Rarity": [ 0, 15, 60, 25 ] },
         { "Item": "SwordBlackmetal",  "Weight": 3, "Rarity": [ 0, 15, 60, 25 ] },
@@ -356,6 +375,60 @@
         { "Item": "Tier5Weapons" },
         { "Item": "Tier5Armor"   },
         { "Item": "Tier5Shields" }
+      ]
+    },
+
+    // Tier 6 Items
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    {
+      "Name": "Tier6Weapons",
+      "Loot": [
+        { "Item": "SwordMistwalker",    "Weight": 1, "Rarity": [ 0, 10, 50, 40 ] },
+        { "Item": "THSwordKrom",        "Weight": 1, "Rarity": [ 0, 10, 50, 40 ] },
+        { "Item": "StaffFireball",      "Weight": 1, "Rarity": [ 0, 10, 50, 40 ] },
+        { "Item": "StaffIceShards",     "Weight": 1, "Rarity": [ 0, 10, 50, 40 ] },
+        { "Item": "StaffShield",        "Weight": 1, "Rarity": [ 0, 10, 50, 40 ] },
+        { "Item": "StaffSkeleton",      "Weight": 1, "Rarity": [ 0, 10, 50, 40 ] },
+        { "Item": "AtgeirHimminAfl",    "Weight": 1, "Rarity": [ 0, 10, 50, 40 ] },
+        { "Item": "KnifeSkollAndHati",  "Weight": 1, "Rarity": [ 0, 10, 50, 40 ] },
+        { "Item": "AxeJotunBane",       "Weight": 1, "Rarity": [ 0, 10, 50, 40 ] },
+        { "Item": "SpearCarapace",      "Weight": 1, "Rarity": [ 0, 10, 50, 40 ] },
+        { "Item": "SledgeDemolisher",   "Weight": 1, "Rarity": [ 0, 10, 50, 40 ] },
+        { "Item": "BowSpineSnap",       "Weight": 1, "Rarity": [ 0, 10, 50, 40 ] }
+      ]
+    },
+    {
+      "Name": "Tier6Armor",
+      "Loot": [
+        { "Item": "ArmorCarapaceChest", "Weight": 1, "Rarity": [ 0, 10, 50, 40 ] },
+        { "Item": "ArmorCarapaceLegs",  "Weight": 1, "Rarity": [ 0, 10, 50, 40 ] },
+        { "Item": "HelmetCarapace",     "Weight": 1, "Rarity": [ 0, 10, 50, 40 ] },
+        { "Item": "ArmorMageChest",     "Weight": 1, "Rarity": [ 0, 10, 50, 40 ] },
+        { "Item": "ArmorMageLegs",      "Weight": 1, "Rarity": [ 0, 10, 50, 40 ] },
+        { "Item": "HelmetMage",         "Weight": 1, "Rarity": [ 0, 10, 50, 40 ] },
+        { "Item": "CapeFeather",        "Weight": 1, "Rarity": [ 0, 10, 50, 40 ] }
+      ]
+    },
+    {
+      "Name": "Tier6Shields",
+      "Loot": [
+        { "Item": "ShieldCarapace",         "Weight": 1, "Rarity": [ 0, 10, 50, 40 ] },
+        { "Item": "ShieldCarapaceBuckler",  "Weight": 1, "Rarity": [ 0, 10, 50, 40 ] }
+      ]
+    },
+    {
+      "Name": "Tier6Tools",
+      "Loot": [
+        { "Item": "PickaxeBlackmetal", "Weight": 1, "Rarity": [ 0, 10, 50, 40 ] }
+      ]
+    },
+    {
+      "Name": "Tier6Everything",
+      "Loot": [
+        { "Item": "Tier6Weapons" },
+        { "Item": "Tier6Armor"   },
+        { "Item": "Tier6Shields" },
+        { "Item": "Tier6Tools"   }
       ]
     }
   ],
@@ -737,6 +810,55 @@
         }
       ]
     },
+  // Tier 7 Mobs (Seeker, SeekerBrute, Gjall, Tick)
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    {
+      "Object": "Tier7Mob",
+      "LeveledLoot": [
+        {
+          "Level": 1,
+          "Drops": [ [0, 70], [1, 28], [2, 2] ],
+          "Loot": [
+            { "Item": "Tier6Everything", "Weight": 1, "Rarity": [ 0, 25, 65, 10 ] }
+          ]
+        },
+        {
+          "Level": 2,
+          "Drops": [ [0, 50], [1, 46], [2, 3], [3, 1] ],
+          "Loot": [
+            { "Item": "Tier6Everything", "Weight": 1, "Rarity": [ 0, 0, 85, 15 ] }
+          ]
+        },
+        {
+          "Level": 3,
+          "Drops": [ [0, 30], [1, 64], [2, 4], [3, 2] ],
+          "Loot": [
+            { "Item": "Tier6Everything", "Weight": 1, "Rarity": [ 0, 0, 80, 20 ] }
+          ]
+        },
+        {
+          "Level": 4,
+          "Drops": [ [0, 5], [1, 87], [2, 5], [3, 3] ],
+          "Loot": [
+            { "Item": "Tier6Everything", "Weight": 1, "Rarity": [ 0, 0, 75, 25 ] }
+          ]
+        },
+        {
+          "Level": 5,
+          "Drops": [ [0, 0], [1, 86], [2, 10], [3, 4] ],
+          "Loot": [
+            { "Item": "Tier6Everything", "Weight": 1, "Rarity": [ 0, 0, 70, 30 ] }
+          ]
+        },
+        {
+          "Level": 6,
+          "Drops": [ [0, 0], [1, 80], [2, 15], [3, 5] ],
+          "Loot": [
+            { "Item": "Tier6Everything", "Weight": 1, "Rarity": [ 0, 0, 65, 35 ] }
+          ]
+        }
+      ]
+    },
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Tier 0 Mobs (Greyling, Deer, Boar, Neck)
@@ -855,13 +977,31 @@
     },
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Tier 4 Mobs (Draugr Elite, Oozer, Wraith, Wolf, Drake)
+    // Tier 4 Mobs (Draugr Elite, Oozer, Wraith, Wolf, Drake,Abomination, Fenring_Cultist, Ulv)
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Draugr Elite (Draugr_Elite)
     ////////////////////////////////////////////////////////////////////////////////////
     {
       "Object": "Draugr_Elite",
+      "RefObject": "Tier4Mob"
+    },
+    // Abomination (Abomination)
+    ////////////////////////////////////////////////////////////////////////////////////
+    {
+      "Object": "Abomination",
+      "RefObject": "Tier4Mob"
+    },
+    // Ulv (Ulv)
+    ////////////////////////////////////////////////////////////////////////////////////
+    {
+      "Object": "Ulv",
+      "RefObject": "Tier4Mob"
+    },
+    // Fenring_Cultist (Fenring_Cultist)
+    ////////////////////////////////////////////////////////////////////////////////////
+    {
+      "Object": "Fenring_Cultist",
       "RefObject": "Tier4Mob"
     },
     // Oozer (BlobElite)
@@ -951,6 +1091,56 @@
     {
       "Object": "GoblinShaman",
       "RefObject": "Tier6Mob"
+    },
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Tier 7 Mobs (Seeker, SeekerBrute, Gjall, Tick)
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Seeker (Seeker)
+    ////////////////////////////////////////////////////////////////////////////////////
+    {
+      "Object": "Seeker",
+      "RefObject": "Tier7Mob"
+    },
+    //  SeekerBrute (SeekerBrute)
+    ////////////////////////////////////////////////////////////////////////////////////
+    {
+      "Object": "SeekerBrute",
+      "RefObject": "Tier7Mob"
+    },
+    // Dvergers (Dverger, DvergerMage)
+    ////////////////////////////////////////////////////////////////////////////////////
+    {
+      "Object": "Dverger",
+      "RefObject": "Tier7Mob"
+    },
+    {
+      "Object": "DvergerMage",
+      "RefObject": "Tier7Mob"
+    },
+    {
+      "Object": "DvergerMageFire",
+      "RefObject": "Tier7Mob"
+    },
+    {
+      "Object": "DvergerMageIce",
+      "RefObject": "Tier7Mob"
+    },
+    {
+      "Object": "DvergerMageSupport",
+      "RefObject": "Tier7Mob"
+    },
+    // Gjall (Gjall)
+    ////////////////////////////////////////////////////////////////////////////////////
+    {
+      "Object": "Gjall",
+      "RefObject": "Tier7Mob"
+    },
+    // Tick (Tick)
+    ////////////////////////////////////////////////////////////////////////////////////
+    {
+      "Object": "Tick",
+      "RefObject": "Tier7Mob"
     },
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1204,6 +1394,55 @@
         }
       ]
     },
+    // The Queen (SeekerQueen)
+    ////////////////////////////////////////////////////////////////////////////////////
+    {
+      "Object": "SeekerQueen",
+      "LeveledLoot": [
+        {
+          "Level": 1,
+          "Drops": [ [3, 20], [4, 60], [5, 15], [6, 5] ],
+          "Loot": [
+            { "Item": "Tier6Everything", "Weight": 1, "Rarity": [ 0, 0, 80, 20 ] }
+          ]
+        },
+        {
+          "Level": 2,
+          "Drops": [ [4, 70], [5, 20], [6, 10] ],
+          "Loot": [
+            { "Item": "SeekerQueen.1", "Weight": 1, "Rarity": [ 0, 0, 70, 30 ] }
+          ]
+        },
+        {
+          "Level": 3,
+          "Drops": [ [4, 45], [5, 40], [6, 15] ],
+          "Loot": [
+            { "Item": "SeekerQueen.1", "Weight": 1, "Rarity": [ 0, 0, 60, 40 ] }
+          ]
+        },
+        {
+          "Level": 4,
+          "Drops": [ [4, 25], [5, 50], [6, 25] ],
+          "Loot": [
+            { "Item": "SeekerQueen.1", "Weight": 1, "Rarity": [ 0, 0, 40, 60 ] }
+          ]
+        },
+        {
+          "Level": 5,
+          "Drops": [ [4, 5], [5, 60], [6, 30], [7, 5] ],
+          "Loot": [
+            { "Item": "SeekerQueen.1", "Weight": 1, "Rarity": [ 0, 0, 20, 80 ] }
+          ]
+        },
+        {
+          "Level": 6,
+          "Drops": [ [5, 50], [6, 40], [7, 10] ],
+          "Loot": [
+            { "Item": "SeekerQueen.1", "Weight": 1, "Rarity": [ 0, 0, 0, 100 ] }
+          ]
+        }
+      ]
+    },
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // TREASURE CHESTS
@@ -1306,6 +1545,16 @@
         { "Item": "Tier4Everything", "Weight": 1 }
       ]
     },
+    // TreasureChest_mountaincave
+    ////////////////////////////////////////////////////////////////////////////////////
+    {
+      "Object": "TreasureChest_mountaincave",
+      "Drops": [ [0, 58], [1, 30], [2, 20], [3, 2] ],
+      "Loot": [
+        { "Item": "Tier3Everything", "Weight": 4 },
+        { "Item": "Tier4Everything", "Weight": 1 }
+      ]
+    },
     // TreasureChest_plains_stone
     ////////////////////////////////////////////////////////////////////////////////////
     {
@@ -1323,6 +1572,34 @@
       "Loot": [
         { "Item": "Tier4Everything", "Weight": 3 },
         { "Item": "Tier5Everything", "Weight": 1 }
+      ]
+    },
+    // TreasureChest_dvergrtown
+    ////////////////////////////////////////////////////////////////////////////////////
+    {
+      "Object": "TreasureChest_dvergrtown",
+      "Drops": [ [0, 58], [1, 30], [2, 20], [3, 2] ],
+      "Loot": [
+        { "Item": "Tier5Everything", "Weight": 3 },
+        { "Item": "Tier6Everything", "Weight": 1 }
+      ]
+    },
+    // TreasureChest_dvergrtower
+    ////////////////////////////////////////////////////////////////////////////////////
+    {
+      "Object": "TreasureChest_dvergrtower",
+      "Drops": [ [0, 58], [1, 30], [2, 20], [3, 2] ],
+      "Loot": [
+        { "Item": "TreasureChest_dvergrtown.1", "Weight": 1 }
+      ]
+    },
+    // TreasureChest_dvergr_loose_stone
+    ////////////////////////////////////////////////////////////////////////////////////
+    {
+      "Object": "TreasureChest_dvergr_loose_stone",
+      "Drops": [ [0, 58], [1, 30], [2, 20], [3, 2] ],
+      "Loot": [
+        { "Item": "TreasureChest_dvergrtown.1", "Weight": 1 }
       ]
     },
 
@@ -1367,6 +1644,14 @@
       "Loot": [
         { "Item": "Tier4Everything", "Weight": 1, "Rarity": [ 0, 10, 75, 15] },
         { "Item": "Tier5Everything", "Weight": 1, "Rarity": [ 0, 10, 75, 15] }
+      ]
+    },
+    {
+      "Object": "TreasureMapChest_Mistlands",
+      "Drops": [ [3, 80], [4, 15], [5, 5] ],
+      "Loot": [
+        { "Item": "Tier5Everything", "Weight": 1, "Rarity": [ 0, 5, 70, 25] },
+        { "Item": "Tier6Everything", "Weight": 1, "Rarity": [ 0, 5, 70, 25] }
       ]
     }
   ]

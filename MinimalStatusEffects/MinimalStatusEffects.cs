@@ -23,7 +23,7 @@ namespace MinimalStatusEffects
     public class MinimalStatusEffects : BaseUnityPlugin
     {
         public const string PluginId = "randyknapp.mods.minimalstatuseffects";
-        public const string Version = "1.0.3";
+        public const string Version = "1.0.4";
 
         private Harmony _harmony;
 
@@ -47,7 +47,7 @@ namespace MinimalStatusEffects
 
         private void OnDestroy()
         {
-            _harmony.UnpatchAll(PluginId);
+            _harmony.UnpatchSelf();
         }
     }
 }

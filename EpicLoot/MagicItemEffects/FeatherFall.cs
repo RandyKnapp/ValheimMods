@@ -1,71 +1,37 @@
-﻿using System;
+﻿using System.Linq;
 using HarmonyLib;
 using JetBrains.Annotations;
-using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace EpicLoot.MagicItemEffects
 {
-	[HarmonyPatch(typeof(Character), nameof(Character.UpdateGroundContact))]
-	public class FeatherFallDisableFallDamage_Character_UpdateGroundContact_Patch
-	{
-		[UsedImplicitly]
-		private static void Prefix(Character __instance, ref float ___m_maxAirAltitude)
-		{
-			if (!__instance.m_groundContact)
-			{
-				return;
-			}
-			
-			if (__instance is Player player && player.HasActiveMagicEffect(MagicEffectType.FeatherFall))
-			{
-				___m_maxAirAltitude = Mathf.Min(3.99f + __instance.transform.position.y, ___m_maxAirAltitude);
-			}
-		}
-	}
-	
-	[HarmonyPatch(typeof(Player), nameof(Player.FixedUpdate))]
-	public class FeatherFallReduceFallSpeed_Player_FixedUpdate_Patch
+	//UpdateEquipmentStatusEffects
+	[HarmonyPatch(typeof(Humanoid), nameof(Humanoid.UpdateEquipmentStatusEffects))]
+    public class FeatherFall_Humanoid_UpdateEquipmentStatusEffects_Patch
     {
-        public const string FeatherFallEffectName = "FeatherFallAura";
-        public const float MaxFallSpeed = -6;
-
-		[UsedImplicitly]
-		private static void Postfix(Player __instance)
-		{
-            var currentFeatherFallAura = __instance.transform.Find(FeatherFallEffectName);
-
-			if (!__instance.IsOnGround() && __instance.HasActiveMagicEffect(MagicEffectType.FeatherFall) && __instance.m_body)
-			{
-				var velocity = __instance.m_body.velocity;
-
-                if (velocity.y <= MaxFallSpeed + float.Epsilon * 10)
-                {
-                    if (currentFeatherFallAura != null && currentFeatherFallAura.GetComponent<ParticleSystem>().isStopped)
-                    {
-                        currentFeatherFallAura.GetComponent<ParticleSystem>().Play();
-                        currentFeatherFallAura.GetComponent<AudioSource>().Play();
-                    }
-                    else if (currentFeatherFallAura == null)
-                    {
-                        var effect = Object.Instantiate(EpicLoot.LoadAsset<GameObject>(FeatherFallEffectName), __instance.transform);
-                        effect.name = FeatherFallEffectName;
-                        effect.GetComponent<AudioSource>().outputAudioMixerGroup = AudioMan.instance.m_ambientMixer;
-                    }
-
-                    velocity.x = Mathf.Lerp(velocity.x, 0, 1 / 30f);
-                    velocity.z = Mathf.Lerp(velocity.z, 0, 1 / 30f);
-                }
-
-				velocity.y = Math.Max(MaxFallSpeed, velocity.y);
-				__instance.m_body.velocity = velocity;
-			}
-
-            if (__instance.IsOnGround() && currentFeatherFallAura != null)
+        [UsedImplicitly]
+        public static void Postfix(Humanoid __instance)
+        {
+            if (__instance is Player player)
             {
-                currentFeatherFallAura.GetComponent<ParticleSystem>().Stop();
-                currentFeatherFallAura.GetComponent<AudioSource>().Stop();
+                var slowFall = ObjectDB.instance.GetStatusEffect("SlowFall".GetHashCode());
+                if (slowFall == null)
+                {
+                    EpicLoot.LogError("Could not find SlowFall status effect!");
+                    return;
+                }
+                
+                EquipmentEffectCache.Reset(player);
+
+                var shouldHaveFeatherFall = player.HasActiveMagicEffect(MagicEffectType.FeatherFall);
+                var hasFeatherFall = player.m_equipmentStatusEffects.Contains(slowFall);
+                if (!hasFeatherFall && shouldHaveFeatherFall)
+                {
+                    player.m_equipmentStatusEffects.Add(slowFall);
+                    player.m_seman.AddStatusEffect(slowFall);
+                    var equipEffectsList = string.Join(", ", player.m_equipmentStatusEffects.Select(x => x.name));
+                    EpicLoot.Log($"Adding feather fall. Current equip effects: {equipEffectsList}");
+                }
             }
         }
-	}
+    }
 }

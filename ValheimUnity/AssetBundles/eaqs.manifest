@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 3833557892
+CRC: 1529971468
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 4567c59cf9bb55ff8e4ad31e99aeba33
+    Hash: 8c925f65ebb6fc33ead2f022671a404c
   TypeTreeHash:
     serializedVersion: 2
-    Hash: f98c7bdb74dd487f54cac0f4547117d5
+    Hash: 8bfd4c748b2eb63d60372f8972dd3346
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -23,9 +23,13 @@ ClassTypes:
   Script: {instanceID: 0}
 - Class: 224
   Script: {instanceID: 0}
-SerializeReferenceClassIdentifiers: []
+SerializeReferenceClassIdentifiers:
+- AssemblyName: UnityEngine.CoreModule
+  ClassName: UnityEngine.Events.PersistentCallGroup
+- AssemblyName: UnityEngine.UI
+  ClassName: UnityEngine.UI.MaskableGraphic/CullStateChangedEvent
 Assets:
+- Assets/EAQS/PaperdollFemale.png
 - Assets/EAQS/PaperdollMale.png
 - Assets/EAQS/Paperdolls.prefab
-- Assets/EAQS/PaperdollFemale.png
 Dependencies: []

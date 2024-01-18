@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
+using System.Reflection.Emit;
 using BepInEx;
 using BepInEx.Configuration;
 using HarmonyLib;
@@ -7,8 +8,7 @@ using UnityEngine;
 
 namespace EquipmentAndQuickSlots
 {
-
-    [BepInPlugin(PluginId, "Equipment and Quick Slots", "2.0.14")]
+    [BepInPlugin(PluginId, "Equipment and Quick Slots", "2.1.7")]
     [BepInDependency("moreslots", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("randyknapp.mods.auga", BepInDependency.DependencyFlags.SoftDependency)]
     public class EquipmentAndQuickSlots : BaseUnityPlugin
@@ -17,7 +17,7 @@ namespace EquipmentAndQuickSlots
 
         public const int QuickSlotCount = 3;
         public static int EquipSlotCount => EquipSlotTypes.Count;
-        public static readonly ConfigEntry<string>[] KeyCodes = new ConfigEntry<string>[QuickSlotCount];
+        public static readonly ConfigEntry<KeyboardShortcut>[] KeyCodes = new ConfigEntry<KeyboardShortcut>[QuickSlotCount];
         public static readonly ConfigEntry<string>[] HotkeyLabels = new ConfigEntry<string>[QuickSlotCount];
         public static readonly List<ItemDrop.ItemData.ItemType> EquipSlotTypes = new List<ItemDrop.ItemData.ItemType>() {
             ItemDrop.ItemData.ItemType.Helmet,
@@ -33,6 +33,10 @@ namespace EquipmentAndQuickSlots
         private static ConfigEntry<bool> _loggingEnabled;
         public static ConfigEntry<TextAnchor> QuickSlotsAnchor;
         public static ConfigEntry<Vector2> QuickSlotsPosition;
+        public static ConfigEntry<bool> DontDropEquipmentOnDeath;
+        public static ConfigEntry<bool> DontDropQuickslotsOnDeath;
+        public static ConfigEntry<bool> InstantlyReequipArmorOnPickup;
+        public static ConfigEntry<bool> InstantlyReequipQuickslotsOnPickup;
 
         //Ergänzungen etofi
         //-------------------------------------------------------------------------------------------------------------------------------------------
@@ -58,9 +62,18 @@ namespace EquipmentAndQuickSlots
             _instance = this;
 
             _loggingEnabled = Config.Bind("Logging", "Logging Enabled", false, "Enable logging");
-            KeyCodes[0] = Config.Bind("Hotkeys", "Quick slot hotkey 1", "z", "Hotkey for Quick Slot 1.");
-            KeyCodes[1] = Config.Bind("Hotkeys", "Quick slot hotkey 2", "v", "Hotkey for Quick Slot 2.");
-            KeyCodes[2] = Config.Bind("Hotkeys", "Quick slot hotkey 3", "b", "Hotkey for Quick Slot 3.");
+            KeyCodes[0] = Config.Bind("Hotkeys", "Quick slot hotkey 1", new KeyboardShortcut(KeyCode.Z), "Hotkey for Quick Slot 1.");
+            if (KeyCodes[0].Value.MainKey == KeyCode.None)
+                KeyCodes[0].Value = new KeyboardShortcut(KeyCode.Z);
+            
+            KeyCodes[1] = Config.Bind("Hotkeys", "Quick slot hotkey 2", new KeyboardShortcut(KeyCode.V), "Hotkey for Quick Slot 2.");
+            if (KeyCodes[1].Value.MainKey == KeyCode.None)
+                KeyCodes[1].Value = new KeyboardShortcut(KeyCode.V);
+            
+            KeyCodes[2] = Config.Bind("Hotkeys", "Quick slot hotkey 3", new KeyboardShortcut(KeyCode.B), "Hotkey for Quick Slot 3.");
+            if (KeyCodes[2].Value.MainKey == KeyCode.None)
+                KeyCodes[2].Value = new KeyboardShortcut(KeyCode.B);
+            
             HotkeyLabels[0] = Config.Bind("Hotkeys", "Quick slot hotkey label 1", "", "Hotkey Label for Quick Slot 1. Leave blank to use the hotkey itself.");
             HotkeyLabels[1] = Config.Bind("Hotkeys", "Quick slot hotkey label 2", "", "Hotkey Label for Quick Slot 2. Leave blank to use the hotkey itself.");
             HotkeyLabels[2] = Config.Bind("Hotkeys", "Quick slot hotkey label 3", "", "Hotkey Label for Quick Slot 3. Leave blank to use the hotkey itself.");
@@ -69,6 +82,10 @@ namespace EquipmentAndQuickSlots
             ViewDebugSaveData = Config.Bind("Toggles", "View Debug Save Data", false, "Enable to view the raw save data in the compendium.");
             QuickSlotsAnchor = Config.Bind("Quick Slots", "Quick Slots Anchor", TextAnchor.LowerLeft, "The point on the HUD to anchor the Quick Slots bar. Changing this also changes the pivot of the Quick Slots to that corner.");
             QuickSlotsPosition = Config.Bind("Quick Slots", "Quick Slots Position", new Vector2(216, 150), "The position offset from the Quick Slots Anchor at which to place the Quick Slots.");
+            DontDropEquipmentOnDeath = Config.Bind("Gravestone", "Dont drop equipment on death", false, "If set to true, your equipment will not be dropped when you die. Only valid when Equipment Slots are enabled.");
+            DontDropQuickslotsOnDeath = Config.Bind("Gravestone", "Dont drop quickslot items on death", false, "If set to true, the items in the quickslots will not be dropped when you die. Only valid when Quick Slots are enabled.");
+            InstantlyReequipArmorOnPickup = Config.Bind("Gravestone", "Instantly re-equip armor on pickup", false, "If set to true, when you pickup your equipment gravestone your armor will be instantly re-equipped, if possible. Only valid when Equipment Slots are enabled.");
+            InstantlyReequipQuickslotsOnPickup = Config.Bind("Gravestone", "Instantly re-equip quickslot items on pickup", true, "If set to true, when you pickup your equipment gravestone your quick slot items will be instantly re-equipped, if possible. Only valid when Quick Slots are enabled.");
 
             //Ergänzungen etofi
             //-------------------------------------------------------------------------------------------------------------------------------------------
@@ -105,7 +122,7 @@ namespace EquipmentAndQuickSlots
 
         private void OnDestroy()
         {
-            _harmony?.UnpatchAll(PluginId);
+            _harmony?.UnpatchSelf();
         }
 
         private void Update()
@@ -150,28 +167,25 @@ namespace EquipmentAndQuickSlots
         public static string GetBindingLabel(int index)
         {
             index = Mathf.Clamp(index, 0, QuickSlotCount - 1);
+            
             var keycode = GetBindingKeycode(index);
             var label = HotkeyLabels[index]?.Value;
-            if (string.IsNullOrEmpty(label))
-            {
-                return string.IsNullOrEmpty(keycode) ? "" : keycode.ToUpperInvariant();
-            }
-            else
-            {
-                return label;
-            }
+            
+            return string.IsNullOrEmpty(label) ? keycode.ToString() : label;
         }
 
-        public static string GetBindingKeycode(int index)
+        public static KeyCode GetBindingKeycode(int index)
         {
             index = Mathf.Clamp(index, 0, QuickSlotCount - 1);
-            return KeyCodes[index] == null ? null : KeyCodes[index].Value.ToLowerInvariant();
+            var keycodeValue = KeyCodes[index].Value.MainKey;
+
+            return keycodeValue;
         }
 
         public static void CheckQuickUseInput(Player player, int index)
         {
             var keyCode = GetBindingKeycode(index);
-            if (keyCode != null && Input.GetKeyDown(keyCode))
+            if (ZInput.GetKeyDown(keyCode))
             {
                 var item = player.GetQuickSlotItem(index);
                 if (item != null)
@@ -200,5 +214,23 @@ namespace EquipmentAndQuickSlots
         {
             return EquipSlotTypes.Contains(item.m_shared.m_itemType);
         }
+        
+        public static CodeInstruction LogMessage(CodeInstruction instruction, int counter)
+        {
+            EquipmentAndQuickSlots.Log($"IL_{counter}: Opcode: {instruction.opcode} Operand: {instruction.operand}");
+            return instruction;
+        }
+            
+        public static CodeInstruction FindInstructionWithLabel(List<CodeInstruction> codeInstructions, int index, Label label)
+        {
+            if (index >= codeInstructions.Count)
+                return null;
+                
+            if (codeInstructions[index].labels.Contains(label))
+                return codeInstructions[index];
+                
+            return FindInstructionWithLabel(codeInstructions, index + 1, label);
+        }
+
     }
 }
