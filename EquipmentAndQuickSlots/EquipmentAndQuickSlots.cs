@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace EquipmentAndQuickSlots
 {
-    [BepInPlugin(PluginId, "Equipment and Quick Slots", "2.1.14")]
+    [BepInPlugin(PluginId, "Equipment and Quick Slots Advanced", "2.1.14")]
     [BepInDependency("moreslots", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("randyknapp.mods.auga", BepInDependency.DependencyFlags.SoftDependency)]    
     public class EquipmentAndQuickSlots : BaseUnityPlugin
