@@ -1,7 +1,7 @@
 ﻿using Common;
 using HarmonyLib;
 using UnityEngine;
-using UnityEngine.UI;
+using TMPro;
 
 namespace EquipmentAndQuickSlots
 {
@@ -53,11 +53,11 @@ namespace EquipmentAndQuickSlots
             {
                 for (var i = 0; i < EquipmentAndQuickSlots.QuickSlotCount; ++i)
                 {
-                    var element = __instance.m_elements[i];
-                    var bindingText = element.m_go.transform.Find("binding").GetComponent<Text>();
-                    bindingText.enabled = true;
-                    bindingText.horizontalOverflow = HorizontalWrapMode.Overflow;
-                    bindingText.text = EquipmentAndQuickSlots.GetBindingLabel(i);
+                    TMP_Text component = __instance.m_elements[i].m_go.transform.Find("binding").GetComponent<TMP_Text>();
+                    ((Behaviour)component).enabled = true;
+                    component.overflowMode = (TextOverflowModes)0;
+                    component.textWrappingMode = (TextWrappingModes)0;
+                    component.text = EquipmentAndQuickSlots.GetBindingLabel(i);
                 }
             }
             else if (__instance.name == "EquipmentSlotGrid")
@@ -86,13 +86,15 @@ namespace EquipmentAndQuickSlots
                 {
                     var element = __instance.m_elements[i];
 
-                    var bindingText = element.m_go.transform.Find("binding").GetComponent<Text>();
-                    bindingText.enabled = !EquipmentAndQuickSlots.HasAuga;
+                    TMP_Text component = element.m_go.transform.Find("binding").GetComponent<TMP_Text>();
+                    ((Behaviour)component).enabled = !EquipmentAndQuickSlots.HasAuga;
+
                     if (!EquipmentAndQuickSlots.HasAuga)
                     {
-                        bindingText.horizontalOverflow = HorizontalWrapMode.Overflow;
-                        bindingText.text = equipNames[i];
-                        bindingText.rectTransform.anchoredPosition = new Vector2(32, 5);
+                        component.overflowMode = (TextOverflowModes)0;
+                        component.textWrappingMode = (TextWrappingModes)0;
+                        component.text = equipNames[i];
+                        component.rectTransform.anchoredPosition = new Vector2(32f, 5f);
                     }
 
                     var offset = new Vector2(-20, 79);

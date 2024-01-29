@@ -331,32 +331,19 @@ namespace EquipmentAndQuickSlots
         public void OverrideUpdateTotalWeight()
         {
             CallBase = true;
-            m_totalWeight = 0f;
-
+            m_totalWeight = 0.0f;
             if (EquipmentAndQuickSlots.InventoryInfiniteWeight.Value == false)
             {
-                var iWeight = new float[_inventories.Count()];
-                //EquipmentAndQuickSlots.LogWarning("Begin updating " + _inventories.Count() + " inventories of weights");
-
-                for (var i = 0; i < _inventories.Count(); i++)
+                float[] numArray = new float[_inventories.Count<Inventory>()];
+                for (int index = 0; index < _inventories.Count<Inventory>(); ++index)
                 {
-                    //EquipmentAndQuickSlots.LogWarning("InventoryName: " + _inventories[i].m_name + " has " + _inventories[i].m_inventory.Count() + " items");
-
-                    foreach (var itemData in _inventories[i].m_inventory)
-                    {
-                        iWeight[i] += itemData.GetWeight();
-                        //EquipmentAndQuickSlots.LogWarning("ItemName: " + itemData.m_shared.m_name + ", ItemWeight: " + itemData.GetWeight() + ", Total " + _inventories[i].m_name + " Weight: " + iWeight[i] );
-                    }
-                    //EquipmentAndQuickSlots.LogWarning(_inventories[i].m_name + " Weight:" + iWeight[i]);
-                    m_totalWeight += iWeight[i];
+                    foreach (ItemDrop.ItemData itemData in _inventories[index].m_inventory)
+                        numArray[index] += itemData.GetWeight();
+                    m_totalWeight += numArray[index];
                 }
             }
-
-            //EquipmentAndQuickSlots.LogWarning("Total Weight of all inventories: " + m_totalWeight);
             CallBase = false;
-            //EquipmentAndQuickSlots.LogWarning("Done Updating Total Weight");
-        }
-
+            }
 
         public bool OverrideIsTeleportable()
         {
