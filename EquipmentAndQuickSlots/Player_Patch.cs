@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using HarmonyLib;
 using UnityEngine;
+using UnityEngine.Assertions.Must;
 using static ItemDrop;
 using static Unity.IO.LowLevel.Unsafe.AsyncReadManagerMetrics;
 
@@ -69,13 +70,6 @@ namespace EquipmentAndQuickSlots
         {
             __state = (Inventory)null;
 
-            if (EquipmentAndQuickSlots.keepAllItemsOnDeath.Value)
-            {
-                Inventory savedInventory = new Inventory("SavedInventory", (Sprite)null, __instance.m_inventory.m_width, __instance.m_inventory.m_height);
-                savedInventory.MoveAll(__instance.m_inventory);
-                __state = savedInventory;
-            }
-
             bool globalKey1 = ZoneSystem.instance.GetGlobalKey(GlobalKeys.DeathKeepEquip);
             bool globalKey2 = ZoneSystem.instance.GetGlobalKey(GlobalKeys.DeathDeleteItems);
             bool globalKey3 = ZoneSystem.instance.GetGlobalKey(GlobalKeys.DeathDeleteUnequipped);
@@ -90,8 +84,30 @@ namespace EquipmentAndQuickSlots
 
             EquipmentAndQuickSlots.LogWarning("== PLAYER DIED ==");
             Inventory equipmentSlotInventory = __instance.GetEquipmentSlotInventory();
-            Inventory quickSlotInventory = __instance.GetQuickSlotInventory();
+            Inventory quickSlotInventory = __instance.GetQuickSlotInventory();            
             List<Inventory> inventoryList = new List<Inventory>();
+
+            if (EquipmentAndQuickSlots.keepAllItemsOnDeath.Value)
+            {
+                List<Inventory> inventoryListKeepAll = new List<Inventory>();
+                List<ItemData> itemDataListKeepAll = new List<ItemData>();
+                Inventory savedInventory = new Inventory("SavedInventory", (Sprite)null, __instance.m_inventory.m_width, __instance.m_inventory.m_height);
+
+                foreach (Inventory allInventory in __instance.GetAllInventories())
+                {
+                    foreach (ItemData itemData in allInventory.m_inventory)
+                    {
+                        Vector2i gridPos = itemData.m_gridPos;
+                        if (allInventory == quickSlotInventory)
+                        {
+                            itemData.m_customData["eaqs-qs"] = string.Format("{0},{1}", (object)gridPos.x, (object)gridPos.y);
+                        }
+                        savedInventory.AddItem(itemData,itemData.m_stack, gridPos.x, gridPos.y);
+                    }
+                }
+                __state = savedInventory;
+                return false;
+            }
 
             if (!EquipmentAndQuickSlots.DontDropEquipmentOnDeath.Value && !flag1)
             {
@@ -100,7 +116,9 @@ namespace EquipmentAndQuickSlots
             }
 
             if (!EquipmentAndQuickSlots.DontDropQuickslotsOnDeath.Value && !flag1)
+            {
                 inventoryList.Add(quickSlotInventory);
+            }
 
             if (inventoryList.Count == 0)
                 return true;
@@ -177,7 +195,6 @@ namespace EquipmentAndQuickSlots
                 __instance.GetInventory().MoveAll(__state);
             }
         }
-
         public static void UnequipNonEAQSSlots(Player __instance)
         {
             if (__instance.m_rightItem != null)
@@ -205,7 +222,12 @@ namespace EquipmentAndQuickSlots
 				    }
 			    }
 		    }
-	    }
+
+            if (EquipmentAndQuickSlots.keepAllItemsOnDeath.Value)
+            {
+                TombStone_OnTakeAllSuccess_Patch.TryReequipQuickslotItems();
+            }
+        }
     }
 
     [HarmonyPatch(typeof(TombStone), nameof(TombStone.OnTakeAllSuccess))]
