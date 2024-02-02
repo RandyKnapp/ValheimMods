@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Emit;
 using HarmonyLib;
 using JetBrains.Annotations;
 using UnityEngine;
@@ -23,12 +24,20 @@ namespace EquipmentAndQuickSlots
             {
                 if (EquipmentAndQuickSlots.QuickSlotsEnabled.Value)
                 {
-                    BuildQuickSlotGrid(__instance);
+                    BuildQuickSlotGrid(__instance);                                  
                 }
+
                 if (EquipmentAndQuickSlots.EquipmentSlotsEnabled.Value)
                 {
                     BuildEquipmentSlotGrid(__instance);
                 }
+
+                if (EquipmentAndQuickSlots.extraRows.Value > 0)
+                {
+                    int height = EquipmentAndQuickSlots.extraRows.Value;
+                    __instance.m_player.Find("Bkg").GetComponent<RectTransform>().anchorMin = new Vector2(0, (height) * -0.25f);
+                }
+
             }
 
             private static void BuildQuickSlotGrid(InventoryGui inventoryGui)
@@ -84,6 +93,7 @@ namespace EquipmentAndQuickSlots
                 }
 
                 var go = new GameObject(name, typeof(RectTransform));
+                go.SetActive(false);
                 go.transform.SetParent(EAQSPanel.transform, false);
 
                 grid = go.AddComponent<InventoryGrid>();
@@ -96,6 +106,7 @@ namespace EquipmentAndQuickSlots
                 grid.m_elementPrefab = inventoryGui.m_playerGrid.m_elementPrefab;
                 grid.m_gridRoot = root.transform as RectTransform;
                 grid.m_elementSpace = inventoryGui.m_playerGrid.m_elementSpace;
+                go.SetActive(true);
                 grid.ResetView();
 
                 if (name == "EquipmentSlotGrid")

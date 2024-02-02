@@ -1,9 +1,10 @@
 {
-  "name": "EquipmentAndQuickSlots",
-  "version_number": "2.1.7",
-  "website_url": "https://github.com/RandyKnapp/ValheimMods/tree/main/EquipmentAndQuickSlots",
-  "description": "Give equipped items their own dedicated inventory slots, plus three more hotkeyable quick slots.",
-  "dependencies": [
-    "denikson-BepInExPack_Valheim-5.4.2102"
-  ]
+	"name": "EquipmentAndQuickSlotsAdvanced",
+	"version_number": "2.1.14",
+	"website_url": "https://github.com/etofi/ValheimMods/tree/main/EquipmentAndQuickSlots",
+	"description": "Give equipped items their own dedicated inventory slots, plus three more hotkeyable quick slots and some more usefull functions.",
+	"author": "etofi",
+	"dependencies": [
+	"denikson-BepInExPack_Valheim-5.4.2200"
+	]
 }

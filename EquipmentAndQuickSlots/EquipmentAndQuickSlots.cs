@@ -8,12 +8,12 @@ using UnityEngine;
 
 namespace EquipmentAndQuickSlots
 {
-    [BepInPlugin(PluginId, "Equipment and Quick Slots", "2.1.7")]
+    [BepInPlugin(PluginId, "Equipment and Quick Slots Advanced", "2.1.14")]
     [BepInDependency("moreslots", BepInDependency.DependencyFlags.SoftDependency)]
-    [BepInDependency("randyknapp.mods.auga", BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency("randyknapp.mods.auga", BepInDependency.DependencyFlags.SoftDependency)]    
     public class EquipmentAndQuickSlots : BaseUnityPlugin
     {
-        public const string PluginId = "randyknapp.mods.equipmentandquickslots";
+        public const string PluginId = "etofi.mods.equipmentandquickslotsadvanced";
 
         public const int QuickSlotCount = 3;
         public static int EquipSlotCount => EquipSlotTypes.Count;
@@ -37,6 +37,18 @@ namespace EquipmentAndQuickSlots
         public static ConfigEntry<bool> DontDropQuickslotsOnDeath;
         public static ConfigEntry<bool> InstantlyReequipArmorOnPickup;
         public static ConfigEntry<bool> InstantlyReequipQuickslotsOnPickup;
+        
+        //Ergänzungen etofi
+        //-------------------------------------------------------------------------------------------------------------------------------------------
+        public static ConfigEntry<bool> InventoryInfiniteWeight;
+        public static ConfigEntry<bool> AllowAllItemsInPortals;
+        public static ConfigEntry<bool> DontLoseSkillsOnDeat;
+        public static ConfigEntry<bool> EquipedArmorDoesntAffectMovementSpeed;
+        public static ConfigEntry<float> MinimapDiscoveryRadius;
+        public static ConfigEntry<float> MinimapDiscoveryRadiusBoat;
+        public static ConfigEntry<int> extraRows;
+        public static ConfigEntry<bool> keepAllItemsOnDeath;
+        //-------------------------------------------------------------------------------------------------------------------------------------------
 
         public static Sprite PaperdollMale;
         public static Sprite PaperdollFemale;
@@ -50,6 +62,8 @@ namespace EquipmentAndQuickSlots
         private void Awake()
         {
             _instance = this;
+
+            HasAuga = Auga.API.IsLoaded();
 
             _loggingEnabled = Config.Bind("Logging", "Logging Enabled", false, "Enable logging");
             KeyCodes[0] = Config.Bind("Hotkeys", "Quick slot hotkey 1", new KeyboardShortcut(KeyCode.Z), "Hotkey for Quick Slot 1.");
@@ -71,17 +85,45 @@ namespace EquipmentAndQuickSlots
             QuickSlotsEnabled = Config.Bind("Toggles", "Enable Quick Slots", true, "Enable the quick slots. Disabling this while items are in the slots with attempt to move them to your inventory.");
             ViewDebugSaveData = Config.Bind("Toggles", "View Debug Save Data", false, "Enable to view the raw save data in the compendium.");
             QuickSlotsAnchor = Config.Bind("Quick Slots", "Quick Slots Anchor", TextAnchor.LowerLeft, "The point on the HUD to anchor the Quick Slots bar. Changing this also changes the pivot of the Quick Slots to that corner.");
-            QuickSlotsPosition = Config.Bind("Quick Slots", "Quick Slots Position", new Vector2(216, 150), "The position offset from the Quick Slots Anchor at which to place the Quick Slots.");
+            QuickSlotsPosition = Config.Bind<Vector2>("Quick Slots", "Quick Slots Position", GetDefaultPosition(new Vector2(216f, 150f)), "The position offset from the Quick Slots Anchor at which to place the Quick Slots.");
             DontDropEquipmentOnDeath = Config.Bind("Gravestone", "Dont drop equipment on death", false, "If set to true, your equipment will not be dropped when you die. Only valid when Equipment Slots are enabled.");
             DontDropQuickslotsOnDeath = Config.Bind("Gravestone", "Dont drop quickslot items on death", false, "If set to true, the items in the quickslots will not be dropped when you die. Only valid when Quick Slots are enabled.");
             InstantlyReequipArmorOnPickup = Config.Bind("Gravestone", "Instantly re-equip armor on pickup", false, "If set to true, when you pickup your equipment gravestone your armor will be instantly re-equipped, if possible. Only valid when Equipment Slots are enabled.");
             InstantlyReequipQuickslotsOnPickup = Config.Bind("Gravestone", "Instantly re-equip quickslot items on pickup", true, "If set to true, when you pickup your equipment gravestone your quick slot items will be instantly re-equipped, if possible. Only valid when Quick Slots are enabled.");
+            FixQuickSlotPositionForAuga((Vector2)QuickSlotsPosition.DefaultValue, QuickSlotsPosition.Value);
+
+            //Ergänzungen etofi
+            //-------------------------------------------------------------------------------------------------------------------------------------------
+            InventoryInfiniteWeight = Config.Bind("XtraToggles", "Inventory has infinite weight", false, "Enable inventory has infinite weight");
+            AllowAllItemsInPortals = Config.Bind("XtraToggles", "Allow all items in portals", false, "Enable allow all items in portals");
+            DontLoseSkillsOnDeat = Config.Bind("XtraToggles", "Do not lose skills on death", false, "Enable do not lose skills on death");
+            EquipedArmorDoesntAffectMovementSpeed = Config.Bind("XtraToggles", "Equiped armor does not affect movement speed", false, "Enable Equiped armor does not affect movement speed");
+            MinimapDiscoveryRadius = Config.Bind("XtraMinimap", "Set minimap discovery radius", 0f, "Set minimap discovery radius (default=0)");
+            MinimapDiscoveryRadiusBoat = Config.Bind("XtraMinimap", "Set minimap discovery radius on boat", 0f, "Set minimap discovery radius on boat(default=0)");
+            extraRows = Config.Bind<int>("XtraInventory", "ExtraRows", 0, "Number of extra ordinary rows.");
+            keepAllItemsOnDeath = this.Config.Bind<bool>("Gravestone", "Keep all items on death", false, "Keep complete inventory on death.");
+            //-------------------------------------------------------------------------------------------------------------------------------------------
 
             LoadAssets();
 
             _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), PluginId);
 
-            HasAuga = Auga.API.IsLoaded();
+            
+        }
+
+        private static Vector2 GetDefaultPosition(Vector2 defaultPosition)
+        {
+            return !EquipmentAndQuickSlots.HasAuga ? defaultPosition : new Vector2(defaultPosition.x, 86f);
+        }
+
+        private static void FixQuickSlotPositionForAuga(
+          Vector2 defaultPosition,
+          Vector2 currentPosition)
+        {
+            if (!EquipmentAndQuickSlots.HasAuga || defaultPosition != currentPosition)
+                return;
+            Vector2 defaultPosition1 = EquipmentAndQuickSlots.GetDefaultPosition(currentPosition);
+            EquipmentAndQuickSlots.QuickSlotsPosition.Value = defaultPosition1;
         }
 
         private static void LoadAssets()
@@ -100,11 +142,7 @@ namespace EquipmentAndQuickSlots
             return assetBundle;
         }
 
-        private void OnDestroy()
-        {
-            _harmony?.UnpatchSelf();
-        }
-
+    
         private void Update()
         {
             if (QuickSlotsEnabled.Value)

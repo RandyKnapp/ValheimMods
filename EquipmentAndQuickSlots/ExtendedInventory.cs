@@ -331,32 +331,29 @@ namespace EquipmentAndQuickSlots
         public void OverrideUpdateTotalWeight()
         {
             CallBase = true;
-            m_totalWeight = 0f;
-            var iWeight = new float[_inventories.Count()];
-            //EquipmentAndQuickSlots.LogWarning("Begin updating " + _inventories.Count() + " inventories of weights");
-
-            for (var i = 0; i < _inventories.Count(); i++)
+            m_totalWeight = 0.0f;
+            if (EquipmentAndQuickSlots.InventoryInfiniteWeight.Value == false)
             {
-                //EquipmentAndQuickSlots.LogWarning("InventoryName: " + _inventories[i].m_name + " has " + _inventories[i].m_inventory.Count() + " items");
-
-                foreach (var itemData in _inventories[i].m_inventory)
+                float[] numArray = new float[_inventories.Count<Inventory>()];
+                for (int index = 0; index < _inventories.Count<Inventory>(); ++index)
                 {
-                    iWeight[i] += itemData.GetWeight();
-                    //EquipmentAndQuickSlots.LogWarning("ItemName: " + itemData.m_shared.m_name + ", ItemWeight: " + itemData.GetWeight() + ", Total " + _inventories[i].m_name + " Weight: " + iWeight[i] );
+                    foreach (ItemDrop.ItemData itemData in _inventories[index].m_inventory)
+                        numArray[index] += itemData.GetWeight();
+                    m_totalWeight += numArray[index];
                 }
-                //EquipmentAndQuickSlots.LogWarning(_inventories[i].m_name + " Weight:" + iWeight[i]);
-                m_totalWeight += iWeight[i];
             }
-            //EquipmentAndQuickSlots.LogWarning("Total Weight of all inventories: " + m_totalWeight);
             CallBase = false;
-            //EquipmentAndQuickSlots.LogWarning("Done Updating Total Weight");
-        }
-
+            }
 
         public bool OverrideIsTeleportable()
         {
             CallBase = true;
-            var result = _inventories.All(x => x.IsTeleportable());
+
+            var result = true;
+            if (EquipmentAndQuickSlots.AllowAllItemsInPortals.Value == false)
+            {
+                result = _inventories.All(x => x.IsTeleportable());
+            }
             CallBase = false;
             return result;
         }

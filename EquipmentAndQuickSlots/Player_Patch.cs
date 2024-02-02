@@ -1,8 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using System.Reflection;
 using HarmonyLib;
 using UnityEngine;
+using UnityEngine.Assertions.Must;
+using static ItemDrop;
+using static Unity.IO.LowLevel.Unsafe.AsyncReadManagerMetrics;
 
 namespace EquipmentAndQuickSlots
 {
@@ -42,9 +47,18 @@ namespace EquipmentAndQuickSlots
 
             var t = typeof(Humanoid).GetField(nameof(Humanoid.m_inventory),
                 BindingFlags.Instance | BindingFlags.NonPublic);
-            t.SetValue(__instance,new ExtendedInventory(__instance, inv.m_name, inv.m_bkg, inv.m_width, inv.m_height));
             
+            if (EquipmentAndQuickSlots.extraRows.Value > 0)
+            {
+                int height = EquipmentAndQuickSlots.extraRows.Value;
+                int inv_heigt = inv.m_height;
+                AccessTools.FieldRefAccess<Inventory, int>(inv, "m_height") = inv_heigt + height;
+                __instance.m_tombstone.GetComponent<Container>().m_height = inv_heigt + height;
+            }
+
+            t.SetValue(__instance, new ExtendedInventory(__instance, inv.m_name, inv.m_bkg, inv.m_width, inv.m_height));
             __instance.m_inventory.Extended().OverrideAwake();
+            //typeof(Humanoid).GetField("m_inventory", BindingFlags.Instance | BindingFlags.NonPublic).SetValue((object)__instance, (object)new ExtendedInventory(__instance, inv.m_name, inv.m_bkg, inv.m_width, inv.m_height));
         }
     }
 
@@ -52,77 +66,119 @@ namespace EquipmentAndQuickSlots
     [HarmonyPatch(typeof(Player), nameof(Player.CreateTombStone))]
     public static class Player_CreateTombStone_Patch
     {
-        public static bool Prefix(Player __instance)
+        public static bool Prefix(Player __instance, out Inventory __state)
         {
-            var allInventories = __instance.GetAllInventories();
-            var totalItemCount = allInventories.Sum(x => x.NrOfItems());
-            if (totalItemCount == 0)
-                return true;
+            __state = (Inventory)null;
 
+            bool globalKey1 = ZoneSystem.instance.GetGlobalKey(GlobalKeys.DeathKeepEquip);
+            bool globalKey2 = ZoneSystem.instance.GetGlobalKey(GlobalKeys.DeathDeleteItems);
+            bool globalKey3 = ZoneSystem.instance.GetGlobalKey(GlobalKeys.DeathDeleteUnequipped);
+            bool globalKey4 = ZoneSystem.instance.GetGlobalKey(GlobalKeys.DeathSkillsReset);
+            bool flag1 = globalKey2 | globalKey3;
+            bool flag2 = !globalKey1 && !globalKey2 && !globalKey3 && !globalKey4;
+
+            if (globalKey1 || __instance.GetAllInventories().Sum<Inventory>((Func<Inventory, int>)(x => x.NrOfItems())) == 0)
+                return true;
             EquipmentSlotHelper.AllowMove = false;
             UnequipNonEAQSSlots(__instance);
 
             EquipmentAndQuickSlots.LogWarning("== PLAYER DIED ==");
-            var equipSlotInventory = __instance.GetEquipmentSlotInventory();
-            var quickSlotInventory = __instance.GetQuickSlotInventory();
-            var extraInventories = new List<Inventory>();
-            if (!EquipmentAndQuickSlots.DontDropEquipmentOnDeath.Value)
+            Inventory equipmentSlotInventory = __instance.GetEquipmentSlotInventory();
+            Inventory quickSlotInventory = __instance.GetQuickSlotInventory();            
+            List<Inventory> inventoryList = new List<Inventory>();
+
+            if (EquipmentAndQuickSlots.keepAllItemsOnDeath.Value)
             {
-                __instance.UnequipAllItems();
-                extraInventories.Add(equipSlotInventory);
+                List<Inventory> inventoryListKeepAll = new List<Inventory>();
+                List<ItemData> itemDataListKeepAll = new List<ItemData>();
+                Inventory savedInventory = new Inventory("SavedInventory", (Sprite)null, __instance.m_inventory.m_width, __instance.m_inventory.m_height);
+
+                foreach (Inventory allInventory in __instance.GetAllInventories())
+                {
+                    foreach (ItemData itemData in allInventory.m_inventory)
+                    {
+                        Vector2i gridPos = itemData.m_gridPos;
+                        if (allInventory == quickSlotInventory)
+                        {
+                            itemData.m_customData["eaqs-qs"] = string.Format("{0},{1}", (object)gridPos.x, (object)gridPos.y);
+                        }
+                        savedInventory.AddItem(itemData,itemData.m_stack, gridPos.x, gridPos.y);
+                    }
+                }
+                __state = savedInventory;
+                return false;
             }
 
-            if (!EquipmentAndQuickSlots.DontDropQuickslotsOnDeath.Value)
+            if (!EquipmentAndQuickSlots.DontDropEquipmentOnDeath.Value && !flag1)
             {
-                extraInventories.Add(quickSlotInventory);
+                __instance.UnequipAllItems();                  
+                inventoryList.Add(equipmentSlotInventory);
             }
 
-            if (extraInventories.Count == 0)
+            if (!EquipmentAndQuickSlots.DontDropQuickslotsOnDeath.Value && !flag1)
+            {
+                inventoryList.Add(quickSlotInventory);
+            }
+
+            if (inventoryList.Count == 0)
                 return true;
 
-            var tombstoneGameObject = Object.Instantiate(__instance.m_tombstone, __instance.GetCenterPoint() + Vector3.up + __instance.transform.forward * 0.5f, __instance.transform.rotation);
-            var tombStone = tombstoneGameObject.GetComponent<TombStone>();
-            var playerProfile = Game.instance.GetPlayerProfile();
-            var name = playerProfile.GetName();
-            var playerId = playerProfile.GetPlayerID();
-            tombStone.Setup($"{name}'s Equipment", playerId);
+            Inventory containerInventory = (Inventory)null;
 
-            var container = tombstoneGameObject.GetComponent<Container>();
-            var containerInventory = container.GetInventory();
-
-            foreach (var inventory in extraInventories)
+            if (!globalKey2)
             {
-	            List<ItemDrop.ItemData> retainItems = new List<ItemDrop.ItemData>();
-                foreach (var item in inventory.m_inventory)
-                {
-                    if (!CreatureLevelControl.API.DropItemOnDeath(item))
-                    {
-	                    retainItems.Add(item);
-	                    continue;
-                    }
-
-                    var oldSlot = item.m_gridPos;
-                    var newSlot = containerInventory.FindEmptySlot(false);
-
-                    if (inventory == equipSlotInventory && EquipmentAndQuickSlots.InstantlyReequipArmorOnPickup.Value)
-                        item.m_customData["eaqs-e"] = "1";
-
-                    if (inventory == quickSlotInventory)
-                        item.m_customData["eaqs-qs"] = $"{oldSlot.x},{oldSlot.y}";
-
-                    containerInventory.AddItem(item, item.m_stack, newSlot.x, newSlot.y);
-                }
-
-                inventory.m_inventory = retainItems;
-                inventory.Changed();
-                containerInventory.Changed();
+                GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(__instance.m_tombstone, __instance.GetCenterPoint() + Vector3.up + __instance.transform.forward * 0.5f, __instance.transform.rotation);
+                TombStone component = gameObject.GetComponent<TombStone>();
+                PlayerProfile playerProfile = Game.instance.GetPlayerProfile();
+                string name = playerProfile.GetName();
+                long playerId = playerProfile.GetPlayerID();
+                component.Setup(name + "'s Equipment", playerId);
+                containerInventory = gameObject.GetComponent<Container>().GetInventory();
             }
 
+            foreach (Inventory allInventory in inventoryList)
+            {
+                List<ItemDrop.ItemData> itemDataList = new List<ItemDrop.ItemData>();
+                foreach (ItemDrop.ItemData itemData in allInventory.m_inventory)
+                {
+                    if (!CreatureLevelControl.API.DropItemOnDeath(itemData) && !globalKey2)
+                        itemDataList.Add(itemData);
+                    else if (containerInventory != null)
+                    {
+                        Vector2i gridPos = itemData.m_gridPos;
+                        Vector2i emptySlot = containerInventory.FindEmptySlot(false);
+                        if (allInventory == equipmentSlotInventory && EquipmentAndQuickSlots.InstantlyReequipArmorOnPickup.Value)
+                            itemData.m_customData["eaqs-e"] = "1";
+                        if (allInventory == quickSlotInventory)
+                        {
+                            if (flag1)
+                            {
+                                quickSlotInventory = new Inventory(quickSlotInventory.m_name, quickSlotInventory.GetBkg(), quickSlotInventory.m_width, quickSlotInventory.m_height);
+                                continue;
+                            }
+                            itemData.m_customData["eaqs-qs"] = string.Format("{0},{1}", (object)gridPos.x, (object)gridPos.y);
+                        }                        
+                        
+                        containerInventory.AddItem(itemData, itemData.m_stack, emptySlot.x, emptySlot.y);
+
+                    }
+                    else
+                    {
+                        equipmentSlotInventory = new Inventory(equipmentSlotInventory.m_name, equipmentSlotInventory.GetBkg(), equipmentSlotInventory.m_width, equipmentSlotInventory.m_height);
+                        quickSlotInventory = new Inventory(quickSlotInventory.m_name, quickSlotInventory.GetBkg(), quickSlotInventory.m_width, quickSlotInventory.m_height);
+                    }
+                }
+                  
+                allInventory.m_inventory = itemDataList;
+                allInventory.Changed();
+                containerInventory?.Changed();
+
+            }
             // Continue on making the regular tombstone
             return true;
         }
 
-        public static void Postfix(Player __instance)
+        public static void Postfix(Player __instance, Inventory __state)
         {
             EquipmentSlotHelper.AllowMove = true;
             if (EquipmentAndQuickSlots.DontDropEquipmentOnDeath.Value)
@@ -133,8 +189,12 @@ namespace EquipmentAndQuickSlots
                     __instance.EquipItem(equipment);
                 }
             }
-        }
 
+            if (EquipmentAndQuickSlots.keepAllItemsOnDeath.Value)
+            {
+                __instance.GetInventory().MoveAll(__state);
+            }
+        }
         public static void UnequipNonEAQSSlots(Player __instance)
         {
             if (__instance.m_rightItem != null)
@@ -162,7 +222,12 @@ namespace EquipmentAndQuickSlots
 				    }
 			    }
 		    }
-	    }
+
+            if (EquipmentAndQuickSlots.keepAllItemsOnDeath.Value)
+            {
+                TombStone_OnTakeAllSuccess_Patch.TryReequipQuickslotItems();
+            }
+        }
     }
 
     [HarmonyPatch(typeof(TombStone), nameof(TombStone.OnTakeAllSuccess))]
@@ -250,7 +315,7 @@ namespace EquipmentAndQuickSlots
         ZLog.Log((object) "Grave should fit in inventory, loot all");
         this.m_container.TakeAll(character);
         return true;
-    }*/
+    }*/ 
     [HarmonyPatch(typeof(TombStone), nameof(TombStone.Interact))]
     public static class Tombstone_Interact_Patch
     {
@@ -339,5 +404,5 @@ namespace EquipmentAndQuickSlots
             // Fixes bug in vanilla valheim with cloning items with custom data
             __result.m_customData = new Dictionary<string, string>(__instance.m_customData);
         }
-    }
+    }     
 }
