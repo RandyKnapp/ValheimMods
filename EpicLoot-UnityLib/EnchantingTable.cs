@@ -74,7 +74,6 @@ namespace EpicLoot_UnityLib
                 ResponseCallback = responseCallback
             });
             _nview.InvokeRPC("el.TableUpgradeRequest",tableZDO, (int)feature, toLevel);
-
         }
            
         //Function for RPC_TableUpgradeRequest
@@ -128,7 +127,6 @@ namespace EpicLoot_UnityLib
                     }
                 }
             }
-
         }
 
         public void Update()
@@ -144,6 +142,7 @@ namespace EpicLoot_UnityLib
         {
             OnAnyFeatureLevelChanged?.Invoke();
         }
+
         public bool UseItem(Humanoid user, ItemDrop.ItemData item)
         {
             return false;
@@ -208,7 +207,6 @@ namespace EpicLoot_UnityLib
             if (_nview == null || _nview.GetZDO() == null)
                 return FeatureUnavailableSentinel;
 
-            
             if (!UpgradesActive(feature, out var featureActive))
             {
                 return FeatureLevelOne;

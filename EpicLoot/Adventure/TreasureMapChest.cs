@@ -17,8 +17,13 @@ namespace EpicLoot.Adventure
             Reinitialize(biome, treasureMapInterval, false, player.GetPlayerID());
 
             var container = GetComponent<Container>();
-            var zdo = container?.m_nview.GetZDO();
-            if (container != null && zdo != null && zdo.IsValid())
+            if (container == null || container.m_nview == null)
+            {
+                EpicLoot.LogError($"Trying to set up TreasureMapChest ({biome} {treasureMapInterval}) but there was no Container component!");
+            }
+
+            var zdo = container.m_nview.GetZDO();
+            if (zdo != null && zdo.IsValid())
             {
                 container.GetInventory().RemoveAll();
 
@@ -46,7 +51,7 @@ namespace EpicLoot.Adventure
             }
             else
             {
-                EpicLoot.LogError($"Trying to set up TreasureMapChest ({biome} {treasureMapInterval}) but there was no Container component!");
+                EpicLoot.LogError($"Trying to set up TreasureMapChest ({biome} {treasureMapInterval}) but ZDO was not valid!");
             }
         }
 
@@ -54,12 +59,23 @@ namespace EpicLoot.Adventure
         {
             Biome = biome;
             Interval = treasureMapInterval;
-
             gameObject.layer = 12;
 
             var container = GetComponent<Container>();
             if (container != null)
             {
+                if (hasBeenFound)
+                {
+                    // Remove treasure chests that have already been found
+                    var zdo = container.m_nview.GetZDO();
+                    if (zdo != null && zdo.IsValid())
+                    {
+                        zdo.SetOwner(ZDOMan.GetSessionID());
+                        container.m_nview.Destroy();
+                        return;
+                    }
+                }
+
                 var label = Localization.instance.Localize("$mod_epicloot_treasurechest_name", $"$biome_{Biome.ToString().ToLower()}", (treasureMapInterval + 1).ToString());
                 container.m_name = Localization.instance.Localize(label);
                 container.m_privacy = hasBeenFound ? Container.PrivacySetting.Public : Container.PrivacySetting.Private;
@@ -78,6 +94,7 @@ namespace EpicLoot.Adventure
             }
 
             // TODO Figure out why this damn thing won't float
+            // Idea: It's probably because of the snap to ground chests have? Or gravity physics?
             /*var rigidbody = gameObject.AddComponent<Rigidbody>();
             rigidbody.constraints =
                 RigidbodyConstraints.FreezePositionX
@@ -127,13 +144,7 @@ namespace EpicLoot.Adventure
         public static void Postfix(Container __instance, long uid, bool granted)
         {
             var zdo = __instance.m_nview.GetZDO();
-            if (zdo == null || !zdo.IsValid())
-            {
-                return;
-            }
-
-            var hasAlreadyBeenFound = zdo.GetBool("TreasureMapChest.HasBeenFound");
-            if (hasAlreadyBeenFound)
+            if (zdo == null || !zdo.IsValid() || zdo.GetBool("TreasureMapChest.HasBeenFound"))
             {
                 return;
             }
@@ -146,10 +157,7 @@ namespace EpicLoot.Adventure
                 {
                     EpicLoot.Log($"Player is opening treasure map chest ({treasureMapChest.Biome}, {treasureMapChest.Interval})!");
                     var saveData = player.GetAdventureSaveData();
-                    if (saveData.FoundTreasureChest(treasureMapChest.Interval, treasureMapChest.Biome))
-                    {
-                        player.SaveAdventureSaveData();
-                    }
+                    saveData.FoundTreasureChest(treasureMapChest.Interval, treasureMapChest.Biome);
 
                     zdo.Set("TreasureMapChest.HasBeenFound", true);
 

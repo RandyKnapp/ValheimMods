@@ -8,12 +8,6 @@ namespace EpicLoot.Adventure
     [RequireComponent(typeof(Character))]
     public class BountyTarget : MonoBehaviour
     {
-        public const string BountyIDKey = "BountyID";
-        public const string BountyDataKey = "BountyData";
-        public const string MonsterIDKey = "MonsterID";
-        public const string IsAddKey = "IsAdd";
-        public const string BountyTargetNameKey = "BountyTargetName";
-
         private BountyInfo _bountyInfo;
         private string _monsterID;
         private bool _isAdd;
@@ -37,6 +31,7 @@ namespace EpicLoot.Adventure
         [UsedImplicitly]
         public void OnDestroy()
         {
+            // TODO: save zdo data?
             if (_character != null)
             {
                 _character.m_onDeath -= OnDeath;
@@ -45,42 +40,34 @@ namespace EpicLoot.Adventure
 
         private bool HasBeenSetup()
         {
-            var bountyID = _zdo.GetString(BountyIDKey);
+            var bountyID = _zdo.GetString(BountyTargetComponent.BountyIDKey);
             return !string.IsNullOrEmpty(bountyID);
         }
 
         private void OnDeath()
         {
-            if (ZNet.instance.IsServer() || !ZNet.instance.IsServer() && !ZNet.instance.IsDedicated())
-            {
-                var pkg = new ZPackage();
-                _bountyInfo.ToPackage(pkg);
-
-                EpicLoot.LogWarning($"SENDING -> RPC_SlayBountyTarget: {_monsterID} ({(_isAdd ? "minion" : "target")})");
-                ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.Everybody, "SlayBountyTarget", pkg, _monsterID, _isAdd);
-            }
-            else
-            {
-                var bountyID = _zdo.GetString(BountyIDKey);
-                EpicLoot.LogWarning($"SENDING -> RPC_SlayBountyTargetFromBountyId: (bountyID={bountyID}) {_monsterID} ({(_isAdd ? "minion" : "target")})");
-                ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.Everybody, "SlayBountyIDTarget", _monsterID, _isAdd, bountyID);
-            }
+            var pkg = new ZPackage();
+            _bountyInfo.ToPackage(pkg);
+            // Send death event to server
+            EpicLoot.LogWarning($"SENDING -> RPC_SlayBountyTarget: {_monsterID} ({(_isAdd ? "minion" : "target")})");
+            ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.Everybody, "SlayBountyTarget", pkg, _monsterID, _isAdd);
         }
 
         public void Initialize(BountyInfo bounty, string monsterID, bool isAdd)
         {
-            _zdo.Set(BountyIDKey, bounty.ID);
-            if (ZNet.instance.IsServer() || !ZNet.instance.IsServer() && !ZNet.instance.IsDedicated())
+            _zdo.Set(BountyTargetComponent.BountyIDKey, bounty.ID);
+            if (!ZNet.instance.IsDedicated())
             {
                 var pkg = new ZPackage();
                 bounty.ToPackage(pkg);
                 pkg.SetPos(0);
-                _zdo.Set(BountyDataKey, pkg.GetBase64());
+                _zdo.Set(BountyTargetComponent.BountyDataKey, pkg.GetBase64());
             }
-            _zdo.Set(MonsterIDKey, monsterID);
-            _zdo.Set(IsAddKey, isAdd);
-            _zdo.Set(BountyTargetNameKey, GetTargetName(_character.m_name, isAdd, bounty.TargetName));
-            
+
+            _zdo.Set(BountyTargetComponent.MonsterIDKey, monsterID);
+            _zdo.Set(BountyTargetComponent.IsAddKey, isAdd);
+            _zdo.Set(BountyTargetComponent.BountyTargetNameKey, GetTargetName(_character.m_name, isAdd, bounty.TargetName));
+
             _character.SetLevel(GetTargetLevel(bounty, monsterID, isAdd));
             _character.SetMaxHealth(GetModifiedMaxHealth(_character, bounty, isAdd));
             _character.m_baseAI.SetPatrolPoint();
@@ -88,30 +75,51 @@ namespace EpicLoot.Adventure
             Reinitialize();
         }
 
+        /// <summary>
+        /// Initialize custom data from the character zdo.
+        /// </summary>
         public void Reinitialize()
         {
-            if (ZNet.instance.IsServer() || !ZNet.instance.IsServer() && !ZNet.instance.IsDedicated())
-            { 
-                var pkgString = _zdo.GetString(BountyDataKey);
+            if (!ZNet.instance.IsDedicated())
+            {
+                var pkgString = _zdo.GetString(BountyTargetComponent.BountyDataKey);
                 var pkg = new ZPackage(pkgString);
+
                 try
                 {
                     _bountyInfo = BountyInfo.FromPackage(pkg);
                 }
                 catch (Exception)
                 {
-                    Debug.LogError($"[EpicLoot] Error loading bounty info on creature ({name})! Possibly old or outdated bounty target, destroying creature.\nBountyData:\n{pkgString}");
-                    _zdo.Set("BountyTarget", "");
-                    _zdo.Set(BountyDataKey, "");
-                    _character.m_nview.Destroy();
+                    Debug.LogError($"[EpicLoot] Error loading bounty info on creature ({name})! " +
+                        $"Possibly old or outdated bounty target, destroying creature." +
+                        $"\nBountyData:\n{pkgString}");
+                    DestroyInstance();
                     return;
                 }
-            }
-            _monsterID = _zdo.GetString(MonsterIDKey);
-            _isAdd = _zdo.GetBool(IsAddKey);
 
-            _character.m_name = _zdo.GetString(BountyTargetNameKey);
-            _character.m_boss = !_zdo.GetBool(IsAddKey);
+                // TODO: clean up abandoned bounties?
+                // Currently does not track if abandoned on the zdo
+                /*if (_bountyInfo.State == BountyState.Abandoned)
+                {
+                    // Destroy abandoned bounties
+                    EpicLoot.Log("Destroying abandoned bounty!");
+                    DestroyInstance();
+                    return;
+                }*/
+            }
+
+            _monsterID = _zdo.GetString(BountyTargetComponent.MonsterIDKey);
+            _isAdd = _zdo.GetBool(BountyTargetComponent.IsAddKey);
+
+            _character.m_name = _zdo.GetString(BountyTargetComponent.BountyTargetNameKey);
+            _character.m_boss = !_zdo.GetBool(BountyTargetComponent.IsAddKey);
+        }
+
+        private void DestroyInstance()
+        {
+            _zdo.SetOwner(ZDOMan.GetSessionID());
+            _character.m_nview.Destroy();
         }
 
         private static float GetModifiedMaxHealth(Character character, BountyInfo bounty, bool isAdd)
@@ -131,8 +139,8 @@ namespace EpicLoot.Adventure
 
         private static string GetTargetName(string originalName, bool isAdd, string targetName)
         {
-            return isAdd ? 
-                Localization.instance.Localize("$mod_epicloot_bounties_minionname", originalName) 
+            return isAdd ?
+                Localization.instance.Localize("$mod_epicloot_bounties_minionname", originalName)
                 : (string.IsNullOrEmpty(targetName) ? originalName : targetName);
         }
 
@@ -157,36 +165,40 @@ namespace EpicLoot.Adventure
 
     static class BountyTargetComponent
     {
-        private static void StartBoutyTarget(Character instance)
+        public const string BountyIDKey = "BountyID";
+        public const string BountyDataKey = "BountyData";
+        public const string BountyTargetKey = "BountyTarget";
+        public const string MonsterIDKey = "MonsterID";
+        public const string IsAddKey = "IsAdd";
+        public const string BountyTargetNameKey = "BountyTargetName";
+
+        private static void StartBountyTarget(Character instance)
         {
             var zdo = instance.m_nview != null ? instance.m_nview.GetZDO() : null;
 
             if (zdo != null && zdo.IsValid())
             {
-                var old = !string.IsNullOrEmpty(zdo.GetString("BountyTarget"));
-
-                if (old)
+                if (!string.IsNullOrEmpty(zdo.GetString(BountyTargetKey)))
                 {
                     EpicLoot.LogWarning($"Destroying old bounty target: {instance.name}");
-                    zdo.Set("BountyTarget", "");
+                    zdo.SetOwner(ZDOMan.GetSessionID());
                     instance.m_nview.Destroy();
                     return;
                 }
 
-                if (!string.IsNullOrEmpty(zdo.GetString(BountyTarget.BountyIDKey)))
+                if (!string.IsNullOrEmpty(zdo.GetString(BountyIDKey)))
                 {
                     var bountyTarget = instance.gameObject.AddComponent<BountyTarget>();
-                    bountyTarget.Reinitialize();
                 }
             }
         }
-        
+
         [HarmonyPatch(typeof(Humanoid), nameof(Humanoid.Start))]
         public static class Humanoid_Start_Patch
         {
             public static void Postfix(Humanoid __instance)
             {
-                StartBoutyTarget(__instance);
+                StartBountyTarget(__instance);
             }
         }
 
@@ -195,7 +207,7 @@ namespace EpicLoot.Adventure
         {
             public static void Postfix(Character __instance)
             {
-                StartBoutyTarget(__instance);
+                StartBountyTarget(__instance);
             }
         }
     }

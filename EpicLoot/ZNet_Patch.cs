@@ -36,10 +36,9 @@ namespace EpicLoot
     [HarmonyPatch(typeof(ZNet), nameof(ZNet.SaveWorld))]
     public static class ZNet_SaveWorld_Patch
     {
-        public static bool Prefix(ZNet __instance)
+        public static void Prefix(ZNet __instance)
         {
             AdventureDataManager.OnWorldSave();
-            return true;
         }
     }
 }

@@ -38,30 +38,32 @@ namespace EpicLoot_UnityLib
             if (uiSFX)
                 Audio.outputAudioMixerGroup = uiSFX.GetComponent<AudioSource>().outputAudioMixerGroup;
 
+            AugaFixup(this);
+        }
+
+        private void SetupTabs()
+        {
             for (var index = 0; index < TabHandler.m_tabs.Count; index++)
             {
                 var tabData = TabHandler.m_tabs[index];
                 tabData.m_onClick.AddListener(PlayTabSelectSFX);
                 var featureStatus = tabData.m_button.gameObject.GetComponent<FeatureStatus>();
                 if (featureStatus != null)
-                    featureStatus.SetFeature((EnchantingFeature)index);
+                    featureStatus.Refresh();
             }
-
-            AugaFixup(this);
             TabActivation(this);
         }
 
         public static void Show(GameObject enchantingUiPrefab, EnchantingTable source)
         {
-            if (instance == null)
+            bool firstSetup = false;
+            if (instance == null && StoreGui.instance != null)
             {
-                if (StoreGui.instance != null)
-                {
-                    var inGameGui = StoreGui.instance.transform.parent;
-                    var siblingIndex = StoreGui.instance.transform.GetSiblingIndex() + 1;
-                    var enchantingUI = Instantiate(enchantingUiPrefab, inGameGui);
-                    enchantingUI.transform.SetSiblingIndex(siblingIndex);
-                }
+                var inGameGui = StoreGui.instance.transform.parent;
+                var siblingIndex = StoreGui.instance.transform.GetSiblingIndex() + 1;
+                var enchantingUI = Instantiate(enchantingUiPrefab, inGameGui);
+                enchantingUI.transform.SetSiblingIndex(siblingIndex);
+                firstSetup = true;
             }
 
             if (instance == null)
@@ -71,10 +73,15 @@ namespace EpicLoot_UnityLib
             instance.Root.SetActive(true);
             instance.Scrim.SetActive(true);
             instance.SourceTable.Refresh();
-            
+
             foreach (var panel in instance.Panels)
             {
                 panel.DeselectAll();
+            }
+
+            if (firstSetup)
+            {
+                instance.SetupTabs();
             }
         }
 

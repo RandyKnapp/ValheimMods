@@ -85,7 +85,7 @@ namespace EpicLoot
                 var saveData = player.GetAdventureSaveData();
                 saveData.TreasureMaps.Clear();
                 saveData.NumberOfTreasureMapsOrBountiesStarted = 0;
-                player.SaveAdventureSaveData();
+                ResetMinimap();
             }));
             new Terminal.ConsoleCommand("resettm", "", (args =>
             {
@@ -93,7 +93,7 @@ namespace EpicLoot
                 var saveData = player.GetAdventureSaveData();
                 saveData.TreasureMaps.Clear();
                 saveData.NumberOfTreasureMapsOrBountiesStarted = 0;
-                player.SaveAdventureSaveData();
+                ResetMinimap();
             }));
             new Terminal.ConsoleCommand("debugtreasuremap", "", (args =>
             {
@@ -110,7 +110,7 @@ namespace EpicLoot
                 var player = Player.m_localPlayer;
                 var saveData = player.GetAdventureSaveData();
                 saveData.Bounties.Clear();
-                player.SaveAdventureSaveData();
+                ResetMinimap();
             }));
             new Terminal.ConsoleCommand("testbountynames", "", (args =>
             {
@@ -127,7 +127,7 @@ namespace EpicLoot
                 var player = Player.m_localPlayer;
                 var adventureComponent = player.GetComponent<AdventureComponent>();
                 adventureComponent.SaveData = new AdventureSaveDataList();
-                player.SaveAdventureSaveData();
+                ResetMinimap();
             }));
             new Terminal.ConsoleCommand("bounties", "", (args =>
             {
@@ -206,6 +206,15 @@ namespace EpicLoot
             new Terminal.ConsoleCommand("debugluck", "", (args => {
                 LootRoller.DebugLuckFactor();
             }));
+        }
+
+        private static void ResetMinimap()
+        {
+            var pinJob = new PinJob
+            {
+                Task = MinimapPinQueueTask.RefreshAll
+            };
+            MinimapController.AddPinJobToQueue(pinJob);
         }
 
         private static void TestTreasureMap(string[] args)

@@ -1,8 +1,19 @@
-## Version 0.9.37 - Auga Tooltip Bug Fix
-* Auga Tooltip now populates correctly in the Crafting and Augmenting actions.
+## Version 0.9.38 - Various Bug Fixes
+* Fix enchanting table not displaying correctly the first time it is accessed.
+* Fix for Modify health critical effect not applying correctly.
+* Changed attack speed to apply as a multiplier rather than additive since animation base speeds is not always 1.
+* Reworked Bounty system, upgraded file format. NOT backwards compatible.
+    * Reverting from this version your server bounty ledger will not load and all players with unrecorded bounty kills from other players will be lost.
+    * Removes bounty data from global keys storage, fully upgrading to the external file save system.
+* Added self-destruct to treasure chests that have been found upon reloading them.
+* Minimap should now handle removing adventure map pins when abandoned or when resetting via console commands.
+* Decreased maximum minimap offset by 20% so that treasure chests and bounties are better spawned within the red map circle.
 
 <details>
 <summary><b>Changelog History</b> (<i>click to expand</i>)</summary>
+
+## Version 0.9.37 - Auga Tooltip Bug Fix
+* Auga Tooltip now populates correctly in the Crafting and Augmenting actions.
 
 ## Version 0.9.36 - Valheim Enchantment System Compatibility
 * Added compatibility with Valheim Enchantment System

@@ -89,7 +89,6 @@ namespace EpicLoot.Adventure.Feature
         }
     }
 
-
     public class ClaimableBountiesListPanel : MerchantListPanel<BountyListElement>
     {
         private readonly MerchantPanel _merchantPanel;

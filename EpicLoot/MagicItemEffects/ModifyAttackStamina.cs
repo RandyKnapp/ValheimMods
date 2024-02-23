@@ -2,9 +2,8 @@
 
 namespace EpicLoot.MagicItemEffects
 {
-    //public float GetStaminaUsage()
     [HarmonyPatch(typeof(Attack), nameof(Attack.GetAttackStamina))]
-    public class ModifyAttackStamina_Attack_GetStaminaUsage_Patch
+    public class ModifyAttackStamina_Attack_GetAttackStamina_Patch
     {
         public static void Postfix(Attack __instance, ref float __result)
         {

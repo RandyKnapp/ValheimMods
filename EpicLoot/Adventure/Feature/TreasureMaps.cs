@@ -78,10 +78,9 @@ namespace EpicLoot.Adventure.Feature
             var treasureChest = treasureChestObject.AddComponent<TreasureMapChest>();
             treasureChest.Setup(player, biome, GetCurrentInterval());
 
-            var offset2 = UnityEngine.Random.insideUnitCircle * AdventureDataManager.Config.TreasureMap.MinimapAreaRadius;
+            var offset2 = UnityEngine.Random.insideUnitCircle * (AdventureDataManager.Config.TreasureMap.MinimapAreaRadius * 0.8f);
             var offset = new Vector3(offset2.x, 0, offset2.y);
             saveData.PurchasedTreasureMap(GetCurrentInterval(), biome, spawnPoint, offset);
-            player.SaveAdventureSaveData();
             Minimap.instance.ShowPointOnMap(spawnPoint + offset);
 
             callback?.Invoke(true, spawnPoint);

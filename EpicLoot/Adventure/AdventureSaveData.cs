@@ -243,11 +243,6 @@ namespace EpicLoot.Adventure
             return TreasureMaps.Exists(x => x.Interval == interval && x.Biome == biome);
         }
 
-        public bool HasFoundTreasureMapChest(int interval, Heightmap.Biome biome)
-        {
-            return TreasureMaps.Exists(x => x.Interval == interval && x.Biome == biome && x.State == TreasureMapState.Found);
-        }
-
         public List<TreasureMapChestInfo> GetUnfoundTreasureChests()
         {
             return TreasureMaps.Where(x => x.State == TreasureMapState.Purchased).ToList();
@@ -292,38 +287,7 @@ namespace EpicLoot.Adventure
                 MinimapController.AddPinJobToQueue(pinJob);
             }
 
-
             return true;
-        }
-
-        public bool KilledBountyTarget(int interval, string bountyID)
-        {
-            var bounty = GetBountyInfo(interval, bountyID);
-            if (bounty != null && bounty.State == BountyState.InProgress)
-            {
-                bounty.State = BountyState.Complete;
-
-                return true;
-            }
-
-            return false;
-        }
-
-        public bool ClaimedBountyReward(int interval, string bountyID)
-        {
-            var bounty = GetBountyInfo(interval, bountyID);
-            if (bounty != null && bounty.State == BountyState.Complete)
-            {
-                bounty.State = BountyState.Claimed;
-                return true;
-            }
-
-            return false;
-        }
-
-        private BountyInfo GetBountyInfo(int interval, string bountyID)
-        {
-            return Bounties.Find(x => x.Interval == interval && x.ID == bountyID);
         }
 
         public BountyInfo GetBountyInfoByID(string bountyID)

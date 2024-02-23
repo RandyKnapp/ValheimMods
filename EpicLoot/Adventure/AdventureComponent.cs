@@ -1,5 +1,4 @@
 ﻿using System;
-using HarmonyLib;
 using Newtonsoft.Json;
 using UnityEngine;
 
@@ -21,9 +20,14 @@ namespace EpicLoot.Adventure
 
         public void Load()
         {
-            if (_player.m_knownTexts.TryGetValue(SaveDataKey, out var oldData) && !_player.m_customData.ContainsKey(SaveDataKey))
+            // Upgrade old bounty information to new save system
+            if (_player.m_knownTexts.TryGetValue(SaveDataKey, out var oldData))
             {
-                _player.m_customData[SaveDataKey] = oldData;
+                if (!_player.m_customData.ContainsKey(SaveDataKey))
+                {
+                    _player.m_customData.Add(SaveDataKey, oldData);
+                }
+
                 _player.m_knownTexts.Remove(SaveDataKey);
             }
             
@@ -43,7 +47,6 @@ namespace EpicLoot.Adventure
                     if (removed > 0)
                     {
                         EpicLoot.LogWarning($"Removed {removed} invalid bounties");
-                        Save();
                     }
                 }
                 catch (Exception)
@@ -61,15 +64,6 @@ namespace EpicLoot.Adventure
         {
             var data = JsonConvert.SerializeObject(SaveData, Formatting.None);
             _player.m_customData[SaveDataKey] = data;
-        }
-    }
-
-    [HarmonyPatch(typeof(TextsDialog), nameof(TextsDialog.UpdateTextsList))]
-    public static class TextsDialog_UpdateTextsList_Patch
-    {
-        public static void Postfix(TextsDialog __instance)
-        {
-            __instance.m_texts.RemoveAll(x => x.m_topic.Equals(AdventureComponent.SaveDataKey, StringComparison.InvariantCulture));
         }
     }
 }

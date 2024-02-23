@@ -1,4 +1,6 @@
-﻿namespace EpicLoot.Adventure
+﻿using HarmonyLib;
+
+namespace EpicLoot.Adventure
 {
     public static class PlayerExtensions_Adventure
     {
@@ -27,9 +29,21 @@
             return saveData;
         }
 
-        public static void SaveAdventureSaveData(this Player player)
+        private static void SaveAdventureSaveData(this Player player)
         {
             GetAdventureComponent(player).Save();
+        }
+
+        /// <summary>
+        /// Adds the adventure data to the player custom data before a player save.
+        /// </summary>
+        [HarmonyPatch(typeof(Player), nameof(Player.Save))]
+        public static class Player_Save_Patch
+        {
+            public static void Prefix(Player __instance)
+            {
+                __instance.SaveAdventureSaveData();
+            }
         }
     }
 }
