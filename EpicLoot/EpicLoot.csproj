@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <Import Project="..\Paths.props" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -12,6 +13,7 @@
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -34,264 +36,23 @@
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="0Harmony">
-      <HintPath>M:\Code\VapokModBase\References\BepInEx\5.4.2201\BepInEx\core\0Harmony.dll</HintPath>
-    </Reference>
-    <Reference Include="AdventureBackpacksAPI">
-      <HintPath>..\..\VapokModBase\References\ABAPI\AdventureBackpacksAPI.dll</HintPath>
-    </Reference>
-    <Reference Include="AnimationSpeedManager">
-      <HintPath>..\Libs\AnimationSpeedManager.dll</HintPath>
-    </Reference>
-    <Reference Include="assembly_guiutils_publicized">
-      <HintPath>M:\Code\VapokModBase\References\Valheim\0.217.28\assembly_guiutils_publicized.dll</HintPath>
-    </Reference>
-    <Reference Include="assembly_utils_publicized">
-      <HintPath>M:\Code\VapokModBase\References\Valheim\0.217.28\assembly_utils_publicized.dll</HintPath>
-    </Reference>
-    <Reference Include="assembly_valheim_publicized">
-      <HintPath>M:\Code\VapokModBase\References\Valheim\0.217.28\assembly_valheim_publicized.dll</HintPath>
-    </Reference>
-    <Reference Include="AugaAPI">
-      <HintPath>..\Libs\AugaAPI.dll</HintPath>
-    </Reference>
-    <Reference Include="BepInEx">
-      <HintPath>M:\Code\VapokModBase\References\BepInEx\5.4.2201\BepInEx\core\BepInEx.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="ServerSync, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\Libs\ServerSync.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Runtime.Serialization">
-      <HintPath>..\Libs\System.Runtime.Serialization.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.TextMeshPro">
-      <HintPath>..\..\VapokModBase\References\BepInEx\5.4.2201\unstripped_corlib\Unity.TextMeshPro.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine">
-      <HintPath>M:\Code\VapokModBase\References\BepInEx\5.4.2201\unstripped_corlib\UnityEngine.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.AnimationModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>M:\Code\VapokModBase\References\BepInEx\5.4.2201\unstripped_corlib\UnityEngine.AnimationModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.AssetBundleModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>M:\Code\VapokModBase\References\BepInEx\5.4.2201\unstripped_corlib\UnityEngine.AssetBundleModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.AudioModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>M:\Code\VapokModBase\References\BepInEx\5.4.2201\unstripped_corlib\UnityEngine.AudioModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.ClothModule">
-      <HintPath>M:\Code\VapokModBase\References\BepInEx\5.4.2201\unstripped_corlib\UnityEngine.ClothModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.CoreModule">
-      <HintPath>M:\Code\VapokModBase\References\BepInEx\5.4.2201\unstripped_corlib\UnityEngine.CoreModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.ImageConversionModule">
-      <HintPath>M:\Code\VapokModBase\References\BepInEx\5.4.2201\unstripped_corlib\UnityEngine.ImageConversionModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.InputLegacyModule">
-      <HintPath>M:\Code\VapokModBase\References\BepInEx\5.4.2201\unstripped_corlib\UnityEngine.InputLegacyModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.ParticleSystemModule">
-      <HintPath>M:\Code\VapokModBase\References\BepInEx\5.4.2201\unstripped_corlib\UnityEngine.ParticleSystemModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.PhysicsModule">
-      <HintPath>M:\Code\VapokModBase\References\BepInEx\5.4.2201\unstripped_corlib\UnityEngine.PhysicsModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.TextRenderingModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>M:\Code\VapokModBase\References\BepInEx\5.4.2201\unstripped_corlib\UnityEngine.TextRenderingModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.UI">
-      <HintPath>M:\Code\VapokModBase\References\BepInEx\5.4.2201\unstripped_corlib\UnityEngine.UI.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.UIModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>M:\Code\VapokModBase\References\BepInEx\5.4.2201\unstripped_corlib\UnityEngine.UIModule.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Abilities\Ability.cs" />
-    <Compile Include="Abilities\AbilityBar.cs" />
-    <Compile Include="Abilities\AbilityConfig.cs" />
-    <Compile Include="Abilities\AbilityController.cs" />
-    <Compile Include="Abilities\AbilityDefinitions.cs" />
-    <Compile Include="Abilities\AbilityFactory.cs" />
-    <Compile Include="Abilities\PlayerExtensions_Abilities.cs" />
-    <Compile Include="Adventure\BountyManagmentSystem.cs" />
-    <Compile Include="Adventure\Feature\Bosses.cs" />
-    <Compile Include="Adventure\Feature\BountyLedger.cs" />
-    <Compile Include="Adventure\Game_Patch.cs" />
-    <Compile Include="Adventure\MinimapController.cs" />
-    <Compile Include="Attack_Patch.cs" />
-    <Compile Include="CraftingV2\EnchantingTable_Patch.cs" />
-    <Compile Include="CraftingV2\EnchantingUIAugaFixup.cs" />
-    <Compile Include="CraftingV2\EnchantingUIController.cs" />
-    <Compile Include="CraftingV2\EnchantingUI_Patches.cs" />
-    <Compile Include="CraftingV2\MaterialConversions.cs" />
-    <Compile Include="Crafting\AugmentHelper.cs" />
-    <Compile Include="Crafting\CraftSuccessDialog.cs" />
-    <Compile Include="Crafting\EnchantHelper.cs" />
-    <Compile Include="Crafting\TransferMagicalEffects.cs" />
-    <Compile Include="Data\ConfigValue.cs" />
-    <Compile Include="Data\EIDFLegacy.cs" />
-    <Compile Include="Data\CustomDataManager.cs" />
-    <Compile Include="DebugText.cs" />
-    <Compile Include="EpicLootAuga.cs" />
-    <Compile Include="GameCamera_Patch.cs" />
-    <Compile Include="Healing\AddHealingQueueToPlayerPatch.cs" />
-    <Compile Include="Adventure\AbandonBountyDialog.cs" />
-    <Compile Include="Adventure\AdventureComponent.cs" />
-    <Compile Include="Adventure\AdventureSaveData.cs" />
-    <Compile Include="Adventure\BaseMerchantPanelListElement.cs" />
-    <Compile Include="Adventure\BountyTarget.cs" />
-    <Compile Include="Adventure\CharacterDrop_Patch.cs" />
-    <Compile Include="Adventure\Feature\AdventureFeature.cs" />
-    <Compile Include="Adventure\Feature\Bounties.cs" />
-    <Compile Include="Adventure\Feature\BountiesListPanel.cs" />
-    <Compile Include="Adventure\Feature\Gamble.cs" />
-    <Compile Include="Adventure\Feature\GambleListPanel.cs" />
-    <Compile Include="Adventure\Feature\MerchantListPanel.cs" />
-    <Compile Include="Adventure\Feature\SecretStash.cs" />
-    <Compile Include="Adventure\Feature\SecretStashListPanel.cs" />
-    <Compile Include="Adventure\Feature\TreasureMapListPanel.cs" />
-    <Compile Include="Adventure\Feature\TreasureMaps.cs" />
-    <Compile Include="Adventure\MessageHud_Patch.cs" />
-    <Compile Include="Adventure\PlayerExtensions_Adventure.cs" />
-    <Compile Include="Adventure\SE_CustomFinder.cs" />
-    <Compile Include="Adventure\TreasureMapChest.cs" />
-    <Compile Include="Adventure\TreasureMapListElement.cs" />
-    <Compile Include="Crafting\AugmentsAvailableDialog.cs" />
-    <Compile Include="Crafting\CraftingItemExtensions.cs" />
-    <Compile Include="Crafting\CraftingTabs.cs" />
-    <Compile Include="Crafting\AugmentChoiceDialog.cs" />
-    <Compile Include="Crafting\EnchantCostsConfig.cs" />
-    <Compile Include="Crafting\EnchantCostsHelper.cs" />
-    <Compile Include="Crafting\ItemDrop_Patch.cs" />
-    <Compile Include="Crafting\Player_Patch.cs" />
-    <Compile Include="Crafting\RecipesHelper.cs" />
-    <Compile Include="GatedItemType\GatedItemTypeHelper.cs" />
-    <Compile Include="GatedItemType\ItemInfoConfig.cs" />
-    <Compile Include="Healing\HealingQueueMono.cs" />
-    <Compile Include="Humanoid_Patch.cs" />
-    <Compile Include="Integrations\HarmonyPatches\ArmorStand_Patch.cs" />
-    <Compile Include="Integrations\HarmonyPatches\ItemStand_Patch.cs" />
-    <Compile Include="LegendarySystem\LegendaryItemConfig.cs" />
-    <Compile Include="LegendarySystem\UniqueLegendaryHelper.cs" />
-    <Compile Include="LootBeams\AlwaysPointUp.cs" />
-    <Compile Include="LootBeams\BeamColorSetter.cs" />
-    <Compile Include="CharacterDrop_Patch.cs" />
-    <Compile Include="MagicItemEffects\IncreaseEitr.cs" />
-    <Compile Include="MagicItemEffects\ModifyEitrRegen.cs" />
-    <Compile Include="MagicItemEffects\MultiShot.cs" />
-    <Compile Include="Multiplayer_Player_Patch.cs" />
-    <Compile Include="Patching\FilePatching.cs" />
-    <Compile Include="Terminal_Patch.cs" />
-    <Compile Include="Container_Patch.cs" />
-    <Compile Include="ItemDrop_Patch.cs" />
-    <Compile Include="LootBeams\LootBeam.cs" />
-    <Compile Include="LootConfig.cs" />
+    <Compile Include="src\*\*\*.cs" />
+    <Compile Include="src\*.cs" />
+    <Compile Include="src\*\*.cs" />
     <Compile Include="EpicLoot.cs" />
-    <Compile Include="LootRoller.cs" />
-    <Compile Include="MagicItem.cs" />
-    <Compile Include="MagicItemComponent.cs" />
-    <Compile Include="MagicItemEffectDefinition.cs" />
-    <Compile Include="MagicItemEffectDefinitions_Setup.cs" />
-    <Compile Include="ItemDrop_Patch_MagicItemTooltip.cs" />
-    <Compile Include="MagicItemEffects\AddCarryWeight.cs" />
-    <Compile Include="MagicItemEffects\AddLifeSteal.cs" />
-    <Compile Include="MagicItemEffects\AvoidDamageTaken.cs" />
-    <Compile Include="MagicItemEffects\Comfortable.cs" />
-    <Compile Include="MagicItemEffects\DoubleJump.cs" />
-    <Compile Include="MagicItemEffects\Executioner.cs" />
-    <Compile Include="MagicItemEffects\ExplosiveArrows.cs" />
-    <Compile Include="MagicItemEffects\FeatherFall.cs" />
-    <Compile Include="MagicItemEffects\FreeBuild.cs" />
-    <Compile Include="MagicItemEffects\FrostAOE.cs" />
-    <Compile Include="MagicItemEffects\Immovable.cs" />
-    <Compile Include="MagicItemEffects\IncreaseHealth.cs" />
-    <Compile Include="MagicItemEffects\IncreaseStamina.cs" />
-    <Compile Include="MagicItemEffects\Indestructible.cs" />
-    <Compile Include="MagicItemEffects\MagicEffectsHelper.cs" />
-    <Compile Include="MagicItemEffects\ModifyArmor.cs" />
-    <Compile Include="MagicItemEffects\ModifyAttackSpeed.cs" />
-    <Compile Include="MagicItemEffects\ModifyAttackStamina.cs" />
-    <Compile Include="MagicItemEffects\ModifyBackstab.cs" />
-    <Compile Include="MagicItemEffects\ModifyBlockPower.cs" />
-    <Compile Include="MagicItemEffects\ModifyBlockStaminaUse.cs" />
-    <Compile Include="MagicItemEffects\ModifyDamage.cs" />
-    <Compile Include="MagicItemEffects\ModifyDiscoveryRadius.cs" />
-    <Compile Include="MagicItemEffects\ModifyDurability.cs" />
-    <Compile Include="MagicItemEffects\ModifyHealthRegen.cs" />
-    <Compile Include="MagicItemEffects\ModifyJumpStaminaUsage.cs" />
-    <Compile Include="MagicItemEffects\ModifyParry.cs" />
-    <Compile Include="MagicItemEffects\ModifyParryWindow.cs" />
-    <Compile Include="MagicItemEffects\ModifyResistance.cs" />
-    <Compile Include="MagicItemEffects\ModifyRunStaminaDrain.cs" />
-    <Compile Include="MagicItemEffects\AddSkillLevel.cs" />
-    <Compile Include="MagicItemEffects\ModifyStaggerDamage.cs" />
-    <Compile Include="MagicItemEffects\ModifyStaggerDuration.cs" />
-    <Compile Include="MagicItemEffects\ModifyStaminaRegen.cs" />
-    <Compile Include="MagicItemEffects\ModifyWithLowHealth.cs" />
-    <Compile Include="MagicItemEffects\Opportunist.cs" />
-    <Compile Include="MagicItemEffects\Paralyze.cs" />
-    <Compile Include="MagicItemEffects\QuickDraw.cs" />
-    <Compile Include="MagicItemEffects\QuickLearner.cs" />
-    <Compile Include="MagicItemEffects\RecallWeapon.cs" />
-    <Compile Include="MagicItemEffects\ReduceWeight.cs" />
-    <Compile Include="MagicItemEffects\ModifyMovementSpeed.cs" />
-    <Compile Include="MagicItemEffects\ReflectDamage.cs" />
-    <Compile Include="MagicItemEffects\Riches.cs" />
-    <Compile Include="MagicItemEffects\Slow.cs" />
-    <Compile Include="MagicItemEffects\StaggerOnDamageTaken.cs" />
-    <Compile Include="MagicItemEffects\Throwable.cs" />
-    <Compile Include="MagicItemEffects\Undying.cs" />
-    <Compile Include="MagicItemEffects\Waterproof.cs" />
-    <Compile Include="MagicItemNames.cs" />
-    <Compile Include="Adventure\BountyListElement.cs" />
-    <Compile Include="Adventure\BuyListElement.cs" />
-    <Compile Include="Adventure\AdventureDataConfig.cs" />
-    <Compile Include="Adventure\AdventureDataManager.cs" />
-    <Compile Include="Adventure\MerchantPanel.cs" />
-    <Compile Include="Adventure\StoreGui_Patch.cs" />
-    <Compile Include="ObjectDB_Patch.cs" />
-    <Compile Include="TextsDialog_Patch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="VisEquipment_Patch.cs" />
-    <Compile Include="WelcomeMessage.cs" />
-    <Compile Include="ZNetScene_Patch.cs" />
-    <Compile Include="ZNet_Patch.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="..\ValheimUnity\AssetBundles\epicloot">
       <Link>epicloot</Link>
     </EmbeddedResource>
-    <None Include="abilities.json" />
-    <None Include="adventuredata.json" />
-    <None Include="enchantcosts.json" />
-    <None Include="enchantingupgrades.json" />
+    <None Include="config\*.json" />
     <None Include="info.md" />
-    <None Include="iteminfo.json" />
-    <None Include="itemnames.json" />
-    <None Include="legendaries.json" />
-    <None Include="materialconversions.json" />
     <None Include="packages.config" />
-    <None Include="Patching\testpatches.json" />
-    <None Include="translations.json" />
-    <None Include="loottables.json" />
-    <None Include="magiceffects.json" />
-    <None Include="manifest.json" />
+    <None Include="thunderstore\manifest.json" />
     <None Include="CHANGELOG.md" />
     <None Include="todo.md" />
     <None Include="README.md" />
-    <None Include="recipes.json" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\EpicLoot-UnityLib\EpicLoot-UnityLib.csproj">
@@ -321,25 +82,6 @@
   <ItemGroup />
   <Import Project="..\Common\Common.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Target Name="Copy" AfterTargets="ILRepack">
-    <Exec Command="xcopy &quot;$(TargetDir)$(TargetFileName)&quot; &quot;G:\Steam\steamapps\common\Valheim-Dev\BepInEx\plugins\$(ProjectName)\&quot; /q /y /i" />
-  </Target>
-  <PropertyGroup>
-    <PostBuildEvent>
-      xcopy "$(ProjectDir)translations.json" "G:\Steam\steamapps\common\Valheim-Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
-      xcopy "$(ProjectDir)loottables.json" "G:\Steam\steamapps\common\Valheim-Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
-      xcopy "$(ProjectDir)magiceffects.json" "G:\Steam\steamapps\common\Valheim-Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
-      xcopy "$(ProjectDir)iteminfo.json" "G:\Steam\steamapps\common\Valheim-Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
-      xcopy "$(ProjectDir)recipes.json" "G:\Steam\steamapps\common\Valheim-Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
-      xcopy "$(ProjectDir)enchantcosts.json" "G:\Steam\steamapps\common\Valheim-Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
-      xcopy "$(ProjectDir)enchantingupgrades.json" "G:\Steam\steamapps\common\Valheim-Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
-      xcopy "$(ProjectDir)itemnames.json" "G:\Steam\steamapps\common\Valheim-Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
-      xcopy "$(ProjectDir)adventuredata.json" "G:\Steam\steamapps\common\Valheim-Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
-      xcopy "$(ProjectDir)legendaries.json" "G:\Steam\steamapps\common\Valheim-Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
-      xcopy "$(ProjectDir)abilities.json" "G:\Steam\steamapps\common\Valheim-Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
-      xcopy "$(ProjectDir)materialconversions.json" "G:\Steam\steamapps\common\Valheim-Dev\BepInEx\plugins\$(ProjectName)\" /q /y /i
-</PostBuildEvent>
-  </PropertyGroup>
   <Import Project="..\packages\ILRepack.Lib.MSBuild.Task.2.0.18.2\build\ILRepack.Lib.MSBuild.Task.targets" Condition="Exists('..\packages\ILRepack.Lib.MSBuild.Task.2.0.18.2\build\ILRepack.Lib.MSBuild.Task.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

@@ -116,7 +116,7 @@
       }
     },
     "system_io_compression": {
-      "version": "file:Compression",
+      "version": "file:compression",
       "depth": 0,
       "source": "embedded",
       "dependencies": {}
