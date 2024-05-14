@@ -111,13 +111,13 @@ namespace EquipmentAndQuickSlots
 
             foreach (var inventory in extraInventories)
             {
-	            List<ItemDrop.ItemData> retainItems = new List<ItemDrop.ItemData>();
+                List<ItemDrop.ItemData> retainItems = new List<ItemDrop.ItemData>();
                 foreach (var item in inventory.m_inventory)
                 {
                     if (!CreatureLevelControl.API.DropItemOnDeath(item) && !deleteItems)
                     {
-	                    retainItems.Add(item);
-	                    continue;
+                        retainItems.Add(item);
+                        continue;
                     }
 
                     if (containerInventory != null)
@@ -189,20 +189,20 @@ namespace EquipmentAndQuickSlots
     [HarmonyPatch(typeof(Game), nameof(Game.SpawnPlayer))]
     public static class Game_SpawnPlayer_Patch
     {
-	    public static void Postfix(Game __instance)
-	    {
-		    if (!__instance.m_firstSpawn)
-		    {
-			    Player player = Player.m_localPlayer;
-			    if (player.GetEquipmentSlotInventory() is Inventory inventory)
-			    {
-				    foreach (var equipment in inventory.m_inventory.ToArray())
-				    {
-					    player.EquipItem(equipment);
-				    }
-			    }
-		    }
-	    }
+        public static void Postfix(Game __instance)
+        {
+            if (!__instance.m_firstSpawn)
+            {
+                Player player = Player.m_localPlayer;
+                if (player.GetEquipmentSlotInventory() is Inventory inventory)
+                {
+                    foreach (var equipment in inventory.m_inventory.ToArray())
+                    {
+                        player.EquipItem(equipment);
+                    }
+                }
+            }
+        }
     }
 
     [HarmonyPatch(typeof(TombStone), nameof(TombStone.OnTakeAllSuccess))]

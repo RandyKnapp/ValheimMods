@@ -36,7 +36,10 @@ namespace EpicLoot_UnityLib
 
             var uiSFX = GameObject.Find("sfx_gui_button");
             if (uiSFX)
-                Audio.outputAudioMixerGroup = uiSFX.GetComponent<AudioSource>().outputAudioMixerGroup;
+            {
+                Audio.outputAudioMixerGroup = 
+                    uiSFX.GetComponent<AudioSource>().outputAudioMixerGroup;
+            }
 
             AugaFixup(this);
         }
@@ -49,7 +52,9 @@ namespace EpicLoot_UnityLib
                 tabData.m_onClick.AddListener(PlayTabSelectSFX);
                 var featureStatus = tabData.m_button.gameObject.GetComponent<FeatureStatus>();
                 if (featureStatus != null)
+                {
                     featureStatus.Refresh();
+                }
             }
             TabActivation(this);
         }
@@ -67,7 +72,9 @@ namespace EpicLoot_UnityLib
             }
 
             if (instance == null)
+            {
                 return;
+            }
 
             instance.SourceTable = source;
             instance.Root.SetActive(true);
@@ -88,7 +95,9 @@ namespace EpicLoot_UnityLib
         public static void Hide()
         {
             if (instance == null)
+            {
                 return;
+            }
 
             instance.Root.SetActive(false);
             instance.Scrim.SetActive(false);
@@ -97,19 +106,24 @@ namespace EpicLoot_UnityLib
 
         public static bool IsVisible()
         {
-            return instance != null && ((instance._hiddenFrames <= 2) || (instance.Root != null && instance.Root.activeSelf));
+            return instance != null && ((instance._hiddenFrames <= 2) ||
+                (instance.Root != null && instance.Root.activeSelf));
         }
 
         public static bool IsInTextInput()
         {
             if (!IsVisible())
+            {
                 return false;
+            }
 
             var textFields = instance.Root.GetComponentsInChildren<InputField>(false);
             foreach (var inputField in textFields)
             {
                 if (inputField.isFocused)
+                {
                     return true;
+                }
             }
 
             return false;
@@ -118,7 +132,9 @@ namespace EpicLoot_UnityLib
         public void Update()
         {
             if (Root == null)
+            {
                 return;
+            }
 
             if (!Root.activeSelf)
             {
@@ -128,11 +144,18 @@ namespace EpicLoot_UnityLib
 
             _hiddenFrames = 0;
 
-            var disallowClose = (Chat.instance != null && Chat.instance.HasFocus()) || Console.IsVisible() || Menu.IsVisible() || (TextViewer.instance != null && TextViewer.instance.IsVisible()) || Player.m_localPlayer.InCutscene();
-            if (disallowClose)
-                return;
+            var disallowClose = (Chat.instance != null && Chat.instance.HasFocus()) || 
+                Console.IsVisible() || Menu.IsVisible() || (TextViewer.instance != null && 
+                TextViewer.instance.IsVisible()) || Player.m_localPlayer.InCutscene();
 
-            var gotCloseInput = ZInput.GetButtonDown("JoyButtonB") || Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.Tab);
+            if (disallowClose)
+            {
+                return;
+            }
+
+            var gotCloseInput = ZInput.GetButtonDown("JoyButtonB") ||
+                ZInput.GetKeyDown(KeyCode.Escape) || ZInput.GetKeyDown(KeyCode.Tab);
+
             if (gotCloseInput)
             {
                 ZInput.ResetButtonStatus("JoyButtonB");
@@ -150,7 +173,9 @@ namespace EpicLoot_UnityLib
                 }
 
                 if (!panelCapturedInput)
+                {
                     Hide();
+                }
             }
         }
 

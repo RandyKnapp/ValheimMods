@@ -14,7 +14,15 @@ namespace EpicLoot.Abilities
             Abilities.Clear();
             foreach (var def in Config.Abilities)
             {
-                Abilities.Add(def.ID, def);
+                if (!Abilities.ContainsKey(def.ID))
+                {
+                    Abilities.Add(def.ID, def);
+                }
+                else
+                {
+                    EpicLoot.LogWarning($"Duplicate entry found for Abilities: {def.ID}. " +
+                        $"Please fix your configuration.");
+                }
             }
         }
 

@@ -14,27 +14,29 @@
     {
       "Type": "Swords",
       "Fallback": "AxeFlint",
-      "Items": [ "SwordBronze", "SwordIron", "SwordSilver", "SwordBlackmetal", "SwordMistwalker", "THSwordKrom" ],
+      "Items": [ "SwordBronze", "SwordIron", "SwordSilver", "SwordBlackmetal", "SwordMistwalker", "THSwordKrom", "SwordNiedhogg", "THSwordSlayer", "SwordDyrnwyn" ],
       "ItemsByBoss" : {
-        "defeated_eikthyr"    : [  ],
+        "defeated_eikthyr"    : [],
         "defeated_gdking"     : [ "SwordBronze" ],
         "defeated_bonemass"   : [ "SwordIron" ],
         "defeated_dragon"     : [ "SwordSilver" ],
         "defeated_goblinking" : [ "SwordBlackmetal" ],
-        "defeated_queen"      : [ "SwordMistwalker", "THSwordKrom" ]
+        "defeated_queen"      : [ "SwordMistwalker", "THSwordKrom" ],
+        "defeated_fader"      : [ "SwordNiedhogg", "THSwordSlayer", "SwordDyrnwyn" ]
       }
     },
     {
       "Type": "Axes",
       "Fallback": "Club",
-      "Items": [ "AxeStone", "AxeFlint", "AxeBronze", "AxeIron", "AxeBlackMetal", "AxeJotunBane" ],
+      "Items": [ "AxeStone", "AxeFlint", "AxeBronze", "AxeIron", "AxeBlackMetal", "AxeJotunBane", "AxeBerzerkr"],
       "ItemsByBoss" : {
         "defeated_eikthyr"    : [ "AxeStone", "AxeFlint" ],
         "defeated_gdking"     : [ "AxeBronze" ],
         "defeated_bonemass"   : [ "AxeIron" ],
-        "defeated_dragon"     : [  ],
+        "defeated_dragon"     : [],
         "defeated_goblinking" : [ "AxeBlackMetal" ],
-        "defeated_queen"      : [ "AxeJotunBane" ]
+        "defeated_queen"      : [ "AxeJotunBane" ],
+        "defeated_fader"      : [ "AxeBerzerkr" ]
       }
     },
     {
@@ -42,12 +44,13 @@
         "Fallback": "Axes",
         "Items": [ "Battleaxe", "BattleaxeCrystal" ],
         "ItemsByBoss": {
-            "defeated_eikthyr": [],
-            "defeated_gdking": [],
-            "defeated_bonemass": [ "Battleaxe" ],
-            "defeated_dragon": [ "BattleaxeCrystal" ],
-            "defeated_goblinking": [],
-            "defeated_queen": []
+            "defeated_eikthyr"    : [],
+            "defeated_gdking"     : [],
+            "defeated_bonemass"   : [ "Battleaxe" ],
+            "defeated_dragon"     : [ "BattleaxeCrystal" ],
+            "defeated_goblinking" : [],
+            "defeated_queen"      : [],
+            "defeated_fader"      : []
         }
     },
     {
@@ -60,7 +63,8 @@
         "defeated_bonemass"   : [ "KnifeChitin" ],
         "defeated_dragon"     : [ "KnifeSilver" ],
         "defeated_goblinking" : [ "KnifeBlackMetal" ],
-        "defeated_queen"      : [ "KnifeSkollAndHati" ]
+        "defeated_queen"      : [ "KnifeSkollAndHati" ],
+        "defeated_fader"      : []
       }
     },
     {
@@ -68,38 +72,41 @@
       "Fallback": "Knives",
       "Items": [ "FistFenrirClaw" ],
       "ItemsByBoss" : {
-        "defeated_eikthyr"    : [  ],
-        "defeated_gdking"     : [  ],
-        "defeated_bonemass"   : [  ],
+        "defeated_eikthyr"    : [],
+        "defeated_gdking"     : [],
+        "defeated_bonemass"   : [],
         "defeated_dragon"     : [ "FistFenrirClaw" ],
-        "defeated_goblinking" : [  ],
-        "defeated_queen"      : [  ]
+        "defeated_goblinking" : [],
+        "defeated_queen"      : [],
+        "defeated_fader"      : []
       }
     },
     {
         "Type": "Staffs",
         "Fallback": "Spears",
-        "Items": [ "StaffFireball", "StaffIceShards", "StaffShield", "StaffSkeleton" ],
+        "Items": [ "StaffFireball", "StaffIceShards", "StaffShield", "StaffSkeleton", "StaffClusterbomb", "StaffLightning", "StaffRedTroll", "StaffGreenRoots" ],
         "ItemsByBoss": {
-            "defeated_eikthyr": [],
-            "defeated_gdking": [],
-            "defeated_bonemass": [],
-            "defeated_dragon": [],
-            "defeated_goblinking": [],
-            "defeated_queen": [ "StaffFireball", "StaffIceShards", "StaffShield", "StaffSkeleton" ]
+            "defeated_eikthyr"    : [],
+            "defeated_gdking"     : [],
+            "defeated_bonemass"   : [],
+            "defeated_dragon"     : [],
+            "defeated_goblinking" : [],
+            "defeated_queen"      : [ "StaffFireball", "StaffIceShards", "StaffShield", "StaffSkeleton" ],
+            "defeated_fader"      : [ "StaffClusterbomb", "StaffLightning", "StaffRedTroll", "StaffGreenRoots" ]
         }
     },
     {
       "Type": "Clubs",
       "Fallback": "",
-      "Items": [ "Club", "MaceBronze", "MaceIron", "MaceSilver", "MaceNeedle" ],
+      "Items": [ "Club", "MaceBronze", "MaceIron", "MaceSilver", "MaceNeedle", "MaceEldner" ],
       "ItemsByBoss" : {
         "defeated_eikthyr"    : [ "Club" ],
         "defeated_gdking"     : [ "MaceBronze" ],
         "defeated_bonemass"   : [ "MaceIron" ],
         "defeated_dragon"     : [ "MaceSilver" ],
         "defeated_goblinking" : [ "MaceNeedle" ],
-        "defeated_queen"      : [  ]
+        "defeated_queen"      : [],
+        "defeated_fader"      : [ "MaceEldner" ]
       }
     },
     {
@@ -107,12 +114,13 @@
         "Fallback": "Clubs",
         "Items": [ "SledgeStagbreaker", "SledgeIron", "SledgeDemolisher" ],
         "ItemsByBoss": {
-            "defeated_eikthyr": [ "SledgeStagbreaker" ],
-            "defeated_gdking": [],
-            "defeated_bonemass": [ "SledgeIron" ],
-            "defeated_dragon": [],
-            "defeated_goblinking": [],
-            "defeated_queen": [ "SledgeDemolisher" ]
+            "defeated_eikthyr"    : [ "SledgeStagbreaker" ],
+            "defeated_gdking"     : [],
+            "defeated_bonemass"   : [ "SledgeIron" ],
+            "defeated_dragon"     : [],
+            "defeated_goblinking" : [],
+            "defeated_queen"      : [ "SledgeDemolisher" ],
+            "defeated_fader"      : []
         }
     },
     {
@@ -120,25 +128,27 @@
         "Fallback": "Spears",
         "Items": [ "AtgeirBronze", "AtgeirIron", "AtgeirBlackmetal", "AtgeirHimminAfl" ],
         "ItemsByBoss": {
-            "defeated_eikthyr": [],
-            "defeated_gdking": [ "AtgeirBronze" ],
-            "defeated_bonemass": [ "AtgeirIron" ],
-            "defeated_dragon": [],
-            "defeated_goblinking": [ "AtgeirBlackmetal" ],
-            "defeated_queen": [ "AtgeirHimminAfl" ]
+            "defeated_eikthyr"    : [],
+            "defeated_gdking"     : [ "AtgeirBronze" ],
+            "defeated_bonemass"   : [ "AtgeirIron" ],
+            "defeated_dragon"     : [],
+            "defeated_goblinking" : [ "AtgeirBlackmetal" ],
+            "defeated_queen"      : [ "AtgeirHimminAfl" ],
+            "defeated_fader"      : []
         }
     },
     {
         "Type": "Spears",
         "Fallback": "Axes",
-        "Items": [ "SpearFlint", "SpearBronze", "SpearElderbark", "SpearChitin", "SpearWolfFang", "SpearCarapace" ],
+        "Items": [ "SpearFlint", "SpearBronze", "SpearElderbark", "SpearChitin", "SpearWolfFang", "SpearCarapace", "SpearSplitner" ],
         "ItemsByBoss": {
-            "defeated_eikthyr": [ "SpearFlint" ],
-            "defeated_gdking": [ "SpearBronze" ],
-            "defeated_bonemass": [ "SpearElderbark", "SpearChitin" ],
-            "defeated_dragon": [ "SpearWolfFang" ],
-            "defeated_goblinking": [],
-            "defeated_queen": [ "SpearCarapace" ]
+            "defeated_eikthyr"    : [ "SpearFlint" ],
+            "defeated_gdking"     : [ "SpearBronze" ],
+            "defeated_bonemass"   : [ "SpearElderbark", "SpearChitin" ],
+            "defeated_dragon"     : [ "SpearWolfFang" ],
+            "defeated_goblinking" : [],
+            "defeated_queen"      : [ "SpearCarapace" ],
+            "defeated_fader"      : [ "SpearSplitner" ]
         }
     },
     {
@@ -146,25 +156,27 @@
         "Fallback": "Axes",
         "Items": [ "PickaxeAntler", "PickaxeBronze", "PickaxeIron", "PickaxeBlackMetal" ],
         "ItemsByBoss": {
-            "defeated_eikthyr": [ "PickaxeAntler" ],
-            "defeated_gdking": [ "PickaxeBronze" ],
-            "defeated_bonemass": [ "PickaxeIron" ],
-            "defeated_dragon": [],
-            "defeated_goblinking": [ "PickaxeBlackMetal" ],
-            "defeated_queen": []
+            "defeated_eikthyr"    : [ "PickaxeAntler" ],
+            "defeated_gdking"     : [ "PickaxeBronze" ],
+            "defeated_bonemass"   : [ "PickaxeIron" ],
+            "defeated_dragon"     : [],
+            "defeated_goblinking" : [ "PickaxeBlackMetal" ],
+            "defeated_queen"      : [],
+            "defeated_fader"      : []
         }
     },
     {
       "Type": "Bows",
       "Fallback": "Clubs",
-      "Items": [ "Bow", "BowFineWood", "BowHuntsman", "BowDraugrFang", "CrossbowArbalest", "BowSpineSnap" ],
+      "Items": [ "Bow", "BowFineWood", "BowHuntsman", "BowDraugrFang", "CrossbowArbalest", "BowSpineSnap", "BowAshlands" ],
       "ItemsByBoss" : {
         "defeated_eikthyr"    : [ "Bow" ],
         "defeated_gdking"     : [ "BowFineWood" ],
         "defeated_bonemass"   : [ "BowHuntsman" ],
         "defeated_dragon"     : [ "BowDraugrFang" ],
-        "defeated_goblinking" : [  ],
-        "defeated_queen"      : [ "CrossbowArbalest", "BowSpineSnap" ]
+        "defeated_goblinking" : [],
+        "defeated_queen"      : [ "CrossbowArbalest", "BowSpineSnap" ],
+        "defeated_fader"      : [ "BowAshlands" ]
       }
     },
     {
@@ -172,90 +184,97 @@
         "Fallback": "RoundShields",
         "Items": [ "ShieldBronzeBuckler", "ShieldIronBuckler", "ShieldCarapaceBuckler" ],
         "ItemsByBoss": {
-            "defeated_eikthyr": [],
-            "defeated_gdking": [ "ShieldBronzeBuckler" ],
-            "defeated_bonemass": [ "ShieldIronBuckler" ],
-            "defeated_dragon": [],
-            "defeated_goblinking": [],
-            "defeated_queen": [ "ShieldCarapaceBuckler" ]
+            "defeated_eikthyr"    : [],
+            "defeated_gdking"     : [ "ShieldBronzeBuckler" ],
+            "defeated_bonemass"   : [ "ShieldIronBuckler" ],
+            "defeated_dragon"     : [],
+            "defeated_goblinking" : [],
+            "defeated_queen"      : [ "ShieldCarapaceBuckler" ],
+            "defeated_fader"      : []
         }
     },
     {
       "Type": "RoundShields",
       "Fallback": "ShieldWood",
-      "Items": [ "ShieldWood", "ShieldBanded", "ShieldSilver", "ShieldBlackmetal", "ShieldCarapace" ],
+      "Items": [ "ShieldWood", "ShieldBanded", "ShieldSilver", "ShieldBlackmetal", "ShieldCarapace", "ShieldFlametal" ],
       "ItemsByBoss" : {
         "defeated_eikthyr"    : [ "ShieldWood" ],
-        "defeated_gdking"     : [  ],
+        "defeated_gdking"     : [],
         "defeated_bonemass"   : [ "ShieldBanded" ],
         "defeated_dragon"     : [ "ShieldSilver" ],
         "defeated_goblinking" : [ "ShieldBlackmetal" ],
-        "defeated_queen"      : [ "ShieldCarapace" ]
+        "defeated_queen"      : [ "ShieldCarapace" ],
+        "defeated_fader"      : [ "ShieldFlametal" ]
       }
     },
     {
       "Type": "TowerShields",
       "Fallback": "ShieldWoodTower",
-      "Items": [ "ShieldWoodTower", "ShieldBoneTower", "ShieldIronTower", "ShieldSerpentscale", "ShieldBlackmetalTower" ],
+      "Items": [ "ShieldWoodTower", "ShieldBoneTower", "ShieldIronTower", "ShieldSerpentscale", "ShieldBlackmetalTower", "ShieldFlametalTower" ],
       "ItemsByBoss" : {
         "defeated_eikthyr"    : [ "ShieldWoodTower" ],
         "defeated_gdking"     : [ "ShieldBoneTower" ],
         "defeated_bonemass"   : [ "ShieldIronTower", "ShieldSerpentscale" ],
-        "defeated_dragon"     : [  ],
+        "defeated_dragon"     : [],
         "defeated_goblinking" : [ "ShieldBlackmetalTower" ],
-        "defeated_queen"      : [  ]
+        "defeated_queen"      : [],
+        "defeated_fader"      : [ "ShieldFlametalTower" ]
       }
     },
     {
       "Type": "ChestArmor",
       "Fallback": "",
-      "Items": [ "ArmorRagsChest", "ArmorLeatherChest", "ArmorBronzeChest", "ArmorTrollLeatherChest", "ArmorIronChest", "ArmorRootChest", "ArmorWolfChest", "ArmorFenringChest", "ArmorPaddedCuirass", "ArmorCarapaceChest", "ArmorMageChest" ],
+      "Items": [ "ArmorRagsChest", "ArmorLeatherChest", "ArmorBronzeChest", "ArmorTrollLeatherChest", "ArmorIronChest", "ArmorRootChest", "ArmorWolfChest", "ArmorFenringChest", "ArmorPaddedCuirass", "ArmorCarapaceChest", "ArmorMageChest", "ArmorFlametalChest", "ArmorAshlandsMediumChest", "ArmorMageChest_Ashlands" ],
       "ItemsByBoss" : {
         "defeated_eikthyr"    : [ "ArmorRagsChest", "ArmorLeatherChest" ],
         "defeated_gdking"     : [ "ArmorBronzeChest", "ArmorTrollLeatherChest" ],
         "defeated_bonemass"   : [ "ArmorIronChest", "ArmorRootChest" ],
         "defeated_dragon"     : [ "ArmorWolfChest", "ArmorFenringChest" ],
         "defeated_goblinking" : [ "ArmorPaddedCuirass" ],
-        "defeated_queen"      : [ "ArmorCarapaceChest", "ArmorMageChest" ]
+        "defeated_queen"      : [ "ArmorCarapaceChest", "ArmorMageChest" ],
+        "defeated_fader"      : [ "ArmorFlametalChest", "ArmorAshlandsMediumChest", "ArmorMageChest_Ashlands" ]
       }
     },
     {
       "Type": "LegsArmor",
       "Fallback": "",
-      "Items": [ "ArmorRagsLegs", "ArmorLeatherLegs", "ArmorTrollLeatherLegs", "ArmorBronzeLegs", "ArmorIronLegs", "ArmorRootLegs", "ArmorWolfLegs", "ArmorFenringLegs", "ArmorPaddedGreaves", "ArmorCarapaceLegs", "ArmorMageLegs" ],
+      "Items": [ "ArmorRagsLegs", "ArmorLeatherLegs", "ArmorTrollLeatherLegs", "ArmorBronzeLegs", "ArmorIronLegs", "ArmorRootLegs", "ArmorWolfLegs", "ArmorFenringLegs", "ArmorPaddedGreaves", "ArmorCarapaceLegs", "ArmorMageLegs", "ArmorFlametalLegs", "ArmorAshlandsMediumlegs", "ArmorMageLegs_Ashlands" ],
       "ItemsByBoss" : {
         "defeated_eikthyr"    : [ "ArmorRagsLegs", "ArmorLeatherLegs" ],
         "defeated_gdking"     : [ "ArmorTrollLeatherLegs", "ArmorBronzeLegs" ],
         "defeated_bonemass"   : [ "ArmorIronLegs", "ArmorRootLegs" ],
         "defeated_dragon"     : [ "ArmorWolfLegs", "ArmorFenringLegs" ],
         "defeated_goblinking" : [ "ArmorPaddedGreaves" ],
-        "defeated_queen"      : [ "ArmorCarapaceLegs", "ArmorMageLegs" ]
+        "defeated_queen"      : [ "ArmorCarapaceLegs", "ArmorMageLegs" ],
+        "defeated_fader"      : [ "ArmorFlametalLegs", "ArmorAshlandsMediumlegs", "ArmorMageLegs_Ashlands" ]
       }
     },
     {
       "Type": "HeadArmor",
       "Fallback": "ArmorRagsChest",
-      "Items": [ "HelmetLeather", "HelmetTrollLeather", "HelmetBronze", "HelmetIron", "HelmetRoot", "HelmetDrake", "HelmetFenring", "HelmetPadded", "HelmetCarapace", "HelmetMage" ],
+      "Items": [ "HelmetLeather", "HelmetTrollLeather", "HelmetBronze", "HelmetIron", "HelmetRoot", "HelmetDrake", "HelmetFenring", "HelmetPadded", "HelmetCarapace", "HelmetMage", "HelmetFlametal", "HelmetAshlandsMediumHood", "HelmetMage_Ashlands" ],
       "ItemsByBoss" : {
         "defeated_eikthyr"    : [ "HelmetLeather" ],
         "defeated_gdking"     : [ "HelmetTrollLeather", "HelmetBronze" ],
         "defeated_bonemass"   : [ "HelmetIron", "HelmetRoot" ],
         "defeated_dragon"     : [ "HelmetDrake", "HelmetFenring" ],
         "defeated_goblinking" : [ "HelmetPadded" ],
-        "defeated_queen"      : [ "HelmetCarapace", "HelmetMage" ]
+        "defeated_queen"      : [ "HelmetCarapace", "HelmetMage" ],
+        "defeated_fader"      : [ "HelmetFlametal", "HelmetAshlandsMediumHood", "HelmetMage_Ashlands" ]
       }
     },
     {
       "Type": "ShouldersArmor",
       "Fallback": "ArmorRagsLegs",
-      "Items": [ "CapeDeerHide", "CapeTrollHide", "CapeWolf", "CapeLinen", "CapeLox", "CapeFeather" ],
+      "Items": [ "CapeDeerHide", "CapeTrollHide", "CapeWolf", "CapeLinen", "CapeLox", "CapeFeather", "CapeAsh", "CapeAsksvin" ],
       "ItemsByBoss" : {
         "defeated_eikthyr"    : [ "CapeDeerHide" ],
         "defeated_gdking"     : [ "CapeTrollHide" ],
-        "defeated_bonemass"   : [  ],
+        "defeated_bonemass"   : [],
         "defeated_dragon"     : [ "CapeWolf" ],
         "defeated_goblinking" : [ "CapeLinen", "CapeLox" ],
-        "defeated_queen"      : [ "CapeFeather" ]
+        "defeated_queen"      : [ "CapeFeather" ],
+        "defeated_fader"      : [ "CapeAsh", "CapeAsksvin" ]
       }
     },
     {
@@ -264,24 +283,26 @@
       "Items": [ "Torch" ],
       "ItemsByBoss" : {
         "defeated_eikthyr"    : [ "Torch" ],
-        "defeated_gdking"     : [  ],
-        "defeated_bonemass"   : [  ],
-        "defeated_dragon"     : [  ],
-        "defeated_goblinking" : [  ],
-        "defeated_queen"      : [  ]
+        "defeated_gdking"     : [],
+        "defeated_bonemass"   : [],
+        "defeated_dragon"     : [],
+        "defeated_goblinking" : [],
+        "defeated_queen"      : [],
+        "defeated_fader"      : []
       }
     },
     {
       "Type": "Tools",
       "Fallback": "Clubs",
-      "Items": [ "Hammer", "Hoe", "Cultivator" ],
+      "Items": [ "Hammer", "Hoe", "Cultivator", "FishingRod" ],
       "ItemsByBoss" : {
         "defeated_eikthyr"    : [ "Hammer", "Hoe" ],
-        "defeated_gdking"     : [ "Cultivator" ],
-        "defeated_bonemass"   : [  ],
-        "defeated_dragon"     : [  ],
-        "defeated_goblinking" : [  ],
-        "defeated_queen"      : [  ]
+        "defeated_gdking"     : [ "Cultivator", "FishingRod" ],
+        "defeated_bonemass"   : [],
+        "defeated_dragon"     : [],
+        "defeated_goblinking" : [],
+        "defeated_queen"      : [],
+        "defeated_fader"      : []
       }
     },
     {
@@ -289,12 +310,13 @@
       "Fallback": "Clubs",
       "Items": [ "LeatherBelt", "GoldRubyRing", "SilverRing" ],
       "ItemsByBoss" : {
-        "defeated_eikthyr"    : [  ],
+        "defeated_eikthyr"    : [],
         "defeated_gdking"     : [ "LeatherBelt", "GoldRubyRing" ],
-        "defeated_bonemass"   : [  ],
+        "defeated_bonemass"   : [],
         "defeated_dragon"     : [ "SilverRing" ],
-        "defeated_goblinking" : [  ],
-        "defeated_queen"      : [  ]
+        "defeated_goblinking" : [],
+        "defeated_queen"      : [],
+        "defeated_fader"      : []
       }
     }
   ]

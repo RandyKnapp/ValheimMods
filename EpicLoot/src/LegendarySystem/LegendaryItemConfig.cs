@@ -59,5 +59,7 @@ namespace EpicLoot.LegendarySystem
     {
         public List<LegendaryInfo> LegendaryItems = new List<LegendaryInfo>();
         public List<LegendarySetInfo> LegendarySets = new List<LegendarySetInfo>();
+        public List<LegendaryInfo> MythicItems = new List<LegendaryInfo>();
+        public List<LegendarySetInfo> MythicSets = new List<LegendarySetInfo>();
     }
 }

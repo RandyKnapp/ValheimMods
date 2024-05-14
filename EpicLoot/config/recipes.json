@@ -360,7 +360,7 @@
       "item": "RunestoneLegendary",
       "craftingStation": "",
       "resources": [
-        { "item": "DragonTear", "amount": 3 }
+        { "item": "DragonTear", "amount": 10 }
       ]
     },
     {
@@ -368,7 +368,23 @@
       "item": "RunestoneLegendary",
       "craftingStation": "",
       "resources": [
-        { "item": "YagluthDrop", "amount": 1 }
+        { "item": "YagluthDrop", "amount": 3 }
+      ]
+    },
+    {
+      "name": "Recipe_SeekerQueenRunestone",
+      "item": "RunestoneLegendary",
+      "craftingStation": "",
+      "resources": [
+        { "item": "QueenDrop", "amount": 5 }
+      ]
+    },
+    {
+      "name": "Recipe_FaderRunestone",
+      "item": "RunestoneMythic",
+      "craftingStation": "",
+      "resources": [
+        { "item": "FaderDrop", "amount": 5 }
       ]
     }
   ]

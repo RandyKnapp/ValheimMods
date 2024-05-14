@@ -115,7 +115,7 @@ namespace EpicLoot.Patching
         {
             PatchesPerFile.GetValues(fileName, true).RemoveAll(y => y.SourceFile.Equals(patchFile));
         }
-
+        
         public static void GetAllConfigFileNames(DirectoryInfo pluginFolder)
         {
             ConfigFileNames.Clear();
@@ -189,15 +189,20 @@ namespace EpicLoot.Patching
                 return;
             }
 
-            if (!string.IsNullOrEmpty(patchFile.TargetFile) && !string.IsNullOrEmpty(defaultTargetFile) && patchFile.TargetFile != defaultTargetFile)
-                EpicLoot.LogWarningForce($"TargetFile ({patchFile.TargetFile}) specified in patch file ({file.Name}) does not match! If patch file name matches a config file name, TargetFile is unnecessary.");
+            if (!string.IsNullOrEmpty(patchFile.TargetFile) && !string.IsNullOrEmpty(defaultTargetFile) && 
+                patchFile.TargetFile != defaultTargetFile)
+            {
+                EpicLoot.LogWarningForce($"TargetFile ({patchFile.TargetFile}) specified in patch file ({file.Name}) " +
+                    $"does not match! If patch file name matches a config file name, TargetFile is unnecessary.");
+            }
 
             if (!string.IsNullOrEmpty(patchFile.TargetFile))
                 defaultTargetFile = patchFile.TargetFile;
 
             if (!string.IsNullOrEmpty(defaultTargetFile) && !ConfigFileNames.Contains(defaultTargetFile))
             {
-                EpicLoot.LogErrorForce($"TargetFile ({defaultTargetFile}) specified in patch file ({file.Name}) does not exist! {file.Name} will not be processed.");
+                EpicLoot.LogErrorForce($"TargetFile ({defaultTargetFile}) specified in patch file ({file.Name}) " +
+                    $"does not exist! {file.Name} will not be processed.");
                 return;
             }
 
@@ -210,7 +215,8 @@ namespace EpicLoot.Patching
             for (var index = 0; index < patchFile.Patches.Count; index++)
             {
                 var patch = patchFile.Patches[index];
-                EpicLoot.Log($"Patch: ({file.Name}, {index})\n  > Action: {patch.Action}\n  > Path: {patch.Path}\n  > Value: {patch.Value}");
+                EpicLoot.Log($"Patch: ({file.Name}, {index})\n  > Action: {patch.Action}\n  > " +
+                    $"Path: {patch.Path}\n  > Value: {patch.Value}");
 
                 patch.Require = requireAll || patch.Require;
                 if (string.IsNullOrEmpty(patch.Author))
@@ -219,7 +225,8 @@ namespace EpicLoot.Patching
                 {
                     if (requiresSpecifiedSourceFile)
                     {
-                        EpicLoot.LogErrorForce($"Patch ({index}) in file ({file.Name}) requires a specified TargetFile!");
+                        EpicLoot.LogErrorForce($"Patch ({index}) in file ({file.Name}) " +
+                            $"requires a specified TargetFile!");
                         continue;
                     }
 
@@ -227,7 +234,8 @@ namespace EpicLoot.Patching
                 }
                 else if (!ConfigFileNames.Contains(patch.TargetFile))
                 {
-                    EpicLoot.LogErrorForce($"Patch ({index}) in file ({file.Name}) has unknown specified source file ({patch.TargetFile})!");
+                    EpicLoot.LogErrorForce($"Patch ({index}) in file ({file.Name}) " +
+                        $"has unknown specified source file ({patch.TargetFile})!");
                     continue;
                 }
                 

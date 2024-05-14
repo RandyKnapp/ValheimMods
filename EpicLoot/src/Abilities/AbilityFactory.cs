@@ -9,7 +9,14 @@ namespace EpicLoot.Abilities
 
         public static void Register(string abilityID, Type abilityClassType)
         {
-            AbilityClassTypes.Add(abilityID, abilityClassType);
+            if (!AbilityClassTypes.ContainsKey(abilityID))
+            {
+                AbilityClassTypes.Add(abilityID, abilityClassType);
+            }
+            else
+            {
+                EpicLoot.LogWarning($"Duplicate entry found for AbilityClassTypes: {abilityID}.");
+            }
         }
 
         public static Ability Create(string abilityID)

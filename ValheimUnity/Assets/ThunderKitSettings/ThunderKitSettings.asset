@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   FirstLoad: 1
   ShowOnStartup: 1
-  GameExecutable: valheim.exe
-  GamePath: G:\Steam\steamapps\common\Valheim
-  Is64Bit: 1
+  GameExecutable: 
+  GamePath: 
+  Is64Bit: 0
   DateTimeFormat: HH:mm:ss:fff
   CreatedDateFormat: MMM/dd HH:mm:ss
   ShowLogWindow: 1

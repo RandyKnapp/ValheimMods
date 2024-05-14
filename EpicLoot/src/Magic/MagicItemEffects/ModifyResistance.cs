@@ -40,36 +40,36 @@ namespace EpicLoot.MagicItemEffects
     [HarmonyPatch(typeof(Character), nameof(Character.RPC_Damage))]
     public static class ModifyResistance_Character_RPC_Damage_Patch
     {
-	    public static void Prefix(Character __instance, HitData hit)
-	    {
-		    if (!(__instance is Player player))
-		    {
-			    return;
-		    }
+        public static void Prefix(Character __instance, HitData hit)
+        {
+            if (!(__instance is Player player))
+            {
+                return;
+            }
 
-		    float sum(params string[] effects)
-		    {
-			    float value = 1;
-			    foreach (var effect in effects)
-			    {
-				    value -= player.GetTotalActiveMagicEffectValue(effect, 0.01f);
-			    }
+            float sum(params string[] effects)
+            {
+                float value = 1;
+                foreach (var effect in effects)
+                {
+                    value -= player.GetTotalActiveMagicEffectValue(effect, 0.01f);
+                }
 
-			    return Math.Max(value, 0);
-		    }
+                return Math.Max(value, 0);
+            }
 
-		    // elemental resistances
-		    hit.m_damage.m_fire *= sum(MagicEffectType.AddFireResistancePercentage, MagicEffectType.AddElementalResistancePercentage);
-		    hit.m_damage.m_frost *= sum(MagicEffectType.AddFrostResistancePercentage, MagicEffectType.AddElementalResistancePercentage);
-		    hit.m_damage.m_lightning *= sum(MagicEffectType.AddLightningResistancePercentage, MagicEffectType.AddElementalResistancePercentage);
-		    hit.m_damage.m_poison *= sum(MagicEffectType.AddPoisonResistancePercentage, MagicEffectType.AddElementalResistancePercentage);
-		    hit.m_damage.m_spirit *= sum(MagicEffectType.AddSpiritResistancePercentage, MagicEffectType.AddElementalResistancePercentage);
-		    
-		    // physical resistances
-		    hit.m_damage.m_blunt *= sum(MagicEffectType.AddBluntResistancePercentage, MagicEffectType.AddPhysicalResistancePercentage);
-		    hit.m_damage.m_slash *= sum(MagicEffectType.AddSlashingResistancePercentage, MagicEffectType.AddPhysicalResistancePercentage);
-		    hit.m_damage.m_pierce *= sum(MagicEffectType.AddPiercingResistancePercentage, MagicEffectType.AddPhysicalResistancePercentage);
-		    hit.m_damage.m_chop *= sum(MagicEffectType.AddChoppingResistancePercentage, MagicEffectType.AddPhysicalResistancePercentage);
-	    }
+            // elemental resistances
+            hit.m_damage.m_fire *= sum(MagicEffectType.AddFireResistancePercentage, MagicEffectType.AddElementalResistancePercentage);
+            hit.m_damage.m_frost *= sum(MagicEffectType.AddFrostResistancePercentage, MagicEffectType.AddElementalResistancePercentage);
+            hit.m_damage.m_lightning *= sum(MagicEffectType.AddLightningResistancePercentage, MagicEffectType.AddElementalResistancePercentage);
+            hit.m_damage.m_poison *= sum(MagicEffectType.AddPoisonResistancePercentage, MagicEffectType.AddElementalResistancePercentage);
+            hit.m_damage.m_spirit *= sum(MagicEffectType.AddSpiritResistancePercentage, MagicEffectType.AddElementalResistancePercentage);
+            
+            // physical resistances
+            hit.m_damage.m_blunt *= sum(MagicEffectType.AddBluntResistancePercentage, MagicEffectType.AddPhysicalResistancePercentage);
+            hit.m_damage.m_slash *= sum(MagicEffectType.AddSlashingResistancePercentage, MagicEffectType.AddPhysicalResistancePercentage);
+            hit.m_damage.m_pierce *= sum(MagicEffectType.AddPiercingResistancePercentage, MagicEffectType.AddPhysicalResistancePercentage);
+            hit.m_damage.m_chop *= sum(MagicEffectType.AddChoppingResistancePercentage, MagicEffectType.AddPhysicalResistancePercentage);
+        }
     }
 }

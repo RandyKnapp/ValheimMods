@@ -77,7 +77,7 @@ namespace EpicLoot.Crafting
                     focus.gameObject.SetActive(ZInput.IsGamepadActive() && index == _choiceIndex);
             }
 
-            if (ZInput.GetButtonDown("Inventory") || ZInput.GetButtonDown("JoyButtonB") || Input.GetKeyDown(KeyCode.Escape))
+            if (ZInput.GetButtonDown("Inventory") || ZInput.GetButtonDown("JoyButtonB") || ZInput.GetKeyDown(KeyCode.Escape))
             {
                 EffectChoiceButtons[0].onClick.Invoke();
             }

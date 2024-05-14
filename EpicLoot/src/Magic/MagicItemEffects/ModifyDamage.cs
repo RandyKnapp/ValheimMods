@@ -84,7 +84,7 @@ namespace EpicLoot.MagicItemEffects
             });
             __result.Modify(1.0f + damageMod);
 
-            if (player != null && player.GetSEMan().HaveStatusEffect("BerserkerStatusEffect"))
+            if (player != null && player.GetSEMan().HaveStatusEffect("BerserkerStatusEffect".GetStableHashCode()))
             {
                 var percentLife = player.GetHealthPercentage();
                 var berserkerMod = Mathf.Lerp(2.0f, 0.5f, percentLife);

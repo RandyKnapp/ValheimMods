@@ -11,6 +11,9 @@
     ],
     "Legendary": [ 
       { "Item": "IronBountyToken", "Amount": 7 }
+    ],
+    "Mythic": [ 
+      { "Item": "IronBountyToken", "Amount": 9 }
     ]
   },
   // Sacrifice Products
@@ -54,6 +57,15 @@
     },
     {
       "IsMagic": true, 
+      "ItemTypes" : [ "OneHandedWeapon", "Bow", "TwoHandedWeapon", "TwoHandedWeaponLeft", "Torch", "Tool" ],
+      "Rarity": "Mythic",
+      "Products": [
+        { "Item": "DustMythic",    "Amount": 1 },
+        { "Item": "EssenceMythic", "Amount": 1 }
+      ]
+    },
+    {
+      "IsMagic": true, 
       "ItemTypes" : [ "Shield", "Helmet", "Chest", "Legs", "Shoulder", "Utility" ],
       "Rarity": "Magic",
       "Products": [
@@ -89,6 +101,15 @@
       ]
     },
     {
+      "IsMagic": true, 
+      "ItemTypes" : [ "Shield", "Helmet", "Chest", "Legs", "Shoulder", "Utility" ],
+      "Rarity": "Mythic",
+      "Products": [
+        { "Item": "DustMythic",    "Amount": 1 },
+        { "Item": "ReagentMythic", "Amount": 1 }
+      ]
+    },
+    {
       "ItemTypes" : [ "Trophy" ],
       "ItemNames" : [ "$item_trophy_boar", "$item_trophy_deer", "$item_trophy_greydwarf", "$item_trophy_neck", "$item_trophy_skeleton", "$item_trophy_skeletonpoison" ],
       "Products" : [ { "Item": "ShardMagic", "Amount": 1 } ]
@@ -100,13 +121,19 @@
     },
     {
       "ItemTypes" : [ "Trophy" ],
-      "ItemNames" : [ "$item_trophy_fenring", "$item_trophy_goblin", "$item_trophy_skeleton_hildir", "$item_trophy_brutebro", "$item_trophy_shamanbro", "$item_trophy_hatchling", "$item_trophy_lox", "$item_trophy_sgolem", "$item_trophy_abomination", "$item_trophy_cultist", "$item_trophy_ulv", "$item_trophy_growth", "$item_trophy_tick", "$item_trophy_hare" ],
+      "ItemNames" : [ "$item_trophy_fenring", "$item_trophy_goblin", "$item_trophy_skeleton_hildir", "$item_trophy_cultist_hildir", "$item_trophy_hatchling", "$item_trophy_lox", "$item_trophy_sgolem", "$item_trophy_abomination", "$item_trophy_cultist", "$item_trophy_ulv", "$item_trophy_growth", "$item_trophy_tick", "$item_trophy_hare" ],
       "Products" : [ { "Item": "ShardEpic", "Amount": 1 } ]
     },
     {
       "ItemTypes" : [ "Trophy" ],
-      "ItemNames" : [ "$item_trophy_deathsquito", "$item_trophy_goblinbrute", "$item_trophy_goblinshaman", "$item_trophy_serpent", "$item_trophy_seeker", "$item_trophy_seeker_brute", "$item_trophy_gjall", "$item_trophy_dvergr" ],
+      "ItemNames" : [ "$item_trophy_deathsquito", "$item_trophy_goblinbrute", "$item_trophy_goblinshaman", "$item_trophy_serpent", "$item_trophy_seeker", "$item_trophy_seeker_brute", "$item_trophy_gjall", "$item_trophy_dvergr", "$item_trophy_brutebro", "$item_trophy_shamanbro", "$item_trophy_asksvin", "$item_trophy_bonemaw", "$item_trophy_volture" ],
       "Products" : [ { "Item": "ShardLegendary", "Amount": 1 } ]
+    },
+    {
+      "ItemTypes" : [ "Trophy" ],
+      "ItemNames" : [ "$item_trophy_charredarcher", "$item_trophy_charredmage", "$item_trophy_charredmelee",
+    "$item_trophy_fallenvalkyrie", "$item_trophy_morgen" ],
+      "Products" : [ { "Item": "ShardMythic", "Amount": 1 } ]
     },
     {
       "ItemTypes" : [ "Trophy" ],
@@ -126,17 +153,22 @@
     {
       "ItemTypes" : [ "Trophy" ],
       "ItemNames" : [ "$item_trophy_dragonqueen" ],
-      "Products" : [ { "Item": "RunestoneLegendary", "Amount": 2 } ]
+      "Products" : [ { "Item": "RunestoneEpic", "Amount": 2 } ]
     },
     {
       "ItemTypes" : [ "Trophy" ],
       "ItemNames" : [ "$item_trophy_goblinking" ],
-      "Products" : [ { "Item": "RunestoneLegendary", "Amount": 4 } ]
+      "Products" : [ { "Item": "RunestoneLegendary", "Amount": 1 } ]
     },
     {
       "ItemTypes" : [ "Trophy" ],
       "ItemNames" : [ "$item_trophy_seekerqueen" ],
-      "Products" : [ { "Item": "RunestoneLegendary", "Amount": 12 } ]
+      "Products" : [ { "Item": "RunestoneLegendary", "Amount": 2 } ]
+    },
+    {
+      "ItemTypes" : [ "Trophy" ],
+      "ItemNames" : [ "$item_trophy_fader" ],
+      "Products" : [ { "Item": "RunestoneMythic", "Amount": 1 } ]
     },
     {
       "ItemNames" : [ "$item_cryptkey" ],
@@ -155,19 +187,11 @@
       ]
     },
     {
-      "ItemNames" : [ "$item_dragontear" ],
+      "ItemNames" : [ "$item_yagluththing" ],
       "Products" : [
         { "Item": "DustLegendary",    "Amount": 2 },
         { "Item": "EssenceLegendary", "Amount": 1 },
         { "Item": "ReagentLegendary", "Amount": 1 }
-      ]
-    },
-    {
-      "ItemNames" : [ "$item_yagluththing" ],
-      "Products" : [
-        { "Item": "DustLegendary",    "Amount": 6 },
-        { "Item": "EssenceLegendary", "Amount": 3 },
-        { "Item": "ReagentLegendary", "Amount": 3 }
       ]
     },
     {
@@ -179,16 +203,22 @@
       ]
     },
     {
-      "ItemNames" : [ "$item_queen_drop" ],
+      "ItemNames" : [ "$item_seekerqueen_drop" ],
       "Products" : [
-        { "Item": "DustLegendary",    "Amount": 10 },
-        { "Item": "EssenceLegendary", "Amount": 5 },
-        { "Item": "ReagentLegendary", "Amount": 5 }
+        { "Item": "DustLegendary",    "Amount": 2 },
+        { "Item": "EssenceLegendary", "Amount": 1 },
+        { "Item": "ReagentLegendary", "Amount": 1 }
+      ]
+    },
+    {
+      "ItemNames" : [ "$item_fader_drop" ],
+      "Products" : [
+        { "Item": "DustMythic",    "Amount": 2 },
+        { "Item": "EssenceMythic", "Amount": 1 },
+        { "Item": "ReagentMythic", "Amount": 1 }
       ]
     }
   ],
-
-
   // Enchant Costs
   ///////////////////////////////////////////////////////////////////////////////////////////////
   "EnchantCosts": [
@@ -229,6 +259,15 @@
       ]
     },
     {
+      "ItemTypes" : [ "OneHandedWeapon", "Bow", "TwoHandedWeapon", "TwoHandedWeaponLeft", "Torch", "Tool" ],
+      "Rarity": "Mythic",
+      "Cost": [
+        { "Item": "RunestoneMythic", "Amount": 1 },
+        { "Item": "DustMythic",      "Amount": 5 },
+        { "Item": "EssenceMythic",   "Amount": 5 }
+      ]
+    },
+    {
       "ItemTypes" : [ "Shield", "Helmet", "Chest", "Legs", "Shoulder", "Utility" ],
       "Rarity": "Magic",
       "Cost": [
@@ -263,10 +302,17 @@
         { "Item": "DustLegendary",      "Amount": 5 },
         { "Item": "ReagentLegendary",   "Amount": 5 }
       ]
+    },
+    {
+      "ItemTypes" : [ "Shield", "Helmet", "Chest", "Legs", "Shoulder", "Utility" ],
+      "Rarity": "Mythic",
+      "Cost": [
+        { "Item": "RunestoneMythic", "Amount": 1 },
+        { "Item": "DustMythic",      "Amount": 5 },
+        { "Item": "ReagentMythic",   "Amount": 5 }
+      ]
     }
   ],
-
-
   // Augment Costs
   ///////////////////////////////////////////////////////////////////////////////////////////////
   "AugmentCosts": [
@@ -307,6 +353,15 @@
       ]
     },
     {
+      "ItemTypes" : [ "OneHandedWeapon", "Bow", "TwoHandedWeapon", "TwoHandedWeaponLeft", "Torch", "Tool" ],
+      "Rarity": "Mythic",
+      "Cost": [
+        { "Item": "ShardMythic",   "Amount": 1 },
+        { "Item": "DustMythic",    "Amount": 1 },
+        { "Item": "EssenceMythic", "Amount": 1 }
+      ]
+    },
+    {
       "ItemTypes" : [ "Shield", "Helmet", "Chest", "Legs", "Shoulder", "Utility" ],
       "Rarity": "Magic",
       "Cost": [
@@ -341,18 +396,27 @@
         { "Item": "DustLegendary",    "Amount": 1 },
         { "Item": "ReagentLegendary", "Amount": 1 }
       ]
+    },
+    {
+      "ItemTypes" : [ "Shield", "Helmet", "Chest", "Legs", "Shoulder", "Utility" ],
+      "Rarity": "Mythic",
+      "Cost": [
+        { "Item": "ShardMythic",   "Amount": 1 },
+        { "Item": "DustMythic",    "Amount": 1 },
+        { "Item": "ReagentMythic", "Amount": 1 }
+      ]
     }
   ],
   "ReAugmentCosts" : [
+    { "Item": "Coins", "Amount": 500 },
+    { "Item": "Coins", "Amount": 1000 },
+    { "Item": "Coins", "Amount": 1500 },
+    { "Item": "Coins", "Amount": 2000 },
+    { "Item": "Coins", "Amount": 2500 },
+    { "Item": "Coins", "Amount": 3500 },
+    { "Item": "Coins", "Amount": 4000 },
+    { "Item": "Coins", "Amount": 4500 },
     { "Item": "Coins", "Amount": 5000 },
-    { "Item": "Coins", "Amount": 10000 },
-    { "Item": "Coins", "Amount": 15000 },
-    { "Item": "Coins", "Amount": 20000 },
-    { "Item": "Coins", "Amount": 25000 },
-    { "Item": "Coins", "Amount": 35000 },
-    { "Item": "Coins", "Amount": 40000 },
-    { "Item": "Coins", "Amount": 45000 },
-    { "Item": "Coins", "Amount": 50000 },
-    { "Item": "Coins", "Amount": 55000 }
+    { "Item": "Coins", "Amount": 5500 }
   ] 
 }

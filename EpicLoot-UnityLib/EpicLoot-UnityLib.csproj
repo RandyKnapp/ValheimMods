@@ -53,4 +53,7 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\Microsoft.Net.Compilers.Toolset.4.4.0\build\Microsoft.Net.Compilers.Toolset.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Net.Compilers.Toolset.4.4.0\build\Microsoft.Net.Compilers.Toolset.props'))" />
   </Target>
+  <Target Name="CopyAssembly" AfterTargets="Build">
+    <Copy SourceFiles="$(TargetDir)$(TargetFileName)" DestinationFolder="$(SolutionDir)ValheimUnity\Assets\ExternalLibraries" />
+  </Target>
 </Project>

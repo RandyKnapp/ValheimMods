@@ -37,7 +37,9 @@ namespace EpicLoot.Crafting
                     scrollBar.value = Mathf.Clamp01(scrollBar.value + rightStickAxis * -0.1f);
             }
 
-            if (ZInput.GetButtonDown("Inventory") || ZInput.GetButtonDown("JoyButtonB") || (ZInput.GetButtonDown("JoyButtonY") || Input.GetKeyDown(KeyCode.Escape)) || ZInput.GetButtonDown("JoyButtonA"))
+            if (ZInput.GetButtonDown("Inventory") || ZInput.GetButtonDown("JoyButtonB") ||
+                (ZInput.GetButtonDown("JoyButtonY") || ZInput.GetKeyDown(KeyCode.Escape)) ||
+                ZInput.GetButtonDown("JoyButtonA"))
             {
                 Close();
             }

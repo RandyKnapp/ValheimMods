@@ -34,6 +34,7 @@ namespace EpicLoot
         public RareItemNameConfig Rare;
         public EpicItemNameConfig Epic;
         public List<ItemNameEntry> Legendary;
+        public List<ItemNameEntry> Mythic;
     }
 
     public static class MagicItemNames
@@ -71,8 +72,10 @@ namespace EpicLoot
                     return BuildEpicName(item, magicItem);
 
                 case ItemRarity.Legendary:
-                case ItemRarity.Mythic:
                     return GetLegendaryName(item, magicItem);
+
+                case ItemRarity.Mythic:
+                    return GetMythicName(item, magicItem);
 
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -162,7 +165,8 @@ namespace EpicLoot
             return string.IsNullOrEmpty(namePart) ? TranslateAndCapitalize(item.m_shared.m_name) : namePart;
         }
 
-        public static List<string> GetAllowedNamesFromList(List<ItemNameEntry> nameEntries, ItemDrop.ItemData item, MagicItem magicItem)
+        public static List<string> GetAllowedNamesFromList(List<ItemNameEntry> nameEntries,
+            ItemDrop.ItemData item, MagicItem magicItem)
         {
             var results = new List<string>();
 
@@ -175,7 +179,8 @@ namespace EpicLoot
                     continue;
                 }
 
-                if (IsValidTypeForSkillCheck(itemType) && nameEntry.Skills.Count > 0 && nameEntry.Skills.Contains(item.m_shared.m_skillType))
+                if (IsValidTypeForSkillCheck(itemType) && nameEntry.Skills.Count > 0 &&
+                    nameEntry.Skills.Contains(item.m_shared.m_skillType))
                 {
                     results.Add(nameEntry.Name);
                     continue;
@@ -207,13 +212,35 @@ namespace EpicLoot
             }
 
             var format = Localization.instance.Localize("$mod_epicloot_basiclegendarynameformat");
+
             var baseName = TranslateAndCapitalize(item.m_shared.m_name);
             return string.Format(format, baseName);
         }
 
-        public static List<string> GetAllowedNamesFromListAllRequired(List<ItemNameEntry> nameEntries, ItemDrop.ItemData item, MagicItem magicItem)
+        private static string GetMythicName(ItemDrop.ItemData item, MagicItem magicItem)
+        {
+            var allowedNames = GetAllowedNamesFromListAllRequired(Config.Mythic, item, magicItem);
+            var name = GetRandomStringFromList(allowedNames);
+
+            if (!string.IsNullOrEmpty(name))
+            {
+                return name;
+            }
+
+            var format = Localization.instance.Localize("$mod_epicloot_basicmythicnameformat");
+            var baseName = TranslateAndCapitalize(item.m_shared.m_name);
+            return string.Format(format, baseName);
+        }
+
+        public static List<string> GetAllowedNamesFromListAllRequired(List<ItemNameEntry> nameEntries,
+            ItemDrop.ItemData item, MagicItem magicItem)
         {
             var results = new List<string>();
+
+            if (nameEntries == null)
+            {
+                return results;
+            }
 
             foreach (var nameEntry in nameEntries)
             {
@@ -223,7 +250,8 @@ namespace EpicLoot
                     continue;
                 }
 
-                if (IsValidTypeForSkillCheck(itemType) && nameEntry.Skills.Count > 0 && !nameEntry.Skills.Contains(item.m_shared.m_skillType))
+                if (IsValidTypeForSkillCheck(itemType) && nameEntry.Skills.Count > 0 &&
+                    !nameEntry.Skills.Contains(item.m_shared.m_skillType))
                 {
                     continue;
                 }

@@ -1,11 +1,12 @@
-# Epic Loot - Config Patching System and Various Bug Fixes
+# Epic Loot
+
 Author: [RandyKnapp](https://discord.gg/ZNhYeavv3C)
 Source: [Github](https://github.com/RandyKnapp/ValheimMods/blob/main/EpicLoot/)
 Patreon: [patreon.com/randyknapp](https://www.patreon.com/randyknapp)
 Discord: [RandyKnapp's Mod Community](https://discord.gg/ZNhYeavv3C)
 Patch notes: [Github Patchnotes](https://github.com/RandyKnapp/ValheimMods/blob/main/EpicLoot/CHANGELOG.md)
 
-This mod aims to add a loot drop experience to Valheim similar to Diablo or other RPGs. Monsters and chests can now drop Magic, Rare, Epic, or Legendary magic items. Each magic item has a number of magic effects on it, that give bonuses to the item or your character when that magic item is equipped.
+This mod aims to add a loot drop experience to Valheim similar to Diablo or other RPGs. Monsters and chests can now drop Magic, Rare, Epic, Legendary, or Mythic magic items. Each magic item has a number of magic effects on it, that give bonuses to the item or your character when that magic item is equipped.
 
 The mod is currently in ***Early Access***! That means it's **not done**! Be patient as the author adds new features, fixes bugs, and finishes things up. If you want to help, please provide feedback on the [Nexus mod page](https://www.nexusmods.com/valheim/mods/387) or on the [github](https://github.com/RandyKnapp/ValheimMods/tree/main/EpicLoot) for the following:
 
@@ -17,6 +18,12 @@ The mod is currently in ***Early Access***! That means it's **not done**! Be pat
 
 ***EpicLoot works in multiplayer and on dedicated servers!*** The server and all players should have the mod and its dependencies installed.
 
+## Ashlands Update Notice!
+
+The Ashlands update introduced the addition of the Mythic tier rarity, as well as a huge rebalance of the mod to be more vanilla friendly. If you are upgrading from a previous version you may wish to restore the old values. There is now an add-on with patches to restore the old Epic values: [thunderstore link](https://thunderstore.io/c/valheim/p/RandyKnapp/EpicPatches_EpicLoot/).
+
+Mythic sets have not been created for the base mod, but the feature is available if you wish to create your own sets and add them with the patching system.
+
 ## Documentation
 
 **Magic Effects:** [Magic Effects Wiki](https://github.com/RandyKnapp/ValheimMods/wiki/Magic-Effects)
@@ -24,6 +31,7 @@ The mod is currently in ***Early Access***! That means it's **not done**! Be pat
 **Patching System:** [Config Patching](https://github.com/RandyKnapp/ValheimMods/wiki/Config-Patching)
 
 ## Credits
+
 Epic Loot Team Members:
   * [Vapok](https://github.com/Vapok) - Joined in Dec 2022, made hundreds of changes and bugfixes since.
   * [OrianaVenture](https://github.com/OrianaVenture) - Joined in Dec 2023, helping with maintenance and improvements.
@@ -39,7 +47,8 @@ Contibutions from the following modders were invaluable and appreciated:
   * [Digitalroot](https://github.com/Digitalroot) - Help with testing
 
 ## Installation
-Copy the contents of "files" to a new folder called "EpicLoot" in your BepInEx/plugins directory (on both clients and dedicated servers).
+
+Copy the contents of "plugins" to a new folder called "EpicLoot" in your BepInEx/plugins directory (on both clients and dedicated servers). Currently all main mod json files must be contained in the same folder as the EpicLoot.dll file. When using a thunderstore mod manager these files should be placed in the correct directory for you.
 
 ## Cheats
 
@@ -47,23 +56,23 @@ Enter these into the console (F5) after using `devcommands`:
 
   * `magicitem <rarity> <itemtype> <amount>`: Roll a random magic item using the specified values. (alias: `mi`)
     * `<rarity>`: (String) One of: magic, rare, epic, legendary, random. If left empty, uses random.
-	* `<itemtype>`: (String) The internal ID of an item. May be "random". If left empty, uses random.
-	* `<amount>`: (Int) The number of magic items to roll. If the other values are set to random, rerolls that random item each time. If left empty, uses 1.
-	* `<effectcount>`: (Int) The number of magic effects to roll on each item. If left empty, it rolls effect count as normal.
+  * `<itemtype>`: (String) The internal ID of an item. May be "random". If left empty, uses random.
+  * `<amount>`: (Int) The number of magic items to roll. If the other values are set to random, rerolls that random item each time. If left empty, uses 1.
+  * `<effectcount>`: (Int) The number of magic effects to roll on each item. If left empty, it rolls effect count as normal.
   * `magicmats`: Spawns a bunch of all the magic crafting materials
   * `magicitemwitheffect <effectID> <itemtype>`: Spawn a magic item with the specified magic effect. (alias: `mieffect`)
     * `<effectID>`: (String) The type of magic effect you want to guarantee
-	* `<itemtype>`: (String) The internal ID of an item.
+  * `<itemtype>`: (String) The internal ID of an item.
   * `magicitemlegendary <legendaryID> <itemtype>`: Spawn a specific legendary item. (alias: `milegend`)
-	* `<legendaryID>`: (String) The ID of the legendary you want to spawn
-	* `<itemtype>`: (String) The internal ID of an item (optional, will use an item that meets the legendary definition's requirements)
+  * `<legendaryID>`: (String) The ID of the legendary you want to spawn
+  * `<itemtype>`: (String) The internal ID of an item (optional, will use an item that meets the legendary definition's requirements)
   * `magicitemset <setID>`: Spawn all the items in a legendary item set. (alias: `miset`)
-	* `<setID>`: (String) The ID of the legendary set you want to spawn
+  * `<setID>`: (String) The ID of the legendary set you want to spawn
 
 ## Current Known Mod Conflicts
-  * **BetterUI** ([Nexus](https://www.nexusmods.com/valheim/mods/189), [Thunderstore](https://valheim.thunderstore.io/package/Masa/BetterUI/)): You won't be able to see the magic item properties in the tooltip. Go to the BetterUI config and set `showCustomTooltips = false`.
+
+  * **BetterUI**: You won't be able to see the magic item properties in the tooltip. Go to the BetterUI config and set `showCustomTooltips = false`.
 
 ## Known Bugs
-  * Gamepad: Still some gamepad issues, especially when using other mods that change the inventory.
 
-**Author's Note:** Older versions of this mod used an image of the Odal rune (ᛟ) to denote set items. It's reconstructed Proto-Germanic meaning is "Heritage" or "Possession" and the author felt like it was the best rune from the Elder Futhark to signify set items. However, the Odal rune with wings or feet was and is used as a Nazi symbol. The author ***UNEQUIVOCALLY CONDEMNS*** Nazis, Nazism, anti-semitism, and white supremacy. Furthermore, those who hold or practice those beliefs are not welcome to use this mod. F\*\*k Nazis.
+  * Gamepad: Still some gamepad issues, especially when using other mods that change the inventory.

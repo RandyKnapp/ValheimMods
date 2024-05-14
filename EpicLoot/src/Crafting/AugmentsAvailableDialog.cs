@@ -20,10 +20,11 @@ namespace EpicLoot.Crafting
         [UsedImplicitly]
         public void Update()
         {
-            //EpicLoot.Log("AugmentsAvailableDialog.Update");
             if (!EpicLoot.HasAuga)
             {
-                if (ZInput.GetButtonDown("Inventory") || ZInput.GetButtonDown("JoyButtonB") || (ZInput.GetButtonDown("JoyButtonY") || Input.GetKeyDown(KeyCode.Escape)) || ZInput.GetButtonDown("Use"))
+                if (ZInput.GetButtonDown("Inventory") || ZInput.GetButtonDown("JoyButtonB") ||
+                    (ZInput.GetButtonDown("JoyButtonY") || ZInput.GetKeyDown(KeyCode.Escape)) ||
+                    ZInput.GetButtonDown("Use"))
                 {
                     OnClose();
                 }

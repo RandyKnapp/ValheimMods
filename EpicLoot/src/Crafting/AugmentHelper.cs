@@ -163,7 +163,8 @@ namespace EpicLoot.Crafting
             return newDialogT;
         }
 
-        public static List<MagicItemEffectDefinition> GetAvailableAugments(AugmentRecipe recipe, ItemDrop.ItemData item, MagicItem magicItem, ItemRarity rarity)
+        public static List<MagicItemEffectDefinition> GetAvailableAugments(
+            AugmentRecipe recipe, ItemDrop.ItemData item, MagicItem magicItem, ItemRarity rarity)
         {
             var valuelessEffect = false;
             if (recipe.EffectIndex >= 0 && recipe.EffectIndex < magicItem.Effects.Count)
@@ -172,14 +173,16 @@ namespace EpicLoot.Crafting
                 valuelessEffect = currentEffectDef.GetValuesForRarity(rarity) == null;
             }
 
-            return MagicItemEffectDefinitions.GetAvailableEffects(item.Extended(), item.GetMagicItem(), valuelessEffect ? -1 : recipe.EffectIndex);
+            return MagicItemEffectDefinitions.GetAvailableEffects(
+                item.Extended(), item.GetMagicItem(), valuelessEffect ? -1 : recipe.EffectIndex);
         }
 
         public static string GetAugmentSelectorText(MagicItem magicItem, int i, IReadOnlyList<MagicItemEffect> augmentableEffects, ItemRarity rarity)
         {
             var pip = EpicLoot.GetMagicEffectPip(magicItem.IsEffectAugmented(i));
             bool free = EnchantCostsHelper.EffectIsDeprecated(augmentableEffects[i].EffectType);
-            return $"{pip} {Localization.instance.Localize(MagicItem.GetEffectText(augmentableEffects[i], rarity, true))}{(free ? " [<color=yellow>*FREE</color>]" : "")}";
+            return $"{pip} {Localization.instance.Localize(MagicItem.GetEffectText(augmentableEffects[i], rarity, true))}" +
+                $"{(free ? " [<color=yellow>*FREE</color>]" : "")}";
         }
 
         public static List<KeyValuePair<ItemDrop, int>> GetAugmentCosts(ItemDrop.ItemData item, int recipeEffectIndex)

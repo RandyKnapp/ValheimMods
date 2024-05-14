@@ -121,8 +121,12 @@ namespace EpicLoot.MagicItemEffects
             return attackProjectile;
         }
 
-        private static readonly MethodInfo AttackProjectileMarker = AccessTools.DeclaredMethod(typeof(StaggeringProjectileInstantiation_Attack_FireProjectileBurst_Patch), nameof(MarkAttackProjectile));
-        private static readonly MethodInfo Instantiator = AccessTools.GetDeclaredMethods(typeof(Object)).Where(m => m.Name == "Instantiate" && m.GetGenericArguments().Length == 1).Select(m => m.MakeGenericMethod(typeof(GameObject))).First(m => m.GetParameters().Length == 3 && m.GetParameters()[1].ParameterType == typeof(Vector3));
+        private static readonly MethodInfo AttackProjectileMarker = AccessTools.DeclaredMethod(
+            typeof(StaggeringProjectileInstantiation_Attack_FireProjectileBurst_Patch), nameof(MarkAttackProjectile));
+        private static readonly MethodInfo Instantiator = AccessTools
+            .GetDeclaredMethods(typeof(Object)).Where(m => m.Name == "Instantiate" && m.GetGenericArguments().Length == 1)
+            .Select(m => m.MakeGenericMethod(typeof(GameObject)))
+            .First(m => m.GetParameters().Length == 3 && m.GetParameters()[1].ParameterType == typeof(Vector3));
 
         [UsedImplicitly]
         private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)

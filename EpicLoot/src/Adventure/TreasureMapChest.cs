@@ -64,7 +64,7 @@ namespace EpicLoot.Adventure
             var container = GetComponent<Container>();
             if (container != null)
             {
-                if (hasBeenFound)
+                if (hasBeenFound && container.m_inventory.NrOfItems() == 0)
                 {
                     // Remove treasure chests that have already been found
                     var zdo = container.m_nview.GetZDO();

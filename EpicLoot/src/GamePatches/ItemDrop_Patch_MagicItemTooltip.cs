@@ -9,7 +9,8 @@ using UnityEngine;
 namespace EpicLoot
 {
     // Set the topic of the tooltip with the decorated name
-    [HarmonyPatch(typeof(InventoryGrid), nameof(InventoryGrid.CreateItemTooltip), typeof(ItemDrop.ItemData), typeof(UITooltip))]
+    [HarmonyPatch(typeof(InventoryGrid), nameof(InventoryGrid.CreateItemTooltip),
+        typeof(ItemDrop.ItemData), typeof(UITooltip))]
     public static class InventoryGrid_CreateItemTooltip_MagicItemComponent_Patch
     {
         [HarmonyAfter(new []{"kg.ValheimEnchantmentSystem"})]
@@ -17,10 +18,12 @@ namespace EpicLoot
         {
             __state = null;
             string tooltipText;
-            if (item.IsEquipable() && !item.m_equipped && Player.m_localPlayer != null && Player.m_localPlayer.HasEquipmentOfType(item.m_shared.m_itemType) && Input.GetKey(KeyCode.LeftControl))
+            if (item.IsEquipable() && !item.m_equipped && Player.m_localPlayer != null &&
+                Player.m_localPlayer.HasEquipmentOfType(item.m_shared.m_itemType) && ZInput.GetKey(KeyCode.LeftControl))
             {
                 var otherItem = Player.m_localPlayer.GetEquipmentOfType(item.m_shared.m_itemType);
-                tooltipText = item.GetTooltip() + $"<color=#AAA><i>$mod_epicloot_currentlyequipped:</i></color>\n<size=18>{otherItem.GetDecoratedName()}</size>\n" + otherItem.GetTooltip();
+                tooltipText = item.GetTooltip() + $"<color=#AAA><i>$mod_epicloot_currentlyequipped:" +
+                    $"</i></color>\n<size=18>{otherItem.GetDecoratedName()}</size>\n" + otherItem.GetTooltip();
             }
             else
             {
@@ -32,11 +35,12 @@ namespace EpicLoot
     }
 
     // Set the content of the tooltip
-    [HarmonyPatch(typeof(ItemDrop.ItemData), nameof(ItemDrop.ItemData.GetTooltip), typeof(ItemDrop.ItemData), typeof(int), typeof(bool), typeof(float))]
+    [HarmonyPatch(typeof(ItemDrop.ItemData), nameof(ItemDrop.ItemData.GetTooltip),
+        typeof(ItemDrop.ItemData), typeof(int), typeof(bool), typeof(float))]
     public static class MagicItemTooltip_ItemDrop_Patch
     {
         [UsedImplicitly]
-        private static bool Prefix(ref string __result, ItemDrop.ItemData item, int qualityLevel, bool crafting)
+        private static bool Prefix(ref string __result, ItemDrop.ItemData item, int qualityLevel)
         {
             if (item == null)
                 return true;
@@ -83,7 +87,8 @@ namespace EpicLoot
                 text.AppendFormat("\n$item_value: <color=orange>{0} ({1})</color>", item.GetValue(), item.m_shared.m_value);
             }
 
-            var weightColor = magicItem.HasEffect(MagicEffectType.ReduceWeight) || magicItem.HasEffect(MagicEffectType.Weightless) ? magicColor : "orange";
+            var weightColor = magicItem.HasEffect(MagicEffectType.ReduceWeight) ||
+                magicItem.HasEffect(MagicEffectType.Weightless) ? magicColor : "orange";
             text.Append($"\n$item_weight: <color={weightColor}>{item.GetWeight():0.0}</color>");
 
             if (item.m_shared.m_maxQuality > 1)
@@ -103,7 +108,8 @@ namespace EpicLoot
                 var durabilityPercentageString = currentDurabilityPercentage.ToString("0");
                 var durabilityValueString = durability.ToString("0");
                 var durabilityMaxString = maxDurability.ToString("0");
-                text.Append($"\n$item_durability: <color={maxDurabilityColor1}>{durabilityPercentageString}%</color> <color={maxDurabilityColor2}>({durabilityValueString}/{durabilityMaxString})</color>");
+                text.Append($"\n$item_durability: <color={maxDurabilityColor1}>{durabilityPercentageString}%</color> " +
+                    $"<color={maxDurabilityColor2}>({durabilityValueString}/{durabilityMaxString})</color>");
 
                 if (item.m_shared.m_canBeReparied)
                 {
@@ -151,9 +157,11 @@ namespace EpicLoot
                 case ItemDrop.ItemData.ItemType.TwoHandedWeapon:
                 case ItemDrop.ItemData.ItemType.TwoHandedWeaponLeft:
                 case ItemDrop.ItemData.ItemType.Torch:
-                    text.Append(GetDamageTooltipString(magicItem, item.GetDamage(qualityLevel,Game.m_worldLevel), item.m_shared.m_skillType, magicColor));
+                    text.Append(GetDamageTooltipString(magicItem, item.GetDamage(qualityLevel,Game.m_worldLevel),
+                        item.m_shared.m_skillType, magicColor));
 
-                    var magicAttackStamina = magicItem.HasEffect(MagicEffectType.ModifyAttackStaminaUse) || magicItem.HasEffect(MagicEffectType.ModifyBlockStaminaUse);
+                    var magicAttackStamina = magicItem.HasEffect(MagicEffectType.ModifyAttackStaminaUse) ||
+                        magicItem.HasEffect(MagicEffectType.ModifyBlockStaminaUse);
                     var magicAttackStaminaColor = magicAttackStamina ? magicColor : "orange";
                     var staminaUsePercentage = 1 - magicItem.GetTotalEffectValue(MagicEffectType.ModifyAttackStaminaUse, 0.01f);
                     var totalStaminaUse = staminaUsePercentage * item.m_shared.m_attack.m_attackStamina;
@@ -162,19 +170,24 @@ namespace EpicLoot
                     if (item.m_shared.m_attack.m_attackEitr > 0.0)
                         text.Append($"\n$item_eitruse: <color=orange>{item.m_shared.m_attack.m_attackEitr}</color>");
                     if (item.m_shared.m_attack.m_attackHealth > 0.0)
-                        text.Append($"\n$item_healthuse: <color=orange>{item.m_shared.m_attack.m_attackHealth}</color>");
+                        text.Append($"\n$item_healthuse: " +
+                            $"<color=orange>{item.m_shared.m_attack.m_attackHealth}</color>");
                     if (item.m_shared.m_attack.m_attackHealthPercentage > 0.0)
-                        text.Append($"\n$item_healthuse: <color=orange>{item.m_shared.m_attack.m_attackHealthPercentage:0.0}%</color>");
+                        text.Append($"\n$item_healthuse: " +
+                            $"<color=orange>{item.m_shared.m_attack.m_attackHealthPercentage:0.0}%</color>");
                     if (item.m_shared.m_attack.m_drawStaminaDrain > 0.0)
-                        text.Append($"\n$item_staminahold: <color=orange>{item.m_shared.m_attack.m_drawStaminaDrain}</color>/s");
+                        text.Append($"\n$item_staminahold: " +
+                            $"<color=orange>{item.m_shared.m_attack.m_drawStaminaDrain}</color>/s");
 
                     var baseBlockPower1 = item.GetBaseBlockPower(qualityLevel);
                     var blockPowerTooltipValue = item.GetBlockPowerTooltip(qualityLevel);
                     var blockPowerPercentageString = blockPowerTooltipValue.ToString("0");
-                    text.Append($"\n$item_blockpower: <color={magicBlockColor1}>{baseBlockPower1}</color> <color={magicBlockColor2}>({blockPowerPercentageString})</color>");
+                    text.Append($"\n$item_blockpower: <color={magicBlockColor1}>{baseBlockPower1}</color> " +
+                        $"<color={magicBlockColor2}>({blockPowerPercentageString})</color>");
                     if (item.m_shared.m_timedBlockBonus > 1.0)
                     {
-                        text.Append($"\n$item_deflection: <color={magicParryColor}>{item.GetDeflectionForce(qualityLevel)}</color>");
+                        text.Append($"\n$item_deflection: " +
+                            $"<color={magicParryColor}>{item.GetDeflectionForce(qualityLevel)}</color>");
 
                         var timedBlockBonus = item.m_shared.m_timedBlockBonus;
                         if (magicParry)
@@ -213,10 +226,12 @@ namespace EpicLoot
                     var baseBlockPower2 = item.GetBaseBlockPower(qualityLevel);
                     blockPowerTooltipValue = item.GetBlockPowerTooltip(qualityLevel);
                     var str5 = blockPowerTooltipValue.ToString("0");
-                    text.Append($"\n$item_blockpower: <color={magicBlockColor1}>{baseBlockPower2}</color> <color={magicBlockColor2}>({str5})</color>");
+                    text.Append($"\n$item_blockpower: <color={magicBlockColor1}>{baseBlockPower2}</color> " +
+                        $"<color={magicBlockColor2}>({str5})</color>");
                     if (item.m_shared.m_timedBlockBonus > 1.0)
                     {
-                        text.Append($"\n$item_deflection: <color={magicParryColor}>{item.GetDeflectionForce(qualityLevel)}</color>");
+                        text.Append($"\n$item_deflection: " +
+                            $"<color={magicParryColor}>{item.GetDeflectionForce(qualityLevel)}</color>");
 
                         var timedBlockBonus = item.m_shared.m_timedBlockBonus;
                         if (magicParry)
@@ -234,7 +249,8 @@ namespace EpicLoot
                 case ItemDrop.ItemData.ItemType.Legs:
                 case ItemDrop.ItemData.ItemType.Shoulder:
                     var magicArmorColor = magicItem.HasEffect(MagicEffectType.ModifyArmor) ? magicColor : "orange";
-                    text.Append($"\n$item_armor: <color={magicArmorColor}>{item.GetArmor(qualityLevel,Game.m_worldLevel):0.#}</color>");
+                    text.Append($"\n$item_armor: " +
+                        $"<color={magicArmorColor}>{item.GetArmor(qualityLevel,Game.m_worldLevel):0.#}</color>");
                     var modifiersTooltipString = SE_Stats.GetDamageModifiersTooltipString(item.m_shared.m_damageModifiers);
                     if (modifiersTooltipString.Length > 0)
                     {
@@ -266,7 +282,8 @@ namespace EpicLoot
                 var totalEitrRegenModifier = equipEitrRegenModifier + equipMagicEitrRegenModifier;
                 var color = (magicEitrRegen) ? magicColor : "orange";
                 var totalColor = equipMagicEitrRegenModifier > 0 ? magicColor : "yellow";
-                text.Append($"\n$item_eitrregen_modifier: <color={color}>{itemEitrRegenModDisplay}</color> ($item_total: <color={totalColor}>{totalEitrRegenModifier:+0;-0}%</color>)");
+                text.Append($"\n$item_eitrregen_modifier: <color={color}>{itemEitrRegenModDisplay}</color> " +
+                    $"($item_total: <color={totalColor}>{totalEitrRegenModifier:+0;-0}%</color>)");
             }
 
             var magicMovement = magicItem.HasEffect(MagicEffectType.ModifyMovementSpeed);
@@ -277,7 +294,8 @@ namespace EpicLoot
                 var movementModifier = localPlayer.GetEquipmentMovementModifier();
                 var totalMovementModifier = movementModifier * 100f;
                 var color = (removePenalty || magicMovement) ? magicColor : "orange";
-                text.Append($"\n$item_movement_modifier: <color={color}>{itemMovementModDisplay}</color> ($item_total:<color=yellow>{totalMovementModifier:+0;-0}%</color>)");
+                text.Append($"\n$item_movement_modifier: <color={color}>{itemMovementModDisplay}</color> " +
+                    $"($item_total:<color=yellow>{totalMovementModifier:+0;-0}%</color>)");
             }
 
             // Add magic item effects here
@@ -306,7 +324,8 @@ namespace EpicLoot
             if (item.IsMagicCraftingMaterial() || item.IsRunestone())
             {
                 var rarityDisplay = EpicLoot.GetRarityDisplayName(item.GetCraftingMaterialRarity());
-                __result = $"<color={item.GetCraftingMaterialRarityColor()}>{rarityDisplay} $mod_epicloot_craftingmaterial\n</color>" + __result;
+                __result = $"<color={item.GetCraftingMaterialRarityColor()}>{rarityDisplay} " +
+                    $"$mod_epicloot_craftingmaterial\n</color>" + __result;
             }
 
             if (!item.IsMagic())
@@ -335,7 +354,8 @@ namespace EpicLoot
             __result = __result.Replace("\n\n\n", "\n\n");
         }
 
-        public static string GetDamageTooltipString(MagicItem item, HitData.DamageTypes instance, Skills.SkillType skillType, string magicColor)
+        public static string GetDamageTooltipString(MagicItem item, HitData.DamageTypes instance,
+            Skills.SkillType skillType, string magicColor)
         {
             if (Player.m_localPlayer == null)
             {
@@ -402,13 +422,15 @@ namespace EpicLoot
             return str;
         }
 
-        public static string DamageRange(float damage, float minFactor, float maxFactor, bool magic = false, string magicColor = "")
+        public static string DamageRange(float damage, float minFactor, float maxFactor, 
+            bool magic = false, string magicColor = "")
         {
             var num1 = Mathf.RoundToInt(damage * minFactor);
             var num2 = Mathf.RoundToInt(damage * maxFactor);
             var color1 = magic ? magicColor : "orange";
             var color2 = magic ? magicColor : "yellow";
-            return $"<color={color1}>{Mathf.RoundToInt(damage)}</color> <color={color2}>({num1}-{num2}) </color>";
+            return $"<color={color1}>{Mathf.RoundToInt(damage)}</color> " +
+                $"<color={color2}>({num1}-{num2}) </color>";
         }
 
         public static string GetEitrRegenModifier(ItemDrop.ItemData item, MagicItem magicItem, out bool magicEitrRegen)
@@ -421,7 +443,8 @@ namespace EpicLoot
             return (itemEitrRegenModifier == 0) ? "0%" : $"{itemEitrRegenModifier:+0;-0}%";
         }
 
-        public static string GetMovementModifier(ItemDrop.ItemData item, MagicItem magicItem, out bool magicMovement, out bool removePenalty)
+        public static string GetMovementModifier(ItemDrop.ItemData item, MagicItem magicItem,
+            out bool magicMovement, out bool removePenalty)
         {
             magicMovement = magicItem.HasEffect(MagicEffectType.ModifyMovementSpeed);
             removePenalty = magicItem.HasEffect(MagicEffectType.RemoveSpeedPenalty);
@@ -471,7 +494,8 @@ namespace EpicLoot
                         break;
 
                     case "$item_weight":
-                        if (magicItem.HasEffect(MagicEffectType.ReduceWeight) || magicItem.HasEffect(MagicEffectType.Weightless))
+                        if (magicItem.HasEffect(MagicEffectType.ReduceWeight) ||
+                            magicItem.HasEffect(MagicEffectType.Weightless))
                         {
                             value = $"<color={magicColor}>{value}</color>";
                         }
@@ -554,7 +578,8 @@ namespace EpicLoot
                         {
                             var baseBlockPower = item.GetBaseBlockPower(item.m_quality);
                             var blockPowerPercentageString = item.GetBlockPowerTooltip(item.m_quality).ToString("0");
-                            value = $"<color={magicColor}>{baseBlockPower}</color> <color={magicColor}>({blockPowerPercentageString})</color>";
+                            value = $"<color={magicColor}>{baseBlockPower}</color> " +
+                                $"<color={magicColor}>({blockPowerPercentageString})</color>";
                         }
                         break;
 
@@ -582,7 +607,8 @@ namespace EpicLoot
                         break;
 
                     case "$item_staminause":
-                        if (magicItem.HasEffect(MagicEffectType.ModifyAttackStaminaUse) || magicItem.HasEffect(MagicEffectType.ModifyBlockStaminaUse))
+                        if (magicItem.HasEffect(MagicEffectType.ModifyAttackStaminaUse) ||
+                            magicItem.HasEffect(MagicEffectType.ModifyBlockStaminaUse))
                         {
                             value = $"<color={magicColor}>{value}</color>";
                         }
@@ -593,7 +619,9 @@ namespace EpicLoot
                         break;
                 }
                 
-                if (label.StartsWith("$item_movement_modifier") && (magicItem.HasEffect(MagicEffectType.RemoveSpeedPenalty) || magicItem.HasEffect(MagicEffectType.ModifyMovementSpeed)))
+                if (label.StartsWith("$item_movement_modifier") &&
+                    (magicItem.HasEffect(MagicEffectType.RemoveSpeedPenalty) ||
+                    magicItem.HasEffect(MagicEffectType.ModifyMovementSpeed)))
                 {
                     var colorIndex = label.IndexOf("<color", StringComparison.Ordinal);
                     if (colorIndex >= 0)
@@ -602,7 +630,8 @@ namespace EpicLoot
                         sb.Remove(colorIndex, "<color=#XXXXXX>".Length);
                         sb.Insert(colorIndex, $"<color={magicColor}>");
 
-                        var itemMovementModDisplay = MagicItemTooltip_ItemDrop_Patch.GetMovementModifier(item, magicItem, out _, out _);
+                        var itemMovementModDisplay = MagicItemTooltip_ItemDrop_Patch.GetMovementModifier(
+                            item, magicItem, out _, out _);
                         var valueIndex = colorIndex + "<color=#XXXXXX>".Length;
                         var percentIndex = label.IndexOf("%", valueIndex, StringComparison.Ordinal);
                         sb.Remove(valueIndex, percentIndex - valueIndex + 1);
@@ -614,7 +643,8 @@ namespace EpicLoot
             }
 
             var magicEitrRegen = magicItem?.HasEffect(MagicEffectType.ModifyEitrRegen) ?? false;
-            if (label.StartsWith("$item_eitrregen_modifier") && (magicEitrRegen || item.m_shared.m_eitrRegenModifier != 0) && localPlayer != null)
+            if (label.StartsWith("$item_eitrregen_modifier") && (magicEitrRegen ||
+                item.m_shared.m_eitrRegenModifier != 0) && localPlayer != null)
             {
                 var itemEitrRegenModDisplay = MagicItemTooltip_ItemDrop_Patch.GetEitrRegenModifier(item, magicItem, out _);
 
@@ -623,7 +653,8 @@ namespace EpicLoot
                 var totalEitrRegenModifier = equipEitrRegenModifier + equipMagicEitrRegenModifier;
                 if (magicEitrRegen && magicItem != null)
                     itemEitrRegenModDisplay = $"<color={magicItem.GetColorString()}>{itemEitrRegenModDisplay}</color>";
-                label = $"$item_eitrregen_modifier: {itemEitrRegenModDisplay} ($item_total: <color={Auga.API.Brown3}>{totalEitrRegenModifier:+0;-0}%</color>)";
+                label = $"$item_eitrregen_modifier: {itemEitrRegenModDisplay} " +
+                    $"($item_total: <color={Auga.API.Brown3}>{totalEitrRegenModifier:+0;-0}%</color>)";
             }
 
             switch (label)

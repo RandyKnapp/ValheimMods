@@ -73,9 +73,6 @@
     <EmbeddedResource Include="..\ValheimUnity\Assets\ExternalLibraries\EpicLoot-UnityLib.dll">
       <Link>EpicLoot-UnityLib.dll</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\ValheimUnity\AssetBundles\epiclootpieces">
-      <Link>epiclootpieces</Link>
-    </EmbeddedResource>
     <Content Include="ILRepack.targets">
       <SubType>Designer</SubType>
     </Content>
@@ -90,9 +87,5 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\ILRepack.Lib.MSBuild.Task.2.0.18.2\build\ILRepack.Lib.MSBuild.Task.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\ILRepack.Lib.MSBuild.Task.2.0.18.2\build\ILRepack.Lib.MSBuild.Task.targets'))" />
   </Target>
-  <ProjectExtensions>
-    <VisualStudio>
-      <UserProperties manifest_1json__JsonSchema="" />
-    </VisualStudio>
-  </ProjectExtensions>
+  <ProjectExtensions />
 </Project>

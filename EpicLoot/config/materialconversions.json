@@ -30,6 +30,16 @@
       ]
     },
     {
+      "Name": "Recipe_ShardMythicUpgrade",
+      "Product": "ShardMythic",
+      "Amount": 1,
+      "Type": "Upgrade", 
+      "Resources": [
+        { "Item": "ShardLegendary", "Amount": 5 },
+        { "Item": "Coins",          "Amount": 15 }
+      ]
+    },
+    {
       "Name": "Recipe_DustRareUpgrade",
       "Product": "DustRare",
       "Amount": 1,
@@ -56,6 +66,16 @@
       "Resources": [
         { "Item": "DustEpic", "Amount": 5  },
         { "Item": "Coins",    "Amount": 10 }
+      ]
+    },
+    {
+      "Name": "Recipe_DustMythicUpgrade",
+      "Product": "DustMythic",
+      "Amount": 1,
+      "Type": "Upgrade", 
+      "Resources": [
+        { "Item": "DustLegendary",  "Amount": 5  },
+        { "Item": "Coins",          "Amount": 15 }
       ]
     },
     {
@@ -88,6 +108,16 @@
       ]
     },
     {
+      "Name": "Recipe_ReagentMythicUpgrade",
+      "Product": "ReagentMythic",
+      "Amount": 1,
+      "Type": "Upgrade", 
+      "Resources": [
+        { "Item": "ReagentLegendary", "Amount": 5  },
+        { "Item": "Coins",            "Amount": 15 }
+      ]
+    },
+    {
       "Name": "Recipe_EssenceRareUpgrade",
       "Product": "EssenceRare",
       "Amount": 1,
@@ -117,6 +147,16 @@
       ]
     },
     {
+      "Name": "Recipe_EssenceMythicUpgrade",
+      "Product": "EssenceMythic",
+      "Amount": 1,
+      "Type": "Upgrade", 
+      "Resources": [
+        { "Item": "EssenceLegendary", "Amount": 5  },
+        { "Item": "Coins",            "Amount": 15 }
+      ]
+    },
+    {
       "Name": "Recipe_RunestoneRareUpgrade",
       "Product": "RunestoneRare",
       "Amount": 1,
@@ -143,6 +183,16 @@
       "Resources": [
         { "Item": "RunestoneEpic", "Amount": 5  },
         { "Item": "Coins",         "Amount": 10 }
+      ]
+    },
+    {
+      "Name": "Recipe_RunestoneMythicUpgrade",
+      "Product": "RunestoneMythic",
+      "Amount": 1,
+      "Type": "Upgrade", 
+      "Resources": [
+        { "Item": "RunestoneLegendary", "Amount": 5  },
+        { "Item": "Coins",              "Amount": 15 }
       ]
     },
     {
@@ -261,10 +311,40 @@
         { "Item": "ShardLegendary", "Amount": 2 },
         { "Item": "Coins",          "Amount": 4 }
       ]
+    },{
+      "Name": "Recipe_MythicShardToDust_Conversion",
+      "Product": "DustMythic",
+      "Amount": 1,
+      "Type": "Convert", 
+      "Resources": [
+        { "Item": "ShardMythic", "Amount": 2 },
+        { "Item": "Coins",          "Amount": 4 }
+      ]
+    },
+    {
+      "Name": "Recipe_MythicShardToEssence_Conversion",
+      "Product": "EssenceMythic",
+      "Amount": 1,
+      "Type": "Convert", 
+      "Resources": [
+        { "Item": "ShardMythic", "Amount": 2 },
+        { "Item": "Coins",          "Amount": 4 }
+      ]
+    },
+    {
+      "Name": "Recipe_MythicShardToReagent_Conversion",
+      "Product": "ReagentMythic",
+      "Amount": 1,
+      "Type": "Convert", 
+      "Resources": [
+        { "Item": "ShardMythic", "Amount": 2 },
+        { "Item": "Coins",          "Amount": 4 }
+      ]
     },
     {
       "Name": "Recipe_BoneSkeletonTrophy",
       "Product": "TrophySkeleton",
+      "Amount": 1,
       "Type": "Junk", 
       "Resources": [
         { "Item": "BoneFragments", "Amount": 10 }
@@ -273,6 +353,7 @@
     {
       "Name": "Recipe_EyeGreydwarfTrophy",
       "Product": "TrophyGreydwarf",
+      "Amount": 1,
       "Type": "Junk", 
       "Resources": [
         { "Item": "GreydwarfEye", "Amount": 10 }
@@ -281,14 +362,16 @@
     {
       "Name": "Recipe_AntlerDeerTrophy",
       "Product": "TrophyDeer",
+      "Amount": 1,
       "Type": "Junk", 
       "Resources": [
-        { "Item": "HardAntler", "Amount": 5 }
+        { "Item": "HardAntler", "Amount": 3 }
       ]
     },
     {
       "Name": "Recipe_HideTrollTrophy",
       "Product": "TrophyFrostTroll",
+      "Amount": 1,
       "Type": "Junk", 
       "Resources": [
         { "Item": "TrollHide", "Amount": 10 }
@@ -297,6 +380,7 @@
     {
       "Name": "Recipe_CoreSurtlingTrophy",
       "Product": "TrophySurtling",
+      "Amount": 1,
       "Type": "Junk", 
       "Resources": [
         { "Item": "SurtlingCore", "Amount": 2 }
@@ -305,6 +389,7 @@
     {
       "Name": "Recipe_FreezeGlandDrakeTrophy",
       "Product": "TrophyHatchling",
+      "Amount": 1,
       "Type": "Junk", 
       "Resources": [
         { "Item": "FreezeGland", "Amount": 3 }
@@ -313,26 +398,37 @@
     {
       "Name": "Recipe_DragonTearRunestone",
       "Product": "RunestoneLegendary",
+      "Amount": 1,
       "Type": "Junk", 
       "Resources": [
-        { "Item": "DragonTear", "Amount": 3 }
+        { "Item": "DragonTear", "Amount": 10 }
       ]
     },
     {
       "Name": "Recipe_YagluthThingRunestone",
       "Product": "RunestoneLegendary",
+      "Amount": 1,
       "Type": "Junk", 
       "Resources": [
-        { "Item": "YagluthDrop", "Amount": 1 }
+        { "Item": "YagluthDrop", "Amount": 3 }
       ]
     },
     {
       "Name": "Recipe_SeekerQueenRunestone",
       "Product": "RunestoneLegendary",
-      "Amount": 3, 
+      "Amount": 1,
       "Type": "Junk", 
       "Resources": [
-        { "Item": "QueenDrop", "Amount": 1 }
+        { "Item": "QueenDrop", "Amount": 5 }
+      ]
+    },
+    {
+      "Name": "Recipe_FaderRunestone",
+      "Product": "RunestoneMythic",
+      "Amount": 1,
+      "Type": "Junk", 
+      "Resources": [
+        { "Item": "FaderDrop", "Amount": 5 }
       ]
     }
   ] 

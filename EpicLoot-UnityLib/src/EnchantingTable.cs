@@ -121,9 +121,17 @@ namespace EpicLoot_UnityLib
                     if (Player.m_localPlayer != null)
                     {
                         if (toLevel == 0)
-                            Player.m_localPlayer.Message(MessageHud.MessageType.Center, Localization.instance.Localize("$mod_epicloot_unlockmessage", EnchantingTableUpgrades.GetFeatureName(feature)));
+                        {
+                            Player.m_localPlayer.Message(MessageHud.MessageType.Center,
+                                Localization.instance.Localize("$mod_epicloot_unlockmessage",
+                                EnchantingTableUpgrades.GetFeatureName(feature)));
+                        }
                         else
-                            Player.m_localPlayer.Message(MessageHud.MessageType.Center, Localization.instance.Localize("$mod_epicloot_upgrademessage", EnchantingTableUpgrades.GetFeatureName(feature), toLevel.ToString()));
+                        {
+                            Player.m_localPlayer.Message(MessageHud.MessageType.Center,
+                                Localization.instance.Localize("$mod_epicloot_upgrademessage",
+                                EnchantingTableUpgrades.GetFeatureName(feature), toLevel.ToString()));
+                        }
                     }
                 }
             }
@@ -131,7 +139,8 @@ namespace EpicLoot_UnityLib
 
         public void Update()
         {
-            if (_interactingPlayer != null && EnchantingTableUI.instance != null && EnchantingTableUI.instance.isActiveAndEnabled && !InUseDistance(_interactingPlayer))
+            if (_interactingPlayer != null && EnchantingTableUI.instance != null &&
+                EnchantingTableUI.instance.isActiveAndEnabled && !InUseDistance(_interactingPlayer))
             {
                 EnchantingTableUI.Hide();
                 _interactingPlayer = null;
@@ -186,12 +195,17 @@ namespace EpicLoot_UnityLib
         private static int GetDefaultFeatureLevel(EnchantingFeature feature)
         {
             if (!UpgradesActive(feature, out var featureActive))
+            {
                 return FeatureLevelOne;
+            }
             
             if (!featureActive)
+            {
                 return FeatureUnavailableSentinel;
+            }
             
-            return EnchantingTableUpgrades.Config.DefaultFeatureLevels.TryGetValue(feature, out var level) ? level : FeatureUnavailableSentinel;
+            return EnchantingTableUpgrades.Config.DefaultFeatureLevels.TryGetValue(feature, out var level) ?
+                level : FeatureUnavailableSentinel;
         }
 
         public void Reset()
@@ -205,7 +219,9 @@ namespace EpicLoot_UnityLib
         public int GetFeatureLevel(EnchantingFeature feature)
         {
             if (_nview == null || _nview.GetZDO() == null)
+            {
                 return FeatureUnavailableSentinel;
+            }
 
             if (!UpgradesActive(feature, out var featureActive))
             {
@@ -213,13 +229,15 @@ namespace EpicLoot_UnityLib
             }
             
             if (!featureActive)
+            {
                 return FeatureUnavailableSentinel;
+            }
             
             var featureName = feature.ToString();
             var level = _nview.GetZDO().GetInt(FormatFeatureName(featureName), FeatureUnavailableSentinel);
             //For those that travel here from afar, you might be asking yourself why I'm adding and subtracting 1 to the level.
             //It's because Iron Gate decided that 0 value ZDO's should be removed when world save occurs........
-            var returncode = level == FeatureUnavailableSentinel ? FeatureUnavailableSentinel : level - 1;
+            //var returncode = level == FeatureUnavailableSentinel ? FeatureUnavailableSentinel : level - 1;
             return level == FeatureUnavailableSentinel ? FeatureUnavailableSentinel : level - 1;
         }
 
@@ -234,11 +252,13 @@ namespace EpicLoot_UnityLib
             }
             else
             {
-                if (level > (EnchantingTableUpgrades.Config.MaximumFeatureLevels.TryGetValue(feature, out var maxLevel) ? maxLevel : 1))
+                if (level > (EnchantingTableUpgrades.Config.MaximumFeatureLevels.TryGetValue(
+                    feature, out var maxLevel) ? maxLevel : 1))
                 {
                     return;
                 }
             }
+
             var featureName = feature.ToString();
             _nview.GetZDO().Set(FormatFeatureName(featureName), level+1);
             OnFeatureLevelChanged?.Invoke(feature, level);
@@ -268,7 +288,10 @@ namespace EpicLoot_UnityLib
         public List<InventoryItemListElement> GetFeatureUnlockCost(EnchantingFeature feature)
         {
             if (IsFeatureUnlocked(feature))
-                Debug.LogWarning($"[EpicLoot] Warning: tried to get unlock cost for a feature that is already unlocked! ({feature})");
+            {
+                Debug.LogWarning($"[EpicLoot] Warning: " +
+                    $"tried to get unlock cost for a feature that is already unlocked! ({feature})");
+            }
 
             return EnchantingTableUpgrades.GetUpgradeCost(feature, 0);
         }
@@ -276,7 +299,10 @@ namespace EpicLoot_UnityLib
         public List<InventoryItemListElement> GetFeatureUpgradeCost(EnchantingFeature feature)
         {
             if (IsFeatureLocked(feature) || !IsFeatureAvailable(feature))
-                Debug.LogWarning($"[EpicLoot] Warning: tried to get enchanting feature unlock cost for a feature that is locked or unavailable! ({feature})");
+            {
+                Debug.LogWarning($"[EpicLoot] Warning: " +
+                    $"tried to get enchanting feature unlock cost for a feature that is locked or unavailable! ({feature})");
+            }
 
             var currentLevel = GetFeatureLevel(feature);
             return EnchantingTableUpgrades.GetUpgradeCost(feature, currentLevel + 1);
@@ -285,10 +311,14 @@ namespace EpicLoot_UnityLib
         public Tuple<float, float> GetFeatureValue(EnchantingFeature feature, int level)
         {
             if (!IsFeatureAvailable(feature))
+            {
                 return new Tuple<float, float>(float.NaN, float.NaN);
+            }
 
             if (level < 0 || level > EnchantingTableUpgrades.GetFeatureMaxLevel(feature))
+            {
                 return new Tuple<float, float>(float.NaN, float.NaN);
+            }
 
             var values = feature switch
             {
@@ -302,13 +332,21 @@ namespace EpicLoot_UnityLib
             };
 
             if (level >= values.Count)
+            {
                 return new Tuple<float, float>(float.NaN, float.NaN);
+            }
 
             var levelValues = values[level];
             if (levelValues.Length == 1)
+            {
                 return new Tuple<float, float>(levelValues[0], float.NaN);
+            }
+
             if (levelValues.Length >= 2)
+            {
                 return new Tuple<float, float>(levelValues[0], levelValues[1]);
+            }
+
             return new Tuple<float, float>(float.NaN, float.NaN);
         }
 

@@ -78,28 +78,28 @@ namespace EpicLoot.MagicItemEffects
     [HarmonyPatch(typeof(Attack), nameof(Attack.ProjectileAttackTriggered))]
     public static class Throwable_Attack_ProjectileAttackTriggered_Patch
     {
-	    public static void Prefix(Attack __instance, ref EffectList __state)
-	    {
-		    if (__instance.m_weapon.IsMagic() && __instance.m_weapon.GetMagicItem().HasEffect(MagicEffectType.Throwable))
-		    {
-			    __state = __instance.m_weapon.m_shared.m_triggerEffect;
-			    __instance.m_weapon.m_shared.m_triggerEffect = new EffectList();
-		    }
-	    }
-		    
-	    public static void Postfix(Attack __instance, EffectList __state)
-	    {
-		    if (__instance.m_weapon.IsMagic() && __instance.m_weapon.GetMagicItem().HasEffect(MagicEffectType.Throwable))
-		    {
-			    if (__instance.m_weapon.m_lastProjectile.GetComponent<Projectile>() is Projectile projectile)
-			    {
-				    projectile.m_spawnOnHitEffects = new EffectList { m_effectPrefabs = projectile.m_spawnOnHitEffects.m_effectPrefabs.Concat(__state.m_effectPrefabs).ToArray() };
-				    projectile.m_aoe = __instance.m_weapon.m_shared.m_attack.m_attackRayWidth;
-			    }
+        public static void Prefix(Attack __instance, ref EffectList __state)
+        {
+            if (__instance.m_weapon.IsMagic() && __instance.m_weapon.GetMagicItem().HasEffect(MagicEffectType.Throwable))
+            {
+                __state = __instance.m_weapon.m_shared.m_triggerEffect;
+                __instance.m_weapon.m_shared.m_triggerEffect = new EffectList();
+            }
+        }
+            
+        public static void Postfix(Attack __instance, EffectList __state)
+        {
+            if (__instance.m_weapon.IsMagic() && __instance.m_weapon.GetMagicItem().HasEffect(MagicEffectType.Throwable))
+            {
+                if (__instance.m_weapon.m_lastProjectile.GetComponent<Projectile>() is Projectile projectile)
+                {
+                    projectile.m_spawnOnHitEffects = new EffectList { m_effectPrefabs = projectile.m_spawnOnHitEffects.m_effectPrefabs.Concat(__state.m_effectPrefabs).ToArray() };
+                    projectile.m_aoe = __instance.m_weapon.m_shared.m_attack.m_attackRayWidth;
+                }
 
-			    __instance.m_weapon.m_shared.m_triggerEffect = __state;
-		    }
-	    }
+                __instance.m_weapon.m_shared.m_triggerEffect = __state;
+            }
+        }
     }
 
     [HarmonyPatch(typeof(Attack), nameof(Attack.FireProjectileBurst))]
