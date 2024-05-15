@@ -1,3 +1,7 @@
+## Version 0.10.1
+
+* Fixed internal mod version and updated logo.
+
 ## Version 0.10.0 - Ashlands & Mythic Rarity
 
 * Bug fixes to catch various reported exceptions.
