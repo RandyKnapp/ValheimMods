@@ -49,6 +49,9 @@ namespace EpicLoot.Adventure
         public Text GoldBountyTokensCount;
 
         private readonly Currencies _currencies = new Currencies(-1);
+        public static MerchantPanel Instance => _instance;
+        public static Text AcceptBountyText => _acceptBountyText;
+        private static Text _acceptBountyText;
         private static MerchantPanel _instance;
         private AudioSource _audioSource;
 
@@ -168,6 +171,9 @@ namespace EpicLoot.Adventure
                 EpicLootAuga.ReplaceButton(transform.Find("Bounties/ClaimBountyButton").GetComponent<Button>());
                 EpicLootAuga.ReplaceButton(transform.Find("Bounties/AbandonBountyButton").GetComponent<Button>(), true);
             }
+            
+            _acceptBountyText = transform.Find("Bounties/AcceptBountyButton").GetComponentInChildren<Text>();
+            
 
             Panels.Add(new SecretStashListPanel(this, buyListPrefab));
             Panels.Add(new GambleListPanel(this, buyListPrefab));

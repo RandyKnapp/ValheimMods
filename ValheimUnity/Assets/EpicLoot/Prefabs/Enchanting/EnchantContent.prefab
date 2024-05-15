@@ -580,7 +580,7 @@ GameObject:
   - component: {fileID: 2543194723949190013}
   - component: {fileID: 4738114070797658412}
   m_Layer: 5
-  m_Name: Hint
+  m_Name: Hint-1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2272,13 +2272,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 4094944259969962945}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 702673311, guid: d920e4723ba2566674efb2f0c3eb6edb, type: 3}
+  m_Script: {fileID: 702673311, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_keyCode: 0
   m_zinputKey: JoyButtonX
   m_hint: {fileID: 1020429698750349789}
   m_blockingElements: []
+  alternativeGroupHandler: {fileID: 0}
 --- !u!1 &4191204001038911440
 GameObject:
   m_ObjectHideFlags: 0
@@ -2928,13 +2929,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 5477187047603773140}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 702673311, guid: d920e4723ba2566674efb2f0c3eb6edb, type: 3}
+  m_Script: {fileID: 702673311, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_keyCode: 0
   m_zinputKey: 
   m_hint: {fileID: 1162387315793068156}
   m_blockingElements: []
+  alternativeGroupHandler: {fileID: 0}
 --- !u!1 &5540183127287863730
 GameObject:
   m_ObjectHideFlags: 0

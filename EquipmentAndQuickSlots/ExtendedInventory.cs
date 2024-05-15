@@ -108,7 +108,7 @@ namespace EquipmentAndQuickSlots
             return result;
         }
 
-        public ItemDrop.ItemData OverrideFindFreeStackItem(string name, int quality)
+        public ItemDrop.ItemData OverrideFindFreeStackItem(string name, int quality, float worldLevel)
         {
             ItemDrop.ItemData result = null;
             foreach (var inventory in _inventories)
@@ -118,7 +118,7 @@ namespace EquipmentAndQuickSlots
                     continue;
                 }
 
-                result = inventory.FindFreeStackItem(name, quality);
+                result = inventory.FindFreeStackItem(name, quality, worldLevel);
                 if (result != null)
                 {
                     break;
@@ -225,14 +225,14 @@ namespace EquipmentAndQuickSlots
             return result;
         }
 
-        public void OverrideRemoveItem(string name, int amount, int itemQuality = -1)
+        public void OverrideRemoveItem(string name, int amount, int itemQuality = -1, bool worldLevelBased = true)
         {
             CallBase = true;
             foreach (var inventory in _inventories)
             {
                 foreach (var itemData in inventory.m_inventory)
                 {
-                    if (itemData.m_shared.m_name == name && (itemQuality < 0 || itemData.m_quality == itemQuality))
+                    if (itemData.m_shared.m_name == name && (itemQuality < 0 || itemData.m_quality == itemQuality) && (!worldLevelBased || itemData.m_worldLevel >= Game.m_worldLevel))
                     {
                         var num = Mathf.Min(itemData.m_stack, amount);
                         itemData.m_stack -= num;
@@ -250,10 +250,10 @@ namespace EquipmentAndQuickSlots
             CallBase = false;
         }
 
-        public bool OverrideHaveItem(string name)
+        public bool OverrideHaveItem(string name, bool matchWorldLevel)
         {
             CallBase = true;
-            var result = _inventories.Any(x => x.HaveItem(name));
+            var result = _inventories.Any(x => x.HaveItem(name,matchWorldLevel));
             CallBase = false;
             return result;
         }
@@ -265,10 +265,10 @@ namespace EquipmentAndQuickSlots
             CallBase = false;
         }
 
-        public int OverrideCountItems(string name)
+        public int OverrideCountItems(string name, bool matchWorldLevel)
         {
             CallBase = true;
-            var result = _inventories.Sum(x => x.CountItems(name));
+            var result = _inventories.Sum(x => x.CountItems(name,-1,matchWorldLevel));
             CallBase = false;
             return result;
         }
@@ -305,10 +305,10 @@ namespace EquipmentAndQuickSlots
             return result;
         }
 
-        public int OverrideFindFreeStackSpace(string name)
+        public int OverrideFindFreeStackSpace(string name, float worldLevel)
         {
             CallBase = true;
-            var result = _inventories.Sum(x => x.FindFreeStackSpace(name));
+            var result = _inventories.Sum(x => x.FindFreeStackSpace(name,worldLevel));
             CallBase = false;
             return result;
         }

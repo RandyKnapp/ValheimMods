@@ -1,3 +1,5 @@
+## Release 2.1.7
+* Hildir's Request Updates 0.217.14
 ## Release 2.1.6
 * Updates needed for Valheim 0.216.7
 ## Release 2.1.5

@@ -1,4 +1,5 @@
-﻿using Common;
+﻿using System;
+using Common;
 
 namespace EpicLoot.Crafting
 {
@@ -21,7 +22,10 @@ namespace EpicLoot.Crafting
             PrefabCreator.Reset();
             foreach (var recipe in Config.recipes)
             {
-                PrefabCreator.AddNewRecipe(recipe.name, recipe.item, recipe);
+                if (!String.IsNullOrEmpty(recipe.craftingStation))
+                {
+                    PrefabCreator.AddNewRecipe(recipe.name, recipe.item, recipe);                    
+                }
             }
         }
 

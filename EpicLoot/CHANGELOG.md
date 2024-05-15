@@ -1,3 +1,42 @@
+## Version 0.9.23 - Crafting with Enchanted Components
+* Recipes built with items that are Enchanted will now carry over their magical properties to the new item.
+    * The highest magical rarity will carry over if more than one magical item is consumed.
+* Server-Synced Configuration is available toggle the enablement of this functionality.
+    * Default will leave this functionality Disabled.
+
+## Version 0.9.22 - Bounty System Improvements Part 2
+* Would help if I included the translations in the Module Zip
+    * Also, when Auga is NOT installed, have to forcably localize the strings.
+* Added the new trophies to the Enchantcosts
+
+## Version 0.9.21 - Bounty System Improvements
+* Completely Overhauled how the Bounty Ledger is stored.
+  * No longer using GlobalKeys when playing.
+  * Saves to a data file in config folder.
+  * Saves a backup to World File on Shutdown.
+  * Restores from World File is data file is missing.
+  * Tested on Single Player, P2P, and Dedicated Server
+    * Tested Bounty Kills without Issue
+* Added a Bounty Limiter to the Config
+  * When enabled, and set to a max, prevents players from purchasing more bounties if they are at max In-Progress bounties.
+  * These are per-player maximums.
+* Revamped how Attack Speed modifications are handled using the AnimationSpeedManager
+  * Thanks to Wacky for the assistance in the Discord getting it setup.
+  * Thanks to Smoothbrain for their community contributions.
+  * This should allow Wacky's EpicMMO and Duel Wield to adjust attack speeds accordingly with Epic Loot
+## Version 0.9.20 - Hildir's Request Bug Fixes
+* Added null checking to the Gated Items to prevent patches from causing errors.
+* Fixed Map Pins going away when logging in and out
+* Extensively tested the Sacrifice process on the Enchanting Table.
+  * The change here is that stuff will sacrifice if you have it in your inventory, instead of showing the full list of sacrifices.
+    * If this still doesn't work for you, please ensure all your JSON's are updated correctly.
+
+## Version 0.9.19 - Hildir's Request Update
+* Provides Compatibility with Hildir's Request
+* Removes Legacy Workbench Functions
+    * To perform Enchanting, please use Enchanting Table
+* Fix for Map Pins
+
 ## Version 0.9.18 - New Feature: Enchanting Table Upgrades (Take 3)
 * Fixed an issue where when placing a table down, can cause an error.
 
@@ -31,15 +70,15 @@
   * Enchanting Table Upgrade Costs are JSON configurable, and can be patched like other JSON's
     * The `enchantingupgrades.json` provides adjustment for upgrade costs and upgrade benefit adjustments.
 
-## Version 0.9.15 - Valheim Update 0.216.9 - Part 3
+## Version 0.9.15 - Valheim Update 0.217.5 - Part 3
 * Updated `enchantcosts.json` with the corrected spelling of Trophy (from Trophie).
 * Fixed issue with bounties not working correctly after update to 0.9.14.
 
-## Version 0.9.14 - Valheim Update 0.216.9 - Part 2
+## Version 0.9.14 - Valheim Update 0.217.5 - Part 2
 * Left a piece out that needed to be updated with regards to `CopyCustomDataFromUpgradedItem`
 
-## Version 0.9.13 - Valheim Update 0.216.9
-* Required updates for Valheim version 0.216.9
+## Version 0.9.13 - Valheim Update 0.217.5
+* Required updates for Valheim version 0.217.5
 
 ## Version 0.9.12 - More Performance Improvements and Bugfixes
 * Reduced the frequency that Multiplayer send Legendary Info
