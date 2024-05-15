@@ -74,13 +74,17 @@ namespace EpicLoot_UnityLib
             var selectedItems = AvailableItems.GetSelectedItems<IListElement>();
             var sacrificeProducts = GetSacrificeProducts(selectedItems.Select(x => new Tuple<ItemDrop.ItemData, int>(x.Item1.GetItem(), x.Item2)).ToList());
             SacrificeProducts.SetItems(sacrificeProducts.Cast<IListElement>().ToList());
-            var featureUnlocked = EnchantingTableUI.instance.SourceTable.IsFeatureUnlocked(EnchantingFeature.Sacrifice);
+            var featureUnlocked = EnchantingTableUI.instance != null && EnchantingTableUI.instance.SourceTable != null && EnchantingTableUI.instance.SourceTable.IsFeatureUnlocked(EnchantingFeature.Sacrifice);
             MainButton.interactable = featureUnlocked && selectedItems.Count > 0;
         }
         
         public override void Cancel()
         {
-            _buttonLabel.text = Localization.instance.Localize("$mod_epicloot_sacrifice");
+            if (_useTMP)
+                _tmpButtonLabel.text = Localization.instance.Localize("$mod_epicloot_sacrifice");
+            else
+                _buttonLabel.text = Localization.instance.Localize("$mod_epicloot_sacrifice");
+            
             base.Cancel();
         }
         

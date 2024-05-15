@@ -157,8 +157,8 @@ namespace EpicLoot.Adventure.Feature
 
         protected static IEnumerator GetRandomPointInBiome(Heightmap.Biome biome, AdventureSaveData saveData, Action<bool, Vector3, Vector3> onComplete)
         {
-            const int maxRangeIncreases = 10;
-            const int maxPointsInRange = 15;
+            const int maxRangeIncreases = 20;
+            const int maxPointsInRange = 35;
 
             MerchantPanel.ShowInputBlocker(true);
 
@@ -183,7 +183,6 @@ namespace EpicLoot.Adventure.Feature
                     var zoneId = ZoneSystem.instance.GetZone(spawnPoint);
                     while (!ZoneSystem.instance.SpawnZone(zoneId, ZoneSystem.SpawnMode.Client, out _))
                     {
-                        EpicLoot.LogWarning($"Spawning Zone ({zoneId})...");
                         yield return null;
                     }
 
@@ -199,6 +198,7 @@ namespace EpicLoot.Adventure.Feature
 
                     var solidHeight = ZoneSystem.instance.GetSolidHeight(spawnPoint);
                     var offsetFromGround = Math.Abs(solidHeight - groundHeight);
+                    EpicLoot.Log($"solidHeight {solidHeight} - groundHeight{groundHeight} = offset {offsetFromGround} (5 is limit)");
                     if (offsetFromGround > 5)
                     {
                         // Don't place too high off the ground (on top of tree or something?
@@ -226,11 +226,15 @@ namespace EpicLoot.Adventure.Feature
                     }
 
                     var waterLevel = ZoneSystem.instance.m_waterLevel;
-                    if (biome != Heightmap.Biome.Ocean && waterLevel > groundHeight + 1.0f)
+                    var groundHeightWaterOffset = 5.0f;
+                    if (biome != Heightmap.Biome.Ocean && waterLevel > groundHeight - groundHeightWaterOffset)
                     {
-                        // Too deep, try again
-                        EpicLoot.Log($"Spawn Point rejected: too deep underwater (waterLevel:{waterLevel}, groundHeight:{groundHeight})");
-                        continue;
+                        if (!(biome == Heightmap.Biome.Swamp && waterLevel < groundHeight))
+                        {
+                            // Too deep, try again
+                            EpicLoot.Log($"Spawn Point rejected: too deep underwater (waterLevel:{waterLevel}, groundHeight:{groundHeight}, groundoffset:{groundHeight - groundHeightWaterOffset})");
+                            continue;
+                        }
                     }
 
                     EpicLoot.Log($"Success! (ground={groundHeight} water={waterLevel} placed={spawnPoint.y})");

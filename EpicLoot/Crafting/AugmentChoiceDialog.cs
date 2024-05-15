@@ -112,29 +112,30 @@ namespace EpicLoot.Crafting
             {
                 NameText.text = Localization.instance.Localize(fromItem.GetDecoratedName());
             }
-
+            
             if (Description != null)
             {
                 Description.text = Localization.instance.Localize(fromItem.GetTooltip());
             }
-
+            
             if (Icon != null)
             {
                 Icon.sprite = fromItem.GetIcon();
             }
-
+            
             foreach (var button in EffectChoiceButtons)
             {
                 button.gameObject.SetActive(false);
             }
-
+            
             var newEffectOptions = LootRoller.RollAugmentEffects(fromItem, magicItem, effectIndex);
+            
             for (var index = 0; index < newEffectOptions.Count; index++)
             {
                 var effect = newEffectOptions[index];
                 var button = EffectChoiceButtons[index];
                 button.gameObject.SetActive(true);
-                var text = button.GetComponentInChildren<Text>();
+                var text = button.GetComponentInChildren<TMP_Text>();
                 text.text = Localization.instance.Localize((index == 0 ? "<color=white>($mod_epicloot_augment_keep)</color> " : "") + MagicItem.GetEffectText(effect, rarity, true));
                 text.color = rarityColor;
 

@@ -155,13 +155,11 @@ namespace EpicLoot.Adventure
         }
     }
 
-    [HarmonyPatch(typeof(Humanoid), nameof(Humanoid.Start))]
-    [HarmonyPatch(typeof(Character), nameof(Character.Start))]
-    public static class Character_Start_Patch
+    static class BountyTargetComponent
     {
-        public static void Postfix(Character __instance)
+        private static void StartBoutyTarget(Character instance)
         {
-            var zdo = __instance.m_nview != null ? __instance.m_nview.GetZDO() : null;
+            var zdo = instance.m_nview != null ? instance.m_nview.GetZDO() : null;
 
             if (zdo != null && zdo.IsValid())
             {
@@ -169,17 +167,35 @@ namespace EpicLoot.Adventure
 
                 if (old)
                 {
-                    EpicLoot.LogWarning($"Destroying old bounty target: {__instance.name}");
+                    EpicLoot.LogWarning($"Destroying old bounty target: {instance.name}");
                     zdo.Set("BountyTarget", "");
-                    __instance.m_nview.Destroy();
+                    instance.m_nview.Destroy();
                     return;
                 }
 
                 if (!string.IsNullOrEmpty(zdo.GetString(BountyTarget.BountyIDKey)))
                 {
-                    var bountyTarget = __instance.gameObject.AddComponent<BountyTarget>();
+                    var bountyTarget = instance.gameObject.AddComponent<BountyTarget>();
                     bountyTarget.Reinitialize();
                 }
+            }
+        }
+        
+        [HarmonyPatch(typeof(Humanoid), nameof(Humanoid.Start))]
+        public static class Humanoid_Start_Patch
+        {
+            public static void Postfix(Humanoid __instance)
+            {
+                StartBoutyTarget(__instance);
+            }
+        }
+
+        [HarmonyPatch(typeof(Character), nameof(Character.Start))]
+        public static class Character_Start_Patch
+        {
+            public static void Postfix(Character __instance)
+            {
+                StartBoutyTarget(__instance);
             }
         }
     }

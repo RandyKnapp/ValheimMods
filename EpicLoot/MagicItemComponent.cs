@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using Common;
 using EpicLoot.Crafting;
 using EpicLoot.Data;
@@ -442,14 +443,14 @@ namespace EpicLoot
                 foreach (var setItemName in setPieces)
                 {
                     var isEquipped = IsSetItemEquipped(currentSetEquipped, setItemName, isMundane);
-                    var color = isEquipped ? "white" : "grey";
+                    var color = isEquipped ? "white" : "#808080ff";
                     var displayName = GetSetItemDisplayName(setItemName, isMundane);
                     text.Append($"\n  <color={color}>{displayName}</color>");
                 }
 
                 if (isMundane)
                 {
-                    var setEffectColor = currentSetEquipped.Count == setSize ? EpicLoot.GetSetItemColor() : "grey";
+                    var setEffectColor = currentSetEquipped.Count == setSize ? EpicLoot.GetSetItemColor() : "#808080ff";
                     var skillLevel = Player.m_localPlayer.GetSkillLevel(item.m_shared.m_skillType);
                     text.Append($"\n<color={setEffectColor}>({setSize}) ‣ {item.GetSetStatusEffectTooltip(item.m_quality, skillLevel).Replace("\n", " ")}</color>");
                 }
@@ -748,7 +749,7 @@ namespace EpicLoot
         }
     }
 
-    [HarmonyPatch(typeof(InventoryGrid), nameof(InventoryGrid.UpdateGui))]
+    [HarmonyPatch(typeof(InventoryGrid), nameof(InventoryGrid.UpdateGui), typeof(Player), typeof(ItemDrop.ItemData))]
     public static class InventoryGrid_UpdateGui_MagicItemComponent_Patch
     {
         public static void UpdateGuiElements(InventoryGrid.Element element, bool used)
@@ -803,6 +804,8 @@ namespace EpicLoot
         [UsedImplicitly]
         public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
+            var successPatch1 = false;
+            var successPatch2 = false;
             var instrs = instructions.ToList();
 
             var counter = 0;
@@ -813,8 +816,8 @@ namespace EpicLoot
                 return instruction;
             }
 
-            var elementUsedField = AccessTools.DeclaredField(typeof(InventoryGrid.Element), "m_used"); 
-            var elementQueuedField = AccessTools.DeclaredField(typeof(InventoryGrid.Element), "m_queued");
+            var elementUsedField = AccessTools.DeclaredField(typeof(InventoryGrid.Element), nameof(InventoryGrid.Element.m_used)); 
+            var elementQueuedField = AccessTools.DeclaredField(typeof(InventoryGrid.Element), nameof(InventoryGrid.Element.m_queued));
 
             for (int i = 0; i < instrs.Count; ++i)
             {
@@ -836,8 +839,10 @@ namespace EpicLoot
                     //Skip Stfld Instruction
                     i++;
 
-                }else if (i > 6 && instrs[i].opcode == OpCodes.Ldloc_S && instrs[i+1].opcode == OpCodes.Ldfld && instrs[i+1].operand.Equals(elementQueuedField)
-                          && instrs[i+2].opcode == OpCodes.Ldarg_1 && instrs[i+3].opcode == OpCodes.Call)
+                    successPatch1 = true;
+
+                } else if (i > 6 && instrs[i].opcode == OpCodes.Ldloc_S && instrs[i+1].opcode == OpCodes.Ldfld && instrs[i+1].operand.Equals(elementQueuedField)
+                           && instrs[i+2].opcode == OpCodes.Ldarg_1 && instrs[i+3].opcode == OpCodes.Call)
                 {
                     //Item Spot
                     var elementOperand = instrs[i].operand;
@@ -861,10 +866,19 @@ namespace EpicLoot
                     //Patch Calling Method
                     yield return LogMessage(new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(InventoryGrid_UpdateGui_MagicItemComponent_Patch), nameof(UpdateGuiItems))));
                     counter++;
+                    successPatch2 = true;
                 }
                 
                 yield return LogMessage(instrs[i]);
                 counter++;
+            }
+            
+            if (!successPatch2 || !successPatch1)
+            {
+                EpicLoot.LogError($"InventoryGrid.UpdateGui Transpiler Failed To Patch");
+                EpicLoot.LogError($"!successPatch1: {!successPatch1}");
+                EpicLoot.LogError($"!successPatch2: {!successPatch2}");
+                Thread.Sleep(5000);
             }
         }
     }
@@ -906,6 +920,8 @@ namespace EpicLoot
         public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
             var instrs = instructions.ToList();
+            var successPatch1 = false;
+            var successPatch2 = false;
 
             var counter = 0;
 
@@ -940,7 +956,7 @@ namespace EpicLoot
                     
                     //Skip Stfld Instruction
                     i++;
-
+                    successPatch1 = true;
                 }
                 
                 yield return LogMessage(instrs[i]);
@@ -969,8 +985,18 @@ namespace EpicLoot
                     //Patch Calling Method
                     yield return LogMessage(new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(HotkeyBar_UpdateIcons_Patch), nameof(UpdateIcons))));
                     counter++;
+                    successPatch2 = true;
                 }
             }
+            
+            if (!successPatch2 || !successPatch1)
+            {
+                EpicLoot.LogError($"HotkeyBar.UpdateIcons Transpiler Failed To Patch");
+                EpicLoot.LogError($"!successPatch1: {!successPatch1}");
+                EpicLoot.LogError($"!successPatch2: {!successPatch2}");
+                Thread.Sleep(5000);
+            }
+
         }
     }
 
