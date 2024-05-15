@@ -1,3 +1,22 @@
+## Release 2.1.13
+* Updated for Valheim 0.217.38 Patch
+
+<details>
+<summary><b>Changelog History</b> (<i>click to expand</i>)</summary>
+
+## Release 2.1.12
+* Updated for Valheim 0.217.27
+* Updated Auga and CLLC API's
+* If Auga is loaded, set the default position of Quick Slot Bar accordingly
+* Updated for World Modifiers and Hard/Hardcore Settings
+## Release 2.1.11
+* Adjusting InventoryGrid Initialization to prevent Awake from happening before variables are set.
+  * This has fixed a compatibility issue that was found with Jewelcrafting allowing EAQS to now be used with Smoothbrain's Jewelcrafting
+## Release 2.1.10
+* Fixing Hotkey Bar Binding Texts
+## Release 2.1.8 & 2.1.9
+* Hildir's Request Updates 0.217.24
+* Updated version from 2.1.7 to 2.1.9 because I forgot to change it.
 ## Release 2.1.7
 * Hildir's Request Updates 0.217.14
 ## Release 2.1.6
@@ -28,7 +47,6 @@
   * Fixed bug where you couldn't move items out of your quickslots
   * Added new config features: DontDropEquipmentOnDeath, DontDropQuickslotsOnDeath, InstantlyReequipArmorOnPickup, InstantlyReequipQuickslotsOnPickup
 
-### Archieved Change Log:
 * 1.0.3
     * Integrated fix for larger containers (this mod was not allowing the same row to be used in containers as it uses in the Inventory)
 * 1.0.4
@@ -72,3 +90,5 @@
     * Updated for H&H
 * 2.0.15
     * Yet Another Attempt at fixing the lost-equipment-on-death bug
+
+</details>

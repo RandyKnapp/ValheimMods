@@ -29,7 +29,7 @@ namespace AdvancedPortals
     {
         public const string PluginId = "randyknapp.mods.advancedportals";
         public const string DisplayName = "Advanced Portals";
-        public const string Version = "1.0.8";
+        public const string Version = "1.0.10";
         public static readonly string[] _portalPrefabs = { "portal_ancient", "portal_obsidian", "portal_blackmarble" };
         
         public static readonly List<GameObject> RegisteredPrefabs = new List<GameObject>();
@@ -250,7 +250,6 @@ namespace AdvancedPortals
         private void OnDestroy()
         {
             _instance = null;
-            _harmony?.UnpatchSelf();
         }
 
         private ConfigEntry<T> SyncedConfig<T>(string group, string configName, T value, string description, bool synchronizedSetting = true) => SyncedConfig(group, configName, value, new ConfigDescription(description), synchronizedSetting);

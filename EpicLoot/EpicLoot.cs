@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using AdventureBackpacks.API;
 using BepInEx;
 using BepInEx.Configuration;
 using Common;
@@ -85,27 +86,27 @@ namespace EpicLoot
 
     [BepInPlugin(PluginId, DisplayName, Version)]
     [BepInDependency("randyknapp.mods.auga", BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency("vapok.mods.adventurebackpacks", BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency("kg.ValheimEnchantmentSystem", BepInDependency.DependencyFlags.SoftDependency)]
     public class EpicLoot : BaseUnityPlugin
     {
         public const string PluginId = "randyknapp.mods.epicloot";
         public const string DisplayName = "Epic Loot";
-        public const string Version = "0.9.23";
+        public const string Version = "0.9.39";
 
-        private readonly ConfigSync _configSync = new ConfigSync(PluginId) { DisplayName = DisplayName, CurrentVersion = Version, MinimumRequiredVersion = "0.9.23" };
+        private readonly ConfigSync _configSync = new ConfigSync(PluginId) { DisplayName = DisplayName, CurrentVersion = Version, MinimumRequiredVersion = "0.9.35" };
 
         private static ConfigEntry<string> _setItemColor;
         private static ConfigEntry<string> _magicRarityColor;
         private static ConfigEntry<string> _rareRarityColor;
         private static ConfigEntry<string> _epicRarityColor;
         private static ConfigEntry<string> _legendaryRarityColor;
-        // TODO: Mythic Hookup
-        //private static ConfigEntry<string> _mythicRarityColor;
+        private static ConfigEntry<string> _mythicRarityColor;
         private static ConfigEntry<int> _magicMaterialIconColor;
         private static ConfigEntry<int> _rareMaterialIconColor;
         private static ConfigEntry<int> _epicMaterialIconColor;
         private static ConfigEntry<int> _legendaryMaterialIconColor;
-        // TODO: Mythic Hookup
-        //private static ConfigEntry<int> _mythicMaterialIconColor;
+        private static ConfigEntry<int> _mythicMaterialIconColor;
         public static ConfigEntry<bool> UseScrollingCraftDescription;
         public static ConfigEntry<bool> TransferMagicItemToCrafts;
         public static ConfigEntry<CraftingTabStyle> CraftingTabStyle;
@@ -134,7 +135,7 @@ namespace EpicLoot
         public static ConfigEntry<bool> EnableLimitedBountiesInProgress;
         public static ConfigEntry<int> MaxInProgressBounties;
         public static ConfigEntry<EnchantingTabs> EnchantingTableActivatedTabs;
-        
+
         public static Dictionary<string, CustomSyncedValue<string>> SyncedJsonFiles = new Dictionary<string, CustomSyncedValue<string>>();
         public static Dictionary<string, ConfigValue<string>> NonSyncedJsonFiles = new Dictionary<string, ConfigValue<string>>();
 
@@ -178,6 +179,7 @@ namespace EpicLoot
         public const Minimap.PinType BountyPinType = (Minimap.PinType) 800;
         public const Minimap.PinType TreasureMapPinType = (Minimap.PinType) 801;
         public static bool HasAuga;
+        public static bool HasAdventureBackpacks;
         public static bool AugaTooltipNoTextBoxes;
         
 
@@ -187,45 +189,144 @@ namespace EpicLoot
         private static EpicLoot _instance;
         private Harmony _harmony;
         private float _worldLuckFactor;
+        private static ConfigEntry<BossDropMode> _bossCryptKeyDropMode;
+        private static ConfigEntry<float> _bossCryptKeyDropPlayerRange;
+        private static ConfigEntry<BossDropMode> _bossWishboneDropMode;
+        private static ConfigEntry<float> _bossWishboneDropPlayerRange;
 
         [UsedImplicitly]
         private void Awake()
         {
             _instance = this;
 
-            _magicRarityColor = Config.Bind("Item Colors", "Magic Rarity Color", "Blue", "The color of Magic rarity items, the lowest magic item tier. (Optional, use an HTML hex color starting with # to have a custom color.) Available options: Red, Orange, Yellow, Green, Teal, Blue, Indigo, Purple, Pink, Gray");
-            _magicMaterialIconColor = Config.Bind("Item Colors", "Magic Crafting Material Icon Index", 5, "Indicates the color of the icon used for magic crafting materials. A number between 0 and 9. Available options: 0=Red, 1=Orange, 2=Yellow, 3=Green, 4=Teal, 5=Blue, 6=Indigo, 7=Purple, 8=Pink, 9=Gray");
-            _rareRarityColor = Config.Bind("Item Colors", "Rare Rarity Color", "Yellow", "The color of Rare rarity items, the second magic item tier. (Optional, use an HTML hex color starting with # to have a custom color.) Available options: Red, Orange, Yellow, Green, Teal, Blue, Indigo, Purple, Pink, Gray");
-            _rareMaterialIconColor = Config.Bind("Item Colors", "Rare Crafting Material Icon Index", 2, "Indicates the color of the icon used for rare crafting materials. A number between 0 and 9. Available options: 0=Red, 1=Orange, 2=Yellow, 3=Green, 4=Teal, 5=Blue, 6=Indigo, 7=Purple, 8=Pink, 9=Gray");
-            _epicRarityColor = Config.Bind("Item Colors", "Epic Rarity Color", "Purple", "The color of Epic rarity items, the third magic item tier. (Optional, use an HTML hex color starting with # to have a custom color.) Available options: Red, Orange, Yellow, Green, Teal, Blue, Indigo, Purple, Pink, Gray");
-            _epicMaterialIconColor = Config.Bind("Item Colors", "Epic Crafting Material Icon Index", 7, "Indicates the color of the icon used for epic crafting materials. A number between 0 and 9. Available options: 0=Red, 1=Orange, 2=Yellow, 3=Green, 4=Teal, 5=Blue, 6=Indigo, 7=Purple, 8=Pink, 9=Gray");
-            _legendaryRarityColor = Config.Bind("Item Colors", "Legendary Rarity Color", "Teal", "The color of Legendary rarity items, the highest magic item tier. (Optional, use an HTML hex color starting with # to have a custom color.) Available options: Red, Orange, Yellow, Green, Teal, Blue, Indigo, Purple, Pink, Gray");
-            _legendaryMaterialIconColor = Config.Bind("Item Colors", "Legendary Crafting Material Icon Index", 4, "Indicates the color of the icon used for legendary crafting materials. A number between 0 and 9. Available options: 0=Red, 1=Orange, 2=Yellow, 3=Green, 4=Teal, 5=Blue, 6=Indigo, 7=Purple, 8=Pink, 9=Gray");
-            // TODO: Mythic hookup
-            //_mythicRarityColor = Config.Bind("Item Colors", "Mythic Rarity Color", "Orange", "The color of Legendary rarity items, the highest magic item tier. (Optional, use an HTML hex color starting with # to have a custom color.) Available options: Red, Orange, Yellow, Green, Teal, Blue, Indigo, Purple, Pink, Gray");
-            //_mythicMaterialIconColor = Config.Bind("Item Colors", "Mythic Crafting Material Icon Index", 1, "Indicates the color of the icon used for legendary crafting materials. A number between 0 and 9. Available options: 0=Red, 1=Orange, 2=Yellow, 3=Green, 4=Teal, 5=Blue, 6=Indigo, 7=Purple, 8=Pink, 9=Gray");
-            _setItemColor = Config.Bind("Item Colors", "Set Item Color", "#26ffff", "The color of set item text and the set item icon. Use a hex color, default is cyan");
-            UseScrollingCraftDescription = Config.Bind("Crafting UI", "Use Scrolling Craft Description", true, "Changes the item description in the crafting panel to scroll instead of scale when it gets too long for the space.");
-            CraftingTabStyle = Config.Bind("Crafting UI", "Crafting Tab Style", Crafting.CraftingTabStyle.HorizontalSquish, "Sets the layout style for crafting tabs, if you've got too many. Horizontal is the vanilla method, but might overlap other mods or run off the screen. HorizontalSquish makes the buttons narrower, works okay with 6 or 7 buttons. Vertical puts the tabs in a column to the left the crafting window. Angled tries to make more room at the top of the crafting panel by angling the tabs, works okay with 6 or 7 tabs.");
-            ShowEquippedAndHotbarItemsInSacrificeTab = Config.Bind("Crafting UI", "ShowEquippedAndHotbarItemsInSacrificeTab", false, "If set to false, hides the items that are equipped or on your hotbar in the Sacrifice items list.");
+            // Item Colors
+            _magicRarityColor = Config.Bind("Item Colors", "Magic Rarity Color", "Blue",
+                "The color of Magic rarity items, the lowest magic item tier. " +
+                "(Optional, use an HTML hex color starting with # to have a custom color.) " +
+                "Available options: Red, Orange, Yellow, Green, Teal, Blue, Indigo, Purple, Pink, Gray");
+            _magicMaterialIconColor = Config.Bind("Item Colors", "Magic Crafting Material Icon Index", 5,
+                "Indicates the color of the icon used for magic crafting materials. A number between 0 and 9. " +
+                "Available options: 0=Red, 1=Orange, 2=Yellow, 3=Green, 4=Teal, 5=Blue, 6=Indigo, 7=Purple, 8=Pink, 9=Gray");
+            _rareRarityColor = Config.Bind("Item Colors", "Rare Rarity Color", "Yellow",
+                "The color of Rare rarity items, the second magic item tier. " +
+                "(Optional, use an HTML hex color starting with # to have a custom color.) " +
+                "Available options: Red, Orange, Yellow, Green, Teal, Blue, Indigo, Purple, Pink, Gray");
+            _rareMaterialIconColor = Config.Bind("Item Colors", "Rare Crafting Material Icon Index", 2,
+                "Indicates the color of the icon used for rare crafting materials. A number between 0 and 9. " +
+                "Available options: 0=Red, 1=Orange, 2=Yellow, 3=Green, 4=Teal, 5=Blue, 6=Indigo, 7=Purple, 8=Pink, 9=Gray");
+            _epicRarityColor = Config.Bind("Item Colors", "Epic Rarity Color", "Purple",
+                "The color of Epic rarity items, the third magic item tier. " +
+                "(Optional, use an HTML hex color starting with # to have a custom color.) " +
+                "Available options: Red, Orange, Yellow, Green, Teal, Blue, Indigo, Purple, Pink, Gray");
+            _epicMaterialIconColor = Config.Bind("Item Colors", "Epic Crafting Material Icon Index", 7,
+                "Indicates the color of the icon used for epic crafting materials. A number between 0 and 9. " +
+                "Available options: 0=Red, 1=Orange, 2=Yellow, 3=Green, 4=Teal, 5=Blue, 6=Indigo, 7=Purple, 8=Pink, 9=Gray");
+            _legendaryRarityColor = Config.Bind("Item Colors", "Legendary Rarity Color", "Teal",
+                "The color of Legendary rarity items, the fourth magic item tier. " +
+                "(Optional, use an HTML hex color starting with # to have a custom color.) " +
+                "Available options: Red, Orange, Yellow, Green, Teal, Blue, Indigo, Purple, Pink, Gray");
+            _legendaryMaterialIconColor = Config.Bind("Item Colors", "Legendary Crafting Material Icon Index", 4, 
+                "Indicates the color of the icon used for legendary crafting materials. A number between 0 and 9. " +
+                "Available options: 0=Red, 1=Orange, 2=Yellow, 3=Green, 4=Teal, 5=Blue, 6=Indigo, 7=Purple, 8=Pink, 9=Gray");
+            _mythicRarityColor = Config.Bind("Item Colors", "Mythic Rarity Color", "Orange",
+                "The color of Mythic rarity items, the highest magic item tier. " +
+                "(Optional, use an HTML hex color starting with # to have a custom color.) " +
+                "Available options: Red, Orange, Yellow, Green, Teal, Blue, Indigo, Purple, Pink, Gray");
+            _mythicMaterialIconColor = Config.Bind("Item Colors", "Mythic Crafting Material Icon Index", 1,
+                "Indicates the color of the icon used for legendary crafting materials. A number between 0 and 9. " +
+                "Available options: 0=Red, 1=Orange, 2=Yellow, 3=Green, 4=Teal, 5=Blue, 6=Indigo, 7=Purple, 8=Pink, 9=Gray");
+            _setItemColor = Config.Bind("Item Colors", "Set Item Color", "#26ffff",
+                "The color of set item text and the set item icon. Use a hex color, default is cyan");
+            
+            // Crafting UI
+            UseScrollingCraftDescription = Config.Bind("Crafting UI", "Use Scrolling Craft Description", true,
+                "Changes the item description in the crafting panel to scroll instead of scale when it gets too " +
+                "long for the space.");
+            CraftingTabStyle = Config.Bind("Crafting UI", "Crafting Tab Style", Crafting.CraftingTabStyle.HorizontalSquish,
+                "Sets the layout style for crafting tabs, if you've got too many. " +
+                "Horizontal is the vanilla method, but might overlap other mods or run off the screen. " +
+                "HorizontalSquish makes the buttons narrower, works okay with 6 or 7 buttons. " +
+                "Vertical puts the tabs in a column to the left the crafting window. " +
+                "Angled tries to make more room at the top of the crafting panel by angling the tabs, " +
+                "works okay with 6 or 7 tabs.");
+            ShowEquippedAndHotbarItemsInSacrificeTab = Config.Bind("Crafting UI",
+                "ShowEquippedAndHotbarItemsInSacrificeTab", false,
+                "If set to false, hides the items that are equipped or on your hotbar in the Sacrifice items list.");
+            
+            // Logging
             _loggingEnabled = Config.Bind("Logging", "Logging Enabled", false, "Enable logging");
-            _logLevel = Config.Bind("Logging", "Log Level", LogLevel.Info, "Only log messages of the selected level or higher");
-            UseGeneratedMagicItemNames = Config.Bind("General", "Use Generated Magic Item Names", true, "If true, magic items uses special, randomly generated names based on their rarity, type, and magic effects.");
-            _gatedItemTypeModeConfig = SyncedConfig("Balance", "Item Drop Limits", GatedItemTypeMode.BossKillUnlocksCurrentBiomeItems, "Sets how the drop system limits what item types can drop. Unlimited: no limits, exactly what's in the loot table will drop. BossKillUnlocksCurrentBiomeItems: items will drop for the current biome if the that biome's boss has been killed (Leather gear will drop once Eikthyr is killed). BossKillUnlocksNextBiomeItems: items will only drop for the current biome if the previous biome's boss is killed (Bronze gear will drop once Eikthyr is killed). PlayerMustKnowRecipe: (local world only) the item can drop if the player can craft it. PlayerMustHaveCraftedItem: (local world only) the item can drop if the player has already crafted it or otherwise picked it up. If an item type cannot drop, it will downgrade to an item of the same type and skill that the player has unlocked (i.e. swords will stay swords) according to iteminfo.json.");
-            BossBountyMode = SyncedConfig("Balance", "Gated Bounty Mode", GatedBountyMode.Unlimited, "Sets whether available bounties are ungated or gated by boss kills.");
-            _bossTrophyDropMode = SyncedConfig("Balance", "Boss Trophy Drop Mode", BossDropMode.OnePerPlayerNearBoss, "Sets bosses to drop a number of trophies equal to the number of players, similar to the way Wishbone works in vanilla. Optionally set it to only include players within a certain distance, use 'Boss Trophy Drop Player Range' to set the range.");
-            _bossTrophyDropPlayerRange = SyncedConfig("Balance", "Boss Trophy Drop Player Range", 100.0f, "Sets the range that bosses check when dropping multiple trophies using the OnePerPlayerNearBoss drop mode.");
-            _adventureModeEnabled = SyncedConfig("Balance", "Adventure Mode Enabled", true, "Set to true to enable all the adventure mode features: secret stash, gambling, treasure maps, and bounties. Set to false to disable. This will not actually remove active treasure maps or bounties from your save.");
-            _andvaranautRange = SyncedConfig("Balance", "Andvaranaut Range", 20, "Sets the range that Andvaranaut will locate a treasure chest.");
-            _serverConfigLocked = SyncedConfig("Config Sync", "Lock Config", false, new ConfigDescription("[Server Only] The configuration is locked and may not be changed by clients once it has been synced from the server. Only valid for server config, will have no effect on clients."));
-            SetItemDropChance = SyncedConfig("Balance", "Set Item Drop Chance", 0.15f, "The percent chance that a legendary item will be a set item. Min = 0, Max = 1");
-            GlobalDropRateModifier = SyncedConfig("Balance", "Global Drop Rate Modifier", 1.0f, "A global percentage that modifies how likely items are to drop. 1 = Exactly what is in the loot tables will drop. 0 = Nothing will drop. 2 = The number of items in the drop table are twice as likely to drop (note, this doesn't double the number of items dropped, just doubles the relative chance for them to drop). Min = 0, Max = 4");
-            ItemsToMaterialsDropRatio = SyncedConfig("Balance", "Items To Materials Drop Ratio", 0.0f, "Sets the chance that item drops are instead dropped as magic crafting materials. 0 = all items, no materials. 1 = all materials, no items. Values between 0 and 1 change the ratio of items to materials that drop. At 0.5, half of everything that drops would be items and the other half would be materials. Min = 0, Max = 1");
-            TransferMagicItemToCrafts = SyncedConfig("Balance", "Transfer Enchants to Crafted Items", false, "When enchanted items are used as ingredients in recipes, transfer the highest enchant to the newly crafted item. Default: False.");
+            _logLevel = Config.Bind("Logging", "Log Level", LogLevel.Info,
+                "Only log messages of the selected level or higher");
+            
+            // General
+            UseGeneratedMagicItemNames = Config.Bind("General", "Use Generated Magic Item Names", true,
+                "If true, magic items uses special, randomly generated names based on their rarity, type, and magic effects.");
+            
+            // Balance
+            _gatedItemTypeModeConfig = SyncedConfig("Balance", "Item Drop Limits",
+                GatedItemTypeMode.BossKillUnlocksCurrentBiomeItems,
+                "Sets how the drop system limits what item types can drop. " +
+                "Unlimited: no limits, exactly what's in the loot table will drop. " +
+                "BossKillUnlocksCurrentBiomeItems: items will drop for the current biome if the that biome's boss has been killed " +
+                "(Leather gear will drop once Eikthyr is killed). " +
+                "BossKillUnlocksNextBiomeItems: items will only drop for the current biome if the previous biome's boss is killed " +
+                "(Bronze gear will drop once Eikthyr is killed). " +
+                "PlayerMustKnowRecipe: (local world only) the item can drop if the player can craft it. " +
+                "PlayerMustHaveCraftedItem: (local world only) the item can drop if the player has already crafted it " +
+                "or otherwise picked it up. If an item type cannot drop, it will downgrade to an item of the same type and " +
+                "skill that the player has unlocked (i.e. swords will stay swords) according to iteminfo.json.");
+            BossBountyMode = SyncedConfig("Balance", "Gated Bounty Mode", GatedBountyMode.Unlimited,
+                "Sets whether available bounties are ungated or gated by boss kills.");
+            _bossTrophyDropMode = SyncedConfig("Balance", "Boss Trophy Drop Mode", BossDropMode.OnePerPlayerNearBoss,
+                "Sets bosses to drop a number of trophies equal to the number of players. " +
+                "Optionally set it to only include players within a certain distance, " +
+                "use 'Boss Trophy Drop Player Range' to set the range.");
+            _bossTrophyDropPlayerRange = SyncedConfig("Balance", "Boss Trophy Drop Player Range", 100.0f,
+                "Sets the range that bosses check when dropping multiple trophies using the OnePerPlayerNearBoss drop mode.");
+            _bossCryptKeyDropMode = SyncedConfig("Balance", "Crypt Key Drop Mode", BossDropMode.OnePerPlayerNearBoss,
+                "Sets bosses to drop a number of crypt keys equal to the number of players. " +
+                "Optionally set it to only include players within a certain distance, " +
+                "use 'Crypt Key Drop Player Range' to set the range.");
+            _bossCryptKeyDropPlayerRange = SyncedConfig("Balance", "Crypt Key Drop Player Range", 100.0f,
+                "Sets the range that bosses check when dropping multiple crypt keys using the OnePerPlayerNearBoss drop mode.");
+            _bossWishboneDropMode = SyncedConfig("Balance", "Wishbone Drop Mode", BossDropMode.OnePerPlayerNearBoss,
+                "Sets bosses to drop a number of wishbones equal to the number of players. " +
+                "Optionally set it to only include players within a certain distance, " +
+                "use 'Crypt Key Drop Player Range' to set the range.");
+            _bossWishboneDropPlayerRange = SyncedConfig("Balance", "Wishbone Drop Player Range", 100.0f,
+                "Sets the range that bosses check when dropping multiple wishbones using the OnePerPlayerNearBoss drop mode.");
+            _adventureModeEnabled = SyncedConfig("Balance", "Adventure Mode Enabled", true,
+                "Set to true to enable all the adventure mode features: secret stash, gambling, treasure maps, and bounties. " +
+                "Set to false to disable. This will not actually remove active treasure maps or bounties from your save.");
+            _andvaranautRange = SyncedConfig("Balance", "Andvaranaut Range", 20,
+                "Sets the range that Andvaranaut will locate a treasure chest.");
+            _serverConfigLocked = SyncedConfig("Config Sync", "Lock Config", false,
+                new ConfigDescription("[Server Only] The configuration is locked and may not be changed by clients " +
+                "once it has been synced from the server. Only valid for server config, will have no effect on clients."));
+            SetItemDropChance = SyncedConfig("Balance", "Set Item Drop Chance", 0.15f,
+                "The percent chance that a legendary item will be a set item. Min = 0, Max = 1");
+            GlobalDropRateModifier = SyncedConfig("Balance", "Global Drop Rate Modifier", 1.0f,
+                "A global percentage that modifies how likely items are to drop. " +
+                "1 = Exactly what is in the loot tables will drop. " +
+                "0 = Nothing will drop. " +
+                "2 = The number of items in the drop table are twice as likely to drop " +
+                "(note, this doesn't double the number of items dropped, just doubles the relative chance for them to drop). " +
+                "Min = 0, Max = 4");
+            ItemsToMaterialsDropRatio = SyncedConfig("Balance", "Items To Materials Drop Ratio", 0.0f,
+                "Sets the chance that item drops are instead dropped as magic crafting materials. " +
+                "0 = all items, no materials. " +
+                "1 = all materials, no items. Values between 0 and 1 change the ratio of items to materials that drop. " +
+                "At 0.5, half of everything that drops would be items and the other half would be materials. " +
+                "Min = 0, Max = 1");
+            TransferMagicItemToCrafts = SyncedConfig("Balance", "Transfer Enchants to Crafted Items", false,
+                "When enchanted items are used as ingredients in recipes, transfer the highest enchant to the " +
+                "newly crafted item. Default: False.");
 
+            // Debug
             AlwaysShowWelcomeMessage = Config.Bind("Debug", "AlwaysShowWelcomeMessage", false, "Just a debug flag for testing the welcome message, do not use.");
             OutputPatchedConfigFiles = Config.Bind("Debug", "OutputPatchedConfigFiles", false, "Just a debug flag for testing the patching system, do not use.");
 
+            // Abilities
             AbilityKeyCodes[0] = Config.Bind("Abilities", "Ability Hotkey 1", "g", "Hotkey for Ability Slot 1.");
             AbilityKeyCodes[1] = Config.Bind("Abilities", "Ability Hotkey 2", "h", "Hotkey for Ability Slot 2.");
             AbilityKeyCodes[2] = Config.Bind("Abilities", "Ability Hotkey 3", "j", "Hotkey for Ability Slot 3.");
@@ -234,26 +335,26 @@ namespace EpicLoot
             AbilityBarLayoutAlignment = Config.Bind("Abilities", "Ability Bar Layout Alignment", TextAnchor.LowerLeft, "The Ability Bar is a Horizontal Layout Group. This value indicates how the elements inside are aligned. Choices with 'Center' in them will keep the items centered on the bar, even if there are fewer than the maximum allowed. 'Left' will be left aligned, and similar for 'Right'.");
             AbilityBarIconSpacing = Config.Bind("Abilities", "Ability Bar Icon Spacing", 8.0f, "The number of units between the icons on the ability bar.");
 
-            //Enchanting Table
+            // Enchanting Table
             EnchantingTableUpgradesActive = SyncedConfig("Enchanting Table", "Upgrades Active", true, "Toggles Enchanting Table Upgrade Capabilities. If false, enchanting table features will be unlocked set to Level 1");
             EnchantingTableActivatedTabs = SyncedConfig("Enchanting Table", $"Table Features Active", EnchantingTabs.Sacrifice | EnchantingTabs.Augment | EnchantingTabs.Enchant | EnchantingTabs.Disenchant | EnchantingTabs.Upgrade | EnchantingTabs.ConvertMaterials, $"Toggles Enchanting Table Feature on and off completely.");
             
-            //Limiting Bounties
+            // Bounty Management
             EnableLimitedBountiesInProgress = SyncedConfig("Bounty Management", "Enable Bounty Limit", false, "Toggles limiting bounties. Players unable to purchase if enabled and maximum bounty in-progress count is met");
             MaxInProgressBounties = SyncedConfig("Bounty Management", "Max Bounties Per Player", 5, "Max amount of in-progress bounties allowed per player.");
             
             _configSync.AddLockingConfigEntry(_serverConfigLocked);
 
             var assembly = Assembly.GetExecutingAssembly();
-
             
             EIDFLegacy.CheckForExtendedItemFrameworkLoaded(_instance);
 
-            LoadEmbeddedAssembly(assembly, "Newtonsoft.Json.dll");
             LoadEmbeddedAssembly(assembly, "EpicLoot-UnityLib.dll");
 
             EnchantingTableUpgradesActive.SettingChanged += (_, _) => EnchantingTableUI.UpdateUpgradeActivation();
             EnchantingTableActivatedTabs.SettingChanged += (_, _) => EnchantingTableUI.UpdateTabActivation();
+
+            HasAdventureBackpacks = ABAPI.IsLoaded();
 
             LoadPatches();
             InitializeConfig();
@@ -319,7 +420,8 @@ namespace EpicLoot
                 magicBG = (RectTransform)itemBG.transform.Find("magicItem");
                 if (magicBG == null)
                 {
-                    var magicItemObject = Instantiate(itemBGImage, inFront ? itemBG.transform : itemBG.transform.parent).gameObject;
+                    var magicItemObject = Instantiate(itemBGImage, inFront ?
+                        itemBG.transform : itemBG.transform.parent).gameObject;
                     magicItemObject.name = "magicItem";
                     magicItemObject.SetActive(true);
                     magicBG = (RectTransform)magicItemObject.transform;
@@ -366,7 +468,8 @@ namespace EpicLoot
                 string localizedSubtitle;
                 if (item.IsLegendarySetItem())
                 {
-                    localizedSubtitle = $"<color={GetSetItemColor()}>$mod_epicloot_legendarysetlabel</color>, {itemTypeName}\n";
+                    localizedSubtitle = $"<color={GetSetItemColor()}>" +
+                        $"$mod_epicloot_legendarysetlabel</color>, {itemTypeName}\n";
                 }
                 else
                 {
@@ -381,39 +484,46 @@ namespace EpicLoot
                 {
                     Auga.API.ComplexTooltip_SetSubtitle(complexTooltip, localizedSubtitle);
                 }
-
-
+                
                 if (AugaTooltipNoTextBoxes)
                     return;
+                
+                //Don't need to process the InventoryTooltip Information.
+                if (complexTooltip.name.Contains("InventoryTooltip"))
+                    return;
 
+                //The following is used only for Crafting Result Panel.
                 Auga.API.ComplexTooltip_AddDivider(complexTooltip);
 
                 var magicItemText = magicItem.GetTooltip();
                 var textBox = Auga.API.ComplexTooltip_AddTwoColumnTextBox(complexTooltip);
                 magicItemText = magicItemText.Replace("\n\n", "");
                 Auga.API.TooltipTextBox_AddLine(textBox, magicItemText);
-
+                
                 if (magicItem.IsLegendarySetItem())
                 {
                     var textBox2 = Auga.API.ComplexTooltip_AddTwoColumnTextBox(complexTooltip);
                     Auga.API.TooltipTextBox_AddLine(textBox2, item.GetSetTooltip());
                 }
-
+                
                 try
                 {
-                    Auga.API.ComplexTooltip_SetDescription(complexTooltip, Localization.instance.Localize(item.GetDescription()));
+                    Auga.API.ComplexTooltip_SetDescription(complexTooltip,
+                        Localization.instance.Localize(item.GetDescription()));
                 }
                 catch (Exception)
                 {
                     Auga.API.ComplexTooltip_SetDescription(complexTooltip, item.GetDescription());
                 }
-                
             }
         }
 
-        private ConfigEntry<T> SyncedConfig<T>(string group, string configName, T value, string description, bool synchronizedSetting = true) => SyncedConfig(group, configName, value, new ConfigDescription(description), synchronizedSetting);
+        private ConfigEntry<T> SyncedConfig<T>(string group, string configName, T value,
+            string description, bool synchronizedSetting = true) => 
+            SyncedConfig(group, configName, value, new ConfigDescription(description), synchronizedSetting);
         
-        private ConfigEntry<T> SyncedConfig<T>(string group, string configName, T value, ConfigDescription description, bool synchronizedSetting = true)
+        private ConfigEntry<T> SyncedConfig<T>(string group, string configName, T value,
+            ConfigDescription description, bool synchronizedSetting = true)
         {
             var configEntry = Config.Bind(group, configName, value, description);
 
@@ -438,7 +548,8 @@ namespace EpicLoot
                 return;
             }
 
-            var oldEntries = Localization.instance.m_translations.Where(instanceMTranslation => instanceMTranslation.Key.StartsWith(translationPrefix)).ToList();
+            var oldEntries = Localization.instance.m_translations.Where(instanceMTranslation => 
+                instanceMTranslation.Key.StartsWith(translationPrefix)).ToList();
 
             //Clean Translations
             foreach (var entry in oldEntries)
@@ -472,7 +583,7 @@ namespace EpicLoot
             LoadJsonFile<AbilityConfig>("abilities.json", AbilityDefinitions.Initialize, ConfigType.Synced);
             LoadJsonFile<MaterialConversionsConfig>("materialconversions.json", MaterialConversions.Initialize, ConfigType.Synced);
             LoadJsonFile<EnchantingUpgradesConfig>("enchantingupgrades.json", EnchantingTableUpgrades.InitializeConfig, ConfigType.Synced);
-
+            
             WatchNewPatchConfig();
         }
 
@@ -558,37 +669,10 @@ namespace EpicLoot
             _instance.Logger.LogError(message);
         }
 
-        /*private void Update()
-        {
-            PointerEventData pointerData = new PointerEventData(EventSystem.current)
-            {
-                position = Input.mousePosition
-            };
-
-            List<RaycastResult> results = new List<RaycastResult>();
-            EventSystem.current.RaycastAll(pointerData, results);
-
-            EpicLoot.LogWarning("== Objects under cursor: ==");
-            if (Input.GetKeyDown(KeyCode.I))
-            {
-                results.ForEach((result) => {
-                    EpicLoot.Log($"- {result.gameObject.name} ({result.gameObject.transform.parent.name})");
-                });
-            }
-        }*/
-
-        /*[UsedImplicitly]
-        private void Update()
-        {
-            if (Input.GetKey(KeyCode.RightControl) && Input.GetKeyDown(KeyCode.Backspace))
-            {
-                Time.timeScale = Time.timeScale == 0 ? 1 : 0;
-            }
-        }*/
-
         private void LoadAssets()
         {
             var assetBundle = LoadAssetBundle("epicloot");
+
             Assets.AssetBundle = assetBundle;
             Assets.EquippedSprite = assetBundle.LoadAsset<Sprite>("Equipped");
             Assets.AugaEquippedSprite = assetBundle.LoadAsset<Sprite>("AugaEquipped");
@@ -631,7 +715,6 @@ namespace EpicLoot
             {
                 Table = "_HammerPieceTable",
                 CraftingStation = "piece_workbench",
-                ExtendStation = "forge",
                 Resources = new List<RecipeRequirementConfig>
                 {
                     new RecipeRequirementConfig { item = "Stone", amount = 10 },
@@ -643,7 +726,6 @@ namespace EpicLoot
             {
                 Table = "_HammerPieceTable",
                 CraftingStation = "piece_workbench",
-                ExtendStation = "forge",
                 Resources = new List<RecipeRequirementConfig>
                 {
                     new RecipeRequirementConfig { item = "Obsidian", amount = 10 },
@@ -740,8 +822,11 @@ namespace EpicLoot
             {
                 if (asset is GameObject assetGo && assetGo.GetComponent<ZNetView>() != null)
                 {
-                    _assetCache.Add(asset.name, assetGo);
-                    RegisteredPrefabs.Add(assetGo);
+                    if (!_assetCache.ContainsKey(asset.name))
+                        _assetCache.Add(asset.name, assetGo);
+                    
+                    if (!RegisteredPrefabs.Contains(assetGo))
+                        RegisteredPrefabs.Add(assetGo);
                 }
             }
         }
@@ -750,7 +835,6 @@ namespace EpicLoot
         private void OnDestroy()
         {
             _instance = null;
-            _harmony?.UnpatchSelf();
         }
 
         public static void TryRegisterPrefabs(ZNetScene zNetScene)
@@ -797,7 +881,9 @@ namespace EpicLoot
                 var pieceTable = pieceTables.Find(x => x.name == pieceDef.Table);
                 if (pieceTable == null)
                 {
-                    LogError($"Tried to register piece ({prefab}) but could not find piece table ({pieceDef.Table}) (pieceTables({pieceTables.Count})= {string.Join(", ", pieceTables.Select(x =>x.name))})!");
+                    LogError($"Tried to register piece ({prefab}) but could not find piece table " +
+                        $"({pieceDef.Table}) (pieceTables({pieceTables.Count})= " +
+                        $"{string.Join(", ", pieceTables.Select(x =>x.name))})!");
                     continue;
                 }
 
@@ -855,7 +941,8 @@ namespace EpicLoot
         public static bool IsObjectDBReady()
         {
             // Hack, just making sure the built-in items and prefabs have loaded
-            return ObjectDB.instance != null && ObjectDB.instance.m_items.Count != 0 && ObjectDB.instance.GetItemPrefab("Amber") != null;
+            return ObjectDB.instance != null && ObjectDB.instance.m_items.Count != 0 &&
+                ObjectDB.instance.GetItemPrefab("Amber") != null;
         }
 
         public static void TryRegisterItems()
@@ -917,11 +1004,13 @@ namespace EpicLoot
                 var itemDrop = itemPrefab.GetComponent<ItemDrop>();
                 if (itemDrop == null)
                 {
-                    LogError($"An item without an ItemDrop ({itemPrefab}) exists in ObjectDB.instance.m_items! Don't do this!");
+                    LogError($"An item without an ItemDrop ({itemPrefab}) exists in ObjectDB.instance.m_items! " +
+                        $"Don't do this!");
                     continue;
                 }
                 var item = itemDrop.m_itemData;
-                if (item != null && item.m_shared.m_buildPieces != null && !pieceTables.Contains(item.m_shared.m_buildPieces))
+                if (item != null && item.m_shared.m_buildPieces != null && 
+                    !pieceTables.Contains(item.m_shared.m_buildPieces))
                 {
                     pieceTables.Add(item.m_shared.m_buildPieces);
                 }
@@ -1055,14 +1144,14 @@ namespace EpicLoot
 
                 }
 
-	            var filePath = GetAssetPath(filename);
-	            FileSystemWatcher watcher = new FileSystemWatcher(Path.GetDirectoryName(filePath), Path.GetFileName(filePath));
-	            watcher.Changed += ConsumeConfigFileEvent;
-	            watcher.Created += ConsumeConfigFileEvent;
-	            watcher.Renamed += ConsumeConfigFileEvent;
-	            watcher.IncludeSubdirectories = true;
-	            watcher.SynchronizingObject = ThreadingHelper.SynchronizingObject;
-	            watcher.EnableRaisingEvents = true;
+                var filePath = GetAssetPath(filename);
+                FileSystemWatcher watcher = new FileSystemWatcher(Path.GetDirectoryName(filePath), Path.GetFileName(filePath));
+                watcher.Changed += ConsumeConfigFileEvent;
+                watcher.Created += ConsumeConfigFileEvent;
+                watcher.Renamed += ConsumeConfigFileEvent;
+                watcher.IncludeSubdirectories = true;
+                watcher.SynchronizingObject = ThreadingHelper.SynchronizingObject;
+                watcher.EnableRaisingEvents = true;
 
                 //Patch JSON Watcher
                 for (var i = 0; i < FilePatching.PatchesPerFile.Where(y => y.Key.Equals(filename)).ToList().Count; i++)
@@ -1108,14 +1197,14 @@ namespace EpicLoot
                 SyncedJsonFiles[fileName].AssignLocalValue(LoadJsonText(fileName));
             }
 
-            var patchWatcher = new FileSystemWatcher(Path.GetDirectoryName(fullPatchFilename), Path.GetFileName(fullPatchFilename));
+            var patchWatcher = new FileSystemWatcher(Path.GetDirectoryName(fullPatchFilename),
+                Path.GetFileName(fullPatchFilename));
 
             patchWatcher.Changed += ConsumePatchFileEvent;
             patchWatcher.Deleted += ConsumePatchFileEvent;
             patchWatcher.IncludeSubdirectories = true;
             patchWatcher.SynchronizingObject = ThreadingHelper.SynchronizingObject;
             patchWatcher.EnableRaisingEvents = true;
-
         }
 
 
@@ -1138,7 +1227,8 @@ namespace EpicLoot
         public static AssetBundle LoadAssetBundle(string filename)
         {
             var assembly = Assembly.GetCallingAssembly();
-            var assetBundle = AssetBundle.LoadFromStream(assembly.GetManifestResourceStream($"{assembly.GetName().Name}.{filename}"));
+            var assetBundle = AssetBundle.LoadFromStream(assembly.GetManifestResourceStream(
+                $"{assembly.GetName().Name}.{filename}"));
 
             return assetBundle;
         }
@@ -1167,7 +1257,8 @@ namespace EpicLoot
 
         public static bool CanBeMagicItem(ItemDrop.ItemData item)
         {
-            return item != null && IsPlayerItem(item) && Nonstackable(item) && IsNotRestrictedItem(item) && AllowedMagicItemTypes.Contains(item.m_shared.m_itemType);
+            return item != null && IsPlayerItem(item) && Nonstackable(item) && 
+                IsNotRestrictedItem(item) && AllowedMagicItemTypes.Contains(item.m_shared.m_itemType);
         }
 
         public static Sprite GetMagicItemBgSprite()
@@ -1222,7 +1313,8 @@ namespace EpicLoot
 
             var characterName = GetCharacterCleanName(characterDrop.m_character);
             var level = characterDrop.m_character.GetLevel();
-            var dropPoint = characterDrop.m_character.GetCenterPoint() + characterDrop.transform.TransformVector(characterDrop.m_spawnOffset);
+            var dropPoint = characterDrop.m_character.GetCenterPoint() +
+                characterDrop.transform.TransformVector(characterDrop.m_spawnOffset);
 
             OnCharacterDeath(characterName, level, dropPoint);
         }
@@ -1238,7 +1330,8 @@ namespace EpicLoot
             if (lootTables != null && lootTables.Count > 0)
             {
                 var loot = LootRoller.RollLootTableAndSpawnObjects(lootTables, level, characterName, dropPoint);
-                Log($"Rolling on loot table: {characterName} (lvl {level}), spawned {loot.Count} items at drop point({dropPoint}).");
+                Log($"Rolling on loot table: {characterName} (lvl {level}), " +
+                    $"spawned {loot.Count} items at drop point({dropPoint}).");
                 DropItems(loot, dropPoint);
                 foreach (var l in loot)
                 {
@@ -1246,7 +1339,8 @@ namespace EpicLoot
                     var magicItem = itemData.GetMagicItem();
                     if (magicItem != null)
                     {
-                        Log($"  - {itemData.m_shared.m_name} <{l.transform.position}>: {string.Join(", ", magicItem.Effects.Select(x => x.EffectType.ToString()))}");
+                        Log($"  - {itemData.m_shared.m_name} <{l.transform.position}>: " +
+                            $"{string.Join(", ", magicItem.Effects.Select(x => x.EffectType.ToString()))}");
                     }
                 }
             }
@@ -1306,7 +1400,7 @@ namespace EpicLoot
             t.AppendLine(GetMagicEffectCountTableLine(ItemRarity.Rare));
             t.AppendLine(GetMagicEffectCountTableLine(ItemRarity.Epic));
             t.AppendLine(GetMagicEffectCountTableLine(ItemRarity.Legendary));
-            //t.AppendLine(GetMagicEffectCountTableLine(ItemRarity.Mythic));
+            t.AppendLine(GetMagicEffectCountTableLine(ItemRarity.Mythic));
             t.AppendLine();
 
             var rarities = new List<ItemRarity>();
@@ -1379,7 +1473,8 @@ namespace EpicLoot
                 }
 
                 var allowedItemTypes = def.GetAllowedItemTypes();
-                t.AppendLine("> **Allowed Item Types:** " + (allowedItemTypes.Count == 0 ? "*None*" : string.Join(", ", allowedItemTypes)));
+                t.AppendLine("> **Allowed Item Types:** " + (allowedItemTypes.Count == 0 ? "*None*" : 
+                    string.Join(", ", allowedItemTypes)));
                 t.AppendLine("> ");
                 t.AppendLine("> **Requirements:**");
                 t.Append(def.Requirements);
@@ -1412,6 +1507,12 @@ namespace EpicLoot
                         var v = def.ValuesPerRarity.Legendary;
                         t.AppendLine($"> |Legendary|{v.MinValue}|{v.MaxValue}|{v.Increment}|");
                     }
+
+                    if (def.ValuesPerRarity.Mythic != null)
+                    {
+                        var v = def.ValuesPerRarity.Legendary;
+                        t.AppendLine($"> |Mythic|{v.MinValue}|{v.MaxValue}|{v.Increment}|");
+                    }
                 }
                 if (!string.IsNullOrEmpty(def.Comment))
                 {
@@ -1440,7 +1541,8 @@ namespace EpicLoot
             // Loot tables
             t.AppendLine("# Loot Tables");
             t.AppendLine();
-            t.AppendLine("A list of every built-in loot table from the mod. The name of the loot table is the object name followed by a number signifying the level of the object.");
+            t.AppendLine("A list of every built-in loot table from the mod. " +
+                "The name of the loot table is the object name followed by a number signifying the level of the object.");
 
             foreach (var lootTableEntry in LootRoller.LootTables)
             {
@@ -1461,7 +1563,8 @@ namespace EpicLoot
 
         private static void WriteLootTableDrops(StringBuilder t, LootTable lootTable)
         {
-            var highestLevel = lootTable.LeveledLoot != null && lootTable.LeveledLoot.Count > 0 ? lootTable.LeveledLoot.Max(x => x.Level) : 0;
+            var highestLevel = lootTable.LeveledLoot != null && lootTable.LeveledLoot.Count > 0 ?
+                lootTable.LeveledLoot.Max(x => x.Level) : 0;
             var limit = Mathf.Max(3, highestLevel);
             for (var i = 0; i < limit; i++)
             {
@@ -1491,7 +1594,8 @@ namespace EpicLoot
 
         private static void WriteLootTableItems(StringBuilder t, LootTable lootTable)
         {
-            var highestLevel = lootTable.LeveledLoot != null && lootTable.LeveledLoot.Count > 0 ? lootTable.LeveledLoot.Max(x => x.Level) : 0;
+            var highestLevel = lootTable.LeveledLoot != null && lootTable.LeveledLoot.Count > 0 ?
+                lootTable.LeveledLoot.Max(x => x.Level) : 0;
             var limit = Mathf.Max(3, highestLevel);
             for (var i = 0; i < limit; i++)
             {
@@ -1509,8 +1613,8 @@ namespace EpicLoot
         private static void WriteLootList(StringBuilder t, int level, LootDrop[] lootList)
         {
             var levelDisplay = level > 0 ? $" (lvl {level})" : "";
-            t.AppendLine($"> | Items{levelDisplay} | Weight (Chance) | Magic | Rare | Epic | Legendary |");
-            t.AppendLine("> | -- | -- | -- | -- | -- | -- |");
+            t.AppendLine($"> | Items{levelDisplay} | Weight (Chance) | Magic | Rare | Epic | Legendary | Mythic |");
+            t.AppendLine("> | -- | -- | -- | -- | -- | -- | -- |");
 
             float totalLootWeight = lootList.Sum(x => x.Weight);
             foreach (var lootDrop in lootList)
@@ -1518,7 +1622,8 @@ namespace EpicLoot
                 var percentChance = lootDrop.Weight / totalLootWeight * 100;
                 if (lootDrop.Rarity == null || lootDrop.Rarity.Length == 0)
                 {
-                    t.AppendLine($"> | {lootDrop.Item} | {lootDrop.Weight} ({percentChance:0.#}%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |");
+                    t.AppendLine($"> | {lootDrop.Item} | {lootDrop.Weight} ({percentChance:0.#}%) | " +
+                        $"1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) | 0 (0%) |");
                     continue;
                 }
 
@@ -1529,12 +1634,14 @@ namespace EpicLoot
                     lootDrop.Rarity[1] / rarityTotal * 100,
                     lootDrop.Rarity[2] / rarityTotal * 100,
                     lootDrop.Rarity[3] / rarityTotal * 100,
+                    lootDrop.Rarity[4] / rarityTotal * 100
                 };
                 t.AppendLine($"> | {lootDrop.Item} | {lootDrop.Weight} ({percentChance:0.#}%) " +
                              $"| {lootDrop.Rarity[0]} ({rarityPercent[0]:0.#}%) " +
                              $"| {lootDrop.Rarity[1]} ({rarityPercent[1]:0.#}%) " +
                              $"| {lootDrop.Rarity[2]:0.#} ({rarityPercent[2]:0.#}%) " +
-                             $"| {lootDrop.Rarity[3]} ({rarityPercent[3]:0.#}%) |");
+                             $"| {lootDrop.Rarity[3]} ({rarityPercent[3]:0.#}%) |" +
+                             $"| {lootDrop.Rarity[4]} ({rarityPercent[4]:0.#}%) |");
             }
 
             t.AppendLine();
@@ -1545,7 +1652,7 @@ namespace EpicLoot
             var effectCounts = LootRoller.GetEffectCountsPerRarity(rarity, false);
             float total = effectCounts.Sum(x => x.Value);
             var result = $"|{rarity}|";
-            for (var i = 1; i <= 6; ++i)
+            for (var i = 1; i <= 7; ++i)
             {
                 var valueString = " ";
                 var i1 = i;
@@ -1597,8 +1704,7 @@ namespace EpicLoot
                 case ItemRarity.Legendary:
                     return GetColor(_legendaryRarityColor.Value);
                 case ItemRarity.Mythic:
-                    // TODO: Mythic Hookup
-                    return GetColor("Orange"/*_mythicRarityColor.Value*/);
+                    return GetColor(_mythicRarityColor.Value);
                 default:
                     return "#FFFFFF";
             }
@@ -1639,8 +1745,7 @@ namespace EpicLoot
                 case ItemRarity.Legendary:
                     return Mathf.Clamp(_legendaryMaterialIconColor.Value, 0, 9);
                 case ItemRarity.Mythic:
-                    // TODO: Mythic Hookup
-                    return 1; //Mathf.Clamp(_mythicMaterialIconColor.Value, 0, 9);
+                    return Mathf.Clamp(_mythicMaterialIconColor.Value, 0, 9);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(rarity), rarity, null);
             }
@@ -1665,6 +1770,25 @@ namespace EpicLoot
         {
             return _bossTrophyDropPlayerRange.Value;
         }
+        public static float GetBossCryptKeyPlayerRange()
+        {
+            return _bossCryptKeyDropPlayerRange.Value;
+        }
+
+        public static BossDropMode GetBossCryptKeyDropMode()
+        {
+            return _bossCryptKeyDropMode.Value;
+        }
+
+        public static BossDropMode GetBossWishboneDropMode()
+        {
+            return _bossWishboneDropMode.Value;
+        }
+
+        public static float GetBossWishboneDropPlayerRange()
+        {
+            return _bossWishboneDropPlayerRange.Value;
+        }
 
         public static int GetAndvaranautRange()
         {
@@ -1688,7 +1812,9 @@ namespace EpicLoot
                 if (string.IsNullOrEmpty(effectDef.Description))
                 {
                     effectDef.Description = effectDef.DisplayText.Replace("display", "desc");
-                    jsonFile = jsonFile.Replace($"\"DisplayText\" : \"{effectDef.DisplayText}\"", $"\"DisplayText\" : \"{effectDef.DisplayText}\",\n      \"Description\" : \"{effectDef.Description}\"");
+                    jsonFile = jsonFile.Replace($"\"DisplayText\" : \"{effectDef.DisplayText}\"",
+                        $"\"DisplayText\" : \"{effectDef.DisplayText}\",\n      " +
+                        $"\"Description\" : \"{effectDef.Description}\"");
                     translations.Add(effectDef.Description, "");
                 }
             }
@@ -1697,7 +1823,8 @@ namespace EpicLoot
             File.WriteAllText(outputPath, jsonFile);
 
             var translationsOutputPath = GenerateAssetPathAtAssembly("new_translations.json");
-            var translationsText = "{\n" + string.Join("\n", translations.Select(x => $"  \"{x.Key}\": \"{x.Value}\",")) +"\n}";
+            var translationsText = "{\n" + string.Join("\n", 
+                translations.Select(x => $"  \"{x.Key}\": \"{x.Value}\",")) +"\n}";
             File.WriteAllText(translationsOutputPath, translationsText);
         }
 
@@ -1706,7 +1833,8 @@ namespace EpicLoot
             return name.Replace("'", "").Replace(",", "").Trim().Replace(" ", "_").ToLowerInvariant();
         }
 
-        private static void ReplaceValueList(List<string> values, string field, string label, MagicItemEffectDefinition effectDef, Dictionary<string, string> translations, ref string magicEffectsJson)
+        private static void ReplaceValueList(List<string> values, string field, string label, 
+            MagicItemEffectDefinition effectDef, Dictionary<string, string> translations, ref string magicEffectsJson)
         {
             var newValues = new List<string>();
             for (var index = 0; index < values.Count; index++)
@@ -1728,7 +1856,8 @@ namespace EpicLoot
             if (newValues.Count > 0)
             {
                 var old = $"\"{label}\": [ {string.Join(", ", values.Select(x => $"\"{x}\""))} ]";
-                var toReplace = $"\"{label}\": [\n        {string.Join(",\n        ", newValues.Select(x => (x.StartsWith("$") ? $"\"{x}\"" : $"\"${x}\"")))}\n      ]";
+                var toReplace = $"\"{label}\": [\n        {string.Join(",\n        ",
+                    newValues.Select(x => (x.StartsWith("$") ? $"\"{x}\"" : $"\"${x}\"")))}\n      ]";
                 magicEffectsJson = ReplaceTranslation(magicEffectsJson, old, toReplace);
             }
         }
@@ -1748,7 +1877,8 @@ namespace EpicLoot
             return jsonFile.Replace(original, locId);
         }
 
-        private static string SetupTranslation(MagicItemEffectDefinition effectDef, string value, string field, string replaceFormat, Dictionary<string, string> translations, string jsonFile)
+        private static string SetupTranslation(MagicItemEffectDefinition effectDef, string value, string field,
+            string replaceFormat, Dictionary<string, string> translations, string jsonFile)
         {
             if (string.IsNullOrEmpty(value) || value.StartsWith("$"))
             {
@@ -1757,7 +1887,8 @@ namespace EpicLoot
 
             var key = GetId(effectDef, field);
             AddTranslation(translations, key, value);
-            return ReplaceTranslation(jsonFile, string.Format(replaceFormat, value), string.Format(replaceFormat, $"${key}"));
+            return ReplaceTranslation(jsonFile, string.Format(replaceFormat, value),
+                string.Format(replaceFormat, $"${key}"));
         }
 
         public static float GetWorldLuckFactor()

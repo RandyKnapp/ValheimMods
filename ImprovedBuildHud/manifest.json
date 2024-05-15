@@ -1,7 +1,0 @@
-{
-  "name": "ImprovedBuildHud",
-  "version_number": "1.0.5",
-  "website_url": "https://github.com/RandyKnapp/ValheimMods/tree/main/ImprovedBuildHud",
-  "description": "Add the total can-build amount plus the player's current inventory count to the requirements.",
-  "dependencies": []
-}

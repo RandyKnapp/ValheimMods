@@ -7,8 +7,10 @@
             <InputAssemblies Include="$(OutputPath)\Newtonsoft.Json.dll" />
             <InputAssemblies Include="$(OutputPath)\AugaAPI.dll" />
             <InputAssemblies Include="$(OutputPath)\AnimationSpeedManager.dll" />
+            <InputAssemblies Include="$(OutputPath)\AdventureBackpacksAPI.dll" />
+            <InputAssemblies Include="$(OutputPath)\System.Runtime.Serialization.dll" />
             <LibraryPath Include="$(OutputPath)" />
-            <LibraryPath Include="C:\Program Files (x86)\Steam\steamapps\common\Valheim\valheim_Data\Managed" />
+            <LibraryPath Include="$(GamePath)\valheim_Data\Managed" />
         </ItemGroup>
         <ILRepack Parallel="true" DebugInfo="true" Internalize="true" InputAssemblies="@(InputAssemblies)" OutputFile="$(TargetPath)" TargetKind="SameAsPrimaryAssembly" LibraryPath="@(LibraryPath)" />
     </Target>

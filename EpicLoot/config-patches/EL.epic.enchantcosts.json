@@ -1,0 +1,24 @@
+{
+  "TargetFile": "enchantcosts.json",
+  "Author": "EpicLoot",
+  "Priority": 2000,
+  "RequireAll": true,
+  "Patches": [
+    {
+      "Path": "$.ReAugmentCosts",
+      "Action": "Overwrite",
+      "Value": [
+        { "Item": "Coins", "Amount": 5000 },
+        { "Item": "Coins", "Amount": 10000 },
+        { "Item": "Coins", "Amount": 15000 },
+        { "Item": "Coins", "Amount": 20000 },
+        { "Item": "Coins", "Amount": 25000 },
+        { "Item": "Coins", "Amount": 35000 },
+        { "Item": "Coins", "Amount": 40000 },
+        { "Item": "Coins", "Amount": 45000 },
+        { "Item": "Coins", "Amount": 50000 },
+        { "Item": "Coins", "Amount": 55000 }
+      ]
+    }
+  ]
+}

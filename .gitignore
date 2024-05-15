@@ -76,3 +76,10 @@ crashlytics-build.properties
 /valheim_Data/BepInEx-out/plugins/EpicLoot/enchantcosts.json
 /valheim_Data/BepInEx-out/plugins/EpicLoot/adventuredata.json
 /valheim_Data/BepInEx-out/plugins/EpicLoot/abilities.json
+ValheimUnity/Assets/ExternalLibraries/EpicLoot-UnityLib.dll
+
+# Unity
+ValheimUnity/AssetBundles
+ValheimUnity/Assets/ExternalLibraries/*.dll
+ValheimUnity/Assets/ExternalLibraries/valheim/*.dll
+ValheimUnity/UserSettings

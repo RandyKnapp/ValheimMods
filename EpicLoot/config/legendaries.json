@@ -1,0 +1,455 @@
+{
+  // Legendary Items
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  "LegendaryItems": [
+    {
+      "ID": "Dyrnwyn",
+      "Name": "$mod_epicloot_l_dyrnwyn",
+      "Description": "$mod_epicloot_l_dyrnwyn_desc",
+      "EquipFx": "FireAura", 
+      "EquipFxMode": "EquipRoot", 
+      "Requirements": {
+        "AllowedItemTypes": [ "OneHandedWeapon" ],
+        "AllowedSkillTypes": [ "Swords" ]
+      },
+      "GuaranteedMagicEffects": [
+        { "Type": "AddFireDamage" }
+      ]
+    },
+    {
+      "ID": "SleipnirsHoof",
+      "Name": "$mod_epicloot_l_sleipnirshoof",
+      "Description": "$mod_epicloot_l_sleipnirshoof_desc",
+      "EquipFx": "WhiteAura", 
+      "EquipFxMode": "EquipRoot", 
+      "Requirements": {
+        "AllowedItemTypes": [ "OneHandedWeapon" ],
+        "AllowedSkillTypes": [ "Clubs" ]
+      },
+      "GuaranteedMagicEffects": [
+        { "Type": "ModifyMovementSpeed" }
+      ]
+    },
+    {
+      "ID": "Gungnir",
+      "Name": "$mod_epicloot_l_gungnir",
+      "Description": "$mod_epicloot_l_gungnir_desc",
+      "Requirements": {
+        "AllowedItemTypes": [ "OneHandedWeapon" ],
+        "AllowedSkillTypes": [ "Spears" ]
+      },
+      "GuaranteedMagicEffects": [
+        { "Type": "ModifyDamage" }
+      ]
+    },
+    {
+      "ID": "Mjolnir",
+      "Name": "$mod_epicloot_l_mjolnir",
+      "Description": "$mod_epicloot_l_mjolnir_desc",
+      "EquipFx": "LightningAuraSledge",
+      "EquipFxMode": "EquipRoot", 
+      "Requirements": {
+        "AllowedItemNames": [ "$item_sledge_iron" ]
+      },
+      "GuaranteedEffectCount": 6, 
+      "GuaranteedMagicEffects": [
+        { "Type": "ModifyPhysicalDamage" },
+        { "Type": "AddLightningDamage" },
+        { "Type": "Throwable" },
+        { "Type": "RecallWeapon" }
+      ]
+    },
+    {
+      "ID": "Lindisfarne",
+      "Name": "$mod_epicloot_l_lind",
+      "Description": "$mod_epicloot_l_lind_desc",
+      "Requirements" : {
+        "AllowedItemTypes": [ "OneHandedWeapon" ],
+        "AllowedSkillTypes": [ "Axes" ]
+      },
+      "GuaranteedMagicEffects": [
+        { "Type": "Throwable" },
+        { "Type": "RecallWeapon" },
+        { "Type": "Opportunist" },
+        { "Type": "ModifyBackstab" }
+      ]
+    },
+    {
+      "ID": "Gram",
+      "Name": "$mod_epicloot_l_gram",
+      "Description": "$mod_epicloot_l_gram_desc",
+      "Requirements" : {
+        "AllowedItemTypes": [ "OneHandedWeapon" ],
+        "AllowedSkillTypes": [ "Swords" ]
+      },
+      "GuaranteedMagicEffects": [
+        { "Type": "AddSlashingDamage" },
+        { "Type": "Executioner"},
+        { "Type": "ModifyPhysicalDamage" }
+      ]
+    },
+    {
+      "ID": "Angurvadal",
+      "Name": "$mod_epicloot_l_angurvadal",
+      "Description": "$mod_epicloot_l_angurvadal_desc",
+      "EquipFx": "WhiteAura", 
+      "EquipFxMode" : "EquipRoot", 
+      "Requirements" : {
+        "AllowedItemTypes": [ "OneHandedWeapon" ],
+        "AllowedSkillTypes": [ "Swords" ]
+      },
+      "GuaranteedMagicEffects": [
+        { "Type": "Glowing" },
+        { "Type": "RemoveSpeedPenalty" },
+        { "Type": "Opportunist" },
+        { "Type": "ModifyBackstab" }
+      ]
+    },
+    {
+      "ID": "Laevateinn",
+      "Name": "$mod_epicloot_l_lokis",
+      "Description": "$mod_epicloot_l_lokis_desc",
+      "Requirements" : {
+        "AllowedItemTypes": [ "OneHandedWeapon" ],
+        "AllowedSkillTypes": [ "Knives" ]
+      },
+      "GuaranteedMagicEffects": [
+        { "Type": "Throwable" },
+        { "Type": "RecallWeapon" },
+        { "Type": "AddPoisonDamage" },
+        { "Type": "ModifyBackstab" }
+      ]
+    },
+    {
+      "ID": "NjordsFavor",
+      "Name": "$mod_epicloot_l_njord",
+      "Description": "$mod_epicloot_l_njord_desc",
+      "Requirements" : {
+        "AllowedItemTypes": [ "OneHandedWeapon" ],
+        "AllowedSkillTypes": [ "Knives" ]
+      },
+      "GuaranteedMagicEffects": [
+        { "Type": "AddSlashingDamage" },
+        { "Type": "ModifyMovementSpeed" },
+        { "Type": "ModifyAttackSpeed" }
+      ]
+    },
+    {
+      "ID": "ValkyriesBlessing",
+      "Name": "$mod_epicloot_l_valk",
+      "Description": "$mod_epicloot_l_valk_desc",
+      "Requirements" : {
+        "AllowedItemTypes": [ "TwoHandedWeapon" ],
+        "AllowedSkillTypes": [ "Axes" ]
+      },
+      "GuaranteedMagicEffects": [
+        { "Type": "ModifyMovementSpeedLowHealth" },
+        { "Type": "ModifyStaminaRegenLowHealth" },
+        { "Type": "ModifyDamageLowHealth" },
+        { "Type": "ModifyAttackSpeedLowHealth" },
+        { "Type": "AvoidDamageTakenLowHealth" }
+      ]
+    },
+    {
+      "ID": "Skofnung",
+      "Name": "$mod_epicloot_l_skofnung",
+      "Description": "$mod_epicloot_l_skofnung_desc",
+      "Requirements" : {
+        "AllowedItemTypes": [ "OneHandedWeapon" ],
+        "AllowedSkillTypes": [ "Swords" ]
+      },
+      "GuaranteedMagicEffects": [
+        { "Type": "AddSlashingDamage" },
+        { "Type": "ModifyAttackStaminaUse" },
+        { "Type": "ModifyAttackSpeed" },
+        { "Type": "Indestructible" }
+      ]
+    },
+    {
+      "ID": "Hofund",
+      "Name": "$mod_epicloot_l_hofund",
+      "Description": "$mod_epicloot_l_hofund_desc",
+      "Requirements" : {
+        "AllowedItemTypes": [ "OneHandedWeapon" ],
+        "AllowedSkillTypes": [ "Swords" ]
+      },
+      "GuaranteedMagicEffects": [
+        { "Type": "AddSlashingDamage" },
+        { "Type": "ModifyAttackStaminaUse" },
+        { "Type": "LifeSteal" },
+        { "Type": "Indestructible" }
+      ]
+    },
+    {
+      "ID": "ShardMace",
+      "Name": "$mod_epicloot_l_shard",
+      "Description": "$mod_epicloot_l_shard_desc",
+      "Requirements" : {
+        "AllowedItemTypes": [ "OneHandedWeapon" ],
+        "AllowedSkillTypes": [ "Clubs" ]
+      },
+      "GuaranteedMagicEffects": [
+        { "Type": "AddFireDamage" },
+        { "Type": "AddFrostDamage" },
+        { "Type": "AddLightningDamage" },
+        { "Type": "AddPoisonDamage" }
+      ]
+    },
+    {
+      "ID": "Bloodmace",
+      "Name": "$mod_epicloot_l_bloodmace",
+      "Description": "$mod_epicloot_l_bloodmace_desc",
+      "Requirements" : {
+        "AllowedItemNames" : [ "$item_mace_needle" ]
+      },
+      "GuaranteedMagicEffects": [
+        { "Type": "AddPiercingDamage" },
+        { "Type": "LifeSteal" },
+        { "Type": "LifeStealLowHealth" }
+      ]
+    },
+    {
+      "ID": "GunnarsAtgeir",
+      "Name": "$mod_epicloot_l_gunnar",
+      "Description": "$mod_epicloot_l_gunnar_desc",
+      "Requirements" : {
+        "AllowedItemTypes": [ "TwoHandedWeapon" ],
+        "AllowedSkillTypes": [ "Polearms" ]
+      },
+      "GuaranteedMagicEffects": [
+        { "Type": "AddPiercingDamage" },
+        { "Type": "ModifyAttackSpeed" },
+        { "Type": "ModifyAttackStaminaUse" }
+      ]
+    },
+    {
+      "ID": "SkadiBow",
+      "Name": "$mod_epicloot_l_skadi",
+      "Description": "$mod_epicloot_l_skadi_desc",
+      "Requirements" : {
+        "AllowedItemTypes": [ "Bow" ],
+        "AllowedSkillTypes": [ "Bows" ]
+      },
+      "GuaranteedMagicEffects": [
+        { "Type": "ModifyMovementSpeed" },
+        { "Type": "RemoveSpeedPenalty" }
+      ]
+    },
+    {
+      "ID": "UllrBow",
+      "Name": "$mod_epicloot_l_ullr",
+      "Description": "$mod_epicloot_l_ullr_desc",
+      "Requirements" : {
+        "AllowedItemTypes": [ "Bow" ],
+        "AllowedSkillTypes": [ "Bows" ]
+      },
+      "GuaranteedMagicEffects": [
+        { "Type": "ExplosiveArrows" },
+        { "Type": "AddFrostDamage" },
+        { "Type": "Indestructible" }
+      ]
+    },
+    {
+      "ID": "EndlessBow",
+      "Name": "$mod_epicloot_l_endbow",
+      "Description": "$mod_epicloot_l_endbow_desc",
+      "Requirements" : {
+        "AllowedItemTypes": [ "Bow" ],
+        "AllowedSkillTypes": [ "Bows" ]
+      },
+      "GuaranteedMagicEffects": [
+        { "Type": "QuickDraw" },
+        { "Type": "ModifyAttackStaminaUse" },
+        { "Type": "Indestructible" }
+      ]
+    },
+    {
+      "ID": "BlackSunSpite",
+      "Name": "$mod_epicloot_l_spite",
+      "Description": "$mod_epicloot_l_spite_desc",
+      "Requirements" : {
+        "AllowedItemTypes": [ "OneHandedWeapon" ],
+        "AllowedSkillTypes": [ "Knives" ]
+      },
+      "GuaranteedEffectCount": 6, 
+      "GuaranteedMagicEffects": [
+        { "Type": "ModifyAttackStaminaUse" },
+        { "Type": "ModifyAttackSpeed" },
+        { "Type": "AddLightningDamage" },
+        { "Type": "AddPiercingDamage" },
+        { "Type": "ModifyMovementSpeed" }
+      ]
+    },
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Legendary Set Items
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Heimdall
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    {
+      "ID": "HeimdallTowerShield",
+      "Name": "$mod_epicloot_l_heimdalltowershield",
+      "Description": "$mod_epicloot_l_heimdalltowershield_desc",
+      "IsSetItem": true, 
+      "Requirements": {
+        "AllowedItemTypes": [
+          "Shield"
+        ],
+        "ItemHasNoParryPower": true
+      },
+      "GuaranteedMagicEffects": [
+        { "Type": "Immovable" }
+      ]
+    },
+    {
+      "ID": "HeimdallHelmet",
+      "Name": "$mod_epicloot_l_heimdallhelmet",
+      "Description": "$mod_epicloot_l_heimdallhelmet_desc",
+      "IsSetItem": true, 
+      "Requirements": {
+        "AllowedItemTypes": [
+          "Helmet"
+        ]
+      },
+      "GuaranteedEffectCount": 6, 
+      "GuaranteedMagicEffects": [
+        { "Type": "ModifyArmorLowHealth" },
+        { "Type": "ModifyStaminaRegenLowHealth" }
+      ]
+    },
+    {
+      "ID": "HeimdallChest",
+      "Name": "$mod_epicloot_l_heimdallchest",
+      "Description": "$mod_epicloot_l_heimdallchest_desc",
+      "TextureReplacements": [ { "ItemID": "ArmorPaddedCuirass", "MainTexture": "PaddedArmorMain_Heimdall", "ChestTex": "PaddedArmorChest_Heimdall" } ],
+      "IsSetItem": true, 
+      "Requirements": {
+        "AllowedItemTypes": [
+          "Chest"
+        ]
+      },
+      "GuaranteedEffectCount": 6, 
+      "GuaranteedMagicEffects": [
+        { "Type": "ModifyArmor" },
+        { "Type": "IncreaseStamina" }
+      ]
+    },
+    {
+      "ID": "HeimdallLegs",
+      "Name": "$mod_epicloot_l_heimdalllegs",
+      "Description": "$mod_epicloot_l_heimdalllegs_desc",
+      "IsSetItem": true, 
+      "Requirements": {
+        "AllowedItemTypes": [
+          "Legs"
+        ]
+      },
+      "GuaranteedEffectCount": 6, 
+      "GuaranteedMagicEffects": [
+        { "Type": "AddMovementSkills" },
+        { "Type": "ModifyMovementSpeedLowHealth" }
+      ]
+    },
+
+    // Ragnar
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    {
+      "ID": "RagnarBattleAxe",
+      "Name": "$mod_epicloot_l_ragnarbattleaxe",
+      "Description": "$mod_epicloot_l_ragnarbattleaxe_desc",
+      "EquipFx": "FrostAuraBattleAxe",
+      "EquipFxMode": "EquipRoot", 
+      "IsSetItem": true, 
+      "Requirements": {
+        "AllowedItemTypes": [ "TwoHandedWeapon" ], 
+        "AllowedSkillTypes": [ "Axes" ]
+      },
+      "GuaranteedMagicEffects": [
+        { "Type": "ModifyPhysicalDamage" },
+        { "Type": "AddFrostDamage" }
+      ]
+    },
+    {
+      "ID": "RagnarCape",
+      "Name": "$mod_epicloot_l_ragnarcape",
+      "Description": "$mod_epicloot_l_ragnarcape_desc",
+      "IsSetItem": true, 
+      "Requirements": {
+        "AllowedItemTypes": [
+          "Shoulder"
+        ]
+      },
+      "GuaranteedEffectCount": 6
+    },
+    {
+      "ID": "RagnarChest",
+      "Name": "$mod_epicloot_l_ragnarchest",
+      "Description": "$mod_epicloot_l_ragnarchest_desc",
+      "TextureReplacements": [ { "ItemID": "ArmorPaddedCuirass", "MainTexture": "paddedarmortest2_d", "ChestTex": "PaddedArmorChest2_d" } ],
+      "IsSetItem": true, 
+      "Requirements": {
+        "AllowedItemTypes": [
+          "Chest"
+        ]
+      },
+      "GuaranteedEffectCount": 6
+    },
+    {
+      "ID": "RagnarLegs",
+      "Name": "$mod_epicloot_l_ragnarlegs",
+      "Description": "$mod_epicloot_l_ragnarlegs_desc",
+      "IsSetItem": true, 
+      "Requirements": {
+        "AllowedItemTypes": [
+          "Legs"
+        ]
+      },
+      "GuaranteedEffectCount": 6
+    }
+  ],
+
+  // Legendary Sets
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  "LegendarySets": [
+    {
+      "ID": "Heimdall",
+      "Name": "$mod_epicloot_set_heimdall",
+      "LegendaryIDs": [
+        "HeimdallTowerShield",
+        "HeimdallHelmet",
+        "HeimdallChest",
+        "HeimdallLegs"
+      ],
+      "SetBonuses": [
+        { "Count": 2, "Effect": { "Type": "ModifyBlockPower", "Values": { "MinValue": 40, "MaxValue": 40, "Increment": 1 } } },
+        { "Count": 3, "Effect": { "Type": "Bulwark" } },
+        { "Count": 4, "Effect": { "Type": "Undying" } }
+      ]
+    },
+    {
+      "ID": "Ragnar",
+      "Name": "$mod_epicloot_set_ragnar",
+      "LegendaryIDs": [
+        "RagnarBattleAxe",
+        "RagnarCape",
+        "RagnarChest",
+        "RagnarLegs"
+      ],
+      "SetBonuses": [
+        { "Count": 2, "Effect": { "Type": "AddHealthRegen", "Values": { "MinValue": 3, "MaxValue": 3, "Increment": 1 } } },
+        { "Count": 2, "Effect": { "Type": "ModifyHealthRegen", "Values": { "MinValue": 50, "MaxValue": 50, "Increment": 1 } } },
+        { "Count": 3, "Effect": { "Type": "Berserker" } },
+        { "Count": 4, "Effect": { "Type": "FrostDamageAOE", "Values": { "MinValue": 40, "MaxValue": 40, "Increment": 1 } } }
+      ]
+    }
+  ],
+
+  "MythicItems" : [
+
+  ],
+  
+  "MythicSets" : [
+    
+  ]
+}

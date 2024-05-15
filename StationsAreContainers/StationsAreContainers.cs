@@ -15,7 +15,7 @@ namespace StationsAreContainers
     {
         public const string PluginId = "randyknapp.mods.stationcontainers";
         public const string DisplayName = "Stations Are Containers";
-        public const string Version = "1.0.3";
+        public const string Version = "1.0.5";
 
         public class StationConfig
         {
@@ -95,12 +95,6 @@ namespace StationsAreContainers
                 var newConfig = InitConfigForStation(station.m_name, label);
                 return newConfig;
             }
-        }
-
-        [UsedImplicitly]
-        private void OnDestroy()
-        {
-            _harmony?.UnpatchSelf();
         }
 
         public static void ImprovedBuildHud_GetAvailableItems_Patch(ref int __result, string itemName)

@@ -18,7 +18,7 @@ namespace Jam
     {
         public const string PluginId = "randyknapp.mods.jam";
         public const string DisplayName = "Jam";
-        public const string Version = "1.0.4";
+        public const string Version = "1.0.7";
 
         private readonly ConfigSync _configSync = new ConfigSync(PluginId) { DisplayName = DisplayName, CurrentVersion = Version, MinimumRequiredVersion = Version };
         private static ConfigEntry<bool> _serverConfigLocked;
@@ -162,7 +162,6 @@ namespace Jam
         public void OnDestroy()
         {
             _instance = null;
-            _harmony?.UnpatchSelf();
         }
 
         public static void TryRegisterPrefabs(ZNetScene zNetScene)

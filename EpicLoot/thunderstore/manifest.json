@@ -1,0 +1,9 @@
+{
+  "name": "EpicLoot",
+  "version_number": "0.10.0",
+  "website_url": "https://github.com/RandyKnapp/ValheimMods/wiki/What-is-Epic-Loot%3F",
+  "description": "Adds loot drops, magic items, and enchanting to Valheim.",
+  "dependencies": [
+    "denikson-BepInExPack_Valheim-5.4.2202"
+  ]
+}

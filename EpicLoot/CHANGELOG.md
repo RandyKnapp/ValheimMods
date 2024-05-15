@@ -1,3 +1,116 @@
+## Version 0.10.0 - Ashlands & Mythic Rarity
+
+* Bug fixes to catch various reported exceptions.
+* Added check to ensure chest is empty before self-destruct on treasure chests.
+* Additions for the new Ashlands content.
+* Additions for missing Hildir content.
+* Added Mythic rarity! New translations available:
+  * $mod_epicloot_mythic
+  * $mod_epicloot_mythicsetlabel (not used yet)
+  * $mod_epicloot_basicmythicnameformat
+* Rebalanced the mod to account for Mythic rarity and to be more vanilla friendly.
+* Added missing crossbow skill: 4 new translation keys available:
+  * $mod_epicloot_me_addcrossbowsskill_display
+  * $mod_epicloot_me_addcrossbowsskill_desc
+  * $mod_epicloot_me_addcrossbowsskill_prefix1
+  * $mod_epicloot_me_addcrossbowsskill_suffix1
+* Added missing fishing skill: 4 new translation keys available:
+  * $mod_epicloot_me_addfishingskill_display
+  * $mod_epicloot_me_addfishingskill_desc
+  * $mod_epicloot_me_addfishingskill_prefix1
+  * $mod_epicloot_me_addfishingskill_suffix1
+* Added fishing rod support to enchanting system
+* Added new magic effect requirement option: MustHaveEffectTypes, to only apply when any of the given effects are present on the item.
+  * This is used to prevent recall from applying to weapons that are not throwable.
+
+<details>
+<summary><b>Changelog History</b> (<i>click to expand</i>)</summary>
+
+## Version 0.9.38 - Various Bug Fixes
+* Fix enchanting table not displaying correctly the first time it is accessed.
+* Fix for Modify health critical effect not applying correctly.
+* Changed attack speed to apply as a multiplier rather than additive since animation base speeds is not always 1.
+* Reworked Bounty system, upgraded file format. NOT backwards compatible.
+    * Reverting from this version your server bounty ledger will not load and all players with unrecorded bounty kills from other players will be lost.
+    * Removes bounty data from global keys storage, fully upgrading to the external file save system.
+* Added self-destruct to treasure chests that have been found upon reloading them.
+* Minimap should now handle removing adventure map pins when abandoned or when resetting via console commands.
+* Decreased maximum minimap offset by 20% so that treasure chests and bounties are better spawned within the red map circle.
+
+## Version 0.9.37 - Auga Tooltip Bug Fix
+* Auga Tooltip now populates correctly in the Crafting and Augmenting actions.
+
+## Version 0.9.36 - Valheim Enchantment System Compatibility
+* Added compatibility with Valheim Enchantment System
+* Fixed bug that would occur if there was no rarity table in the loottable entry.
+* Added defensive coding around loot rolling to ensure no errors would occur.
+* Refactored Auga's EpicLoot tooltips for showing Magic Items.
+
+## Version 0.9.35 - Various Clean Up
+* Added additional logging and break prevention for loot rolls
+    * This is to prevent loot roller from breaking because of bad patches.
+* Added additional logging and break prevention for patch files directory.
+    * This is to prevent bad BepInEx installs from crashing Epic Loot fully.
+    * Still need to ensure the BepInEx for Valheim is used from Thunderstore.
+* Added 4 new config settings that control additional items that bosses drop and to allow customization to drops in the same way that Trophies do.
+    * Crypt Key Drop Mode
+    * Crypt Key Drop Player Range
+    * Wishbone Drop Mode
+    * Wishbone Drop Player Range
+
+## Version 0.9.34 - Valheim Update 0.217.27
+* Updated for 0.217.27 References
+* Updated Unity for 2022.3.9
+* Added Mac/Linux Support
+    * OpenGLCore and Metal Support are now bundled
+* Added Brenna's Trophy to Sacrifice List
+* Added in AdventureBackpacks API
+
+## Version 0.9.33 - BepInEx 5.4.2201 Preparation
+* The removal of the doorstop corlib search path presented a dependency issue for EpicLoot
+  * Fixed the dependency issue by including missing DLL.
+
+## Version 0.9.32 - Auga Compatibility Part 2
+* Now updating Skills in Auga when Magic Effects give Bonus to Skills.
+
+## Version 0.9.31 - Auga Compatibility
+* In preparation for Auga Update, this adds changes needed to support Auga interfaces for the Enchanting Table and Tooltips
+* Various bug fixes
+
+## Version 0.9.30 - Bug Fixes
+* Updated a couple entries in loottables.json that were typos or incorrectly tiered.
+* Updated ServerSync to current community standard.
+  * Will need to update SERVERS to this version.
+* Updated EpicLoot Unity
+* Made a change to Augmenter/Enchanter Furniture that may cause errors from the previous version.
+  * Dismantle the augmenter/enchanter created from 0.9.29 and recreate.
+
+## Version 0.9.29 - Bug Fixes
+* Tooltips when only one effect was present were getting cut off.
+  * This is fixed by adding some text after the effects.
+* Added Rarity and Effect Count to Tooltips.
+* Fixed a display issue on Skills when a +Skills Effect is equipped.
+* Fixed a long term display issue where additional skill bar wouldn't disappear after unequipping a weapon
+* Added a null check to the Loot Roller in rare cases where an item is configured, but doesn't exist in game.
+* Changed original augmenter and enchanter to be furniture and updated descriptions
+* Updated Unity Project to 0.217.24 and TMP 3.2.0 -preview5
+* Updated a few places where colors were not hex values.
+
+## Version 0.9.28 - Augmenting Menu Issue
+* Missed a spot where I needed to update to TMP_Text
+
+## Version 0.9.27 - Fixing Server Sync
+* Had to update server sync correctly.
+
+## Version 0.9.26 - Valheim Update 0.217.24
+* Updated for Valheim 0.217.24
+* Adjust Swamp Bounties to have better chance to spawn. Looking at you Leeches!
+
+## Version 0.9.24/25 - Fixing Bounties
+* Fixed: Some bounties would spawn without name plate and would not register as a kill.
+* Slightly changed the logic to hopefully prevent underwater bounty spawns that shouldn't be underwater.
+* 0.9.25 - is a recompile to up the version after the zip got messed up.
+
 ## Version 0.9.23 - Crafting with Enchanted Components
 * Recipes built with items that are Enchanted will now carry over their magical properties to the new item.
     * The highest magical rarity will carry over if more than one magical item is consumed.
@@ -402,9 +515,9 @@
   * Changing the default rarity of Dverger Circlet, Megingjord, and Wishbone to Rare
   * Fixing a bug where Eikthyr (or some other mob, like Troll lvl 3) dies repeatedly
 ## Version 0.5.10
-  * Removing all cheat and dlc items from the random loot generation cheat	
-  * Fixed a bug that showed 0% chance for all magic effect counts while enchanting	
-  * Fixed a bug that caused some chests to spawn non-magical items	
+  * Removing all cheat and dlc items from the random loot generation cheat
+  * Fixed a bug that showed 0% chance for all magic effect counts while enchanting
+  * Fixed a bug that caused some chests to spawn non-magical items
   * Updated loot tables with feedback from comments:
     * Chitin weapons moved to tier 2 weapons
     * Draugr Fang added to tier 4 weapons
@@ -416,45 +529,47 @@
     * Fixed treasure chests so they properly reflected their biome (`plains_stone` is actually Black Forest, `heath` is Plains)
     * Reduced loot tiers for `meadows_buried` and `shipwreck_karve` chests (they still have higher rarity chances)
 ## Version 0.5.9
-  * Fixed bug where sacrificing with nearly full inventory resulted in lost items (items that do not fit in the inventory now fall to the ground)	
-  * Loot2 and Loot3 in the loot table are now exclusive (e.g. if the mob is level 2, and Loot2 is present, then only the loot from Loot2 is used, otherwise it falls back to Loot)	
-  * ItemSets have been added to the loot table schema (If the "Item" field of the Loot list is in the item set, roll on that loot table for that item instead)	
-  * Can now reference other loot tables in the loot table item config using "Item": "`object`.`level`" where `object` is the name of a loot table entry and `level` is an integer between 1 and 3 that refers to Loot, Loot2, or Loot3.	
-  * Number of magic effects per rarity is now configurable in loottables.json in the "MagicEffectsCount" object	
-  * Completed loottables with updates from feedback and using the new system	
+  * Fixed bug where sacrificing with nearly full inventory resulted in lost items (items that do not fit in the inventory now fall to the ground)
+  * Loot2 and Loot3 in the loot table are now exclusive (e.g. if the mob is level 2, and Loot2 is present, then only the loot from Loot2 is used, otherwise it falls back to Loot)
+  * ItemSets have been added to the loot table schema (If the "Item" field of the Loot list is in the item set, roll on that loot table for that item instead)
+  * Can now reference other loot tables in the loot table item config using "Item": "`object`.`level`" where `object` is the name of a loot table entry and `level` is an integer between 1 and 3 that refers to Loot, Loot2, or Loot3.
+  * Number of magic effects per rarity is now configurable in loottables.json in the "MagicEffectsCount" object
+  * Completed loottables with updates from feedback and using the new system
 ## Version 0.5.8
-  * Hiding console commands behind the cheat flag	
-  * Removing log spam	
+  * Hiding console commands behind the cheat flag
+  * Removing log spam
 ## Version 0.5.7
-  * Removing accidentally added debug object	
+  * Removing accidentally added debug object
 ## Version 0.5.6
-  * Fixing crafting tabs showing magic items	
-  * Changing crafting tab item description to scrolling (can turn off in config)	
-  * Can set display name of rarity types in config	
-  * Can put non-magic items in the loot table by omitting the Rarity chance array	
-  * Loot beam sounds now respect the in-game SFX volume setting	
+  * Fixing crafting tabs showing magic items
+  * Changing crafting tab item description to scrolling (can turn off in config)
+  * Can set display name of rarity types in config
+  * Can put non-magic items in the loot table by omitting the Rarity chance array
+  * Loot beam sounds now respect the in-game SFX volume setting
 ## Version 0.5.5
-  * Fixed yet another couple of crafting tab bugs	
-  * Reduced mats upgrade recipe to 5:1	
-  * Added shard to same rarity dust/essence/reagent recipe at 2:1	
-  * Increased drop chance on The Elder and Bonemass	
-  * Fixed crafting recipe list selection exploit/bug	
-  * Added special recipe to sacrifice Swamp Key (who needs more than one?)	
+  * Fixed yet another couple of crafting tab bugs
+  * Reduced mats upgrade recipe to 5:1
+  * Added shard to same rarity dust/essence/reagent recipe at 2:1
+  * Increased drop chance on The Elder and Bonemass
+  * Fixed crafting recipe list selection exploit/bug
+  * Added special recipe to sacrifice Swamp Key (who needs more than one?)
 ## Version 0.5.4
-  * Fixed bug with viewing effect ranges	
-  * Added troll trophy to rare disenchant list	
-  * Moved greydwarf brute and shaman trophy to rare disenchant list	
-  * Fixed an icon bug where the new material message showed the red material icon	
-  * Fixed some bugs with the crafting tabs	
+  * Fixed bug with viewing effect ranges
+  * Added troll trophy to rare disenchant list
+  * Moved greydwarf brute and shaman trophy to rare disenchant list
+  * Fixed an icon bug where the new material message showed the red material icon
+  * Fixed some bugs with the crafting tabs
 ## Version 0.5.3
-  * Fixed stamina regen and health regen	
-  * Added holding shift to see ranges in tooltips	
-  * Fixed Elder/Bonemass runestone rarity mixup	
+  * Fixed stamina regen and health regen
+  * Added holding shift to see ranges in tooltips
+  * Fixed Elder/Bonemass runestone rarity mixup
 ## Version 0.5.2
-  * Fix for an enchant exploit	
-  * Updated swamp loot tables	
-  * Fixed resistances not working at all	
+  * Fix for an enchant exploit
+  * Updated swamp loot tables
+  * Fixed resistances not working at all
 ## Version 0.5.1
-  * Fixed never respawning after dying	
-  * Fixed a bug where a whole stack of trophies would be disenchanted for a single crafting material	
+  * Fixed never respawning after dying
+  * Fixed a bug where a whole stack of trophies would be disenchanted for a single crafting material
   * Updated correct ## Version number everywhere
+
+</details>

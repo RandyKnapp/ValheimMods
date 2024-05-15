@@ -1,0 +1,747 @@
+{
+  "TargetFile": "magiceffects.json", 
+  "Author": "EpicLoot",
+  "Priority": 2000,
+  "RequireAll": true, 
+  "Patches": [
+	  {
+      "Path": "$.MagicItemEffects[?(@.Type == 'ModifyDamage')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 10,  "MaxValue" : 20,  "Increment" : 1 },
+        "Rare"      : { "MinValue" : 15,  "MaxValue" : 25,  "Increment" : 1 },
+        "Epic"      : { "MinValue" : 20,  "MaxValue" : 30,  "Increment" : 1 },
+        "Legendary" : { "MinValue" : 25,  "MaxValue" : 40,  "Increment" : 1 },
+        "Mythic"    : { "MinValue" : 30,  "MaxValue" : 50,  "Increment" : 1 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'ModifyPhysicalDamage')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 10,  "MaxValue" : 20,  "Increment" : 1 },
+        "Rare"      : { "MinValue" : 10,  "MaxValue" : 20,  "Increment" : 1 },
+        "Epic"      : { "MinValue" : 10,  "MaxValue" : 20,  "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15,  "MaxValue" : 25,  "Increment" : 1 },
+        "Mythic"    : { "MinValue" : 20,  "MaxValue" : 30,  "Increment" : 1 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'ModifyElementalDamage')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 10,  "MaxValue" : 20,  "Increment" : 1 },
+        "Rare"      : { "MinValue" : 10,  "MaxValue" : 20,  "Increment" : 1 },
+        "Epic"      : { "MinValue" : 10,  "MaxValue" : 20,  "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15,  "MaxValue" : 25,  "Increment" : 1 },
+        "Mythic"    : { "MinValue" : 20,  "MaxValue" : 30,  "Increment" : 1 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'ModifyDurability')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 50,  "MaxValue" : 100,  "Increment" : 5 },
+        "Rare"      : { "MinValue" : 50,  "MaxValue" : 100,  "Increment" : 5 },
+        "Epic"      : { "MinValue" : 50,  "MaxValue" : 100,  "Increment" : 5 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'ReduceWeight')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 70,  "MaxValue" : 90,  "Increment" : 5 },
+        "Rare"      : { "MinValue" : 70,  "MaxValue" : 90,  "Increment" : 5 },
+        "Epic"      : { "MinValue" : 70,  "MaxValue" : 90,  "Increment" : 5 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'ModifyBlockPower')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 10,  "MaxValue" : 20,  "Increment" : 1 },
+        "Rare"      : { "MinValue" : 10,  "MaxValue" : 20,  "Increment" : 1 },
+        "Epic"      : { "MinValue" : 10,  "MaxValue" : 20,  "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15,  "MaxValue" : 25,  "Increment" : 1 },
+        "Mythic"    : { "MinValue" : 20,  "MaxValue" : 30,  "Increment" : 1 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'ModifyParry')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 10,  "MaxValue" : 20,  "Increment" : 1 },
+        "Rare"      : { "MinValue" : 10,  "MaxValue" : 20,  "Increment" : 1 },
+        "Epic"      : { "MinValue" : 10,  "MaxValue" : 20,  "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15,  "MaxValue" : 25,  "Increment" : 1 },
+        "Mythic"    : { "MinValue" : 20,  "MaxValue" : 30,  "Increment" : 1 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'ModifyArmor')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 10,  "MaxValue" : 20,  "Increment" : 1 },
+        "Rare"      : { "MinValue" : 10,  "MaxValue" : 20,  "Increment" : 1 },
+        "Epic"      : { "MinValue" : 10,  "MaxValue" : 20,  "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15,  "MaxValue" : 25,  "Increment" : 1 },
+        "Mythic"    : { "MinValue" : 20,  "MaxValue" : 30,  "Increment" : 1 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'ModifyBackstab')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 10,  "MaxValue" : 20,  "Increment" : 1 },
+        "Rare"      : { "MinValue" : 10,  "MaxValue" : 20,  "Increment" : 1 },
+        "Epic"      : { "MinValue" : 10,  "MaxValue" : 20,  "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15,  "MaxValue" : 25,  "Increment" : 1 },
+        "Mythic"    : { "MinValue" : 20,  "MaxValue" : 30,  "Increment" : 1 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'IncreaseHealth')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 10,  "MaxValue" : 25,  "Increment" : 1 },
+        "Rare"      : { "MinValue" : 15,  "MaxValue" : 30,  "Increment" : 1 },
+        "Epic"      : { "MinValue" : 20,  "MaxValue" : 35,  "Increment" : 1 },
+        "Legendary" : { "MinValue" : 25,  "MaxValue" : 50,  "Increment" : 1 },
+        "Mythic"    : { "MinValue" : 35,  "MaxValue" : 60,  "Increment" : 1 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'IncreaseStamina')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 10,  "MaxValue" : 25,  "Increment" : 1 },
+        "Rare"      : { "MinValue" : 15,  "MaxValue" : 30,  "Increment" : 1 },
+        "Epic"      : { "MinValue" : 20,  "MaxValue" : 35,  "Increment" : 1 },
+        "Legendary" : { "MinValue" : 25,  "MaxValue" : 50,  "Increment" : 1 },
+        "Mythic"    : { "MinValue" : 35,  "MaxValue" : 60,  "Increment" : 1 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'IncreaseEitr')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 5,  "MaxValue" : 10,  "Increment" : 1 },
+        "Rare"      : { "MinValue" : 5,  "MaxValue" : 15,  "Increment" : 1 },
+        "Epic"      : { "MinValue" : 10,  "MaxValue" : 25,  "Increment" : 1 },
+        "Legendary" : { "MinValue" : 20,  "MaxValue" : 35,  "Increment" : 1 },
+        "Mythic"    : { "MinValue" : 30,  "MaxValue" : 50,  "Increment" : 1 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'ModifyHealthRegen')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 10,  "MaxValue" : 20,  "Increment" : 1 },
+        "Rare"      : { "MinValue" : 10,  "MaxValue" : 20,  "Increment" : 1 },
+        "Epic"      : { "MinValue" : 10,  "MaxValue" : 20,  "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15,  "MaxValue" : 25,  "Increment" : 1 },
+        "Mythic"    : { "MinValue" : 20,  "MaxValue" : 30,  "Increment" : 1 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'AddHealthRegen')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 0.5,  "MaxValue" : 1.5,  "Increment" : 0.5 },
+        "Rare"      : { "MinValue" : 1,  "MaxValue" : 3,  "Increment" : 0.5 },
+        "Epic"      : { "MinValue" : 2,  "MaxValue" : 4.5,  "Increment" : 0.5 },
+        "Legendary" : { "MinValue" : 3,  "MaxValue" : 6,  "Increment" : 0.5 },
+        "Mythic"    : { "MinValue" : 4,  "MaxValue" : 7.5,  "Increment" : 0.5 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'ModifyStaminaRegen')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 10,  "MaxValue" : 20,  "Increment" : 1 },
+        "Rare"      : { "MinValue" : 10,  "MaxValue" : 20,  "Increment" : 1 },
+        "Epic"      : { "MinValue" : 10,  "MaxValue" : 20,  "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15,  "MaxValue" : 25,  "Increment" : 1 },
+        "Mythic"    : { "MinValue" : 20,  "MaxValue" : 30,  "Increment" : 1 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'ModifyEitrRegen')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 10,  "MaxValue" : 20,  "Increment" : 1 },
+        "Rare"      : { "MinValue" : 10,  "MaxValue" : 20,  "Increment" : 1 },
+        "Epic"      : { "MinValue" : 10,  "MaxValue" : 20,  "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15,  "MaxValue" : 25,  "Increment" : 1 },
+        "Mythic"    : { "MinValue" : 20,  "MaxValue" : 30,  "Increment" : 1 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'AddBluntDamage')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 1,  "MaxValue" : 4,  "Increment" : 1 },
+        "Rare"      : { "MinValue" : 3,  "MaxValue" : 8,  "Increment" : 1 },
+        "Epic"      : { "MinValue" : 7,  "MaxValue" : 15,  "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15,  "MaxValue" : 20,  "Increment" : 1 },
+        "Mythic"    : { "MinValue" : 20,  "MaxValue" : 25,  "Increment" : 1 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'AddSlashingDamage')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 1,  "MaxValue" : 4,  "Increment" : 1 },
+        "Rare"      : { "MinValue" : 3,  "MaxValue" : 8,  "Increment" : 1 },
+        "Epic"      : { "MinValue" : 7,  "MaxValue" : 15,  "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15,  "MaxValue" : 20,  "Increment" : 1 },
+        "Mythic"    : { "MinValue" : 20,  "MaxValue" : 25,  "Increment" : 1 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'AddPiercingDamage')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 1,  "MaxValue" : 4,  "Increment" : 1 },
+        "Rare"      : { "MinValue" : 3,  "MaxValue" : 8,  "Increment" : 1 },
+        "Epic"      : { "MinValue" : 7,  "MaxValue" : 15,  "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15,  "MaxValue" : 20,  "Increment" : 1 },
+        "Mythic"    : { "MinValue" : 20,  "MaxValue" : 25,  "Increment" : 1 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'AddFireDamage')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 1,  "MaxValue" : 4,  "Increment" : 1 },
+        "Rare"      : { "MinValue" : 3,  "MaxValue" : 8,  "Increment" : 1 },
+        "Epic"      : { "MinValue" : 7,  "MaxValue" : 15,  "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15,  "MaxValue" : 20,  "Increment" : 1 },
+        "Mythic"    : { "MinValue" : 20,  "MaxValue" : 25,  "Increment" : 1 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'AddFrostDamage')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 1,  "MaxValue" : 4,  "Increment" : 1 },
+        "Rare"      : { "MinValue" : 3,  "MaxValue" : 8,  "Increment" : 1 },
+        "Epic"      : { "MinValue" : 7,  "MaxValue" : 15,  "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15,  "MaxValue" : 20,  "Increment" : 1 },
+        "Mythic"    : { "MinValue" : 20,  "MaxValue" : 25,  "Increment" : 1 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'AddLightningDamage')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 1,  "MaxValue" : 4,  "Increment" : 1 },
+        "Rare"      : { "MinValue" : 3,  "MaxValue" : 8,  "Increment" : 1 },
+        "Epic"      : { "MinValue" : 7,  "MaxValue" : 15,  "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15,  "MaxValue" : 20,  "Increment" : 1 },
+        "Mythic"    : { "MinValue" : 20,  "MaxValue" : 25,  "Increment" : 1 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'AddPoisonDamage')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 1,  "MaxValue" : 4,  "Increment" : 1 },
+        "Rare"      : { "MinValue" : 3,  "MaxValue" : 8,  "Increment" : 1 },
+        "Epic"      : { "MinValue" : 7,  "MaxValue" : 15,  "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15,  "MaxValue" : 20,  "Increment" : 1 },
+        "Mythic"    : { "MinValue" : 20,  "MaxValue" : 25,  "Increment" : 1 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'AddSpiritDamage')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 1,  "MaxValue" : 4,  "Increment" : 1 },
+        "Rare"      : { "MinValue" : 3,  "MaxValue" : 8,  "Increment" : 1 },
+        "Epic"      : { "MinValue" : 7,  "MaxValue" : 15,  "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15,  "MaxValue" : 20,  "Increment" : 1 },
+        "Mythic"    : { "MinValue" : 20,  "MaxValue" : 25,  "Increment" : 1 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'ModifyMovementSpeed')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 5,  "MaxValue" : 10,  "Increment" : 1 },
+        "Rare"      : { "MinValue" : 6,  "MaxValue" : 11,  "Increment" : 1 },
+        "Epic"      : { "MinValue" : 7,  "MaxValue" : 12,  "Increment" : 1 },
+        "Legendary" : { "MinValue" : 8,  "MaxValue" : 13,  "Increment" : 1 },
+        "Mythic"    : { "MinValue" : 9,  "MaxValue" : 14,  "Increment" : 1 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'ModifySprintStaminaUse')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 5,  "MaxValue" : 10,  "Increment" : 1 },
+        "Rare"      : { "MinValue" : 8,  "MaxValue" : 13,  "Increment" : 1 },
+        "Epic"      : { "MinValue" : 11,  "MaxValue" : 16,  "Increment" : 1 },
+        "Legendary" : { "MinValue" : 14,  "MaxValue" : 19,  "Increment" : 1 },
+        "Mythic"    : { "MinValue" : 17,  "MaxValue" : 21,  "Increment" : 1 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'ModifyJumpStaminaUse')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 5,  "MaxValue" : 10,  "Increment" : 1 },
+        "Rare"      : { "MinValue" : 8,  "MaxValue" : 13,  "Increment" : 1 },
+        "Epic"      : { "MinValue" : 11,  "MaxValue" : 16,  "Increment" : 1 },
+        "Legendary" : { "MinValue" : 14,  "MaxValue" : 19,  "Increment" : 1 },
+        "Mythic"    : { "MinValue" : 17,  "MaxValue" : 21,  "Increment" : 1 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'ModifyAttackStaminaUse')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 5,  "MaxValue" : 10,  "Increment" : 1 },
+        "Rare"      : { "MinValue" : 8,  "MaxValue" : 13,  "Increment" : 1 },
+        "Epic"      : { "MinValue" : 11,  "MaxValue" : 16,  "Increment" : 1 },
+        "Legendary" : { "MinValue" : 14,  "MaxValue" : 19,  "Increment" : 1 },
+        "Mythic"    : { "MinValue" : 17,  "MaxValue" : 21,  "Increment" : 1 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'ModifyBlockStaminaUse')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 5,  "MaxValue" : 10,  "Increment" : 1 },
+        "Rare"      : { "MinValue" : 8,  "MaxValue" : 13,  "Increment" : 1 },
+        "Epic"      : { "MinValue" : 11,  "MaxValue" : 16,  "Increment" : 1 },
+        "Legendary" : { "MinValue" : 14,  "MaxValue" : 19,  "Increment" : 1 },
+        "Mythic"    : { "MinValue" : 17,  "MaxValue" : 21,  "Increment" : 1 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'AddCarryWeight')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 5,  "MaxValue" : 10,  "Increment" : 1 },
+        "Rare"      : { "MinValue" : 10,  "MaxValue" : 15,  "Increment" : 1 },
+        "Epic"      : { "MinValue" : 15,  "MaxValue" : 25,  "Increment" : 1 },
+        "Legendary" : { "MinValue" : 20,  "MaxValue" : 50,  "Increment" : 1 },
+        "Mythic"    : { "MinValue" : 35,  "MaxValue" : 75,  "Increment" : 1 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'ModifyAttackSpeed')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 5,  "MaxValue" : 10,  "Increment" : 1 },
+        "Rare"      : { "MinValue" : 8,  "MaxValue" : 13,  "Increment" : 1 },
+        "Epic"      : { "MinValue" : 11,  "MaxValue" : 16,  "Increment" : 1 },
+        "Legendary" : { "MinValue" : 14,  "MaxValue" : 19,  "Increment" : 1 },
+        "Mythic"    : { "MinValue" : 17,  "MaxValue" : 21,  "Increment" : 1 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'QuickDraw')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 2,  "MaxValue" : 8,  "Increment" : 1 },
+        "Rare"      : { "MinValue" : 6,  "MaxValue" : 16,  "Increment" : 1 },
+        "Epic"      : { "MinValue" : 14,  "MaxValue" : 30,  "Increment" : 1 },
+        "Legendary" : { "MinValue" : 30,  "MaxValue" : 40,  "Increment" : 1 },
+        "Mythic"    : { "MinValue" : 40,  "MaxValue" : 50,  "Increment" : 1 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'AddSwordsSkill')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 1,  "MaxValue" : 4,  "Increment" : 1 },
+        "Rare"      : { "MinValue" : 3,  "MaxValue" : 8,  "Increment" : 1 },
+        "Epic"      : { "MinValue" : 7,  "MaxValue" : 15,  "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15,  "MaxValue" : 20,  "Increment" : 1 },
+        "Mythic"    : { "MinValue" : 20,  "MaxValue" : 30,  "Increment" : 1 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'AddKnivesSkill')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 1,  "MaxValue" : 4,  "Increment" : 1 },
+        "Rare"      : { "MinValue" : 3,  "MaxValue" : 8,  "Increment" : 1 },
+        "Epic"      : { "MinValue" : 7,  "MaxValue" : 15,  "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15,  "MaxValue" : 20,  "Increment" : 1 },
+        "Mythic"    : { "MinValue" : 20,  "MaxValue" : 30,  "Increment" : 1 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'AddClubsSkill')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 1,  "MaxValue" : 4,  "Increment" : 1 },
+        "Rare"      : { "MinValue" : 3,  "MaxValue" : 8,  "Increment" : 1 },
+        "Epic"      : { "MinValue" : 7,  "MaxValue" : 15,  "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15,  "MaxValue" : 20,  "Increment" : 1 },
+        "Mythic"    : { "MinValue" : 20,  "MaxValue" : 30,  "Increment" : 1 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'AddPolearmsSkill')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 1,  "MaxValue" : 4,  "Increment" : 1 },
+        "Rare"      : { "MinValue" : 3,  "MaxValue" : 8,  "Increment" : 1 },
+        "Epic"      : { "MinValue" : 7,  "MaxValue" : 15,  "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15,  "MaxValue" : 20,  "Increment" : 1 },
+        "Mythic"    : { "MinValue" : 20,  "MaxValue" : 30,  "Increment" : 1 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'AddSpearsSkill')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 1,  "MaxValue" : 4,  "Increment" : 1 },
+        "Rare"      : { "MinValue" : 3,  "MaxValue" : 8,  "Increment" : 1 },
+        "Epic"      : { "MinValue" : 7,  "MaxValue" : 15,  "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15,  "MaxValue" : 20,  "Increment" : 1 },
+        "Mythic"    : { "MinValue" : 20,  "MaxValue" : 30,  "Increment" : 1 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'AddBlockingSkill')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 1,  "MaxValue" : 4,  "Increment" : 1 },
+        "Rare"      : { "MinValue" : 3,  "MaxValue" : 8,  "Increment" : 1 },
+        "Epic"      : { "MinValue" : 7,  "MaxValue" : 15,  "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15,  "MaxValue" : 20,  "Increment" : 1 },
+        "Mythic"    : { "MinValue" : 20,  "MaxValue" : 30,  "Increment" : 1 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'AddAxesSkill')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 1,  "MaxValue" : 4,  "Increment" : 1 },
+        "Rare"      : { "MinValue" : 3,  "MaxValue" : 8,  "Increment" : 1 },
+        "Epic"      : { "MinValue" : 7,  "MaxValue" : 15,  "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15,  "MaxValue" : 20,  "Increment" : 1 },
+        "Mythic"    : { "MinValue" : 20,  "MaxValue" : 30,  "Increment" : 1 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'AddBowsSkill')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 1,  "MaxValue" : 4,  "Increment" : 1 },
+        "Rare"      : { "MinValue" : 3,  "MaxValue" : 8,  "Increment" : 1 },
+        "Epic"      : { "MinValue" : 7,  "MaxValue" : 15,  "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15,  "MaxValue" : 20,  "Increment" : 1 },
+        "Mythic"    : { "MinValue" : 20,  "MaxValue" : 30,  "Increment" : 1 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'AddCrossbowsSkill')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 1,  "MaxValue" : 4,  "Increment" : 1 },
+        "Rare"      : { "MinValue" : 3,  "MaxValue" : 8,  "Increment" : 1 },
+        "Epic"      : { "MinValue" : 7,  "MaxValue" : 15,  "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15,  "MaxValue" : 20,  "Increment" : 1 },
+        "Mythic"    : { "MinValue" : 20,  "MaxValue" : 30,  "Increment" : 1 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'AddBloodMagicSkill')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 1,  "MaxValue" : 4,  "Increment" : 1 },
+        "Rare"      : { "MinValue" : 3,  "MaxValue" : 8,  "Increment" : 1 },
+        "Epic"      : { "MinValue" : 7,  "MaxValue" : 15,  "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15,  "MaxValue" : 20,  "Increment" : 1 },
+        "Mythic"    : { "MinValue" : 20,  "MaxValue" : 30,  "Increment" : 1 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'AddElementalMagicSkill')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 1,  "MaxValue" : 4,  "Increment" : 1 },
+        "Rare"      : { "MinValue" : 3,  "MaxValue" : 8,  "Increment" : 1 },
+        "Epic"      : { "MinValue" : 7,  "MaxValue" : 15,  "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15,  "MaxValue" : 20,  "Increment" : 1 },
+        "Mythic"    : { "MinValue" : 20,  "MaxValue" : 30,  "Increment" : 1 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'AddUnarmedSkill')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 1,  "MaxValue" : 4,  "Increment" : 1 },
+        "Rare"      : { "MinValue" : 3,  "MaxValue" : 8,  "Increment" : 1 },
+        "Epic"      : { "MinValue" : 7,  "MaxValue" : 15,  "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15,  "MaxValue" : 20,  "Increment" : 1 },
+        "Mythic"    : { "MinValue" : 20,  "MaxValue" : 30,  "Increment" : 1 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'AddPickaxesSkill')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 1,  "MaxValue" : 4,  "Increment" : 1 },
+        "Rare"      : { "MinValue" : 3,  "MaxValue" : 8,  "Increment" : 1 },
+        "Epic"      : { "MinValue" : 7,  "MaxValue" : 15,  "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15,  "MaxValue" : 20,  "Increment" : 1 },
+        "Mythic"    : { "MinValue" : 20,  "MaxValue" : 30,  "Increment" : 1 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'AddFishingSkill')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 1,  "MaxValue" : 4,  "Increment" : 1 },
+        "Rare"      : { "MinValue" : 3,  "MaxValue" : 8,  "Increment" : 1 },
+        "Epic"      : { "MinValue" : 7,  "MaxValue" : 15,  "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15,  "MaxValue" : 20,  "Increment" : 1 },
+        "Mythic"    : { "MinValue" : 20,  "MaxValue" : 30,  "Increment" : 1 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'AddMovementSkills')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 1,  "MaxValue" : 4,  "Increment" : 1 },
+        "Rare"      : { "MinValue" : 3,  "MaxValue" : 8,  "Increment" : 1 },
+        "Epic"      : { "MinValue" : 7,  "MaxValue" : 15,  "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15,  "MaxValue" : 20,  "Increment" : 1 },
+        "Mythic"    : { "MinValue" : 20,  "MaxValue" : 30,  "Increment" : 1 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'ModifyStaggerDuration')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 5,  "MaxValue" : 10,  "Increment" : 1 },
+        "Rare"      : { "MinValue" : 8,  "MaxValue" : 13,  "Increment" : 1 },
+        "Epic"      : { "MinValue" : 11,  "MaxValue" : 16,  "Increment" : 1 },
+        "Legendary" : { "MinValue" : 14,  "MaxValue" : 19,  "Increment" : 1 },
+        "Mythic"    : { "MinValue" : 17,  "MaxValue" : 21,  "Increment" : 1 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'QuickLearner')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 5,  "MaxValue" : 10,  "Increment" : 1 },
+        "Rare"      : { "MinValue" : 8,  "MaxValue" : 13,  "Increment" : 1 },
+        "Epic"      : { "MinValue" : 11,  "MaxValue" : 16,  "Increment" : 1 },
+        "Legendary" : { "MinValue" : 14,  "MaxValue" : 19,  "Increment" : 1 },
+        "Mythic"    : { "MinValue" : 17,  "MaxValue" : 21,  "Increment" : 1 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'ReflectDamage')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 5,  "MaxValue" : 10,  "Increment" : 1 },
+        "Rare"      : { "MinValue" : 8,  "MaxValue" : 13,  "Increment" : 1 },
+        "Epic"      : { "MinValue" : 11,  "MaxValue" : 16,  "Increment" : 1 },
+        "Legendary" : { "MinValue" : 14,  "MaxValue" : 19,  "Increment" : 1 },
+        "Mythic"    : { "MinValue" : 17,  "MaxValue" : 21,  "Increment" : 1 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'AvoidDamageTaken')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 5,  "MaxValue" : 10,  "Increment" : 1 },
+        "Rare"      : { "MinValue" : 8,  "MaxValue" : 13,  "Increment" : 1 },
+        "Epic"      : { "MinValue" : 11,  "MaxValue" : 16,  "Increment" : 1 },
+        "Legendary" : { "MinValue" : 14,  "MaxValue" : 19,  "Increment" : 1 },
+        "Mythic"    : { "MinValue" : 17,  "MaxValue" : 21,  "Increment" : 1 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'ModifyDiscoveryRadius')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 5,  "MaxValue" : 10,  "Increment" : 1 },
+        "Rare"      : { "MinValue" : 8,  "MaxValue" : 13,  "Increment" : 1 },
+        "Epic"      : { "MinValue" : 11,  "MaxValue" : 16,  "Increment" : 1 },
+        "Legendary" : { "MinValue" : 14,  "MaxValue" : 19,  "Increment" : 1 },
+        "Mythic"    : { "MinValue" : 17,  "MaxValue" : 21,  "Increment" : 1 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'ModifyMovementSpeedLowHealth')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 7,  "MaxValue" : 12,  "Increment" : 1 },
+        "Rare"      : { "MinValue" : 8,  "MaxValue" : 13,  "Increment" : 1 },
+        "Epic"      : { "MinValue" : 9,  "MaxValue" : 14,  "Increment" : 1 },
+        "Legendary" : { "MinValue" : 10,  "MaxValue" : 15,  "Increment" : 1 },
+        "Mythic"    : { "MinValue" : 11,  "MaxValue" : 16,  "Increment" : 1 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'ModifyHealthRegenLowHealth')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 15,  "MaxValue" : 25,  "Increment" : 1 },
+        "Rare"      : { "MinValue" : 15,  "MaxValue" : 25,  "Increment" : 1 },
+        "Epic"      : { "MinValue" : 15,  "MaxValue" : 25,  "Increment" : 1 },
+        "Legendary" : { "MinValue" : 25,  "MaxValue" : 30,  "Increment" : 1 },
+        "Mythic"    : { "MinValue" : 30,  "MaxValue" : 35,  "Increment" : 1 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'ModifyStaminaRegenLowHealth')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 15,  "MaxValue" : 25,  "Increment" : 1 },
+        "Rare"      : { "MinValue" : 15,  "MaxValue" : 25,  "Increment" : 1 },
+        "Epic"      : { "MinValue" : 15,  "MaxValue" : 25,  "Increment" : 1 },
+        "Legendary" : { "MinValue" : 25,  "MaxValue" : 30,  "Increment" : 1 },
+        "Mythic"    : { "MinValue" : 30,  "MaxValue" : 35,  "Increment" : 1 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'ModifyEitrRegenLowHealth')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 15,  "MaxValue" : 25,  "Increment" : 1 },
+        "Rare"      : { "MinValue" : 15,  "MaxValue" : 25,  "Increment" : 1 },
+        "Epic"      : { "MinValue" : 15,  "MaxValue" : 25,  "Increment" : 1 },
+        "Legendary" : { "MinValue" : 25,  "MaxValue" : 30,  "Increment" : 1 },
+        "Mythic"    : { "MinValue" : 30,  "MaxValue" : 35,  "Increment" : 1 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'ModifyArmorLowHealth')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 15,  "MaxValue" : 25,  "Increment" : 1 },
+        "Rare"      : { "MinValue" : 15,  "MaxValue" : 25,  "Increment" : 1 },
+        "Epic"      : { "MinValue" : 15,  "MaxValue" : 25,  "Increment" : 1 },
+        "Legendary" : { "MinValue" : 25,  "MaxValue" : 30,  "Increment" : 1 },
+        "Mythic"    : { "MinValue" : 30,  "MaxValue" : 35,  "Increment" : 1 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'ModifyBlockPowerLowHealth')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 15,  "MaxValue" : 25,  "Increment" : 1 },
+        "Rare"      : { "MinValue" : 15,  "MaxValue" : 25,  "Increment" : 1 },
+        "Epic"      : { "MinValue" : 15,  "MaxValue" : 25,  "Increment" : 1 },
+        "Legendary" : { "MinValue" : 25,  "MaxValue" : 30,  "Increment" : 1 },
+        "Mythic"    : { "MinValue" : 30,  "MaxValue" : 35,  "Increment" : 1 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'ModifyParryLowHealth')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 15,  "MaxValue" : 25,  "Increment" : 1 },
+        "Rare"      : { "MinValue" : 15,  "MaxValue" : 25,  "Increment" : 1 },
+        "Epic"      : { "MinValue" : 15,  "MaxValue" : 25,  "Increment" : 1 },
+        "Legendary" : { "MinValue" : 25,  "MaxValue" : 30,  "Increment" : 1 },
+        "Mythic"    : { "MinValue" : 30,  "MaxValue" : 35,  "Increment" : 1 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'ModifyAttackSpeedLowHealth')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 7,  "MaxValue" : 15,  "Increment" : 1 },
+        "Rare"      : { "MinValue" : 16,  "MaxValue" : 22,  "Increment" : 1 },
+        "Epic"      : { "MinValue" : 23,  "MaxValue" : 30,  "Increment" : 1 },
+        "Legendary" : { "MinValue" : 31,  "MaxValue" : 40,  "Increment" : 1 },
+        "Mythic"    : { "MinValue" : 41,  "MaxValue" : 50,  "Increment" : 1 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'AvoidDamageTakenLowHealth')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 7,  "MaxValue" : 15,  "Increment" : 1 },
+        "Rare"      : { "MinValue" : 16,  "MaxValue" : 22,  "Increment" : 1 },
+        "Epic"      : { "MinValue" : 23,  "MaxValue" : 30,  "Increment" : 1 },
+        "Legendary" : { "MinValue" : 31,  "MaxValue" : 40,  "Increment" : 1 },
+        "Mythic"    : { "MinValue" : 41,  "MaxValue" : 50,  "Increment" : 1 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'Executioner')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Epic"      : { "MinValue" : 50,  "MaxValue" : 100,  "Increment" : 1 },
+        "Legendary" : { "MinValue" : 100,  "MaxValue" : 200,  "Increment" : 1 },
+        "Mythic"    : { "MinValue" : 200,  "MaxValue" : 250,  "Increment" : 1 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'Riches')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 1,  "MaxValue" : 3,  "Increment" : 1 },
+        "Rare"      : { "MinValue" : 4,  "MaxValue" : 6,  "Increment" : 1 },
+        "Epic"      : { "MinValue" : 7,  "MaxValue" : 9,  "Increment" : 1 },
+        "Legendary" : { "MinValue" : 10,  "MaxValue" : 15,  "Increment" : 1 },
+        "Mythic"    : { "MinValue" : 14,  "MaxValue" : 20,  "Increment" : 1 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'Duelist')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 20,  "MaxValue" : 30,  "Increment" : 1 },
+        "Rare"      : { "MinValue" : 31,  "MaxValue" : 40,  "Increment" : 1 },
+        "Epic"      : { "MinValue" : 41,  "MaxValue" : 50,  "Increment" : 1 },
+        "Legendary" : { "MinValue" : 51,  "MaxValue" : 60,  "Increment" : 1 },
+        "Mythic"    : { "MinValue" : 61,  "MaxValue" : 70,  "Increment" : 1 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'ModifyStaggerDamage')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 7,  "MaxValue" : 15,  "Increment" : 1 },
+        "Rare"      : { "MinValue" : 16,  "MaxValue" : 22,  "Increment" : 1 },
+        "Epic"      : { "MinValue" : 23,  "MaxValue" : 30,  "Increment" : 1 },
+        "Legendary" : { "MinValue" : 31,  "MaxValue" : 40,  "Increment" : 1 },
+        "Mythic"    : { "MinValue" : 41,  "MaxValue" : 50,  "Increment" : 1 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'Luck')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 1,  "MaxValue" : 5,  "Increment" : 1 },
+        "Rare"      : { "MinValue" : 5,  "MaxValue" : 10,  "Increment" : 1 },
+        "Epic"      : { "MinValue" : 10,  "MaxValue" : 15,  "Increment" : 1 },
+        "Legendary" : { "MinValue" : 15,  "MaxValue" : 20,  "Increment" : 1 },
+        "Mythic"    : { "MinValue" : 20,  "MaxValue" : 25,  "Increment" : 1 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'Slow')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Magic"     : { "MinValue" : 30,  "MaxValue" : 50,  "Increment" : 1 },
+        "Rare"      : { "MinValue" : 40,  "MaxValue" : 60,  "Increment" : 1 },
+        "Epic"      : { "MinValue" : 50,  "MaxValue" : 70,  "Increment" : 1 },
+        "Legendary" : { "MinValue" : 60,  "MaxValue" : 80,  "Increment" : 1 },
+        "Mythic"    : { "MinValue" : 70,  "MaxValue" : 90,  "Increment" : 1 }
+      }
+    },
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'FrostDamageAOE')].ValuesPerRarity",
+      "Action": "Overwrite",
+      "Value": {
+        "Legendary" : { "MinValue" : 50,  "MaxValue" : 50,  "Increment" : 1 },
+        "Mythic"    : { "MinValue" : 60,  "MaxValue" : 60,  "Increment" : 1 }
+      }
+    }
+  ]
+}

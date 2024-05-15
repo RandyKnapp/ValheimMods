@@ -12,6 +12,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9057f7f601990a4883b2cb295c4f43e, type: 3}
   m_Name: ThunderKitSettings
   m_EditorClassIdentifier: 
-  GameExecutable: valheim.exe
-  GamePath: C:\Program Files (x86)\Steam\steamapps\common\Valheim
-  Is64Bit: 1
+  FirstLoad: 1
+  ShowOnStartup: 1
+  GameExecutable: 
+  GamePath: 
+  Is64Bit: 0
+  DateTimeFormat: HH:mm:ss:fff
+  CreatedDateFormat: MMM/dd HH:mm:ss
+  ShowLogWindow: 1
+  LogPackageSourceTimings: 0
+  GenerateAssetsProject: 0
+  FixLocalDiskPackages: 0
+  ImageCachePath: Library/MarkdownImageCache
+  CachedImageCount: 0
+  CacheSize: 0
+  MarkdownOpenMode: 1
+  SelectedPipeline: {fileID: 0}
+  SelectedManifest: {fileID: 0}
+  QuickAccessPipelines: []
+  QuickAccessManifests: []
+  ImportConfiguration: {fileID: 0}
