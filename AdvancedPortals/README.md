@@ -1,8 +1,9 @@
-# AdvancedPortals
-Author: RandyKnapp
-Source: [Github](https://github.com/RandyKnapp/ValheimMods/tree/main/AdvancedPortals)
-Discord: [RandyKnapp's Mod Community](https://discord.gg/randyknappmods)
-Patreon: [Randy's Patreon](https://www.patreon.com/randyknapp)
+# Advanced Portals
+
+Author: [RandyKnapp](https://discord.gg/ZNhYeavv3C)
+Source: [Github](https://github.com/OrianaVenture/Randy_Vapok_ValheimMods/tree/main/AdvancedPortals)
+Patreon: [patreon.com/randyknapp](https://www.patreon.com/randyknapp)
+Discord: [RandyKnapp's Mod Community](https://discord.gg/ZNhYeavv3C)
 
 Adds three new portals to provide a lore-friendly and balanced way to reduce the item-transport slog!
 
@@ -13,53 +14,23 @@ Adds three new portals to provide a lore-friendly and balanced way to reduce the
   * **Black Marble Portal:** Allows teleporting anything
     * *Requires:* 20 Black Marble, BlackMetal 5, 2 Refined Eitr
 
-Includes ServerSync.
+## Version 1.1.0!
+
+As of the 1.1.0 update Jotunn is required to run this mod. A version check will be performed on server connection to ensure all players have the mod installed properly.
+
+Configurations should sync on servers and live update on changing the randyknapp.mods.advancedportals.cfg file.
 
 ## Configuration:
 
-### Ancient Portal
+Each portal can be configured:
 
-  * Ancient Portal Enabled: Enable this portal. If false, the portal will not be buildable.
-  * Ancient Portal Recipe: The items needed to build the Ancient portal. Must be in the following format: "ITEM1:QUANTITY,ITEM2:QUANTITY,..." where each ITEM is the item ID ([found here](https://valheim-modding.github.io/Jotunn/data/objects/item-list.html)), and QUANTITY is an integer.
-  * Ancient Portal Allowed Items: The items that will be allowed to teleport through the Ancient Portal. Must be in the following format: "ITEM1,ITEM2,ITEM3,..." where ITEM is the item ID.
-  * Ancient Portal Allow Everything: If set to true, the Allowed Items will be ignored and all items will be teleportable through this portal. Default=false.
-
-### Obsidian Portal
-
-  * Obsidian Portal Enabled: Enable this portal. If false, the portal will not be buildable.
-  * Obsidian Portal Recipe: The items needed to build the Obsidian portal. (same format as Ancient Portal Recipe)
-  * Obsidian Portal Allowed Items: The items that will be allowed to teleport through the Obsidian Portal. (same format as Ancient Portal Allowed Items)
-  * Obsidian Portal Allow Everything: If set to true, the Allowed Items will be ignored and all items will be teleportable through this portal. Default=false.
-  * Obsidian Portal Use All Previous: If set to true, automatically allow all the Allowed Items from the Ancient Portal through this portal too. Default=true.
-
-### Black Marble Portal
-
-  * Black Marble Portal Enabled: Enable this portal. If false, the portal will not be buildable.
-  * Black Marble Portal Recipe: The items needed to build the Black Marble portal. (same format as Ancient Portal Recipe)
-  * Black Marble Portal Allowed Items: The items that will be allowed to teleport through the Black Marble Portal. (same format as Ancient Portal Allowed Items)
-  * Black Marble Portal Allow Everything: If set to true, the Allowed Items will be ignored and all items will be teleportable through this portal. Default=true;
-  * Black Marble Portal Use All Previous: If set to true, automatically allow all the Allowed Items from the Ancient Portal and Obsidian Portal through this portal too. Default=true.
+  * Enabled: Enable building the portal. Existing portals of this type will not be removed.
+  * Recipe: Items needed to build the portal in the format "ITEM1:QUANTITY,ITEM2:QUANTITY,..." where each ITEM is the item ID ([found here](https://valheim-modding.github.io/Jotunn/data/objects/item-list.html)), and QUANTITY is an integer.
+  * Allowed Items: Items allowed to teleport through the portal in the format: "ITEM1,ITEM2,ITEM3,..." where ITEM is the item ID.
+  * Allow Everything: Allow all items through the portal.
+  * Use All Previous: For the Obsidian portal also include the Allowed Items from the Ancient portal. For the Black Marble portal also include the Allowed Items from both the Ancient and Obsidian portals.
 
 ## Installation:
-  * Nexus: Drop the AdvancedPortals.dll right into your BepInEx/plugins folder
-  * ThunderStore: Use r2modman to install, or manually drop the dll into your BepInEx/plugins folder
 
-### Changelist:
-
-#### 1.0.6
-* Restored Portal Connections on Dedicated Servers.
-#### 1.0.5
-  * Updated Portal Connection logic which was preventing Advanced Portals from connecting
-#### 1.0.4 
-  * Updates for Valheim 0.217.5
-#### 1.0.3
-  * Vapok fixed a bug that makes Adventure Backpacks work with Advanced Portals
-#### 1.0.2
-  * Added bronze to Ancient portal transport list (how could I forget?)
-  * Updated to support other mods that extend the inventory (Thanks Vapok)
-#### 1.0.1
-  * Added compatibility with AnyPortal and TargetPortal
-  * Fixed a bug with Obsidian and Black Marble portal recipes
-  * Added 5 BlackMetal to the default recipe for Black Marble portals (delete your config to automatically use the new recipe)
-#### 1.0.0
-  * Initial Release
+  * Manual: Drop the AdvancedPortals.dll into your BepInEx/plugins folder. Download Jotunn and install similarly.
+  * ThunderStore: When using a thunderstore mod manager the files should be placed in the correct directory for you. Dependencies should install automatically.

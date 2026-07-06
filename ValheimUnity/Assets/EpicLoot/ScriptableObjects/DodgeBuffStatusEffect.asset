@@ -1,0 +1,120 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1345532120, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
+  m_Name: DodgeBuffStatusEffect
+  m_EditorClassIdentifier: 
+  m_name: $mod_epicloot_me_adrenaline_rush
+  m_category: 
+  m_icon: {fileID: 21300000, guid: f22724e4e83debf4c9d9aabdb25b44ec, type: 3}
+  m_flashIcon: 1
+  m_cooldownIcon: 0
+  m_tooltip: $mod_epicloot_me_adrenaline_rush_desc
+  m_attributes: 0
+  m_startMessageType: 2
+  m_startMessage: 
+  m_stopMessageType: 1
+  m_stopMessage: 
+  m_repeatMessageType: 1
+  m_repeatMessage: 
+  m_repeatInterval: 0
+  m_ttl: 10
+  m_startEffects:
+    m_effectPrefabs:
+    - m_prefab: {fileID: 1653710073109452256, guid: 1a53a2468d74cd8499bd34fee0d528e7,
+        type: 3}
+      m_enabled: 1
+      m_variant: -1
+      m_attach: 0
+      m_follow: 0
+      m_inheritParentRotation: 0
+      m_inheritParentScale: 0
+      m_multiplyParentVisualScale: 0
+      m_randomRotation: 0
+      m_scale: 0
+      m_childTransform: 
+  m_stopEffects:
+    m_effectPrefabs: []
+  m_cooldown: 0
+  m_activationAnimation: gpower
+  m_character: {fileID: 0}
+  m_tickInterval: 0
+  m_healthPerTickMinHealthPercentage: 0
+  m_healthPerTick: 0
+  m_hitType: 0
+  m_healthUpFront: 0
+  m_healthOverTime: 0
+  m_healthOverTimeDuration: 0
+  m_healthOverTimeInterval: 0
+  m_staminaUpFront: 0
+  m_staminaOverTime: 0
+  m_staminaOverTimeDuration: 0
+  m_staminaOverTimeIsFraction: 0
+  m_staminaDrainPerSec: 0
+  m_runStaminaDrainModifier: 0
+  m_jumpStaminaUseModifier: 0
+  m_attackStaminaUseModifier: 0
+  m_blockStaminaUseModifier: 0
+  m_blockStaminaUseFlatValue: 0
+  m_dodgeStaminaUseModifier: 0
+  m_swimStaminaUseModifier: 0
+  m_homeItemStaminaUseModifier: 0
+  m_sneakStaminaUseModifier: 0
+  m_runStaminaUseModifier: 0
+  m_adrenalineUpFront: 0
+  m_adrenalineModifier: 0
+  m_staggerModifier: 0
+  m_timedBlockBonus: 0
+  m_eitrUpFront: 0
+  m_eitrOverTime: 0
+  m_eitrOverTimeDuration: 0
+  m_healthRegenMultiplier: 1
+  m_staminaRegenMultiplier: 1
+  m_eitrRegenMultiplier: 1
+  m_addArmor: 0
+  m_armorMultiplier: 0
+  m_raiseSkill: 0
+  m_raiseSkillModifier: 0
+  m_skillLevel: 0
+  m_skillLevelModifier: 0
+  m_skillLevel2: 0
+  m_skillLevelModifier2: 0
+  m_mods: []
+  m_modifyAttackSkill: 0
+  m_damageModifier: 1
+  m_percentigeDamageModifiers:
+    m_damage: 0
+    m_blunt: 0
+    m_slash: 0
+    m_pierce: 0
+    m_chop: 0
+    m_pickaxe: 0
+    m_fire: 0
+    m_frost: 0
+    m_lightning: 0
+    m_poison: 0
+    m_spirit: 0
+  m_noiseModifier: 0
+  m_stealthModifier: 0
+  m_addMaxCarryWeight: 0
+  m_speedModifier: 0
+  m_swimSpeedModifier: 0
+  m_jumpModifier: {x: 0, y: 0, z: 0}
+  m_maxMaxFallSpeed: 0
+  m_fallDamageModifier: 0
+  m_windMovementModifier: 0
+  m_windRunStaminaModifier: 0
+  m_pheromoneTarget: {fileID: 0}
+  m_pheromoneSpawnChanceOverride: 0
+  m_pheromoneSpawnMinLevel: 0
+  m_pheromoneLevelUpMultiplier: 1
+  m_pheromoneMaxInstanceOverride: 0
+  m_pheromoneFlee: 0

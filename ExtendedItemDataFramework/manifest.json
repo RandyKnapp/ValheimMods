@@ -1,7 +1,0 @@
-{
-  "name": "ExtendedItemDataFramework",
-  "version_number": "1.0.11",
-  "website_url": "https://github.com/RandyKnapp/ValheimMods/tree/main/ExtendedItemDataFramework",
-  "description": "Extends ItemData for modders. Adds Unique ID to items.",
-  "dependencies": []
-}

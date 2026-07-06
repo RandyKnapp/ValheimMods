@@ -5,6 +5,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 6585589531590257382, guid: 5aaf2636940aee346b4f966b92c03038,
@@ -70,23 +71,22 @@ PrefabInstance:
     - target: {fileID: 6585589531590257385, guid: 5aaf2636940aee346b4f966b92c03038,
         type: 3}
       propertyPath: m_itemData.m_shared.m_food
-      value: 25
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 6585589531590257385, guid: 5aaf2636940aee346b4f966b92c03038,
         type: 3}
       propertyPath: m_itemData.m_shared.m_name
-      value: Honey-sweetened Cloudberry jam
+      value: $rkjam_honey_cloudberry_jam_name
       objectReference: {fileID: 0}
     - target: {fileID: 6585589531590257385, guid: 5aaf2636940aee346b4f966b92c03038,
         type: 3}
       propertyPath: m_itemData.m_shared.m_foodRegen
-      value: 5
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6585589531590257385, guid: 5aaf2636940aee346b4f966b92c03038,
         type: 3}
       propertyPath: m_itemData.m_shared.m_description
-      value: Delightfully tart cloudberries crushed, preserved and sweetened with
-        fresh honey.
+      value: $rkjam_honey_cloudberry_jam_description
       objectReference: {fileID: 0}
     - target: {fileID: 6585589531590257385, guid: 5aaf2636940aee346b4f966b92c03038,
         type: 3}
@@ -106,7 +106,7 @@ PrefabInstance:
     - target: {fileID: 6585589531590257385, guid: 5aaf2636940aee346b4f966b92c03038,
         type: 3}
       propertyPath: m_itemData.m_shared.m_foodStamina
-      value: 40
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 6585589531590257385, guid: 5aaf2636940aee346b4f966b92c03038,
         type: 3}
@@ -115,14 +115,28 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6585589531590257385, guid: 5aaf2636940aee346b4f966b92c03038,
         type: 3}
-      propertyPath: m_itemData.m_shared.m_maxStackSize
-      value: 20
-      objectReference: {fileID: 0}
-    - target: {fileID: 6585589531590257385, guid: 5aaf2636940aee346b4f966b92c03038,
-        type: 3}
       propertyPath: m_itemData.m_shared.m_icons.Array.data[0]
       value: 
       objectReference: {fileID: 21300000, guid: c588eb8d9012bf847a0097b5b752cbf8,
         type: 3}
+    - target: {fileID: 7799080847930345290, guid: 5aaf2636940aee346b4f966b92c03038,
+        type: 3}
+      propertyPath: m_icon
+      value: 
+      objectReference: {fileID: 21300000, guid: c588eb8d9012bf847a0097b5b752cbf8,
+        type: 3}
+    - target: {fileID: 7799080847930345290, guid: 5aaf2636940aee346b4f966b92c03038,
+        type: 3}
+      propertyPath: m_name
+      value: $rkjam_honey_cloudberry_jam_name
+      objectReference: {fileID: 0}
+    - target: {fileID: 7799080847930345290, guid: 5aaf2636940aee346b4f966b92c03038,
+        type: 3}
+      propertyPath: m_description
+      value: $rkjam_honey_cloudberry_jam_description
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5aaf2636940aee346b4f966b92c03038, type: 3}

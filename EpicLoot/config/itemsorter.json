@@ -1,0 +1,172 @@
+{
+  "UncraftableItemsAlwaysAllowed": {
+    "none": [ "THSwordWood", "SpearWood", "BattleaxeWood", "KnifeWood", "MaceWood", "AtgeirWood", "AxeWood", "SledgeWood" ],
+    "defeated_eikthyr": [],
+    "defeated_gdking": [],
+    "defeated_bonemass": [],
+    "defeated_dragon": [],
+    "defeated_goblinking": [],
+    "defeated_queen": [],
+    "defeated_fader": []
+  },
+  "LootSetsToItemCategories": {
+    "Weapons": [
+      "Swords",
+      "Axes",
+      "TwoHandAxes",
+      "Knives",
+      "Fists",
+      "Staffs",
+      "Clubs",
+      "Sledges",
+      "Polearms",
+      "Spears",
+      "Bows"
+    ],
+    "Tools": [
+      "Pickaxes",
+      "Torches",
+      "Tools"
+    ],
+    "Armor": [
+      "ChestArmor",
+      "LegsArmor",
+      "HeadArmor",
+      "ShouldersArmor"
+    ],
+    "Shields": [
+      "TowerShields",
+      "RoundShields",
+      "Bucklers"
+    ]
+  },
+  "BiomeSorterData": {
+    "None": {
+      "Tier": "Tier0",
+      "BossKey": "none",
+      "BiomeMaterials": [
+        "Wood",
+        "Stone"
+      ],
+      "BiomeSpecificCraftingStations": []
+    },
+    "Meadows": {
+      "Tier": "Tier1",
+      "BossKey": "defeated_eikthyr",
+      "BiomeMaterials": [
+        "Flint",
+        "LeatherScraps",
+        "DeerHide"
+      ],
+      "BiomeSpecificCraftingStations": []
+    },
+    "Blackforest": {
+      "Tier": "Tier2",
+      "BossKey": "defeated_gdking",
+      "BiomeMaterials": [
+        "Copper",
+        "Tin",
+        "Bronze",
+        "RoundLog",
+        "FineWood",
+        "TrollHide",
+        "BjornHide",
+        "BjornPaw"
+      ],
+      "BiomeSpecificCraftingStations": []
+    },
+    "Swamp": {
+      "Tier": "Tier3",
+      "BossKey": "defeated_bonemass",
+      "BiomeMaterials": [
+        "Iron",
+        "Chain",
+        "ElderBark",
+        "Guck",
+        "Chitin",
+        "SerpentScale",
+        "Ooze"
+      ],
+      "BiomeSpecificCraftingStations": []
+    },
+    "Mountain": {
+      "Tier": "Tier4",
+      "BossKey": "defeated_dragon",
+      "BiomeMaterials": [
+        "Silver",
+        "Obsidian",
+        "WolfHairBundle",
+        "WolfClaw",
+        "WolfFang"
+      ],
+      "BiomeSpecificCraftingStations": [
+        "piece_artisanstation"
+      ]
+    },
+    "Plains": {
+      "Tier": "Tier5",
+      "BossKey": "defeated_goblinking",
+      "BiomeMaterials": [
+        "Needle",
+        "BlackMetal",
+        "LinenThread",
+        "UndeadBjornRibcage",
+        "TrophyBjornUndead"
+      ],
+      "BiomeSpecificCraftingStations": []
+    },
+    "Mistlands": {
+      "Tier": "Tier6",
+      "BossKey": "defeated_queen",
+      "BiomeMaterials": [
+        "YggdrasilWood",
+        "BlackMarble",
+        "Eitr",
+        "BlackCore",
+        "Mandible",
+        "Carapace",
+        "ScaleHide",
+        "YagluthDrop"
+      ],
+      "BiomeSpecificCraftingStations": [
+        "piece_magetable",
+        "blackforge"
+      ]
+    },
+    "Ashlands": {
+      "Tier": "Tier7",
+      "BossKey": "defeated_fader",
+      "BiomeMaterials": [
+        "FlametalNew",
+        "Blackwood",
+        "CharredBone",
+        "MoltenCore",
+        "GemstoneBlue",
+        "GemstoneGreen",
+        "GemstoneRed",
+        "CelestialFeather"
+      ],
+      "BiomeSpecificCraftingStations": []
+    }
+  },
+  "TierRarityProbabilities": {
+    "Tier0": [ 97.0, 2.0, 1.0, 0.0, 0.0 ],
+    "Tier1": [ 94.0, 3.0, 2.0, 1.0, 0.0 ],
+    "Tier2": [ 80.0, 14.0, 4.0, 2.0, 0.0 ],
+    "Tier3": [ 38.0, 50.0, 8.0, 3.0, 1.0 ],
+    "Tier4": [ 5.0, 35.0, 50.0, 17.0, 3.0 ],
+    "Tier5": [ 0.0, 15.0, 60.0, 20.0, 5.0 ],
+    "Tier6": [ 0.0, 10.0, 50.0, 30.0, 10.0 ],
+    "Tier7": [ 0.0, 5.0, 35.0, 45.0, 15.0 ]
+  },
+  "VendorCostByBiomeKey": {
+    "none": 50,
+    "defeated_eikthyr": 100,
+    "defeated_gdking": 400,
+    "defeated_bonemass": 600,
+    "defeated_dragon": 900,
+    "defeated_goblinking": 1100,
+    "defeated_queen": 1300,
+    "defeated_fader": 1600
+  }
+}

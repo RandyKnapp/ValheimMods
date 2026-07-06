@@ -34,10 +34,10 @@ Randy Knapp - 2/7/2022
     * Build Events > Post-build event command line (use your valheim install dir): 
     This will automatically install your new mod after a successful build. As you add assets, you’ll need to modify this command to include copying your assets over as well.
     ```
-    xcopy "$(TargetDir)\$(TargetFileName)" "C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\" /q /y /i
+    xcopy "$(TargetDir)\$(TargetFileName)" "G:\Steam\steamapps\common\Valheim\BepInEx\plugins\" /q /y /i
     ```
 
-* Add the references that you will need for your project. (I will just use “Valheim” to mean your install path. Mine is at C:\Program Files (x86)\Steam\steamapps\common\Valheim)
+* Add the references that you will need for your project. (I will just use “Valheim” to mean your install path. Mine is at G:\Steam\steamapps\common\Valheim)
   * BepInEx.dll: Valheim\BepInEx\core\BepInEx.dll
     * Need this to hook into BepInEx’s modloading stuff
   * 0Harmony: Valheim\BepInEx\core\0Harmony.dll

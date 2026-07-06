@@ -1,0 +1,50 @@
+{
+  "TargetFile": "loottables.json",
+  "Author": "EpicLoot",
+  "Priority": 2000,
+  "RequireAll": true,
+  "Patches": [
+    {
+      "Path": "$.LootTables[?(@.Object == 'TreasureMapChest_Meadows')].Loot",
+      "Action": "Append",
+      "Value": 
+        { "Item": "IronBountyToken", "Weight": 1 }
+    },
+    {
+      "Path": "$.LootTables[?(@.Object == 'TreasureMapChest_BlackForest')].Loot",
+      "Action": "Append",
+      "Value": 
+        { "Item": "IronBountyToken", "Weight": 1 }
+    },
+    {
+      "Path": "$.LootTables[?(@.Object == 'TreasureMapChest_Swamp')].Loot",
+      "Action": "Append",
+      "Value": 
+        { "Item": "IronBountyToken", "Weight": 1 }
+    },
+    {
+      "Path": "$.LootTables[?(@.Object == 'TreasureMapChest_Mountain')].Loot",
+      "Action": "Append",
+      "Value": 
+        { "Item": "IronBountyToken", "Weight": 1 }
+    },
+    {
+      "Path": "$.LootTables[?(@.Object == 'TreasureMapChest_Plains')].Loot",
+      "Action": "Append",
+      "Value": 
+        { "Item": "IronBountyToken", "Weight": 1 }
+    },
+    {
+      "Path": "$.LootTables[?(@.Object == 'TreasureMapChest_Mistlands')].Loot",
+      "Action": "Append",
+      "Value": 
+        { "Item": "IronBountyToken", "Weight": 1 }
+    },
+    {
+      "Path": "$.LootTables[?(@.Object == 'TreasureMapChest_AshLands')].Loot",
+      "Action": "Append",
+      "Value": 
+        { "Item": "IronBountyToken", "Weight": 1 }
+    }
+  ]
+}

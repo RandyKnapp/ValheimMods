@@ -1,0 +1,27 @@
+{
+  "TargetFile": "enchantcosts.json",
+  "Author": "EpicLoot",
+  "Priority": 2000,
+  "RequireAll": true,
+  "Patches": [
+    {
+      "Path": "$.DisenchantProducts",
+      "Action": "Append",
+      "Value": [
+        {
+          "ItemTypes" : [ "Trophy" ],
+          "ItemNames" : [ "$trophyname1",  "$trophyname2"],
+          "Products" : [ { "Item": "ShardRare", "Amount": 1 } ]
+        },
+        {
+          "ItemNames" : [ "$itemname1" ],
+          "Products" : [
+            { "Item": "DustMythic",    "Amount": 2 },
+            { "Item": "EssenceMythic", "Amount": 1 },
+            { "Item": "ReagentMythic", "Amount": 1 }
+          ]
+        }
+      ]
+    }
+  ]
+}

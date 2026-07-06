@@ -1,0 +1,18 @@
+{
+  "TargetFile": "loottables.json",
+  "Author": "EpicLoot",
+  "Priority": 2000,
+  "RequireAll": true,
+  "Patches": [
+    {
+      "Path": "$.LootTables[?(@.Object == 'Wolf')].RefObject",
+      "Action": "Overwrite",
+      "Value": "Tier5Mob"
+    },
+    {
+      "Path": "$.LootTables[?(@.Object == 'Hatchling')].RefObject",
+      "Action": "Overwrite",
+      "Value": "Tier5Mob"
+    }
+  ]
+}

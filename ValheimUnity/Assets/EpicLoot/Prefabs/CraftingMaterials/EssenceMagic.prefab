@@ -5,6 +5,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 2139454011735914371}
     m_Modifications:
     - target: {fileID: 8122669392020522455, guid: 20fe547445d6fc746aa5a8cf42ecd4d1,
@@ -43,12 +44,22 @@ PrefabInstance:
       value: -0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 20fe547445d6fc746aa5a8cf42ecd4d1, type: 3}
+--- !u!4 &2830112765711474835 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8122669392020522455, guid: 20fe547445d6fc746aa5a8cf42ecd4d1,
+    type: 3}
+  m_PrefabInstance: {fileID: 6340804763555571012}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &7115346581044977294
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 124223530235104039, guid: f8c9237298dab3a438c66dbedd157d72,
@@ -59,7 +70,7 @@ PrefabInstance:
     - target: {fileID: 124223530235104039, guid: f8c9237298dab3a438c66dbedd157d72,
         type: 3}
       propertyPath: m_itemData.m_shared.m_name
-      value: $mod_epicloot_magic $mod_epicloot_assets_essence
+      value: $mod_epicloot_Magic $mod_epicloot_assets_essence
       objectReference: {fileID: 0}
     - target: {fileID: 124223530235104039, guid: f8c9237298dab3a438c66dbedd157d72,
         type: 3}
@@ -80,61 +91,61 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 124223530235104039, guid: f8c9237298dab3a438c66dbedd157d72,
         type: 3}
-      propertyPath: m_itemData.m_shared.m_icons.Array.data[0]
+      propertyPath: 'm_itemData.m_shared.m_icons.Array.data[0]'
       value: 
       objectReference: {fileID: 21300000, guid: 0290456079067d042a6671a8a4197232,
         type: 3}
     - target: {fileID: 124223530235104039, guid: f8c9237298dab3a438c66dbedd157d72,
         type: 3}
-      propertyPath: m_itemData.m_shared.m_icons.Array.data[1]
+      propertyPath: 'm_itemData.m_shared.m_icons.Array.data[1]'
       value: 
       objectReference: {fileID: 21300000, guid: c481387414fcd7640ae3e264eb233c1e,
         type: 3}
     - target: {fileID: 124223530235104039, guid: f8c9237298dab3a438c66dbedd157d72,
         type: 3}
-      propertyPath: m_itemData.m_shared.m_icons.Array.data[2]
+      propertyPath: 'm_itemData.m_shared.m_icons.Array.data[2]'
       value: 
       objectReference: {fileID: 21300000, guid: 2bfe485bacfbad34db32ff60e7535e14,
         type: 3}
     - target: {fileID: 124223530235104039, guid: f8c9237298dab3a438c66dbedd157d72,
         type: 3}
-      propertyPath: m_itemData.m_shared.m_icons.Array.data[3]
+      propertyPath: 'm_itemData.m_shared.m_icons.Array.data[3]'
       value: 
       objectReference: {fileID: 21300000, guid: b5053d6e480fd4e4ab3d5d0de1b1fb47,
         type: 3}
     - target: {fileID: 124223530235104039, guid: f8c9237298dab3a438c66dbedd157d72,
         type: 3}
-      propertyPath: m_itemData.m_shared.m_icons.Array.data[4]
+      propertyPath: 'm_itemData.m_shared.m_icons.Array.data[4]'
       value: 
       objectReference: {fileID: 21300000, guid: 588723436dc63b8478d0a0b8dd5b442a,
         type: 3}
     - target: {fileID: 124223530235104039, guid: f8c9237298dab3a438c66dbedd157d72,
         type: 3}
-      propertyPath: m_itemData.m_shared.m_icons.Array.data[5]
+      propertyPath: 'm_itemData.m_shared.m_icons.Array.data[5]'
       value: 
       objectReference: {fileID: 21300000, guid: 964bd3597334d5c4d814ef6908b8747b,
         type: 3}
     - target: {fileID: 124223530235104039, guid: f8c9237298dab3a438c66dbedd157d72,
         type: 3}
-      propertyPath: m_itemData.m_shared.m_icons.Array.data[6]
+      propertyPath: 'm_itemData.m_shared.m_icons.Array.data[6]'
       value: 
       objectReference: {fileID: 21300000, guid: 268a6d1587e0ff345864b68d26479e18,
         type: 3}
     - target: {fileID: 124223530235104039, guid: f8c9237298dab3a438c66dbedd157d72,
         type: 3}
-      propertyPath: m_itemData.m_shared.m_icons.Array.data[7]
+      propertyPath: 'm_itemData.m_shared.m_icons.Array.data[7]'
       value: 
       objectReference: {fileID: 21300000, guid: 890a966cf2b13914ab7baeef4bb08885,
         type: 3}
     - target: {fileID: 124223530235104039, guid: f8c9237298dab3a438c66dbedd157d72,
         type: 3}
-      propertyPath: m_itemData.m_shared.m_icons.Array.data[8]
+      propertyPath: 'm_itemData.m_shared.m_icons.Array.data[8]'
       value: 
       objectReference: {fileID: 21300000, guid: 0b8be229df4468f4abdcf3c301e19dbe,
         type: 3}
     - target: {fileID: 124223530235104039, guid: f8c9237298dab3a438c66dbedd157d72,
         type: 3}
-      propertyPath: m_itemData.m_shared.m_icons.Array.data[9]
+      propertyPath: 'm_itemData.m_shared.m_icons.Array.data[9]'
       value: 
       objectReference: {fileID: 21300000, guid: d34325993785d994bbe7bc25b9db707e,
         type: 3}
@@ -204,6 +215,13 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 9155277163626522893, guid: f8c9237298dab3a438c66dbedd157d72,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2830112765711474835}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f8c9237298dab3a438c66dbedd157d72, type: 3}
 --- !u!4 &2139454011735914371 stripped
 Transform:

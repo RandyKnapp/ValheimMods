@@ -1,1773 +1,990 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
 using BepInEx;
-using BepInEx.Configuration;
 using Common;
-using EpicLoot.Abilities;
 using EpicLoot.Adventure;
+using EpicLoot.Config;
 using EpicLoot.Crafting;
 using EpicLoot.CraftingV2;
 using EpicLoot.Data;
 using EpicLoot.GatedItemType;
-using EpicLoot.LegendarySystem;
+using EpicLoot.General;
+using EpicLoot.Magic;
 using EpicLoot.MagicItemEffects;
-using EpicLoot.Patching;
-using EpicLoot_UnityLib;
 using HarmonyLib;
 using JetBrains.Annotations;
-using Newtonsoft.Json;
-using ServerSync;
+using Jotunn.Configs;
+using Jotunn.Entities;
+using Jotunn.Managers;
+using Jotunn.Utils;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
+using System.Text.RegularExpressions;
 using UnityEngine;
-using UnityEngine.UI;
-using Debug = UnityEngine.Debug;
 using Object = UnityEngine.Object;
-using Random = UnityEngine.Random;
 
-namespace EpicLoot
+namespace EpicLoot;
+
+[BepInPlugin(PluginId, DisplayName, Version)]
+[BepInDependency(Jotunn.Main.ModGuid)]
+[BepInDependency("com.ValheimModding.NewtonsoftJsonDetector")]
+[NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Patch)]
+[BepInDependency("randyknapp.mods.auga", BepInDependency.DependencyFlags.SoftDependency)]
+[BepInDependency("vapok.mods.adventurebackpacks", BepInDependency.DependencyFlags.SoftDependency)]
+[BepInDependency("kg.ValheimEnchantmentSystem", BepInDependency.DependencyFlags.SoftDependency)]
+[BepInDependency("org.bepinex.plugins.steadyregeneration", BepInDependency.DependencyFlags.SoftDependency)]
+public sealed class EpicLoot : BaseUnityPlugin
 {
-    public enum LogLevel
+    public const string PluginId = "randyknapp.mods.epicloot";
+    public const string DisplayName = "Epic Loot";
+    public const string Version = "0.12.15";
+
+    private static string ConfigFileName = PluginId + ".cfg";
+    private static string ConfigFileFullPath = BepInEx.Paths.ConfigPath + Path.DirectorySeparatorChar + ConfigFileName;
+
+    public static readonly Dictionary<string, string> MagicItemColors = new Dictionary<string, string>()
     {
-        Info,
-        Warning,
-        Error
+        { "Red",    "#ff4545" },
+        { "Orange", "#ffac59" },
+        { "Yellow", "#ffff75" },
+        { "Green",  "#80fa70" },
+        { "Teal",   "#18e7a9" },
+        { "Blue",   "#00abff" },
+        { "Indigo", "#709bba" },
+        { "Purple", "#d078ff" },
+        { "Pink",   "#ff63d6" },
+        { "Gray",   "#dbcadb" },
+    };
+
+    public static string[] MagicMaterials = new string[]
+    {
+        "Runestone",
+        "EtchedRunestone",
+        "Shard",
+        "Dust",
+        "Reagent",
+        "Essence"
+    };
+
+    public static string[] ItemNames = new string[]
+    {
+        "LeatherBelt",
+        "SilverRing",
+        "GoldRubyRing",
+        "ForestToken",
+        "IronBountyToken",
+        "GoldBountyToken"
+    };
+
+    public static bool AlwaysDropCheat = false;
+    public const Minimap.PinType BountyPinType = (Minimap.PinType) 800;
+    public const Minimap.PinType TreasureMapPinType = (Minimap.PinType) 801;
+    public static bool HasAuga;
+    public static bool AugaTooltipNoTextBoxes;
+
+    public static event Action AbilitiesInitialized;
+    public static event Action LootTableLoaded;
+
+    private static EpicLoot _instance;
+    private Harmony _harmony;
+    private float _worldLuckFactor;
+    internal ELConfig cfg;
+
+    [UsedImplicitly]
+    void Awake()
+    {
+        _instance = this;
+
+        Assembly assembly = Assembly.GetExecutingAssembly();
+
+        LoadEmbeddedAssembly(assembly, "EpicLoot-UnityLib.dll");
+
+        cfg = new ELConfig(Config);
+
+        // Set the referenced common logger to the EL specific reference so that common things get logged
+        PrefabCreator.Logger = Logger;
+        InitializeAbilities();
+        AddLocalizations();
+        LoadAssets();
+        EnchantingUIController.Initialize();
+        _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), PluginId);
+
+        LootTableLoaded?.Invoke();
+        RegisterMagicEffectEvents();
+
+        TerminalCommands.AddTerminalCommands();
+        // Main file config watcher
+        SetupWatcher();
     }
 
-    public enum BossDropMode
+    private static void RegisterMagicEffectEvents()
     {
-        Default,
-        OnePerPlayerOnServer,
-        OnePerPlayerNearBoss
+        // This needs to not run until after the game is loaded, otherwise it will not be able to find the ObjectDB
+        MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinitions += Riches_CharacterDrop_GenerateDropList_Patch.UpdateRichesOnEffectSetup;
     }
 
-    public enum GatedBountyMode
+    private static void LoadEmbeddedAssembly(Assembly assembly, string assemblyName)
     {
-        Unlimited,
-        BossKillUnlocksCurrentBiomeBounties,
-        BossKillUnlocksNextBiomeBounties
-    }
-
-    public class Assets
-    {
-        public AssetBundle AssetBundle;
-        public Sprite EquippedSprite;
-        public Sprite AugaEquippedSprite;
-        public Sprite GenericSetItemSprite;
-        public Sprite AugaSetItemSprite;
-        public Sprite GenericItemBgSprite;
-        public Sprite AugaItemBgSprite;
-        public GameObject[] MagicItemLootBeamPrefabs = new GameObject[5];
-        public readonly Dictionary<string, GameObject[]> CraftingMaterialPrefabs = new Dictionary<string, GameObject[]>();
-        public Sprite SmallButtonEnchantOverlay;
-        public AudioClip[] MagicItemDropSFX = new AudioClip[5];
-        public AudioClip ItemLoopSFX;
-        public AudioClip AugmentItemSFX;
-        public GameObject MerchantPanel;
-        public Sprite MapIconTreasureMap;
-        public Sprite MapIconBounty;
-        public AudioClip AbandonBountySFX;
-        public AudioClip DoubleJumpSFX;
-        public GameObject DebugTextPrefab;
-        public GameObject AbilityBar;
-        public GameObject WelcomMessagePrefab;
-    }
-
-    public class PieceDef
-    {
-        public string Table;
-        public string CraftingStation;
-        public string ExtendStation;
-        public List<RecipeRequirementConfig> Resources = new List<RecipeRequirementConfig>();
-    }
-
-    [BepInPlugin(PluginId, DisplayName, Version)]
-    [BepInDependency("randyknapp.mods.auga", BepInDependency.DependencyFlags.SoftDependency)]
-    public class EpicLoot : BaseUnityPlugin
-    {
-        public const string PluginId = "randyknapp.mods.epicloot";
-        public const string DisplayName = "Epic Loot";
-        public const string Version = "0.9.23";
-
-        private readonly ConfigSync _configSync = new ConfigSync(PluginId) { DisplayName = DisplayName, CurrentVersion = Version, MinimumRequiredVersion = "0.9.23" };
-
-        private static ConfigEntry<string> _setItemColor;
-        private static ConfigEntry<string> _magicRarityColor;
-        private static ConfigEntry<string> _rareRarityColor;
-        private static ConfigEntry<string> _epicRarityColor;
-        private static ConfigEntry<string> _legendaryRarityColor;
-        // TODO: Mythic Hookup
-        //private static ConfigEntry<string> _mythicRarityColor;
-        private static ConfigEntry<int> _magicMaterialIconColor;
-        private static ConfigEntry<int> _rareMaterialIconColor;
-        private static ConfigEntry<int> _epicMaterialIconColor;
-        private static ConfigEntry<int> _legendaryMaterialIconColor;
-        // TODO: Mythic Hookup
-        //private static ConfigEntry<int> _mythicMaterialIconColor;
-        public static ConfigEntry<bool> UseScrollingCraftDescription;
-        public static ConfigEntry<bool> TransferMagicItemToCrafts;
-        public static ConfigEntry<CraftingTabStyle> CraftingTabStyle;
-        private static ConfigEntry<bool> _loggingEnabled;
-        private static ConfigEntry<LogLevel> _logLevel;
-        public static ConfigEntry<bool> UseGeneratedMagicItemNames;
-        private static ConfigEntry<GatedItemTypeMode> _gatedItemTypeModeConfig;
-        public static ConfigEntry<GatedBountyMode> BossBountyMode;
-        private static ConfigEntry<BossDropMode> _bossTrophyDropMode;
-        private static ConfigEntry<float> _bossTrophyDropPlayerRange;
-        private static ConfigEntry<int> _andvaranautRange;
-        public static ConfigEntry<bool> ShowEquippedAndHotbarItemsInSacrificeTab;
-        private static ConfigEntry<bool> _adventureModeEnabled;
-        private static ConfigEntry<bool> _serverConfigLocked;
-        public static readonly ConfigEntry<string>[] AbilityKeyCodes = new ConfigEntry<string>[AbilityController.AbilitySlotCount];
-        public static ConfigEntry<TextAnchor> AbilityBarAnchor;
-        public static ConfigEntry<Vector2> AbilityBarPosition;
-        public static ConfigEntry<TextAnchor> AbilityBarLayoutAlignment;
-        public static ConfigEntry<float> AbilityBarIconSpacing;
-        public static ConfigEntry<float> SetItemDropChance;
-        public static ConfigEntry<float> GlobalDropRateModifier;
-        public static ConfigEntry<float> ItemsToMaterialsDropRatio;
-        public static ConfigEntry<bool> AlwaysShowWelcomeMessage;
-        public static ConfigEntry<bool> OutputPatchedConfigFiles;
-        public static ConfigEntry<bool> EnchantingTableUpgradesActive;
-        public static ConfigEntry<bool> EnableLimitedBountiesInProgress;
-        public static ConfigEntry<int> MaxInProgressBounties;
-        public static ConfigEntry<EnchantingTabs> EnchantingTableActivatedTabs;
-        
-        public static Dictionary<string, CustomSyncedValue<string>> SyncedJsonFiles = new Dictionary<string, CustomSyncedValue<string>>();
-        public static Dictionary<string, ConfigValue<string>> NonSyncedJsonFiles = new Dictionary<string, ConfigValue<string>>();
-
-        public static readonly List<ItemDrop.ItemData.ItemType> AllowedMagicItemTypes = new List<ItemDrop.ItemData.ItemType>
+        var stream = assembly.GetManifestResourceStream($"{assembly.GetName().Name}.{assemblyName}");
+        if (stream == null)
         {
-            ItemDrop.ItemData.ItemType.Helmet,
-            ItemDrop.ItemData.ItemType.Chest,
-            ItemDrop.ItemData.ItemType.Legs,
-            ItemDrop.ItemData.ItemType.Shoulder,
-            ItemDrop.ItemData.ItemType.Utility,
-            ItemDrop.ItemData.ItemType.Bow,
-            ItemDrop.ItemData.ItemType.OneHandedWeapon,
-            ItemDrop.ItemData.ItemType.TwoHandedWeapon,
-            ItemDrop.ItemData.ItemType.TwoHandedWeaponLeft,
-            ItemDrop.ItemData.ItemType.Shield,
-            ItemDrop.ItemData.ItemType.Tool,
-            ItemDrop.ItemData.ItemType.Torch,
-        };
+            LogErrorForce($"Could not load embedded assembly ({assemblyName})!");
+            return;
+        }
 
-        public static readonly Dictionary<string, string> MagicItemColors = new Dictionary<string, string>()
+        using (stream)
         {
-            { "Red",    "#ff4545" },
-            { "Orange", "#ffac59" },
-            { "Yellow", "#ffff75" },
-            { "Green",  "#80fa70" },
-            { "Teal",   "#18e7a9" },
-            { "Blue",   "#00abff" },
-            { "Indigo", "#709bba" },
-            { "Purple", "#d078ff" },
-            { "Pink",   "#ff63d6" },
-            { "Gray",   "#dbcadb" },
-        };
+            var data = new byte[stream.Length];
+            stream.Read(data, 0, data.Length);
+            Assembly.Load(data);
+        }
+    }
 
-        public static readonly Assets Assets = new Assets();
-        public static readonly List<GameObject> RegisteredPrefabs = new List<GameObject>();
-        public static readonly List<GameObject> RegisteredItemPrefabs = new List<GameObject>();
-        public static readonly Dictionary<GameObject, PieceDef> RegisteredPieces = new Dictionary<GameObject, PieceDef>();
-        private static readonly Dictionary<string, Action<ItemDrop>> _customItemSetupActions = new Dictionary<string, Action<ItemDrop>>();
-        private static readonly Dictionary<string, Object> _assetCache = new Dictionary<string, Object>();
-        public static bool AlwaysDropCheat = false;
-        public const Minimap.PinType BountyPinType = (Minimap.PinType) 800;
-        public const Minimap.PinType TreasureMapPinType = (Minimap.PinType) 801;
-        public static bool HasAuga;
-        public static bool AugaTooltipNoTextBoxes;
-        
+    //sealed void Start()
+    //{
+    //    //HasAuga = Auga.API.IsLoaded();
 
-        public static event Action AbilitiesInitialized;
-        public static event Action LootTableLoaded;
+    //    //if (HasAuga)
+    //    //{
+    //    //    Auga.API.ComplexTooltip_AddItemTooltipCreatedListener(ExtendAugaTooltipForMagicItem);
+    //    //    Auga.API.ComplexTooltip_AddItemStatPreprocessor(AugaTooltipPreprocessor.PreprocessTooltipStat);
+    //    //}
+    //}
 
-        private static EpicLoot _instance;
-        private Harmony _harmony;
-        private float _worldLuckFactor;
+    //public static void ExtendAugaTooltipForMagicItem(GameObject complexTooltip, ItemDrop.ItemData item)
+    //{
+    //    //Auga.API.ComplexTooltip_SetTopic(complexTooltip, Localization.instance.Localize(item.GetDecoratedName()));
 
-        [UsedImplicitly]
-        private void Awake()
-        {
-            _instance = this;
+    //    var isMagic = item.IsMagic(out var magicItem);
 
-            _magicRarityColor = Config.Bind("Item Colors", "Magic Rarity Color", "Blue", "The color of Magic rarity items, the lowest magic item tier. (Optional, use an HTML hex color starting with # to have a custom color.) Available options: Red, Orange, Yellow, Green, Teal, Blue, Indigo, Purple, Pink, Gray");
-            _magicMaterialIconColor = Config.Bind("Item Colors", "Magic Crafting Material Icon Index", 5, "Indicates the color of the icon used for magic crafting materials. A number between 0 and 9. Available options: 0=Red, 1=Orange, 2=Yellow, 3=Green, 4=Teal, 5=Blue, 6=Indigo, 7=Purple, 8=Pink, 9=Gray");
-            _rareRarityColor = Config.Bind("Item Colors", "Rare Rarity Color", "Yellow", "The color of Rare rarity items, the second magic item tier. (Optional, use an HTML hex color starting with # to have a custom color.) Available options: Red, Orange, Yellow, Green, Teal, Blue, Indigo, Purple, Pink, Gray");
-            _rareMaterialIconColor = Config.Bind("Item Colors", "Rare Crafting Material Icon Index", 2, "Indicates the color of the icon used for rare crafting materials. A number between 0 and 9. Available options: 0=Red, 1=Orange, 2=Yellow, 3=Green, 4=Teal, 5=Blue, 6=Indigo, 7=Purple, 8=Pink, 9=Gray");
-            _epicRarityColor = Config.Bind("Item Colors", "Epic Rarity Color", "Purple", "The color of Epic rarity items, the third magic item tier. (Optional, use an HTML hex color starting with # to have a custom color.) Available options: Red, Orange, Yellow, Green, Teal, Blue, Indigo, Purple, Pink, Gray");
-            _epicMaterialIconColor = Config.Bind("Item Colors", "Epic Crafting Material Icon Index", 7, "Indicates the color of the icon used for epic crafting materials. A number between 0 and 9. Available options: 0=Red, 1=Orange, 2=Yellow, 3=Green, 4=Teal, 5=Blue, 6=Indigo, 7=Purple, 8=Pink, 9=Gray");
-            _legendaryRarityColor = Config.Bind("Item Colors", "Legendary Rarity Color", "Teal", "The color of Legendary rarity items, the highest magic item tier. (Optional, use an HTML hex color starting with # to have a custom color.) Available options: Red, Orange, Yellow, Green, Teal, Blue, Indigo, Purple, Pink, Gray");
-            _legendaryMaterialIconColor = Config.Bind("Item Colors", "Legendary Crafting Material Icon Index", 4, "Indicates the color of the icon used for legendary crafting materials. A number between 0 and 9. Available options: 0=Red, 1=Orange, 2=Yellow, 3=Green, 4=Teal, 5=Blue, 6=Indigo, 7=Purple, 8=Pink, 9=Gray");
-            // TODO: Mythic hookup
-            //_mythicRarityColor = Config.Bind("Item Colors", "Mythic Rarity Color", "Orange", "The color of Legendary rarity items, the highest magic item tier. (Optional, use an HTML hex color starting with # to have a custom color.) Available options: Red, Orange, Yellow, Green, Teal, Blue, Indigo, Purple, Pink, Gray");
-            //_mythicMaterialIconColor = Config.Bind("Item Colors", "Mythic Crafting Material Icon Index", 1, "Indicates the color of the icon used for legendary crafting materials. A number between 0 and 9. Available options: 0=Red, 1=Orange, 2=Yellow, 3=Green, 4=Teal, 5=Blue, 6=Indigo, 7=Purple, 8=Pink, 9=Gray");
-            _setItemColor = Config.Bind("Item Colors", "Set Item Color", "#26ffff", "The color of set item text and the set item icon. Use a hex color, default is cyan");
-            UseScrollingCraftDescription = Config.Bind("Crafting UI", "Use Scrolling Craft Description", true, "Changes the item description in the crafting panel to scroll instead of scale when it gets too long for the space.");
-            CraftingTabStyle = Config.Bind("Crafting UI", "Crafting Tab Style", Crafting.CraftingTabStyle.HorizontalSquish, "Sets the layout style for crafting tabs, if you've got too many. Horizontal is the vanilla method, but might overlap other mods or run off the screen. HorizontalSquish makes the buttons narrower, works okay with 6 or 7 buttons. Vertical puts the tabs in a column to the left the crafting window. Angled tries to make more room at the top of the crafting panel by angling the tabs, works okay with 6 or 7 tabs.");
-            ShowEquippedAndHotbarItemsInSacrificeTab = Config.Bind("Crafting UI", "ShowEquippedAndHotbarItemsInSacrificeTab", false, "If set to false, hides the items that are equipped or on your hotbar in the Sacrifice items list.");
-            _loggingEnabled = Config.Bind("Logging", "Logging Enabled", false, "Enable logging");
-            _logLevel = Config.Bind("Logging", "Log Level", LogLevel.Info, "Only log messages of the selected level or higher");
-            UseGeneratedMagicItemNames = Config.Bind("General", "Use Generated Magic Item Names", true, "If true, magic items uses special, randomly generated names based on their rarity, type, and magic effects.");
-            _gatedItemTypeModeConfig = SyncedConfig("Balance", "Item Drop Limits", GatedItemTypeMode.BossKillUnlocksCurrentBiomeItems, "Sets how the drop system limits what item types can drop. Unlimited: no limits, exactly what's in the loot table will drop. BossKillUnlocksCurrentBiomeItems: items will drop for the current biome if the that biome's boss has been killed (Leather gear will drop once Eikthyr is killed). BossKillUnlocksNextBiomeItems: items will only drop for the current biome if the previous biome's boss is killed (Bronze gear will drop once Eikthyr is killed). PlayerMustKnowRecipe: (local world only) the item can drop if the player can craft it. PlayerMustHaveCraftedItem: (local world only) the item can drop if the player has already crafted it or otherwise picked it up. If an item type cannot drop, it will downgrade to an item of the same type and skill that the player has unlocked (i.e. swords will stay swords) according to iteminfo.json.");
-            BossBountyMode = SyncedConfig("Balance", "Gated Bounty Mode", GatedBountyMode.Unlimited, "Sets whether available bounties are ungated or gated by boss kills.");
-            _bossTrophyDropMode = SyncedConfig("Balance", "Boss Trophy Drop Mode", BossDropMode.OnePerPlayerNearBoss, "Sets bosses to drop a number of trophies equal to the number of players, similar to the way Wishbone works in vanilla. Optionally set it to only include players within a certain distance, use 'Boss Trophy Drop Player Range' to set the range.");
-            _bossTrophyDropPlayerRange = SyncedConfig("Balance", "Boss Trophy Drop Player Range", 100.0f, "Sets the range that bosses check when dropping multiple trophies using the OnePerPlayerNearBoss drop mode.");
-            _adventureModeEnabled = SyncedConfig("Balance", "Adventure Mode Enabled", true, "Set to true to enable all the adventure mode features: secret stash, gambling, treasure maps, and bounties. Set to false to disable. This will not actually remove active treasure maps or bounties from your save.");
-            _andvaranautRange = SyncedConfig("Balance", "Andvaranaut Range", 20, "Sets the range that Andvaranaut will locate a treasure chest.");
-            _serverConfigLocked = SyncedConfig("Config Sync", "Lock Config", false, new ConfigDescription("[Server Only] The configuration is locked and may not be changed by clients once it has been synced from the server. Only valid for server config, will have no effect on clients."));
-            SetItemDropChance = SyncedConfig("Balance", "Set Item Drop Chance", 0.15f, "The percent chance that a legendary item will be a set item. Min = 0, Max = 1");
-            GlobalDropRateModifier = SyncedConfig("Balance", "Global Drop Rate Modifier", 1.0f, "A global percentage that modifies how likely items are to drop. 1 = Exactly what is in the loot tables will drop. 0 = Nothing will drop. 2 = The number of items in the drop table are twice as likely to drop (note, this doesn't double the number of items dropped, just doubles the relative chance for them to drop). Min = 0, Max = 4");
-            ItemsToMaterialsDropRatio = SyncedConfig("Balance", "Items To Materials Drop Ratio", 0.0f, "Sets the chance that item drops are instead dropped as magic crafting materials. 0 = all items, no materials. 1 = all materials, no items. Values between 0 and 1 change the ratio of items to materials that drop. At 0.5, half of everything that drops would be items and the other half would be materials. Min = 0, Max = 1");
-            TransferMagicItemToCrafts = SyncedConfig("Balance", "Transfer Enchants to Crafted Items", false, "When enchanted items are used as ingredients in recipes, transfer the highest enchant to the newly crafted item. Default: False.");
+    //    var inFront = true;
+    //    var itemBG = complexTooltip.transform.Find("Tooltip/IconHeader/IconBkg/Item");
+    //    if (itemBG == null)
+    //    {
+    //        itemBG = complexTooltip.transform.Find("InventoryElement/icon");
+    //        inFront = false;
+    //    }
 
-            AlwaysShowWelcomeMessage = Config.Bind("Debug", "AlwaysShowWelcomeMessage", false, "Just a debug flag for testing the welcome message, do not use.");
-            OutputPatchedConfigFiles = Config.Bind("Debug", "OutputPatchedConfigFiles", false, "Just a debug flag for testing the patching system, do not use.");
+    //    RectTransform magicBG = null;
+    //    if (itemBG != null)
+    //    {
+    //        var itemBGImage = itemBG.GetComponent<Image>();
+    //        magicBG = (RectTransform)itemBG.transform.Find("magicItem");
+    //        if (magicBG == null)
+    //        {
+    //            var magicItemObject = Instantiate(itemBGImage, inFront ?
+    //                itemBG.transform : itemBG.transform.parent).gameObject;
+    //            magicItemObject.name = "magicItem";
+    //            magicItemObject.SetActive(true);
+    //            magicBG = (RectTransform)magicItemObject.transform;
+    //            magicBG.anchorMin = Vector2.zero;
+    //            magicBG.anchorMax = new Vector2(1, 1);
+    //            magicBG.sizeDelta = Vector2.zero;
+    //            magicBG.pivot = new Vector2(0.5f, 0.5f);
+    //            magicBG.anchoredPosition = Vector2.zero;
+    //            var magicItemInit = magicBG.GetComponent<Image>();
+    //            magicItemInit.color = Color.white;
+    //            magicItemInit.raycastTarget = false;
+    //            magicItemInit.sprite = GetMagicItemBgSprite();
 
-            AbilityKeyCodes[0] = Config.Bind("Abilities", "Ability Hotkey 1", "g", "Hotkey for Ability Slot 1.");
-            AbilityKeyCodes[1] = Config.Bind("Abilities", "Ability Hotkey 2", "h", "Hotkey for Ability Slot 2.");
-            AbilityKeyCodes[2] = Config.Bind("Abilities", "Ability Hotkey 3", "j", "Hotkey for Ability Slot 3.");
-            AbilityBarAnchor = Config.Bind("Abilities", "Ability Bar Anchor", TextAnchor.LowerLeft, "The point on the HUD to anchor the ability bar. Changing this also changes the pivot of the ability bar to that corner. For reference: the ability bar size is 208 by 64.");
-            AbilityBarPosition = Config.Bind("Abilities", "Ability Bar Position", new Vector2(150, 170), "The position offset from the Ability Bar Anchor at which to place the ability bar.");
-            AbilityBarLayoutAlignment = Config.Bind("Abilities", "Ability Bar Layout Alignment", TextAnchor.LowerLeft, "The Ability Bar is a Horizontal Layout Group. This value indicates how the elements inside are aligned. Choices with 'Center' in them will keep the items centered on the bar, even if there are fewer than the maximum allowed. 'Left' will be left aligned, and similar for 'Right'.");
-            AbilityBarIconSpacing = Config.Bind("Abilities", "Ability Bar Icon Spacing", 8.0f, "The number of units between the icons on the ability bar.");
+    //            if (!inFront)
+    //            {
+    //                magicBG.SetSiblingIndex(0);
+    //            }
+    //        }
+    //    }
 
-            //Enchanting Table
-            EnchantingTableUpgradesActive = SyncedConfig("Enchanting Table", "Upgrades Active", true, "Toggles Enchanting Table Upgrade Capabilities. If false, enchanting table features will be unlocked set to Level 1");
-            EnchantingTableActivatedTabs = SyncedConfig("Enchanting Table", $"Table Features Active", EnchantingTabs.Sacrifice | EnchantingTabs.Augment | EnchantingTabs.Enchant | EnchantingTabs.Disenchant | EnchantingTabs.Upgrade | EnchantingTabs.ConvertMaterials, $"Toggles Enchanting Table Feature on and off completely.");
+    //    if (magicBG != null)
+    //    {
+    //        magicBG.gameObject.SetActive(isMagic);
+    //    }
+
+    //    if (item.IsMagicCraftingMaterial())
+    //    {
+    //        var rarity = item.GetCraftingMaterialRarity();
+    //        //Auga.API.ComplexTooltip_SetIcon(complexTooltip, item.m_shared.m_icons[GetRarityIconIndex(rarity)]);
+    //    }
+
+    //    if (isMagic)
+    //    {
+    //        var magicColor = magicItem.GetColorString();
+    //        var itemTypeName = magicItem.GetItemTypeName(item.Extended());
+
+    //        if (magicBG != null)
+    //        {
+    //            magicBG.GetComponent<Image>().color = item.GetRarityColor();
+    //        }
+
+    //        //Auga.API.ComplexTooltip_SetIcon(complexTooltip, item.GetIcon());
+
+    //        string localizedSubtitle;
+    //        if (item.IsLegendarySetItem())
+    //        {
+    //            localizedSubtitle = $"<color={GetSetItemColor()}>" +
+    //                $"$mod_epicloot_legendarysetlabel</color>, {itemTypeName}\n";
+    //        }
+    //        else
+    //        {
+    //            localizedSubtitle = $"<color={magicColor}>{magicItem.GetRarityDisplay()} {itemTypeName}</color>";
+    //        }
+
+    //        try
+    //        {
+    //            //Auga.API.ComplexTooltip_SetSubtitle(complexTooltip, Localization.instance.Localize(localizedSubtitle));
+    //        }
+    //        catch (Exception)
+    //        {
+    //            //Auga.API.ComplexTooltip_SetSubtitle(complexTooltip, localizedSubtitle);
+    //        }
             
-            //Limiting Bounties
-            EnableLimitedBountiesInProgress = SyncedConfig("Bounty Management", "Enable Bounty Limit", false, "Toggles limiting bounties. Players unable to purchase if enabled and maximum bounty in-progress count is met");
-            MaxInProgressBounties = SyncedConfig("Bounty Management", "Max Bounties Per Player", 5, "Max amount of in-progress bounties allowed per player.");
+    //        if (AugaTooltipNoTextBoxes)
+    //            return;
             
-            _configSync.AddLockingConfigEntry(_serverConfigLocked);
+    //        //Don't need to process the InventoryTooltip Information.
+    //        if (complexTooltip.name.Contains("InventoryTooltip"))
+    //            return;
 
-            var assembly = Assembly.GetExecutingAssembly();
+    //        //The following is used only for Crafting Result Panel.
+    //        Auga.API.ComplexTooltip_AddDivider(complexTooltip);
 
+    //        var magicItemText = magicItem.GetTooltip();
+    //        var textBox = Auga.API.ComplexTooltip_AddTwoColumnTextBox(complexTooltip);
+    //        magicItemText = magicItemText.Replace("\n\n", "");
+    //        Auga.API.TooltipTextBox_AddLine(textBox, magicItemText);
             
-            EIDFLegacy.CheckForExtendedItemFrameworkLoaded(_instance);
-
-            LoadEmbeddedAssembly(assembly, "Newtonsoft.Json.dll");
-            LoadEmbeddedAssembly(assembly, "EpicLoot-UnityLib.dll");
-
-            EnchantingTableUpgradesActive.SettingChanged += (_, _) => EnchantingTableUI.UpdateUpgradeActivation();
-            EnchantingTableActivatedTabs.SettingChanged += (_, _) => EnchantingTableUI.UpdateTabActivation();
-
-            LoadPatches();
-            InitializeConfig();
-            InitializeAbilities();
-            PrintInfo();
-            //GenerateTranslations();
-
-            LoadAssets();
-
-            EnchantingUIController.Initialize();
-
-            _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), PluginId);
-
-            LootTableLoaded?.Invoke();
-        }
-
-        private static void LoadEmbeddedAssembly(Assembly assembly, string assemblyName)
-        {
-            var stream = assembly.GetManifestResourceStream($"{assembly.GetName().Name}.{assemblyName}");
-            if (stream == null)
-            {
-                LogErrorForce($"Could not load embedded assembly ({assemblyName})!");
-                return;
-            }
-
-            using (stream)
-            {
-                var data = new byte[stream.Length];
-                stream.Read(data, 0, data.Length);
-                Assembly.Load(data);
-            }
-        }
-
-        public void Start()
-        {
-            HasAuga = Auga.API.IsLoaded();
-
-            if (HasAuga)
-            {
-                Auga.API.ComplexTooltip_AddItemTooltipCreatedListener(ExtendAugaTooltipForMagicItem);
-                Auga.API.ComplexTooltip_AddItemStatPreprocessor(AugaTooltipPreprocessor.PreprocessTooltipStat);
-            }
-        }
-
-        public static void ExtendAugaTooltipForMagicItem(GameObject complexTooltip, ItemDrop.ItemData item)
-        {
-            Auga.API.ComplexTooltip_SetTopic(complexTooltip, Localization.instance.Localize(item.GetDecoratedName()));
-
-            var isMagic = item.IsMagic(out var magicItem);
-
-            var inFront = true;
-            var itemBG = complexTooltip.transform.Find("Tooltip/IconHeader/IconBkg/Item");
-            if (itemBG == null)
-            {
-                itemBG = complexTooltip.transform.Find("InventoryElement/icon");
-                inFront = false;
-            }
-
-            RectTransform magicBG = null;
-            if (itemBG != null)
-            {
-                var itemBGImage = itemBG.GetComponent<Image>();
-                magicBG = (RectTransform)itemBG.transform.Find("magicItem");
-                if (magicBG == null)
-                {
-                    var magicItemObject = Instantiate(itemBGImage, inFront ? itemBG.transform : itemBG.transform.parent).gameObject;
-                    magicItemObject.name = "magicItem";
-                    magicItemObject.SetActive(true);
-                    magicBG = (RectTransform)magicItemObject.transform;
-                    magicBG.anchorMin = Vector2.zero;
-                    magicBG.anchorMax = new Vector2(1, 1);
-                    magicBG.sizeDelta = Vector2.zero;
-                    magicBG.pivot = new Vector2(0.5f, 0.5f);
-                    magicBG.anchoredPosition = Vector2.zero;
-                    var magicItemInit = magicBG.GetComponent<Image>();
-                    magicItemInit.color = Color.white;
-                    magicItemInit.raycastTarget = false;
-                    magicItemInit.sprite = GetMagicItemBgSprite();
-
-                    if (!inFront)
-                    {
-                        magicBG.SetSiblingIndex(0);
-                    }
-                }
-            }
-
-            if (magicBG != null)
-            {
-                magicBG.gameObject.SetActive(isMagic);
-            }
-
-            if (item.IsMagicCraftingMaterial())
-            {
-                var rarity = item.GetCraftingMaterialRarity();
-                Auga.API.ComplexTooltip_SetIcon(complexTooltip, item.m_shared.m_icons[GetRarityIconIndex(rarity)]);
-            }
-
-            if (isMagic)
-            {
-                var magicColor = magicItem.GetColorString();
-                var itemTypeName = magicItem.GetItemTypeName(item.Extended());
-
-                if (magicBG != null)
-                {
-                    magicBG.GetComponent<Image>().color = item.GetRarityColor();
-                }
-
-                Auga.API.ComplexTooltip_SetIcon(complexTooltip, item.GetIcon());
-
-                string localizedSubtitle;
-                if (item.IsLegendarySetItem())
-                {
-                    localizedSubtitle = $"<color={GetSetItemColor()}>$mod_epicloot_legendarysetlabel</color>, {itemTypeName}\n";
-                }
-                else
-                {
-                    localizedSubtitle = $"<color={magicColor}>{magicItem.GetRarityDisplay()} {itemTypeName}</color>";
-                }
-
-                try
-                {
-                    Auga.API.ComplexTooltip_SetSubtitle(complexTooltip, Localization.instance.Localize(localizedSubtitle));
-                }
-                catch (Exception)
-                {
-                    Auga.API.ComplexTooltip_SetSubtitle(complexTooltip, localizedSubtitle);
-                }
-
-
-                if (AugaTooltipNoTextBoxes)
-                    return;
-
-                Auga.API.ComplexTooltip_AddDivider(complexTooltip);
-
-                var magicItemText = magicItem.GetTooltip();
-                var textBox = Auga.API.ComplexTooltip_AddTwoColumnTextBox(complexTooltip);
-                magicItemText = magicItemText.Replace("\n\n", "");
-                Auga.API.TooltipTextBox_AddLine(textBox, magicItemText);
-
-                if (magicItem.IsLegendarySetItem())
-                {
-                    var textBox2 = Auga.API.ComplexTooltip_AddTwoColumnTextBox(complexTooltip);
-                    Auga.API.TooltipTextBox_AddLine(textBox2, item.GetSetTooltip());
-                }
-
-                try
-                {
-                    Auga.API.ComplexTooltip_SetDescription(complexTooltip, Localization.instance.Localize(item.GetDescription()));
-                }
-                catch (Exception)
-                {
-                    Auga.API.ComplexTooltip_SetDescription(complexTooltip, item.GetDescription());
-                }
-                
-            }
-        }
-
-        private ConfigEntry<T> SyncedConfig<T>(string group, string configName, T value, string description, bool synchronizedSetting = true) => SyncedConfig(group, configName, value, new ConfigDescription(description), synchronizedSetting);
-        
-        private ConfigEntry<T> SyncedConfig<T>(string group, string configName, T value, ConfigDescription description, bool synchronizedSetting = true)
-        {
-            var configEntry = Config.Bind(group, configName, value, description);
-
-            var syncedConfigEntry = _configSync.AddConfigEntry(configEntry);
-            syncedConfigEntry.SynchronizedConfig = synchronizedSetting;
-
-            return configEntry;
-        }
-
-        public static void LoadPatches()
-        {
-            FilePatching.LoadAllPatches();
-        }
-
-        private static void LoadTranslations(IDictionary<string, object> translations)
-        {
-            const string translationPrefix = "mod_epicloot_";
-
-            if (translations == null)
-            {
-                LogErrorForce("Could not parse translations.json!");
-                return;
-            }
-
-            var oldEntries = Localization.instance.m_translations.Where(instanceMTranslation => instanceMTranslation.Key.StartsWith(translationPrefix)).ToList();
-
-            //Clean Translations
-            foreach (var entry in oldEntries)
-            {
-                Localization.instance.m_translations.Remove(entry.Key);
-            }
+    //        if (magicItem.IsLegendarySetItem())
+    //        {
+    //            var textBox2 = Auga.API.ComplexTooltip_AddTwoColumnTextBox(complexTooltip);
+    //            Auga.API.TooltipTextBox_AddLine(textBox2, item.GetSetTooltip());
+    //        }
             
-            //Load New Translations
-            foreach (var translation in translations)
-            {
-                Localization.instance.AddWord(translation.Key, translation.Value.ToString());
-            }
-        }
+    //        try
+    //        {
+    //            Auga.API.ComplexTooltip_SetDescription(complexTooltip,
+    //                Localization.instance.Localize(item.GetDescription()));
+    //        }
+    //        catch (Exception)
+    //        {
+    //            Auga.API.ComplexTooltip_SetDescription(complexTooltip, item.GetDescription());
+    //        }
+    //    }
+    //}
 
-        public static ConfigFile GetConfigObject()
+    private void AddLocalizations()
+    {
+        CustomLocalization Localization = LocalizationManager.Instance.GetLocalization();
+        // load all localization files within the localizations directory
+        Log("Loading Localizations.");
+        foreach (string embeddedResouce in typeof(EpicLoot).Assembly.GetManifestResourceNames())
         {
-            return _instance.Config;
+            if (!embeddedResouce.Contains("localizations")) { continue; }
+            string localization = ReadEmbeddedResourceFile(embeddedResouce);
+            // This will clean comments out of the localization files
+            string cleaned_localization = Regex.Replace(localization, @"\/\/.*\n", "");
+            // Log($"Cleaned Localization: {cleaned_localization}");
+            var name = embeddedResouce.Split('.');
+            Log($"Adding localization: {name[2]}");
+            Localization.AddJsonFile(name[2], cleaned_localization);
         }
+        // Load the localization patches and additional languages
+        ELConfig.StartupProcessModifiedLocalizations();
+    }
 
-        public static void InitializeConfig()
+    private static void InitializeAbilities()
+    {
+        MagicEffectType.Initialize();
+        AbilitiesInitialized?.Invoke();
+    }
+
+    public static void Log(string message)
+    {
+        if (ELConfig._loggingEnabled.Value && ELConfig._logLevel.Value <= LogLevel.Info)
         {
-            LoadJsonFile<IDictionary<string, object>>("translations.json", LoadTranslations, ConfigType.Nonsynced);
-            LoadJsonFile<LootConfig>("loottables.json", LootRoller.Initialize, ConfigType.Synced);
-            LoadJsonFile<MagicItemEffectsList>("magiceffects.json", MagicItemEffectDefinitions.Initialize, ConfigType.Synced);
-            LoadJsonFile<ItemInfoConfig>("iteminfo.json", GatedItemTypeHelper.Initialize, ConfigType.Synced);
-            LoadJsonFile<RecipesConfig>("recipes.json", RecipesHelper.Initialize, ConfigType.Synced);
-            LoadJsonFile<EnchantingCostsConfig>("enchantcosts.json", EnchantCostsHelper.Initialize, ConfigType.Synced);
-            LoadJsonFile<ItemNameConfig>("itemnames.json", MagicItemNames.Initialize, ConfigType.Synced);
-            LoadJsonFile<AdventureDataConfig>("adventuredata.json", AdventureDataManager.Initialize, ConfigType.Synced);
-            LoadJsonFile<LegendaryItemConfig>("legendaries.json", UniqueLegendaryHelper.Initialize, ConfigType.Synced);
-            LoadJsonFile<AbilityConfig>("abilities.json", AbilityDefinitions.Initialize, ConfigType.Synced);
-            LoadJsonFile<MaterialConversionsConfig>("materialconversions.json", MaterialConversions.Initialize, ConfigType.Synced);
-            LoadJsonFile<EnchantingUpgradesConfig>("enchantingupgrades.json", EnchantingTableUpgrades.InitializeConfig, ConfigType.Synced);
-
-            WatchNewPatchConfig();
+            _instance.Logger.LogInfo(message);
         }
+    }
 
-        public static void WatchNewPatchConfig()
-        {
-            Log("Watching For Files");
-
-            //Patch JSON Watcher
-            void ConsumeNewPatchFile(object s, FileSystemEventArgs e)
-            {
-                switch (e.ChangeType)
-                {
-                    case WatcherChangeTypes.Created:
-                        //File Created
-                        var fileInfo = new FileInfo(e.FullPath);
-                        if (!fileInfo.Exists)
-                            return;
-
-                        FilePatching.ProcessPatchFile(fileInfo);
-                        var sourceFile = fileInfo.Name;
-
-                        foreach (var fileName in FilePatching.PatchesPerFile.Values.SelectMany(l => l).ToList()
-                            .Where(u => u.SourceFile.Equals(sourceFile)).Select(p => p.TargetFile).Distinct()
-                            .ToArray())
-                        {
-                            if (SyncedJsonFiles.ContainsKey(fileName))
-                                SyncedJsonFiles[fileName].AssignLocalValue(LoadJsonText(fileName));
-                            else
-                                NonSyncedJsonFiles[fileName].AssignValue(LoadJsonText(fileName));
-
-                            AddPatchFileWatcher(fileName, sourceFile);
-                        }
-
-                        break;
-                }
-            }
-
-            var newPatchWatcher = new FileSystemWatcher(FilePatching.PatchesDirPath, "*.json");
-
-            newPatchWatcher.Created += ConsumeNewPatchFile;
-            newPatchWatcher.IncludeSubdirectories = true;
-            newPatchWatcher.SynchronizingObject = ThreadingHelper.SynchronizingObject;
-            newPatchWatcher.EnableRaisingEvents = true;
-        }
-
-        private static void InitializeAbilities()
-        {
-            MagicEffectType.Initialize();
-            AbilitiesInitialized?.Invoke();
-        }
-
-        public static void Log(string message)
-        {
-            if (_loggingEnabled.Value && _logLevel.Value <= LogLevel.Info)
-            {
-                _instance.Logger.LogInfo(message);
-            }
-        }
-
-        public static void LogWarning(string message)
-        {
-            if (_loggingEnabled.Value && _logLevel.Value <= LogLevel.Warning)
-            {
-                _instance.Logger.LogWarning(message);
-            }
-        }
-
-        public static void LogError(string message)
-        {
-            if (_loggingEnabled.Value && _logLevel.Value <= LogLevel.Error)
-            {
-                _instance.Logger.LogError(message);
-            }
-        }
-
-        public static void LogWarningForce(string message)
+    public static void LogWarning(string message)
+    {
+        if (ELConfig._loggingEnabled.Value && ELConfig._logLevel.Value <= LogLevel.Warning)
         {
             _instance.Logger.LogWarning(message);
         }
+    }
 
-        public static void LogErrorForce(string message)
+    public static void LogError(string message)
+    {
+        if (ELConfig._loggingEnabled.Value && ELConfig._logLevel.Value <= LogLevel.Error)
         {
             _instance.Logger.LogError(message);
         }
+    }
 
-        /*private void Update()
+    public static void LogWarningForce(string message)
+    {
+        _instance.Logger.LogWarning(message);
+    }
+
+    public static void LogErrorForce(string message)
+    {
+        _instance.Logger.LogError(message);
+    }
+
+    private static void LoadAssets()
+    {
+        var assetBundle = LoadAssetBundle("epicloot");
+
+        if (assetBundle == null)
         {
-            PointerEventData pointerData = new PointerEventData(EventSystem.current)
-            {
-                position = Input.mousePosition
-            };
-
-            List<RaycastResult> results = new List<RaycastResult>();
-            EventSystem.current.RaycastAll(pointerData, results);
-
-            EpicLoot.LogWarning("== Objects under cursor: ==");
-            if (Input.GetKeyDown(KeyCode.I))
-            {
-                results.ForEach((result) => {
-                    EpicLoot.Log($"- {result.gameObject.name} ({result.gameObject.transform.parent.name})");
-                });
-            }
-        }*/
-
-        /*[UsedImplicitly]
-        private void Update()
-        {
-            if (Input.GetKey(KeyCode.RightControl) && Input.GetKeyDown(KeyCode.Backspace))
-            {
-                Time.timeScale = Time.timeScale == 0 ? 1 : 0;
-            }
-        }*/
-
-        private void LoadAssets()
-        {
-            var assetBundle = LoadAssetBundle("epicloot");
-            Assets.AssetBundle = assetBundle;
-            Assets.EquippedSprite = assetBundle.LoadAsset<Sprite>("Equipped");
-            Assets.AugaEquippedSprite = assetBundle.LoadAsset<Sprite>("AugaEquipped");
-            Assets.GenericSetItemSprite = assetBundle.LoadAsset<Sprite>("GenericSetItemMarker");
-            Assets.AugaSetItemSprite = assetBundle.LoadAsset<Sprite>("AugaSetItem");
-            Assets.GenericItemBgSprite = assetBundle.LoadAsset<Sprite>("GenericItemBg");
-            Assets.AugaItemBgSprite = assetBundle.LoadAsset<Sprite>("AugaItemBG");
-            Assets.SmallButtonEnchantOverlay = assetBundle.LoadAsset<Sprite>("SmallButtonEnchantOverlay");
-            Assets.MagicItemLootBeamPrefabs[(int)ItemRarity.Magic] = assetBundle.LoadAsset<GameObject>("MagicLootBeam");
-            Assets.MagicItemLootBeamPrefabs[(int)ItemRarity.Rare] = assetBundle.LoadAsset<GameObject>("RareLootBeam");
-            Assets.MagicItemLootBeamPrefabs[(int)ItemRarity.Epic] = assetBundle.LoadAsset<GameObject>("EpicLootBeam");
-            Assets.MagicItemLootBeamPrefabs[(int)ItemRarity.Legendary] = assetBundle.LoadAsset<GameObject>("LegendaryLootBeam");
-            Assets.MagicItemLootBeamPrefabs[(int)ItemRarity.Mythic] = assetBundle.LoadAsset<GameObject>("MythicLootBeam");
-
-            Assets.MagicItemDropSFX[(int)ItemRarity.Magic] = assetBundle.LoadAsset<AudioClip>("MagicItemDrop");
-            Assets.MagicItemDropSFX[(int)ItemRarity.Rare] = assetBundle.LoadAsset<AudioClip>("RareItemDrop");
-            Assets.MagicItemDropSFX[(int)ItemRarity.Epic] = assetBundle.LoadAsset<AudioClip>("EpicItemDrop");
-            Assets.MagicItemDropSFX[(int)ItemRarity.Legendary] = assetBundle.LoadAsset<AudioClip>("LegendaryItemDrop");
-            Assets.MagicItemDropSFX[(int)ItemRarity.Mythic] = assetBundle.LoadAsset<AudioClip>("MythicItemDrop");
-            Assets.ItemLoopSFX = assetBundle.LoadAsset<AudioClip>("ItemLoop");
-            Assets.AugmentItemSFX = assetBundle.LoadAsset<AudioClip>("AugmentItem");
-
-            Assets.MerchantPanel = assetBundle.LoadAsset<GameObject>("MerchantPanel");
-            Assets.MapIconTreasureMap = assetBundle.LoadAsset<Sprite>("TreasureMapIcon");
-            Assets.MapIconBounty = assetBundle.LoadAsset<Sprite>("MapIconBounty");
-            Assets.AbandonBountySFX = assetBundle.LoadAsset<AudioClip>("AbandonBounty");
-            Assets.DoubleJumpSFX = assetBundle.LoadAsset<AudioClip>("DoubleJump");
-            Assets.DebugTextPrefab = assetBundle.LoadAsset<GameObject>("DebugText");
-            Assets.AbilityBar = assetBundle.LoadAsset<GameObject>("AbilityBar");
-            Assets.WelcomMessagePrefab = assetBundle.LoadAsset<GameObject>("WelcomeMessage");
-
-            LoadCraftingMaterialAssets(assetBundle, "Runestone");
-
-            LoadCraftingMaterialAssets(assetBundle, "Shard");
-            LoadCraftingMaterialAssets(assetBundle, "Dust");
-            LoadCraftingMaterialAssets(assetBundle, "Reagent");
-            LoadCraftingMaterialAssets(assetBundle, "Essence");
-
-            LoadBuildPiece(assetBundle, "piece_enchanter", new PieceDef()
-            {
-                Table = "_HammerPieceTable",
-                CraftingStation = "piece_workbench",
-                ExtendStation = "forge",
-                Resources = new List<RecipeRequirementConfig>
-                {
-                    new RecipeRequirementConfig { item = "Stone", amount = 10 },
-                    new RecipeRequirementConfig { item = "SurtlingCore", amount = 3 },
-                    new RecipeRequirementConfig { item = "Copper", amount = 3 },
-                }
-            });
-            LoadBuildPiece(assetBundle, "piece_augmenter", new PieceDef()
-            {
-                Table = "_HammerPieceTable",
-                CraftingStation = "piece_workbench",
-                ExtendStation = "forge",
-                Resources = new List<RecipeRequirementConfig>
-                {
-                    new RecipeRequirementConfig { item = "Obsidian", amount = 10 },
-                    new RecipeRequirementConfig { item = "Crystal", amount = 3 },
-                    new RecipeRequirementConfig { item = "Bronze", amount = 3 },
-                }
-            });
-            LoadBuildPiece(assetBundle, "piece_enchantingtable", new PieceDef() {
-                Table = "_HammerPieceTable",
-                CraftingStation = "piece_workbench",
-                Resources = new List<RecipeRequirementConfig>
-                {
-                    new RecipeRequirementConfig { item = "FineWood", amount = 10 },
-                    new RecipeRequirementConfig { item = "SurtlingCore", amount = 1 }
-                }
-            });
-
-            LoadItem(assetBundle, "LeatherBelt");
-            LoadItem(assetBundle, "SilverRing");
-            LoadItem(assetBundle, "GoldRubyRing");
-            LoadItem(assetBundle, "Andvaranaut", SetupAndvaranaut);
-
-            LoadItem(assetBundle, "ForestToken");
-            LoadItem(assetBundle, "IronBountyToken");
-            LoadItem(assetBundle, "GoldBountyToken");
-
-            LoadAllZNetAssets(assetBundle);
+            LogErrorForce("Unable to load asset bundle! This mod will not behave as expected!");
+            return;
         }
 
-        public static T LoadAsset<T>(string assetName) where T : Object
-        {
-            try
-            {
-                if (_assetCache.ContainsKey(assetName))
-                {
-                    return (T)_assetCache[assetName];
-                }
+        EpicAssets.AssetBundle = assetBundle;
+        EpicAssets.EquippedSprite = assetBundle.LoadAsset<Sprite>("Equipped");
+        EpicAssets.AugaEquippedSprite = assetBundle.LoadAsset<Sprite>("AugaEquipped");
+        EpicAssets.GenericSetItemSprite = assetBundle.LoadAsset<Sprite>("GenericSetItemMarker");
+        EpicAssets.AugaSetItemSprite = assetBundle.LoadAsset<Sprite>("AugaSetItem");
+        EpicAssets.GenericItemBgSprite = assetBundle.LoadAsset<Sprite>("GenericItemBg");
+        EpicAssets.AugaItemBgSprite = assetBundle.LoadAsset<Sprite>("AugaItemBG");
+        EpicAssets.SmallButtonEnchantOverlay = assetBundle.LoadAsset<Sprite>("SmallButtonEnchantOverlay");
+        EpicAssets.DodgeBuffSprite = assetBundle.LoadAsset<Sprite>("DodgeBuff");
+        EpicAssets.MagicItemLootBeamPrefabs[(int)ItemRarity.Magic] = assetBundle.LoadAsset<GameObject>("MagicLootBeam");
+        EpicAssets.MagicItemLootBeamPrefabs[(int)ItemRarity.Rare] = assetBundle.LoadAsset<GameObject>("RareLootBeam");
+        EpicAssets.MagicItemLootBeamPrefabs[(int)ItemRarity.Epic] = assetBundle.LoadAsset<GameObject>("EpicLootBeam");
+        EpicAssets.MagicItemLootBeamPrefabs[(int)ItemRarity.Legendary] = assetBundle.LoadAsset<GameObject>("LegendaryLootBeam");
+        EpicAssets.MagicItemLootBeamPrefabs[(int)ItemRarity.Mythic] = assetBundle.LoadAsset<GameObject>("MythicLootBeam");
 
-                var asset = Assets.AssetBundle.LoadAsset<T>(assetName);
-                _assetCache.Add(assetName, asset);
-                return asset;
-            }
-            catch (Exception e)
+        EpicAssets.MagicItemDropSFX[(int)ItemRarity.Magic] = assetBundle.LoadAsset<AudioClip>("MagicItemDrop");
+        EpicAssets.MagicItemDropSFX[(int)ItemRarity.Rare] = assetBundle.LoadAsset<AudioClip>("RareItemDrop");
+        EpicAssets.MagicItemDropSFX[(int)ItemRarity.Epic] = assetBundle.LoadAsset<AudioClip>("EpicItemDrop");
+        EpicAssets.MagicItemDropSFX[(int)ItemRarity.Legendary] = assetBundle.LoadAsset<AudioClip>("LegendaryItemDrop");
+        EpicAssets.MagicItemDropSFX[(int)ItemRarity.Mythic] = assetBundle.LoadAsset<AudioClip>("MythicItemDrop");
+        EpicAssets.ItemLoopSFX = assetBundle.LoadAsset<AudioClip>("ItemLoop");
+        EpicAssets.AugmentItemSFX = assetBundle.LoadAsset<AudioClip>("AugmentItem");
+
+        EpicAssets.MerchantPanel = assetBundle.LoadAsset<GameObject>("MerchantPanel");
+        EpicAssets.MapIconTreasureMap = assetBundle.LoadAsset<Sprite>("TreasureMapIcon");
+        EpicAssets.MapIconBounty = assetBundle.LoadAsset<Sprite>("MapIconBounty");
+        EpicAssets.AbandonBountySFX = assetBundle.LoadAsset<AudioClip>("AbandonBounty");
+        EpicAssets.DoubleJumpSFX = assetBundle.LoadAsset<AudioClip>("DoubleJump");
+        EpicAssets.OffSetSFX = assetBundle.LoadAsset<AudioClip>("sfx_offset");
+        EpicAssets.DebugTextPrefab = assetBundle.LoadAsset<GameObject>("DebugText");
+        EpicAssets.AbilityBar = assetBundle.LoadAsset<GameObject>("AbilityBar");
+        EpicAssets.WelcomMessagePrefab = assetBundle.LoadAsset<GameObject>("WelcomeMessage");
+
+        EpicAssets.BulwarkStatusEffect = assetBundle.LoadAsset<SE_Stats>(EpicAssets.Bulwark_SE_Name);
+        EpicAssets.BulwarkMagicShieldVFX = assetBundle.LoadAsset<GameObject>("MagicShield");
+        EpicAssets.BulwarkMagicShieldSFX = assetBundle.LoadAsset<GameObject>("sfx_bulwark");
+
+        EpicAssets.UndyingStatusEffect = assetBundle.LoadAsset<SE_Stats>(EpicAssets.Undying_SE_Name);
+        EpicAssets.UndyingVFX = assetBundle.LoadAsset<GameObject>("Undying");
+        EpicAssets.UndyingSFX = assetBundle.LoadAsset<GameObject>("sfx_undying");
+
+        EpicAssets.BerserkerStatusEffect = assetBundle.LoadAsset<SE_Stats>(EpicAssets.Berserker_SE_Name);
+        EpicAssets.BerserkerVFX = assetBundle.LoadAsset<GameObject>("Berserker");
+        EpicAssets.BerserkerSFX =  assetBundle.LoadAsset<GameObject>("sfx_berserker");
+
+        EpicAssets.DodgeBuffStatusEffect = assetBundle.LoadAsset<SE_Stats>(EpicAssets.DodgeBuff_SE_Name);
+        EpicAssets.DodgeBuffSFX = assetBundle.LoadAsset<GameObject>("sfx_dodgebuff");
+
+        GameObject explosiveArrow = assetBundle.LoadAsset<GameObject>(EpicAssets.ExplosiveArrow);
+        PrefabManager.Instance.AddPrefab(new CustomPrefab(explosiveArrow, true));
+
+        LoadCraftingMaterialAssets();
+
+        LoadPieces();
+        LoadItems();
+        LoadBountySpawner();
+        RegisterStatusEffects();
+
+        PrefabManager.OnPrefabsRegistered += SetupAndvaranaut;
+        ItemManager.OnItemsRegistered += SetupStatusEffects;
+        LoadUnidentifiedItems();
+        // Needs to trigger late in order to get all potentially added items by other mods
+        MinimapManager.OnVanillaMapDataLoaded += () => AutoAddEnchantableItems.CheckAndAddAllEnchantableItems();
+
+        EpicAssets.AssertAssetIntegrety();
+    }
+
+    public static T LoadAsset<T>(string assetName) where T : Object
+    {
+        try
+        {
+            if (EpicAssets.AssetCache.ContainsKey(assetName))
             {
-                LogErrorForce($"Error loading asset ({assetName}): {e.Message}");
-                return null;
+                return (T)EpicAssets.AssetCache[assetName];
             }
+
+            var asset = EpicAssets.AssetBundle.LoadAsset<T>(assetName);
+            EpicAssets.AssetCache.Add(assetName, asset);
+            return asset;
+        }
+        catch (Exception e)
+        {
+            LogErrorForce($"Error loading asset ({assetName}): {e.Message}");
+            return null;
+        }
+    }
+
+    private static void LoadPieces()
+    {
+        GameObject enchanter = EpicAssets.AssetBundle.LoadAsset<GameObject>("piece_enchanter");
+        PieceConfig enchanterPC = new PieceConfig();
+        enchanterPC.PieceTable = "Hammer";
+        enchanterPC.Category = PieceCategories.Misc;
+        enchanterPC.AllowedInDungeons = false;
+        enchanterPC.Requirements = new RequirementConfig[]
+        {
+            new RequirementConfig() { Item = "Stone", Amount = 10, Recover = true },
+            new RequirementConfig() { Item = "SurtlingCore", Amount = 3, Recover = true },
+            new RequirementConfig() { Item = "Copper", Amount = 3, Recover = true },
+            new RequirementConfig() { Item = "SwordCheat", Amount = 1, Recover = false }
+        };
+        PieceManager.Instance.AddPiece(new CustomPiece(enchanter, true, enchanterPC));
+
+        GameObject augmenter = EpicAssets.AssetBundle.LoadAsset<GameObject>("piece_augmenter");
+        PieceConfig augmenterPC = new PieceConfig();
+        augmenterPC.PieceTable = "Hammer";
+        augmenterPC.Category = PieceCategories.Misc;
+        augmenterPC.AllowedInDungeons = false;
+        augmenterPC.Requirements = new RequirementConfig[]
+        {
+            new RequirementConfig() { Item = "Obsidian", Amount = 10, Recover = true },
+            new RequirementConfig() { Item = "Crystal", Amount = 3, Recover = true },
+            new RequirementConfig() { Item = "Bronze", Amount = 3, Recover = true },
+            new RequirementConfig() { Item = "SwordCheat", Amount = 1, Recover = false }
+        };
+        PieceManager.Instance.AddPiece(new CustomPiece(augmenter, true, augmenterPC));
+
+        GameObject table = EpicAssets.AssetBundle.LoadAsset<GameObject>("piece_enchantingtable");
+        PieceConfig tablePC = new PieceConfig();
+        tablePC.PieceTable = "Hammer";
+        tablePC.Category = PieceCategories.Crafting;
+        tablePC.Requirements = new RequirementConfig[]
+        {
+            new RequirementConfig() { Item = "FineWood", Amount = 10, Recover = true },
+            new RequirementConfig() { Item = "SurtlingCore", Amount = 1, Recover = true }
+        };
+        PieceManager.Instance.AddPiece(new CustomPiece(table, true, tablePC));
+    }
+
+    private static void LoadItems()
+    {
+        foreach (var item in ItemNames)
+        {
+            var go = EpicAssets.AssetBundle.LoadAsset<GameObject>(item);
+            var customItem = new CustomItem(go, false);
+            ItemManager.Instance.AddItem(customItem);
         }
 
-        private static void LoadItem(AssetBundle assetBundle, string assetName, Action<ItemDrop> customSetupAction = null)
-        {
-            var prevForceDisable = ZNetView.m_forceDisableInit;
-            ZNetView.m_forceDisableInit = true;
-            var prefab = assetBundle.LoadAsset<GameObject>(assetName);
-            ZNetView.m_forceDisableInit = prevForceDisable;
-            RegisteredItemPrefabs.Add(prefab);
-            RegisteredPrefabs.Add(prefab);
-            if (customSetupAction != null)
-            {
-                _customItemSetupActions.Add(prefab.name, customSetupAction);
-            }
-        }
+        // Make a dummy empty game object for later use.
+        GameObject dummyGO = PrefabManager.Instance.CreateEmptyPrefab(EpicAssets.DummyName, true);
+        ItemDrop itemDrop = dummyGO.AddComponent<ItemDrop>();
+        itemDrop.m_itemData.m_shared = new ItemDrop.ItemData.SharedData();
+        itemDrop.m_itemData.m_shared.m_name = "";
+        var dummyItem = new CustomItem(dummyGO, false);
+        ItemManager.Instance.AddItem(dummyItem);
+    }
 
-        private static void LoadBuildPiece(AssetBundle assetBundle, string assetName, PieceDef pieceDef)
-        {
-            var prefab = assetBundle.LoadAsset<GameObject>(assetName);
-            RegisteredPieces.Add(prefab, pieceDef);
-            RegisteredPrefabs.Add(prefab);
-        }
+    private static void LoadBountySpawner()
+    {
+        GameObject bounty_spawner = EpicAssets.AssetBundle.LoadAsset<GameObject>("EL_SpawnController");
 
-        private static void LoadCraftingMaterialAssets(AssetBundle assetBundle, string type)
+        if (bounty_spawner == null)
         {
-            var prefabs = new GameObject[5];
+            LogErrorForce("Unable to find bounty spawner asset! This mod will not behave as expected!");
+        }
+        else
+        {
+            bounty_spawner.AddComponent<AdventureSpawnController>();
+            CustomPrefab prefab_obj = new CustomPrefab(bounty_spawner, false);
+            PrefabManager.Instance.AddPrefab(prefab_obj);
+        }
+    }
+
+    private static void LoadCraftingMaterialAssets()
+    {
+        foreach (string type in MagicMaterials)
+        {
             foreach (ItemRarity rarity in Enum.GetValues(typeof(ItemRarity)))
             {
-                var assetName = $"{type}{rarity}";
-                var prefab = assetBundle.LoadAsset<GameObject>(assetName);
-                if (prefab == null)
+                string assetName = $"{type}{rarity}";
+                GameObject prefab = EpicAssets.AssetBundle.LoadAsset<GameObject>(assetName);
+
+                if (!prefab)
                 {
                     LogErrorForce($"Tried to load asset {assetName} but it does not exist in the asset bundle!");
                     continue;
                 }
-                prefabs[(int) rarity] = prefab;
-                RegisteredPrefabs.Add(prefab);
-                RegisteredItemPrefabs.Add(prefab);
-            }
-            Assets.CraftingMaterialPrefabs.Add(type, prefabs);
-        }
 
-        private void LoadAllZNetAssets(AssetBundle assetBundle)
-        {
-            var znetAssets = assetBundle.LoadAllAssets();
-            foreach (var asset in znetAssets)
-            {
-                if (asset is GameObject assetGo && assetGo.GetComponent<ZNetView>() != null)
+                if (prefab.TryGetComponent(out ItemDrop itemDrop))
                 {
-                    _assetCache.Add(asset.name, assetGo);
-                    RegisteredPrefabs.Add(assetGo);
-                }
-            }
-        }
-
-        [UsedImplicitly]
-        private void OnDestroy()
-        {
-            _instance = null;
-            _harmony?.UnpatchSelf();
-        }
-
-        public static void TryRegisterPrefabs(ZNetScene zNetScene)
-        {
-            if (zNetScene == null || zNetScene.m_prefabs == null || zNetScene.m_prefabs.Count <= 0)
-            {
-                return;
-            }
-
-            foreach (var prefab in RegisteredPrefabs)
-            {
-                if (!zNetScene.m_prefabs.Contains(prefab))
-                {
-                    zNetScene.m_prefabs.Add(prefab);
-                }
-            }
-        }
-
-        public static void TryRegisterPieces(List<PieceTable> pieceTables, List<CraftingStation> craftingStations)
-        {
-            foreach (var entry in RegisteredPieces)
-            {
-                var prefab = entry.Key;
-                if (prefab == null)
-                {
-                    LogError($"Tried to register piece but prefab was null!");
-                    continue;
-                }
-
-                var pieceDef = entry.Value;
-                if (pieceDef == null)
-                {
-                    LogError($"Tried to register piece ({prefab}) but pieceDef was null!");
-                    continue;
-                }
-
-                var piece = prefab.GetComponent<Piece>();
-                if (piece == null)
-                {
-                    LogError($"Tried to register piece ({prefab}) but Piece component was missing!");
-                    continue;
-                }
-
-                var pieceTable = pieceTables.Find(x => x.name == pieceDef.Table);
-                if (pieceTable == null)
-                {
-                    LogError($"Tried to register piece ({prefab}) but could not find piece table ({pieceDef.Table}) (pieceTables({pieceTables.Count})= {string.Join(", ", pieceTables.Select(x =>x.name))})!");
-                    continue;
-                }
-
-                if (pieceTable.m_pieces.Contains(prefab))
-                {
-                    continue;
-                }
-
-                pieceTable.m_pieces.Add(prefab);
-
-                var pieceStation = craftingStations.Find(x => x.name == pieceDef.CraftingStation);
-                piece.m_craftingStation = pieceStation;
-
-                var resources = new List<Piece.Requirement>();
-                foreach (var resource in pieceDef.Resources)
-                {
-                    var resourcePrefab = ObjectDB.instance.GetItemPrefab(resource.item);
-                    resources.Add(new Piece.Requirement()
+                    if (itemDrop.m_itemData.IsMagicCraftingMaterial())
                     {
-                        m_resItem = resourcePrefab.GetComponent<ItemDrop>(),
-                        m_amount = resource.amount
-                    });
-                }
-                piece.m_resources = resources.ToArray();
-
-                var stationExt = prefab.GetComponent<StationExtension>();
-                if (stationExt != null && !string.IsNullOrEmpty(pieceDef.ExtendStation))
-                {
-                    var stationPrefab = pieceTable.m_pieces.Find(x => x.name == pieceDef.ExtendStation);
-                    if (stationPrefab != null)
-                    {
-                        var station = stationPrefab.GetComponent<CraftingStation>();
-                        stationExt.m_craftingStation = station;
+                        // Set icons for crafting materials.
+                        itemDrop.m_itemData.m_variant = GetRarityIconIndex(rarity);
                     }
 
-                    var otherExt = pieceTable.m_pieces.Find(x => x.GetComponent<StationExtension>() != null);
-                    if (otherExt != null)
-                    {
-                        var otherStationExt = otherExt.GetComponent<StationExtension>();
-                        var otherPiece = otherExt.GetComponent<Piece>();
-
-                        stationExt.m_connectionPrefab = otherStationExt.m_connectionPrefab;
-                        piece.m_placeEffect.m_effectPrefabs = otherPiece.m_placeEffect.m_effectPrefabs.ToArray();
-                    }
-                }
-                else
-                {
-                    var workshopPrefab = pieceTable.m_pieces.FirstOrDefault(x => x.name == "piece_workshop");
-                    if (workshopPrefab != null && workshopPrefab.GetComponent<Piece>() is Piece otherPiece)
-                        piece.m_placeEffect.m_effectPrefabs = otherPiece.m_placeEffect.m_effectPrefabs.ToArray();
-                }
-            }
-        }
-
-        public static bool IsObjectDBReady()
-        {
-            // Hack, just making sure the built-in items and prefabs have loaded
-            return ObjectDB.instance != null && ObjectDB.instance.m_items.Count != 0 && ObjectDB.instance.GetItemPrefab("Amber") != null;
-        }
-
-        public static void TryRegisterItems()
-        {
-            if (!IsObjectDBReady())
-            {
-                return;
-            }
-
-            
-            foreach (var prefab in RegisteredItemPrefabs)
-            {
-                var itemDrop = prefab.GetComponent<ItemDrop>();
-                if (itemDrop != null)
-                {
-                    //Set icons for crafting materials
-
-                    if (itemDrop.m_itemData.IsMagicCraftingMaterial() || itemDrop.m_itemData.IsRunestone())
-                    {
-                        var rarity = itemDrop.m_itemData.GetRarity();
-                        
-                        if (itemDrop.m_itemData.IsMagicCraftingMaterial())
-                        {
-                            itemDrop.m_itemData.m_variant = GetRarityIconIndex(rarity);
-                        }
-                    }
-                }
-            }
-
-            foreach (var prefab in RegisteredItemPrefabs)
-            {
-                var itemDrop = prefab.GetComponent<ItemDrop>();
-                if (itemDrop != null)
-                {
-                    if (ObjectDB.instance.GetItemPrefab(prefab.name.GetStableHashCode()) == null)
-                    {
-                        ObjectDB.instance.m_items.Add(prefab);
-                    }
-                }
-            }
-
-            foreach (var prefab in RegisteredItemPrefabs)
-            {
-                var itemDrop = prefab.GetComponent<ItemDrop>();
-                if (itemDrop != null)
-                {
-                    if (_customItemSetupActions.TryGetValue(prefab.name, out var action))
-                    {
-                        action?.Invoke(itemDrop);
-                    }
-                }
-            }
-
-            ObjectDB.instance.UpdateItemHashes();
-
-            var pieceTables = new List<PieceTable>();
-            foreach (var itemPrefab in ObjectDB.instance.m_items)
-            {
-                var itemDrop = itemPrefab.GetComponent<ItemDrop>();
-                if (itemDrop == null)
-                {
-                    LogError($"An item without an ItemDrop ({itemPrefab}) exists in ObjectDB.instance.m_items! Don't do this!");
-                    continue;
-                }
-                var item = itemDrop.m_itemData;
-                if (item != null && item.m_shared.m_buildPieces != null && !pieceTables.Contains(item.m_shared.m_buildPieces))
-                {
-                    pieceTables.Add(item.m_shared.m_buildPieces);
-                }
-            }
-
-            var craftingStations = new List<CraftingStation>();
-            foreach (var pieceTable in pieceTables)
-            {
-                craftingStations.AddRange(pieceTable.m_pieces
-                    .Where(x => x.GetComponent<CraftingStation>() != null)
-                    .Select(x => x.GetComponent<CraftingStation>()));
-            }
-
-            TryRegisterPieces(pieceTables, craftingStations);
-            SetupStatusEffects();
-        }
-
-        public static void TryRegisterRecipes()
-        {
-            if (!IsObjectDBReady())
-            {
-                return;
-            }
-
-            RecipesHelper.SetupRecipes();
-        }
-
-        private static void SetupAndvaranaut(ItemDrop prefab)
-        {
-            var andvaranaut = prefab.m_itemData;
-            var wishbone = ObjectDB.instance.GetItemPrefab("Wishbone").GetComponent<ItemDrop>().m_itemData;
-
-            // first, create custom status effect
-            var originalFinder = wishbone.m_shared.m_equipStatusEffect;
-            var wishboneFinder = ScriptableObject.CreateInstance<SE_CustomFinder>();
-
-            // Copy all values from finder
-            Common.Utils.CopyFields(originalFinder, wishboneFinder, typeof(SE_Finder));
-            wishboneFinder.name = "CustomWishboneFinder";
-
-            var andvaranautFinder = ScriptableObject.CreateInstance<SE_CustomFinder>();
-            Common.Utils.CopyFields(wishboneFinder, andvaranautFinder, typeof(SE_CustomFinder));
-            andvaranautFinder.name = "Andvaranaut";
-            andvaranautFinder.m_name = "$mod_epicloot_item_andvaranaut";
-            andvaranautFinder.m_icon = andvaranaut.GetIcon();
-            andvaranautFinder.m_tooltip = "$mod_epicloot_item_andvaranaut_tooltip";
-            andvaranautFinder.m_startMessage = "$mod_epicloot_item_andvaranaut_startmsg";
-
-            // Setup restrictions
-            andvaranautFinder.RequiredComponentTypes = new List<Type> { typeof(TreasureMapChest) };
-            wishboneFinder.DisallowedComponentTypes = new List<Type> { typeof(TreasureMapChest) };
-
-            // Add to list
-            ObjectDB.instance.m_StatusEffects.Remove(originalFinder);
-            ObjectDB.instance.m_StatusEffects.Add(andvaranautFinder);
-            ObjectDB.instance.m_StatusEffects.Add(wishboneFinder);
-
-            // Set new status effect
-            andvaranaut.m_shared.m_equipStatusEffect = andvaranautFinder;
-            wishbone.m_shared.m_equipStatusEffect = wishboneFinder;
-
-            // Setup magic item
-            var magicItem = new MagicItem
-            {
-                Rarity = ItemRarity.Epic,
-                TypeNameOverride = "$mod_epicloot_item_andvaranaut_type"
-            };
-            magicItem.Effects.Add(new MagicItemEffect(MagicEffectType.Andvaranaut));
-
-            prefab.m_itemData.SaveMagicItem(magicItem);
-        }
-
-        private static void SetupStatusEffects()
-        {
-            var lightning = ObjectDB.instance.GetStatusEffect("Lightning".GetHashCode());
-            var paralyzed = ScriptableObject.CreateInstance<SE_Paralyzed>();
-            Common.Utils.CopyFields(lightning, paralyzed, typeof(StatusEffect));
-            paralyzed.name = "Paralyze";
-            paralyzed.m_name = "mod_epicloot_se_paralyze";
-
-            ObjectDB.instance.m_StatusEffects.Add(paralyzed);
-        }
-
-        public static void LoadJsonFile<T>(string filename, Action<T> onFileLoad, ConfigType configType, bool update = false) where T : class
-        {
-            var jsonFile = LoadJsonText(filename);
-
-            if (!update)
-            {
-                if (configType == ConfigType.Synced)
-                    SyncedJsonFiles.Add(filename, new CustomSyncedValue<string>(_instance._configSync, filename, jsonFile));
-                else
-                    NonSyncedJsonFiles.Add(filename,new ConfigValue<string>(filename,jsonFile));
-            }
-            
-            void Process()
-            {
-                T result;
-                try
-                {
-                    if (configType == ConfigType.Synced)
-                        result = string.IsNullOrEmpty(SyncedJsonFiles[filename].Value) ? null : JsonConvert.DeserializeObject<T>(SyncedJsonFiles[filename].Value);
-                    else
-                        result = string.IsNullOrEmpty(NonSyncedJsonFiles[filename].Value) ? null : JsonConvert.DeserializeObject<T>(NonSyncedJsonFiles[filename].Value);
-                }
-                catch (Exception)
-                {
-                    LogErrorForce($"Could not parse file '{filename}'! Errors in JSON!");
-                    throw;
+                    // Add MagicItemComponent or products will not stack until reloaded.
+                    itemDrop.m_itemData.CreateMagicItem();
                 }
 
-                onFileLoad(result);
+                CustomItem custom = new CustomItem(prefab, false);
+                ItemManager.Instance.AddItem(custom);
             }
+        }
+    }
 
-            if (configType == ConfigType.Synced)
-                SyncedJsonFiles[filename].ValueChanged += Process;
-            else
-                NonSyncedJsonFiles[filename].ValueChanged += Process;
+    private static void LoadUnidentifiedItems()
+    {
+        // TODO: Add support for biomes added by other mods as needed.
+        GameObject genericPrefab = EpicAssets.AssetBundle.LoadAsset<GameObject>("_Unidentified");
+        CustomItem genericUnidentified = new CustomItem(genericPrefab, false);
+        ItemManager.Instance.AddItem(genericUnidentified);
+        genericPrefab.SetActive(false);
 
-            Process();
-
-            if (jsonFile != null)
+        foreach (string biome in Enum.GetNames(typeof(Heightmap.Biome)))
+        {
+            if (biome == "None" || biome == "All")
             {
-                //Primary JSON Watcher
-                void ConsumeConfigFileEvent(object s, FileSystemEventArgs e)
-                {
-                    if (configType == ConfigType.Synced)
-                        SyncedJsonFiles[filename].AssignLocalValue(LoadJsonText(filename));
-                    else
-                        NonSyncedJsonFiles[filename].AssignValue(LoadJsonText(filename));
-
-                }
-
-	            var filePath = GetAssetPath(filename);
-	            FileSystemWatcher watcher = new FileSystemWatcher(Path.GetDirectoryName(filePath), Path.GetFileName(filePath));
-	            watcher.Changed += ConsumeConfigFileEvent;
-	            watcher.Created += ConsumeConfigFileEvent;
-	            watcher.Renamed += ConsumeConfigFileEvent;
-	            watcher.IncludeSubdirectories = true;
-	            watcher.SynchronizingObject = ThreadingHelper.SynchronizingObject;
-	            watcher.EnableRaisingEvents = true;
-
-                //Patch JSON Watcher
-                for (var i = 0; i < FilePatching.PatchesPerFile.Where(y => y.Key.Equals(filename)).ToList().Count; i++)
-                {
-                    var configFile = FilePatching.PatchesPerFile.Where(y => y.Key.Equals(filename)).ToList()[i];
-                    var lists = configFile.Value.Select(p => p.SourceFile).Distinct().ToList();
-
-                    for (var index = 0; index < lists.Count; index++)
-                    {
-                        var patchfile = lists[index];
-                        AddPatchFileWatcher(filename,patchfile);
-                    }
-                }
+                continue;
             }
-        }
 
-        private static void AddPatchFileWatcher(string fileName, string patchFile)
-        {
-            var fullPatchFilename = Path.Combine(FilePatching.PatchesDirPath, patchFile);
-            Log($"[AddPatchFileWatcher] Full Patch File Name = {fullPatchFilename}");
-            void ConsumePatchFileEvent(object s, FileSystemEventArgs e)
+            foreach (ItemRarity rarity in Enum.GetValues(typeof(ItemRarity)))
             {
-                FileInfo fileInfo = null;
-
-                switch (e.ChangeType)
+                var prefab = Object.Instantiate(genericPrefab);
+                string prefabName = $"{biome}_{rarity}_Unidentified";
+                prefab.name = prefabName;
+                ItemDrop pid = prefab.GetComponent<ItemDrop>();
+                var magicItemComponent = pid.m_itemData.Data().GetOrCreate<MagicItemComponent>();
+                pid.m_itemData.m_dropPrefab = prefab;
+                magicItemComponent.SetMagicItem(new MagicItem
                 {
-                    case WatcherChangeTypes.Deleted:
-                        //File Deleted
-                        Debug.Log($"Function Deleted");
-                        FilePatching.RemoveFilePatches(fileName, patchFile);
-                        break;
-                    case WatcherChangeTypes.Changed:
-                        //File Changed
-                        Debug.Log($"Function Changed");
-                        FilePatching.RemoveFilePatches(fileName, patchFile);
-                        fileInfo = new FileInfo(fullPatchFilename);
-                        break;
-                }
-
-                if (fileInfo != null && fileInfo.Exists)
-                    FilePatching.ProcessPatchFile(fileInfo);
-
-                SyncedJsonFiles[fileName].AssignLocalValue(LoadJsonText(fileName));
-            }
-
-            var patchWatcher = new FileSystemWatcher(Path.GetDirectoryName(fullPatchFilename), Path.GetFileName(fullPatchFilename));
-
-            patchWatcher.Changed += ConsumePatchFileEvent;
-            patchWatcher.Deleted += ConsumePatchFileEvent;
-            patchWatcher.IncludeSubdirectories = true;
-            patchWatcher.SynchronizingObject = ThreadingHelper.SynchronizingObject;
-            patchWatcher.EnableRaisingEvents = true;
-
-        }
-
-
-        public static string LoadJsonText(string filename)
-        {
-            var jsonFilePath = GetAssetPath(filename);
-            if (string.IsNullOrEmpty(jsonFilePath))
-                return null;
-
-            var jsonFileText = File.ReadAllText(jsonFilePath);
-            var patchedJsonFileText = FilePatching.ProcessConfigFile(filename, jsonFileText);
-            if (OutputPatchedConfigFiles.Value && jsonFileText != patchedJsonFileText)
-            { 
-                var debugFilePath = Path.Combine(Paths.ConfigPath, "EpicLoot", filename.Replace(".json", "_patched.json"));
-                File.WriteAllText(debugFilePath, patchedJsonFileText);
-            }
-            return patchedJsonFileText;
-        }
-
-        public static AssetBundle LoadAssetBundle(string filename)
-        {
-            var assembly = Assembly.GetCallingAssembly();
-            var assetBundle = AssetBundle.LoadFromStream(assembly.GetManifestResourceStream($"{assembly.GetName().Name}.{filename}"));
-
-            return assetBundle;
-        }
-
-        public static string GenerateAssetPathAtAssembly(string assetName)
-        {
-            var assembly = typeof(EpicLoot).Assembly;
-            return Path.Combine(Path.GetDirectoryName(assembly.Location) ?? string.Empty, assetName);
-        }
-
-        public static string GetAssetPath(string assetName)
-        {
-            var assetFileName = Path.Combine(Paths.PluginPath, "EpicLoot", assetName);
-            if (!File.Exists(assetFileName))
-            {
-                assetFileName = GenerateAssetPathAtAssembly(assetName);
-                if (!File.Exists(assetFileName))
+                    Rarity = rarity,
+                    IsUnidentified = true,
+                });
+                magicItemComponent.Save();
+                
+                ItemConfig unidentifiedIC = new ItemConfig()
                 {
-                    LogErrorForce($"Could not find asset ({assetName})");
-                    return null;
-                }
-            }
-
-            return assetFileName;
-        }
-
-        public static bool CanBeMagicItem(ItemDrop.ItemData item)
-        {
-            return item != null && IsPlayerItem(item) && Nonstackable(item) && IsNotRestrictedItem(item) && AllowedMagicItemTypes.Contains(item.m_shared.m_itemType);
-        }
-
-        public static Sprite GetMagicItemBgSprite()
-        {
-            return HasAuga ? Assets.AugaItemBgSprite : Assets.GenericItemBgSprite;
-        }
-
-        public static Sprite GetEquippedSprite()
-        {
-            return HasAuga ? Assets.AugaEquippedSprite : Assets.EquippedSprite;
-        }
-
-        public static Sprite GetSetItemSprite()
-        {
-            return HasAuga ? Assets.AugaSetItemSprite : Assets.GenericSetItemSprite;
-        }
-
-        public static string GetMagicEffectPip(bool hasBeenAugmented)
-        {
-            return HasAuga ? (hasBeenAugmented ? "♢" : "♦") : (hasBeenAugmented ? "◇" : "◆");
-        }
-
-        private static bool IsNotRestrictedItem(ItemDrop.ItemData item)
-        {
-            if (item.m_dropPrefab != null && LootRoller.Config.RestrictedItems.Contains(item.m_dropPrefab.name))
-                return false;
-            return !LootRoller.Config.RestrictedItems.Contains(item.m_shared.m_name);
-        }
-
-        private static bool Nonstackable(ItemDrop.ItemData item)
-        {
-            return item.m_shared.m_maxStackSize == 1;
-        }
-
-        private static bool IsPlayerItem(ItemDrop.ItemData item)
-        {
-            // WTF, this is the only thing I found different between player usable items and items that are only for enemies
-            return item.m_shared.m_icons.Length > 0;
-        }
-
-        public static string GetCharacterCleanName(Character character)
-        {
-            return character.name.Replace("(Clone)", "").Trim();
-        }
-
-        public static void OnCharacterDeath(CharacterDrop characterDrop)
-        {
-            if (!CanCharacterDropLoot(characterDrop.m_character))
-            {
-                return;
-            }
-
-            var characterName = GetCharacterCleanName(characterDrop.m_character);
-            var level = characterDrop.m_character.GetLevel();
-            var dropPoint = characterDrop.m_character.GetCenterPoint() + characterDrop.transform.TransformVector(characterDrop.m_spawnOffset);
-
-            OnCharacterDeath(characterName, level, dropPoint);
-        }
-
-        public static bool CanCharacterDropLoot(Character character)
-        {
-            return character != null && !character.IsTamed();
-        }
-
-        public static void OnCharacterDeath(string characterName, int level, Vector3 dropPoint)
-        {
-            var lootTables = LootRoller.GetLootTable(characterName);
-            if (lootTables != null && lootTables.Count > 0)
-            {
-                var loot = LootRoller.RollLootTableAndSpawnObjects(lootTables, level, characterName, dropPoint);
-                Log($"Rolling on loot table: {characterName} (lvl {level}), spawned {loot.Count} items at drop point({dropPoint}).");
-                DropItems(loot, dropPoint);
-                foreach (var l in loot)
-                {
-                    var itemData = l.GetComponent<ItemDrop>().m_itemData;
-                    var magicItem = itemData.GetMagicItem();
-                    if (magicItem != null)
-                    {
-                        Log($"  - {itemData.m_shared.m_name} <{l.transform.position}>: {string.Join(", ", magicItem.Effects.Select(x => x.EffectType.ToString()))}");
-                    }
-                }
-            }
-            else
-            {
-                Log($"Could not find loot table for: {characterName} (lvl {level})");
-            }
-        }
-
-        public static void DropItems(List<GameObject> loot, Vector3 centerPos, float dropHemisphereRadius = 0.5f)
-        {
-            foreach (var item in loot)
-            {
-                var vector3 = Random.insideUnitSphere * dropHemisphereRadius;
-                vector3.y = Mathf.Abs(vector3.y);
-                item.transform.position = centerPos + vector3;
-                item.transform.rotation = Quaternion.Euler(0.0f, Random.Range(0, 360), 0.0f);
-
-                var rigidbody = item.GetComponent<Rigidbody>();
-                if (rigidbody != null)
-                {
-                    var insideUnitSphere = Random.insideUnitSphere;
-                    if (insideUnitSphere.y < 0.0)
-                    {
-                        insideUnitSphere.y = -insideUnitSphere.y;
-                    }
-                    rigidbody.AddForce(insideUnitSphere * 5f, ForceMode.VelocityChange);
-                }
-            }
-        }
-
-        private void PrintInfo()
-        {
-            const string devOutputPath = @"C:\Users\rknapp\Documents\GitHub\ValheimMods\EpicLoot";
-            if (!Directory.Exists(devOutputPath))
-            {
-                return;
-            }
-
-            var t = new StringBuilder();
-            t.AppendLine($"# EpicLoot Data v{Version}");
-            t.AppendLine();
-            t.AppendLine("*Author: RandyKnapp*");
-            t.AppendLine("*Source: [Github](https://github.com/RandyKnapp/ValheimMods/tree/main/EpicLoot)*");
-            t.AppendLine();
-
-            // Magic item effects per rarity
-            t.AppendLine("# Magic Effect Count Weights Per Rarity");
-            t.AppendLine();
-            t.AppendLine("Each time a **MagicItem** is rolled a number of **MagicItemEffects** are added based on its **Rarity**. The percent chance to roll each number of effects is found on the following table. These values are hardcoded.");
-            t.AppendLine();
-            t.AppendLine("The raw weight value is shown first, followed by the calculated percentage chance in parentheses.");
-            t.AppendLine();
-            t.AppendLine("|Rarity|1|2|3|4|5|6|");
-            t.AppendLine("|--|--|--|--|--|--|--|");
-            t.AppendLine(GetMagicEffectCountTableLine(ItemRarity.Magic));
-            t.AppendLine(GetMagicEffectCountTableLine(ItemRarity.Rare));
-            t.AppendLine(GetMagicEffectCountTableLine(ItemRarity.Epic));
-            t.AppendLine(GetMagicEffectCountTableLine(ItemRarity.Legendary));
-            //t.AppendLine(GetMagicEffectCountTableLine(ItemRarity.Mythic));
-            t.AppendLine();
-
-            var rarities = new List<ItemRarity>();
-            foreach (ItemRarity value in Enum.GetValues(typeof(ItemRarity)))
-            {
-                rarities.Add(value);
-            }
-
-            var skillTypes = new List<Skills.SkillType>();
-            foreach (Skills.SkillType value in Enum.GetValues(typeof(Skills.SkillType)))
-            {
-                if (value == Skills.SkillType.None
-                    || value == Skills.SkillType.WoodCutting
-                    || value == Skills.SkillType.Jump
-                    || value == Skills.SkillType.Sneak
-                    || value == Skills.SkillType.Run
-                    || value == Skills.SkillType.Swim
-                    || value == Skills.SkillType.All)
-                {
-                    continue;
-                }
-                skillTypes.Add(value);
-            }
-
-            // Magic item effects
-            t.AppendLine("# MagicItemEffect List");
-            t.AppendLine();
-            t.AppendLine("The following lists all the built-in **MagicItemEffects**. MagicItemEffects are defined in `magiceffects.json` and are parsed and added " +
-                         "to `MagicItemEffectDefinitions` on Awake. EpicLoot uses an string for the types of magic effects. You can add your own new types using your own identifiers.");
-            t.AppendLine();
-            t.AppendLine("Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinitions` (which gets called in `EpicLoot.Awake`) to add your own using instances of MagicItemEffectDefinition.");
-            t.AppendLine();
-            t.AppendLine("  * **Display Text:** This text appears in the tooltip for the magic item, with {0:?} replaced with the rolled value for the effect, formatted using the shown C# string format.");
-            t.AppendLine("  * **Requirements:** A set of requirements.");
-            t.AppendLine("    * **Flags:** A set of predefined flags to check certain weapon properties. The list of flags is: `NoRoll, ExclusiveSelf, ItemHasPhysicalDamage, ItemHasElementalDamage, ItemUsesDurability, ItemHasNegativeMovementSpeedModifier, ItemHasBlockPower, ItemHasNoParryPower, ItemHasParryPower, ItemHasArmor, ItemHasBackstabBonus, ItemUsesStaminaOnAttack`");
-            t.AppendLine("    * **ExclusiveEffectTypes:** This effect may not be rolled on an item that has already rolled on of these effects");
-            t.AppendLine($"    * **AllowedItemTypes:** This effect may only be rolled on items of a the types in this list. When this list is empty, this is usually done because this is a special effect type added programmatically  or currently not allowed to roll. Options are: `{string.Join(", ", AllowedMagicItemTypes)}`");
-            t.AppendLine($"    * **ExcludedItemTypes:** This effect may only be rolled on items that are not one of the types on this list.");
-            t.AppendLine($"    * **AllowedRarities:** This effect may only be rolled on an item of one of these rarities. Options are: `{string.Join(", ", rarities)}`");
-            t.AppendLine($"    * **ExcludedRarities:** This effect may only be rolled on an item that is not of one of these rarities.");
-            t.AppendLine($"    * **AllowedSkillTypes:** This effect may only be rolled on an item that uses one of these skill types. Options are: `{string.Join(", ", skillTypes)}`");
-            t.AppendLine($"    * **ExcludedSkillTypes:** This effect may only be rolled on an item that does not use one of these skill types.");
-            t.AppendLine("    * **AllowedItemNames:** This effect may only be rolled on an item with one of these names. Use the unlocalized shared name, i.e.: `$item_sword_iron`");
-            t.AppendLine("    * **ExcludedItemNames:** This effect may only be rolled on an item that does not have one of these names.");
-            t.AppendLine("    * **CustomFlags:** A set of any arbitrary strings for future use");
-            t.AppendLine("  * **Value Per Rarity:** This effect may only be rolled on items of a rarity included in this table. The value is rolled using a linear distribution between Min and Max and divisible by the Increment.");
-            t.AppendLine();
-
-            foreach (var definitionEntry in MagicItemEffectDefinitions.AllDefinitions)
-            {
-                var def = definitionEntry.Value;
-                t.AppendLine($"## {def.Type}");
-                t.AppendLine();
-                t.AppendLine($"> **Display Text:** {Localization.instance.Localize(def.DisplayText)}");
-                t.AppendLine("> ");
-
-                if (def.Prefixes.Count > 0)
-                {
-                    t.AppendLine($"> **Prefixes:** {Localization.instance.Localize(string.Join(", ", def.Prefixes))}");
-                }
-
-                if (def.Suffixes.Count > 0)
-                {
-                    t.AppendLine($"> **Suffixes:** {Localization.instance.Localize(string.Join(", ", def.Suffixes))}");
-                }
-
-                if (def.Prefixes.Count > 0 || def.Suffixes.Count > 0)
-                {
-                    t.AppendLine("> ");
-                }
-
-                var allowedItemTypes = def.GetAllowedItemTypes();
-                t.AppendLine("> **Allowed Item Types:** " + (allowedItemTypes.Count == 0 ? "*None*" : string.Join(", ", allowedItemTypes)));
-                t.AppendLine("> ");
-                t.AppendLine("> **Requirements:**");
-                t.Append(def.Requirements);
-
-                if (def.HasRarityValues())
-                {
-                    t.AppendLine("> ");
-                    t.AppendLine("> **Value Per Rarity:**");
-                    t.AppendLine("> ");
-                    t.AppendLine("> |Rarity|Min|Max|Increment|");
-                    t.AppendLine("> |--|--|--|--|");
-
-                    if (def.ValuesPerRarity.Magic != null)
-                    {
-                        var v = def.ValuesPerRarity.Magic;
-                        t.AppendLine($"> |Magic|{v.MinValue}|{v.MaxValue}|{v.Increment}|");
-                    }
-                    if (def.ValuesPerRarity.Rare != null)
-                    {
-                        var v = def.ValuesPerRarity.Rare;
-                        t.AppendLine($"> |Rare|{v.MinValue}|{v.MaxValue}|{v.Increment}|");
-                    }
-                    if (def.ValuesPerRarity.Epic != null)
-                    {
-                        var v = def.ValuesPerRarity.Epic;
-                        t.AppendLine($"> |Epic|{v.MinValue}|{v.MaxValue}|{v.Increment}|");
-                    }
-                    if (def.ValuesPerRarity.Legendary != null)
-                    {
-                        var v = def.ValuesPerRarity.Legendary;
-                        t.AppendLine($"> |Legendary|{v.MinValue}|{v.MaxValue}|{v.Increment}|");
-                    }
-                }
-                if (!string.IsNullOrEmpty(def.Comment))
-                {
-                    t.AppendLine("> ");
-                    t.AppendLine($"> ***Notes:*** *{def.Comment}*");
-                }
-
-                t.AppendLine();
-            }
-
-            // Item Sets
-            t.AppendLine("# Item Sets");
-            t.AppendLine();
-            t.AppendLine("Sets of loot drop data that can be referenced in the loot tables");
-
-            foreach (var lootTableEntry in LootRoller.ItemSets)
-            {
-                var itemSet = lootTableEntry.Value;
-
-                t.AppendLine($"## {lootTableEntry.Key}");
-                t.AppendLine();
-                WriteLootList(t, 0, itemSet.Loot);
-                t.AppendLine();
-            }
-
-            // Loot tables
-            t.AppendLine("# Loot Tables");
-            t.AppendLine();
-            t.AppendLine("A list of every built-in loot table from the mod. The name of the loot table is the object name followed by a number signifying the level of the object.");
-
-            foreach (var lootTableEntry in LootRoller.LootTables)
-            {
-                var list = lootTableEntry.Value;
-
-                foreach (var lootTable in list)
-                {
-                    t.AppendLine($"## {lootTableEntry.Key}");
-                    t.AppendLine();
-                    WriteLootTableDrops(t, lootTable);
-                    WriteLootTableItems(t, lootTable);
-                    t.AppendLine();
-                }
-            }
-
-            File.WriteAllText(Path.Combine(devOutputPath, "info.md"), t.ToString());
-        }
-
-        private static void WriteLootTableDrops(StringBuilder t, LootTable lootTable)
-        {
-            var highestLevel = lootTable.LeveledLoot != null && lootTable.LeveledLoot.Count > 0 ? lootTable.LeveledLoot.Max(x => x.Level) : 0;
-            var limit = Mathf.Max(3, highestLevel);
-            for (var i = 0; i < limit; i++)
-            {
-                var level = i + 1;
-                var dropTable = LootRoller.GetDropsForLevel(lootTable, level, false);
-                if (dropTable == null || dropTable.Count == 0)
-                {
-                    continue;
-                }
-
-                float total = dropTable.Sum(x => x.Value);
-                if (total > 0)
-                {
-                    t.AppendLine($"> | Drops (lvl {level}) | Weight (Chance) |");
-                    t.AppendLine($"> | -- | -- |");
-                    foreach (var drop in dropTable)
-                    {
-                        var count = drop.Key;
-                        var value = drop.Value;
-                        var percent = (value / total) * 100;
-                        t.AppendLine($"> | {count} | {value} ({percent:0.#}%) |");
-                    }
-                }
-                t.AppendLine();
-            }
-        }
-
-        private static void WriteLootTableItems(StringBuilder t, LootTable lootTable)
-        {
-            var highestLevel = lootTable.LeveledLoot != null && lootTable.LeveledLoot.Count > 0 ? lootTable.LeveledLoot.Max(x => x.Level) : 0;
-            var limit = Mathf.Max(3, highestLevel);
-            for (var i = 0; i < limit; i++)
-            {
-                var level = i + 1;
-                var lootList = LootRoller.GetLootForLevel(lootTable, level, false);
-                if (ArrayUtils.IsNullOrEmpty(lootList))
-                {
-                    continue;
-                }
-
-                WriteLootList(t, level, lootList);
-            }
-        }
-
-        private static void WriteLootList(StringBuilder t, int level, LootDrop[] lootList)
-        {
-            var levelDisplay = level > 0 ? $" (lvl {level})" : "";
-            t.AppendLine($"> | Items{levelDisplay} | Weight (Chance) | Magic | Rare | Epic | Legendary |");
-            t.AppendLine("> | -- | -- | -- | -- | -- | -- |");
-
-            float totalLootWeight = lootList.Sum(x => x.Weight);
-            foreach (var lootDrop in lootList)
-            {
-                var percentChance = lootDrop.Weight / totalLootWeight * 100;
-                if (lootDrop.Rarity == null || lootDrop.Rarity.Length == 0)
-                {
-                    t.AppendLine($"> | {lootDrop.Item} | {lootDrop.Weight} ({percentChance:0.#}%) | 1 (100%) | 0 (0%) | 0 (0%) | 0 (0%) |");
-                    continue;
-                }
-
-                float rarityTotal = lootDrop.Rarity.Sum();
-                float[] rarityPercent =
-                {
-                    lootDrop.Rarity[0] / rarityTotal * 100,
-                    lootDrop.Rarity[1] / rarityTotal * 100,
-                    lootDrop.Rarity[2] / rarityTotal * 100,
-                    lootDrop.Rarity[3] / rarityTotal * 100,
+                    Name = $"$mod_epicloot_{rarity} $mod_epicloot_unidentified_{biome}",
+                    Description = "$mod_epicloot_unidentified_introduce",
                 };
-                t.AppendLine($"> | {lootDrop.Item} | {lootDrop.Weight} ({percentChance:0.#}%) " +
-                             $"| {lootDrop.Rarity[0]} ({rarityPercent[0]:0.#}%) " +
-                             $"| {lootDrop.Rarity[1]} ({rarityPercent[1]:0.#}%) " +
-                             $"| {lootDrop.Rarity[2]:0.#} ({rarityPercent[2]:0.#}%) " +
-                             $"| {lootDrop.Rarity[3]} ({rarityPercent[3]:0.#}%) |");
-            }
 
-            t.AppendLine();
-        }
+                CustomItem custom = new CustomItem(prefab, false, unidentifiedIC);
+                ItemManager.Instance.AddItem(custom);
 
-        private static string GetMagicEffectCountTableLine(ItemRarity rarity)
-        {
-            var effectCounts = LootRoller.GetEffectCountsPerRarity(rarity, false);
-            float total = effectCounts.Sum(x => x.Value);
-            var result = $"|{rarity}|";
-            for (var i = 1; i <= 6; ++i)
-            {
-                var valueString = " ";
-                var i1 = i;
-                if (effectCounts.TryFind(x => x.Key == i1, out var found))
+                // Enable Items once things are working so that ZNet issues don't happen
+                void EnableUnidentified(string prefabname)
                 {
-                    var value = found.Value;
-                    var percent = value / total * 100;
-                    valueString = $"{value} ({percent:0.#}%)";
+                    PrefabManager.Instance.GetPrefab(prefabName).SetActive(true);
+                    PrefabManager.Instance.GetPrefab(prefabName).GetComponent<ItemDrop>().m_itemData.m_dropPrefab =
+                        PrefabManager.Instance.GetPrefab(prefabName);
+                    ItemManager.OnItemsRegistered -= () => EnableUnidentified(prefabname);
                 }
-                result += $"{valueString}|";
+
+                ItemManager.OnItemsRegistered += () => EnableUnidentified(prefabName);
             }
-            return result;
         }
+    }
 
-        public static string GetSetItemColor()
-        {
-            return _setItemColor.Value;
-        }
+    private static void RegisterStatusEffects()
+    {
+        RegisterBulwark();
+        RegisterUndying();
+        RegisterBerserker();
+        RegisterAdrenalineRush();
+    }
 
-        public static string GetRarityDisplayName(ItemRarity rarity)
+    private static void RegisterBulwark()
+    {
+        PrefabManager.Instance.AddPrefab(EpicAssets.BulwarkMagicShieldVFX);
+        PrefabManager.Instance.AddPrefab(EpicAssets.BulwarkMagicShieldSFX);
+        ItemManager.OnItemsRegistered += () => ObjectDB.instance.m_StatusEffects.Add(EpicAssets.BulwarkStatusEffect);
+    }
+
+    private static void RegisterBerserker()
+    {
+        PrefabManager.Instance.AddPrefab(EpicAssets.BerserkerVFX);
+        PrefabManager.Instance.AddPrefab(EpicAssets.BerserkerSFX);
+        ItemManager.OnItemsRegistered += () => ObjectDB.instance.m_StatusEffects.Add(EpicAssets.BerserkerStatusEffect);
+    }
+
+    private static void RegisterUndying()
+    {
+        PrefabManager.Instance.AddPrefab(EpicAssets.UndyingVFX);
+        PrefabManager.Instance.AddPrefab(EpicAssets.UndyingSFX);
+        ItemManager.OnItemsRegistered += () => ObjectDB.instance.m_StatusEffects.Add(EpicAssets.UndyingStatusEffect);
+    }
+
+    private static void RegisterAdrenalineRush()
+    {
+        PrefabManager.Instance.AddPrefab(EpicAssets.DodgeBuffSFX);
+        ItemManager.OnItemsRegistered += () => ObjectDB.instance.m_StatusEffects.Add(EpicAssets.DodgeBuffStatusEffect);
+    }
+
+    [UsedImplicitly]
+    void OnDestroy()
+    {
+        Config.Save();
+        _instance = null;
+    }
+
+    public static bool IsObjectDBReady()
+    {
+        // Hack, just making sure the built-in items and prefabs have loaded
+        return ObjectDB.instance != null && ObjectDB.instance.m_items.Count != 0 &&
+            ObjectDB.instance.GetItemPrefab("Amber") != null;
+    }
+
+    private static void SetupAndvaranaut()
+    {
+        var go = EpicAssets.AssetBundle.LoadAsset<GameObject>("Andvaranaut");
+        ItemDrop prefab = go.GetComponent<ItemDrop>();
+
+        var andvaranaut = prefab.m_itemData;
+        var wishbone = ObjectDB.instance.GetItemPrefab("Wishbone").GetComponent<ItemDrop>().m_itemData;
+
+        // first, create custom status effect
+        var originalFinder = wishbone.m_shared.m_equipStatusEffect;
+        var wishboneFinder = ScriptableObject.CreateInstance<SE_CustomFinder>();
+
+        // Copy all values from finder
+        Common.Utils.CopyFields(originalFinder, wishboneFinder, typeof(SE_Finder));
+        wishboneFinder.name = "CustomWishboneFinder";
+
+        var andvaranautFinder = ScriptableObject.CreateInstance<SE_CustomFinder>();
+        Common.Utils.CopyFields(wishboneFinder, andvaranautFinder, typeof(SE_CustomFinder));
+        andvaranautFinder.name = "Andvaranaut";
+        andvaranautFinder.m_name = "$mod_epicloot_item_andvaranaut";
+        andvaranautFinder.m_icon = andvaranaut.GetIcon();
+        andvaranautFinder.m_tooltip = "$mod_epicloot_item_andvaranaut_tooltip";
+        andvaranautFinder.m_startMessage = "$mod_epicloot_item_andvaranaut_startmsg";
+
+        // Setup restrictions
+        andvaranautFinder.RequiredComponentTypes = new List<Type> { typeof(TreasureMapChest), typeof(BountyTarget) };
+        wishboneFinder.DisallowedComponentTypes = new List<Type> { typeof(TreasureMapChest), typeof(BountyTarget) };
+
+        // Add to list
+        ObjectDB.instance.m_StatusEffects.Remove(originalFinder);
+        ObjectDB.instance.m_StatusEffects.Add(andvaranautFinder);
+        ObjectDB.instance.m_StatusEffects.Add(wishboneFinder);
+
+        // Set new status effect
+        andvaranaut.m_shared.m_equipStatusEffect = andvaranautFinder;
+        wishbone.m_shared.m_equipStatusEffect = wishboneFinder;
+
+        // Setup magic item
+        var magicItem = new MagicItem
         {
-            switch (rarity)
+            Rarity = ItemRarity.Epic,
+            TypeNameOverride = "$mod_epicloot_item_andvaranaut_type"
+        };
+        magicItem.Effects.Add(new MagicItemEffect(MagicEffectType.Andvaranaut));
+
+        prefab.m_itemData.SaveMagicItem(magicItem);
+
+        var customItem = new CustomItem(go, false);
+        ItemManager.Instance.AddItem(customItem);
+
+        PrefabManager.OnPrefabsRegistered -= SetupAndvaranaut;
+    }
+
+    private static void SetupStatusEffects()
+    {
+        var lightning = ObjectDB.instance.GetStatusEffect("Lightning".GetHashCode());
+        var paralyzed = ScriptableObject.CreateInstance<SE_Paralyzed>();
+        Common.Utils.CopyFields(lightning, paralyzed, typeof(StatusEffect));
+        paralyzed.name = "Paralyze";
+        paralyzed.m_name = "$mod_epicloot_se_paralyze";
+
+        ObjectDB.instance.m_StatusEffects.Add(paralyzed);
+        ItemManager.OnItemsRegistered -= SetupStatusEffects;
+    }
+
+    public static AssetBundle LoadAssetBundle(string filename)
+    {
+        var assembly = Assembly.GetCallingAssembly();
+        var assetBundle = AssetBundle.LoadFromStream(assembly.GetManifestResourceStream(
+            $"{assembly.GetName().Name}.{filename}"));
+
+        return assetBundle;
+    }
+
+    /// <summary>
+    /// This reads an embedded file resouce name, these are all resouces packed into the DLL
+    /// </summary>
+    /// <param name="filename"></param>
+    /// <returns></returns>
+    internal static string ReadEmbeddedResourceFile(string filename)
+    {
+        using (var stream = typeof(EpicLoot).Assembly.GetManifestResourceStream(filename))
+        {
+            using (var reader = new StreamReader(stream))
             {
-                case ItemRarity.Magic:
-                    return "$mod_epicloot_magic";
-                case ItemRarity.Rare:
-                    return "$mod_epicloot_rare";
-                case ItemRarity.Epic:
-                    return "$mod_epicloot_epic";
-                case ItemRarity.Legendary:
-                    return "$mod_epicloot_legendary";
-                case ItemRarity.Mythic:
-                    return "$mod_epicloot_mythic";
-                default:
-                    return "<non magic>";
+                return reader.ReadToEnd();
             }
         }
+    }
 
-        public static string GetRarityColor(ItemRarity rarity)
+    internal static List<string> GetEmbeddedResourceNamesFromDirectory(string embedded_location = "EpicLoot.config.")
+    {
+        List<string> resourcenames = new List<string>();
+        foreach (string embeddedResouce in typeof(EpicLoot).Assembly.GetManifestResourceNames())
         {
-            switch (rarity)
+            if (embeddedResouce.Contains(embedded_location))
             {
-                case ItemRarity.Magic:
-                    return GetColor(_magicRarityColor.Value);
-                case ItemRarity.Rare:
-                    return GetColor(_rareRarityColor.Value);
-                case ItemRarity.Epic:
-                    return GetColor(_epicRarityColor.Value);
-                case ItemRarity.Legendary:
-                    return GetColor(_legendaryRarityColor.Value);
-                case ItemRarity.Mythic:
-                    // TODO: Mythic Hookup
-                    return GetColor("Orange"/*_mythicRarityColor.Value*/);
-                default:
-                    return "#FFFFFF";
+                // Got to strip the starting 'EpicLoot.config.' off, so we just take the ending substring
+                resourcenames.Add(embeddedResouce.Substring(16));
             }
         }
+        return resourcenames;
+    }
 
-        public static Color GetRarityColorARGB(ItemRarity rarity)
+    public static bool CanBeMagicItem(ItemDrop.ItemData item)
+    {
+        return item != null
+               && IsPlayerItem(item)
+               && Nonstackable(item)
+               && IsNotRestrictedItem(item)
+               && IsAllowedMagicItemType(item);
+    }
+
+    public static bool IsAllowedMagicItemType(ItemDrop.ItemData item)
+    {
+        switch (item.m_shared.m_itemType)
         {
-            return ColorUtility.TryParseHtmlString(GetRarityColor(rarity), out var color) ? color : Color.white;
+            case ItemDrop.ItemData.ItemType.Ammo:
+            case ItemDrop.ItemData.ItemType.AmmoNonEquipable:
+                    return false;
+            default:
+                return item.IsEquipable();
+        }
+    }
+
+    public static Sprite GetMagicItemBgSprite()
+    {
+        return HasAuga ? EpicAssets.AugaItemBgSprite : EpicAssets.GenericItemBgSprite;
+    }
+
+    public static Sprite GetEquippedSprite()
+    {
+        return HasAuga ? EpicAssets.AugaEquippedSprite : EpicAssets.EquippedSprite;
+    }
+
+    public static Sprite GetSetItemSprite()
+    {
+        return HasAuga ? EpicAssets.AugaSetItemSprite : EpicAssets.GenericSetItemSprite;
+    }
+
+    public static string GetMagicEffectPip(bool hasBeenAugmented)
+    {
+        return HasAuga ? (hasBeenAugmented ? "▾" : "♦") : (hasBeenAugmented ? "▼" : "◆"); // //🞠🞛
+    }
+
+    private static bool IsNotRestrictedItem(ItemDrop.ItemData item)
+    {
+        if (item.m_dropPrefab != null && LootRoller.Config.RestrictedItems.Contains(item.m_dropPrefab.name))
+        {
+            return false;
         }
 
-        private static string GetColor(string configValue)
+        return !LootRoller.Config.RestrictedItems.Contains(item.m_shared.m_name);
+    }
+
+    private static bool Nonstackable(ItemDrop.ItemData item)
+    {
+        return item.m_shared.m_maxStackSize == 1;
+    }
+
+    private static bool IsPlayerItem(ItemDrop.ItemData item)
+    {
+        // WTF, this is the only thing I found different between player usable items and items that are only for enemies
+        return item.m_shared.m_icons.Length > 0;
+    }
+
+    public static string GetCharacterCleanName(Character character)
+    {
+        return character.name.Replace("(Clone)", "").Trim();
+    }
+
+    public static string GetSetItemColor()
+    {
+        return ELConfig._setItemColor.Value;
+    }
+
+    public static string GetRarityDisplayName(ItemRarity rarity)
+    {
+        switch (rarity)
         {
-            if (configValue.StartsWith("#"))
+            case ItemRarity.Magic:
+                return "$mod_epicloot_Magic";
+            case ItemRarity.Rare:
+                return "$mod_epicloot_Rare";
+            case ItemRarity.Epic:
+                return "$mod_epicloot_Epic";
+            case ItemRarity.Legendary:
+                return "$mod_epicloot_Legendary";
+            case ItemRarity.Mythic:
+                return "$mod_epicloot_Mythic";
+            default:
+                return "<non magic>";
+        }
+    }
+
+    public static string GetRarityColor(ItemRarity rarity)
+    {
+        switch (rarity)
+        {
+            case ItemRarity.Magic:
+                return GetColor(ELConfig._magicRarityColor.Value);
+            case ItemRarity.Rare:
+                return GetColor(ELConfig._rareRarityColor.Value);
+            case ItemRarity.Epic:
+                return GetColor(ELConfig._epicRarityColor.Value);
+            case ItemRarity.Legendary:
+                return GetColor(ELConfig._legendaryRarityColor.Value);
+            case ItemRarity.Mythic:
+                return GetColor(ELConfig._mythicRarityColor.Value);
+            default:
+                return "#FFFFFF";
+        }
+    }
+
+    public static Color GetRarityColorARGB(ItemRarity rarity)
+    {
+        return ColorUtility.TryParseHtmlString(GetRarityColor(rarity), out var color) ? color : Color.white;
+    }
+
+    private static string GetColor(string configValue)
+    {
+        if (configValue.StartsWith("#"))
+        {
+            return configValue;
+        }
+        else
+        {
+            if (MagicItemColors.TryGetValue(configValue, out var color))
             {
-                return configValue;
-            }
-            else
-            {
-                if (MagicItemColors.TryGetValue(configValue, out var color))
-                {
-                    return color;
-                }
-            }
-
-            return "#000000";
-        }
-
-        public static int GetRarityIconIndex(ItemRarity rarity)
-        {
-            switch (rarity)
-            {
-                case ItemRarity.Magic:
-                    return Mathf.Clamp(_magicMaterialIconColor.Value, 0, 9);
-                case ItemRarity.Rare:
-                    return Mathf.Clamp(_rareMaterialIconColor.Value, 0, 9);
-                case ItemRarity.Epic:
-                    return Mathf.Clamp(_epicMaterialIconColor.Value, 0, 9);
-                case ItemRarity.Legendary:
-                    return Mathf.Clamp(_legendaryMaterialIconColor.Value, 0, 9);
-                case ItemRarity.Mythic:
-                    // TODO: Mythic Hookup
-                    return 1; //Mathf.Clamp(_mythicMaterialIconColor.Value, 0, 9);
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(rarity), rarity, null);
+                return color;
             }
         }
 
-        public static AudioClip GetMagicItemDropSFX(ItemRarity rarity)
+        return "#000000";
+    }
+
+    public static int GetRarityIconIndex(ItemRarity rarity)
+    {
+        switch (rarity)
         {
-            return Assets.MagicItemDropSFX[(int) rarity];
+            case ItemRarity.Magic:
+                return Mathf.Clamp(ELConfig._magicMaterialIconColor.Value, 0, 9);
+            case ItemRarity.Rare:
+                return Mathf.Clamp(ELConfig._rareMaterialIconColor.Value, 0, 9);
+            case ItemRarity.Epic:
+                return Mathf.Clamp(ELConfig._epicMaterialIconColor.Value, 0, 9);
+            case ItemRarity.Legendary:
+                return Mathf.Clamp(ELConfig._legendaryMaterialIconColor.Value, 0, 9);
+            case ItemRarity.Mythic:
+                return Mathf.Clamp(ELConfig._mythicMaterialIconColor.Value, 0, 9);
+            default:
+                throw new ArgumentOutOfRangeException(nameof(rarity), rarity, null);
+        }
+    }
+
+    public static AudioClip GetMagicItemDropSFX(ItemRarity rarity)
+    {
+        return EpicAssets.MagicItemDropSFX[(int) rarity];
+    }
+
+    public static GatedItemTypeMode GetGatedItemTypeMode()
+    {
+        return ELConfig._gatedItemTypeModeConfig.Value;
+    }
+
+    public static BossDropMode GetBossTrophyDropMode()
+    {
+        return ELConfig._bossTrophyDropMode.Value;
+    }
+
+    public static float GetBossTrophyDropPlayerRange()
+    {
+        return ELConfig._bossTrophyDropPlayerRange.Value;
+    }
+
+    public static float GetBossCryptKeyPlayerRange()
+    {
+        return ELConfig._bossCryptKeyDropPlayerRange.Value;
+    }
+
+    public static BossDropMode GetBossCryptKeyDropMode()
+    {
+        return ELConfig._bossCryptKeyDropMode.Value;
+    }
+
+    public static BossDropMode GetBossWishboneDropMode()
+    {
+        return ELConfig._bossWishboneDropMode.Value;
+    }
+
+    public static float GetBossWishboneDropPlayerRange()
+    {
+        return ELConfig._bossWishboneDropPlayerRange.Value;
+    }
+
+    public static int GetAndvaranautRange()
+    {
+      return ELConfig._andvaranautRange.Value;
+    }
+
+    public static bool IsAdventureModeEnabled()
+    {
+        return ELConfig._adventureModeEnabled.Value;
+    }
+
+    public static float GetWorldLuckFactor()
+    {
+        return _instance._worldLuckFactor;
+    }
+
+    // TODO, why isn't this used?
+    public static void SetWorldLuckFactor(float luckFactor)
+    {
+        _instance._worldLuckFactor = luckFactor;
+    }
+
+    private void SetupWatcher()
+    {
+        FileSystemWatcher watcher = new(BepInEx.Paths.ConfigPath, ConfigFileName);
+        watcher.Changed += ReadConfigValues;
+        watcher.Created += ReadConfigValues;
+        watcher.Renamed += ReadConfigValues;
+        watcher.IncludeSubdirectories = true;
+        watcher.SynchronizingObject = ThreadingHelper.SynchronizingObject;
+        watcher.EnableRaisingEvents = true;
+    }
+
+    private DateTime _lastReloadTime;
+    private const long RELOAD_DELAY = 10000000; // One second
+
+    private void ReadConfigValues(object sender, FileSystemEventArgs e)
+    {
+        var now = DateTime.Now;
+        var time = now.Ticks - _lastReloadTime.Ticks;
+        if (!File.Exists(ConfigFileFullPath) || time < RELOAD_DELAY) return;
+
+        try
+        {
+            Log("Attempting to reload configuration...");
+            Config.Reload();
+        }
+        catch
+        {
+            Log($"There was an issue loading {ConfigFileName}");
+            return;
         }
 
-        public static GatedItemTypeMode GetGatedItemTypeMode()
-        {
-            return _gatedItemTypeModeConfig.Value;
-        }
-
-        public static BossDropMode GetBossTrophyDropMode()
-        {
-            return _bossTrophyDropMode.Value;
-        }
-
-        public static float GetBossTrophyDropPlayerRange()
-        {
-            return _bossTrophyDropPlayerRange.Value;
-        }
-
-        public static int GetAndvaranautRange()
-        {
-          return _andvaranautRange.Value;
-        }
-
-        public static bool IsAdventureModeEnabled()
-        {
-            return _adventureModeEnabled.Value;
-        }
-
-        private static void GenerateTranslations()
-        {
-            var jsonFile = LoadJsonText("magiceffects.json");
-            var config = JsonConvert.DeserializeObject<MagicItemEffectsList>(jsonFile);
-
-            var translations = new Dictionary<string, string>();
-
-            foreach (var effectDef in config.MagicItemEffects)
-            {
-                if (string.IsNullOrEmpty(effectDef.Description))
-                {
-                    effectDef.Description = effectDef.DisplayText.Replace("display", "desc");
-                    jsonFile = jsonFile.Replace($"\"DisplayText\" : \"{effectDef.DisplayText}\"", $"\"DisplayText\" : \"{effectDef.DisplayText}\",\n      \"Description\" : \"{effectDef.Description}\"");
-                    translations.Add(effectDef.Description, "");
-                }
-            }
-
-            var outputPath = GenerateAssetPathAtAssembly("magiceffects_translated.json");
-            File.WriteAllText(outputPath, jsonFile);
-
-            var translationsOutputPath = GenerateAssetPathAtAssembly("new_translations.json");
-            var translationsText = "{\n" + string.Join("\n", translations.Select(x => $"  \"{x.Key}\": \"{x.Value}\",")) +"\n}";
-            File.WriteAllText(translationsOutputPath, translationsText);
-        }
-
-        private static string Clean(string name)
-        {
-            return name.Replace("'", "").Replace(",", "").Trim().Replace(" ", "_").ToLowerInvariant();
-        }
-
-        private static void ReplaceValueList(List<string> values, string field, string label, MagicItemEffectDefinition effectDef, Dictionary<string, string> translations, ref string magicEffectsJson)
-        {
-            var newValues = new List<string>();
-            for (var index = 0; index < values.Count; index++)
-            {
-                var value = values[index];
-                string key;
-                if (value.StartsWith("$"))
-                {
-                    key = value;
-                }
-                else
-                {
-                    key = GetId(effectDef, $"{field}{index + 1}");
-                    AddTranslation(translations, key, value);
-                }
-                newValues.Add(key);
-            }
-
-            if (newValues.Count > 0)
-            {
-                var old = $"\"{label}\": [ {string.Join(", ", values.Select(x => $"\"{x}\""))} ]";
-                var toReplace = $"\"{label}\": [\n        {string.Join(",\n        ", newValues.Select(x => (x.StartsWith("$") ? $"\"{x}\"" : $"\"${x}\"")))}\n      ]";
-                magicEffectsJson = ReplaceTranslation(magicEffectsJson, old, toReplace);
-            }
-        }
-
-        private static string GetId(MagicItemEffectDefinition effectDef, string field)
-        {
-            return $"mod_epicloot_me_{effectDef.Type.ToLowerInvariant()}_{field.ToLowerInvariant()}";
-        }
-
-        private static void AddTranslation(Dictionary<string, string> translations, string key, string value)
-        {
-            translations.Add(key, value);
-        }
-
-        private static string ReplaceTranslation(string jsonFile, string original, string locId)
-        {
-            return jsonFile.Replace(original, locId);
-        }
-
-        private static string SetupTranslation(MagicItemEffectDefinition effectDef, string value, string field, string replaceFormat, Dictionary<string, string> translations, string jsonFile)
-        {
-            if (string.IsNullOrEmpty(value) || value.StartsWith("$"))
-            {
-                return jsonFile;
-            }
-
-            var key = GetId(effectDef, field);
-            AddTranslation(translations, key, value);
-            return ReplaceTranslation(jsonFile, string.Format(replaceFormat, value), string.Format(replaceFormat, $"${key}"));
-        }
-
-        public static float GetWorldLuckFactor()
-        {
-            return _instance._worldLuckFactor;
-        }
-
-        public static void SetWorldLuckFactor(float luckFactor)
-        {
-            _instance._worldLuckFactor = luckFactor;
-        }
+        _lastReloadTime = now;
     }
 }

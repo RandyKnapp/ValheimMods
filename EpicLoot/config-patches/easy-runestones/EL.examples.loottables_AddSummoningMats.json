@@ -1,0 +1,50 @@
+{
+  "TargetFile": "loottables.json",
+  "Author": "EpicLoot",
+  "Priority": 2000,
+  "RequireAll": true,
+  "Patches": [
+    {
+      "Path": "$.ItemSets[?(@.Name == 'Tier1Everything')].Loot",
+      "Action": "Append",
+      "Value": 
+        { "Item": "TrophyDeer" }
+    },
+    {
+      "Path": "$.ItemSets[?(@.Name == 'Tier2Everything')].Loot",
+      "Action": "Append",
+      "Value": 
+        { "Item": "AncientSeed" }
+    },
+    {
+      "Path": "$.ItemSets[?(@.Name == 'Tier3Everything')].Loot",
+      "Action": "Append",
+      "Value": 
+        { "Item": "WitheredBone" }
+    },
+    {
+      "Path": "$.ItemSets[?(@.Name == 'Tier4Everything')].Loot",
+      "Action": "Append",
+      "Value": 
+        { "Item": "DragonEgg" }
+    },
+    {
+      "Path": "$.ItemSets[?(@.Name == 'Tier5Everything')].Loot",
+      "Action": "Append",
+      "Value": 
+        { "Item": "DragonEgg" }
+    },
+    {
+      "Path": "$.ItemSets[?(@.Name == 'Tier6Everything')].Loot",
+      "Action": "Append",
+      "Value": 
+        { "Item": "GoblinTotem" }
+    },
+    {
+      "Path": "$.ItemSets[?(@.Name == 'Tier7Everything')].Loot",
+      "Action": "Append",
+      "Value": 
+        { "Item": "TrophySeekerBrute" }
+    }
+  ]
+}

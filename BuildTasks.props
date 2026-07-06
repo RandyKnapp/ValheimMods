@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Target Name="CopyAssembliesToUnity">
+    <Message Text="Copy assemblies to Unity" Importance="high" />
+    <Copy SourceFiles="$(BepinexPath)core\BepInEx.dll" DestinationFolder="$(SolutionUnity)Assets\ExternalLibraries" />
+    <Copy SourceFiles="$(BepinexPath)core\0Harmony.dll" DestinationFolder="$(SolutionUnity)Assets\ExternalLibraries" />
+    <Copy SourceFiles="$(BepinexPath)core\Mono.Cecil.dll" DestinationFolder="$(SolutionUnity)Assets\ExternalLibraries" />
+    <Copy SourceFiles="$(BepinexPath)core\MonoMod.Utils.dll" DestinationFolder="$(SolutionUnity)Assets\ExternalLibraries" />
+    <Copy SourceFiles="$(BepinexPath)core\MonoMod.RuntimeDetour.dll" DestinationFolder="$(SolutionUnity)Assets\ExternalLibraries" />
+    <Copy SourceFiles="$(TargetDir)Jotunn.dll" DestinationFolder="$(SolutionUnity)Assets\ExternalLibraries" />
+    <Copy SourceFiles="$(GamePathManaged)\Assembly-CSharp.dll" DestinationFolder="$(SolutionUnity)Assets\ExternalLibraries\valheim" />
+    <Copy SourceFiles="$(GamePathManaged)\assembly_valheim.dll" DestinationFolder="$(SolutionUnity)Assets\ExternalLibraries\valheim" />
+    <Copy SourceFiles="$(GamePathManaged)\assembly_utils.dll" DestinationFolder="$(SolutionUnity)Assets\ExternalLibraries\valheim" />
+    <Copy SourceFiles="$(GamePathManaged)\assembly_postprocessing.dll" DestinationFolder="$(SolutionUnity)Assets\ExternalLibraries\valheim" />
+    <Copy SourceFiles="$(GamePathManaged)\assembly_sunshafts.dll" DestinationFolder="$(SolutionUnity)Assets\ExternalLibraries\valheim" />
+    <Copy SourceFiles="$(GamePathManaged)\assembly_guiutils.dll" DestinationFolder="$(SolutionUnity)Assets\ExternalLibraries\valheim" />
+    <Copy SourceFiles="$(GamePathManaged)\assembly_lux.dll" DestinationFolder="$(SolutionUnity)Assets\ExternalLibraries\valheim" />
+    <Copy SourceFiles="$(GamePathManaged)\assembly_simplemeshcombine.dll" DestinationFolder="$(SolutionUnity)Assets\ExternalLibraries\valheim" />
+    <Copy SourceFiles="$(GamePathManaged)\assembly_googleanalytics.dll" DestinationFolder="$(SolutionUnity)Assets\ExternalLibraries\valheim" />
+    <Copy SourceFiles="$(GamePathManaged)\PlayFab.dll" DestinationFolder="$(SolutionUnity)Assets\ExternalLibraries\valheim" />
+    <Copy SourceFiles="$(GamePathManaged)\PlayFabParty.dll" DestinationFolder="$(SolutionUnity)Assets\ExternalLibraries\valheim" />
+    <Copy SourceFiles="$(GamePathManaged)\Splatform.dll" DestinationFolder="$(SolutionUnity)Assets\ExternalLibraries\valheim" />
+    <Copy SourceFiles="$(GamePathManaged)\Splatform.Steam.dll" DestinationFolder="$(SolutionUnity)Assets\ExternalLibraries\valheim" />
+    <Copy SourceFiles="$(GamePathManaged)\gui_framework.dll" DestinationFolder="$(SolutionUnity)Assets\ExternalLibraries\valheim" />
+    <Copy SourceFiles="$(GamePathManaged)\com.rlabrecque.steamworks.net.dll" DestinationFolder="$(SolutionUnity)Assets\ExternalLibraries\valheim" />
+    <Copy SourceFiles="$(GamePathManaged)\SoftReferenceableAssets.dll" DestinationFolder="$(SolutionUnity)Assets\ExternalLibraries\valheim" />
+  </Target>
+</Project>

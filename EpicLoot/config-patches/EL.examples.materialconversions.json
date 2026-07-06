@@ -1,0 +1,168 @@
+{
+  "TargetFile": "materialconversions.json",
+  "Author": "EpicLoot",
+  "Priority": 2000,
+  "RequireAll": true,
+  "Patches": [
+    {
+      "Path": "$.MaterialConversions[?(@.Name == 'Recipe_ShardRareUpgrade')].Resources",
+      "Action": "Overwrite",
+      "Value": [
+        { "Item": "ShardMagic", "Amount": 5 },
+        { "Item": "Coins",      "Amount": 1 }
+      ]
+    },
+    {
+      "Path": "$.MaterialConversions[?(@.Name == 'Recipe_ShardEpicUpgrade')].Resources",
+      "Action": "Overwrite",
+      "Value": [
+        { "Item": "ShardRare", "Amount": 5 },
+        { "Item": "Coins",     "Amount": 2 }
+      ]
+    },
+    {
+      "Path": "$.MaterialConversions[?(@.Name == 'Recipe_ShardLegendaryUpgrade')].Resources",
+      "Action": "Overwrite",
+      "Value": [
+        { "Item": "ShardEpic", "Amount": 5 },
+        { "Item": "Coins",     "Amount": 3 }
+      ]
+    },
+    {
+      "Path": "$.MaterialConversions[?(@.Name == 'Recipe_ShardMythicUpgrade')].Resources",
+      "Action": "Overwrite",
+      "Value": [
+        { "Item": "ShardLegendary", "Amount": 5 },
+        { "Item": "Coins",          "Amount": 4 }
+      ]
+    },
+    {
+      "Path": "$.MaterialConversions[?(@.Name == 'Recipe_DustRareUpgrade')].Resources",
+      "Action": "Overwrite",
+      "Value": [
+        { "Item": "DustMagic", "Amount": 5 },
+        { "Item": "Coins",     "Amount": 1 }
+      ]
+    },
+    {
+      "Path": "$.MaterialConversions[?(@.Name == 'Recipe_DustEpicUpgrade')].Resources",
+      "Action": "Overwrite",
+      "Value": [
+        { "Item": "DustRare", "Amount": 5 },
+        { "Item": "Coins",    "Amount": 2 }
+      ]
+    },
+    {
+      "Path": "$.MaterialConversions[?(@.Name == 'Recipe_DustLegendaryUpgrade')].Resources",
+      "Action": "Overwrite",
+      "Value": [
+        { "Item": "DustEpic", "Amount": 5 },
+        { "Item": "Coins",    "Amount": 3 }
+      ]
+    },
+    {
+      "Path": "$.MaterialConversions[?(@.Name == 'Recipe_DustMythicUpgrade')].Resources",
+      "Action": "Overwrite",
+      "Value": [
+        { "Item": "DustLegendary", "Amount": 5 },
+        { "Item": "Coins",         "Amount": 4 }
+      ]
+    },
+    {
+      "Path": "$.MaterialConversions[?(@.Name == 'Recipe_ReagentRareUpgrade')].Resources",
+      "Action": "Overwrite",
+      "Value": [
+        { "Item": "ReagentMagic", "Amount": 5 },
+        { "Item": "Coins",        "Amount": 1 }
+      ]
+    },
+    {
+      "Path": "$.MaterialConversions[?(@.Name == 'Recipe_ReagentEpicUpgrade')].Resources",
+      "Action": "Overwrite",
+      "Value": [
+        { "Item": "ReagentRare", "Amount": 5 },
+        { "Item": "Coins",       "Amount": 2 }
+      ]
+    },
+    {
+      "Path": "$.MaterialConversions[?(@.Name == 'Recipe_ReagentLegendaryUpgrade')].Resources",
+      "Action": "Overwrite",
+      "Value": [
+        { "Item": "ReagentEpic", "Amount": 5 },
+        { "Item": "Coins",       "Amount": 3 }
+      ]
+    },
+    {
+      "Path": "$.MaterialConversions[?(@.Name == 'Recipe_ReagentMythicUpgrade')].Resources",
+      "Action": "Overwrite",
+      "Value": [
+        { "Item": "ReagentLegendary", "Amount": 5 },
+        { "Item": "Coins",            "Amount": 4 }
+      ]
+    },
+    {
+      "Path": "$.MaterialConversions[?(@.Name == 'Recipe_EssenceRareUpgrade')].Resources",
+      "Action": "Overwrite",
+      "Value": [
+        { "Item": "EssenceMagic", "Amount": 5 },
+        { "Item": "Coins",        "Amount": 1 }
+      ]
+    },
+    {
+      "Path": "$.MaterialConversions[?(@.Name == 'Recipe_EssenceEpicUpgrade')].Resources",
+      "Action": "Overwrite",
+      "Value": [
+        { "Item": "EssenceRare", "Amount": 5 },
+        { "Item": "Coins",       "Amount": 2 }
+      ]
+    },
+    {
+      "Path": "$.MaterialConversions[?(@.Name == 'Recipe_EssenceLegendaryUpgrade')].Resources",
+      "Action": "Overwrite",
+      "Value": [
+        { "Item": "EssenceEpic", "Amount": 5 },
+        { "Item": "Coins",       "Amount": 3 }
+      ]
+    },
+    {
+      "Path": "$.MaterialConversions[?(@.Name == 'Recipe_EssenceMythicUpgrade')].Resources",
+      "Action": "Overwrite",
+      "Value": [
+        { "Item": "EssenceLegendary", "Amount": 5 },
+        { "Item": "Coins",            "Amount": 4 }
+      ]
+    },
+    {
+      "Path": "$.MaterialConversions[?(@.Name == 'Recipe_RunestoneRareUpgrade')].Resources",
+      "Action": "Overwrite",
+      "Value": [
+        { "Item": "RunestoneMagic", "Amount": 5 },
+        { "Item": "Coins",          "Amount": 1 }
+      ]
+    },
+    {
+      "Path": "$.MaterialConversions[?(@.Name == 'Recipe_RunestoneEpicUpgrade')].Resources",
+      "Action": "Overwrite",
+      "Value": [
+        { "Item": "RunestoneRare", "Amount": 5 },
+        { "Item": "Coins",         "Amount": 2 }
+      ]
+    },
+    {
+      "Path": "$.MaterialConversions[?(@.Name == 'Recipe_RunestoneLegendaryUpgrade')].Resources",
+      "Action": "Overwrite",
+      "Value": [
+        { "Item": "RunestoneEpic", "Amount": 5 },
+        { "Item": "Coins",         "Amount": 3 }
+      ]
+    },
+    {
+      "Path": "$.MaterialConversions[?(@.Name == 'Recipe_RunestoneMythicUpgrade')].Resources",
+      "Action": "Overwrite",
+      "Value": [
+        { "Item": "RunestoneLegendary", "Amount": 5 },
+        { "Item": "Coins",              "Amount": 4 }
+      ]
+    }
+  ]
+}

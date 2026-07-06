@@ -1,0 +1,307 @@
+{
+  "TargetFile": "legendaries.json",
+  "Author": "EpicLoot",
+  "RequireAll": true,
+  "Priority": 2000,
+  "Patches": [
+    {
+      "Path": "$.LegendaryItems[?(@.ID == 'Dyrnwyn')].GuaranteedMagicEffects[?(@.Type == 'AddFireDamage')]",
+      "Action": "Merge",
+      "Value": { "Values": { "MinValue": 36, "MaxValue": 48, "Increment": 1 } }
+    },
+    {
+      "Path": "$.LegendaryItems[?(@.ID == 'SleipnirsHoof')].GuaranteedMagicEffects[?(@.Type == 'ModifyMovementSpeed')]",
+      "Action": "Merge",
+      "Value": { "Values": { "MinValue": 10, "MaxValue": 14, "Increment": 1 } }
+    },
+    {
+      "Path": "$.LegendaryItems[?(@.ID == 'Gungnir')].GuaranteedMagicEffects[?(@.Type == 'ModifyDamage')]",
+      "Action": "Merge",
+      "Value": { "Values": { "MinValue": 20, "MaxValue": 25, "Increment": 1 } }
+    },
+    {
+      "Path": "$.LegendaryItems[?(@.ID == 'Mjolnir')].GuaranteedMagicEffects[?(@.Type == 'ModifyPhysicalDamage')]",
+      "Action": "Merge",
+      "Value": { "Values": { "MinValue": 36, "MaxValue": 44, "Increment": 1 } }
+    },
+    {
+      "Path": "$.LegendaryItems[?(@.ID == 'Mjolnir')].GuaranteedMagicEffects[?(@.Type == 'AddLightningDamage')]",
+      "Action": "Merge",
+      "Value": { "Values": { "MinValue": 25, "MaxValue": 30, "Increment": 1  } }
+    },
+    {
+      "Path": "$.LegendaryItems[?(@.ID == 'Lindisfarne')].GuaranteedMagicEffects[?(@.Type == 'Opportunist')]",
+      "Action": "Merge",
+      "Value": { "Values": { "MinValue" : 25, "MaxValue" : 30, "Increment" : 1 } }
+    },
+    {
+      "Path": "$.LegendaryItems[?(@.ID == 'Lindisfarne')].GuaranteedMagicEffects[?(@.Type == 'ModifyBackstab')]",
+      "Action": "Merge",
+      "Value": { "Values": { "MinValue" : 80, "MaxValue" : 90, "Increment" : 1 } }
+    },
+    {
+      "Path": "$.LegendaryItems[?(@.ID == 'Gram')].GuaranteedMagicEffects[?(@.Type == 'AddSlashingDamage')]",
+      "Action": "Merge",
+      "Value": { "Values": { "MinValue" : 30, "MaxValue" : 35, "Increment" : 1  } }
+    },
+    {
+      "Path": "$.LegendaryItems[?(@.ID == 'Gram')].GuaranteedMagicEffects[?(@.Type == 'Executioner')]",
+      "Action": "Merge",
+      "Value": { "Values": { "MinValue" : 900, "MaxValue" : 1000, "Increment" : 10 } }
+    },
+    {
+      "Path": "$.LegendaryItems[?(@.ID == 'Gram')].GuaranteedMagicEffects[?(@.Type == 'ModifyPhysicalDamage')]",
+      "Action": "Merge",
+      "Value": { "Values": { "MinValue" : 27, "MaxValue" : 30, "Increment" : 1  } }
+    },
+    {
+      "Path": "$.LegendaryItems[?(@.ID == 'Angurvadal')].GuaranteedMagicEffects[?(@.Type == 'Opportunist')]",
+      "Action": "Merge",
+      "Value": { "Values": { "MinValue" : 30, "MaxValue" : 35, "Increment" : 1 } }
+    },
+    {
+      "Path": "$.LegendaryItems[?(@.ID == 'Angurvadal')].GuaranteedMagicEffects[?(@.Type == 'ModifyBackstab')]",
+      "Action": "Merge",
+      "Value": { "Values": { "MinValue" : 61, "MaxValue" : 80, "Increment" : 1 } }
+    },
+    {
+      "Path": "$.LegendaryItems[?(@.ID == 'Laevateinn')].GuaranteedMagicEffects[?(@.Type == 'AddPoisonDamage')]",
+      "Action": "Merge",
+      "Value": { "Values": { "MinValue" : 45, "MaxValue" : 55, "Increment" : 1 } }
+    },
+    {
+      "Path": "$.LegendaryItems[?(@.ID == 'Laevateinn')].GuaranteedMagicEffects[?(@.Type == 'ModifyBackstab')]",
+      "Action": "Merge",
+      "Value": { "Values": { "MinValue" : 90, "MaxValue" : 100, "Increment" : 1 } }
+    },
+    {
+      "Path": "$.LegendaryItems[?(@.ID == 'NjordsFavor')].GuaranteedMagicEffects[?(@.Type == 'AddSlashingDamage')]",
+      "Action": "Merge",
+      "Value": { "Values": { "MinValue" : 30, "MaxValue" : 35, "Increment" : 1 } }
+    },
+    {
+      "Path": "$.LegendaryItems[?(@.ID == 'NjordsFavor')].GuaranteedMagicEffects[?(@.Type == 'ModifyMovementSpeed')]",
+      "Action": "Merge",
+      "Value": { "Values": { "MinValue" : 10, "MaxValue" : 14, "Increment" : 1 } }
+    },
+    {
+      "Path": "$.LegendaryItems[?(@.ID == 'NjordsFavor')].GuaranteedMagicEffects[?(@.Type == 'ModifyAttackSpeed')]",
+      "Action": "Merge",
+      "Value": { "Values": { "MinValue" : 20, "MaxValue" : 25, "Increment" : 1 } }
+    },
+    {
+      "Path": "$.LegendaryItems[?(@.ID == 'ValkyriesBlessing')].GuaranteedMagicEffects[?(@.Type == 'ModifyMovementSpeedLowHealth')]",
+      "Action": "Merge",
+      "Value": { "Values": { "MinValue" : 25, "MaxValue" : 35, "Increment" : 1 } }
+    },
+    {
+      "Path": "$.LegendaryItems[?(@.ID == 'ValkyriesBlessing')].GuaranteedMagicEffects[?(@.Type == 'ModifyStaminaRegenLowHealth')]",
+      "Action": "Merge",
+      "Value": { "Values": { "MinValue" : 70, "MaxValue" : 90, "Increment" : 1 } }
+    },
+    {
+      "Path": "$.LegendaryItems[?(@.ID == 'ValkyriesBlessing')].GuaranteedMagicEffects[?(@.Type == 'ModifyDamageLowHealth')]",
+      "Action": "Merge",
+      "Value": { "Values": { "MinValue" : 60, "MaxValue" : 80, "Increment" : 1 } }
+    },
+    {
+      "Path": "$.LegendaryItems[?(@.ID == 'ValkyriesBlessing')].GuaranteedMagicEffects[?(@.Type == 'ModifyAttackSpeedLowHealth')]",
+      "Action": "Merge",
+      "Value": { "Values": { "MinValue" : 90, "MaxValue" : 110, "Increment" : 5 } }
+    },
+    {
+      "Path": "$.LegendaryItems[?(@.ID == 'ValkyriesBlessing')].GuaranteedMagicEffects[?(@.Type == 'AvoidDamageTakenLowHealth')]",
+      "Action": "Merge",
+      "Value": { "Values": { "MinValue" : 30, "MaxValue" : 35, "Increment" : 1 } }
+    },
+    {
+      "Path": "$.LegendaryItems[?(@.ID == 'Skofnung')].GuaranteedMagicEffects[?(@.Type == 'AddSlashingDamage')]",
+      "Action": "Merge",
+      "Value": { "Values": { "MinValue" : 30, "MaxValue" : 35, "Increment" : 1 } }
+    },
+    {
+      "Path": "$.LegendaryItems[?(@.ID == 'Skofnung')].GuaranteedMagicEffects[?(@.Type == 'ModifyAttackStaminaUse')]",
+      "Action": "Merge",
+      "Value": { "Values": { "MinValue" : 25, "MaxValue" : 30, "Increment" : 1 } }
+    },
+    {
+      "Path": "$.LegendaryItems[?(@.ID == 'Skofnung')].GuaranteedMagicEffects[?(@.Type == 'ModifyAttackSpeed')]",
+      "Action": "Merge",
+      "Value": { "Values": { "MinValue" : 20, "MaxValue" : 25, "Increment" : 1 }  }
+    },
+    {
+      "Path": "$.LegendaryItems[?(@.ID == 'Hofund')].GuaranteedMagicEffects[?(@.Type == 'AddSlashingDamage')]",
+      "Action": "Merge",
+      "Value": { "Values": { "MinValue" : 30, "MaxValue" : 35, "Increment" : 1 } }
+    },
+    {
+      "Path": "$.LegendaryItems[?(@.ID == 'Hofund')].GuaranteedMagicEffects[?(@.Type == 'ModifyAttackStaminaUse')]",
+      "Action": "Merge",
+      "Value": { "Values": { "MinValue" : 25, "MaxValue" : 30, "Increment" : 1 } }
+    },
+    {
+      "Path": "$.LegendaryItems[?(@.ID == 'Hofund')].GuaranteedMagicEffects[?(@.Type == 'LifeSteal')]",
+      "Action": "Merge",
+      "Value": { "Values": { "MinValue" : 4, "MaxValue" : 4.5, "Increment" : 0.1 } }
+    },
+    {
+      "Path": "$.LegendaryItems[?(@.ID == 'ShardMace')].GuaranteedMagicEffects[?(@.Type == 'AddFireDamage')]",
+      "Action": "Merge",
+      "Value": { "Values": { "MinValue" : 12, "MaxValue" : 21, "Increment" : 1 } }
+    },
+    {
+      "Path": "$.LegendaryItems[?(@.ID == 'ShardMace')].GuaranteedMagicEffects[?(@.Type == 'AddFrostDamage')]",
+      "Action": "Merge",
+      "Value": { "Values": { "MinValue" : 6, "MaxValue" : 10, "Increment" : 1 }  }
+    },
+    {
+      "Path": "$.LegendaryItems[?(@.ID == 'ShardMace')].GuaranteedMagicEffects[?(@.Type == 'AddLightningDamage')]",
+      "Action": "Merge",
+      "Value": { "Values": { "MinValue" : 7, "MaxValue" : 15, "Increment" : 1 } }
+    },
+    {
+      "Path": "$.LegendaryItems[?(@.ID == 'ShardMace')].GuaranteedMagicEffects[?(@.Type == 'AddPoisonDamage')]",
+      "Action": "Merge",
+      "Value": { "Values": { "MinValue" : 22, "MaxValue" : 30, "Increment" : 1 } }
+    },
+    {
+      "Path": "$.LegendaryItems[?(@.ID == 'Bloodmace')].GuaranteedMagicEffects[?(@.Type == 'AddPiercingDamage')]",
+      "Action": "Merge",
+      "Value": { "Values": { "MinValue" : 15, "MaxValue" : 20, "Increment" : 1 } }
+    },
+    {
+      "Path": "$.LegendaryItems[?(@.ID == 'Bloodmace')].GuaranteedMagicEffects[?(@.Type == 'LifeSteal')]",
+      "Action": "Merge",
+      "Value": { "Values": { "MinValue" : 4, "MaxValue" : 4.5, "Increment" : 0.1 } }
+    },
+    {
+      "Path": "$.LegendaryItems[?(@.ID == 'Bloodmace')].GuaranteedMagicEffects[?(@.Type == 'LifeStealLowHealth')]",
+      "Action": "Merge",
+      "Value": { "Values": { "MinValue" : 6, "MaxValue" : 8, "Increment" : 0.1 } }
+    },
+    {
+      "Path": "$.LegendaryItems[?(@.ID == 'GunnarsAtgeir')].GuaranteedMagicEffects[?(@.Type == 'AddPiercingDamage')]",
+      "Action": "Merge",
+      "Value": { "Values": { "MinValue" : 20, "MaxValue" : 25, "Increment" : 1 } }
+    },
+    {
+      "Path": "$.LegendaryItems[?(@.ID == 'GunnarsAtgeir')].GuaranteedMagicEffects[?(@.Type == 'ModifyAttackSpeed')]",
+      "Action": "Merge",
+      "Value": { "Values": { "MinValue" : 20, "MaxValue" : 22, "Increment" : 1 }  }
+    },
+    {
+      "Path": "$.LegendaryItems[?(@.ID == 'GunnarsAtgeir')].GuaranteedMagicEffects[?(@.Type == 'ModifyAttackStaminaUse')]",
+      "Action": "Merge",
+      "Value": { "Values": { "MinValue" : 20, "MaxValue" : 22, "Increment" : 1 }  }
+    },
+    {
+      "Path": "$.LegendaryItems[?(@.ID == 'SkadiBow')].GuaranteedMagicEffects[?(@.Type == 'ModifyMovementSpeed')]",
+      "Action": "Merge",
+      "Value": { "Values": { "MinValue" : 8, "MaxValue" : 13, "Increment" : 1 } }
+    },
+    {
+      "Path": "$.LegendaryItems[?(@.ID == 'UllrBow')].GuaranteedMagicEffects[?(@.Type == 'ExplosiveArrows')]",
+      "Action": "Merge",
+      "Value": { "Values": { "MinValue" : 35, "MaxValue" : 40, "Increment" : 1 } }
+    },
+    {
+      "Path": "$.LegendaryItems[?(@.ID == 'UllrBow')].GuaranteedMagicEffects[?(@.Type == 'AddFrostDamage')]",
+      "Action": "Merge",
+      "Value": { "Values": { "MinValue" : 6, "MaxValue" : 10, "Increment" : 1 } }
+    },
+    {
+      "Path": "$.LegendaryItems[?(@.ID == 'EndlessBow')].GuaranteedMagicEffects[?(@.Type == 'QuickDraw')]",
+      "Action": "Merge",
+      "Value": { "Values": { "MinValue" : 25, "MaxValue" : 35, "Increment" : 1 } }
+    },
+    {
+      "Path": "$.LegendaryItems[?(@.ID == 'EndlessBow')].GuaranteedMagicEffects[?(@.Type == 'ModifyAttackStaminaUse')]",
+      "Action": "Merge",
+      "Value": { "Values": { "MinValue" : 17, "MaxValue" : 20, "Increment" : 1 } }
+    },
+    {
+      "Path": "$.LegendaryItems[?(@.ID == 'BlackSunSpite')].GuaranteedMagicEffects[?(@.Type == 'ModifyAttackStaminaUse')]",
+      "Action": "Merge",
+      "Value": { "Values": { "MinValue" : 30, "MaxValue" : 40, "Increment" : 1 }  }
+    },
+    {
+      "Path": "$.LegendaryItems[?(@.ID == 'BlackSunSpite')].GuaranteedMagicEffects[?(@.Type == 'ModifyAttackSpeed')]",
+      "Action": "Merge",
+      "Value": { "Values": { "MinValue" : 25, "MaxValue" : 30, "Increment" : 1 } }
+    },
+    {
+      "Path": "$.LegendaryItems[?(@.ID == 'BlackSunSpite')].GuaranteedMagicEffects[?(@.Type == 'AddLightningDamage')]",
+      "Action": "Merge",
+      "Value": { "Values": { "MinValue" : 50, "MaxValue" : 60, "Increment" : 1 } }
+    },
+    {
+      "Path": "$.LegendaryItems[?(@.ID == 'BlackSunSpite')].GuaranteedMagicEffects[?(@.Type == 'AddPiercingDamage')]",
+      "Action": "Merge",
+      "Value": { "Values": { "MinValue" : 30, "MaxValue" : 35, "Increment" : 1 } }
+    },
+    {
+      "Path": "$.LegendaryItems[?(@.ID == 'BlackSunSpite')].GuaranteedMagicEffects[?(@.Type == 'ModifyMovementSpeed')]",
+      "Action": "Merge",
+      "Value": { "Values": { "MinValue" : 15, "MaxValue" : 20, "Increment" : 1 } }
+    },
+    {
+      "Path": "$.LegendaryItems[?(@.ID == 'HeimdallHelmet')].GuaranteedMagicEffects[?(@.Type == 'ModifyArmorLowHealth')]",
+      "Action": "Merge",
+      "Value": { "Values": { "MinValue": 30, "MaxValue": 35, "Increment": 1 } }
+    },
+    {
+      "Path": "$.LegendaryItems[?(@.ID == 'HeimdallHelmet')].GuaranteedMagicEffects[?(@.Type == 'ModifyStaminaRegenLowHealth')]",
+      "Action": "Merge",
+      "Value": { "Values": { "MinValue": 25, "MaxValue": 30, "Increment": 1 } }
+    },
+    {
+      "Path": "$.LegendaryItems[?(@.ID == 'HeimdallChest')].GuaranteedMagicEffects[?(@.Type == 'ModifyArmor')]",
+      "Action": "Merge",
+      "Value": { "Values": { "MinValue": 50, "MaxValue": 50, "Increment": 1 } }
+    },
+    {
+      "Path": "$.LegendaryItems[?(@.ID == 'HeimdallChest')].GuaranteedMagicEffects[?(@.Type == 'IncreaseStamina')]",
+      "Action": "Merge",
+      "Value": { "Values": { "MinValue": 50, "MaxValue": 60, "Increment": 1 } }
+    },
+    {
+      "Path": "$.LegendaryItems[?(@.ID == 'HeimdallLegs')].GuaranteedMagicEffects[?(@.Type == 'AddMovementSkills')]",
+      "Action": "Merge",
+      "Value": { "Values": { "MinValue": 30, "MaxValue": 40, "Increment": 1 } }
+    },
+    {
+      "Path": "$.LegendaryItems[?(@.ID == 'HeimdallLegs')].GuaranteedMagicEffects[?(@.Type == 'ModifyMovementSpeedLowHealth')]",
+      "Action": "Merge",
+      "Value": { "Values": { "MinValue": 25, "MaxValue": 25, "Increment": 1 } }
+    },
+    {
+      "Path": "$.LegendaryItems[?(@.ID == 'RagnarBattleAxe')].GuaranteedMagicEffects[?(@.Type == 'ModifyPhysicalDamage')]",
+      "Action": "Merge",
+      "Value": { "Values": { "MinValue": 15, "MaxValue": 20, "Increment": 1 } }
+    },
+    {
+      "Path": "$.LegendaryItems[?(@.ID == 'RagnarBattleAxe')].GuaranteedMagicEffects[?(@.Type == 'AddFrostDamage')]",
+      "Action": "Merge",
+      "Value": { "Values": { "MinValue": 30, "MaxValue": 35, "Increment": 1 } }
+    },
+    {
+      "Path": "$.LegendarySets[?(@.ID == 'Heimdall')].SetBonuses",
+      "Action": "Overwrite",
+      "Value": [
+        { "Count": 2, "Effect": { "Type": "ModifyBlockPower", "Values": { "MinValue": 200, "MaxValue": 200, "Increment": 1 } } },
+        { "Count": 3, "Effect": { "Type": "Bulwark" } },
+        { "Count": 4, "Effect": { "Type": "Undying" } }
+      ]
+    },
+    {
+      "Path": "$.LegendarySets[?(@.ID == 'Ragnar')].SetBonuses",
+      "Action": "Overwrite",
+      "Value": [
+        { "Count": 2, "Effect": { "Type": "AddHealthRegen", "Values": { "MinValue": 2, "MaxValue": 2, "Increment": 1 } } },
+        { "Count": 2, "Effect": { "Type": "ModifyHealthRegen", "Values": { "MinValue": 100, "MaxValue": 100, "Increment": 1 } } },
+        { "Count": 3, "Effect": { "Type": "Berserker" } },
+        { "Count": 4, "Effect": { "Type": "FrostDamageAOE", "Values": { "MinValue": 50, "MaxValue": 50, "Increment": 1 } } }
+      ]
+    }
+  ]
+}

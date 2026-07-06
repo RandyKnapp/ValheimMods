@@ -1,0 +1,44 @@
+{
+  "TargetFile": "loottables.json",
+  "Author": "EpicLoot",
+  "Priority": 2000,
+  "RequireAll": true,
+  "Patches": [
+    {
+      "Path": "$.ItemSets[?(@.Name == 'Tier2Everything')].Loot",
+      "Action": "Append",
+      "Value": 
+        { "Item": "Tier0Runestone" }
+    },
+    {
+      "Path": "$.ItemSets[?(@.Name == 'Tier3Everything')].Loot",
+      "Action": "Append",
+      "Value": 
+        { "Item": "Tier1Runestone" }
+    },
+    {
+      "Path": "$.ItemSets[?(@.Name == 'Tier4Everything')].Loot",
+      "Action": "Append",
+      "Value": 
+        { "Item": "Tier2Runestone" }
+    },
+    {
+      "Path": "$.ItemSets[?(@.Name == 'Tier5Everything')].Loot",
+      "Action": "Append",
+      "Value": 
+        { "Item": "Tier3Runestone" }
+    },
+    {
+      "Path": "$.ItemSets[?(@.Name == 'Tier6Everything')].Loot",
+      "Action": "Append",
+      "Value": 
+        { "Item": "Tier4Runestone" }
+    },
+    {
+      "Path": "$.ItemSets[?(@.Name == 'Tier7Everything')].Loot",
+      "Action": "Append",
+      "Value": 
+        { "Item": "Tier4Runestone" }
+    }
+  ]
+}

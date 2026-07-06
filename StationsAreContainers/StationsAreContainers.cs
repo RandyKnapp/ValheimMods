@@ -4,7 +4,7 @@ using BepInEx;
 using BepInEx.Configuration;
 using HarmonyLib;
 using JetBrains.Annotations;
-using ServerSync;
+//using ServerSync;
 
 namespace StationsAreContainers
 {
@@ -15,7 +15,7 @@ namespace StationsAreContainers
     {
         public const string PluginId = "randyknapp.mods.stationcontainers";
         public const string DisplayName = "Stations Are Containers";
-        public const string Version = "1.0.3";
+        public const string Version = "1.0.7";
 
         public class StationConfig
         {
@@ -24,8 +24,9 @@ namespace StationsAreContainers
             public ConfigEntry<int>  Height;
         }
 
-        private static ConfigEntry<bool> _serverConfigLocked;
-        private readonly ConfigSync _configSync = new ConfigSync(PluginId) { DisplayName = DisplayName, CurrentVersion = Version, MinimumRequiredVersion = Version };
+        //private static ConfigEntry<bool> _serverConfigLocked;
+        //private readonly ConfigSync _configSync = new ConfigSync(PluginId) { DisplayName = DisplayName,
+        //    CurrentVersion = Version, MinimumRequiredVersion = Version };
 
         private static StationsAreContainers _instance;
         private Harmony _harmony;
@@ -44,8 +45,10 @@ namespace StationsAreContainers
             InitConfigForStation("$piece_blackforge", "Black Forge");
             InitConfigForStation("$piece_magetable", "Galdr Table");
 
-            _serverConfigLocked = SyncedConfig("Config Sync", "Lock Config", false, "[Server Only] The configuration is locked and may not be changed by clients once it has been synced from the server. Only valid for server config, will have no effect on clients.");
-            _configSync.AddLockingConfigEntry(_serverConfigLocked);
+            //_serverConfigLocked = SyncedConfig("Config Sync", "Lock Config", false,
+            //    "[Server Only] The configuration is locked and may not be changed by clients once it has been synced from the server. " +
+            //    "Only valid for server config, will have no effect on clients.");
+            //_configSync.AddLockingConfigEntry(_serverConfigLocked);
 
             _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), PluginId);
 
@@ -61,7 +64,7 @@ namespace StationsAreContainers
             }
         }
 
-        private ConfigEntry<T> SyncedConfig<T>(string group, string configName, T value, string description, bool synchronizedSetting = true)
+        /*private ConfigEntry<T> SyncedConfig<T>(string group, string configName, T value, string description, bool synchronizedSetting = true)
         {
             var configEntry = Config.Bind(group, configName, value, new ConfigDescription(description));
 
@@ -69,7 +72,7 @@ namespace StationsAreContainers
             syncedConfigEntry.SynchronizedConfig = synchronizedSetting;
 
             return configEntry;
-        }
+        }*/
 
         public static StationConfig InitConfigForStation(string locID, string label)
         {
@@ -95,12 +98,6 @@ namespace StationsAreContainers
                 var newConfig = InitConfigForStation(station.m_name, label);
                 return newConfig;
             }
-        }
-
-        [UsedImplicitly]
-        private void OnDestroy()
-        {
-            _harmony?.UnpatchSelf();
         }
 
         public static void ImprovedBuildHud_GetAvailableItems_Patch(ref int __result, string itemName)
@@ -167,10 +164,11 @@ namespace StationsAreContainers
         }
     }
 
-    [HarmonyPatch(typeof(Player), nameof(Player.HaveRequirementItems), new[] { typeof(Recipe), typeof(bool), typeof(int) })]
+    [HarmonyPatch(typeof(Player), nameof(Player.HaveRequirementItems),
+        new[] { typeof(Recipe), typeof(bool), typeof(int), typeof(int) })]
     public static class Player_HaveRequirementItems_Patch
     {
-        public static void Postfix(Player __instance, ref bool __result, Recipe piece, int qualityLevel)
+        public static void Postfix(Player __instance, ref bool __result, Recipe piece, int qualityLevel, int amount)
         {
             if (__instance == null)
                 return;
@@ -186,9 +184,9 @@ namespace StationsAreContainers
                         if (resource.m_resItem != null)
                         {
                             var itemName = resource.m_resItem.m_itemData.m_shared.m_name;
-                            var amount = resource.GetAmount(qualityLevel);
+                            var resAmount = resource.GetAmount(qualityLevel) * amount;
                             var totalPlayerHas = __instance.GetInventory().CountItems(itemName) + container.GetInventory().CountItems(itemName);
-                            if (totalPlayerHas < amount)
+                            if (totalPlayerHas < resAmount)
                                 return;
                         }
                     }
@@ -241,7 +239,8 @@ namespace StationsAreContainers
 
         [HarmonyPatch(typeof(Inventory), nameof(Inventory.CountItems))]
         [HarmonyPostfix]
-        public static void InventoryGui_SetupRequirement_Postfix(Inventory __instance, ref int __result, string name, int quality = -1, bool matchWorldLevel = true)
+        public static void InventoryGui_SetupRequirement_Postfix(Inventory __instance, ref int __result,
+            string name, int quality = -1, bool matchWorldLevel = true)
         {
             if (SettingUpRequirement > 0 && __instance != null && Player.m_localPlayer != null && __instance == Player.m_localPlayer.m_inventory)
             {
@@ -261,7 +260,7 @@ namespace StationsAreContainers
     [HarmonyPatch(typeof(Player), nameof(Player.ConsumeResources))]
     public static class Player_ConsumeResources_Patch
     {
-        public static bool Prefix(Player __instance, Piece.Requirement[] requirements, int qualityLevel)
+        public static bool Prefix(Player __instance, Piece.Requirement[] requirements, int qualityLevel, int multiplier)
         {
             if (__instance == null)
                 return true;
@@ -279,7 +278,7 @@ namespace StationsAreContainers
                 if (requirement.m_resItem != null)
                 {
                     var itemName = requirement.m_resItem.m_itemData.m_shared.m_name;
-                    var amount = requirement.GetAmount(qualityLevel);
+                    var amount = requirement.GetAmount(qualityLevel) * multiplier;
                     if (amount > 0)
                     {
                         var has = __instance.m_inventory.CountItems(itemName);

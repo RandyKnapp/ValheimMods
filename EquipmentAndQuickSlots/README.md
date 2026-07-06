@@ -23,32 +23,32 @@ Copy EquipmentAndQuickSlots.dll into the BepInEx/plugins folder
   * 1.0.5
     * Fixed issue where the previous fix broke the #8 hotkey...
   * 2.0.0 Stability Update
-	* Items are saved even if accidentally uninstalling or having an error
-	* UIs work better with controller
-	* Never drop or lose items on death
+  * Items are saved even if accidentally uninstalling or having an error
+  * UIs work better with controller
+  * Never drop or lose items on death
   * 2.0.1
-	* Hotfix for not being able to craft when fully equipped
+  * Hotfix for not being able to craft when fully equipped
   * 2.0.2
-	* Fixed an issue where some equipment was lost on death
-	* Re-added the toggles to disable and enable features
+  * Fixed an issue where some equipment was lost on death
+  * Re-added the toggles to disable and enable features
   * 2.0.3
     * Fixed a bug where players could teleport with items they normally can't
   * 2.0.4
     * Fixed gamepad navigation for the crafting recipe list
-	* Fixed bug preventing new characters from being created
+  * Fixed bug preventing new characters from being created
   * 2.0.5
     * Put in a potential fix for "losing items" on tombstone pickup (they're in your inventory, just outside the grid. This version should fix that.)
   * 2.0.6
     * Fix for double upgrade when using EpicLoot with EAQS
-	* Fix for items lost in tombstone by [jsza](https://github.com/jsza).
+  * Fix for items lost in tombstone by [jsza](https://github.com/jsza).
   * 2.0.7
-	* (This entire update provided by [jsza](https://github.com/jsza))
-	* Fix a variety of equipment bugs
-	* Fix a variety of pickup/stacking bugs
+  * (This entire update provided by [jsza](https://github.com/jsza))
+  * Fix a variety of equipment bugs
+  * Fix a variety of pickup/stacking bugs
   * 2.0.8
     * Had to update the number to re-upload to ThunderStore
   * 2.0.9
-	* Quick slots position is now configurable
+  * Quick slots position is now configurable
   * 2.0.10
     * Fixed an encumberance bug
   * 2.0.11

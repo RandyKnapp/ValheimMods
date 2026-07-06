@@ -1,0 +1,22 @@
+{
+    "$rkjam_raspberry_jam_name": "Raspberry Jam",
+    "$rkjam_raspberry_jam_description": "A delicious pot of raspberry preserves.",
+    "$rkjam_honey_raspberry_jam_name": "Sweetened Raspberry Jam",
+    "$rkjam_honey_raspberry_jam_description": "A delicious pot of raspberry preserves, sweetened with honey.",
+    "$rkjam_blueberry_jam_name": "Blueberry Jam",
+    "$rkjam_blueberry_jam_description": "A delicious pot of blueberry preserves.",
+    "$rkjam_honey_blueberry_jam_name": "Sweetened Blueberry Jam",
+    "$rkjam_honey_blueberry_jam_description": "A delicious pot of blueberry preserves, sweetened with honey.",
+    "$rkjam_cloudberry_jam_name": "Cloudberry Jam",
+    "$rkjam_cloudberry_jam_description": "Delightfully tart cloudberries crushed, preserved and sweetened.",
+    "$rkjam_honey_cloudberry_jam_name": "Sweetened Cloudberry Jam",
+    "$rkjam_honey_cloudberry_jam_description": "Delightfully tart cloudberries crushed, preserved and sweetened with fresh honey.",
+    "$rkjam_kings_jam_name": "Kings Jam",
+    "$rkjam_kings_jam_description": "A new twist blend of raspberries and cloudberries.",
+    "$rkjam_nordic_jam_name": "Nordic Jam",
+    "$rkjam_nordic_jam_description": "A traditional blend of blueberries and cloudberries.",
+    "$rkjam_mushroom_jam_name": "Savory Eitrian Jam",
+    "$rkjam_mushroom_jam_description": "A savory blend of mushrooms and onions, rendered down to a pleasing spread.",
+    "$rkjam_ashlands_jam_name": "Rich Eitrian Jam",
+    "$rkjam_ashlands_jam_description": "A rich blend of exotic ingredients that tingles on the way down."
+}

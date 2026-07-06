@@ -1,0 +1,42 @@
+{
+  "TargetFile": "iteminfo.json",
+  "Author": "EpicLoot",
+  "Priority": 2000,
+  "RequireAll": true,
+  "Patches": [
+    {
+      "Path": "$.ItemInfo",
+      "Action": "Append",
+      "Value": 
+      {
+        "Type": "BossMats",
+        "Fallback": "Utility",
+        "ItemFallback": "Hammer",
+        "ItemsByBoss": {
+          "none": [],
+          "defeated_eikthyr": [
+            "TrophyDeer"
+          ],
+          "defeated_gdking": [
+            "AncientSeed"
+          ],
+          "defeated_bonemass": [
+            "WitheredBone"
+          ],
+          "defeated_dragon": [
+            "DragonEgg"
+          ],
+          "defeated_goblinking": [
+            "GoblinTotem"
+          ],
+          "defeated_queen": [
+            "TrophySeekerBrute"
+          ],
+          "defeated_fader": [
+            "BellFragment"
+          ]
+        }
+      }
+    }
+  ]
+}

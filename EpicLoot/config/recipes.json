@@ -1,0 +1,30 @@
+{
+  "recipes": [
+    {
+      "name": "Recipe_LeatherBelt",
+      "item": "LeatherBelt",
+      "craftingStation": "forge",
+      "resources": [
+        { "item": "LeatherScraps", "amount": 4 },
+        { "item": "Bronze", "amount": 1 }
+      ]
+    },
+    {
+      "name": "Recipe_SilverRing",
+      "item": "SilverRing",
+      "craftingStation": "forge",
+      "resources": [
+        { "item": "Silver", "amount": 1 }
+      ]
+    },
+    {
+      "name": "Recipe_GoldRubyRing",
+      "item": "GoldRubyRing",
+      "craftingStation": "forge",
+      "resources": [
+        { "item": "Coins", "amount": 200 },
+        { "item": "Ruby", "amount": 1 }
+      ]
+    }
+  ]
+}

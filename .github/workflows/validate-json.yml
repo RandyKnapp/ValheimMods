@@ -1,0 +1,28 @@
+name: Validate JSON
+
+on:
+  push:
+    paths:
+      - '**.json'
+  pull_request:
+    paths:
+      - '**.json'
+  workflow_dispatch:
+
+jobs:
+  json-syntax-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Verify JSON Syntax
+        run: |
+          # Find all .json files and validate using jq.
+          # Uses bash argument passing ("$1") to safely handle filenames with quotes/spaces.
+          find . -type f -name "*.json" -print0 | xargs -0 -I {} bash -c '
+            if ! jq empty "$1"; then
+              echo "::error file=$1::JSON Syntax Error in $1"
+              exit 1
+            fi
+          ' -- "{}"

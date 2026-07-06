@@ -1,0 +1,17 @@
+{
+  "TargetFile": "magiceffects.json", 
+  "Author": "EpicLoot",
+  "Priority": 2000,
+  "RequireAll": true, 
+  "Patches": [
+    {
+      "Path": "$.MagicItemEffects[?(@.Type == 'FreeBuild')].Requirements.AllowedItemNames",
+      "Action": "AppendAll",
+      "Value": [
+        "Prefab1",
+        "Prefab2"
+      ]
+      
+    }
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "TargetFile": "loottables.json",
+  "Author": "EpicLoot",
+  "Priority": 2000,
+  "RequireAll": true,
+  "Patches": [
+    {
+      "Path": "$.ItemSets[?(@.Name == 'Tier0Everything')].Loot",
+      "Action": "Overwrite",
+      "Value":  [
+        { "Item": "Tier0Mats" }
+      ]
+    },
+    {
+      "Path": "$.ItemSets[?(@.Name == 'Tier1Everything')].Loot",
+      "Action": "Overwrite",
+      "Value": [
+        { "Item": "Tier0Mats" }
+      ]
+    },
+    {
+      "Path": "$.ItemSets[?(@.Name == 'Tier2Everything')].Loot",
+      "Action": "Overwrite",
+      "Value": [
+        { "Item": "Tier0Mats", "Weight": 5 },
+        { "Item": "Tier0Runestone" }
+      ]
+    },
+    {
+      "Path": "$.ItemSets[?(@.Name == 'Tier3Everything')].Loot",
+      "Action": "Overwrite",
+      "Value": [
+        { "Item": "Tier1Mats", "Weight": 5 },
+        { "Item": "Tier1Runestone" }
+      ]
+    },
+    {
+      "Path": "$.ItemSets[?(@.Name == 'Tier4Everything')].Loot",
+      "Action": "Overwrite",
+      "Value": [
+        { "Item": "Tier2Mats", "Weight": 5 },
+        { "Item": "Tier2Runestone" }
+      ]
+    },
+    {
+      "Path": "$.ItemSets[?(@.Name == 'Tier5Everything')].Loot",
+      "Action": "Overwrite",
+      "Value": [
+        { "Item": "Tier3Mats", "Weight": 5 },
+        { "Item": "Tier3Runestone" }
+      ]
+    },
+    {
+      "Path": "$.ItemSets[?(@.Name == 'Tier6Everything')].Loot",
+      "Action": "Overwrite",
+      "Value": [
+        { "Item": "Tier4Mats", "Weight": 5 },
+        { "Item": "Tier4Runestone" }
+      ]
+    },
+    {
+      "Path": "$.ItemSets[?(@.Name == 'Tier7Everything')].Loot",
+      "Action": "Overwrite",
+      "Value": [
+        { "Item": "Tier4Mats", "Weight": 5 },
+        { "Item": "Tier4Runestone" }
+      ]
+    }
+  ]
+}

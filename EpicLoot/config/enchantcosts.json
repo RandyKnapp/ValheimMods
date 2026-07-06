@@ -1,0 +1,2207 @@
+{
+  "DisenchantCosts": {
+    "Magic": [
+      {
+        "Item": "IronBountyToken",
+        "Amount": 2
+      }
+    ],
+    "Rare": [
+      {
+        "Item": "IronBountyToken",
+        "Amount": 3
+      }
+    ],
+    "Epic": [
+      {
+        "Item": "IronBountyToken",
+        "Amount": 5
+      }
+    ],
+    "Legendary": [
+      {
+        "Item": "IronBountyToken",
+        "Amount": 7
+      }
+    ],
+    "Mythic": [
+      {
+        "Item": "IronBountyToken",
+        "Amount": 9
+      }
+    ]
+  },
+  "DisenchantProducts": [
+    {
+      "IsMagic": true,
+      "ItemTypes": [
+        "OneHandedWeapon",
+        "Bow",
+        "TwoHandedWeapon",
+        "TwoHandedWeaponLeft",
+        "Torch",
+        "Tool"
+      ],
+      "Rarity": "Magic",
+      "Products": [
+        {
+          "Item": "DustMagic",
+          "Amount": 1
+        },
+        {
+          "Item": "EssenceMagic",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "IsMagic": true,
+      "ItemTypes": [
+        "OneHandedWeapon",
+        "Bow",
+        "TwoHandedWeapon",
+        "TwoHandedWeaponLeft",
+        "Torch",
+        "Tool"
+      ],
+      "Rarity": "Rare",
+      "Products": [
+        {
+          "Item": "DustRare",
+          "Amount": 1
+        },
+        {
+          "Item": "EssenceRare",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "IsMagic": true,
+      "ItemTypes": [
+        "OneHandedWeapon",
+        "Bow",
+        "TwoHandedWeapon",
+        "TwoHandedWeaponLeft",
+        "Torch",
+        "Tool"
+      ],
+      "Rarity": "Epic",
+      "Products": [
+        {
+          "Item": "DustEpic",
+          "Amount": 1
+        },
+        {
+          "Item": "EssenceEpic",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "IsMagic": true,
+      "ItemTypes": [
+        "OneHandedWeapon",
+        "Bow",
+        "TwoHandedWeapon",
+        "TwoHandedWeaponLeft",
+        "Torch",
+        "Tool"
+      ],
+      "Rarity": "Legendary",
+      "Products": [
+        {
+          "Item": "DustLegendary",
+          "Amount": 1
+        },
+        {
+          "Item": "EssenceLegendary",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "IsMagic": true,
+      "ItemTypes": [
+        "OneHandedWeapon",
+        "Bow",
+        "TwoHandedWeapon",
+        "TwoHandedWeaponLeft",
+        "Torch",
+        "Tool"
+      ],
+      "Rarity": "Mythic",
+      "Products": [
+        {
+          "Item": "DustMythic",
+          "Amount": 1
+        },
+        {
+          "Item": "EssenceMythic",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "IsMagic": true,
+      "ItemTypes": [
+        "Shield",
+        "Helmet",
+        "Chest",
+        "Legs",
+        "Shoulder",
+        "Utility",
+        "Trinket",
+        "None",
+        "Misc"
+      ],
+      "Rarity": "Magic",
+      "Products": [
+        {
+          "Item": "DustMagic",
+          "Amount": 1
+        },
+        {
+          "Item": "ReagentMagic",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "IsMagic": true,
+      "ItemTypes": [
+        "Shield",
+        "Helmet",
+        "Chest",
+        "Legs",
+        "Shoulder",
+        "Utility",
+        "Trinket",
+        "None",
+        "Misc"
+      ],
+      "Rarity": "Rare",
+      "Products": [
+        {
+          "Item": "DustRare",
+          "Amount": 1
+        },
+        {
+          "Item": "ReagentRare",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "IsMagic": true,
+      "ItemTypes": [
+        "Shield",
+        "Helmet",
+        "Chest",
+        "Legs",
+        "Shoulder",
+        "Utility",
+        "Trinket",
+        "None",
+        "Misc"
+      ],
+      "Rarity": "Epic",
+      "Products": [
+        {
+          "Item": "DustEpic",
+          "Amount": 1
+        },
+        {
+          "Item": "ReagentEpic",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "IsMagic": true,
+      "ItemTypes": [
+        "Shield",
+        "Helmet",
+        "Chest",
+        "Legs",
+        "Shoulder",
+        "Utility",
+        "Trinket",
+        "None",
+        "Misc"
+      ],
+      "Rarity": "Legendary",
+      "Products": [
+        {
+          "Item": "DustLegendary",
+          "Amount": 1
+        },
+        {
+          "Item": "ReagentLegendary",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "IsMagic": true,
+      "ItemTypes": [
+        "Shield",
+        "Helmet",
+        "Chest",
+        "Legs",
+        "Shoulder",
+        "Utility",
+        "Trinket",
+        "None",
+        "Misc"
+      ],
+      "Rarity": "Mythic",
+      "Products": [
+        {
+          "Item": "DustMythic",
+          "Amount": 1
+        },
+        {
+          "Item": "ReagentMythic",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "ItemTypes": [
+        "Trophy"
+      ],
+      "ItemNames": [
+        "$item_trophy_boar",
+        "$item_trophy_deer",
+        "$item_trophy_greydwarf",
+        "$item_trophy_neck",
+        "$item_trophy_skeleton",
+        "$item_trophy_skeletonpoison",
+        "$item_trophy_ghost"
+      ],
+      "Products": [
+        {
+          "Item": "ShardMagic",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "ItemTypes": [
+        "Trophy"
+      ],
+      "ItemNames": [
+        "$item_trophy_troll",
+        "$item_trophy_greydwarfbrute",
+        "$item_trophy_greydwarfshaman",
+        "$item_trophy_blob",
+        "$item_trophy_draugr",
+        "$item_trophy_draugrelite",
+        "$item_trophy_draugrfem",
+        "$item_trophy_foresttroll",
+        "$item_trophy_leech",
+        "$item_trophy_surtling",
+        "$item_trophy_wolf",
+        "$item_trophy_wraith",
+        "$item_trophy_bjorn"
+      ],
+      "Products": [
+        {
+          "Item": "ShardRare",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "ItemTypes": [
+        "Trophy"
+      ],
+      "ItemNames": [
+        "$item_trophy_fenring",
+        "$item_trophy_goblin",
+        "$item_trophy_skeleton_hildir",
+        "$item_trophy_cultist_hildir",
+        "$item_trophy_hatchling",
+        "$item_trophy_lox",
+        "$item_trophy_sgolem",
+        "$item_trophy_abomination",
+        "$item_trophy_cultist",
+        "$item_trophy_ulv",
+        "$item_trophy_growth",
+        "$item_trophy_tick",
+        "$item_trophy_hare"
+      ],
+      "Products": [
+        {
+          "Item": "ShardEpic",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "ItemTypes": [
+        "Trophy"
+      ],
+      "ItemNames": [
+        "$item_trophy_deathsquito",
+        "$item_trophy_goblinbrute",
+        "$item_trophy_goblinshaman",
+        "$item_trophy_serpent",
+        "$item_trophy_seeker",
+        "$item_trophy_seeker_brute",
+        "$item_trophy_gjall",
+        "$item_trophy_dvergr",
+        "$item_trophy_brutebro",
+        "$item_trophy_shamanbro",
+        "$item_trophy_asksvin",
+        "$item_trophy_bonemaw",
+        "$item_trophy_volture",
+        "$item_trophy_bjorn_undead"
+      ],
+      "Products": [
+        {
+          "Item": "ShardLegendary",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "ItemTypes": [
+        "Trophy"
+      ],
+      "ItemNames": [
+        "$item_trophy_charredarcher",
+        "$item_trophy_charredmage",
+        "$item_trophy_charredmelee",
+        "$item_trophy_fallenvalkyrie",
+        "$item_trophy_morgen"
+      ],
+      "Products": [
+        {
+          "Item": "ShardMythic",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "ItemTypes": [
+        "Trophy"
+      ],
+      "ItemNames": [
+        "$item_trophy_eikthyr"
+      ],
+      "Products": [
+        {
+          "Item": "RunestoneMagic",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "ItemTypes": [
+        "Trophy"
+      ],
+      "ItemNames": [
+        "$item_trophy_elder"
+      ],
+      "Products": [
+        {
+          "Item": "RunestoneRare",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "ItemTypes": [
+        "Trophy"
+      ],
+      "ItemNames": [
+        "$item_trophy_bonemass"
+      ],
+      "Products": [
+        {
+          "Item": "RunestoneEpic",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "ItemTypes": [
+        "Trophy"
+      ],
+      "ItemNames": [
+        "$item_trophy_dragonqueen"
+      ],
+      "Products": [
+        {
+          "Item": "RunestoneEpic",
+          "Amount": 2
+        }
+      ]
+    },
+    {
+      "ItemTypes": [
+        "Trophy"
+      ],
+      "ItemNames": [
+        "$item_trophy_goblinking"
+      ],
+      "Products": [
+        {
+          "Item": "RunestoneLegendary",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "ItemTypes": [
+        "Trophy"
+      ],
+      "ItemNames": [
+        "$item_trophy_seekerqueen"
+      ],
+      "Products": [
+        {
+          "Item": "RunestoneLegendary",
+          "Amount": 2
+        }
+      ]
+    },
+    {
+      "ItemTypes": [
+        "Trophy"
+      ],
+      "ItemNames": [
+        "$item_trophy_fader"
+      ],
+      "Products": [
+        {
+          "Item": "RunestoneMythic",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "ItemNames": [
+        "$item_cryptkey"
+      ],
+      "Products": [
+        {
+          "Item": "DustRare",
+          "Amount": 2
+        },
+        {
+          "Item": "EssenceRare",
+          "Amount": 1
+        },
+        {
+          "Item": "ReagentRare",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "ItemTypes": [
+        "Trophy"
+      ],
+      "ItemNames": [
+        "$item_trophy_troll",
+        "$item_trophy_greydwarfbrute",
+        "$item_trophy_greydwarfshaman",
+        "$item_trophy_blob",
+        "$item_trophy_draugr",
+        "$item_trophy_draugrelite",
+        "$item_trophy_draugrfem",
+        "$item_trophy_foresttroll",
+        "$item_trophy_leech",
+        "$item_trophy_surtling",
+        "$item_trophy_wolf",
+        "$item_trophy_wraith"
+      ],
+      "Products": [
+        {
+          "Item": "ShardRare",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "ItemTypes": [
+        "Trophy"
+      ],
+      "ItemNames": [
+        "$item_trophy_fenring",
+        "$item_trophy_goblin",
+        "$item_trophy_skeleton_hildir",
+        "$item_trophy_cultist_hildir",
+        "$item_trophy_hatchling",
+        "$item_trophy_lox",
+        "$item_trophy_sgolem",
+        "$item_trophy_abomination",
+        "$item_trophy_cultist",
+        "$item_trophy_ulv",
+        "$item_trophy_growth",
+        "$item_trophy_tick",
+        "$item_trophy_hare"
+      ],
+      "Products": [
+        {
+          "Item": "ShardEpic",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "ItemTypes": [
+        "Trophy"
+      ],
+      "ItemNames": [
+        "$item_trophy_deathsquito",
+        "$item_trophy_goblinbrute",
+        "$item_trophy_goblinshaman",
+        "$item_trophy_serpent",
+        "$item_trophy_seeker",
+        "$item_trophy_seeker_brute",
+        "$item_trophy_gjall",
+        "$item_trophy_dvergr",
+        "$item_trophy_brutebro",
+        "$item_trophy_shamanbro",
+        "$item_trophy_asksvin",
+        "$item_trophy_bonemaw",
+        "$item_trophy_volture"
+      ],
+      "Products": [
+        {
+          "Item": "ShardLegendary",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "ItemTypes": [
+        "Trophy"
+      ],
+      "ItemNames": [
+        "$item_trophy_charredarcher",
+        "$item_trophy_charredmage",
+        "$item_trophy_charredmelee",
+        "$item_trophy_fallenvalkyrie",
+        "$item_trophy_morgen"
+      ],
+      "Products": [
+        {
+          "Item": "ShardMythic",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "ItemTypes": [
+        "Trophy"
+      ],
+      "ItemNames": [
+        "$item_trophy_eikthyr"
+      ],
+      "Products": [
+        {
+          "Item": "RunestoneMagic",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "ItemTypes": [
+        "Trophy"
+      ],
+      "ItemNames": [
+        "$item_trophy_elder"
+      ],
+      "Products": [
+        {
+          "Item": "RunestoneRare",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "ItemTypes": [
+        "Trophy"
+      ],
+      "ItemNames": [
+        "$item_trophy_bonemass"
+      ],
+      "Products": [
+        {
+          "Item": "RunestoneEpic",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "ItemTypes": [
+        "Trophy"
+      ],
+      "ItemNames": [
+        "$item_trophy_dragonqueen"
+      ],
+      "Products": [
+        {
+          "Item": "RunestoneEpic",
+          "Amount": 2
+        }
+      ]
+    },
+    {
+      "ItemTypes": [
+        "Trophy"
+      ],
+      "ItemNames": [
+        "$item_trophy_goblinking"
+      ],
+      "Products": [
+        {
+          "Item": "RunestoneLegendary",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "ItemTypes": [
+        "Trophy"
+      ],
+      "ItemNames": [
+        "$item_trophy_seekerqueen"
+      ],
+      "Products": [
+        {
+          "Item": "RunestoneLegendary",
+          "Amount": 2
+        }
+      ]
+    },
+    {
+      "ItemTypes": [
+        "Trophy"
+      ],
+      "ItemNames": [
+        "$item_trophy_fader"
+      ],
+      "Products": [
+        {
+          "Item": "RunestoneMythic",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "ItemNames": [
+        "$item_cryptkey"
+      ],
+      "Products": [
+        {
+          "Item": "DustRare",
+          "Amount": 2
+        },
+        {
+          "Item": "EssenceRare",
+          "Amount": 1
+        },
+        {
+          "Item": "ReagentRare",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "ItemNames": [
+        "$item_dragontear"
+      ],
+      "Products": [
+        {
+          "Item": "DustLegendary",
+          "Amount": 2
+        },
+        {
+          "Item": "EssenceLegendary",
+          "Amount": 1
+        },
+        {
+          "Item": "ReagentLegendary",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "ItemNames": [
+        "$item_yagluththing"
+      ],
+      "Products": [
+        {
+          "Item": "DustLegendary",
+          "Amount": 2
+        },
+        {
+          "Item": "EssenceLegendary",
+          "Amount": 1
+        },
+        {
+          "Item": "ReagentLegendary",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "ItemNames": [
+        "$item_dvergrkeyfragment"
+      ],
+      "Products": [
+        {
+          "Item": "DustLegendary",
+          "Amount": 2
+        },
+        {
+          "Item": "EssenceLegendary",
+          "Amount": 1
+        },
+        {
+          "Item": "ReagentLegendary",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "ItemNames": [
+        "$item_seekerqueen_drop"
+      ],
+      "Products": [
+        {
+          "Item": "DustLegendary",
+          "Amount": 2
+        },
+        {
+          "Item": "EssenceLegendary",
+          "Amount": 1
+        },
+        {
+          "Item": "ReagentLegendary",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "ItemNames": [
+        "$item_fader_drop"
+      ],
+      "Products": [
+        {
+          "Item": "DustMythic",
+          "Amount": 2
+        },
+        {
+          "Item": "EssenceMythic",
+          "Amount": 1
+        },
+        {
+          "Item": "ReagentMythic",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "IsUnidentified": true,
+      "Rarity": "Magic",
+      "Products": [
+        {
+          "Item": "DustMagic",
+          "Amount": 1
+        },
+        {
+          "Item": "ReagentMagic",
+          "Amount": 1
+        },
+        {
+          "Item": "EssenceMagic",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "IsUnidentified": true,
+      "Rarity": "Rare",
+      "Products": [
+        {
+          "Item": "DustRare",
+          "Amount": 1
+        },
+        {
+          "Item": "ReagentRare",
+          "Amount": 1
+        },
+        {
+          "Item": "EssenceRare",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "IsUnidentified": true,
+      "Rarity": "Epic",
+      "Products": [
+        {
+          "Item": "DustEpic",
+          "Amount": 1
+        },
+        {
+          "Item": "ReagentEpic",
+          "Amount": 1
+        },
+        {
+          "Item": "EssenceEpic",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "IsUnidentified": true,
+      "Rarity": "Legendary",
+      "Products": [
+        {
+          "Item": "DustLegendary",
+          "Amount": 1
+        },
+        {
+          "Item": "ReagentLegendary",
+          "Amount": 1
+        },
+        {
+          "Item": "EssenceLegendary",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "IsUnidentified": true,
+      "Rarity": "Mythic",
+      "Products": [
+        {
+          "Item": "DustMythic",
+          "Amount": 1
+        },
+        {
+          "Item": "ReagentMythic",
+          "Amount": 1
+        },
+        {
+          "Item": "EssenceMythic",
+          "Amount": 1
+        }
+      ]
+    }
+  ],
+  "EnchantCosts": [
+    {
+      "ItemTypes": [
+        "OneHandedWeapon",
+        "Bow",
+        "TwoHandedWeapon",
+        "TwoHandedWeaponLeft",
+        "Torch",
+        "Tool"
+      ],
+      "Rarity": "Magic",
+      "Cost": [
+        {
+          "Item": "RunestoneMagic",
+          "Amount": 1
+        },
+        {
+          "Item": "DustMagic",
+          "Amount": 5
+        },
+        {
+          "Item": "EssenceMagic",
+          "Amount": 5
+        }
+      ]
+    },
+    {
+      "ItemTypes": [
+        "OneHandedWeapon",
+        "Bow",
+        "TwoHandedWeapon",
+        "TwoHandedWeaponLeft",
+        "Torch",
+        "Tool"
+      ],
+      "Rarity": "Rare",
+      "Cost": [
+        {
+          "Item": "RunestoneRare",
+          "Amount": 1
+        },
+        {
+          "Item": "DustRare",
+          "Amount": 5
+        },
+        {
+          "Item": "EssenceRare",
+          "Amount": 5
+        }
+      ]
+    },
+    {
+      "ItemTypes": [
+        "OneHandedWeapon",
+        "Bow",
+        "TwoHandedWeapon",
+        "TwoHandedWeaponLeft",
+        "Torch",
+        "Tool"
+      ],
+      "Rarity": "Epic",
+      "Cost": [
+        {
+          "Item": "RunestoneEpic",
+          "Amount": 1
+        },
+        {
+          "Item": "DustEpic",
+          "Amount": 5
+        },
+        {
+          "Item": "EssenceEpic",
+          "Amount": 5
+        }
+      ]
+    },
+    {
+      "ItemTypes": [
+        "OneHandedWeapon",
+        "Bow",
+        "TwoHandedWeapon",
+        "TwoHandedWeaponLeft",
+        "Torch",
+        "Tool"
+      ],
+      "Rarity": "Legendary",
+      "Cost": [
+        {
+          "Item": "RunestoneLegendary",
+          "Amount": 1
+        },
+        {
+          "Item": "DustLegendary",
+          "Amount": 5
+        },
+        {
+          "Item": "EssenceLegendary",
+          "Amount": 5
+        }
+      ]
+    },
+    {
+      "ItemTypes": [
+        "OneHandedWeapon",
+        "Bow",
+        "TwoHandedWeapon",
+        "TwoHandedWeaponLeft",
+        "Torch",
+        "Tool"
+      ],
+      "Rarity": "Mythic",
+      "Cost": [
+        {
+          "Item": "RunestoneMythic",
+          "Amount": 1
+        },
+        {
+          "Item": "DustMythic",
+          "Amount": 5
+        },
+        {
+          "Item": "EssenceMythic",
+          "Amount": 5
+        }
+      ]
+    },
+    {
+      "ItemTypes": [
+        "Shield",
+        "Helmet",
+        "Chest",
+        "Legs",
+        "Shoulder",
+        "Utility",
+        "Trinket",
+        "None",
+        "Misc"
+      ],
+      "Rarity": "Magic",
+      "Cost": [
+        {
+          "Item": "RunestoneMagic",
+          "Amount": 1
+        },
+        {
+          "Item": "DustMagic",
+          "Amount": 5
+        },
+        {
+          "Item": "ReagentMagic",
+          "Amount": 5
+        }
+      ]
+    },
+    {
+      "ItemTypes": [
+        "Shield",
+        "Helmet",
+        "Chest",
+        "Legs",
+        "Shoulder",
+        "Utility",
+        "Trinket",
+        "None",
+        "Misc"
+      ],
+      "Rarity": "Rare",
+      "Cost": [
+        {
+          "Item": "RunestoneRare",
+          "Amount": 1
+        },
+        {
+          "Item": "DustRare",
+          "Amount": 5
+        },
+        {
+          "Item": "ReagentRare",
+          "Amount": 5
+        }
+      ]
+    },
+    {
+      "ItemTypes": [
+        "Shield",
+        "Helmet",
+        "Chest",
+        "Legs",
+        "Shoulder",
+        "Utility",
+        "Trinket",
+        "None",
+        "Misc"
+      ],
+      "Rarity": "Epic",
+      "Cost": [
+        {
+          "Item": "RunestoneEpic",
+          "Amount": 1
+        },
+        {
+          "Item": "DustEpic",
+          "Amount": 5
+        },
+        {
+          "Item": "ReagentEpic",
+          "Amount": 5
+        }
+      ]
+    },
+    {
+      "ItemTypes": [
+        "Shield",
+        "Helmet",
+        "Chest",
+        "Legs",
+        "Shoulder",
+        "Utility",
+        "Trinket",
+        "None",
+        "Misc"
+      ],
+      "Rarity": "Legendary",
+      "Cost": [
+        {
+          "Item": "RunestoneLegendary",
+          "Amount": 1
+        },
+        {
+          "Item": "DustLegendary",
+          "Amount": 5
+        },
+        {
+          "Item": "ReagentLegendary",
+          "Amount": 5
+        }
+      ]
+    },
+    {
+      "ItemTypes": [
+        "Shield",
+        "Helmet",
+        "Chest",
+        "Legs",
+        "Shoulder",
+        "Utility",
+        "Trinket",
+        "None",
+        "Misc"
+      ],
+      "Rarity": "Mythic",
+      "Cost": [
+        {
+          "Item": "RunestoneMythic",
+          "Amount": 1
+        },
+        {
+          "Item": "DustMythic",
+          "Amount": 5
+        },
+        {
+          "Item": "ReagentMythic",
+          "Amount": 5
+        }
+      ]
+    }
+  ],
+  "AugmentCosts": [
+    {
+      "ItemTypes": [
+        "OneHandedWeapon",
+        "Bow",
+        "TwoHandedWeapon",
+        "TwoHandedWeaponLeft",
+        "Torch",
+        "Tool"
+      ],
+      "Rarity": "Magic",
+      "Cost": [
+        {
+          "Item": "ShardMagic",
+          "Amount": 1
+        },
+        {
+          "Item": "DustMagic",
+          "Amount": 1
+        },
+        {
+          "Item": "EssenceMagic",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "ItemTypes": [
+        "OneHandedWeapon",
+        "Bow",
+        "TwoHandedWeapon",
+        "TwoHandedWeaponLeft",
+        "Torch",
+        "Tool"
+      ],
+      "Rarity": "Rare",
+      "Cost": [
+        {
+          "Item": "ShardRare",
+          "Amount": 1
+        },
+        {
+          "Item": "DustRare",
+          "Amount": 1
+        },
+        {
+          "Item": "EssenceRare",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "ItemTypes": [
+        "OneHandedWeapon",
+        "Bow",
+        "TwoHandedWeapon",
+        "TwoHandedWeaponLeft",
+        "Torch",
+        "Tool"
+      ],
+      "Rarity": "Epic",
+      "Cost": [
+        {
+          "Item": "ShardEpic",
+          "Amount": 1
+        },
+        {
+          "Item": "DustEpic",
+          "Amount": 1
+        },
+        {
+          "Item": "EssenceEpic",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "ItemTypes": [
+        "OneHandedWeapon",
+        "Bow",
+        "TwoHandedWeapon",
+        "TwoHandedWeaponLeft",
+        "Torch",
+        "Tool"
+      ],
+      "Rarity": "Legendary",
+      "Cost": [
+        {
+          "Item": "ShardLegendary",
+          "Amount": 1
+        },
+        {
+          "Item": "DustLegendary",
+          "Amount": 1
+        },
+        {
+          "Item": "EssenceLegendary",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "ItemTypes": [
+        "OneHandedWeapon",
+        "Bow",
+        "TwoHandedWeapon",
+        "TwoHandedWeaponLeft",
+        "Torch",
+        "Tool"
+      ],
+      "Rarity": "Mythic",
+      "Cost": [
+        {
+          "Item": "ShardMythic",
+          "Amount": 1
+        },
+        {
+          "Item": "DustMythic",
+          "Amount": 1
+        },
+        {
+          "Item": "EssenceMythic",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "ItemTypes": [
+        "Shield",
+        "Helmet",
+        "Chest",
+        "Legs",
+        "Shoulder",
+        "Utility",
+        "Trinket",
+        "None",
+        "Misc"
+      ],
+      "Rarity": "Magic",
+      "Cost": [
+        {
+          "Item": "ShardMagic",
+          "Amount": 1
+        },
+        {
+          "Item": "DustMagic",
+          "Amount": 1
+        },
+        {
+          "Item": "ReagentMagic",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "ItemTypes": [
+        "Shield",
+        "Helmet",
+        "Chest",
+        "Legs",
+        "Shoulder",
+        "Utility",
+        "Trinket",
+        "None",
+        "Misc"
+      ],
+      "Rarity": "Rare",
+      "Cost": [
+        {
+          "Item": "ShardRare",
+          "Amount": 1
+        },
+        {
+          "Item": "DustRare",
+          "Amount": 1
+        },
+        {
+          "Item": "ReagentRare",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "ItemTypes": [
+        "Shield",
+        "Helmet",
+        "Chest",
+        "Legs",
+        "Shoulder",
+        "Utility",
+        "Trinket",
+        "None",
+        "Misc"
+      ],
+      "Rarity": "Epic",
+      "Cost": [
+        {
+          "Item": "ShardEpic",
+          "Amount": 1
+        },
+        {
+          "Item": "DustEpic",
+          "Amount": 1
+        },
+        {
+          "Item": "ReagentEpic",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "ItemTypes": [
+        "Shield",
+        "Helmet",
+        "Chest",
+        "Legs",
+        "Shoulder",
+        "Utility",
+        "Trinket",
+        "None",
+        "Misc"
+      ],
+      "Rarity": "Legendary",
+      "Cost": [
+        {
+          "Item": "ShardLegendary",
+          "Amount": 1
+        },
+        {
+          "Item": "DustLegendary",
+          "Amount": 1
+        },
+        {
+          "Item": "ReagentLegendary",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "ItemTypes": [
+        "Shield",
+        "Helmet",
+        "Chest",
+        "Legs",
+        "Shoulder",
+        "Utility",
+        "Trinket",
+        "None",
+        "Misc"
+      ],
+      "Rarity": "Mythic",
+      "Cost": [
+        {
+          "Item": "ShardMythic",
+          "Amount": 1
+        },
+        {
+          "Item": "DustMythic",
+          "Amount": 1
+        },
+        {
+          "Item": "ReagentMythic",
+          "Amount": 1
+        }
+      ]
+    }
+  ],
+  "ReAugmentCosts": [
+    {
+      "Item": "Coins",
+      "Amount": 500
+    },
+    {
+      "Item": "Coins",
+      "Amount": 1000
+    },
+    {
+      "Item": "Coins",
+      "Amount": 1500
+    },
+    {
+      "Item": "Coins",
+      "Amount": 2000
+    },
+    {
+      "Item": "Coins",
+      "Amount": 2500
+    },
+    {
+      "Item": "Coins",
+      "Amount": 3500
+    },
+    {
+      "Item": "Coins",
+      "Amount": 4000
+    },
+    {
+      "Item": "Coins",
+      "Amount": 4500
+    },
+    {
+      "Item": "Coins",
+      "Amount": 5000
+    },
+    {
+      "Item": "Coins",
+      "Amount": 5500
+    }
+  ],
+  "RuneExtractCosts": [
+    {
+      "ItemTypes": [
+        "OneHandedWeapon",
+        "Bow",
+        "TwoHandedWeapon",
+        "TwoHandedWeaponLeft",
+        "Torch",
+        "Tool",
+        "Shield",
+        "Helmet",
+        "Chest",
+        "Legs",
+        "Shoulder",
+        "Utility",
+        "Trinket",
+        "None",
+        "Misc"
+      ],
+      "Rarity": "Magic",
+      "Cost": [
+        {
+          "Item": "RunestoneMagic",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "ItemTypes": [
+        "OneHandedWeapon",
+        "Bow",
+        "TwoHandedWeapon",
+        "TwoHandedWeaponLeft",
+        "Torch",
+        "Tool",
+        "Shield",
+        "Helmet",
+        "Chest",
+        "Legs",
+        "Shoulder",
+        "Utility",
+        "Trinket",
+        "None",
+        "Misc"
+      ],
+      "Rarity": "Rare",
+      "Cost": [
+        {
+          "Item": "RunestoneRare",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "ItemTypes": [
+        "OneHandedWeapon",
+        "Bow",
+        "TwoHandedWeapon",
+        "TwoHandedWeaponLeft",
+        "Torch",
+        "Tool",
+        "Shield",
+        "Helmet",
+        "Chest",
+        "Legs",
+        "Shoulder",
+        "Utility",
+        "Trinket",
+        "None",
+        "Misc"
+      ],
+      "Rarity": "Epic",
+      "Cost": [
+        {
+          "Item": "RunestoneEpic",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "ItemTypes": [
+        "OneHandedWeapon",
+        "Bow",
+        "TwoHandedWeapon",
+        "TwoHandedWeaponLeft",
+        "Torch",
+        "Tool",
+        "Shield",
+        "Helmet",
+        "Chest",
+        "Legs",
+        "Shoulder",
+        "Utility",
+        "Trinket",
+        "None",
+        "Misc"
+      ],
+      "Rarity": "Legendary",
+      "Cost": [
+        {
+          "Item": "RunestoneLegendary",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "ItemTypes": [
+        "OneHandedWeapon",
+        "Bow",
+        "TwoHandedWeapon",
+        "TwoHandedWeaponLeft",
+        "Torch",
+        "Tool",
+        "Shield",
+        "Helmet",
+        "Chest",
+        "Legs",
+        "Shoulder",
+        "Utility",
+        "Trinket",
+        "None",
+        "Misc"
+      ],
+      "Rarity": "Mythic",
+      "Cost": [
+        {
+          "Item": "RunestoneMythic",
+          "Amount": 1
+        }
+      ]
+    }
+  ],
+  "RuneEtchCosts": [
+    {
+      "ItemTypes": [
+        "OneHandedWeapon",
+        "Bow",
+        "TwoHandedWeapon",
+        "TwoHandedWeaponLeft",
+        "Torch",
+        "Tool",
+        "Shield",
+        "Helmet",
+        "Chest",
+        "Legs",
+        "Shoulder",
+        "Utility",
+        "Trinket",
+        "None",
+        "Misc"
+      ],
+      "Rarity": "Magic",
+      "Cost": [
+        {
+          "Item": "DustMagic",
+          "Amount": 10
+        }
+      ]
+    },
+    {
+      "ItemTypes": [
+        "OneHandedWeapon",
+        "Bow",
+        "TwoHandedWeapon",
+        "TwoHandedWeaponLeft",
+        "Torch",
+        "Tool",
+        "Shield",
+        "Helmet",
+        "Chest",
+        "Legs",
+        "Shoulder",
+        "Utility",
+        "Trinket",
+        "None",
+        "Misc"
+      ],
+      "Rarity": "Rare",
+      "Cost": [
+        {
+          "Item": "DustRare",
+          "Amount": 10
+        }
+      ]
+    },
+    {
+      "ItemTypes": [
+        "OneHandedWeapon",
+        "Bow",
+        "TwoHandedWeapon",
+        "TwoHandedWeaponLeft",
+        "Torch",
+        "Tool",
+        "Shield",
+        "Helmet",
+        "Chest",
+        "Legs",
+        "Shoulder",
+        "Utility",
+        "Trinket",
+        "None",
+        "Misc"
+      ],
+      "Rarity": "Epic",
+      "Cost": [
+        {
+          "Item": "DustEpic",
+          "Amount": 10
+        }
+      ]
+    },
+    {
+      "ItemTypes": [
+        "OneHandedWeapon",
+        "Bow",
+        "TwoHandedWeapon",
+        "TwoHandedWeaponLeft",
+        "Torch",
+        "Tool",
+        "Shield",
+        "Helmet",
+        "Chest",
+        "Legs",
+        "Shoulder",
+        "Utility",
+        "Trinket",
+        "None",
+        "Misc"
+      ],
+      "Rarity": "Legendary",
+      "Cost": [
+        {
+          "Item": "DustLegendary",
+          "Amount": 10
+        }
+      ]
+    },
+    {
+      "ItemTypes": [
+        "OneHandedWeapon",
+        "Bow",
+        "TwoHandedWeapon",
+        "TwoHandedWeaponLeft",
+        "Torch",
+        "Tool",
+        "Shield",
+        "Helmet",
+        "Chest",
+        "Legs",
+        "Shoulder",
+        "Utility",
+        "Trinket",
+        "None",
+        "Misc"
+      ],
+      "Rarity": "Mythic",
+      "Cost": [
+        {
+          "Item": "DustMythic",
+          "Amount": 10
+        }
+      ]
+    }
+  ],
+  "IdentifyTypes": {
+    "Random": {
+      "localization": "$mod_epicloot_identify_random",
+      "BiomeLootLists": {
+        "none": [
+          "Tier0Everything"
+        ],
+        "Meadows": [
+          "Tier1Everything"
+        ],
+        "BlackForest": [
+          "Tier2Everything"
+        ],
+        "Ocean": [
+          "Tier2Everything"
+        ],
+        "Swamp": [
+          "Tier3Everything"
+        ],
+        "Mountain": [
+          "Tier4Everything"
+        ],
+        "Plains": [
+          "Tier5Everything"
+        ],
+        "Mistlands": [
+          "Tier6Everything"
+        ],
+        "AshLands": [
+          "Tier7Everything"
+        ]
+      },
+      "Costs": [
+        {
+          "Item": "Coins",
+          "Amount": 5
+        }
+      ]
+    },
+    "Weapon": {
+      "localization": "$mod_epicloot_identify_weapon",
+      "BiomeLootLists": {
+        "none": [
+          "Tier0Weapons"
+        ],
+        "Meadows": [
+          "Tier1Weapons"
+        ],
+        "BlackForest": [
+          "Tier2Weapons"
+        ],
+        "Ocean": [
+          "Tier2Weapons"
+        ],
+        "Swamp": [
+          "Tier3Weapons"
+        ],
+        "Mountain": [
+          "Tier4Weapons"
+        ],
+        "Plains": [
+          "Tier5Weapons"
+        ],
+        "Mistlands": [
+          "Tier6Weapons"
+        ],
+        "AshLands": [
+          "Tier7Weapons"
+        ]
+      },
+      "Costs": [
+        {
+          "Item": "Coins",
+          "Amount": 50
+        },
+        {
+          "Item": "GoldBountyToken",
+          "Amount": 2
+        }
+      ]
+    },
+    "Armor": {
+      "localization": "$mod_epicloot_identify_armor",
+      "BiomeLootLists": {
+        "none": [
+          "Tier0Armor",
+          "Tier0Shields"
+        ],
+        "Meadows": [
+          "Tier1Armor",
+          "Tier1Shields"
+        ],
+        "BlackForest": [
+          "Tier2Armor",
+          "Tier2Shields"
+        ],
+        "Ocean": [
+          "Tier2Armor",
+          "Tier2Shields"
+        ],
+        "Swamp": [
+          "Tier3Armor",
+          "Tier3Shields"
+        ],
+        "Mountain": [
+          "Tier4Armor",
+          "Tier4Shields"
+        ],
+        "Plains": [
+          "Tier5Armor",
+          "Tier5Shields"
+        ],
+        "Mistlands": [
+          "Tier6Armor",
+          "Tier6Shields"
+        ],
+        "AshLands": [
+          "Tier7Armor",
+          "Tier7Shields"
+        ]
+      },
+      "Costs": [
+        {
+          "Item": "Coins",
+          "Amount": 50
+        },
+        {
+          "Item": "GoldBountyToken",
+          "Amount": 2
+        }
+      ]
+    },
+    "Utility": {
+      "localization": "$mod_epicloot_identify_accessory",
+      "BiomeLootLists": {
+        "None": [ "ModUtility" ],
+        "Meadows": [ "Tier1Tools", "ModUtility" ],
+        "BlackForest": [ "Tier2Tools", "ModUtility", "Tier2Trinkets" ],
+        "Ocean": [ "Tier2Tools", "ModUtility", "Tier2Trinkets" ],
+        "Swamp": [ "Tier3Tools", "ModUtility", "Tier3Trinkets" ],
+        "Mountain": [ "Tier3Tools", "ModUtility", "Tier4Trinkets" ],
+        "Plains": [ "Tier3Tools", "ModUtility", "Tier5Trinkets" ],
+        "Mistlands": [ "Tier6Tools", "ModUtility", "Tier6Trinkets" ],
+        "AshLands": [ "Tier6Tools", "ModUtility", "Tier7Trinkets" ]
+      },
+      "Costs": [
+        {
+          "Item": "Coins",
+          "Amount": 150
+        },
+        {
+          "Item": "GoldBountyToken",
+          "Amount": 3
+        }
+      ]
+    }
+  },
+  "IdentifyCosts": {
+    "Meadows": {
+      "CostByRarity": {
+        "Magic": [
+          {
+            "Item": "Flint",
+            "Amount": 1
+          }
+        ],
+        "Rare": [
+          {
+            "Item": "Flint",
+            "Amount": 2
+          }
+        ],
+        "Epic": [
+          {
+            "Item": "Flint",
+            "Amount": 3
+          }
+        ],
+        "Legendary": [
+          {
+            "Item": "Flint",
+            "Amount": 4
+          }
+        ],
+        "Mythic": [
+          {
+            "Item": "Flint",
+            "Amount": 5
+          }
+        ]
+      }
+    },
+    "BlackForest": {
+      "CostByRarity": {
+        "Magic": [
+          {
+            "Item": "Bronze",
+            "Amount": 1
+          }
+        ],
+        "Rare": [
+          {
+            "Item": "Bronze",
+            "Amount": 2
+          }
+        ],
+        "Epic": [
+          {
+            "Item": "Bronze",
+            "Amount": 3
+          }
+        ],
+        "Legendary": [
+          {
+            "Item": "Bronze",
+            "Amount": 4
+          }
+        ],
+        "Mythic": [
+          {
+            "Item": "Bronze",
+            "Amount": 5
+          }
+        ]
+      }
+    },
+    "Swamp": {
+      "CostByRarity": {
+        "Magic": [
+          {
+            "Item": "Iron",
+            "Amount": 1
+          }
+        ],
+        "Rare": [
+          {
+            "Item": "Iron",
+            "Amount": 2
+          }
+        ],
+        "Epic": [
+          {
+            "Item": "Iron",
+            "Amount": 3
+          }
+        ],
+        "Legendary": [
+          {
+            "Item": "Iron",
+            "Amount": 4
+          }
+        ],
+        "Mythic": [
+          {
+            "Item": "Iron",
+            "Amount": 5
+          }
+        ]
+      }
+    },
+    "Ocean": {
+      "CostByRarity": {
+        "Magic": [
+          {
+            "Item": "Iron",
+            "Amount": 1
+          }
+        ],
+        "Rare": [
+          {
+            "Item": "Iron",
+            "Amount": 2
+          }
+        ],
+        "Epic": [
+          {
+            "Item": "Iron",
+            "Amount": 3
+          }
+        ],
+        "Legendary": [
+          {
+            "Item": "Iron",
+            "Amount": 4
+          }
+        ],
+        "Mythic": [
+          {
+            "Item": "Iron",
+            "Amount": 5
+          }
+        ]
+      }
+    },
+    "Mountain": {
+      "CostByRarity": {
+        "Magic": [
+          {
+            "Item": "Silver",
+            "Amount": 1
+          }
+        ],
+        "Rare": [
+          {
+            "Item": "Silver",
+            "Amount": 2
+          }
+        ],
+        "Epic": [
+          {
+            "Item": "Silver",
+            "Amount": 3
+          }
+        ],
+        "Legendary": [
+          {
+            "Item": "Silver",
+            "Amount": 4
+          }
+        ],
+        "Mythic": [
+          {
+            "Item": "Silver",
+            "Amount": 5
+          }
+        ]
+      }
+    },
+    "Plains": {
+      "CostByRarity": {
+        "Magic": [
+          {
+            "Item": "BlackMetal",
+            "Amount": 1
+          }
+        ],
+        "Rare": [
+          {
+            "Item": "BlackMetal",
+            "Amount": 2
+          }
+        ],
+        "Epic": [
+          {
+            "Item": "BlackMetal",
+            "Amount": 3
+          }
+        ],
+        "Legendary": [
+          {
+            "Item": "BlackMetal",
+            "Amount": 4
+          }
+        ],
+        "Mythic": [
+          {
+            "Item": "BlackMetal",
+            "Amount": 5
+          }
+        ]
+      }
+    },
+    "Mistlands": {
+      "CostByRarity": {
+        "Magic": [
+          {
+            "Item": "Eitr",
+            "Amount": 1
+          }
+        ],
+        "Rare": [
+          {
+            "Item": "Eitr",
+            "Amount": 2
+          }
+        ],
+        "Epic": [
+          {
+            "Item": "Eitr",
+            "Amount": 3
+          }
+        ],
+        "Legendary": [
+          {
+            "Item": "Eitr",
+            "Amount": 4
+          }
+        ],
+        "Mythic": [
+          {
+            "Item": "Eitr",
+            "Amount": 5
+          }
+        ]
+      }
+    },
+    "AshLands": {
+      "CostByRarity": {
+        "Magic": [
+          {
+            "Item": "FlametalNew",
+            "Amount": 1
+          }
+        ],
+        "Rare": [
+          {
+            "Item": "FlametalNew",
+            "Amount": 2
+          }
+        ],
+        "Epic": [
+          {
+            "Item": "FlametalNew",
+            "Amount": 3
+          }
+        ],
+        "Legendary": [
+          {
+            "Item": "FlametalNew",
+            "Amount": 4
+          }
+        ],
+        "Mythic": [
+          {
+            "Item": "FlametalNew",
+            "Amount": 5
+          }
+        ]
+      }
+    },
+    "DeepNorth": {
+      "CostByRarity": {
+        "Magic": [
+          {
+            "Item": "FlametalNew",
+            "Amount": 1
+          }
+        ],
+        "Rare": [
+          {
+            "Item": "FlametalNew",
+            "Amount": 2
+          }
+        ],
+        "Epic": [
+          {
+            "Item": "FlametalNew",
+            "Amount": 3
+          }
+        ],
+        "Legendary": [
+          {
+            "Item": "FlametalNew",
+            "Amount": 4
+          }
+        ],
+        "Mythic": [
+          {
+            "Item": "FlametalNew",
+            "Amount": 5
+          }
+        ]
+      }
+    }
+  }
+}

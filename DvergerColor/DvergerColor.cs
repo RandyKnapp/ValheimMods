@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace DvergerColor
 {
-    [BepInPlugin(PluginId, "Dverger Color", "1.0.3")]
+    [BepInPlugin(PluginId, "Dverger Color", "1.0.6")]
     [BepInProcess("valheim.exe")]
     public class DvergerColor : BaseUnityPlugin
     {
@@ -50,11 +50,6 @@ namespace DvergerColor
             TurnOffInBed = Config.Bind("General", "Turn Off In Bed", true, "Whether the circlet should be turned off when you get into bed.");
 
             _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), PluginId);
-        }
-
-        private void OnDestroy()
-        {
-            _harmony.UnpatchSelf();
         }
     }
 }

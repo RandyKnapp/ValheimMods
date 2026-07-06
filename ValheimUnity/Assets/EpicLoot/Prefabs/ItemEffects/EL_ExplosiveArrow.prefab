@@ -1,0 +1,189 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &8913183054937609128
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8538918485681905953}
+  - component: {fileID: 7991604110302920607}
+  - component: {fileID: 5585765786454826862}
+  m_Layer: 0
+  m_Name: EL_ExplosiveArrow
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8538918485681905953
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8913183054937609128}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7991604110302920607
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8913183054937609128}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1521249158, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_persistent: 0
+  m_distant: 0
+  m_type: 0
+  m_syncInitialScale: 0
+--- !u!114 &5585765786454826862
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8913183054937609128}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 2140874873, guid: c1b78fa918b030faf1c1f6f6164daeb2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_name: 
+  m_useAttackSettings: 1
+  m_damage:
+    m_damage: 0
+    m_blunt: 0
+    m_slash: 0
+    m_pierce: 0
+    m_chop: 0
+    m_pickaxe: 0
+    m_fire: 1
+    m_frost: 0
+    m_lightning: 0
+    m_poison: 0
+    m_spirit: 0
+  m_scaleDamageByDistance: 0
+  m_distanceScaleCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 1
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 1
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  m_dodgeable: 0
+  m_blockable: 0
+  m_toolTier: 0
+  m_attackForce: 0
+  m_backstabBonus: 4
+  m_statusEffect: 
+  m_statusEffectIfBoss: 
+  m_statusEffectIfPlayer: 
+  m_damagePerLevel:
+    m_damage: 0
+    m_blunt: 0
+    m_slash: 0
+    m_pierce: 0
+    m_chop: 0
+    m_pickaxe: 0
+    m_fire: 0
+    m_frost: 0
+    m_lightning: 0
+    m_poison: 0
+    m_spirit: 0
+  m_attackForceForward: 0
+  m_spawnOnHitTerrain: {fileID: 0}
+  m_hitTerrainOnlyOnce: 0
+  m_spawnOnGroundType: -1
+  m_groundLavaValue: -1
+  m_hitNoise: 0
+  m_placeOnGround: 0
+  m_randomRotation: 0
+  m_maxTargetsFromCenter: 0
+  m_multiSpawnMin: 0
+  m_multiSpawnMax: 0
+  m_multiSpawnDistanceMin: 0
+  m_multiSpawnDistanceMax: 0
+  m_multiSpawnScaleMin: 0
+  m_multiSpawnScaleMax: 0
+  m_multiSpawnSpringDelayMax: 0
+  m_chainStartChance: 0
+  m_chainStartChanceFalloff: 0.8
+  m_chainChancePerTarget: 0
+  m_chainObj: {fileID: 0}
+  m_chainStartDelay: 0
+  m_chainMinTargets: 0
+  m_chainMaxTargets: 0
+  m_chainEffects:
+    m_effectPrefabs: []
+  m_damageSelf: 0
+  m_hitOwner: 0
+  m_hitParent: 1
+  m_hitSame: 0
+  m_hitFriendly: 0
+  m_hitEnemy: 1
+  m_hitCharacters: 1
+  m_hitProps: 1
+  m_hitTerrain: 0
+  m_ignorePVP: 0
+  m_launchCharacters: 0
+  m_launchForceMinMax: {x: 0, y: 1}
+  m_launchForceUpFactor: 0.5
+  m_skill: 0
+  m_canRaiseSkill: 1
+  m_useTriggers: 0
+  m_triggerEnterOnly: 0
+  m_useCollider: {fileID: 0}
+  m_radius: 2
+  m_activationDelay: 0
+  m_ttl: 1
+  m_ttlMax: 0
+  m_hitAfterTtl: 0
+  m_hitInterval: 1
+  m_hitOnEnable: 0
+  m_attachToCaster: 0
+  m_hitEffects:
+    m_effectPrefabs: []
+  m_initiateEffect:
+    m_effectPrefabs:
+    - m_prefab: {fileID: 6139978749562815545, guid: abc02b51a8458f74d9fd31ce39444c30,
+        type: 3}
+      m_enabled: 1
+      m_variant: -1
+      m_attach: 0
+      m_follow: 0
+      m_inheritParentRotation: 0
+      m_inheritParentScale: 0
+      m_multiplyParentVisualScale: 0
+      m_randomRotation: 0
+      m_scale: 0
+      m_childTransform: 
