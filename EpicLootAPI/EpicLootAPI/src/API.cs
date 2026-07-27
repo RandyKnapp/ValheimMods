@@ -1,5 +1,6 @@
 ﻿using JetBrains.Annotations;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 
@@ -21,6 +22,10 @@ public static class EpicLoot
     private static readonly Method API_HasLegendarySet = new("HasLegendarySet");
     private static readonly Method API_RegisterAsset = new("RegisterAsset");
     private static readonly Method API_GetMagicItemJson = new("GetMagicItemJson");
+    private static readonly Method API_RegisterMagicEffectRequirement = new(
+        "RegisterMagicEffectRequirement",
+        typeof(string),
+        typeof(Func<ItemDrop.ItemData, object, string, bool, bool, bool, bool>));
 
     [PublicAPI][Description("Send all your custom conversions, effects, item definitions, etc... to Epic Loot")]
     public static void RegisterAll()
@@ -50,6 +55,21 @@ public static class EpicLoot
         object[] result = API_RegisterAsset.Invoke(name, asset);
         bool output = (bool)(result[0] ?? false);
         logger.LogDebug($"Registered asset: {name}, {output}");
+        return output;
+    }
+
+    /// <summary>
+    /// Register a predicate for magic effect Requirements.ExternalRequirements.
+    /// </summary>
+    /// <param name="externalRequirement">The ExternalRequirements value used by magic effect JSON.</param>
+    /// <param name="requirement">Receives item data, magic item object, effect type, loot roll flag, augment roll flag, and rune roll flag.</param>
+    /// <returns>true if Epic Loot registered the requirement</returns>
+    [PublicAPI]
+    public static bool RegisterMagicEffectRequirement(string externalRequirement, Func<ItemDrop.ItemData, object, string, bool, bool, bool, bool> requirement)
+    {
+        object[] result = API_RegisterMagicEffectRequirement.Invoke(externalRequirement, requirement);
+        bool output = (bool)(result[0] ?? false);
+        logger.LogDebug($"Registered magic effect requirement: {externalRequirement}, {output}");
         return output;
     }
     

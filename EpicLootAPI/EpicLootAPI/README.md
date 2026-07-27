@@ -46,7 +46,13 @@ If you need to update your custom classes, use the API `Update` functions
 ```c#
 public void Awake()
 {
+    EpicLoot.RegisterMagicEffectRequirement(
+        "MyMod.RequiresBow",
+        (itemData, magicItem, effectType, checkLootRoll, checkAugmentRoll, checkRuneRoll) =>
+            itemData.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Bow);
+
     var Definition = new MagicItemEffectDefinition("Blink", "Blink", "Teleport to impact point");
+    Definition.Requirements.ExternalRequirements.Add("MyMod.RequiresBow");
     Definition.Requirements.AllowedSkillTypes.Add(Skills.SkillType.Bows, Skills.SkillType.Spears);
     Definition.Requirements.AllowedRarities.Add(ItemRarity.Epic, ItemRarity.Legendary, ItemRarity.Mythic);
     Definition.SelectionWeight = 1;

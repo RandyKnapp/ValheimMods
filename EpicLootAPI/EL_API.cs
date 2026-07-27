@@ -140,6 +140,7 @@ public static class EpicLoot
         public bool? ItemUsesDrawStaminaOnAttack;
 
         public List<string> CustomFlags = new();
+        public List<string> ExternalRequirements = new();
     }
     public enum FxAttachMode
     {
@@ -375,6 +376,7 @@ public static class EpicLoot
     private static readonly Method API_AddAbility = new("EpicLoot.API, EpicLoot", "AddAbility");
     private static readonly Method API_HasLegendaryItem = new("EpicLoot.API, EpicLoot", "HasLegendaryItem");
     private static readonly Method API_HasLegendarySet = new("EpicLoot.API, EpicLoot", "HasLegendarySet");
+    private static readonly Method API_RegisterMagicEffectRequirement = new("EpicLoot.API, EpicLoot", "RegisterMagicEffectRequirement");
 
     public static MagicItemEffectDefinition? GetMagicEffectDefinitionCopy(string effectType)
     {
@@ -404,6 +406,13 @@ public static class EpicLoot
         string data = JsonConvert.SerializeObject(definition);
         object? result = API_AddMagicEffect.Invoke(data);
 
+        return (bool)(result ?? false);
+    }
+
+    [Description("Register a custom requirement for magic effect Requirements.ExternalRequirements")]
+    public static bool RegisterMagicEffectRequirement(string externalRequirement, Func<ItemDrop.ItemData, object, string, bool, bool, bool, bool> requirement)
+    {
+        object? result = API_RegisterMagicEffectRequirement.Invoke(externalRequirement, requirement);
         return (bool)(result ?? false);
     }
 

@@ -215,6 +215,7 @@ public class MagicItemEffectRequirements
     public bool? ItemUsesDrawStaminaOnAttack;
 
     public List<string> CustomFlags = new();
+    public List<string> ExternalRequirements = new();
 
     public void AddAllowedItemTypes(params ItemDrop.ItemData.ItemType[] types)
     {

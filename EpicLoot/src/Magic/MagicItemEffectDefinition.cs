@@ -40,6 +40,7 @@ namespace EpicLoot
         public bool? ItemUsesDrawStaminaOnAttack;
 
         public List<string> CustomFlags;
+        public List<string> ExternalRequirements;
 
         public bool AllowByItemType([NotNull] ItemDrop.ItemData itemData)
         {
@@ -285,6 +286,11 @@ namespace EpicLoot
                 {
                     return false;
                 }
+            }
+
+            if (!API.CheckMagicEffectExternalRequirements(ExternalRequirements, itemData, magicItem, magicEffectType, checklootroll, checkaugmentroll, checkruneroll))
+            {
+                return false;
             }
 
             return true;

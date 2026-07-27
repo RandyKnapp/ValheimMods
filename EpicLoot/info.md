@@ -34,7 +34,8 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
     * **ExcludedSkillTypes:** This effect may only be rolled on an item that does not use one of these skill types.
     * **AllowedItemNames:** This effect may only be rolled on an item with one of these names. Use the unlocalized shared name, i.e.: `$item_sword_iron`
     * **ExcludedItemNames:** This effect may only be rolled on an item that does not have one of these names.
-    * **CustomFlags:** A set of any arbitrary strings for future use
+    * **CustomFlags:** A set of arbitrary strings for future use.
+    * **ExternalRequirements:** Requirement keys registered by external plugins through `API.RegisterMagicEffectRequirement`. Every listed key must be registered and must return true for the effect to roll.
   * **Value Per Rarity:** This effect may only be rolled on items of a rarity included in this table. The value is rolled using a linear distribution between Min and Max and divisible by the Increment.
 
 ## DvergerCirclet
@@ -7253,5 +7254,3 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 > | Items (lvl 6) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier6Everything | 1 (100%) | 0 (0%) | 0 (0%) | 65 (65%) | 35 (35%) |
-
-
