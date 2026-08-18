@@ -1,16 +1,14 @@
-﻿using HarmonyLib;
-using JetBrains.Annotations;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects
 {
-    [HarmonyPatch(typeof(Character), nameof(Character.RPC_Damage))]
     public class AvoidDamageTaken_Character_RPC_Damage_Patch
     {
-        [UsedImplicitly]
-        private static bool Prefix(Character __instance, HitData hit)
+        // Prefix handler invoked by CharacterRpcDamageDispatch. Returns false to cancel the incoming hit
+        // (the dispatcher propagates that as the Harmony prefix return value).
+        public static bool ShouldTakeDamage(Character __instance, HitData hit, Character attacker)
         {
-            var attacker = hit.GetAttacker();
+
             if (__instance is Player player && attacker != null && attacker != __instance)
             {
                 var avoidanceChance = 0f;

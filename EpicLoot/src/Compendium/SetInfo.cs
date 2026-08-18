@@ -45,9 +45,8 @@ public class SetInfo(string topic, bool showSearchBar = true) : MagicTextInfo(to
                 continue;
             }
             
-            content.Add($" - ({bonus.Count}) " + 
-                        $"{string.Format(Localization.instance.Localize(definition.DisplayText), 
-                            "<b><color=yellow>X</color></b>")}");
+            content.Add($" - ({bonus.Count}) " +
+                        $"{MagicItem.GetEffectTextGeneric(definition, "<b><color=yellow>X</color></b>")}");
         }
         
         instance.MagicPagesTextArea.Add($"<size={MagicPages.LARGE_FONT_SIZE}>" + 

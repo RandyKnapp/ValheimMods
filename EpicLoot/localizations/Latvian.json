@@ -1448,5 +1448,18 @@
   "mod_epicloot_search_placeholder": "Meklēt...",
   "mod_epicloot_no_active_adventures": "Nav aktīvu piedzīvojumu",
   "mod_epicloot_set_bonuses": "Komplekta bonusi",
-  "mod_epicloot_legendary_sets": "Leģendārās komplekti"
+  "mod_epicloot_legendary_sets": "Leģendārās komplekti",
+  "mod_epicloot_enchantments": "Apbūrumi",
+  "mod_epicloot_output": "Rezultāts",
+  "mod_epicloot_history": "Vēsture",
+  "mod_epicloot_requirements": "Prasības",
+  "mod_epicloot_info": "Informācija",
+  "mod_epicloot_min": "Min",
+  "mod_epicloot_max": "Maks",
+  "mod_epicloot_increment": "Pieaugums",
+  "mod_epicloot_minmax": "Min/Maks",
+  "mod_epicloot_successchance": "Veiksmes iespēja",
+  "mod_epicloot_criticalsuccess": "Kritisks panākums",
+  "mod_epicloot_criticalfail": "Kritiska kļūme",
+  "mod_epicloot_temper": "Rūdīšana"
 }

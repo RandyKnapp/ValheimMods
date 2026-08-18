@@ -6,15 +6,24 @@ namespace EpicLoot;
 
 public static class PlayerExtensions
 {
+    /// <summary>
+    /// Every magic item the player currently has equipped. This is the single source of equipped magic
+    /// gear for effect totals, set bonuses, tooltips and shard socketing, so it is also where external
+    /// equipment providers (extra slots, quick slots, equipped backpacks) are merged in --
+    /// see <see cref="API.RegisterEquipmentProvider"/>.
+    /// </summary>
     public static List<ItemDrop.ItemData> GetMagicEquipment(this Player player)
     {
         List<ItemDrop.ItemData> items = player.GetInventory().GetEquippedItems()
             .Where(x => x.IsMagic()).ToList();
+        API.AppendProviderEquipment(player, items);
         return items;
     }
 
     /// <summary>
-    /// DEPRECATED, DO NOT USE
+    /// DEPRECATED, DO NOT USE. Kept only because external mods patch it; nothing inside Epic Loot calls
+    /// it, so patching this does not affect effect resolution -- use
+    /// <see cref="API.RegisterEquipmentProvider"/> instead.
     /// </summary>
     public static List<ItemDrop.ItemData> GetEquipment(this Player player)
     {
@@ -25,7 +34,7 @@ public static class PlayerExtensions
     {
         IEnumerable<MagicItemEffect> equipEffects = player.GetMagicEquipment()
             .Where(x => x.IsMagic())
-            .SelectMany(x => x.GetMagicItem().GetEffects(effectType));
+            .SelectMany(x => x.GetMagicItem().GetEffects(effectType, includeSocketed: true));
         List<MagicItemEffect> setEffects = player.GetAllActiveSetMagicEffects(effectType);
         return equipEffects.Concat(setEffects).ToList();
     }
@@ -78,7 +87,7 @@ public static class PlayerExtensions
 
         if (ignoreThisItem != null && player.IsItemEquiped(ignoreThisItem) && ignoreThisItem.IsMagic(out MagicItem magicItem))
         {
-            totalValue -= magicItem.GetTotalEffectValue(effectType, scale);
+            totalValue -= magicItem.GetTotalEffectValue(effectType, scale, includeSocketed: true);
         }
 
         return totalValue;
@@ -122,6 +131,17 @@ public static class PlayerExtensions
     public static Player GetPlayerWithEquippedItem(ItemDrop.ItemData itemData)
     {
         // TODO: evaluate if this returns magic items of other players correctly
-        return Player.s_players.FirstOrDefault(player => player.IsItemEquiped(itemData));
+        // Hot path (called from ModifyArmor on every GetArmor): manual loop instead of a LINQ
+        // FirstOrDefault(closure) so we don't allocate a capturing closure on every call.
+        List<Player> players = Player.s_players;
+        for (int i = 0; i < players.Count; i++)
+        {
+            if (players[i].IsItemEquiped(itemData))
+            {
+                return players[i];
+            }
+        }
+
+        return null;
     }
 }

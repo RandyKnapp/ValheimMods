@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using static ItemDrop;
 
@@ -43,6 +44,18 @@ namespace EpicLoot.General
         public static float EpicLootGetTotalDamageAgainstPlayer(this HitData.DamageTypes damage)
         {
             return damage.GetTotalDamage() - damage.m_chop - damage.m_pickaxe - damage.m_spirit;
+        }
+
+        /// <summary>
+        /// Localizes a bare token, reporting whether that token is actually defined. Valheim's
+        /// Localization returns "[token]" for an undefined token rather than the bare token, so the
+        /// bracketed form is the only signal that a lookup missed. Use this instead of comparing the
+        /// result of Localize against the token when a fallback is needed.
+        /// </summary>
+        public static bool TryLocalize(string token, out string localized)
+        {
+            localized = Localization.instance.Localize($"${token}");
+            return !string.Equals(localized, $"[{token}]", StringComparison.Ordinal);
         }
     }
 }

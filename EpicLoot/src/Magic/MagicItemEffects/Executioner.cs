@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using EpicLoot.src.Magic.MagicItemEffects.Helpers;
+using HarmonyLib;
 using JetBrains.Annotations;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,31 +25,29 @@ namespace EpicLoot.MagicItemEffects
         private static void Postfix() => ExecutionerCheckDamage_Character_Damage_Patch.ExecutionerMultiplier = null;
     }
 
-    [HarmonyPatch(typeof(Character), nameof(Character.Damage))]
-    [HarmonyPriority(Priority.VeryLow)]
     public class ExecutionerCheckDamage_Character_Damage_Patch
     {
         public static float? ExecutionerMultiplier;
 
-        [UsedImplicitly]
-        private static void Prefix(Character __instance, HitData hit)
+        // Targets the local player has already executed. Tracked attacker-side (this runs on the attacker's
+        // client) so the once-per-target dedupe doesn't depend on writing a ZDO we may not own -- a non-owner
+        // ZDO write isn't authoritative and gets reverted on the owner's next sync. ZDOIDs are unique per
+        // spawn, so a respawned enemy gets a fresh id and can be executed again.
+        private static readonly HashSet<ZDOID> _executedTargets = new HashSet<ZDOID>();
+
+        // Prefix handler invoked by CharacterDamageDispatch (attacker-side outgoing modifier, runs at
+        // Priority.Last so the execute multiplier lands after other damage modifiers).
+        public static void ModifyOutgoingHit(Character __instance, HitData hit)
         {
-            if (__instance == null || hit == null || hit.GetAttacker() == null || !hit.GetAttacker().IsPlayer())
+            if (__instance == null || hit == null || hit.GetAttacker() != Player.m_localPlayer)
             {
                 ExecutionerMultiplier = null;
                 return;
             }
 
-            var player = (Player)hit.GetAttacker();
-            var znetView = __instance.GetComponent<ZNetView>();
-            if (znetView == null)
-                return;
-
-            var zdo = znetView.GetZDO();
-            if (zdo == null)
-                return;
-
-            if (zdo.GetBool("epic loot executioner flag " + player.GetZDO().m_uid))
+            var player = Player.m_localPlayer;
+            var targetId = __instance.GetZDOID();
+            if (!targetId.IsNone() && _executedTargets.Contains(targetId))
             {
                 return;
             }
@@ -61,9 +60,18 @@ namespace EpicLoot.MagicItemEffects
             if (ExecutionerMultiplier is float multiplier && __instance.GetHealth() / __instance.GetMaxHealth() < 0.2f)
             {
                 hit.m_damage.Modify(multiplier);
-                __instance.GetComponent<ZNetView>().GetZDO().Set("epic loot executioner flag " + player.GetZDO().m_uid, true);
+                if (!targetId.IsNone())
+                {
+                    // Bounded so a long session can't grow this without limit; executed targets almost always
+                    // die on the burst, so this rarely matters and a clear just re-allows a survivor's execute.
+                    if (_executedTargets.Count > 1024)
+                    {
+                        _executedTargets.Clear();
+                    }
+                    _executedTargets.Add(targetId);
+                }
             }
-            
+
             ExecutionerMultiplier = null;
         }
 

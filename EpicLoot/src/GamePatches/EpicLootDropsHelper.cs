@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using EpicLoot.MagicItemEffects.Shards;
+using HarmonyLib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,17 +14,36 @@ namespace EpicLoot
 
         public static void OnCharacterDeath(CharacterDrop characterDrop)
         {
-            if (!CanCharacterDropLoot(characterDrop.m_character))
+            if (!TryGetDropInfo(characterDrop, out string characterName, out int level, out Vector3 dropPoint))
             {
                 return;
             }
 
-            string characterName = EpicLoot.GetCharacterCleanName(characterDrop.m_character);
-            int level = characterDrop.m_character.GetLevel();
-            Vector3 dropPoint = characterDrop.m_character.GetCenterPoint() +
-                characterDrop.transform.TransformVector(characterDrop.m_spawnOffset);
-
             OnCharacterDeath(characterName, level, dropPoint);
+        }
+
+        /// <summary>
+        /// Resolves the loot-table name, creature level and drop point for a dying creature. Split out so
+        /// callers that need those values for something other than the standard roll (Lucky Loot's bonus
+        /// rolls) derive them exactly the same way.
+        /// </summary>
+        public static bool TryGetDropInfo(CharacterDrop characterDrop, out string characterName,
+            out int level, out Vector3 dropPoint)
+        {
+            characterName = null;
+            level = 0;
+            dropPoint = Vector3.zero;
+
+            if (characterDrop == null || !CanCharacterDropLoot(characterDrop.m_character))
+            {
+                return false;
+            }
+
+            characterName = EpicLoot.GetCharacterCleanName(characterDrop.m_character);
+            level = characterDrop.m_character.GetLevel();
+            dropPoint = characterDrop.m_character.GetCenterPoint() +
+                characterDrop.transform.TransformVector(characterDrop.m_spawnOffset);
+            return true;
         }
 
         public static bool CanCharacterDropLoot(Character character)
@@ -85,9 +105,20 @@ namespace EpicLoot
     {
         public static void Postfix(CharacterDrop __instance)
         {
-            if (EpicLootDropsHelper.InstantDropsEnabled)
+            if (!EpicLootDropsHelper.InstantDropsEnabled)
             {
-                EpicLootDropsHelper.OnCharacterDeath(__instance);
+                return;
+            }
+
+            EpicLootDropsHelper.OnCharacterDeath(__instance);
+
+            // No-ragdoll path: GenerateDropList ran moments ago in this same frame, so Lucky Loot's latch
+            // is consumed directly rather than travelling through a ragdoll ZDO.
+            int luckyRolls = LuckyLoot.ConsumePendingRolls(__instance);
+            if (luckyRolls > 0 &&
+                EpicLootDropsHelper.TryGetDropInfo(__instance, out string name, out int level, out Vector3 dropPoint))
+            {
+                LuckyLoot.RollBonusEpicLootDrops(name, level, dropPoint, luckyRolls);
             }
         }
     }
@@ -113,6 +144,17 @@ namespace EpicLoot
             int level = characterDrop.m_character.GetLevel();
             __instance.m_nview.m_zdo.Set("characterName", characterName);
             __instance.m_nview.m_zdo.Set("level", level);
+
+            // Ragdoll.Setup has just called SaveLootList -> CharacterDrop.GenerateDropList, so if Lucky
+            // Loot procced its latch is still warm and keyed to this very CharacterDrop. Carry the bonus
+            // roll count on the ragdoll's ZDO, since the magic-item half doesn't happen until SpawnLoot,
+            // possibly minutes later. Only written when non-zero, to keep the key off every ragdoll in the
+            // world. We just instantiated this ragdoll, so the write is on a ZDO we own.
+            int luckyRolls = LuckyLoot.ConsumePendingRolls(characterDrop);
+            if (luckyRolls > 0)
+            {
+                __instance.m_nview.m_zdo.Set(LuckyLoot.ZdoBonusRollsKey, luckyRolls);
+            }
         }
     }
 
@@ -126,7 +168,13 @@ namespace EpicLoot
 
             if (!string.IsNullOrEmpty(characterName))
             {
-                EpicLootDropsHelper.OnCharacterDeath(characterName, level, center + Vector3.up * 0.75f);
+                Vector3 dropPoint = center + Vector3.up * 0.75f;
+                EpicLootDropsHelper.OnCharacterDeath(characterName, level, dropPoint);
+
+                // A Harmony postfix still runs when vanilla SpawnLoot early-returns on s_drops <= 0, so a
+                // creature whose vanilla drop list was empty still gets its Lucky Loot bonus rolls.
+                LuckyLoot.RollBonusEpicLootDrops(characterName, level, dropPoint,
+                    __instance.m_nview.m_zdo.GetInt(LuckyLoot.ZdoBonusRollsKey));
             }
         }
     }

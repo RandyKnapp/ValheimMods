@@ -6,6 +6,14 @@ namespace EpicLoot.MagicItemEffects;
 [HarmonyPatch]
 public static class BulkupEffect
 {
+    // Tooltip shows both sides of the trade-off. Both derive from the same rolled value today
+    // (+value% max HP / -value% HP regen); keeping the regen figure here means it can diverge in one
+    // place later and the tooltip follows. See GetHealthRegenWithBulkUp / GetAdditionalHealthWithBulkUp.
+    public static void RegisterDisplayValues()
+    {
+        MagicItem.RegisterDisplayValues(MagicEffectType.BulkUp, value => new object[] { value, value });
+    }
+
     [HarmonyPriority(Priority.LowerThanNormal)]
     [HarmonyPatch(typeof(SEMan), nameof(SEMan.ModifyHealthRegen))]
     public static class ModifyHealthRegen_Patch

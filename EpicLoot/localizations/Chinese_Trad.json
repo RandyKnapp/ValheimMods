@@ -1448,5 +1448,18 @@
   "mod_epicloot_search_placeholder": "搜尋...",
   "mod_epicloot_no_active_adventures": "沒有進行中的冒險",
   "mod_epicloot_set_bonuses": "套裝加成",
-  "mod_epicloot_legendary_sets": "傳奇套裝"
+  "mod_epicloot_legendary_sets": "傳奇套裝",
+  "mod_epicloot_enchantments": "附魔",
+  "mod_epicloot_output": "產出",
+  "mod_epicloot_history": "歷史",
+  "mod_epicloot_requirements": "需求",
+  "mod_epicloot_info": "資訊",
+  "mod_epicloot_min": "最小",
+  "mod_epicloot_max": "最大",
+  "mod_epicloot_increment": "增量",
+  "mod_epicloot_minmax": "最小/最大",
+  "mod_epicloot_successchance": "成功率",
+  "mod_epicloot_criticalsuccess": "暴擊成功",
+  "mod_epicloot_criticalfail": "暴擊失敗",
+  "mod_epicloot_temper": "淬鍊"
 }

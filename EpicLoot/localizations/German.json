@@ -1448,5 +1448,18 @@
   "mod_epicloot_search_placeholder": "Suche...",
   "mod_epicloot_no_active_adventures": "Keine aktiven Abenteuer",
   "mod_epicloot_set_bonuses": "Set-Boni",
-  "mod_epicloot_legendary_sets": "Legendäre Sets"
+  "mod_epicloot_legendary_sets": "Legendäre Sets",
+  "mod_epicloot_enchantments": "Verzauberungen",
+  "mod_epicloot_output": "Ergebnis",
+  "mod_epicloot_history": "Verlauf",
+  "mod_epicloot_requirements": "Voraussetzungen",
+  "mod_epicloot_info": "Informationen",
+  "mod_epicloot_min": "Min",
+  "mod_epicloot_max": "Max",
+  "mod_epicloot_increment": "Erhöhung",
+  "mod_epicloot_minmax": "Min/Max",
+  "mod_epicloot_successchance": "Erfolgschance",
+  "mod_epicloot_criticalsuccess": "Kritischer Erfolg",
+  "mod_epicloot_criticalfail": "Kritischer Fehlschlag",
+  "mod_epicloot_temper": "Härten"
 }

@@ -57,7 +57,7 @@ public class SecretStashItem
         }
 
         SecretStashes.Remove(this);
-        RunTimeRegistry.Register(type, key);
+        RunTimeRegistry.Register(this, key);
         EpicLoot.logger.LogDebug($"Registered secret stash {Item}");
         return true;
     }

@@ -10,7 +10,11 @@ namespace EpicLoot.Crafting
 {
     public static class EnchantCostsHelper
     {
-        public static EnchantingCostsConfig Config;
+        // Defaults to an empty config rather than null: every helper below dereferences this unguarded,
+        // and other mods read it directly (VNEI's EpicLootCompat.IndexSacrifices does an
+        // EnchantCostsHelper.Config.DisenchantProducts field access). An empty config degrades to
+        // "no costs configured" instead of a NullReferenceException in someone else's code.
+        public static EnchantingCostsConfig Config = new EnchantingCostsConfig();
         public static HashSet<string> DeprecatedMagicEffects = new HashSet<string>
         {
             MagicEffectType.AddSpiritResistancePercentage,
@@ -21,6 +25,14 @@ namespace EpicLoot.Crafting
         #nullable disable
         public static void Initialize(EnchantingCostsConfig config)
         {
+            // A failed deserialize hands us null; keep the last good config rather than poisoning the
+            // static for everything that reads it.
+            if (config == null)
+            {
+                EpicLoot.LogWarning("Enchanting costs config was null, keeping the previous config.");
+                return;
+            }
+
             Config = config;
             OnSetupEnchantingCosts?.Invoke();
         }
@@ -32,6 +44,14 @@ namespace EpicLoot.Crafting
 
         public static List<ItemAmountConfig> GetSacrificeProducts(ItemDrop.ItemData item)
         {
+            // An external filter (see API.RegisterSacrificeFilter) can veto an item -- typically one
+            // equipped in a slot Epic Loot cannot see, which would otherwise be destroyed by accident.
+            // No products means the Sacrifice tab does not offer it.
+            if (!API.SacrificeAllowed(item))
+            {
+                return null;
+            }
+
             bool isMagic = item.IsMagic();
             bool isUnidentified = item.IsUnidentified();
             ItemDrop.ItemData.ItemType type = item.m_shared.m_itemType;

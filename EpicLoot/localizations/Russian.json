@@ -1448,5 +1448,18 @@
   "mod_epicloot_search_placeholder": "Поиск...",
   "mod_epicloot_no_active_adventures": "Активных приключений нет",
   "mod_epicloot_set_bonuses": "Бонусы комплекта",
-  "mod_epicloot_legendary_sets": "Легендарные наборы"
+  "mod_epicloot_legendary_sets": "Легендарные наборы",
+  "mod_epicloot_enchantments": "Зачарования",
+  "mod_epicloot_output": "Результат",
+  "mod_epicloot_history": "История",
+  "mod_epicloot_requirements": "Требования",
+  "mod_epicloot_info": "Информация",
+  "mod_epicloot_min": "Мин",
+  "mod_epicloot_max": "Макс",
+  "mod_epicloot_increment": "Прибавление",
+  "mod_epicloot_minmax": "Мин/Макс",
+  "mod_epicloot_successchance": "Шанс успеха",
+  "mod_epicloot_criticalsuccess": "Критический успех",
+  "mod_epicloot_criticalfail": "Критический провал",
+  "mod_epicloot_temper": "Закалка"
 }

@@ -252,9 +252,8 @@ namespace EpicLoot.Adventure.Feature
             }
 
             // Is too near to player ward
-            var tooCloseToWard = PrivateArea.m_allAreas.Any(
-                x => x.IsInside(location, AdventureDataManager.Config.TreasureMap.MinimapAreaRadius));
-            if (tooCloseToWard)
+            if (AdventureWardCheck.TryFindNearbyWard(location,
+                    AdventureDataManager.Config.TreasureMap.MinimapAreaRadius, out _))
             {
                 return false;
             }

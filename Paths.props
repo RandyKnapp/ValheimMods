@@ -41,9 +41,6 @@
       <Reference Include="BepInEx, Culture=neutral, PublicKeyToken=null">
       <HintPath>$(BepinexPath)core\BepInEx.dll</HintPath>
     </Reference>
-    <Reference Include="CreatureLevelControlAPI">
-      <HintPath>$(SolutionDir)Libs\CreatureLevelControlAPI.dll</HintPath>
-    </Reference>
     <Reference Include="Jotunn">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(SolutionDir)Libs\Jotunn.dll</HintPath>
@@ -90,6 +87,9 @@
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>$(GamePathManaged)UnityEngine.CoreModule.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.IMGUIModule">
+      <HintPath>$(GamePathManaged)UnityEngine.IMGUIModule.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine.InputLegacyModule">
       <HintPath>$(GamePathManaged)UnityEngine.InputLegacyModule.dll</HintPath>
     </Reference>
@@ -98,6 +98,9 @@
     </Reference>
     <Reference Include="UnityEngine.PhysicsModule">
       <HintPath>$(GamePathManaged)UnityEngine.PhysicsModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TextCoreFontEngineModule">
+      <HintPath>$(GamePathManaged)UnityEngine.TextCoreFontEngineModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.TextCoreTextEngineModule">
       <HintPath>$(GamePathManaged)UnityEngine.TextCoreTextEngineModule.dll</HintPath>

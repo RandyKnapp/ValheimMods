@@ -1448,5 +1448,18 @@
   "mod_epicloot_search_placeholder": "ค้นหา...",
   "mod_epicloot_no_active_adventures": "ไม่มีการผจญภัยที่กำลังดำเนินอยู่",
   "mod_epicloot_set_bonuses": "โบนัสชุด",
-  "mod_epicloot_legendary_sets": "ชุดในตำนาน"
+  "mod_epicloot_legendary_sets": "ชุดในตำนาน",
+  "mod_epicloot_enchantments": "การร่ายมนตร์",
+  "mod_epicloot_output": "ผลลัพธ์",
+  "mod_epicloot_history": "ประวัติ",
+  "mod_epicloot_requirements": "ข้อกำหนด",
+  "mod_epicloot_info": "ข้อมูล",
+  "mod_epicloot_min": "ต่ำสุด",
+  "mod_epicloot_max": "สูงสุด",
+  "mod_epicloot_increment": "การเพิ่ม",
+  "mod_epicloot_minmax": "ต่ำสุด/สูงสุด",
+  "mod_epicloot_successchance": "โอกาสสำเร็จ",
+  "mod_epicloot_criticalsuccess": "ความสำเร็จขั้นวิกฤต",
+  "mod_epicloot_criticalfail": "ความล้มเหลวขั้นวิกฤต",
+  "mod_epicloot_temper": "การชุบแข็ง"
 }

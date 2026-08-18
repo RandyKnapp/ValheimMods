@@ -1448,5 +1448,18 @@
   "mod_epicloot_search_placeholder": "Pretraži...",
   "mod_epicloot_no_active_adventures": "Nema aktivnih avantura",
   "mod_epicloot_set_bonuses": "Set bonusi",
-  "mod_epicloot_legendary_sets": "Legendarni setovi"
+  "mod_epicloot_legendary_sets": "Legendarni setovi",
+  "mod_epicloot_enchantments": "Začaranja",
+  "mod_epicloot_output": "Rezultat",
+  "mod_epicloot_history": "Povijest",
+  "mod_epicloot_requirements": "Zahtjevi",
+  "mod_epicloot_info": "Informacije",
+  "mod_epicloot_min": "Min",
+  "mod_epicloot_max": "Maks",
+  "mod_epicloot_increment": "Povećanje",
+  "mod_epicloot_minmax": "Min/Maks",
+  "mod_epicloot_successchance": "Šansa za uspjeh",
+  "mod_epicloot_criticalsuccess": "Kritični uspjeh",
+  "mod_epicloot_criticalfail": "Kritični neuspjeh",
+  "mod_epicloot_temper": "Kaljenje"
 }

@@ -1448,5 +1448,18 @@
   "mod_epicloot_search_placeholder": "Пребарај...",
   "mod_epicloot_no_active_adventures": "Нема активни авантури",
   "mod_epicloot_set_bonuses": "Бонуси од сет",
-  "mod_epicloot_legendary_sets": "Легендарни сетови"
+  "mod_epicloot_legendary_sets": "Легендарни сетови",
+  "mod_epicloot_enchantments": "Маѓепсувања",
+  "mod_epicloot_output": "Резултат",
+  "mod_epicloot_history": "Историја",
+  "mod_epicloot_requirements": "Барања",
+  "mod_epicloot_info": "Информации",
+  "mod_epicloot_min": "Мин",
+  "mod_epicloot_max": "Макс",
+  "mod_epicloot_increment": "Зголемување",
+  "mod_epicloot_minmax": "Мин/Макс",
+  "mod_epicloot_successchance": "Шанса за успех",
+  "mod_epicloot_criticalsuccess": "Критичен успех",
+  "mod_epicloot_criticalfail": "Критичен неуспех",
+  "mod_epicloot_temper": "Калење"
 }

@@ -11,7 +11,7 @@
 - [X] Limit drop types by actual player progression
 - [X] Gamble for magic items from Merchant
 - [X] Unique legendary system
-- [ ] Create effects for in-game models of magic items
+- [x] Create effects for in-game models of magic items
 - [X] Custom item sets (~replace troll too~ Left vanilla set system intact for Terraheim compatibility)
 - [X] Create activated ability system
 - [ ] Move tooltip code to postfix, parse and inject rather than redo from scratch
@@ -48,7 +48,7 @@
 
 #### Armor
 - [ ] Mimic Dverger Circlet
-- [ ] Warm (Prevent freezing effect)
+- [X] Warm (Prevent freezing effect)
 - [X] Waterproof (cape, prevent Wet effect from rain)
 - [X] Waterwalk (legs)
 - [X] Double Jump (legs)

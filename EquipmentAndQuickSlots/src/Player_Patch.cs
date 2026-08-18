@@ -111,15 +111,12 @@ namespace EquipmentAndQuickSlots
 
             foreach (var inventory in extraInventories)
             {
+                // Items kept in the inventory instead of moved to the tombstone. Previously populated by
+                // CreatureLevelControl's DropItemOnDeath API; that dependency has been removed, so every item
+                // now drops and this list only serves to clear the inventory below.
                 List<ItemDrop.ItemData> retainItems = new List<ItemDrop.ItemData>();
                 foreach (var item in inventory.m_inventory)
                 {
-                    if (!CreatureLevelControl.API.DropItemOnDeath(item) && !deleteItems)
-                    {
-                        retainItems.Add(item);
-                        continue;
-                    }
-
                     if (containerInventory != null)
                     {
                         var oldSlot = item.m_gridPos;

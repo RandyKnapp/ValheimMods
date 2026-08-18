@@ -30,28 +30,21 @@ namespace EpicLoot.Adventure
 
                 _player.m_knownTexts.Remove(SaveDataKey);
             }
-            
+
             if (_player.m_customData.TryGetValue(SaveDataKey, out var data))
             {
-                try
+                SaveData = Deserialize(data);
+
+                // Clean up old bounties
+                var removed = 0;
+                foreach (var saveData in SaveData.AllSaveData)
                 {
-                    SaveData = JsonConvert.DeserializeObject<AdventureSaveDataList>(data);
-
-                    // Clean up old bounties
-                    var removed = 0;
-                    foreach (var saveData in SaveData.AllSaveData)
-                    {
-                        removed += saveData.Bounties.RemoveAll(x => x.State == BountyState.InProgress && x.PlayerID == 0);
-                    }
-
-                    if (removed > 0)
-                    {
-                        EpicLoot.LogWarning($"Removed {removed} invalid bounties");
-                    }
+                    removed += saveData.Bounties.RemoveAll(x => x.State == BountyState.InProgress && x.PlayerID == 0);
                 }
-                catch (Exception)
+
+                if (removed > 0)
                 {
-                    SaveData = new AdventureSaveDataList();
+                    EpicLoot.LogWarning($"Removed {removed} invalid bounties");
                 }
             }
             else
@@ -60,10 +53,68 @@ namespace EpicLoot.Adventure
             }
         }
 
+        /// <summary>
+        /// Reads the save blob. New saves are a base64-encoded ZPackage; legacy saves are JSON
+        /// (which starts with '{'). Legacy blobs are upgraded transparently on the next Save().
+        /// </summary>
+        private static AdventureSaveDataList Deserialize(string data)
+        {
+            if (string.IsNullOrEmpty(data))
+            {
+                return new AdventureSaveDataList();
+            }
+
+            if (!data.StartsWith("{"))
+            {
+                try
+                {
+                    return AdventureSaveDataList.FromPackage(new ZPackage(data));
+                }
+                catch (Exception)
+                {
+                    // Not a valid binary blob; fall back to the legacy JSON path below.
+                }
+            }
+
+            try
+            {
+                return JsonConvert.DeserializeObject<AdventureSaveDataList>(data) ?? new AdventureSaveDataList();
+            }
+            catch (Exception)
+            {
+                return new AdventureSaveDataList();
+            }
+        }
+
         public void Save()
         {
-            var data = JsonConvert.SerializeObject(SaveData, Formatting.None);
-            _player.m_customData[SaveDataKey] = data;
+            PruneStaleRecords();
+
+            var pkg = new ZPackage();
+            SaveData.ToPackage(pkg);
+            pkg.SetPos(0);
+            _player.m_customData[SaveDataKey] = pkg.GetBase64();
+        }
+
+        /// <summary>
+        /// Drops finished records from elapsed intervals before serializing. Only runs with the
+        /// world loaded, since GetCurrentInterval() dereferences EnvMan.instance.
+        /// </summary>
+        private void PruneStaleRecords()
+        {
+            if (ZNet.m_world == null || EnvMan.instance == null
+                || AdventureDataManager.Bounties == null || AdventureDataManager.TreasureMaps == null)
+            {
+                return;
+            }
+
+            var currentBountyInterval = AdventureDataManager.Bounties.GetCurrentInterval();
+            var currentTreasureInterval = AdventureDataManager.TreasureMaps.GetCurrentInterval();
+
+            foreach (var saveData in SaveData.AllSaveData)
+            {
+                saveData.PruneStaleRecords(currentBountyInterval, currentTreasureInterval);
+            }
         }
     }
 }

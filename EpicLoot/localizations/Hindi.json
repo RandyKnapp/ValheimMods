@@ -1448,5 +1448,18 @@
   "mod_epicloot_search_placeholder": "खोजें...",
   "mod_epicloot_no_active_adventures": "कोई सक्रिय रोमांच नहीं",
   "mod_epicloot_set_bonuses": "सेट बोनस",
-  "mod_epicloot_legendary_sets": "पौराणिक सेट"
+  "mod_epicloot_legendary_sets": "पौराणिक सेट",
+  "mod_epicloot_enchantments": "मंत्रमुग्धता",
+  "mod_epicloot_output": "परिणाम",
+  "mod_epicloot_history": "इतिहास",
+  "mod_epicloot_requirements": "आवश्यकताएँ",
+  "mod_epicloot_info": "जानकारी",
+  "mod_epicloot_min": "न्यूनतम",
+  "mod_epicloot_max": "अधिकतम",
+  "mod_epicloot_increment": "वृद्धि",
+  "mod_epicloot_minmax": "न्यूनतम/अधिकतम",
+  "mod_epicloot_successchance": "सफलता की संभावना",
+  "mod_epicloot_criticalsuccess": "गंभीर सफलता",
+  "mod_epicloot_criticalfail": "गंभीर विफलता",
+  "mod_epicloot_temper": "कठोरीकरण"
 }

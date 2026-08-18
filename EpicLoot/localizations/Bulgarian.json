@@ -1448,5 +1448,18 @@
   "mod_epicloot_search_placeholder": "Търсене...",
   "mod_epicloot_no_active_adventures": "Няма активни приключения",
   "mod_epicloot_set_bonuses": "Комплектни бонуси",
-  "mod_epicloot_legendary_sets": "Легендарни сетове"
+  "mod_epicloot_legendary_sets": "Легендарни сетове",
+  "mod_epicloot_enchantments": "Омагьосвания",
+  "mod_epicloot_output": "Резултат",
+  "mod_epicloot_history": "История",
+  "mod_epicloot_requirements": "Изисквания",
+  "mod_epicloot_info": "Информация",
+  "mod_epicloot_min": "Мин",
+  "mod_epicloot_max": "Макс",
+  "mod_epicloot_increment": "Увеличение",
+  "mod_epicloot_minmax": "Мин/Макс",
+  "mod_epicloot_successchance": "Шанс за успех",
+  "mod_epicloot_criticalsuccess": "Критичен успех",
+  "mod_epicloot_criticalfail": "Критичен неуспех",
+  "mod_epicloot_temper": "Закаляване"
 }

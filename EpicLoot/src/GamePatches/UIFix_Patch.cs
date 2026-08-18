@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using EpicLoot.Config;
+using HarmonyLib;
 using Jotunn.Managers;
 using TMPro;
 using UnityEngine;
@@ -10,10 +11,15 @@ namespace EpicLoot;
 [HarmonyPatch]
 public static class PatchOnHoverFix
 {
-    public const float MAX_WIDTH = 350f;
-    public const float MAX_HEIGHT = 700f;
+    public const float MIN_WIDTH = 150f;
+    public const float MIN_HEIGHT = 350f;
     public const float PADDING = 10f;
     public const float CURSOR_PADDING = 20f;
+
+    // Tooltip box dimensions are configurable (absolute pixels); read fresh on each
+    // hover so config changes apply live. Height defaults to 80% of screen height.
+    public static float MaxWidth => Mathf.Max(ELConfig.TooltipMaxWidth.Value, MIN_WIDTH);
+    public static float MaxHeight => Mathf.Max(ELConfig.TooltipMaxHeight.Value, MIN_HEIGHT);
     public static string ComparisonTitleString = "";
     public static string ComparisonTooltipString = "";
     public static bool ComparisonAdded = false;
@@ -70,7 +76,7 @@ public static class PatchOnHoverFix
             RectTransform tooltipTransform = Utils.FindChild(UITooltip.m_tooltip.transform, "Canvas").GetComponent<RectTransform>();
             tooltipTransform.GetWorldCorners(tooltipCorners);
             scrollRT.GetWorldCorners(compareCorners);
-            scrollRT.anchoredPosition = new Vector2(tooltipTfm.anchoredPosition.x + MAX_WIDTH, tooltipTfm.anchoredPosition.y);
+            scrollRT.anchoredPosition = new Vector2(tooltipTfm.anchoredPosition.x + MaxWidth, tooltipTfm.anchoredPosition.y);
 
             // Offset calculation is needed to adjust the two canvases since they will have different heights
             float xoffset = Mathf.Abs(tooltipCorners[0].y - tooltipCorners[1].y);
@@ -110,7 +116,7 @@ public static class PatchOnHoverFix
 
         GameObject scrollArea = GUIManager.Instance.CreateScrollView(
             tooltipObject.transform, false, true, PADDING, PADDING,
-            GUIManager.Instance.ValheimScrollbarHandleColorBlock, Color.grey, MAX_WIDTH, MAX_HEIGHT);
+            GUIManager.Instance.ValheimScrollbarHandleColorBlock, Color.grey, MaxWidth, MaxHeight);
 
         // Hide the scrollbar by default, it will show when needed
         scrollArea.GetComponentInChildren<Scrollbar>().gameObject.SetActive(false);
@@ -155,18 +161,18 @@ public static class PatchOnHoverFix
         scrollRT.anchoredPosition = new Vector2(xoffset, yoffset);
 
         RectTransform contentRT = contentt.GetComponent<RectTransform>();
-        contentRT.offsetMax = new Vector2(MAX_WIDTH + PADDING, 0); // Expand area so scrollbar isn't floating
+        contentRT.offsetMax = new Vector2(MaxWidth + PADDING, 0); // Expand area so scrollbar isn't floating
         RectTransform textRT = tooltipTextTransform.GetComponent<RectTransform>();
-        textRT.offsetMax = new Vector2(MAX_WIDTH - 25f, -22); // Expand text to get more of the full area
+        textRT.offsetMax = new Vector2(MaxWidth - 25f, -22); // Expand text to get more of the full area
         header.GetComponent<RectTransform>().offsetMax = new Vector2(210, 0); // Expand title to get more of the full area
     }
 
     private static void GetOffsets(RectTransform transform, out float xoffset, out float yoffset)
     {
-        float width = (MAX_WIDTH / 2f) + PADDING;
+        float width = (MaxWidth / 2f) + PADDING;
         // If on left side of screen display tooltip on right, right side on left.
         xoffset = transform.position.x > (Screen.width / 2f) ? -width : width + CURSOR_PADDING;
-        yoffset = MAX_HEIGHT / -2f;
+        yoffset = MaxHeight / -2f;
     }
 }
 

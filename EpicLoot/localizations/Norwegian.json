@@ -1448,5 +1448,18 @@
   "mod_epicloot_search_placeholder": "Søk...",
   "mod_epicloot_no_active_adventures": "Ingen aktive eventyr",
   "mod_epicloot_set_bonuses": "Settbonuser",
-  "mod_epicloot_legendary_sets": "Legendariske sett"
+  "mod_epicloot_legendary_sets": "Legendariske sett",
+  "mod_epicloot_enchantments": "Fortryllelser",
+  "mod_epicloot_output": "Resultat",
+  "mod_epicloot_history": "Historikk",
+  "mod_epicloot_requirements": "Krav",
+  "mod_epicloot_info": "Informasjon",
+  "mod_epicloot_min": "Min",
+  "mod_epicloot_max": "Maks",
+  "mod_epicloot_increment": "Økning",
+  "mod_epicloot_minmax": "Min/Maks",
+  "mod_epicloot_successchance": "Sjanse for suksess",
+  "mod_epicloot_criticalsuccess": "Kritisk suksess",
+  "mod_epicloot_criticalfail": "Kritisk feil",
+  "mod_epicloot_temper": "Herding"
 }

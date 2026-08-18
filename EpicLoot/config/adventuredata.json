@@ -271,6 +271,7 @@
     "IncreaseRadiusCount": 3,
     "RadiusInterval": 50,
     "MinimapAreaRadius": 45,
+    "MaxSpawnSearchExpansions": 5,
     "SaleItems": [
       { "Item": "RunestoneMagic",     "ForestTokenCost": 5 },
       { "Item": "RunestoneRare",      "ForestTokenCost": 10 },

@@ -16,7 +16,19 @@ namespace EpicLoot.Adventure
 
         private BoolZNetProperty isBounty { get; set; }
 
+        /// <summary>Frames to settle before the first search attempt.</summary>
+        private const int InitialSearchDelayFrames = 300;
+
+        /// <summary>
+        /// Frames to wait before re-attempting a search that found nowhere to spawn. Longer than the
+        /// initial delay because a blocked search usually stays blocked until a ward comes down.
+        /// </summary>
+        private const int RetrySearchDelayFrames = 1800;
+
+        private const int SpawnAttemptsPerBand = 100;
+
         private int currentUpdates = 0;
+        private int updatesRequired = InitialSearchDelayFrames;
         private bool startedPlacement = false;
         private Vector3 defaultSpawn = new(1, 1, 1);
         private BountyInfo defaultBounty = new();
@@ -51,7 +63,17 @@ namespace EpicLoot.Adventure
                 return;
             }
 
-            if (currentUpdates < 300)
+            // A spawner whose ZDO already records a successful placement must never run again. If the
+            // owner logged out (or the zone unloaded) between placing and the Destroy at the bottom of
+            // this method, the object comes back with spawnPoint already set, falls straight through
+            // the searchingForSpawn gate below, and would spawn its contents a second time.
+            if (placed.Get() == true)
+            {
+                ZNetScene.instance.Destroy(this.gameObject);
+                return;
+            }
+
+            if (currentUpdates < updatesRequired)
             {
                 currentUpdates += 1;
                 return;
@@ -157,19 +179,25 @@ namespace EpicLoot.Adventure
         {
             Vector3 point = spawnPoint.Get();
 
-            const string treasureChestPrefabName = "piece_chest_wood";
+            const string treasureChestPrefabName = "loot_chest_stone";
             var treasureChestPrefab = ZNetScene.instance.GetPrefab(treasureChestPrefabName);
             ZoneSystem.instance.GetGroundData(
                 ref point, out var normal, out var foundBiome, out var biomeArea, out var hmap);
             var treasureChestObject = UnityEngine.Object.Instantiate(
                 treasureChestPrefab, point, Quaternion.FromToRotation(Vector3.up, normal));
             var treasureChest = treasureChestObject.AddComponent<TreasureMapChest>();
-            Piece tpiece = treasureChestObject.GetComponent<Piece>();
 
-            // Prevent the wildlife from attacking the chest and giving away its location
-            tpiece.m_primaryTarget = false;
-            tpiece.m_randomTarget = false;
-            tpiece.m_targetNonPlayerBuilt = false;
+            // Dungeon loot chests are not player-built pieces, so Piece may legitimately be absent -
+            // TreasureMapChest.Reinitialize guards the same way.
+            Piece tpiece = treasureChestObject.GetComponent<Piece>();
+            if (tpiece != null)
+            {
+                // Prevent the wildlife from attacking the chest and giving away its location
+                tpiece.m_primaryTarget = false;
+                tpiece.m_randomTarget = false;
+                tpiece.m_targetNonPlayerBuilt = false;
+            }
+
             treasureChest.Setup(treasure.PlayerID, treasure.Biome, treasure.Interval);
             placed.ForceSet(true);
         }
@@ -186,72 +214,122 @@ namespace EpicLoot.Adventure
 
             // TODO: If bounties get their own minimap area radius config this must choose the correct one
             float radius = AdventureDataManager.Config.TreasureMap.MinimapAreaRadius;
+            int maxExpansions = Mathf.Max(0, AdventureDataManager.Config.TreasureMap.MaxSpawnSearchExpansions);
             Vector3 determinedSpawn = startingSpawnPoint;
-            int spawnLocationAttempts = 0;
+            bool foundSpawn = false;
+            PrivateArea blockingWard = null;
 
-            // Attempt to find a spawn point, valid height must be selected
-            while (spawnLocationAttempts < 100)
+            // Band 0 is the original search disc. Every band after it is an annulus one MinimapAreaRadius
+            // further out - the smallest step that can escape a ward, since a ward vetoes everything
+            // within its own radius + MinimapAreaRadius.
+            for (int band = 0; band <= maxExpansions && !foundSpawn; band++)
             {
-                var offset = UnityEngine.Random.insideUnitCircle * (radius * 0.8f);
-                determinedSpawn = startingSpawnPoint + new Vector3(offset.x, 0, offset.y);
+                float innerRadius = band == 0 ? 0f : radius * 0.8f + (band - 1) * radius;
+                float outerRadius = band == 0 ? radius * 0.8f : radius * 0.8f + band * radius;
 
-                if (spawnLocationAttempts > 1 && spawnLocationAttempts % 10 == 0)
+                int spawnLocationAttempts = 0;
+
+                // Attempt to find a spawn point, valid height must be selected
+                while (spawnLocationAttempts < SpawnAttemptsPerBand)
                 {
-                    // Sleep to avoid locking the thread
-                    yield return new WaitForSeconds(1f);
-                }
+                    // Area-uniform sample of the ring, so points do not bunch up against its inner edge.
+                    // For band 0 this is identical to the old Random.insideUnitCircle * (radius * 0.8f).
+                    float sampleRadius = Mathf.Sqrt(Mathf.Lerp(innerRadius * innerRadius,
+                        outerRadius * outerRadius, UnityEngine.Random.value));
+                    float sampleAngle = UnityEngine.Random.Range(0f, Mathf.PI * 2f);
+                    determinedSpawn = startingSpawnPoint + new Vector3(
+                        Mathf.Cos(sampleAngle) * sampleRadius, 0, Mathf.Sin(sampleAngle) * sampleRadius);
 
-                ZoneSystem.instance.GetGroundData(
-                    ref determinedSpawn, out var normal, out var foundBiome, out var biomeArea, out var hmap);
+                    if (spawnLocationAttempts > 1 && spawnLocationAttempts % 10 == 0)
+                    {
+                        // Sleep to avoid locking the thread
+                        yield return new WaitForSeconds(1f);
+                    }
 
-                if (hmap == null || foundBiome != biome)
-                {
-                    spawnLocationAttempts += 1;
-                    continue;
-                }
+                    ZoneSystem.instance.GetGroundData(
+                        ref determinedSpawn, out var normal, out var foundBiome, out var biomeArea, out var hmap);
 
-                float terrainHeight = determinedSpawn.y;
-                float solidHeight = StartingHeight;
-
-                if (ZoneSystem.instance.FindFloor(new Vector3(determinedSpawn.x, determinedSpawn.y + 100f, determinedSpawn.z), out solidHeight))
-                {
-                    float terrainDiff = solidHeight - terrainHeight;
-
-                    // Prevent spawns in objects and too high off the ground
-                    if (terrainDiff > 0.5f)
+                    if (hmap == null || foundBiome != biome)
                     {
                         spawnLocationAttempts += 1;
                         continue;
                     }
 
-                    if (terrainDiff > 0f)
+                    float terrainHeight = determinedSpawn.y;
+                    float solidHeight = StartingHeight;
+
+                    if (ZoneSystem.instance.FindFloor(new Vector3(determinedSpawn.x, determinedSpawn.y + 100f, determinedSpawn.z), out solidHeight))
                     {
-                        determinedSpawn.y = solidHeight;
+                        float terrainDiff = solidHeight - terrainHeight;
+
+                        // Prevent spawns in objects and too high off the ground
+                        if (terrainDiff > 0.5f)
+                        {
+                            spawnLocationAttempts += 1;
+                            continue;
+                        }
+
+                        if (terrainDiff > 0f)
+                        {
+                            determinedSpawn.y = solidHeight;
+                        }
                     }
-                }
-                else
-                {
-                    spawnLocationAttempts += 1;
-                    continue;
+                    else
+                    {
+                        spawnLocationAttempts += 1;
+                        continue;
+                    }
+
+                    // Prevents spawning in a body of water
+                    if ((biome != Heightmap.Biome.Ocean || !allowWaterSpawn) &&
+                        determinedSpawn.y < 29)
+                    {
+                        spawnLocationAttempts += 1;
+                        continue;
+                    }
+
+                    // Prevent spawning in Lava unless a last resort
+                    if (biome == Heightmap.Biome.AshLands &&
+                        hmap.GetVegetationMask(determinedSpawn) > 0.45f)
+                    {
+                        spawnLocationAttempts += 1;
+                        continue;
+                    }
+
+                    // Keep the spawn out of player bases. Unlike the check made when the world point was
+                    // first picked, the wards around here are actually loaded by now.
+                    if (AdventureWardCheck.TryFindNearbyWard(determinedSpawn, radius, out PrivateArea ward))
+                    {
+                        blockingWard = ward;
+                        spawnLocationAttempts += 1;
+                        continue;
+                    }
+
+                    foundSpawn = true;
+                    break;
                 }
 
-                // Prevents spawning in a body of water
-                if ((biome != Heightmap.Biome.Ocean || !allowWaterSpawn) &&
-                    determinedSpawn.y < 29)
+                if (!foundSpawn && band < maxExpansions)
                 {
-                    spawnLocationAttempts += 1;
-                    continue;
+                    EpicLoot.LogWarning(
+                        $"No valid adventure spawn point in search band {band} " +
+                        $"({innerRadius:0.##}-{outerRadius:0.##}m); expanding. " +
+                        $"Start=({startingSpawnPoint.x:0.##}, {startingSpawnPoint.y:0.##}, {startingSpawnPoint.z:0.##}), " +
+                        $"Biome={biome}, Ward={AdventureWardCheck.DescribeWard(blockingWard)}");
                 }
+            }
 
-                // Prevent spawning in Lava unless a last resort
-                if (biome == Heightmap.Biome.AshLands &&
-                    hmap.GetVegetationMask(determinedSpawn) > 0.45f)
-                {
-                    spawnLocationAttempts += 1;
-                    continue;
-                }
-
-                break;
+            if (!foundSpawn)
+            {
+                EpicLoot.LogWarning(
+                    "Could not find a valid adventure spawn point after exhausting every search band. " +
+                    $"Start=({startingSpawnPoint.x:0.##}, {startingSpawnPoint.y:0.##}, {startingSpawnPoint.z:0.##}), " +
+                    $"Biome={biome}, SearchRadius={radius:0.##}, Expansions={maxExpansions}, " +
+                    $"Ward={AdventureWardCheck.DescribeWard(blockingWard)}. " +
+                    "Leaving the spawner in place to retry - it is not safe to discard a bounty or " +
+                    "treasure map the player has already paid for.");
+                ParkAndRetry();
+                yield break;
             }
 
             if (determinedSpawn.y >= StartingHeight - 1f)
@@ -259,9 +337,104 @@ namespace EpicLoot.Adventure
                 determinedSpawn.y = 400f;
             }
 
+            // A point from an outer band no longer sits under the map marker, so the marker has to
+            // follow it. Pins live in per-player local save data, so only the player who bought this
+            // spawn can move theirs - anyone else parks and leaves it for the owner.
+            if (RequiresPinRelocation(startingSpawnPoint, determinedSpawn) &&
+                !TryRelocateOwnerPin(determinedSpawn))
+            {
+                EpicLoot.Log("Found an adventure spawn point outside the map circle, but the local " +
+                    "player does not own this spawn; leaving it for the owner to place.");
+                ParkAndRetry();
+                yield break;
+            }
+
             EpicLoot.Log($"Selected Spawn point X {determinedSpawn.x}, Y {determinedSpawn.y}, Z {determinedSpawn.z}");
             spawnPoint.ForceSet(determinedSpawn);
             yield break;
+        }
+
+        /// <summary>
+        /// Stands the spawner back down without placing anything. Deliberately leaves both
+        /// <c>placed</c> and <c>spawnPoint</c> untouched: Update's searchingForSpawn gate then keeps
+        /// the component idle, the persistent ZDO survives, and the search runs again on the next
+        /// visit (or after the retry delay for a player who stays in the zone). Marking it placed
+        /// here would destroy a bounty or treasure map the player has already paid for.
+        /// </summary>
+        private void ParkAndRetry()
+        {
+            startedPlacement = false;
+            currentUpdates = 0;
+            updatesRequired = RetrySearchDelayFrames;
+        }
+
+        /// <summary>
+        /// True when the chosen point falls outside the circle drawn on the map. The pin's
+        /// <c>m_worldSize</c> is a diameter (vanilla sets it to range * 2), and MinimapController
+        /// assigns MinimapAreaRadius * AreaScale, so the drawn radius is half of that.
+        /// </summary>
+        private static bool RequiresPinRelocation(Vector3 pinCentre, Vector3 spawn)
+        {
+            float drawnRadius = AdventureDataManager.Config.TreasureMap.MinimapAreaRadius *
+                MinimapController.AreaScale * 0.5f;
+            return Utils.DistanceXZ(pinCentre, spawn) > drawnRadius;
+        }
+
+        /// <summary>
+        /// Moves the owning player's minimap pin to <paramref name="newPosition"/>.
+        /// Returns false only when the local player is not the one who bought this spawn - a missing
+        /// or already-resolved save record still counts as handled, since parking forever would be
+        /// worse than a stale pin.
+        /// </summary>
+        private bool TryRelocateOwnerPin(Vector3 newPosition)
+        {
+            Player player = Player.m_localPlayer;
+            if (player == null)
+            {
+                return false;
+            }
+
+            long localPlayerID = player.GetPlayerID();
+            AdventureSaveData saveData = player.GetAdventureSaveData();
+
+            bool relocated;
+            string description;
+
+            if (isBounty.Get() == true)
+            {
+                BountyInfo bountyInfo = bounty.Get();
+                if (bountyInfo.PlayerID != localPlayerID)
+                {
+                    return false;
+                }
+
+                relocated = saveData != null && saveData.RelocateBounty(bountyInfo.ID, newPosition);
+                description = $"bountyID={bountyInfo.ID}";
+            }
+            else
+            {
+                TreasureMapChestInfo treasureInfo = treasure.Get();
+                if (treasureInfo.PlayerID != localPlayerID)
+                {
+                    return false;
+                }
+
+                relocated = saveData != null &&
+                    saveData.RelocateTreasureMap(treasureInfo.Interval, treasureInfo.Biome, newPosition);
+                description = $"interval={treasureInfo.Interval} biome={treasureInfo.Biome}";
+            }
+
+            if (relocated)
+            {
+                player.Message(MessageHud.MessageType.Center, "$mod_epicloot_adventure_spawnrelocated");
+            }
+            else
+            {
+                EpicLoot.LogWarning("Moved an adventure spawn outside its map circle but could not " +
+                    $"update the minimap pin ({description}).");
+            }
+
+            return true;
         }
     }
 }

@@ -9,9 +9,9 @@ public class ExplainTextInfo(string topic) : MagicTextInfo(topic)
     {
         IOrderedEnumerable<KeyValuePair<string, string>> sortedMagicEffects = MagicItemEffectDefinitions.AllDefinitions
             .Where(x => !x.Value.Requirements.NoRoll && x.Value.CanBeAugmented)
-            .Select(x => new KeyValuePair<string, string>(string.Format(Localization.instance.Localize(x.Value.DisplayText),
-                    "<b><color=yellow>X</color></b>"),
-                Localization.instance.Localize(x.Value.Description)))
+            .Select(x => new KeyValuePair<string, string>(
+                MagicItem.GetEffectTextGeneric(x.Value, "<b><color=yellow>X</color></b>"),
+                MagicItem.GetEffectDescriptionGeneric(x.Value, "<b><color=yellow>X</color></b>")))
             .OrderBy(x => x.Key);
 
         foreach (KeyValuePair<string, string> kvp in sortedMagicEffects)

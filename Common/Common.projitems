@@ -9,6 +9,10 @@
     <Import_RootNamespace>Common</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)src\*.cs" />
+    <!-- Recursive by design: every .cs under src/ is compiled into each consuming mod. Do NOT add explicit
+         <Compile Include> entries alongside this - Visual Studio adds them automatically when you add a file
+         through Solution Explorer, and they collide with the glob ("Duplicate 'Compile' items were included").
+         If that happens, delete the explicit entries and keep this line. -->
+    <Compile Include="$(MSBuildThisFileDirectory)src\**\*.cs" />
   </ItemGroup>
 </Project>

@@ -1,3 +1,101 @@
+## Version 0.13.0
+
+New Content:
+* Shardstones Added! Shardstones are a new item that can be attached to weapons with available shardsockets
+    * Thanks Leslie, Warp and Rusty for contributing effects 
+    * Interacting with an enchanted item that has a shard socket will pull up a small storage UI, allowing you to socket or remove shards. 
+    * Shardstones can be found in the world as loot, different shards in each biome
+    * Every boss drops a shardstone of its own (Eikthyr, The Elder, Bonemass, Moder, Yagluth, The Queen and Fader), and two unique shardstones drop rarely from elite creatures and treasure chests
+    * 90+ new magic effects have been added and are primarily available through shardstones
+    * The enchanting table's probability panel now lists shard slot odds alongside effect count odds
+    * `Shard Stack Mode` option controls whether several shards of the same color may be socketed into the same item
+    * `Shard Removal Mode` option controls whether a socketed shard can be freely removed, must be broken out (destroying it), or is permanent
+    * `Shard Stone Drop Ratio` balance option weighs shardstone drops against normal item, unidentified and material drops
+* Tempering (Thanks Rusty!)
+    * Tempering allows you to pay to increase the value of an existing enchantment (service provided by Hildir)
+    * Tempering can be configured to allow upgrading past a tiers normal maximum.
+    * Careful! Tempering can downgrade enchantments too if you critically fail (its configurable don't worry).
+* Runestone Balance options
+    * Runestone extraction can now be configured with new options: KeepItem / ReduceEnchants / ReduceEnchantsAndRarity / DestroyItem
+    * Runestones can also be socketed into shardsockets
+* Improved Tooltips!
+    * User-side configuration allows you to expand vertical or horizontally (or shrink) tooltips (scrollbar automatically used, as needed)
+    * SHIFT when moused over an item will now show extended tooltip information, this includes more detailed descriptions, configurable effects and precise values for multiple parts of the effects
+* Terminal Commands upgraded (Thanks Rusty!)
+    * Terminal commands now have better completion and more options
+    * Color based formatting for rarity loot table rolls!
+* Config option to show computed roll chance for all effects when enchanting an item (disabled by default)
+* Client side config options to personalize how large item tooltips are
+* Base configs now keep themselves up to date
+    * Epic Loot now tracks config file versions and will prompt you to update configs which have been customized
+    * Configs you *have* edited are never overwritten on their own. If an update changes one of them, a prompt at the main menu offers to replace it, copying your version to `BepInEx\config\EpicLoot\baseconfig-backup` first. Declining is remembered per file, and you are only asked again if that config changes in a future update
+    * Configs targeted by a patch file are unaffected, as they are already rebuilt from the current defaults every launch
+    * Dedicated servers log the affected files instead of prompting. 
+    * Enabling `Always Refresh Core Configs` activates the patch system and prevents config file prompts (configs are rebuilt every restart, and only changes defined in patches will be applied)
+
+Changes:
+* Enchanting shards (Shard Magic, Shard Rare, and so on -- not the new Shardstones) are now crafted at the enchanting table instead of the forge
+* The Leather Belt, Silver Ring and Gold Ruby Ring are now configurable
+* Enchanting table building resources are now easily configurable
+    * Resources to build the enchanting table has been changed to 10 wood, 2 greydwarf eyes
+* The Epic Loot config file has been regrouped and now reads in a deliberate order instead of alphabetically, in both the file and the configuration manager
+    * Sections are numbered in the order they are meant to be read (`1 - General`, `2 - Balance`, `3 - Shardstones & Runes`, `4 - Enchanting Table`, `5 - Adventure`, `6 - Interface`, `7 - Item Colors`, `8 - Abilities`, `9 - Debug`) and the settings inside each one keep the order they were written in
+    * The bounty and adventure settings gathered into Adventure, the crafting UI / tooltip / panel position settings into Interface, `Rune Extract Mode` into Shardstones & Runes, and logging into Debug
+    * Every setting you had customized is carried over to its new home automatically; nothing resets to defaults
+    * Each setting's description now states whether it is synced from the server
+* New cheat commands `magicshards` and `cheatsockets`
+
+Bugfixes:
+* Fixes tooltip display for enchanted items health use percentage
+* Fixes a bug with Ragnar's ice wave which would cause a player to swim upwards in the air (upon exit) if the effect was used in a dungeon
+* Attack speed compatibility: when another mod already provides AnimationSpeedManager (embedded as a binary), Epic Loot now routes its attack-speed changes into that shared instance instead of running its own copy, so the two mods' attack-speed modifiers stack correctly instead of overwriting each other
+* Merchant panels are now draggable, and save their position client side
+* Config patches now honor the `Priority` field reliably and equal-priority patches are now applied in a deterministic order instead of depending on the filesystem's file listing order
+    * When any config patches are active, Epic Loot now always logs a one-line summary of how many patches were applied (regardless of your logging settings) to make patched setups obvious in bug reports
+* Adventure data (Treasure hunts, bounties etc) is now compressed and cleaned resulting in massive reductions in stored custom data
+* Transfer Enchantments through crafting now works properly
+* Chest loot is now rolled when it is opened, not when it is spawned, so that the loot is always appropriate for the player opening it. This primarily fixes mountain & swamp loot which would be loaded very early, but actually opened later.
+* Filtering an enchanting table list no longer hides items from you while still acting on them. Previously, typing in the Sacrifice tab's filter and pressing Select All would sacrifice every sacrificeable item in your inventory, not just the filtered ones
+    * Select All, the products preview and the action itself now only ever cover the rows the filter is showing
+    * Items you selected before filtering keep their selection, so you can filter and select several times over and then clear the filter to act on everything you picked
+    * The filter is also reapplied after each action and when switching between Sacrifice and Identify, so the list no longer shows a stale set of rows
+* Equip effect visuals (auras such as `Glowing`) are now reconciled against your equipped magic gear after every equipment change, instead of being attached from the model-building path and removed from the unequip path
+    * Items worn in slots added by other mods now get their aura, which previously never appeared at all
+    * The spurious `Unequipped item (...) from player that had fx, but could not find fx (...)!` error is gone — a missing effect is now simply nothing to remove
+    * An aura shared by two worn items survives unequipping either one, and is removed when the last one comes off
+* Fixed the reset for helmet attachment never running, which let the helmet's texture overrides and item effects be applied to a beard, hair or back-slung weapon model instead
+* Fixed legendary texture overrides on armor being resolved by item type rather than by the item actually being attached, which picked the wrong item when two worn items shared a type
+    * This also makes legendary armor texture overrides render for other players, which previously never happened
+
+API:
+* The API now covers integration, not just content registration. Full reference and a migration table in `EpicLoot/docs/API.md`
+    * `API.ApiVersion` / `GetApiVersion()` / `HasEndpoint(name)` let a mod check what the installed Epic Loot supports and degrade gracefully instead of throwing
+    * The `EpicLootAPI` shim provides typed wrappers for everything below and can be bundled into your plugin with ILRepack
+* Inventory providers — `API.RegisterInventoryProvider` lets container, backpack and stash mods feed the enchanting table
+    * Epic Loot spends the player's own inventory first and only charges the shortfall to providers
+    * Removal by item instance matches on reference, so magic data on the consumed item is preserved
+* Equipment providers — `API.RegisterEquipmentProvider` lets extra-slot mods contribute equipped items
+    * Contributed items count toward effect totals, legendary set bonuses, tooltips and shard socketing, and receive their equip effect visuals
+    * `API.InvalidatePlayerEffectCache(player)` discards memoized effect totals and refreshes worn equip effect visuals when your slot contents change outside vanilla equip/unequip
+* Sacrifice filters — `API.RegisterSacrificeFilter` lets a mod veto sacrificing an item, so gear equipped in slots Epic Loot cannot see is not destroyed by accident
+* Custom item slots — `API.ApplyMagicItemBackground` draws the rarity background, set marker and equipped overlay on a slot your own mod renders
+    * Epic Loot decorates the vanilla grid and hotkey bar with transpilers, so a mod that reimplements `InventoryGrid.UpdateGui` or `HotkeyBar.UpdateIcons` previously lost the background entirely; this is the supported way to put it back
+* Lifecycle events — `API.AddMagicItemChangedListener`, `AddLootGeneratedListener` and `AddBountyCompletedListener`
+    * The change event fires on every magic-data write with a reason token: `Enchant`, `Augment`, `Disenchant`, `Rune`, `Temper`, `Socket`, `Unsocket`, `LootRoll`, `Transfer`, or `Unspecified`. Item loading does not raise it
+* Queries — `IsMagicItem`, `TryGetRarity` (non-throwing), rarity colors and display names, `IsEpicLootItem`, `IsShardStone`, `IsRunestone`, `IsMagicCraftingMaterial`, `IsUnidentified`, `CanBeMagicItem`, `ItemHasMagicEffect`, `GetAllMagicEffectTypes`, `GetEnchantCostsJson`, `GetSacrificeProductsJson`
+* Loot generation — `TryMakeMagicItem` rolls and applies a magic item exactly the way a drop does, plus `RollMagicItemJson` / `ApplyMagicItemJson` to inspect before applying, `GetLuckFactor`, `RollEffectCountForRarity`, `GetLegendaryIDs` and `GetLegendaryInfoJson`
+    * `API.AddLootTables` / `UpdateLootTables` register loot tables at runtime, and they are re-applied on config reload and on a dedicated server's config push
+* New `magicapi` console command (`version`, `query`, `providers`, `events`, `roll`) for testing an integration in game
+* Mod authors patching `PlayerExtensions.GetEquipment` should switch to an equipment provider: that method is a deprecated alias and nothing inside Epic Loot calls it
+* `EpicLootAPI`'s `MagicItem` was updated to account for tempering, shardstones and unidentified items
+* New magic effect requirement flags: `ItemGivesAdrenaline` (item's attack grants above-default adrenaline) and `ItemHasAdrenaline` (item provides a max adrenaline pool)
+  * Note: `ItemGivesAdrenaline` requires that the item gives more than 1 adrenaline. This is due to all items by default adding 1 adrenaline.
+* New magic effect requirements allowed from the API
+    * API magic effect requirements when defined for an effect will be evaluated for all items, allowing only items which fit the filter (Thanks Warp!)
+* `recipes.json` has been removed (its contained recipes are now handled and directly exposed in the Bepinex config file [Randyknapp.epicloot.cfg])
+    * Mod authors: `API.AddRecipe`, `API.AddRecipes`, `API.UpdateRecipes` and the shim's `CustomRecipe` are now deprecated.
+
+
 ## Version 0.12.15
 
 * Fixed an issue with bounties not spawning correctly if not using the Star Level System mod.

@@ -2,6 +2,7 @@
 using EpicLoot.Crafting;
 using EpicLoot.Data;
 using EpicLoot.LegendarySystem;
+using EpicLoot.ShardStones;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +18,12 @@ public static class ItemDataExtensions
     {
         MagicItemComponent magicData = itemData.Data().Get<MagicItemComponent>();
         return magicData != null && magicData.MagicItem != null;
+    }
+
+    public static bool IsShardStone(this ItemDrop.ItemData itemData) {
+        // A shard is identified by its shared data, not its magic data, so this answers correctly even
+        // for an instance whose MagicItem has not been rebuilt yet.
+        return Shards.IsShard(itemData);
     }
 
     public static bool IsUnidentified(this ItemDrop.ItemData itemData)
@@ -83,9 +90,11 @@ public static class ItemDataExtensions
         return ColorUtility.TryParseHtmlString(colorString, out Color color) ? color : Color.white;
     }
 
-    public static bool HasMagicEffect(this ItemDrop.ItemData itemData, string effectType)
+    // includeSocketed defaults to true: this extension is used by effect-application patches to gate
+    // behavior, so socketed effects should count. The only crafting caller (CheckRequirements) passes false.
+    public static bool HasMagicEffect(this ItemDrop.ItemData itemData, string effectType, bool includeSocketed = true)
     {
-        return itemData.GetMagicItem()?.HasEffect(effectType) ?? false;
+        return itemData.GetMagicItem()?.HasEffect(effectType, includeSocketed: includeSocketed) ?? false;
     }
 
     public static void CreateMagicItem(this ItemDrop.ItemData itemData)
@@ -310,6 +319,11 @@ public static class ItemDataExtensions
     /// </summary>
     public static void InitializeCustomData(this ItemDrop.ItemData itemData)
     {
+        // Shards rebuild their own magic data from m_shared.m_ammoType, so they need neither the prefab
+        // reference nor its baked custom data. Done ahead of the m_dropPrefab check so a shard is healed
+        // even when the prefab is unresolved. Cheap no-op for everything else.
+        Shards.EnsureShardMetadata(itemData);
+
         GameObject prefab = itemData.m_dropPrefab;
         if (prefab == null)
         {

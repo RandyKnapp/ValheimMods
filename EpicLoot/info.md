@@ -24,7 +24,7 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
 
   * **Display Text:** This text appears in the tooltip for the magic item, with {0:?} replaced with the rolled value for the effect, formatted using the shown C# string format.
   * **Requirements:** A set of requirements.
-    * **Flags:** A set of predefined flags to check certain weapon properties. The list of flags is: `NoRoll, ExclusiveSelf, ItemHasPhysicalDamage, ItemHasElementalDamage, ItemUsesDurability, ItemHasNegativeMovementSpeedModifier, ItemHasBlockPower, ItemHasNoParryPower, ItemHasParryPower, ItemHasArmor, ItemHasBackstabBonus, ItemUsesStaminaOnAttack`
+    * **Flags:** A set of predefined flags to check certain weapon properties. The list of flags is: `NoRoll, ExclusiveSelf, ItemHasPhysicalDamage, ItemHasElementalDamage, ItemHasChopDamage, ItemUsesDurability, ItemHasNegativeMovementSpeedModifier, ItemHasBlockPower, ItemHasNoParryPower, ItemHasParryPower, ItemHasArmor, ItemHasBackstabBonus, ItemUsesStaminaOnAttack, ItemUsesEitrOnAttack, ItemUsesHealthOnAttack, ItemUsesDrawStaminaOnAttack, ItemGivesAdrenaline, ItemHasAdrenaline`
     * **ExclusiveEffectTypes:** This effect may not be rolled on an item that has already rolled on of these effects
     * **AllowedItemTypes:** This effect may only be rolled on items of a the types in this list. When this list is empty, this is usually done because this is a special effect type added programmatically  or currently not allowed to roll. Options are: `Helmet, Chest, Legs, Shoulder, Utility, Bow, OneHandedWeapon, TwoHandedWeapon, TwoHandedWeaponLeft, Shield, Tool, Torch`
     * **ExcludedItemTypes:** This effect may only be rolled on items that are not one of the types on this list.
@@ -34,7 +34,8 @@ Listen to the event `MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinition
     * **ExcludedSkillTypes:** This effect may only be rolled on an item that does not use one of these skill types.
     * **AllowedItemNames:** This effect may only be rolled on an item with one of these names. Use the unlocalized shared name, i.e.: `$item_sword_iron`
     * **ExcludedItemNames:** This effect may only be rolled on an item that does not have one of these names.
-    * **CustomFlags:** A set of any arbitrary strings for future use
+    * **CustomFlags:** A set of arbitrary strings for future use.
+    * **ExternalRequirements:** Requirement keys registered by external plugins through `API.RegisterMagicEffectRequirement`. Every listed key must be registered and must return true for the effect to roll.
   * **Value Per Rarity:** This effect may only be rolled on items of a rarity included in this table. The value is rolled using a linear distribution between Min and Max and divisible by the Increment.
 
 ## DvergerCirclet
@@ -7253,5 +7254,3 @@ A list of every built-in loot table from the mod. The name of the loot table is 
 > | Items (lvl 6) | Weight (Chance) | Magic | Rare | Epic | Legendary |
 > | -- | -- | -- | -- | -- | -- |
 > | Tier6Everything | 1 (100%) | 0 (0%) | 0 (0%) | 65 (65%) | 35 (35%) |
-
-

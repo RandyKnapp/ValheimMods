@@ -7,6 +7,7 @@ namespace EpicLoot.Adventure
     public static class StoreGui_Patch
     {
         public static GameObject MerchantPanel;
+        public static GameObject TemperPanel;
 
         [HarmonyPatch(nameof(StoreGui.Show))]
         [HarmonyPostfix]
@@ -14,6 +15,24 @@ namespace EpicLoot.Adventure
         {
             if (!EpicLoot.IsAdventureModeEnabled() || __instance == null)
             {
+                return;
+            }
+
+            if (__instance.m_trader.m_name == "$npc_hildir")
+            {
+                if (__instance.transform.Find(nameof(TemperPanel)) == null)
+                {
+                    if (TemperPanel != null)
+                    {
+                        Object.Destroy(TemperPanel);
+                    }
+                    global::EpicLoot.TemperPanel.LoadFonts();
+                    TemperPanel = Object.Instantiate(EpicAssets.TemperPanel, __instance.transform, false);
+                    TemperPanel.name = nameof(TemperPanel);
+                    TemperPanel.AddComponent<TemperPanel>();
+                }
+
+                TemperPanel.GetComponent<TemperPanel>().Show(Player.m_localPlayer);
                 return;
             }
 
@@ -41,6 +60,11 @@ namespace EpicLoot.Adventure
         [HarmonyPostfix]
         public static void Hide(StoreGui __instance)
         {
+            if (global::EpicLoot.TemperPanel.Instance)
+            {
+                global::EpicLoot.TemperPanel.Instance.Hide();
+            }
+            
             if (MerchantPanel == null)
             {
                 return;
@@ -54,6 +78,7 @@ namespace EpicLoot.Adventure
         public static void OnDestroy(StoreGui __instance)
         {
             MerchantPanel = null;
+            TemperPanel = null;
         }
     }
 }

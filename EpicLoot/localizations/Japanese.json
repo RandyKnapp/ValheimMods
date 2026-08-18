@@ -1448,5 +1448,18 @@
   "mod_epicloot_search_placeholder": "検索...",
   "mod_epicloot_no_active_adventures": "アクティブな冒険はありません",
   "mod_epicloot_set_bonuses": "セットボーナス",
-  "mod_epicloot_legendary_sets": "伝説のセット"
+  "mod_epicloot_legendary_sets": "伝説のセット",
+  "mod_epicloot_enchantments": "エンチャント",
+  "mod_epicloot_output": "結果",
+  "mod_epicloot_history": "履歴",
+  "mod_epicloot_requirements": "必要条件",
+  "mod_epicloot_info": "情報",
+  "mod_epicloot_min": "最小",
+  "mod_epicloot_max": "最大",
+  "mod_epicloot_increment": "増加量",
+  "mod_epicloot_minmax": "最小/最大",
+  "mod_epicloot_successchance": "成功率",
+  "mod_epicloot_criticalsuccess": "クリティカル成功",
+  "mod_epicloot_criticalfail": "クリティカル失敗",
+  "mod_epicloot_temper": "鍛錬"
 }

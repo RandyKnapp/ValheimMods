@@ -1,0 +1,4005 @@
+{
+  "MaterialConversions": [
+    {
+      "Name": "ShardStoneUpgrade_Red_Magic_to_Rare",
+      "Product": "Red_Rare_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "Red_Magic_ShardStone", "Amount": 1 },
+        { "Item": "ShardMagic", "Amount": 4 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Red_Rare_to_Epic",
+      "Product": "Red_Epic_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "Red_Rare_ShardStone", "Amount": 1 },
+        { "Item": "ShardRare", "Amount": 5 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Red_Epic_to_Legendary",
+      "Product": "Red_Legendary_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "Red_Epic_ShardStone", "Amount": 1 },
+        { "Item": "ShardEpic", "Amount": 6 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Red_Legendary_to_Mythic",
+      "Product": "Red_Mythic_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "Red_Legendary_ShardStone", "Amount": 1 },
+        { "Item": "ShardLegendary", "Amount": 7 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Yellow_Magic_to_Rare",
+      "Product": "Yellow_Rare_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "Yellow_Magic_ShardStone", "Amount": 1 },
+        { "Item": "ShardMagic", "Amount": 4 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Yellow_Rare_to_Epic",
+      "Product": "Yellow_Epic_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "Yellow_Rare_ShardStone", "Amount": 1 },
+        { "Item": "ShardRare", "Amount": 5 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Yellow_Epic_to_Legendary",
+      "Product": "Yellow_Legendary_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "Yellow_Epic_ShardStone", "Amount": 1 },
+        { "Item": "ShardEpic", "Amount": 6 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Yellow_Legendary_to_Mythic",
+      "Product": "Yellow_Mythic_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "Yellow_Legendary_ShardStone", "Amount": 1 },
+        { "Item": "ShardLegendary", "Amount": 7 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Cyan_Magic_to_Rare",
+      "Product": "Cyan_Rare_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "Cyan_Magic_ShardStone", "Amount": 1 },
+        { "Item": "ShardMagic", "Amount": 4 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Cyan_Rare_to_Epic",
+      "Product": "Cyan_Epic_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "Cyan_Rare_ShardStone", "Amount": 1 },
+        { "Item": "ShardRare", "Amount": 5 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Cyan_Epic_to_Legendary",
+      "Product": "Cyan_Legendary_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "Cyan_Epic_ShardStone", "Amount": 1 },
+        { "Item": "ShardEpic", "Amount": 6 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Cyan_Legendary_to_Mythic",
+      "Product": "Cyan_Mythic_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "Cyan_Legendary_ShardStone", "Amount": 1 },
+        { "Item": "ShardLegendary", "Amount": 7 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Orange_Magic_to_Rare",
+      "Product": "Orange_Rare_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "Orange_Magic_ShardStone", "Amount": 1 },
+        { "Item": "ShardMagic", "Amount": 4 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Orange_Rare_to_Epic",
+      "Product": "Orange_Epic_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "Orange_Rare_ShardStone", "Amount": 1 },
+        { "Item": "ShardRare", "Amount": 5 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Orange_Epic_to_Legendary",
+      "Product": "Orange_Legendary_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "Orange_Epic_ShardStone", "Amount": 1 },
+        { "Item": "ShardEpic", "Amount": 6 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Orange_Legendary_to_Mythic",
+      "Product": "Orange_Mythic_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "Orange_Legendary_ShardStone", "Amount": 1 },
+        { "Item": "ShardLegendary", "Amount": 7 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Pink_Magic_to_Rare",
+      "Product": "Pink_Rare_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "Pink_Magic_ShardStone", "Amount": 1 },
+        { "Item": "ShardMagic", "Amount": 4 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Pink_Rare_to_Epic",
+      "Product": "Pink_Epic_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "Pink_Rare_ShardStone", "Amount": 1 },
+        { "Item": "ShardRare", "Amount": 5 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Pink_Epic_to_Legendary",
+      "Product": "Pink_Legendary_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "Pink_Epic_ShardStone", "Amount": 1 },
+        { "Item": "ShardEpic", "Amount": 6 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Pink_Legendary_to_Mythic",
+      "Product": "Pink_Mythic_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "Pink_Legendary_ShardStone", "Amount": 1 },
+        { "Item": "ShardLegendary", "Amount": 7 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Black_Magic_to_Rare",
+      "Product": "Black_Rare_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "Black_Magic_ShardStone", "Amount": 1 },
+        { "Item": "ShardMagic", "Amount": 4 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Black_Rare_to_Epic",
+      "Product": "Black_Epic_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "Black_Rare_ShardStone", "Amount": 1 },
+        { "Item": "ShardRare", "Amount": 5 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Black_Epic_to_Legendary",
+      "Product": "Black_Legendary_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "Black_Epic_ShardStone", "Amount": 1 },
+        { "Item": "ShardEpic", "Amount": 6 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Black_Legendary_to_Mythic",
+      "Product": "Black_Mythic_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "Black_Legendary_ShardStone", "Amount": 1 },
+        { "Item": "ShardLegendary", "Amount": 7 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_White_Magic_to_Rare",
+      "Product": "White_Rare_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "White_Magic_ShardStone", "Amount": 1 },
+        { "Item": "ShardMagic", "Amount": 4 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_White_Rare_to_Epic",
+      "Product": "White_Epic_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "White_Rare_ShardStone", "Amount": 1 },
+        { "Item": "ShardRare", "Amount": 5 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_White_Epic_to_Legendary",
+      "Product": "White_Legendary_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "White_Epic_ShardStone", "Amount": 1 },
+        { "Item": "ShardEpic", "Amount": 6 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_White_Legendary_to_Mythic",
+      "Product": "White_Mythic_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "White_Legendary_ShardStone", "Amount": 1 },
+        { "Item": "ShardLegendary", "Amount": 7 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Green_Magic_to_Rare",
+      "Product": "Green_Rare_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "Green_Magic_ShardStone", "Amount": 1 },
+        { "Item": "ShardMagic", "Amount": 4 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Green_Rare_to_Epic",
+      "Product": "Green_Epic_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "Green_Rare_ShardStone", "Amount": 1 },
+        { "Item": "ShardRare", "Amount": 5 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Green_Epic_to_Legendary",
+      "Product": "Green_Legendary_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "Green_Epic_ShardStone", "Amount": 1 },
+        { "Item": "ShardEpic", "Amount": 6 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Green_Legendary_to_Mythic",
+      "Product": "Green_Mythic_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "Green_Legendary_ShardStone", "Amount": 1 },
+        { "Item": "ShardLegendary", "Amount": 7 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Purple_Magic_to_Rare",
+      "Product": "Purple_Rare_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "Purple_Magic_ShardStone", "Amount": 1 },
+        { "Item": "ShardMagic", "Amount": 4 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Purple_Rare_to_Epic",
+      "Product": "Purple_Epic_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "Purple_Rare_ShardStone", "Amount": 1 },
+        { "Item": "ShardRare", "Amount": 5 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Purple_Epic_to_Legendary",
+      "Product": "Purple_Legendary_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "Purple_Epic_ShardStone", "Amount": 1 },
+        { "Item": "ShardEpic", "Amount": 6 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Purple_Legendary_to_Mythic",
+      "Product": "Purple_Mythic_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "Purple_Legendary_ShardStone", "Amount": 1 },
+        { "Item": "ShardLegendary", "Amount": 7 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Grey_Magic_to_Rare",
+      "Product": "Grey_Rare_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "Grey_Magic_ShardStone", "Amount": 1 },
+        { "Item": "ShardMagic", "Amount": 4 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Grey_Rare_to_Epic",
+      "Product": "Grey_Epic_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "Grey_Rare_ShardStone", "Amount": 1 },
+        { "Item": "ShardRare", "Amount": 5 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Grey_Epic_to_Legendary",
+      "Product": "Grey_Legendary_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "Grey_Epic_ShardStone", "Amount": 1 },
+        { "Item": "ShardEpic", "Amount": 6 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Grey_Legendary_to_Mythic",
+      "Product": "Grey_Mythic_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "Grey_Legendary_ShardStone", "Amount": 1 },
+        { "Item": "ShardLegendary", "Amount": 7 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_DarkRed_Magic_to_Rare",
+      "Product": "DarkRed_Rare_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "DarkRed_Magic_ShardStone", "Amount": 1 },
+        { "Item": "ShardMagic", "Amount": 4 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_DarkRed_Rare_to_Epic",
+      "Product": "DarkRed_Epic_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "DarkRed_Rare_ShardStone", "Amount": 1 },
+        { "Item": "ShardRare", "Amount": 5 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_DarkRed_Epic_to_Legendary",
+      "Product": "DarkRed_Legendary_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "DarkRed_Epic_ShardStone", "Amount": 1 },
+        { "Item": "ShardEpic", "Amount": 6 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_DarkRed_Legendary_to_Mythic",
+      "Product": "DarkRed_Mythic_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "DarkRed_Legendary_ShardStone", "Amount": 1 },
+        { "Item": "ShardLegendary", "Amount": 7 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_DarkGreen_Magic_to_Rare",
+      "Product": "DarkGreen_Rare_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "DarkGreen_Magic_ShardStone", "Amount": 1 },
+        { "Item": "ShardMagic", "Amount": 4 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_DarkGreen_Rare_to_Epic",
+      "Product": "DarkGreen_Epic_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "DarkGreen_Rare_ShardStone", "Amount": 1 },
+        { "Item": "ShardRare", "Amount": 5 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_DarkGreen_Epic_to_Legendary",
+      "Product": "DarkGreen_Legendary_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "DarkGreen_Epic_ShardStone", "Amount": 1 },
+        { "Item": "ShardEpic", "Amount": 6 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_DarkGreen_Legendary_to_Mythic",
+      "Product": "DarkGreen_Mythic_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "DarkGreen_Legendary_ShardStone", "Amount": 1 },
+        { "Item": "ShardLegendary", "Amount": 7 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_DarkBlue_Magic_to_Rare",
+      "Product": "DarkBlue_Rare_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "DarkBlue_Magic_ShardStone", "Amount": 1 },
+        { "Item": "ShardMagic", "Amount": 4 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_DarkBlue_Rare_to_Epic",
+      "Product": "DarkBlue_Epic_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "DarkBlue_Rare_ShardStone", "Amount": 1 },
+        { "Item": "ShardRare", "Amount": 5 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_DarkBlue_Epic_to_Legendary",
+      "Product": "DarkBlue_Legendary_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "DarkBlue_Epic_ShardStone", "Amount": 1 },
+        { "Item": "ShardEpic", "Amount": 6 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_DarkBlue_Legendary_to_Mythic",
+      "Product": "DarkBlue_Mythic_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "DarkBlue_Legendary_ShardStone", "Amount": 1 },
+        { "Item": "ShardLegendary", "Amount": 7 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_DarkPurple_Magic_to_Rare",
+      "Product": "DarkPurple_Rare_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "DarkPurple_Magic_ShardStone", "Amount": 1 },
+        { "Item": "ShardMagic", "Amount": 4 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_DarkPurple_Rare_to_Epic",
+      "Product": "DarkPurple_Epic_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "DarkPurple_Rare_ShardStone", "Amount": 1 },
+        { "Item": "ShardRare", "Amount": 5 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_DarkPurple_Epic_to_Legendary",
+      "Product": "DarkPurple_Legendary_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "DarkPurple_Epic_ShardStone", "Amount": 1 },
+        { "Item": "ShardEpic", "Amount": 6 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_DarkPurple_Legendary_to_Mythic",
+      "Product": "DarkPurple_Mythic_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "DarkPurple_Legendary_ShardStone", "Amount": 1 },
+        { "Item": "ShardLegendary", "Amount": 7 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Golden_Magic_to_Rare",
+      "Product": "Golden_Rare_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "Golden_Magic_ShardStone", "Amount": 1 },
+        { "Item": "ShardMagic", "Amount": 4 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Golden_Rare_to_Epic",
+      "Product": "Golden_Epic_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "Golden_Rare_ShardStone", "Amount": 1 },
+        { "Item": "ShardRare", "Amount": 5 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Golden_Epic_to_Legendary",
+      "Product": "Golden_Legendary_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "Golden_Epic_ShardStone", "Amount": 1 },
+        { "Item": "ShardEpic", "Amount": 6 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Golden_Legendary_to_Mythic",
+      "Product": "Golden_Mythic_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "Golden_Legendary_ShardStone", "Amount": 1 },
+        { "Item": "ShardLegendary", "Amount": 7 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_LightBlue_Magic_to_Rare",
+      "Product": "LightBlue_Rare_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "LightBlue_Magic_ShardStone", "Amount": 1 },
+        { "Item": "ShardMagic", "Amount": 4 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_LightBlue_Rare_to_Epic",
+      "Product": "LightBlue_Epic_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "LightBlue_Rare_ShardStone", "Amount": 1 },
+        { "Item": "ShardRare", "Amount": 5 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_LightBlue_Epic_to_Legendary",
+      "Product": "LightBlue_Legendary_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "LightBlue_Epic_ShardStone", "Amount": 1 },
+        { "Item": "ShardEpic", "Amount": 6 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_LightBlue_Legendary_to_Mythic",
+      "Product": "LightBlue_Mythic_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "LightBlue_Legendary_ShardStone", "Amount": 1 },
+        { "Item": "ShardLegendary", "Amount": 7 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_LightGreen_Magic_to_Rare",
+      "Product": "LightGreen_Rare_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "LightGreen_Magic_ShardStone", "Amount": 1 },
+        { "Item": "ShardMagic", "Amount": 4 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_LightGreen_Rare_to_Epic",
+      "Product": "LightGreen_Epic_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "LightGreen_Rare_ShardStone", "Amount": 1 },
+        { "Item": "ShardRare", "Amount": 5 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_LightGreen_Epic_to_Legendary",
+      "Product": "LightGreen_Legendary_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "LightGreen_Epic_ShardStone", "Amount": 1 },
+        { "Item": "ShardEpic", "Amount": 6 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_LightGreen_Legendary_to_Mythic",
+      "Product": "LightGreen_Mythic_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "LightGreen_Legendary_ShardStone", "Amount": 1 },
+        { "Item": "ShardLegendary", "Amount": 7 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Peach_Magic_to_Rare",
+      "Product": "Peach_Rare_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "Peach_Magic_ShardStone", "Amount": 1 },
+        { "Item": "ShardMagic", "Amount": 4 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Peach_Rare_to_Epic",
+      "Product": "Peach_Epic_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "Peach_Rare_ShardStone", "Amount": 1 },
+        { "Item": "ShardRare", "Amount": 5 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Peach_Epic_to_Legendary",
+      "Product": "Peach_Legendary_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "Peach_Epic_ShardStone", "Amount": 1 },
+        { "Item": "ShardEpic", "Amount": 6 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Peach_Legendary_to_Mythic",
+      "Product": "Peach_Mythic_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "Peach_Legendary_ShardStone", "Amount": 1 },
+        { "Item": "ShardLegendary", "Amount": 7 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Firewalker_Epic_to_Legendary",
+      "Product": "Firewalker_Legendary_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "Firewalker_Epic_ShardStone", "Amount": 1 },
+        { "Item": "ShardEpic", "Amount": 6 },
+        { "Item": "RunestoneEpic", "Amount": 2 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Firewalker_Legendary_to_Mythic",
+      "Product": "Firewalker_Mythic_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "Firewalker_Legendary_ShardStone", "Amount": 1 },
+        { "Item": "ShardLegendary", "Amount": 7 },
+        { "Item": "RunestoneLegendary", "Amount": 2 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Stormcaller_Epic_to_Legendary",
+      "Product": "Stormcaller_Legendary_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "Stormcaller_Epic_ShardStone", "Amount": 1 },
+        { "Item": "ShardEpic", "Amount": 6 },
+        { "Item": "RunestoneEpic", "Amount": 2 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Stormcaller_Legendary_to_Mythic",
+      "Product": "Stormcaller_Mythic_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "Stormcaller_Legendary_ShardStone", "Amount": 1 },
+        { "Item": "ShardLegendary", "Amount": 7 },
+        { "Item": "RunestoneLegendary", "Amount": 2 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Eikthyr_Rare_to_Epic",
+      "Product": "Eikthyr_Epic_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "Eikthyr_Rare_ShardStone", "Amount": 1 },
+        { "Item": "ShardRare", "Amount": 5 },
+        { "Item": "TrophyEikthyr", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Eikthyr_Epic_to_Legendary",
+      "Product": "Eikthyr_Legendary_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "Eikthyr_Epic_ShardStone", "Amount": 1 },
+        { "Item": "ShardEpic", "Amount": 6 },
+        { "Item": "TrophyEikthyr", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Eikthyr_Legendary_to_Mythic",
+      "Product": "Eikthyr_Mythic_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "Eikthyr_Legendary_ShardStone", "Amount": 1 },
+        { "Item": "ShardLegendary", "Amount": 7 },
+        { "Item": "TrophyEikthyr", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Elder_Rare_to_Epic",
+      "Product": "Elder_Epic_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "Elder_Rare_ShardStone", "Amount": 1 },
+        { "Item": "ShardRare", "Amount": 5 },
+        { "Item": "TrophyTheElder", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Elder_Epic_to_Legendary",
+      "Product": "Elder_Legendary_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "Elder_Epic_ShardStone", "Amount": 1 },
+        { "Item": "ShardEpic", "Amount": 6 },
+        { "Item": "TrophyTheElder", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Elder_Legendary_to_Mythic",
+      "Product": "Elder_Mythic_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "Elder_Legendary_ShardStone", "Amount": 1 },
+        { "Item": "ShardLegendary", "Amount": 7 },
+        { "Item": "TrophyTheElder", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Bonemass_Epic_to_Legendary",
+      "Product": "Bonemass_Legendary_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "Bonemass_Epic_ShardStone", "Amount": 1 },
+        { "Item": "ShardEpic", "Amount": 6 },
+        { "Item": "TrophyBonemass", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Bonemass_Legendary_to_Mythic",
+      "Product": "Bonemass_Mythic_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "Bonemass_Legendary_ShardStone", "Amount": 1 },
+        { "Item": "ShardLegendary", "Amount": 7 },
+        { "Item": "TrophyBonemass", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Moder_Epic_to_Legendary",
+      "Product": "Moder_Legendary_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "Moder_Epic_ShardStone", "Amount": 1 },
+        { "Item": "ShardEpic", "Amount": 6 },
+        { "Item": "TrophyDragonQueen", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Moder_Legendary_to_Mythic",
+      "Product": "Moder_Mythic_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "Moder_Legendary_ShardStone", "Amount": 1 },
+        { "Item": "ShardLegendary", "Amount": 7 },
+        { "Item": "TrophyDragonQueen", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Yagluth_Legendary_to_Mythic",
+      "Product": "Yagluth_Mythic_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "Yagluth_Legendary_ShardStone", "Amount": 1 },
+        { "Item": "ShardLegendary", "Amount": 7 },
+        { "Item": "TrophyGoblinKing", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Queen_Legendary_to_Mythic",
+      "Product": "Queen_Mythic_ShardStone",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "Queen_Legendary_ShardStone", "Amount": 1 },
+        { "Item": "ShardLegendary", "Amount": 7 },
+        { "Item": "TrophySeekerQueen", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Red_Magic_to_Dust",
+      "Product": "DustMagic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Red_Magic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Red_Magic_to_Reagent",
+      "Product": "ReagentMagic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Red_Magic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Red_Magic_to_Essence",
+      "Product": "EssenceMagic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Red_Magic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Red_Rare_to_Dust",
+      "Product": "DustRare",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Red_Rare_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Red_Rare_to_Reagent",
+      "Product": "ReagentRare",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Red_Rare_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Red_Rare_to_Essence",
+      "Product": "EssenceRare",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Red_Rare_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Red_Epic_to_Dust",
+      "Product": "DustEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Red_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Red_Epic_to_Reagent",
+      "Product": "ReagentEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Red_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Red_Epic_to_Essence",
+      "Product": "EssenceEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Red_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Red_Legendary_to_Dust",
+      "Product": "DustLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Red_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Red_Legendary_to_Reagent",
+      "Product": "ReagentLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Red_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Red_Legendary_to_Essence",
+      "Product": "EssenceLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Red_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Red_Mythic_to_Dust",
+      "Product": "DustMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Red_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Red_Mythic_to_Reagent",
+      "Product": "ReagentMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Red_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Red_Mythic_to_Essence",
+      "Product": "EssenceMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Red_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Yellow_Magic_to_Dust",
+      "Product": "DustMagic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Yellow_Magic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Yellow_Magic_to_Reagent",
+      "Product": "ReagentMagic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Yellow_Magic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Yellow_Magic_to_Essence",
+      "Product": "EssenceMagic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Yellow_Magic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Yellow_Rare_to_Dust",
+      "Product": "DustRare",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Yellow_Rare_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Yellow_Rare_to_Reagent",
+      "Product": "ReagentRare",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Yellow_Rare_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Yellow_Rare_to_Essence",
+      "Product": "EssenceRare",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Yellow_Rare_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Yellow_Epic_to_Dust",
+      "Product": "DustEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Yellow_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Yellow_Epic_to_Reagent",
+      "Product": "ReagentEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Yellow_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Yellow_Epic_to_Essence",
+      "Product": "EssenceEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Yellow_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Yellow_Legendary_to_Dust",
+      "Product": "DustLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Yellow_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Yellow_Legendary_to_Reagent",
+      "Product": "ReagentLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Yellow_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Yellow_Legendary_to_Essence",
+      "Product": "EssenceLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Yellow_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Yellow_Mythic_to_Dust",
+      "Product": "DustMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Yellow_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Yellow_Mythic_to_Reagent",
+      "Product": "ReagentMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Yellow_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Yellow_Mythic_to_Essence",
+      "Product": "EssenceMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Yellow_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Cyan_Magic_to_Dust",
+      "Product": "DustMagic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Cyan_Magic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Cyan_Magic_to_Reagent",
+      "Product": "ReagentMagic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Cyan_Magic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Cyan_Magic_to_Essence",
+      "Product": "EssenceMagic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Cyan_Magic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Cyan_Rare_to_Dust",
+      "Product": "DustRare",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Cyan_Rare_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Cyan_Rare_to_Reagent",
+      "Product": "ReagentRare",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Cyan_Rare_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Cyan_Rare_to_Essence",
+      "Product": "EssenceRare",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Cyan_Rare_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Cyan_Epic_to_Dust",
+      "Product": "DustEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Cyan_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Cyan_Epic_to_Reagent",
+      "Product": "ReagentEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Cyan_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Cyan_Epic_to_Essence",
+      "Product": "EssenceEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Cyan_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Cyan_Legendary_to_Dust",
+      "Product": "DustLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Cyan_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Cyan_Legendary_to_Reagent",
+      "Product": "ReagentLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Cyan_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Cyan_Legendary_to_Essence",
+      "Product": "EssenceLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Cyan_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Cyan_Mythic_to_Dust",
+      "Product": "DustMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Cyan_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Cyan_Mythic_to_Reagent",
+      "Product": "ReagentMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Cyan_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Cyan_Mythic_to_Essence",
+      "Product": "EssenceMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Cyan_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Orange_Magic_to_Dust",
+      "Product": "DustMagic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Orange_Magic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Orange_Magic_to_Reagent",
+      "Product": "ReagentMagic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Orange_Magic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Orange_Magic_to_Essence",
+      "Product": "EssenceMagic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Orange_Magic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Orange_Rare_to_Dust",
+      "Product": "DustRare",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Orange_Rare_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Orange_Rare_to_Reagent",
+      "Product": "ReagentRare",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Orange_Rare_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Orange_Rare_to_Essence",
+      "Product": "EssenceRare",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Orange_Rare_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Orange_Epic_to_Dust",
+      "Product": "DustEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Orange_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Orange_Epic_to_Reagent",
+      "Product": "ReagentEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Orange_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Orange_Epic_to_Essence",
+      "Product": "EssenceEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Orange_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Orange_Legendary_to_Dust",
+      "Product": "DustLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Orange_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Orange_Legendary_to_Reagent",
+      "Product": "ReagentLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Orange_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Orange_Legendary_to_Essence",
+      "Product": "EssenceLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Orange_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Orange_Mythic_to_Dust",
+      "Product": "DustMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Orange_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Orange_Mythic_to_Reagent",
+      "Product": "ReagentMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Orange_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Orange_Mythic_to_Essence",
+      "Product": "EssenceMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Orange_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Pink_Magic_to_Dust",
+      "Product": "DustMagic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Pink_Magic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Pink_Magic_to_Reagent",
+      "Product": "ReagentMagic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Pink_Magic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Pink_Magic_to_Essence",
+      "Product": "EssenceMagic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Pink_Magic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Pink_Rare_to_Dust",
+      "Product": "DustRare",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Pink_Rare_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Pink_Rare_to_Reagent",
+      "Product": "ReagentRare",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Pink_Rare_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Pink_Rare_to_Essence",
+      "Product": "EssenceRare",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Pink_Rare_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Pink_Epic_to_Dust",
+      "Product": "DustEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Pink_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Pink_Epic_to_Reagent",
+      "Product": "ReagentEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Pink_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Pink_Epic_to_Essence",
+      "Product": "EssenceEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Pink_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Pink_Legendary_to_Dust",
+      "Product": "DustLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Pink_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Pink_Legendary_to_Reagent",
+      "Product": "ReagentLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Pink_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Pink_Legendary_to_Essence",
+      "Product": "EssenceLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Pink_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Pink_Mythic_to_Dust",
+      "Product": "DustMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Pink_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Pink_Mythic_to_Reagent",
+      "Product": "ReagentMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Pink_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Pink_Mythic_to_Essence",
+      "Product": "EssenceMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Pink_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Black_Magic_to_Dust",
+      "Product": "DustMagic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Black_Magic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Black_Magic_to_Reagent",
+      "Product": "ReagentMagic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Black_Magic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Black_Magic_to_Essence",
+      "Product": "EssenceMagic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Black_Magic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Black_Rare_to_Dust",
+      "Product": "DustRare",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Black_Rare_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Black_Rare_to_Reagent",
+      "Product": "ReagentRare",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Black_Rare_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Black_Rare_to_Essence",
+      "Product": "EssenceRare",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Black_Rare_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Black_Epic_to_Dust",
+      "Product": "DustEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Black_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Black_Epic_to_Reagent",
+      "Product": "ReagentEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Black_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Black_Epic_to_Essence",
+      "Product": "EssenceEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Black_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Black_Legendary_to_Dust",
+      "Product": "DustLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Black_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Black_Legendary_to_Reagent",
+      "Product": "ReagentLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Black_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Black_Legendary_to_Essence",
+      "Product": "EssenceLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Black_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Black_Mythic_to_Dust",
+      "Product": "DustMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Black_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Black_Mythic_to_Reagent",
+      "Product": "ReagentMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Black_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Black_Mythic_to_Essence",
+      "Product": "EssenceMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Black_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_White_Magic_to_Dust",
+      "Product": "DustMagic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "White_Magic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_White_Magic_to_Reagent",
+      "Product": "ReagentMagic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "White_Magic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_White_Magic_to_Essence",
+      "Product": "EssenceMagic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "White_Magic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_White_Rare_to_Dust",
+      "Product": "DustRare",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "White_Rare_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_White_Rare_to_Reagent",
+      "Product": "ReagentRare",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "White_Rare_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_White_Rare_to_Essence",
+      "Product": "EssenceRare",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "White_Rare_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_White_Epic_to_Dust",
+      "Product": "DustEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "White_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_White_Epic_to_Reagent",
+      "Product": "ReagentEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "White_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_White_Epic_to_Essence",
+      "Product": "EssenceEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "White_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_White_Legendary_to_Dust",
+      "Product": "DustLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "White_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_White_Legendary_to_Reagent",
+      "Product": "ReagentLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "White_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_White_Legendary_to_Essence",
+      "Product": "EssenceLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "White_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_White_Mythic_to_Dust",
+      "Product": "DustMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "White_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_White_Mythic_to_Reagent",
+      "Product": "ReagentMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "White_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_White_Mythic_to_Essence",
+      "Product": "EssenceMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "White_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Green_Magic_to_Dust",
+      "Product": "DustMagic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Green_Magic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Green_Magic_to_Reagent",
+      "Product": "ReagentMagic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Green_Magic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Green_Magic_to_Essence",
+      "Product": "EssenceMagic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Green_Magic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Green_Rare_to_Dust",
+      "Product": "DustRare",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Green_Rare_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Green_Rare_to_Reagent",
+      "Product": "ReagentRare",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Green_Rare_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Green_Rare_to_Essence",
+      "Product": "EssenceRare",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Green_Rare_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Green_Epic_to_Dust",
+      "Product": "DustEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Green_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Green_Epic_to_Reagent",
+      "Product": "ReagentEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Green_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Green_Epic_to_Essence",
+      "Product": "EssenceEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Green_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Green_Legendary_to_Dust",
+      "Product": "DustLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Green_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Green_Legendary_to_Reagent",
+      "Product": "ReagentLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Green_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Green_Legendary_to_Essence",
+      "Product": "EssenceLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Green_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Green_Mythic_to_Dust",
+      "Product": "DustMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Green_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Green_Mythic_to_Reagent",
+      "Product": "ReagentMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Green_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Green_Mythic_to_Essence",
+      "Product": "EssenceMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Green_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Purple_Magic_to_Dust",
+      "Product": "DustMagic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Purple_Magic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Purple_Magic_to_Reagent",
+      "Product": "ReagentMagic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Purple_Magic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Purple_Magic_to_Essence",
+      "Product": "EssenceMagic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Purple_Magic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Purple_Rare_to_Dust",
+      "Product": "DustRare",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Purple_Rare_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Purple_Rare_to_Reagent",
+      "Product": "ReagentRare",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Purple_Rare_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Purple_Rare_to_Essence",
+      "Product": "EssenceRare",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Purple_Rare_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Purple_Epic_to_Dust",
+      "Product": "DustEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Purple_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Purple_Epic_to_Reagent",
+      "Product": "ReagentEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Purple_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Purple_Epic_to_Essence",
+      "Product": "EssenceEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Purple_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Purple_Legendary_to_Dust",
+      "Product": "DustLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Purple_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Purple_Legendary_to_Reagent",
+      "Product": "ReagentLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Purple_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Purple_Legendary_to_Essence",
+      "Product": "EssenceLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Purple_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Purple_Mythic_to_Dust",
+      "Product": "DustMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Purple_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Purple_Mythic_to_Reagent",
+      "Product": "ReagentMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Purple_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Purple_Mythic_to_Essence",
+      "Product": "EssenceMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Purple_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Grey_Magic_to_Dust",
+      "Product": "DustMagic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Grey_Magic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Grey_Magic_to_Reagent",
+      "Product": "ReagentMagic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Grey_Magic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Grey_Magic_to_Essence",
+      "Product": "EssenceMagic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Grey_Magic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Grey_Rare_to_Dust",
+      "Product": "DustRare",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Grey_Rare_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Grey_Rare_to_Reagent",
+      "Product": "ReagentRare",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Grey_Rare_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Grey_Rare_to_Essence",
+      "Product": "EssenceRare",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Grey_Rare_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Grey_Epic_to_Dust",
+      "Product": "DustEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Grey_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Grey_Epic_to_Reagent",
+      "Product": "ReagentEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Grey_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Grey_Epic_to_Essence",
+      "Product": "EssenceEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Grey_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Grey_Legendary_to_Dust",
+      "Product": "DustLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Grey_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Grey_Legendary_to_Reagent",
+      "Product": "ReagentLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Grey_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Grey_Legendary_to_Essence",
+      "Product": "EssenceLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Grey_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Grey_Mythic_to_Dust",
+      "Product": "DustMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Grey_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Grey_Mythic_to_Reagent",
+      "Product": "ReagentMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Grey_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Grey_Mythic_to_Essence",
+      "Product": "EssenceMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Grey_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_DarkRed_Magic_to_Dust",
+      "Product": "DustMagic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "DarkRed_Magic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_DarkRed_Magic_to_Reagent",
+      "Product": "ReagentMagic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "DarkRed_Magic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_DarkRed_Magic_to_Essence",
+      "Product": "EssenceMagic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "DarkRed_Magic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_DarkRed_Rare_to_Dust",
+      "Product": "DustRare",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "DarkRed_Rare_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_DarkRed_Rare_to_Reagent",
+      "Product": "ReagentRare",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "DarkRed_Rare_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_DarkRed_Rare_to_Essence",
+      "Product": "EssenceRare",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "DarkRed_Rare_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_DarkRed_Epic_to_Dust",
+      "Product": "DustEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "DarkRed_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_DarkRed_Epic_to_Reagent",
+      "Product": "ReagentEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "DarkRed_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_DarkRed_Epic_to_Essence",
+      "Product": "EssenceEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "DarkRed_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_DarkRed_Legendary_to_Dust",
+      "Product": "DustLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "DarkRed_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_DarkRed_Legendary_to_Reagent",
+      "Product": "ReagentLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "DarkRed_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_DarkRed_Legendary_to_Essence",
+      "Product": "EssenceLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "DarkRed_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_DarkRed_Mythic_to_Dust",
+      "Product": "DustMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "DarkRed_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_DarkRed_Mythic_to_Reagent",
+      "Product": "ReagentMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "DarkRed_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_DarkRed_Mythic_to_Essence",
+      "Product": "EssenceMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "DarkRed_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_DarkGreen_Magic_to_Dust",
+      "Product": "DustMagic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "DarkGreen_Magic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_DarkGreen_Magic_to_Reagent",
+      "Product": "ReagentMagic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "DarkGreen_Magic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_DarkGreen_Magic_to_Essence",
+      "Product": "EssenceMagic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "DarkGreen_Magic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_DarkGreen_Rare_to_Dust",
+      "Product": "DustRare",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "DarkGreen_Rare_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_DarkGreen_Rare_to_Reagent",
+      "Product": "ReagentRare",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "DarkGreen_Rare_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_DarkGreen_Rare_to_Essence",
+      "Product": "EssenceRare",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "DarkGreen_Rare_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_DarkGreen_Epic_to_Dust",
+      "Product": "DustEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "DarkGreen_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_DarkGreen_Epic_to_Reagent",
+      "Product": "ReagentEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "DarkGreen_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_DarkGreen_Epic_to_Essence",
+      "Product": "EssenceEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "DarkGreen_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_DarkGreen_Legendary_to_Dust",
+      "Product": "DustLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "DarkGreen_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_DarkGreen_Legendary_to_Reagent",
+      "Product": "ReagentLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "DarkGreen_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_DarkGreen_Legendary_to_Essence",
+      "Product": "EssenceLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "DarkGreen_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_DarkGreen_Mythic_to_Dust",
+      "Product": "DustMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "DarkGreen_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_DarkGreen_Mythic_to_Reagent",
+      "Product": "ReagentMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "DarkGreen_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_DarkGreen_Mythic_to_Essence",
+      "Product": "EssenceMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "DarkGreen_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_DarkBlue_Magic_to_Dust",
+      "Product": "DustMagic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "DarkBlue_Magic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_DarkBlue_Magic_to_Reagent",
+      "Product": "ReagentMagic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "DarkBlue_Magic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_DarkBlue_Magic_to_Essence",
+      "Product": "EssenceMagic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "DarkBlue_Magic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_DarkBlue_Rare_to_Dust",
+      "Product": "DustRare",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "DarkBlue_Rare_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_DarkBlue_Rare_to_Reagent",
+      "Product": "ReagentRare",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "DarkBlue_Rare_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_DarkBlue_Rare_to_Essence",
+      "Product": "EssenceRare",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "DarkBlue_Rare_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_DarkBlue_Epic_to_Dust",
+      "Product": "DustEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "DarkBlue_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_DarkBlue_Epic_to_Reagent",
+      "Product": "ReagentEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "DarkBlue_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_DarkBlue_Epic_to_Essence",
+      "Product": "EssenceEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "DarkBlue_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_DarkBlue_Legendary_to_Dust",
+      "Product": "DustLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "DarkBlue_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_DarkBlue_Legendary_to_Reagent",
+      "Product": "ReagentLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "DarkBlue_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_DarkBlue_Legendary_to_Essence",
+      "Product": "EssenceLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "DarkBlue_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_DarkBlue_Mythic_to_Dust",
+      "Product": "DustMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "DarkBlue_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_DarkBlue_Mythic_to_Reagent",
+      "Product": "ReagentMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "DarkBlue_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_DarkBlue_Mythic_to_Essence",
+      "Product": "EssenceMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "DarkBlue_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_DarkPurple_Magic_to_Dust",
+      "Product": "DustMagic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "DarkPurple_Magic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_DarkPurple_Magic_to_Reagent",
+      "Product": "ReagentMagic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "DarkPurple_Magic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_DarkPurple_Magic_to_Essence",
+      "Product": "EssenceMagic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "DarkPurple_Magic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_DarkPurple_Rare_to_Dust",
+      "Product": "DustRare",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "DarkPurple_Rare_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_DarkPurple_Rare_to_Reagent",
+      "Product": "ReagentRare",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "DarkPurple_Rare_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_DarkPurple_Rare_to_Essence",
+      "Product": "EssenceRare",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "DarkPurple_Rare_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_DarkPurple_Epic_to_Dust",
+      "Product": "DustEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "DarkPurple_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_DarkPurple_Epic_to_Reagent",
+      "Product": "ReagentEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "DarkPurple_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_DarkPurple_Epic_to_Essence",
+      "Product": "EssenceEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "DarkPurple_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_DarkPurple_Legendary_to_Dust",
+      "Product": "DustLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "DarkPurple_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_DarkPurple_Legendary_to_Reagent",
+      "Product": "ReagentLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "DarkPurple_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_DarkPurple_Legendary_to_Essence",
+      "Product": "EssenceLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "DarkPurple_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_DarkPurple_Mythic_to_Dust",
+      "Product": "DustMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "DarkPurple_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_DarkPurple_Mythic_to_Reagent",
+      "Product": "ReagentMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "DarkPurple_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_DarkPurple_Mythic_to_Essence",
+      "Product": "EssenceMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "DarkPurple_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Golden_Magic_to_Dust",
+      "Product": "DustMagic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Golden_Magic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Golden_Magic_to_Reagent",
+      "Product": "ReagentMagic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Golden_Magic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Golden_Magic_to_Essence",
+      "Product": "EssenceMagic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Golden_Magic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Golden_Rare_to_Dust",
+      "Product": "DustRare",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Golden_Rare_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Golden_Rare_to_Reagent",
+      "Product": "ReagentRare",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Golden_Rare_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Golden_Rare_to_Essence",
+      "Product": "EssenceRare",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Golden_Rare_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Golden_Epic_to_Dust",
+      "Product": "DustEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Golden_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Golden_Epic_to_Reagent",
+      "Product": "ReagentEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Golden_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Golden_Epic_to_Essence",
+      "Product": "EssenceEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Golden_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Golden_Legendary_to_Dust",
+      "Product": "DustLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Golden_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Golden_Legendary_to_Reagent",
+      "Product": "ReagentLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Golden_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Golden_Legendary_to_Essence",
+      "Product": "EssenceLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Golden_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Golden_Mythic_to_Dust",
+      "Product": "DustMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Golden_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Golden_Mythic_to_Reagent",
+      "Product": "ReagentMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Golden_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Golden_Mythic_to_Essence",
+      "Product": "EssenceMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Golden_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_LightBlue_Magic_to_Dust",
+      "Product": "DustMagic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "LightBlue_Magic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_LightBlue_Magic_to_Reagent",
+      "Product": "ReagentMagic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "LightBlue_Magic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_LightBlue_Magic_to_Essence",
+      "Product": "EssenceMagic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "LightBlue_Magic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_LightBlue_Rare_to_Dust",
+      "Product": "DustRare",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "LightBlue_Rare_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_LightBlue_Rare_to_Reagent",
+      "Product": "ReagentRare",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "LightBlue_Rare_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_LightBlue_Rare_to_Essence",
+      "Product": "EssenceRare",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "LightBlue_Rare_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_LightBlue_Epic_to_Dust",
+      "Product": "DustEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "LightBlue_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_LightBlue_Epic_to_Reagent",
+      "Product": "ReagentEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "LightBlue_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_LightBlue_Epic_to_Essence",
+      "Product": "EssenceEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "LightBlue_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_LightBlue_Legendary_to_Dust",
+      "Product": "DustLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "LightBlue_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_LightBlue_Legendary_to_Reagent",
+      "Product": "ReagentLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "LightBlue_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_LightBlue_Legendary_to_Essence",
+      "Product": "EssenceLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "LightBlue_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_LightBlue_Mythic_to_Dust",
+      "Product": "DustMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "LightBlue_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_LightBlue_Mythic_to_Reagent",
+      "Product": "ReagentMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "LightBlue_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_LightBlue_Mythic_to_Essence",
+      "Product": "EssenceMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "LightBlue_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_LightGreen_Magic_to_Dust",
+      "Product": "DustMagic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "LightGreen_Magic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_LightGreen_Magic_to_Reagent",
+      "Product": "ReagentMagic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "LightGreen_Magic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_LightGreen_Magic_to_Essence",
+      "Product": "EssenceMagic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "LightGreen_Magic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_LightGreen_Rare_to_Dust",
+      "Product": "DustRare",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "LightGreen_Rare_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_LightGreen_Rare_to_Reagent",
+      "Product": "ReagentRare",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "LightGreen_Rare_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_LightGreen_Rare_to_Essence",
+      "Product": "EssenceRare",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "LightGreen_Rare_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_LightGreen_Epic_to_Dust",
+      "Product": "DustEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "LightGreen_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_LightGreen_Epic_to_Reagent",
+      "Product": "ReagentEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "LightGreen_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_LightGreen_Epic_to_Essence",
+      "Product": "EssenceEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "LightGreen_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_LightGreen_Legendary_to_Dust",
+      "Product": "DustLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "LightGreen_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_LightGreen_Legendary_to_Reagent",
+      "Product": "ReagentLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "LightGreen_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_LightGreen_Legendary_to_Essence",
+      "Product": "EssenceLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "LightGreen_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_LightGreen_Mythic_to_Dust",
+      "Product": "DustMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "LightGreen_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_LightGreen_Mythic_to_Reagent",
+      "Product": "ReagentMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "LightGreen_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_LightGreen_Mythic_to_Essence",
+      "Product": "EssenceMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "LightGreen_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Peach_Magic_to_Dust",
+      "Product": "DustMagic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Peach_Magic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Peach_Magic_to_Reagent",
+      "Product": "ReagentMagic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Peach_Magic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Peach_Magic_to_Essence",
+      "Product": "EssenceMagic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Peach_Magic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Peach_Rare_to_Dust",
+      "Product": "DustRare",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Peach_Rare_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Peach_Rare_to_Reagent",
+      "Product": "ReagentRare",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Peach_Rare_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Peach_Rare_to_Essence",
+      "Product": "EssenceRare",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Peach_Rare_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Peach_Epic_to_Dust",
+      "Product": "DustEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Peach_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Peach_Epic_to_Reagent",
+      "Product": "ReagentEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Peach_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Peach_Epic_to_Essence",
+      "Product": "EssenceEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Peach_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Peach_Legendary_to_Dust",
+      "Product": "DustLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Peach_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Peach_Legendary_to_Reagent",
+      "Product": "ReagentLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Peach_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Peach_Legendary_to_Essence",
+      "Product": "EssenceLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Peach_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Peach_Mythic_to_Dust",
+      "Product": "DustMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Peach_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Peach_Mythic_to_Reagent",
+      "Product": "ReagentMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Peach_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Peach_Mythic_to_Essence",
+      "Product": "EssenceMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Peach_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Firewalker_Epic_to_Dust",
+      "Product": "DustEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Firewalker_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Firewalker_Epic_to_Reagent",
+      "Product": "ReagentEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Firewalker_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Firewalker_Epic_to_Essence",
+      "Product": "EssenceEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Firewalker_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Firewalker_Legendary_to_Dust",
+      "Product": "DustLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Firewalker_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Firewalker_Legendary_to_Reagent",
+      "Product": "ReagentLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Firewalker_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Firewalker_Legendary_to_Essence",
+      "Product": "EssenceLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Firewalker_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Firewalker_Mythic_to_Dust",
+      "Product": "DustMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Firewalker_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Firewalker_Mythic_to_Reagent",
+      "Product": "ReagentMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Firewalker_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Firewalker_Mythic_to_Essence",
+      "Product": "EssenceMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Firewalker_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Stormcaller_Epic_to_Dust",
+      "Product": "DustEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Stormcaller_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Stormcaller_Epic_to_Reagent",
+      "Product": "ReagentEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Stormcaller_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Stormcaller_Epic_to_Essence",
+      "Product": "EssenceEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Stormcaller_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Stormcaller_Legendary_to_Dust",
+      "Product": "DustLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Stormcaller_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Stormcaller_Legendary_to_Reagent",
+      "Product": "ReagentLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Stormcaller_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Stormcaller_Legendary_to_Essence",
+      "Product": "EssenceLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Stormcaller_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Stormcaller_Mythic_to_Dust",
+      "Product": "DustMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Stormcaller_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Stormcaller_Mythic_to_Reagent",
+      "Product": "ReagentMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Stormcaller_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Stormcaller_Mythic_to_Essence",
+      "Product": "EssenceMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Stormcaller_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Eikthyr_Rare_to_Dust",
+      "Product": "DustRare",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Eikthyr_Rare_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Eikthyr_Rare_to_Reagent",
+      "Product": "ReagentRare",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Eikthyr_Rare_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Eikthyr_Rare_to_Essence",
+      "Product": "EssenceRare",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Eikthyr_Rare_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Eikthyr_Epic_to_Dust",
+      "Product": "DustEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Eikthyr_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Eikthyr_Epic_to_Reagent",
+      "Product": "ReagentEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Eikthyr_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Eikthyr_Epic_to_Essence",
+      "Product": "EssenceEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Eikthyr_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Eikthyr_Legendary_to_Dust",
+      "Product": "DustLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Eikthyr_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Eikthyr_Legendary_to_Reagent",
+      "Product": "ReagentLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Eikthyr_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Eikthyr_Legendary_to_Essence",
+      "Product": "EssenceLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Eikthyr_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Eikthyr_Mythic_to_Dust",
+      "Product": "DustMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Eikthyr_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Eikthyr_Mythic_to_Reagent",
+      "Product": "ReagentMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Eikthyr_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Eikthyr_Mythic_to_Essence",
+      "Product": "EssenceMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Eikthyr_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Elder_Rare_to_Dust",
+      "Product": "DustRare",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Elder_Rare_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Elder_Rare_to_Reagent",
+      "Product": "ReagentRare",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Elder_Rare_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Elder_Rare_to_Essence",
+      "Product": "EssenceRare",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Elder_Rare_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Elder_Epic_to_Dust",
+      "Product": "DustEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Elder_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Elder_Epic_to_Reagent",
+      "Product": "ReagentEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Elder_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Elder_Epic_to_Essence",
+      "Product": "EssenceEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Elder_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Elder_Legendary_to_Dust",
+      "Product": "DustLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Elder_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Elder_Legendary_to_Reagent",
+      "Product": "ReagentLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Elder_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Elder_Legendary_to_Essence",
+      "Product": "EssenceLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Elder_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Elder_Mythic_to_Dust",
+      "Product": "DustMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Elder_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Elder_Mythic_to_Reagent",
+      "Product": "ReagentMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Elder_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Elder_Mythic_to_Essence",
+      "Product": "EssenceMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Elder_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Bonemass_Epic_to_Dust",
+      "Product": "DustEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Bonemass_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Bonemass_Epic_to_Reagent",
+      "Product": "ReagentEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Bonemass_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Bonemass_Epic_to_Essence",
+      "Product": "EssenceEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Bonemass_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Bonemass_Legendary_to_Dust",
+      "Product": "DustLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Bonemass_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Bonemass_Legendary_to_Reagent",
+      "Product": "ReagentLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Bonemass_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Bonemass_Legendary_to_Essence",
+      "Product": "EssenceLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Bonemass_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Bonemass_Mythic_to_Dust",
+      "Product": "DustMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Bonemass_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Bonemass_Mythic_to_Reagent",
+      "Product": "ReagentMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Bonemass_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Bonemass_Mythic_to_Essence",
+      "Product": "EssenceMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Bonemass_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Moder_Epic_to_Dust",
+      "Product": "DustEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Moder_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Moder_Epic_to_Reagent",
+      "Product": "ReagentEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Moder_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Moder_Epic_to_Essence",
+      "Product": "EssenceEpic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Moder_Epic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Moder_Legendary_to_Dust",
+      "Product": "DustLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Moder_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Moder_Legendary_to_Reagent",
+      "Product": "ReagentLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Moder_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Moder_Legendary_to_Essence",
+      "Product": "EssenceLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Moder_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Moder_Mythic_to_Dust",
+      "Product": "DustMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Moder_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Moder_Mythic_to_Reagent",
+      "Product": "ReagentMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Moder_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Moder_Mythic_to_Essence",
+      "Product": "EssenceMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Moder_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Yagluth_Legendary_to_Dust",
+      "Product": "DustLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Yagluth_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Yagluth_Legendary_to_Reagent",
+      "Product": "ReagentLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Yagluth_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Yagluth_Legendary_to_Essence",
+      "Product": "EssenceLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Yagluth_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Yagluth_Mythic_to_Dust",
+      "Product": "DustMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Yagluth_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Yagluth_Mythic_to_Reagent",
+      "Product": "ReagentMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Yagluth_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Yagluth_Mythic_to_Essence",
+      "Product": "EssenceMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Yagluth_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Queen_Legendary_to_Dust",
+      "Product": "DustLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Queen_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Queen_Legendary_to_Reagent",
+      "Product": "ReagentLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Queen_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Queen_Legendary_to_Essence",
+      "Product": "EssenceLegendary",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Queen_Legendary_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Queen_Mythic_to_Dust",
+      "Product": "DustMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Queen_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Queen_Mythic_to_Reagent",
+      "Product": "ReagentMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Queen_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Queen_Mythic_to_Essence",
+      "Product": "EssenceMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Queen_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Fader_Mythic_to_Dust",
+      "Product": "DustMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Fader_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Fader_Mythic_to_Reagent",
+      "Product": "ReagentMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Fader_Mythic_ShardStone", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneConvert_Fader_Mythic_to_Essence",
+      "Product": "EssenceMythic",
+      "Amount": 2,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "Fader_Mythic_ShardStone", "Amount": 1 }
+      ]
+    }
+  ]
+}

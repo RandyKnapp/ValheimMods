@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\Paths.props" />
+  <Import Project="..\BuildTasks.props" />
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <TargetFramework>net481</TargetFramework>
@@ -30,6 +31,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="config-patches\**" />
+    <EmbeddedResource Remove="config-patches\**" />
+    <None Remove="config-patches\**" />
     <None Remove="localizations\*" />
   </ItemGroup>
 
@@ -53,19 +57,6 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
-  <ItemGroup>
-    <EmbeddedResource Include="..\ValheimUnity\Assets\ExternalLibraries\EpicLoot-UnityLib.dll">
-      <Link>EpicLoot-UnityLib.dll</Link>
-    </EmbeddedResource>
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\EpicLoot-UnityLib\EpicLoot-UnityLib.csproj">
-      <Project>{8DABA031-AEA4-472F-A9AA-DE8B1AA69DE5}</Project>
-      <Name>EpicLoot-UnityLib</Name>
-    </ProjectReference>
-  </ItemGroup>
-
   <Target Name="CopyToModManagers" AfterTargets="Build">
     <Message Text="Copying to mod managers" Importance="high" />
     <Copy SourceFiles="$(TargetDir)\$(TargetFileName)" DestinationFolder="$(AppData)\com.kesomannen.gale\valheim\profiles\Modtest\BepInEx\plugins\" />
@@ -73,5 +64,19 @@
     <Copy SourceFiles="$(TargetDir)\$(TargetFileName)" DestinationFolder="$(AppData)\Thunderstore Mod Manager\DataFolder\Valheim\profiles\Modtesting\BepInEx\plugins\" />
   </Target>
 
+  <!-- Stage the merged EpicLoot.dll into the Unity project so the enchanting-UI prefabs bind to it
+       (replaces the old EpicLoot-UnityLib.dll authoring plugin). Guarded so a bare `dotnet build`
+       without SolutionDir skips it instead of failing. Run `-t:CopyAssembliesToUnity` (from
+       BuildTasks.props) to refresh the BepInEx/Jotunn/Valheim dependency DLLs alongside it when
+       they change. -->
+  <Target Name="CopyToUnityForAuthoring" AfterTargets="Build" Condition="Exists('$(SolutionUnity)')">
+    <Message Text="Staging EpicLoot.dll into Unity ExternalLibraries for prefab authoring" Importance="high" />
+    <Copy SourceFiles="$(TargetDir)$(TargetFileName)" DestinationFolder="$(SolutionUnity)Assets\ExternalLibraries" />
+  </Target>
+
   <Import Project="..\Common\Common.projitems" Label="Shared" />
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="xcopy /Y &quot;$(TargetDir)$(TargetFileName)&quot; &quot;$(AppData)\r2modmanPlus-local\Valheim\profiles\testa\BepInEx\plugins\&quot;" />
+  </Target>
 </Project>

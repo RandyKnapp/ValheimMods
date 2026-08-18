@@ -19,8 +19,24 @@ public class RecipeRequirement
     }
 }
 
+internal static class RecipeApi
+{
+    /// <summary>
+    /// Shared deprecation message. Mirrors the [Obsolete] already on Epic Loot's own AddRecipe /
+    /// AddRecipes / UpdateRecipes endpoints (EpicLoot/API/Helpers.cs).
+    /// </summary>
+    internal const string Obsolete =
+        "Epic Loot removed recipes.json in 0.13.0 and no longer ships a recipe config, so this no " +
+        "longer has anywhere to register into. Add recipes with Jotunn's ItemManager instead.";
+}
+
+/// <summary>
+/// Recipe registration. Deprecated along with the Epic Loot endpoint it calls -- Epic Loot dropped
+/// recipes.json in 0.13.0, so there is no longer a recipe config for these to be merged into.
+/// </summary>
 [Serializable]
 [PublicAPI]
+[Obsolete(RecipeApi.Obsolete)]
 public class CustomRecipe
 {
     public string name = "";
@@ -51,6 +67,7 @@ public class CustomRecipe
     /// </summary>
     /// <returns>Unique key if added</returns>
     [PublicAPI]
+    [Obsolete(RecipeApi.Obsolete)]
     public static void RegisterAll()
     {
         foreach (var recipe in new List<CustomRecipe>(Recipes))
@@ -59,6 +76,7 @@ public class CustomRecipe
         }
     }
 
+    [Obsolete(RecipeApi.Obsolete)]
     public bool Register()
     {
         string json = JsonConvert.SerializeObject(this);

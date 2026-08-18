@@ -35,11 +35,6 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <Resource Include="..\Libs\CreatureLevelControlAPI.dll">
-      <Link>CreatureLevelControlAPI.dll</Link>
-    </Resource>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="src\*.cs" />
     <Compile Include="src\*\*.cs" />
     <Compile Include="EquipmentAndQuickSlots.cs" />

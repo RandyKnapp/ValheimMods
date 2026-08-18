@@ -1448,5 +1448,18 @@
   "mod_epicloot_search_placeholder": "Hľadať...",
   "mod_epicloot_no_active_adventures": "Žiadne aktívne dobrodružstvá",
   "mod_epicloot_set_bonuses": "Bonusy setu",
-  "mod_epicloot_legendary_sets": "Legendárne sady"
+  "mod_epicloot_legendary_sets": "Legendárne sady",
+  "mod_epicloot_enchantments": "Očarovania",
+  "mod_epicloot_output": "Výsledok",
+  "mod_epicloot_history": "História",
+  "mod_epicloot_requirements": "Požiadavky",
+  "mod_epicloot_info": "Informácie",
+  "mod_epicloot_min": "Min",
+  "mod_epicloot_max": "Max",
+  "mod_epicloot_increment": "Prírastok",
+  "mod_epicloot_minmax": "Min/Max",
+  "mod_epicloot_successchance": "Šanca na úspech",
+  "mod_epicloot_criticalsuccess": "Kritický úspech",
+  "mod_epicloot_criticalfail": "Kritické zlyhanie",
+  "mod_epicloot_temper": "Kalenie"
 }

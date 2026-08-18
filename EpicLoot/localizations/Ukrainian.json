@@ -1448,5 +1448,18 @@
   "mod_epicloot_search_placeholder": "Пошук...",
   "mod_epicloot_no_active_adventures": "Немає активних пригод",
   "mod_epicloot_set_bonuses": "Бонуси комплекту",
-  "mod_epicloot_legendary_sets": "Легендарні набори"
+  "mod_epicloot_legendary_sets": "Легендарні набори",
+  "mod_epicloot_enchantments": "Зачарування",
+  "mod_epicloot_output": "Результат",
+  "mod_epicloot_history": "Історія",
+  "mod_epicloot_requirements": "Вимоги",
+  "mod_epicloot_info": "Інформація",
+  "mod_epicloot_min": "Мін",
+  "mod_epicloot_max": "Макс",
+  "mod_epicloot_increment": "Приріст",
+  "mod_epicloot_minmax": "Мін/Макс",
+  "mod_epicloot_successchance": "Шанс успіху",
+  "mod_epicloot_criticalsuccess": "Критичний успіх",
+  "mod_epicloot_criticalfail": "Критичний провал",
+  "mod_epicloot_temper": "Гартування"
 }

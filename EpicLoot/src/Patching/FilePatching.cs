@@ -60,7 +60,6 @@ namespace EpicLoot.Patching
             "loottables",
             "magiceffects",
             "iteminfo",
-            "recipes",
             "enchantcosts",
             "itemnames",
             "itemsorter",
@@ -68,7 +67,9 @@ namespace EpicLoot.Patching
             "legendaries",
             "abilities",
             "materialconversions",
-            "enchantingupgrades"
+            "enchantingupgrades",
+            "shardstones",
+            "shardstoneconversions"
         ];
         public static MultiValueDictionary<string, Patch> PatchesPerFile = new MultiValueDictionary<string, Patch>();
 
@@ -123,7 +124,9 @@ namespace EpicLoot.Patching
             FileInfo[] files = null;
             try
             {
-                files = dir.GetFiles("*.json");
+                // Sort so ingestion (and thus equal-priority tie-breaking) is deterministic across platforms;
+                // DirectoryInfo.GetFiles does not guarantee any particular order.
+                files = dir.GetFiles("*.json").OrderBy(f => f.Name, StringComparer.OrdinalIgnoreCase).ToArray();
             }
             catch (Exception e)
             {
@@ -138,7 +141,7 @@ namespace EpicLoot.Patching
                 }
             }
 
-            DirectoryInfo[] subDirs = dir.GetDirectories();
+            DirectoryInfo[] subDirs = dir.GetDirectories().OrderBy(d => d.Name, StringComparer.OrdinalIgnoreCase).ToArray();
             foreach (DirectoryInfo subDir in subDirs)
             {
                 ProcessPatchDirectory(subDir);
@@ -148,9 +151,12 @@ namespace EpicLoot.Patching
         public static List<string> ProcessPatchFile(FileInfo file)
         {
             string defaultTargetFile = "";
-            if (ConfigFileNames.Contains(file.Name))
+            // ConfigFileNames entries have no extension, but file.Name includes ".json"; compare without it
+            // so a patch file named like a config (e.g. "loottables.json") infers its TargetFile.
+            string fileNameNoExt = Path.GetFileNameWithoutExtension(file.Name);
+            if (ConfigFileNames.Contains(fileNameNoExt))
             {
-                defaultTargetFile = file.Name;
+                defaultTargetFile = fileNameNoExt;
             }
 
             PatchFile patchFile = null;
@@ -170,16 +176,19 @@ namespace EpicLoot.Patching
                 return null;
             }
 
-            if (!string.IsNullOrEmpty(patchFile.TargetFile) && !string.IsNullOrEmpty(defaultTargetFile) &&
-                patchFile.TargetFile != defaultTargetFile)
+            // Normalize away any ".json" so the file-name-derived default and an explicit TargetFile compare equal.
+            string specifiedTargetFile = (patchFile.TargetFile ?? "").Replace(".json", "");
+
+            if (!string.IsNullOrEmpty(specifiedTargetFile) && !string.IsNullOrEmpty(defaultTargetFile) &&
+                specifiedTargetFile != defaultTargetFile)
             {
                 EpicLoot.LogWarningForce($"TargetFile ({patchFile.TargetFile}) specified in patch file ({file.Name}) " +
                     $"does not match! If patch file name matches a config file name, TargetFile is unnecessary.");
             }
 
-            if (!string.IsNullOrEmpty(patchFile.TargetFile))
+            if (!string.IsNullOrEmpty(specifiedTargetFile))
             {
-                defaultTargetFile = patchFile.TargetFile.Replace(".json", "");
+                defaultTargetFile = specifiedTargetFile;
             }
 
             if (!string.IsNullOrEmpty(defaultTargetFile) && !ConfigFileNames.Contains(defaultTargetFile))
@@ -259,7 +268,13 @@ namespace EpicLoot.Patching
 
         public static string BuildPatchedConfig(string targetFile, JObject sourceJson)
         {
-            List<Patch> patches = PatchesPerFile.GetValues(targetFile, true).OrderByDescending(x => x.Priority).ToList();
+            // Higher Priority is applied first; since later patches overwrite earlier ones, the lowest-priority
+            // patch has the final say (per the documented semantics). ThenBy makes equal-priority ties
+            // deterministic by source file name instead of depending on filesystem enumeration order.
+            List<Patch> patches = PatchesPerFile.GetValues(targetFile, true)
+                .OrderByDescending(x => x.Priority)
+                .ThenBy(x => x.SourceFile, StringComparer.OrdinalIgnoreCase)
+                .ToList();
 
             foreach (Patch patch in patches)
             {
@@ -270,45 +285,68 @@ namespace EpicLoot.Patching
             return output;
         }
 
-        // This is only called on startup, and will modify all base classes that have patches loaded locally
+        // Re-applies patches for every target file that has patches loaded (used by hot reload).
         public static void ApplyAllPatches()
         {
             foreach (KeyValuePair<string, List<Patch>> entry in PatchesPerFile)
             {
                 LoadPatchedJSON(entry.Key);
             }
+
+            LogAppliedPatchSummary();
         }
 
-        internal static void LoadPatchedJSON(string filename, bool firstrun = false)
+        // Always-on (not gated by the logging config) summary so bug reports reveal when the user is
+        // actually running patched configs. Logs nothing when no patches are loaded.
+        public static void LogAppliedPatchSummary()
         {
-            // If the overhaul config is present, use that as the definition- otherwise fall back to the embedded config
-            // Also fall back if the overhaul configuration is invalid, and note with a warning that this happened.
-            string baseCfgFile = Path.Combine(ELConfig.GetOverhaulDirectoryPath(), $"{filename}.json");
-            if (ELConfig.AlwaysRefreshCoreConfigs.Value == false && firstrun == false)
+            int fileCount = PatchesPerFile.Count;
+            int total = 0;
+            foreach (KeyValuePair<string, List<Patch>> entry in PatchesPerFile)
             {
-                // Skip applying patches if this is not a first run and we are not refreshing the core configs
-                return;
+                total += entry.Value.Count;
             }
 
-            // Ensure that the core config file exists
-            if (File.Exists(baseCfgFile) == false)
+            if (total > 0)
             {
-                ELConfig.CreateBaseConfigurations(baseCfgFile, filename);
+                EpicLoot.LogForce($"Applied {total} config patch(es) across {fileCount} config file(s).");
+            }
+        }
+
+        internal static void LoadPatchedJSON(string filename)
+        {
+            string baseCfgFile = Path.Combine(ELConfig.GetOverhaulDirectoryPath(), $"{filename}.json");
+            List<Patch> patches = PatchesPerFile.GetValues(filename, true);
+
+            // No patches target this file: refresh from the embedded default only if requested or missing,
+            // otherwise leave the file alone so manual edits are respected.
+            if (patches.Count == 0)
+            {
+                if (File.Exists(baseCfgFile) == false || ELConfig.AlwaysRefreshCoreConfigs.Value)
+                {
+                    ELConfig.CreateBaseConfigurations(baseCfgFile, $"{filename}.json");
+                }
+
+                return;
             }
 
             try
             {
-                // Load the yaml file, and convert it to a json object, and then parse it into a json node tree
-                JObject baseJsonString = JObject.Parse(File.ReadAllText(baseCfgFile));
-                string patchedString = BuildPatchedConfig(filename, baseJsonString);
-                // We only need to write the file result if its valid. If this file is changed it will trigger a reload of the config.
+                // Always build from the pristine embedded default (not the previously-written file) so that
+                // Priority ordering is honored and repeated application (startup + hot reload) is idempotent
+                // (no baking of prior results, no duplicated Appends).
+                string embeddedConfig = EpicLoot.ReadEmbeddedResourceFile(
+                    ELConfig.GetDefaultEmbeddedFileLocation($"{filename}.json"));
+                JObject baseJson = JObject.Parse(embeddedConfig);
+                string patchedString = BuildPatchedConfig(filename, baseJson);
+                // Writing the file triggers the config file watcher, which reloads the config in-game.
                 File.WriteAllText(baseCfgFile, patchedString);
 
                 EpicLoot.Log($"Loaded and applied patches for {filename}.json");
             }
             catch (Exception e)
             {
-                EpicLoot.LogWarningForce($"Applying pacthes for {filename}.json failed!\n {e}");
+                EpicLoot.LogWarningForce($"Applying patches for {filename}.json failed!\n {e}");
             }
         }
 

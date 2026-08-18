@@ -82,6 +82,14 @@ namespace EpicLoot.Adventure
         [Obsolete] // TODO evaluate if should keep
         public float RadiusInterval = 500;
         public float MinimapAreaRadius = 100;
+        /// <summary>
+        /// How many times the adventure spawn search may push its sampling ring further out when
+        /// everything inside the map circle is blocked (almost always by a ward). Each band steps out
+        /// by one <see cref="MinimapAreaRadius"/>, which is the minimum that can escape a ward's
+        /// veto, since a ward rejects points within its own radius + MinimapAreaRadius. Set to 0 to
+        /// restore the old behaviour of never searching outside the circle.
+        /// </summary>
+        public int MaxSpawnSearchExpansions = 5;
         public List<SecretStashItemConfig> SaleItems = new List<SecretStashItemConfig>();
         
         [NonSerialized]

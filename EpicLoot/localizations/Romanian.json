@@ -1448,5 +1448,18 @@
   "mod_epicloot_search_placeholder": "Căutare...",
   "mod_epicloot_no_active_adventures": "Nu există aventuri active",
   "mod_epicloot_set_bonuses": "Bonusuri set",
-  "mod_epicloot_legendary_sets": "Seturi legendare"
+  "mod_epicloot_legendary_sets": "Seturi legendare",
+  "mod_epicloot_enchantments": "Descântece",
+  "mod_epicloot_output": "Rezultat",
+  "mod_epicloot_history": "Istoric",
+  "mod_epicloot_requirements": "Cerințe",
+  "mod_epicloot_info": "Informații",
+  "mod_epicloot_min": "Min",
+  "mod_epicloot_max": "Max",
+  "mod_epicloot_increment": "Creștere",
+  "mod_epicloot_minmax": "Min/Max",
+  "mod_epicloot_successchance": "Șansă de succes",
+  "mod_epicloot_criticalsuccess": "Succes critic",
+  "mod_epicloot_criticalfail": "Eșec critic",
+  "mod_epicloot_temper": "Călire"
 }

@@ -1448,5 +1448,18 @@
   "mod_epicloot_search_placeholder": "Keresés...",
   "mod_epicloot_no_active_adventures": "Nincs aktív kaland",
   "mod_epicloot_set_bonuses": "Szett bónuszok",
-  "mod_epicloot_legendary_sets": "Legendás készletek"
+  "mod_epicloot_legendary_sets": "Legendás készletek",
+  "mod_epicloot_enchantments": "Bűbájok",
+  "mod_epicloot_output": "Eredmény",
+  "mod_epicloot_history": "Előzmények",
+  "mod_epicloot_requirements": "Követelmények",
+  "mod_epicloot_info": "Információ",
+  "mod_epicloot_min": "Min",
+  "mod_epicloot_max": "Max",
+  "mod_epicloot_increment": "Növekmény",
+  "mod_epicloot_minmax": "Min/Max",
+  "mod_epicloot_successchance": "Siker esélye",
+  "mod_epicloot_criticalsuccess": "Kritikus siker",
+  "mod_epicloot_criticalfail": "Kritikus kudarc",
+  "mod_epicloot_temper": "Edzés"
 }

@@ -1448,5 +1448,18 @@
   "mod_epicloot_search_placeholder": "ძიება...",
   "mod_epicloot_no_active_adventures": "მოქმედი თავგადასავალი არ არის",
   "mod_epicloot_set_bonuses": "ჯგუფური ბონუსები",
-  "mod_epicloot_legendary_sets": "ლეგენდარული სეტები"
+  "mod_epicloot_legendary_sets": "ლეგენდარული სეტები",
+  "mod_epicloot_enchantments": "მოჯადოებები",
+  "mod_epicloot_output": "შედეგი",
+  "mod_epicloot_history": "ისტორია",
+  "mod_epicloot_requirements": "მოთხოვნები",
+  "mod_epicloot_info": "ინფორმაცია",
+  "mod_epicloot_min": "მინ",
+  "mod_epicloot_max": "მაქს",
+  "mod_epicloot_increment": "გაზრდა",
+  "mod_epicloot_minmax": "მინ/მაქს",
+  "mod_epicloot_successchance": "წარმატების შანსი",
+  "mod_epicloot_criticalsuccess": "კრიტიკული წარმატება",
+  "mod_epicloot_criticalfail": "კრიტიკული წარუმატებლობა",
+  "mod_epicloot_temper": "გამკვრივება"
 }

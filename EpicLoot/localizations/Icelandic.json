@@ -1448,5 +1448,18 @@
   "mod_epicloot_search_placeholder": "Leita...",
   "mod_epicloot_no_active_adventures": "Engar virkar ævintýri",
   "mod_epicloot_set_bonuses": "Settafbótir",
-  "mod_epicloot_legendary_sets": "Goðsagnakennd sett"
+  "mod_epicloot_legendary_sets": "Goðsagnakennd sett",
+  "mod_epicloot_enchantments": "Töfranir",
+  "mod_epicloot_output": "Niðurstaða",
+  "mod_epicloot_history": "Saga",
+  "mod_epicloot_requirements": "Kröfur",
+  "mod_epicloot_info": "Upplýsingar",
+  "mod_epicloot_min": "Lágm",
+  "mod_epicloot_max": "Hám",
+  "mod_epicloot_increment": "Aukning",
+  "mod_epicloot_minmax": "Lágm/Hám",
+  "mod_epicloot_successchance": "Líkur á árangri",
+  "mod_epicloot_criticalsuccess": "Gagnrýninn árangur",
+  "mod_epicloot_criticalfail": "Gagnrýninn mistök",
+  "mod_epicloot_temper": "Hersla"
 }

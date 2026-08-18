@@ -1448,5 +1448,18 @@
   "mod_epicloot_search_placeholder": "Sök...",
   "mod_epicloot_no_active_adventures": "Inga aktiva äventyr",
   "mod_epicloot_set_bonuses": "Setbonusar",
-  "mod_epicloot_legendary_sets": "Legendariska set"
+  "mod_epicloot_legendary_sets": "Legendariska set",
+  "mod_epicloot_enchantments": "Förbättringar",
+  "mod_epicloot_output": "Resultat",
+  "mod_epicloot_history": "Historik",
+  "mod_epicloot_requirements": "Krav",
+  "mod_epicloot_info": "Information",
+  "mod_epicloot_min": "Min",
+  "mod_epicloot_max": "Max",
+  "mod_epicloot_increment": "Ökning",
+  "mod_epicloot_minmax": "Min/Max",
+  "mod_epicloot_successchance": "Chans att lyckas",
+  "mod_epicloot_criticalsuccess": "Kritisk framgång",
+  "mod_epicloot_criticalfail": "Kritiskt misslyckande",
+  "mod_epicloot_temper": "Härdning"
 }

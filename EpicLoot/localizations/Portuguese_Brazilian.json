@@ -1448,5 +1448,18 @@
   "mod_epicloot_search_placeholder": "Pesquisar...",
   "mod_epicloot_no_active_adventures": "Nenhuma aventura ativa",
   "mod_epicloot_set_bonuses": "Bônus de conjunto",
-  "mod_epicloot_legendary_sets": "Conjuntos Lendários"
+  "mod_epicloot_legendary_sets": "Conjuntos Lendários",
+  "mod_epicloot_enchantments": "Encantamentos",
+  "mod_epicloot_output": "Resultado",
+  "mod_epicloot_history": "Histórico",
+  "mod_epicloot_requirements": "Requisitos",
+  "mod_epicloot_info": "Informações",
+  "mod_epicloot_min": "Mín",
+  "mod_epicloot_max": "Máx",
+  "mod_epicloot_increment": "Incremento",
+  "mod_epicloot_minmax": "Mín/Máx",
+  "mod_epicloot_successchance": "Chance de Sucesso",
+  "mod_epicloot_criticalsuccess": "Sucesso Crítico",
+  "mod_epicloot_criticalfail": "Falha Crítica",
+  "mod_epicloot_temper": "Têmpera"
 }

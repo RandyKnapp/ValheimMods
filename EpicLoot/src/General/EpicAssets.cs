@@ -26,6 +26,8 @@ public sealed class EpicAssets
     public static AudioClip ItemLoopSFX;
     public static AudioClip AugmentItemSFX;
     public static GameObject MerchantPanel;
+    public static GameObject TemperPanel;
+    
     public static Sprite MapIconTreasureMap;
     public static Sprite MapIconBounty;
     public static AudioClip AbandonBountySFX;
@@ -34,11 +36,15 @@ public sealed class EpicAssets
     public static GameObject DebugTextPrefab;
     public static GameObject AbilityBar;
     public static GameObject WelcomMessagePrefab;
+    public static GameObject ConfigMessagePrefab;
+    public static GameObject SocketMessagePrefab;
 
     public static SE_Stats BulwarkStatusEffect;
     public static SE_Stats BerserkerStatusEffect;
     public static SE_Stats UndyingStatusEffect;
     public static SE_Stats DodgeBuffStatusEffect;
+
+    public static GameObject IceSpikesVFX;
 
     public static GameObject BulwarkMagicShieldVFX;
     public static GameObject BulwarkMagicShieldSFX;

@@ -8,6 +8,11 @@
     <Copy SourceFiles="$(BepinexPath)core\MonoMod.Utils.dll" DestinationFolder="$(SolutionUnity)Assets\ExternalLibraries" />
     <Copy SourceFiles="$(BepinexPath)core\MonoMod.RuntimeDetour.dll" DestinationFolder="$(SolutionUnity)Assets\ExternalLibraries" />
     <Copy SourceFiles="$(TargetDir)Jotunn.dll" DestinationFolder="$(SolutionUnity)Assets\ExternalLibraries" />
+    <!-- EpicLoot.dll runtime dependency closure (needed when authoring/baking the enchanting UI prefabs
+         against the merged EpicLoot assembly in the Unity editor). Guarded so a missing package/lib on a
+         given machine doesn't fail the copy target. -->
+    <Copy SourceFiles="$(SolutionDir)Packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll" DestinationFolder="$(SolutionUnity)Assets\ExternalLibraries" Condition="Exists('$(SolutionDir)Packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll')" />
+    <Copy SourceFiles="$(SolutionDir)Libs\System.Runtime.Serialization.dll" DestinationFolder="$(SolutionUnity)Assets\ExternalLibraries" Condition="Exists('$(SolutionDir)Libs\System.Runtime.Serialization.dll')" />
     <Copy SourceFiles="$(GamePathManaged)\Assembly-CSharp.dll" DestinationFolder="$(SolutionUnity)Assets\ExternalLibraries\valheim" />
     <Copy SourceFiles="$(GamePathManaged)\assembly_valheim.dll" DestinationFolder="$(SolutionUnity)Assets\ExternalLibraries\valheim" />
     <Copy SourceFiles="$(GamePathManaged)\assembly_utils.dll" DestinationFolder="$(SolutionUnity)Assets\ExternalLibraries\valheim" />

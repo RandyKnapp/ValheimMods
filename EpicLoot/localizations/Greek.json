@@ -1448,5 +1448,18 @@
   "mod_epicloot_search_placeholder": "Αναζήτηση...",
   "mod_epicloot_no_active_adventures": "Δεν υπάρχουν ενεργές περιπέτειες",
   "mod_epicloot_set_bonuses": "Μπόνους σετ",
-  "mod_epicloot_legendary_sets": "Θρυλικά Σετ"
+  "mod_epicloot_legendary_sets": "Θρυλικά Σετ",
+  "mod_epicloot_enchantments": "Μαγείες",
+  "mod_epicloot_output": "Αποτέλεσμα",
+  "mod_epicloot_history": "Ιστορικό",
+  "mod_epicloot_requirements": "Απαιτήσεις",
+  "mod_epicloot_info": "Πληροφορίες",
+  "mod_epicloot_min": "Ελάχ",
+  "mod_epicloot_max": "Μέγ",
+  "mod_epicloot_increment": "Αύξηση",
+  "mod_epicloot_minmax": "Ελάχ/Μέγ",
+  "mod_epicloot_successchance": "Πιθανότητα επιτυχίας",
+  "mod_epicloot_criticalsuccess": "Κρίσιμη επιτυχία",
+  "mod_epicloot_criticalfail": "Κρίσιμη αποτυχία",
+  "mod_epicloot_temper": "Σκλήρυνση"
 }

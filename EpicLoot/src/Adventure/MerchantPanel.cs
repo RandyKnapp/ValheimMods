@@ -1,10 +1,12 @@
 ﻿using EpicLoot.Adventure.Feature;
+using EpicLoot.Config;
 using EpicLoot.Crafting;
 using EpicLoot_UnityLib;
 using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace EpicLoot.Adventure
@@ -37,7 +39,7 @@ namespace EpicLoot.Adventure
         }
     }
 
-    public class MerchantPanel : MonoBehaviour
+    public class MerchantPanel : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
     {
         public readonly List<IMerchantListPanel> Panels = new List<IMerchantListPanel>();
 
@@ -56,6 +58,9 @@ namespace EpicLoot.Adventure
         private static Text _acceptBountyText;
         private static MerchantPanel _instance;
         private AudioSource _audioSource;
+
+        private RectTransform _rt;
+        private Vector2 _dragOffset;
 
         public void Awake()
         {
@@ -219,6 +224,18 @@ namespace EpicLoot.Adventure
                     EpicLootAuga.FixupScrollbar(scrollbar);
                 }
             }
+
+            // Capture the prefab baseline position, make the panel draggable, and apply the
+            // configured horizontal position. Done at the end of Awake so the root Graphic
+            // (which may be swapped by the Auga background replacement above) is final.
+            _rt = (RectTransform)transform;
+            var backgroundImage = GetComponent<Image>();
+            if (backgroundImage != null)
+            {
+                backgroundImage.raycastTarget = true;
+            }
+
+            ApplyConfiguredPosition();
         }
 
         public void OnEnable()
@@ -251,6 +268,43 @@ namespace EpicLoot.Adventure
         public void OnDestroy()
         {
             _instance = null;
+        }
+
+        public void ApplyConfiguredPosition()
+        {
+            if (_rt == null)
+            {
+                return;
+            }
+
+            _rt.anchoredPosition = new Vector2(ELConfig.TraderPanelPositionX.Value, ELConfig.TraderPanelPositionY.Value);
+        }
+
+        public void OnBeginDrag(PointerEventData eventData)
+        {
+            var parent = (RectTransform)_rt.parent;
+            if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                    parent, eventData.position, eventData.pressEventCamera, out var localPoint))
+            {
+                _dragOffset = _rt.anchoredPosition - localPoint;
+            }
+        }
+
+        public void OnDrag(PointerEventData eventData)
+        {
+            var parent = (RectTransform)_rt.parent;
+            if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                    parent, eventData.position, eventData.pressEventCamera, out var localPoint))
+            {
+                _rt.anchoredPosition = localPoint + _dragOffset;
+            }
+        }
+
+        public void OnEndDrag(PointerEventData eventData)
+        {
+            // Persists automatically because cfg.SaveOnConfigSet is true.
+            ELConfig.TraderPanelPositionX.Value = _rt.anchoredPosition.x;
+            ELConfig.TraderPanelPositionY.Value = _rt.anchoredPosition.y;
         }
 
         public Currencies GetPlayerCurrencies()

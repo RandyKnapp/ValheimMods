@@ -65,7 +65,7 @@ namespace EpicLoot.MagicItemEffects
                     }
                     else if (ELConfig.GatedFreebuildMode.Value == GatedItemType.GatedPieceTypeMode.BossKillUnlocksNextBiomePieces)
                     {
-                        requiredKey = "";
+                        requiredKey = "defeated_gdking";
                     }
                     break;
                 case "piece_stonecutter":

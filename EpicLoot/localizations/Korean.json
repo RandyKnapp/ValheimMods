@@ -1448,5 +1448,18 @@
   "mod_epicloot_search_placeholder": "검색...",
   "mod_epicloot_no_active_adventures": "활성화된 모험이 없습니다",
   "mod_epicloot_set_bonuses": "세트 보너스",
-  "mod_epicloot_legendary_sets": "전설 세트"
+  "mod_epicloot_legendary_sets": "전설 세트",
+  "mod_epicloot_enchantments": "마법 부여",
+  "mod_epicloot_output": "결과",
+  "mod_epicloot_history": "기록",
+  "mod_epicloot_requirements": "요구 사항",
+  "mod_epicloot_info": "정보",
+  "mod_epicloot_min": "최소",
+  "mod_epicloot_max": "최대",
+  "mod_epicloot_increment": "증가량",
+  "mod_epicloot_minmax": "최소/최대",
+  "mod_epicloot_successchance": "성공 확률",
+  "mod_epicloot_criticalsuccess": "치명적 성공",
+  "mod_epicloot_criticalfail": "치명적 실패",
+  "mod_epicloot_temper": "담금질"
 }

@@ -1,20 +1,15 @@
-﻿using HarmonyLib;
-using JetBrains.Annotations;
+﻿namespace EpicLoot.MagicItemEffects;
 
-namespace EpicLoot.MagicItemEffects;
-
-[HarmonyPatch(typeof(Character), nameof(Character.Damage))]
+// Postfix handler invoked by CharacterDamageDispatch (on-hit reaction): the local player's hits have a
+// chance to stagger the (PvP-enabled) victim.
 public static class StaggerOnDamageTaken_Character_Damage_Patch
 {
-    [UsedImplicitly]
-    private static void Postfix(Character __instance, HitData hit)
+    public static void OnDamageDealt(Character __instance, HitData hit, Character attacker)
     {
         if (hit == null || __instance == null)
         {
             return;
         }
-
-        Character attacker = hit.GetAttacker();
 
         if (attacker == Player.m_localPlayer &&
             __instance != null && attacker != __instance &&

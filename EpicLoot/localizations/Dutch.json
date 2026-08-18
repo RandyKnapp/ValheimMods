@@ -1448,5 +1448,18 @@
   "mod_epicloot_search_placeholder": "Zoeken...",
   "mod_epicloot_no_active_adventures": "Geen actieve avonturen",
   "mod_epicloot_set_bonuses": "Setbonussen",
-  "mod_epicloot_legendary_sets": "Legendarische sets"
+  "mod_epicloot_legendary_sets": "Legendarische sets",
+  "mod_epicloot_enchantments": "Betoveringen",
+  "mod_epicloot_output": "Resultaat",
+  "mod_epicloot_history": "Geschiedenis",
+  "mod_epicloot_requirements": "Vereisten",
+  "mod_epicloot_info": "Informatie",
+  "mod_epicloot_min": "Min",
+  "mod_epicloot_max": "Max",
+  "mod_epicloot_increment": "Verhoging",
+  "mod_epicloot_minmax": "Min/Max",
+  "mod_epicloot_successchance": "Kans op succes",
+  "mod_epicloot_criticalsuccess": "Kritiek succes",
+  "mod_epicloot_criticalfail": "Kritieke mislukking",
+  "mod_epicloot_temper": "Harden"
 }

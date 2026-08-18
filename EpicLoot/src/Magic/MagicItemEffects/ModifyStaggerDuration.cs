@@ -42,16 +42,15 @@ namespace EpicLoot.MagicItemEffects
         }
     }
 
-    [HarmonyPatch(typeof(Character), nameof(Character.RPC_Damage))]
     public static class RPC_TagCharacterOnHit_Character_RPC_Damage_Patch
     {
-        [UsedImplicitly]
-        private static void Prefix(Character __instance, HitData hit)
+        // Prefix handler invoked by CharacterRpcDamageDispatch (tags the victim's stagger-duration ZDO).
+        public static void TagStaggerDuration(Character __instance, HitData hit, Character attacker)
         {
             if (!__instance.IsStaggering() && hit.m_skill != Skills.SkillType.Bows && hit.m_skill != Skills.SkillType.None)
             {
                 var staggerValue = 1f;
-                if (hit.GetAttacker() is Player player)
+                if (attacker is Player player)
                 {
                     staggerValue += player.GetTotalActiveMagicEffectValue(MagicEffectType.ModifyStaggerDuration, 0.01f);
                 }

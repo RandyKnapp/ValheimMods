@@ -1448,5 +1448,18 @@
   "mod_epicloot_search_placeholder": "Ara...",
   "mod_epicloot_no_active_adventures": "Aktif macera yok",
   "mod_epicloot_set_bonuses": "Set Bonusları",
-  "mod_epicloot_legendary_sets": "Efsanevi Setler"
+  "mod_epicloot_legendary_sets": "Efsanevi Setler",
+  "mod_epicloot_enchantments": "Büyüler",
+  "mod_epicloot_output": "Sonuç",
+  "mod_epicloot_history": "Geçmiş",
+  "mod_epicloot_requirements": "Gereksinimler",
+  "mod_epicloot_info": "Bilgi",
+  "mod_epicloot_min": "Min",
+  "mod_epicloot_max": "Maks",
+  "mod_epicloot_increment": "Artış",
+  "mod_epicloot_minmax": "Min/Maks",
+  "mod_epicloot_successchance": "Başarı Şansı",
+  "mod_epicloot_criticalsuccess": "Kritik Başarı",
+  "mod_epicloot_criticalfail": "Kritik Başarısızlık",
+  "mod_epicloot_temper": "Su Verme"
 }

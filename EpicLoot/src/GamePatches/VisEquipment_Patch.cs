@@ -2,6 +2,7 @@
 using HarmonyLib;
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -23,6 +24,12 @@ namespace EpicLoot
         public enum ItemSettingSlot { None, Helmet, LeftHand, RightHand, Armor }
 
         public static ItemSettingSlot AttachingItemSlot = ItemSettingSlot.None;
+
+        // Player-mode fx are reconciled against GetMagicEquipment() rather than attached from the
+        // VisEquipment model path, so items in slots added by other mods get them too. Valued by
+        // instance, not just name: destruction then targets the exact object we created, so a
+        // same-named child belonging to something else can never be destroyed.
+        private static readonly ConditionalWeakTable<Player, Dictionary<string, GameObject>> AttachedPlayerFx = new();
 
         [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.SetLeftHandEquipped))]
         [HarmonyPrefix]
@@ -59,7 +66,7 @@ namespace EpicLoot
             AttachingItemSlot = ItemSettingSlot.Helmet;
         }
 
-        [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.SetLeftHandEquipped))]
+        [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.SetHelmetEquipped))]
         [HarmonyPostfix]
         public static void SetHelmetEquiped_Postfix()
         {
@@ -77,7 +84,7 @@ namespace EpicLoot
             }
 
             SetTextureOverrides(__instance, new List<GameObject> { __result }, itemID, equippedItem);
-            SetItemFx(__result, equippedItem, player);
+            SetItemFx(__result, equippedItem);
         }
 
         [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.AttachArmor))]
@@ -91,62 +98,64 @@ namespace EpicLoot
             }
 
             SetTextureOverrides(__instance, __result, itemID, equippedItem);
-            SetItemFx(null, equippedItem, player);
         }
 
-        private static void SetItemFx(GameObject __result, ItemDrop.ItemData equippedItem, Player player)
+        private static void SetItemFx(GameObject __result, ItemDrop.ItemData equippedItem)
         {
             string equipFx = GetEquipFxName(equippedItem, out FxAttachMode mode);
-            if (!string.IsNullOrEmpty(equipFx))
+            if (mode == FxAttachMode.Player || string.IsNullOrEmpty(equipFx))
             {
-                GameObject asset = EpicLoot.LoadAsset<GameObject>(equipFx);
-                if (asset != null)
-                {
-                    Transform attachObject = null;
-                    if (mode == FxAttachMode.Player && player != null)
-                    {
-                        attachObject = player.transform;
-                    }
-                    else if (__result != null)
-                    {
-                        attachObject = __result.transform;
-                    }
-
-                    if (attachObject == null)
-                    {
-                        EpicLoot.LogError($"Tried to attach FX to item that did not exist. " +
-                            $"item={equippedItem.m_shared.m_name}, equipFx={equipFx}, mode={mode}");
-                        return;
-                    }
-
-                    Transform equipEffects = attachObject.Find("equiped");
-                    if (equipEffects != null && mode == FxAttachMode.EquipRoot)
-                    {
-                        attachObject = equipEffects;
-                    }
-
-                    AttachFx(attachObject, equipFx, asset);
-                }
+                // Player-mode fx are owned by RefreshPlayerFx, which sees items in modded slots too.
+                return;
             }
-        }
 
-        private static void AttachFx(Transform attachObject, string equipFx, GameObject asset)
-        {
-            if (attachObject.Find(equipFx) != null)
+            GameObject asset = EpicLoot.LoadAsset<GameObject>(equipFx);
+            if (asset == null || __result == null)
             {
                 return;
             }
 
+            Transform attachObject = __result.transform;
+            Transform equipEffects = attachObject.Find("equiped");
+            if (equipEffects != null && mode == FxAttachMode.EquipRoot)
+            {
+                attachObject = equipEffects;
+            }
+
+            AttachFx(attachObject, equipFx, asset);
+        }
+
+        private static GameObject AttachFx(Transform attachObject, string equipFx, GameObject asset)
+        {
+            Transform existing = attachObject.Find(equipFx);
+            if (existing != null)
+            {
+                return existing.gameObject;
+            }
+
+            GameObject newEffect;
             ZNetView.m_forceDisableInit = true;
-            GameObject newEffect = Object.Instantiate(asset, attachObject, false);
-            ZNetView.m_forceDisableInit = false;
+            try
+            {
+                // m_forceDisableInit is global; leaking it true would break every later ZNetView.
+                newEffect = Object.Instantiate(asset, attachObject, false);
+            }
+            finally
+            {
+                ZNetView.m_forceDisableInit = false;
+            }
 
             newEffect.name = equipFx;
-            AudioSource[] audioSources = newEffect.GetComponentsInChildren<AudioSource>();
-            foreach (AudioSource audioSource in audioSources)
+            if (AudioMan.instance != null)
             {
-                audioSource.outputAudioMixerGroup = AudioMan.instance.m_ambientMixer;
+                AudioSource[] audioSources = newEffect.GetComponentsInChildren<AudioSource>();
+                foreach (AudioSource audioSource in audioSources)
+                {
+                    audioSource.outputAudioMixerGroup = AudioMan.instance.m_ambientMixer;
+                }
             }
+
+            return newEffect;
         }
 
         private static void SetTextureOverrides(VisEquipment __instance, List<GameObject> __result,
@@ -228,71 +237,91 @@ namespace EpicLoot
             }
         }
 
-        [HarmonyPatch(typeof(Humanoid), nameof(Humanoid.DropItem))]
-        [HarmonyPostfix]
-        public static void Humanoid_DropItem(Humanoid __instance, ItemDrop.ItemData item)
+        /// <summary>
+        /// Brings the player's <see cref="FxAttachMode.Player"/> effects in line with what
+        /// <see cref="PlayerExtensions.GetMagicEquipment"/> reports, adding what is missing and removing
+        /// what is no longer worn. Because that list already merges in registered equipment providers,
+        /// items equipped into slots added by other mods are covered without any per-mod handling.
+        /// </summary>
+        public static void RefreshPlayerFx(Player player)
         {
-            RemoveEffect(__instance, item);
-        }
-
-        [HarmonyPatch(typeof(Humanoid), nameof(Humanoid.UnequipItem))]
-        [HarmonyPrefix]
-        public static void Humanoid_UnequipItem_Prefix(Humanoid __instance,
-            ItemDrop.ItemData item, bool triggerEquipEffects)
-        {
-            RemoveEffect(__instance, item, triggerEquipEffects);
-        }
-
-        private static void RemoveEffect(Humanoid __instance, ItemDrop.ItemData item, bool triggerEquipEffects = true)
-        {
-            if (item == null || !item.m_equipped || !triggerEquipEffects)
+            if (player == null)
             {
                 return;
             }
 
-            string equipFx = GetEquipFxName(item, out FxAttachMode mode);
-            if (OtherItemsUseThisEffect(__instance, equipFx, item, mode))
+            HashSet<string> desired = new HashSet<string>(StringComparer.Ordinal);
+            foreach (ItemDrop.ItemData item in player.GetMagicEquipment())
             {
-                return;
-            }
-
-            if (!string.IsNullOrEmpty(equipFx) && mode == FxAttachMode.Player)
-            {
-                Transform effect = __instance.transform.Find(equipFx);
-                if (effect == null)
+                string fx = GetEquipFxName(item, out FxAttachMode mode);
+                if (mode == FxAttachMode.Player && !string.IsNullOrEmpty(fx))
                 {
-                    EpicLoot.LogError($"Unequipped item ({item.m_shared.m_name}) from player that had fx, " +
-                        $"but could not find fx ({equipFx})!");
-                    return;
+                    // Two items granting the same effect share one instance -- the set does what
+                    // the old OtherItemsUseThisEffect check did by hand.
+                    desired.Add(fx);
                 }
-
-                ZNetScene.instance.Destroy(effect.gameObject);
-            }
-        }
-
-        private static bool OtherItemsUseThisEffect(Humanoid humanoid, string equipFx,
-            ItemDrop.ItemData item, FxAttachMode mode)
-        {
-            if (humanoid == null || !humanoid.IsPlayer())
-            {
-                return false;
             }
 
-            Player player = (Player)humanoid;
-            foreach (ItemDrop.ItemData equipmentItemData in player.GetMagicEquipment())
+            Dictionary<string, GameObject> attached = AttachedPlayerFx.GetOrCreateValue(player);
+
+            List<string> stale = null;
+            foreach (KeyValuePair<string, GameObject> entry in attached)
             {
-                if (equipmentItemData == item)
+                // entry.Value == null covers a destroyed instance; Unity's operator== is the only
+                // thing that reports that, so do not switch this to a pattern match.
+                if (entry.Value != null && desired.Contains(entry.Key))
                 {
                     continue;
                 }
 
-                if (GetEquipFxName(equipmentItemData, out FxAttachMode equippedItemMode) == equipFx && equippedItemMode == mode)
+                if (entry.Value != null)
                 {
-                    return true;
+                    DestroyFx(entry.Value);
+                }
+
+                (stale ??= new List<string>()).Add(entry.Key);
+            }
+
+            if (stale != null)
+            {
+                foreach (string fx in stale)
+                {
+                    attached.Remove(fx);
                 }
             }
 
-            return false;
+            foreach (string fx in desired)
+            {
+                if (attached.ContainsKey(fx))
+                {
+                    continue;
+                }
+
+                GameObject asset = EpicLoot.LoadAsset<GameObject>(fx);
+                if (asset == null)
+                {
+                    EpicLoot.LogError($"Missing equip fx asset: {fx}");
+                    continue;
+                }
+
+                GameObject instance = AttachFx(player.transform, fx, asset);
+                if (instance != null)
+                {
+                    attached[fx] = instance;
+                }
+            }
+        }
+
+        private static void DestroyFx(GameObject effect)
+        {
+            if (ZNetScene.instance != null)
+            {
+                ZNetScene.instance.Destroy(effect);
+            }
+            else
+            {
+                Object.Destroy(effect);
+            }
         }
 
         public static bool CanCreateEffect(VisEquipment __instance, int itemHash, ItemSettingSlot slot,
@@ -334,12 +363,42 @@ namespace EpicLoot
                     equippedItem = player.m_rightItem;
                     break;
                 case ItemSettingSlot.Armor:
-                    equippedItem = player.GetEquipmentOfType(itemDrop.m_itemData.m_shared.m_itemType);
+                    equippedItem = FindWornItemByPrefab(player, itemID);
                     break;
                 default: throw new ArgumentOutOfRangeException();
             }
 
             return equippedItem != null;
+        }
+
+        /// <summary>
+        /// The worn item this armor model was actually built from. AttachArmor is only ever driven by
+        /// Humanoid.SetupVisEquipment writing the vanilla worn fields, so the answer is one of them.
+        /// Matching by item type instead would pick the wrong one whenever two worn items share a type
+        /// -- a utility belt plus a Utility-typed ring held in a third-party slot, say -- and apply the
+        /// wrong legendary texture override.
+        /// </summary>
+        private static ItemDrop.ItemData FindWornItemByPrefab(Player player, string itemID)
+        {
+            // Humanoid_Patch substitutes the dummy prefab for a null m_dropPrefab, so two items can
+            // carry it at once; it is never a usable identity.
+            if (string.IsNullOrEmpty(itemID) || itemID == EpicAssets.DummyName)
+            {
+                return null;
+            }
+
+            if (MatchesPrefab(player.m_chestItem, itemID)) return player.m_chestItem;
+            if (MatchesPrefab(player.m_legItem, itemID)) return player.m_legItem;
+            if (MatchesPrefab(player.m_helmetItem, itemID)) return player.m_helmetItem;
+            if (MatchesPrefab(player.m_shoulderItem, itemID)) return player.m_shoulderItem;
+            if (MatchesPrefab(player.m_utilityItem, itemID)) return player.m_utilityItem;
+            if (MatchesPrefab(player.m_trinketItem, itemID)) return player.m_trinketItem;
+            return null;
+        }
+
+        private static bool MatchesPrefab(ItemDrop.ItemData item, string itemID)
+        {
+            return item != null && item.m_dropPrefab != null && item.m_dropPrefab.name == itemID;
         }
 
         public static string GetEquipFxName(ItemDrop.ItemData equippedItem, out FxAttachMode mode)

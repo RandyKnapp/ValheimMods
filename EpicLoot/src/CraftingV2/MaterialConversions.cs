@@ -1,6 +1,7 @@
 ﻿using Common;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace EpicLoot.CraftingV2
 {
@@ -53,9 +54,17 @@ namespace EpicLoot.CraftingV2
             }
         }
 
+        // What a dedicated server pushes to each client. The shardstone recipes are merged into Config at
+        // load but ship in their own config with its own RPC, and every client re-merges them from that
+        // copy, so sending them here would duplicate several hundred entries in the payload for nothing.
         public static MaterialConversionsConfig GetCFG()
         {
-            return Config;
+            return new MaterialConversionsConfig
+            {
+                MaterialConversions = Config.MaterialConversions
+                    .Where(x => !ShardStones.ShardStoneConversions.IsShardStoneRecipe(x))
+                    .ToList()
+            };
         }
     }
 }
