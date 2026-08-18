@@ -20,7 +20,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <NoWarn>0169;USG0001</NoWarn>
-    <DefineConstants>UNITY_6000_0_58;UNITY_6000_0;UNITY_6000;UNITY_5_3_OR_NEWER;UNITY_5_4_OR_NEWER;UNITY_5_5_OR_NEWER;UNITY_5_6_OR_NEWER;UNITY_2017_1_OR_NEWER;UNITY_2017_2_OR_NEWER;UNITY_2017_3_OR_NEWER;UNITY_2017_4_OR_NEWER;UNITY_2018_1_OR_NEWER;UNITY_2018_2_OR_NEWER;UNITY_2018_3_OR_NEWER;UNITY_2018_4_OR_NEWER;UNITY_2019_1_OR_NEWER;UNITY_2019_2_OR_NEWER;UNITY_2019_3_OR_NEWER;UNITY_2019_4_OR_NEWER;UNITY_2020_1_OR_NEWER;UNITY_2020_2_OR_NEWER;UNITY_2020_3_OR_NEWER;UNITY_2021_1_OR_NEWER;UNITY_2021_2_OR_NEWER;UNITY_2021_3_OR_NEWER;UNITY_2022_1_OR_NEWER;UNITY_2022_2_OR_NEWER;UNITY_2022_3_OR_NEWER;UNITY_2023_1_OR_NEWER;UNITY_2023_2_OR_NEWER;UNITY_2023_3_OR_NEWER;UNITY_6000_0_OR_NEWER;UNITY_INCLUDE_TESTS;ENABLE_AR;ENABLE_AUDIO;ENABLE_CACHING;ENABLE_CLOTH;ENABLE_EVENT_QUEUE;ENABLE_MICROPHONE;ENABLE_MULTIPLE_DISPLAYS;ENABLE_PHYSICS;ENABLE_TEXTURE_STREAMING;ENABLE_VIRTUALTEXTURING;ENABLE_LZMA;ENABLE_UNITYEVENTS;ENABLE_VR;ENABLE_WEBCAM;ENABLE_UNITYWEBREQUEST;ENABLE_WWW;ENABLE_CLOUD_SERVICES;ENABLE_CLOUD_SERVICES_ADS;ENABLE_CLOUD_SERVICES_USE_WEBREQUEST;ENABLE_CLOUD_SERVICES_CRASH_REPORTING;ENABLE_CLOUD_SERVICES_PURCHASING;ENABLE_CLOUD_SERVICES_ANALYTICS;ENABLE_CLOUD_SERVICES_BUILD;ENABLE_EDITOR_GAME_SERVICES;ENABLE_UNITY_GAME_SERVICES_ANALYTICS_SUPPORT;ENABLE_CLOUD_LICENSE;ENABLE_EDITOR_HUB_LICENSE;ENABLE_WEBSOCKET_CLIENT;ENABLE_GENERATE_NATIVE_PLUGINS_FOR_ASSEMBLIES_API;ENABLE_DIRECTOR_AUDIO;ENABLE_DIRECTOR_TEXTURE;ENABLE_MANAGED_JOBS;ENABLE_MANAGED_TRANSFORM_JOBS;ENABLE_MANAGED_ANIMATION_JOBS;ENABLE_MANAGED_AUDIO_JOBS;ENABLE_MANAGED_UNITYTLS;INCLUDE_DYNAMIC_GI;ENABLE_SCRIPTING_GC_WBARRIERS;PLATFORM_SUPPORTS_MONO;RENDER_SOFTWARE_CURSOR;ENABLE_MARSHALLING_TESTS;ENABLE_VIDEO;ENABLE_NAVIGATION_OFFMESHLINK_TO_NAVMESHLINK;ENABLE_ACCELERATOR_CLIENT_DEBUGGING;TEXTCORE_1_0_OR_NEWER;EDITOR_ONLY_NAVMESH_BUILDER_DEPRECATED;PLATFORM_STANDALONE_WIN;PLATFORM_STANDALONE;UNITY_STANDALONE_WIN;UNITY_STANDALONE;ENABLE_RUNTIME_GI;ENABLE_MOVIES;ENABLE_NETWORK;ENABLE_NVIDIA;ENABLE_AMD;ENABLE_CRUNCH_TEXTURE_COMPRESSION;ENABLE_OUT_OF_PROCESS_CRASH_HANDLER;ENABLE_CLUSTER_SYNC;ENABLE_CLUSTERINPUT;PLATFORM_UPDATES_TIME_OUTSIDE_OF_PLAYER_LOOP;GFXDEVICE_WAITFOREVENT_MESSAGEPUMP;PLATFORM_USES_EXPLICIT_MEMORY_MANAGER_INITIALIZER;PLATFORM_SUPPORTS_WAIT_FOR_PRESENTATION;PLATFORM_SUPPORTS_SPLIT_GRAPHICS_JOBS;ENABLE_MONO;NET_STANDARD_2_0;NET_STANDARD;NET_STANDARD_2_1;NETSTANDARD;NETSTANDARD2_1;ENABLE_PROFILER;DEBUG;TRACE;UNITY_ASSERTIONS;UNITY_EDITOR;UNITY_EDITOR_64;UNITY_EDITOR_WIN;ENABLE_UNITY_COLLECTIONS_CHECKS;ENABLE_BURST_AOT;UNITY_TEAM_LICENSE;ENABLE_CUSTOM_RENDER_TEXTURE;ENABLE_DIRECTOR;ENABLE_LOCALIZATION;ENABLE_SPRITES;ENABLE_TERRAIN;ENABLE_TILEMAP;ENABLE_TIMELINE;ENABLE_INPUT_SYSTEM;ENABLE_LEGACY_INPUT_MANAGER;TEXTCORE_FONT_ENGINE_1_5_OR_NEWER;TEXTCORE_TEXT_ENGINE_1_5_OR_NEWER;system_io_compression;thunderkit;CSHARP_7_OR_LATER;CSHARP_7_3_OR_NEWER</DefineConstants>
+    <DefineConstants>UNITY_6000_0_58;UNITY_6000_0;UNITY_6000;UNITY_5_3_OR_NEWER;UNITY_5_4_OR_NEWER;UNITY_5_5_OR_NEWER;UNITY_5_6_OR_NEWER;UNITY_2017_1_OR_NEWER;UNITY_2017_2_OR_NEWER;UNITY_2017_3_OR_NEWER;UNITY_2017_4_OR_NEWER;UNITY_2018_1_OR_NEWER;UNITY_2018_2_OR_NEWER;UNITY_2018_3_OR_NEWER;UNITY_2018_4_OR_NEWER;UNITY_2019_1_OR_NEWER;UNITY_2019_2_OR_NEWER;UNITY_2019_3_OR_NEWER;UNITY_2019_4_OR_NEWER;UNITY_2020_1_OR_NEWER;UNITY_2020_2_OR_NEWER;UNITY_2020_3_OR_NEWER;UNITY_2021_1_OR_NEWER;UNITY_2021_2_OR_NEWER;UNITY_2021_3_OR_NEWER;UNITY_2022_1_OR_NEWER;UNITY_2022_2_OR_NEWER;UNITY_2022_3_OR_NEWER;UNITY_2023_1_OR_NEWER;UNITY_2023_2_OR_NEWER;UNITY_2023_3_OR_NEWER;UNITY_6000_0_OR_NEWER;PLATFORM_ARCH_64;UNITY_64;UNITY_INCLUDE_TESTS;ENABLE_AR;ENABLE_AUDIO;ENABLE_CACHING;ENABLE_CLOTH;ENABLE_EVENT_QUEUE;ENABLE_MICROPHONE;ENABLE_MULTIPLE_DISPLAYS;ENABLE_PHYSICS;ENABLE_TEXTURE_STREAMING;ENABLE_VIRTUALTEXTURING;ENABLE_LZMA;ENABLE_UNITYEVENTS;ENABLE_VR;ENABLE_WEBCAM;ENABLE_UNITYWEBREQUEST;ENABLE_WWW;ENABLE_CLOUD_SERVICES;ENABLE_CLOUD_SERVICES_ADS;ENABLE_CLOUD_SERVICES_USE_WEBREQUEST;ENABLE_CLOUD_SERVICES_CRASH_REPORTING;ENABLE_CLOUD_SERVICES_PURCHASING;ENABLE_CLOUD_SERVICES_ANALYTICS;ENABLE_CLOUD_SERVICES_BUILD;ENABLE_EDITOR_GAME_SERVICES;ENABLE_UNITY_GAME_SERVICES_ANALYTICS_SUPPORT;ENABLE_CLOUD_LICENSE;ENABLE_EDITOR_HUB_LICENSE;ENABLE_WEBSOCKET_CLIENT;ENABLE_GENERATE_NATIVE_PLUGINS_FOR_ASSEMBLIES_API;ENABLE_DIRECTOR_AUDIO;ENABLE_DIRECTOR_TEXTURE;ENABLE_MANAGED_JOBS;ENABLE_MANAGED_TRANSFORM_JOBS;ENABLE_MANAGED_ANIMATION_JOBS;ENABLE_MANAGED_AUDIO_JOBS;ENABLE_MANAGED_UNITYTLS;INCLUDE_DYNAMIC_GI;ENABLE_SCRIPTING_GC_WBARRIERS;PLATFORM_SUPPORTS_MONO;RENDER_SOFTWARE_CURSOR;ENABLE_MARSHALLING_TESTS;ENABLE_VIDEO;ENABLE_NAVIGATION_OFFMESHLINK_TO_NAVMESHLINK;ENABLE_ACCELERATOR_CLIENT_DEBUGGING;TEXTCORE_1_0_OR_NEWER;EDITOR_ONLY_NAVMESH_BUILDER_DEPRECATED;PLATFORM_STANDALONE_WIN;PLATFORM_STANDALONE;UNITY_STANDALONE_WIN;UNITY_STANDALONE;ENABLE_RUNTIME_GI;ENABLE_MOVIES;ENABLE_NETWORK;ENABLE_NVIDIA;ENABLE_AMD;ENABLE_CRUNCH_TEXTURE_COMPRESSION;ENABLE_OUT_OF_PROCESS_CRASH_HANDLER;ENABLE_CLUSTER_SYNC;ENABLE_CLUSTERINPUT;PLATFORM_UPDATES_TIME_OUTSIDE_OF_PLAYER_LOOP;GFXDEVICE_WAITFOREVENT_MESSAGEPUMP;PLATFORM_USES_EXPLICIT_MEMORY_MANAGER_INITIALIZER;PLATFORM_SUPPORTS_WAIT_FOR_PRESENTATION;PLATFORM_SUPPORTS_SPLIT_GRAPHICS_JOBS;ENABLE_MONO;NET_STANDARD_2_0;NET_STANDARD;NET_STANDARD_2_1;NETSTANDARD;NETSTANDARD2_1;ENABLE_PROFILER;DEBUG;TRACE;UNITY_ASSERTIONS;UNITY_EDITOR;UNITY_EDITOR_64;UNITY_EDITOR_WIN;ENABLE_UNITY_COLLECTIONS_CHECKS;ENABLE_BURST_AOT;UNITY_TEAM_LICENSE;ENABLE_CUSTOM_RENDER_TEXTURE;ENABLE_DIRECTOR;ENABLE_LOCALIZATION;ENABLE_SPRITES;ENABLE_TERRAIN;ENABLE_TILEMAP;ENABLE_TIMELINE;ENABLE_INPUT_SYSTEM;ENABLE_LEGACY_INPUT_MANAGER;TEXTCORE_FONT_ENGINE_1_5_OR_NEWER;TEXTCORE_TEXT_ENGINE_1_5_OR_NEWER;system_io_compression;thunderkit;CSHARP_7_OR_LATER;CSHARP_7_3_OR_NEWER</DefineConstants>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -51,7 +51,7 @@
     <UnityProjectGeneratorVersion>2.0.25</UnityProjectGeneratorVersion>
     <UnityProjectGeneratorStyle>Legacy</UnityProjectGeneratorStyle>
     <UnityProjectType>Game:1</UnityProjectType>
-    <UnityBuildTarget>StandaloneWindows:5</UnityBuildTarget>
+    <UnityBuildTarget>StandaloneWindows64:19</UnityBuildTarget>
     <UnityVersion>6000.0.58f2</UnityVersion>
   </PropertyGroup>
   <ItemGroup>
@@ -76,87 +76,106 @@
     <Compile Include="Assets\X_RPGVFX\RPG VFX Bundle\Demo scenes\Demo track markers\RaycastInstance.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Assets\ExternalLibraries\valheim\Splatform.dll" />
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
+    <None Include="Assets\ExternalLibraries\assembly_utils.dll" />
     <None Include="Assets\ExternalLibraries\valheim\assembly_googleanalytics.dll" />
     <None Include="Assets\ExternalLibraries\Jotunn.dll" />
-    <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Demo scenes\Demo projectiles\README.txt" />
+    <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Demo scenes\Demo projectiles\Readme.txt" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Overlay.shader" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile-2-Pass.shader" />
-    <None Include="Assets\ExternalLibraries\Mono.Security.dll" />
     <None Include="Assets\ExternalLibraries\valheim\assembly_valheim.dll" />
-    <None Include="Assets\ExternalLibraries\AdvancedPortals.dll" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap.shader" />
-    <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Prefabs\Projectiles\README.txt" />
-    <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Demo scenes\Demo AOE skills\README.txt" />
-    <None Include="Assets\ExternalLibraries\Mono.Cecil.Rocks.dll" />
+    <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Prefabs\Projectiles\Readme.txt" />
+    <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Demo scenes\Demo AOE skills\Readme.txt" />
     <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Shaders\Lit_CenterGlow.shader" />
     <None Include="Assets\JVLMock\Custom_Piece.shader" />
+    <None Include="Assets\ExternalLibraries\assembly_simplemeshcombine.dll" />
     <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Shaders\SmoothSmoke.shader" />
     <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Prefabs\HDRP and URP(LWRP).txt" />
-    <None Include="Assets\ExternalLibraries\valheim\assembly_simplemeshcombine.dll" />
     <None Include="Assets\TextMesh Pro\Shaders\TMPro_Mobile.cginc" />
-    <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Demo scenes\Demo magic circles Vol 1\README.txt" />
+    <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Demo scenes\Demo magic circles Vol 1\Readme.txt" />
     <None Include="Assets\ExternalLibraries\valheim\PlayFabParty.dll" />
     <None Include="Assets\X_Wiz\AnimCtrl\OrganJarAnimationTiming.txt" />
+    <None Include="Assets\ExternalLibraries\valheim\MonoMod.Utils.dll" />
     <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Shaders\DissolveNoise.shader" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF SSD.shader" />
     <None Include="Assets\X_Wiz\AnimCtrl\StaffOfAtom_AnimationTimings.txt" />
     <None Include="Assets\X_LootBeams\Shaders\Beams\Beam AlphaBlended.shader" />
+    <None Include="Assets\ExternalLibraries\valheim\MonoMod.RuntimeDetour.dll" />
     <None Include="Assets\ExternalLibraries\MonoMod.RuntimeDetour.dll" />
-    <None Include="Assets\ExternalLibraries\valheim\Splatform.dll" />
     <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Demo scenes\Demo scene lasers\If you want to use lasers in 2D.txt" />
-    <None Include="Assets\ExternalLibraries\valheim\Assembly-CSharp.dll" />
+    <None Include="Assets\ExternalLibraries\assembly_valheim.dll" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Surface-Mobile.shader" />
     <None Include="Assets\JVLMock\Particles_Standard Unlit2.shader" />
+    <None Include="Assets\ExternalLibraries\Newtonsoft.Json.dll" />
+    <None Include="Assets\ExternalLibraries\gui_framework.dll" />
     <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Shaders\Distortion.shader" />
+    <None Include="Assets\ExternalLibraries\valheim\Splatform.Steam.dll" />
+    <None Include="Assets\ExternalLibraries\PlayFab.dll" />
     <None Include="Assets\X_LootBeams\Shaders\Beams\Beam Additive.shader" />
     <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Shaders\Blend_TwoSides.shader" />
-    <None Include="Assets\X_LootBeams\README.txt" />
+    <None Include="Assets\ExternalLibraries\valheim\assembly_lux.dll" />
+    <None Include="Assets\X_LootBeams\Readme.txt" />
     <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Shaders\Electricity.shader" />
     <None Include="Assets\TextMesh Pro\Shaders\SDFFunctions.hlsl" />
     <None Include="Assets\X_RPGVFX\Auras pack\Shaders\Blend_CenterGlow.shader" />
     <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Shaders\Blend_Normals.shader" />
+    <None Include="Assets\ExternalLibraries\assembly_lux.dll" />
+    <None Include="Assets\ExternalLibraries\assembly_sunshafts.dll" />
+    <None Include="Assets\ExternalLibraries\SoftReferenceableAssets.dll" />
     <None Include="Assets\ExternalLibraries\Mono.Cecil.dll" />
-    <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Prefabs\AOE spells\README.txt" />
+    <None Include="Assets\ExternalLibraries\Splatform.dll" />
+    <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Prefabs\AOE spells\Readme.txt" />
+    <None Include="Assets\ExternalLibraries\valheim\assembly_simplemeshcombine.dll" />
     <None Include="Assets\ExternalLibraries\valheim\assembly_sunshafts.dll" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Surface.shader" />
-    <None Include="Assets\ExternalLibraries\Mono.Cecil.Pdb.dll" />
-    <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Demo scenes\Demo scene lasers\README.txt" />
+    <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Demo scenes\Demo scene lasers\Readme.txt" />
     <None Include="Assets\TextMesh Pro\Sprites\EmojiOne Attribution.txt" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap-Custom-Atlas.shader" />
     <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Shaders\LightGlow.shader" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF.shader" />
-    <None Include="Assets\ExternalLibraries\valheim\assembly_lux.dll" />
+    <None Include="Assets\ExternalLibraries\AdvancedPortals.dll" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile SSD.shader" />
     <None Include="Assets\TextMesh Pro\Resources\LineBreaking Leading Characters.txt" />
     <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Prefabs\Magic circles\Loop version\How to use.txt" />
-    <None Include="Assets\ExternalLibraries\valheim\Splatform.Steam.dll" />
+    <None Include="Assets\ExternalLibraries\System.Runtime.Serialization.dll" />
     <None Include="Assets\TextMesh Pro\Shaders\TMPro_Properties.cginc" />
     <None Include="Assets\ExternalLibraries\valheim\assembly_postprocessing.dll" />
     <None Include="Assets\ExternalLibraries\valheim\assembly_guiutils.dll" />
     <None Include="Assets\TextMesh Pro\Shaders\TMPro_Surface.cginc" />
+    <None Include="Assets\ExternalLibraries\valheim\BepInEx.dll" />
     <None Include="Assets\ExternalLibraries\MonoMod.Utils.dll" />
+    <None Include="Assets\ExternalLibraries\assembly_guiutils.dll" />
     <None Include="Assets\ExternalLibraries\0Harmony.dll" />
     <None Include="Assets\ExternalLibraries\valheim\assembly_utils.dll" />
     <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Shaders\BlendDistort.shader" />
     <None Include="Assets\TextMesh Pro\Resources\LineBreaking Following Characters.txt" />
+    <None Include="Assets\ExternalLibraries\PlayFabParty.dll" />
     <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Shaders\AddTrail.shader" />
+    <None Include="Assets\ExternalLibraries\Assembly-CSharp.dll" />
     <None Include="Assets\ExternalLibraries\valheim\SoftReferenceableAssets.dll" />
     <None Include="Assets\JVLMock\Custom_Gradient Mapped Particle (Unlit).shader" />
     <None Include="Assets\JVLMock\Particles_Standard Surface2.shader" />
     <None Include="Assets\ExternalLibraries\valheim\com.rlabrecque.steamworks.net.dll" />
+    <None Include="Assets\ExternalLibraries\valheim\Mono.Cecil.dll" />
+    <None Include="Assets\ExternalLibraries\valheim\0Harmony.dll" />
+    <None Include="Assets\ExternalLibraries\assembly_postprocessing.dll" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Masking.shader" />
     <None Include="Assets\X_RPGVFX\Auras pack\Shaders\Add_CenterGlow.shader" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF Overlay.shader" />
+    <None Include="Assets\ExternalLibraries\valheim\Jotunn.dll" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap-Mobile.shader" />
+    <None Include="Assets\ExternalLibraries\com.rlabrecque.steamworks.net.dll" />
     <None Include="Assets\TextMesh Pro\Fonts\LiberationSans - OFL.txt" />
     <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Demo scenes\Demo AOE skills\HDRP and URP(LWRP).txt" />
     <None Include="Assets\ExternalLibraries\valheim\PlayFab.dll" />
-    <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Scripts\README.txt" />
-    <None Include="Assets\ExternalLibraries\BepInEx.Harmony.dll" />
+    <None Include="Assets\X_RPGVFX\RPG VFX Bundle\Scripts\Readme.txt" />
+    <None Include="Assets\ExternalLibraries\valheim\Assembly-CSharp.dll" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile.shader" />
-    <None Include="Assets\ExternalLibraries\EpicLoot-UnityLib.dll" />
-    <None Include="Assets\ExternalLibraries\Mono.Cecil.Mdb.dll" />
+    <None Include="Assets\ExternalLibraries\EpicLoot.dll" />
+    <None Include="Assets\ExternalLibraries\assembly_googleanalytics.dll" />
+    <None Include="Assets\ExternalLibraries\Splatform.Steam.dll" />
     <None Include="Assets\ExternalLibraries\valheim\gui_framework.dll" />
     <None Include="Assets\ExternalLibraries\BepInEx.dll" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_Sprite.shader" />
@@ -634,100 +653,92 @@
       <HintPath>C:\Program Files\Unity\Hub\Editor\6000.0.58f2\Editor\Data\Managed\UnityEngine\UnityEditor.XRModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Jotunn">
-      <HintPath>Assets\ExternalLibraries\Jotunn.dll</HintPath>
+    <Reference Include="Splatform">
+      <HintPath>Assets\ExternalLibraries\valheim\Splatform.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Mono.Security">
-      <HintPath>Assets\ExternalLibraries\Mono.Security.dll</HintPath>
+    <Reference Include="assembly_utils">
+      <HintPath>Assets\ExternalLibraries\assembly_utils.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Jotunn">
+      <HintPath>Assets\ExternalLibraries\Jotunn.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="nunit.framework">
       <HintPath>Library\PackageCache\com.unity.ext.nunit@031a54704bff\net40\unity-custom\nunit.framework.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="AdvancedPortals">
-      <HintPath>Assets\ExternalLibraries\AdvancedPortals.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Mono.Cecil.Rocks">
-      <HintPath>Assets\ExternalLibraries\Mono.Cecil.Rocks.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="assembly_simplemeshcombine">
-      <HintPath>Assets\ExternalLibraries\valheim\assembly_simplemeshcombine.dll</HintPath>
+      <HintPath>Assets\ExternalLibraries\assembly_simplemeshcombine.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="PlayFabParty">
       <HintPath>Assets\ExternalLibraries\valheim\PlayFabParty.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="MonoMod.Utils">
+      <HintPath>Assets\ExternalLibraries\valheim\MonoMod.Utils.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="MonoMod.RuntimeDetour">
-      <HintPath>Assets\ExternalLibraries\MonoMod.RuntimeDetour.dll</HintPath>
+      <HintPath>Assets\ExternalLibraries\valheim\MonoMod.RuntimeDetour.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Splatform">
-      <HintPath>Assets\ExternalLibraries\valheim\Splatform.dll</HintPath>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>Assets\ExternalLibraries\Newtonsoft.Json.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Assembly-CSharp">
-      <HintPath>Assets\ExternalLibraries\valheim\Assembly-CSharp.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Mono.Cecil">
-      <HintPath>Assets\ExternalLibraries\Mono.Cecil.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Mono.Cecil.Pdb">
-      <HintPath>Assets\ExternalLibraries\Mono.Cecil.Pdb.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="assembly_lux">
-      <HintPath>Assets\ExternalLibraries\valheim\assembly_lux.dll</HintPath>
+    <Reference Include="gui_framework">
+      <HintPath>Assets\ExternalLibraries\gui_framework.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Splatform.Steam">
       <HintPath>Assets\ExternalLibraries\valheim\Splatform.Steam.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="MonoMod.Utils">
-      <HintPath>Assets\ExternalLibraries\MonoMod.Utils.dll</HintPath>
+    <Reference Include="PlayFab">
+      <HintPath>Assets\ExternalLibraries\PlayFab.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="assembly_lux">
+      <HintPath>Assets\ExternalLibraries\valheim\assembly_lux.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="assembly_sunshafts">
+      <HintPath>Assets\ExternalLibraries\assembly_sunshafts.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="SoftReferenceableAssets">
+      <HintPath>Assets\ExternalLibraries\SoftReferenceableAssets.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Mono.Cecil">
+      <HintPath>Assets\ExternalLibraries\Mono.Cecil.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="AdvancedPortals">
+      <HintPath>Assets\ExternalLibraries\AdvancedPortals.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="BepInEx">
+      <HintPath>Assets\ExternalLibraries\valheim\BepInEx.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="0Harmony">
       <HintPath>Assets\ExternalLibraries\0Harmony.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="SoftReferenceableAssets">
-      <HintPath>Assets\ExternalLibraries\valheim\SoftReferenceableAssets.dll</HintPath>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>Assets\ExternalLibraries\Assembly-CSharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="com.rlabrecque.steamworks.net">
       <HintPath>Assets\ExternalLibraries\valheim\com.rlabrecque.steamworks.net.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="PlayFab">
-      <HintPath>Assets\ExternalLibraries\valheim\PlayFab.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="BepInEx.Harmony">
-      <HintPath>Assets\ExternalLibraries\BepInEx.Harmony.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="EpicLoot-UnityLib">
-      <HintPath>Assets\ExternalLibraries\EpicLoot-UnityLib.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Mono.Cecil.Mdb">
-      <HintPath>Assets\ExternalLibraries\Mono.Cecil.Mdb.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="gui_framework">
-      <HintPath>Assets\ExternalLibraries\valheim\gui_framework.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="BepInEx">
-      <HintPath>Assets\ExternalLibraries\BepInEx.dll</HintPath>
+    <Reference Include="EpicLoot">
+      <HintPath>Assets\ExternalLibraries\EpicLoot.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="netstandard">
@@ -1232,6 +1243,10 @@
     </Reference>
     <Reference Include="Unity.AssetBundleBrowser.Editor">
       <HintPath>Library\ScriptAssemblies\Unity.AssetBundleBrowser.Editor.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.2D.Sprite.Editor">
+      <HintPath>Library\ScriptAssemblies\Unity.2D.Sprite.Editor.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Unity.Multiplayer.Center.Common">

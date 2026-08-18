@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using EpicLoot.MagicItemEffects.Shards;
+using HarmonyLib;
 using System;
 using System.Collections.Generic;
 using System.Reflection.Emit;
@@ -79,6 +80,11 @@ public static class ModifyPlayerRegen
         private static void ModifyHealthRegen_Postfix(SEMan __instance, ref float regenMultiplier)
         {
             DoPostfix(__instance, MagicEffectType.ModifyHealthRegen, ref regenMultiplier);
+
+            // Shard health-regen effects that used to declare their own ModifyHealthRegen postfix.
+            DayHealthRegen.Apply(__instance, ref regenMultiplier);
+            RestingHealthRegen.Apply(__instance, ref regenMultiplier);
+            BloodMagicLevelIncreasesHealthRegen.Apply(__instance, ref regenMultiplier);
         }
 
         [HarmonyPostfix]
@@ -86,6 +92,11 @@ public static class ModifyPlayerRegen
         private static void ModifyStaminaRegen_Postfix(SEMan __instance, ref float staminaMultiplier)
         {
             DoPostfix(__instance, MagicEffectType.ModifyStaminaRegen, ref staminaMultiplier);
+
+            // Shard stamina-regen effects that used to declare their own ModifyStaminaRegen postfix.
+            DayStaminaRegen.Apply(__instance, ref staminaMultiplier);
+            NightStaminaRegenIncrease.Apply(__instance, ref staminaMultiplier);
+            StaminaRegenBonusFromPlayerWeight.Apply(__instance, ref staminaMultiplier);
         }
 
         [HarmonyPostfix]

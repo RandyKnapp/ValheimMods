@@ -1,7 +1,7 @@
 # Jam
 
 Author: [RandyKnapp](https://discord.gg/ZNhYeavv3C)
-Source: [Github](https://github.com/OrianaVenture/Randy_Vapok_ValheimMods/tree/main/Jam)
+Source: [Github](https://github.com/RandyKnapp/ValheimMods/tree/main/Jam)
 Patreon: [patreon.com/randyknapp](https://www.patreon.com/randyknapp)
 Discord: [RandyKnapp's Mod Community](https://discord.gg/ZNhYeavv3C)
 

@@ -22,6 +22,28 @@ namespace EpicLoot.Adventure
         public SerializableVector3 Position;
         public SerializableVector3 MinimapCircleOffset;
         public long PlayerID;
+
+        public void ToPackage(ZPackage pkg)
+        {
+            pkg.Write(Interval);
+            pkg.Write((int)Biome);
+            pkg.Write((int)State);
+            Position.ToPackage(pkg);
+            MinimapCircleOffset.ToPackage(pkg);
+            pkg.Write(PlayerID);
+        }
+
+        public static TreasureMapChestInfo FromPackage(ZPackage pkg)
+        {
+            var result = new TreasureMapChestInfo();
+            result.Interval = pkg.ReadInt();
+            result.Biome = (Heightmap.Biome)pkg.ReadInt();
+            result.State = (TreasureMapState)pkg.ReadInt();
+            result.Position = SerializableVector3.FromPackage(pkg);
+            result.MinimapCircleOffset = SerializableVector3.FromPackage(pkg);
+            result.PlayerID = pkg.ReadLong();
+            return result;
+        }
     }
 
     [Serializable]
@@ -134,7 +156,33 @@ namespace EpicLoot.Adventure
     [Serializable]
     public class AdventureSaveDataList
     {
+        // Format version for the compact binary save. Bump when the layout changes.
+        public const int Version = 1;
+
         public List<AdventureSaveData> AllSaveData = new List<AdventureSaveData>();
+
+        public void ToPackage(ZPackage pkg)
+        {
+            pkg.Write(Version);
+            pkg.Write(AllSaveData.Count);
+            foreach (var saveData in AllSaveData)
+            {
+                saveData.ToPackage(pkg);
+            }
+        }
+
+        public static AdventureSaveDataList FromPackage(ZPackage pkg)
+        {
+            var result = new AdventureSaveDataList();
+            pkg.ReadInt(); // Version (reserved for future format branching)
+            var count = pkg.ReadInt();
+            result.AllSaveData = new List<AdventureSaveData>(count);
+            for (var index = 0; index < count; index++)
+            {
+                result.AllSaveData.Add(AdventureSaveData.FromPackage(pkg));
+            }
+            return result;
+        }
     }
 
     [Serializable]
@@ -147,6 +195,66 @@ namespace EpicLoot.Adventure
 
         [NonSerialized] public bool DebugMode;
         [NonSerialized] public int IntervalOverride;
+
+        public void ToPackage(ZPackage pkg)
+        {
+            pkg.Write(WorldID);
+            pkg.Write(NumberOfTreasureMapsOrBountiesStarted);
+
+            pkg.Write(TreasureMaps.Count);
+            foreach (var treasureMap in TreasureMaps)
+            {
+                treasureMap.ToPackage(pkg);
+            }
+
+            pkg.Write(Bounties.Count);
+            foreach (var bounty in Bounties)
+            {
+                bounty.ToPackage(pkg);
+            }
+        }
+
+        public static AdventureSaveData FromPackage(ZPackage pkg)
+        {
+            var result = new AdventureSaveData();
+            result.WorldID = pkg.ReadLong();
+            result.NumberOfTreasureMapsOrBountiesStarted = pkg.ReadInt();
+
+            var treasureMapCount = pkg.ReadInt();
+            result.TreasureMaps = new List<TreasureMapChestInfo>(treasureMapCount);
+            for (var index = 0; index < treasureMapCount; index++)
+            {
+                result.TreasureMaps.Add(TreasureMapChestInfo.FromPackage(pkg));
+            }
+
+            var bountyCount = pkg.ReadInt();
+            result.Bounties = new List<BountyInfo>(bountyCount);
+            for (var index = 0; index < bountyCount; index++)
+            {
+                result.Bounties.Add(BountyInfo.FromPackage(pkg));
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Drops terminal-state records from intervals that have already elapsed. The board and
+        /// shop regenerate deterministically per interval, so past-interval finished records are
+        /// never read again. Current-interval records are kept: pruning them would let the same
+        /// map/bounty reappear as available this interval.
+        /// </summary>
+        public int PruneStaleRecords(int currentBountyInterval, int currentTreasureInterval)
+        {
+            var removed = Bounties.RemoveAll(x =>
+                (x.State == BountyState.Claimed || x.State == BountyState.Abandoned)
+                && x.Interval < currentBountyInterval);
+
+            removed += TreasureMaps.RemoveAll(x =>
+                x.State == TreasureMapState.Found
+                && x.Interval < currentTreasureInterval);
+
+            return removed;
+        }
 
         public bool PurchasedTreasureMap(TreasureMapChestInfo chestInfo)
         {
@@ -212,6 +320,55 @@ namespace EpicLoot.Adventure
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Moves a purchased-but-unfound treasure map to a new world position and drags its minimap
+        /// pin along with it. Called when the spawner had to search outside the original map circle
+        /// (almost always because a ward covered it) - without this the pin would keep pointing at a
+        /// spot the chest is not in.
+        /// </summary>
+        public bool RelocateTreasureMap(int interval, Heightmap.Biome biome, Vector3 newPosition)
+        {
+            var treasureMap = GetTreasureMapChestInfo(interval, biome);
+            if (treasureMap == null || treasureMap.State != TreasureMapState.Purchased)
+            {
+                return false;
+            }
+
+            treasureMap.Position = newPosition;
+            // The circle is re-centred on the chest, so any old offset would just skew it back.
+            treasureMap.MinimapCircleOffset = Vector3.zero;
+
+            var key = new Tuple<int, Heightmap.Biome>(interval, biome);
+            if (MinimapController.TreasureMapPins.TryGetValue(key, out var existingPin))
+            {
+                // The queue is drained FIFO, so remove-then-add is a move.
+                MinimapController.AddPinJobToQueue(new PinJob
+                {
+                    Task = MinimapPinQueueTask.RemoveTreasurePin,
+                    DebugMode = DebugMode,
+                    TreasurePin = new KeyValuePair<Tuple<int, Heightmap.Biome>, AreaPinInfo>(key, existingPin)
+                });
+            }
+
+            var pinInfo = new AreaPinInfo
+            {
+                Position = treasureMap.Position + treasureMap.MinimapCircleOffset,
+                Type = EpicLoot.TreasureMapPinType,
+                Name = Localization.instance.Localize("$mod_epicloot_treasurechest_minimappin",
+                    Localization.instance.Localize($"$biome_{biome.ToString().ToLowerInvariant()}"),
+                    (interval + 1).ToString())
+            };
+
+            MinimapController.AddPinJobToQueue(new PinJob
+            {
+                Task = MinimapPinQueueTask.AddTreasurePin,
+                DebugMode = DebugMode,
+                TreasurePin = new KeyValuePair<Tuple<int, Heightmap.Biome>, AreaPinInfo>(key, pinInfo)
+            });
+
+            return true;
         }
 
         public TreasureMapChestInfo GetTreasureMapChestInfo(int interval, Heightmap.Biome biome)
@@ -303,6 +460,50 @@ namespace EpicLoot.Adventure
             {
                 bounty.State = BountyState.Abandoned;
             }
+        }
+
+        /// <summary>
+        /// Bounty counterpart to <see cref="RelocateTreasureMap"/>: moves an in-progress bounty's
+        /// world position and its minimap pin when the spawner had to place the targets outside the
+        /// original circle.
+        /// </summary>
+        public bool RelocateBounty(string bountyID, Vector3 newPosition)
+        {
+            var bounty = GetBountyInfoByID(bountyID);
+            if (bounty == null || bounty.State != BountyState.InProgress)
+            {
+                return false;
+            }
+
+            bounty.Position = newPosition;
+            bounty.MinimapCircleOffset = Vector3.zero;
+
+            if (MinimapController.BountyPins.TryGetValue(bountyID, out var existingPin))
+            {
+                MinimapController.AddPinJobToQueue(new PinJob
+                {
+                    Task = MinimapPinQueueTask.RemoveBountyPin,
+                    DebugMode = DebugMode,
+                    BountyPin = new KeyValuePair<string, AreaPinInfo>(bountyID, existingPin)
+                });
+            }
+
+            var pinInfo = new AreaPinInfo
+            {
+                Position = bounty.Position + bounty.MinimapCircleOffset,
+                Type = EpicLoot.BountyPinType,
+                Name = Localization.instance.Localize("$mod_epicloot_bounties_minimappin",
+                    AdventureDataManager.GetBountyName(bounty))
+            };
+
+            MinimapController.AddPinJobToQueue(new PinJob
+            {
+                Task = MinimapPinQueueTask.AddBountyPin,
+                DebugMode = DebugMode,
+                BountyPin = new KeyValuePair<string, AreaPinInfo>(bountyID, pinInfo)
+            });
+
+            return true;
         }
     }
 }

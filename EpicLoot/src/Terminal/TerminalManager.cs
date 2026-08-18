@@ -37,8 +37,10 @@ public static partial class TerminalManager
             _ = new Command("magicitemset", "spawn magic item set: [setID]", SpawnMagicItemSet, GetMagicItemSetOptions, isCheat: true, alternates: "miset");
             _ = new Command("checkstackquality", "show list of items that have a max stack size over 1 and max quality over 1", CheckStackQuality, isCheat: true);
             _ = new Command("magicmats", "spawn all magic materials with half stack", SpawnMagicCraftingMaterials, isCheat: true);
+            _ = new Command("magicshards", "spawn all shardstones: [rarity] (random valid rarity per shard if omitted)", SpawnMagicShards, isCheat: true);
             _ = new Command("alwaysdrop", "toggle always drop", ToggleAlwaysDrop, isCheat: true);
             _ = new Command("cheatgating", "toggle cheat gating", ToggleCheatGating, isCheat: true);
+            _ = new Command("cheatsockets", "forces the provided number of sockets to always roll onto drops", CheatSockets, isCheat: true);
             _ = new Command("testtreasuremap", "spawns treasure chests and adds to adventure map", TestTreasureMap,  isCheat: true, alternates: "testtm");
             _ = new Command("resettreasuremap", "removes all active treasure maps", ResetTreasureMap,  isCheat: true, alternates: "resettm");
             _ = new Command("debugtreasuremap", "toggle treasure map debug mode", DebugTreasureMap,  isCheat: true, alternates: "debugtm");
@@ -55,7 +57,9 @@ public static partial class TerminalManager
             _ = new Command("tooltipdebug", "write inventory item tooltips to disk", DebugTooltip, isCheat: true);
             _ = new Command("tooltipdebugvanilla", "write inventory item tooltips to disk, without magic effects", DebugVanillaTooltip,  isCheat: true);
             _ = new Command("lucktest", "rolls an example loot table with the sepcified luck eg: lucktest Greydwarf 1.0", TestLuck, GetTestLuckOptions, isCheat: true);
+            _ = new Command("fishlucktest", "samples the lucky fishing treasure roll: [effectValue] [samples]", TestFishingLuck, isCheat: true);
             _ = new Command("printconfig", "prints out the Epic Loot current configuration of the specified type", PrintConfig, GetPrintConfigOptions);
+            _ = new Command("magicapi", "exercise the public API: version | query | providers | events | roll [rarity]", ApiDiagnostics, GetApiDiagnosticsOptions, isCheat: true);
             _ = new Command("el-help", "print available epic loot commands", Help, hideFromHelp: true);
         }
     }

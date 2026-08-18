@@ -42,7 +42,7 @@ namespace EpicLoot.MagicItemEffects
                 return true;
             }
 
-            if (!currentWeapon.IsMagic() || !currentWeapon.GetMagicItem().HasEffect(MagicEffectType.Throwable) ||
+            if (!currentWeapon.IsMagic() || !currentWeapon.GetMagicItem().HasEffect(MagicEffectType.Throwable, includeSocketed: true) ||
                 currentWeapon.m_shared.m_tamedOnly) // Temporary fix for all powerful butcher knifes
             {
                 return true;
@@ -82,7 +82,7 @@ namespace EpicLoot.MagicItemEffects
     {
         public static void Prefix(Attack __instance, ref EffectList __state)
         {
-            if (__instance.m_weapon.IsMagic() && __instance.m_weapon.GetMagicItem().HasEffect(MagicEffectType.Throwable))
+            if (__instance.m_weapon.IsMagic() && __instance.m_weapon.GetMagicItem().HasEffect(MagicEffectType.Throwable, includeSocketed: true))
             {
                 __state = __instance.m_weapon.m_shared.m_triggerEffect;
                 __instance.m_weapon.m_shared.m_triggerEffect = new EffectList();
@@ -91,7 +91,7 @@ namespace EpicLoot.MagicItemEffects
 
         public static void Postfix(Attack __instance, EffectList __state)
         {
-            if (__instance.m_weapon.IsMagic() && __instance.m_weapon.GetMagicItem().HasEffect(MagicEffectType.Throwable))
+            if (__instance.m_weapon.IsMagic() && __instance.m_weapon.GetMagicItem().HasEffect(MagicEffectType.Throwable, includeSocketed: true))
             {
                 if (__instance.m_weapon.m_lastProjectile.GetComponent<Projectile>() is Projectile projectile)
                 {
@@ -111,7 +111,7 @@ namespace EpicLoot.MagicItemEffects
         public static void Postfix(Attack __instance)
         {
             if (__instance.m_weapon.m_lastProjectile != null && __instance.m_weapon.IsMagic() &&
-                __instance.m_weapon.GetMagicItem().HasEffect(MagicEffectType.Throwable))
+                __instance.m_weapon.GetMagicItem().HasEffect(MagicEffectType.Throwable, includeSocketed: true))
             {
                 var existingMesh = __instance.m_weapon.m_lastProjectile.transform.Find("spear");
                 if (existingMesh != null)

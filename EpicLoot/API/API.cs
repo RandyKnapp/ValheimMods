@@ -4,7 +4,7 @@ using EpicLoot.Adventure;
 using EpicLoot.Crafting;
 using EpicLoot.CraftingV2;
 using EpicLoot.LegendarySystem;
-using EpicLoot.MagicItemEffects;
+using EpicLoot.src.Magic.MagicItemEffects.Helpers;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
 using System;
@@ -37,6 +37,7 @@ public static partial class API
     /// </summary>
     static API()
     {
+        LootRoller.OnSetupLootTables += ReloadExternalLootTables;
         MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinitions += ReloadExternalMagicEffects;
         UniqueLegendaryHelper.OnSetupLegendaryItemConfig += ReloadExternalLegendary;
         AbilityDefinitions.OnSetupAbilityDefinitions += ReloadExternalAbilities;

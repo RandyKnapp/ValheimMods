@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using EpicLoot.src.Magic.MagicItemEffects.Helpers;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects;

@@ -15,6 +15,11 @@
 /**/obj/
 /packages/
 
+# Always ignore the valheim assembly metadata as it gets updated each time a build happens
+ValheimUnity/Assets/ExternalLibraries/**.meta
+ValheimUnity/Assets/Exports.meta
+EpicLoot/ValheimUnity/Assets/ExternalLibraries/EpicLoot.dll
+
 # Never ignore Asset meta data
 !/[Aa]ssets/**/*.meta
 
@@ -62,13 +67,15 @@ sysinfo.txt
 *.apk
 *.unitypackage
 
+# Releases
+EpicLoot/Releases/
+
 # Crashlytics generated file
 crashlytics-build.properties
 
 *.swp
 /valheim_Data/BepInEx-out/plugins/ExtendedItemDataFramework.dll
 /valheim_Data/BepInEx-out/plugins/EpicLoot/translations.json
-/valheim_Data/BepInEx-out/plugins/EpicLoot/recipes.json
 /valheim_Data/BepInEx-out/plugins/EpicLoot/magiceffects.json
 /valheim_Data/BepInEx-out/plugins/EpicLoot/loottables.json
 /valheim_Data/BepInEx-out/plugins/EpicLoot/legendaries.json
@@ -92,3 +99,9 @@ ValheimUnity/Packages/packages-lock.json
 Common
 ValheimMods.sln
 *.env
+/EpicLoot/shardstone_testing_matrix.csv
+/.gitignore
+/Common/Common.projitems
+/EpicLoot/EpicLoot.csproj
+/EpicLoot/EpicLoot.sln
+/EpicLoot/shardstone_testing_matrix.csv

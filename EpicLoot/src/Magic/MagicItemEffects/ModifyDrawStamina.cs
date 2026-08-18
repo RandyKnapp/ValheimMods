@@ -10,7 +10,7 @@ namespace EpicLoot.MagicItemEffects
             __state = __instance.m_shared.m_attack.m_drawStaminaDrain;
 
             if (__instance.IsMagic(out var magicItem) &&
-                magicItem.HasEffect(MagicEffectType.ModifyDrawStaminaUse))
+                magicItem.HasEffect(MagicEffectType.ModifyDrawStaminaUse, includeSocketed: true))
             {
                 float modifier = magicItem.GetTotalEffectValue(MagicEffectType.ModifyDrawStaminaUse, 0.01f);
                 __instance.m_shared.m_attack.m_drawStaminaDrain *= 1.0f - modifier;

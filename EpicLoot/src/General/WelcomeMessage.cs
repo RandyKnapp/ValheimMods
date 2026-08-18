@@ -79,11 +79,21 @@ public sealed class WelcomeMessage : MonoBehaviour
         Destroy(gameObject);
     }
 
+    // The four drop ratios are relative weights competing for each loot drop (see LootRoller.SelectDropType),
+    // so each preset sets all four -- leaving one unset would let a value from another preset, or from a
+    // hand-edited config, skew the mix this preset is meant to describe.
+    private static void SetDropMix(float item, float unidentified, float materials, float shardStone)
+    {
+        ELConfig.ItemDropRatio.Value = item;
+        ELConfig.ItemsUnidentifiedDropRatio.Value = unidentified;
+        ELConfig.MaterialsDropRatio.Value = materials;
+        ELConfig.ShardStoneDropRatio.Value = shardStone;
+    }
+
     public void SetOverhaulBalancedAndClick()
     {
         ELConfig.BalanceConfigurationType.Value = "balanced";
-        ELConfig.ItemsUnidentifiedDropRatio.Value = 0.8f;
-        ELConfig.ItemsToMaterialsDropRatio.Value = 0.95f;
+        SetDropMix(item: 0.6f, unidentified: 0.3f, materials: 0.15f, shardStone: 0.1f);
 
         OnOverhaulButtonClick();
         Close();
@@ -92,7 +102,7 @@ public sealed class WelcomeMessage : MonoBehaviour
     public void SetOverhaulMinimalAndClick()
     {
         ELConfig.BalanceConfigurationType.Value = "minimal";
-        ELConfig.ItemsToMaterialsDropRatio.Value = 1.0f;
+        SetDropMix(item: 0.1f, unidentified: 0.5f, materials: 0.25f, shardStone: 0.1f);
 
         OnOverhaulButtonClick();
         Close();
@@ -101,8 +111,7 @@ public sealed class WelcomeMessage : MonoBehaviour
     public void SetOverhaulLegendaryAndClick()
     {
         ELConfig.BalanceConfigurationType.Value = "legendary";
-        ELConfig.ItemsUnidentifiedDropRatio.Value = 0.2f;
-        ELConfig.ItemsToMaterialsDropRatio.Value = 0.1f;
+        SetDropMix(item: 1.0f, unidentified: 0.1f, materials: 0.0f, shardStone: 0.1f);
 
         OnOverhaulButtonClick();
         Close();

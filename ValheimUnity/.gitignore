@@ -13,8 +13,11 @@
 */obj/
 
 
-# Never ignore Asset meta data
+# Never ignore Asset meta data...
 !/[Aa]ssets/**/*.meta
+
+# ...except .meta files inside ExternalLibraries (must come after the negation above to win)
+/[Aa]ssets/ExternalLibraries/**/*.meta
 
 # Uncomment this line if you wish to ignore the asset store tools plugin
 # /[Aa]ssets/AssetStoreTools*

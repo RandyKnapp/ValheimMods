@@ -1,16 +1,12 @@
-﻿using HarmonyLib;
-using JetBrains.Annotations;
-
-namespace EpicLoot.MagicItemEffects
+﻿namespace EpicLoot.MagicItemEffects
 {
-    [HarmonyPatch(typeof(Character), nameof(Character.Damage))]
     public class ReflectiveDamage_Character_Damage_Patch
     {
         private static bool _isApplyingReflectiveDmg;
 
-        [UsedImplicitly]
-        [HarmonyPriority(Priority.Last)]
-        private static void Prefix(Character __instance, HitData hit)
+        // Prefix handler invoked by CharacterDamageDispatch (victim-side, runs at Priority.Last so it
+        // reflects the fully-modified incoming damage).
+        public static void OnIncomingHit(Character __instance, HitData hit)
         {
             var attacker = hit.GetAttacker();
             if (__instance is Player player &&

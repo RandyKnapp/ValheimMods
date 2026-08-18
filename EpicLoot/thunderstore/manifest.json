@@ -1,11 +1,11 @@
 {
   "name": "EpicLoot",
-  "version_number": "0.12.10",
+  "version_number": "0.13.0",
   "website_url": "https://discord.gg/ZNhYeavv3C",
   "description": "Adds loot drops, magic items, and enchanting to Valheim.",
-  "dependencies": [
-    "denikson-BepInExPack_Valheim-5.4.2333",
-    "ValheimModding-JsonDotNET-13.0.4",
-    "ValheimModding-Jotunn-2.27.1"
-  ]
+    "dependencies": [
+        "denikson-BepInExPack_Valheim-5.4.2333",
+        "ValheimModding-JsonDotNET-13.0.4",
+        "ValheimModding-Jotunn-2.29.2"
+    ]
 }

@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using EpicLoot.src.Magic.MagicItemEffects.Helpers;
+using HarmonyLib;
 using System.Reflection;
 
 namespace EpicLoot.MagicItemEffects;

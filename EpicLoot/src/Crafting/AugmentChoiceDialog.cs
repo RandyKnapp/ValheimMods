@@ -1,6 +1,7 @@
 ﻿using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
+using EpicLoot.CraftingV2;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,9 +15,6 @@ namespace EpicLoot.Crafting
         public Image Icon;
         public Image MagicBG;
         public List<Button> EffectChoiceButtons = new List<Button>();
-
-        public delegate float AudioVolumeLevelDelegate();
-        public static AudioVolumeLevelDelegate AudioVolumeLevel;
 
         private AudioSource _audioSource;
         private int _choiceIndex = 0;
@@ -34,7 +32,7 @@ namespace EpicLoot.Crafting
             var uiSFX = GameObject.Find("sfx_gui_button");
             if (uiSFX && _audioSource != null)
                 _audioSource.outputAudioMixerGroup = uiSFX.GetComponent<AudioSource>().outputAudioMixerGroup;
-            _audioSource.volume = AudioVolumeLevel();
+            _audioSource.volume = EnchantingUIController.GetAudioLevel();
         }
 
         [UsedImplicitly]

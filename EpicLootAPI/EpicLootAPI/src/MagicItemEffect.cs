@@ -213,6 +213,8 @@ public class MagicItemEffectRequirements
     public bool? ItemUsesEitrOnAttack;
     public bool? ItemUsesHealthOnAttack;
     public bool? ItemUsesDrawStaminaOnAttack;
+    public bool? ItemGivesAdrenaline;
+    public bool? ItemHasAdrenaline;
 
     public List<string> CustomFlags = new();
     public List<string> ExternalRequirements = new();

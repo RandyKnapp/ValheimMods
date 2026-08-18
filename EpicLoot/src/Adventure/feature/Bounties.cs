@@ -330,6 +330,8 @@ namespace EpicLoot.Adventure.Feature
             {
                 InventoryManagement.Instance.GiveItem("Coins", bountyInfo.RewardCoins);
             }
+
+            API.RaiseBountyCompleted(player, bountyInfo.Target?.MonsterID);
         }
 
         public void AbandonBounty(BountyInfo bountyInfo)

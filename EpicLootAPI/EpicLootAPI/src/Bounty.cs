@@ -63,7 +63,7 @@ public class BountyTarget
             return false;
         }
 
-        RunTimeRegistry.Register(BountyTargets, key);
+        RunTimeRegistry.Register(this, key);
         BountyTargets.Remove(this);
         EpicLoot.logger.LogDebug($"Registered bounty: {TargetID}");
         return true;
@@ -76,7 +76,7 @@ public class BountyTarget
             return false;
         }
 
-        string json = JsonConvert.SerializeObject(BountyTargets);
+        string json = JsonConvert.SerializeObject(this);
         object[] result =  API_UpdateBountyTarget.Invoke(key, json);
         bool output = (bool)(result[0] ?? false);
         EpicLoot.logger.LogDebug($"Updated bounty target: {TargetID}, {output}");

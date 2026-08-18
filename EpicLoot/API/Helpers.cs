@@ -2,6 +2,7 @@
 using EpicLoot.Crafting;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 
@@ -9,7 +10,15 @@ namespace EpicLoot;
 
 public static partial class API
 {
+    /// <summary>
+    /// Message shared by the deprecated recipe endpoints below.
+    /// </summary>
+    private const string RecipeApiObsolete = "Epic Loot's recipes.json was removed in 0.13.0 and it no longer ships the recipes.json file. ";
+
+    /// <param name="json">JSON serialized <see cref="RecipeConfig"/></param>
+    /// <returns>unique key if successfully added</returns>
     [PublicAPI]
+    [Obsolete(RecipeApiObsolete)]
     public static string AddRecipe(string json)
     {
         try
@@ -34,6 +43,7 @@ public static partial class API
     /// <param name="json">JSON serialized List of <see cref="RecipeConfig"/></param>
     /// <returns>unique key if successfully added</returns>
     [PublicAPI]
+    [Obsolete(RecipeApiObsolete)]
     public static string AddRecipes(string json)
     {
         // TODO: Figure out why it looks like recipes are added twice
@@ -61,9 +71,10 @@ public static partial class API
     }
     
     /// <param name="key">unique identifier <see cref="string"/></param>
-    /// <param name="json">JSON serialized List of <see cref="MaterialConversion"/></param>
+    /// <param name="json">JSON serialized List of <see cref="RecipeConfig"/></param>
     /// <returns>True if updated</returns>
     [PublicAPI]
+    [Obsolete(RecipeApiObsolete)]
     public static bool UpdateRecipes(string key, string json)
     {
         if (!RuntimeRegistry.TryGetValue(key, out List<RecipeConfig> list))

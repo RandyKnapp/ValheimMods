@@ -12,6 +12,24 @@ namespace EpicLoot.MagicItemEffects
     [HarmonyPatch]
     public static class FrostAOE
     {
+        // Routes the IceSpikes VFX's ripped SFX (sfx_frostcone) through the game's audio mixer so the
+        // player's volume sliders apply. When a vanilla SFX prefab is ripped into a mod bundle its
+        // AudioSource.outputAudioMixerGroup deserializes to null (the mixer asset isn't in the bundle),
+        // making it play at full volume. Subscribed to PrefabManager.OnPrefabsRegistered, which fires
+        // during ZNetScene setup while AudioMan.instance exists. Idempotent; safe to re-run per world.
+        public static void HookUpIceSpikesAudio()
+        {
+            if (AudioMan.instance == null || EpicAssets.IceSpikesVFX == null)
+            {
+                return;
+            }
+
+            foreach (var audioSource in EpicAssets.IceSpikesVFX.GetComponentsInChildren<AudioSource>(true))
+            {
+                audioSource.outputAudioMixerGroup = AudioMan.instance.m_ambientMixer;
+            }
+        }
+
         [HarmonyPatch(typeof(Attack), nameof(Attack.DoMeleeAttack))]
         public class Attack_DoMeleeAttack_Transpiler
         {

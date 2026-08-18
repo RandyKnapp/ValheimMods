@@ -63,22 +63,30 @@ namespace EpicLoot.MagicItemEffects
         }
     }
 
-    [HarmonyPatch(typeof(Character), nameof(Character.RPC_Damage))]
-    public static class ApplySlow_Character_RPC_Damage_Patch
+    public static class ApplySlow_Character_Damage_Patch
     {
-        [UsedImplicitly]
-        private static void Postfix(Character __instance, HitData hit)
+        // Postfix handler invoked by CharacterDamageDispatch (attacker-side, on hit dealt). The Slow value
+        // lives in the local player's inventory, which is only readable on the attacker's own client -- so the
+        // check must happen here, then the slow is applied on the target's owner via the broadcast RPC (that is
+        // where movement is authoritative). Checking it on the RPC_Damage side instead only worked when the
+        // local player also owned the target.
+        public static void OnDamageDealt(Character __instance, HitData hit, Character attacker)
         {
-            if (!__instance.IsBoss()
-                && hit.GetAttacker() is Player player
-                && player.HasActiveMagicEffect(MagicEffectType.Slow, out float effectValue, 0.01f))
+            if (__instance == null || __instance.m_nview == null || attacker != Player.m_localPlayer
+                || __instance.IsBoss())
             {
-                float slowMultiplier = 1 - effectValue;
+                return;
+            }
 
-                if (!Mathf.Approximately(slowMultiplier, 1))
-                {
-                    __instance.m_nview.InvokeRPC(ZRoutedRpc.Everybody, Slow.RPCKey, slowMultiplier);
-                }
+            if (!Player.m_localPlayer.HasActiveMagicEffect(MagicEffectType.Slow, out float effectValue, 0.01f))
+            {
+                return;
+            }
+
+            float slowMultiplier = 1 - effectValue;
+            if (!Mathf.Approximately(slowMultiplier, 1))
+            {
+                __instance.m_nview.InvokeRPC(ZRoutedRpc.Everybody, Slow.RPCKey, slowMultiplier);
             }
         }
     }

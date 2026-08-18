@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.5.002.0
+# Visual Studio Version 18
+VisualStudioVersion = 18.7.12002.237 oobstable
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EpicLoot", "EpicLoot.csproj", "{E09E115B-AE11-480A-B4F4-56DE2FC2D9C8}"
 EndProject
@@ -21,5 +21,8 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8F61D22A-7D04-451F-8DD2-064B70513685}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		..\Common\Common.projitems*{e09e115b-ae11-480a-b4f4-56de2fc2d9c8}*SharedItemsImports = 5
 	EndGlobalSection
 EndGlobal

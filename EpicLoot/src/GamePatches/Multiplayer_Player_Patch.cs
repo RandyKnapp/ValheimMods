@@ -1,4 +1,5 @@
 ﻿using EpicLoot.Data;
+using EpicLoot.MagicItemEffects.Shards;
 using HarmonyLib;
 using JetBrains.Annotations;
 using UnityEngine;
@@ -228,9 +229,14 @@ namespace EpicLoot
                 {
                     int currentZdoLuck = zdo.GetInt("el-luk");
                     int currentZdoRiches = zdo.GetInt("el-rch");
+                    // Lucky Loot is read by CharacterDrop.GenerateDropList, which runs on the creature's
+                    // owner -- a machine that may have no local player at all. Mirroring the value here is
+                    // what lets that machine see it.
+                    int currentZdoLuckyLoot = zdo.GetInt(LuckyLoot.ZdoValueKey);
 
                     int currentLuck = (int)player.GetTotalActiveMagicEffectValue(MagicEffectType.Luck);
                     int currentRiches = (int)player.GetTotalActiveMagicEffectValue(MagicEffectType.Riches);
+                    int currentLuckyLoot = (int)player.GetTotalActiveMagicEffectValue(MagicEffectType.LuckyLoot);
 
                     if (currentLuck != currentZdoLuck)
                     {
@@ -240,6 +246,11 @@ namespace EpicLoot
                     if (currentRiches != currentZdoRiches)
                     {
                         zdo.Set("el-rch", currentRiches);
+                    }
+
+                    if (currentLuckyLoot != currentZdoLuckyLoot)
+                    {
+                        zdo.Set(LuckyLoot.ZdoValueKey, currentLuckyLoot);
                     }
                 }
             }

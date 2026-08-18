@@ -1,22 +1,13 @@
 ﻿using EpicLoot.General;
-using HarmonyLib;
+using EpicLoot.src.Magic.MagicItemEffects.Helpers;
 
 namespace EpicLoot.MagicItemEffects
 {
     public static class AddLifeSteal
     {
-        [HarmonyPatch(typeof(Character), nameof(Character.Damage))]
-        public static class AddLifeSteal_Character_Damage_Patch
+        // Postfix handler invoked by CharacterDamageDispatch (on-hit reaction).
+        public static void CheckAndDoLifeSteal(HitData hit, Character attacker)
         {
-            public static void Postfix(HitData hit)
-            {
-                CheckAndDoLifeSteal(hit);
-            }
-        }
-        
-        public static void CheckAndDoLifeSteal(HitData hit)
-        {
-            var attacker = hit.GetAttacker();
             if (attacker == null || attacker is not Player player)
             {
                 return;

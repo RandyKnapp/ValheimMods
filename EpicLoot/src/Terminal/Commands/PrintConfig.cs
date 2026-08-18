@@ -6,6 +6,8 @@ using EpicLoot.Crafting;
 using EpicLoot.CraftingV2;
 using EpicLoot.GatedItemType;
 using EpicLoot.LegendarySystem;
+using EpicLoot.Magic;
+using EpicLoot.ShardStones;
 using Newtonsoft.Json;
 
 namespace EpicLoot;
@@ -15,8 +17,9 @@ public static partial class TerminalManager
     private static readonly List<string> ConfigNames =
     [
         "loottable", "abilities", "adventuredata", "enchantcosts",
-        "enchantingupgrades", "iteminfo", "itemnames", "legendaries",
-        "magiceffects", "materialconversion", "recipes"
+        "enchantingupgrades", "iteminfo", "itemnames", "itemsorter", "legendaries",
+        "magiceffects", "materialconversion", "recipes", "shardstones",
+        "shardstoneconversions"
     ];
 
     private static List<string> GetPrintConfigOptions(string[] args)
@@ -68,6 +71,15 @@ public static partial class TerminalManager
                 break;
             case "recipes":
                 EpicLoot.LogWarningForce(JsonConvert.SerializeObject(RecipesHelper.Config, Formatting.Indented));
+                break;
+            case "itemsorter":
+                EpicLoot.LogWarningForce(JsonConvert.SerializeObject(AutoAddEnchantableItems.Config, Formatting.Indented));
+                break;
+            case "shardstones":
+                EpicLoot.LogWarningForce(JsonConvert.SerializeObject(Shards.GetCFG(), Formatting.Indented));
+                break;
+            case "shardstoneconversions":
+                EpicLoot.LogWarningForce(JsonConvert.SerializeObject(ShardStoneConversions.Config, Formatting.Indented));
                 break;
         }
     }

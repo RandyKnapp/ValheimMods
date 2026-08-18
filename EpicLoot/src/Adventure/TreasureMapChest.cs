@@ -70,6 +70,12 @@ namespace EpicLoot.Adventure
                 container.m_name = Localization.instance.Localize(label);
                 container.m_privacy = hasBeenFound ? Container.PrivacySetting.Public : Container.PrivacySetting.Private;
                 container.m_autoDestroyEmpty = true;
+
+                // The chest can end up inside another player's ward (it spawns at a random point,
+                // or a ward can be raised over it after the fact) that the buyer isn't permitted on.
+                // Disable the guard-stone check so the buyer can always reach their purchased
+                // treasure; access is still restricted to them by the Private privacy setting above.
+                container.m_checkGuardStone = false;
             }
 
             var piece = GetComponent<Piece>();

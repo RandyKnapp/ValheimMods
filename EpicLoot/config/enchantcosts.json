@@ -34,6 +34,46 @@
   "DisenchantProducts": [
     {
       "IsMagic": true,
+      "ItemTypes": [ "Material" ],
+      "Rarity": "Magic",
+      "Products": [
+        { "Item": "ShardMagic", "Amount": 2 }
+      ]
+    },
+    {
+      "IsMagic": true,
+      "ItemTypes": [ "Material" ],
+      "Rarity": "Rare",
+      "Products": [
+        { "Item": "ShardRare", "Amount": 2 }
+      ]
+    },
+    {
+      "IsMagic": true,
+      "ItemTypes": [ "Material" ],
+      "Rarity": "Epic",
+      "Products": [
+        { "Item": "ShardEpic", "Amount": 2 }
+      ]
+    },
+    {
+      "IsMagic": true,
+      "ItemTypes": [ "Material" ],
+      "Rarity": "Legendary",
+      "Products": [
+        { "Item": "ShardLegendary", "Amount": 2 }
+      ]
+    },
+    {
+      "IsMagic": true,
+      "ItemTypes": [ "Material" ],
+      "Rarity": "Mythic",
+      "Products": [
+        { "Item": "ShardMythic", "Amount": 2 }
+      ]
+    },
+    {
+      "IsMagic": true,
       "ItemTypes": [
         "OneHandedWeapon",
         "Bow",

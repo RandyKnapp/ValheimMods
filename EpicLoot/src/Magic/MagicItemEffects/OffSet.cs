@@ -32,10 +32,10 @@ public class OffSetAttack
     }
 
     /// <summary>
-    /// Applies any active OffSetAttack buffs when taking damage.
+    /// Applies any active OffSetAttack buffs when taking damage. Prefix handler invoked (victim-side) by
+    /// CharacterDamageDispatch.
     /// </summary>
-    [HarmonyPatch(typeof(Character), nameof(Character.Damage))]
-    private static void Prefix(Character __instance, ref HitData hit)
+    public static void ReduceIncomingHit(Character __instance, HitData hit)
     {
         if (!_activeOffSet ||
             __instance == null ||

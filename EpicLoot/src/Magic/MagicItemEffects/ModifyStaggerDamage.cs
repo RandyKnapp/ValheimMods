@@ -1,17 +1,16 @@
-﻿using HarmonyLib;
+﻿using EpicLoot.src.Magic.MagicItemEffects.Helpers;
+using HarmonyLib;
 using JetBrains.Annotations;
 
 namespace EpicLoot.MagicItemEffects
 {
-    [HarmonyPatch(typeof(Character), nameof(Character.Damage))]
     public class ModifyStaggerDamage_Character_Damage_Patch
     {
         public static float? HandlingProjectileDamage;
-        
-        [UsedImplicitly]
-        private static void Prefix(Character __instance, HitData hit)
+
+        // Prefix handler invoked by CharacterDamageDispatch (attacker-side outgoing modifier).
+        public static void ApplyStaggerModifier(Character __instance, HitData hit, Character attacker)
         {
-            var attacker = hit.GetAttacker();
             if (attacker is Player player && __instance.IsStaggering())
             {
                 if (HandlingProjectileDamage == null)
@@ -67,7 +66,11 @@ namespace EpicLoot.MagicItemEffects
         {
             if (owner != null && owner.IsPlayer() && __instance != null && __instance.m_nview != null)
             {
-                __instance.m_nview.GetZDO().Set("epic loot modify stagger damage",
+                var zdo = __instance.m_nview.GetZDO();
+                if (zdo == null)
+                    return;
+
+                zdo.Set("epic loot modify stagger damage",
                     ModifyStaggerDamage_Character_Damage_Patch.ReadStaggerDamageValue((Player)owner));
             }
         }

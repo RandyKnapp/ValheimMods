@@ -1,0 +1,57 @@
+﻿root = true
+
+[*]
+indent_style = space
+indent_size = 4
+# Editor Guidelines VS/Rider extension: 180-col guide
+guidelines = 180
+
+[*.cs]
+indent_size = 4
+tab_width = 4
+
+# A BOM is what stops an editor from misreading a UTF-8 file as CP1252 and silently
+# round-tripping non-ASCII characters into mojibake (it happened to the tooltip pip
+# glyphs in EpicLoot.cs). Prefer \uXXXX escapes for glyphs in string literals anyway.
+charset = utf-8-bom
+
+# --- One True Brace Style (1TBS) ---
+csharp_new_line_before_open_brace = none
+csharp_new_line_before_else = false
+csharp_new_line_before_catch = false
+csharp_new_line_before_finally = false
+csharp_new_line_before_members_in_object_initializers = true
+csharp_new_line_before_members_in_anonymous_types = true
+csharp_new_line_between_query_expression_clauses = true
+
+# Always use braces (1TBS mandates them, even on single-line blocks)
+csharp_prefer_braces = true:suggestion
+
+# Block / switch indentation
+csharp_indent_case_contents = true
+csharp_indent_switch_labels = true
+csharp_indent_block_contents = true
+csharp_indent_braces = false
+
+# Keep formatting deviations as hints, never warnings/errors
+dotnet_diagnostic.IDE0055.severity = suggestion
+
+# --- Reduce modernization nagging (merged from both old files) ---
+dotnet_diagnostic.IDE0003.severity = none  # Remove qualification
+dotnet_diagnostic.IDE0031.severity = none  # Use null propagation
+dotnet_diagnostic.IDE0051.severity = none  # Remove unused private members
+dotnet_diagnostic.IDE0060.severity = none  # Remove unused parameter
+dotnet_diagnostic.IDE0066.severity = none  # Convert switch to expression
+dotnet_diagnostic.IDE0074.severity = none  # Use compound assignment
+dotnet_diagnostic.IDE0090.severity = none  # 'new' expression can be simplified
+dotnet_diagnostic.IDE0130.severity = none  # Namespace doesn't match folder
+dotnet_diagnostic.IDE0270.severity = none  # Use coalesce expression
+
+# Localization files are read with BOM detection but must never carry one for
+# other tooling; plain UTF-8 is the contract.
+[*.{json,md}]
+charset = utf-8
+
+# --- Generated / third-party Unity code: skip style analysis ---
+[ValheimUnity/**.cs]
+generated_code = true

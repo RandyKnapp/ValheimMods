@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using static Mono.Security.X509.X520;
 
 namespace EpicLoot.MagicItemEffects
 {
@@ -34,7 +33,7 @@ namespace EpicLoot.MagicItemEffects
 
         public static bool PlayerHasLowHealth(Player player)
         {
-            return player != null && player.GetHealth() / player.GetMaxHealth() < Mathf.Min(GetLowHealthPercentage(player), 1.0f);
+            return player != null && player.GetHealth() / player.GetMaxHealth() <= Mathf.Min(GetLowHealthPercentage(player), 1.0f);
         }
 
         public static float GetLowHealthPercentage(Player player)

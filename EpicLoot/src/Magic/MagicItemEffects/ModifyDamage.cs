@@ -1,4 +1,6 @@
 ﻿using EpicLoot.General;
+using EpicLoot.MagicItemEffects.Shards;
+using EpicLoot.src.Magic.MagicItemEffects.Helpers;
 using HarmonyLib;
 using UnityEngine;
 
@@ -6,6 +8,10 @@ namespace EpicLoot.MagicItemEffects;
 
 public static class ModifyDamage
 {
+    // Single consolidated patch for ItemDrop.ItemData.GetDamage. It applies the core magic damage
+    // modifiers and then the per-weapon shard modifiers that used to each declare their own GetDamage
+    // postfix. All of them are gated on the local player having the weapon equipped (RunGetDamagePatch),
+    // which also drives the weapon tooltip, so folding them here keeps that gating and ordering explicit.
     [HarmonyPatch(typeof(ItemDrop.ItemData), nameof(ItemDrop.ItemData.GetDamage), typeof(int), typeof(float))]
     private class ModifyDamage_ItemData_GetDamage_Patch
     {
@@ -14,8 +20,25 @@ public static class ModifyDamage
             if (RunGetDamagePatch(__instance))
             {
                 ApplyMagicDamageModifiers(Player.m_localPlayer, __instance, ref __result);
+                ApplyShardWeaponModifiers(__instance, ref __result);
             }
         }
+    }
+
+    // Per-weapon shard GetDamage modifiers, run after the core modifiers. Each handler keeps its own
+    // effect-specific gate (day/night, adrenaline, weight, etc.); the equipped-local-player gate is
+    // already satisfied by RunGetDamagePatch above.
+    private static void ApplyShardWeaponModifiers(ItemDrop.ItemData item, ref HitData.DamageTypes damage)
+    {
+        IncreaseDamageDuringDaytime.ModifyWeaponDamage(item, ref damage);
+        IncreaseDamageDuringNighttime.ModifyWeaponDamage(item, ref damage);
+        DamageBonusFromPlayerWeight.ModifyWeaponDamage(item, ref damage);
+        DamageIncreaseFromMovementPenalty.ModifyWeaponDamage(item, ref damage);
+        IncreaseHarvestDamage.ModifyWeaponDamage(item, ref damage);
+        ConvertPhysicalDamageToLightning.ModifyWeaponDamage(item, ref damage);
+        IcyWeight.ModifyWeaponDamage(item, ref damage);
+        ReduceArmorIncreaseDamage.ModifyWeaponDamage(item, ref damage);
+        NecroticFire.ModifyWeaponDamage(item, ref damage);
     }
 
     /// <summary>

@@ -13,7 +13,7 @@ public class AmmoConservation
     {
         public static void Postfix(Attack __instance, ref bool __result, ItemDrop.ItemData ammoItem)
         {
-            if (__result == false) return;
+            if (__result == false || ammoItem == null) return;
             
             Player player = __instance.m_character as Player;
             if (player != Player.m_localPlayer) return;

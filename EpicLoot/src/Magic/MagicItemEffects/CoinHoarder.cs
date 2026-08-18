@@ -1,4 +1,4 @@
-using System.Linq;
+using EpicLoot.General;
 using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects;
@@ -13,15 +13,12 @@ public class CoinHoarder
             return 0f;
         }
 
-        ItemDrop.ItemData[] mcoins = player.m_inventory.GetAllItems()
-            .Where(val => val.m_dropPrefab != null && val.m_dropPrefab.name == "Coins").ToArray();
-
-        if (mcoins.Length == 0)
+        float totalCoins = CoinPurse.GetTotalCoins(player);
+        if (totalCoins <= 0)
         {
             return 0f;
         }
 
-        float totalCoins = mcoins.Sum(coin => coin.m_stack);
         if (totalCoins <= 1000)
         {
             // Linear fraction increase up till 1000 coins, then logarithmic decay increase (1.145x at 1000)

@@ -1,4 +1,4 @@
-﻿{
+{
   "MaterialConversions" : [
     {
       "Name": "Recipe_ShardRareUpgrade",
@@ -193,6 +193,56 @@
       "Resources": [
         { "Item": "RunestoneLegendary", "Amount": 5  },
         { "Item": "Coins",              "Amount": 15 }
+      ]
+    },
+    {
+      "Name": "Recipe_MagicDustAndEssenceToShard_Conversion",
+      "Product": "ShardMagic",
+      "Amount": 1,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "EssenceMagic", "Amount": 2 },
+        { "Item": "DustMagic",    "Amount": 2 }
+      ]
+    },
+    {
+      "Name": "Recipe_RareDustAndEssenceToShard_Conversion",
+      "Product": "ShardRare",
+      "Amount": 1,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "EssenceRare", "Amount": 2 },
+        { "Item": "DustRare",    "Amount": 2 }
+      ]
+    },
+    {
+      "Name": "Recipe_EpicDustAndEssenceToShard_Conversion",
+      "Product": "ShardEpic",
+      "Amount": 1,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "EssenceEpic", "Amount": 2 },
+        { "Item": "DustEpic",    "Amount": 2 }
+      ]
+    },
+    {
+      "Name": "Recipe_LegendaryDustAndEssenceToShard_Conversion",
+      "Product": "ShardLegendary",
+      "Amount": 1,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "EssenceLegendary", "Amount": 2 },
+        { "Item": "DustLegendary",    "Amount": 2 }
+      ]
+    },
+    {
+      "Name": "Recipe_MythicDustAndEssenceToShard_Conversion",
+      "Product": "ShardMythic",
+      "Amount": 1,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "EssenceMythic", "Amount": 2 },
+        { "Item": "DustMythic",    "Amount": 2 }
       ]
     },
     {

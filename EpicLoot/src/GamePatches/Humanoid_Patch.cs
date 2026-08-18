@@ -29,6 +29,18 @@ namespace EpicLoot
             AssignEmptyToNull(ref __instance.m_trinketItem);
         }
 
+        // Runs after every equipment change (Humanoid.SetupEquipment routes here), so it also covers
+        // mods that equip into their own slots and finish by calling SetupEquipment themselves.
+        [HarmonyPatch(nameof(Humanoid.SetupVisEquipment))]
+        [HarmonyPostfix]
+        public static void SetupVisEquipment_Postfix(Humanoid __instance, bool isRagdoll)
+        {
+            if (!isRagdoll && __instance is Player player)
+            {
+                VisEquipment_Patch.RefreshPlayerFx(player);
+            }
+        }
+
         private static void AssignEmptyToNull(ref ItemDrop.ItemData data)
         {
             if (data != null && data.m_dropPrefab == null)

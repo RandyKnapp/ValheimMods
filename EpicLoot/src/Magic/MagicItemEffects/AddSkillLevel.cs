@@ -13,6 +13,8 @@ namespace EpicLoot.MagicItemEffects
     [HarmonyPatch(typeof(Skills), nameof(Skills.GetSkillFactor))]
     public static class AddSkillLevel_Skills_GetSkillFactor_Patch
     {
+        private static bool _inSkillsAsSkills = false;
+
         [UsedImplicitly]
         private static void Postfix(Skills __instance, SkillType skillType, ref float __result)
         {
@@ -28,6 +30,32 @@ namespace EpicLoot.MagicItemEffects
                 if (type.Contains(skillType))
                 {
                     increase += (int) player.GetTotalActiveMagicEffectValue(effect);
+                }
+            }
+
+
+
+            void SkillsAsSkills(string effect, SkillType[] type, SkillType[] asType) 
+            {
+                if (_inSkillsAsSkills) return;
+                if (type.Contains(skillType)) 
+                {
+                    _inSkillsAsSkills = true;
+
+                    float effectValue = player.GetTotalActiveMagicEffectValue(effect);
+                    try 
+                    {
+                        for (int i = 0; i < asType.Length; ++i) 
+                        {
+                            if (asType[i] == skillType) continue;
+                            var asTotal = player.m_skills.GetSkillFactor(asType[i]); // skills total post bonuses
+                            increase += (int)(asTotal * effectValue);
+                        }
+                    } 
+                    finally 
+                    {
+                        _inSkillsAsSkills = false;
+                    }
                 }
             }
 
@@ -48,6 +76,9 @@ namespace EpicLoot.MagicItemEffects
             check(MagicEffectType.AddBloodMagicSkill, SkillType.BloodMagic);
             check(MagicEffectType.AddMovementSkills, SkillType.Run, SkillType.Jump, SkillType.Swim, SkillType.Sneak);
             check(MagicEffectType.AddCrafterSkills, SkillType.Crafting, SkillType.Cooking);
+            check(MagicEffectType.IncreaseMeleeSkills, Shards.IncreaseMeleeSkills.MeleeSkills);
+            SkillsAsSkills(MagicEffectType.BlockAsDodgeAsBlock, Shards.BlockAsDodgeAsBlock.type, Shards.BlockAsDodgeAsBlock.asType);
+            SkillsAsSkills(MagicEffectType.BlockAsWoodCuttingAndPickaxes, Shards.BlockAsWoodCuttingAndPickaxes.type, Shards.BlockAsWoodCuttingAndPickaxes.asType);
 
             return increase;
         }

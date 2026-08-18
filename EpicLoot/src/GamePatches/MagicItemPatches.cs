@@ -39,27 +39,7 @@ public static class InventoryGrid_UpdateGui_MagicItemComponent_Patch
 
     public static void UpdateGuiItems(ItemDrop.ItemData itemData, InventoryGrid.Element element)
     {
-        Image magicItem = ItemBackgroundHelper.CreateAndGetMagicItemBackgroundImage(element.m_go, element.m_equiped.gameObject, true);
-        if (itemData.UseMagicBackground())
-        {
-            magicItem.enabled = true;
-            magicItem.sprite = EpicLoot.GetMagicItemBgSprite();
-            magicItem.color = itemData.GetRarityColor();
-        }
-        else
-        {
-            magicItem.enabled = false;
-        }
-
-        Transform setItemTransform = element.m_go.transform.Find("setItem");
-        if (setItemTransform != null)
-        {
-            Image setItem = setItemTransform.GetComponent<Image>();
-            if (setItem != null)
-            {
-                setItem.enabled = itemData.IsSetItem();
-            }
-        }
+        API.ApplyMagicItemBackground(element.m_go, element.m_equiped.gameObject, itemData, true);
     }
 
     [UsedImplicitly]
@@ -171,17 +151,7 @@ public static class HotkeyBar_UpdateIcons_Patch
 
     public static void UpdateIcons(HotkeyBar.ElementData element, ItemDrop.ItemData itemData)
     {
-        Image magicItem = ItemBackgroundHelper.CreateAndGetMagicItemBackgroundImage(element.m_go, element.m_equiped, false);
-        if (itemData != null && itemData.UseMagicBackground())
-        {
-            magicItem.enabled = true;
-            magicItem.sprite = EpicLoot.GetMagicItemBgSprite();
-            magicItem.color = itemData.GetRarityColor();
-        }
-        else
-        {
-            magicItem.enabled = false;
-        }
+        API.ApplyMagicItemBackground(element.m_go, element.m_equiped, itemData, false);
     }
 
     [UsedImplicitly]

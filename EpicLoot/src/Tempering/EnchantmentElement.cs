@@ -44,8 +44,7 @@ public class EnchantmentElement : MonoBehaviour, IPointerEnterHandler, IPointerE
         _effect = effect;
         _definition = MagicItemEffectDefinitions.Get(effect.EffectType);
         _values = _definition.GetValuesForRarity(rarity);
-        string baseLabel = Localization.instance.Localize(_definition.DisplayText);
-        string text = string.Format(baseLabel, $"<b><color=yellow>{effect.EffectValue}</color></b>");
+        string text = MagicItem.GetEffectTextGeneric(_definition, $"<b><color=yellow>{effect.EffectValue}</color></b>");
         canBeTempered = _values != null;
         label.text = text;
         if (_values == null)
