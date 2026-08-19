@@ -1,4 +1,4 @@
-using BepInEx;
+﻿using BepInEx;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;

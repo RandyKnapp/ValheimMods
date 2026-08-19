@@ -6,11 +6,12 @@ using UnityEngine;
 
 namespace DvergerColor
 {
-    [BepInPlugin(PluginId, "Dverger Color", "1.0.6")]
+    [BepInPlugin(PluginId, "Dverger Color", Version)]
     [BepInProcess("valheim.exe")]
     public class DvergerColor : BaseUnityPlugin
     {
         public const string PluginId = "randyknapp.mods.dvergercolor";
+        public const string Version = "1.0.7";
 
         public static ConfigEntry<Color> Color;
         public static ConfigEntry<int> MaxSteps;

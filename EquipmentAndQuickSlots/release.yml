@@ -1,0 +1,27 @@
+# Release configuration for mod-tools.
+# Shared settings come from the preset, which ships inside the gem.
+#
+# Inspect what this actually resolves to:
+#   mod-tools print-config
+
+extends:  jotunn-mono
+assembly: EquipmentAndQuickSlots
+
+# This repository predates the tool and spells the version constant its own way.
+version_const: Version
+
+# Copy the build into this machine's mod manager profiles after every build.
+deploy:
+  enabled: true
+
+publish:
+  thunderstore:
+    enabled: true
+  nexus:
+    enabled: true
+    mod_id: 92
+    file_id: 543565
+  github:
+    enabled: true
+  discord:
+    enabled: true

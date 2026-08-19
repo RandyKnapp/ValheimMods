@@ -8,13 +8,29 @@ namespace EpicLoot.Adventure.Feature
 {
     internal static class BountyLocationEarlyCache
     {
-        // This could be shifted to multiple variable zsynced lists to preserve the generated values for future use.
+        // Per-client and deliberately unsynchronized: two players picking different spots for their own
+        // bounties is fine, and the alternative (a shared list) would need an anchor to live on --
+        // Haldor has none, since vanilla Trader carries no ZNetView and no networked state at all.
+        //
+        // Lifetime is the client's session, not the merchant panel's. Reset() clears it on world change
+        // (points are world-specific); nothing else empties it, so reopening the merchant is free.
         public static Dictionary<Heightmap.Biome, List<Vector3>> PotentialBiomeLocations =
             new Dictionary<Heightmap.Biome, List<Vector3>> { };
-        private static int _minimumLocationKeys = 3;
 
-        private static int _cacheTriesPerBiome = 10;
-        private static int _maximumTries = 100;
+        // Target and low-water mark are separate. The old single value of 3 was both the goal and the
+        // cap, and SelectSpawnPoint consumes one per bounty or treasure map, so a biome ran dry after
+        // two of them -- and every bounty after that paid for a full blocking search.
+        private const int TargetPointsPerBiome = 12;
+        private const int RefillThreshold = 4;
+
+        private const int MaxTriesPerBiomeFill = 60;
+        private const int MaxTriesOnDemand = 100;
+
+        // A candidate whose zone will not come up is not worth waiting on forever; move to the next one.
+        private const int MaxZoneWaitFrames = 120;
+
+        // Only one top-up coroutine at a time, so repeated merchant visits cannot stack them.
+        private static bool _refilling;
 
         private static Dictionary<Heightmap.Biome, Tuple<float, float>> GetRadiusRanges()
         {
@@ -35,35 +51,63 @@ namespace EpicLoot.Adventure.Feature
             return radiusRanges;
         }
 
+        /// <summary>
+        /// Drops the cache. Called on world change -- every point is a world position, so carrying them
+        /// into another world would hand out spawn points from the wrong map.
+        /// </summary>
+        public static void Reset()
+        {
+            // Stop first: a top-up still in flight would otherwise finish against the new world and file
+            // points it picked from the old one.
+            AdventureCacheDriver.StopAll();
+            PotentialBiomeLocations.Clear();
+            _refilling = false;
+        }
+
+        internal static int CachedPointCount(Heightmap.Biome biome)
+        {
+            return PotentialBiomeLocations.TryGetValue(biome, out var points) ? points.Count : 0;
+        }
+
         internal static void TryAddBiomePoint(Heightmap.Biome biome, Vector3 point)
         {
-            if (!PotentialBiomeLocations.ContainsKey(biome))
+            if (!PotentialBiomeLocations.TryGetValue(biome, out var points))
             {
-                PotentialBiomeLocations.Add(biome, new List<Vector3>() { });
+                points = new List<Vector3>();
+                PotentialBiomeLocations.Add(biome, points);
             }
-            else if (PotentialBiomeLocations[biome].Count >= _minimumLocationKeys)
+
+            if (points.Count >= TargetPointsPerBiome)
             {
                 return;
             }
 
-            PotentialBiomeLocations[biome].Add(point);
+            points.Add(point);
         }
 
         public static IEnumerator TryGetBiomePoint(
             Heightmap.Biome biome, AdventureSaveData saveData, Action<bool, Vector3> onComplete)
         {
-            Dictionary<Heightmap.Biome, Tuple<float, float>> radiusRanges = GetRadiusRanges();
-
-            // Check if any valid cached
-            if (PotentialBiomeLocations.ContainsKey(biome) && PotentialBiomeLocations[biome].Count > 1)
+            // Anything cached is served immediately -- the player is standing at the merchant waiting on
+            // a bounty they have already paid for, so searching here is the one thing worth avoiding.
+            if (CachedPointCount(biome) > 0)
             {
                 SelectSpawnPoint(biome, onComplete);
+                RequestRefill();
                 yield break;
             }
 
-            yield return AddBiomePointLazyCache(radiusRanges, biome, true, onComplete);
+            // Nothing banked for this biome, so there is no choice but to search now.
+            yield return AddBiomePointLazyCache(GetRadiusRanges(), biome, true, onComplete);
+            RequestRefill();
         }
 
+        /// <summary>
+        /// Tops the cache up to <see cref="TargetPointsPerBiome"/>. Called from MerchantPanel.Awake, so
+        /// it runs again every time the panel is rebuilt -- it deliberately does not clear anything, and
+        /// returns immediately when every biome is already stocked. Regenerating on each merchant visit
+        /// is what made accepting a bounty pay for hundreds of world-point tests.
+        /// </summary>
         public static IEnumerator PopulateCacheFromStart()
         {
             // Can't setup the cache without a player
@@ -72,44 +116,78 @@ namespace EpicLoot.Adventure.Feature
                 yield break;
             }
 
-            // Clear old data
-            PotentialBiomeLocations = new Dictionary<Heightmap.Biome, List<Vector3>> { };
+            yield return FillBiomesBelowTarget();
+        }
+
+        /// <summary>
+        /// Kicks off a background top-up when any biome has fallen below the low-water mark. Fire and
+        /// forget: the caller never waits on it, so consuming a point never blocks on a search.
+        /// </summary>
+        public static void RequestRefill(bool ignoreThreshold = false)
+        {
+            if (_refilling || Player.m_localPlayer == null)
+            {
+                return;
+            }
+
+            if (!ignoreThreshold && !AnyBiomeBelowThreshold())
+            {
+                return;
+            }
+
+            AdventureCacheDriver.Run(RefillCache());
+        }
+
+        private static bool AnyBiomeBelowThreshold()
+        {
+            foreach (var biome in AdventureDataManager.Config.TreasureMap.GetBiomeList())
+            {
+                if (biome == Heightmap.Biome.None || biome == Heightmap.Biome.All)
+                {
+                    continue;
+                }
+
+                if (CachedPointCount(biome) < RefillThreshold)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static IEnumerator RefillCache()
+        {
+            _refilling = true;
+            try
+            {
+                yield return FillBiomesBelowTarget();
+            }
+            finally
+            {
+                _refilling = false;
+            }
+        }
+
+        private static IEnumerator FillBiomesBelowTarget()
+        {
             Dictionary<Heightmap.Biome, Tuple<float, float>> radiusRanges = GetRadiusRanges();
 
-            int index = 0;
-            Heightmap.Biome[] biomeList = AdventureDataManager.Config.TreasureMap.GetBiomeList();
-
-            while (index < biomeList.Length)
+            foreach (var biome in AdventureDataManager.Config.TreasureMap.GetBiomeList())
             {
-                Heightmap.Biome targetBiome = biomeList[index];
-
-                Tuple<float, float> radiusRange = radiusRanges[targetBiome];
-
-                yield return AddBiomePointLazyCache(radiusRanges, targetBiome);
-
-                index++;
-
-                // Check if all biomes have the required number of keys
-                bool isReady = true;
-                foreach (var biome in biomeList)
+                if (biome == Heightmap.Biome.None || biome == Heightmap.Biome.All)
                 {
-                    if (biome == Heightmap.Biome.None || biome == Heightmap.Biome.All)
-                    {
-                        continue;
-                    }
-
-                    if (!PotentialBiomeLocations.ContainsKey(biome) ||
-                        PotentialBiomeLocations[biome].Count < _minimumLocationKeys)
-                    {
-                        isReady = false;
-                        break;
-                    }
+                    continue;
                 }
 
-                if (isReady)
+                // Already stocked. Points do not go stale -- the world does not change -- so there is
+                // nothing to refresh and this is the path a repeat merchant visit takes.
+                if (CachedPointCount(biome) >= TargetPointsPerBiome)
                 {
-                    break;
+                    continue;
                 }
+
+                yield return AddBiomePointLazyCache(radiusRanges, biome);
             }
         }
 
@@ -118,32 +196,83 @@ namespace EpicLoot.Adventure.Feature
             Action<bool, Vector3> onComplete = null)
         {
             int tries = 0;
+            int maxTries = requireSelection ? MaxTriesOnDemand : MaxTriesPerBiomeFill;
 
             while (true)
             {
                 // Fail safe, exit coroutine.
-                if ((!requireSelection && tries > _cacheTriesPerBiome) || tries > _maximumTries)
+                if (tries > maxTries)
                 {
                     onComplete?.Invoke(false, Vector3.zero);
                     yield break;
                 }
 
-                // Prevent locking main thread.
-                if (tries % 20 == 0 && tries > 1)
+                // Prevent locking main thread. Every path below increments tries, so this is guaranteed
+                // to come around -- it previously could not, because the radius-reject path used to
+                // `continue` without incrementing, leaving the loop spinning with nothing to yield on.
+                if (tries % 10 == 0 && tries > 1)
                 {
                     yield return new WaitForSeconds(1f);
                 }
+
+                // Stop filling the moment the biome is stocked, rather than burning the full try budget.
+                if (!requireSelection && CachedPointCount(biome) >= TargetPointsPerBiome)
+                {
+                    yield break;
+                }
+
                 var range = radiusRanges.ContainsKey(biome) ? radiusRanges[biome] :
                     new Tuple<float, float>(0f, WorldGenerator.waterEdge);
                 var spawnPoint = SelectWorldPoint(range, tries, biome);
-                var zoneId = ZoneSystem.GetZone(spawnPoint);
-                while (!ZoneSystem.instance.SpawnZone(zoneId, ZoneSystem.SpawnMode.Client, out _))
+
+                // Cheap rejection first. WorldGenerator answers biome and height from the world seed with
+                // no instantiation at all, and it is the same data the Heightmap is built from -- so any
+                // point it rejects would have failed the full check below too. This is what keeps the
+                // zone spawn underneath from running on nearly every candidate.
+                if (!PassesWorldGenPreFilter(spawnPoint))
                 {
-                    // Wait until the zone is spawned.
+                    tries++;
+                    continue;
+                }
+
+                // The full check needs a real Heightmap (GetGroundData raycasts terrain colliders, and
+                // the lava test reads the vegetation mask), so the zone has to exist for it.
+                var zoneId = ZoneSystem.GetZone(spawnPoint);
+                GameObject zoneRoot = null;
+                int zoneWaitFrames = 0;
+                while (!ZoneSystem.instance.SpawnZone(zoneId, ZoneSystem.SpawnMode.Client, out zoneRoot))
+                {
+                    // A zone whose location prefab has not finished loading can stay unavailable for an
+                    // open-ended time. Give up on this candidate rather than waiting on it forever.
+                    if (++zoneWaitFrames > MaxZoneWaitFrames)
+                    {
+                        break;
+                    }
+
                     yield return new WaitForEndOfFrame();
                 }
 
-                if (!IsSpawnLocationValid(spawnPoint, out Heightmap.Biome spawnLocationBiome))
+                if (zoneRoot == null)
+                {
+                    tries++;
+                    continue;
+                }
+
+                Heightmap.Biome spawnLocationBiome;
+                bool valid;
+                try
+                {
+                    valid = IsSpawnLocationValid(spawnPoint, out spawnLocationBiome);
+                }
+                finally
+                {
+                    // SpawnZone always instantiates a fresh root and, unlike PokeLocalZone, we never
+                    // register it in ZoneSystem.m_zones -- so UpdateTTL will never destroy it. Left alone
+                    // this leaked a zone and its terrain mesh on every single try.
+                    UnityEngine.Object.Destroy(zoneRoot);
+                }
+
+                if (!valid)
                 {
                     tries++;
                     continue;
@@ -156,24 +285,51 @@ namespace EpicLoot.Adventure.Feature
                     onComplete?.Invoke(true, spawnPoint);
                     yield break;
                 }
-                else
-                {
-                    if (radiusRanges.ContainsKey(spawnLocationBiome))
-                    {
-                        var min = radiusRanges[spawnLocationBiome].Item1;
-                        var max = radiusRanges[spawnLocationBiome].Item2;
-                        var mag = new Vector2(spawnPoint.x, spawnPoint.z).magnitude;
-                        if (mag < min || mag > max)
-                        {
-                            continue;
-                        }
-                    }
 
-                    TryAddBiomePoint(spawnLocationBiome, spawnPoint);
+                if (radiusRanges.ContainsKey(spawnLocationBiome))
+                {
+                    var min = radiusRanges[spawnLocationBiome].Item1;
+                    var max = radiusRanges[spawnLocationBiome].Item2;
+                    var mag = new Vector2(spawnPoint.x, spawnPoint.z).magnitude;
+                    if (mag < min || mag > max)
+                    {
+                        tries++;
+                        continue;
+                    }
                 }
 
+                TryAddBiomePoint(spawnLocationBiome, spawnPoint);
                 tries++;
             }
+        }
+
+        /// <summary>
+        /// Seed-level rejection of a candidate point, with nothing instantiated. Mirrors the biome and
+        /// water tests in <see cref="IsSpawnLocationValid"/> using WorldGenerator, which is the source
+        /// the Heightmap is generated from -- so this only ever rejects points the full check rejects.
+        /// </summary>
+        private static bool PassesWorldGenPreFilter(Vector3 point)
+        {
+            var worldGenerator = WorldGenerator.instance;
+            if (worldGenerator == null)
+            {
+                // No generator to consult yet; let the full check decide.
+                return true;
+            }
+
+            var biome = worldGenerator.GetBiome(point.x, point.z);
+            if (biome == Heightmap.Biome.None)
+            {
+                return false;
+            }
+
+            if (biome != Heightmap.Biome.Ocean &&
+                ZoneSystem.instance.m_waterLevel > worldGenerator.GetHeight(point.x, point.z) + 2f)
+            {
+                return false;
+            }
+
+            return true;
         }
 
         internal static void SelectSpawnPoint(Heightmap.Biome biome, Action<bool, Vector3> onComplete)
@@ -300,6 +456,36 @@ namespace EpicLoot.Adventure.Feature
         private static TreasureMapBiomeInfoConfig GetBiomeInfoConfig(Heightmap.Biome biome)
         {
             return AdventureDataManager.Config.TreasureMap.BiomeInfo.Find(x => x.Biome == biome);
+        }
+    }
+
+    /// <summary>
+    /// Host for the background cache top-up. The merchant panel cannot run it -- StoreGui deactivates
+    /// that object on close, which would stop the coroutine partway -- and a refill is normally
+    /// requested at the moment a point is consumed, i.e. while the panel is on its way out.
+    /// </summary>
+    internal class AdventureCacheDriver : MonoBehaviour
+    {
+        private static AdventureCacheDriver _instance;
+
+        public static void Run(IEnumerator routine)
+        {
+            if (_instance == null)
+            {
+                var go = new GameObject("EpicLoot_AdventureCacheDriver");
+                UnityEngine.Object.DontDestroyOnLoad(go);
+                _instance = go.AddComponent<AdventureCacheDriver>();
+            }
+
+            _instance.StartCoroutine(routine);
+        }
+
+        public static void StopAll()
+        {
+            if (_instance != null)
+            {
+                _instance.StopAllCoroutines();
+            }
         }
     }
 }

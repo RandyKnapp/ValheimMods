@@ -115,11 +115,20 @@ namespace EpicLoot.Adventure.Feature
                 return null;
             }
 
-            ZNetView.m_forceDisableInit = true;
-            var item = Object.Instantiate(itemDropPrefab);
-            ZNetView.m_forceDisableInit = false;
-
-            return item;
+            // Save and restore rather than assigning false. Instantiate runs the new object's whole Awake
+            // chain, and a throw in there would strand this global true -- after which every ZNetView in
+            // the session destroys itself in Awake instead of registering a ZDO, which corrupts
+            // ZNetScene for the rest of the run. Same guard as LootRoller.SpawnLootForDrop.
+            var priorForceDisableInit = ZNetView.m_forceDisableInit;
+            try
+            {
+                ZNetView.m_forceDisableInit = true;
+                return Object.Instantiate(itemDropPrefab);
+            }
+            finally
+            {
+                ZNetView.m_forceDisableInit = priorForceDisableInit;
+            }
         }
 
         public static List<SecretStashItemInfo> CollectItems(List<SecretStashItemConfig> itemList)

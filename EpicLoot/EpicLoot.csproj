@@ -46,8 +46,8 @@
     <EmbeddedResource Include="localizations\*.json" />
     <None Include="info.md" />
     <None Include="packages.config" />
-    <None Include="thunderstore\manifest.json" />
-    <None Include="CHANGELOG.md" />
+    <None Include="Package\manifest.json" />
+    <None Include="Package\CHANGELOG.md" />
     <None Include="todo.md" />
     <None Include="README.md" />
   </ItemGroup>
@@ -56,13 +56,6 @@
     <PackageReference Include="JotunnLib" Version="2.*" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
-
-  <Target Name="CopyToModManagers" AfterTargets="Build">
-    <Message Text="Copying to mod managers" Importance="high" />
-    <Copy SourceFiles="$(TargetDir)\$(TargetFileName)" DestinationFolder="$(AppData)\com.kesomannen.gale\valheim\profiles\Modtest\BepInEx\plugins\" />
-    <Copy SourceFiles="$(TargetDir)\$(TargetFileName)" DestinationFolder="$(AppData)\r2modmanPlus-local\Valheim\profiles\Modtest\BepInEx\plugins\" />
-    <Copy SourceFiles="$(TargetDir)\$(TargetFileName)" DestinationFolder="$(AppData)\Thunderstore Mod Manager\DataFolder\Valheim\profiles\Modtesting\BepInEx\plugins\" />
-  </Target>
 
   <!-- Stage the merged EpicLoot.dll into the Unity project so the enchanting-UI prefabs bind to it
        (replaces the old EpicLoot-UnityLib.dll authoring plugin). Guarded so a bare `dotnet build`
@@ -76,7 +69,44 @@
 
   <Import Project="..\Common\Common.projitems" Label="Shared" />
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="xcopy /Y &quot;$(TargetDir)$(TargetFileName)&quot; &quot;$(AppData)\r2modmanPlus-local\Valheim\profiles\testa\BepInEx\plugins\&quot;" />
+  <!-- BEGIN mod-tools (managed block; replaced by `mod-tools setup`) -->
+  <PropertyGroup>
+    <RepoRoot Condition=" '$(RepoRoot)' == '' ">$([System.IO.Path]::GetFullPath('$(MSBuildProjectDirectory)/'))</RepoRoot>
+    <!-- Override in the gitignored Environment.props when the gem's bindir
+         is not on the PATH that MSBuild sees. -->
+    <ModTools Condition=" '$(ModTools)' == '' ">mod-tools</ModTools>
+  </PropertyGroup>
+
+  <!-- Nothing is vendored into this repo, so a machine that never installed
+       the tools has no mod-tools at all. This probes for it once and warns,
+       rather than failing: not having a release tool should not stop anyone
+       compiling. Everything below is then conditioned on the result, so a
+       machine without it skips those steps instead of failing three times
+       over with "command not found" buried in Exec output. -->
+  <Target Name="ModToolsGuard" BeforeTargets="Build">
+    <Exec Command="$(ModTools) preflight --root &quot;$(RepoRoot).&quot;" ContinueOnError="true" IgnoreExitCode="true" StandardOutputImportance="low">
+      <Output TaskParameter="ExitCode" PropertyName="ModToolsExit" />
+    </Exec>
+    <PropertyGroup>
+      <ModToolsAvailable Condition=" '$(ModToolsExit)' == '0' ">true</ModToolsAvailable>
+    </PropertyGroup>
+    <Warning Condition=" '$(ModToolsAvailable)' != 'true' " Text="mod-tools is not installed on this machine, or this repo is not set up. Skipping release checks, packaging and deploy. Install it with `rake install` from a clone of the tools repo; see its SETUP.md." />
   </Target>
+
+  <Target Name="ReleaseChecks" BeforeTargets="Build" Condition=" '$(ModToolsAvailable)' == 'true' AND '$(Configuration)' == 'Release' ">
+    <Exec Command="$(ModTools) check --root &quot;$(RepoRoot).&quot;" />
+  </Target>
+
+  <Target Name="ReleasePackage" AfterTargets="Build" Condition=" '$(ModToolsAvailable)' == 'true' AND '$(Configuration)' == 'Release' ">
+    <Exec Command="$(ModTools) package --root &quot;$(RepoRoot).&quot;" />
+  </Target>
+
+  <!-- No Configuration condition, unlike the two above: every build lands
+       in the test profiles, Debug and Release alike. Declared last so it
+       runs after a GenerateMdb target defined earlier in this file, whose
+       .mdb it copies. Does nothing unless release.yml enables deploy. -->
+  <Target Name="ModToolsDeploy" AfterTargets="Build" Condition=" '$(ModToolsAvailable)' == 'true' ">
+    <Exec Command="$(ModTools) deploy --root &quot;$(RepoRoot).&quot; --configuration $(Configuration)" />
+  </Target>
+  <!-- END mod-tools -->
 </Project>

@@ -1,4 +1,4 @@
-using EpicLoot.Config;
+﻿using EpicLoot.Config;
 using HarmonyLib;
 using Jotunn.Managers;
 using System;

@@ -1,1 +1,1 @@
-thunderstore/README.md
+Package/README.md

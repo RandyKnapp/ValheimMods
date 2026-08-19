@@ -1,0 +1,31 @@
+# Release configuration for mod-tools.
+# Shared settings come from the preset, which ships inside the gem.
+#
+# Inspect what this actually resolves to:
+#   mod-tools print-config
+
+extends:  jotunn-mono
+assembly: ImprovedDvergerCirclet
+
+# This repository predates the tool and spells the version constant its own way.
+version_const: Version
+
+# The directory and the plugin source say DvergerColor; the assembly (and the
+# Thunderstore package) say ImprovedDvergerCirclet.
+plugin_source: DvergerColor.cs
+
+# Copy the build into this machine's mod manager profiles after every build.
+deploy:
+  enabled: true
+
+publish:
+  thunderstore:
+    enabled: true
+  nexus:
+    enabled: true
+    mod_id: 79
+    file_id: 490738
+  github:
+    enabled: true
+  discord:
+    enabled: true

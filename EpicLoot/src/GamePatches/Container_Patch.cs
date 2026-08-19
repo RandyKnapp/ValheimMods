@@ -1,5 +1,6 @@
 ﻿using EpicLoot.Config;
 using HarmonyLib;
+using UnityEngine;
 
 namespace EpicLoot
 {
@@ -13,6 +14,13 @@ namespace EpicLoot
                 return;
             }
 
+            // CLLC's DropTable.GetDropListItems postfix multiplies a drop by appending the *same*
+            // ItemDrop.ItemData reference N times rather than cloning it, and vanilla AddDefaultItems
+            // feeds each of those to Inventory.AddItem. The result is one object occupying several
+            // inventory slots, which every later pass over the inventory — ours included — then
+            // treats as distinct items. Split them before EpicLoot touches this container.
+            PendingChestLoot.DeAliasInventory(__instance, containerName);
+
             var zdo = __instance.m_nview == null ? null : __instance.m_nview.GetZDO();
 
             // CheckForChanges destroys an m_autoDestroyEmpty container as soon as it is owned, empty
@@ -21,7 +29,19 @@ namespace EpicLoot
             if (!ELConfig.DeferChestLootRoll.Value || __instance.m_autoDestroyEmpty
                 || zdo == null || !zdo.IsValid())
             {
-                PendingChestLoot.Roll(__instance, containerName, lootTables);
+                // ZNetView.m_useInitZDO is true for exactly as long as ZNetScene.CreateObject is
+                // mid-Instantiate of this container, and this postfix runs inside Container.Awake,
+                // inside that Instantiate. Rolling here would nest a second Instantiate inside the
+                // first while ZNetScene still has m_initZDO checked out — so hand it to LateUpdate.
+                if (ZNetView.m_useInitZDO)
+                {
+                    PendingChestLoot.RequestDirectRoll(__instance);
+                }
+                else
+                {
+                    PendingChestLoot.Roll(__instance, containerName, lootTables);
+                }
+
                 return;
             }
 
@@ -48,8 +68,12 @@ namespace EpicLoot
 
     /// <summary>
     /// The universal "contents are being read" accessor — InventoryGui, Container.CanBeRemoved and
-    /// quick-loot mods all route through it. Rolling in a prefix hands the caller an inventory that
-    /// already holds the loot, so nothing needs a second pass to notice it.
+    /// quick-loot mods all route through it. It is a plain getter, though: container-scanning mods
+    /// (AzuCraftyBoxes' EpicLoot inventory provider among them, via our own API) call it over every
+    /// container in range, several times per frame. Rolling inline here meant one crafting-station
+    /// query force-rolled every unopened chest in the dungeon in a single frame. Queue instead; the
+    /// loot lands on the next LateUpdate, which is still well before a player can act on it, since
+    /// hovering a chest fires the trigger below first.
     /// </summary>
     [HarmonyPatch(typeof(Container), nameof(Container.GetInventory))]
     public static class Container_GetInventory_Patch
@@ -58,7 +82,7 @@ namespace EpicLoot
         {
             if (PendingChestLoot.AnyPending)
             {
-                PendingChestLoot.TryRoll(__instance);
+                PendingChestLoot.RequestRoll(__instance);
             }
         }
     }
@@ -66,7 +90,8 @@ namespace EpicLoot
     /// <summary>
     /// GetHoverText reads m_inventory directly, so it bypasses the GetInventory hook; without this a
     /// pending chest whose vanilla drop table rolled nothing would read "( empty )". Hovering is a
-    /// short local raycast, so it is a fair "the player is at the chest" signal.
+    /// short local raycast, so it is a fair "the player is at the chest" signal — but it also runs
+    /// every frame the player looks at the chest, so it queues rather than rolling inline.
     /// </summary>
     [HarmonyPatch(typeof(Container), nameof(Container.GetHoverText))]
     public static class Container_GetHoverText_Patch
@@ -75,6 +100,23 @@ namespace EpicLoot
         {
             if (PendingChestLoot.AnyPending)
             {
+                PendingChestLoot.RequestRoll(__instance);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Opening a chest is a deliberate player action on one specific container, so it rolls
+    /// synchronously — there is no bulk-call risk here, and the contents must be present by the time
+    /// the open RPC resolves.
+    /// </summary>
+    [HarmonyPatch(typeof(Container), nameof(Container.Interact))]
+    public static class Container_Interact_Patch
+    {
+        public static void Prefix(Container __instance, bool hold)
+        {
+            if (!hold && PendingChestLoot.AnyPending)
+            {
                 PendingChestLoot.TryRoll(__instance);
             }
         }
@@ -82,7 +124,8 @@ namespace EpicLoot
 
     /// <summary>
     /// DropAllItems reads m_inventory directly, so smashing a chest nobody ever opened would
-    /// otherwise silently lose its EpicLoot contents.
+    /// otherwise silently lose its EpicLoot contents. Synchronous: the inventory is emptied inside
+    /// this same call, so a deferred roll would arrive after the loot had already been dropped.
     /// </summary>
     [HarmonyPatch(typeof(Container), nameof(Container.OnDestroyed))]
     public static class Container_OnDestroyed_Patch
@@ -98,7 +141,8 @@ namespace EpicLoot
 
     /// <summary>
     /// Take-all moves out of m_inventory directly. Unreachable for chests in vanilla (Interact bails
-    /// on hold), but Container.TakeAll is public and quick-loot mods call it.
+    /// on hold), but Container.TakeAll is public and quick-loot mods call it. Synchronous for the
+    /// same reason as OnDestroyed.
     /// </summary>
     [HarmonyPatch(typeof(Container), nameof(Container.RPC_TakeAllRespons))]
     public static class Container_RPC_TakeAllRespons_Patch
