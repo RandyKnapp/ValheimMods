@@ -40,7 +40,7 @@ namespace EpicLoot
 
         // Biome shard drops name their item set "ShardStone_{Biome}" using the Heightmap.Biome enum name, the
         // same convention as TreasureMapChest_{Biome} and {Biome}_{Rarity}_Unidentified. This one covers a biome
-        // with no set of its own -- a modded biome, or Heightmap.Biome.None.
+        // with no set of its own — a modded biome, or Heightmap.Biome.None.
         private const string DefaultShardStoneSet = "ShardStone_None";
 
         // Ceiling on how many sockets a SocketCounts entry may ask for. SocketsUI builds its inventory
@@ -221,7 +221,19 @@ namespace EpicLoot
             foreach (var itemObject in gameObjects)
             {
                 results.Add(itemObject.GetComponent<ItemDrop>().m_itemData.Clone());
-                ZNetScene.instance.Destroy(itemObject);
+
+                // ZNetScene.Destroy is the right call either way: it no-ops the ZDO half when the
+                // ZNetView never registered (the normal case here, since these are spawned with
+                // m_forceDisableInit), and unregisters properly if it did. Plain Object.Destroy would
+                // strand a live entry in ZNetScene.m_instances in that second case.
+                if (ZNetScene.instance != null)
+                {
+                    ZNetScene.instance.Destroy(itemObject);
+                }
+                else
+                {
+                    Object.Destroy(itemObject);
+                }
             }
 
             return results;
@@ -532,8 +544,8 @@ namespace EpicLoot
                 var rarityLength = lootDrop?.Rarity?.Length != null ? lootDrop.Rarity.Length : -1;
                 EpicLoot.Log($"Item: {itemName} - Rarity Count: {rarityLength} - Weight: {lootDrop.Weight}");
 
-                // A drop that is already a shard -- rolled from an elite creature's bonus shard set or from a
-                // boss's shard table -- must not be re-rolled into a biome shard, nor sacrificed for
+                // A drop that is already a shard — rolled from an elite creature's bonus shard set or from a
+                // boss's shard table — must not be re-rolled into a biome shard, nor sacrificed for
                 // materials. The unidentified category needs no such guard: IsAllowedMagicItemType rejects
                 // a Material.
                 var isShardDrop = lootDrop.Item != null &&
@@ -556,8 +568,8 @@ namespace EpicLoot
                         break;
                 }
 
-                // Every substitute category can still fail late -- a missing prefab, a rarity with no
-                // sacrifice products -- and each one warns before it does. Falling back to the item the
+                // Every substitute category can still fail late — a missing prefab, a rarity with no
+                // sacrifice products — and each one warns before it does. Falling back to the item the
                 // loot table actually named is what keeps a failure from silently eating the drop.
                 if (!spawned)
                 {
@@ -571,7 +583,7 @@ namespace EpicLoot
         // Rolls what a single drop becomes. The four Balance drop ratios are relative weights, not
         // independent chances, so only their proportions matter and any of them may be zeroed to remove
         // that category. Categories this particular drop cannot become are left out of the roll entirely
-        // rather than rolled and then rejected -- an ineligible category in the pool would silently eat
+        // rather than rolled and then rejected — an ineligible category in the pool would silently eat
         // the drop's chance of becoming any of the others.
         private static LootDropType SelectDropType(LootDrop lootDrop, bool isShardDrop, bool cheatsActive)
         {
@@ -730,27 +742,41 @@ namespace EpicLoot
 
             EpicLoot.Log($"Adding {rarity} unidentified item");
             var randomRotation = Quaternion.Euler(0.0f, Random.Range(0.0f, 360.0f), 0.0f);
-            ZNetView.m_forceDisableInit = !initializeObject;
-            var lootdrop = Object.Instantiate(prefab, dropPoint, randomRotation);
-            // Ensure that the unidentified item has the correct magic item data for the rarity
-            var id = lootdrop.GetComponent<ItemDrop>();
-            var mic = id.m_itemData.Data().GetOrCreate<MagicItemComponent>();
-            mic.SetMagicItem(new MagicItem
+
+            // m_forceDisableInit is a global that ZNetView.Awake reads to decide whether to register a
+            // ZDO at all. Restore whatever it was, in a finally: leaving it stuck true makes every
+            // later ZNetView awake unregistered, which strands null-ZDO entries in ZNetScene.m_instances
+            // and NREs ZNetScene.RemoveObjects every frame for the rest of the session.
+            var priorForceDisableInit = ZNetView.m_forceDisableInit;
+            GameObject lootdrop;
+            try
             {
-                Rarity = rarity,
-                IsUnidentified = true,
-            });
-            // Persist the rarity/unidentified state into the ZDO so a real world drop survives reload.
-            // No-op for the container path where the ZNetView was disabled (Save early-returns on
-            // invalid nview).
-            id.Save();
-            ZNetView.m_forceDisableInit = false;
+                ZNetView.m_forceDisableInit = !initializeObject;
+                lootdrop = Object.Instantiate(prefab, dropPoint, randomRotation);
+                // Ensure that the unidentified item has the correct magic item data for the rarity
+                var id = lootdrop.GetComponent<ItemDrop>();
+                var mic = id.m_itemData.Data().GetOrCreate<MagicItemComponent>();
+                mic.SetMagicItem(new MagicItem
+                {
+                    Rarity = rarity,
+                    IsUnidentified = true,
+                });
+                // Persist the rarity/unidentified state into the ZDO so a real world drop survives reload.
+                // No-op for the container path where the ZNetView was disabled (Save early-returns on
+                // invalid nview).
+                id.Save();
+            }
+            finally
+            {
+                ZNetView.m_forceDisableInit = priorForceDisableInit;
+            }
+
             results.Add(lootdrop);
             return true;
         }
 
         // Replaces the drop with the magic crafting materials that item would yield if sacrificed. Returns
-        // false when nothing could be spawned -- an item with no sacrifice products for the rolled rarity
+        // false when nothing could be spawned — an item with no sacrifice products for the rolled rarity
         // drops as itself rather than as nothing at all.
         private static bool TrySpawnMaterials(LootDrop lootDrop, Vector3 dropPoint, float luckFactor,
             List<GameObject> results)
@@ -857,10 +883,21 @@ namespace EpicLoot
         public static GameObject SpawnLootForDrop(GameObject itemPrefab, Vector3 dropPoint, bool initializeObject)
         {
             Quaternion randomRotation = Quaternion.Euler(0.0f, Random.Range(0.0f, 360.0f), 0.0f);
-            ZNetView.m_forceDisableInit = !initializeObject;
-            GameObject item = Object.Instantiate(itemPrefab, dropPoint, randomRotation);
-            ZNetView.m_forceDisableInit = false;
-            return item;
+
+            // Save and restore rather than assigning false: Instantiate runs the new object's Awake
+            // chain (ItemDrop.Awake, ItemDataManager, our own postfixes), any of which can throw, and
+            // the chest path can run nested inside another instantiate. A stranded true here breaks
+            // ZNetScene for the rest of the session — see the comment in TrySpawnUnidentified.
+            var priorForceDisableInit = ZNetView.m_forceDisableInit;
+            try
+            {
+                ZNetView.m_forceDisableInit = !initializeObject;
+                return Object.Instantiate(itemPrefab, dropPoint, randomRotation);
+            }
+            finally
+            {
+                ZNetView.m_forceDisableInit = priorForceDisableInit;
+            }
         }
 
         // Resolves a loot entry down to a name that ObjectDB can look up, following per-rarity maps,
@@ -871,7 +908,7 @@ namespace EpicLoot
         // console commands resolve entries outside of any drop and have no luck to apply.
         //
         // consumeRarityItems: false stops resolution at the first entry carrying a per-rarity map, leaving
-        // its authored Rarity spread intact. Only the luck-test command wants that -- rolling a rarity is
+        // its authored Rarity spread intact. Only the luck-test command wants that — rolling a rarity is
         // exactly what it is trying to report on rather than perform.
         public static LootDrop ResolveLootDrop(LootDrop lootDrop, float luckFactor = 0f, bool consumeRarityItems = true)
         {
@@ -883,8 +920,26 @@ namespace EpicLoot
                 RarityItems = lootDrop.RarityItems
             };
             var needsResolve = true;
+
+            // Every branch below can hand the loop another name to resolve, so a cyclic config (set A
+            // -> set B -> set A, or a loot table referencing itself) spins here forever on the main
+            // thread with nothing logged. No legitimate chain is anywhere near this deep; trip the cap
+            // and name the trail instead of hanging the game.
+            const int maxResolveSteps = 32;
+            var resolveSteps = 0;
+            var resolveTrail = new List<string>();
+
             while (needsResolve)
             {
+                resolveTrail.Add(result.Item);
+                if (++resolveSteps > maxResolveSteps)
+                {
+                    EpicLoot.LogError($"ResolveLootDrop exceeded {maxResolveSteps} steps resolving " +
+                        $"'{lootDrop.Item}' -- the loot config almost certainly has a cycle. " +
+                        $"Chain: {string.Join(" -> ", resolveTrail)}");
+                    break;
+                }
+
                 // Checked first, and before any name lookup: the map is what decides which name this entry
                 // even has. Whatever it names is then resolved by the branches below, so a rarity may point
                 // at an ItemSet or another table just as Item may.
@@ -908,7 +963,7 @@ namespace EpicLoot
                     result.Item = itemSetResult.Item;
                     result.Weight = itemSetResult.Weight;
                     // A rarity map belongs to the name it was authored next to, so unlike Rarity it always
-                    // replaces what came in -- the entry we just rolled is the one that knows its prefabs.
+                    // replaces what came in — the entry we just rolled is the one that knows its prefabs.
                     result.RarityItems = itemSetResult.RarityItems;
                     if (ArrayUtils.IsNullOrEmpty(result.Rarity))
                     {
@@ -1095,7 +1150,7 @@ namespace EpicLoot
         // plugins, and randomized wear is part of that flow.
         internal static void InitializeMagicItem(ItemDrop.ItemData baseItem)
         {
-            // Callers run SetMagicItem first, which already synced Indestructible -- so an
+            // Callers run SetMagicItem first, which already synced Indestructible — so an
             // indestructible drop reads m_useDurability == false here and skips the wear roll.
             if (baseItem.m_shared.m_useDurability)
             {
@@ -1297,13 +1352,13 @@ namespace EpicLoot
         // nothing) when the entry carries no map, which is the common case.
         //
         // Pinning is what makes the feature safe to use for anything other than shards. Every later stage
-        // -- the magic item roll in SpawnNormalItem, and the Unidentified and Materials substitutions --
+        // — the magic item roll in SpawnNormalItem, and the Unidentified and Materials substitutions --
         // re-reads Rarity, so leaving the original spread in place would let a drop be selected as one
         // rarity and then rolled as another. Shards do not care (they are Materials and carry their rarity
         // in their own prefab's shared data), but a rarity map pointing at gear would.
         //
         // The map is cleared as it is consumed so the caller's while-loop can keep resolving whatever was
-        // substituted -- an ItemSet or an "Object.Level" reference -- without re-entering here.
+        // substituted — an ItemSet or an "Object.Level" reference — without re-entering here.
         private static bool ResolveRarityItem(LootDrop lootDrop, float luckFactor)
         {
             if (lootDrop?.RarityItems == null || lootDrop.RarityItems.Count == 0)

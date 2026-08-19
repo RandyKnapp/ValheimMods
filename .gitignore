@@ -105,3 +105,7 @@ ValheimMods.sln
 /EpicLoot/EpicLoot.csproj
 /EpicLoot/EpicLoot.sln
 /EpicLoot/shardstone_testing_matrix.csv
+.env
+
+# mod-tools staging directories, created during packaging and never committed
+*/Package/plugins/

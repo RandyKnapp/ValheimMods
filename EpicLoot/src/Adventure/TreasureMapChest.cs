@@ -112,7 +112,7 @@ namespace EpicLoot.Adventure
     {
         public static void Postfix(Container __instance)
         {
-            var zdo = __instance.m_nview.GetZDO();
+            var zdo = __instance.m_nview == null ? null : __instance.m_nview.GetZDO();
             if (zdo != null)
             {
                 var biomeString = zdo.GetString($"{nameof(TreasureMapChest)}.{nameof(TreasureMapChest.Biome)}");
@@ -140,7 +140,7 @@ namespace EpicLoot.Adventure
     {
         public static void Postfix(Container __instance, long uid, bool granted)
         {
-            var zdo = __instance.m_nview.GetZDO();
+            var zdo = __instance.m_nview == null ? null : __instance.m_nview.GetZDO();
             if (zdo == null || !zdo.IsValid() || zdo.GetBool("TreasureMapChest.HasBeenFound"))
             {
                 return;

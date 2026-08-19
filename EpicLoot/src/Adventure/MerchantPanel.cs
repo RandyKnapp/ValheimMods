@@ -193,8 +193,10 @@ namespace EpicLoot.Adventure
             IronBountyTokensCount = transform.Find("Currencies/BountyTokensIronCount").GetComponent<Text>();
             GoldBountyTokensCount = transform.Find("Currencies/BountyTokensGoldCount").GetComponent<Text>();
 
-            // Initialize the cache of of bounty positions, starting from the central part of the map.
-            StartCoroutine(BountyLocationEarlyCache.PopulateCacheFromStart());
+            // Top up the cache of bounty positions. Runs on the cache's own driver rather than this
+            // panel: StoreGui deactivates the panel on close, which would abandon the fill partway.
+            // It is a no-op once every biome is stocked, so reopening the merchant costs nothing.
+            BountyLocationEarlyCache.RequestRefill(ignoreThreshold: true);
 
             if (EpicLoot.HasAuga)
             {

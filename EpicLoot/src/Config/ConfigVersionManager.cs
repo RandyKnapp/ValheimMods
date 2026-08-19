@@ -1,4 +1,4 @@
-using BepInEx;
+﻿using BepInEx;
 using EpicLoot.Patching;
 using System;
 using System.Collections.Generic;

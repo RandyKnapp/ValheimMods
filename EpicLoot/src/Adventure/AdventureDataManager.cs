@@ -127,6 +127,11 @@ namespace EpicLoot.Adventure
             Gamble.OnZNetDestroyed();
             TreasureMaps.OnZNetDestroyed();
             Bounties.OnZNetDestroyed();
+
+            // The spawn-point cache lives for the client's session rather than the merchant panel's, so
+            // this is the only thing that empties it. Its contents are world positions -- carrying them
+            // into the next world would hand out points from the wrong map.
+            BountyLocationEarlyCache.Reset();
         }
 
         public static void OnWorldSave()

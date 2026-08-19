@@ -42,4 +42,44 @@
     <None Include="README.md" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- BEGIN mod-tools (managed block; replaced by `mod-tools setup`) -->
+  <PropertyGroup>
+    <RepoRoot Condition=" '$(RepoRoot)' == '' ">$([System.IO.Path]::GetFullPath('$(MSBuildProjectDirectory)/'))</RepoRoot>
+    <!-- Override in the gitignored Environment.props when the gem's bindir
+         is not on the PATH that MSBuild sees. -->
+    <ModTools Condition=" '$(ModTools)' == '' ">mod-tools</ModTools>
+  </PropertyGroup>
+
+  <!-- Nothing is vendored into this repo, so a machine that never installed
+       the tools has no mod-tools at all. This probes for it once and warns,
+       rather than failing: not having a release tool should not stop anyone
+       compiling. Everything below is then conditioned on the result, so a
+       machine without it skips those steps instead of failing three times
+       over with "command not found" buried in Exec output. -->
+  <Target Name="ModToolsGuard" BeforeTargets="Build">
+    <Exec Command="$(ModTools) preflight --root &quot;$(RepoRoot).&quot;" ContinueOnError="true" IgnoreExitCode="true" StandardOutputImportance="low">
+      <Output TaskParameter="ExitCode" PropertyName="ModToolsExit" />
+    </Exec>
+    <PropertyGroup>
+      <ModToolsAvailable Condition=" '$(ModToolsExit)' == '0' ">true</ModToolsAvailable>
+    </PropertyGroup>
+    <Warning Condition=" '$(ModToolsAvailable)' != 'true' " Text="mod-tools is not installed on this machine, or this repo is not set up. Skipping release checks, packaging and deploy. Install it with `rake install` from a clone of the tools repo; see its SETUP.md." />
+  </Target>
+
+  <Target Name="ReleaseChecks" BeforeTargets="Build" Condition=" '$(ModToolsAvailable)' == 'true' AND '$(Configuration)' == 'Release' ">
+    <Exec Command="$(ModTools) check --root &quot;$(RepoRoot).&quot;" />
+  </Target>
+
+  <Target Name="ReleasePackage" AfterTargets="Build" Condition=" '$(ModToolsAvailable)' == 'true' AND '$(Configuration)' == 'Release' ">
+    <Exec Command="$(ModTools) package --root &quot;$(RepoRoot).&quot;" />
+  </Target>
+
+  <!-- No Configuration condition, unlike the two above: every build lands
+       in the test profiles, Debug and Release alike. Declared last so it
+       runs after a GenerateMdb target defined earlier in this file, whose
+       .mdb it copies. Does nothing unless release.yml enables deploy. -->
+  <Target Name="ModToolsDeploy" AfterTargets="Build" Condition=" '$(ModToolsAvailable)' == 'true' ">
+    <Exec Command="$(ModTools) deploy --root &quot;$(RepoRoot).&quot; --configuration $(Configuration)" />
+  </Target>
+  <!-- END mod-tools -->
 </Project>

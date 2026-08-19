@@ -32,7 +32,7 @@ using System.Runtime.InteropServices;
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 //
-// KEEP IN SYNC with EpicLoot.Version (EpicLoot.cs) and thunderstore/manifest.json. The csproj sets
+// KEEP IN SYNC with EpicLoot.Version (EpicLoot.cs) and Package/manifest.json. The csproj sets
 // GenerateAssemblyInfo=false, so these are hand-maintained; anything that version-binds against the
 // assembly rather than the BepInEx plugin metadata reads these.
 [assembly: AssemblyVersion("0.13.0")]

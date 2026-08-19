@@ -48,7 +48,7 @@ namespace EpicLoot.MagicItemEffects
         [UsedImplicitly]
         private static void Postfix(Character __instance)
         {
-            __instance.m_nview.Register<float>(Slow.RPCKey, (s, multiplier) => RPC_Slow(__instance, multiplier));
+            __instance.m_nview?.Register<float>(Slow.RPCKey, (s, multiplier) => RPC_Slow(__instance, multiplier));
         }
 
         private static void RPC_Slow(Character character, float multiplier)

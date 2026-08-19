@@ -27,6 +27,9 @@ namespace EpicLoot.Adventure
 
         private const int SpawnAttemptsPerBand = 100;
 
+        /// <summary>Set once a missing creature prefab has been reported, so it is logged one time.</summary>
+        private bool reportedMissingPrefab = false;
+
         private int currentUpdates = 0;
         private int updatesRequired = InitialSearchDelayFrames;
         private bool startedPlacement = false;
@@ -136,8 +139,7 @@ namespace EpicLoot.Adventure
             var mainPrefab = ZNetScene.instance.GetPrefab(bounty.Target.MonsterID);
             if (mainPrefab == null)
             {
-                EpicLoot.LogWarning($"Could not find prefab for bounty target! BountyID: " +
-                    $"{bounty.ID}, MonsterID: {bounty.Target.MonsterID}");
+                ReportMissingPrefab("target", bounty.ID, bounty.Target.MonsterID);
                 return;
             }
 
@@ -149,8 +151,7 @@ namespace EpicLoot.Adventure
                     var prefab = ZNetScene.instance.GetPrefab(addConfig.MonsterID);
                     if (prefab == null)
                     {
-                        EpicLoot.LogError($"Could not find prefab for bounty add! BountyID: " +
-                            $"{bounty.ID}, MonsterID: {addConfig.MonsterID}");
+                        ReportMissingPrefab("add", bounty.ID, addConfig.MonsterID);
                         return;
                     }
                     prefabs.Add(prefab);
@@ -364,6 +365,35 @@ namespace EpicLoot.Adventure
         private void ParkAndRetry()
         {
             startedPlacement = false;
+            currentUpdates = 0;
+            updatesRequired = RetrySearchDelayFrames;
+        }
+
+        /// <summary>
+        /// Handles a bounty creature prefab that ZNetScene does not have -- typically a creature from a
+        /// mod that has since been removed.
+        ///
+        /// Spawning bails without setting <c>placed</c>, and Update re-enters it on the very next frame,
+        /// so before this the spawner retried a lookup that cannot succeed **every frame for as long as
+        /// the player stayed near the bounty**. Back off to the same delay a failed location search uses,
+        /// and report it once at Error rather than per-frame at Warning -- Warning is invisible at the
+        /// default Log Level, which is why this failed silently.
+        ///
+        /// The spawner is deliberately not marked placed: the player has already paid for this bounty,
+        /// and re-adding the missing mod should let it spawn normally.
+        /// </summary>
+        private void ReportMissingPrefab(string role, string bountyId, string monsterId)
+        {
+            if (!reportedMissingPrefab)
+            {
+                reportedMissingPrefab = true;
+                EpicLoot.LogError($"Could not find prefab for bounty {role}! BountyID: {bountyId}, " +
+                    $"MonsterID: {monsterId}. This bounty cannot spawn until that prefab exists again " +
+                    "(is the mod that adds it still installed?). Retrying occasionally.");
+            }
+
+            // Delay the next attempt without clearing startedPlacement -- the spawn point is fine, it is
+            // only the prefab that is missing, so there is nothing to re-search for.
             currentUpdates = 0;
             updatesRequired = RetrySearchDelayFrames;
         }
