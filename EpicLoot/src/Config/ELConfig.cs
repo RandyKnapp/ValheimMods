@@ -71,6 +71,11 @@ internal class ELConfig {
     // Named ...StackingMode for the same shadowing reason as ShardSocketRemovalMode above.
     public static ConfigEntry<ShardStackMode> ShardStackingMode;
     public static ConfigEntry<float> ShardStackDecayFactor;
+    public static ConfigEntry<bool> AllowGiftOnItemsWithSlots;
+    public static ConfigEntry<int> LegendaryGiftSlotsAdded;
+    public static ConfigEntry<int> MythicGiftSlotsAdded;
+    public static ConfigEntry<float> LegendaryGiftSuccessChance;
+    public static ConfigEntry<float> MythicGiftSuccessChance;
     public static ConfigEntry<float> GlobalDropRateModifier;
     public static ConfigEntry<bool> DeferChestLootRoll;
 
@@ -447,6 +452,29 @@ internal class ELConfig {
             "DestroyItem = the item is consumed.\n" +
             "If the extracted enchantment is the item's only enchantment, the item reverts to a normal item.\n" +
             "Default: ReduceEnchants.");
+        AllowGiftOnItemsWithSlots = BindServer(SectionSockets, "Allow Brokkr Gift On Items With Slots", true,
+            "When true, Brokkr's Gift can extend an item that already has shard slots, up to the most " +
+            "its rarity allows. When false, it only works on an item with no shard slots at all -- an " +
+            "item with slots is refused even when every slot is still empty.\n" +
+            "Default: true.");
+        LegendaryGiftSlotsAdded = BindServer(SectionSockets, "Legendary Brokkr Gift Slots Added", 1,
+            "How many shard slots a Legendary Brokkr's Gift adds. The item's rarity cap still applies on " +
+            "top of this: if fewer slots are free than this grants, the item gains only what fits and the " +
+            "gift is still consumed.\n" +
+            $"Min = 1, Max = {LootRoller.MaxSocketCount}", new AcceptableValueRange<int>(1, LootRoller.MaxSocketCount));
+        MythicGiftSlotsAdded = BindServer(SectionSockets, "Mythic Brokkr Gift Slots Added", 2,
+            "How many shard slots a Mythic Brokkr's Gift adds. The item's rarity cap still applies on " +
+            "top of this: if fewer slots are free than this grants, the item gains only what fits and the " +
+            "gift is still consumed.\n" +
+            $"Min = 1, Max = {LootRoller.MaxSocketCount}", new AcceptableValueRange<int>(1, LootRoller.MaxSocketCount));
+        LegendaryGiftSuccessChance = BindServer(SectionSockets, "Legendary Brokkr Gift Success Chance", 100f,
+            "Percent chance that a Legendary Brokkr's Gift adds its slots. On a failed roll the gift is " +
+            "still consumed and nothing is added.\n" +
+            "Min = 0, Max = 100", new AcceptableValueRange<float>(0f, 100f));
+        MythicGiftSuccessChance = BindServer(SectionSockets, "Mythic Brokkr Gift Success Chance", 100f,
+            "Percent chance that a Mythic Brokkr's Gift adds its slots. On a failed roll the gift is " +
+            "still consumed and nothing is added.\n" +
+            "Min = 0, Max = 100", new AcceptableValueRange<float>(0f, 100f));
 
         // 4 - Enchanting Table
         EnchantingTableUpgradesActive = BindServer(SectionEnchanting, "Upgrades Active", true,
@@ -775,12 +803,22 @@ internal class ELConfig {
         try {
             string fileContents = File.ReadAllText(baseCfgLocation);
             T contents = JsonConvert.DeserializeObject<T>(fileContents);
+            if (contents == null) {
+                // A file containing just "null" (or empty) deserializes to null without throwing.
+                throw new InvalidDataException("file deserialized to null");
+            }
             setupMethod(contents);
         } catch (Exception e) {
             EpicLoot.LogWarningForce($"The existing baseconfig file {filename} is invalid! Defaults will be used." +
                 $"\n{e.Message}");
-            string defaultConfig = EpicLoot.ReadEmbeddedResourceFile(GetDefaultEmbeddedFileLocation(filename));
-            setupMethod(JsonConvert.DeserializeObject<T>(defaultConfig));
+            try {
+                string defaultConfig = EpicLoot.ReadEmbeddedResourceFile(GetDefaultEmbeddedFileLocation(filename));
+                setupMethod(JsonConvert.DeserializeObject<T>(defaultConfig));
+            } catch (Exception fallbackException) {
+                // The fallback path must never escape: this runs inside the ELConfig constructor,
+                // and an unhandled throw here kills Awake before any Harmony patch is applied.
+                EpicLoot.LogErrorForce($"Failed to load even the embedded default for {filename}: {fallbackException}");
+            }
         }
 
         EpicLoot.Log($"Finished loading and applying patches for baseconfig file {filename}.");
@@ -825,13 +863,16 @@ internal class ELConfig {
             }
         }
 
-        // Setup the file watcher for the config file
+        // Setup the file watcher for the config file. NotifyFilter must include FileName:
+        // LastWrite alone never reports create/delete/rename actions, which left the
+        // Created/Deleted/Renamed handlers dead and missed editors that save via
+        // write-temp-then-rename.
         FileSystemWatcher fsw = new FileSystemWatcher(ELConfig.GetOverhaulDirectoryPath());
         fsw.Created += new FileSystemEventHandler(FileModified);
         fsw.Changed += new FileSystemEventHandler(FileModified);
         fsw.Renamed += new RenamedEventHandler(FileModified);
         fsw.Deleted += new FileSystemEventHandler(FileModified);
-        fsw.NotifyFilter = NotifyFilters.LastWrite;
+        fsw.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName;
         fsw.SynchronizingObject = ThreadingHelper.SynchronizingObject;
         fsw.EnableRaisingEvents = true;
         fsw.Filter = filename;
@@ -853,12 +894,26 @@ internal class ELConfig {
                 continue;
             }
 
-            Dictionary<string, string> localizationUpdates = new Dictionary<string, string>();
-            string contents = File.ReadAllText(file);
-            string cleanedLocalization = Regex.Replace(contents, @"\/\/.*\n", "");
-            localizationUpdates = JsonConvert.DeserializeObject<Dictionary<string, string>>(cleanedLocalization);
+            // Per-file isolation: these are user-edited files, and a stray comma used to throw out
+            // of AddLocalizations -> Awake BEFORE any Harmony patch was applied, leaving the whole
+            // mod silently inert. Comments are stripped by the JSON reader itself instead of a
+            // regex, which used to truncate any line containing "//" inside a value (URLs).
+            try {
+                string contents = File.ReadAllText(file);
+                // Newtonsoft skips // and /* */ comments natively during parsing, so no regex
+                // pre-pass is needed (the old one also broke URLs inside values).
+                Dictionary<string, string> localizationUpdates =
+                    JsonConvert.DeserializeObject<Dictionary<string, string>>(contents);
 
-            CheckAndUpdateLocalization(localizationUpdates, language);
+                if (localizationUpdates == null) {
+                    EpicLoot.LogErrorForce($"Localization override {fileInfo.Name} is empty or not a JSON object; skipping it.");
+                    continue;
+                }
+
+                CheckAndUpdateLocalization(localizationUpdates, language);
+            } catch (Exception ex) {
+                EpicLoot.LogErrorForce($"Could not parse localization override {fileInfo.Name}: {ex.Message}. Skipping it.");
+            }
         }
     }
 
@@ -874,7 +929,10 @@ internal class ELConfig {
         }
 
         // Do not process directories, setup a new watcher- otherwise they get ingored even with subdirectory watching.
-        if (File.GetAttributes(e.FullPath).HasFlag(FileAttributes.Directory)) {
+        // Directory.Exists instead of File.GetAttributes: a Deleted event (or a Changed event racing
+        // an atomic-save rename) arrives for a path that no longer exists, and the GetAttributes
+        // throw was silently swallowed upstream -- the reload below then never ran.
+        if (Directory.Exists(e.FullPath)) {
             SetupPatchConfigFileWatch(e.FullPath);
             EpicLoot.Log($"Adding subdirectory filewatcher: {e.FullPath}");
             return;
@@ -899,7 +957,9 @@ internal class ELConfig {
         newPatchWatcher.Changed += new FileSystemEventHandler(IngestPatchFilesFromDisk);
         newPatchWatcher.Renamed += new RenamedEventHandler(IngestPatchFilesFromDisk);
         newPatchWatcher.Deleted += new FileSystemEventHandler(IngestPatchFilesFromDisk);
-        newPatchWatcher.NotifyFilter = NotifyFilters.LastWrite;
+        // FileName included so dropping in / deleting / renaming a patch file actually fires
+        // (LastWrite alone only reports in-place content writes).
+        newPatchWatcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName;
         // newPatchWatcher.IncludeSubdirectories = true;
         newPatchWatcher.SynchronizingObject = ThreadingHelper.SynchronizingObject;
         newPatchWatcher.EnableRaisingEvents = true;
@@ -916,67 +976,72 @@ internal class ELConfig {
     }
 
     private static IEnumerator OnClientRecieveLootConfigs(long sender, ZPackage package) {
-        LootRoller.Initialize(ClientRecieveParseJsonConfig<LootConfig>(package.ReadString()));
-        yield return null;
+        return ApplyClientConfig<LootConfig>("loottables.json", package, LootRoller.Initialize);
     }
 
     private static IEnumerator OnClientRecieveMagicConfigs(long sender, ZPackage package) {
-        MagicItemEffectDefinitions.Initialize(ClientRecieveParseJsonConfig<MagicItemEffectsList>(package.ReadString()));
-        yield return null;
+        return ApplyClientConfig<MagicItemEffectsList>("magiceffects.json", package, MagicItemEffectDefinitions.Initialize);
     }
 
     private static IEnumerator OnClientRecieveItemInfoConfigs(long sender, ZPackage package) {
-        GatedItemTypeHelper.Initialize(ClientRecieveParseJsonConfig<ItemInfoConfig>(package.ReadString()));
-        yield return null;
+        return ApplyClientConfig<ItemInfoConfig>("iteminfo.json", package, GatedItemTypeHelper.Initialize);
     }
 
     private static IEnumerator OnClientRecieveEnchantingCostsConfigs(long sender, ZPackage package) {
-        EnchantCostsHelper.Initialize(ClientRecieveParseJsonConfig<EnchantingCostsConfig>(package.ReadString()));
-        yield return null;
+        return ApplyClientConfig<EnchantingCostsConfig>("enchantcosts.json", package, EnchantCostsHelper.Initialize);
     }
 
     private static IEnumerator OnClientRecieveItemNameConfigs(long sender, ZPackage package) {
-        MagicItemNames.Initialize(ClientRecieveParseJsonConfig<ItemNameConfig>(package.ReadString()));
-        yield return null;
+        return ApplyClientConfig<ItemNameConfig>("itemnames.json", package, MagicItemNames.Initialize);
     }
 
     private static IEnumerator OnClientRecieveAdventureDataConfigs(long sender, ZPackage package) {
-        AdventureDataManager.UpdateAventureData(ClientRecieveParseJsonConfig<AdventureDataConfig>(package.ReadString()));
-        yield return null;
+        // Full Initialize (not UpdateAventureData): the RPC path must fire OnSetupAdventureData and
+        // rebuild the features exactly like a local reload does, or every API-registered bounty
+        // target / stash item / treasure map silently vanishes the moment a client joins a server.
+        return ApplyClientConfig<AdventureDataConfig>("adventuredata.json", package, AdventureDataManager.Initialize);
     }
 
     private static IEnumerator OnClientRecieveLegendaryItemConfigs(long sender, ZPackage package) {
-        UniqueLegendaryHelper.Initialize(ClientRecieveParseJsonConfig<LegendaryItemConfig>(package.ReadString()));
-        yield return null;
+        return ApplyClientConfig<LegendaryItemConfig>("legendaries.json", package, UniqueLegendaryHelper.Initialize);
     }
 
     private static IEnumerator OnClientRecieveAbilityConfigs(long sender, ZPackage package) {
-        AbilityDefinitions.Initialize(ClientRecieveParseJsonConfig<AbilityConfig>(package.ReadString()));
-        yield return null;
+        return ApplyClientConfig<AbilityConfig>("abilities.json", package, AbilityDefinitions.Initialize);
     }
 
     private static IEnumerator OnClientRecieveMaterialConversionConfigs(long sender, ZPackage package) {
-        MaterialConversions.Initialize(ClientRecieveParseJsonConfig<MaterialConversionsConfig>(package.ReadString()));
-        yield return null;
+        return ApplyClientConfig<MaterialConversionsConfig>("materialconversions.json", package, MaterialConversions.Initialize);
     }
 
     private static IEnumerator OnClientRecieveEnchantingUpgradesConfigs(long sender, ZPackage package) {
-        EnchantingTableUpgrades.InitializeConfig(ClientRecieveParseJsonConfig<EnchantingUpgradesConfig>(package.ReadString()));
-        yield return null;
+        return ApplyClientConfig<EnchantingUpgradesConfig>("enchantingupgrades.json", package, EnchantingTableUpgrades.InitializeConfig);
     }
 
     private static IEnumerator OnClientRecieveAutoSorterConfigs(long sender, ZPackage package) {
-        AutoAddEnchantableItems.InitializeConfig(ClientRecieveParseJsonConfig<AutoSorterConfiguration>(package.ReadString()));
-        yield return null;
+        return ApplyClientConfig<AutoSorterConfiguration>("autosorter config", package, AutoAddEnchantableItems.InitializeConfig);
     }
 
     private static IEnumerator OnClientRecieveShardStonesConfigs(long sender, ZPackage package) {
-        Shards.InitializeShardDefinitions(ClientRecieveParseJsonConfig<ShardStonesConfig>(package.ReadString()));
-        yield return null;
+        return ApplyClientConfig<ShardStonesConfig>("shardstones.json", package, Shards.InitializeShardDefinitions);
     }
 
     private static IEnumerator OnClientRecieveShardStoneConversionsConfigs(long sender, ZPackage package) {
-        ShardStoneConversions.Initialize(ClientRecieveParseJsonConfig<MaterialConversionsConfig>(package.ReadString()));
+        return ApplyClientConfig<MaterialConversionsConfig>("shardstoneconversions.json", package, ShardStoneConversions.Initialize);
+    }
+
+    // One guard for every server-pushed config: a payload that fails to parse (or deserializes to
+    // null -- JsonConvert returns null for the literal "null" WITHOUT throwing) is ignored with an
+    // error, keeping whatever config is currently loaded. Passing the null through used to clear
+    // the live tables and then NRE inside the Initialize chain, leaving the client without that
+    // whole subsystem for the session.
+    private static IEnumerator ApplyClientConfig<T>(string name, ZPackage package, Action<T> initialize) where T : class {
+        T parsed = ClientRecieveParseJsonConfig<T>(package.ReadString());
+        if (parsed == null) {
+            EpicLoot.LogErrorForce($"Server-pushed {name} could not be parsed; keeping the currently loaded config.");
+        } else {
+            initialize(parsed);
+        }
         yield return null;
     }
 

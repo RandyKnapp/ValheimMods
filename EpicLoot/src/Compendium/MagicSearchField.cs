@@ -47,8 +47,7 @@ public class MagicSearchField
         _placeholderRect = placeholderObj.AddComponent<RectTransform>();
         placeholderObj.transform.SetParent(_obj.transform);
         _placeholder = placeholderObj.AddComponent<Text>();
-        //TODO: localize search text
-        _placeholder.text = "Search...";
+        _placeholder.text = Localization.instance.Localize("$mod_epicloot_search_placeholder");
         _placeholder.color = Color.gray;
         Input.placeholder = _placeholder;
         _placeholder.alignment = TextAnchor.MiddleLeft;

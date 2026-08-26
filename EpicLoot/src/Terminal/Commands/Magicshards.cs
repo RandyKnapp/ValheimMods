@@ -1,11 +1,19 @@
 using EpicLoot.ShardStones;
 using Jotunn.Managers;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace EpicLoot;
 
 public static partial class TerminalManager {
+    private static List<string> GetMagicShardOptions(string[] args) {
+        return args.Length switch {
+            2 => ["Magic", "Rare", "Epic", "Legendary", "Mythic"],
+            _ => []
+        };
+    }
+
     private static void SpawnMagicShards(Terminal.ConsoleEventArgs args) {
         if (Player.m_localPlayer == null) {
             return;

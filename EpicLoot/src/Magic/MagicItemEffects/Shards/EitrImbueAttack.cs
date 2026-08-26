@@ -12,8 +12,10 @@
 
             // The shard is socketed into the attacking weapon, so read the effect from that weapon
             // rather than player-wide -- the imbue only fires for the weapon that carries it.
+            // GetActiveWeapon resolves the weapon of the attack in flight; GetCurrentWeapon returned
+            // the right hand first, so an off-hand weapon's shard never fired.
             // TODO: make this work for unarmed attacks and not be required on the weapon itself
-            var magicItem = player.GetCurrentWeapon()?.GetMagicItem();
+            var magicItem = global::EpicLoot.src.Magic.MagicItemEffects.Helpers.MagicEffectsHelper.GetActiveWeapon(player)?.GetMagicItem();
             float bonus = GetSpiritBonus(magicItem, hit.m_damage);
             if (bonus <= 0f) {
                 return;

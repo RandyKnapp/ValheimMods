@@ -98,6 +98,37 @@ namespace ItsJustWood
                 PrefabCreator.AddNewRecipe($"Recipe_{prefabName}ToWood", "Wood", recipeWoodToWood);
         }
 
+        private static readonly Dictionary<string, ItemDrop> _itemCache = new Dictionary<string, ItemDrop>();
+        private static readonly HashSet<string> _warnedMissingItems = new HashSet<string>();
+
+        // Null-safe, cached ObjectDB item lookup. The previous chained
+        // GetItemPrefab(..).GetComponent<ItemDrop>() calls NRE'd on any missing item (older game build,
+        // item-stripping mod) and re-ran the lookups on every fireplace/smelter interaction.
+        public static ItemDrop GetCachedItem(string prefabName)
+        {
+            if (_itemCache.TryGetValue(prefabName, out ItemDrop cached) && cached != null)
+                return cached;
+
+            ItemDrop found = null;
+            var db = ObjectDB.instance;
+            if (db != null)
+            {
+                var go = db.GetItemPrefab(prefabName);
+                if (go != null)
+                    found = go.GetComponent<ItemDrop>();
+            }
+
+            if (found == null)
+            {
+                if (_warnedMissingItems.Add(prefabName))
+                    Debug.LogWarning($"[{pluginName}] Could not find item prefab '{prefabName}'; the related substitution is disabled.");
+                return null;
+            }
+
+            _itemCache[prefabName] = found;
+            return found;
+        }
+
         public static ItemDrop GetReplacementFuelItem(Inventory inventory, ItemDrop builtIn)
         {
             if (builtIn != wood)
@@ -108,27 +139,27 @@ namespace ItsJustWood
                 return null;
             }
 
-            var fineWood = ObjectDB.instance.GetItemPrefab("FineWood").GetComponent<ItemDrop>();
-            var coreWood = ObjectDB.instance.GetItemPrefab("RoundLog").GetComponent<ItemDrop>();
-            var ancientBark = ObjectDB.instance.GetItemPrefab("ElderBark").GetComponent<ItemDrop>();
-            var yggdrasilWood = ObjectDB.instance.GetItemPrefab("YggdrasilWood").GetComponent<ItemDrop>();
+            var fineWood = GetCachedItem("FineWood");
+            var coreWood = GetCachedItem("RoundLog");
+            var ancientBark = GetCachedItem("ElderBark");
+            var yggdrasilWood = GetCachedItem("YggdrasilWood");
 
-            if (AllowAncientBarkForFuel.Value && inventory.HaveItem(ancientBark.m_itemData.m_shared.m_name))
+            if (AllowAncientBarkForFuel.Value && ancientBark != null && inventory.HaveItem(ancientBark.m_itemData.m_shared.m_name))
             {
                 return ancientBark;
             }
 
-            if (AllowCoreWoodForFuel.Value && inventory.HaveItem(coreWood.m_itemData.m_shared.m_name))
+            if (AllowCoreWoodForFuel.Value && coreWood != null && inventory.HaveItem(coreWood.m_itemData.m_shared.m_name))
             {
                 return coreWood;
             }
 
-            if (AllowFineWoodForFuel.Value && inventory.HaveItem(fineWood.m_itemData.m_shared.m_name))
+            if (AllowFineWoodForFuel.Value && fineWood != null && inventory.HaveItem(fineWood.m_itemData.m_shared.m_name))
             {
                 return fineWood;
             }
 
-            if (AllowYggdrasilWoodForFuel.Value && inventory.HaveItem(yggdrasilWood.m_itemData.m_shared.m_name))
+            if (AllowYggdrasilWoodForFuel.Value && yggdrasilWood != null && inventory.HaveItem(yggdrasilWood.m_itemData.m_shared.m_name))
             {
                 return yggdrasilWood;
             }

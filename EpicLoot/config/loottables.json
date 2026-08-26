@@ -238,6 +238,13 @@
       ]
     },
     {
+      "Name": "ShardSlotChisel",
+      "Loot": [
+        { "Item": "ShardSlotChiselLegendary", "Rarity": [ 0, 0, 0, 80, 20 ],
+          "RarityItems": { "Legendary": "ShardSlotChiselLegendary", "Mythic": "ShardSlotChiselMythic" } }
+      ]
+    },
+    {
       "Name": "ShardStone_None",
       "Loot": [ { "Item": "ShardT1" } ]
     },
@@ -2262,7 +2269,8 @@
       "Loot": [
         { "Item": "Tier5Everything", "Weight": 3 },
         { "Item": "Tier6Everything", "Weight": 1 },
-        { "Item": "ShardUnique", "Weight": 0.02 }
+        { "Item": "ShardUnique", "Weight": 0.02 },
+        { "Item": "ShardSlotChisel", "Weight": 0.02 }
       ]
     },
     {
@@ -2285,7 +2293,8 @@
       "Loot": [
         { "Item": "Tier6Everything", "Weight": 3 },
         { "Item": "Tier7Everything", "Weight": 1 },
-        { "Item": "ShardUnique", "Weight": 0.02 }
+        { "Item": "ShardUnique", "Weight": 0.02 },
+        { "Item": "ShardSlotChisel", "Weight": 0.02 }
       ]
     },
     {
@@ -2294,7 +2303,8 @@
       "Loot": [
         { "Item": "Tier6Everything", "Weight": 3 },
         { "Item": "Tier7Everything", "Weight": 1 },
-        { "Item": "ShardUnique", "Weight": 0.02 }
+        { "Item": "ShardUnique", "Weight": 0.02 },
+        { "Item": "ShardSlotChisel", "Weight": 0.02 }
       ]
     },
     {
@@ -2346,7 +2356,8 @@
       "Loot": [
         { "Item": "Tier5Everything", "Weight": 1, "Rarity": [ 0, 5, 70, 20, 5] },
         { "Item": "Tier6Everything", "Weight": 1, "Rarity": [ 0, 5, 70, 20, 5] },
-        { "Item": "ShardUnique", "Weight": 0.02 }
+        { "Item": "ShardUnique", "Weight": 0.02 },
+        { "Item": "ShardSlotChisel", "Weight": 0.02 }
       ]
     },
     {
@@ -2355,7 +2366,8 @@
       "Loot": [
         { "Item": "Tier6Everything", "Weight": 1, "Rarity": [ 0, 0, 65, 25, 10] },
         { "Item": "Tier7Everything", "Weight": 1, "Rarity": [ 0, 0, 65, 25, 10] },
-        { "Item": "ShardUnique", "Weight": 0.02 }
+        { "Item": "ShardUnique", "Weight": 0.02 },
+        { "Item": "ShardSlotChisel", "Weight": 0.02 }
       ]
     }
   ]

@@ -16,11 +16,17 @@ public class IncreaseMiningDrop : IncreaseDrop
         };
     }
 
-    // Reset ZDO variable on equipment change
-    [HarmonyPatch(typeof(Humanoid), nameof(Humanoid.EquipItem))]
-    [HarmonyPatch(typeof(Humanoid), nameof(Humanoid.UnequipItem))]
+    // Reset ZDO variable on equipment change.
+    // TargetMethods because two class-level [HarmonyPatch] attributes MERGE into one target (the
+    // old form only patched UnequipItem, so the ZDO tag was never cleared on equip).
+    [HarmonyPatch]
     public static class IncreaseMiningDrop_Player_EquipmentChange_Patches
     {
+        public static System.Collections.Generic.IEnumerable<System.Reflection.MethodBase> TargetMethods()
+        {
+            yield return AccessTools.DeclaredMethod(typeof(Humanoid), nameof(Humanoid.EquipItem));
+            yield return AccessTools.DeclaredMethod(typeof(Humanoid), nameof(Humanoid.UnequipItem));
+        }
         public static void Postfix(Humanoid __instance)
         {
             if (__instance == Player.m_localPlayer && __instance.m_nview.IsValid())
@@ -45,9 +51,28 @@ public class IncreaseMiningDrop : IncreaseDrop
     [HarmonyPatch(typeof(MineRock), nameof(MineRock.RPC_Hit))]
     public static class IncreaseMiningDrop_MineRock_RPC_Hit_Patch
     {
-        private static void Postfix(MineRock __instance, HitData hit)
+        // The old guard was '__instance.m_nview == null' -- never true, because ZNetScene.Destroy
+        // only resets the ZDO and defers the Unity destroy, so the bonus never dropped here.
+        // Detect "this hit destroyed the area" instead: alive before, dead (or ZDO gone) after.
+        private static void Prefix(MineRock __instance, int hitAreaIndex, ref float __state)
         {
-            if (hit != null && __instance.m_nview == null)
+            __state = -1f;
+            if (__instance.m_nview != null && __instance.m_nview.IsValid())
+            {
+                __state = __instance.m_nview.GetZDO().GetFloat("Health" + hitAreaIndex, __instance.GetHealth());
+            }
+        }
+
+        private static void Postfix(MineRock __instance, HitData hit, int hitAreaIndex, float __state)
+        {
+            if (hit == null || __state <= 0f)
+            {
+                return;
+            }
+
+            ZDO zdo = __instance.m_nview != null ? __instance.m_nview.GetZDO() : null;
+            bool areaDiedThisHit = zdo == null || zdo.GetFloat("Health" + hitAreaIndex, 1f) <= 0f;
+            if (areaDiedThisHit)
             {
                 Instance.TryDropExtraItems(hit.GetAttacker(), __instance.m_dropItems, __instance.transform.position);
             }

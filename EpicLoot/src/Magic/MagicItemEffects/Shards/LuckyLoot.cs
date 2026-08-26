@@ -95,18 +95,18 @@ namespace EpicLoot.MagicItemEffects.Shards {
         // into 20% would imply an 11x multiplier rather than 6x. No cache, because Riches' 5-second one is
         // a single scalar shared across every creature in the world, and a player scan on death is cheap
         // when deaths are rare relative to frames.
-        private static int BestNearbyValue(Vector3 position) {
+        private static float BestNearbyValue(Vector3 position) {
             var players = new List<Player>();
             Player.GetPlayersInRange(position, PlayerScanRange, players);
 
-            var best = 0;
+            var best = 0f;
             foreach (var player in players) {
                 var zdo = player?.m_nview?.GetZDO();
                 if (zdo == null) {
                     continue;
                 }
 
-                var value = zdo.GetInt(ZdoValueKey);
+                var value = zdo.GetFloat(ZdoValueKey);
                 if (value > best) {
                     best = value;
                 }

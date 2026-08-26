@@ -30,7 +30,10 @@ namespace EpicLoot.Adventure
     {
         public int RefreshInterval;
         public List<SecretStashItemConfig> Materials = new List<SecretStashItemConfig>();
-        public List<int> RollsPerRarity = new List<int> {1, 1, 1, 1};
+        // Left empty and backfilled in AdventureDataManager.Initialize: Newtonsoft APPENDS to
+        // pre-initialized collections, so a hardcoded {1,1,1,1} turned the shipped [1,1,1,1,1]
+        // into a 9-element list whose first four entries were the defaults.
+        public List<int> RollsPerRarity = new List<int>();
         public List<SecretStashItemConfig> RandomItems = new List<SecretStashItemConfig>();
         public int RandomItemsCount = 0;
         public List<SecretStashItemConfig> OtherItems = new List<SecretStashItemConfig>();

@@ -93,7 +93,10 @@ namespace Common
 
         public static bool IsServer()
         {
-            return ZNet.instance.IsServer() || ZNet.instance.IsDedicated() || SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null;
+            // Callable before a world is loaded: ZNet.instance is null during plugin Awake and at the
+            // main menu, and the headless (dedicated) check must still work there.
+            return (ZNet.instance != null && (ZNet.instance.IsServer() || ZNet.instance.IsDedicated())) ||
+                SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null;
         }
     }
 

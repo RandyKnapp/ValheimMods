@@ -15,11 +15,17 @@ public class IncreaseTreeDrop : IncreaseDrop
         };
     }
 
-    // Reset ZDO variable on equipment change
-    [HarmonyPatch(typeof(Humanoid), nameof(Humanoid.EquipItem))]
-    [HarmonyPatch(typeof(Humanoid), nameof(Humanoid.UnequipItem))]
+    // Reset ZDO variable on equipment change.
+    // TargetMethods because two class-level [HarmonyPatch] attributes MERGE into one target (the
+    // old form only patched UnequipItem, so the ZDO tag was never cleared on equip).
+    [HarmonyPatch]
     public static class IncreaseTreeDrop_Player_EquipmentChange_Patches
     {
+        public static System.Collections.Generic.IEnumerable<System.Reflection.MethodBase> TargetMethods()
+        {
+            yield return AccessTools.DeclaredMethod(typeof(Humanoid), nameof(Humanoid.EquipItem));
+            yield return AccessTools.DeclaredMethod(typeof(Humanoid), nameof(Humanoid.UnequipItem));
+        }
         public static void Postfix(Humanoid __instance)
         {
             if (Player.m_localPlayer != null && __instance == Player.m_localPlayer && __instance.m_nview.IsValid() && __instance.m_nview.GetZDO().GetInt(Instance.ZDOVar) != 0)
@@ -64,7 +70,11 @@ public class IncreaseTreeDrop : IncreaseDrop
     {
         private static void Postfix(TreeBase __instance, HitData hit)
         {
-            if (hit != null && __instance.m_nview == null && !__instance.gameObject.activeSelf)
+            // The old guard also required 'm_nview == null', which is never true (ZNetScene.Destroy
+            // defers the Unity destroy), so the bonus never dropped here. Vanilla's destroy path
+            // calls gameObject.SetActive(false) synchronously inside this very RPC, and only that
+            // path does -- inactive-after-call is the precise "felled by this hit" signal.
+            if (hit != null && !__instance.gameObject.activeSelf)
             {
                 Instance.TryDropExtraItems(hit.GetAttacker(), __instance.m_dropWhenDestroyed, __instance.transform.position);
             }

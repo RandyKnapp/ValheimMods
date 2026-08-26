@@ -72,8 +72,10 @@ namespace EpicLoot.MagicItemEffects.Shards
                 return;
             }
 
-            // Socketed on the weapon, so the rate is read from the attacking weapon rather than player-wide.
-            var magicItem = player.GetCurrentWeapon()?.GetMagicItem();
+            // Socketed on the weapon, so the rate is read from the attacking weapon rather than
+            // player-wide. GetActiveWeapon resolves the weapon of the attack in flight;
+            // GetCurrentWeapon returned the right hand first, so an off-hand weapon's shard never fired.
+            var magicItem = global::EpicLoot.src.Magic.MagicItemEffects.Helpers.MagicEffectsHelper.GetActiveWeapon(player)?.GetMagicItem();
             if (magicItem == null ||
                 !magicItem.HasEffect(MagicEffectType.Mercenary, includeSocketed: true))
             {

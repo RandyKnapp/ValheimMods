@@ -34,6 +34,12 @@ namespace EpicLoot.src.Magic.MagicItemEffects.Helpers {
             Wager.ModifyOutgoingHit(__instance, hit, attacker);
             ChanceDoubleDamage.ModifyOutgoingHit(hit, attacker);
             ChanceToCritOnHit.ModifyOutgoingHit(hit, attacker);
+            ModifySummonDamage.ModifyOutgoingHit(hit, attacker);
+            // Attacker-side reads that used to live (incorrectly) on the RPC_Damage dispatcher:
+            // both read the local attacker's magic effects; the stagger tagger routes its write to
+            // the target's owner.
+            Opportunist_Character_RPC_Damage_Patch.ModifyIncoming(__instance, hit, attacker);
+            RPC_TagCharacterOnHit_Character_RPC_Damage_Patch.TagStaggerDuration(__instance, hit, attacker);
             ModifyStaggerDamage_Character_Damage_Patch.ApplyStaggerModifier(__instance, hit, attacker);
 
             // NOTE: victim-side incoming-hit handlers (AutoMeads, OffSet, ReflectDamage) live on the

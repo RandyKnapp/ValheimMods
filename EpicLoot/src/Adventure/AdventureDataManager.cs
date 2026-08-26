@@ -22,7 +22,14 @@ namespace EpicLoot.Adventure
         public static void Initialize(AdventureDataConfig config)
         {
             Config = config;
-            
+
+            // Code-side default for a config that omits the block (the POCO default is left empty
+            // because Newtonsoft appends to pre-initialized collections).
+            if (Config?.SecretStash != null && Config.SecretStash.RollsPerRarity.Count == 0)
+            {
+                Config.SecretStash.RollsPerRarity = new List<int> { 1, 1, 1, 1, 1 };
+            }
+
             OnSetupAdventureData?.Invoke();
 
             SecretStash = new SecretStashAdventureFeature();

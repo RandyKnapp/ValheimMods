@@ -10,6 +10,7 @@ public class MagicPages : MonoBehaviour
     public TreasureBountyTextInfo TreasureBountyPage;
     public MagicEffectTextInfo MagicEffectsPage;
     public SetInfo SetInfos;
+    public ShardStoneTextInfo ShardStonePage;
 
     public const int HEADER_FONT_SIZE = 40;
     public const int LARGE_FONT_SIZE = 24;
@@ -38,6 +39,8 @@ public class MagicPages : MonoBehaviour
             $"{EpicLoot.GetMagicEffectPip(false)} $mod_epicloot_active_magic_effects"));
         SetInfos = new SetInfo(Localization.instance.Localize(
             $"{EpicLoot.GetMagicEffectPip(false)} $mod_epicloot_legendary_sets"));
+        ShardStonePage = new ShardStoneTextInfo(Localization.instance.Localize(
+            $"{EpicLoot.GetMagicEffectPip(false)} $mod_epicloot_shardstones_title"));
         
         instance = this;
         

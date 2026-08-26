@@ -192,7 +192,7 @@ namespace EpicLoot
                 Texture legsTexAsset = EpicLoot.LoadAsset<Texture>(legsTex);
                 if (legsTexAsset != null)
                 {
-                    __instance.m_bodyModel.material.SetTexture("_ChestTex", legsTexAsset);
+                    __instance.m_bodyModel.material.SetTexture("_LegsTex", legsTexAsset);
                 }
                 else
                 {

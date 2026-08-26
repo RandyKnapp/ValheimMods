@@ -1,4 +1,4 @@
-using JetBrains.Annotations;
+﻿using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -14,8 +14,8 @@ public static partial class API
 {
     /// <summary>
     /// Applies Epic Loot's rarity background to a single item slot, creating the child images the first
-    /// time one is actually needed. Safe to call every frame: after the first call only the sprite,
-    /// colour and enabled state are touched.
+    /// time one is actually needed, and restyles the slot's equipped marker to Epic Loot's frame. Safe
+    /// to call every frame: after the first call only the sprite, colour and enabled state are touched.
     /// </summary>
     /// <param name="slotRoot">The slot's root object -- the one holding "icon", "equiped" and friends.</param>
     /// <param name="equippedOverlay">The slot's "equiped" child. Used as the template for the images
@@ -32,6 +32,10 @@ public static partial class API
         {
             return false;
         }
+
+        // Every slot, before anything else: a worn plain item must get the same marker as a worn magic
+        // one, so this cannot live behind the rarity-background early-out below.
+        ItemBackgroundHelper.ApplyEquippedSprite(equippedOverlay, inventoryGrid);
 
         bool showBackground = item != null && item.UseMagicBackground();
         bool showSetMarker = inventoryGrid && item != null && item.IsSetItem();

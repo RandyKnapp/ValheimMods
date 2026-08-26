@@ -175,9 +175,11 @@ namespace EpicLoot.Crafting
 
         public static List<ItemAmountConfig> GetRuneCost(ItemDrop.ItemData item, ItemRarity rarity, RuneActions operation)
         {
-            bool typecheck = false;
+            // Only filter by item type when there is an item to read it from (the flag was never
+            // set before, leaving every RuneCostConfig.ItemTypes list ignored).
+            bool typecheck = item != null;
             ItemDrop.ItemData.ItemType itemtype = ItemDrop.ItemData.ItemType.None;
-            
+
             if (item != null)
             {
                 itemtype = item.m_shared.m_itemType;

@@ -123,6 +123,7 @@ namespace AdvancedPortals
                 if (piece == null)
                 {
                     AdvancedPortals.APLogger.LogError($"Could not update portal configurations for {portal}. Piece not found.");
+                    continue;
                 }
 
                 GameObject pieceTablePiece = pieceTable.m_pieces.Find(x => x.name == Utils.GetPrefabName(portalPrefab.name));
@@ -142,6 +143,13 @@ namespace AdvancedPortals
                     {
                         var newReq = req.GetRequirement();
                         GameObject resource = PrefabManager.Instance.GetPrefab(req.Item);
+                        if (resource == null)
+                        {
+                            // A typo or an item from an uninstalled mod: skip this requirement instead of
+                            // NRE-ing out of OnPiecesRegistered and leaving the remaining portals unconfigured.
+                            AdvancedPortals.APLogger.LogError($"Could not find requirement prefab {req.Item}, for {portal}");
+                            continue;
+                        }
                         ItemDrop resourceItemDrop = resource.GetComponent<ItemDrop>();
                         if (resourceItemDrop != null)
                         {
@@ -154,14 +162,26 @@ namespace AdvancedPortals
                         }
                     }
 
-                    piece.m_resources = reqs.ToArray();
+                    // If every configured ingredient failed to resolve, keep the previous requirements:
+                    // an empty array would make the portal free to build.
+                    if (reqs.Count > 0)
+                    {
+                        piece.m_resources = reqs.ToArray();
+                    }
+                    else
+                    {
+                        AdvancedPortals.APLogger.LogError($"No valid ingredients resolved for {portal}; keeping the previous build cost.");
+                    }
                     piece.m_description = GetAdvancedPortalDescription(component.AllowEverything, component.AllowedItems);
 
                     if (pieceTablePiece != null)
                     {
                         // Update existing
                         var tablePiece = pieceTablePiece.GetComponent<Piece>();
-                        tablePiece.m_resources = reqs.ToArray();
+                        if (reqs.Count > 0)
+                        {
+                            tablePiece.m_resources = reqs.ToArray();
+                        }
                     }
                     else
                     {

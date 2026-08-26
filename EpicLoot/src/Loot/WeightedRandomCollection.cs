@@ -71,7 +71,10 @@ namespace EpicLoot
                 T result = Roll();
                 if (!EqualityComparer<T>.Default.Equals(result, default(T)))
                 {
-                    results.Add(Roll());
+                    // Add the roll that was just validated. The old code rolled AGAIN here, which
+                    // consumed two pool entries per requested item under removeOnSelect and could
+                    // push an unvalidated default(T) into the results once the pool emptied.
+                    results.Add(result);
                 }
             }
             return results;

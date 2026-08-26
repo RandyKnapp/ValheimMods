@@ -27,6 +27,7 @@ public static partial class API
         public const string Unsocket = "Unsocket";
         public const string LootRoll = "LootRoll";
         public const string Transfer = "Transfer";
+        public const string AddSocket = "AddSocket";
 
         /// <summary>
         /// A write that has no dedicated call site. Every magic-data write funnels through

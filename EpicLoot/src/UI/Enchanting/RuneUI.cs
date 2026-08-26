@@ -72,6 +72,14 @@ namespace EpicLoot_UnityLib
         {
             base.Update();
 
+            // Between death and respawn the local player is null for a few frames while this panel
+            // is still active -- bail instead of NRE-ing (EnchantingTableUI.Update closes the UI).
+            if (Player.m_localPlayer == null || EnchantingTableUI.instance == null ||
+                EnchantingTableUI.instance.SourceTable == null)
+            {
+                return;
+            }
+
             bool featureUnlocked = EnchantingTableUI.instance.SourceTable.IsFeatureUnlocked(EnchantingFeature.Rune);
             if (!featureUnlocked && !Player.m_localPlayer.NoCostCheat())
             {
@@ -491,12 +499,12 @@ namespace EpicLoot_UnityLib
 
         internal static float GetCostReduction(float value)
         {
-            return value == 0f || value == float.NaN ? 1.0f : 1f - (value / 100f);
+            return value == 0f || float.IsNaN(value) ? 1.0f : 1f - (value / 100f);
         }
 
         internal static float GetPowerModifier(float value)
         {
-            return value == float.NaN ? 1.0f : (value / 100f);
+            return float.IsNaN(value) ? 1.0f : (value / 100f);
         }
 
         public override bool CanCancel()

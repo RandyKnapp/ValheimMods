@@ -46,9 +46,8 @@ namespace DvergerColor
                 return;
             }
 
-            var zdo = player.GetZDO();
             bool changedStep = false;
-            if (player != null && player.TakeInput())
+            if (player.TakeInput())
             {
                 if (On && Input.GetKeyDown(DvergerColor.NarrowBeamHotkey.Value))
                 {
@@ -70,8 +69,14 @@ namespace DvergerColor
             if (changedStep)
             {
                 ShowStatusMessage();
-                zdo.Set(DvergerColor.StepDataKey, Step);
-                zdo.Set(DvergerColor.OnDataKey, On);
+                // During logout/teleport teardown the player still exists while its ZNetView/ZDO is
+                // already gone -- fetch and guard only when there is actually something to write.
+                var zdo = player.m_nview != null ? player.m_nview.GetZDO() : null;
+                if (zdo != null)
+                {
+                    zdo.Set(DvergerColor.StepDataKey, Step);
+                    zdo.Set(DvergerColor.OnDataKey, On);
+                }
             }
 
             if (Step == _maxSteps)

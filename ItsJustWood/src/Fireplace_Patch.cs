@@ -29,12 +29,10 @@ namespace ItsJustWood
             __instance.m_fuelItem = itemFuelReplacement;
         }
 
-        [HarmonyPriority(Priority.First)]
-        private static void Postfix(Fireplace __instance, ItemDrop __state)
+        // Finalizer, not postfix: if Fireplace.Interact (or another mod patching it) throws, a postfix
+        // never runs and this fireplace would keep consuming the substitute fuel for the session.
+        private static void Finalizer(Fireplace __instance, ItemDrop __state)
         {
-            if (!ItsJustWood.modEnabled.Value)
-                return;
-
             if (__state == null)
                 return;
 

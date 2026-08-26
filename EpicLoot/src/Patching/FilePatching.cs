@@ -75,10 +75,25 @@ namespace EpicLoot.Patching
 
         public static void ReloadAndApplyAllPatches()
         {
+            // Remember which targets HAD patches: a file whose last patch was just deleted must be
+            // rebuilt from the embedded default, or it keeps the stale patched output forever.
+            List<string> previousTargets = new List<string>(Keys);
             PatchesPerFile.Clear();
             LoadAllPatches();
             ApplyAllPatches();
+
+            foreach (string target in previousTargets)
+            {
+                if (PatchesPerFile.GetValues(target, true).Count == 0)
+                {
+                    EpicLoot.LogForce($"All patches targeting '{target}' were removed; restoring the unpatched default.");
+                    string baseCfgFile = Path.Combine(ELConfig.GetOverhaulDirectoryPath(), $"{target}.json");
+                    ELConfig.CreateBaseConfigurations(baseCfgFile, $"{target}.json");
+                }
+            }
         }
+
+        private static IEnumerable<string> Keys => PatchesPerFile.Keys;
 
         public static void LoadAllPatches()
         {
@@ -137,14 +152,30 @@ namespace EpicLoot.Patching
             {
                 foreach (FileInfo file in files)
                 {
-                    ProcessPatchFile(file);
+                    try
+                    {
+                        ProcessPatchFile(file);
+                    }
+                    catch (Exception e)
+                    {
+                        // Per-file isolation: one malformed patch file must not abort the rest of
+                        // the directory (or, worse, the whole patch system).
+                        EpicLoot.LogErrorForce($"Error processing patch file ({file.Name}): {e.Message}");
+                    }
                 }
             }
 
             DirectoryInfo[] subDirs = dir.GetDirectories().OrderBy(d => d.Name, StringComparer.OrdinalIgnoreCase).ToArray();
             foreach (DirectoryInfo subDir in subDirs)
             {
-                ProcessPatchDirectory(subDir);
+                try
+                {
+                    ProcessPatchDirectory(subDir);
+                }
+                catch (Exception e)
+                {
+                    EpicLoot.LogErrorForce($"Error processing patch directory ({subDir.Name}): {e.Message}");
+                }
             }
         }
 
@@ -198,6 +229,15 @@ namespace EpicLoot.Patching
                 return null;
             }
 
+            if (patchFile.Patches == null)
+            {
+                // A stray JSON in patches/ (a config backup, or a patch file missing its "Patches"
+                // array) deserializes fine with a null list -- skip it instead of throwing, which
+                // used to abort every remaining patch file and subdirectory.
+                EpicLoot.LogErrorForce($"Patch file ({file.Name}) has no \"Patches\" array; skipping it.");
+                return null;
+            }
+
             bool requiresSpecifiedSourceFile = string.IsNullOrEmpty(defaultTargetFile);
 
             string author = string.IsNullOrEmpty(patchFile.Author) ? "<author>" : patchFile.Author;
@@ -214,6 +254,13 @@ namespace EpicLoot.Patching
                 if (string.IsNullOrEmpty(patch.Author))
                 {
                     patch.Author = author;
+                }
+
+                // Normalize away ".json" exactly like the file-level TargetFile above, so
+                // "loottables.json" is accepted in both places.
+                if (!string.IsNullOrEmpty(patch.TargetFile))
+                {
+                    patch.TargetFile = patch.TargetFile.Replace(".json", "");
                 }
 
                 if (string.IsNullOrEmpty(patch.TargetFile))
@@ -278,7 +325,18 @@ namespace EpicLoot.Patching
 
             foreach (Patch patch in patches)
             {
-                ApplyPatch(sourceJson, patch);
+                try
+                {
+                    ApplyPatch(sourceJson, patch);
+                }
+                catch (Exception e)
+                {
+                    // Per-patch isolation: one throwing patch (bad JSONPath, wrong token type) used
+                    // to discard every patch for this file -- including other mods' -- and leave the
+                    // previous launch's output on disk.
+                    EpicLoot.LogErrorForce($"Patch ({patch.SourceFile}, {patch.Path}) for " +
+                        $"({patch.TargetFile}) threw and was skipped: {e.Message}");
+                }
             }
 
             string output = sourceJson.ToString(Formatting.Indented);
@@ -389,11 +447,23 @@ namespace EpicLoot.Patching
                 return;
             }
 
-            int index = 0;
+            if (patch.MultiPropertyName == null || patch.MultiPropertyName.Length == 0)
+            {
+                EpicLoot.LogErrorForce($"Patch ({patch.SourceFile}, {patch.Path}) has action 'MultiAdd' " +
+                    $"but has not supplied MultiPropertyName! This patch will be ignored!");
+                return;
+            }
+
+            if (token.Type != JTokenType.Object)
+            {
+                EpicLoot.LogErrorForce($"Patch ({patch.SourceFile}, {patch.Path}) has action 'MultiAdd' " +
+                    $"but has selected a token that is not a json Object! This patch will be ignored!");
+                return;
+            }
+
             foreach (string item in patch.MultiPropertyName)
             {
                 Patch_Add(token, item, patch.Value);
-                index ++;
             }
         }
 
@@ -528,6 +598,14 @@ namespace EpicLoot.Patching
                 return;
             }
 
+            // SelectTokens("$.foo") selects the property's VALUE; its parent is the JProperty.
+            // Unwrap to the property (same as ApplyPatch_Overwrite) so inserting relative to an
+            // object member works -- this case previously fell through both branches silently.
+            if (token.Parent?.Type == JTokenType.Property)
+            {
+                token = token.Parent;
+            }
+
             JContainer parent = token.Parent;
             if (parent == null)
             {
@@ -564,6 +642,11 @@ namespace EpicLoot.Patching
                 {
                     token.AddBeforeSelf(new JProperty(patch.PropertyName, patch.Value));
                 }
+            }
+            else
+            {
+                EpicLoot.LogErrorForce($"Patch ({patch.SourceFile}, {patch.Path}) has action '{actionName}' " +
+                    $"but the selected token's parent is neither an Array nor an Object! This patch will be ignored!");
             }
         }
 

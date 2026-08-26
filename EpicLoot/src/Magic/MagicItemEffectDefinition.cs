@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using static ItemDrop;
+using System.Text.RegularExpressions;
 
 namespace EpicLoot
 {
@@ -95,8 +96,10 @@ namespace EpicLoot
             if (ExcludedItemTypes.Count == 0)
                 return false;
 
+            // A configured iteminfo-type match means the item IS excluded (mirror of
+            // AllowedByItemInfoType in AllowByItemType above; this used to be inverted).
             if (ExcludedByItemInfoType(itemData))
-                return false;
+                return true;
 
             var itemIsStaff = itemData.m_shared.m_skillType == Skills.SkillType.BloodMagic ||
                 itemData.m_shared.m_skillType == Skills.SkillType.ElementalMagic;
@@ -494,6 +497,26 @@ namespace EpicLoot
             }
 
             return key;
+        }
+
+        // Splits a PascalCase effect type into words: "LifeGainOnHit" -> "Life Gain On Hit". Breaks before
+        // a capital that follows a lower-case letter or digit, and before the last capital of a run that
+        // starts a new word ("AoEDamage" -> "AoE Damage"), so acronyms survive intact.
+        private static readonly Regex PascalCaseBoundary =
+            new Regex("(?<=[a-z0-9])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])", RegexOptions.Compiled);
+
+        // The effect's short name, for places that identify an effect rather than state what it does --
+        // the shardstone compendium lists a name per slot and puts the numbers in the description below
+        // it. Prefers the authored token (mod_epicloot_me_<type>_name, the same per-effect convention as
+        // _display/_desc) and falls back to the type name split into words, so an effect whose name has
+        // not been written yet still reads as English rather than as an identifier.
+        public string GetName() {
+            if (!string.IsNullOrEmpty(Type) &&
+                Extensions.TryLocalize($"mod_epicloot_me_{Type.ToLowerInvariant()}_name", out var localized)) {
+                return localized;
+            }
+
+            return string.IsNullOrEmpty(Type) ? string.Empty : PascalCaseBoundary.Replace(Type, " ");
         }
 
         public List<string> GetAllowedItemTypes()

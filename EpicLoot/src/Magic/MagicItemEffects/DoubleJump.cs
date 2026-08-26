@@ -9,6 +9,21 @@ namespace EpicLoot.MagicItemEffects
         // This can use the magic effect system to track more charges in the future
         public static int MultiJumpCombo = 0;
 
+        // Reset on ground contact, not only on a grounded Jump call: walking off a ledge after
+        // using the double jump used to leave the counter latched, refusing the air jump until the
+        // next grounded jump.
+        [HarmonyPatch(typeof(Character), "UpdateGroundContact")]
+        public static class Character_UpdateGroundContact_Patch
+        {
+            public static void Postfix(Character __instance)
+            {
+                if (MultiJumpCombo != 0 && __instance == Player.m_localPlayer && __instance.IsOnGround())
+                {
+                    MultiJumpCombo = 0;
+                }
+            }
+        }
+
         [HarmonyPatch(typeof(Character), nameof(Character.Jump))]
         public static class Character_Jump_Patch
         {

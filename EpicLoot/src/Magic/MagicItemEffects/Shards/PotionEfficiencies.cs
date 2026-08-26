@@ -27,7 +27,10 @@ namespace EpicLoot.src.Magic.MagicItemEffects.Shards {
 
                     var se = __instance.GetSEMan().GetStatusEffect(item.m_shared.m_consumeStatusEffect.NameHash());
                     if (se != null && se.m_ttl > 0f) {
-                        se.m_ttl *= 1f + fraction;
+                        // Restamp from the prototype's base duration: re-drinking the same potion
+                        // reuses the live clone (vanilla only resets its clock), so multiplying its
+                        // m_ttl again compounded the bonus without limit.
+                        se.m_ttl = item.m_shared.m_consumeStatusEffect.m_ttl * (1f + fraction);
                     }
                 }
             }

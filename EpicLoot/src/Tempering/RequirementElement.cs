@@ -28,7 +28,7 @@ public class RequirementElement : MonoBehaviour
 
     public void Update()
     {
-        if (!Player.m_localPlayer || _requirement == null)
+        if (!Player.m_localPlayer || _requirement == null || !_requirement.isValid)
         {
             return;
         }
@@ -54,6 +54,12 @@ public class RequirementElement : MonoBehaviour
 
     public void Set(TemperRequirement requirement)
     {
+        // A requirement whose configured prefab is missing (removed adventure-mode token, edited
+        // costMap) renders as an empty row instead of NRE-ing the panel.
+        if (requirement != null && !requirement.isValid)
+        {
+            requirement = null;
+        }
         if (requirement == null)
         {
             label.enabled = false;

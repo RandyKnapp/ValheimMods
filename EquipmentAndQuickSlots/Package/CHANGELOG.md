@@ -1,3 +1,29 @@
+**3.0.0**
+* **Complete rewrite of the slot system.**
+    * All configs that impact balance or functionality now are server synced (if the mod is installed on the server).   
+* **Your items are migrated automatically.** On first login per character, items from the old
+  2.x slot storage (including pre-Mistlands saves) move into the new slots. **There is no
+  downgrade path** — after a character has saved under 3.0.0, going back to 2.x will not restore
+  the old format (the automatic backup still protects the items themselves).
+* New **Trinket** equipment slot.
+* **Configurable utility slots** (`Equipment Slots / Utility Slot Count`, 1–3, default 1):
+  optionally wear more than one utility item. 
+  (This was previously a glitch that could happen, but is now supported as an optional feature)
+* **Quick slot count is configurable** (0–6, default 3)
+* **Extra inventory rows** (`Inventory / Extra Inventory Rows`, 0–5 default 0): Optionally enable additional inventory rows. 
+* **Base carry weight** (`Inventory / Base Carry Weight`): the player's carry capacity before
+  belts; 300 (vanilla) leaves other mods' carry-weight changes untouched.
+* **Death fixes**: Death item dropping/equipping now works correctly
+* **Hotkey conflict prevention**: quick slot hotkeys no longer trigger vanilla actions bound to
+  the same key.
+* **Public API for other mods** — add custom slots, query slot contents, subscribe to changes.
+  See `docs/API.md`; an embeddable typed shim (`EquipmentAndQuickSlotsAPI.dll`) is available
+  from the repository or follow the doc example to use reflection to access the API.
+* Console commands reworked: `eaqs_validate` repairs misplaced items (replaces the broken
+  `fixinventory`); destructive commands now require cheats.
+* Removed the dead Creature Level and Loot Control integration remnants and the second death
+  tombstone (one grave now holds everything, sized to fit).
+
 **2.1.14**
 * Updated for Valheim 0.219.13 Patch (Bog Witch)
 

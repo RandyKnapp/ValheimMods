@@ -25,8 +25,10 @@ namespace EpicLoot.MagicItemEffects
         {
             public static bool Prefix(SEMan __instance, int nameHash)
             {
+                // Vanilla passes GetStableHashCode-based ids (SEMan.s_statusEffect*); comparing
+                // against string.GetHashCode never matched, so Warmth never blocked anything.
                 if (AddingStatusFromEnv && __instance.m_character is Player player &&
-                    (nameHash == "Freezing".GetHashCode() || nameHash == "Cold".GetHashCode()))
+                    (nameHash == SEMan.s_statusEffectFreezing || nameHash == SEMan.s_statusEffectCold))
                 {
                     if (player.HasActiveMagicEffect(MagicEffectType.Warmth, out float effectValue))
                     {

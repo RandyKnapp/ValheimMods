@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using EpicLoot.Config;
 using EpicLoot.LegendarySystem;
@@ -91,12 +92,28 @@ public class TemperData
             Rarity = magicItem.Rarity,
             TypeNameOverride = magicItem.TypeNameOverride,
             AugmentedEffectIndex = magicItem.AugmentedEffectIndex,
-            AugmentedEffectIndices = magicItem.AugmentedEffectIndices,
-            TemperedEffectIndices = magicItem.TemperedEffectIndices,
+            // Copied, not aliased: OnSuccess mutates these lists, and sharing them with the live
+            // item mutated it before (and independently of) the save.
+            AugmentedEffectIndices = new List<int>(magicItem.AugmentedEffectIndices),
+            TemperedEffectIndices = new List<int>(magicItem.TemperedEffectIndices),
             DisplayName = magicItem.DisplayName,
             LegendaryID = magicItem.LegendaryID,
             SetID = magicItem.SetID,
-            IsUnidentified = magicItem.IsUnidentified
+            IsUnidentified = magicItem.IsUnidentified,
+            // SaveMagicItem replaces the payload wholesale -- omitting the socket state destroyed
+            // every socketed shard/runestone (and the socket capacity) on both temper outcomes.
+            SocketCount = magicItem.SocketCount,
+            Sockets = magicItem.Sockets.Select(socket => new SocketedEffect
+            {
+                Version = socket.Version,
+                Effect = socket.Effect != null
+                    ? new MagicItemEffect(socket.Effect.EffectType, socket.Effect.EffectValue)
+                    : null,
+                SourcePrefab = socket.SourcePrefab,
+                SourceRarity = socket.SourceRarity,
+                ShardType = socket.ShardType,
+                StackMultiplier = socket.StackMultiplier
+            }).ToList()
         };
 
         for (int i = 0; i < magicItem.Effects.Count; ++i)
@@ -143,7 +160,10 @@ public class TemperData
             _tempEffect.EffectValue += _tempIncrement;
             _tempUpdatedValue = _tempEffect.EffectValue;
         }
-        _tempItem.TemperedEffectIndices.Add(indexOfEffect);
+        if (!_tempItem.TemperedEffectIndices.Contains(indexOfEffect))
+        {
+            _tempItem.TemperedEffectIndices.Add(indexOfEffect);
+        }
         API.WithChangeReason(API.ChangeReason.Temper, () => itemData.SaveMagicItem(_tempItem));
         UpdateLog(critical ? CRIT_SUCCESS_GOLD : SUCCESS_GREEN);
 

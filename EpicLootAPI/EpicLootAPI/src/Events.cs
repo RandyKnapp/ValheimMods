@@ -24,6 +24,7 @@ public static partial class EpicLoot
         public const string Unsocket = "Unsocket";
         public const string LootRoll = "LootRoll";
         public const string Transfer = "Transfer";
+        public const string AddSocket = "AddSocket";
 
         /// <summary>A magic-data write with no dedicated call site.</summary>
         public const string Unspecified = "Unspecified";

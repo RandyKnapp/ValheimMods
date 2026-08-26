@@ -40,6 +40,10 @@ public class MagicItemComponent : CustomItemData
         if (Item.m_equipped && Player.m_localPlayer.IsItemEquiped(Item))
         {
             Multiplayer_Player_Patch.UpdatePlayerZDOForEquipment(Player.m_localPlayer, Item, MagicItem != null);
+            // The worn item's effects just changed; drop the memoized per-player totals. This is
+            // the single funnel for magic-data writes, so paths that never re-equip (tempering,
+            // rune etching) get correct totals immediately instead of on the next equip change.
+            EquipmentEffectCache.Reset(Player.m_localPlayer);
         }
     }
 

@@ -12,8 +12,10 @@ public static class ItemBackgroundHelper
         if (magicItemTransform == null)
         {
             GameObject magicItemObject = UnityEngine.Object.Instantiate(equipped, equipped.transform.parent);
-            magicItemObject.transform.SetSiblingIndex(EpicLoot.HasAuga ? equipped.transform.GetSiblingIndex() :
-                equipped.transform.GetSiblingIndex() + 1);
+            // Directly below "equiped", never above it: the rarity background fills the whole cell,
+            // so drawing it on top of the equipped marker hides the marker completely and a worn
+            // magic item becomes indistinguishable from one sitting in the bag.
+            magicItemObject.transform.SetSiblingIndex(equipped.transform.GetSiblingIndex());
             magicItemObject.name = "magicItem";
             magicItemObject.SetActive(true);
             magicItemTransform = (RectTransform)magicItemObject.transform;
@@ -50,22 +52,40 @@ public static class ItemBackgroundHelper
             }
         }
 
-        // Also change equipped image
-        Image equippedImage = equipped.GetComponent<Image>();
-        if (equippedImage != null && (!isInventoryGrid || !EpicLoot.HasAuga))
+        return magicItemTransform.GetComponent<Image>();
+    }
+
+    /// <summary>
+    /// Swaps the slot's vanilla "equiped" overlay (a translucent blue fill) for Epic Loot's frame.
+    /// Unconditional per slot, and deliberately separate from the rarity background above: the
+    /// equipped marker has to look the same on every worn item, magic or not, and must not depend
+    /// on whether this particular cell ever happened to hold a magic item. Cheap to call every
+    /// frame -- once the sprite is in place there is nothing left to do.
+    /// </summary>
+    public static void ApplyEquippedSprite(GameObject equipped, bool isInventoryGrid)
+    {
+        // Auga restyles the inventory grid's equipped marker itself; only the hotbar is ours there.
+        if (equipped == null || (isInventoryGrid && EpicLoot.HasAuga))
         {
-            equippedImage.sprite = EpicLoot.GetEquippedSprite();
-            equippedImage.color = Color.white;
-            equippedImage.raycastTarget = false;
-            RectTransform rectTransform = equipped.RectTransform();
-            rectTransform.anchorMin = new Vector2(0.5f, 0.5f);
-            rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
-            rectTransform.pivot = new Vector2(0.5f, 0.5f);
-            rectTransform.anchoredPosition = Vector2.zero;
-            rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, equippedImage.sprite.texture.width);
-            rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, equippedImage.sprite.texture.height);
+            return;
         }
 
-        return magicItemTransform.GetComponent<Image>();
+        Image equippedImage = equipped.GetComponent<Image>();
+        Sprite sprite = EpicLoot.GetEquippedSprite();
+        if (equippedImage == null || sprite == null || equippedImage.sprite == sprite)
+        {
+            return;
+        }
+
+        equippedImage.sprite = sprite;
+        equippedImage.color = Color.white;
+        equippedImage.raycastTarget = false;
+        RectTransform rectTransform = equipped.RectTransform();
+        rectTransform.anchorMin = new Vector2(0.5f, 0.5f);
+        rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+        rectTransform.pivot = new Vector2(0.5f, 0.5f);
+        rectTransform.anchoredPosition = Vector2.zero;
+        rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, sprite.texture.width);
+        rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, sprite.texture.height);
     }
 }

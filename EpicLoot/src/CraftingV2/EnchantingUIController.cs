@@ -901,7 +901,10 @@ namespace EpicLoot.CraftingV2
                 ItemDrop.ItemData itemData = entry.Key.m_itemData.Clone();
                 itemData.m_dropPrefab = entry.Key.gameObject;
                 int cost = entry.Value;
-                if (costModifier != float.NaN)
+                // float.IsNaN, never == float.NaN (that comparison is always false): the NaN
+                // modifier used to multiply through and the <= 0 clamp collapsed every rune
+                // extract cost to 1 of each item.
+                if (!float.IsNaN(costModifier))
                 {
                     cost = Mathf.RoundToInt(entry.Value * costModifier);
                 }
@@ -924,7 +927,8 @@ namespace EpicLoot.CraftingV2
                 ItemDrop.ItemData itemData = entry.Key.m_itemData.Clone();
                 itemData.m_dropPrefab = entry.Key.gameObject;
                 int cost = entry.Value;
-                if (costModifier != float.NaN)
+                // float.IsNaN, never != float.NaN (always true) -- see GetRuneExtractCost above.
+                if (!float.IsNaN(costModifier))
                 {
                     cost = Mathf.RoundToInt(entry.Value * costModifier);
                 }
@@ -945,7 +949,7 @@ namespace EpicLoot.CraftingV2
             MagicItemEffect effect = selectedItem.GetMagicItem().Effects[targetEnchant];
             MagicItemEffect runeEffect = new MagicItemEffect(effect.EffectType);
 
-            if (effect.EffectValue == float.NaN)
+            if (float.IsNaN(effect.EffectValue))
             {
                 return null;
             }
@@ -972,15 +976,21 @@ namespace EpicLoot.CraftingV2
             MagicItemComponent magicItemComponent = newItem.Data().GetOrCreate<MagicItemComponent>();
 
             // We might need to rethink how power modifier is checked and applied here
-            if (powerModifier != float.NaN && powerModifier < 999f && powerModifier > 0 && effect.EffectValue > 1)
+            if (!float.IsNaN(powerModifier) && powerModifier < 999f && powerModifier > 0 && effect.EffectValue > 1)
             {
                 runeEffect.EffectValue = effect.EffectValue * powerModifier;
-                float maxDefaultValue = MagicItemEffectDefinitions.AllDefinitions[effect.EffectType].ValuesPerRarity
-                    .GetValueDefForRarity(selectedItem.GetRarity()).MaxValue;
-                // To clamp down on potentially infinite power looping by re-runing items
-                if (runeEffect.EffectValue > (maxDefaultValue * powerModifier))
+                // Get() synthesizes a fallback for a missing definition (removed content mod,
+                // deleted shard grid slot) -- the raw dictionary index threw KeyNotFound here.
+                var valueDef = MagicItemEffectDefinitions.Get(effect.EffectType)?.ValuesPerRarity?
+                    .GetValueDefForRarity(selectedItem.GetRarity());
+                if (valueDef != null)
                 {
-                    runeEffect.EffectValue = (maxDefaultValue * powerModifier);
+                    float maxDefaultValue = valueDef.MaxValue;
+                    // To clamp down on potentially infinite power looping by re-runing items
+                    if (runeEffect.EffectValue > (maxDefaultValue * powerModifier))
+                    {
+                        runeEffect.EffectValue = (maxDefaultValue * powerModifier);
+                    }
                 }
             }
             else
@@ -1001,7 +1011,7 @@ namespace EpicLoot.CraftingV2
 
         internal static string GetSelectedEnchantmentNameByIndex(ItemDrop.ItemData selectedItem, int targetEnchant)
         {
-            if (targetEnchant > selectedItem.GetMagicItem().Effects.Count) {
+            if (targetEnchant < 0 || targetEnchant >= selectedItem.GetMagicItem().Effects.Count) {
                 EpicLoot.LogWarning($"Tried to get enchantment {targetEnchant} from item with only {selectedItem.GetMagicItem().Effects.Count} effects");
                 return "invalid";
             }
@@ -1094,8 +1104,12 @@ namespace EpicLoot.CraftingV2
                     // Skip or replace existing effects with the same effect type
                     if (item.GetMagicItem().Effects.Any(x => x.EffectType == effect.EffectType))
                     {
-                        // If the item already has this effect, but with a lower value, replace it
-                        if (item.GetMagicItem().Effects.Any(x => x.EffectValue < effect.EffectValue))
+                        // If the item already has this effect, but with a lower value, replace it.
+                        // Same-TYPE comparison: the old test matched any effect on the item with a
+                        // smaller value, so a weaker rune could overwrite a stronger existing
+                        // effect because some unrelated effect happened to roll low.
+                        if (item.GetMagicItem().Effects.Any(x =>
+                            x.EffectType == effect.EffectType && x.EffectValue < effect.EffectValue))
                         {
                             int index = item.GetMagicItem().Effects.FindIndex(x => x.EffectType == effect.EffectType);
                             item.GetMagicItem().Effects[index] = effect;
@@ -1388,8 +1402,18 @@ namespace EpicLoot.CraftingV2
                     continue;
                 }
 
+                int reducedAmount = Mathf.Max(0, itemAmountConfig.Amount - reducedCost);
+                if (reducedAmount <= 0)
+                {
+                    // Fully discounted. A negative stack here was catastrophic: the affordability
+                    // check trivially passed and vanilla Inventory.RemoveItem with a negative
+                    // amount ADDS to the stack -- a fully upgraded table MINTED bounty tokens on
+                    // every disenchant.
+                    continue;
+                }
+
                 ItemDrop.ItemData costItem = itemDrop.m_itemData.Clone();
-                costItem.m_stack = itemAmountConfig.Amount - reducedCost;
+                costItem.m_stack = reducedAmount;
                 result.Add(new InventoryItemListElement() { Item = costItem });
             }
 

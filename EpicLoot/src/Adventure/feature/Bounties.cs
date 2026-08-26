@@ -214,7 +214,15 @@ namespace EpicLoot.Adventure.Feature
             {
                 if (success)
                 {
-                    saveData.AcceptedBounty(bounty, spawnPoint, Vector3.zero);
+                    // AcceptedBounty refuses when the bounty is already accepted or not in the
+                    // Available state; spawning anyway used to create bounty creatures with no save
+                    // record -- impossible to complete and never despawned.
+                    if (!saveData.AcceptedBounty(bounty, spawnPoint, Vector3.zero))
+                    {
+                        callback?.Invoke(false, spawnPoint);
+                        return;
+                    }
+
                     saveData.NumberOfTreasureMapsOrBountiesStarted++;
 
                     // Spawn monster initializer

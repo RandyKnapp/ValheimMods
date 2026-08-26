@@ -47,9 +47,17 @@ namespace EpicLoot.MagicItemEffects
         {
             var item = __instance.m_spawnItem;
             var player = Player.m_localPlayer;
-            if (player != null && item != null && item.HasMagicEffect(MagicEffectType.RecallWeapon))
+            // Owner-only, and measured against the projectile's OWNER: this postfix runs on every
+            // client that has the projectile loaded, and a distant bystander used to trigger the
+            // recall (spawning a networked drop) while the owner kept its own copy -- duplication.
+            if (__instance.m_nview == null || !__instance.m_nview.IsValid() || !__instance.m_nview.IsOwner())
             {
-                var v = player.transform.position - __instance.transform.position;
+                return;
+            }
+            var owner = __instance.m_owner != null ? __instance.m_owner.transform : (player != null ? player.transform : null);
+            if (owner != null && item != null && item.HasMagicEffect(MagicEffectType.RecallWeapon))
+            {
+                var v = owner.position - __instance.transform.position;
                 var distSq = v.sqrMagnitude;
                 if (distSq > AutoRecallDistance * AutoRecallDistance)
                 {

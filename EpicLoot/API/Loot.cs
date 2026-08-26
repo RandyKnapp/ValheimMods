@@ -273,7 +273,16 @@ public static partial class API
             return false;
         }
 
-        List<LootTable> tables = JsonConvert.DeserializeObject<List<LootTable>>(json);
+        List<LootTable> tables;
+        try
+        {
+            tables = JsonConvert.DeserializeObject<List<LootTable>>(json);
+        }
+        catch
+        {
+            OnError?.Invoke("Failed to parse loot tables from external plugin");
+            return false;
+        }
         if (tables == null)
         {
             return false;

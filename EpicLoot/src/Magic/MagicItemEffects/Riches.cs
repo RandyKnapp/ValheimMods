@@ -100,10 +100,16 @@ namespace EpicLoot.MagicItemEffects
                 // Riches table not setup, so we need to update it
                 if (RichesTable.Count == 0) {
                     UpdateRichesOnEffectSetup();
+                    // Still empty (nothing configured/resolvable): bail rather than indexing into
+                    // an empty table from inside CharacterDrop.GenerateDropList.
+                    if (RichesTable.Count == 0) {
+                        return;
+                    }
                 }
 
-                // Randomly select _one_ loot item from the list, scale it based on the riches value, and add it to the drop list
-                int selected = Random.Range(0, RichesTable.Count()-1);
+                // Randomly select _one_ loot item from the list, scale it based on the riches value, and add it to the drop list.
+                // (int overload of Random.Range is max-exclusive; Count-1 made the last entry unreachable.)
+                int selected = Random.Range(0, RichesTable.Count);
                 float richesValueRoll = richesRandomRoll * 100;
                 float richesCost = RichesTable[RichesTable.Keys.ElementAt(selected)];
                 float richesAmount = richesValueRoll / richesCost;

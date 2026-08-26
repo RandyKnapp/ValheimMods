@@ -13,11 +13,12 @@ namespace EpicLoot.MagicItemEffects
         {
             if (attacker is Player player && __instance.IsStaggering())
             {
-                if (HandlingProjectileDamage == null)
-                {
-                    HandlingProjectileDamage = ReadStaggerDamageValue(player);
-                }
-                hit.ApplyModifier((float)HandlingProjectileDamage);
+                // Projectile hits carry the value staged on the projectile's ZDO (set by the OnHit
+                // prefix, cleared by its postfix); melee reads live. The old code cached the melee
+                // value INTO the projectile static and never cleared it, so the first melee stagger
+                // multiplier was silently reused for every later hit.
+                float multiplier = HandlingProjectileDamage ?? ReadStaggerDamageValue(player);
+                hit.ApplyModifier(multiplier);
             }
         }
 

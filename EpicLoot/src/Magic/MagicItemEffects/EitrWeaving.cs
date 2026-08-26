@@ -8,9 +8,11 @@ public static class EitrWeaving
     [HarmonyPatch(typeof(Humanoid), nameof(Humanoid.BlockAttack))]
     private static class PatchParry_EitrWeave
     {
-        private static void Postfix(Humanoid __instance, Character attacker)
+        private static void Postfix(Humanoid __instance, Character attacker, bool __result)
         {
-            if (__instance != Player.m_localPlayer)
+            // __result: vanilla returns false when there is no blocker or the attack came from
+            // behind -- no block happened, so no eitr.
+            if (!__result || __instance != Player.m_localPlayer)
             {
                 return;
             }
@@ -19,6 +21,10 @@ public static class EitrWeaving
             if (eitrWeaveValue > 0)
             {
                 ItemDrop.ItemData currentBlocker = __instance.GetCurrentBlocker();
+                if (currentBlocker == null)
+                {
+                    return;
+                }
                 bool parriedAttack = currentBlocker.m_shared.m_timedBlockBonus > 1f &&
                     __instance.m_blockTimer != -1f && __instance.m_blockTimer < 0.25f;
                     

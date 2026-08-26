@@ -26,6 +26,7 @@ public static class MagicFontManager
         [TMP_Attributes("Valheim-AveriaSansLibre", "Valheim-AveriaSansLibre - Outline")] AveriaSansLibreOutline,
         [TMP_Attributes("AveriaSansLibre-Bold SDF", "Valheim-AveriaSansLibre - Outline")] AveriaSansLibreBoldOutline,
         [TMP_Attributes("Valheim-AveriaSerifLibre", "Valheim-AveriaSerifLibre - Outline")] AveriaSerifLibreOutline,
+        [TMP_Attributes("Valheim-AveriaSerifLibre", "Valheim-AveriaSerifLibre")] AveriaSerifLibre,
         [TMP_Attributes("Valheim-Rune", "Valheim-Rune")] Rune,
         
     }

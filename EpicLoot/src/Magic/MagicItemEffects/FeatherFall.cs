@@ -12,7 +12,9 @@ namespace EpicLoot.MagicItemEffects
         {
             if (__instance is Player player)
             {
-                var slowFall = ObjectDB.instance.GetStatusEffect("SlowFall".GetHashCode());
+                // ObjectDB.GetStatusEffect matches StatusEffect.NameHash() == GetStableHashCode;
+                // string.GetHashCode never found it, so FeatherFall never applied.
+                var slowFall = ObjectDB.instance.GetStatusEffect("SlowFall".GetStableHashCode());
                 if (slowFall == null)
                 {
                     EpicLoot.LogError("Could not find SlowFall status effect!");

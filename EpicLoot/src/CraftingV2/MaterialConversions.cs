@@ -44,6 +44,12 @@ namespace EpicLoot.CraftingV2
 
         public static void Initialize(MaterialConversionsConfig config)
         {
+            if (config == null)
+            {
+                EpicLoot.LogWarning("MaterialConversions.Initialize called with a null config; keeping the currently loaded conversions.");
+                return;
+            }
+
             Config = config;
             OnSetupMaterialConversions?.Invoke();
 

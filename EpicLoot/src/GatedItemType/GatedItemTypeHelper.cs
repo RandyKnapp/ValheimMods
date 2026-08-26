@@ -51,6 +51,12 @@ namespace EpicLoot.GatedItemType
 
         public static void Initialize(ItemInfoConfig config)
         {
+            if (config == null)
+            {
+                EpicLoot.LogWarning("GatedItemTypeHelper.Initialize called with a null config; keeping the currently loaded item info.");
+                return;
+            }
+
             GatedConfig = config;
             ItemsByTypeAndBoss.Clear();
             AllItemsWithDetails.Clear();
@@ -152,10 +158,12 @@ namespace EpicLoot.GatedItemType
             HashSet<string> currentSelected, List<string> validBosses, bool allowDuplicate = false,
             bool allowTypeFallback = false, bool allowItemFallback = false)
         {
+            // No bosses defeated yet is the NORMAL early-game state under
+            // BossKillUnlocksCurrentBiomeItems -- fall back to the type's configured fallback item,
+            // tolerating types iteminfo.json doesn't know (API-registered or patched-out types).
             if (validBosses.Count == 0)
             {
-                // TODO: this should never trigger
-                return FallbackByType[itemType].Item;
+                return FallbackByType.TryGetValue(itemType, out var earlyFallback) ? earlyFallback.Item : null;
             }
 
             if (!ItemsByTypeAndBoss.ContainsKey(itemType))
@@ -177,7 +185,7 @@ namespace EpicLoot.GatedItemType
 
             if (allowItemFallback)
             {
-                return FallbackByType[itemType].Item;
+                return FallbackByType.TryGetValue(itemType, out var fallback) ? fallback.Item : null;
             }
 
             return null;
@@ -258,7 +266,9 @@ namespace EpicLoot.GatedItemType
                     return null;
                 }
                 
-                string item = potentialItems[UnityEngine.Random.Range(0, potentialItems.Count - 1)];
+                // Random.Range(int, int) is max-exclusive; Count-1 made the last entry unreachable
+                // (and a 2-entry category always picked the first).
+                string item = potentialItems[UnityEngine.Random.Range(0, potentialItems.Count)];
                 
                 if (!CheckIfItemNeedsGate(gatedMode, item, out GatedItemDetails itemDetails))
                 {

@@ -46,12 +46,19 @@ namespace EpicLoot.Adventure.Feature
             var availableMaterials = new MultiValueDictionary<ItemRarity, SecretStashItemInfo>();
             availableMaterialsList.ForEach(x => availableMaterials.Add(x.Item.GetRarity(), x));
 
-            // Roll N times on each rarity list
+            // Roll N times on each rarity list, ACCUMULATING across rarities -- the out-parameter
+            // overload replaced the list on every pass (a 0.11.4 regression), so only the last
+            // rarity's picks ever reached the stash.
             foreach (ItemRarity section in Enum.GetValues(typeof(ItemRarity)))
             {
                 var items = availableMaterials.GetValues(section, true).ToList();
-                var rolls = AdventureDataManager.Config.SecretStash.RollsPerRarity[(int)section];
-                RollOnListNTimes(random, items, rolls, out results);
+                var rollsPerRarity = AdventureDataManager.Config.SecretStash.RollsPerRarity;
+                if ((int)section >= rollsPerRarity.Count)
+                {
+                    continue;
+                }
+                var rolls = rollsPerRarity[(int)section];
+                RollOnListNTimesUnique(random, items, rolls, results);
             }
 
             // Remove the results that the player doesn't know about yet
