@@ -25,8 +25,10 @@ namespace EpicLoot.MagicItemEffects.Shards {
                 return;
             }
 
-            // Only fire on a kill -- the hit must have dropped the target to (or below) zero health.
-            if (__instance.GetHealth() > 0f) {
+            // Only fire on a kill. Predicted lethality: against a remote-owned victim the RPC
+            // carrying this hit has not executed yet, so GetHealth() still reads pre-hit health and
+            // a plain <= 0 check never fired in multiplayer.
+            if (__instance.GetHealth() - hit.GetTotalDamage() > 0f) {
                 return;
             }
 

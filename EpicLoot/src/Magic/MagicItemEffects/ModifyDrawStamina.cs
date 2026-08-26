@@ -17,7 +17,9 @@ namespace EpicLoot.MagicItemEffects
             }
         }
 
-        public static void Postfix(ItemDrop.ItemData __instance, ref float __state)
+        // Finalizer, not postfix: the restore must run even when the original (or another mod's
+        // patch) throws -- m_shared is the descriptor shared by every copy of the item.
+        public static void Finalizer(ItemDrop.ItemData __instance, float __state)
         {
             __instance.m_shared.m_attack.m_drawStaminaDrain = __state;
         }

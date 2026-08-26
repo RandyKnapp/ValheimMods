@@ -71,6 +71,10 @@ public static class ItemDataExtensions
         throw new ArgumentException("itemData is not magic item, magic crafting material, or runestone");
     }
 
+    // Keyed by the color string itself, so a config reload that changes a rarity's color simply
+    // misses the cache — no invalidation needed. Callers run per item per UI refresh.
+    private static readonly Dictionary<string, Color> ParsedColorCache = new Dictionary<string, Color>();
+
     public static Color GetRarityColor(this ItemDrop.ItemData itemData)
     {
         string colorString = "white";
@@ -87,7 +91,14 @@ public static class ItemDataExtensions
             colorString = itemData.GetRunestoneRarityColor();
         }
 
-        return ColorUtility.TryParseHtmlString(colorString, out Color color) ? color : Color.white;
+        if (ParsedColorCache.TryGetValue(colorString, out Color cached))
+        {
+            return cached;
+        }
+
+        Color parsed = ColorUtility.TryParseHtmlString(colorString, out Color color) ? color : Color.white;
+        ParsedColorCache[colorString] = parsed;
+        return parsed;
     }
 
     // includeSocketed defaults to true: this extension is used by effect-application patches to gate

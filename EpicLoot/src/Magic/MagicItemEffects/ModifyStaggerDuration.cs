@@ -11,6 +11,49 @@ namespace EpicLoot.MagicItemEffects
     public static class ModifyStaggerDuration
     {
         public const string ZdoKey = "el-sd";
+        public const string RpcKey = "EL_TagStaggerDuration";
+
+        // The tag must be checked on the client that owns the player wearing the effect (a remote
+        // player's magic data is not replicated) and written by the client that owns the target's
+        // ZDO (a non-owner Set is reverted on the owner's next sync). Same check-here/apply-there
+        // pattern as Slow/Paralyze: owner writes directly, everyone else routes.
+        [HarmonyPatch(typeof(Character), nameof(Character.Awake))]
+        public static class RegisterRpc_Character_Awake_Patch
+        {
+            [UsedImplicitly]
+            private static void Postfix(Character __instance)
+            {
+                __instance.m_nview?.Register<float>(RpcKey, (sender, value) => RPC_TagStaggerDuration(__instance, value));
+            }
+        }
+
+        private static void RPC_TagStaggerDuration(Character character, float value)
+        {
+            if (character == null || character.m_nview == null ||
+                !character.m_nview.IsValid() || !character.m_nview.IsOwner())
+            {
+                return;
+            }
+
+            character.m_nview.GetZDO().Set(ZdoKey, value);
+        }
+
+        public static void TagTarget(Character target, float staggerValue)
+        {
+            if (target == null || target.m_nview == null || !target.m_nview.IsValid())
+            {
+                return;
+            }
+
+            if (target.m_nview.IsOwner())
+            {
+                target.m_nview.GetZDO().Set(ZdoKey, staggerValue);
+            }
+            else
+            {
+                target.m_nview.InvokeRPC(ZNetView.Everybody, RpcKey, staggerValue);
+            }
+        }
     }
 
     [HarmonyPatch(typeof(CharacterAnimEvent), nameof(CharacterAnimEvent.CustomFixedUpdate))]
@@ -44,17 +87,25 @@ namespace EpicLoot.MagicItemEffects
 
     public static class RPC_TagCharacterOnHit_Character_RPC_Damage_Patch
     {
-        // Prefix handler invoked by CharacterRpcDamageDispatch (tags the victim's stagger-duration ZDO).
+        // Prefix handler invoked by SharedCharacterDamagePatch -- ATTACKER side. It used to live on
+        // the RPC_Damage (victim-owner) dispatcher, where a remote attacking player's magic data
+        // reads as empty, so the melee bonus never applied in multiplayer. The check runs here on
+        // the attacker's client; the write is routed to the target's owner via TagTarget.
         public static void TagStaggerDuration(Character __instance, HitData hit, Character attacker)
         {
+            if (__instance == null || __instance.m_nview == null || !__instance.m_nview.IsValid())
+            {
+                return;
+            }
+
             if (!__instance.IsStaggering() && hit.m_skill != Skills.SkillType.Bows && hit.m_skill != Skills.SkillType.None)
             {
                 var staggerValue = 1f;
-                if (attacker is Player player)
+                if (attacker is Player player && player == Player.m_localPlayer)
                 {
                     staggerValue += player.GetTotalActiveMagicEffectValue(MagicEffectType.ModifyStaggerDuration, 0.01f);
                 }
-                __instance.m_nview.GetZDO().Set(ModifyStaggerDuration.ZdoKey, staggerValue);
+                ModifyStaggerDuration.TagTarget(__instance, staggerValue);
             }
         }
     }
@@ -72,7 +123,9 @@ namespace EpicLoot.MagicItemEffects
                 {
                     staggerValue += player.GetTotalActiveMagicEffectValue(MagicEffectType.ModifyStaggerDuration, 0.01f);
                 }
-                attacker.m_nview.GetZDO().Set(ModifyStaggerDuration.ZdoKey, staggerValue);
+                // Routed: the blocker rarely owns the attacker's ZDO, and a non-owner Set is
+                // reverted on the owner's next sync.
+                ModifyStaggerDuration.TagTarget(attacker, staggerValue);
             }
         }
     }

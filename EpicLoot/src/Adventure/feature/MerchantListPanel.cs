@@ -103,10 +103,18 @@ namespace EpicLoot.Adventure.Feature
 
         protected void DestroyAllListElementsInList()
         {
-            foreach (Transform child in List)
+            // DestroyImmediate (same reason as MultiSelectItemList.MakeEnoughElements): Object.Destroy
+            // defers removal to end-of-frame, so for the rest of this frame List.childCount covered
+            // old+new rows and the child-index selection below read a stale, pending-destroy element
+            // while highlighting a different new one.
+            for (int i = List.childCount - 1; i >= 0; i--)
             {
-                Object.Destroy(child.gameObject);
+                Object.DestroyImmediate(List.GetChild(i).gameObject);
             }
+
+            // The old index points at whatever now happens to occupy that row after a refresh (an
+            // accepted bounty vanishing shifts everything up) -- never carry it across a rebuild.
+            _selectedItemIndex = -1;
         }
     }
 }

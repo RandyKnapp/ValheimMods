@@ -102,6 +102,12 @@ namespace StationsAreContainers
 
         public static void ImprovedBuildHud_GetAvailableItems_Patch(ref int __result, string itemName)
         {
+            // Inside SetupRequirementList the Inventory.CountItems postfix has already added the
+            // container's items to the count GetAvailableItems just did on the player inventory --
+            // adding them again here double-counted every requirement in the crafting panel.
+            if (InventoryGui_SetupRequirement_Patch.SettingUpRequirement > 0)
+                return;
+
             if (Player.m_localPlayer != null)
             {
                 var station = Player.m_localPlayer.GetCurrentCraftingStation();
@@ -125,9 +131,20 @@ namespace StationsAreContainers
             if (InventoryGui.IsVisible())
             {
                 var container = GetOrCreateContainer(__instance);
-                if (container)
+                if (container && container.m_nview != null && container.m_nview.GetZDO() != null)
                 {
-                    InventoryGui.instance.m_currentContainer = container;
+                    // Go through vanilla's open handshake instead of assigning m_currentContainer
+                    // directly: RPC_RequestOpen transfers ZDO ownership to this client (the grid only
+                    // draws for the owner) and enforces the single-user lock; the granted response
+                    // calls InventoryGui.Show(container), which attaches the pane.
+                    container.m_nview.InvokeRPC("RequestOpen", Game.instance.GetPlayerProfile().GetPlayerID());
+                }
+                else if (InventoryGui.instance.m_currentContainer != null &&
+                         InventoryGui.instance.m_currentContainer.GetComponent<CraftingStation>() != null)
+                {
+                    // Station containers are disabled (or this one is invalid): don't leave a previous
+                    // station's container pane attached.
+                    InventoryGui.instance.m_currentContainer = null;
                 }
 
                 InventoryGui.instance.UpdateCraftingPanel();
@@ -156,6 +173,14 @@ namespace StationsAreContainers
                 return null;
 
             var container = craftingStation.gameObject.AddComponent<Container>();
+            // Container.Awake runs synchronously inside AddComponent and bails before creating
+            // m_inventory when the station has no ZNetView/ZDO (ghost build previews, stripped
+            // objects) -- dereferencing it here would NRE.
+            if (container.m_inventory == null)
+            {
+                UnityEngine.Object.Destroy(container);
+                return null;
+            }
             container.m_name = container.m_inventory.m_name = craftingStation.m_name;
             container.m_width = container.m_inventory.m_width = width;
             container.m_height = container.m_inventory.m_height = height;
@@ -168,32 +193,62 @@ namespace StationsAreContainers
         new[] { typeof(Recipe), typeof(bool), typeof(int), typeof(int) })]
     public static class Player_HaveRequirementItems_Patch
     {
-        public static void Postfix(Player __instance, ref bool __result, Recipe piece, int qualityLevel, int amount)
+        public static void Postfix(Player __instance, ref bool __result, Recipe piece, bool discover, int qualityLevel, int amount)
         {
-            if (__instance == null)
+            // Discover mode checks m_knownMaterial, not inventory counts -- letting container
+            // contents flip it would mark recipes "known" for materials the player never picked up.
+            if (__instance == null || discover || __result)
                 return;
 
             var station = __instance.GetCurrentCraftingStation();
-            if (!__result && station != null)
-            {
-                var container = station.GetComponent<Container>();
-                if (container != null)
-                {
-                    foreach (var resource in piece.m_resources)
-                    {
-                        if (resource.m_resItem != null)
-                        {
-                            var itemName = resource.m_resItem.m_itemData.m_shared.m_name;
-                            var resAmount = resource.GetAmount(qualityLevel) * amount;
-                            var totalPlayerHas = __instance.GetInventory().CountItems(itemName) + container.GetInventory().CountItems(itemName);
-                            if (totalPlayerHas < resAmount)
-                                return;
-                        }
-                    }
+            if (station == null)
+                return;
 
-                    __result = true;
+            var container = station.GetComponent<Container>();
+            if (container == null || container.GetInventory() == null)
+                return;
+
+            bool anySatisfied = false;
+            foreach (var resource in piece.m_resources)
+            {
+                if (resource.m_resItem == null)
+                    continue;
+
+                var shared = resource.m_resItem.m_itemData.m_shared;
+                var resAmount = resource.GetAmount(qualityLevel) * amount;
+                // Mirror vanilla: the count that matters is the best single quality level, not the
+                // sum across qualities.
+                int best = 0;
+                for (int quality = 1; quality < shared.m_maxQuality + 1; ++quality)
+                {
+                    int count = __instance.GetInventory().CountItems(shared.m_name, quality) +
+                                container.GetInventory().CountItems(shared.m_name, quality);
+                    if (count > best)
+                        best = count;
+                }
+
+                if (piece.m_requireOnlyOneIngredient)
+                {
+                    if (best >= resAmount)
+                    {
+                        anySatisfied = true;
+                        break;
+                    }
+                }
+                else if (best < resAmount)
+                {
+                    return;
                 }
             }
+
+            if (piece.m_requireOnlyOneIngredient)
+            {
+                if (anySatisfied)
+                    __result = true;
+                return;
+            }
+
+            __result = true;
         }
     }
 
@@ -229,12 +284,15 @@ namespace StationsAreContainers
             SettingUpRequirement++;
         }
 
+        // Finalizer, not postfix: a throw inside SetupRequirementList (e.g. another mod's patch)
+        // would skip a postfix, latch the counter above zero, and permanently inflate every later
+        // Inventory.CountItems on the player inventory.
         [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.SetupRequirementList))]
-        [HarmonyPostfix]
-        [HarmonyPriority(Priority.Last)]
-        public static void SetupRequirementsList_Postfix()
+        [HarmonyFinalizer]
+        public static void SetupRequirementsList_Finalizer()
         {
-            SettingUpRequirement--;
+            if (SettingUpRequirement > 0)
+                SettingUpRequirement--;
         }
 
         [HarmonyPatch(typeof(Inventory), nameof(Inventory.CountItems))]
@@ -260,9 +318,13 @@ namespace StationsAreContainers
     [HarmonyPatch(typeof(Player), nameof(Player.ConsumeResources))]
     public static class Player_ConsumeResources_Patch
     {
-        public static bool Prefix(Player __instance, Piece.Requirement[] requirements, int qualityLevel, int multiplier)
+        // Priority.Last + __runOriginal: the container must not be drained when an earlier prefix
+        // already cancelled the consume (the items would vanish with nothing crafted).
+        [HarmonyPriority(Priority.Last)]
+        public static bool Prefix(Player __instance, Piece.Requirement[] requirements, int qualityLevel,
+            int itemQuality, int multiplier, bool __runOriginal)
         {
-            if (__instance == null)
+            if (!__runOriginal || __instance == null)
                 return true;
 
             var station = __instance.GetCurrentCraftingStation();
@@ -270,7 +332,7 @@ namespace StationsAreContainers
                 return true;
 
             var stationContainer = station.GetComponent<Container>();
-            if (stationContainer == null)
+            if (stationContainer == null || stationContainer.m_inventory == null)
                 return true;
 
             foreach (var requirement in requirements)
@@ -281,11 +343,13 @@ namespace StationsAreContainers
                     var amount = requirement.GetAmount(qualityLevel) * multiplier;
                     if (amount > 0)
                     {
-                        var has = __instance.m_inventory.CountItems(itemName);
+                        // Vanilla removes with the same itemQuality filter -- count and drain with it
+                        // too, or upgrades would under-drain the container and undercharge.
+                        var has = __instance.m_inventory.CountItems(itemName, itemQuality);
                         var fromContainer = has >= amount ? 0 : amount - has;
                         if (fromContainer > 0)
-                            stationContainer.m_inventory.RemoveItem(itemName, fromContainer);
-                    }   
+                            stationContainer.m_inventory.RemoveItem(itemName, fromContainer, itemQuality);
+                    }
                 }
             }
 

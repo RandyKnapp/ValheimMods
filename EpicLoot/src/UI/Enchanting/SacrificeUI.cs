@@ -253,7 +253,7 @@ namespace EpicLoot_UnityLib
                     x => new Tuple<ItemDrop.ItemData, int>(x.Item1.GetItem(), x.Item2)).ToList();
                 Tuple<float, float> featureValues =
                     EnchantingTableUI.instance.SourceTable.GetFeatureCurrentValue(EnchantingFeature.Sacrifice);
-                float costReduction = featureValues.Item1 == 0f || featureValues.Item1 == float.NaN ?
+                float costReduction = featureValues.Item1 == 0f || float.IsNaN(featureValues.Item1) ?
                     1.0f : 1f - (featureValues.Item1 / 100f);
                 List<InventoryItemListElement> cost = EnchantingUIController.GetIdentifyCostForCategory(identifyFilter, unidentifiedItems, costReduction);
                 CostList.SetItems(cost.Cast<IListElement>().ToList());

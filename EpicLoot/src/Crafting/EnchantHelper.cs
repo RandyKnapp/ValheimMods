@@ -1,6 +1,7 @@
 ﻿using EpicLoot.CraftingV2;
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace EpicLoot.Crafting
 {
@@ -18,7 +19,10 @@ namespace EpicLoot.Crafting
 
             foreach (ItemAmountConfig itemAmountConfig in enchantCostDef)
             {
-                ItemDrop prefab = ObjectDB.instance.GetItemPrefab(itemAmountConfig.Item).GetComponent<ItemDrop>();
+                // Two-step lookup: GetItemPrefab returns null for an unknown name, so chaining
+                // .GetComponent off it NRE'd before the guard could log (cf. AugmentHelper).
+                GameObject prefabObject = ObjectDB.instance.GetItemPrefab(itemAmountConfig.Item);
+                ItemDrop prefab = prefabObject != null ? prefabObject.GetComponent<ItemDrop>() : null;
                 if (prefab == null)
                 {
                     EpicLoot.LogWarning($"Tried to add unknown item ({itemAmountConfig.Item}) to enchant cost for item ({item.m_shared.m_name})");
@@ -43,7 +47,8 @@ namespace EpicLoot.Crafting
 
             foreach (ItemAmountConfig itemAmountConfig in enchantCostDef)
             {
-                ItemDrop prefab = ObjectDB.instance.GetItemPrefab(itemAmountConfig.Item).GetComponent<ItemDrop>();
+                GameObject prefabObject = ObjectDB.instance.GetItemPrefab(itemAmountConfig.Item);
+                ItemDrop prefab = prefabObject != null ? prefabObject.GetComponent<ItemDrop>() : null;
                 if (prefab == null)
                 {
                     EpicLoot.LogWarning($"Tried to add unknown item ({itemAmountConfig.Item}) to rune cost for item ({item.m_shared.m_name})");

@@ -177,6 +177,14 @@ namespace EpicLoot_UnityLib
 
             _hiddenFrames = 0;
 
+            // The player died (or logged out) with the table open: close it -- nothing else does,
+            // and every dereference below would NRE each frame over the death screen.
+            if (Player.m_localPlayer == null)
+            {
+                Hide();
+                return;
+            }
+
             bool disallowClose = (Chat.instance != null && Chat.instance.HasFocus()) ||
                 Console.IsVisible() || Menu.IsVisible() || (TextViewer.instance != null &&
                 TextViewer.instance.IsVisible()) || Player.m_localPlayer.InCutscene();

@@ -1,3 +1,67 @@
+**0.13.3**
+
+New Content:
+* Brokkr's Gift
+    * A rare artifact that can add shard slots to existing equipment
+    * Drops rarely from Dvergr town, Charred fortress and Ashlands stone chests, and from Mistlands and Ashlands treasure map chests
+    * Configurable success and number of slots added
+* Shardstone Compendium page
+    * Built live from your shard config
+
+Changes:
+* Localization for all languages is now available for shardstones and shardstone features
+* Improves compatibility with Equipment and Quickslots. The slots it adds now carry Epic Loot's rarity background and equipped frame like the rest of the inventory
+* The Golden shardstone's shield slot grants Lucky Block correctly
+* `cheatsockets` now clamps to the maximum socket count instead of building an absurd socket row
+
+Bugfixes:
+* Terminal commands now auto-complete every entry 
+* Opportunist and the melee stagger duration bonus now actually apply.
+* Head Hunter now works across players (similar to riches)
+* Summon damage was rewritten, it incorrectly impacted other non-summoned creatures
+* Enchanting table feature levels are now written only by the table's owner
+* Server-pushed configs that fail to parse are ignored with an error, keeping whatever is currently loaded.
+* An enchant or rune cost naming an item that does not exist now logs a warning instead of throwing
+* A `baseconfig` file containing `null` or nothing at all falls back to the embedded default
+* Config file watchers now notice files being created, deleted or renamed, which also covers editors that save by writing a temp file and renaming it
+* Deleting the last patch that targeted a config file now rebuilds that file from the default, instead of leaving the stale patched output in place forever
+* One malformed patch no longer takes out the rest of the patch system. A bad patch, patch file or patch directory is reported and skipped individually
+* `MultiAdd` patches validate their inputs, `InsertBefore`/`InsertAfter` work on object members, and a patch may name its target as `loottables.json` as well as `loottables`
+* The enchantable item scan no longer re-runs on every world join.
+* A stale or incomplete `shardstones.json` now skips the affected shard with an explanatory error
+* The bounty ledger is now per world. A static path captured the first world loaded, so hosting a second world in the same session read and wrote the first world's ledger
+* The ledger retries if the zone system is not ready yet. Bailing permanently left it empty for the whole session, silently dropping every offline player's bounty kill
+* Accepting a bounty that the save data refuses no longer spawns creatures with no save record -- impossible to complete and never despawned
+* The beacon on a bounty target clears when it takes damage again. The patch was only reaching `Character.OnDamaged`, which real bounty targets never call
+* Darting Thoughts math corrected and tooltip now displays the actual values
+* Ammo Conservation no longer grants a phantom instant reload to bows, and no longer cancels the reload tick outright
+* The Slow attack speed hook is registered once instead of on every world load, which was compounding the slow multiplier within a session
+* Executioner and the stagger damage multiplier no longer reuse a stale multiplier. Executioner applied to only the first target of an area projectile, and a melee stagger multiplier was silently reused for every later hit
+* Multishot decides its proc before ammo is spent, so the extra ammo cost is charged for the shot it belongs to, and the effect no longer leaks into the next attack with a different weapon
+* Quick Draw no longer applies to Draugr and Fuling archers, and a zero-value roll no longer overwrites the game's own crossbow reload timing
+* Double Jump resets on ground contact, so walking off a ledge after an air jump no longer refuses the next one
+* Eitr Weaving only triggers on an actual block, rather than on any attack aimed at you
+* The low-health health regen bonus adds to the base bonus instead of overwriting it
+* Corpse Rot now has a cooldown
+* Potion duration bonuses no longer compound every time you re-drink the same potion
+* Fixed a crash in Apportation when the hit is known only by its collider
+* Legendary leg texture overrides were being written into the chest texture slot
+* A fully upgraded table no longer *creates* bounty tokens on each disenchant
+* The Convert tab re-checks that you can afford the cost when you press the button, matching the other tabs
+* Tempering no longer destroys every socketed shard and runestone on the item, on both outcomes
+* Tempering's gamepad navigation no longer walks off the end of the list on items that have untemperable effects, and an effect can no longer be recorded as tempered twice
+* A temper requirement whose item no longer exists renders as an empty row and counts as unaffordable, rather than crashing the panel or making tempering free
+* The enchanting table and rune panels close cleanly if you die with them open, instead of erroring every frame over the death screen
+* The rarity background no longer covers up the equipped marker, so a worn magic item is distinguishable from one in your bag.
+* `lootres` reports a clear error for an unknown table, an empty level, or an out-of-range index instead of crashing
+
+API:
+* Every API entry point that parses JSON now catches parse failures and reports them through `OnError` instead of throwing into the calling plugin
+* `AddAbilityProxy` rejects duplicate ability IDs, and a registered proxy now survives a config reload or a server config push -- its definition used to vanish on the first reload
+* Fixed the cross-mod `ItemInfo` bridge: its accessors discarded the result of every call and returned null or false regardless of what the other mod did
+* New `API.ChangeReason.AddSocket`, raised when Brokkr's Gift adds shard slots to an item
+* `API.ApplyMagicItemBackground` now also restyles the slot's equipped marker, so slots added by other mods (Equipment and Quickslots) match the rest of the inventory
+
 **0.13.2**
 * Fixes Loot generation recursively happening with certain mods
 * Fixes terrain generation memory leak, noticable with excessive bounties

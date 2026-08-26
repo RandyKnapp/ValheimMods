@@ -73,9 +73,19 @@ namespace EpicLoot_UnityLib
             {
                 if (ZInput.GetButtonDown("JoyButtonY"))
                 {
-                    int activeAugmentCount = _AugmentSelectors.Count();
-                    int nextAugmentIndex = (_augmentIndex + 1) % activeAugmentCount;
-                    _AugmentSelectors[nextAugmentIndex].isOn = true;
+                    int activeAugmentCount = _AugmentSelectors.Count;
+                    // No selectors (nothing selected on the tab): the modulo below divided by zero.
+                    if (activeAugmentCount > 0)
+                    {
+                        int nextAugmentIndex = (_augmentIndex + 1) % activeAugmentCount;
+                        // Skip selectors disabled as non-augmentable (bounded by one full loop).
+                        for (int step = 0; step < activeAugmentCount &&
+                            !_AugmentSelectors[nextAugmentIndex].interactable; ++step)
+                        {
+                            nextAugmentIndex = (nextAugmentIndex + 1) % activeAugmentCount;
+                        }
+                        _AugmentSelectors[nextAugmentIndex].isOn = true;
+                    }
                     ZInput.ResetButtonStatus("JoyButtonY");
                 }
 
@@ -228,7 +238,9 @@ namespace EpicLoot_UnityLib
                 AvailableEffectsText.text = string.Empty;
             }
 
-            _augmentIndex = 0;
+            // First AUGMENTABLE effect (or -1 for none): defaulting blindly to 0 let the Augment
+            // button operate on an effect whose selector was disabled as non-augmentable.
+            _augmentIndex = _AugmentSelectors.FindIndex(selector => selector.interactable);
             OnAugmentIndexChanged();
         }
 

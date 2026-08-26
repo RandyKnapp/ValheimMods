@@ -42,8 +42,21 @@ public static partial class API
             return false;
         }
 
-        DisenchantProductsConfig sacrifice = JsonConvert.DeserializeObject<DisenchantProductsConfig>(json);
-        disenchantProduct.CopyFieldsFrom(sacrifice);
-        return true;
+        try
+        {
+            DisenchantProductsConfig sacrifice = JsonConvert.DeserializeObject<DisenchantProductsConfig>(json);
+            if (sacrifice == null)
+            {
+                return false;
+            }
+
+            disenchantProduct.CopyFieldsFrom(sacrifice);
+            return true;
+        }
+        catch
+        {
+            OnError?.Invoke("Failed to parse sacrifice from external plugin");
+            return false;
+        }
     }
 }

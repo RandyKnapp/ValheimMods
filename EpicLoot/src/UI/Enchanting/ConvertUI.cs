@@ -166,9 +166,22 @@ namespace EpicLoot_UnityLib
 
             Cancel();
 
-            foreach (InventoryItemListElement costElement in cost)
+            // Re-check affordability at execution time like every sibling panel: the button state
+            // is only recomputed on selection change, so materials drained in the meantime used to
+            // yield free products.
+            if (!Player.m_localPlayer.NoCostCheat() && !LocalPlayerCanAffordCost(cost))
             {
-                InventoryManagement.Instance.RemoveItem(costElement.GetItem());
+                DeselectAll();
+                RefreshAvailableItems();
+                return;
+            }
+
+            if (!Player.m_localPlayer.NoCostCheat())
+            {
+                foreach (InventoryItemListElement costElement in cost)
+                {
+                    InventoryManagement.Instance.RemoveItem(costElement.GetItem());
+                }
             }
 
             foreach (InventoryItemListElement productElement in allProducts)

@@ -26,7 +26,9 @@ namespace EpicLoot.LegendarySystem
         public string ID;
         public string Name;
         public string Description;
-        public MagicItemEffectRequirements Requirements;
+        // Default instance: an entry that omits "Requirements" must not be null (legendary rolls
+        // call CheckRequirements on every entry).
+        public MagicItemEffectRequirements Requirements = new MagicItemEffectRequirements();
         public List<GuaranteedMagicEffect> GuaranteedMagicEffects = new List<GuaranteedMagicEffect>();
         public int GuaranteedEffectCount = -1;
         public float SelectionWeight = 1;

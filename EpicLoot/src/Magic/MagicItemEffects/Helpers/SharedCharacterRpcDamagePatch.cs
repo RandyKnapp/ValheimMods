@@ -30,9 +30,9 @@ namespace EpicLoot.src.Magic.MagicItemEffects.Helpers {
             // below (e.g. ReflectDamage) can never clobber an outer invocation's attacker.
             Character attacker = hit.GetAttacker();
 
-            // Attacker-side / universal: these tag or bonus the hit regardless of who the victim is.
-            Opportunist_Character_RPC_Damage_Patch.ModifyIncoming(__instance, hit, attacker);
-            RPC_TagCharacterOnHit_Character_RPC_Damage_Patch.TagStaggerDuration(__instance, hit, attacker);
+            // NOTE: Opportunist and the melee stagger-duration tagger moved to the attacker-side
+            // dispatcher (SharedCharacterDamagePatch): they read the ATTACKER's magic effects, which
+            // are empty here whenever a remote client owns the attacker.
 
             // Victim-side mitigations (each self-guards on __instance == local player).
             // Convert physical -> element first, so the resistance step below reduces the converted damage.

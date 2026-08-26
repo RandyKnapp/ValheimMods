@@ -42,13 +42,21 @@ public static partial class API
             return false;
         }
 
-        MagicItemEffectDefinition def = JsonConvert.DeserializeObject<MagicItemEffectDefinition>(json);
-        if (def == null)
+        try
         {
+            MagicItemEffectDefinition def = JsonConvert.DeserializeObject<MagicItemEffectDefinition>(json);
+            if (def == null)
+            {
+                return false;
+            }
+
+            original.CopyFieldsFrom(def);
+            return true;
+        }
+        catch
+        {
+            OnError?.Invoke("Failed to parse magic effect from external plugin");
             return false;
         }
-
-        original.CopyFieldsFrom(def);
-        return true;
     }
 }

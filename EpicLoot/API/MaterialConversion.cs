@@ -42,13 +42,21 @@ public static partial class API
             return false;
         }
 
-        MaterialConversion conversion = JsonConvert.DeserializeObject<MaterialConversion>(json);
-        if (conversion == null)
+        try
         {
+            MaterialConversion conversion = JsonConvert.DeserializeObject<MaterialConversion>(json);
+            if (conversion == null)
+            {
+                return false;
+            }
+
+            original.CopyFieldsFrom(conversion);
+            return true;
+        }
+        catch
+        {
+            OnError?.Invoke("Failed to parse material conversion from external plugin");
             return false;
         }
-
-        original.CopyFieldsFrom(conversion);
-        return true;
     }
 }

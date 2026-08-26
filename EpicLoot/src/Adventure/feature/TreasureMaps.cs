@@ -79,10 +79,6 @@ namespace EpicLoot.Adventure.Feature
 
         private void CreateTreasureSpawner(Heightmap.Biome biome,  Vector3 spawnPoint, AdventureSaveData saveData)
         {
-            Quaternion rotation = Quaternion.Euler(0f, UnityEngine.Random.Range(0f, 360f), 0f);
-            GameObject gameObject = PrefabManager.Instance.GetPrefab("EL_SpawnController");
-            GameObject created_go = Object.Instantiate(gameObject, spawnPoint, rotation);
-            AdventureSpawnController asc = created_go.GetComponent<AdventureSpawnController>();
             TreasureMapChestInfo treasure_details = new TreasureMapChestInfo()
             {
                 Biome = biome,
@@ -90,12 +86,24 @@ namespace EpicLoot.Adventure.Feature
                 Position = spawnPoint,
                 PlayerID = Player.m_localPlayer.GetPlayerID()
             };
+
+            // Record the purchase FIRST and honor its refusal (duplicate interval/biome):
+            // spawning regardless used to leave orphan treasure chests with no save record.
+            if (!saveData.PurchasedTreasureMap(treasure_details))
+            {
+                EpicLoot.LogWarning($"Treasure map purchase for {biome} was refused by the save data; no chest spawned.");
+                return;
+            }
+
+            Quaternion rotation = Quaternion.Euler(0f, UnityEngine.Random.Range(0f, 360f), 0f);
+            GameObject gameObject = PrefabManager.Instance.GetPrefab("EL_SpawnController");
+            GameObject created_go = Object.Instantiate(gameObject, spawnPoint, rotation);
+            AdventureSpawnController asc = created_go.GetComponent<AdventureSpawnController>();
             asc.SetTreasure(treasure_details);
 
-            Vector2 offset2 = UnityEngine.Random.insideUnitCircle * 
+            Vector2 offset2 = UnityEngine.Random.insideUnitCircle *
                 (AdventureDataManager.Config.TreasureMap.MinimapAreaRadius * 0.8f);
             Vector3 offset = new Vector3(offset2.x, 0, offset2.y);
-            saveData.PurchasedTreasureMap(treasure_details);
 
             Minimap.instance.ShowPointOnMap(spawnPoint + offset);
         }

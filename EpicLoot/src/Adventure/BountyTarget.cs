@@ -63,6 +63,16 @@ namespace EpicLoot.Adventure
 
         private void OnDeath()
         {
+            // Reinitialize leaves this null when the ZDO carried no parsable bounty data (it destroys the
+            // creature in that case, but the destroy is not guaranteed to land before a death already in
+            // flight). Without the guard the kill NREs here and the slay RPC is never sent.
+            if (_bountyInfo == null)
+            {
+                EpicLoot.LogWarning($"Bounty target died with no bounty info: {_monsterID} " +
+                    $"({(_isAdd ? "minion" : "target")}); not reporting the slay.");
+                return;
+            }
+
             var pkg = new ZPackage();
             _bountyInfo.ToPackage(pkg);
             // Send death event to server
@@ -73,13 +83,16 @@ namespace EpicLoot.Adventure
         public void Initialize(BountyInfo bounty, string monsterID, bool isAdd)
         {
             _zdo.Set(BountyTargetComponent.BountyIDKey, bounty.ID);
-            if (!ZNet.instance.IsDedicated())
-            {
-                var pkg = new ZPackage();
-                bounty.ToPackage(pkg);
-                pkg.SetPos(0);
-                _zdo.Set(BountyTargetComponent.BountyDataKey, pkg.GetBase64());
-            }
+
+            // Written unconditionally. This used to be skipped on a dedicated server on the assumption
+            // that a dedicated server never spawns or simulates a bounty target -- true on a vanilla
+            // server, but false when a mod (e.g. Serverside Simulations) hands world simulation to the
+            // server. There, the server is the spawn controller's owner, so skipping the write left the
+            // data unwritten for everyone and no client could ever complete the bounty.
+            var pkg = new ZPackage();
+            bounty.ToPackage(pkg);
+            pkg.SetPos(0);
+            _zdo.Set(BountyTargetComponent.BountyDataKey, pkg.GetBase64());
 
             _zdo.Set(BountyTargetComponent.MonsterIDKey, monsterID);
             _zdo.Set(BountyTargetComponent.IsAddKey, isAdd);
@@ -105,34 +118,34 @@ namespace EpicLoot.Adventure
         /// </summary>
         public void Reinitialize()
         {
-            if (!ZNet.instance.IsDedicated())
+            // Read unconditionally -- see the note in Initialize. OnDeath runs on whichever machine owns
+            // the creature, and under serverside simulation that is the dedicated server, so the server
+            // needs the parsed bounty just as much as a client does.
+            var pkgString = _zdo.GetString(BountyTargetComponent.BountyDataKey);
+            var pkg = new ZPackage(pkgString);
+
+            try
             {
-                var pkgString = _zdo.GetString(BountyTargetComponent.BountyDataKey);
-                var pkg = new ZPackage(pkgString);
-
-                try
-                {
-                    _bountyInfo = BountyInfo.FromPackage(pkg);
-                }
-                catch (Exception)
-                {
-                    Debug.LogError($"[EpicLoot] Error loading bounty info on creature ({name})! " +
-                        $"Possibly old or outdated bounty target, destroying creature." +
-                        $"\nBountyData:\n{pkgString}");
-                    DestroyInstance();
-                    return;
-                }
-
-                // TODO: clean up abandoned bounties?
-                // Currently does not track if abandoned on the zdo
-                /*if (_bountyInfo.State == BountyState.Abandoned)
-                {
-                    // Destroy abandoned bounties
-                    EpicLoot.Log("Destroying abandoned bounty!");
-                    DestroyInstance();
-                    return;
-                }*/
+                _bountyInfo = BountyInfo.FromPackage(pkg);
             }
+            catch (Exception)
+            {
+                Debug.LogError($"[EpicLoot] Error loading bounty info on creature ({name})! " +
+                    $"Possibly old or outdated bounty target, destroying creature." +
+                    $"\nBountyData:\n{pkgString}");
+                DestroyInstance();
+                return;
+            }
+
+            // TODO: clean up abandoned bounties?
+            // Currently does not track if abandoned on the zdo
+            /*if (_bountyInfo.State == BountyState.Abandoned)
+            {
+                // Destroy abandoned bounties
+                EpicLoot.Log("Destroying abandoned bounty!");
+                DestroyInstance();
+                return;
+            }*/
 
             _monsterID = _zdo.GetString(BountyTargetComponent.MonsterIDKey);
             _isAdd = _zdo.GetBool(BountyTargetComponent.IsAddKey);
@@ -252,12 +265,20 @@ namespace EpicLoot.Adventure
         }
 
         /// <summary>
-        /// Remove the beacon of bounty targets when they take damage.
+        /// Remove the beacon of bounty targets when they take damage. Uses TargetMethods because two
+        /// class-level [HarmonyPatch] attributes MERGE into a single target (the old form only
+        /// patched Character.OnDamaged -- and Humanoid overrides it without calling base, so the
+        /// beacon never cleared for real bounty targets, which are all Humanoids).
         /// </summary>
-        [HarmonyPatch(typeof(Humanoid), nameof(Humanoid.OnDamaged))]
-        [HarmonyPatch(typeof(Character), nameof(Character.OnDamaged))]
+        [HarmonyPatch]
         public static class Character_OnDamaged_Patch
         {
+            public static System.Collections.Generic.IEnumerable<System.Reflection.MethodBase> TargetMethods()
+            {
+                yield return AccessTools.DeclaredMethod(typeof(Character), "OnDamaged");
+                yield return AccessTools.DeclaredMethod(typeof(Humanoid), "OnDamaged");
+            }
+
             public static void Postfix(Character __instance)
             {
                 var target = __instance.GetComponent<BountyTarget>();

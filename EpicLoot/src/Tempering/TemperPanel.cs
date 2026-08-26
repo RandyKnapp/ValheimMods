@@ -413,6 +413,9 @@ public class TemperPanel : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         TemperRequirement[] requirements = TemperMan.GetRequirements(selectedItemElement._magicItem.Rarity);
         for (int i = 0; i < requirements.Length; ++i) {
             TemperRequirement requirement = requirements[i];
+            // A missing prefab renders as an empty row in the list; treat it as unaffordable here
+            // so a broken cost config can't make tempering free.
+            if (!requirement.isValid) return false;
             int playerItemCount = player.GetInventory().CountItems(requirement.item.m_itemData.m_shared.m_name);
             if (playerItemCount < requirement.amount) return false;
         }
@@ -530,6 +533,7 @@ public class TemperPanel : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 
         List<MagicItemEffect> effects = selectedItemElement._magicItem.GetEffects();
 
+        int listIndex = 0;
         for (int i = 0; i < effects.Count; ++i) {
             MagicItemEffect effect = effects[i];
             // A valueless effect (Warmth, Indestructible) has no roll range to temper against --
@@ -542,7 +546,10 @@ public class TemperPanel : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
             if (instance.TryGetComponent(out EnchantmentElement element)) {
                 element.selected.color = EpicLoot.GetRarityColorARGB(selectedItemElement._magicItem.Rarity);
                 element.SetEffect(effect, selectedItemElement._magicItem.Rarity);
-                element.index = i;
+                // List position, NOT the effect index: gamepad navigation walks
+                // EnchantmentElement.elements by this value, and skipping untemperable effects
+                // above desyncs the two (the up-branch then indexed past the end of the list).
+                element.index = listIndex++;
                 element.button.onClick.AddListener(() => {
                     SetSelectedEnchantment(element);
                 });

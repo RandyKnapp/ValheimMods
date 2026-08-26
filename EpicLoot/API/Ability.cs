@@ -48,14 +48,22 @@ public static partial class API
             return false;
         }
 
-        AbilityDefinition def = JsonConvert.DeserializeObject<AbilityDefinition>(json);
-        if (def == null)
+        try
         {
+            AbilityDefinition def = JsonConvert.DeserializeObject<AbilityDefinition>(json);
+            if (def == null)
+            {
+                return false;
+            }
+
+            original.CopyFieldsFrom(def);
+            return true;
+        }
+        catch
+        {
+            OnError?.Invoke("Failed to parse ability definition from external plugin");
             return false;
         }
-        
-        original.CopyFieldsFrom(def);
-        return true;
     }
     
     public static bool HasCurrentAbility(Player player, string key)

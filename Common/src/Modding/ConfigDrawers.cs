@@ -120,15 +120,21 @@ namespace Common {
             float slid = GUILayout.HorizontalSlider(shown, min, max, GUILayout.Width(150f));
             if (Mathf.Abs(slid - shown) > Mathf.Epsilon) { SliderPending[key] = slid; }
             if (SliderPending.TryGetValue(key, out float dragging)) {
-                result = dragging;
-                if (!Input.GetMouseButton(0)) { SliderPending.Remove(key); }
+                // Deferred commit: while the mouse is held, only the pending display value changes.
+                // Returning the dragged value every frame wrote cfg.Value (and with SaveOnConfigSet, the
+                // .cfg file) once per frame of the drag -- commit exactly once, on release.
+                if (!Input.GetMouseButton(0)) {
+                    SliderPending.Remove(key);
+                    result = dragging;
+                }
             }
 
-            // Numeric text box for exact entry.
+            // Numeric text box for exact entry. Shows the in-flight drag value while one exists.
+            float uiValue = SliderPending.TryGetValue(key, out float pendingDrag) ? pendingDrag : result;
             string ctrl = "num_" + key.GetHashCode();
             GUI.SetNextControlName(ctrl);
             bool focused = GUI.GetNameOfFocusedControl() == ctrl;
-            string live = isInt ? Mathf.RoundToInt(result).ToString() : result.ToString("0.###");
+            string live = isInt ? Mathf.RoundToInt(uiValue).ToString() : uiValue.ToString("0.###");
             string shownText = focused && TextBuffer.TryGetValue(key, out string buf) ? buf : live;
             string typed = GUILayout.TextField(shownText, GUILayout.Width(70f));
             if (focused) {

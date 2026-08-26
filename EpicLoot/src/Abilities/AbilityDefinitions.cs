@@ -15,6 +15,13 @@ namespace EpicLoot.Abilities
             OnSetupAbilityDefinitions?.Invoke();
 
             Abilities.Clear();
+            if (Config?.Abilities == null)
+            {
+                // Malformed/empty abilities.json (or a null server payload): keep the ability list
+                // empty instead of NRE-ing out of config load.
+                EpicLoot.LogWarning("abilities.json produced no ability list; no abilities are registered.");
+                return;
+            }
             foreach (var def in Config.Abilities)
             {
                 if (!Abilities.ContainsKey(def.ID))

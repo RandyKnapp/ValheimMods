@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace ItsJustWood
 {
+    // NOTE: this patch currently never substitutes anything -- vanilla cooking stations that take fuel
+    // burn Coal, and GetReplacementFuelItem only substitutes when the built-in fuel is Wood. Kept
+    // deliberately (see also Smelter_OnAddFuel_Patch); the gate lives in GetReplacementFuelItem.
     [HarmonyPatch(typeof(CookingStation), nameof(CookingStation.OnAddFuelSwitch))]
     public static class CookingStation_OnAddFuelSwitch_Patch
     {
@@ -25,12 +28,9 @@ namespace ItsJustWood
             __instance.m_fuelItem = itemFuelReplacement;
         }
 
-        [HarmonyPriority(Priority.First)]
-        private static void Postfix(CookingStation __instance, ItemDrop __state)
+        // Finalizer, not postfix: restore must run even when the original throws (see Fireplace patch).
+        private static void Finalizer(CookingStation __instance, ItemDrop __state)
         {
-            if (!ItsJustWood.modEnabled.Value)
-                return;
-
             if (__state == null)
                 return;
 

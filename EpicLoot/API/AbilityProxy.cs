@@ -30,9 +30,19 @@ public static partial class API
                 return null;
             }
 
+            if (AbilityDefinitions.Abilities.ContainsKey(ability.ID))
+            {
+                OnError?.Invoke($"Duplicate entry found for Abilities: {ability.ID} when registering proxy from external plugin.");
+                return null;
+            }
+
             AbilityFactory.Register(ability.ID, typeof(AbilityProxy));
             AbilityProxies[ability.ID] = delegates;
             AbilityProxyDefinition def = new AbilityProxyDefinition(ability, delegates);
+            // Recorded like AddAbility's entries: ExternalAbilities is what ReloadExternalAbilities
+            // re-applies on every abilities.json reload / server push -- without this the proxy's
+            // definition silently vanished on the first config reload.
+            ExternalAbilities[ability.ID] = ability;
             AbilityDefinitions.Config.Abilities.Add(ability);
             AbilityDefinitions.Abilities[ability.ID] = ability;
             return RuntimeRegistry.Register(def);
@@ -56,10 +66,30 @@ public static partial class API
             return false;
         }
 
-        AbilityDefinition def = JsonConvert.DeserializeObject<AbilityDefinition>(json);
-        kvp.Ability.CopyFieldsFrom(def);
-        kvp.Delegates.CopyFieldsFrom(proxy);
-        return true;
+        try
+        {
+            AbilityDefinition def = JsonConvert.DeserializeObject<AbilityDefinition>(json);
+            if (def == null || proxy == null)
+            {
+                return false;
+            }
+
+            kvp.Ability.CopyFieldsFrom(def);
+            // Repopulate entry-by-entry: reflective field-copying a Dictionary aliases its internal
+            // buckets with the caller's, so later mutations of the caller's dictionary silently
+            // mutated ours (and a null proxy threw a TargetException).
+            kvp.Delegates.Clear();
+            foreach (KeyValuePair<string, Delegate> callback in proxy)
+            {
+                kvp.Delegates[callback.Key] = callback.Value;
+            }
+            return true;
+        }
+        catch
+        {
+            OnError?.Invoke("Failed to parse proxy ability definition from external plugin");
+            return false;
+        }
     }
 
     /// <summary>

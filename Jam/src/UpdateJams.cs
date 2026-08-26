@@ -140,7 +140,16 @@ namespace Jam
             else
             {
                 gameRecipe.m_enabled = enabled;
-                gameRecipe.m_resources = reqs;
+                // If every configured ingredient failed to resolve, keep the previous requirements: an
+                // empty array would make the jam free to craft.
+                if (reqs.Length > 0)
+                {
+                    gameRecipe.m_resources = reqs;
+                }
+                else
+                {
+                    Jam.JamLogger.LogError($"No valid ingredients resolved for {name} ('{recipe}'); keeping the previous recipe cost.");
+                }
             }
 
             // Update Item

@@ -12,7 +12,8 @@ namespace EpicLoot.MagicItemEffects
             var item = __instance.m_spawnItem;
             GameObject terrain_water = go ?? collider?.gameObject;
             if (terrain_water == null) return;
-            if ((go.GetComponent<MonsterAI>() || go.GetComponent<BaseAI>()) && item != null && item.HasMagicEffect(MagicEffectType.Apportation)) {
+            // Use the coalesced object: 'go' itself can be null when only the collider is known.
+            if ((terrain_water.GetComponent<MonsterAI>() || terrain_water.GetComponent<BaseAI>()) && item != null && item.HasMagicEffect(MagicEffectType.Apportation)) {
                 Vector3 weaponPosition = __instance.transform.position;
                 Vector3 targetPosition = weaponPosition + __instance.transform.TransformDirection(__instance.m_spawnOffset);
                 if (Player.m_localPlayer != null && Player.m_localPlayer == __instance.m_owner) {

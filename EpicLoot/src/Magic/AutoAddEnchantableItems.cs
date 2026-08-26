@@ -46,12 +46,16 @@ namespace EpicLoot.Magic
         public static AutoSorterConfiguration Config;
         public static readonly string NONE = "none";
 
+        // The subscription must be a stored delegate: unsubscribing a freshly written lambda is a
+        // no-op (two lambda sites compile to two different methods), which used to re-run this whole
+        // scan -- and rewrite iteminfo/loottables/adventuredata on disk -- on every world join.
+        public static readonly Action OnMapDataLoadedHandler = () => CheckAndAddAllEnchantableItems();
+
         public static void CheckAndAddAllEnchantableItems(bool deregister = true)
         {
             if (deregister)
             {
-                Jotunn.Managers.MinimapManager.OnVanillaMapDataLoaded -=
-                    () => AutoAddEnchantableItems.CheckAndAddAllEnchantableItems();
+                Jotunn.Managers.MinimapManager.OnVanillaMapDataLoaded -= OnMapDataLoadedHandler;
             }
 
             if (ELConfig.AutoAddEquipment.Value == false && ELConfig.AutoRemoveEquipmentNotFound.Value == false)
@@ -136,9 +140,11 @@ namespace EpicLoot.Magic
             {
                 string contents = JsonConvert.SerializeObject(new ItemInfoConfig() { ItemInfo = newConfig }, Formatting.Indented);
                 string overhaulFileLocation = Path.Combine(ELConfig.GetOverhaulDirectoryPath(), "iteminfo.json");
+                string previousContents = File.Exists(overhaulFileLocation) ? File.ReadAllText(overhaulFileLocation) : null;
                 File.WriteAllText(overhaulFileLocation, contents);
-                // Claim this as the mod's own output so a later launch does not read it as a player edit.
-                ConfigVersionManager.RecordWrittenContent("iteminfo", contents);
+                // Claim this as the mod's own output ONLY when the baseline it merged over was also
+                // ours -- a player-edited baseline must stay flagged as the player's.
+                ConfigVersionManager.RecordWrittenContent("iteminfo", contents, previousContents);
             }
             catch (Exception e)
             {
@@ -276,9 +282,11 @@ namespace EpicLoot.Magic
                 };
                 string contents = JsonConvert.SerializeObject(newLootConfig, Formatting.Indented);
                 string overhaulFileLocation = Path.Combine(ELConfig.GetOverhaulDirectoryPath(), "loottables.json");
+                string previousContents = File.Exists(overhaulFileLocation) ? File.ReadAllText(overhaulFileLocation) : null;
                 File.WriteAllText(overhaulFileLocation, contents);
-                // Claim this as the mod's own output so a later launch does not read it as a player edit.
-                ConfigVersionManager.RecordWrittenContent("loottables", contents);
+                // Claim this as the mod's own output ONLY when the baseline it merged over was also
+                // ours -- a player-edited baseline must stay flagged as the player's.
+                ConfigVersionManager.RecordWrittenContent("loottables", contents, previousContents);
             }
             catch (Exception e)
             {
@@ -350,9 +358,11 @@ namespace EpicLoot.Magic
             {
                 string contents = JsonConvert.SerializeObject(AdventureDataConfigReplacement, Formatting.Indented);
                 string overhaulFileLocation = Path.Combine(ELConfig.GetOverhaulDirectoryPath(), "adventuredata.json");
+                string previousContents = File.Exists(overhaulFileLocation) ? File.ReadAllText(overhaulFileLocation) : null;
                 File.WriteAllText(overhaulFileLocation, contents);
-                // Claim this as the mod's own output so a later launch does not read it as a player edit.
-                ConfigVersionManager.RecordWrittenContent("adventuredata", contents);
+                // Claim this as the mod's own output ONLY when the baseline it merged over was also
+                // ours -- a player-edited baseline must stay flagged as the player's.
+                ConfigVersionManager.RecordWrittenContent("adventuredata", contents, previousContents);
             }
             catch (Exception e)
             {
@@ -503,9 +513,10 @@ namespace EpicLoot.Magic
                         continue;
                     }
 
-                    // Replace entries with only the found values, removes non-found items and adds new ones
+                    // Merge in the newly-found ignored items (this used to union the list with
+                    // itself -- a no-op -- so add-only mode never picked up new ignored items).
                     itemsByCategory[fbc.Key].IgnoredItems = itemsByCategory[fbc.Key].IgnoredItems
-                        .Union(itemsByCategory[fbc.Key].IgnoredItems).ToList();
+                        .Union(fbc.Value.IgnoredItems).ToList();
 
                     foreach (KeyValuePair<string, List<string>> entry in fbc.Value.ItemsByBoss)
                     {

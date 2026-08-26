@@ -13,8 +13,9 @@ namespace EpicLoot.Crafting
             bool isMagic = __instance.m_itemData.IsMagicCraftingMaterial();
             bool isRunestone = __instance.m_itemData.IsRunestone();
             bool isUnidentified = __instance.m_itemData.IsUnidentifiedMaterial();
+            bool isChisel = __instance.m_itemData.IsShardSlotChisel();
 
-            if (isMagic || isRunestone || isUnidentified)
+            if (isMagic || isRunestone || isUnidentified || isChisel)
             {
                 var particleContainer = __instance.transform.Find("Particles");
                 if (particleContainer != null)
@@ -39,13 +40,23 @@ namespace EpicLoot.Crafting
 
                     mi.Save();
                 }
+                // Brokkr's Gift carries a cosmetic MagicItem purely for the rarity-coloured name and
+                // background; heal it here so an instance that lost its custom data still renders as
+                // its tier rather than as a plain grey item.
+                else if (isChisel && mi.MagicItem == null)
+                {
+                    mi.SetMagicItem(new MagicItem { Rarity = rarity });
+                    mi.Save();
+                }
 
                 if (ColorUtility.TryParseHtmlString(magicColor, out var rgbaColor))
                 {
                     __instance.gameObject.AddComponent<BeamColorSetter>().SetColor(rgbaColor);
                 }
 
-                if (isUnidentified)
+                // Both carry a single authored icon rather than the ten-icon rarity array the
+                // crafting materials use, so there is no variant to select.
+                if (isUnidentified || isChisel)
                 {
                     variant = 0;
                 }

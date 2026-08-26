@@ -75,14 +75,21 @@ public static partial class API
             return false;
         }
 
-        SecretStashItemConfig secretStash = JsonConvert.DeserializeObject<SecretStashItemConfig>(json);
-
-        if (secretStash == null)
+        try
         {
+            SecretStashItemConfig secretStash = JsonConvert.DeserializeObject<SecretStashItemConfig>(json);
+            if (secretStash == null)
+            {
+                return false;
+            }
+
+            original.CopyFieldsFrom(secretStash);
+            return true;
+        }
+        catch
+        {
+            OnError?.Invoke("Failed to parse secret stash item from external plugin");
             return false;
         }
-
-        original.CopyFieldsFrom(secretStash);
-        return true;
     }
 }

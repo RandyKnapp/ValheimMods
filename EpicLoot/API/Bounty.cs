@@ -37,8 +37,21 @@ public static partial class API
             return false;
         }
 
-        BountyTargetConfig config = JsonConvert.DeserializeObject<BountyTargetConfig>(json);
-        bountyTarget.CopyFieldsFrom(config);
-        return true;
+        try
+        {
+            BountyTargetConfig config = JsonConvert.DeserializeObject<BountyTargetConfig>(json);
+            if (config == null)
+            {
+                return false;
+            }
+
+            bountyTarget.CopyFieldsFrom(config);
+            return true;
+        }
+        catch
+        {
+            OnError?.Invoke("Failed to parse bounty target from external plugin");
+            return false;
+        }
     }
 }

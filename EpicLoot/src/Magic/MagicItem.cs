@@ -412,24 +412,24 @@ namespace EpicLoot
             return FormatDisplayText(effectDef.DisplayText, GetDisplayArgs(effectDef.Type, value));
         }
 
-        // Range preview (compendium/enchant/augment): fills each placeholder with that derived value's
-        // own min-max range. A constant slot (min == max, e.g. a fixed "200") collapses to a single
-        // number rather than a range. A null value def (valueless effect) fills placeholders with "".
-        public static string GetEffectTextRange(MagicItemEffectDefinition effectDef, MagicItemEffectDefinition.ValueDef values)
+        // The {0},{1},... args for a range preview: each placeholder becomes that derived value's own
+        // min-max range. A constant slot (min == max, e.g. a fixed "200") collapses to a single number
+        // rather than a range. A null value def (valueless effect) yields empty strings.
+        private static object[] GetRangeArgs(string effectType, MagicItemEffectDefinition.ValueDef values)
         {
             if (values == null)
             {
-                var count = GetDisplayArgs(effectDef.Type, 0f).Length;
+                var count = GetDisplayArgs(effectType, 0f).Length;
                 var empties = new object[count];
                 for (var i = 0; i < count; i++)
                 {
                     empties[i] = string.Empty;
                 }
-                return FormatDisplayText(effectDef.DisplayText, empties);
+                return empties;
             }
 
-            var argsMin = GetDisplayArgs(effectDef.Type, values.MinValue);
-            var argsMax = GetDisplayArgs(effectDef.Type, values.MaxValue);
+            var argsMin = GetDisplayArgs(effectType, values.MinValue);
+            var argsMax = GetDisplayArgs(effectType, values.MaxValue);
             var display = new object[argsMin.Length];
             for (var i = 0; i < argsMin.Length; i++)
             {
@@ -439,7 +439,30 @@ namespace EpicLoot
                     ? $"({min}-{max})"
                     : $"{min}";
             }
-            return FormatDisplayText(effectDef.DisplayText, display);
+            return display;
+        }
+
+        // Range preview (compendium/enchant/augment): the DisplayText with every value slot shown as its
+        // min-max range.
+        public static string GetEffectTextRange(MagicItemEffectDefinition effectDef, MagicItemEffectDefinition.ValueDef values)
+        {
+            return FormatDisplayText(effectDef.DisplayText, GetRangeArgs(effectDef.Type, values));
+        }
+
+        // Range description (shardstone compendium): the Description with every value slot shown as its
+        // min-max range. Descriptions use one of two conventions -- {0},{1},... placeholders or the
+        // legacy "<b><color=yellow>X</color></b>" marker -- so both are filled here; a description using
+        // neither passes through unchanged. This is the range counterpart of GetEffectDescription, for
+        // catalogue pages that describe an effect across every rarity rather than one rolled value.
+        public static string GetEffectDescriptionRange(MagicItemEffectDefinition effectDef,
+            MagicItemEffectDefinition.ValueDef values)
+        {
+            var args = GetRangeArgs(effectDef.Type, values);
+            var description = FormatDisplayText(effectDef.Description, args);
+            return args.Length > 0
+                ? description.Replace("<b><color=yellow>X</color></b>",
+                    $"<b><color=yellow>{args[0]}</color></b>")
+                : description;
         }
 
         // Builds args where rolled-value slots become valueToken but constant slots (e.g. a fixed

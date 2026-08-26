@@ -23,6 +23,8 @@
 
         // --- Perfect-dodge system (Pink) ---
         public static string PerfectDodge = nameof(PerfectDodge);
+        // Declared but assigned to no grid slot in shardstones.json -- no definition is synthesized,
+        // so the effect is inert. Kept live deliberately.
         public static string PerfectDodgeGivesHealth = nameof(PerfectDodgeGivesHealth);
         public static string PerfectDodgeGivesStamina = nameof(PerfectDodgeGivesStamina);
         public static string PerfectDodgeGivesEitr = nameof(PerfectDodgeGivesEitr);
@@ -61,6 +63,8 @@
         public static string EitrImbueAttack = nameof(EitrImbueAttack);
 
         // --- Resource conversion / sustain ---
+        // Declared but assigned to no grid slot in shardstones.json -- no definition is synthesized,
+        // so the effect is inert. Kept live deliberately.
         public static string StaminaReturnFromEitr = nameof(StaminaReturnFromEitr);
         public static string EnergeticEitr = nameof(EnergeticEitr);
         public static string ConvertEitrCostToStaminaCost = nameof(ConvertEitrCostToStaminaCost);
@@ -116,6 +120,8 @@
         public static string LuckyBlock = nameof(LuckyBlock); // Golden shield: chance to stagger the attacker on a block
         public static string BlockAsDodgeAsBlock = nameof(BlockAsDodgeAsBlock); // block and dodge bundle BADAB
         public static string BlockAsWoodCuttingAndPickaxes = nameof(BlockAsWoodCuttingAndPickaxes);
+        // Declared but assigned to no grid slot in shardstones.json -- no definition is synthesized,
+        // so the effect is inert. Kept live deliberately.
         public static string StaggerOnBlock = nameof(StaggerOnBlock);
 
         // --- Element / status mechanics ---

@@ -19,12 +19,22 @@ namespace ImprovedBuildHud
                 var fewestPossible = int.MaxValue;
                 foreach (var requirement in piece.m_resources)
                 {
+                    // Vanilla tolerates a null m_resItem and a zero amount (mis-configured pieces from
+                    // other mods produce both); this runs per frame, so guard rather than throw.
+                    if (requirement == null || requirement.m_resItem == null || requirement.m_amount <= 0)
+                    {
+                        continue;
+                    }
                     var currentAmount = ImprovedBuildHud.GetAvailableItems(requirement.m_resItem.m_itemData.m_shared.m_name);
                     var canMake = currentAmount / requirement.m_amount;
                     if (canMake < fewestPossible)
                     {
                         fewestPossible = canMake;
                     }
+                }
+                if (fewestPossible == int.MaxValue)
+                {
+                    return;
                 }
 
                 var canBuildDisplay = string.Format(ImprovedBuildHudConfig.CanBuildAmountFormat.Value, fewestPossible);

@@ -45,7 +45,10 @@ namespace ConsoleHelper
                 return true;
             }
 
-            public static void Postfix()
+            // Finalizer, not postfix: InputText runs the typed command, and a throwing command
+            // (mistyped or from another mod) would skip a postfix -- leaving the flag latched and
+            // ZNet.IsServer patched-true on this client for the rest of the session.
+            public static void Finalizer()
             {
                 _inputtingText = false;
             }

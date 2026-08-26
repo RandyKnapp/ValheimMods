@@ -11,7 +11,6 @@ namespace EpicLoot.ShardStones {
         public static ItemDrop.ItemData OpenEquipment;
         public static Inventory OpenInventory;
         private static bool _reconciling;
-        private static SocketBreakPrompt _breakPrompt;
 
         private static bool IsSocketGridOpen => OpenEquipment != null && OpenInventory != null;
 
@@ -155,9 +154,9 @@ namespace EpicLoot.ShardStones {
                     return;
                 }
 
-                // The break confirmation owns the interaction until it is answered.
-                if (_breakPrompt != null) {
-                    UpdateBreakPrompt();
+                // A confirmation owns the interaction until it is answered.
+                if (InventoryPromptHost.IsOpen) {
+                    InventoryPromptHost.Update();
                     return;
                 }
 
@@ -257,12 +256,14 @@ namespace EpicLoot.ShardStones {
 
             [UsedImplicitly]
             private static void Prefix(InventoryGui __instance) {
+                // An unanswered confirmation is cancelled rather than carried over. Ahead of the socket
+                // grid check on purpose: a confirmation raised over the plain inventory (Brokkr's Gift)
+                // has no socket grid behind it and must still be dropped when the window closes.
+                InventoryPromptHost.Cancel();
+
                 if (!IsSocketGridOpen) {
                     return;
                 }
-
-                // An unanswered break confirmation is cancelled rather than carried over.
-                CloseBreakPrompt();
 
                 if (Player.m_localPlayer != null) {
                     SaveSockets();
@@ -300,60 +301,13 @@ namespace EpicLoot.ShardStones {
                 Localization.instance.Localize("$mod_epicloot_socket_break_body"),
                 Localization.instance.Localize(item.m_shared.m_name));
 
-            _breakPrompt = SocketBreakPrompt.Create(InventoryGui.instance.transform,
+            var prompt = SocketBreakPrompt.Create(InventoryGui.instance.transform,
                 Localization.instance.Localize("$mod_epicloot_socket_break_title"), body);
 
-            if (_breakPrompt == null) {
+            if (!InventoryPromptHost.Open(prompt, () => BreakSocketedItem(item))) {
                 // No prefab to confirm with -- refuse the removal rather than destroying it unconfirmed.
                 ShowSocketMessage("$mod_epicloot_socket_mustbreak");
-                return;
             }
-
-            _breakPrompt.OnAccept = () => {
-                _breakPrompt = null;
-                BreakSocketedItem(item);
-            };
-            _breakPrompt.OnDeny = () => _breakPrompt = null;
-        }
-
-        // Drives the open break confirmation, and swallows every press that would otherwise act on the
-        // window behind it. This lives in the InventoryGui.Update prefix rather than in a SocketBreakPrompt
-        // MonoBehaviour Update because that Update may run either side of InventoryGui.Update: if it
-        // answered first, the prefix would see no prompt and vanilla would Hide() the inventory in the same
-        // frame. A Harmony prefix always runs before the original, so the ordering here is certain.
-        //
-        // Gamepad A accepts and B denies -- the panel's buttons cannot be clicked without a mouse, so A is
-        // the only way to confirm.
-        private static void UpdateBreakPrompt() {
-            var accept = ZInput.GetButtonDown("JoyButtonA");
-            var deny = ZInput.GetButtonDown("JoyButtonB") || ZInput.GetKeyDown(KeyCode.Escape);
-
-            // Consume everything vanilla InventoryGui.Update would otherwise turn into a Hide().
-            ZInput.ResetButtonStatus("Use");
-            ZInput.ResetButtonStatus("JoyUse");
-            ZInput.ResetButtonStatus("JoyButtonA");
-            ZInput.ResetButtonStatus("JoyButtonB");
-            ZInput.ResetButtonStatus("JoyButtonY");
-            ZInput.ResetButtonStatus("Inventory");
-
-            var prompt = _breakPrompt;
-            if (accept) {
-                prompt.OnAcceptClick();
-            } else if (deny) {
-                prompt.OnDenyClick();
-            }
-        }
-
-        private static void CloseBreakPrompt() {
-            if (_breakPrompt == null) {
-                return;
-            }
-
-            var prompt = _breakPrompt;
-            _breakPrompt = null;
-            prompt.OnAccept = null;
-            prompt.OnDeny = null;
-            prompt.Close();
         }
 
         // Destroys a socketed stone in place. Taking it out of the synthetic inventory fires
@@ -425,14 +379,16 @@ namespace EpicLoot.ShardStones {
             [UsedImplicitly]
             private static bool Prefix(InventoryGui __instance, InventoryGrid grid, ItemDrop.ItemData item,
                 InventoryGrid.Modifier mod) {
-                if (!IsSocketGridOpen || grid == null) {
-                    return true;
+                // While a confirmation is up it owns the whole window: the prefab's input blocker only
+                // stops pointer events, so a gamepad A press would still reach the grid underneath.
+                // Checked before the socket-grid guard, so it also covers a confirmation raised over the
+                // plain inventory.
+                if (InventoryPromptHost.IsOpen) {
+                    return false;
                 }
 
-                // While the confirmation is up it owns the whole window: the prefab's input blocker only
-                // stops pointer events, so a gamepad A press would still reach the grid underneath.
-                if (_breakPrompt != null) {
-                    return false;
+                if (!IsSocketGridOpen || grid == null) {
+                    return true;
                 }
 
                 // A drag in progress means we're dropping INTO a grid, which InventoryGrid.DropItem
@@ -496,7 +452,7 @@ namespace EpicLoot.ShardStones {
                     return true;
                 }
 
-                if (_breakPrompt != null) {
+                if (InventoryPromptHost.IsOpen) {
                     return false;
                 }
 

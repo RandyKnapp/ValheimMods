@@ -5,6 +5,23 @@ using UnityEngine;
 
 namespace EpicLoot.Adventure
 {
+    /// <summary>
+    /// How a spawn point that lands in open water is resolved. Only the Ocean biome ever reaches
+    /// anything but <see cref="Reject"/> -- everywhere else, water means a lake or a river and the
+    /// point is thrown away.
+    /// </summary>
+    internal enum WaterPlacement
+    {
+        /// <summary>Submerged points are rejected outright.</summary>
+        Reject,
+
+        /// <summary>The point stays on the seabed, under the water. Treasure chests sit there.</summary>
+        Seabed,
+
+        /// <summary>The point is lifted to the water line. Swimming bounty targets belong there.</summary>
+        Surface
+    }
+
     internal class AdventureSpawnController : MonoBehaviour
     {
         protected ZNetView zNetView;
@@ -89,12 +106,14 @@ namespace EpicLoot.Adventure
                 startedPlacement = true;
                 if (bounty.Get().PlayerID != 0)
                 {
-                    StartCoroutine(DeterminespawnPoint(bounty.Get().Position, bounty.Get().Biome));
+                    StartCoroutine(DeterminespawnPoint(bounty.Get().Position, bounty.Get().Biome,
+                        WaterPlacement.Surface));
                 }
 
                 if (treasure.Get().PlayerID != 0)
                 {
-                    StartCoroutine(DeterminespawnPoint(treasure.Get().Position, treasure.Get().Biome, true));
+                    StartCoroutine(DeterminespawnPoint(treasure.Get().Position, treasure.Get().Biome,
+                        WaterPlacement.Seabed));
                 }
             }
 
@@ -158,19 +177,42 @@ namespace EpicLoot.Adventure
                 }
             }
 
+            // An ocean bounty's targets swim, so they hold the water line the search settled on
+            // instead of being dropped onto a seabed that is tens of metres further down.
+            bool swimmingTargets = bounty.Biome == Heightmap.Biome.Ocean;
+            float baseHeight = point.y;
+
             for (var index = 0; index < prefabs.Count; index++)
             {
                 var prefab = prefabs[index];
                 var isAdd = index > 0;
 
-                var creature = UnityEngine.Object.Instantiate(prefab, point, Quaternion.identity);
+                // Character.UpdateSwimming holds a swimming creature at (water line - m_swimDepth),
+                // so starting it there means it is already buoyant rather than dropping in from
+                // above the surface.
+                Vector3 spawnAt = point;
+                if (swimmingTargets && prefab.TryGetComponent(out Character prefabCharacter))
+                {
+                    spawnAt.y = ZoneSystem.instance.m_waterLevel - prefabCharacter.m_swimDepth;
+                }
+
+                var creature = UnityEngine.Object.Instantiate(prefab, spawnAt, Quaternion.identity);
                 var bountyTarget = creature.AddComponent<BountyTarget>();
                 bountyTarget.Initialize(bounty, prefab.name, isAdd);
 
                 var randomSpacing = UnityEngine.Random.insideUnitSphere * 4f;
                 point += randomSpacing;
-                ZoneSystem.instance.FindFloor(point, out var floorHeight);
-                point.y = floorHeight;
+
+                // FindFloor reports 0 when its ray hits nothing at all, and the old code assigned
+                // that unconditionally -- a miss teleported the next add down to y=0.
+                if (!swimmingTargets && ZoneSystem.instance.FindFloor(point, out var floorHeight))
+                {
+                    point.y = floorHeight;
+                }
+                else
+                {
+                    point.y = baseHeight;
+                }
             }
 
             placed.ForceSet(true);
@@ -204,7 +246,7 @@ namespace EpicLoot.Adventure
         }
 
         internal IEnumerator DeterminespawnPoint(Vector3 startingSpawnPoint,
-            Heightmap.Biome biome, bool allowWaterSpawn = false)
+            Heightmap.Biome biome, WaterPlacement waterPlacement = WaterPlacement.Reject)
         {
             yield return new WaitForSeconds(5);
 
@@ -215,6 +257,13 @@ namespace EpicLoot.Adventure
 
             // TODO: If bounties get their own minimap area radius config this must choose the correct one
             float radius = AdventureDataManager.Config.TreasureMap.MinimapAreaRadius;
+            float waterSurface = ZoneSystem.instance.m_waterLevel;
+
+            // The Ocean biome is open water by definition -- its biome cutoff sits roughly 25m below
+            // the water line, so every point inside it is under water. Rejecting submerged points
+            // there rejected every candidate in every band, which is why no ocean bounty ever placed.
+            bool spawnInOpenWater = biome == Heightmap.Biome.Ocean &&
+                waterPlacement != WaterPlacement.Reject;
             int maxExpansions = Mathf.Max(0, AdventureDataManager.Config.TreasureMap.MaxSpawnSearchExpansions);
             Vector3 determinedSpawn = startingSpawnPoint;
             bool foundSpawn = false;
@@ -281,9 +330,10 @@ namespace EpicLoot.Adventure
                         continue;
                     }
 
-                    // Prevents spawning in a body of water
-                    if ((biome != Heightmap.Biome.Ocean || !allowWaterSpawn) &&
-                        determinedSpawn.y < 29)
+                    // Prevents spawning in a body of water. Open-water spawns are exempt: the
+                    // seabed is the ground there, and a surface spawn is lifted to the water line
+                    // once a point is settled on.
+                    if (!spawnInOpenWater && determinedSpawn.y < waterSurface - 1f)
                     {
                         spawnLocationAttempts += 1;
                         continue;
@@ -331,6 +381,13 @@ namespace EpicLoot.Adventure
                     "treasure map the player has already paid for.");
                 ParkAndRetry();
                 yield break;
+            }
+
+            // Bounty targets that belong in the Ocean are swimming creatures, so put them at the
+            // surface rather than on the seabed tens of metres below it.
+            if (spawnInOpenWater && waterPlacement == WaterPlacement.Surface)
+            {
+                determinedSpawn.y = waterSurface;
             }
 
             if (determinedSpawn.y >= StartingHeight - 1f)

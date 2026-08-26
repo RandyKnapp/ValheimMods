@@ -13,7 +13,13 @@ public class MagicTextGroup
     public readonly MagicTextElement Title;
     public readonly MagicTextElement[] Content;
 
-    public bool IsMatch(string query) => Title.IsMatch(query) || Content.Any(x => x.IsMatch(query));
+    // Lowers the query once here rather than in every element, since a group fans it out across its
+    // title plus every content line on each keystroke.
+    public bool IsMatch(string query)
+    {
+        string lowered = query.ToLowerInvariant();
+        return Title.IsMatch(lowered) || Content.Any(x => x.IsMatch(lowered));
+    }
     public void Enable(bool enable)
     {
         Title.Enable(enable);

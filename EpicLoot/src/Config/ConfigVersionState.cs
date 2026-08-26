@@ -104,12 +104,19 @@ public class ConfigVersionState
     /// </summary>
     public void Stamp(string configName, string sourceHash, string writtenHash, string variant)
     {
+        // Preserve any recorded decline: the decline is keyed to the SourceHash it was made against
+        // and only consulted while disk content diverges from the default, so carrying it over is
+        // always safe -- dropping it (the old behavior) made the update prompt re-appear after any
+        // runtime rewrite of the file.
+        Files.TryGetValue(configName, out ConfigVersionEntry previous);
         Files[configName] = new ConfigVersionEntry
         {
             Version = EpicLoot.Version,
             SourceHash = sourceHash,
             WrittenHash = writtenHash ?? "",
-            Variant = variant ?? ""
+            Variant = variant ?? "",
+            DeclinedSourceHash = previous?.DeclinedSourceHash ?? "",
+            DeclinedVersion = previous?.DeclinedVersion ?? ""
         };
     }
 

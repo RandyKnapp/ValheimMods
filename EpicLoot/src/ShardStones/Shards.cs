@@ -405,6 +405,68 @@ namespace EpicLoot.ShardStones {
             return Extensions.TryLocalize(token, out var localized) ? localized : category.ToString();
         }
 
+        // Human-readable label for a shard category, e.g. "$mod_epicloot_shardcategory_boss" -> "Boss".
+        // Falls back to the raw enum name when no localization key is defined.
+        public static string GetCategoryDisplayName(ShardCategory category) {
+            var token = $"mod_epicloot_shardcategory_{category.ToString().ToLowerInvariant()}";
+            return Extensions.TryLocalize(token, out var localized) ? localized : category.ToString();
+        }
+
+        // Display color for each shard color's name text (Compendium/tooltips). One entry per
+        // ShardType; anything unmapped renders white.
+        private static readonly Dictionary<ShardType, string> ShardNameColors = new Dictionary<ShardType, string>
+        {
+            { ShardType.Red, "#e6484c" },
+            { ShardType.Yellow, "#e8d24a" },
+            { ShardType.Cyan, "#4ad9e0" },
+            { ShardType.Black, "#9a8fa8" },
+            { ShardType.Green, "#5fc65f" },
+            { ShardType.Orange, "#f08a35" },
+            { ShardType.Pink, "#f08ac0" },
+            { ShardType.Purple, "#b070e0" },
+            { ShardType.White, "#f2f0e6" },
+            { ShardType.Grey, "#b0b0b0" },
+            { ShardType.DarkGreen, "#3f9a5c" },
+            { ShardType.DarkPurple, "#8a52c0" },
+            { ShardType.DarkRed, "#c0392b" },
+            { ShardType.DarkBlue, "#4a72d0" },
+            { ShardType.Golden, "#d4af37" },
+            { ShardType.LightBlue, "#8fd0f0" },
+            { ShardType.LightGreen, "#a8e08a" },
+            { ShardType.Peach, "#f5b98a" },
+            { ShardType.Firewalker, "#ff7a3c" },
+            { ShardType.Stormcaller, "#7ec8ff" },
+            { ShardType.Eikthyr, "#c9e86a" },
+            { ShardType.Elder, "#7fbf6a" },
+            { ShardType.Bonemass, "#8fa85c" },
+            { ShardType.Moder, "#9fd8f0" },
+            { ShardType.Yagluth, "#e07a3c" },
+            { ShardType.Queen, "#e0b84a" },
+            { ShardType.Fader, "#d06ad0" },
+        };
+
+        public static string GetShardNameColor(ShardType color) =>
+            ShardNameColors.TryGetValue(color, out var value) ? value : "#ffffff";
+
+        // Prefab name of the lowest-rarity shard of this color -- the stand-in used when a UI needs
+        // "an icon for this color" without a concrete shard in hand (e.g. the Compendium sprite
+        // atlas). Null when the color has no usable definition.
+        public static string GetIconPrefabName(ShardType color) {
+            var def = ShardDefinitions.Get(color);
+            if (def?.Rarities == null || def.Rarities.Count == 0) {
+                return null;
+            }
+
+            ItemRarity lowest = def.Rarities[0];
+            foreach (ItemRarity rarity in def.Rarities) {
+                if (rarity < lowest) {
+                    lowest = rarity;
+                }
+            }
+
+            return $"{color}_{lowest}_ShardStone";
+        }
+
         // Categories whose shards are mutually exclusive: a player may wear at most one socketed
         // shard of each such category at a time. Exclusivity is a property of the category, so it
         // applies uniformly to every color in it.
@@ -444,7 +506,18 @@ namespace EpicLoot.ShardStones {
 
                 Enum.TryParse(shardColor, true, out ShardType color);
 
-                foreach (ItemRarity rarity in ShardDefinitions.Get(color).Rarities) {
+                // A stale on-disk shardstones.json (missing this colour entirely, or carrying
+                // "Rarities": null) used to NRE here -- inside LoadAssets(), which kills the whole
+                // plugin in Awake. Skip the colour instead; its shards just don't exist this session.
+                ShardDefinition shardDef = ShardDefinitions.Get(color);
+                if (shardDef?.Rarities == null || shardDef.Rarities.Count == 0) {
+                    EpicLoot.LogErrorForce($"shardstones.json has no usable definition for shard colour '{shardColor}' " +
+                        "(missing entry or empty Rarities); skipping its shard items. Delete the on-disk " +
+                        "baseconfig/shardstones.json (or enable AlwaysRefreshCoreConfigs) to regenerate it.");
+                    continue;
+                }
+
+                foreach (ItemRarity rarity in shardDef.Rarities) {
                     var prefab = UnityEngine.Object.Instantiate(genericPrefab);
                     string PrefabName = $"{shardColor}_{rarity}_ShardStone";
                     prefab.name = PrefabName;

@@ -41,7 +41,6 @@ namespace EpicLoot.MagicItemEffects
         {
             if (__instance == null || hit == null || hit.GetAttacker() != Player.m_localPlayer)
             {
-                ExecutionerMultiplier = null;
                 return;
             }
 
@@ -52,12 +51,14 @@ namespace EpicLoot.MagicItemEffects
                 return;
             }
 
-            if (ExecutionerMultiplier == null)
-            {
-                ExecutionerMultiplier = ReadExecutionerValue(player);
-            }
+            // Projectile hits use the multiplier staged from the projectile's ZDO (set by the
+            // Projectile.OnHit prefix and cleared by its postfix); every target of an AoE
+            // projectile must see the same staged value, so it is never consumed here -- the old
+            // code nulled it after the first target and re-derived the rest from the currently
+            // equipped weapon. Melee hits derive from the live weapon per hit.
+            float multiplier = ExecutionerMultiplier ?? ReadExecutionerValue(player);
 
-            if (ExecutionerMultiplier is float multiplier && __instance.GetHealth() / __instance.GetMaxHealth() < 0.2f)
+            if (__instance.GetHealth() / __instance.GetMaxHealth() < 0.2f)
             {
                 hit.m_damage.Modify(multiplier);
                 if (!targetId.IsNone())
@@ -71,8 +72,6 @@ namespace EpicLoot.MagicItemEffects
                     _executedTargets.Add(targetId);
                 }
             }
-
-            ExecutionerMultiplier = null;
         }
 
         public static float ReadExecutionerValue(Player player)

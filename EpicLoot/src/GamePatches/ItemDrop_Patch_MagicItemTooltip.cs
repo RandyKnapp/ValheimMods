@@ -16,7 +16,20 @@ public static class MagicTooltipPatches
     // dialogs and trader lists all call GetTooltip() directly, and the hint means nothing there.
     private static string GetSocketOpenHint(ItemDrop.ItemData item)
     {
-        if (item == null || !item.IsMagic(out MagicItem magicItem) || !magicItem.HasSockets())
+        if (item == null)
+        {
+            return "";
+        }
+
+        // Brokkr's Gift is used by dragging it, which is not discoverable on its own -- say so here.
+        // Checked first: the gift carries a cosmetic MagicItem, so the socket branch below would
+        // otherwise have to know to skip it.
+        if (item.IsShardSlotChisel())
+        {
+            return "\n<color=yellow><b>$mod_epicloot_slotchisel_hint</b></color>";
+        }
+
+        if (!item.IsMagic(out MagicItem magicItem) || !magicItem.HasSockets())
         {
             return "";
         }

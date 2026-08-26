@@ -83,7 +83,10 @@ namespace EpicLoot.MagicItemEffects.Shards {
                 return;
             }
 
-            if (__instance.GetHealth() > 0f) {
+            // Predicted lethality (see StaminaOnKill): against a remote-owned victim the post-hit
+            // health is not visible yet, and the old plain check silently ATE the stake on every
+            // real kill in multiplayer.
+            if (__instance.GetHealth() - hit.GetTotalDamage() > 0f) {
                 return; // the bet was lost -- the stake is gone
             }
 

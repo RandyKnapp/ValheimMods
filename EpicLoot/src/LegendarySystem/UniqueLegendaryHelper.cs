@@ -27,6 +27,12 @@ namespace EpicLoot.LegendarySystem
 
         public static void Initialize(LegendaryItemConfig config)
         {
+            if (config == null)
+            {
+                EpicLoot.LogWarning("UniqueLegendaryHelper.Initialize called with a null config; keeping the currently loaded legendaries.");
+                return;
+            }
+
             Config = config;
             OnSetupLegendaryItemConfig?.Invoke();
             LegendaryInfo.Clear();
@@ -160,7 +166,8 @@ namespace EpicLoot.LegendarySystem
         public static IList<LegendaryInfo> GetAvailableLegendaries(ItemDrop.ItemData baseItem, MagicItem magicItem, bool rollSetItem)
         {
             var availableLegendaries = LegendaryInfo.Values
-                .Where(x => x.IsSetItem == rollSetItem && x.Requirements.CheckRequirements(baseItem, magicItem))
+                .Where(x => x.IsSetItem == rollSetItem &&
+                    (x.Requirements == null || x.Requirements.CheckRequirements(baseItem, magicItem)))
                 .AddItem(GenericLegendaryInfo).ToList();
             if (rollSetItem && availableLegendaries.Count > 1)
             {
@@ -173,7 +180,8 @@ namespace EpicLoot.LegendarySystem
         public static IList<LegendaryInfo> GetAvailableMythics(ItemDrop.ItemData baseItem, MagicItem magicItem, bool rollSetItem)
         {
             var availableMythics = MythicInfo.Values
-                .Where(x => x.IsSetItem == rollSetItem && x.Requirements.CheckRequirements(baseItem, magicItem))
+                .Where(x => x.IsSetItem == rollSetItem &&
+                    (x.Requirements == null || x.Requirements.CheckRequirements(baseItem, magicItem)))
                 .AddItem(GenericLegendaryInfo).ToList();
             if (rollSetItem && availableMythics.Count > 1)
             {

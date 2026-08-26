@@ -187,6 +187,14 @@ namespace Common {
             // Configuration Manager responsive (one visible row per piece under "Building Pieces").
             PieceConfigDrawer.Attach(jbuildpiece);
 
+            // An empty/unparseable PieceCost (both the config value AND the code default failed to parse)
+            // used to fall through with zero requirements, registering a free-to-build piece. Refuse to
+            // register instead -- a piece with no valid cost is a definition error, not a free piece.
+            if (jbuildpiece.Cfgs.UpdatedCost.Count == 0) {
+                ModLogger.LogError($"{jbuildpiece.Name} has no valid build cost (empty or unparseable PieceCost); skipping registration so it cannot be built for free.");
+                return;
+            }
+
             List<RequirementConfig> recipe = new List<RequirementConfig>();
             foreach (PieceCost entry in jbuildpiece.Cfgs.UpdatedCost) {
                 recipe.Add(new RequirementConfig { Item = entry.Prefab, Amount = entry.Amount, Recover = entry.Refundable });

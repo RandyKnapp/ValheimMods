@@ -54,14 +54,22 @@ public static partial class API
             return false;
         }
 
-        LegendaryInfo config = JsonConvert.DeserializeObject<LegendaryInfo>(json);
-        if (config == null)
+        try
         {
+            LegendaryInfo config = JsonConvert.DeserializeObject<LegendaryInfo>(json);
+            if (config == null)
+            {
+                return false;
+            }
+
+            legendaryInfo.CopyFieldsFrom(config);
+            return true;
+        }
+        catch
+        {
+            OnError?.Invoke("Failed to parse legendary item from external plugin");
             return false;
         }
-
-        legendaryInfo.CopyFieldsFrom(config);
-        return true;
     }
 
     [PublicAPI]
@@ -119,13 +127,21 @@ public static partial class API
             return false;
         }
 
-        LegendarySetInfo config = JsonConvert.DeserializeObject<LegendarySetInfo>(json);
-        if (config == null)
+        try
         {
+            LegendarySetInfo config = JsonConvert.DeserializeObject<LegendarySetInfo>(json);
+            if (config == null)
+            {
+                return false;
+            }
+
+            legendarySetInfo.CopyFieldsFrom(config);
+            return true;
+        }
+        catch
+        {
+            OnError?.Invoke("Failed to parse legendary set from external plugin");
             return false;
         }
-
-        legendarySetInfo.CopyFieldsFrom(config);
-        return true;
     }
 }

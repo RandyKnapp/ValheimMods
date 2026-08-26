@@ -37,7 +37,7 @@ namespace EpicLoot;
 public sealed class EpicLoot : BaseUnityPlugin {
     public const string PluginId = "randyknapp.mods.epicloot";
     public const string DisplayName = "Epic Loot";
-    public const string Version = "0.13.2";
+    public const string Version = "0.13.3";
 
     private static string ConfigFileName = PluginId + ".cfg";
     private static string ConfigFileFullPath = BepInEx.Paths.ConfigPath + Path.DirectorySeparatorChar + ConfigFileName;
@@ -123,6 +123,7 @@ public sealed class EpicLoot : BaseUnityPlugin {
         // Register per-effect tooltip display-value providers (effects that show more than one number).
         // These are keyed by effect-type constant and don't depend on config load, so register once here.
         MagicItemEffects.BulkupEffect.RegisterDisplayValues();
+        Magic.MagicItemEffects.DartingThoughts.RegisterDisplayValues();
         MagicItemEffects.Shards.HealthGainPerXDamageDone.RegisterDisplayValues();
         MagicItemEffects.Shards.HealthOnEitrUse.RegisterDisplayValues();
         MagicItemEffects.Shards.Mercenary.RegisterDisplayValues();
@@ -305,8 +306,10 @@ public sealed class EpicLoot : BaseUnityPlugin {
         foreach (string embeddedResouce in typeof(EpicLoot).Assembly.GetManifestResourceNames()) {
             if (!embeddedResouce.Contains("localizations")) { continue; }
             string localization = ReadEmbeddedResourceFile(embeddedResouce);
-            // This will clean comments out of the localization files
-            string cleaned_localization = Regex.Replace(localization, @"\/\/.*\n", "");
+            // This will clean comments out of the localization files. Full-line comments only: the
+            // old pattern also truncated any line containing "//" inside a value (URLs in
+            // translations), corrupting the JSON.
+            string cleaned_localization = Regex.Replace(localization, @"^\s*\/\/.*$", "", RegexOptions.Multiline);
             // Log($"Cleaned Localization: {cleaned_localization}");
             var name = embeddedResouce.Split('.');
             Log($"Adding localization: {name[2]}");
@@ -470,8 +473,10 @@ public sealed class EpicLoot : BaseUnityPlugin {
         ItemManager.OnItemsRegistered += SetupStatusEffects;
         LoadUnidentifiedItems();
         ShardStones.Shards.CreateAndLoadShardItems();
-        // Needs to trigger late in order to get all potentially added items by other mods
-        MinimapManager.OnVanillaMapDataLoaded += () => AutoAddEnchantableItems.CheckAndAddAllEnchantableItems();
+        LoadShardSlotChisels();
+        // Needs to trigger late in order to get all potentially added items by other mods.
+        // Subscribed via the stored handler so the self-unsubscribe inside actually matches.
+        MinimapManager.OnVanillaMapDataLoaded += AutoAddEnchantableItems.OnMapDataLoadedHandler;
 
         EpicAssets.AssertAssetIntegrety();
     }
@@ -664,6 +669,33 @@ public sealed class EpicLoot : BaseUnityPlugin {
         }
     }
 
+    // Brokkr's Gift, the consumable that adds shard slots to a magic item. Two authored prefabs loaded
+    // by name, not runtime clones, so there is no deferred SetActive dance here -- and no ItemConfig
+    // either: name, description and icon are all baked on the prefab. Note the single icon: do NOT set
+    // m_variant, which on the crafting materials selects out of a ten-icon rarity array these lack.
+    private static void LoadShardSlotChisels() {
+        var chisels = new (string Prefab, ItemRarity Rarity)[] {
+            (ShardStones.ShardSlotChisel.LegendaryPrefab, ItemRarity.Legendary),
+            (ShardStones.ShardSlotChisel.MythicPrefab, ItemRarity.Mythic),
+        };
+
+        foreach (var (prefabName, rarity) in chisels) {
+            GameObject prefab = EpicAssets.AssetBundle.LoadAsset<GameObject>(prefabName);
+            if (prefab == null) {
+                LogErrorForce($"Tried to load asset {prefabName} but it does not exist in the asset bundle!");
+                continue;
+            }
+
+            if (prefab.TryGetComponent(out ItemDrop itemDrop)) {
+                itemDrop.m_itemData.m_dropPrefab = prefab;
+                // Cosmetic only: this is what colours the name and gives it the magic item background.
+                itemDrop.m_itemData.SaveMagicItem(new MagicItem { Rarity = rarity });
+            }
+
+            ItemManager.Instance.AddItem(new CustomItem(prefab, false));
+        }
+    }
+
     private static void LoadUnidentifiedItems() {
         // TODO: Add support for biomes added by other mods as needed.
         GameObject genericPrefab = EpicAssets.AssetBundle.LoadAsset<GameObject>("_Unidentified");
@@ -816,8 +848,19 @@ public sealed class EpicLoot : BaseUnityPlugin {
         PrefabManager.OnPrefabsRegistered -= SetupAndvaranaut;
     }
 
+    // Legacy registration of an ObjectDB-visible "Paralyze" status effect. Nothing in the mod
+    // consumes it -- Paralyze.cs applies its own EL_Paralyze prototype directly via SEMan -- but it
+    // is kept for anything external that looks the effect up by hash. The old lookup used
+    // string.GetHashCode (ObjectDB matches on GetStableHashCode), always returned null, and
+    // CopyFields(null, ...) then threw a TargetException on every world load (swallowed by Jotunn's
+    // SafeInvoke), so the effect was never actually registered.
     private static void SetupStatusEffects() {
-        var lightning = ObjectDB.instance.GetStatusEffect("Lightning".GetHashCode());
+        var lightning = ObjectDB.instance.GetStatusEffect("Lightning".GetStableHashCode());
+        if (lightning == null) {
+            LogWarning("Vanilla 'Lightning' status effect not found; skipping legacy Paralyze ObjectDB registration.");
+            ItemManager.OnItemsRegistered -= SetupStatusEffects;
+            return;
+        }
         var paralyzed = ScriptableObject.CreateInstance<SE_Paralyzed>();
         Common.Utils.CopyFields(lightning, paralyzed, typeof(StatusEffect));
         paralyzed.name = "Paralyze";

@@ -10,21 +10,32 @@ public static partial class TerminalManager
         int level = args.TryParameterInt(2, 1);
         int itemIndex = args.TryParameterInt(3, 0);
         
-        LootTable table = LootRoller.GetLootTable(lootTable)[0];
+        List<LootTable> tables = LootRoller.GetLootTable(lootTable);
+        if (tables.Count == 0)
+        {
+            args.Context.PrintError($"> no loot table found for '{lootTable}'");
+            return;
+        }
+        LootTable table = tables[0];
         LootDrop[] tableForLevel = LootRoller.GetLootForLevel(table, level);
-        if (tableForLevel.Length < itemIndex - 1)
+        if (tableForLevel.Length == 0)
+        {
+            args.Context.PrintError($"> loot table '{lootTable}' has no entries for level {level}");
+            return;
+        }
+        if (itemIndex < 0 || itemIndex >= tableForLevel.Length)
         {
             args.Context.PrintError("> item index is out of range, using last index");
             itemIndex = tableForLevel.Length - 1;
         }
-        
+
         args.Context.PrintInfo($"> lootres: {lootTable}:{level}:{itemIndex}");
 
         LootDrop lootDrop = tableForLevel[itemIndex];
         lootDrop = LootRoller.ResolveLootDrop(lootDrop);
         float[] rarity = lootDrop.Rarity;
 
-        if (rarity.Length < 1)
+        if (rarity == null || rarity.Length < 1)
         {
             args.Context.PrintError($"> loot resolution not defined for {lootTable}");
             return;

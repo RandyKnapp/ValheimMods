@@ -224,9 +224,15 @@ public static class ConfigVersionManager
 
     /// <summary>
     /// Records content the mod itself wrote to a baseconfig file, so that its own output is not
-    /// mistaken for a player edit. Callers must pass exactly what they wrote to disk.
+    /// mistaken for a player edit. Callers must pass exactly what they wrote to disk, plus the
+    /// content that was on disk BEFORE the rewrite (null when the file did not exist).
+    ///
+    /// The before-content matters: runtime rewriters (AutoAddEnchantableItems) merge on top of
+    /// whatever is on disk, player edits included. Stamping that merged output as "our own" told
+    /// the next launch's RefreshUnmodifiedConfigs the file was untouched, and a mod update then
+    /// silently replaced it -- destroying the player's edits with no backup and no prompt.
     /// </summary>
-    public static void RecordWrittenContent(string configName, string contents)
+    public static void RecordWrittenContent(string configName, string contents, string previousContents)
     {
         if (!_enabled || _state == null)
         {
@@ -238,6 +244,24 @@ public static class ConfigVersionManager
             string embeddedHash = GetEmbeddedHash(configName, out string variant, out _);
             if (string.IsNullOrEmpty(embeddedHash))
             {
+                return;
+            }
+
+            if (previousContents != null && _state.Files.TryGetValue(configName, out ConfigVersionEntry entry))
+            {
+                bool baselineWasPlayerModified = string.IsNullOrEmpty(entry.WrittenHash) ||
+                    ConfigVersionState.HashConfigText(previousContents) != entry.WrittenHash;
+                if (baselineWasPlayerModified)
+                {
+                    EpicLoot.Log($"Config {configName}.json was rewritten on top of a player-modified " +
+                        "baseline; keeping it flagged as player-owned.");
+                    return;
+                }
+            }
+            else if (previousContents != null)
+            {
+                // No bookkeeping entry: the file predates version tracking, so its origin is
+                // unknown -- treat it as the player's rather than claiming it.
                 return;
             }
 

@@ -1,4 +1,5 @@
 ﻿using EpicLoot.Data;
+using EpicLoot.Magic.MagicItemEffects;
 using EpicLoot.MagicItemEffects.Shards;
 using HarmonyLib;
 using JetBrains.Annotations;
@@ -83,30 +84,43 @@ namespace EpicLoot
         [HarmonyPatch(typeof(Player), nameof(Player.Update))]
         public static class WatchLegendaryEquipment_Player_Update_Patch
         {
-            private static float _updateEventTime;
-            
+            // Per-player timers: a single static ticked down once per Player.Update, so with N
+            // remote players it expired N times faster and only ever processed one of them per
+            // expiry.
+            private static readonly System.Runtime.CompilerServices.ConditionalWeakTable<Player, float[]>
+                _updateEventTimes = new System.Runtime.CompilerServices.ConditionalWeakTable<Player, float[]>();
+
             [UsedImplicitly]
             public static void Postfix(Player __instance)
             {
-                _updateEventTime -= Time.deltaTime;
-                if (_updateEventTime > 0.0)
+                if (__instance == null)
                 {
                     return;
                 }
 
-                _updateEventTime = 10f;
-                
+                float[] timer = _updateEventTimes.GetValue(__instance, _ => new float[1]);
+                timer[0] -= Time.deltaTime;
+                if (timer[0] > 0.0)
+                {
+                    return;
+                }
+
+                timer[0] = 10f;
+
                 if (__instance != null && __instance != Player.m_localPlayer &&
                     __instance.m_nview != null && __instance.m_nview.GetZDO() is ZDO zdo)
                 {
+                    // |= (not ||): every slot must be checked each pass. The old short-circuit
+                    // stopped reconciling after the first changed slot, so a remote player swapping
+                    // several pieces at once had the later slots ignored until a later pass.
                     bool changed = DoCheck(__instance, zdo, "LeftItem", "lf-ell", ref __instance.m_leftItem);
-                    changed = changed || DoCheck(__instance, zdo, "RightItem", "ri-ell", ref __instance.m_rightItem);
-                    changed = changed || DoCheck(__instance, zdo, "ChestItem", "ch-ell", ref __instance.m_chestItem);
-                    changed = changed || DoCheck(__instance, zdo, "LegItem", "lg-ell", ref __instance.m_legItem);
-                    changed = changed || DoCheck(__instance, zdo, "HelmetItem", "hl-ell", ref __instance.m_helmetItem);
-                    changed = changed || DoCheck(__instance, zdo, "ShoulderItem", "sh-ell", ref __instance.m_shoulderItem);
-                    changed = changed || DoCheck(__instance, zdo, "UtilityItem", "ut-ell", ref __instance.m_utilityItem);
-                    changed = changed || DoCheck(__instance, zdo, "TrinketItem", "tr-ell", ref __instance.m_trinketItem);
+                    changed |= DoCheck(__instance, zdo, "RightItem", "ri-ell", ref __instance.m_rightItem);
+                    changed |= DoCheck(__instance, zdo, "ChestItem", "ch-ell", ref __instance.m_chestItem);
+                    changed |= DoCheck(__instance, zdo, "LegItem", "lg-ell", ref __instance.m_legItem);
+                    changed |= DoCheck(__instance, zdo, "HelmetItem", "hl-ell", ref __instance.m_helmetItem);
+                    changed |= DoCheck(__instance, zdo, "ShoulderItem", "sh-ell", ref __instance.m_shoulderItem);
+                    changed |= DoCheck(__instance, zdo, "UtilityItem", "ut-ell", ref __instance.m_utilityItem);
+                    changed |= DoCheck(__instance, zdo, "TrinketItem", "tr-ell", ref __instance.m_trinketItem);
 
                     if (changed)
                     {
@@ -231,12 +245,16 @@ namespace EpicLoot
                     int currentZdoRiches = zdo.GetInt("el-rch");
                     // Lucky Loot is read by CharacterDrop.GenerateDropList, which runs on the creature's
                     // owner -- a machine that may have no local player at all. Mirroring the value here is
-                    // what lets that machine see it.
-                    int currentZdoLuckyLoot = zdo.GetInt(LuckyLoot.ZdoValueKey);
+                    // what lets that machine see it. Stored as floats: both effects roll in fractional
+                    // steps (HeadHunter's increment is 0.5), which an int cast silently truncated.
+                    float currentZdoLuckyLoot = zdo.GetFloat(LuckyLoot.ZdoValueKey);
+                    // Head Hunter reads on the same GenerateDropList path, for the same reason.
+                    float currentZdoHeadHunter = zdo.GetFloat(Headhunter.ZdoValueKey);
 
                     int currentLuck = (int)player.GetTotalActiveMagicEffectValue(MagicEffectType.Luck);
                     int currentRiches = (int)player.GetTotalActiveMagicEffectValue(MagicEffectType.Riches);
-                    int currentLuckyLoot = (int)player.GetTotalActiveMagicEffectValue(MagicEffectType.LuckyLoot);
+                    float currentLuckyLoot = player.GetTotalActiveMagicEffectValue(MagicEffectType.LuckyLoot);
+                    float currentHeadHunter = player.GetTotalActiveMagicEffectValue(MagicEffectType.HeadHunter);
 
                     if (currentLuck != currentZdoLuck)
                     {
@@ -251,6 +269,11 @@ namespace EpicLoot
                     if (currentLuckyLoot != currentZdoLuckyLoot)
                     {
                         zdo.Set(LuckyLoot.ZdoValueKey, currentLuckyLoot);
+                    }
+
+                    if (currentHeadHunter != currentZdoHeadHunter)
+                    {
+                        zdo.Set(Headhunter.ZdoValueKey, currentHeadHunter);
                     }
                 }
             }

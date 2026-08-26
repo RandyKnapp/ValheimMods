@@ -107,9 +107,19 @@ namespace EpicLoot.MagicItemEffects
             return speed;
         }
         
+        private static bool _appliedAttackSpeed;
+
         [UsedImplicitly]
         private static void Postfix(Game __instance)
         {
+            // Game.Awake runs once per world load; registering again each time compounded the slow
+            // multiplier (speed * Multiplier^N after N loads in one session).
+            if (_appliedAttackSpeed)
+            {
+                return;
+            }
+
+            _appliedAttackSpeed = true;
             AnimationSpeedManager.Add(ModifyAttackSpeed);
         }
     }

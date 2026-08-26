@@ -180,6 +180,14 @@ namespace EpicLoot_UnityLib
 
         private void InitFeatureLevels()
         {
+            // Owner-only: a non-owner Set is not authoritative and bumps the data revision on a
+            // ZDO someone else owns -- every client streaming the table in used to re-write the
+            // disabled-feature sentinels on each load, letting clients disagree about levels.
+            if (_nview == null || !_nview.IsValid() || !_nview.IsOwner())
+            {
+                return;
+            }
+
             const int uninitializedSentinel = -888;
             foreach (EnchantingFeature feature in Enum.GetValues(typeof(EnchantingFeature)))
             {

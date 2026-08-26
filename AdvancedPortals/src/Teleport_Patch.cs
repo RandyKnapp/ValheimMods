@@ -10,6 +10,10 @@ namespace AdvancedPortals
 
         public static void TargetPortal_HandlePortalClick_Prefix()
         {
+            if (Player.m_localPlayer == null)
+            {
+                return;
+            }
             Vector3 playerPos = Player.m_localPlayer.transform.position;
             const float searchRadius = 2.0f;
             Collider[] colliders = Physics.OverlapSphere(playerPos, searchRadius);
@@ -61,9 +65,13 @@ namespace AdvancedPortals
             CurrentAdvancedPortal = __instance.GetComponent<AdvancedPortal>();
         }
 
+        // Finalizer, not postfix: UpdatePortal runs on an InvokeRepeating timer for every portal in the
+        // scene, and a postfix does not run when the original (or another mod's patch) throws -- which
+        // used to leave CurrentAdvancedPortal stuck, applying one portal's allow-list to every later
+        // Inventory.IsTeleportable call in the game.
         [HarmonyPatch(typeof(TeleportWorld), nameof(TeleportWorld.UpdatePortal))]
-        [HarmonyPostfix]
-        public static void TeleportWorld_UpdatePortal_Postfix()
+        [HarmonyFinalizer]
+        public static void TeleportWorld_UpdatePortal_Finalizer()
         {
             CurrentAdvancedPortal = null;
         }
@@ -76,8 +84,8 @@ namespace AdvancedPortals
         }
 
         [HarmonyPatch(typeof(TeleportWorld), nameof(TeleportWorld.Teleport))]
-        [HarmonyPostfix]
-        public static void TeleportWorld_Teleport_Postfix()
+        [HarmonyFinalizer]
+        public static void TeleportWorld_Teleport_Finalizer()
         {
             CurrentAdvancedPortal = null;
         }
@@ -102,12 +110,15 @@ namespace AdvancedPortals
 
             foreach (ItemDrop.ItemData itemData in __instance.GetAllItems())
             {
-                if (itemData.m_dropPrefab == null)
+                if (itemData.m_shared.m_teleportable)
                 {
                     continue;
                 }
 
-                if (!itemData.m_shared.m_teleportable &&
+                // A non-teleportable item with no drop prefab cannot be matched against the allow-list;
+                // treat it as blocking rather than silently letting it through (vanilla blocks on the
+                // shared flag alone and never consults the prefab).
+                if (itemData.m_dropPrefab == null ||
                     !CurrentAdvancedPortal.AllowedItems.Contains(itemData.m_dropPrefab.name))
                 {
                     return;

@@ -20,11 +20,15 @@ public class BountyManagmentSystem : MonoBehaviour
     private static BountyManagmentSystem _instance;
     private const string LedgerIdentifier = "randyknapp.mods.epicloot.BountyLedger";
     private static string _ledgerSaveDirectory = Path.Combine(Paths.ConfigPath, "EpicLoot", "BountySaves");
-    private static string _ledgerSaveFile = Path.Combine(_ledgerSaveDirectory, $"{LedgerIdentifier}.{ZNet.m_world.m_uid}.dat");
+    // Per-instance, resolved in Awake: a static initializer runs once per process and captured the
+    // FIRST world's uid -- hosting a second world in the same session then read and wrote the
+    // first world's ledger file (offline players' bounty kills crossing worlds or vanishing).
+    private string _ledgerSaveFile;
 
     public void Awake()
     {
         Directory.CreateDirectory(_ledgerSaveDirectory);
+        _ledgerSaveFile = Path.Combine(_ledgerSaveDirectory, $"{LedgerIdentifier}.{ZNet.m_world.m_uid}.dat");
         _instance = this;
     }
 
@@ -37,20 +41,38 @@ public class BountyManagmentSystem : MonoBehaviour
     {
         SaveTempLedger();
 
-        var fs = File.Create(_ledgerSaveFile);
-
-        var data = JsonConvert.SerializeObject(_tempBountyLedger);
-        using (var sr = new StreamWriter(fs))
+        // Guarded: this runs from a ZNet.SaveWorld prefix, and an IO exception (file locked by
+        // AV/backup, disk full) used to propagate out of the prefix and abort the vanilla world
+        // save itself.
+        try
         {
-            sr.Write(data);
+            var data = JsonConvert.SerializeObject(_tempBountyLedger);
+            using (var fs = File.Create(_ledgerSaveFile))
+            using (var sr = new StreamWriter(fs))
+            {
+                sr.Write(data);
+            }
         }
-        fs.Close();
+        catch (Exception e)
+        {
+            EpicLoot.LogErrorForce($"Could not save the bounty ledger ({_ledgerSaveFile}): {e.Message}");
+        }
     }
 
     private void LoadBounties()
     {
-        if (!Common.Utils.IsServer() || ZoneSystem.instance == null)
+        if (!Common.Utils.IsServer())
         {
+            return;
+        }
+
+        if (ZoneSystem.instance == null)
+        {
+            // Unity gives no ordering guarantee between this component's Start and ZoneSystem's
+            // Awake. Bailing permanently left the ledger null for the whole session (every offline
+            // player's bounty kill silently dropped) -- retry next frame instead.
+            EpicLoot.LogWarning("ZoneSystem not ready when loading the bounty ledger; retrying.");
+            Invoke(nameof(LoadBounties), 0f);
             return;
         }
 
@@ -58,26 +80,31 @@ public class BountyManagmentSystem : MonoBehaviour
 
         if (File.Exists(_ledgerSaveFile))
         {
-            var bf = new BinaryFormatter();
-            var fs = File.Open(_ledgerSaveFile, FileMode.Open);
-
-            using (var sr = new StreamReader(fs))
+            try
             {
-                try
+                var bf = new BinaryFormatter();
+                using (var fs = File.Open(_ledgerSaveFile, FileMode.Open))
+                using (var sr = new StreamReader(fs))
                 {
-                    // Using new file format V0.9.28
-                    var data = sr.ReadToEnd();
-                    _bountyLedger = JsonConvert.DeserializeObject<BountyLedger>(data);
-                }
-                catch
-{
-                    // Load from original file format V0.9.27
-                    fs.Position = 0;
-                    _bountyLedger = bf.Deserialize(fs) as BountyLedger;
+                    try
+                    {
+                        // Using new file format V0.9.28
+                        var data = sr.ReadToEnd();
+                        _bountyLedger = JsonConvert.DeserializeObject<BountyLedger>(data);
+                    }
+                    catch
+                    {
+                        // Load from original file format V0.9.27
+                        fs.Position = 0;
+                        _bountyLedger = bf.Deserialize(fs) as BountyLedger;
+                    }
                 }
             }
-
-            fs.Close();
+            catch (Exception e)
+            {
+                EpicLoot.LogErrorForce($"Could not read the bounty ledger ({_ledgerSaveFile}): {e.Message}. A new ledger will be started.");
+                _bountyLedger = null;
+            }
         }
         else
         {

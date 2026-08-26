@@ -6,7 +6,7 @@ using UnityEngine;
 namespace EpicLoot.MagicItemEffects.Shards {
     // Detonates a poison cloud on enemies the local player kills
     public static class BonemassCorpseRot {
-        private const float Cooldown = 15f;
+        private const float Cooldown = 5f;
         private const float CorpseRadius = 2f;
         private const float PoisonPerTier = 20f; // 20 poison damage per point of shard value (5..25 -> 100..500)
         private const string ExplosionFx = "vfx_BombBlob_explode_poison";
@@ -35,11 +35,17 @@ namespace EpicLoot.MagicItemEffects.Shards {
                     return;
                 }
 
+                // Rate limit: the cooldown indicator doubles as the gate (mirrors ElderForestsAid).
+                // It was wired up but never engaged, so every kill detonated with no cooldown.
+                if (player.GetSEMan().HaveStatusEffect(CooldownHash)) {
+                    return;
+                }
+
                 var center = __instance.GetCenterPoint();
                 SpawnExplosionFx(__instance.transform.position);
                 DamageInRadius.DamageEnemiesInRadius(player, center, CorpseRadius,
                     new HitData.DamageTypes { m_poison = value * PoisonPerTier });
-                //ShowCooldown(player);
+                ShowCooldown(player);
             }
         }
 

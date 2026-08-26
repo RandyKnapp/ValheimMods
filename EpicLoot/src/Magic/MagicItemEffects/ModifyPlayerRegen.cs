@@ -122,7 +122,9 @@ public static class ModifyPlayerRegen
         var regenValue = 0f;
         ModifyWithLowHealth.Apply(player, magicEffect, effect =>
         {
-            regenValue = player.GetTotalActiveMagicEffectValue(effect, 0.01f);
+            // += : Apply invokes this twice at low health (base effect, then the ...LowHealth
+            // variant); '=' made the second call overwrite the base contribution.
+            regenValue += player.GetTotalActiveMagicEffectValue(effect, 0.01f);
         });
 
         return regenValue;

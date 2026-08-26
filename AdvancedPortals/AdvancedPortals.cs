@@ -167,7 +167,9 @@ namespace AdvancedPortals
                 {
                     _harmony.Patch(handlePortalClickMethod, new HarmonyMethod(
                         typeof(Teleport_Patch), nameof(Teleport_Patch.TargetPortal_HandlePortalClick_Prefix)));
-                    _harmony.Patch(handlePortalClickMethod, null, new HarmonyMethod(
+                    // Finalizer, not postfix: must clear CurrentAdvancedPortal even when the click
+                    // handler throws, or the stuck static applies this portal's allow-list globally.
+                    _harmony.Patch(handlePortalClickMethod, finalizer: new HarmonyMethod(
                         typeof(Teleport_Patch), nameof(Teleport_Patch.Generic_Postfix)));
                 }
             }

@@ -9,7 +9,13 @@ namespace EpicLoot.Adventure.Feature
     {
         private readonly MerchantPanel _merchantPanel;
 
-        private static bool _generatingBounty = false; // Flag to prevent spam accepting multiple bounties
+        // Flag to prevent spam accepting multiple bounties. Instance state with a time failsafe:
+        // it used to be a static cleared only inside the accept coroutine's callback -- if the
+        // hosting Player died mid-search the coroutine died with it, and the latched static left
+        // the Accept button silently dead for the rest of the process.
+        private bool _generatingBounty = false;
+        private float _generatingBountyStarted;
+        private const float GeneratingBountyTimeout = 30f;
 
         public AvailableBountiesListPanel(MerchantPanel merchantPanel, BountyListElement elementPrefab)
             : base(
@@ -54,9 +60,12 @@ namespace EpicLoot.Adventure.Feature
             }
 
             var bounty = GetSelectedItem();
-            if (!_generatingBounty && bounty != null && bounty.BountyInfo.State == BountyState.Available)
+            bool latchExpired = _generatingBounty &&
+                Time.unscaledTime - _generatingBountyStarted > GeneratingBountyTimeout;
+            if ((!_generatingBounty || latchExpired) && bounty != null && bounty.BountyInfo.State == BountyState.Available)
             {
                 _generatingBounty = true;
+                _generatingBountyStarted = Time.unscaledTime;
                 EpicLoot.Log("Trying to accept bounty...");
                 player.StartCoroutine(AdventureDataManager.Bounties.AcceptBounty(
                     player, bounty.BountyInfo, (success, position) =>
