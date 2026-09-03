@@ -1,4 +1,4 @@
-﻿# Equipment and Quick Slots
+# Equipment and Quick Slots
 ##### by RandyKnapp, rewritten by MidnightsFX
 
 Version 3.0 is a complete rewrite.
