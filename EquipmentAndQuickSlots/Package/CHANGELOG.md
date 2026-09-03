@@ -1,3 +1,7 @@
+**3.0.2**
+* Better Archery compatibility
+
+
 **3.0.1**
 * Drag-to-unequip works again, with the unequip progress bar
 * **Compatibility with mods that make the player inventory scrollable** (Valheim Plus with its

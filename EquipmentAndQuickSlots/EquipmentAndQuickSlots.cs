@@ -20,7 +20,7 @@ namespace EquipmentAndQuickSlots {
     [BepInIncompatibility("com.bruce.valheim.comfyquickslots")]
     public class EquipmentAndQuickSlots : BaseUnityPlugin {
         public const string PluginId = "randyknapp.mods.equipmentandquickslots";
-        public const string Version = "3.0.1";
+        public const string Version = "3.0.2";
 
         public static Sprite PaperdollMale;
         public static Sprite PaperdollFemale;
