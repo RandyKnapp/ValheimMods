@@ -1,23 +1,39 @@
-﻿using HarmonyLib;
+﻿using EpicLoot.src.Magic.MagicItemEffects.Helpers;
+using HarmonyLib;
 using JetBrains.Annotations;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects.Shards {
 
     // Storm based adrenaline pulse. Grants a flat amount of adrenaline every 10 seconds while in a storm and suppresses adrenaline decay
     public static class StormFury {
-        internal const float TickInterval = 10f;  // seconds between adrenaline pulses
+        // Seconds between adrenaline pulses. Tunable as "TickInterval" in this effect's Config block in
+        // config/shardstones.json; StormFuryPulse re-arms its InvokeRepeating when this changes.
+        public const float DefaultTickInterval = 10f;
+
+        private const string TickIntervalKey = "TickInterval";
+
+        public static readonly Dictionary<string, float> DefaultConfig = new Dictionary<string, float> {
+            { TickIntervalKey, DefaultTickInterval },
+        };
+
+        // Floored well above zero: InvokeRepeating with a tiny period would pulse every frame.
+        internal static float GetTickInterval() {
+            return Mathf.Max(0.5f,
+                EffectConfig.Get(MagicEffectType.StormFury, TickIntervalKey, DefaultTickInterval));
+        }
 
         // What m_adrenalineDegenTimer is held at while suppression is active. Anything above a frame's dt
         // stops the degen branch; keeping it small also caps the leftover grace once the storm ends (or the
         // shard comes off) at ~1 second.
         private const float DegenPin = 1f;
 
-        // Tooltip: "+{0} Adrenaline every {1}s in Storms, No Adrenaline Decay" -- {1} is the interval const
-        // so the shown number stays in sync with the code rather than a baked-in literal.
+        // Tooltip: "+{0} Adrenaline every {1}s in Storms, No Adrenaline Decay" -- {1} is the configured
+        // interval, so the shown number follows a retune instead of staying at the baked-in default.
         public static void RegisterDisplayValues() {
             MagicItem.RegisterDisplayValues(MagicEffectType.StormFury,
-                value => new object[] { value, TickInterval });
+                value => new object[] { value, GetTickInterval() });
         }
 
         // One payout tick. Called by StormFuryPulse only after it has confirmed a storm and that the local
@@ -74,14 +90,30 @@ namespace EpicLoot.MagicItemEffects.Shards {
             go.AddComponent<StormFuryPulse>();
         }
 
+        // The period InvokeRepeating was last armed with. InvokeRepeating fixes its period at scheduling
+        // time, so a retuned TickInterval only takes hold once the invoke is cancelled and re-armed.
+        private float _scheduledInterval;
+
         [UsedImplicitly]
         private void Awake() {
             instance = this;
-            InvokeRepeating(nameof(Pulse), StormFury.TickInterval, StormFury.TickInterval);
+            Reschedule();
+        }
+
+        private void Reschedule() {
+            _scheduledInterval = StormFury.GetTickInterval();
+            CancelInvoke(nameof(Pulse));
+            InvokeRepeating(nameof(Pulse), _scheduledInterval, _scheduledInterval);
         }
 
         [UsedImplicitly]
         private void Pulse() {
+            // Cheapest place guaranteed to run after a config reload, and it costs one float compare on a
+            // call that already only happens every few seconds.
+            if (!Mathf.Approximately(_scheduledInterval, StormFury.GetTickInterval())) {
+                Reschedule();
+            }
+
             var player = Player.m_localPlayer;
             if (player == null || !StormRider.IsStorm()) {
                 return;

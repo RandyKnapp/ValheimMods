@@ -9,8 +9,15 @@ namespace EpicLoot.MagicItemEffects.Shards {
                 return;
             }
 
-            staminaMultiplier += player.GetTotalActiveMagicEffectValue(
-                MagicEffectType.StaminaRegenBonusFromPlayerWeight, 0.01f) * PenaltyScaling.WeightFactor(player);
+            var pct = player.GetTotalActiveMagicEffectValue(
+                MagicEffectType.StaminaRegenBonusFromPlayerWeight, 0.01f);
+            if (pct == 0f) {
+                return;
+            }
+
+            // WeightFactor calls GetMaxCarryWeight, which re-enters the whole ModifyMaxCarryWeight
+            // handler chain. ModifyStaminaRegen runs every tick, so it stays behind the memoized lookup.
+            staminaMultiplier += pct * PenaltyScaling.WeightFactor(player);
         }
     }
 }

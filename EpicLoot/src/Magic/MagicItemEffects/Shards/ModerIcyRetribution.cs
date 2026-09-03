@@ -1,13 +1,27 @@
 ﻿using EpicLoot.src.Magic.MagicItemEffects.Helpers;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects.Shards {
     // Provides a reactive frost nova when the player takes damage, with a scaling damage and cooldown based on rarity.
     public static class ModerIcyRetribution {
-        private const float NovaRadius = 8f;
-        private const float FrostPerTier = 8f;   // frost damage per point of value (15..25 -> 120..200)
-        private const float BaseCooldown = 140f;      // cooldown at Epic (the shard's rarity floor)
-        private const float CooldownPerRarity = 20f;  // added per rarity above Epic
+        // All tunable in this effect's Config block in config/shardstones.json, under these key names.
+        public const float DefaultRadius = 8f;
+        public const float DefaultFrostPerTier = 8f;       // frost damage per point of value (15..25 -> 120..200)
+        public const float DefaultBaseCooldown = 140f;     // cooldown at Epic (the shard's rarity floor)
+        public const float DefaultCooldownPerRarity = 20f; // added per rarity above Epic
+
+        private const string RadiusKey = "Radius";
+        private const string FrostPerTierKey = "FrostPerTier";
+        private const string BaseCooldownKey = "BaseCooldown";
+        private const string CooldownPerRarityKey = "CooldownPerRarity";
+
+        public static readonly Dictionary<string, float> DefaultConfig = new Dictionary<string, float> {
+            { RadiusKey, DefaultRadius },
+            { FrostPerTierKey, DefaultFrostPerTier },
+            { BaseCooldownKey, DefaultBaseCooldown },
+            { CooldownPerRarityKey, DefaultCooldownPerRarity },
+        };
 
         // Visual: our own trimmed copy of the fenring's ice nova, built and cached by FrostNovaFx so the
         // fenring's full-length nova is left untouched. Played at the helper's default speed.
@@ -41,16 +55,25 @@ namespace EpicLoot.MagicItemEffects.Shards {
             Vector3 playerNovaPosition = player.transform.position;
             playerNovaPosition.y += 0.6f;
             FrostNovaFx.Spawn(NovaTemplateName, playerNovaPosition);
-            DamageInRadius.DamageEnemiesInRadius(player, player.GetCenterPoint(), NovaRadius,
-                new HitData.DamageTypes { m_frost = value * FrostPerTier });
+            DamageInRadius.DamageEnemiesInRadius(player, player.GetCenterPoint(),
+                EffectConfig.Get(MagicEffectType.IcyRetribution, RadiusKey, DefaultRadius),
+                new HitData.DamageTypes {
+                    m_frost = value * EffectConfig.Get(MagicEffectType.IcyRetribution,
+                        FrostPerTierKey, DefaultFrostPerTier)
+                });
             ShowCooldown(player, GetCooldown(player));
         }
 
-        // Cooldown length scales with the highest rarity among the equipped IcyRetribution shards: 140s at
-        // Epic, +20s for each rarity above it (Legendary 160s, Mythic 180s).
+        // Cooldown length scales with the highest rarity among the equipped IcyRetribution shards: by default
+        // 140s at Epic, +20s for each rarity above it (Legendary 160s, Mythic 180s). Floored just above zero:
+        // a ttl of 0 is "no timeout" to vanilla, which would gate the shard permanently.
         private static float GetCooldown(Player player) {
             var stepsAboveEpic = Mathf.Max(0, (int)GetEffectRarity(player) - (int)ItemRarity.Epic);
-            return BaseCooldown + stepsAboveEpic * CooldownPerRarity;
+            var baseCooldown = EffectConfig.Get(MagicEffectType.IcyRetribution,
+                BaseCooldownKey, DefaultBaseCooldown);
+            var perRarity = EffectConfig.Get(MagicEffectType.IcyRetribution,
+                CooldownPerRarityKey, DefaultCooldownPerRarity);
+            return Mathf.Max(0.1f, baseCooldown + stepsAboveEpic * perRarity);
         }
 
         // Highest source rarity among the socketed IcyRetribution effects on the player's equipped magic
@@ -109,7 +132,7 @@ namespace EpicLoot.MagicItemEffects.Shards {
             se.name = CooldownName;
             se.m_name = "$mod_epicloot_se_icyretribution";
             se.m_icon = icon;
-            se.m_ttl = BaseCooldown;   // overwritten per-proc by ShowCooldown with the rarity-scaled cooldown
+            se.m_ttl = DefaultBaseCooldown;   // overwritten per-proc by ShowCooldown with the rarity-scaled cooldown
             se.m_cooldownIcon = true;
             _cooldownIndicator = se;
             return _cooldownIndicator;

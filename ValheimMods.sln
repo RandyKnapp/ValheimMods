@@ -74,11 +74,11 @@ Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Common\Common.projitems*{08ed5bc9-9e0c-4343-90a5-92497be6e216}*SharedItemsImports = 5
 		Common\Common.projitems*{09bcfe16-0d69-481c-98c6-1090d78e3127}*SharedItemsImports = 13
-		Common\Common.projitems*{0ddde55c-5daf-4b53-b5e2-83b5c44c4682}*SharedItemsImports = 4
-		Common\Common.projitems*{6c679b7e-9f39-4df2-9f8a-717e68fbf0e3}*SharedItemsImports = 4
-		Common\Common.projitems*{70b6ed26-2afe-4e7a-a40f-cf187f14fca0}*SharedItemsImports = 4
+		Common\Common.projitems*{0ddde55c-5daf-4b53-b5e2-83b5c44c4682}*SharedItemsImports = 5
+		Common\Common.projitems*{6c679b7e-9f39-4df2-9f8a-717e68fbf0e3}*SharedItemsImports = 5
+		Common\Common.projitems*{70b6ed26-2afe-4e7a-a40f-cf187f14fca0}*SharedItemsImports = 5
 		Common\Common.projitems*{963cf4f8-ba02-49fc-8884-97e781e6bc18}*SharedItemsImports = 5
-		Common\Common.projitems*{bb4dfa8b-72b0-4a9b-b9a0-5af5595aa309}*SharedItemsImports = 4
-		Common\Common.projitems*{cbed8160-747f-4022-98ce-61a8ee201652}*SharedItemsImports = 4
+		Common\Common.projitems*{bb4dfa8b-72b0-4a9b-b9a0-5af5595aa309}*SharedItemsImports = 5
+		Common\Common.projitems*{cbed8160-747f-4022-98ce-61a8ee201652}*SharedItemsImports = 5
 	EndGlobalSection
 EndGlobal

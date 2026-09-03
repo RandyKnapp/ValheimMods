@@ -37,6 +37,16 @@ copy `EquipmentAndQuickSlots.dll` into the `BepInEx/plugins` folder.
 * `eaqs_restorebackup` (cheat) — restores the automatic slot backup into free slots
 * `breakequipment`, `dropall` (cheat) — testing helpers
 
+### Compatibility
+
+* **BetterUI** works out of the box. While BetterUI's HUD editing is enabled (its default), BetterUI
+  positions the quick slot bar: move it with BetterUI's HUD edit key (F7 by default) and BetterUI
+  remembers where you put it. `Quick Slots Anchor` / `Quick Slots Position` in this mod's config only
+  decide where the bar starts. If the bar sits somewhere odd after updating from 3.0.0, press F7 and
+  drag it back, or reset BetterUI's `uiData` setting to `none`.
+* Other slot mods — AzuExtendedPlayerInventory, ExtendedPlayerInventory, ExtraSlots, ComfyQuickSlots —
+  are declared incompatible; BepInEx will not load this mod next to them.
+
 ### Notes
 
 The following things WILL NOT BE ADDED OR CONSIDERED.

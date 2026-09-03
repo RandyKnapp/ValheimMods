@@ -1,3 +1,28 @@
+**0.13.4**
+
+Changes:
+* Shardstone effect tuning is now exposed to config
+    * New `Global` block in `shardstones.json` for tunables shared by several shards
+* Tempering costs are configurable per rarity through a `Tempering.CostsByRarity` block in `adventuredata.json`. A rarity left out keeps its built-in default
+* The same effect declared on several shard slots with disagreeing `Config` blocks is reported rather than silently resolved
+
+Bugfixes:
+* Editing `shardstones.json` live, now properly updates effects
+* Slow is clamped to a floor of 10%
+* A tempering cost naming an item that cannot be resolved is warned about once and skipped
+* Fixes Adrenaline Surge's "Seconds per 1%" tooltip not localizing
+* A patch edit now reloads the rebuilt configs into the running game
+* The patch file watcher now covers subdirectories, so patches shipped in `patches/<ModName>/` are watched
+* Patch files that changed but rebuilt nothing now say so in the log instead of failing silently
+* A baseconfig file that deserializes to null is rejected and the currently loaded config is kept
+
+Performance:
+* The movement-penalty measurement is cached per physics step
+* Magic effect value lookups hold on to the last player's table and no longer allocate a delegate per call on the per-tick paths
+* Every shard effect sitting on a hot vanilla method bails on a zero effect value before doing any other work
+* The comparison tooltip only walks the player's equipment while Ctrl is actually held
+
+
 **0.13.3**
 
 New Content:

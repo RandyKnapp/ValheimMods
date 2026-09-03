@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using EpicLoot.src.Magic.MagicItemEffects.Helpers;
+using HarmonyLib;
 using JetBrains.Annotations;
 using System.Collections.Generic;
 using UnityEngine;
@@ -20,8 +21,17 @@ namespace EpicLoot.MagicItemEffects.Shards
         // Config keys that are tunables rather than loot prefabs. Matched explicitly so a future tunable
         // that happens to collide with a prefab name can never be silently rolled as treasure.
         public const string TripleChanceKey = "TripleChance";
+        public const string RollBaseKey = "RollBase";
+        public const string RollPerValueKey = "RollPerValue";
+        public const string RollCurveKey = "RollCurve";
+        public const string FloorFractionKey = "FloorFraction";
 
-        private static readonly HashSet<string> ReservedConfigKeys = new HashSet<string> { TripleChanceKey };
+        // Every key in this set is skipped by ResolveTable. Anything NOT listed here is treated as a loot
+        // prefab name, so a new tunable that is left out would be looked up in the ObjectDB on every proc
+        // and, if a prefab happened to share its name, rolled as treasure.
+        private static readonly HashSet<string> ReservedConfigKeys = new HashSet<string> {
+            TripleChanceKey, RollBaseKey, RollPerValueKey, RollCurveKey, FloorFractionKey,
+        };
 
         // Percent of successful multi-catch procs that yield +2 fish instead of +1.
         public const float DefaultTripleChance = 20f;
@@ -32,19 +42,23 @@ namespace EpicLoot.MagicItemEffects.Shards
         //   rollMax = RollBase + value * RollPerValue   the range the roll can reach at all
         //   roll    = pow(random, RollCurve) * rollMax  biased low, so each higher tier is rarer
         //   floor   = rollMax * FloorFraction           climbs with rollMax, dropping cheap entries out
-        // Kept as consts rather than Config keys: every Config key renders as its own line in the
-        // detailed (Shift) tooltip, and the prefab list already fills it.
-        private const float RollBase = 40f;
-        private const float RollPerValue = 12f;
-        private const float RollCurve = 2f;
-        private const float FloorFraction = 0.05f;
+        public const float DefaultRollBase = 40f;
+        public const float DefaultRollPerValue = 12f;
+        public const float DefaultRollCurve = 2f;
+        public const float DefaultFloorFraction = 0.05f;
 
-        // Default Config block, registered in ShardEffectDefinitions.EffectConfigs. Prefab name -> value
-        // threshold, mirroring the Riches entry in magiceffects.json. An admin overrides the whole table
-        // by adding a "Type": "LuckWhileFishing" entry with its own Config to magiceffects.json.
+        // Default Config block, registered in ShardEffectDefinitions.EffectConfigs. The four roll-shape
+        // tunables above, plus prefab name -> value threshold, mirroring the Riches entry in
+        // magiceffects.json. The grid entry's own "Config" in shardstones.json overlays this per key, so
+        // retuning one number leaves the rest of the treasure table intact; setting an entry to 0 removes
+        // it from the table.
         public static readonly Dictionary<string, float> DefaultConfig = new Dictionary<string, float>
         {
             { TripleChanceKey, DefaultTripleChance },
+            { RollBaseKey, DefaultRollBase },
+            { RollPerValueKey, DefaultRollPerValue },
+            { RollCurveKey, DefaultRollCurve },
+            { FloorFractionKey, DefaultFloorFraction },
             { "Flint", 5 },
             { "Coins", 15 },
             { "Amber", 40 },
@@ -126,9 +140,15 @@ namespace EpicLoot.MagicItemEffects.Shards
                 return false;
             }
 
-            var rollMax = RollBase + value * RollPerValue;
-            var roll = Mathf.Pow(Random.value, RollCurve) * rollMax;
-            var floor = rollMax * FloorFraction;
+            // Curve floored above zero: pow(x, 0) is 1, which would pin every roll to the top of the range.
+            var rollMax = EffectConfig.Get(MagicEffectType.LuckWhileFishing, RollBaseKey, DefaultRollBase)
+                + value * EffectConfig.Get(MagicEffectType.LuckWhileFishing,
+                    RollPerValueKey, DefaultRollPerValue);
+            var curve = Mathf.Max(0.01f, EffectConfig.Get(MagicEffectType.LuckWhileFishing,
+                RollCurveKey, DefaultRollCurve));
+            var roll = Mathf.Pow(Random.value, curve) * rollMax;
+            var floor = rollMax * EffectConfig.Get(MagicEffectType.LuckWhileFishing,
+                FloorFractionKey, DefaultFloorFraction);
 
             // Table is ascending by threshold: walk up keeping the last affordable entry that the floor
             // still allows, and remember the cheapest allowed entry as the fallback.

@@ -30,6 +30,10 @@ namespace EpicLoot.Adventure
                 Config.SecretStash.RollsPerRarity = new List<int> { 1, 1, 1, 1, 1 };
             }
 
+            // Every load path - first load, embedded-default fallback, file-watcher hot reload and the
+            // server->client RPC - routes through here, so this is the only hook tempering costs need.
+            TemperMan.ApplyConfig(Config?.Tempering);
+
             OnSetupAdventureData?.Invoke();
 
             SecretStash = new SecretStashAdventureFeature();

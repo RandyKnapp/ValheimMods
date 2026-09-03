@@ -49,7 +49,10 @@ namespace EpicLoot.MagicItemEffects
         // check must happen here; the SE itself is applied on the target's owner via the RPC below.
         public static void OnDamaged(Character __instance, HitData hit, Character attacker)
         {
+            // IsValid() (not just a null check): the target can already be dead and destroyed by the time this
+            // postfix runs -- ZNetScene.Destroy nulls the ZDO immediately, so InvokeRPC below would NRE.
             if (hit == null || __instance == null || __instance.m_nview == null
+                || !__instance.m_nview.IsValid()
                 || attacker != Player.m_localPlayer
                 || hit.m_damage.EpicLootGetTotalDamage() <= 0.0)
             {

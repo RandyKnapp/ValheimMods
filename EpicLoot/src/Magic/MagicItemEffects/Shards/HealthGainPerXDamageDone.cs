@@ -1,17 +1,33 @@
 ﻿using EpicLoot.General;
 using EpicLoot.src.Magic.MagicItemEffects.Helpers;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects.Shards {
     // Provides a heal to the player for every X damage dealt, cumulative across hits
     public static class HealthGainPerXDamageDone {
-        // Threshold of damage dealt before the player is healed.
-        private const float DamagePerTrigger = 200f;
+        // Threshold of damage dealt before the player is healed. Tunable as "DamagePerTrigger" in this
+        // effect's Config block in config/shardstones.json.
+        public const float DefaultDamagePerTrigger = 200f;
 
-        // Tooltip: "Heal {0} per {1} Damage Dealt" -- {1} is the DamagePerTrigger const so the shown
-        // threshold stays in sync with the code rather than a baked-in literal.
+        private const string DamagePerTriggerKey = "DamagePerTrigger";
+
+        public static readonly Dictionary<string, float> DefaultConfig = new Dictionary<string, float> {
+            { DamagePerTriggerKey, DefaultDamagePerTrigger },
+        };
+
+        // Floored at 1 because the payout divides by this: a configured 0 would turn a single hit into an
+        // unbounded number of triggers.
+        private static float GetDamagePerTrigger() {
+            return Mathf.Max(1f, EffectConfig.Get(MagicEffectType.HealthGainPerXDamageDone,
+                DamagePerTriggerKey, DefaultDamagePerTrigger));
+        }
+
+        // Tooltip: "Heal {0} per {1} Damage Dealt" -- {1} is the configured threshold, so the shown number
+        // follows a retune instead of staying at the baked-in default.
         public static void RegisterDisplayValues() {
             MagicItem.RegisterDisplayValues(MagicEffectType.HealthGainPerXDamageDone,
-                value => new object[] { value, DamagePerTrigger });
+                value => new object[] { value, GetDamagePerTrigger() });
         }
 
         // Cumulative damage the local player has dealt with the effect active but not yet paid out as a
@@ -36,13 +52,14 @@ namespace EpicLoot.MagicItemEffects.Shards {
                 return;
             }
 
+            var damagePerTrigger = GetDamagePerTrigger();
             _accumulatedDamage += hit.m_damage.EpicLootGetTotalDamage();
-            if (_accumulatedDamage < DamagePerTrigger) {
+            if (_accumulatedDamage < damagePerTrigger) {
                 return;
             }
 
-            int triggers = (int)(_accumulatedDamage / DamagePerTrigger);
-            _accumulatedDamage -= triggers * DamagePerTrigger;
+            int triggers = (int)(_accumulatedDamage / damagePerTrigger);
+            _accumulatedDamage -= triggers * damagePerTrigger;
             player.Heal(triggers * healthPerTrigger);
         }
     }

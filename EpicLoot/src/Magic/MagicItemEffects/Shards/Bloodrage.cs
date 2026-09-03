@@ -1,5 +1,6 @@
 using EpicLoot.General;
 using EpicLoot.src.Magic.MagicItemEffects.Helpers;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects.Shards {
@@ -10,8 +11,18 @@ namespace EpicLoot.MagicItemEffects.Shards {
     // Mythic (5) tops out at +25% damage. The bonus is applied by SE_Bloodrage's own ModifyAttack
     // override, so vanilla drives it off the live stack count on every swing.
     public static class Bloodrage {
+        // How many hits taken the rage may stack to, and how long a stack survives without a refresh.
+        // Tunable as "MaxStacks" and "BuffDuration" in this effect's Config block in config/shardstones.json.
         public const int DefaultMaxStacks = 5;
-        private const float BuffDuration = 10f; // seconds the buff lasts / is refreshed to on each hit taken
+        public const float DefaultBuffDuration = 10f;
+
+        private const string MaxStacksKey = "MaxStacks";
+        private const string BuffDurationKey = "BuffDuration";
+
+        public static readonly Dictionary<string, float> DefaultConfig = new Dictionary<string, float> {
+            { MaxStacksKey, DefaultMaxStacks },
+            { BuffDurationKey, DefaultBuffDuration },
+        };
 
         private const string BuffName = "EL_Bloodrage";
         private static readonly int BuffHash = BuffName.GetStableHashCode();
@@ -52,6 +63,7 @@ namespace EpicLoot.MagicItemEffects.Shards {
             }
 
             var maxStacks = GetMaxStacks();
+            var duration = GetBuffDuration();
             var seMan = Player.m_localPlayer.GetSEMan();
 
             // Re-proc while the buff is still up: add a stack (capped), restamp the per-stack bonus (the
@@ -60,6 +72,7 @@ namespace EpicLoot.MagicItemEffects.Shards {
                 existing.Stacks = Mathf.Min(existing.Stacks + 1, maxStacks);
                 existing.MaxStacks = maxStacks;
                 existing.DamagePerStack = perStack;
+                existing.m_ttl = duration; // restamped so a retuned duration reaches a buff already running
                 existing.ResetTime();
                 return;
             }
@@ -68,20 +81,20 @@ namespace EpicLoot.MagicItemEffects.Shards {
                 added.Stacks = 1;
                 added.MaxStacks = maxStacks;
                 added.DamagePerStack = perStack;
-                added.m_ttl = BuffDuration;
+                added.m_ttl = duration;
                 added.ResetTime();
             }
         }
 
-        // Max stacks come from the Bloodrage magic effect's Config block ("MaxStacks", see
-        // ShardEffectDefinitions), defaulting to DefaultMaxStacks when unset. Clamped to at least 1 so a
-        // misconfiguration can't disable the buff.
+        // Clamped to at least 1 so a misconfiguration can't disable the buff outright.
         private static int GetMaxStacks() {
-            var cfg = MagicItemEffectDefinitions.GetEffectConfig(MagicEffectType.Bloodrage);
-            if (cfg != null && cfg.TryGetValue("MaxStacks", out var raw)) {
-                return Mathf.Max(1, Mathf.RoundToInt(raw));
-            }
-            return DefaultMaxStacks;
+            return EffectConfig.GetIntAtLeast(MagicEffectType.Bloodrage, MaxStacksKey, DefaultMaxStacks, 1);
+        }
+
+        // Floored just above zero: a ttl of 0 is "no timeout" to vanilla, which would make the rage permanent.
+        private static float GetBuffDuration() {
+            return Mathf.Max(0.1f,
+                EffectConfig.Get(MagicEffectType.Bloodrage, BuffDurationKey, DefaultBuffDuration));
         }
 
         // Lazily builds the buff prototype. Runs on a hit taken, so the asset bundle is loaded. A null
@@ -106,7 +119,7 @@ namespace EpicLoot.MagicItemEffects.Shards {
             se.name = BuffName;
             se.m_name = "$mod_epicloot_se_bloodrage";
             se.m_icon = icon;
-            se.m_ttl = BuffDuration;
+            se.m_ttl = GetBuffDuration(); // restamped on every proc by ApplyOrStack
             _buffPrototype = se;
             return _buffPrototype;
         }

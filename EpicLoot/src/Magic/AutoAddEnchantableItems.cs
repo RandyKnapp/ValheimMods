@@ -51,6 +51,13 @@ namespace EpicLoot.Magic
         // scan -- and rewrite iteminfo/loottables/adventuredata on disk -- on every world join.
         public static readonly Action OnMapDataLoadedHandler = () => CheckAndAddAllEnchantableItems();
 
+        /// <summary>
+        /// The baseconfig files this pass writes back out. A caller that needs the live config to
+        /// match disk without waiting on the file watchers reloads exactly these.
+        /// </summary>
+        public static readonly string[] RewrittenConfigFiles =
+            ["adventuredata.json", "iteminfo.json", "loottables.json"];
+
         public static void CheckAndAddAllEnchantableItems(bool deregister = true)
         {
             if (deregister)

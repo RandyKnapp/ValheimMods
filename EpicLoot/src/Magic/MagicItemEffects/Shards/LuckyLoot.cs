@@ -34,24 +34,47 @@ namespace EpicLoot.MagicItemEffects.Shards {
         public const float DefaultBonusRollsMin = 1f;
         public const float DefaultBonusRollsMax = 6f;
 
+        // Ceiling on the derived multiplier, so an admin who sets the chance to 50% doesn't get a 26x
+        // drop. The shipped ramp (2/4/6/8/10) tops out at 6x, well inside this.
+        public const int DefaultMaxMultiplier = 10;
+        // Vanilla's own per-entry cap (CharacterDrop.GenerateDropList clamps to this before we run).
+        // CharacterDrop.DropItems instantiates one networked GameObject *per unit* -- it does not stack --
+        // so multiplying past vanilla's own ceiling is how one kill turns into four figures of ItemDrops.
+        // Raising it is the fastest way to make a single kill spawn enough objects to stall the server.
+        public const int DefaultMaxUnitsPerEntry = 100;
+        // Belt and braces for creatures (or mods) with many drop entries.
+        public const int DefaultMaxAddedUnitsPerDeath = 300;
+
         private const string BonusRollsMinKey = "BonusRollsMin";
         private const string BonusRollsMaxKey = "BonusRollsMax";
+        private const string MaxMultiplierKey = "MaxMultiplier";
+        private const string MaxUnitsPerEntryKey = "MaxUnitsPerEntry";
+        private const string MaxAddedUnitsPerDeathKey = "MaxAddedUnitsPerDeath";
 
         public static readonly Dictionary<string, float> DefaultConfig = new Dictionary<string, float>
         {
             { BonusRollsMinKey, DefaultBonusRollsMin },
             { BonusRollsMaxKey, DefaultBonusRollsMax },
+            { MaxMultiplierKey, DefaultMaxMultiplier },
+            { MaxUnitsPerEntryKey, DefaultMaxUnitsPerEntry },
+            { MaxAddedUnitsPerDeathKey, DefaultMaxAddedUnitsPerDeath },
         };
 
-        // Ceiling on the derived multiplier, so an admin who sets the chance to 50% doesn't get a 26x
-        // drop. The shipped ramp (2/4/6/8/10) tops out at 6x, well inside this.
-        private const int MaxMultiplier = 10;
-        // Vanilla's own per-entry cap (CharacterDrop.GenerateDropList clamps to this before we run).
-        // CharacterDrop.DropItems instantiates one networked GameObject *per unit* -- it does not stack --
-        // so multiplying past vanilla's own ceiling is how one kill turns into four figures of ItemDrops.
-        private const int MaxUnitsPerEntry = 100;
-        // Belt and braces for creatures (or mods) with many drop entries.
-        private const int MaxAddedUnitsPerDeath = 300;
+        // All three floored at 1: a cap of zero would either delete the drop list or make the proc inert,
+        // neither of which is a sane tuning outcome.
+        private static int GetMaxMultiplier() {
+            return Mathf.Max(1, Mathf.RoundToInt(GetConfigValue(MaxMultiplierKey, DefaultMaxMultiplier)));
+        }
+
+        private static int GetMaxUnitsPerEntry() {
+            return Mathf.Max(1, Mathf.RoundToInt(GetConfigValue(MaxUnitsPerEntryKey, DefaultMaxUnitsPerEntry)));
+        }
+
+        private static int GetMaxAddedUnitsPerDeath() {
+            return Mathf.Max(1,
+                Mathf.RoundToInt(GetConfigValue(MaxAddedUnitsPerDeathKey, DefaultMaxAddedUnitsPerDeath)));
+        }
+
         // Matches Riches. The shard owner has to be in the area for the kill to count.
         private const float PlayerScanRange = 100f;
         // The latch only has to survive GenerateDropList -> Ragdoll.Setup, which is the same call stack.
@@ -82,7 +105,7 @@ namespace EpicLoot.MagicItemEffects.Shards {
         // with 1f and 2f and treats any slot that doesn't change as a constant, so a floor of 2 would
         // freeze {1} in the generic tooltip.
         private static int Multiplier(float value) {
-            return Mathf.Clamp(1 + Mathf.RoundToInt(value * 0.5f), 1, MaxMultiplier);
+            return Mathf.Clamp(1 + Mathf.RoundToInt(value * 0.5f), 1, GetMaxMultiplier());
         }
 
         // The creature's owner runs this, and on a dedicated server that machine has no local player at
@@ -163,7 +186,7 @@ namespace EpicLoot.MagicItemEffects.Shards {
 
             var added = 0;
             for (var i = 0; i < dropList.Count; i++) {
-                if (added >= MaxAddedUnitsPerDeath) {
+                if (added >= GetMaxAddedUnitsPerDeath()) {
                     break;
                 }
 
@@ -173,7 +196,7 @@ namespace EpicLoot.MagicItemEffects.Shards {
                 }
 
                 var amount = dropList[i].Value;
-                var newAmount = Mathf.Min(amount * multiplier, MaxUnitsPerEntry);
+                var newAmount = Mathf.Min(amount * multiplier, GetMaxUnitsPerEntry());
                 if (newAmount > amount) {
                     added += newAmount - amount;
                     dropList[i] = new KeyValuePair<GameObject, int>(prefab, newAmount);

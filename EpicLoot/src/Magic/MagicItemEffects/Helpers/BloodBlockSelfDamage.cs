@@ -6,8 +6,22 @@ namespace EpicLoot.src.Magic.MagicItemEffects.Helpers {
     // BloodStaggerBlock). Each shard keeps its own Humanoid.UpdateBlock postfix so carrying both costs
     // blood twice, but the trigger logic lives here once: fire on the first frame of a block
     // (m_blockTimer is -1 while idle and is set to 0 on the block's first UpdateBlock pass) and charge
-    // the local player 5% of max health as untyped true damage, with the shared hit/blood fx.
+    // the local player a share of max health as untyped true damage, with the shared hit/blood fx.
     public static class BloodBlockSelfDamage {
+        // Percent of max health charged per block start. Shared by both blood block shards, so it lives
+        // in the Global block of config/shardstones.json ("BloodBlockSelfDamagePercent") rather than on
+        // either effect. A plain static field because this sits on a per-frame UpdateBlock postfix;
+        // EffectConfig.ApplyGlobalConfig refreshes it once per config load.
+        public const float DefaultSelfDamagePercent = 5f;
+        public static float SelfDamagePercent = DefaultSelfDamagePercent;
+
+        // Config setup hook, called from EffectConfig.ApplyGlobalConfig. Clamped to 0..100: a negative
+        // share would heal on block, and over 100% would one-shot the player on their first block.
+        public static void RefreshGlobalConfig() {
+            SelfDamagePercent = Mathf.Clamp(
+                EffectConfig.Global("BloodBlockSelfDamagePercent", DefaultSelfDamagePercent), 0f, 100f);
+        }
+
         private static GameObject sfx = null;
         private static GameObject vfx = null;
 
@@ -34,7 +48,8 @@ namespace EpicLoot.src.Magic.MagicItemEffects.Helpers {
             hit.SetAttacker(player); // self dmg as player. I want to trigger on hit effects.
                                      // Can scrap if its too powerful or jank. I expect this effect to go under utilized.
 
-            hit.m_damage.m_damage = (player.GetMaxHealth() / 20f); // 5% hardcoded as true damage untyped dmg doesnt run through armor or known resistances
+            // True damage: untyped damage does not run through armor or any known resistance.
+            hit.m_damage.m_damage = player.GetMaxHealth() * (SelfDamagePercent / 100f);
             hit.m_staggerMultiplier = 0f;
 
             // addtions to validate hit

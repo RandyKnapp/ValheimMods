@@ -410,12 +410,10 @@ public class TemperPanel : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
             return false;
         }
 
-        TemperRequirement[] requirements = TemperMan.GetRequirements(selectedItemElement._magicItem.Rarity);
+        // Resolved, so unresolvable prefabs are already warned about and dropped upstream.
+        TemperRequirement[] requirements = TemperMan.GetResolvedRequirements(selectedItemElement._magicItem.Rarity);
         for (int i = 0; i < requirements.Length; ++i) {
             TemperRequirement requirement = requirements[i];
-            // A missing prefab renders as an empty row in the list; treat it as unaffordable here
-            // so a broken cost config can't make tempering free.
-            if (!requirement.isValid) return false;
             int playerItemCount = player.GetInventory().CountItems(requirement.item.m_itemData.m_shared.m_name);
             if (playerItemCount < requirement.amount) return false;
         }
@@ -430,7 +428,8 @@ public class TemperPanel : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
             return false;
         }
 
-        TemperRequirement[] requirements = TemperMan.GetRequirements(selectedItemElement._magicItem.Rarity);
+        // Must be the resolved set: ToPieceRequirement() would hand ConsumeResources a null m_resItem.
+        TemperRequirement[] requirements = TemperMan.GetResolvedRequirements(selectedItemElement._magicItem.Rarity);
         Piece.Requirement[] pieceRequirements = requirements
             .Select(r => r.ToPieceRequirement())
             .ToArray();
@@ -567,7 +566,7 @@ public class TemperPanel : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         RequirementElement.elements.Clear();
 
         if (!selectedItemElement) {
-            for (int i = 0; i < 4; ++i) {
+            for (int i = 0; i < TemperMan.MaxRequirementRows; ++i) {
                 GameObject instance = UnityEngine.Object.Instantiate(requirementListPrefab, requirementListRoot);
                 instance.SetActive(true);
                 if (instance.TryGetComponent(out RequirementElement element)) {
@@ -575,10 +574,13 @@ public class TemperPanel : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
                 }
             }
         } else {
-            TemperRequirement[] requirements = TemperMan.GetRequirements(selectedItemElement._magicItem.Rarity);
-            for (int i = 0; i < requirements.Length; ++i) {
+            TemperRequirement[] requirements = TemperMan.GetResolvedRequirements(selectedItemElement._magicItem.Rarity);
+            // Display only: this list has no ScrollRect, so extra rows would spill outside the panel.
+            // HaveRequirements/ConsumeRequirements still walk the full array, so a long cost list is
+            // charged in full even though only the first few rows are shown.
+            int displayCount = Mathf.Min(requirements.Length, TemperMan.MaxRequirementRows);
+            for (int i = 0; i < displayCount; ++i) {
                 TemperRequirement requirement = requirements[i];
-                if (!requirement.isValid) continue;
                 GameObject instance = UnityEngine.Object.Instantiate(requirementListPrefab, requirementListRoot);
                 instance.SetActive(true);
                 if (instance.TryGetComponent(out RequirementElement element)) {
@@ -586,8 +588,8 @@ public class TemperPanel : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
                 }
             }
 
-            if (RequirementElement.elements.Count < 4) {
-                int difference = 4 - RequirementElement.elements.Count;
+            if (RequirementElement.elements.Count < TemperMan.MaxRequirementRows) {
+                int difference = TemperMan.MaxRequirementRows - RequirementElement.elements.Count;
                 for (int i = 0; i < difference; ++i) {
                     GameObject instance = UnityEngine.Object.Instantiate(requirementListPrefab, requirementListRoot);
                     instance.SetActive(true);

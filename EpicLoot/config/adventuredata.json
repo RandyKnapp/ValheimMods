@@ -742,5 +742,39 @@
         "$mod_epicloot_bounties_suffix_the_wicked"
       ] 
     }  
-  } 
+  },
+  "Tempering": {
+    "CostsByRarity": {
+      "Magic": [
+        { "Item": "Coins",            "Amount": 10 },
+        { "Item": "EssenceMagic",     "Amount": 10 },
+        { "Item": "ReagentMagic",     "Amount": 10 },
+        { "Item": "DustMagic",        "Amount": 10 }
+      ],
+      "Rare": [
+        { "Item": "ForestToken",      "Amount": 1  },
+        { "Item": "EssenceRare",      "Amount": 10 },
+        { "Item": "ReagentRare",      "Amount": 10 },
+        { "Item": "DustRare",         "Amount": 10 }
+      ],
+      "Epic": [
+        { "Item": "IronBountyToken",  "Amount": 1  },
+        { "Item": "EssenceEpic",      "Amount": 10 },
+        { "Item": "ReagentEpic",      "Amount": 10 },
+        { "Item": "DustEpic",         "Amount": 10 }
+      ],
+      "Legendary": [
+        { "Item": "GoldBountyToken",  "Amount": 1  },
+        { "Item": "EssenceLegendary", "Amount": 10 },
+        { "Item": "ReagentLegendary", "Amount": 10 },
+        { "Item": "DustLegendary",    "Amount": 10 }
+      ],
+      "Mythic": [
+        { "Item": "GoldBountyToken",  "Amount": 2  },
+        { "Item": "EssenceMythic",    "Amount": 10 },
+        { "Item": "ReagentMythic",    "Amount": 10 },
+        { "Item": "DustMythic",       "Amount": 10 }
+      ]
+    }
+  }
 }

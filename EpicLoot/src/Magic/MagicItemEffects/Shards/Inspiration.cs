@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using EpicLoot.MagicItemEffects.Helpers;
+using EpicLoot.src.Magic.MagicItemEffects.Helpers;
 using HarmonyLib;
 using JetBrains.Annotations;
 using UnityEngine;
@@ -24,25 +25,49 @@ namespace EpicLoot.MagicItemEffects.Shards {
         // XP faucet. Exposed as Config so it can be retuned without a rebuild.
         public const float DefaultProcChance = 0.25f;
 
+        // Skills below this level are never chosen. Level 0-1 skills are usually ones the player has
+        // barely touched by accident, and vanilla's curve makes the first two levels nearly free anyway.
+        public const float DefaultMinSkillLevel = 2f;
+        // Weight = (100 - level)^2, so level 2 weighs 9604 and level 99 weighs 1. Squared rather than
+        // linear because a linear ramp still hands ~10% of procs to skills where the grant is a rounding
+        // error; the point of the effect is to pull up whatever is lagging. Set it to 0 for a flat pick.
+        public const float DefaultLevelWeightExponent = 2f;
+        // Hard stop on the level-walk loop. Nothing should get near this -- the only way to spin is a
+        // degenerate zero-cost level requirement.
+        public const int DefaultMaxLevelUpsPerProc = 20;
+
         private const string ProcChanceKey = "ProcChance";
+        private const string MinSkillLevelKey = "MinSkillLevel";
+        private const string LevelWeightExponentKey = "LevelWeightExponent";
+        private const string MaxLevelUpsPerProcKey = "MaxLevelUpsPerProc";
 
         public static readonly Dictionary<string, float> DefaultConfig = new Dictionary<string, float>
         {
             { ProcChanceKey, DefaultProcChance },
+            { MinSkillLevelKey, DefaultMinSkillLevel },
+            { LevelWeightExponentKey, DefaultLevelWeightExponent },
+            { MaxLevelUpsPerProcKey, DefaultMaxLevelUpsPerProc },
         };
 
-        // Skills below this level are never chosen. Level 0-1 skills are usually ones the player has
-        // barely touched by accident, and vanilla's curve makes the first two levels nearly free anyway.
-        private const float MinSkillLevel = 2f;
-        // Weight = (100 - level)^2, so level 2 weighs 9604 and level 99 weighs 1. Squared rather than
-        // linear because a linear ramp still hands ~10% of procs to skills where the grant is a rounding
-        // error; the point of the effect is to pull up whatever is lagging.
-        private const float LevelWeightExponent = 2f;
-        // Vanilla's Skills.c_MaxSkillLevel (private const there).
+        private static float GetMinSkillLevel() {
+            return EffectConfig.Get(MagicEffectType.Inspiration, MinSkillLevelKey, DefaultMinSkillLevel);
+        }
+
+        // Floored at zero: a negative exponent would invert the weighting and feed the highest skills.
+        private static float GetLevelWeightExponent() {
+            return Mathf.Max(0f, EffectConfig.Get(MagicEffectType.Inspiration,
+                LevelWeightExponentKey, DefaultLevelWeightExponent));
+        }
+
+        // Floored at 1: this is a runaway-loop guard, and a value of 0 would grant nothing at all.
+        private static int GetMaxLevelUpsPerProc() {
+            return EffectConfig.GetIntAtLeast(MagicEffectType.Inspiration,
+                MaxLevelUpsPerProcKey, DefaultMaxLevelUpsPerProc, 1);
+        }
+
+        // Vanilla's Skills.c_MaxSkillLevel (private const there). Not a balance knob -- it mirrors a
+        // vanilla constant, so it stays out of the effect Config.
         private const float MaxSkillLevel = 100f;
-        // Hard stop on the level-walk loop. Nothing should get near this -- the only way to spin is a
-        // degenerate zero-cost level requirement.
-        private const int MaxLevelUpsPerProc = 20;
         // The needed/perFactor round trip can land an ULP short of the boundary and silently fail to
         // level. The overshoot is discarded by vanilla anyway, so padding it costs nothing.
         private const float LevelEpsilon = 0.001f;
@@ -101,7 +126,7 @@ namespace EpicLoot.MagicItemEffects.Shards {
             var candidates = skills.GetSkillList()
                 .Where(s => s?.m_info != null
                             && s.m_info.m_skill != SkillType.None
-                            && s.m_level >= MinSkillLevel
+                            && s.m_level >= GetMinSkillLevel()
                             && s.m_level < MaxSkillLevel)
                 .ToList();
 
@@ -110,7 +135,7 @@ namespace EpicLoot.MagicItemEffects.Shards {
             }
 
             return new WeightedRandomCollection<Skills.Skill>(candidates,
-                s => Mathf.Pow(Mathf.Max(0.01f, MaxSkillLevel - s.m_level), LevelWeightExponent)).Roll();
+                s => Mathf.Pow(Mathf.Max(0.01f, MaxSkillLevel - s.m_level), GetLevelWeightExponent())).Roll();
         }
 
         // Hands the skill `points` raw accumulator points, spread over as many RaiseSkill calls as it
@@ -138,7 +163,8 @@ namespace EpicLoot.MagicItemEffects.Shards {
             try {
                 var guard = 0;
                 // skill is a live reference, so m_level / m_accumulator are re-read fresh each pass.
-                while (remaining > 0f && skill.m_level < MaxSkillLevel && guard++ < MaxLevelUpsPerProc) {
+                var maxLevelUps = GetMaxLevelUpsPerProc();
+                while (remaining > 0f && skill.m_level < MaxSkillLevel && guard++ < maxLevelUps) {
                     var needed = Mathf.Max(0f, NextLevelRequirement(skill.m_level) - skill.m_accumulator);
                     if (needed > remaining) {
                         break; // can't reach the next boundary; fall through to the top-up below
@@ -162,12 +188,10 @@ namespace EpicLoot.MagicItemEffects.Shards {
             return Mathf.Pow(Mathf.Floor(level + 1f), 1.5f) * 0.5f + 0.5f;
         }
 
+        // Clamped to 0..100: it is a percent, and a negative one would silently disable the effect.
         private static float GetProcChance() {
-            var cfg = MagicItemEffectDefinitions.GetEffectConfig(MagicEffectType.Inspiration);
-            if (cfg != null && cfg.TryGetValue(ProcChanceKey, out var raw)) {
-                return Mathf.Max(0f, raw);
-            }
-            return DefaultProcChance;
+            return EffectConfig.GetClamped(MagicEffectType.Inspiration,
+                ProcChanceKey, DefaultProcChance, 0f, 100f);
         }
     }
 }

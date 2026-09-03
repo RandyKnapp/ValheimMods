@@ -1,6 +1,7 @@
 ﻿using EpicLoot.src.Magic.MagicItemEffects.Helpers;
 using HarmonyLib;
 using JetBrains.Annotations;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects.Shards
@@ -92,8 +93,18 @@ namespace EpicLoot.MagicItemEffects.Shards
     // ModifyStaminaRegen override, so vanilla drives it every frame off the live stack count.
     public static class PerfectDodge
     {
+        // How many dodges the buff may stack to, and how long a stack survives without a refresh. Tunable as
+        // "MaxStacks" and "BuffDuration" in this effect's Config block in config/shardstones.json.
         public const int DefaultMaxStacks = 5;
-        private const float BuffDuration = 10f; // seconds the buff lasts / is refreshed to on each perfect dodge
+        public const float DefaultBuffDuration = 10f;
+
+        private const string MaxStacksKey = "MaxStacks";
+        private const string BuffDurationKey = "BuffDuration";
+
+        public static readonly Dictionary<string, float> DefaultConfig = new Dictionary<string, float> {
+            { MaxStacksKey, DefaultMaxStacks },
+            { BuffDurationKey, DefaultBuffDuration },
+        };
 
         private const string BuffName = "EL_DodgeMomentum";
         private static readonly int BuffHash = BuffName.GetStableHashCode();
@@ -124,6 +135,7 @@ namespace EpicLoot.MagicItemEffects.Shards
             }
 
             var maxStacks = GetMaxStacks();
+            var duration = GetBuffDuration();
             var seMan = player.GetSEMan();
 
             // Re-proc while the buff is still up: add a stack (capped), restamp the per-stack bonus (the shard
@@ -133,6 +145,7 @@ namespace EpicLoot.MagicItemEffects.Shards
                 existing.Stacks = Mathf.Min(existing.Stacks + 1, maxStacks);
                 existing.MaxStacks = maxStacks;
                 existing.RegenPerStack = regenPerStack;
+                existing.m_ttl = duration; // restamped so a retuned duration reaches a buff already running
                 existing.ResetTime();
                 return;
             }
@@ -141,22 +154,22 @@ namespace EpicLoot.MagicItemEffects.Shards
                 added.Stacks = 1;
                 added.MaxStacks = maxStacks;
                 added.RegenPerStack = regenPerStack;
-                added.m_ttl = BuffDuration;
+                added.m_ttl = duration;
                 added.ResetTime();
             }
         }
 
-        // Max stacks come from the PerfectDodge magic effect's Config block ("MaxStacks", see
-        // ShardEffectDefinitions), defaulting to DefaultMaxStacks when unset. Clamped to at least 1 so a
-        // misconfiguration can't disable the buff.
+        // Clamped to at least 1 so a misconfiguration can't disable the buff outright.
         private static int GetMaxStacks()
         {
-            var cfg = MagicItemEffectDefinitions.GetEffectConfig(MagicEffectType.PerfectDodge);
-            if (cfg != null && cfg.TryGetValue("MaxStacks", out var raw))
-            {
-                return Mathf.Max(1, Mathf.RoundToInt(raw));
-            }
-            return DefaultMaxStacks;
+            return EffectConfig.GetIntAtLeast(MagicEffectType.PerfectDodge, MaxStacksKey, DefaultMaxStacks, 1);
+        }
+
+        // Floored just above zero: a ttl of 0 is "no timeout" to vanilla, which would make the buff permanent.
+        private static float GetBuffDuration()
+        {
+            return Mathf.Max(0.1f,
+                EffectConfig.Get(MagicEffectType.PerfectDodge, BuffDurationKey, DefaultBuffDuration));
         }
 
         // Lazily builds the buff prototype. Runs on a perfect dodge, so the asset bundle is loaded. A null
@@ -185,7 +198,7 @@ namespace EpicLoot.MagicItemEffects.Shards
             se.name = BuffName;
             se.m_name = "$mod_epicloot_se_dodgemomentum";
             se.m_icon = icon;
-            se.m_ttl = BuffDuration;
+            se.m_ttl = GetBuffDuration(); // restamped on every proc by OnPerfectDodge
             _buffPrototype = se;
             return _buffPrototype;
         }
@@ -218,7 +231,22 @@ namespace EpicLoot.MagicItemEffects.Shards
     // percents, hence the 0.01f.
     public static class PerfectDodgeGivesSpeed
     {
-        private const float BuffDuration = 1f; // seconds the speed buff lasts after a perfect dodge
+        // Seconds the speed buff lasts after a perfect dodge. Tunable as "BuffDuration" in this effect's
+        // Config block in config/shardstones.json.
+        public const float DefaultBuffDuration = 1f;
+
+        private const string BuffDurationKey = "BuffDuration";
+
+        public static readonly Dictionary<string, float> DefaultConfig = new Dictionary<string, float> {
+            { BuffDurationKey, DefaultBuffDuration },
+        };
+
+        // Floored just above zero: a ttl of 0 is "no timeout" to vanilla, which would make the burst permanent.
+        private static float GetBuffDuration()
+        {
+            return Mathf.Max(0.1f, EffectConfig.Get(MagicEffectType.PerfectDodgeGivesSpeed,
+                BuffDurationKey, DefaultBuffDuration));
+        }
 
         private const string BuffName = "EL_DodgeAgility";
         private static readonly int BuffHash = BuffName.GetStableHashCode();
@@ -243,15 +271,18 @@ namespace EpicLoot.MagicItemEffects.Shards
 
             // Re-proc while the buff is still up: restamp the bonus (the shard set may have changed) and
             // refresh the countdown rather than letting the old, shorter timer run out.
+            var duration = GetBuffDuration();
             if (seMan.GetStatusEffect(BuffHash) is SE_DodgeAgility existing)
             {
                 existing.SpeedBonus = bonus;
+                existing.m_ttl = duration; // restamped so a retuned duration reaches a buff already running
                 existing.ResetTime();
                 return;
             }
 
             if (seMan.AddStatusEffect(prototype) is SE_DodgeAgility added) {
                 added.SpeedBonus = bonus;
+                added.m_ttl = duration;
                 added.ResetTime();
             }
         }
@@ -282,7 +313,7 @@ namespace EpicLoot.MagicItemEffects.Shards
             se.name = BuffName;
             se.m_name = "$mod_epicloot_se_dodgeagility";
             se.m_icon = icon;
-            se.m_ttl = BuffDuration;
+            se.m_ttl = GetBuffDuration(); // restamped on every proc by OnPerfectDodge
             _buffPrototype = se;
             return _buffPrototype;
         }

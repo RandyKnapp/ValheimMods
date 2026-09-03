@@ -81,6 +81,7 @@ internal class ELConfig {
 
     public static ConfigEntry<bool> AlwaysShowWelcomeMessage;
     public static ConfigEntry<bool> OutputPatchedConfigFiles;
+    public static ConfigEntry<bool> VerifyPenaltyScalingCache;
     public static ConfigEntry<bool> EnchantingTableUpgradesActive;
     public static ConfigEntry<bool> EnableLimitedBountiesInProgress;
     public static ConfigEntry<int> MaxInProgressBounties;
@@ -226,6 +227,13 @@ internal class ELConfig {
     /// <summary>Everything bound this run, with the section name minus its order prefix.</summary>
     private static readonly List<(ConfigEntryBase Entry, string Location)> BoundEntries =
         new List<(ConfigEntryBase, string)>();
+
+    /// <summary>
+    /// One "re-read this baseconfig file into the live config" callback per file, in the order
+    /// <see cref="InitializeConfig"/> registered them. See <see cref="ReloadBaseConfigsFromDisk"/>.
+    /// </summary>
+    private static readonly List<(string FileName, Func<bool> ReloadFromDisk)> BaseConfigReloaders =
+        new List<(string, Func<bool>)>();
 
     public ELConfig(ConfigFile Config) {
         // ensure all the config values are created
@@ -609,6 +617,10 @@ internal class ELConfig {
             "Sets whether or not the welcome message is displayed on startup, this is automatically set to false once the player has viewed the message.");
         OutputPatchedConfigFiles = BindClient(SectionDebug, "OutputPatchedConfigFiles", false,
             "Just a debug flag for testing the patching system, do not use.");
+        VerifyPenaltyScalingCache = BindClient(SectionDebug, "Verify Penalty Scaling Cache", false,
+            "Recomputes the movement-penalty measurement on every read and logs any disagreement with the " +
+            "per-step cached value. Costs a full status-effect speed pass per read -- for diagnosing a " +
+            "suspected stale scaling factor only, do not leave on.");
         EnableHotReloadPatches = BindServer(SectionDebug, "Enable Hot Reloading Patches", true,
             "Controls whether or not patch edits can be live-reloaded. Can cause lag when recompiling patches.");
         AlwaysRefreshCoreConfigs = BindServer(SectionDebug, "Always Refresh Core Configs", false,
@@ -831,26 +843,24 @@ internal class ELConfig {
         // Setup the initial synchronization for network connection
         SynchronizationManager.Instance.AddInitialSynchronization(targetRPC, SendInitialConfig);
 
-        // Encapsulated file watcher modification method for the config file
-        void FileModified(object sender, FileSystemEventArgs e) {
-            if (e.FullPath != baseCfgLocation || !File.Exists(baseCfgLocation)) {
-                return;
+        // Reads the file back into the live config. Shared by the file watcher and by the hot-reload
+        // pass, which cannot wait for the watcher (see ReloadBaseConfigsFromDisk).
+        bool ReloadFromDisk() {
+            if (!File.Exists(baseCfgLocation)) {
+                return false;
             }
 
-            EpicLoot.Log($"Config file {baseCfgLocation} {e.FullPath} has been modified, attempting to update config.");
-
-            bool validUpdate = false;
             try {
                 T contents = JsonConvert.DeserializeObject<T>(File.ReadAllText(baseCfgLocation));
+                if (contents == null) {
+                    throw new InvalidDataException("file deserialized to null");
+                }
+
                 EpicLoot.Log($"Config file {baseCfgLocation} has been modified, updating config.");
                 setupMethod(contents);
-                validUpdate = true;
             } catch (Exception ex) {
                 EpicLoot.LogWarningForce($"Config file {baseCfgLocation} is invalid and config will not be updated." + ex);
-            }
-
-            if (validUpdate == false) {
-                return;
+                return false;
             }
 
             if (GUIManager.IsHeadless()) {
@@ -861,6 +871,24 @@ internal class ELConfig {
                     EpicLoot.LogError($"Error while server syncing {filename} configs");
                 }
             }
+
+            return true;
+        }
+
+        // Registered in call order, so the load-order dependencies InitializeConfig encodes
+        // (adventuredata before iteminfo, shardstones before shardstoneconversions) still hold on a
+        // hot reload. Thirteen independent watchers fire in whatever order the OS delivers them.
+        BaseConfigReloaders.RemoveAll(reloader => reloader.FileName == filename);
+        BaseConfigReloaders.Add((filename, ReloadFromDisk));
+
+        // Encapsulated file watcher modification method for the config file
+        void FileModified(object sender, FileSystemEventArgs e) {
+            if (e.FullPath != baseCfgLocation || !File.Exists(baseCfgLocation)) {
+                return;
+            }
+
+            EpicLoot.Log($"Config file {baseCfgLocation} {e.FullPath} has been modified, attempting to update config.");
+            ReloadFromDisk();
         }
 
         // Setup the file watcher for the config file. NotifyFilter must include FileName:
@@ -918,6 +946,67 @@ internal class ELConfig {
     }
 
 
+    /// <summary>
+    /// Re-reads baseconfig files into the live config, in registration order.
+    /// </summary>
+    /// <param name="fileNames">
+    /// The files to reload, with extension ("loottables.json"). Null reloads every registered file;
+    /// an empty collection reloads none.
+    /// </param>
+    internal static void ReloadBaseConfigsFromDisk(ICollection<string> fileNames) {
+        foreach ((string fileName, Func<bool> reloadFromDisk) in BaseConfigReloaders) {
+            if (fileNames != null && !fileNames.Contains(fileName)) {
+                continue;
+            }
+
+            reloadFromDisk();
+        }
+    }
+
+    /// <summary>
+    /// Rebuilds the configs from the patch files on disk and puts the result into the running game.
+    ///
+    /// The reload has to be driven from here rather than left to the per-file FileSystemWatchers.
+    /// Those events are asynchronous and are marshalled onto the main thread, so they cannot be
+    /// delivered until this callback returns -- which used to mean the auto-add pass below ran
+    /// against the pre-patch config still in memory and wrote it straight back over the files
+    /// FilePatching had just rebuilt. The patch survived on neither disk nor in memory, and only
+    /// took effect after a restart.
+    /// </summary>
+    internal static void RunPatchHotReload() {
+        List<string> rebuiltTargets = FilePatching.ReloadAndApplyAllPatches();
+        if (rebuiltTargets.Count == 0) {
+            // Nothing on disk changed -- a stray json in patches/, or a patch file that failed to
+            // parse. Re-deriving the auto-added items would just rewrite the configs unchanged.
+            // Forced: this is the "my patch did nothing" case, and every other breadcrumb on this
+            // path is Info, which the default Error log level hides.
+            EpicLoot.LogForce("Patch files changed, but no config file needed rebuilding. " +
+                "Check the log above for a patch file that failed to parse.");
+            return;
+        }
+
+        EpicLoot.LogForce($"Patch files changed; rebuilt and reloaded {string.Join(", ", rebuiltTargets)}.");
+        HashSet<string> rebuiltFiles = new HashSet<string>(rebuiltTargets.Select(target => $"{target}.json"));
+        ReloadBaseConfigsFromDisk(rebuiltFiles);
+
+        if (AutoAddEquipment.Value == false && AutoRemoveEquipmentNotFound.Value == false) {
+            return;
+        }
+
+        // The scan classifies the ItemDrops currently loaded, so outside a world it finds nothing and
+        // writes configs stripped of every item. It runs again on the next world load regardless.
+        if (ZNetScene.instance == null) {
+            EpicLoot.LogForce("Patches were rebuilt, but the equipment auto-add pass needs a loaded " +
+                "world and was skipped; it runs again when you load one.");
+            return;
+        }
+
+        AutoAddEnchantableItems.CheckAndAddAllEnchantableItems(false);
+        // The auto-add pass merges onto the live config and writes the result back out, so re-read
+        // the files it rewrote instead of waiting on their watchers.
+        ReloadBaseConfigsFromDisk(AutoAddEnchantableItems.RewrittenConfigFiles);
+    }
+
     private static void IngestPatchFilesFromDisk(object s, FileSystemEventArgs e) {
         if (EnableHotReloadPatches.Value == false) {
             return;
@@ -928,30 +1017,36 @@ internal class ELConfig {
             return;
         }
 
-        // Do not process directories, setup a new watcher- otherwise they get ingored even with subdirectory watching.
+        // Directory events carry no patch content, and the watcher spans subdirectories itself.
         // Directory.Exists instead of File.GetAttributes: a Deleted event (or a Changed event racing
         // an atomic-save rename) arrives for a path that no longer exists, and the GetAttributes
         // throw was silently swallowed upstream -- the reload below then never ran.
         if (Directory.Exists(e.FullPath)) {
-            SetupPatchConfigFileWatch(e.FullPath);
-            EpicLoot.Log($"Adding subdirectory filewatcher: {e.FullPath}");
             return;
         }
 
-        FileInfo fileInfo = new FileInfo(e.FullPath);
-        if (!fileInfo.FullName.Contains(".json")) {
+        // Match what ProcessPatchDirectory ingests (*.json). EndsWith, not Contains: the temp files
+        // an editor writes alongside an atomic save ("foo.json~", "foo.json.tmp") are not patches,
+        // and the rename to the real name raises its own event.
+        if (!e.FullPath.EndsWith(".json", StringComparison.OrdinalIgnoreCase)) {
             return;
         }
 
-        EpicLoot.Log($"Processing patch file update: {fileInfo}");
-        FilePatching.ReloadAndApplyAllPatches();
-
-        if (AutoAddEquipment.Value == true || AutoRemoveEquipmentNotFound.Value == true) {
-            AutoAddEnchantableItems.CheckAndAddAllEnchantableItems(false);
-        }
+        EpicLoot.Log($"Processing patch file update: {e.FullPath}");
+        PatchReloadDebouncer.Schedule();
     }
 
+    private static FileSystemWatcher _patchWatcher;
+
     public static void SetupPatchConfigFileWatch(string path) {
+        // Replacing rather than stacking: a second watcher on the same tree would just double every
+        // event. The field also keeps the watcher rooted -- a collected one stops raising events.
+        if (_patchWatcher != null) {
+            _patchWatcher.EnableRaisingEvents = false;
+            _patchWatcher.Dispose();
+            _patchWatcher = null;
+        }
+
         FileSystemWatcher newPatchWatcher = new FileSystemWatcher(path);
         newPatchWatcher.Created += new FileSystemEventHandler(IngestPatchFilesFromDisk);
         newPatchWatcher.Changed += new FileSystemEventHandler(IngestPatchFilesFromDisk);
@@ -960,10 +1055,13 @@ internal class ELConfig {
         // FileName included so dropping in / deleting / renaming a patch file actually fires
         // (LastWrite alone only reports in-place content writes).
         newPatchWatcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName;
-        // newPatchWatcher.IncludeSubdirectories = true;
+        // ProcessPatchDirectory recurses, so patches shipped in patches/<ModName>/ are loaded at
+        // startup; without this they were loaded but never watched, and only a subdirectory created
+        // while the game ran ever got a watcher of its own.
+        newPatchWatcher.IncludeSubdirectories = true;
         newPatchWatcher.SynchronizingObject = ThreadingHelper.SynchronizingObject;
         newPatchWatcher.EnableRaisingEvents = true;
-        // newPatchWatcher.Filter = "*.json";
+        _patchWatcher = newPatchWatcher;
     }
 
 

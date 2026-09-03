@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copy to Environment.props (gitignored) to override what Directory.Build.props probes for.
+  Every property here is optional - drop the ones you do not need.
+-->
+<Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <!-- Base Valheim folder. Probed from the Steam registry keys and the usual Program Files
+         locations; set it for a non-Steam or second install. -->
+    <GamePath>C:\Program Files (x86)\Steam\steamapps\common\Valheim</GamePath>
+
+    <!-- Folder holding core\BepInEx.dll, WITH a trailing separator - Paths.props builds its
+         HintPaths as $(BepinexPath)core\x.dll. Defaults to $(GamePath)\BepInEx\, then to the
+         first Gale / r2modman / Thunderstore profile that has one. Set it to pin a profile. -->
+    <!-- <BepinexPath>$(AppData)\com.kesomannen.gale\valheim\profiles\Modtest\BepInEx\</BepinexPath> -->
+  </PropertyGroup>
+</Project>

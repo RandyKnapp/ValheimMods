@@ -79,11 +79,17 @@ public static class PlayerExtensions
     public static float GetTotalActiveMagicEffectValue(this Player player, string effectType,
         float scale = 1.0f, ItemDrop.ItemData ignoreThisItem = null)
     {
-        float totalValue = scale * (EquipmentEffectCache.Get(player, effectType, () =>
+        // TryGetValue/Store rather than the Func overload: this runs several times per fixed tick from
+        // GetMaxCarryWeight, ModifyStaminaRegen and GetArmor, and the closure that overload's delegate
+        // captures would be allocated on every one of those calls even though nearly all of them hit.
+        if (!EquipmentEffectCache.TryGetValue(player, effectType, out float? cached))
         {
             List<MagicItemEffect> allEffects = player.GetAllActiveMagicEffects(effectType);
-            return allEffects.Count > 0 ? allEffects.Select(x => x.EffectValue).Sum() : null;
-        }) ?? 0);
+            cached = allEffects.Count > 0 ? allEffects.Select(x => x.EffectValue).Sum() : (float?)null;
+            EquipmentEffectCache.Store(player, effectType, cached);
+        }
+
+        float totalValue = scale * (cached ?? 0);
 
         if (ignoreThisItem != null && player.IsItemEquiped(ignoreThisItem) && ignoreThisItem.IsMagic(out MagicItem magicItem))
         {

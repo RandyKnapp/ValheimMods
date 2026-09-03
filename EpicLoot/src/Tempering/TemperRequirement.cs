@@ -29,6 +29,7 @@ public class TemperRequirement(string prefab, int amount)
             return null;
         }   
     }
+    public readonly string prefab = prefab;
     public readonly int amount = amount;
 
     public Piece.Requirement ToPieceRequirement() => new Piece.Requirement()

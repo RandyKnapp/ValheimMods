@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Choose>
     <When Condition="($(OS) == 'Unix' OR $(OS) == 'OSX') AND $(GamePath) == ''">
@@ -18,9 +18,11 @@
     </When>
   </Choose>
   <PropertyGroup>
-    <GamePathManaged>$(GamePath)\valheim_Data\Managed\</GamePathManaged>
-    <BepinexPath>$(GamePath)\BepInEx\</BepinexPath>
-    <SolutionUnity>$(SolutionDir)ValheimUnity\</SolutionUnity>
+    <GamePathManaged Condition="'$(GamePathManaged)' == ''">$(GamePath)\valheim_Data\Managed\</GamePathManaged>
+    <!-- Conditional: Directory.Build.props resolves this first, falling back to a mod manager
+         profile when the game folder holds no BepInEx. Overwriting it here would undo that. -->
+    <BepinexPath Condition="'$(BepinexPath)' == ''">$(GamePath)\BepInEx\</BepinexPath>
+    <SolutionUnity Condition="'$(SolutionUnity)' == ''">$(SolutionDir)ValheimUnity\</SolutionUnity>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="0Harmony, Culture=neutral, PublicKeyToken=null">
@@ -29,14 +31,14 @@
     <Reference Include="AdventureBackpacksAPI">
       <HintPath>$(SolutionDir)Libs\AdventureBackpacksAPI.dll</HintPath>
     </Reference>
-    <Reference Include="assembly_guiutils_publicized">
-      <HintPath>$(GamePathManaged)publicized_assemblies\assembly_guiutils_publicized.dll</HintPath>
+    <Reference Include="assembly_guiutils">
+      <HintPath>$(GamePathManaged)assembly_guiutils.dll</HintPath>
     </Reference>
-    <Reference Include="assembly_utils_publicized">
-      <HintPath>$(GamePathManaged)publicized_assemblies\assembly_utils_publicized.dll</HintPath>
+    <Reference Include="assembly_utils">
+      <HintPath>$(GamePathManaged)assembly_utils.dll</HintPath>
     </Reference>
-    <Reference Include="assembly_valheim_publicized">
-      <HintPath>$(GamePathManaged)publicized_assemblies\assembly_valheim_publicized.dll</HintPath>
+    <Reference Include="assembly_valheim">
+      <HintPath>$(GamePathManaged)assembly_valheim.dll</HintPath>
     </Reference>
       <Reference Include="BepInEx, Culture=neutral, PublicKeyToken=null">
       <HintPath>$(BepinexPath)core\BepInEx.dll</HintPath>
@@ -52,8 +54,10 @@
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>$(SolutionDir)Packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="Splatform, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>$(GamePathManaged)publicized_assemblies\Splatform_publicized.dll</HintPath>
+    <!-- Simple name so Directory.Build.targets can <Reference Update="Splatform" .../> it; the
+         version/culture qualifiers were inert anyway, since a HintPath resolves by path. -->
+    <Reference Include="Splatform">
+      <HintPath>$(GamePathManaged)Splatform.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

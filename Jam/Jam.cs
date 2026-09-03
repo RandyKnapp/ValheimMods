@@ -1,6 +1,7 @@
 ﻿using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
+using Common;
 using HarmonyLib;
 using JetBrains.Annotations;
 using Jotunn.Configs;
@@ -453,12 +454,14 @@ namespace Jam
             return description + (synchronizedSetting ? " [Synced with Server]" : " [Not Synced with Server]");
         }
 
+        // The assembly is named explicitly rather than taken from Assembly.GetCallingAssembly(). When
+        // another mod hooks Awake, MonoMod recompiles it as a dynamic method (DMD<...::Awake>), and the
+        // "calling assembly" is then that dynamic assembly, not this one. The resource lookup misses,
+        // LoadFromStream(null) throws "ArgumentNullException: stream", and the mod fails to load —
+        // intermittently, since it depends on which other mods are present.
         public static AssetBundle LoadAssetBundle(string filename)
         {
-            Assembly assembly = Assembly.GetCallingAssembly();
-            AssetBundle assetBundle = AssetBundle.LoadFromStream(assembly.GetManifestResourceStream($"{assembly.GetName().Name}.{filename}"));
-
-            return assetBundle;
+            return AssetBundleLoader.LoadFromResources(filename, typeof(Jam).Assembly);
         }
 
         private static void LoadItem(AssetBundle assetBundle, string assetName, string recipe, int stationLevel)

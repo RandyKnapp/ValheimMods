@@ -12,6 +12,10 @@ namespace EpicLoot.MagicItemEffects.Shards {
 
             var pct = MagicEffectsHelper.GetTotalActiveMagicEffectValueForWeapon(
                 player, __instance, MagicEffectType.DamageBonusFromPlayerWeight, 0.01f);
+            if (pct == 0f) {
+                return;
+            }
+
             var bonus = pct * PenaltyScaling.WeightFactor(player);
             if (bonus != 0f) {
                 __result.Modify(1f + bonus);

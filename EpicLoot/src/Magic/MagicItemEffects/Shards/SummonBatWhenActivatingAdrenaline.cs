@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using EpicLoot.src.Magic.MagicItemEffects.Helpers;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects.Shards {
@@ -6,9 +7,30 @@ namespace EpicLoot.MagicItemEffects.Shards {
     public static class SummonBatWhenActivatingAdrenaline {
         private const string BatSourcePrefab = "Bat";              // vanilla creature we clone
         private const string TamedBatPrefab = "EL_TamedBat";       // our registered player-faction/tamed clone
-        private const float BatLifetime = 30f;                     // seconds a summoned bat lives (TimedDestruction)
-        private const float SummonCooldown = 10f;
-        private const float SpawnRadius = 2f;                      // ring radius bats spawn on around the player
+
+        // All tunable in this effect's Config block in config/shardstones.json, under these key names.
+        // The summon count is the shard value plus SummonCountOffset, and at most ConcurrentPerSummon times
+        // that many bats may be alive at once. BatLifetime seeds the cached clone's TimedDestruction, which
+        // is baked into the registered prefab, so a change to it lands on the next game session.
+        public const float DefaultBatLifetime = 30f;      // seconds a summoned bat lives (TimedDestruction)
+        public const float DefaultCooldown = 10f;         // seconds between summons
+        public const float DefaultSpawnRadius = 2f;       // ring radius bats spawn on around the player
+        public const float DefaultSummonCountOffset = -1f;   // added to the rounded shard value
+        public const float DefaultConcurrentPerSummon = 2f;  // live-bat cap as a multiple of the summon count
+
+        private const string BatLifetimeKey = "BatLifetime";
+        private const string CooldownKey = "Cooldown";
+        private const string SpawnRadiusKey = "SpawnRadius";
+        private const string SummonCountOffsetKey = "SummonCountOffset";
+        private const string ConcurrentPerSummonKey = "ConcurrentPerSummon";
+
+        public static readonly Dictionary<string, float> DefaultConfig = new Dictionary<string, float> {
+            { BatLifetimeKey, DefaultBatLifetime },
+            { CooldownKey, DefaultCooldown },
+            { SpawnRadiusKey, DefaultSpawnRadius },
+            { SummonCountOffsetKey, DefaultSummonCountOffset },
+            { ConcurrentPerSummonKey, DefaultConcurrentPerSummon },
+        };
 
         private static float _lastSummonTime = -999f;
 
@@ -25,7 +47,8 @@ namespace EpicLoot.MagicItemEffects.Shards {
         // Called by SharedPlayerAddAdrenalinePatch, which owns the Player.AddAdrenaline patch and the
         // fill/pop detection (including the local-player and no-adrenaline-source guards).
         public static void OnAdrenalineActivated(Player player) {
-            if (Time.time - _lastSummonTime < SummonCooldown) {
+            if (Time.time - _lastSummonTime < EffectConfig.Get(
+                    MagicEffectType.SummonBatWhenActivatingAdrenaline, CooldownKey, DefaultCooldown)) {
                 return;
             }
 
@@ -86,7 +109,8 @@ namespace EpicLoot.MagicItemEffects.Shards {
             }
 
             var timed = template.GetComponent<TimedDestruction>() ?? template.AddComponent<TimedDestruction>();
-            timed.m_timeout = BatLifetime;
+            timed.m_timeout = EffectConfig.Get(MagicEffectType.SummonBatWhenActivatingAdrenaline,
+                BatLifetimeKey, DefaultBatLifetime);
             timed.m_triggerOnAwake = true;
 
             _batTemplate = template;
@@ -109,8 +133,13 @@ namespace EpicLoot.MagicItemEffects.Shards {
                 return;
             }
 
-            var summonCount = Mathf.Max(1, Mathf.RoundToInt(value) - 1);
-            var maxBats = summonCount * 2;
+            var summonCount = Mathf.Max(1, Mathf.RoundToInt(value + EffectConfig.Get(
+                MagicEffectType.SummonBatWhenActivatingAdrenaline,
+                SummonCountOffsetKey, DefaultSummonCountOffset)));
+            // At least one summon's worth of headroom, or a proc could never place a bat.
+            var maxBats = Mathf.Max(summonCount, Mathf.RoundToInt(summonCount * EffectConfig.Get(
+                MagicEffectType.SummonBatWhenActivatingAdrenaline,
+                ConcurrentPerSummonKey, DefaultConcurrentPerSummon)));
 
             // Drop bats that have already despawned/been destroyed before counting toward the cap.
             _activeBats.RemoveAll(bat => bat == null);
@@ -118,7 +147,9 @@ namespace EpicLoot.MagicItemEffects.Shards {
             var basePos = player.transform.position + Vector3.up;
             for (var i = 0; i < summonCount; i++) {
                 var angle = Mathf.PI * 2f * i / summonCount;
-                var spawnPos = basePos + new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle)) * SpawnRadius;
+                var spawnPos = basePos + new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle))
+                    * EffectConfig.Get(MagicEffectType.SummonBatWhenActivatingAdrenaline,
+                        SpawnRadiusKey, DefaultSpawnRadius);
 
                 var bat = Object.Instantiate(prefab, spawnPos, Quaternion.identity);
                 // Faction/tamed/lifetime are baked into the prefab; only the runtime follow target is per-instance.
