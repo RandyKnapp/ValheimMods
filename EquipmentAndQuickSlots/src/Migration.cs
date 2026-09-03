@@ -1,5 +1,6 @@
 ﻿using EquipmentAndQuickSlots.src;
 using HarmonyLib;
+using System.Globalization;
 using System.Linq;
 using static EquipmentAndQuickSlots.Slots;
 using static EquipmentAndQuickSlots.src.MiscPatches;
@@ -12,6 +13,11 @@ namespace EquipmentAndQuickSlots {
         public const string QuickSlotInventoryKey = "QuickSlotInventory";
         public const string EquipmentSlotInventoryKey = "EquipmentSlotInventory";
         public const string ExtendedPlayerDataKey = "ExtendedPlayerData";
+
+        // The visible row count the character was last saved with. The slot region sits directly
+        // under the visible grid, so this is what says whether the saved grid positions still mean
+        // what they meant last session.
+        public const string VisibleRowsKey = "eaqs_visible_rows";
 
         private const int LegacyQuickSlotCount = 3;
         private const int LegacyEquipSlotCount = 5;
@@ -108,6 +114,87 @@ namespace EquipmentAndQuickSlots {
             player.m_customData.Remove(key);
             player.m_knownTexts.Remove(key);
             player.m_knownTexts.Remove(TextsDialog_UpdateTextsList_Patch.LegacySentinel + key);
+        }
+
+        // The slot rows move whenever the visible row count changes: a config edit, a rows mod
+        // installed or removed, or -- the case this was written for -- Better Archery stopping
+        // inflating the player inventory by two rows. Saved items keep the grid position they had,
+        // so without this the equipment and quick slot contents come back on the wrong rows, or
+        // past the end of the inventory where nothing can reach them again.
+        //
+        // The shift is a bijection over the slot region (everything at or below the old first slot
+        // row moves by the same delta), so it cannot make two items collide. Anything that was in
+        // the old visible grid and now finds itself on a slot cell is left to the validation sweep.
+        internal static void MigrateSlotRegionRows(Player player, int previousVisibleRows) {
+            int delta = VisibleRows - previousVisibleRows;
+            Inventory inventory = player.GetInventory();
+            if (delta == 0 || inventory == null)
+                return;
+
+            int moved = 0;
+            foreach (ItemDrop.ItemData item in inventory.m_inventory) {
+                if (item.m_gridPos.y < previousVisibleRows)
+                    continue;
+
+                item.m_gridPos = new Vector2i(item.m_gridPos.x, item.m_gridPos.y + delta);
+                moved++;
+            }
+
+            if (moved == 0)
+                return;
+
+            // Record the new count now: a second Load on this same object would otherwise read the
+            // stale marker and shift everything a second time.
+            player.m_customData[VisibleRowsKey] = VisibleRows.ToString(CultureInfo.InvariantCulture);
+
+            ClearCachedItems();
+            inventory.Changed();
+            SlotValidation.ValidateItems();
+            SlotValidation.ValidateSlots();
+
+            // Ungated: this moved the player's gear, and a report about misplaced items has to
+            // be answerable from the log even with logging turned off.
+            EquipmentAndQuickSlots.LogInfo($"Visible rows changed {previousVisibleRows} -> {VisibleRows}; moved {moved} item(s) with the slot region");
+        }
+
+        private static bool TryGetPreviousVisibleRows(Player player, out int visibleRows) {
+            if (player.m_customData.TryGetValue(VisibleRowsKey, out string stored)
+                && int.TryParse(stored, NumberStyles.Integer, CultureInfo.InvariantCulture, out visibleRows)
+                && visibleRows > 0)
+                return true;
+
+            // No marker: characters saved before it existed still carry the row count inside the
+            // slots backup envelope.
+            return InventoryBackup.TryGetBackupVisibleRows(player, out visibleRows);
+        }
+
+        [HarmonyPatch(typeof(Player), nameof(Player.Save))]
+        private static class Player_Save_WriteVisibleRows {
+            [HarmonyPriority(Priority.Last)]
+            private static void Prefix(Player __instance) {
+                if (__instance == CurrentPlayer)
+                    __instance.m_customData[VisibleRowsKey] = VisibleRows.ToString(CultureInfo.InvariantCulture);
+            }
+        }
+
+        // Ahead of the backup restore (default priority), so that runs against corrected positions.
+        [HarmonyPatch(typeof(Player), nameof(Player.Load))]
+        public static class Player_Load_MigrateSlotRegionRows {
+            [HarmonyPriority(Priority.High)]
+            public static void Postfix(Player __instance) {
+                if (!FejdStartup.instance && !IsValidPlayer(__instance))
+                    return;
+
+                if (!TryGetPreviousVisibleRows(__instance, out int previousVisibleRows))
+                    return;
+
+                loadedPlayer = __instance;
+                try {
+                    MigrateSlotRegionRows(__instance, previousVisibleRows);
+                } finally {
+                    loadedPlayer = null;
+                }
+            }
         }
 
         [HarmonyPatch(typeof(Player), nameof(Player.Load))]

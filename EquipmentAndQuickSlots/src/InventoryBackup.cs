@@ -51,6 +51,21 @@ namespace EquipmentAndQuickSlots {
             return envelope.GetBase64();
         }
 
+        /// <summary>
+        /// The visible row count in effect when the backup was written. The envelope has carried it
+        /// since 3.0, which makes it the one durable record of where the slot region used to be for
+        /// characters saved before the explicit marker existed.
+        /// </summary>
+        internal static bool TryGetBackupVisibleRows(Player player, out int visibleRows) {
+            visibleRows = 0;
+
+            if (!TryGetBackup(player, out BackupEnvelope envelope))
+                return false;
+
+            visibleRows = envelope.visibleRows;
+            return visibleRows > 0;
+        }
+
         private static bool TryGetBackup(Player player, out BackupEnvelope backup) {
             backup = null;
 

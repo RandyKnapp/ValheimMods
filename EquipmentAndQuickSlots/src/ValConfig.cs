@@ -14,6 +14,7 @@ namespace EquipmentAndQuickSlots {
         public static ConfigEntry<bool> PreventStackAll;
         public static ConfigEntry<bool> PreventAutoPickup;
         public static ConfigEntry<bool> BackupEnabled;
+        public static ConfigEntry<bool> BetterArcheryQuiverIntegration;
         public static ConfigEntry<Vector2> EquipmentPanelPosition;
         public static ConfigEntry<bool> EquipmentPanelDraggable;
         public static ConfigEntry<KeyboardShortcut> EquipmentPanelDragKey;
@@ -108,6 +109,11 @@ namespace EquipmentAndQuickSlots {
                 new ConfigDescription("Picked up items never land directly in a quick slot; they go to the regular inventory only.", null, new ConfigurationManagerAttributes { }));
             BackupEnabled = Config.Bind("Protections", "Slots backup enabled", true,
                 new ConfigDescription("Automatically back up equipment and quick slot contents into the character save on every save, and restore them when the slots load empty (e.g. after the mod was temporarily removed).", null, new ConfigurationManagerAttributes { }));
+
+            // Read once at startup, before the slot cells are claimed and Better Archery's patches
+            // are removed, so a live change cannot leave the two mods half-integrated.
+            BetterArcheryQuiverIntegration = Config.Bind("Compatibility", "Better Archery quiver integration", true,
+                new ConfigDescription("Host Better Archery's quiver as three ammo slots in the equipment panel instead of letting it add its own inventory rows. Turn this off to disable Better Archery's quiver entirely; the quick slots hold ammo just as well. Takes effect on restart.", null, new ConfigurationManagerAttributes { }));
 
             // Instantiate server synced config entries here
             EquipmentSlotsEnabled = BindServerConfig("Toggles", "Enable Equipment Slots", true, "Enable the equipment slots. Disabling this while items are equipped will attempt to move them to your inventory.");

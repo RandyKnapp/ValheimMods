@@ -10,6 +10,10 @@ namespace EquipmentAndQuickSlots {
     [BepInDependency("moreslots", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("randyknapp.mods.auga", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("randyknapp.mods.epicloot", BepInDependency.DependencyFlags.SoftDependency)]
+    // Soft dependency purely for load order: Better Archery has to be loaded AND patched
+    // before this Awake runs, or BetterArcheryCompat has nothing to detect and nothing to
+    // unpatch (see src/Compatibility/BetterArcheryCompat.cs).
+    [BepInDependency("ishid4.mods.betterarchery", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInIncompatibility("Azumatt.AzuExtendedPlayerInventory")]
     [BepInIncompatibility("aedenthorn.ExtendedPlayerInventory")]
     [BepInIncompatibility("shudnal.ExtraSlots")]
@@ -42,6 +46,11 @@ namespace EquipmentAndQuickSlots {
             EpicLootCompat.Initialize();
 
             _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), PluginId);
+
+            // After CreateAndPatchAll: it needs our Harmony instance to remove Better Archery's
+            // inventory patches, and it claims reserved slot cells, so it must also run before any
+            // other mod can take them through the API.
+            BetterArcheryCompat.Initialize(_harmony);
         }
 
         private void Update() {
