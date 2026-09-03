@@ -15,8 +15,14 @@ namespace EpicLoot.MagicItemEffects.Shards
                 return;
             }
 
-            stamina += stamina * player.GetTotalActiveMagicEffectValue(
-                MagicEffectType.StaminaIncreaseForMovementPenalty, 0.01f) * PenaltyScaling.MovementPenaltyFactor(player);
+            var pct = player.GetTotalActiveMagicEffectValue(
+                MagicEffectType.StaminaIncreaseForMovementPenalty, 0.01f);
+            if (pct == 0f)
+            {
+                return;
+            }
+
+            stamina += stamina * pct * PenaltyScaling.MovementPenaltyFactor(player);
         }
     }
 }

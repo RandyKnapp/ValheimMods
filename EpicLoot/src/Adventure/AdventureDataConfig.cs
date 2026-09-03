@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using EpicLoot.Crafting;
 
 namespace EpicLoot.Adventure
 {
@@ -168,6 +169,15 @@ namespace EpicLoot.Adventure
     }
 
     [Serializable]
+    public class TemperingConfig
+    {
+        // Left empty rather than seeded with the defaults: Newtonsoft APPENDS to pre-initialized
+        // collections, and an absent rarity key has to fall through to TemperMan's hardcoded
+        // default instead of merging with it. TemperMan.ApplyConfig owns the fallback.
+        public Dictionary<ItemRarity, List<ItemAmountConfig>> CostsByRarity = new Dictionary<ItemRarity, List<ItemAmountConfig>>();
+    }
+
+    [Serializable]
     public class AdventureDataConfig
     {
         public float FulingCoinDropScale = 1;
@@ -175,5 +185,6 @@ namespace EpicLoot.Adventure
         public GambleConfig Gamble;
         public TreasureMapConfig TreasureMap;
         public BountiesConfig Bounties;
+        public TemperingConfig Tempering;
     }
 }

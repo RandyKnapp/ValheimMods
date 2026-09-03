@@ -1,12 +1,35 @@
-﻿using JetBrains.Annotations;
+﻿using EpicLoot.src.Magic.MagicItemEffects.Helpers;
+using JetBrains.Annotations;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects.Shards {
     // Grants adrenaline every few seconds for each nearby enemy that the local player has poisoned.
     public static class GainAdrenalineWhenApplyingPoison {
-        internal const float TickInterval = 3f;   // seconds between adrenaline pulses
-        private const float Radius = 30f;         // how far a poisoned foe can be and still count
+        // Seconds between adrenaline pulses, and how far a poisoned foe can be and still count. Tunable as
+        // "TickInterval" and "Radius" in this effect's Config block in config/shardstones.json;
+        // PoisonAdrenalinePulse re-arms its InvokeRepeating when the interval changes.
+        public const float DefaultTickInterval = 3f;
+        public const float DefaultRadius = 30f;
+
+        private const string TickIntervalKey = "TickInterval";
+        private const string RadiusKey = "Radius";
+
+        public static readonly Dictionary<string, float> DefaultConfig = new Dictionary<string, float> {
+            { TickIntervalKey, DefaultTickInterval },
+            { RadiusKey, DefaultRadius },
+        };
+
+        // Floored well above zero: InvokeRepeating with a tiny period would pulse every frame.
+        internal static float GetTickInterval() {
+            return Mathf.Max(0.5f, EffectConfig.Get(MagicEffectType.GainAdrenalineWhenApplyingPoison,
+                TickIntervalKey, DefaultTickInterval));
+        }
+
+        private static float GetRadius() {
+            return Mathf.Max(0f, EffectConfig.Get(MagicEffectType.GainAdrenalineWhenApplyingPoison,
+                RadiusKey, DefaultRadius));
+        }
 
         // Vanilla SE_Poison TTL defaults, used only when the prototype cannot be read from the ObjectDB.
         private const float DefaultBaseTtl = 2f;
@@ -18,11 +41,11 @@ namespace EpicLoot.MagicItemEffects.Shards {
         private static readonly Dictionary<Character, float> _poisonedUntil = new Dictionary<Character, float>();
         private static readonly List<Character> _stale = new List<Character>();
 
-        // Tooltip: "Gain {0} Adrenaline every {1}s per Poisoned Foe Nearby" -- {1}/{2} are the interval and
-        // radius consts so the shown numbers stay in sync with the code rather than baked-in literals.
+        // Tooltip: "Gain {0} Adrenaline every {1}s per Poisoned Foe Nearby" -- {1}/{2} are the configured
+        // interval and radius, so the shown numbers follow a retune instead of the baked-in defaults.
         public static void RegisterDisplayValues() {
             MagicItem.RegisterDisplayValues(MagicEffectType.GainAdrenalineWhenApplyingPoison,
-                value => new object[] { value, TickInterval, Radius });
+                value => new object[] { value, GetTickInterval(), GetRadius() });
         }
 
         internal static void ClearTracking() {
@@ -60,7 +83,8 @@ namespace EpicLoot.MagicItemEffects.Shards {
             }
 
             var now = Time.time;
-            var radiusSqr = Radius * Radius;
+            var radius = GetRadius();
+            var radiusSqr = radius * radius;
             var origin = player.transform.position;
             var count = 0;
 
@@ -137,15 +161,30 @@ namespace EpicLoot.MagicItemEffects.Shards {
             go.AddComponent<PoisonAdrenalinePulse>();
         }
 
+        // The period InvokeRepeating was last armed with. InvokeRepeating fixes its period at scheduling
+        // time, so a retuned TickInterval only takes hold once the invoke is cancelled and re-armed.
+        private float _scheduledInterval;
+
         [UsedImplicitly]
         private void Awake() {
             instance = this;
-            InvokeRepeating(nameof(Pulse), GainAdrenalineWhenApplyingPoison.TickInterval,
-                GainAdrenalineWhenApplyingPoison.TickInterval);
+            Reschedule();
+        }
+
+        private void Reschedule() {
+            _scheduledInterval = GainAdrenalineWhenApplyingPoison.GetTickInterval();
+            CancelInvoke(nameof(Pulse));
+            InvokeRepeating(nameof(Pulse), _scheduledInterval, _scheduledInterval);
         }
 
         [UsedImplicitly]
         private void Pulse() {
+            // Cheapest place guaranteed to run after a config reload, and it costs one float compare on a
+            // call that already only happens every few seconds.
+            if (!Mathf.Approximately(_scheduledInterval, GainAdrenalineWhenApplyingPoison.GetTickInterval())) {
+                Reschedule();
+            }
+
             var player = Player.m_localPlayer;
             if (player == null || _trackedPlayer != player) {
                 _trackedPlayer = player;

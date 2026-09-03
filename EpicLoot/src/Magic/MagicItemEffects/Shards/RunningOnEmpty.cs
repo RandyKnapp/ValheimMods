@@ -1,9 +1,26 @@
-﻿using UnityEngine;
+﻿using EpicLoot.src.Magic.MagicItemEffects.Helpers;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects.Shards {
     // Burns a chunk of health to refill an amount of stamina, cooldown based
     public static class RunningOnEmpty {
-        private const float Cooldown = 30f;
+        // Seconds between charges. Tunable as "Cooldown" in this effect's Config block in
+        // config/shardstones.json.
+        public const float DefaultCooldown = 30f;
+
+        private const string CooldownKey = "Cooldown";
+
+        public static readonly Dictionary<string, float> DefaultConfig = new Dictionary<string, float> {
+            { CooldownKey, DefaultCooldown },
+        };
+
+        // Floored just above zero: a cooldown of 0 would give the indicator a zero ttl, which vanilla
+        // treats as "no timeout", leaving the shard permanently gated instead of permanently ready.
+        private static float GetCooldown() {
+            return Mathf.Max(0.1f,
+                EffectConfig.Get(MagicEffectType.RunningOnEmpty, CooldownKey, DefaultCooldown));
+        }
 
         // Below this the charge isn't worth burning; firing anyway would spend the whole cooldown on nothing.
         private const float Epsilon = 0.01f;
@@ -53,11 +70,14 @@ namespace EpicLoot.MagicItemEffects.Shards {
             ShowCooldown(player);
         }
 
-        // Adds the recharge indicator to the player; its lifetime (m_ttl = Cooldown) is the cooldown.
-        // Activation is gated on the effect's absence, so it's never already present here.
+        // Adds the recharge indicator to the player; its lifetime (m_ttl) is the cooldown. Activation is
+        // gated on the effect's absence, so it's never already present here. The ttl is stamped here
+        // rather than at construction because the prototype is built once and cached, so a retuned
+        // cooldown would otherwise not take hold until the next game session.
         private static void ShowCooldown(Player player) {
             var indicator = GetOrCreateCooldownIndicator();
             if (indicator != null) {
+                indicator.m_ttl = GetCooldown();
                 player.GetSEMan().AddStatusEffect(indicator, true);
             }
         }
@@ -85,7 +105,7 @@ namespace EpicLoot.MagicItemEffects.Shards {
             se.name = CooldownName;
             se.m_name = "$mod_epicloot_se_runningonempty";
             se.m_icon = icon;
-            se.m_ttl = Cooldown;
+            se.m_ttl = GetCooldown(); // restamped on every proc by ShowCooldown
             se.m_cooldownIcon = true;
             _cooldownIndicator = se;
             return _cooldownIndicator;

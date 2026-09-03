@@ -1,8 +1,25 @@
-﻿namespace EpicLoot.MagicItemEffects.Shards {
+﻿using EpicLoot.src.Magic.MagicItemEffects.Helpers;
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace EpicLoot.MagicItemEffects.Shards {
     // Provides a bonus to spirit damage based on the physical damage dealt by the player, at the cost of Eitr
     public static class EitrImbueAttack {
-        // Eitr paid per point of bonus spirit damage, conversion ratio
-        private const float EitrCostPerDamage = 1f;
+        // Eitr paid per point of bonus spirit damage -- the conversion ratio. Tunable as "EitrCostPerDamage"
+        // in this effect's Config block in config/shardstones.json.
+        public const float DefaultEitrCostPerDamage = 1f;
+
+        private const string EitrCostPerDamageKey = "EitrCostPerDamage";
+
+        public static readonly Dictionary<string, float> DefaultConfig = new Dictionary<string, float> {
+            { EitrCostPerDamageKey, DefaultEitrCostPerDamage },
+        };
+
+        // Floored at zero: a negative ratio would pay the player eitr for imbuing.
+        private static float GetEitrCostPerDamage() {
+            return Mathf.Max(0f, EffectConfig.Get(MagicEffectType.EitrImbueAttack,
+                EitrCostPerDamageKey, DefaultEitrCostPerDamage));
+        }
 
         // Prefix handler invoked by CharacterDamageDispatch (attacker-side outgoing modifier).
         public static void ModifyOutgoingHit(HitData hit, Character attacker) {
@@ -22,7 +39,7 @@
             }
 
             // No bonus unless the pool can fully cover the cost.
-            float cost = bonus * EitrCostPerDamage;
+            float cost = bonus * GetEitrCostPerDamage();
             if (player.GetEitr() < cost) {
                 return;
             }

@@ -53,8 +53,12 @@ public static class MagicTooltipPatches
         {
             __state = null;
             string tooltipText;
+            // ZInput.GetKey before HasEquipmentOfType: this prefix runs every frame the cursor rests on a
+            // slot, and HasEquipmentOfType walks the player's equipment through GetMagicEquipment, which
+            // allocates two lists and runs the registered equipment providers. Only the comparison
+            // tooltip needs that answer, and only while Ctrl is actually held.
             if (item.IsEquipable() && !item.m_equipped && Player.m_localPlayer != null &&
-                Player.m_localPlayer.HasEquipmentOfType(item.m_shared.m_itemType) && ZInput.GetKey(KeyCode.LeftControl))
+                ZInput.GetKey(KeyCode.LeftControl) && Player.m_localPlayer.HasEquipmentOfType(item.m_shared.m_itemType))
             {
                 ItemDrop.ItemData otherItem = Player.m_localPlayer.GetEquipmentOfType(item.m_shared.m_itemType);
                 tooltipText = item.GetTooltip();

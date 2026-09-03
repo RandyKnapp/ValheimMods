@@ -1,6 +1,7 @@
 ﻿using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
+using Common;
 using HarmonyLib;
 using JetBrains.Annotations;
 using Jotunn.Configs;
@@ -105,6 +106,13 @@ namespace AdvancedPortals
                 true, true, ref BlackMarblePortalAllowPreviousPortalItems);
 
             AssetBundle assetBundle = LoadAssetBundle("advancedportals");
+            if (assetBundle == null)
+            {
+                // Everything below needs the bundle. Bailing here reports one clear cause instead of a
+                // cascade of null-reference errors from the piece registrations that follow.
+                APLogger.LogError("Failed to load the 'advancedportals' asset bundle. Advanced Portals is disabled for this session.");
+                return;
+            }
 
             LoadBuildPiece(assetBundle, "portal_ancient", new PieceConfig()
             {
@@ -235,12 +243,14 @@ namespace AdvancedPortals
             return description + (synchronizedSetting ? " [Synced with Server]" : " [Not Synced with Server]");
         }
 
+        // The assembly is named explicitly rather than taken from Assembly.GetCallingAssembly(). When
+        // another mod hooks Awake, MonoMod recompiles it as a dynamic method (DMD<...::Awake>), and the
+        // "calling assembly" is then that dynamic assembly, not this one. The resource lookup misses,
+        // LoadFromStream(null) throws "ArgumentNullException: stream", and the mod fails to load —
+        // intermittently, since it depends on which other mods are present.
         public static AssetBundle LoadAssetBundle(string filename)
         {
-            Assembly assembly = Assembly.GetCallingAssembly();
-            AssetBundle assetBundle = AssetBundle.LoadFromStream(assembly.GetManifestResourceStream($"{assembly.GetName().Name}.{filename}"));
-
-            return assetBundle;
+            return AssetBundleLoader.LoadFromResources(filename, typeof(AdvancedPortals).Assembly);
         }
 
         private static void LoadBuildPiece(AssetBundle assetBundle, string assetName, PieceConfig piececonfig)

@@ -262,12 +262,22 @@ namespace EquipmentAndQuickSlots {
         // them, so anything that must outlive the move is queued from the postfix.
         [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.OnSelectedItem))]
         public static class InventoryGui_OnSelectedItem_DragRules {
-            private static ItemDrop.ItemData _equipAfterDrop;
-            private static ItemDrop.ItemData _unequipAfterDrop;
+            // The cell the dragged item lands in when the drop has to be followed by a queued
+            // equip or unequip — a position, not the dragged ItemData. Vanilla's move goes through
+            // Inventory.AddItem(item, amount, x, y), which puts a Clone() of the dragged item into
+            // the target cell and removes the original from its inventory, so after the drop the
+            // object that was dragged is in no inventory at all and the item in the cell is a
+            // different one. Queuing on the original found nothing to act on: vanilla re-equipped
+            // the clone, no unequip was ever queued, and the sweep snapped the still-worn clone
+            // straight back into the paperdoll — drag-to-unequip was a silent no-op.
+            private static Vector2i? _equipAfterDropPos;
+            private static Vector2i? _unequipAfterDropPos;
+            private static ItemDrop.ItemData.SharedData _droppedShared;
 
             public static bool Prefix(InventoryGui __instance, InventoryGrid grid, Vector2i pos) {
-                _equipAfterDrop = null;
-                _unequipAfterDrop = null;
+                _equipAfterDropPos = null;
+                _unequipAfterDropPos = null;
+                _droppedShared = null;
 
                 Player player = Player.m_localPlayer;
                 if (player == null || player.IsTeleporting() || !__instance.m_dragGo || __instance.m_dragItem == null || __instance.m_dragInventory == null)
@@ -292,7 +302,8 @@ namespace EquipmentAndQuickSlots {
 
                     // From a container: vanilla moves it into the cell first, the postfix queues
                     // the equip; ItemBelongs keeps it in the cell while the equip is pending.
-                    _equipAfterDrop = dragItem;
+                    _equipAfterDropPos = pos;
+                    _droppedShared = dragItem.m_shared;
                 }
 
                 if (sourceSlot != null && sourceSlot.IsEquipmentSlot && dragItemEquipped) {
@@ -313,28 +324,43 @@ namespace EquipmentAndQuickSlots {
                     // unequip, and the sweep leaves it alone while that is pending. Into a
                     // container vanilla unequips on its own — an item can't stay worn outside the
                     // inventory.
-                    if (targetIsPlayerGrid && (targetSlot == null || !targetSlot.IsEquipmentSlot) && targetItem == null)
-                        _unequipAfterDrop = dragItem;
+                    if (targetIsPlayerGrid && (targetSlot == null || !targetSlot.IsEquipmentSlot) && targetItem == null) {
+                        _unequipAfterDropPos = pos;
+                        _droppedShared = dragItem.m_shared;
+                    }
                 }
 
                 return PassDropItem("InventoryGui.OnSelectedItem", grid, __instance.m_dragInventory, dragItem, pos);
             }
 
             public static void Postfix() {
-                ItemDrop.ItemData equip = _equipAfterDrop;
-                ItemDrop.ItemData unequip = _unequipAfterDrop;
-                _equipAfterDrop = null;
-                _unequipAfterDrop = null;
+                Vector2i? equipPos = _equipAfterDropPos;
+                Vector2i? unequipPos = _unequipAfterDropPos;
+                ItemDrop.ItemData.SharedData droppedShared = _droppedShared;
+                _equipAfterDropPos = null;
+                _unequipAfterDropPos = null;
+                _droppedShared = null;
 
                 Player player = Player.m_localPlayer;
                 if (player == null || PlayerInventory == null)
                     return;
 
-                if (equip != null && PlayerInventory.ContainsItem(equip))
+                // Whatever now sits in the target cell is the dropped item (or vanilla's clone of
+                // it). A refused drop leaves an empty target cell empty, or its previous occupant
+                // in place — the shared-data check keeps the queue off anything that isn't the
+                // dragged item, and QueueEquip/QueueUnequip no-op on an item already in the state
+                // asked for.
+                if (equipPos is Vector2i ep && LandedItem(ep, droppedShared) is ItemDrop.ItemData equip)
                     QueueEquip(player, equip);
 
-                if (unequip != null && PlayerInventory.ContainsItem(unequip) && (GetItemSlot(unequip) is not Slot landed || !landed.IsEquipmentSlot))
+                if (unequipPos is Vector2i up && LandedItem(up, droppedShared) is ItemDrop.ItemData unequip
+                    && (GetItemSlot(unequip) is not Slot landed || !landed.IsEquipmentSlot))
                     QueueUnequip(player, unequip);
+            }
+
+            private static ItemDrop.ItemData LandedItem(Vector2i pos, ItemDrop.ItemData.SharedData shared) {
+                ItemDrop.ItemData item = PlayerInventory.GetItemAt(pos.x, pos.y);
+                return item != null && item.m_shared == shared ? item : null;
             }
         }
 

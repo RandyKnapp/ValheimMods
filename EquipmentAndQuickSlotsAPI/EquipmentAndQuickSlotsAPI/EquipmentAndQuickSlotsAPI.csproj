@@ -1,6 +1,13 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\Paths.props" />
+  <PropertyGroup>
+    <!-- The one project here that compiles clean against the vanilla assemblies as shipped:
+         it is a pure API shim and touches no non-public Valheim members. Skip the
+         publicizer rather than take the dependency for nothing. -->
+    <PublicizeGameAssemblies>false</PublicizeGameAssemblies>
+  </PropertyGroup>
+
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <TargetFramework>net472</TargetFramework>

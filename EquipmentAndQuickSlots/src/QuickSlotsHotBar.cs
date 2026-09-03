@@ -73,6 +73,13 @@ namespace EquipmentAndQuickSlots {
                 var positioned = clone.gameObject.AddComponent<Common.ConfigPositionedElement>();
                 positioned.AnchorConfig = ValConfig.QuickSlotsAnchor;
                 positioned.PositionConfig = ValConfig.QuickSlotsPosition;
+                // AddComponent ran Awake before the configs were assigned, so nothing has placed the
+                // bar yet. Place it now rather than leaving it to the component's first Update:
+                // BetterUI's own Hud.Awake postfix (which runs right after this one) removes this
+                // component so its HUD editor can own the bar's position, and it takes the bar's
+                // position at that moment as the starting point — see BetterUICompat. 2.x placed
+                // the bar here as well.
+                positioned.EnsureCorrectPosition();
 
                 bars.Add(vanillaBar.GetComponent<HotkeyBar>());
                 bars.Add(_quickBar);
@@ -131,6 +138,8 @@ namespace EquipmentAndQuickSlots {
                         return;
                     }
                 }
+
+                BetterUICompat.NoteQuickBarHandoff(_quickBar);
 
                 if (ZInput.IsGamepadActive() && IsHotkeyBarsActive() && player.TakeInput()) {
                     bool joyHotbarLeft = ZInput.GetButtonDown("JoyHotbarLeft") && !ZInput.GetButton("JoyAltKeys");

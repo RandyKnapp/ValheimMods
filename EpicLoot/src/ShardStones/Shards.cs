@@ -111,6 +111,22 @@ namespace EpicLoot.ShardStones {
     public class ShardEffectDefinition {
         public string EffectType;
         public Dictionary<ItemRarity, float> ValuesPerRarity = new Dictionary<ItemRarity, float>();
+
+        // Per-effect tunables, the same shape and semantics as the "Config" block on a
+        // magiceffects.json entry: a flat string -> float bag read at runtime through EffectConfig
+        // (backed by MagicItemEffectDefinitions.GetEffectConfig) and rendered one key per line in the
+        // Shift-detail tooltip. This is where a shard effect's cooldowns, charge counts, durations,
+        // radii and caps live, so they can be retuned without rebuilding the DLL.
+        //
+        // Left empty on purpose: Newtonsoft APPENDS to a pre-initialized collection, and an absent key
+        // has to fall through to the effect class's code default rather than merge with it.
+        // ShardEffectDefinitions.BuildDefinition owns that merge -- code defaults first, these keys
+        // overlaid on top -- which is what lets a partial block tune one knob without blanking the rest.
+        //
+        // An effect assigned to several slots is authored once per slot, so the same effect type can
+        // carry more than one Config. First occurrence wins, exactly as ValuesPerRarity already does;
+        // a disagreeing later copy is warned about in ShardEffectDefinitions.CollectShardEffects.
+        public Dictionary<string, float> Config = new Dictionary<string, float>();
     }
 
     public class ShardDefinition {
@@ -140,9 +156,21 @@ namespace EpicLoot.ShardStones {
         }
     }
 
-    // Root of config/shardstones.json: the full shard effect/rarity grid keyed by color.
+    // Tunables shared by several shard effects rather than owned by one, so they have no single
+    // ShardEffectDefinition to hang off (the movement-penalty reference feeds seven shards, the
+    // blood-block self-damage share feeds two). Read through EffectConfig.Global, but resolved once
+    // per load into static fields on the classes that use them -- several sit on 50Hz vanilla methods
+    // where a per-read dictionary lookup would not be free. Empty by default for the Newtonsoft reason
+    // on ShardEffectDefinition.Config above.
+    public class ShardGlobalConfig {
+        public Dictionary<string, float> Values = new Dictionary<string, float>();
+    }
+
+    // Root of config/shardstones.json: the full shard effect/rarity grid keyed by color, plus the
+    // cross-effect tunables that belong to no single shard.
     public class ShardStonesConfig {
         public Dictionary<ShardType, ShardDefinition> Shards = new Dictionary<ShardType, ShardDefinition>();
+        public ShardGlobalConfig Global = new ShardGlobalConfig();
     }
 
     public static class Shards {
@@ -157,8 +185,12 @@ namespace EpicLoot.ShardStones {
         private static Dictionary<ShardType, ShardDefinition> _definitions =
             new Dictionary<ShardType, ShardDefinition>();
 
+        // Cross-effect tunables from the "Global" block, kept whole so GetCFG can round-trip them to
+        // clients. The live values are pushed into static fields by EffectConfig.ApplyGlobalConfig.
+        private static ShardGlobalConfig _globalConfig = new ShardGlobalConfig();
+
         // Config setup hook (SychronizeConfig<ShardStonesConfig>). Backfills defaults so downstream
-        // lookups never hit a null Rarities/TypeEffects.
+        // lookups never hit a null Rarities/TypeEffects/Config.
         public static void InitializeShardDefinitions(ShardStonesConfig config) {
             _definitions = config?.Shards ?? new Dictionary<ShardType, ShardDefinition>();
             foreach (var def in _definitions.Values) {
@@ -173,11 +205,32 @@ namespace EpicLoot.ShardStones {
                 if (def.TypeEffects == null) {
                     def.TypeEffects = new Dictionary<ShardSlotCategory, ShardEffectDefinition>();
                 }
+
+                // An explicit "Config": null in the file would otherwise reach BuildDefinition's merge.
+                if (def.UniformEffect != null && def.UniformEffect.Config == null) {
+                    def.UniformEffect.Config = new Dictionary<string, float>();
+                }
+                foreach (var effect in def.TypeEffects.Values) {
+                    if (effect != null && effect.Config == null) {
+                        effect.Config = new Dictionary<string, float>();
+                    }
+                }
             }
+
+            _globalConfig = config?.Global ?? new ShardGlobalConfig();
+            global::EpicLoot.src.Magic.MagicItemEffects.Helpers.EffectConfig.ApplyGlobalConfig(_globalConfig);
+
+            // The synthesized MagicItemEffectDefinitions are built from this grid, so they go stale the
+            // moment it changes. OnSetupMagicItemEffectDefinitions only fires when magiceffects.json
+            // reloads -- a different file -- so a live edit here, or a server pushing its copy of
+            // shardstones.json, has to rebuild them from this side. Same dual-trigger reason
+            // ShardStoneConversions.Merge runs from both its own Initialize and the other file's event.
+            // RegisterShardEffectDefinitions replaces its own previous output, so re-running is safe.
+            global::EpicLoot.Magic.MagicItemEffects.Helpers.ShardEffectDefinitions.RegisterShardEffectDefinitions();
         }
 
         public static ShardStonesConfig GetCFG() {
-            return new ShardStonesConfig { Shards = _definitions };
+            return new ShardStonesConfig { Shards = _definitions, Global = _globalConfig };
         }
 
         // Brings a shard's MagicItem in line with its identity. Color and rarity both come from

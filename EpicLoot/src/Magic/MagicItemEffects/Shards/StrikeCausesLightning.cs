@@ -1,10 +1,22 @@
 ﻿using EpicLoot.src.Magic.MagicItemEffects.Helpers;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects.Shards {
     // Provides a chance for the player to cause lightning strikes on enemies they hit
     public static class StrikeCausesLightning {
-        private const float DamagePerValue = 6f; // lightning damage per shard-value point
+        // Lightning damage per shard-value point, and the blast radius of the strike. Both tunable in this
+        // effect's Config block in config/shardstones.json, under these key names.
+        public const float DefaultDamagePerValue = 6f;
+        public const float DefaultRadius = 1f;
+
+        private const string DamagePerValueKey = "DamagePerValue";
+        private const string RadiusKey = "Radius";
+
+        public static readonly Dictionary<string, float> DefaultConfig = new Dictionary<string, float> {
+            { DamagePerValueKey, DefaultDamagePerValue },
+            { RadiusKey, DefaultRadius },
+        };
 
         // Visual: our networked, damage-free clone of the vanilla lightning-rod AOE. Built once and registered
         // into ZNetScene on every client each world load (RegisterVisualPrefab), then instantiated at each proc;
@@ -92,7 +104,12 @@ namespace EpicLoot.MagicItemEffects.Shards {
 
             // Specifically set the damage source to null which will become ZDOID.NONE, because we do not want to chain these strikes, each lightning strike requires a new proc from the player.
             // If we set the source to the player, then the lightning strike will be considered a player attack and can chain to other enemies in range, which is not what we want.
-            DamageInRadius.DamageEnemiesInRadius(null, __instance.transform.position, 1f, new HitData.DamageTypes { m_lightning = value * DamagePerValue });
+            DamageInRadius.DamageEnemiesInRadius(null, __instance.transform.position,
+                EffectConfig.Get(MagicEffectType.StrikeCausesLightning, RadiusKey, DefaultRadius),
+                new HitData.DamageTypes {
+                    m_lightning = value * EffectConfig.Get(MagicEffectType.StrikeCausesLightning,
+                        DamagePerValueKey, DefaultDamagePerValue)
+                });
             SpawnVisual(__instance.transform.position);
         }
 

@@ -2,6 +2,57 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\Paths.props" />
   <Import Project="..\BuildTasks.props" />
+
+  <ItemGroup>
+    <!-- This is the only project pulling the JotunnLib package, and JotunnLib's props resolve the
+         vanilla assemblies from <Valheim>/valheim_Data/Managed/publicized_assemblies - a folder
+         nothing in this repo generates, so the build silently depended on someone having
+         publicized by hand. Drop those and take the stock assemblies instead;
+         BepInEx.AssemblyPublicizer.MSBuild publicizes them into obj/ (see
+         ..\Directory.Build.targets), so a game update is picked up on the next build.
+
+         assembly_valheim, assembly_utils and assembly_guiutils are not re-added here: Paths.props
+         already carries them, and Directory.Build.targets marks those Publicize="true". -->
+    <Reference Remove="assembly_valheim_publicized" />
+    <Reference Remove="assembly_utils_publicized" />
+    <Reference Remove="assembly_guiutils_publicized" />
+    <Reference Remove="assembly_googleanalytics_publicized" />
+    <Reference Remove="assembly_lux_publicized" />
+    <Reference Remove="assembly_postprocessing_publicized" />
+    <Reference Remove="assembly_simplemeshcombine_publicized" />
+    <Reference Remove="assembly_sunshafts_publicized" />
+    <Reference Remove="SoftReferenceableAssets_publicized" />
+    <Reference Remove="gui_framework_publicized" />
+
+    <Reference Include="assembly_googleanalytics" Publicize="true">
+      <HintPath>$(GamePathManaged)assembly_googleanalytics.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="assembly_lux" Publicize="true">
+      <HintPath>$(GamePathManaged)assembly_lux.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="assembly_postprocessing" Publicize="true">
+      <HintPath>$(GamePathManaged)assembly_postprocessing.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="assembly_simplemeshcombine" Publicize="true">
+      <HintPath>$(GamePathManaged)assembly_simplemeshcombine.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="assembly_sunshafts" Publicize="true">
+      <HintPath>$(GamePathManaged)assembly_sunshafts.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="SoftReferenceableAssets" Publicize="true">
+      <HintPath>$(GamePathManaged)SoftReferenceableAssets.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="gui_framework" Publicize="true">
+      <HintPath>$(GamePathManaged)gui_framework.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+  </ItemGroup>
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <TargetFramework>net481</TargetFramework>

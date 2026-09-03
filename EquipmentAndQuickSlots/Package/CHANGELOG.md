@@ -1,3 +1,12 @@
+**3.0.1**
+* Drag-to-unequip works again, with the unequip progress bar
+* **Compatibility with mods that make the player inventory scrollable** (Valheim Plus with its
+  `[Inventory]` section enabled).
+* **BetterUI compatibility.**
+    * Once BetterUI has taken the bar over, a one-time line in the log says so, rather than leaving
+      you to wonder why `Quick Slots Anchor` and `Quick Slots Position` appear to do nothing.
+* The readme now documents which mods are compatible and which are refused outright.
+
 **3.0.0**
 * **Complete rewrite of the slot system.**
     * All configs that impact balance or functionality now are server synced (if the mod is installed on the server).   

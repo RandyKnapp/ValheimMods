@@ -1,12 +1,20 @@
 ﻿using EpicLoot.src.Magic.MagicItemEffects.Helpers;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects.Shards {
     // Provides a temporary health regeneration buff on adrenaline activation
     public static class AdrenalineIncreasesHealthRegen {
-        // Seconds of buff granted per 1 point of shard value. Overridable via the effect's Config block
-        // ("SecondsPerPercent", see ShardEffectDefinitions).
+        // Seconds of buff granted per 1 point of shard value -- what turns the single rarity ramp into both
+        // a regen percentage and a duration. Tunable as "SecondsPerPercent" in this effect's Config block in
+        // config/shardstones.json.
         public const float DefaultSecondsPerPercent = 0.5f;
+
+        private const string SecondsPerPercentKey = "SecondsPerPercent";
+
+        public static readonly Dictionary<string, float> DefaultConfig = new Dictionary<string, float> {
+            { SecondsPerPercentKey, DefaultSecondsPerPercent },
+        };
 
         private const string BuffName = "EL_AdrenalineSurge";
         private static readonly int BuffHash = BuffName.GetStableHashCode();
@@ -52,12 +60,11 @@ namespace EpicLoot.MagicItemEffects.Shards {
             }
         }
 
+        // Floored just above zero: the derived value is the buff's ttl, and a ttl of 0 is "no timeout" to
+        // vanilla, which would make the surge permanent.
         private static float GetSecondsPerPercent() {
-            var cfg = MagicItemEffectDefinitions.GetEffectConfig(MagicEffectType.AdrenalineIncreasesHealthRegen);
-            if (cfg != null && cfg.TryGetValue("SecondsPerPercent", out var raw) && raw > 0f) {
-                return raw;
-            }
-            return DefaultSecondsPerPercent;
+            return Mathf.Max(0.001f, EffectConfig.Get(MagicEffectType.AdrenalineIncreasesHealthRegen,
+                SecondsPerPercentKey, DefaultSecondsPerPercent));
         }
 
         private static SE_AdrenalineSurge GetOrCreatePrototype() {

@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using BepInEx;
+using Common;
 using HarmonyLib;
 using UnityEngine;
 
@@ -15,7 +16,7 @@ namespace EquipmentAndQuickSlots {
     [BepInIncompatibility("com.bruce.valheim.comfyquickslots")]
     public class EquipmentAndQuickSlots : BaseUnityPlugin {
         public const string PluginId = "randyknapp.mods.equipmentandquickslots";
-        public const string Version = "3.0.0";
+        public const string Version = "3.0.1";
 
         public static Sprite PaperdollMale;
         public static Sprite PaperdollFemale;
@@ -77,16 +78,25 @@ namespace EquipmentAndQuickSlots {
 
         private static void LoadAssets() {
             var assetBundle = LoadAssetBundle("eaqs");
+            if (assetBundle == null) {
+                // Only the paperdoll art lives in this bundle, so returning here costs the paperdoll
+                // but leaves the slots themselves working, rather than aborting the rest of Awake.
+                LogError("Failed to load the 'eaqs' asset bundle. The paperdoll will not be shown.");
+                return;
+            }
+
             PaperdollMale = assetBundle.LoadAsset<Sprite>("PaperdollMale");
             PaperdollFemale = assetBundle.LoadAsset<Sprite>("PaperdollFemale");
             Paperdolls = assetBundle.LoadAsset<GameObject>("Paperdolls");
         }
 
+        // The assembly is named explicitly rather than taken from Assembly.GetCallingAssembly(). When
+        // another mod hooks Awake, MonoMod recompiles it as a dynamic method (DMD<...::Awake>), and the
+        // "calling assembly" is then that dynamic assembly, not this one. The resource lookup misses,
+        // LoadFromStream(null) throws "ArgumentNullException: stream", and the mod fails to load —
+        // intermittently, since it depends on which other mods are present.
         public static AssetBundle LoadAssetBundle(string filename) {
-            var assembly = Assembly.GetCallingAssembly();
-            var assetBundle = AssetBundle.LoadFromStream(assembly.GetManifestResourceStream($"{assembly.GetName().Name}.{filename}"));
-
-            return assetBundle;
+            return AssetBundleLoader.LoadFromResources(filename, typeof(EquipmentAndQuickSlots).Assembly);
         }
 
         public static void Log(string message) {
@@ -104,6 +114,12 @@ namespace EquipmentAndQuickSlots {
 
         public static void LogError(string message) {
             _instance.Logger.LogError(message);
+        }
+
+        // Ungated as well, for the rare one-time notice that explains why a setting has no effect
+        // (another mod has taken something over); those are worth more than the line they cost.
+        public static void LogInfo(string message) {
+            _instance.Logger.LogInfo(message);
         }
     }
 }

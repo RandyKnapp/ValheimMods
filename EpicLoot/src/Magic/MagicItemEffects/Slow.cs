@@ -9,14 +9,50 @@ namespace EpicLoot.MagicItemEffects
     {
         public const string RPCKey = "epic loot slow";
 
-        public float Multiplier;
+        // Slow values are summed across every equipped magic item (including socketed shards), so a heavily
+        // enchanted setup can total 100% or more. Unclamped that yields a multiplier of zero or negative,
+        // which freezes the target outright and leaves its speeds at 0/NaN/negative once the slow expires.
+        // Clamping to a floor keeps the target moving and keeps the restored speeds sane.
+        //
+        // Deliberately a const and not a config value: the multiplier travels over the RPC and is re-clamped
+        // on receipt, so every client has to agree on the bound or they would simulate different speeds.
+        public const float MinMultiplier = 0.1f;
+
+        public static float ClampMultiplier(float multiplier) => Mathf.Clamp(multiplier, MinMultiplier, 1f);
+
+        public float Multiplier = 1f;
         public float TimeToLive;
 
         private Character _character;
+        private bool _applied;
+        private float _acceleration;
+        private float _runSpeed;
+        private float _flyFastSpeed;
+        private float _swimSpeed;
 
         public void Start()
         {
             _character = GetComponent<Character>();
+            if (_character == null)
+            {
+                Destroy(this);
+                return;
+            }
+
+            // Clamp here as well as at the call site: RPC_Slow takes the multiplier off the wire, so an out
+            // of range value can arrive from a mismatched or modified client.
+            Multiplier = ClampMultiplier(Multiplier);
+
+            // Snapshot the originals and restore them verbatim instead of dividing the multiplier back out.
+            // Division only approximately recovers the starting value, so repeated slows drift the
+            // character's speeds, and it has no answer at all if Multiplier is ever zero. Vanilla treats
+            // these four fields as prefab constants and never writes them at runtime, so nothing else is
+            // competing for them.
+            _acceleration = _character.m_acceleration;
+            _runSpeed = _character.m_runSpeed;
+            _flyFastSpeed = _character.m_flyFastSpeed;
+            _swimSpeed = _character.m_swimSpeed;
+            _applied = true;
 
             _character.m_acceleration *= Multiplier;
             _character.m_runSpeed *= Multiplier;
@@ -33,12 +69,25 @@ namespace EpicLoot.MagicItemEffects
                 return;
             }
 
-            _character.m_acceleration /= Multiplier;
-            _character.m_runSpeed /= Multiplier;
-            _character.m_flyFastSpeed /= Multiplier;
-            _character.m_swimSpeed /= Multiplier;
-
+            // OnDestroy performs the restore, so it runs exactly once however the component goes away.
             Destroy(this);
+        }
+
+        public void OnDestroy()
+        {
+            // _applied is false when Start never ran (destroyed the same frame it was added), in which case
+            // the speeds were never scaled and there is nothing to put back.
+            if (!_applied || _character == null)
+            {
+                return;
+            }
+
+            _applied = false;
+
+            _character.m_acceleration = _acceleration;
+            _character.m_runSpeed = _runSpeed;
+            _character.m_flyFastSpeed = _flyFastSpeed;
+            _character.m_swimSpeed = _swimSpeed;
         }
     }
 
@@ -53,6 +102,17 @@ namespace EpicLoot.MagicItemEffects
 
         private static void RPC_Slow(Character character, float multiplier)
         {
+            if (character == null)
+            {
+                return;
+            }
+
+            multiplier = Slow.ClampMultiplier(multiplier);
+            if (Mathf.Approximately(multiplier, 1f))
+            {
+                return;
+            }
+
             if (!character.TryGetComponent(out Slow slow))
             {
                 slow = character.gameObject.AddComponent<Slow>();
@@ -72,8 +132,13 @@ namespace EpicLoot.MagicItemEffects
         // local player also owned the target.
         public static void OnDamageDealt(Character __instance, HitData hit, Character attacker)
         {
-            if (__instance == null || __instance.m_nview == null || attacker != Player.m_localPlayer
-                || __instance.IsBoss())
+            // IsValid() (not just a null check) is required: Character.Damage routes RPC_Damage synchronously
+            // when the local client owns the target, so the target can already have died and been destroyed by
+            // the time this postfix runs. ZNetScene.Destroy nulls the ZDO immediately while the ZNetView
+            // component itself only compares null at the end of the frame -- InvokeRPC would then dereference
+            // the null m_zdo.
+            if (__instance == null || __instance.m_nview == null || !__instance.m_nview.IsValid()
+                || attacker != Player.m_localPlayer || __instance.IsBoss())
             {
                 return;
             }
@@ -83,7 +148,8 @@ namespace EpicLoot.MagicItemEffects
                 return;
             }
 
-            float slowMultiplier = 1 - effectValue;
+            // Clamp before sending so the value on the wire is already the one every receiver will use.
+            float slowMultiplier = Slow.ClampMultiplier(1 - effectValue);
             if (!Mathf.Approximately(slowMultiplier, 1))
             {
                 __instance.m_nview.InvokeRPC(ZRoutedRpc.Everybody, Slow.RPCKey, slowMultiplier);

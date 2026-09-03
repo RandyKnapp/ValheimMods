@@ -11,8 +11,12 @@ namespace EpicLoot.MagicItemEffects.Shards {
                 return;
             }
 
-            var fraction = player.GetTotalActiveMagicEffectValue(MagicEffectType.IcyWeight, 0.01f)
-                * PenaltyScaling.MovementPenaltyFactor(player);
+            var pct = player.GetTotalActiveMagicEffectValue(MagicEffectType.IcyWeight, 0.01f);
+            if (pct <= 0f) {
+                return;
+            }
+
+            var fraction = pct * PenaltyScaling.MovementPenaltyFactor(player);
             if (fraction <= 0f) {
                 return;
             }

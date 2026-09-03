@@ -13,7 +13,7 @@ namespace EquipmentAndQuickSlots {
     // Utility/Trinket half a row lower on the right) on their own background, with the quick slots
     // on a separate background row below it. The grid elements for the hidden slot rows already
     // exist (the player grid renders the full-height inventory); this class only shrinks the
-    // visible grid and physically relocates those elements. All vanilla behavior — drag/drop,
+    // visible grid and physically relocates those elements out of it. All vanilla behavior — drag/drop,
     // tooltips, gamepad selection, other mods' icon overlays — keeps working because these are
     // real InventoryGrid elements.
     public static class EquipmentPanel {
@@ -75,6 +75,8 @@ namespace EquipmentAndQuickSlots {
         private static RectTransform equipmentBackground;
         private static RectTransform quickBackground;
         private static RectTransform customBackground;
+        private static RectTransform slotRoot;
+        private static RectTransform hiddenRoot;
         private static GameObject paperdoll;
         private static RectTransform[] paperdollImages;
 
@@ -306,6 +308,108 @@ namespace EquipmentAndQuickSlots {
             }
         }
 
+        // The slot cells are born under the grid root, because they are real InventoryGrid
+        // elements. That is not somewhere they can stay: mods that make the player inventory
+        // scrollable (Valheim Plus with its [Inventory] section enabled) add a RectMask2D and a
+        // ScrollRect to the player grid. The mask clips every descendant graphic, erasing the part
+        // of the panel that falls outside the grid rect — the quick and API rows — and making
+        // those cells unclickable with it, while the panel backgrounds (children of the player
+        // panel, not of the grid) keep drawing. The ScrollRect then slides the grid root, and the
+        // cells with it, out from under those backgrounds.
+        //
+        // So the cells get their own root, a sibling of the grid rather than a descendant. It
+        // mirrors the grid root's resting rect, which keeps every layout table in this file and in
+        // AugaPanel in the grid-root space they were written in.
+        private static RectTransform EnsureSlotRoot(InventoryGrid grid) {
+            RectTransform gridRoot = grid.m_gridRoot;
+            if (!gridRoot || !gridRoot.parent || !InventoryGui.instance.m_player)
+                return null;
+
+            if (!slotRoot) {
+                slotRoot = new GameObject("EaqsSlotRoot", typeof(RectTransform)).GetComponent<RectTransform>();
+                slotRoot.SetParent(InventoryGui.instance.m_player, worldPositionStays: false);
+                slotRoot.localScale = Vector3.one;
+                slotRoot.localRotation = Quaternion.identity;
+                // Over the panel backgrounds, which sit early in the panel's sibling order
+                slotRoot.SetAsLastSibling();
+            }
+
+            // Corner anchors, so the rect is described entirely by pivot and size no matter how
+            // the panel or the grid are anchored.
+            slotRoot.anchorMin = Vector2.zero;
+            slotRoot.anchorMax = Vector2.zero;
+            slotRoot.pivot = gridRoot.pivot;
+            slotRoot.sizeDelta = gridRoot.rect.size;
+
+            // anchoredPosition contributes linearly to localPosition, so subtracting it back out
+            // gives the grid root's pivot with any scroll offset removed — the placement the cell
+            // positions were measured against, and where they have to stay however far somebody
+            // else scrolls the grid. It is carried into the panel's local space by walking the
+            // transforms in between rather than through world space: converting a world point back
+            // into a parent's local space divides by that parent's scale, which is undefined when a
+            // component of it is zero — and BetterUI's HUD editor writes exactly that onto the
+            // player panel (see BetterUICompat).
+            Vector3 resting = gridRoot.localPosition - (Vector3)gridRoot.anchoredPosition;
+            if (TryTransformToPanelSpace(gridRoot.parent, slotRoot.parent, ref resting))
+                slotRoot.localPosition = resting;
+            else
+                slotRoot.position = gridRoot.parent.TransformPoint(resting);
+
+            return slotRoot;
+        }
+
+        // Carries a point given in `from`'s local space up through the local transforms of `from`
+        // and its ancestors until it is expressed in `panel`'s local space. False when `panel` is
+        // not an ancestor of `from`; the point is left untouched then.
+        private static bool TryTransformToPanelSpace(Transform from, Transform panel, ref Vector3 point) {
+            Vector3 p = point;
+            for (Transform t = from; t != null; t = t.parent) {
+                if (t == panel) {
+                    point = p;
+                    return true;
+                }
+
+                p = t.localPosition + t.localRotation * Vector3.Scale(t.localScale, p);
+            }
+
+            return false;
+        }
+
+        // Cells of inactive slots — reserved API capacity, quick slots past the configured count,
+        // switched-off equipment cells — must not show, but they cannot be destroyed either:
+        // vanilla InventoryGrid.UpdateGui indexes m_elements by grid position and touches every
+        // element every frame. Deactivating them where they stand has not been enough on its own:
+        // with BetterUI installed, players have seen the whole hidden region drawn as a block of
+        // empty cells under the inventory. Parked under a holder that is itself inactive, a cell
+        // stays invisible and unclickable whatever its own active flag ends up as. The holder sits
+        // far off-screen because vanilla's hover scan (GetHoveredElement) tests every element's
+        // rect, active or not, and returns the first hit — a hidden cell overlapping a panel cell
+        // would otherwise take that cell's tooltip.
+        private static RectTransform EnsureHiddenRoot() {
+            if (hiddenRoot || !InventoryGui.instance.m_player)
+                return hiddenRoot;
+
+            hiddenRoot = new GameObject("EaqsHiddenSlotRoot", typeof(RectTransform)).GetComponent<RectTransform>();
+            hiddenRoot.SetParent(InventoryGui.instance.m_player, worldPositionStays: false);
+            hiddenRoot.localScale = Vector3.one;
+            hiddenRoot.localRotation = Quaternion.identity;
+            hiddenRoot.anchorMin = Vector2.zero;
+            hiddenRoot.anchorMax = Vector2.zero;
+            hiddenRoot.anchoredPosition = new Vector2(-100000f, 0f);
+            hiddenRoot.gameObject.SetActive(false);
+
+            return hiddenRoot;
+        }
+
+        private static void ParkHiddenCell(GameObject go, RectTransform holder) {
+            if (!go)
+                return;
+
+            go.SetActive(false);
+            if (holder && go.transform.parent != holder)
+                go.transform.SetParent(holder, worldPositionStays: false);
+        }
+
         // Runs from InventoryGrid.UpdateGui on the player grid: shrink the visible grid, relocate
         // slot elements, label them, tint unfit targets while dragging.
         internal static void UpdateInventorySlots() {
@@ -315,6 +419,11 @@ namespace EquipmentAndQuickSlots {
 
             int startIndex = InventorySizeVisible;
             ItemDrop.ItemData dragItem = InventoryGui.instance.m_dragItem;
+            RectTransform cellRoot = EnsureSlotRoot(grid);
+            RectTransform hiddenCellRoot = EnsureHiddenRoot();
+            // Without a slot root of our own the cells stay where vanilla put them, and that is
+            // also where a cell has to go back to when its slot is switched on again.
+            Transform activeParent = cellRoot ? cellRoot : grid.m_gridRoot;
 
             for (int i = 0; i < Math.Min(slots.Length, grid.m_elements.Count - startIndex); ++i) {
                 InventoryGrid.Element element = grid.m_elements[startIndex + i];
@@ -324,9 +433,18 @@ namespace EquipmentAndQuickSlots {
                 if (!go)
                     continue;
 
-                go.SetActive(slot.IsActive);
-                if (!slot.IsActive)
+                if (!slot.IsActive) {
+                    ParkHiddenCell(go, hiddenCellRoot);
                     continue;
+                }
+
+                go.SetActive(true);
+
+                // Vanilla rebuilds the elements under the grid root whenever the inventory
+                // dimensions change; re-adopt them when it does. This also brings a cell back
+                // from the hidden holder once its slot is active again.
+                if (activeParent && go.transform.parent != activeParent)
+                    go.transform.SetParent(activeParent, worldPositionStays: false);
 
                 go.GetComponent<RectTransform>().anchoredPosition = EquipmentAndQuickSlots.HasAuga ? AugaPanel.GetSlotPosition(slot) : GetSlotPosition(slot);
                 SetSlotLabel(go.transform.Find("binding"), slot);
@@ -334,7 +452,7 @@ namespace EquipmentAndQuickSlots {
             }
 
             for (int i = startIndex + slots.Length; i < grid.m_elements.Count; i++)
-                grid.m_elements[i]?.m_go?.SetActive(false);
+                ParkHiddenCell(grid.m_elements[i]?.m_go, hiddenCellRoot);
         }
 
         private static bool DragItemFits(Slot slot, ItemDrop.ItemData dragItem) {
@@ -413,6 +531,8 @@ namespace EquipmentAndQuickSlots {
             equipmentBackground = null;
             quickBackground = null;
             customBackground = null;
+            slotRoot = null;
+            hiddenRoot = null;
             paperdoll = null;
             paperdollImages = null;
             _dragPosition = null;

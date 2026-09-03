@@ -1,18 +1,49 @@
 ﻿using EpicLoot.src.Magic.MagicItemEffects.Helpers;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects.Shards {
     // Provides a charge that builds on combat hits and discharges as a forward lightning shockwave when full.
     public static class EikthyrShockingCharge {
-        // Hits required to trigger a discharge.
-        private const int MaxCharges = 15;
-        // Portion of the banked combat damage delivered by the shockwave (tunable).
-        private const float DamageFraction = 0.3f;
-        // Cone geometry: reach straight ahead, and the full width of the cone at that reach. The half-width
-        // grows linearly from 0 at the player to (ConeMaxWidth / 2) at ConeLength.
-        private const float ConeLength = 4f;
-        private const float ConeMaxWidth = 4f;
-        private const float DischargeIgnoreWindow = 0.3f;
+        // All tunable in this effect's Config block in config/shardstones.json, under these key names.
+        //
+        // Hits required to trigger a discharge, and the portion of the banked combat damage the shockwave
+        // delivers. Cone geometry: reach straight ahead, and the full width of the cone at that reach --
+        // the half-width grows linearly from 0 at the player to (ConeMaxWidth / 2) at ConeLength. The
+        // ignore window is how long after a discharge the shockwave's own hits are kept from rebuilding
+        // the charge.
+        public const int DefaultMaxCharges = 15;
+        public const float DefaultDamageFraction = 0.3f;
+        public const float DefaultConeLength = 4f;
+        public const float DefaultConeMaxWidth = 4f;
+        public const float DefaultDischargeIgnoreWindow = 0.3f;
+
+        private const string MaxChargesKey = "MaxCharges";
+        private const string DamageFractionKey = "DamageFraction";
+        private const string ConeLengthKey = "ConeLength";
+        private const string ConeMaxWidthKey = "ConeMaxWidth";
+        private const string DischargeIgnoreWindowKey = "DischargeIgnoreWindow";
+
+        public static readonly Dictionary<string, float> DefaultConfig = new Dictionary<string, float> {
+            { MaxChargesKey, DefaultMaxCharges },
+            { DamageFractionKey, DefaultDamageFraction },
+            { ConeLengthKey, DefaultConeLength },
+            { ConeMaxWidthKey, DefaultConeMaxWidth },
+            { DischargeIgnoreWindowKey, DefaultDischargeIgnoreWindow },
+        };
+
+        // Clamped to at least 1 so a misconfiguration can't discharge on every hit through a zero threshold.
+        private static int GetMaxCharges() {
+            return EffectConfig.GetIntAtLeast(MagicEffectType.ShockingCharge,
+                MaxChargesKey, DefaultMaxCharges, 1);
+        }
+
+        // Floored above zero: the cone test divides by the reach.
+        private static float GetConeLength() {
+            return Mathf.Max(0.1f,
+                EffectConfig.Get(MagicEffectType.ShockingCharge, ConeLengthKey, DefaultConeLength));
+        }
+
         private const string ShockwaveFx = "fx_eikthyr_forwardshockwave";
 
         private static int _charges;
@@ -27,7 +58,7 @@ namespace EpicLoot.MagicItemEffects.Shards {
         private static bool _indicatorMissingLogged;
         // Live charge state, read by SE_ShockingChargeIndicator for its icon text and removal check.
         public static int CurrentCharges => _charges;
-        public static int MaxChargeCount => MaxCharges;
+        public static int MaxChargeCount => GetMaxCharges();
 
         // Postfix handler invoked by CharacterDamageDispatch (on-hit reaction).
         public static void OnDamageDealt(Character __instance, HitData hit, Character attacker) {
@@ -60,7 +91,7 @@ namespace EpicLoot.MagicItemEffects.Shards {
 
             _bankedDamage += contributed;
 
-            if (++_charges < MaxCharges) {
+            if (++_charges < GetMaxCharges()) {
                 ShowIndicator(player);
                 return;
             }
@@ -68,8 +99,10 @@ namespace EpicLoot.MagicItemEffects.Shards {
             // Discharge: fire along this (final) attack's direction, spend the bank, and open the ignore
             // window before the shockwave's hits route back through this postfix.
             _charges = 0;
-            _ignoreUntil = Time.time + DischargeIgnoreWindow;
-            var shotDamage = _bankedDamage * DamageFraction;
+            _ignoreUntil = Time.time + EffectConfig.Get(MagicEffectType.ShockingCharge,
+                DischargeIgnoreWindowKey, DefaultDischargeIgnoreWindow);
+            var shotDamage = _bankedDamage * EffectConfig.Get(MagicEffectType.ShockingCharge,
+                DamageFractionKey, DefaultDamageFraction);
             _bankedDamage = 0f;
             FireShockwave(player, hit.m_dir, shotDamage);
         }
@@ -110,7 +143,9 @@ namespace EpicLoot.MagicItemEffects.Shards {
                 return;
             }
 
-            var halfMaxWidth = ConeMaxWidth * 0.5f;
+            var coneLength = GetConeLength();
+            var halfMaxWidth = EffectConfig.Get(MagicEffectType.ShockingCharge,
+                ConeMaxWidthKey, DefaultConeMaxWidth) * 0.5f;
             foreach (var character in Character.GetAllCharacters()) {
                 if (character == null || character.IsPlayer() || character.IsTamed() || character.IsDead()) {
                     continue;
@@ -124,12 +159,12 @@ namespace EpicLoot.MagicItemEffects.Shards {
                 toTarget.y = 0f;
 
                 var along = Vector3.Dot(toTarget, dir);
-                if (along <= 0f || along > ConeLength) {
+                if (along <= 0f || along > coneLength) {
                     continue;
                 }
 
                 var perpendicular = toTarget - dir * along;
-                var halfWidth = (along / ConeLength) * halfMaxWidth;
+                var halfWidth = (along / coneLength) * halfMaxWidth;
                 if (perpendicular.sqrMagnitude > halfWidth * halfWidth) {
                     continue;
                 }

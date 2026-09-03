@@ -1,4 +1,5 @@
 ﻿using EpicLoot.src.Magic.MagicItemEffects.Helpers;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects.Shards {
@@ -6,17 +7,42 @@ namespace EpicLoot.MagicItemEffects.Shards {
     // blockable damage times the shard's multiplier.
     public static class MeteorSummoner {
         private const string MeteorPrefab = "projectile_meteor";
-        private const int MaxCharges = 25;           // weapon hits required to charge the meteor
-        private const float SpawnHeight = 20f;       // metres above the target the meteor launches from
-        private const float MinDistance = 5f;        // min horizontal offset of the launch point from the target
-        private const float MaxDistance = 15f;       // max horizontal offset of the launch point from the target
-        private const float ProjectileSpeed = 20f;   // metres/second the meteor travels toward the target
-        private const float ExplosionRadius = 4f;     // min AOE radius on impact so a moving target is still caught
+
+        // All tunable in this effect's Config block in config/shardstones.json, under these key names.
+        public const int DefaultMaxCharges = 25;             // weapon hits required to charge the meteor
+        public const float DefaultSpawnHeight = 20f;         // metres above the target the meteor launches from
+        public const float DefaultMinDistance = 5f;          // min horizontal offset of the launch point
+        public const float DefaultMaxDistance = 15f;         // max horizontal offset of the launch point
+        public const float DefaultProjectileSpeed = 20f;     // metres/second the meteor travels
+        public const float DefaultExplosionRadius = 4f;      // min AOE radius so a moving target is still caught
+
+        private const string MaxChargesKey = "MaxCharges";
+        private const string SpawnHeightKey = "SpawnHeight";
+        private const string MinDistanceKey = "MinDistance";
+        private const string MaxDistanceKey = "MaxDistance";
+        private const string ProjectileSpeedKey = "ProjectileSpeed";
+        private const string ExplosionRadiusKey = "ExplosionRadius";
+
+        public static readonly Dictionary<string, float> DefaultConfig = new Dictionary<string, float> {
+            { MaxChargesKey, DefaultMaxCharges },
+            { SpawnHeightKey, DefaultSpawnHeight },
+            { MinDistanceKey, DefaultMinDistance },
+            { MaxDistanceKey, DefaultMaxDistance },
+            { ProjectileSpeedKey, DefaultProjectileSpeed },
+            { ExplosionRadiusKey, DefaultExplosionRadius },
+        };
+
+        // Clamped to at least 1 so a misconfiguration can't make the meteor unreachable or fire every hit
+        // through a zero/negative threshold.
+        private static int GetMaxCharges() {
+            return EffectConfig.GetIntAtLeast(MagicEffectType.MeteorSummoner,
+                MaxChargesKey, DefaultMaxCharges, 1);
+        }
 
         private static int _charges;
         private static bool _meteorMissingLogged;
 
-        // Charge HUD indicator (Yagluth trophy icon showing "n/25"). Built lazily on the first charging hit --
+        // Charge HUD indicator (Yagluth trophy icon showing "n/max"). Built lazily on the first charging hit --
         // see GetOrCreateIndicator -- so ObjectDB is loaded when the trophy is queried. Its live count is read
         // by SE_MeteorChargeIndicator through the accessors below.
         private const string IndicatorName = "EL_MeteorSummonerCharge";
@@ -25,13 +51,13 @@ namespace EpicLoot.MagicItemEffects.Shards {
         private static bool _indicatorMissingLogged;
 
         public static int CurrentCharges => _charges;
-        public static int MaxChargeCount => MaxCharges;
+        public static int MaxChargeCount => GetMaxCharges();
 
-        // Tooltip: "Every {1} weapon hits ... deals {0}x that hit's damage" -- {1} is the charge-count
-        // const so the shown number stays in sync with the code rather than a baked-in literal.
+        // Tooltip: "Every {1} weapon hits ... deals {0}x that hit's damage" -- {1} is the configured
+        // charge count, so the shown number follows a retune instead of the baked-in default.
         public static void RegisterDisplayValues() {
             MagicItem.RegisterDisplayValues(MagicEffectType.MeteorSummoner,
-                value => new object[] { value, (float)MaxCharges });
+                value => new object[] { value, (float)GetMaxCharges() });
         }
 
         // Postfix handler invoked by CharacterDamageDispatch (on-hit reaction).
@@ -56,13 +82,13 @@ namespace EpicLoot.MagicItemEffects.Shards {
                 return;
             }
 
-            if (_charges < MaxCharges) {
+            if (_charges < GetMaxCharges()) {
                 ++_charges;
             }
 
             // A killing blow at full charge holds the charge rather than spending it, so the meteor always
             // gets a live target instead of falling on a corpse.
-            if (_charges < MaxCharges || __instance.IsDead()) {
+            if (_charges < GetMaxCharges() || __instance.IsDead()) {
                 ShowIndicator(player);
                 return;
             }
@@ -73,6 +99,7 @@ namespace EpicLoot.MagicItemEffects.Shards {
 
         // Launches the meteor from a random point on a ring MinDistance..MaxDistance around the target, lifted
         // SpawnHeight up, and flies it straight into the target's centre at ProjectileSpeed carrying `fireDamage`.
+        // All four are read from the effect Config; see the key constants above.
         private static void SummonMeteor(Player player, Character target, float fireDamage) {
             var prefab = ZNetScene.instance?.GetPrefab(MeteorPrefab);
             if (prefab == null) {
@@ -85,14 +112,23 @@ namespace EpicLoot.MagicItemEffects.Shards {
 
             var targetPos = target.GetCenterPoint();
 
+            var minDistance = EffectConfig.Get(MagicEffectType.MeteorSummoner,
+                MinDistanceKey, DefaultMinDistance);
+            // Held at or above the min so Random.Range can't be handed an inverted span.
+            var maxDistance = Mathf.Max(minDistance, EffectConfig.Get(MagicEffectType.MeteorSummoner,
+                MaxDistanceKey, DefaultMaxDistance));
+
             var angle = Random.Range(0f, Mathf.PI * 2f);
-            var horizontalDistance = Random.Range(MinDistance, MaxDistance);
+            var horizontalDistance = Random.Range(minDistance, maxDistance);
             var spawnPos = targetPos + new Vector3(
                 Mathf.Cos(angle) * horizontalDistance,
-                SpawnHeight,
+                EffectConfig.Get(MagicEffectType.MeteorSummoner, SpawnHeightKey, DefaultSpawnHeight),
                 Mathf.Sin(angle) * horizontalDistance);
 
-            var velocity = (targetPos - spawnPos).normalized * ProjectileSpeed;
+            // Floored above zero: a speed of 0 would leave the meteor hanging in the air forever.
+            var speed = Mathf.Max(0.1f, EffectConfig.Get(MagicEffectType.MeteorSummoner,
+                ProjectileSpeedKey, DefaultProjectileSpeed));
+            var velocity = (targetPos - spawnPos).normalized * speed;
 
             var meteor = Object.Instantiate(prefab, spawnPos, Quaternion.LookRotation(velocity));
             var projectile = meteor.GetComponent<Projectile>();
@@ -120,7 +156,8 @@ namespace EpicLoot.MagicItemEffects.Shards {
             // moving target still gets caught when the meteor lands beside it instead of dead-on.
             projectile.m_damage = hitData.m_damage;
             projectile.m_onlySpawnedProjectilesDealDamage = false;
-            projectile.m_aoe = Mathf.Max(projectile.m_aoe, ExplosionRadius);
+            projectile.m_aoe = Mathf.Max(projectile.m_aoe, EffectConfig.Get(
+                MagicEffectType.MeteorSummoner, ExplosionRadiusKey, DefaultExplosionRadius));
         }
 
         // Adds the charge HUD indicator to the player if it isn't already showing. AddStatusEffect clones the

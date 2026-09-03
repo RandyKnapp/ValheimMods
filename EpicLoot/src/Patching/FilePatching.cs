@@ -73,7 +73,12 @@ namespace EpicLoot.Patching
         ];
         public static MultiValueDictionary<string, Patch> PatchesPerFile = new MultiValueDictionary<string, Patch>();
 
-        public static void ReloadAndApplyAllPatches()
+        /// <summary>
+        /// Rebuilds every patched config file on disk. Returns the target names (no extension) whose
+        /// files were rewritten, so the caller can pull exactly those back into the live config --
+        /// the per-file watchers report the same writes, but only asynchronously.
+        /// </summary>
+        public static List<string> ReloadAndApplyAllPatches()
         {
             // Remember which targets HAD patches: a file whose last patch was just deleted must be
             // rebuilt from the embedded default, or it keeps the stale patched output forever.
@@ -82,6 +87,8 @@ namespace EpicLoot.Patching
             LoadAllPatches();
             ApplyAllPatches();
 
+            List<string> rewritten = new List<string>(Keys);
+
             foreach (string target in previousTargets)
             {
                 if (PatchesPerFile.GetValues(target, true).Count == 0)
@@ -89,8 +96,12 @@ namespace EpicLoot.Patching
                     EpicLoot.LogForce($"All patches targeting '{target}' were removed; restoring the unpatched default.");
                     string baseCfgFile = Path.Combine(ELConfig.GetOverhaulDirectoryPath(), $"{target}.json");
                     ELConfig.CreateBaseConfigurations(baseCfgFile, $"{target}.json");
+                    // Not in Keys any more (its patches are gone), so it cannot already be in the list.
+                    rewritten.Add(target);
                 }
             }
+
+            return rewritten;
         }
 
         private static IEnumerable<string> Keys => PatchesPerFile.Keys;

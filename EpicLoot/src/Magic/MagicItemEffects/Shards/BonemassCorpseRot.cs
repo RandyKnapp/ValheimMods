@@ -1,14 +1,36 @@
 ﻿using EpicLoot.src.Magic.MagicItemEffects.Helpers;
 using HarmonyLib;
 using JetBrains.Annotations;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects.Shards {
     // Detonates a poison cloud on enemies the local player kills
     public static class BonemassCorpseRot {
-        private const float Cooldown = 5f;
-        private const float CorpseRadius = 2f;
-        private const float PoisonPerTier = 20f; // 20 poison damage per point of shard value (5..25 -> 100..500)
+        // Seconds between detonations, the burst radius, and the poison dealt per point of shard value
+        // (20 -> 5..25 becomes 100..500). All tunable in this effect's Config block in
+        // config/shardstones.json, under these key names.
+        public const float DefaultCooldown = 5f;
+        public const float DefaultRadius = 2f;
+        public const float DefaultPoisonPerTier = 20f;
+
+        private const string CooldownKey = "Cooldown";
+        private const string RadiusKey = "Radius";
+        private const string PoisonPerTierKey = "PoisonPerTier";
+
+        public static readonly Dictionary<string, float> DefaultConfig = new Dictionary<string, float> {
+            { CooldownKey, DefaultCooldown },
+            { RadiusKey, DefaultRadius },
+            { PoisonPerTierKey, DefaultPoisonPerTier },
+        };
+
+        // Floored just above zero: a ttl of 0 is "no timeout" to vanilla, which would gate the shard
+        // permanently rather than removing the cooldown.
+        private static float GetCooldown() {
+            return Mathf.Max(0.1f,
+                EffectConfig.Get(MagicEffectType.CorpseRot, CooldownKey, DefaultCooldown));
+        }
+
         private const string ExplosionFx = "vfx_BombBlob_explode_poison";
 
         private static bool _fxMissingLogged;
@@ -43,8 +65,12 @@ namespace EpicLoot.MagicItemEffects.Shards {
 
                 var center = __instance.GetCenterPoint();
                 SpawnExplosionFx(__instance.transform.position);
-                DamageInRadius.DamageEnemiesInRadius(player, center, CorpseRadius,
-                    new HitData.DamageTypes { m_poison = value * PoisonPerTier });
+                DamageInRadius.DamageEnemiesInRadius(player, center,
+                    EffectConfig.Get(MagicEffectType.CorpseRot, RadiusKey, DefaultRadius),
+                    new HitData.DamageTypes {
+                        m_poison = value * EffectConfig.Get(MagicEffectType.CorpseRot,
+                            PoisonPerTierKey, DefaultPoisonPerTier)
+                    });
                 ShowCooldown(player);
             }
         }
@@ -62,9 +88,12 @@ namespace EpicLoot.MagicItemEffects.Shards {
             Object.Instantiate(prefab, position, Quaternion.identity);
         }
 
+        // The ttl is stamped here rather than at construction because the prototype is built once and
+        // cached, so a retuned cooldown would otherwise not take hold until the next game session.
         private static void ShowCooldown(Player player) {
             var indicator = GetOrCreateCooldownIndicator();
             if (indicator != null) {
+                indicator.m_ttl = GetCooldown();
                 player.GetSEMan().AddStatusEffect(indicator, true);
             }
         }
@@ -88,7 +117,7 @@ namespace EpicLoot.MagicItemEffects.Shards {
             se.name = CooldownName;
             se.m_name = "$mod_epicloot_se_corpserot";
             se.m_icon = icon;
-            se.m_ttl = Cooldown;
+            se.m_ttl = GetCooldown(); // restamped on every proc by ShowCooldown
             se.m_cooldownIcon = true;
             _cooldownIndicator = se;
             return _cooldownIndicator;

@@ -21,9 +21,13 @@ namespace EpicLoot.MagicItemEffects.Shards {
                     return;
                 }
 
-                var bonus = player.GetTotalActiveMagicEffectValue(
-                    MagicEffectType.IncreaseXPGainFromMovementPenalty, 0.01f) * PenaltyScaling.MovementPenaltyFactor(player);
-                factor *= 1f + bonus;
+                var pct = player.GetTotalActiveMagicEffectValue(
+                    MagicEffectType.IncreaseXPGainFromMovementPenalty, 0.01f);
+                if (pct == 0f) {
+                    return;
+                }
+
+                factor *= 1f + pct * PenaltyScaling.MovementPenaltyFactor(player);
             }
         }
     }

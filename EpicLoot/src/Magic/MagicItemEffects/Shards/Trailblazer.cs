@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using EpicLoot.src.Magic.MagicItemEffects.Helpers;
+using HarmonyLib;
 using JetBrains.Annotations;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,12 +7,37 @@ using UnityEngine;
 namespace EpicLoot.MagicItemEffects.Shards {
     // Lays a trail of burning behind the player while moving, damage scaled by the effect value
     public static class Trailblazer {
-        // Tuning knobs (placeholders; balance later).
-        private const float MinMoveSpeed = 1.5f;      // horizontal speed required to lay a trail
-        private const float SpawnInterval = 0.35f;    // seconds between dropping trail patches
-        private const float PatchRadius = 2.5f;       // burn radius of each patch
-        private const float PatchLifetime = 3f;       // how long a patch lingers
-        private const float PatchTickInterval = 0.5f; // seconds between burn ticks within a patch
+        // Tuning knobs, all read from this effect's Config block in config/shardstones.json under these key
+        // names. PatchLifetime additionally seeds the cached VFX template's particle duration and
+        // TimedDestruction timeout; those are baked into the registered prefab, so a lifetime raised past the
+        // default makes the burn outlast its visual until the next game session. Lowering it is exact,
+        // because TrailblazerFire.Init stamps the live value on each spawned patch.
+        public const float DefaultMinMoveSpeed = 1.5f;      // horizontal speed required to lay a trail
+        public const float DefaultSpawnInterval = 0.35f;    // seconds between dropping trail patches
+        public const float DefaultPatchRadius = 2.5f;       // burn radius of each patch
+        public const float DefaultPatchLifetime = 3f;       // how long a patch lingers
+        public const float DefaultPatchTickInterval = 0.5f; // seconds between burn ticks within a patch
+
+        private const string MinMoveSpeedKey = "MinMoveSpeed";
+        private const string SpawnIntervalKey = "SpawnInterval";
+        private const string PatchRadiusKey = "PatchRadius";
+        private const string PatchLifetimeKey = "PatchLifetime";
+        private const string PatchTickIntervalKey = "PatchTickInterval";
+
+        public static readonly Dictionary<string, float> DefaultConfig = new Dictionary<string, float> {
+            { MinMoveSpeedKey, DefaultMinMoveSpeed },
+            { SpawnIntervalKey, DefaultSpawnInterval },
+            { PatchRadiusKey, DefaultPatchRadius },
+            { PatchLifetimeKey, DefaultPatchLifetime },
+            { PatchTickIntervalKey, DefaultPatchTickInterval },
+        };
+
+        // Floored just above zero: a lifetime of 0 would destroy each patch before it could tick.
+        private static float GetPatchLifetime() {
+            return Mathf.Max(0.1f,
+                EffectConfig.Get(MagicEffectType.Trailblazer, PatchLifetimeKey, DefaultPatchLifetime));
+        }
+
         private const string VfxSourcePrefab = "vfx_FireAddFuel"; // vanilla prefab we clone
         private const string VfxClonePrefab = "EL_TrailblazerFire";  // our registered clone
         private static GameObject _vfxContainer; // disabled parent that keeps the template from Awaking
@@ -82,8 +108,9 @@ namespace EpicLoot.MagicItemEffects.Shards {
                 emission.rateOverTime = 2f;
 
                 var main = firePs.main;
-                if (main.duration < PatchLifetime) {
-                    main.duration = PatchLifetime;
+                var lifetime = GetPatchLifetime();
+                if (main.duration < lifetime) {
+                    main.duration = lifetime;
                 }
             } else {
                 EpicLoot.LogWarning($"Trailblazer: '{VfxSourcePrefab}' has no 'fire' particle system; skipping emission tweak.");
@@ -95,7 +122,7 @@ namespace EpicLoot.MagicItemEffects.Shards {
             // The vanilla vfx already tears itself down with a TimedDestruction; align it with the patch
             // lifetime so the visual and the burn expire together.
             var timed = template.GetComponent<TimedDestruction>() ?? template.AddComponent<TimedDestruction>();
-            timed.m_timeout = PatchLifetime;
+            timed.m_timeout = GetPatchLifetime();
             timed.m_triggerOnAwake = true;
 
             _vfxTemplate = template;
@@ -121,14 +148,17 @@ namespace EpicLoot.MagicItemEffects.Shards {
                 // Only lay a trail while actually moving along the ground.
                 var velocity = __instance.GetVelocity();
                 velocity.y = 0f;
-                if (velocity.magnitude < MinMoveSpeed || !__instance.IsOnGround()) {
+                if (velocity.magnitude < EffectConfig.Get(MagicEffectType.Trailblazer,
+                        MinMoveSpeedKey, DefaultMinMoveSpeed) || !__instance.IsOnGround()) {
                     return;
                 }
 
                 if (_spawnTimer > 0f) {
                     return;
                 }
-                _spawnTimer = SpawnInterval;
+                // Floored above zero so a misconfiguration cannot drop a patch every frame.
+                _spawnTimer = Mathf.Max(0.05f, EffectConfig.Get(MagicEffectType.Trailblazer,
+                    SpawnIntervalKey, DefaultSpawnInterval));
 
                 var prefab = ZNetScene.instance != null ? ZNetScene.instance.GetPrefab(VfxClonePrefab) : null;
                 if (prefab == null) {
@@ -140,8 +170,12 @@ namespace EpicLoot.MagicItemEffects.Shards {
                 }
 
                 var go = Object.Instantiate(prefab, __instance.transform.position, Quaternion.identity);
-                go.GetComponent<TrailblazerFire>()
-                    .Init(__instance, tickDamage, PatchRadius, PatchLifetime, PatchTickInterval);
+                go.GetComponent<TrailblazerFire>().Init(__instance, tickDamage,
+                    EffectConfig.Get(MagicEffectType.Trailblazer, PatchRadiusKey, DefaultPatchRadius),
+                    GetPatchLifetime(),
+                    // Floored above zero: a tick interval of 0 would burn every frame.
+                    Mathf.Max(0.05f, EffectConfig.Get(MagicEffectType.Trailblazer,
+                        PatchTickIntervalKey, DefaultPatchTickInterval)));
             }
         }
     }

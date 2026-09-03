@@ -14,8 +14,15 @@ namespace EpicLoot.MagicItemEffects.Shards {
                     return;
                 }
 
-                var bonus = player.GetTotalActiveMagicEffectValue(MagicEffectType.ArmorFromMovementPenalty, 0.01f)
-                    * PenaltyScaling.MovementPenaltyFactor(player);
+                // GetArmor is hot -- every equipped piece, on every damage calculation and every HUD
+                // refresh -- and measuring the penalty runs the whole status-effect speed pipeline, so
+                // it stays behind the memoized effect lookup.
+                var pct = player.GetTotalActiveMagicEffectValue(MagicEffectType.ArmorFromMovementPenalty, 0.01f);
+                if (pct == 0f) {
+                    return;
+                }
+
+                var bonus = pct * PenaltyScaling.MovementPenaltyFactor(player);
                 if (bonus != 0f) {
                     __result *= 1f + bonus;
                 }

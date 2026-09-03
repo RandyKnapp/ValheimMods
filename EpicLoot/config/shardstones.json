@@ -1,4 +1,10 @@
 {
+    "Global": {
+        "Values": {
+            "MovementPenaltyReference": 0.4,
+            "BloodBlockSelfDamagePercent": 5
+        }
+    },
     "Shards": {
         "Red": {
             "Category": "Core",
@@ -38,6 +44,9 @@
                         "Epic": 9,
                         "Legendary": 12,
                         "Mythic": 15
+                    },
+                    "Config": {
+                        "EitrPerTrigger": 100
                     }
                 },
                 "Shield": {
@@ -47,7 +56,7 @@
                         "Rare": 1.5,
                         "Epic": 2,
                         "Legendary": 2.5,
-                        "Mythic":  3
+                        "Mythic": 3
                     }
                 },
                 "Head": {
@@ -242,6 +251,9 @@
                         "Epic": 13,
                         "Legendary": 15,
                         "Mythic": 17
+                    },
+                    "Config": {
+                        "EitrCostPerDamage": 1
                     }
                 },
                 "RangedWeapon": {
@@ -252,6 +264,9 @@
                         "Epic": 25,
                         "Legendary": 30,
                         "Mythic": 35
+                    },
+                    "Config": {
+                        "EitrCostPerDamage": 1
                     }
                 },
                 "MagicWeapon": {
@@ -414,6 +429,9 @@
                         "Epic": 12,
                         "Legendary": 15,
                         "Mythic": 18
+                    },
+                    "Config": {
+                        "DamagePerTrigger": 75
                     }
                 },
                 "Trinket": {
@@ -536,6 +554,10 @@
                         "Epic": 8,
                         "Legendary": 10,
                         "Mythic": 12
+                    },
+                    "Config": {
+                        "MaxStacks": 5,
+                        "BuffDuration": 10
                     }
                 },
                 "Utility": {
@@ -556,6 +578,9 @@
                         "Epic": 60,
                         "Legendary": 80,
                         "Mythic": 100
+                    },
+                    "Config": {
+                        "BuffDuration": 1
                     }
                 }
             }
@@ -648,6 +673,13 @@
                         "Epic": 4,
                         "Legendary": 5,
                         "Mythic": 6
+                    },
+                    "Config": {
+                        "Cooldown": 10,
+                        "BatLifetime": 30,
+                        "SpawnRadius": 2,
+                        "SummonCountOffset": -1,
+                        "ConcurrentPerSummon": 2
                     }
                 },
                 "Utility": {
@@ -828,7 +860,7 @@
                     "EffectType": "AnchoredBlock",
                     "ValuesPerRarity": {
                         "Magic": 0.25,
-                        "Rare": 0.50,
+                        "Rare": 0.5,
                         "Epic": 0.75,
                         "Legendary": 1,
                         "Mythic": 1.25
@@ -994,6 +1026,9 @@
                         "Epic": 4,
                         "Legendary": 5,
                         "Mythic": 6
+                    },
+                    "Config": {
+                        "Cooldown": 30
                     }
                 },
                 "Shoulders": {
@@ -1188,6 +1223,10 @@
                         "Epic": 3,
                         "Legendary": 4,
                         "Mythic": 5
+                    },
+                    "Config": {
+                        "MaxStacks": 5,
+                        "BuffDuration": 10
                     }
                 },
                 "Legs": {
@@ -1198,6 +1237,10 @@
                         "Epic": 9,
                         "Legendary": 12,
                         "Mythic": 15
+                    },
+                    "Config": {
+                        "MaxHealthPercentPerValue": 2.5,
+                        "MinHealthReduction": 10
                     }
                 },
                 "Trinket": {
@@ -1320,6 +1363,10 @@
                         "Epic": 3,
                         "Legendary": 4,
                         "Mythic": 5
+                    },
+                    "Config": {
+                        "TickInterval": 3,
+                        "Radius": 30
                     }
                 },
                 "Utility": {
@@ -1432,6 +1479,10 @@
                         "Epic": 2,
                         "Legendary": 2.5,
                         "Mythic": 3
+                    },
+                    "Config": {
+                        "Radius": 10,
+                        "SpeedFloor": 0.4
                     }
                 },
                 "Utility": {
@@ -1514,6 +1565,10 @@
                         "Epic": 4,
                         "Legendary": 5,
                         "Mythic": 6
+                    },
+                    "Config": {
+                        "MaxReduction": 1,
+                        "BuffDuration": 30
                     }
                 },
                 "Chest": {
@@ -1586,6 +1641,9 @@
                         "Epic": 7,
                         "Legendary": 9,
                         "Mythic": 11
+                    },
+                    "Config": {
+                        "DamageMultiplier": 2
                     }
                 },
                 "RangedWeapon": {
@@ -1596,6 +1654,9 @@
                         "Epic": 7,
                         "Legendary": 9,
                         "Mythic": 11
+                    },
+                    "Config": {
+                        "DamageMultiplier": 2
                     }
                 },
                 "MagicWeapon": {
@@ -1606,6 +1667,9 @@
                         "Epic": 7,
                         "Legendary": 9,
                         "Mythic": 11
+                    },
+                    "Config": {
+                        "DamageMultiplier": 2
                     }
                 },
                 "Shield": {
@@ -1626,6 +1690,12 @@
                         "Epic": 20,
                         "Legendary": 25,
                         "Mythic": 30
+                    },
+                    "Config": {
+                        "ProcChance": 0.25,
+                        "MinSkillLevel": 2,
+                        "LevelWeightExponent": 2,
+                        "MaxLevelUpsPerProc": 20
                     }
                 },
                 "Chest": {
@@ -1636,6 +1706,13 @@
                         "Epic": 6,
                         "Legendary": 8,
                         "Mythic": 10
+                    },
+                    "Config": {
+                        "BonusRollsMin": 1,
+                        "BonusRollsMax": 6,
+                        "MaxMultiplier": 10,
+                        "MaxUnitsPerEntry": 100,
+                        "MaxAddedUnitsPerDeath": 300
                     }
                 },
                 "Legs": {
@@ -1646,6 +1723,25 @@
                         "Epic": 15,
                         "Legendary": 20,
                         "Mythic": 25
+                    },
+                    "Config": {
+                        "TripleChance": 20,
+                        "RollBase": 40,
+                        "RollPerValue": 12,
+                        "RollCurve": 2,
+                        "FloorFraction": 0.05,
+                        "Flint": 5,
+                        "Coins": 15,
+                        "Amber": 40,
+                        "Ruby": 80,
+                        "Chitin": 100,
+                        "AmberPearl": 120,
+                        "CopperScrap": 180,
+                        "SilverNecklace": 240,
+                        "IronScrap": 300,
+                        "SerpentScale": 360,
+                        "RunestoneEpic": 500,
+                        "RunestoneLegendary": 640
                     }
                 },
                 "Trinket": {
@@ -1768,6 +1864,9 @@
                         "Epic": 2,
                         "Legendary": 2.5,
                         "Mythic": 3
+                    },
+                    "Config": {
+                        "TickInterval": 10
                     }
                 },
                 "Utility": {
@@ -1788,6 +1887,9 @@
                         "Epic": 8,
                         "Legendary": 10,
                         "Mythic": 12
+                    },
+                    "Config": {
+                        "DamagePerTrigger": 200
                     }
                 }
             }
@@ -1810,6 +1912,9 @@
                         "Epic": 8,
                         "Legendary": 10,
                         "Mythic": 12
+                    },
+                    "Config": {
+                        "DamagePerTrigger": 200
                     }
                 },
                 "RangedWeapon": {
@@ -1820,6 +1925,9 @@
                         "Epic": 5,
                         "Legendary": 6,
                         "Mythic": 7
+                    },
+                    "Config": {
+                        "DamagePerTrigger": 200
                     }
                 },
                 "MagicWeapon": {
@@ -1830,6 +1938,9 @@
                         "Epic": 3,
                         "Legendary": 4,
                         "Mythic": 5
+                    },
+                    "Config": {
+                        "DamagePerTrigger": 200
                     }
                 },
                 "Shield": {
@@ -1880,6 +1991,9 @@
                         "Epic": 26,
                         "Legendary": 32,
                         "Mythic": 40
+                    },
+                    "Config": {
+                        "SecondsPerPercent": 0.5
                     }
                 },
                 "Utility": {
@@ -1948,10 +2062,14 @@
                     "EffectType": "BurdenedBlock",
                     "ValuesPerRarity": {
                         "Magic": 0.25,
-                        "Rare": 0.50,
+                        "Rare": 0.5,
                         "Epic": 0.75,
                         "Legendary": 1,
                         "Mythic": 1.25
+                    },
+                    "Config": {
+                        "WeightThreshold": 300,
+                        "WeightPerBonus": 50
                     }
                 },
                 "Head": {
@@ -2012,6 +2130,10 @@
                         "Epic": 9,
                         "Legendary": 12,
                         "Mythic": 15
+                    },
+                    "Config": {
+                        "CarryWeightPerValue": 10,
+                        "MinResultingCarryWeight": 50
                     }
                 }
             }
@@ -2029,6 +2151,13 @@
                     "Epic": 8,
                     "Legendary": 12,
                     "Mythic": 16
+                },
+                "Config": {
+                    "MinMoveSpeed": 1.5,
+                    "SpawnInterval": 0.35,
+                    "PatchRadius": 2.5,
+                    "PatchLifetime": 3,
+                    "PatchTickInterval": 0.5
                 }
             },
             "TypeEffects": {}
@@ -2046,6 +2175,10 @@
                     "Epic": 5,
                     "Legendary": 8,
                     "Mythic": 12
+                },
+                "Config": {
+                    "DamagePerValue": 6,
+                    "Radius": 1
                 }
             },
             "TypeEffects": {}
@@ -2066,6 +2199,13 @@
                     "Epic": 15,
                     "Legendary": 20,
                     "Mythic": 25
+                },
+                "Config": {
+                    "MaxCharges": 15,
+                    "DamageFraction": 0.3,
+                    "ConeLength": 4,
+                    "ConeMaxWidth": 4,
+                    "DischargeIgnoreWindow": 0.3
                 }
             },
             "TypeEffects": {}
@@ -2086,6 +2226,12 @@
                     "Epic": 15,
                     "Legendary": 20,
                     "Mythic": 25
+                },
+                "Config": {
+                    "Cooldown": 30,
+                    "CooldownPerValue": 1.5,
+                    "BaseRadius": 6,
+                    "RadiusPerTier": 0.15
                 }
             },
             "TypeEffects": {}
@@ -2105,6 +2251,11 @@
                     "Epic": 15,
                     "Legendary": 20,
                     "Mythic": 25
+                },
+                "Config": {
+                    "Cooldown": 5,
+                    "Radius": 2,
+                    "PoisonPerTier": 20
                 }
             },
             "TypeEffects": {}
@@ -2124,6 +2275,12 @@
                     "Epic": 15,
                     "Legendary": 20,
                     "Mythic": 25
+                },
+                "Config": {
+                    "BaseCooldown": 140,
+                    "CooldownPerRarity": 20,
+                    "Radius": 8,
+                    "FrostPerTier": 8
                 }
             },
             "TypeEffects": {}
@@ -2142,6 +2299,14 @@
                     "Epic": 8,
                     "Legendary": 10,
                     "Mythic": 12
+                },
+                "Config": {
+                    "MaxCharges": 25,
+                    "SpawnHeight": 20,
+                    "MinDistance": 5,
+                    "MaxDistance": 15,
+                    "ProjectileSpeed": 20,
+                    "ExplosionRadius": 4
                 }
             },
             "TypeEffects": {}
@@ -2160,6 +2325,10 @@
                     "Epic": 9,
                     "Legendary": 10,
                     "Mythic": 11
+                },
+                "Config": {
+                    "MaxStacks": 10,
+                    "BuffDuration": 10
                 }
             },
             "TypeEffects": {}
