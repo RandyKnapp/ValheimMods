@@ -1,5 +1,6 @@
 ﻿using BepInEx;
 using Common;
+using EpicLoot.Biomes;
 using EpicLoot.Config;
 using EpicLoot_UnityLib;
 using HarmonyLib;
@@ -48,65 +49,37 @@ namespace EpicLoot.Adventure.Feature
             var random = GetRandomForInterval(interval, RefreshInterval);
 
             var bountiesPerBiome = new MultiValueDictionary<Heightmap.Biome, BountyTargetConfig>();
-            
-            var defeatedBossBiomes = new List<Heightmap.Biome>();
-            var previousBossKilled = false;
-            var previousBoss = "";
 
             bool bossBountiesGated = BossBountiesGated();
+            HashSet<Heightmap.Biome> unlockedBiomes = bossBountiesGated ?
+                ComputeUnlockedBiomes(ELConfig.BossBountyMode.Value, key => ZoneSystem.instance.GetGlobalKey(key)) :
+                null;
 
-            if (bossBountiesGated)
+            foreach (var targetConfig in AdventureDataManager.Config.Bounties.Targets)
             {
-                foreach (var bossConfig in AdventureDataManager.Config.Bounties.Bosses)
+                // Only targets that exist in this game count, regardless of what the config says
+                if (PrefabManager.Instance.GetPrefab(targetConfig.TargetID) == null)
                 {
-                    if (previousBoss == "" && ELConfig.BossBountyMode.Value == GatedBountyMode.BossKillUnlocksNextBiomeBounties)
-                    {
-                        defeatedBossBiomes.Add(bossConfig.Biome);
-                        previousBoss = bossConfig.BossDefeatedKey;
-                    }
-
-                    if (ZoneSystem.instance.GetGlobalKey(bossConfig.BossDefeatedKey))
-                    {
-                        defeatedBossBiomes.Add(bossConfig.Biome);
-                        previousBossKilled = true;
-                        previousBoss = bossConfig.BossDefeatedKey;
-                    }
-                    else if ((previousBossKilled || previousBoss.Equals(bossConfig.BossDefeatedKey)) &&
-                        ELConfig.BossBountyMode.Value == GatedBountyMode.BossKillUnlocksNextBiomeBounties)
-                    {
-                        defeatedBossBiomes.Add(bossConfig.Biome);
-                        previousBoss = bossConfig.BossDefeatedKey;
-                        previousBossKilled = false;
-                    }
-                }
-            }
-
-            // When we build the list of potential targets we only want to include those that are in the game, regardless of what the config says
-            List<BountyTargetConfig> targetable_bounty_configs = new List<BountyTargetConfig>();
-            foreach (var potential_bounty in AdventureDataManager.Config.Bounties.Targets)
-            {
-                if (PrefabManager.Instance.GetPrefab(potential_bounty.TargetID) == null)
-                {
-                    EpicLoot.Log($"Could not find bounty prefab {potential_bounty.TargetID}");
+                    EpicLoot.Log($"Could not find bounty prefab {targetConfig.TargetID}");
                     continue;
                 }
-                else
-                {
-                    targetable_bounty_configs.Add(potential_bounty);
-                }
-            }
 
-            foreach (var targetConfig in targetable_bounty_configs)
-            {
-                if ((bossBountiesGated && !defeatedBossBiomes.Contains(targetConfig.Biome)) ||
-                    !player.m_knownBiome.Contains(targetConfig.Biome))
+                // A biome name the registry could not resolve was reported when the config loaded;
+                // the entry simply cannot be offered.
+                Heightmap.Biome biome = targetConfig.GetBiome();
+                if (biome == Heightmap.Biome.None)
+                {
+                    continue;
+                }
+
+                if ((bossBountiesGated && !unlockedBiomes.Contains(biome)) || !player.m_knownBiome.Contains(biome))
                 {
                     // Remove the results of undefeated biome bosses &
                     // Remove the results that the player doesn't know about yet
                     continue;
                 }
 
-                bountiesPerBiome.Add(targetConfig.Biome, targetConfig);
+                bountiesPerBiome.Add(biome, targetConfig);
             }
 
             var selectedTargets = new List<BountyTargetConfig>();
@@ -120,7 +93,7 @@ namespace EpicLoot.Adventure.Feature
 
             var results = selectedTargets.Select(targetConfig => new BountyInfo()
             {
-                Biome = targetConfig.Biome,
+                Biome = targetConfig.GetBiome(),
                 Interval = interval,
                 PlayerID = player.GetPlayerID(),
                 Target = new BountyTargetInfo() {
@@ -143,6 +116,46 @@ namespace EpicLoot.Adventure.Feature
             }
 
             return results;
+        }
+
+        /// <summary>
+        /// The biomes allowed to offer bounties under a gated mode. A biome is defeated when every one
+        /// of its boss keys is set (no keys: always). Under BossKillUnlocksNextBiomeBounties a biome is
+        /// also unlocked when the biome group before it is defeated, where consecutive biomes sharing
+        /// one key set form a group: Ocean rides on BlackForest's key, so Eikthyr alone unlocks both,
+        /// exactly as the old Bosses-list walk did.
+        /// </summary>
+        internal static HashSet<Heightmap.Biome> ComputeUnlockedBiomes(GatedBountyMode mode, Func<string, bool> hasKey)
+        {
+            var unlocked = new HashSet<Heightmap.Biome>();
+            bool nextMode = mode == GatedBountyMode.BossKillUnlocksNextBiomeBounties;
+            bool previousGroupDefeated = true; // nothing precedes the first biome
+            bool currentGroupDefeated = false;
+            IReadOnlyList<string> currentGroupKeys = null;
+
+            foreach (BiomeDefinition definition in BiomeDataManager.BiomesInOrder)
+            {
+                bool defeated = definition.BossDefeatedKeys.All(hasKey);
+                if (currentGroupKeys != null && !SameKeySet(currentGroupKeys, definition.BossDefeatedKeys))
+                {
+                    previousGroupDefeated = currentGroupDefeated;
+                }
+
+                currentGroupKeys = definition.BossDefeatedKeys;
+                currentGroupDefeated = defeated;
+
+                if (defeated || (nextMode && previousGroupDefeated))
+                {
+                    unlocked.Add(definition.Biome);
+                }
+            }
+
+            return unlocked;
+        }
+
+        private static bool SameKeySet(IReadOnlyList<string> a, IReadOnlyList<string> b)
+        {
+            return a.Count == b.Count && a.All(b.Contains);
         }
 
         public static string PrintBounties(string label, List<BountyInfo> results)

@@ -1,4 +1,5 @@
 
+using EpicLoot.Biomes;
 using EpicLoot.Config;
 using EpicLoot.Crafting;
 using EpicLoot.Data;
@@ -574,14 +575,23 @@ namespace EpicLoot.CraftingV2
 
             List<LootTable> lootTables = new List<LootTable>() { };
 
-            if (!cfg.BiomeLootLists.ContainsKey(allowedBiome))
+            // A biome without a loot list of its own (a custom biome, say) uses the nearest lower biome
+            // that has one; the walk ends at None, which every shipped identify type defines.
+            if (!EnchantCostsHelper.TryGetForBiomeOrLower(cfg.BiomeLootLists, allowedBiome,
+                out List<string> lootSetNames, out Heightmap.Biome listBiome))
             {
-                // Fallback to the first defined biome loot list if the biome cannot be found.
-                // This should be set to none in the user configurations for best results.
-                allowedBiome = cfg.BiomeLootLists.First().Key;
+                EpicLoot.LogWarning($"No identify loot lists configured for biome " +
+                    $"{BiomeDataManager.GetName(allowedBiome)} or any lower biome.");
+                return lootTables;
             }
 
-            foreach (string lootSetName in cfg.BiomeLootLists[allowedBiome])
+            if (listBiome != allowedBiome)
+            {
+                EpicLoot.Log($" - No identify loot list for {BiomeDataManager.GetName(allowedBiome)}, " +
+                    $"using {BiomeDataManager.GetName(listBiome)}");
+            }
+
+            foreach (string lootSetName in lootSetNames)
             {
                 EpicLoot.Log($" - Checking loot set {lootSetName}");
                 List<LootTable> lootTable = LootRoller.GetFullyResolvedLootTable(lootSetName);
@@ -593,6 +603,40 @@ namespace EpicLoot.CraftingV2
 
             EpicLoot.Log($"Loot tables for {Localization.instance.Localize(cfg.Localization)} {lootTables.Count}");
             return lootTables;
+        }
+
+        /// <summary>
+        /// True when progression gating would identify any of the items below the biome printed on it,
+        /// so the identify panel can say so.
+        /// </summary>
+        internal static bool IsIdentifyGated(List<ItemDrop.ItemData> items)
+        {
+            GatedItemTypeMode mode = EpicLoot.GetGatedItemTypeMode();
+            if (mode == GatedItemTypeMode.Unlimited || mode == GatedItemTypeMode.PlayerMustKnowRecipe)
+            {
+                return false;
+            }
+
+            foreach (ItemDrop.ItemData item in items)
+            {
+                if (item == null || item.m_dropPrefab == null)
+                {
+                    continue;
+                }
+
+                Heightmap.Biome biome = EnchantHelper.GetBiomeFromUnidentifiedItem(item);
+                if (biome == Heightmap.Biome.None)
+                {
+                    continue;
+                }
+
+                if (GatedItemTypeHelper.GetCurrentOrLowerBiomeByDefeatedBossSettings(biome, mode) != biome)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         internal static List<InventoryItemListElement> LootRollSelectedItems(

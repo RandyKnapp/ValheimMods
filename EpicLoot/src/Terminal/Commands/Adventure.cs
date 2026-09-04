@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using EpicLoot.Adventure;
 using EpicLoot.Adventure.Feature;
+using EpicLoot.Biomes;
 using UnityEngine;
 using Random = System.Random;
 
@@ -16,7 +17,8 @@ public static partial class TerminalManager
         Player player = Player.m_localPlayer;
 
         int count = args.TryParameterInt(1, 1);
-        Heightmap.Biome biome = args.GetEnum(2, Heightmap.Biome.None);
+        // A vanilla name, a biomedata.json name, or a numeric value; blank picks a random map biome.
+        Heightmap.Biome biome = BiomeDataManager.Resolve(args.GetString(2, ""), Heightmap.Biome.None);
         int overrideTreasureMapCount = args.TryParameterInt(3, -1);
 
         AdventureDataManager.CheatNumberOfBounties = overrideTreasureMapCount;
@@ -27,14 +29,18 @@ public static partial class TerminalManager
     // TODO: update these tests
     private static IEnumerator TestTreasureMapCoroutine(AdventureSaveData saveData, Heightmap.Biome biome, Player player, int count)
     {
-        Heightmap.Biome[] biomes =
-        [
-            Heightmap.Biome.Meadows, 
-            Heightmap.Biome.BlackForest, 
-            Heightmap.Biome.Swamp,
-            Heightmap.Biome.Mountain, 
-            Heightmap.Biome.Plains
-        ];
+        // Every biome that sells a treasure map, so a biomedata.json biome is covered too.
+        Heightmap.Biome[] biomes = AdventureDataManager.Config.TreasureMap.BiomeInfo
+            .Where(x => x.Cost > 0)
+            .Select(x => x.GetBiome())
+            .Where(x => x != Heightmap.Biome.None)
+            .Distinct()
+            .ToArray();
+        if (biome == Heightmap.Biome.None && biomes.Length == 0)
+        {
+            Console.instance.PrintInfo("> No treasure map biomes are configured");
+            yield break;
+        }
 
         saveData.DebugMode = true;
         int startInterval = saveData.TreasureMaps.Count == 0 ? -1 : saveData.TreasureMaps.Min(x => x.Interval) - 1;

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EpicLoot.Biomes;
+using System;
 using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
@@ -90,7 +91,7 @@ namespace EpicLoot.Adventure
         private string GetTooltip()
         {
             _sb.Clear();
-            var biome = $"$biome_{BountyInfo.Biome.ToString().ToLower()}";
+            var biome = BiomeDataManager.GetLocalizationToken(BountyInfo.Biome);
             var monsterName = AdventureDataManager.GetMonsterName(BountyInfo.Target.MonsterID).ToLowerInvariant();
             var targetName = string.IsNullOrEmpty(BountyInfo.TargetName) ? "" : $"<color=orange>{BountyInfo.TargetName}</color>, ";
             var slayMessage = BountyInfo.Adds.Count > 0 ? "$mod_epicloot_bounties_tooltip_slaymultiple" : "$mod_epicloot_bounties_tooltip_slay";

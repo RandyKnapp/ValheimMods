@@ -1,6 +1,7 @@
 ﻿using BepInEx;
 using Common;
 using EpicLoot.Adventure;
+using EpicLoot.Biomes;
 using EpicLoot.Config;
 using EpicLoot.Crafting;
 using EpicLoot.CraftingV2;
@@ -100,6 +101,12 @@ public sealed class EpicLoot : BaseUnityPlugin {
         ModContext.Initialize(this, Logger, "EpicLoot");
 
         cfg = new ELConfig(Config);
+
+        // A biomedata.json reload re-resolves the adventure config's biome names and rebuilds the item
+        // gating order. Subscribed after the first load, which already ran the three configs in
+        // dependency order (biomedata, adventuredata, iteminfo), so no immediate call is needed.
+        BiomeDataManager.OnBiomeDataInitialized += AdventureDataManager.OnBiomeDataChanged;
+        BiomeDataManager.OnBiomeDataInitialized += GatedItemTypeHelper.OnBiomeDataChanged;
 
         // Set the referenced common logger to the EL specific reference so that common things get logged
         PrefabCreator.Logger = Logger;
@@ -697,7 +704,6 @@ public sealed class EpicLoot : BaseUnityPlugin {
     }
 
     private static void LoadUnidentifiedItems() {
-        // TODO: Add support for biomes added by other mods as needed.
         GameObject genericPrefab = EpicAssets.AssetBundle.LoadAsset<GameObject>("_Unidentified");
         CustomItem genericUnidentified = new CustomItem(genericPrefab, false);
         ItemManager.Instance.AddItem(genericUnidentified);
@@ -710,30 +716,16 @@ public sealed class EpicLoot : BaseUnityPlugin {
                 continue;
             }
 
-            foreach (ItemRarity rarity in Enum.GetValues(typeof(ItemRarity))) {
-                var prefab = Object.Instantiate(genericPrefab);
-                string prefabName = $"{biome}_{rarity}_Unidentified";
-                prefab.name = prefabName;
-                ItemDrop pid = prefab.GetComponent<ItemDrop>();
-                var magicItemComponent = pid.m_itemData.Data().GetOrCreate<MagicItemComponent>();
-                pid.m_itemData.m_dropPrefab = prefab;
-                magicItemComponent.SetMagicItem(new MagicItem {
-                    Rarity = rarity,
-                    IsUnidentified = true,
-                });
-                magicItemComponent.Save();
-                pid.Save();
+            CreateUnidentifiedItems(genericPrefab, biome, $"$mod_epicloot_unidentified_{biome}", unidentifiedPrefabNames);
+        }
 
-                ItemConfig unidentifiedIC = new ItemConfig() {
-                    Name = $"$mod_epicloot_{rarity} $mod_epicloot_unidentified_{biome}",
-                    Description = "$mod_epicloot_unidentified_introduce",
-                };
-
-                CustomItem custom = new CustomItem(prefab, false, unidentifiedIC);
-                ItemManager.Instance.AddItem(custom);
-
-                unidentifiedPrefabNames.Add(prefabName);
-            }
+        // Biomes other mods add, declared in biomedata.json. Only the local file counts here: LoadAssets
+        // runs once in Awake after the configs, and prefabs cannot be registered when a server pushes
+        // its biome data later, so biomedata.json has to ship with the modpack.
+        foreach (BiomeDefinition definition in BiomeDataManager.CustomBiomes) {
+            string displayName = $"$mod_epicloot_unidentified_prefix " +
+                $"{BiomeDataManager.GetLocalizationToken(definition.Biome)} $mod_epicloot_unidentified_suffix";
+            CreateUnidentifiedItems(genericPrefab, definition.Name, displayName, unidentifiedPrefabNames);
         }
 
         // Enable items once things are working so that ZNet issues don't happen.
@@ -753,6 +745,36 @@ public sealed class EpicLoot : BaseUnityPlugin {
         }
 
         ItemManager.OnItemsRegistered += EnableUnidentifiedItems;
+    }
+
+    // One {biomeName}_{rarity}_Unidentified prefab per rarity. The biome name is the prefix the identify
+    // flow parses back out (EnchantHelper.GetBiomeFromUnidentifiedItem), so it must not contain '_'.
+    private static void CreateUnidentifiedItems(GameObject genericPrefab, string biomeName, string biomeDisplayName,
+        List<string> unidentifiedPrefabNames) {
+        foreach (ItemRarity rarity in Enum.GetValues(typeof(ItemRarity))) {
+            var prefab = Object.Instantiate(genericPrefab);
+            string prefabName = $"{biomeName}_{rarity}_Unidentified";
+            prefab.name = prefabName;
+            ItemDrop pid = prefab.GetComponent<ItemDrop>();
+            var magicItemComponent = pid.m_itemData.Data().GetOrCreate<MagicItemComponent>();
+            pid.m_itemData.m_dropPrefab = prefab;
+            magicItemComponent.SetMagicItem(new MagicItem {
+                Rarity = rarity,
+                IsUnidentified = true,
+            });
+            magicItemComponent.Save();
+            pid.Save();
+
+            ItemConfig unidentifiedIC = new ItemConfig() {
+                Name = $"$mod_epicloot_{rarity} {biomeDisplayName}",
+                Description = "$mod_epicloot_unidentified_introduce",
+            };
+
+            CustomItem custom = new CustomItem(prefab, false, unidentifiedIC);
+            ItemManager.Instance.AddItem(custom);
+
+            unidentifiedPrefabNames.Add(prefabName);
+        }
     }
 
     private static void RegisterStatusEffects() {

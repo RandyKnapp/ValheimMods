@@ -380,16 +380,6 @@
       { "Biome": "AshLands",    "TargetID": "Charred_Melee",   "RewardGold": 5, "RewardIron": 9, "RewardCoins": 650, "Adds":
       [ { "ID": "Charred_Archer",  "Count": 2 }, { "ID": "Charred_Twitcher",  "Count": 2 } ] }
     ],
-    "Bosses": [
-      {"Biome": "Meadows",      "BossPrefab": "Eikthyr",      "BossDefeatedKey": "defeated_eikthyr" },
-      {"Biome": "BlackForest",  "BossPrefab": "gd_king",      "BossDefeatedKey": "defeated_gdking" },
-      {"Biome": "Ocean",        "BossPrefab": "gd_king",      "BossDefeatedKey": "defeated_gdking" }, 
-      {"Biome": "Swamp",        "BossPrefab": "Bonemass",     "BossDefeatedKey": "defeated_bonemass" },
-      {"Biome": "Mountain",     "BossPrefab": "Dragon",       "BossDefeatedKey": "defeated_dragon" },
-      {"Biome": "Plains",       "BossPrefab": "GoblinKing",   "BossDefeatedKey": "defeated_goblinking" },
-      {"Biome": "Mistlands",    "BossPrefab": "SeekerQueen",  "BossDefeatedKey": "defeated_queen" },
-      {"Biome": "AshLands",     "BossPrefab": "Fader",        "BossDefeatedKey": "defeated_fader" }
-    ],
     "Names": {
       "ChanceForSpecialName": 0.01,
       "SpecialNames": [

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using EpicLoot.Biomes;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -253,7 +254,7 @@ public class MinimapController : MonoBehaviour
                         Position = chestInfo.Position + chestInfo.MinimapCircleOffset,
                         Type = EpicLoot.TreasureMapPinType,
                         Name = Localization.instance.Localize("$mod_epicloot_treasurechest_minimappin",
-                            Localization.instance.Localize($"$biome_{chestInfo.Biome.ToString().ToLowerInvariant()}"),
+                            Localization.instance.Localize(BiomeDataManager.GetLocalizationToken(chestInfo.Biome)),
                             (chestInfo.Interval + 1).ToString())
                     };
 

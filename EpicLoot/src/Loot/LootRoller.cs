@@ -1,6 +1,7 @@
 ﻿using BepInEx;
 using Common;
 using EpicLoot.Adventure;
+using EpicLoot.Biomes;
 using EpicLoot.Config;
 using EpicLoot.Crafting;
 using EpicLoot.Data;
@@ -703,7 +704,7 @@ namespace EpicLoot
         {
             ZoneSystem.instance.GetGroundData(ref dropPoint, out var _, out var shardBiome, out var _, out var _);
 
-            var shardSetName = $"ShardStone_{shardBiome}";
+            var shardSetName = $"ShardStone_{BiomeDataManager.GetName(shardBiome)}";
             if (!ItemSets.ContainsKey(shardSetName))
             {
                 EpicLoot.LogWarning($"No shard stone item set found for biome {shardBiome} " +
@@ -765,13 +766,10 @@ namespace EpicLoot
             {
                 foreach (string bosskey in itemDetails.RequiredBosses)
                 {
-                    foreach (BountyBossConfig bossEntry in AdventureDataManager.Config.Bounties.Bosses)
+                    Heightmap.Biome bossBiome = BiomeDataManager.GetFirstBiomeForBossKey(bosskey);
+                    if (bossBiome != Heightmap.Biome.None)
                     {
-                        if (bossEntry.BossDefeatedKey != bosskey)
-                        {
-                            continue;
-                        }
-                        biomes.Add(bossEntry.Biome);
+                        biomes.Add(bossBiome);
                     }
                 }
             }
@@ -782,7 +780,7 @@ namespace EpicLoot
                 biomes.Add(biome);
             }
 
-            var selectBiome = biomes.First().ToString();
+            var selectBiome = BiomeDataManager.GetName(biomes.First());
             var prefab = ObjectDB.instance.GetItemPrefab($"{selectBiome}_{rarity}_Unidentified");
             if (prefab == null)
             {

@@ -1,3 +1,23 @@
+**Unreleased**
+
+Changes:
+* Custom biome support. Biomes added by other mods (Expand World Data and the like) can be declared in the new `biomedata.json`, which now owns biome progression order, boss keys and the colors used in the compendium
+    * Every `Biome` field in `adventuredata.json` and every biome key in `enchantcosts.json` takes a biome name (vanilla or from `biomedata.json`) or the numeric biome value
+    * An unknown biome name is now reported and that entry skipped, instead of the whole config file being thrown away
+    * Bounties, treasure maps, unidentified items and item gating all read biome order and boss keys from `biomedata.json`
+    * `Bounties.Bosses` in `adventuredata.json` is deprecated. An existing list is still read: biomes it names that `biomedata.json` does not define are appended to the end of the order
+    * A biome with no boss keys is never gated. `DeepNorth` bounties would previously never appear under a gated bounty mode
+    * Unidentified items are created at startup for every custom biome in the local `biomedata.json` (ship the file with the modpack; a server push alone cannot add prefabs); a custom biome without its own identify loot list or cost uses the nearest lower biome's
+    * Under `BossKillUnlocksNextBiomeItems`, identifying an item no longer advances past the biome on the item's name
+    * The identify panel says `(Progress-gated)` when gating will identify a selected item at a lower tier than its biome
+    * New console commands: `biomes` lists the biome order with keys and status, `knowbiome <biome>` marks a biome discovered so custom-biome bounties can be tested
+    * `testtreasuremap` accepts a biome name and picks random biomes from the treasure map config instead of a fixed list
+
+Bugfixes:
+* Bounty trophy icons no longer throw when a creature's drop list has an entry without a prefab
+* Treasure maps added through the API are now searched for spawn points like the configured ones
+
+
 **0.13.4**
 
 Changes:
