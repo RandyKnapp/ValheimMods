@@ -1,3 +1,34 @@
+**0.13.5**
+
+Changes:
+* Custom biome support. Biomes added by other mods (Expand World Data and the like) can be declared in the new `biomedata.json`, which now owns biome progression order, and boss keys
+    * Every `Biome` field in `adventuredata.json` and every biome key in `enchantcosts.json` takes a biome name (vanilla or from `biomedata.json`) or the numeric biome value
+    * An unknown biome name is now reported and that entry skipped, instead of the whole config file being thrown away
+    * Bounties, treasure maps, unidentified items and item gating all read biome order and boss keys from `biomedata.json`
+    * `Bounties.Bosses` in `adventuredata.json` is deprecated
+    * A biome with no boss keys is never gated
+    * Unidentified items are created at startup for every custom biome in the local `biomedata.json` (ship the file with the modpack; a server push alone cannot add prefabs)
+    * Under `BossKillUnlocksNextBiomeItems`, identifying an item no longer advances past the biome on the item's name
+    * The identify panel says `(Progress-gated)` when gating will identify a selected item at a lower tier than its biome
+    * New console commands: `biomes` lists the biome order with keys and status, `knowbiome <biome>` marks a biome discovered so custom-biome bounties can be tested
+* `Tempering.CostsByRarity` in `adventuredata.json` now supports removing rarities from tempering entirely
+    * A rarity left out of the block is no longer temperable at all, and its items are kept out of the temper panel
+    * A rarity with an empty cost list is still temperable, for free
+* Shardstone upgrades moved out of the Convert Materials tab's generic Upgrade list into their own Upgrade Shardstones mode
+    * That mode only lists an upgrade whose source stone you actually have, instead of every color you hold
+    * Sacrificing a shardstone now yields 2 dust, 2 reagents and 2 essence of its rarity
+* Treasure chests and Bounties now resolve their spawn points much quicker
+    * Both systems now inherently support custom biomes, world size changes and biome distribution changes
+
+Bugfixes:
+* Adds detection and support for custom item containers (such as backpacks, quivers)
+    * Hotkeys to open sockets on inventory containing items like this automatically changes  
+* Partially broken creatures used for bounties no longer crash the bounty system
+* Treasure maps added through the API now search for positions like normal
+* Compendium group headings are no longer unreadable the first time the compendium is opened in a session
+* Fixes shards being disenchtantable
+
+
 **0.13.4**
 
 Changes:

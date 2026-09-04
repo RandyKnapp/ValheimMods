@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using EpicLoot_UnityLib;
 using EpicLoot.Abilities;
 using EpicLoot.Adventure;
+using EpicLoot.Biomes;
 using EpicLoot.Crafting;
 using EpicLoot.CraftingV2;
 using EpicLoot.GatedItemType;
@@ -16,7 +17,7 @@ public static partial class TerminalManager
 {
     private static readonly List<string> ConfigNames =
     [
-        "loottable", "abilities", "adventuredata", "enchantcosts",
+        "loottable", "abilities", "adventuredata", "biomedata", "enchantcosts",
         "enchantingupgrades", "iteminfo", "itemnames", "itemsorter", "legendaries",
         "magiceffects", "materialconversion", "recipes", "shardstones",
         "shardstoneconversions"
@@ -47,6 +48,9 @@ public static partial class TerminalManager
                 break;
             case "adventuredata":
                 EpicLoot.LogWarningForce(JsonConvert.SerializeObject(AdventureDataManager.Config, Formatting.Indented));
+                break;
+            case "biomedata":
+                EpicLoot.LogWarningForce(JsonConvert.SerializeObject(BiomeDataManager.Config, Formatting.Indented));
                 break;
             case "enchantcosts":
                 EpicLoot.LogWarningForce(JsonConvert.SerializeObject(EnchantCostsHelper.Config, Formatting.Indented));

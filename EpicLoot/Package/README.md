@@ -26,7 +26,8 @@ Shardstones grant a variety of small buffs to allow much greater control over yo
   * Press Interact (E) on a socketed item in your inventory to open its shard slots, then drag in a shardstone or an Etched Runestone.
   * Enchanted items can now drop with shard slots, and the rarer the item the more slots it is likely to have.
   * Shardstones drop all over the world, each biome and boss has their own drops. Maybe you can find a unique shardstone also?
-  * Shardstones can be upgraded to a higher rarity, or converted into ordinary enchanting materials if you don't want them, at the enchanting table's Convert Materials tab.
+  * Shardstones can be upgraded to a higher rarity in the enchanting table's Convert Materials tab, under its own Upgrade Shardstones mode
+  * A shardstone you don't want can be sacrificed for dust, reagents and essence of its own rarity
 
 Shard drops come from the loot tables, so if you have customized your loottables.json you will need to accept the config update prompt (or refresh BepInEx/config/EpicLoot/baseconfig/loottables.json) before any shardstones will drop.
 

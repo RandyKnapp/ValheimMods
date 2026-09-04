@@ -1,4 +1,5 @@
-﻿using EpicLoot.CraftingV2;
+﻿using EpicLoot.Biomes;
+using EpicLoot.CraftingV2;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -61,17 +62,13 @@ namespace EpicLoot.Crafting
         }
 
         /// <summary>
-        /// Helper to get the biome from custom unidentified items with the format "{biome}_{rarity}_Unidentified"
+        /// Helper to get the biome from custom unidentified items with the format "{biome}_{rarity}_Unidentified".
+        /// The prefix is a registry biome name, so biomes from biomedata.json resolve as well as vanilla ones.
         /// </summary>
         public static Heightmap.Biome GetBiomeFromUnidentifiedItem(ItemDrop.ItemData item)
         {
             string biomeString = item.m_dropPrefab.name.Split('_')[0];
-            if (!Enum.TryParse<Heightmap.Biome>(biomeString, out Heightmap.Biome biome))
-            {
-                biome = Heightmap.Biome.None;
-            }
-
-            return biome;
+            return BiomeDataManager.TryResolve(biomeString, out Heightmap.Biome biome) ? biome : Heightmap.Biome.None;
         }
     }
 }

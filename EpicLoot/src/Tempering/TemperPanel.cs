@@ -403,11 +403,16 @@ public class TemperPanel : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     }
 
     private bool HaveRequirements(Player player) {
-        if (player.NoCostCheat()) {
-            return true;
-        }
         if (!selectedItemElement) {
             return false;
+        }
+        // Checked ahead of the no-cost cheat: a rarity the config left out is not temperable at all,
+        // so having nothing to pay for it must not become a way to temper it for free.
+        if (!TemperMan.IsTemperableRarity(selectedItemElement._magicItem.Rarity)) {
+            return false;
+        }
+        if (player.NoCostCheat()) {
+            return true;
         }
 
         // Resolved, so unresolvable prefabs are already warned about and dropped upstream.
@@ -421,11 +426,14 @@ public class TemperPanel : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     }
 
     private bool ConsumeRequirements(Player player) {
-        if (player.NoCostCheat()) {
-            return true;
-        }
         if (!selectedItemElement) {
             return false;
+        }
+        if (!TemperMan.IsTemperableRarity(selectedItemElement._magicItem.Rarity)) {
+            return false;
+        }
+        if (player.NoCostCheat()) {
+            return true;
         }
 
         // Must be the resolved set: ToPieceRequirement() would hand ConsumeResources a null m_resItem.
@@ -442,7 +450,10 @@ public class TemperPanel : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         List<ItemDrop.ItemData> magicItems = player
             .GetInventory()
             .GetAllItems()
-            .Where(x => x.IsMagic() && x.IsShardStone() == false)
+            // A rarity with no cost entry in adventuredata.json is not temperable, so its items never
+            // reach the panel's list.
+            .Where(x => x.IsMagic() && x.IsShardStone() == false
+                        && TemperMan.IsTemperableRarity(x.GetMagicItem().Rarity))
             .ToList();
 
 
@@ -867,29 +878,27 @@ public class TemperPanel : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         }
     }
 
+    // MagicFontManager.Apply rather than assigning font + fontSharedMaterial directly: TMP only checks
+    // that a shared material belongs to the font's current atlas inside LoadFontAsset(), which the
+    // fontSharedMaterial setter never runs.
     public static void LoadFonts() {
         if (!fontsLoaded) {
-            MagicFontManager.TMP_FontData averiaOutline = MagicFontManager.GetTMPFont(MagicFontManager.TMP_FontOptions.AveriaSansLibreOutline);
-            MagicFontManager.TMP_FontData norseOutline = MagicFontManager.GetTMPFont(MagicFontManager.TMP_FontOptions.NorseBoldOutline);
-            MagicFontManager.TMP_FontData averia = MagicFontManager.GetTMPFont(MagicFontManager.TMP_FontOptions.AveriaSansLibre);
-
+            bool applied = true;
             TextMeshProUGUI[] textMeshPros = EpicAssets.TemperPanel.GetComponentsInChildren<TextMeshProUGUI>(true);
             for (int i = 0; i < textMeshPros.Length; ++i) {
                 TextMeshProUGUI tmp = textMeshPros[i];
                 if (tmp.name == "Title") {
-                    tmp.font = norseOutline.font;
-                    tmp.fontSharedMaterial = norseOutline.material;
-
+                    applied &= MagicFontManager.Apply(tmp, MagicFontManager.TMP_FontOptions.NorseBoldOutline);
                 } else if (tmp.transform.parent.name == "gamepad_hint") {
-                    tmp.font = averia.font;
-                    tmp.fontSharedMaterial = averia.material;
+                    applied &= MagicFontManager.Apply(tmp, MagicFontManager.TMP_FontOptions.AveriaSansLibre);
                 } else {
-                    tmp.font = averiaOutline.font;
-                    tmp.fontSharedMaterial = averiaOutline.material;
+                    applied &= MagicFontManager.Apply(tmp, MagicFontManager.TMP_FontOptions.AveriaSansLibreOutline);
                 }
             }
 
-            fontsLoaded = true;
+            // Only latched on success: StoreGui reopens call this again, so a lookup that missed
+            // because the font was not loaded yet gets another go rather than sticking on the default.
+            fontsLoaded = applied;
         }
     }
 }

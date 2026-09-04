@@ -206,10 +206,11 @@ namespace EpicLoot_UnityLib
             AvailableItems.ClearFilter();
             AvailableItems.SetItems(items.Cast<IListElement>().ToList());
             AvailableItems.DeselectAll();
+            // Set before the selection refresh, which appends the progress-gated marker when needed.
+            Explainer.text = Localization.instance.Localize("$mod_epicloot_identify_productsexplainer");
             OnSelectedItemsChanged();
             Warning.text = Localization.instance.Localize("$mod_epicloot_identify_explain");
             Warning.color = new Color(1f, 0.631f, 0.235f);
-            Explainer.text = Localization.instance.Localize("$mod_epicloot_identify_productsexplainer");
             MainButton.GetComponentInChildren<Text>().text = Localization.instance.Localize("$mod_epicloot_identify");
             IdentifyStylePanel.SetActive(true);
             CostList.gameObject.SetActive(true);
@@ -249,6 +250,13 @@ namespace EpicLoot_UnityLib
                 List<InventoryItemListElement> potentialIdentifyItems =
                     EnchantingUIController.GetPotentialItemRollsByCategory(identifyFilter, selectedItems.Select(x => x.Item1.GetItem()).ToList());
                 SacrificeProducts.SetItems(potentialIdentifyItems.Cast<IListElement>().ToList());
+
+                // Say so when progression gating will identify a selected item below its own biome.
+                bool progressGated = EnchantingUIController.IsIdentifyGated(selectedItems.Select(x => x.Item1.GetItem()).ToList());
+                Explainer.text = Localization.instance.Localize(progressGated ?
+                    "$mod_epicloot_identify_productsexplainer $mod_epicloot_identify_progressgated" :
+                    "$mod_epicloot_identify_productsexplainer");
+
                 List<Tuple<ItemDrop.ItemData, int>> unidentifiedItems = selectedItems.Select(
                     x => new Tuple<ItemDrop.ItemData, int>(x.Item1.GetItem(), x.Item2)).ToList();
                 Tuple<float, float> featureValues =

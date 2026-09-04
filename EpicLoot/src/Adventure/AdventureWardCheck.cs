@@ -4,11 +4,13 @@ namespace EpicLoot.Adventure
 {
     /// <summary>
     /// The single definition of "this adventure spawn point is too close to a player's ward".
-    /// Used twice on different timescales: once when the world point is first picked
-    /// (<see cref="Feature.BountyLocationEarlyCache.IsSpawnLocationValid"/>), and again when the
-    /// spawner actually places its contents. Both are needed - the early pick force-spawns the zone
-    /// with <see cref="ZoneSystem.SpawnMode.Client"/>, which does not deliver player-built ZDOs, so
-    /// <see cref="PrivateArea.m_allAreas"/> is effectively empty for a remote zone at that point.
+    ///
+    /// Checked once, at placement time, from
+    /// <see cref="AdventureSpawnController.DeterminespawnPoint"/> - the only point in the flow where
+    /// it can mean anything. Picking the world point is seed-only and loads nothing, so
+    /// <see cref="PrivateArea.m_allAreas"/> holds no ward from a remote zone and a check there would
+    /// have approved every location regardless. The placement search is the one that runs with the
+    /// area genuinely loaded, and it expands its search band when a ward vetoes a candidate.
     /// </summary>
     internal static class AdventureWardCheck
     {

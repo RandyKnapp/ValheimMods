@@ -9,48 +9,10 @@ public static class TemperMan
     // The requirements panel is a fixed-height area with no ScrollRect, so only this many rows render.
     public const int MaxRequirementRows = 4;
 
-    private static readonly Dictionary<ItemRarity, TemperRequirement[]> DefaultCostMap =
-        new Dictionary<ItemRarity, TemperRequirement[]>()
-        {
-            [ItemRarity.Magic] = [
-                // new TemperRequirement("ShardMagic", 10), 
-                new TemperRequirement("Coins", 10),
-                new TemperRequirement("EssenceMagic", 10),
-                new TemperRequirement("ReagentMagic", 10),
-                new TemperRequirement("DustMagic", 10)
-            ],
-            [ItemRarity.Rare] = [
-                // new TemperRequirement("ShardRare", 10), 
-                new TemperRequirement("ForestToken", 1), 
-                new TemperRequirement("EssenceRare", 10),
-                new TemperRequirement("ReagentRare", 10),
-                new TemperRequirement("DustRare", 10)
-            ],
-            [ItemRarity.Epic] = [
-                // new TemperRequirement("ShardEpic", 10),  
-                new TemperRequirement("IronBountyToken", 1),  
-                new TemperRequirement("EssenceEpic", 10),
-                new TemperRequirement("ReagentEpic", 10),
-                new TemperRequirement("DustEpic", 10)
-            ],
-            [ItemRarity.Legendary] = [
-                // new TemperRequirement("ShardLegendary", 10),   
-                new TemperRequirement("GoldBountyToken", 1),   
-                new TemperRequirement("EssenceLegendary", 10),
-                new TemperRequirement("ReagentLegendary", 10),
-                new TemperRequirement("DustLegendary", 10)
-            ],
-            [ItemRarity.Mythic] = [
-                // new TemperRequirement("ShardMythic", 10),  
-                new TemperRequirement("GoldBountyToken", 2),   
-                new TemperRequirement("EssenceMythic", 10),
-                new TemperRequirement("ReagentMythic", 10),
-                new TemperRequirement("DustMythic", 10)
-            ],
-        };
-
+    // No hardcoded defaults: adventuredata.json's Tempering block is the only source of temper costs,
+    // so a rarity a config leaves out is simply not temperable.
     public static Dictionary<ItemRarity, TemperRequirement[]> costMap =
-        new Dictionary<ItemRarity, TemperRequirement[]>(DefaultCostMap);
+        new Dictionary<ItemRarity, TemperRequirement[]>();
 
     // Prefabs only resolve once ObjectDB exists, long after the config loads, so an unknown prefab
     // can only be detected on the UI/affordability path - which runs on every selection change.
@@ -58,25 +20,34 @@ public static class TemperMan
     private static readonly HashSet<string> WarnedInvalidPrefabs = new HashSet<string>();
 
     /// <summary>
-    /// Rebuilds the temper cost table from adventuredata.json's Tempering block. A missing block, or a
-    /// rarity absent from it, keeps that rarity's hardcoded default. A rarity present with an empty
-    /// list is taken literally: tempering it is free.
+    /// Rebuilds the temper cost table from adventuredata.json's Tempering block, which is the only
+    /// source of temper costs. A rarity absent from the block is not temperable at all - that is how a
+    /// config turns tempering off for a rarity. A rarity present with an empty list is taken literally:
+    /// it is temperable and costs nothing.
     /// </summary>
     public static void ApplyConfig(TemperingConfig config)
     {
         WarnedInvalidPrefabs.Clear();
-        costMap = new Dictionary<ItemRarity, TemperRequirement[]>(DefaultCostMap);
+        costMap = new Dictionary<ItemRarity, TemperRequirement[]>();
 
         if (config?.CostsByRarity == null || config.CostsByRarity.Count == 0)
         {
+            EpicLoot.LogWarning("Tempering: adventuredata.json has no Tempering.CostsByRarity entries, " +
+                "so nothing can be tempered. An on-disk adventuredata.json predating the Tempering " +
+                "block will do this - add the block or delete the file to pick the shipped one back up.");
             return;
         }
 
         foreach (KeyValuePair<ItemRarity, List<ItemAmountConfig>> entry in config.CostsByRarity)
         {
             ItemRarity rarity = entry.Key;
+            // A null cost list is malformed rather than empty, so it is treated like an omitted rarity
+            // (not temperable) instead of like "[]" (temperable, free) - but say so, since the two
+            // look nearly identical in the json.
             if (entry.Value == null)
             {
+                EpicLoot.LogWarning($"Tempering: rarity {rarity} has a null cost list, treating it as " +
+                    "not temperable. Use [] for a temperable rarity that costs nothing.");
                 continue;
             }
 
@@ -106,15 +77,16 @@ public static class TemperMan
         }
     }
 
+    /// <summary>
+    /// Whether tempering applies to this rarity at all. Purely a question of whether the config listed
+    /// the rarity: an omitted rarity has no costs to charge and its items are kept out of the temper
+    /// panel entirely, rather than being tempered for free.
+    /// </summary>
+    public static bool IsTemperableRarity(ItemRarity rarity) => costMap.ContainsKey(rarity);
+
     public static TemperRequirement[] GetRequirements(ItemRarity rarity)
     {
-        if (costMap.TryGetValue(rarity, out TemperRequirement[] requirements))
-        {
-            return requirements;
-        }
-        return [
-            new  TemperRequirement("Coins", 10)
-        ];
+        return costMap.TryGetValue(rarity, out TemperRequirement[] requirements) ? requirements : [];
     }
 
     /// <summary>

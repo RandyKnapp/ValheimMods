@@ -1,4 +1,5 @@
 
+using EpicLoot.Biomes;
 using EpicLoot.Config;
 using EpicLoot.Crafting;
 using EpicLoot.Data;
@@ -316,6 +317,8 @@ namespace EpicLoot.CraftingV2
                 };
 
                 bool hasSomeItems = false;
+                bool declaresShardCost = false;
+                bool hasSourceShard = false;
                 foreach (MaterialConversionRequirement requirement in conversion.Resources)
                 {
                     GameObject reqPrefab = ObjectDB.instance.GetItemPrefab(requirement.Item);
@@ -356,13 +359,28 @@ namespace EpicLoot.CraftingV2
                         Amount = requiredAmount
                     });
 
+                    bool costIsShard = costItem.IsShardStone();
+                    declaresShardCost |= costIsShard;
+
                     if (InventoryManagement.Instance.CountItem(costItem) > 0)
                     {
                         hasSomeItems = true;
+                        hasSourceShard |= costIsShard;
                     }
                 }
 
-                if (hasSomeItems)
+                // Owning any one ingredient is enough to list a recipe everywhere else, which is what the
+                // generic modes want -- you should see the runestone upgrade you are two shards short of. It
+                // reads as noise in the shard ladder though: every Magic-to-Rare step costs a ShardMagic, so
+                // carrying one surfaced all eighteen colors whether or not you held a single stone. Here the
+                // stone being consumed is the thing you are actually shopping for. A recipe that names no
+                // shard at all (nothing shipped does, but a patch or the API could) falls back rather than
+                // vanishing with no explanation.
+                bool listRecipe = conversion.Type == MaterialConversionType.ShardUpgrade && declaresShardCost
+                    ? hasSourceShard
+                    : hasSomeItems;
+
+                if (listRecipe)
                 {
                     result.Add(recipe);
                 }
@@ -574,14 +592,23 @@ namespace EpicLoot.CraftingV2
 
             List<LootTable> lootTables = new List<LootTable>() { };
 
-            if (!cfg.BiomeLootLists.ContainsKey(allowedBiome))
+            // A biome without a loot list of its own (a custom biome, say) uses the nearest lower biome
+            // that has one; the walk ends at None, which every shipped identify type defines.
+            if (!EnchantCostsHelper.TryGetForBiomeOrLower(cfg.BiomeLootLists, allowedBiome,
+                out List<string> lootSetNames, out Heightmap.Biome listBiome))
             {
-                // Fallback to the first defined biome loot list if the biome cannot be found.
-                // This should be set to none in the user configurations for best results.
-                allowedBiome = cfg.BiomeLootLists.First().Key;
+                EpicLoot.LogWarning($"No identify loot lists configured for biome " +
+                    $"{BiomeDataManager.GetName(allowedBiome)} or any lower biome.");
+                return lootTables;
             }
 
-            foreach (string lootSetName in cfg.BiomeLootLists[allowedBiome])
+            if (listBiome != allowedBiome)
+            {
+                EpicLoot.Log($" - No identify loot list for {BiomeDataManager.GetName(allowedBiome)}, " +
+                    $"using {BiomeDataManager.GetName(listBiome)}");
+            }
+
+            foreach (string lootSetName in lootSetNames)
             {
                 EpicLoot.Log($" - Checking loot set {lootSetName}");
                 List<LootTable> lootTable = LootRoller.GetFullyResolvedLootTable(lootSetName);
@@ -593,6 +620,40 @@ namespace EpicLoot.CraftingV2
 
             EpicLoot.Log($"Loot tables for {Localization.instance.Localize(cfg.Localization)} {lootTables.Count}");
             return lootTables;
+        }
+
+        /// <summary>
+        /// True when progression gating would identify any of the items below the biome printed on it,
+        /// so the identify panel can say so.
+        /// </summary>
+        internal static bool IsIdentifyGated(List<ItemDrop.ItemData> items)
+        {
+            GatedItemTypeMode mode = EpicLoot.GetGatedItemTypeMode();
+            if (mode == GatedItemTypeMode.Unlimited || mode == GatedItemTypeMode.PlayerMustKnowRecipe)
+            {
+                return false;
+            }
+
+            foreach (ItemDrop.ItemData item in items)
+            {
+                if (item == null || item.m_dropPrefab == null)
+                {
+                    continue;
+                }
+
+                Heightmap.Biome biome = EnchantHelper.GetBiomeFromUnidentifiedItem(item);
+                if (biome == Heightmap.Biome.None)
+                {
+                    continue;
+                }
+
+                if (GatedItemTypeHelper.GetCurrentOrLowerBiomeByDefeatedBossSettings(biome, mode) != biome)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         internal static List<InventoryItemListElement> LootRollSelectedItems(
@@ -1336,7 +1397,7 @@ namespace EpicLoot.CraftingV2
             return InventoryManagement.Instance.GetAllItems()
                 .Where(item => !item.m_equipped && !item.IsRunestone()  && (ELConfig.ShowEquippedAndHotbarItemsInSacrificeTab.Value ||
                     !boundItems.Contains(item)))
-                .Where(item => item.IsMagic(out MagicItem magicItem) && magicItem.CanBeDisenchanted())
+                .Where(item => item.CanBeDisenchanted())
                 .Select(item => new InventoryItemListElement() { Item = item })
                 .ToList();
         }
@@ -1428,7 +1489,7 @@ namespace EpicLoot.CraftingV2
         {
             bonusRolled = false;
             List<InventoryItemListElement> returnedItems = new List<InventoryItemListElement>();
-            if (item.IsMagic(out MagicItem magicItem) && magicItem.CanBeDisenchanted())
+            if (item.CanBeDisenchanted() && item.IsMagic(out MagicItem magicItem))
             {
                 Tuple<float, float> featureValues = EnchantingTableUI.instance.SourceTable.GetFeatureCurrentValue(
                     EnchantingFeature.Disenchant);

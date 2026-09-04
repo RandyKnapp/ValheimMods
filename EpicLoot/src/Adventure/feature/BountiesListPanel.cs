@@ -9,14 +9,6 @@ namespace EpicLoot.Adventure.Feature
     {
         private readonly MerchantPanel _merchantPanel;
 
-        // Flag to prevent spam accepting multiple bounties. Instance state with a time failsafe:
-        // it used to be a static cleared only inside the accept coroutine's callback -- if the
-        // hosting Player died mid-search the coroutine died with it, and the latched static left
-        // the Accept button silently dead for the rest of the process.
-        private bool _generatingBounty = false;
-        private float _generatingBountyStarted;
-        private const float GeneratingBountyTimeout = 30f;
-
         public AvailableBountiesListPanel(MerchantPanel merchantPanel, BountyListElement elementPrefab)
             : base(
                 merchantPanel.transform.Find("Bounties/AvailableBountiesPanel/ItemList") as RectTransform,
@@ -60,32 +52,40 @@ namespace EpicLoot.Adventure.Feature
             }
 
             var bounty = GetSelectedItem();
-            bool latchExpired = _generatingBounty &&
-                Time.unscaledTime - _generatingBountyStarted > GeneratingBountyTimeout;
-            if ((!_generatingBounty || latchExpired) && bounty != null && bounty.BountyInfo.State == BountyState.Available)
+            if (bounty == null || bounty.BountyInfo.State != BountyState.Available || !TryBeginAction())
             {
-                _generatingBounty = true;
-                _generatingBountyStarted = Time.unscaledTime;
-                EpicLoot.Log("Trying to accept bounty...");
-                player.StartCoroutine(AdventureDataManager.Bounties.AcceptBounty(
-                    player, bounty.BountyInfo, (success, position) =>
+                return;
+            }
+
+            EpicLoot.Log("Trying to accept bounty...");
+
+            // Hosted on the adventure driver rather than the Player: a coroutine on the player dies
+            // with that object on death, logout or world change, and its completion callback -- the
+            // one that clears the latch and refreshes the list -- would never run.
+            AdventureCacheDriver.Run(AdventureDataManager.Bounties.AcceptBounty(
+                player, bounty.BountyInfo, (success, position) =>
+            {
+                if (success && StoreGui.instance != null && _merchantPanel != null)
                 {
-                    if (success && StoreGui.instance != null && _merchantPanel != null)
+                    RefreshItems(_merchantPanel.GetPlayerCurrencies());
+
+                    if (StoreGui.instance.m_trader != null)
                     {
-                        RefreshItems(_merchantPanel.GetPlayerCurrencies());
-
-                        if (StoreGui.instance.m_trader != null)
-                        {
-                            StoreGui.instance.m_trader.OnBought(new Trader.TradeItem { m_price = 0 });
-                        }
-
-                        StoreGui.instance.m_buyEffects?.Create(player.transform.position, Quaternion.identity);
+                        StoreGui.instance.m_trader.OnBought(new Trader.TradeItem { m_price = 0 });
                     }
 
-                    _generatingBounty = false;
-                    EpicLoot.Log($"Done trying to accept bounty. Success: {success}");
-                }));
-            }
+                    // The player can be gone by the time this lands, since the coroutine now
+                    // outlives them.
+                    var localPlayer = Player.m_localPlayer;
+                    if (localPlayer != null)
+                    {
+                        StoreGui.instance.m_buyEffects?.Create(localPlayer.transform.position, Quaternion.identity);
+                    }
+                }
+
+                EndAction();
+                EpicLoot.Log($"Done trying to accept bounty. Success: {success}");
+            }));
         }
 
         public override void RefreshItems(Currencies currencies)

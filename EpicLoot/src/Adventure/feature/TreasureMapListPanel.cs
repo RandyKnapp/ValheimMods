@@ -9,7 +9,6 @@ namespace EpicLoot.Adventure.Feature
     class TreasureMapListPanel : MerchantListPanel<TreasureMapListElement>
     {
         private readonly MerchantPanel _merchantPanel;
-        private IEnumerator SpawnTreasureChestCoroutine;
 
         public TreasureMapListPanel(MerchantPanel merchantPanel, TreasureMapListElement elementPrefab)
             : base(
@@ -48,11 +47,6 @@ namespace EpicLoot.Adventure.Feature
 
         protected override void OnMainButtonClicked()
         {
-            if (SpawnTreasureChestCoroutine != null)
-            {
-                return;
-            }
-
             Player player = Player.m_localPlayer;
             if (player == null)
             {
@@ -60,29 +54,38 @@ namespace EpicLoot.Adventure.Feature
             }
 
             TreasureMapListElement treasureMap = GetSelectedItem();
-            if (treasureMap != null)
+            if (treasureMap == null || !TryBeginAction())
             {
-                SpawnTreasureChestCoroutine = AdventureDataManager.TreasureMaps
-                    .SpawnTreasureChest(treasureMap.Biome, player, treasureMap.Price, OnSpawnTreasureChest);
-                player.StartCoroutine(SpawnTreasureChestCoroutine);
+                return;
             }
+
+            // Hosted on the adventure driver rather than the Player, so a death, logout or world
+            // change cannot kill the coroutine before its callback clears the latch.
+            AdventureCacheDriver.Run(AdventureDataManager.TreasureMaps
+                .SpawnTreasureChest(treasureMap.Biome, player, treasureMap.Price, OnSpawnTreasureChest));
         }
 
         private void OnSpawnTreasureChest(int price, bool success, Vector3 position)
         {
-            if (success)
+            // Everything captured here can be gone by the time the callback lands, since the
+            // coroutine now outlives the player and the store window.
+            if (success && StoreGui.instance != null)
             {
                 InventoryManagement.Instance.RemoveItem(MerchantPanel.GetCoinsName(), price);
-                
+
                 if (StoreGui.instance.m_trader != null)
                 {
                     StoreGui.instance.m_trader.OnBought(new Trader.TradeItem { m_price = 0 });
                 }
 
-                StoreGui.instance.m_buyEffects?.Create(Player.m_localPlayer.transform.position, Quaternion.identity);
+                Player player = Player.m_localPlayer;
+                if (player != null)
+                {
+                    StoreGui.instance.m_buyEffects?.Create(player.transform.position, Quaternion.identity);
+                }
             }
 
-            SpawnTreasureChestCoroutine = null;
+            EndAction();
         }
 
         public override void RefreshItems(Currencies currencies)

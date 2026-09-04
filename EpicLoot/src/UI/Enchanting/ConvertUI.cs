@@ -42,6 +42,10 @@ namespace EpicLoot_UnityLib
     public class ConvertUI : EnchantingTableUIPanelBase
     {
         public MultiSelectItemList Products;
+
+        // Order is load-bearing: RefreshMode casts a button's index in this list straight to
+        // MaterialConversionType, so entry N must be the button for ordinal N. Reordering this in the
+        // Inspector silently relabels every mode and lists the wrong recipes under each.
         public List<Toggle> ModeButtons;
 
         [Header("Cost")]
@@ -83,6 +87,7 @@ namespace EpicLoot_UnityLib
             _mode = 0;
             RefreshMode();
             List<ConversionRecipeUnity> items = EnchantingUIController.GetConversionRecipes(_mode);
+            AvailableItems.ClearFilter();
             AvailableItems.SetItems(items.Cast<IListElement>().ToList());
         }
 
@@ -122,6 +127,10 @@ namespace EpicLoot_UnityLib
         public void OnModeChanged()
         {
             DeselectAll();
+
+            // Each mode lists a disjoint set of recipes, so a filter typed against the previous one leaves the
+            // new list looking empty rather than filtered. SetItems re-applies the filter but never clears it.
+            AvailableItems.ClearFilter();
             RefreshAvailableItems();
 
             switch (_mode)
@@ -151,6 +160,15 @@ namespace EpicLoot_UnityLib
                         _tmpButtonLabel.text = Localization.instance.Localize("$mod_epicloot_junk");
                     else
                         _buttonLabel.text = Localization.instance.Localize("$mod_epicloot_junk");
+                    break;
+
+                case MaterialConversionType.ShardUpgrade:
+                    CostLabel.text = Localization.instance.Localize("$mod_epicloot_shardupgradecost");
+                    _progressLabel.text = Localization.instance.Localize("$mod_epicloot_shardupgradeprogress");
+                    if (_useTMP)
+                        _tmpButtonLabel.text = Localization.instance.Localize("$mod_epicloot_shardupgrade");
+                    else
+                        _buttonLabel.text = Localization.instance.Localize("$mod_epicloot_shardupgrade");
                     break;
 
                 default:
@@ -309,6 +327,32 @@ namespace EpicLoot_UnityLib
         public override void DeselectAll()
         {
             AvailableItems.DeselectAll();
+        }
+
+        public override void Lock()
+        {
+            base.Lock();
+            SetModeButtonsInteractable(false);
+        }
+
+        public override void Unlock()
+        {
+            base.Unlock();
+            SetModeButtonsInteractable(true);
+        }
+
+        // The gamepad mode cycle in Update already refuses to fire while locked, but a mouse click on a toggle
+        // does not: it would switch modes mid-countdown, deselect everything, and let the progress bar finish
+        // on an empty selection. EnchantUI locks its rarity buttons for the same reason.
+        private void SetModeButtonsInteractable(bool interactable)
+        {
+            foreach (Toggle modeButton in ModeButtons)
+            {
+                if (modeButton != null)
+                {
+                    modeButton.interactable = interactable;
+                }
+            }
         }
     }
 }

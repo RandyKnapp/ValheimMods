@@ -1,4 +1,5 @@
 ﻿using EpicLoot.Adventure;
+using EpicLoot.Biomes;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -28,7 +29,7 @@ public class TreasureBountyTextInfo(string topic) : MagicTextInfo(topic)
             foreach (TreasureMapChestInfo treasureMap in sortedTreasureMaps)
             {
                 content.Add($" - $mod_epicloot_merchant_treasuremaps: " +
-                            $"<color={GetBiomeColor(treasureMap.Biome)}>$biome_{treasureMap.Biome.ToString().ToLower()} " +
+                            $"<color={GetBiomeColor(treasureMap.Biome)}>{BiomeDataManager.GetLocalizationToken(treasureMap.Biome)} " +
                             $"#{treasureMap.Interval + 1}</color>");
             }
 
@@ -56,7 +57,7 @@ public class TreasureBountyTextInfo(string topic) : MagicTextInfo(topic)
                     $"<color=#c0c0c0ff>$mod_epicloot_activebounties_classification:</color> " +
                     $"<color=#d66660>{AdventureDataManager.GetMonsterName(bounty.Target.MonsterID)}</color>, ");
 
-                string info = $" $mod_epicloot_activebounties_biome: <color={GetBiomeColor(bounty.Biome)}>$biome_{bounty.Biome.ToString().ToLower()}</color>";
+                string info = $" $mod_epicloot_activebounties_biome: <color={GetBiomeColor(bounty.Biome)}>{BiomeDataManager.GetLocalizationToken(bounty.Biome)}</color>";
 
                 string status = "";
                 switch (bounty.State)
@@ -95,26 +96,11 @@ public class TreasureBountyTextInfo(string topic) : MagicTextInfo(topic)
 
     public static string GetBiomeColor(Heightmap.Biome biome)
     {
-        string biomeColor = "white";
-        switch (biome)
-        {
-            case Heightmap.Biome.Meadows: biomeColor = "#75d966"; break;
-            case Heightmap.Biome.BlackForest: biomeColor = "#72a178"; break;
-            case Heightmap.Biome.Swamp: biomeColor = "#a88a6f"; break;
-            case Heightmap.Biome.Mountain: biomeColor = "#a3bcd6"; break;
-            case Heightmap.Biome.Plains: biomeColor = "#d6cea3"; break;
-        }
-
-        return biomeColor;
+        return BiomeDataManager.GetColor(biome);
     }
 
     public static float GetBiomeOrder(Heightmap.Biome biome)
     {
-        if (biome == Heightmap.Biome.BlackForest)
-        {
-            return 1.5f;
-        }
-
-        return (float)biome;
+        return BiomeDataManager.GetOrder(biome);
     }
 }

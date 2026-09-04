@@ -1,9 +1,10 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using EpicLoot.Adventure;
 using EpicLoot.Adventure.Feature;
+using EpicLoot.Biomes;
 using UnityEngine;
 using Random = System.Random;
 
@@ -16,7 +17,8 @@ public static partial class TerminalManager
         Player player = Player.m_localPlayer;
 
         int count = args.TryParameterInt(1, 1);
-        Heightmap.Biome biome = args.GetEnum(2, Heightmap.Biome.None);
+        // A vanilla name, a biomedata.json name, or a numeric value; blank picks a random map biome.
+        Heightmap.Biome biome = BiomeDataManager.Resolve(args.GetString(2, ""), Heightmap.Biome.None);
         int overrideTreasureMapCount = args.TryParameterInt(3, -1);
 
         AdventureDataManager.CheatNumberOfBounties = overrideTreasureMapCount;
@@ -27,14 +29,18 @@ public static partial class TerminalManager
     // TODO: update these tests
     private static IEnumerator TestTreasureMapCoroutine(AdventureSaveData saveData, Heightmap.Biome biome, Player player, int count)
     {
-        Heightmap.Biome[] biomes =
-        [
-            Heightmap.Biome.Meadows, 
-            Heightmap.Biome.BlackForest, 
-            Heightmap.Biome.Swamp,
-            Heightmap.Biome.Mountain, 
-            Heightmap.Biome.Plains
-        ];
+        // Every biome that sells a treasure map, so a biomedata.json biome is covered too.
+        Heightmap.Biome[] biomes = AdventureDataManager.Config.TreasureMap.BiomeInfo
+            .Where(x => x.Cost > 0)
+            .Select(x => x.GetBiome())
+            .Where(x => x != Heightmap.Biome.None)
+            .Distinct()
+            .ToArray();
+        if (biome == Heightmap.Biome.None && biomes.Length == 0)
+        {
+            Console.instance.PrintInfo("> No treasure map biomes are configured");
+            yield break;
+        }
 
         saveData.DebugMode = true;
         int startInterval = saveData.TreasureMaps.Count == 0 ? -1 : saveData.TreasureMaps.Min(x => x.Interval) - 1;
@@ -112,6 +118,74 @@ public static partial class TerminalManager
         adventureComponent.SaveData = new AdventureSaveDataList();
         ResetMinimap();
         args.Context.PrintInfo("> Cleared adventure data");
+    }
+
+    /// <summary>
+    /// Reports what the adventure spawn picker can actually see. When a player says a bounty or
+    /// treasure map "did nothing", this is the first thing to run: it shows the resolved world size,
+    /// whether the biome index built, and per biome how many cells fall inside that biome's
+    /// configured radius band. A biome with cells but none in band is the failure that used to be
+    /// silent.
+    /// </summary>
+    private static void AdventureIndexInfo(Terminal.ConsoleEventArgs args)
+    {
+        if (args.Length > 1 && args[1].Equals("rebuild", System.StringComparison.OrdinalIgnoreCase))
+        {
+            WorldBiomeIndex.Reset();
+            WorldBiomeIndex.EnsureBuilt();
+            args.Context.PrintInfo("> Rebuilding world biome index...");
+            return;
+        }
+
+        WorldBiomeIndex.EnsureBuilt();
+
+        // A biome name narrows the report to that biome and adds the rejection breakdown, which is
+        // what answers "the index has cells but the search still fails".
+        string filter = args.Length > 1 ? args[1] : string.Empty;
+        Heightmap.Biome filterBiome = Heightmap.Biome.None;
+        if (!string.IsNullOrEmpty(filter) && !BiomeDataManager.TryResolve(filter, out filterBiome))
+        {
+            args.Context.PrintInfo($"> Unknown biome '{filter}'");
+            return;
+        }
+
+        var sb = new StringBuilder();
+        sb.AppendLine($"World extent: {WorldExtent.Describe()}");
+        sb.AppendLine($"Biome index: {WorldBiomeIndex.Describe()}");
+
+        if (WorldBiomeIndex.State != BiomeIndexState.Ready)
+        {
+            sb.AppendLine("(index not ready; run again in a moment)");
+            args.Context.PrintInfo(sb.ToString());
+            return;
+        }
+
+        // Ordered by progression, with anything the registry does not know about listed after -- a
+        // biome another mod generates but nobody declared still shows up, which is the case worth
+        // seeing here.
+        foreach (Heightmap.Biome biome in WorldBiomeIndex.IndexedBiomes
+                     .Where(x => filterBiome == Heightmap.Biome.None || x == filterBiome)
+                     .OrderBy(x => BiomeDataManager.IsKnown(x) ? BiomeDataManager.GetOrder(x) : int.MaxValue)
+                     .ThenBy(x => BiomeDataManager.GetName(x)))
+        {
+            BountyLocationEarlyCache.GetRadiusBand(biome, out float min, out float max);
+            int inBand = WorldBiomeIndex.CountCellsInBand(biome, min, max);
+            string warning = inBand == 0 ? "  <-- NOTHING IN BAND" : string.Empty;
+            string unknown = BiomeDataManager.IsKnown(biome) ? string.Empty : " [not in biomedata.json]";
+            string water = WorldBiomeIndex.IsOpenWater(biome) ? " [open water]" : string.Empty;
+            sb.AppendLine($"{BiomeDataManager.GetName(biome)}{unknown}{water}: " +
+                $"{WorldBiomeIndex.CountCells(biome)} cells, " +
+                $"{inBand} in band {min:0}-{max:0}m{warning}");
+
+            // Cells in band is not the same as cells a search can use -- lava, water and the world
+            // edge all reject in-band cells -- so break that down for the biome the caller named.
+            if (!string.IsNullOrEmpty(filter))
+            {
+                sb.AppendLine($"    {WorldBiomeIndex.DescribeRejections(biome, min, max)}");
+            }
+        }
+
+        args.Context.PrintInfo(sb.ToString());
     }
 
     private static void PrintAvailableBounties(Terminal.ConsoleEventArgs args)

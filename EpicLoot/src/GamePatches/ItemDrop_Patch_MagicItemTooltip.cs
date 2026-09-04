@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Text;
+using EpicLoot.Compatibility;
+using EpicLoot.Config;
 using EpicLoot.Crafting;
 using HarmonyLib;
 using JetBrains.Annotations;
@@ -39,7 +41,23 @@ public static class MagicTooltipPatches
         // $KEY_Use would reach the screen literally. $KEY_RTrigger / $KEY_ButtonX only resolve to pad
         // glyphs while a gamepad is active (Localization looks up "Joy" + the binding name), which is
         // exactly when this branch is taken.
-        var keys = ZInput.IsGamepadActive() ? "$KEY_RTrigger + $KEY_ButtonX" : "$KEY_Use";
+        // An item another mod turned into a container answers plain Use by opening that container, so
+        // the socket overlay sits behind a modifier there and the hint has to say so. That modifier has
+        // no $KEY_ binding of its own, so its name goes in raw ("LeftAlt + E").
+        string keys;
+        if (ZInput.IsGamepadActive())
+        {
+            keys = "$KEY_RTrigger + $KEY_ButtonX";
+        }
+        else if (ForeignItemContainers.HasContainer(item))
+        {
+            keys = $"{ELConfig.SocketOverlayModifier.Value} + $KEY_Use";
+        }
+        else
+        {
+            keys = "$KEY_Use";
+        }
+
         return $"\n[<color=yellow><b>{keys}</b></color>] $mod_epicloot_press_socket";
     }
 

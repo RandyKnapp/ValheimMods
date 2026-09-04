@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using HarmonyLib;
 
 namespace EpicLoot;
@@ -112,7 +112,10 @@ public static partial class TerminalManager
             _ = new Command("resetbounties", "removes active bounties", ResetBounties,  isCheat: true);
             _ = new Command("testbountynames", "print randomly generated bounty names: [amount]", TestBountyNames,  isCheat: true);
             _ = new Command("resetadventure", "clear player adventure data", ResetAdventure,  isCheat: true);
+            _ = new Command("adventureindex", "print or rebuild the world biome index: [biome|rebuild]", AdventureIndexInfo,  isCheat: true);
             _ = new Command("bounties", "print available bounties: [interval]", PrintAvailableBounties, isCheat: true);
+            _ = new Command("biomes", "print biome progression order, boss keys and status", PrintBiomes, isCheat: true);
+            _ = new Command("knowbiome", "mark a biome as discovered by the local player: [biome]", KnowBiome, GetKnowBiomeOptions, isCheat: true);
             _ = new Command("playerbounties", "print player available bounties", PrintPlayerAvailableBounties,  isCheat: true);
             _ = new Command("gotomerchant", "teleport to merchant: [merchant]", GoToMerchant, GetGoToOptions, isCheat: true, alternates: "gotom");
             _ = new Command("globalkeys", "print active global keys", PrintGlobalKeys,  isCheat: true);

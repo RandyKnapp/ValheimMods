@@ -31,6 +31,17 @@ namespace EpicLoot.Crafting
         public ItemRarity Rarity;
         public List<string> ItemTypes = new List<string>();
         public List<string> ItemNames = new List<string>();
+
+        // Matches against the tail of m_shared.m_ammoType, the field Epic Loot uses as an identity channel for
+        // items it creates (IsRunestone, IsMagicCraftingMaterial, IsShardSlotChisel all read it the same way).
+        // "ShardStone" catches every (color, rarity) shardstone with one entry per rarity, and keeps catching a
+        // color added later. The suffix can be as specific as the caller likes -- a full "Yagluth|Mythic|ShardStone"
+        // singles out one stone -- which is how a per-color or per-boss yield would be expressed.
+        //
+        // An entry carrying one of these is treated as more specific than one without, and among those the
+        // longest matching suffix wins, so a single-stone override beats the blanket entry no matter which
+        // order they end up in: see EnchantCostsHelper.GetSacrificeProducts.
+        public List<string> AmmoTypeSuffixes = new List<string>();
         public List<ItemAmountConfig> Products = new List<ItemAmountConfig>();
     }
 
@@ -61,7 +72,7 @@ namespace EpicLoot.Crafting
     [Serializable]
     public class IdentifyCostConfig
     {
-        public Heightmap.Biome Biome;
+        public string Biome;
         public Dictionary<ItemRarity, List<ItemAmountConfig>> CostByRarity = new Dictionary<ItemRarity, List<ItemAmountConfig>>();
     }
 
@@ -69,7 +80,9 @@ namespace EpicLoot.Crafting
     public class IdentifyTypeConfig
     {
         public string Localization;
-        public Dictionary<Heightmap.Biome, List<string>> BiomeLootLists = new Dictionary<Heightmap.Biome, List<string>>();
+        // Keyed by biome name ("none", "Meadows", or a biomedata.json biome); resolved through the
+        // registry on lookup so a custom biome cannot make the whole file fail to parse.
+        public Dictionary<string, List<string>> BiomeLootLists = new Dictionary<string, List<string>>();
         public List<ItemAmountConfig> Costs = new List<ItemAmountConfig>();
     }
 
@@ -84,6 +97,6 @@ namespace EpicLoot.Crafting
         public List<RuneCostConfig> RuneExtractCosts = new List<RuneCostConfig>();
         public List<RuneCostConfig> RuneEtchCosts = new List<RuneCostConfig>();
         public Dictionary<string, IdentifyTypeConfig> IdentifyTypes = new Dictionary<string, IdentifyTypeConfig>();
-        public Dictionary<Heightmap.Biome, IdentifyCostConfig> IdentifyCosts = new Dictionary<Heightmap.Biome, IdentifyCostConfig>();
+        public Dictionary<string, IdentifyCostConfig> IdentifyCosts = new Dictionary<string, IdentifyCostConfig>();
     }
 }

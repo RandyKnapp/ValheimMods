@@ -26,6 +26,39 @@ namespace EpicLoot.Adventure.Feature
         protected int _currentInterval = -1;
         protected int _selectedItemIndex = -1;
 
+        /// <summary>
+        /// Guards against a second click while a purchase or accept is still resolving.
+        ///
+        /// It expires rather than latching forever. The work it guards runs as a coroutine whose host
+        /// can go away mid-flight (a world change stops the adventure driver), and a latch with no
+        /// expiry left the button permanently dead when that happened. Longer than any search can
+        /// legitimately take, including a first world biome index build on a very large world.
+        /// </summary>
+        private bool _actionInFlight;
+        private float _actionStarted;
+        private const float ActionTimeout = 60f;
+
+        /// <summary>
+        /// Claims the panel's single in-flight action slot. Every path that begins one must pair this
+        /// with <see cref="EndAction"/>, including the failure paths.
+        /// </summary>
+        protected bool TryBeginAction()
+        {
+            if (_actionInFlight && Time.unscaledTime - _actionStarted <= ActionTimeout)
+            {
+                return false;
+            }
+
+            _actionInFlight = true;
+            _actionStarted = Time.unscaledTime;
+            return true;
+        }
+
+        protected void EndAction()
+        {
+            _actionInFlight = false;
+        }
+
         protected MerchantListPanel(RectTransform list, T elementPrefab, Button button, [CanBeNull] Text refreshTime)
         {
             List = list;

@@ -108,6 +108,10 @@ public class MagicPages : MonoBehaviour
 
     public void Reset()
     {
+        // One retry per open for anything that missed because its asset was not loaded yet; the lookup
+        // scans every loaded object, so it must not run per line.
+        MagicFontManager.RetryFailedLookups();
+
         compendiumTextArea.SetActive(true);
         Search.Enable(false);
         MagicPagesTextArea.Enable(false);

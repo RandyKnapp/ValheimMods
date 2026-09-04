@@ -592,22 +592,33 @@ namespace EquipmentAndQuickSlots {
         public static Slot[] GetCustomSlots() => slots.Where(slot => slot.IsCustomSlot).ToArray();
 
         internal static bool TryAddCustomSlot(string slotId, string ownerGuid, Func<string> getName, Func<ItemDrop.ItemData, bool> itemIsValid, Func<bool> isActive) {
+            foreach (int index in ReservedIndices)
+                if (TryAddCustomSlotAt(index, slotId, ownerGuid, getName, itemIsValid, isActive))
+                    return true;
+
+            EquipmentAndQuickSlots.LogWarning($"Could not add custom slot {slotId}: all {ReservedIndices.Length} custom slots are taken");
+            return false;
+        }
+
+        // Claims one specific reserved cell rather than the first free one. Index -> grid position
+        // is fixed math, so a consumer that has to land on a particular cell (a compatibility shim
+        // matching another mod's hardcoded grid coordinates) can ask for it by index. Returns false
+        // if that cell is already taken -- callers must cope, never assume.
+        internal static bool TryAddCustomSlotAt(int index, string slotId, string ownerGuid, Func<string> getName, Func<ItemDrop.ItemData, bool> itemIsValid, Func<bool> isActive) {
+            if (Array.IndexOf(ReservedIndices, index) < 0)
+                return false;
+
             string internalId = customSlotPrefix + slotId;
             if (slots.Any(slot => slot.ID == internalId))
                 return false;
 
-            foreach (int index in ReservedIndices) {
-                if (!slots[index].IsEmptySlot)
-                    continue;
+            if (!slots[index].IsEmptySlot)
+                return false;
 
-                slots[index] = new Slot(internalId, index, getName, itemIsValid, isActive) { OwnerGuid = ownerGuid };
-                slots[index].UpdateGridPosition();
-                ClearCachedItems();
-                return true;
-            }
-
-            EquipmentAndQuickSlots.LogWarning($"Could not add custom slot {slotId}: all {ReservedIndices.Length} custom slots are taken");
-            return false;
+            slots[index] = new Slot(internalId, index, getName, itemIsValid, isActive) { OwnerGuid = ownerGuid };
+            slots[index].UpdateGridPosition();
+            ClearCachedItems();
+            return true;
         }
 
         internal static bool TryRemoveCustomSlot(string slotId) {
@@ -649,6 +660,9 @@ namespace EquipmentAndQuickSlots {
             ClearCachedItems();
 
             InventoryPatches.UpdatePlayerInventorySize();
+
+            // The slot region moved, so anything keyed to its grid coordinates has to follow.
+            BetterArcheryCompat.SyncQuiverRow();
         }
 
         internal static void ClearCachedItems() => cachedItems.Clear();

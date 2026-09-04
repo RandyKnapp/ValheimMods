@@ -718,6 +718,8 @@
     "mod_epicloot_unidentified_Mountain": "Unidentified Mountain Gear",
     "mod_epicloot_unidentified_Ocean": "Unidentified Ocean Gear",
     "mod_epicloot_unidentified_DeepNorth": "Unidentified DeepNorth Gear",
+    "mod_epicloot_unidentified_prefix": "Unidentified",
+    "mod_epicloot_unidentified_suffix": "Gear",
     "mod_epicloot_unidentified_introduce": "This item is unidentified, it could be anything or it could just be ground up into dust! Go to the enchanting table to identify it.",
     "mod_epicloot_tab_sacrifice": "Sacrifice",
     "mod_epicloot_tab_identify": "Identify",
@@ -731,6 +733,7 @@
     "mod_epicloot_identify_accessory": "Accessory",
     "mod_epicloot_identify_explain": "Identify a magic item to turn it into equipment. You can filter the category for a cost.",
     "mod_epicloot_identify_productsexplainer": "Potential Items Identified",
+    "mod_epicloot_identify_progressgated": "<color=yellow>(Progress-gated)</color>",
     "mod_epicloot_identify": "Identify",
 
 
@@ -797,6 +800,10 @@
     "mod_epicloot_junkdesc": "Salvage Junk",
     "mod_epicloot_junkprogress": "Salvaging items from junk...",
     "mod_epicloot_junkcost": "Salvage Cost:",
+    "mod_epicloot_shardupgrade": "Upgrade",
+    "mod_epicloot_shardupgradedesc": "Upgrade Shardstones",
+    "mod_epicloot_shardupgradeprogress": "Upgrading shardstones...",
+    "mod_epicloot_shardupgradecost": "Upgrade Cost:",
 
     "mod_epicloot_disenchant": "Disenchant",
     "mod_epicloot_disenchantprogress": "Disenchanting...",
@@ -819,7 +826,7 @@
 
     "mod_epicloot_featureinfo_none": "Select a feature from the list to the left to view upgrade options.",
     "mod_epicloot_featureinfo_sacrifice": "Sacrifice magic items and trophies, destroying them to produce enchanting materials.\n\nWhen upgraded, gain a chance to receive double the items normally gained from the sacrifice.",
-    "mod_epicloot_featureinfo_convertmaterials": "Upgrade enchanting materials to higher rarity, convert shards to enchanting materials of equal rarity, and salvage other materials from junk.\n\nWhen upgraded, improve the item ratio when upgrading runestones and other crafting materials.",
+    "mod_epicloot_featureinfo_convertmaterials": "Upgrade enchanting materials to higher rarity, convert shards to enchanting materials of equal rarity, salvage other materials from junk, and upgrade shardstones to higher rarity.\n\nWhen upgraded, improve the item ratio when upgrading runestones and other crafting materials.",
     "mod_epicloot_featureinfo_enchant": "Spend enchanting materials to add magic effects to non-magic gear. Requires runestones.\n\nWhen upgraded, gain an improved chance to roll more magic effects on an enchanted item.",
     "mod_epicloot_featureinfo_augment": "Spend enchanting materials to re-roll individual magic effects on magic gear.\n\nWhen upgraded, gain additional choices when augmenting, and have a reduced cost for multiple augments.",
     "mod_epicloot_featureinfo_disenchant": "Spend materials to remove the magic effects from an item, returning it to its non-magical state.\n\nWhen upgraded, gain a chance to recover sacrifice materials when disenchanting (not affected by Sacrifice feature level) and decrease the cost of disenchanting.",
@@ -885,6 +892,8 @@
     "mod_epicloot_itemtooltip_rarity": "Rarity",
     "mod_epicloot_itemtooltip_effects": "Effects",
 
+    "mod_epicloot_adventure_locatefailed": "Could not find a suitable location in the $1.",
+    "mod_epicloot_adventure_locateunavailable": "Still mapping the world - try again in a moment.",
     "mod_epicloot_adventure_spawnrelocated": "Your map has been redrawn - the marked area was occupied.",
 
     "mod_epicloot_bounties_claimedmsg": "Bounty Claimed!",

@@ -44,6 +44,12 @@ copy `EquipmentAndQuickSlots.dll` into the `BepInEx/plugins` folder.
   remembers where you put it. `Quick Slots Anchor` / `Quick Slots Position` in this mod's config only
   decide where the bar starts. If the bar sits somewhere odd after updating from 3.0.0, press F7 and
   drag it back, or reset BetterUI's `uiData` setting to `none`.
+* **Better Archery** works out of the box. Its quiver used to add two hidden rows to the player
+  inventory, which showed up as a block of empty cells under the inventory and could swallow items.
+  Its quiver is now hosted as three ammo-only slots in the equipment panel, keyed to Better
+  Archery's own hotkeys; everything else it does is untouched. Set
+  `Compatibility / Better Archery quiver integration` to `false` to switch its quiver off entirely
+  instead and use the quick slots for ammo.
 * Other slot mods — AzuExtendedPlayerInventory, ExtendedPlayerInventory, ExtraSlots, ComfyQuickSlots —
   are declared incompatible; BepInEx will not load this mod next to them.
 

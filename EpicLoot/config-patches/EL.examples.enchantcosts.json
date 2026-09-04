@@ -20,6 +20,17 @@
             { "Item": "EssenceMythic", "Amount": 1 },
             { "Item": "ReagentMythic", "Amount": 1 }
           ]
+        },
+        {
+          "IsMagic" : true,
+          "Rarity" : "Mythic",
+          "ItemTypes" : [ "Material" ],
+          "AmmoTypeSuffixes" : [ "Yagluth|Mythic|ShardStone" ],
+          "Products" : [
+            { "Item": "DustMythic",    "Amount": 4 },
+            { "Item": "EssenceMythic", "Amount": 4 },
+            { "Item": "ReagentMythic", "Amount": 4 }
+          ]
         }
       ]
     }

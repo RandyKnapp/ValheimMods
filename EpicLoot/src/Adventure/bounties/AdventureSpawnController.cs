@@ -177,9 +177,11 @@ namespace EpicLoot.Adventure
                 }
             }
 
-            // An ocean bounty's targets swim, so they hold the water line the search settled on
-            // instead of being dropped onto a seabed that is tens of metres further down.
-            bool swimmingTargets = bounty.Biome == Heightmap.Biome.Ocean;
+            // An open-water bounty's targets swim, so they hold the water line the search settled on
+            // instead of being dropped onto a seabed that is tens of metres further down. Which
+            // biomes count as open water is measured from the world, so a custom ocean-like biome
+            // gets swimmers too rather than a pile of drowned creatures on the seabed.
+            bool swimmingTargets = WorldBiomeIndex.IsOpenWater(bounty.Biome);
             float baseHeight = point.y;
 
             for (var index = 0; index < prefabs.Count; index++)
@@ -248,6 +250,11 @@ namespace EpicLoot.Adventure
         internal IEnumerator DeterminespawnPoint(Vector3 startingSpawnPoint,
             Heightmap.Biome biome, WaterPlacement waterPlacement = WaterPlacement.Reject)
         {
+            // The owner of this spawner is not necessarily the player who bought it, so the biome
+            // index may never have been built on this client. Start it now; the waits below give it
+            // far longer than it needs, and IsOpenWater falls back safely if it is somehow not ready.
+            WorldBiomeIndex.EnsureBuilt();
+
             yield return new WaitForSeconds(5);
 
             while (!ZNetScene.instance.IsAreaReady(startingSpawnPoint))
@@ -259,10 +266,12 @@ namespace EpicLoot.Adventure
             float radius = AdventureDataManager.Config.TreasureMap.MinimapAreaRadius;
             float waterSurface = ZoneSystem.instance.m_waterLevel;
 
-            // The Ocean biome is open water by definition -- its biome cutoff sits roughly 25m below
-            // the water line, so every point inside it is under water. Rejecting submerged points
-            // there rejected every candidate in every band, which is why no ocean bounty ever placed.
-            bool spawnInOpenWater = biome == Heightmap.Biome.Ocean &&
+            // An open-water biome sits below the water line everywhere -- Ocean's biome cutoff is
+            // roughly 25m under it. Rejecting submerged points there rejected every candidate in
+            // every band, which is why no ocean bounty ever placed. Asking the biome index rather
+            // than testing for Ocean by name extends that fix to any ocean-like biome another mod
+            // adds, which would otherwise hit exactly the same dead end.
+            bool spawnInOpenWater = WorldBiomeIndex.IsOpenWater(biome) &&
                 waterPlacement != WaterPlacement.Reject;
             int maxExpansions = Mathf.Max(0, AdventureDataManager.Config.TreasureMap.MaxSpawnSearchExpansions);
             Vector3 determinedSpawn = startingSpawnPoint;
@@ -339,7 +348,11 @@ namespace EpicLoot.Adventure
                         continue;
                     }
 
-                    // Prevent spawning in Lava unless a last resort
+                    // Prevent spawning in Lava unless a last resort. The AshLands gate stays: the
+                    // vegetation mask is a shared channel with a different meaning per biome, and
+                    // vanilla's own Heightmap.IsLava checks for AshLands before reading it, so lava
+                    // is an AshLands-only concept to the engine rather than a trait a custom biome
+                    // could carry.
                     if (biome == Heightmap.Biome.AshLands &&
                         hmap.GetVegetationMask(determinedSpawn) > 0.45f)
                     {

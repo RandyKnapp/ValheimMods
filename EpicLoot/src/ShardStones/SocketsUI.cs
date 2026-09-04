@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using EpicLoot.Compatibility;
 using EpicLoot.Config;
 using HarmonyLib;
 using JetBrains.Annotations;
@@ -147,7 +148,12 @@ namespace EpicLoot.ShardStones {
         // Only the keyboard "Use" binding is read here. The gamepad equivalent lives in
         // InventoryGui_OnRightClickItem_Patch; see the note there for why "JoyUse" cannot be used.
         [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.Update))]
+        [HarmonyPriority(Priority.First)]
         public static class InventoryGui_Update_Patch {
+            // Priority.First: this is a void prefix that only reads input and, at most, consumes it, so
+            // running ahead of everyone is harmless -- and it is required for the modifier case below.
+            // A container mod's own Update handler must not open the container out from under a
+            // deliberate modifier+Use aimed at the socket overlay.
             [UsedImplicitly]
             private static void Prefix(InventoryGui __instance) {
                 if (!InventoryGui.IsVisible()) {
@@ -173,10 +179,23 @@ namespace EpicLoot.ShardStones {
                     return;
                 }
 
+                // Another mod may have made this item a container (a backpack, a BowsBeforeHoes quiver),
+                // in which case plain Use is already its open gesture and belongs to that mod. Hand the
+                // press over untouched and put our overlay behind a modifier for those items only --
+                // everything else keeps the plain-Use gesture it has always had.
+                var hasForeignContainer = ForeignItemContainers.HasContainer(item);
+                if (hasForeignContainer && !Input.GetKey(ELConfig.SocketOverlayModifier.Value)) {
+                    EpicLoot.Log("[SocketsUI] Yielding the Use press over " +
+                        $"{item.m_shared.m_name} to the mod that owns its container.");
+                    return;
+                }
+
                 if (!item.IsMagic(out var magicItem) || !magicItem.HasSockets()) {
                     // Aiming at an item and hitting one without sockets is a miss, not a request to shut
                     // the whole inventory. Swallow the press: Player doesn't read Use while the inventory
-                    // is visible, so nothing else wants it.
+                    // is visible, so nothing else wants it. Reaching here means the press is ours -- a
+                    // container item only gets this far with the modifier held, which is an explicit ask
+                    // for the overlay rather than for the container.
                     if (ELConfig.KeepInventoryOpenOverItems.Value) {
                         ZInput.ResetButtonStatus("Use");
                     }

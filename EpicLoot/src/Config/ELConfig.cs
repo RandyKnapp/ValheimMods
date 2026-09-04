@@ -3,6 +3,7 @@ using BepInEx.Configuration;
 using Common;
 using EpicLoot.Abilities;
 using EpicLoot.Adventure;
+using EpicLoot.Biomes;
 using EpicLoot.Crafting;
 using EpicLoot.CraftingV2;
 using EpicLoot.GatedItemType;
@@ -76,6 +77,7 @@ internal class ELConfig {
     public static ConfigEntry<int> MythicGiftSlotsAdded;
     public static ConfigEntry<float> LegendaryGiftSuccessChance;
     public static ConfigEntry<float> MythicGiftSuccessChance;
+    public static ConfigEntry<KeyCode> SocketOverlayModifier;
     public static ConfigEntry<float> GlobalDropRateModifier;
     public static ConfigEntry<bool> DeferChestLootRoll;
 
@@ -130,6 +132,7 @@ internal class ELConfig {
     private static CustomRPC AutoSorterConfigurationRPC;
     private static CustomRPC ShardStonesRPC;
     private static CustomRPC ShardStoneConversionsRPC;
+    private static CustomRPC BiomeDataRPC;
 
     private static string LocalizationDir = GetLocalizationDirectoryPath();
     private static readonly List<string> LocalizationLanguages = new List<string>() {
@@ -288,6 +291,8 @@ internal class ELConfig {
             OnServerRecieveConfigs, OnClientRecieveShardStonesConfigs);
         ShardStoneConversionsRPC = NetworkManager.Instance.AddRPC("epicloot_shardstoneconversions_RPC",
             OnServerRecieveConfigs, OnClientRecieveShardStoneConversionsConfigs);
+        BiomeDataRPC = NetworkManager.Instance.AddRPC("epicloot_biomedata_RPC",
+            OnServerRecieveConfigs, OnClientRecieveBiomeDataConfigs);
     }
 
     private static void CreateConfigValues() {
@@ -483,6 +488,11 @@ internal class ELConfig {
             "Percent chance that a Mythic Brokkr's Gift adds its slots. On a failed roll the gift is " +
             "still consumed and nothing is added.\n" +
             "Min = 0, Max = 100", new AcceptableValueRange<float>(0f, 100f));
+        SocketOverlayModifier = BindClient(SectionSockets, "Socket Overlay Modifier", KeyCode.LeftAlt,
+            "Hold this key with Use to open the shard slots of an item that another mod has turned " +
+            "into a container (a backpack, a quiver). Plain Use opens that mod's container instead, " +
+            "since that is the gesture it already advertises. Items with no such container ignore " +
+            "this setting and open their shard slots on plain Use as usual.");
 
         // 4 - Enchanting Table
         EnchantingTableUpgradesActive = BindServer(SectionEnchanting, "Upgrades Active", true,
@@ -739,6 +749,10 @@ internal class ELConfig {
         // Must precede materialconversions, whose Initialize fires the event that merges these in.
         SychronizeConfig<MaterialConversionsConfig>("shardstoneconversions.json", ShardStoneConversions.Initialize,
             ShardStoneConversionsRPC, ShardStoneConversions.GetCFG);
+        // Biome data first: adventuredata resolves its biome names against it (and merges any legacy
+        // Bounties.Bosses list into it), and iteminfo takes its biome progression order from it.
+        SychronizeConfig<BiomeDataConfig>("biomedata.json", BiomeDataManager.Initialize,
+            BiomeDataRPC, BiomeDataManager.GetCFG);
         // Adventure data has to be loaded before iteminfo, as iteminfo uses the adventure data to determine what items can drop
         SychronizeConfig<AdventureDataConfig>("adventuredata.json", AdventureDataManager.Initialize,
             AdventureDataRPC, AdventureDataManager.GetCFG);
@@ -876,8 +890,9 @@ internal class ELConfig {
         }
 
         // Registered in call order, so the load-order dependencies InitializeConfig encodes
-        // (adventuredata before iteminfo, shardstones before shardstoneconversions) still hold on a
-        // hot reload. Thirteen independent watchers fire in whatever order the OS delivers them.
+        // (biomedata before adventuredata before iteminfo, shardstones before shardstoneconversions)
+        // still hold on a hot reload. Fourteen independent watchers fire in whatever order the OS
+        // delivers them.
         BaseConfigReloaders.RemoveAll(reloader => reloader.FileName == filename);
         BaseConfigReloaders.Add((filename, ReloadFromDisk));
 
@@ -1093,8 +1108,12 @@ internal class ELConfig {
         return ApplyClientConfig<ItemNameConfig>("itemnames.json", package, MagicItemNames.Initialize);
     }
 
+    private static IEnumerator OnClientRecieveBiomeDataConfigs(long sender, ZPackage package) {
+        return ApplyClientConfig<BiomeDataConfig>("biomedata.json", package, BiomeDataManager.Initialize);
+    }
+
     private static IEnumerator OnClientRecieveAdventureDataConfigs(long sender, ZPackage package) {
-        // Full Initialize (not UpdateAventureData): the RPC path must fire OnSetupAdventureData and
+        // Full Initialize: the RPC path must fire OnSetupAdventureData and
         // rebuild the features exactly like a local reload does, or every API-registered bounty
         // target / stash item / treasure map silently vanishes the moment a client joins a server.
         return ApplyClientConfig<AdventureDataConfig>("adventuredata.json", package, AdventureDataManager.Initialize);

@@ -4,7 +4,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using EpicLoot.Biomes;
 using EpicLoot.CraftingV2;
+using EpicLoot.GatedItemType;
+using EpicLoot.ShardStones;
 
 namespace EpicLoot.Crafting
 {
@@ -34,7 +37,43 @@ namespace EpicLoot.Crafting
             }
 
             Config = config;
+            EnsureShardStoneSacrificeProducts();
             OnSetupEnchantingCosts?.Invoke();
+        }
+
+        // The shardstone sacrifice yield, as a code-side default. config/enchantcosts.json ships the same five
+        // entries; these are what a player who declines the config-update prompt gets, because an on-disk copy
+        // of that file wins over the embedded one indefinitely and nothing else in this class supplies a
+        // default. Without them a stale file would keep paying out the generic magic-Material yield while the
+        // shard-to-material conversions that used to be the alternative have already been retired.
+        private static void EnsureShardStoneSacrificeProducts()
+        {
+            foreach (ItemRarity rarity in Enum.GetValues(typeof(ItemRarity)).Cast<ItemRarity>())
+            {
+                ItemRarity shardRarity = rarity;
+
+                // Per rarity rather than all-or-nothing, so a file carrying only a hand-written override for
+                // one stone still gets the shipped defaults for everything it does not cover.
+                if (Config.DisenchantProducts.Exists(x => x?.AmmoTypeSuffixes != null &&
+                        x.AmmoTypeSuffixes.Contains(Shards.ShardIndicator) && x.Rarity == shardRarity))
+                {
+                    continue;
+                }
+
+                Config.DisenchantProducts.Add(new DisenchantProductsConfig
+                {
+                    IsMagic = true,
+                    Rarity = rarity,
+                    ItemTypes = new List<string> { ItemDrop.ItemData.ItemType.Material.ToString() },
+                    AmmoTypeSuffixes = new List<string> { Shards.ShardIndicator },
+                    Products = new List<ItemAmountConfig>
+                    {
+                        new ItemAmountConfig { Item = $"Dust{rarity}", Amount = 2 },
+                        new ItemAmountConfig { Item = $"Reagent{rarity}", Amount = 2 },
+                        new ItemAmountConfig { Item = $"Essence{rarity}", Amount = 2 }
+                    }
+                });
+            }
         }
 
         public static EnchantingCostsConfig GetCFG()
@@ -56,7 +95,10 @@ namespace EpicLoot.Crafting
             bool isUnidentified = item.IsUnidentified();
             ItemDrop.ItemData.ItemType type = item.m_shared.m_itemType;
             string name = item.m_shared.m_name;
-            DisenchantProductsConfig configEntry = Config.DisenchantProducts.Find(x => {
+            string ammoType = item.m_shared.m_ammoType;
+
+            bool Matches(DisenchantProductsConfig x)
+            {
                 // Magic item check doesn't apply for unidentified items, since they are considered magic
                 if (x.IsMagic != isMagic && isUnidentified == false)
                 {
@@ -83,8 +125,50 @@ namespace EpicLoot.Crafting
                     return false;
                 }
 
+                // This runs over every item in the player's inventory, including ones other mods created, so
+                // the ammo type can be anything or nothing.
+                if (x.AmmoTypeSuffixes?.Count > 0 &&
+                    (string.IsNullOrEmpty(ammoType) || !x.AmmoTypeSuffixes.Exists(ammoType.EndsWith)))
+                {
+                    return false;
+                }
+
                 return true;
-            });
+            }
+
+            // An entry naming an ammo-type suffix picks out a specific family of items Epic Loot creates --
+            // shardstones today -- so it outranks a generic entry matching only on item type and rarity, which
+            // every magic Material fits. Specificity rather than declaration order, because nothing guarantees
+            // that order: a config rewrite, a file patch and API.AddSacrifice all append. For the same reason
+            // the longest matching suffix wins among ammo-typed entries, so a "Yagluth|Mythic|ShardStone" that
+            // lands after the blanket "ShardStone" still overrides it.
+            DisenchantProductsConfig configEntry = null;
+            int bestSuffixLength = 0;
+            foreach (DisenchantProductsConfig candidate in Config.DisenchantProducts)
+            {
+                if (!(candidate.AmmoTypeSuffixes?.Count > 0) || !Matches(candidate))
+                {
+                    continue;
+                }
+
+                // Matches only passes an ammo-typed entry when a suffix matched, so ammoType is set here.
+                int longest = 0;
+                foreach (string suffix in candidate.AmmoTypeSuffixes)
+                {
+                    if (!string.IsNullOrEmpty(suffix) && ammoType.EndsWith(suffix) && suffix.Length > longest)
+                    {
+                        longest = suffix.Length;
+                    }
+                }
+
+                if (longest > bestSuffixLength)
+                {
+                    bestSuffixLength = longest;
+                    configEntry = candidate;
+                }
+            }
+
+            configEntry ??= Config.DisenchantProducts.Find(x => !(x.AmmoTypeSuffixes?.Count > 0) && Matches(x));
 
             return configEntry?.Products;
         }
@@ -92,6 +176,15 @@ namespace EpicLoot.Crafting
         public static List<ItemAmountConfig> GetSacrificeProducts(bool isMagic, ItemDrop.ItemData.ItemType type, ItemRarity rarity )
         {
             DisenchantProductsConfig configEntry = Config.DisenchantProducts.Find(x => {
+                // There is no item here to read m_ammoType from, so an entry discriminating on it cannot be
+                // evaluated -- and must not match by default. LootRoller's materials-instead-of-a-magic-item
+                // substitution calls this with whatever item type the loot table named, Material included,
+                // which is exactly what the shardstone entries otherwise fit.
+                if (x.AmmoTypeSuffixes?.Count > 0)
+                {
+                    return false;
+                }
+
                 if (x.IsMagic && !isMagic)
                 {
                     return false;
@@ -134,19 +227,78 @@ namespace EpicLoot.Crafting
             return configEntry?.Cost;
         }
 
+        /// <summary>
+        /// Finds the entry keyed by a biome in a config dictionary whose keys are biome names. Keys are
+        /// resolved through the registry, so "none", "Meadows" and a biomedata.json name all work.
+        /// </summary>
+        public static bool TryGetForBiome<T>(Dictionary<string, T> byBiome, Heightmap.Biome biome, out T value)
+        {
+            value = default;
+            if (byBiome == null)
+            {
+                return false;
+            }
+
+            foreach (KeyValuePair<string, T> entry in byBiome)
+            {
+                if (BiomeDataManager.TryResolve(entry.Key, out Heightmap.Biome keyBiome) && keyBiome == biome)
+                {
+                    value = entry.Value;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Like <see cref="TryGetForBiome{T}"/>, but a biome without an entry of its own falls back to
+        /// the nearest earlier biome in progression order that has one, ending at None. A custom biome
+        /// therefore needs no entry of its own to identify at the right tier. A biome the registry does
+        /// not know at all only falls back to None.
+        /// </summary>
+        public static bool TryGetForBiomeOrLower<T>(Dictionary<string, T> byBiome, Heightmap.Biome biome,
+            out T value, out Heightmap.Biome resolvedBiome)
+        {
+            resolvedBiome = biome;
+            if (TryGetForBiome(byBiome, biome, out value))
+            {
+                return true;
+            }
+
+            List<Heightmap.Biome> order = GatedItemTypeHelper.BiomesInOrder;
+            int start = order.IndexOf(biome);
+            if (start < 0)
+            {
+                start = Math.Min(1, order.Count);
+            }
+
+            for (int i = start - 1; i >= 0; i--)
+            {
+                if (TryGetForBiome(byBiome, order[i], out value))
+                {
+                    resolvedBiome = order[i];
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         public static List<ItemAmountConfig> GetIdentifyCosts(string category, ItemRarity rarity, Heightmap.Biome biome)
         {
             List<ItemAmountConfig> totalCost = new List<ItemAmountConfig>();
 
-            // Add biome-specific costs by rarity if configured
-            if (Config.IdentifyCosts.TryGetValue(biome, out IdentifyCostConfig biomeConfig) &&
+            // Biome-specific costs by rarity. A biome without an entry of its own (a custom biome, say)
+            // is charged as the nearest lower biome that has one.
+            if (TryGetForBiomeOrLower(Config.IdentifyCosts, biome, out IdentifyCostConfig biomeConfig, out _) &&
                 biomeConfig.CostByRarity.TryGetValue(rarity, out List<ItemAmountConfig> rarityCosts))
             {
                 totalCost.AddRange(rarityCosts);
             }
             else
             {
-                EpicLoot.LogWarning($"No identify costs configured for biome {biome} and rarity {rarity}.");
+                EpicLoot.LogWarning($"No identify costs configured for biome {BiomeDataManager.GetName(biome)} and rarity {rarity}.");
             }
 
             // Add category-specific costs

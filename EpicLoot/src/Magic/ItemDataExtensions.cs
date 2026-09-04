@@ -222,6 +222,21 @@ public static class ItemDataExtensions
             .Any(effectDef => effectDef.CanBeRunified);
     }
 
+    // Shardstones and Brokkr's Gifts carry a cosmetic MagicItem -- a rarity and nothing else -- purely
+    // so they render with a magic name and background. That makes IsMagic() true for them, and
+    // MagicItem.CanBeDisenchanted() vacuously true as well, since it only vetoes on effects and they
+    // have none. Disenchanting one would charge the player, hand back nothing and strip the metadata,
+    // leaving a plain grey consumable. They are not enchanted gear; keep them out of the flow.
+    public static bool CanBeDisenchanted(this ItemDrop.ItemData itemData)
+    {
+        if (itemData == null || itemData.IsShardStone() || itemData.IsShardSlotChisel())
+        {
+            return false;
+        }
+
+        return itemData.IsMagic(out MagicItem magicItem) && magicItem.CanBeDisenchanted();
+    }
+
     public static string GetSetID(this ItemDrop.ItemData itemData, out bool isMundane)
     {
         isMundane = true;

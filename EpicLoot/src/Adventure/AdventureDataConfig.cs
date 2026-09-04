@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using EpicLoot.Biomes;
 using EpicLoot.Crafting;
 
 namespace EpicLoot.Adventure
@@ -64,7 +65,8 @@ namespace EpicLoot.Adventure
     [Serializable]
     public class TreasureMapBiomeInfoConfig
     {
-        public Heightmap.Biome Biome;
+        /// <summary>A biome name (vanilla or biomedata.json) or numeric value, resolved through the registry on use.</summary>
+        public string Biome;
         public int Cost;
         public int ForestTokens = 0;
         public int GoldTokens;
@@ -72,6 +74,8 @@ namespace EpicLoot.Adventure
         public int Coins;
         public float MinRadius;
         public float MaxRadius;
+
+        public Heightmap.Biome GetBiome() => BiomeDataManager.Resolve(Biome);
     }
 
     [Serializable]
@@ -94,6 +98,19 @@ namespace EpicLoot.Adventure
         /// restore the old behaviour of never searching outside the circle.
         /// </summary>
         public int MaxSpawnSearchExpansions = 5;
+
+        /// <summary>
+        /// Scale every biome's MinRadius/MaxRadius by the real world radius / 10000, so the shipped
+        /// bands keep their meaning on a world resized by Expand World Size. Without this, AshLands'
+        /// 8000-10500 band sits in the inner Meadows of a 40km map and no AshLands point is ever in
+        /// band. Set false if the bands have already been retuned in metres for the target world,
+        /// otherwise the scaling is applied twice.
+        ///
+        /// The `= true` default is load-bearing: an existing on-disk adventuredata.json has no such
+        /// key, and Newtonsoft leaves an absent field at its initializer.
+        /// </summary>
+        public bool ScaleRadiiToWorldSize = true;
+
         public List<SecretStashItemConfig> SaleItems = new List<SecretStashItemConfig>();
         
         [NonSerialized]
@@ -103,15 +120,24 @@ namespace EpicLoot.Adventure
         {
             if (_biomeList == null)
             {
-                _biomeList = BiomeInfo.Select(item => item.Biome).ToArray();
+                UpdateBiomeList();
             }
 
             return _biomeList;
         }
 
+        /// <summary>
+        /// Re-resolves the BiomeInfo biome names. Runs on every adventure data load, whenever
+        /// biomedata.json reloads, and when the API appends a treasure map. A name that does not
+        /// resolve is left out rather than filed under None.
+        /// </summary>
         public void UpdateBiomeList()
         {
-            _biomeList = BiomeInfo.Select(item => item.Biome).ToArray();
+            _biomeList = BiomeInfo
+                .Select(item => item.GetBiome())
+                .Where(biome => biome != Heightmap.Biome.None && biome != Heightmap.Biome.All)
+                .Distinct()
+                .ToArray();
         }
     }
 
@@ -134,18 +160,25 @@ namespace EpicLoot.Adventure
     [Serializable]
     public class BountyTargetConfig
     {
-        public Heightmap.Biome Biome;
+        /// <summary>A biome name (vanilla or biomedata.json) or numeric value, resolved through the registry on use.</summary>
+        public string Biome;
         public string TargetID;
         public int RewardGold;
         public int RewardIron;
         public int RewardCoins;
         public List<BountyTargetAddConfig> Adds = new List<BountyTargetAddConfig>();
+
+        public Heightmap.Biome GetBiome() => BiomeDataManager.Resolve(Biome);
     }
 
+    /// <summary>
+    /// Deprecated. Biome progression order and boss keys live in biomedata.json; entries here are
+    /// still read so older files and patches keep working (see BiomeDataManager.SetLegacyBosses).
+    /// </summary>
     [Serializable]
     public class BountyBossConfig
     {
-        public Heightmap.Biome Biome;
+        public string Biome;
         public string BossPrefab;
         public string BossDefeatedKey;
     }
@@ -171,9 +204,8 @@ namespace EpicLoot.Adventure
     [Serializable]
     public class TemperingConfig
     {
-        // Left empty rather than seeded with the defaults: Newtonsoft APPENDS to pre-initialized
-        // collections, and an absent rarity key has to fall through to TemperMan's hardcoded
-        // default instead of merging with it. TemperMan.ApplyConfig owns the fallback.
+        // There are no hardcoded temper costs to seed this with: what the json lists is the whole cost
+        // table. A rarity omitted here is not temperable at all; see TemperMan.ApplyConfig.
         public Dictionary<ItemRarity, List<ItemAmountConfig>> CostsByRarity = new Dictionary<ItemRarity, List<ItemAmountConfig>>();
     }
 

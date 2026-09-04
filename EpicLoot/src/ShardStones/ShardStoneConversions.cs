@@ -2,13 +2,15 @@ using EpicLoot.CraftingV2;
 
 namespace EpicLoot.ShardStones {
     // Folds config/shardstoneconversions.json into the live material-conversion set, so the ShardStone
-    // rarity ladder and the shard-to-material sinks show up in the enchanting table's Convert Materials
-    // tab alongside everything materialconversions.json declares.
+    // rarity ladder shows up in the enchanting table's Convert Materials tab -- in its own Upgrade Shardstones
+    // mode, keyed by MaterialConversionType.ShardUpgrade, rather than mixed into the generic material upgrades.
+    // The shard-to-material sinks this file used to declare now live in config/enchantcosts.json as the
+    // shardstone sacrifice yield; see Normalize.
     //
-    // The recipes are plain MaterialConversion entries -- one per (color, step) and per (color, rarity,
-    // product) -- written out in full rather than generated from a compact per-category cost model. That
-    // costs a large file, and buys a config a player or patch author can read, JSONPath-target and reason
-    // about one shard at a time, and a loot/crafting graph in which every name is a real prefab.
+    // The recipes are plain MaterialConversion entries -- one per (color, step) -- written out in full rather
+    // than generated from a compact per-category cost model. That costs a large file, and buys a config a
+    // player or patch author can read, JSONPath-target and reason about one shard at a time, and a
+    // loot/crafting graph in which every name is a real prefab.
     //
     // They live in their own file purely so materialconversions.json stays hand-readable; the two are one
     // set as far as the rest of the mod is concerned.
@@ -18,11 +20,16 @@ namespace EpicLoot.ShardStones {
         // re-runs it.
         private const string NamePrefix = "ShardStone";
 
+        // The two recipe families this file has shipped, distinguished by name.
+        private const string UpgradePrefix = "ShardStoneUpgrade";
+        private const string ConvertPrefix = "ShardStoneConvert";
+
         public static MaterialConversionsConfig Config;
 
         // Config setup hook (SychronizeConfig<MaterialConversionsConfig>).
         public static void Initialize(MaterialConversionsConfig config) {
             Config = config ?? new MaterialConversionsConfig();
+            Normalize();
 
             // OnSetupMaterialConversions only fires when materialconversions.json (re)loads, so merging
             // here too is what makes a live edit of this file, a config push from a dedicated server, or
@@ -57,6 +64,23 @@ namespace EpicLoot.ShardStones {
 
         // True for a recipe this class owns. Also used to keep the merged entries out of the
         // materialconversions network payload -- every client merges them from its own copy of this file.
+        // Brings an older copy of this file in line with what this build expects. The embedded config is only
+        // written to disk when the player has no copy yet, so a returning player -- or a dedicated server
+        // pushing its own copy -- can still hand us upgrades typed as a plain Upgrade, and the retired
+        // shard-to-material sinks. Left alone, the former would land back in the generic Upgrade mode this
+        // change exists to unclutter, and the latter would sit in the Convert mode duplicating what
+        // sacrificing the same stone now gives. Runs on Config itself, so GetCFG serves normalized data too.
+        private static void Normalize() {
+            Config.MaterialConversions.RemoveAll(x => x?.Name != null && x.Name.StartsWith(ConvertPrefix));
+
+            foreach (MaterialConversion entry in Config.MaterialConversions) {
+                if (entry?.Name != null && entry.Name.StartsWith(UpgradePrefix) &&
+                    entry.Type == MaterialConversionType.Upgrade) {
+                    entry.Type = MaterialConversionType.ShardUpgrade;
+                }
+            }
+        }
+
         public static bool IsShardStoneRecipe(MaterialConversion conversion) {
             return conversion?.Name != null && conversion.Name.StartsWith(NamePrefix);
         }

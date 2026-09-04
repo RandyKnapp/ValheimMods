@@ -1,4 +1,5 @@
 using EpicLoot.Adventure.Feature;
+using EpicLoot.Biomes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,6 +35,11 @@ namespace EpicLoot.Adventure
             // server->client RPC - routes through here, so this is the only hook tempering costs need.
             TemperMan.ApplyConfig(Config?.Tempering);
 
+            // Surface unresolvable biome names once per load, then hand the deprecated Bounties.Bosses
+            // list to the registry, which appends any biome it does not already define.
+            ReportUnresolvedBiomes();
+            BiomeDataManager.SetLegacyBosses(Config?.Bounties?.Bosses);
+
             OnSetupAdventureData?.Invoke();
 
             SecretStash = new SecretStashAdventureFeature();
@@ -50,12 +56,34 @@ namespace EpicLoot.Adventure
             return Config;
         }
 
-        public static void UpdateAventureData(AdventureDataConfig config)
+        /// <summary>
+        /// biomedata.json was (re)loaded: the adventure config's biome names may resolve differently
+        /// now, so re-check them and rebuild the treasure map biome list. Must not re-send the legacy
+        /// Bosses list; the registry re-applies what it was last given on its own rebuild.
+        /// </summary>
+        public static void OnBiomeDataChanged()
         {
-            Config = config;
+            if (Config == null)
+            {
+                return;
+            }
 
-            Config.TreasureMap.UpdateBiomeList();
-            EpicLoot.Log($"Updated Adventure Data");
+            ReportUnresolvedBiomes();
+            Config.TreasureMap?.UpdateBiomeList();
+        }
+
+        private static void ReportUnresolvedBiomes()
+        {
+            // Resolved purely for the side effect: the registry warns once per unknown name per load.
+            foreach (TreasureMapBiomeInfoConfig info in Config?.TreasureMap?.BiomeInfo ?? new List<TreasureMapBiomeInfoConfig>())
+            {
+                info.GetBiome();
+            }
+
+            foreach (BountyTargetConfig target in Config?.Bounties?.Targets ?? new List<BountyTargetConfig>())
+            {
+                target.GetBiome();
+            }
         }
 
         public static Sprite GetTrophyIconForMonster(string monsterID, bool isGold)
@@ -73,7 +101,12 @@ namespace EpicLoot.Adventure
                     var characterDrop = prefab.GetComponent<CharacterDrop>();
                     if (characterDrop != null)
                     {
-                        var drops = characterDrop.m_drops.Select(x => x.m_prefab.GetComponent<ItemDrop>());
+                        // A drop entry can have no prefab assigned (mod-added creatures do this), and a
+                        // prefab need not carry an ItemDrop.
+                        var drops = characterDrop.m_drops
+                            .Where(x => x.m_prefab != null)
+                            .Select(x => x.m_prefab.GetComponent<ItemDrop>())
+                            .Where(x => x != null);
                         var trophyPrefab = drops.FirstOrDefault(x => x.m_itemData.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Trophy);
                         if (trophyPrefab != null)
                         {
