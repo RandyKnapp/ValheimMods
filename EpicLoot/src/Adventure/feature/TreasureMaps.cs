@@ -1,4 +1,5 @@
-﻿using Jotunn.Managers;
+﻿using EpicLoot.Biomes;
+using Jotunn.Managers;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -34,7 +35,7 @@ namespace EpicLoot.Adventure.Feature
             AdventureSaveData saveData = Player.m_localPlayer.GetAdventureSaveData();
             foreach (Heightmap.Biome biome in Player.m_localPlayer.m_knownBiome)
             {
-                string lootTableName = $"TreasureMapChest_{biome}";
+                string lootTableName = $"TreasureMapChest_{BiomeDataManager.GetName(biome)}";
                 bool lootTableExists = LootRoller.GetLootTable(lootTableName).Count > 0;
 
                 if (!lootTableExists)
@@ -43,7 +44,7 @@ namespace EpicLoot.Adventure.Feature
                 }
 
                 bool purchased = saveData.HasPurchasedTreasureMap(currentInterval, biome);
-                TreasureMapBiomeInfoConfig cost = AdventureDataManager.Config.TreasureMap.BiomeInfo.Find(x => x.Biome == biome);
+                TreasureMapBiomeInfoConfig cost = AdventureDataManager.Config.TreasureMap.BiomeInfo.Find(x => x.GetBiome() == biome);
                 if (cost != null && cost.Cost > 0)
                 {
                     results.Add(new TreasureMapItemInfo()

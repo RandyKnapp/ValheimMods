@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using EpicLoot.Biomes;
+using HarmonyLib;
 using System;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -10,7 +11,7 @@ namespace EpicLoot.Adventure
         public Heightmap.Biome Biome;
         public int Interval;
 
-        public string LootTableName => $"TreasureMapChest_{Biome}";
+        public string LootTableName => $"TreasureMapChest_{BiomeDataManager.GetName(Biome)}";
 
         public void Setup(long playerID, Heightmap.Biome biome, int treasureMapInterval)
         {
@@ -35,7 +36,7 @@ namespace EpicLoot.Adventure
                 var items = LootRoller.RollLootTable(LootTableName, 1, LootTableName, transform.position);
                 items.ForEach(item => container.m_inventory.AddItem(item));
 
-                var biomeConfig = AdventureDataManager.Config.TreasureMap.BiomeInfo.Find(x => x.Biome == biome);
+                var biomeConfig = AdventureDataManager.Config.TreasureMap.BiomeInfo.Find(x => x.GetBiome() == biome);
                 if (biomeConfig?.ForestTokens > 0)
                     container.m_inventory.AddItem("ForestToken", biomeConfig.ForestTokens, 1, 0, 0, string.Empty);
 
@@ -66,7 +67,7 @@ namespace EpicLoot.Adventure
             if (container != null)
             {
                 var label = Localization.instance.Localize("$mod_epicloot_treasurechest_name",
-                    $"$biome_{Biome.ToString().ToLower()}", (treasureMapInterval + 1).ToString());
+                    BiomeDataManager.GetLocalizationToken(Biome), (treasureMapInterval + 1).ToString());
                 container.m_name = Localization.instance.Localize(label);
                 container.m_privacy = hasBeenFound ? Container.PrivacySetting.Public : Container.PrivacySetting.Private;
                 container.m_autoDestroyEmpty = true;
@@ -118,7 +119,9 @@ namespace EpicLoot.Adventure
                 var biomeString = zdo.GetString($"{nameof(TreasureMapChest)}.{nameof(TreasureMapChest.Biome)}");
                 if (!string.IsNullOrEmpty(biomeString))
                 {
-                    if (Enum.TryParse(biomeString, out Heightmap.Biome biome))
+                    // The ZDO holds Biome.ToString(): an enum name for vanilla biomes, the number for a
+                    // custom one. The registry reads both.
+                    if (BiomeDataManager.TryResolve(biomeString, out Heightmap.Biome biome))
                     {
                         var interval = zdo.GetInt("TreasureMapChest.Interval");
                         var hasBeenFound = zdo.GetBool("TreasureMapChest.HasBeenFound");

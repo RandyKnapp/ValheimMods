@@ -1,4 +1,5 @@
 ﻿using EpicLoot.Adventure.Feature;
+using EpicLoot.Biomes;
 using System;
 using UnityEngine;
 using UnityEngine.UI;
@@ -50,7 +51,7 @@ namespace EpicLoot.Adventure
             CanAfford = Price <= currentCoins || Player.m_localPlayer.NoCostCheat();
             AlreadyPurchased = itemInfo.AlreadyPurchased;
 
-            var displayName = Localization.instance.Localize("$mod_epicloot_treasuremap_name", $"$biome_{Biome.ToString().ToLower()}", (itemInfo.Interval + 1).ToString());
+            var displayName = Localization.instance.Localize("$mod_epicloot_treasuremap_name", BiomeDataManager.GetLocalizationToken(Biome), (itemInfo.Interval + 1).ToString());
 
             Icon.color = (CanAfford && !AlreadyPurchased) ? Color.white : new Color(1.0f, 0.0f, 1.0f, 0.0f);
             NameText.text = Localization.instance.Localize(displayName);
@@ -74,7 +75,7 @@ namespace EpicLoot.Adventure
 
         private string GetTooltip()
         {
-            var biome = $"$biome_{Biome.ToString().ToLower()}";
+            var biome = BiomeDataManager.GetLocalizationToken(Biome);
             return Localization.instance.Localize("$mod_epicloot_treasuremap_tooltip", biome);
         }
     }

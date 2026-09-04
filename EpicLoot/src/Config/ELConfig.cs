@@ -3,6 +3,7 @@ using BepInEx.Configuration;
 using Common;
 using EpicLoot.Abilities;
 using EpicLoot.Adventure;
+using EpicLoot.Biomes;
 using EpicLoot.Crafting;
 using EpicLoot.CraftingV2;
 using EpicLoot.GatedItemType;
@@ -130,6 +131,7 @@ internal class ELConfig {
     private static CustomRPC AutoSorterConfigurationRPC;
     private static CustomRPC ShardStonesRPC;
     private static CustomRPC ShardStoneConversionsRPC;
+    private static CustomRPC BiomeDataRPC;
 
     private static string LocalizationDir = GetLocalizationDirectoryPath();
     private static readonly List<string> LocalizationLanguages = new List<string>() {
@@ -288,6 +290,8 @@ internal class ELConfig {
             OnServerRecieveConfigs, OnClientRecieveShardStonesConfigs);
         ShardStoneConversionsRPC = NetworkManager.Instance.AddRPC("epicloot_shardstoneconversions_RPC",
             OnServerRecieveConfigs, OnClientRecieveShardStoneConversionsConfigs);
+        BiomeDataRPC = NetworkManager.Instance.AddRPC("epicloot_biomedata_RPC",
+            OnServerRecieveConfigs, OnClientRecieveBiomeDataConfigs);
     }
 
     private static void CreateConfigValues() {
@@ -739,6 +743,10 @@ internal class ELConfig {
         // Must precede materialconversions, whose Initialize fires the event that merges these in.
         SychronizeConfig<MaterialConversionsConfig>("shardstoneconversions.json", ShardStoneConversions.Initialize,
             ShardStoneConversionsRPC, ShardStoneConversions.GetCFG);
+        // Biome data first: adventuredata resolves its biome names against it (and merges any legacy
+        // Bounties.Bosses list into it), and iteminfo takes its biome progression order from it.
+        SychronizeConfig<BiomeDataConfig>("biomedata.json", BiomeDataManager.Initialize,
+            BiomeDataRPC, BiomeDataManager.GetCFG);
         // Adventure data has to be loaded before iteminfo, as iteminfo uses the adventure data to determine what items can drop
         SychronizeConfig<AdventureDataConfig>("adventuredata.json", AdventureDataManager.Initialize,
             AdventureDataRPC, AdventureDataManager.GetCFG);
@@ -876,8 +884,9 @@ internal class ELConfig {
         }
 
         // Registered in call order, so the load-order dependencies InitializeConfig encodes
-        // (adventuredata before iteminfo, shardstones before shardstoneconversions) still hold on a
-        // hot reload. Thirteen independent watchers fire in whatever order the OS delivers them.
+        // (biomedata before adventuredata before iteminfo, shardstones before shardstoneconversions)
+        // still hold on a hot reload. Fourteen independent watchers fire in whatever order the OS
+        // delivers them.
         BaseConfigReloaders.RemoveAll(reloader => reloader.FileName == filename);
         BaseConfigReloaders.Add((filename, ReloadFromDisk));
 
@@ -1093,8 +1102,12 @@ internal class ELConfig {
         return ApplyClientConfig<ItemNameConfig>("itemnames.json", package, MagicItemNames.Initialize);
     }
 
+    private static IEnumerator OnClientRecieveBiomeDataConfigs(long sender, ZPackage package) {
+        return ApplyClientConfig<BiomeDataConfig>("biomedata.json", package, BiomeDataManager.Initialize);
+    }
+
     private static IEnumerator OnClientRecieveAdventureDataConfigs(long sender, ZPackage package) {
-        // Full Initialize (not UpdateAventureData): the RPC path must fire OnSetupAdventureData and
+        // Full Initialize: the RPC path must fire OnSetupAdventureData and
         // rebuild the features exactly like a local reload does, or every API-registered bounty
         // target / stash item / treasure map silently vanishes the moment a client joins a server.
         return ApplyClientConfig<AdventureDataConfig>("adventuredata.json", package, AdventureDataManager.Initialize);

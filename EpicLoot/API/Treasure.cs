@@ -21,6 +21,9 @@ public static partial class API
 
             ExternalTreasureMaps.Add(map);
             AdventureDataManager.Config.TreasureMap.BiomeInfo.Add(map);
+            // The spawn-point cache only searches biomes in this list; without the refresh an
+            // API-added biome never got a radius range or a cached point.
+            AdventureDataManager.Config.TreasureMap.UpdateBiomeList();
             return RuntimeRegistry.Register(map);
         }
         catch

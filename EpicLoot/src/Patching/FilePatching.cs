@@ -63,6 +63,7 @@ namespace EpicLoot.Patching
             "enchantcosts",
             "itemnames",
             "itemsorter",
+            "biomedata",
             "adventuredata",
             "legendaries",
             "abilities",

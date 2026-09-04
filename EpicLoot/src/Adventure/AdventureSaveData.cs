@@ -1,4 +1,5 @@
 ﻿using Common;
+using EpicLoot.Biomes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -282,7 +283,7 @@ namespace EpicLoot.Adventure
                 {
                     Position = chestInfo.Position + chestInfo.MinimapCircleOffset,
                     Type = EpicLoot.TreasureMapPinType,
-                    Name = Localization.instance.Localize("$mod_epicloot_treasurechest_minimappin", Localization.instance.Localize($"$biome_{chestInfo.Biome.ToString().ToLowerInvariant()}"), (chestInfo.Interval + 1).ToString())
+                    Name = Localization.instance.Localize("$mod_epicloot_treasurechest_minimappin", Localization.instance.Localize(BiomeDataManager.GetLocalizationToken(chestInfo.Biome)), (chestInfo.Interval + 1).ToString())
                 };
 
                 var pinJob = new PinJob
@@ -357,7 +358,7 @@ namespace EpicLoot.Adventure
                 Position = treasureMap.Position + treasureMap.MinimapCircleOffset,
                 Type = EpicLoot.TreasureMapPinType,
                 Name = Localization.instance.Localize("$mod_epicloot_treasurechest_minimappin",
-                    Localization.instance.Localize($"$biome_{biome.ToString().ToLowerInvariant()}"),
+                    Localization.instance.Localize(BiomeDataManager.GetLocalizationToken(biome)),
                     (interval + 1).ToString())
             };
 

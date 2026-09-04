@@ -4,7 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using EpicLoot.Biomes;
 using EpicLoot.CraftingV2;
+using EpicLoot.GatedItemType;
 
 namespace EpicLoot.Crafting
 {
@@ -134,19 +136,78 @@ namespace EpicLoot.Crafting
             return configEntry?.Cost;
         }
 
+        /// <summary>
+        /// Finds the entry keyed by a biome in a config dictionary whose keys are biome names. Keys are
+        /// resolved through the registry, so "none", "Meadows" and a biomedata.json name all work.
+        /// </summary>
+        public static bool TryGetForBiome<T>(Dictionary<string, T> byBiome, Heightmap.Biome biome, out T value)
+        {
+            value = default;
+            if (byBiome == null)
+            {
+                return false;
+            }
+
+            foreach (KeyValuePair<string, T> entry in byBiome)
+            {
+                if (BiomeDataManager.TryResolve(entry.Key, out Heightmap.Biome keyBiome) && keyBiome == biome)
+                {
+                    value = entry.Value;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Like <see cref="TryGetForBiome{T}"/>, but a biome without an entry of its own falls back to
+        /// the nearest earlier biome in progression order that has one, ending at None. A custom biome
+        /// therefore needs no entry of its own to identify at the right tier. A biome the registry does
+        /// not know at all only falls back to None.
+        /// </summary>
+        public static bool TryGetForBiomeOrLower<T>(Dictionary<string, T> byBiome, Heightmap.Biome biome,
+            out T value, out Heightmap.Biome resolvedBiome)
+        {
+            resolvedBiome = biome;
+            if (TryGetForBiome(byBiome, biome, out value))
+            {
+                return true;
+            }
+
+            List<Heightmap.Biome> order = GatedItemTypeHelper.BiomesInOrder;
+            int start = order.IndexOf(biome);
+            if (start < 0)
+            {
+                start = Math.Min(1, order.Count);
+            }
+
+            for (int i = start - 1; i >= 0; i--)
+            {
+                if (TryGetForBiome(byBiome, order[i], out value))
+                {
+                    resolvedBiome = order[i];
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         public static List<ItemAmountConfig> GetIdentifyCosts(string category, ItemRarity rarity, Heightmap.Biome biome)
         {
             List<ItemAmountConfig> totalCost = new List<ItemAmountConfig>();
 
-            // Add biome-specific costs by rarity if configured
-            if (Config.IdentifyCosts.TryGetValue(biome, out IdentifyCostConfig biomeConfig) &&
+            // Biome-specific costs by rarity. A biome without an entry of its own (a custom biome, say)
+            // is charged as the nearest lower biome that has one.
+            if (TryGetForBiomeOrLower(Config.IdentifyCosts, biome, out IdentifyCostConfig biomeConfig, out _) &&
                 biomeConfig.CostByRarity.TryGetValue(rarity, out List<ItemAmountConfig> rarityCosts))
             {
                 totalCost.AddRange(rarityCosts);
             }
             else
             {
-                EpicLoot.LogWarning($"No identify costs configured for biome {biome} and rarity {rarity}.");
+                EpicLoot.LogWarning($"No identify costs configured for biome {BiomeDataManager.GetName(biome)} and rarity {rarity}.");
             }
 
             // Add category-specific costs

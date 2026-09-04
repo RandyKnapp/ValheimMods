@@ -57,6 +57,7 @@ public static partial class API
             AdventureDataManager.Config.TreasureMap.BiomeInfo.Add(treasure);
         }
 
+        AdventureDataManager.Config.TreasureMap.UpdateBiomeList();
         OnReload?.Invoke("Reloaded external treasures");
     }
 

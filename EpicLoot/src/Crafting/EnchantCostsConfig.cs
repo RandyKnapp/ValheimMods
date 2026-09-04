@@ -61,7 +61,7 @@ namespace EpicLoot.Crafting
     [Serializable]
     public class IdentifyCostConfig
     {
-        public Heightmap.Biome Biome;
+        public string Biome;
         public Dictionary<ItemRarity, List<ItemAmountConfig>> CostByRarity = new Dictionary<ItemRarity, List<ItemAmountConfig>>();
     }
 
@@ -69,7 +69,9 @@ namespace EpicLoot.Crafting
     public class IdentifyTypeConfig
     {
         public string Localization;
-        public Dictionary<Heightmap.Biome, List<string>> BiomeLootLists = new Dictionary<Heightmap.Biome, List<string>>();
+        // Keyed by biome name ("none", "Meadows", or a biomedata.json biome); resolved through the
+        // registry on lookup so a custom biome cannot make the whole file fail to parse.
+        public Dictionary<string, List<string>> BiomeLootLists = new Dictionary<string, List<string>>();
         public List<ItemAmountConfig> Costs = new List<ItemAmountConfig>();
     }
 
@@ -84,6 +86,6 @@ namespace EpicLoot.Crafting
         public List<RuneCostConfig> RuneExtractCosts = new List<RuneCostConfig>();
         public List<RuneCostConfig> RuneEtchCosts = new List<RuneCostConfig>();
         public Dictionary<string, IdentifyTypeConfig> IdentifyTypes = new Dictionary<string, IdentifyTypeConfig>();
-        public Dictionary<Heightmap.Biome, IdentifyCostConfig> IdentifyCosts = new Dictionary<Heightmap.Biome, IdentifyCostConfig>();
+        public Dictionary<string, IdentifyCostConfig> IdentifyCosts = new Dictionary<string, IdentifyCostConfig>();
     }
 }

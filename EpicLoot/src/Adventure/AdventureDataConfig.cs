@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using EpicLoot.Biomes;
 using EpicLoot.Crafting;
 
 namespace EpicLoot.Adventure
@@ -64,7 +65,8 @@ namespace EpicLoot.Adventure
     [Serializable]
     public class TreasureMapBiomeInfoConfig
     {
-        public Heightmap.Biome Biome;
+        /// <summary>A biome name (vanilla or biomedata.json) or numeric value, resolved through the registry on use.</summary>
+        public string Biome;
         public int Cost;
         public int ForestTokens = 0;
         public int GoldTokens;
@@ -72,6 +74,8 @@ namespace EpicLoot.Adventure
         public int Coins;
         public float MinRadius;
         public float MaxRadius;
+
+        public Heightmap.Biome GetBiome() => BiomeDataManager.Resolve(Biome);
     }
 
     [Serializable]
@@ -103,15 +107,24 @@ namespace EpicLoot.Adventure
         {
             if (_biomeList == null)
             {
-                _biomeList = BiomeInfo.Select(item => item.Biome).ToArray();
+                UpdateBiomeList();
             }
 
             return _biomeList;
         }
 
+        /// <summary>
+        /// Re-resolves the BiomeInfo biome names. Runs on every adventure data load, whenever
+        /// biomedata.json reloads, and when the API appends a treasure map. A name that does not
+        /// resolve is left out rather than filed under None.
+        /// </summary>
         public void UpdateBiomeList()
         {
-            _biomeList = BiomeInfo.Select(item => item.Biome).ToArray();
+            _biomeList = BiomeInfo
+                .Select(item => item.GetBiome())
+                .Where(biome => biome != Heightmap.Biome.None && biome != Heightmap.Biome.All)
+                .Distinct()
+                .ToArray();
         }
     }
 
@@ -134,18 +147,25 @@ namespace EpicLoot.Adventure
     [Serializable]
     public class BountyTargetConfig
     {
-        public Heightmap.Biome Biome;
+        /// <summary>A biome name (vanilla or biomedata.json) or numeric value, resolved through the registry on use.</summary>
+        public string Biome;
         public string TargetID;
         public int RewardGold;
         public int RewardIron;
         public int RewardCoins;
         public List<BountyTargetAddConfig> Adds = new List<BountyTargetAddConfig>();
+
+        public Heightmap.Biome GetBiome() => BiomeDataManager.Resolve(Biome);
     }
 
+    /// <summary>
+    /// Deprecated. Biome progression order and boss keys live in biomedata.json; entries here are
+    /// still read so older files and patches keep working (see BiomeDataManager.SetLegacyBosses).
+    /// </summary>
     [Serializable]
     public class BountyBossConfig
     {
-        public Heightmap.Biome Biome;
+        public string Biome;
         public string BossPrefab;
         public string BossDefeatedKey;
     }

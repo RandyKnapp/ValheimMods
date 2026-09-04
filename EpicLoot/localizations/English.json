@@ -718,6 +718,8 @@
     "mod_epicloot_unidentified_Mountain": "Unidentified Mountain Gear",
     "mod_epicloot_unidentified_Ocean": "Unidentified Ocean Gear",
     "mod_epicloot_unidentified_DeepNorth": "Unidentified DeepNorth Gear",
+    "mod_epicloot_unidentified_prefix": "Unidentified",
+    "mod_epicloot_unidentified_suffix": "Gear",
     "mod_epicloot_unidentified_introduce": "This item is unidentified, it could be anything or it could just be ground up into dust! Go to the enchanting table to identify it.",
     "mod_epicloot_tab_sacrifice": "Sacrifice",
     "mod_epicloot_tab_identify": "Identify",
@@ -731,6 +733,7 @@
     "mod_epicloot_identify_accessory": "Accessory",
     "mod_epicloot_identify_explain": "Identify a magic item to turn it into equipment. You can filter the category for a cost.",
     "mod_epicloot_identify_productsexplainer": "Potential Items Identified",
+    "mod_epicloot_identify_progressgated": "<color=yellow>(Progress-gated)</color>",
     "mod_epicloot_identify": "Identify",
 
 

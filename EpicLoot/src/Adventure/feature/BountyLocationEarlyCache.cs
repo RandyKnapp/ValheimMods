@@ -455,7 +455,7 @@ namespace EpicLoot.Adventure.Feature
 
         private static TreasureMapBiomeInfoConfig GetBiomeInfoConfig(Heightmap.Biome biome)
         {
-            return AdventureDataManager.Config.TreasureMap.BiomeInfo.Find(x => x.Biome == biome);
+            return AdventureDataManager.Config.TreasureMap.BiomeInfo.Find(x => x.GetBiome() == biome);
         }
     }
 

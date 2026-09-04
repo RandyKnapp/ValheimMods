@@ -1,0 +1,13 @@
+{
+  "Biomes": [
+    { "Name": "Meadows",     "ID": 1,   "Order": 10, "BossDefeatedKeys": [ "defeated_eikthyr" ],    "Color": "#75d966" },
+    { "Name": "BlackForest", "ID": 8,   "Order": 20, "BossDefeatedKeys": [ "defeated_gdking" ],     "Color": "#72a178" },
+    { "Name": "Ocean",       "ID": 256, "Order": 30, "BossDefeatedKeys": [ "defeated_gdking" ],     "Color": "#4a90d9" },
+    { "Name": "Swamp",       "ID": 2,   "Order": 40, "BossDefeatedKeys": [ "defeated_bonemass" ],   "Color": "#a88a6f" },
+    { "Name": "Mountain",    "ID": 4,   "Order": 50, "BossDefeatedKeys": [ "defeated_dragon" ],     "Color": "#a3bcd6" },
+    { "Name": "Plains",      "ID": 16,  "Order": 60, "BossDefeatedKeys": [ "defeated_goblinking" ], "Color": "#d6cea3" },
+    { "Name": "Mistlands",   "ID": 512, "Order": 70, "BossDefeatedKeys": [ "defeated_queen" ],      "Color": "#8b7cb3" },
+    { "Name": "AshLands",    "ID": 32,  "Order": 80, "BossDefeatedKeys": [ "defeated_fader" ],      "Color": "#d94a4a" },
+    { "Name": "DeepNorth",   "ID": 64,  "Order": 90, "BossDefeatedKeys": [],                        "Color": "#a3d6d6" }
+  ]
+}
