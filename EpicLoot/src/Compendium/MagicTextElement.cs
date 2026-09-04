@@ -51,20 +51,11 @@ public class MagicTextElement
         Enable(true);
     }
 
-    private void ApplyFont(MagicFontManager.TMP_FontOptions option)
-    {
-        MagicFontManager.TMP_FontData data = MagicFontManager.GetTMPFont(option);
-        if (data?.font == null)
-        {
-            return;
-        }
-
-        _text.font = data.font;
-        if (data.material != null)
-        {
-            _text.fontSharedMaterial = data.material;
-        }
-    }
+    // Goes through MagicFontManager rather than assigning fontSharedMaterial directly: TMP only
+    // validates a shared material against the font's current atlas inside LoadFontAsset(), which the
+    // setter does not run.
+    private void ApplyFont(MagicFontManager.TMP_FontOptions option) =>
+        MagicFontManager.Apply(_text, option);
 
     public void Resize()
     {
@@ -103,6 +94,8 @@ public class MagicTextElement
     public void Destroy() => UnityEngine.Object.Destroy(_obj);
     public void Enable(bool enable) => _obj.SetActive(enable);
 
+    // No re-measure needed: TMP folds material padding into GenerateTextMesh's vertex/UV math only,
+    // never into CalculatePreferredValues, so the height Set() computed holds across the swap.
     public void EnableOutline(bool enable) => ApplyFont(enable
         ? MagicFontManager.TMP_FontOptions.AveriaSerifLibreOutline
         : MagicFontManager.TMP_FontOptions.AveriaSerifLibre);

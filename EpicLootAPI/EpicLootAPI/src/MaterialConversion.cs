@@ -11,7 +11,10 @@ public enum MaterialConversionType
 {
     Upgrade,
     Convert,
-    Junk
+    Junk,
+    // Mirrors EpicLoot.CraftingV2.MaterialConversionType. Serialized as an int across the API boundary, so
+    // append only -- never reorder.
+    ShardUpgrade
 }
 
 [Serializable][PublicAPI]

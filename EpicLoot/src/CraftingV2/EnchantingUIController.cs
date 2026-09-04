@@ -317,6 +317,8 @@ namespace EpicLoot.CraftingV2
                 };
 
                 bool hasSomeItems = false;
+                bool declaresShardCost = false;
+                bool hasSourceShard = false;
                 foreach (MaterialConversionRequirement requirement in conversion.Resources)
                 {
                     GameObject reqPrefab = ObjectDB.instance.GetItemPrefab(requirement.Item);
@@ -357,13 +359,28 @@ namespace EpicLoot.CraftingV2
                         Amount = requiredAmount
                     });
 
+                    bool costIsShard = costItem.IsShardStone();
+                    declaresShardCost |= costIsShard;
+
                     if (InventoryManagement.Instance.CountItem(costItem) > 0)
                     {
                         hasSomeItems = true;
+                        hasSourceShard |= costIsShard;
                     }
                 }
 
-                if (hasSomeItems)
+                // Owning any one ingredient is enough to list a recipe everywhere else, which is what the
+                // generic modes want -- you should see the runestone upgrade you are two shards short of. It
+                // reads as noise in the shard ladder though: every Magic-to-Rare step costs a ShardMagic, so
+                // carrying one surfaced all eighteen colors whether or not you held a single stone. Here the
+                // stone being consumed is the thing you are actually shopping for. A recipe that names no
+                // shard at all (nothing shipped does, but a patch or the API could) falls back rather than
+                // vanishing with no explanation.
+                bool listRecipe = conversion.Type == MaterialConversionType.ShardUpgrade && declaresShardCost
+                    ? hasSourceShard
+                    : hasSomeItems;
+
+                if (listRecipe)
                 {
                     result.Add(recipe);
                 }
@@ -1380,7 +1397,7 @@ namespace EpicLoot.CraftingV2
             return InventoryManagement.Instance.GetAllItems()
                 .Where(item => !item.m_equipped && !item.IsRunestone()  && (ELConfig.ShowEquippedAndHotbarItemsInSacrificeTab.Value ||
                     !boundItems.Contains(item)))
-                .Where(item => item.IsMagic(out MagicItem magicItem) && magicItem.CanBeDisenchanted())
+                .Where(item => item.CanBeDisenchanted())
                 .Select(item => new InventoryItemListElement() { Item = item })
                 .ToList();
         }
@@ -1472,7 +1489,7 @@ namespace EpicLoot.CraftingV2
         {
             bonusRolled = false;
             List<InventoryItemListElement> returnedItems = new List<InventoryItemListElement>();
-            if (item.IsMagic(out MagicItem magicItem) && magicItem.CanBeDisenchanted())
+            if (item.CanBeDisenchanted() && item.IsMagic(out MagicItem magicItem))
             {
                 Tuple<float, float> featureValues = EnchantingTableUI.instance.SourceTable.GetFeatureCurrentValue(
                     EnchantingFeature.Disenchant);

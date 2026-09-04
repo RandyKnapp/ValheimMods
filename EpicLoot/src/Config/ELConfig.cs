@@ -77,6 +77,7 @@ internal class ELConfig {
     public static ConfigEntry<int> MythicGiftSlotsAdded;
     public static ConfigEntry<float> LegendaryGiftSuccessChance;
     public static ConfigEntry<float> MythicGiftSuccessChance;
+    public static ConfigEntry<KeyCode> SocketOverlayModifier;
     public static ConfigEntry<float> GlobalDropRateModifier;
     public static ConfigEntry<bool> DeferChestLootRoll;
 
@@ -487,6 +488,11 @@ internal class ELConfig {
             "Percent chance that a Mythic Brokkr's Gift adds its slots. On a failed roll the gift is " +
             "still consumed and nothing is added.\n" +
             "Min = 0, Max = 100", new AcceptableValueRange<float>(0f, 100f));
+        SocketOverlayModifier = BindClient(SectionSockets, "Socket Overlay Modifier", KeyCode.LeftAlt,
+            "Hold this key with Use to open the shard slots of an item that another mod has turned " +
+            "into a container (a backpack, a quiver). Plain Use opens that mod's container instead, " +
+            "since that is the gesture it already advertises. Items with no such container ignore " +
+            "this setting and open their shard slots on plain Use as usual.");
 
         // 4 - Enchanting Table
         EnchantingTableUpgradesActive = BindServer(SectionEnchanting, "Upgrades Active", true,

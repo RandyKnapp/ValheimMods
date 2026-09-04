@@ -139,6 +139,16 @@ public static partial class TerminalManager
 
         WorldBiomeIndex.EnsureBuilt();
 
+        // A biome name narrows the report to that biome and adds the rejection breakdown, which is
+        // what answers "the index has cells but the search still fails".
+        string filter = args.Length > 1 ? args[1] : string.Empty;
+        Heightmap.Biome filterBiome = Heightmap.Biome.None;
+        if (!string.IsNullOrEmpty(filter) && !BiomeDataManager.TryResolve(filter, out filterBiome))
+        {
+            args.Context.PrintInfo($"> Unknown biome '{filter}'");
+            return;
+        }
+
         var sb = new StringBuilder();
         sb.AppendLine($"World extent: {WorldExtent.Describe()}");
         sb.AppendLine($"Biome index: {WorldBiomeIndex.Describe()}");
@@ -150,13 +160,29 @@ public static partial class TerminalManager
             return;
         }
 
-        foreach (Heightmap.Biome biome in WorldBiomeIndex.IndexedBiomes.OrderBy(x => x.ToString()))
+        // Ordered by progression, with anything the registry does not know about listed after -- a
+        // biome another mod generates but nobody declared still shows up, which is the case worth
+        // seeing here.
+        foreach (Heightmap.Biome biome in WorldBiomeIndex.IndexedBiomes
+                     .Where(x => filterBiome == Heightmap.Biome.None || x == filterBiome)
+                     .OrderBy(x => BiomeDataManager.IsKnown(x) ? BiomeDataManager.GetOrder(x) : int.MaxValue)
+                     .ThenBy(x => BiomeDataManager.GetName(x)))
         {
             BountyLocationEarlyCache.GetRadiusBand(biome, out float min, out float max);
             int inBand = WorldBiomeIndex.CountCellsInBand(biome, min, max);
             string warning = inBand == 0 ? "  <-- NOTHING IN BAND" : string.Empty;
-            sb.AppendLine($"{biome}: {WorldBiomeIndex.CountCells(biome)} cells, " +
+            string unknown = BiomeDataManager.IsKnown(biome) ? string.Empty : " [not in biomedata.json]";
+            string water = WorldBiomeIndex.IsOpenWater(biome) ? " [open water]" : string.Empty;
+            sb.AppendLine($"{BiomeDataManager.GetName(biome)}{unknown}{water}: " +
+                $"{WorldBiomeIndex.CountCells(biome)} cells, " +
                 $"{inBand} in band {min:0}-{max:0}m{warning}");
+
+            // Cells in band is not the same as cells a search can use -- lava, water and the world
+            // edge all reject in-band cells -- so break that down for the biome the caller named.
+            if (!string.IsNullOrEmpty(filter))
+            {
+                sb.AppendLine($"    {WorldBiomeIndex.DescribeRejections(biome, min, max)}");
+            }
         }
 
         args.Context.PrintInfo(sb.ToString());

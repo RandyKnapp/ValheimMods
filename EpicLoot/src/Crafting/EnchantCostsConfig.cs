@@ -31,6 +31,17 @@ namespace EpicLoot.Crafting
         public ItemRarity Rarity;
         public List<string> ItemTypes = new List<string>();
         public List<string> ItemNames = new List<string>();
+
+        // Matches against the tail of m_shared.m_ammoType, the field Epic Loot uses as an identity channel for
+        // items it creates (IsRunestone, IsMagicCraftingMaterial, IsShardSlotChisel all read it the same way).
+        // "ShardStone" catches every (color, rarity) shardstone with one entry per rarity, and keeps catching a
+        // color added later. The suffix can be as specific as the caller likes -- a full "Yagluth|Mythic|ShardStone"
+        // singles out one stone -- which is how a per-color or per-boss yield would be expressed.
+        //
+        // An entry carrying one of these is treated as more specific than one without, and among those the
+        // longest matching suffix wins, so a single-stone override beats the blanket entry no matter which
+        // order they end up in: see EnchantCostsHelper.GetSacrificeProducts.
+        public List<string> AmmoTypeSuffixes = new List<string>();
         public List<ItemAmountConfig> Products = new List<ItemAmountConfig>();
     }
 

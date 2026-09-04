@@ -19,20 +19,21 @@
       "Value": { "Item": "YagluthDrop", "Amount": 2 }
     },
     {
-      "Path": "$.MaterialConversions[?(@.Name == 'ShardStoneConvert_Red_Mythic_to_Essence')].Amount",
+      "Path": "$.MaterialConversions[?(@.Name == 'ShardStoneUpgrade_Red_Epic_to_Legendary')].Amount",
       "Action": "Overwrite",
-      "Value": 4
+      "Value": 2
     },
     {
       "Path": "$.MaterialConversions",
       "Action": "Append",
       "Value": {
-        "Name": "ShardStoneConvert_Fader_Mythic_to_Shard",
-        "Product": "ShardMythic",
-        "Amount": 3,
-        "Type": "Convert",
+        "Name": "ShardStoneUpgrade_Fader_Mythic_to_Mythic",
+        "Product": "Fader_Mythic_ShardStone",
+        "Amount": 1,
+        "Type": "ShardUpgrade",
         "Resources": [
-          { "Item": "Fader_Mythic_ShardStone", "Amount": 1 }
+          { "Item": "Fader_Mythic_ShardStone", "Amount": 2 },
+          { "Item": "ShardMythic", "Amount": 8 }
         ]
       }
     }

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+using EpicLoot.Biomes;
 using UnityEngine;
 
 namespace EpicLoot.Adventure
@@ -78,17 +79,64 @@ namespace EpicLoot.Adventure
 
         private const int SamplesPerBudgetCheck = 128;
 
-        /// <summary>Cells examined before a search gives up on one rung of the fallback ladder.</summary>
-        private const int MaxCandidatesPerAttempt = 256;
+        /// <summary>Candidate points examined before a search gives up on one rung of the ladder.</summary>
+        private const int MaxCandidatesPerAttempt = 512;
 
-        private const int MaxCellsPerAttempt = 4;
-        private const int NearestCellCount = 8;
+        /// <summary>
+        /// How many indexed cells a search may try. Breadth matters far more than depth here: a cell
+        /// centre was sampled as this biome when the index was built, so it is the only candidate
+        /// guaranteed to still be in the biome, and testing one costs a single height sample. Points
+        /// jittered away from a centre are worth trying for variety but are the first thing to fail
+        /// in a fragmented biome, so they must never crowd out cells that have not been looked at.
+        ///
+        /// This was 4, with 36 jittered candidates each. In AshLands -- fragmented, and largely lava
+        /// and below-water trench -- that meant a search covered 8 guaranteed-in-biome points out of
+        /// thousands available, all of them clustered around one anchor, and reported the biome as
+        /// unusable when that one neighbourhood happened to be bad.
+        /// </summary>
+        private const int MaxCellsPerAttempt = 64;
+
+        private const int NearestCellCount = 64;
+
+        /// <summary>
+        /// Cells sampled from across the whole slice once the nearest ones are exhausted. The nearest
+        /// cells are by construction all in one neighbourhood, so a single hostile region (a lava
+        /// field, a stretch of trench) rejects all of them together; these are strided across the
+        /// biome so they cannot fail for the same local reason.
+        /// </summary>
+        private const int SpreadCellCount = 64;
+
+        /// <summary>Jittered points tried around a validated cell centre, purely for variety.</summary>
+        private const int VarietyAttempts = 6;
+
+        /// <summary>
+        /// How many of the nearest cells get shuffled before the search walks them. Enough that two
+        /// bounties in a row do not resolve to the same cell, small enough that the pick is still
+        /// recognisably the nearest patch of the biome to the anchor.
+        /// </summary>
+        private const int VarietyShuffleCount = 8;
 
         /// <summary>
         /// Minimum spacing between consecutive points handed out for the same biome, when the K
         /// nearest cells offer a choice. Stops two bounties in a row landing in the same clearing.
         /// </summary>
         private const float PreferredSpacing = 200f;
+
+        /// <summary>
+        /// Biomes whose terrain is below the water line essentially everywhere, measured from this
+        /// world rather than assumed. See <see cref="IsOpenWater"/>.
+        /// </summary>
+        private static readonly HashSet<Heightmap.Biome> OpenWaterBiomes = new();
+
+        /// <summary>Cells sampled per biome when deciding whether it is open water.</summary>
+        private const int OpenWaterSampleCount = 128;
+
+        /// <summary>
+        /// Above-water samples that disqualify a biome from being open water. Two rather than one so
+        /// a single freak sandbar in an ocean does not flip the answer, and the sampler stops as soon
+        /// as it is exceeded -- so a land biome costs three height samples, not 128.
+        /// </summary>
+        private const int OpenWaterMaxAboveWaterSamples = 2;
 
         private static readonly Dictionary<Heightmap.Biome, Vector3> LastIssued = new();
 
@@ -139,6 +187,7 @@ namespace EpicLoot.Adventure
         {
             WorldExtent.InvalidateProbe();
             Buckets.Clear();
+            OpenWaterBiomes.Clear();
             LastIssued.Clear();
             _state = BiomeIndexState.NotBuilt;
             _seed = 0;
@@ -276,6 +325,18 @@ namespace EpicLoot.Adventure
                 Buckets.Add(pair.Key, BuildBucket(pair.Value));
             }
 
+            yield return null;
+            frames++;
+
+            OpenWaterBiomes.Clear();
+            foreach (var pair in Buckets)
+            {
+                if (IsBucketOpenWater(worldGenerator, pair.Key, pair.Value))
+                {
+                    OpenWaterBiomes.Add(pair.Key);
+                }
+            }
+
             _cellSize = cellSize;
             _cellCount = sampled;
             _buildMs = elapsedMs;
@@ -288,6 +349,71 @@ namespace EpicLoot.Adventure
 
             EpicLoot.LogForce($"World biome index built: {_cellCount} cells, {_cellSize:0.#}m grid, " +
                 $"{_buildMs:0}ms over {_buildFrames} frames, {WorldExtent.Describe()}. {DescribeBuckets()}");
+        }
+
+        /// <summary>
+        /// Decides whether a biome is open water by measuring it, not by naming it.
+        ///
+        /// The submerged-point rejection in <see cref="TryCandidate"/> has to be skipped for a biome
+        /// that is under water by definition, or it rejects every candidate there and the biome can
+        /// never produce a spawn point at all -- the exact failure that kept vanilla Ocean bounties
+        /// from ever placing. Testing <c>biome == Ocean</c> would re-introduce that for any ocean-like
+        /// biome another mod adds, and the biome registry carries no is-water trait to consult, so
+        /// this samples the world instead. That also means a modded world where, say, Ocean has been
+        /// re-shaped into something walkable gets the right answer rather than the assumed one.
+        ///
+        /// Sampling strides the radius-sorted bucket so the whole radial range is covered, and stops
+        /// as soon as the biome has proven it has land.
+        /// </summary>
+        private static bool IsBucketOpenWater(WorldGenerator worldGenerator, Heightmap.Biome biome,
+            BiomeBucket bucket)
+        {
+            if (bucket.Count == 0)
+            {
+                return false;
+            }
+
+            float waterLevel = ZoneSystem.instance.m_waterLevel;
+            int samples = Mathf.Min(OpenWaterSampleCount, bucket.Count);
+
+            // Never let the allowance reach the sample count, or a biome with only one or two cells
+            // -- all of them dry land -- would be called open water simply because it cannot produce
+            // enough above-water samples to exceed the allowance.
+            int maxAboveWater = Mathf.Min(OpenWaterMaxAboveWaterSamples, samples - 1);
+            int aboveWater = 0;
+
+            for (int i = 0; i < samples; i++)
+            {
+                int index = (int)((long)i * bucket.Count / samples);
+                float height = worldGenerator.GetBiomeHeight(biome, bucket.X[index], bucket.Z[index],
+                    out Color _);
+
+                if (height >= waterLevel)
+                {
+                    aboveWater++;
+                    if (aboveWater > maxAboveWater)
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// True when <paramref name="biome"/> is under water everywhere, so a spawn point in it must
+        /// be allowed to be submerged. Falls back to the vanilla Ocean assumption when the index has
+        /// not been built on this client -- that is the pre-existing behaviour, never worse.
+        /// </summary>
+        internal static bool IsOpenWater(Heightmap.Biome biome)
+        {
+            if (_state != BiomeIndexState.Ready)
+            {
+                return biome == Heightmap.Biome.Ocean;
+            }
+
+            return OpenWaterBiomes.Contains(biome);
         }
 
         private static BiomeBucket BuildBucket(List<Vector2> cells)
@@ -354,7 +480,11 @@ namespace EpicLoot.Adventure
                     sb.Append(' ');
                 }
 
-                sb.Append(pair.Key).Append('=').Append(pair.Value.Count);
+                sb.Append(BiomeDataManager.GetName(pair.Key)).Append('=').Append(pair.Value.Count);
+                if (OpenWaterBiomes.Contains(pair.Key))
+                {
+                    sb.Append("(water)");
+                }
             }
 
             return sb.Length == 0 ? "(no biomes indexed)" : sb.ToString();
@@ -428,6 +558,7 @@ namespace EpicLoot.Adventure
                 int passCandidates = 0;
                 int alreadyTried = candidatesTried;
 
+                // The nearest cells first, so the point stays near the anchor when it can.
                 for (int i = 0; i < cellsToTry; i++)
                 {
                     int index = nearest[i];
@@ -446,6 +577,30 @@ namespace EpicLoot.Adventure
                     if (passCandidates >= MaxCandidatesPerAttempt)
                     {
                         break;
+                    }
+                }
+
+                // Every cell above sits in one neighbourhood around the anchor, so they can all be
+                // rejected for the same local reason -- an AshLands anchor that lands in a lava field
+                // or on the trench rejects its whole neighbourhood at once. These are strided across
+                // the biome's entire slice instead, starting from a random offset so repeat requests
+                // do not retry the same fallback cells.
+                int spreadCells = Mathf.Min(SpreadCellCount, hi - lo);
+                int spreadStart = UnityEngine.Random.Range(0, Mathf.Max(1, hi - lo));
+
+                for (int i = 0; i < spreadCells && passCandidates < MaxCandidatesPerAttempt; i++)
+                {
+                    int index = lo + (spreadStart + (int)((long)i * (hi - lo) / spreadCells)) % (hi - lo);
+                    var cell = new Vector2(bucket.X[index], bucket.Z[index]);
+
+                    bool found = TryRefineInCell(biome, cell, minRadius, maxRadius, requireBand,
+                        requireZoneAgreement, ref passCandidates, out point);
+                    candidatesTried = alreadyTried + passCandidates;
+
+                    if (found)
+                    {
+                        LastIssued[biome] = point;
+                        return true;
                     }
                 }
             }
@@ -508,14 +663,19 @@ namespace EpicLoot.Adventure
         }
 
         /// <summary>
-        /// Shuffles the K nearest cells and floats one clear of the last point issued for this biome
-        /// to the front. Without this, repeat requests keep resolving to the same nearest cell and
-        /// consecutive bounties land on top of each other.
+        /// Shuffles the closest few cells and floats one clear of the last point issued for this
+        /// biome to the front. Without this, repeat requests keep resolving to the same nearest cell
+        /// and consecutive bounties land on top of each other.
+        ///
+        /// Only the front of the list is shuffled. The rest stays in distance order because it is the
+        /// fallback the search walks when the close cells fail, and shuffling all of it would turn
+        /// "the nearest patch of this biome" into "somewhere in a several-kilometre neighbourhood".
         /// </summary>
         private static void OrderByPreference(BiomeBucket bucket, Heightmap.Biome biome,
             int[] nearest, int count)
         {
-            for (int i = count - 1; i > 0; i--)
+            int shuffled = Mathf.Min(count, VarietyShuffleCount);
+            for (int i = shuffled - 1; i > 0; i--)
             {
                 int j = UnityEngine.Random.Range(0, i + 1);
                 (nearest[i], nearest[j]) = (nearest[j], nearest[i]);
@@ -526,8 +686,10 @@ namespace EpicLoot.Adventure
                 return;
             }
 
+            // Confined to the shuffled front for the same reason: promoting a cell from deep in the
+            // distance-ordered tail would trade "not the same clearing twice" for "kilometres away".
             float spacingSq = PreferredSpacing * PreferredSpacing;
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < shuffled; i++)
             {
                 float dx = bucket.X[nearest[i]] - last.x;
                 float dz = bucket.Z[nearest[i]] - last.z;
@@ -540,51 +702,41 @@ namespace EpicLoot.Adventure
         }
 
         /// <summary>
-        /// Turns a grid node into a real position. The cell centre is one candidate; the rest are
-        /// jitter and rings within the cell, so repeat hits on the same cell do not return the same
-        /// point and nothing ends up snapped to a visible 128m lattice.
+        /// Turns a grid node into a real position.
+        ///
+        /// The cell centre is tried first and is the only candidate guaranteed to still be in the
+        /// biome -- it is the exact point the index sampled. If it fails, this gives up on the cell
+        /// immediately rather than spending the budget on jittered points, because in a fragmented
+        /// biome those are mostly outside it and every one of them is budget not spent on a cell that
+        /// has never been looked at. Jitter is for variety, so it is only paid for after a centre has
+        /// already proven the spot is usable, and it falls back to that centre if none of it lands.
         /// </summary>
         private static bool TryRefineInCell(Heightmap.Biome biome, Vector2 cell,
             float minRadius, float maxRadius, bool requireBand, bool requireZoneAgreement,
             ref int candidatesTried, out Vector3 point)
         {
-            point = Vector3.zero;
-
-            if (TryCandidate(biome, cell, minRadius, maxRadius, requireBand, requireZoneAgreement,
-                        ref candidatesTried, out point))
+            if (!TryCandidate(biome, cell, minRadius, maxRadius, requireBand, requireZoneAgreement,
+                    ref candidatesTried, out point))
             {
-                return true;
+                return false;
             }
 
-            float half = _cellSize * 0.5f;
+            // The centre works, so a point here exists. Everything below only looks for a nicer one:
+            // returning centres verbatim would snap every bounty in the world to the sample grid.
+            float jitterRadius = _cellSize * 0.5f;
 
-            for (int i = 0; i < 11 && candidatesTried < MaxCandidatesPerAttempt; i++)
+            for (int i = 0; i < VarietyAttempts && candidatesTried < MaxCandidatesPerAttempt; i++)
             {
-                Vector2 candidate = cell + UnityEngine.Random.insideUnitCircle * half;
+                Vector2 candidate = cell + UnityEngine.Random.insideUnitCircle * jitterRadius;
                 if (TryCandidate(biome, candidate, minRadius, maxRadius, requireBand, requireZoneAgreement,
-                        ref candidatesTried, out point))
+                        ref candidatesTried, out Vector3 jittered))
                 {
+                    point = jittered;
                     return true;
                 }
             }
 
-            float phase = UnityEngine.Random.Range(0f, Mathf.PI * 2f);
-            for (int ring = 1; ring <= 3 && candidatesTried < MaxCandidatesPerAttempt; ring++)
-            {
-                float ringRadius = _cellSize * (0.375f * ring);
-                for (int step = 0; step < 8 && candidatesTried < MaxCandidatesPerAttempt; step++)
-                {
-                    float angle = phase + step / 8f * Mathf.PI * 2f;
-                    Vector2 candidate = cell + new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * ringRadius;
-                    if (TryCandidate(biome, candidate, minRadius, maxRadius, requireBand, requireZoneAgreement,
-                        ref candidatesTried, out point))
-                    {
-                        return true;
-                    }
-                }
-            }
-
-            return false;
+            return true;
         }
 
         /// <summary>
@@ -625,18 +777,26 @@ namespace EpicLoot.Adventure
 
             float height = worldGenerator.GetBiomeHeight(biome, candidate.x, candidate.y, out Color mask);
 
-            // The Ocean biome is open water by definition, so every point in it is submerged and the
-            // water test would reject all of them. Everywhere else, water means a lake or a river.
+            // An open-water biome is submerged by definition, so every point in it would fail this
+            // test; everywhere else, water means a lake or a river and the point is no good. Which
+            // biomes those are is measured per world rather than assumed, so a custom ocean-like
+            // biome works without being named here -- see IsBucketOpenWater.
             // This is also what rejects the trench that CreateAshlandsGap/CreateDeepNorthGap carve
             // around the polar caps, where a biome match sits under tens of metres of water.
-            if (biome != Heightmap.Biome.Ocean &&
-                height < ZoneSystem.instance.m_waterLevel - 2f)
+            if (!IsOpenWater(biome) && height < ZoneSystem.instance.m_waterLevel - 2f)
             {
                 return false;
             }
 
             // mask.a is the Ashlands lava mask, the same value ZoneSystem.IsLavaPreHeightmap tests --
             // already in hand here, where that method would re-derive the biome and the height.
+            //
+            // The AshLands gate is required, not an oversight, and must not be generalised to custom
+            // biomes: mask.a is a shared channel whose meaning is per biome, and GetMistlandsHeight
+            // writes it too. Testing it unconditionally would reject Mistlands points that have no
+            // lava anywhere near them. Vanilla draws the same line -- Heightmap.IsLava and
+            // ZoneSystem.IsLavaPreHeightmap both check for AshLands before reading the mask -- so
+            // lava is an AshLands-only concept to the engine as well, not just to us.
             if (biome == Heightmap.Biome.AshLands && mask.a > 0.6f)
             {
                 return false;
@@ -677,6 +837,77 @@ namespace EpicLoot.Adventure
                 worldGenerator.GetBiome(zonePos.x + half, zonePos.z - half) == biome &&
                 worldGenerator.GetBiome(zonePos.x - half, zonePos.z + half) == biome &&
                 worldGenerator.GetBiome(zonePos.x + half, zonePos.z + half) == biome;
+        }
+
+        /// <summary>
+        /// Counts why cell centres in a biome are rejected. Purely diagnostic -- a search that fails
+        /// can only report "no usable location", which does not say whether the biome is drowned,
+        /// paved in lava, or simply outside its configured band. Uses cell centres only, so every
+        /// sample is known to be in the biome and the tally is about the terrain, not the sampling.
+        /// </summary>
+        internal static string DescribeRejections(Heightmap.Biome biome, float minRadius, float maxRadius,
+            int sampleLimit = 512)
+        {
+            if (!Buckets.TryGetValue(biome, out var bucket) || bucket.Count == 0)
+            {
+                return "no cells indexed";
+            }
+
+            var worldGenerator = WorldGenerator.instance;
+            if (worldGenerator == null)
+            {
+                return "world generator unavailable";
+            }
+
+            float waterLevel = ZoneSystem.instance.m_waterLevel;
+            bool openWater = IsOpenWater(biome);
+            int samples = Mathf.Min(sampleLimit, bucket.Count);
+            int outsideWorld = 0, outsideBand = 0, submerged = 0, lava = 0, zoneEdge = 0, usable = 0;
+
+            for (int i = 0; i < samples; i++)
+            {
+                int index = (int)((long)i * bucket.Count / samples);
+                var cell = new Vector2(bucket.X[index], bucket.Z[index]);
+                float radius = cell.magnitude;
+
+                if (radius > WorldExtent.TotalRadius - _cellSize)
+                {
+                    outsideWorld++;
+                    continue;
+                }
+
+                if (radius < minRadius || radius > maxRadius)
+                {
+                    outsideBand++;
+                    continue;
+                }
+
+                float height = worldGenerator.GetBiomeHeight(biome, cell.x, cell.y, out Color mask);
+
+                if (!openWater && height < waterLevel - 2f)
+                {
+                    submerged++;
+                    continue;
+                }
+
+                if (biome == Heightmap.Biome.AshLands && mask.a > 0.6f)
+                {
+                    lava++;
+                    continue;
+                }
+
+                if (!ZoneAgreesOnBiome(worldGenerator, cell, biome))
+                {
+                    zoneEdge++;
+                    continue;
+                }
+
+                usable++;
+            }
+
+            return $"of {samples} sampled cells: {usable} usable, {outsideBand} outside band, " +
+                $"{submerged} submerged, {lava} lava, {zoneEdge} on a mixed-biome zone, " +
+                $"{outsideWorld} past the world edge";
         }
 
         private static int LowerBound(float[] sorted, float value)

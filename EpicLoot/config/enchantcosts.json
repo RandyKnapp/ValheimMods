@@ -937,6 +937,61 @@
           "Amount": 1
         }
       ]
+    },
+    {
+      "IsMagic": true,
+      "ItemTypes": [ "Material" ],
+      "AmmoTypeSuffixes": [ "ShardStone" ],
+      "Rarity": "Magic",
+      "Products": [
+        { "Item": "DustMagic", "Amount": 2 },
+        { "Item": "ReagentMagic", "Amount": 2 },
+        { "Item": "EssenceMagic", "Amount": 2 }
+      ]
+    },
+    {
+      "IsMagic": true,
+      "ItemTypes": [ "Material" ],
+      "AmmoTypeSuffixes": [ "ShardStone" ],
+      "Rarity": "Rare",
+      "Products": [
+        { "Item": "DustRare", "Amount": 2 },
+        { "Item": "ReagentRare", "Amount": 2 },
+        { "Item": "EssenceRare", "Amount": 2 }
+      ]
+    },
+    {
+      "IsMagic": true,
+      "ItemTypes": [ "Material" ],
+      "AmmoTypeSuffixes": [ "ShardStone" ],
+      "Rarity": "Epic",
+      "Products": [
+        { "Item": "DustEpic", "Amount": 2 },
+        { "Item": "ReagentEpic", "Amount": 2 },
+        { "Item": "EssenceEpic", "Amount": 2 }
+      ]
+    },
+    {
+      "IsMagic": true,
+      "ItemTypes": [ "Material" ],
+      "AmmoTypeSuffixes": [ "ShardStone" ],
+      "Rarity": "Legendary",
+      "Products": [
+        { "Item": "DustLegendary", "Amount": 2 },
+        { "Item": "ReagentLegendary", "Amount": 2 },
+        { "Item": "EssenceLegendary", "Amount": 2 }
+      ]
+    },
+    {
+      "IsMagic": true,
+      "ItemTypes": [ "Material" ],
+      "AmmoTypeSuffixes": [ "ShardStone" ],
+      "Rarity": "Mythic",
+      "Products": [
+        { "Item": "DustMythic", "Amount": 2 },
+        { "Item": "ReagentMythic", "Amount": 2 },
+        { "Item": "EssenceMythic", "Amount": 2 }
+      ]
     }
   ],
   "EnchantCosts": [

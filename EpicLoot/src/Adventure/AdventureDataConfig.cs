@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using EpicLoot.Biomes;
@@ -204,9 +204,8 @@ namespace EpicLoot.Adventure
     [Serializable]
     public class TemperingConfig
     {
-        // Left empty rather than seeded with the defaults: Newtonsoft APPENDS to pre-initialized
-        // collections, and an absent rarity key has to fall through to TemperMan's hardcoded
-        // default instead of merging with it. TemperMan.ApplyConfig owns the fallback.
+        // There are no hardcoded temper costs to seed this with: what the json lists is the whole cost
+        // table. A rarity omitted here is not temperable at all; see TemperMan.ApplyConfig.
         public Dictionary<ItemRarity, List<ItemAmountConfig>> CostsByRarity = new Dictionary<ItemRarity, List<ItemAmountConfig>>();
     }
 

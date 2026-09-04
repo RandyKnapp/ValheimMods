@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using EpicLoot.Biomes;
 using UnityEngine;
 
 namespace EpicLoot.Adventure.Feature
@@ -59,7 +60,7 @@ namespace EpicLoot.Adventure.Feature
             if (biome == Heightmap.Biome.None || biome == Heightmap.Biome.All)
             {
                 // Not a real place. A caller or a config asked for something that cannot exist.
-                EpicLoot.LogErrorForce($"Asked for an adventure spawn point in biome '{biome}', " +
+                EpicLoot.LogErrorForce($"Asked for an adventure spawn point in biome '{BiomeDataManager.GetName(biome)}', " +
                     "which is not a single biome. This is a configuration or caller error.");
                 Fail(biome, "$mod_epicloot_adventure_locatefailed", onComplete);
                 yield break;
@@ -90,7 +91,7 @@ namespace EpicLoot.Adventure.Feature
             if (WorldBiomeIndex.TryFindPoint(biome, minRadius, maxRadius, true,
                     out Vector3 point, out int candidates))
             {
-                EpicLoot.Log($"Picked {biome} spawn at ({point.x:0}, {point.z:0}) " +
+                EpicLoot.Log($"Picked {BiomeDataManager.GetName(biome)} spawn at ({point.x:0}, {point.z:0}) " +
                     $"r={new Vector2(point.x, point.z).magnitude:0} ({candidates} candidates)");
                 onComplete?.Invoke(true, point);
                 yield break;
@@ -102,17 +103,20 @@ namespace EpicLoot.Adventure.Feature
             if (WorldBiomeIndex.TryFindPoint(biome, minRadius, maxRadius, false, out point, out candidates))
             {
                 float radius = new Vector2(point.x, point.z).magnitude;
-                EpicLoot.LogWarning($"No usable {biome} point inside the configured " +
+                EpicLoot.LogWarning($"No usable {BiomeDataManager.GetName(biome)} point inside the configured " +
                     $"{minRadius:0}-{maxRadius:0}m band ({WorldExtent.Describe()}); " +
                     $"using the nearest at {radius:0}m instead ({candidates} candidates).");
                 onComplete?.Invoke(true, point);
                 yield break;
             }
 
-            EpicLoot.LogWarningForce($"The world biome index has no usable {biome} location at a " +
+            // Say why, not just that. "No usable location" with thousands of cells indexed is a
+            // very different problem from a biome this world does not contain, and the two were
+            // previously indistinguishable from the log.
+            EpicLoot.LogWarningForce($"The world biome index has no usable {BiomeDataManager.GetName(biome)} location at a " +
                 $"{WorldBiomeIndex.CellSize:0.#}m sample spacing " +
-                $"({WorldBiomeIndex.CountCells(biome)} cells indexed). " +
-                "This world may not contain that biome.");
+                $"({WorldBiomeIndex.CountCells(biome)} cells indexed, band {minRadius:0}-{maxRadius:0}m). " +
+                WorldBiomeIndex.DescribeRejections(biome, minRadius, maxRadius) + ".");
             Fail(biome, "$mod_epicloot_adventure_locatefailed", onComplete);
         }
 
@@ -125,7 +129,8 @@ namespace EpicLoot.Adventure.Feature
             var player = Player.m_localPlayer;
             if (player != null)
             {
-                string biomeName = Localization.instance.Localize($"$biome_{biome.ToString().ToLowerInvariant()}");
+                string biomeName = Localization.instance.Localize(
+                    BiomeDataManager.GetLocalizationToken(biome));
                 player.Message(MessageHud.MessageType.Center,
                     Localization.instance.Localize(token, biomeName));
             }
@@ -150,8 +155,9 @@ namespace EpicLoot.Adventure.Feature
             {
                 // Legitimate for a biome nothing sells a map for -- DeepNorth has no BiomeInfo entry
                 // but does have bounty targets -- so search the whole world rather than refusing.
-                EpicLoot.LogWarning($"No adventure BiomeInfo entry for {biome}; " +
-                    "searching the whole world for a spawn point.");
+                EpicLoot.LogWarning($"No adventure BiomeInfo entry for {BiomeDataManager.GetName(biome)}; " +
+                    "searching the whole world for a spawn point. Add a TreasureMap.BiomeInfo " +
+                    "entry to gate how far out this biome's bounties and maps are placed.");
                 min = 0f;
                 max = WorldExtent.PlayableRadius;
                 return;
@@ -168,7 +174,7 @@ namespace EpicLoot.Adventure.Feature
             {
                 // A band that clamped to nothing, usually a hand-edited config or a MaxRadius left at
                 // zero. Fall back to the whole world instead of searching an empty annulus.
-                EpicLoot.LogWarning($"Adventure radius band for {biome} is empty after scaling " +
+                EpicLoot.LogWarning($"Adventure radius band for {BiomeDataManager.GetName(biome)} is empty after scaling " +
                     $"({biomeConfig.MinRadius}-{biomeConfig.MaxRadius} x {scale:0.###}); " +
                     "searching the whole world instead.");
                 min = 0f;

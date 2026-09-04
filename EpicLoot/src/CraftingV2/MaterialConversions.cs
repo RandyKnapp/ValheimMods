@@ -10,7 +10,12 @@ namespace EpicLoot.CraftingV2
     {
         Upgrade,
         Convert,
-        Junk
+        Junk,
+        // Appended, never reordered or inserted into. ConvertUI casts a mode button's index in its serialized
+        // ModeButtons list straight to this enum, and both the API shim and the config RPCs round-trip it as an
+        // int (nothing here configures a StringEnumConverter), so the existing ordinals are part of two wire
+        // formats. Only the JSON configs spell it by name.
+        ShardUpgrade
     }
 
     [Serializable]
