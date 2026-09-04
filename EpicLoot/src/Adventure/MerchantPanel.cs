@@ -196,7 +196,10 @@ namespace EpicLoot.Adventure
             // Top up the cache of bounty positions. Runs on the cache's own driver rather than this
             // panel: StoreGui deactivates the panel on close, which would abandon the fill partway.
             // It is a no-op once every biome is stocked, so reopening the merchant costs nothing.
-            BountyLocationEarlyCache.RequestRefill(ignoreThreshold: true);
+            // Warm the world biome index while the player browses, so accepting a bounty resolves
+            // instantly instead of waiting on a first build. Cheap to call repeatedly: it returns at
+            // once when the index is current, and rebuilds only if the world or its size changed.
+            WorldBiomeIndex.EnsureBuilt();
 
             if (EpicLoot.HasAuga)
             {

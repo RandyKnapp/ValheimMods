@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -112,6 +112,48 @@ public static partial class TerminalManager
         adventureComponent.SaveData = new AdventureSaveDataList();
         ResetMinimap();
         args.Context.PrintInfo("> Cleared adventure data");
+    }
+
+    /// <summary>
+    /// Reports what the adventure spawn picker can actually see. When a player says a bounty or
+    /// treasure map "did nothing", this is the first thing to run: it shows the resolved world size,
+    /// whether the biome index built, and per biome how many cells fall inside that biome's
+    /// configured radius band. A biome with cells but none in band is the failure that used to be
+    /// silent.
+    /// </summary>
+    private static void AdventureIndexInfo(Terminal.ConsoleEventArgs args)
+    {
+        if (args.Length > 1 && args[1].Equals("rebuild", System.StringComparison.OrdinalIgnoreCase))
+        {
+            WorldBiomeIndex.Reset();
+            WorldBiomeIndex.EnsureBuilt();
+            args.Context.PrintInfo("> Rebuilding world biome index...");
+            return;
+        }
+
+        WorldBiomeIndex.EnsureBuilt();
+
+        var sb = new StringBuilder();
+        sb.AppendLine($"World extent: {WorldExtent.Describe()}");
+        sb.AppendLine($"Biome index: {WorldBiomeIndex.Describe()}");
+
+        if (WorldBiomeIndex.State != BiomeIndexState.Ready)
+        {
+            sb.AppendLine("(index not ready; run again in a moment)");
+            args.Context.PrintInfo(sb.ToString());
+            return;
+        }
+
+        foreach (Heightmap.Biome biome in WorldBiomeIndex.IndexedBiomes.OrderBy(x => x.ToString()))
+        {
+            BountyLocationEarlyCache.GetRadiusBand(biome, out float min, out float max);
+            int inBand = WorldBiomeIndex.CountCellsInBand(biome, min, max);
+            string warning = inBand == 0 ? "  <-- NOTHING IN BAND" : string.Empty;
+            sb.AppendLine($"{biome}: {WorldBiomeIndex.CountCells(biome)} cells, " +
+                $"{inBand} in band {min:0}-{max:0}m{warning}");
+        }
+
+        args.Context.PrintInfo(sb.ToString());
     }
 
     private static void PrintAvailableBounties(Terminal.ConsoleEventArgs args)

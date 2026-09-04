@@ -65,9 +65,10 @@ namespace EpicLoot.Adventure.Feature
             AdventureSaveData saveData = player.GetAdventureSaveData();
             yield return BountyLocationEarlyCache.TryGetBiomePoint(biome, saveData, (success, spawnPoint) =>
             {
-                if (success)
+                // Only report success once the spawner actually exists. Reporting it unconditionally
+                // charged the player for a map that CreateTreasureSpawner had refused to create.
+                if (success && CreateTreasureSpawner(biome, spawnPoint, saveData))
                 {
-                    CreateTreasureSpawner(biome, spawnPoint, saveData);
                     callback?.Invoke(price, true, spawnPoint);
                 }
                 else
@@ -77,7 +78,11 @@ namespace EpicLoot.Adventure.Feature
             });
         }
 
-        private void CreateTreasureSpawner(Heightmap.Biome biome,  Vector3 spawnPoint, AdventureSaveData saveData)
+        /// <summary>
+        /// Records the purchase and spawns the chest's spawner. Returns false when nothing was
+        /// created, so the caller can leave the player's coins alone.
+        /// </summary>
+        private bool CreateTreasureSpawner(Heightmap.Biome biome,  Vector3 spawnPoint, AdventureSaveData saveData)
         {
             TreasureMapChestInfo treasure_details = new TreasureMapChestInfo()
             {
@@ -91,8 +96,8 @@ namespace EpicLoot.Adventure.Feature
             // spawning regardless used to leave orphan treasure chests with no save record.
             if (!saveData.PurchasedTreasureMap(treasure_details))
             {
-                EpicLoot.LogWarning($"Treasure map purchase for {biome} was refused by the save data; no chest spawned.");
-                return;
+                EpicLoot.LogWarningForce($"Treasure map purchase for {biome} was refused by the save data; no chest spawned.");
+                return false;
             }
 
             Quaternion rotation = Quaternion.Euler(0f, UnityEngine.Random.Range(0f, 360f), 0f);
@@ -106,6 +111,7 @@ namespace EpicLoot.Adventure.Feature
             Vector3 offset = new Vector3(offset2.x, 0, offset2.y);
 
             Minimap.instance.ShowPointOnMap(spawnPoint + offset);
+            return true;
         }
     }
 }

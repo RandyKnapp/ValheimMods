@@ -219,6 +219,10 @@ namespace EpicLoot.Adventure.Feature
                     // record -- impossible to complete and never despawned.
                     if (!saveData.AcceptedBounty(bounty, spawnPoint, Vector3.zero))
                     {
+                        // Reported at Force level: this is one of the ways "I clicked Accept and
+                        // nothing happened" can still occur, and it must never be invisible.
+                        EpicLoot.LogWarningForce($"Save data refused bounty {bounty.ID} " +
+                            $"({bounty.Biome}, state={bounty.State}); nothing was spawned.");
                         callback?.Invoke(false, spawnPoint);
                         return;
                     }

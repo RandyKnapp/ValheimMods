@@ -885,6 +885,8 @@
     "mod_epicloot_itemtooltip_rarity": "Rarity",
     "mod_epicloot_itemtooltip_effects": "Effects",
 
+    "mod_epicloot_adventure_locatefailed": "Could not find a suitable location in the $1.",
+    "mod_epicloot_adventure_locateunavailable": "Still mapping the world - try again in a moment.",
     "mod_epicloot_adventure_spawnrelocated": "Your map has been redrawn - the marked area was occupied.",
 
     "mod_epicloot_bounties_claimedmsg": "Bounty Claimed!",

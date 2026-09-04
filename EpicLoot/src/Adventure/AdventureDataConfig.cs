@@ -94,6 +94,19 @@ namespace EpicLoot.Adventure
         /// restore the old behaviour of never searching outside the circle.
         /// </summary>
         public int MaxSpawnSearchExpansions = 5;
+
+        /// <summary>
+        /// Scale every biome's MinRadius/MaxRadius by the real world radius / 10000, so the shipped
+        /// bands keep their meaning on a world resized by Expand World Size. Without this, AshLands'
+        /// 8000-10500 band sits in the inner Meadows of a 40km map and no AshLands point is ever in
+        /// band. Set false if the bands have already been retuned in metres for the target world,
+        /// otherwise the scaling is applied twice.
+        ///
+        /// The `= true` default is load-bearing: an existing on-disk adventuredata.json has no such
+        /// key, and Newtonsoft leaves an absent field at its initializer.
+        /// </summary>
+        public bool ScaleRadiiToWorldSize = true;
+
         public List<SecretStashItemConfig> SaleItems = new List<SecretStashItemConfig>();
         
         [NonSerialized]
