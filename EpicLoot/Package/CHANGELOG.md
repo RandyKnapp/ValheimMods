@@ -1,3 +1,31 @@
+**0.14.2**
+
+* Fixes biome explored not being updated on Deep North
+* Fixes audio issue with enchanting table not being volume adjusted
+* Added Deep North bounty targets
+
+**0.14.1**
+
+* Deep North support
+    * Deep North creatures drop magic items
+    * Deep North gear is categorized
+* Epic Loot console commands are no longer flagged as cheats, but still require admin
+
+
+**0.14.0**
+
+Changes:
+* New **Ancient** rarity
+    * Every value-based magic effect and shardstone effect gains an Ancient tier
+    * Ashlands creatures, treasure chests and Fader roll a small Ancient chance
+    * Every enchanting table feature gains a seventh level
+
+Bugfixes:
+* Haldor's stock no longer rerolls every time you interact with him (gambler's stock can be consumed when purchased, or infinitely purchasable)
+* Swapping directly between two items that both carry the same exclusive shard category (boss or unique) is no longer refused.
+* Augment UI now correctly re-highlights the selected enchant when augmenting
+* Fixes LightningStrikes not hitting creatures that were too large
+
 **0.13.5**
 
 Changes:

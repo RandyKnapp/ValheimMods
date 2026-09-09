@@ -41,6 +41,16 @@
       ]
     },
     {
+      "Name": "ShardStoneUpgrade_Red_Mythic_to_Ancient",
+      "Product": "Red_Ancient_ShardStone",
+      "Amount": 1,
+      "Type": "ShardUpgrade",
+      "Resources": [
+        { "Item": "Red_Mythic_ShardStone", "Amount": 1 },
+        { "Item": "ShardMythic", "Amount": 8 }
+      ]
+    },
+    {
       "Name": "ShardStoneUpgrade_Yellow_Magic_to_Rare",
       "Product": "Yellow_Rare_ShardStone",
       "Amount": 1,
@@ -78,6 +88,16 @@
       "Resources": [
         { "Item": "Yellow_Legendary_ShardStone", "Amount": 1 },
         { "Item": "ShardLegendary", "Amount": 7 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Yellow_Mythic_to_Ancient",
+      "Product": "Yellow_Ancient_ShardStone",
+      "Amount": 1,
+      "Type": "ShardUpgrade",
+      "Resources": [
+        { "Item": "Yellow_Mythic_ShardStone", "Amount": 1 },
+        { "Item": "ShardMythic", "Amount": 8 }
       ]
     },
     {
@@ -121,6 +141,16 @@
       ]
     },
     {
+      "Name": "ShardStoneUpgrade_Cyan_Mythic_to_Ancient",
+      "Product": "Cyan_Ancient_ShardStone",
+      "Amount": 1,
+      "Type": "ShardUpgrade",
+      "Resources": [
+        { "Item": "Cyan_Mythic_ShardStone", "Amount": 1 },
+        { "Item": "ShardMythic", "Amount": 8 }
+      ]
+    },
+    {
       "Name": "ShardStoneUpgrade_Orange_Magic_to_Rare",
       "Product": "Orange_Rare_ShardStone",
       "Amount": 1,
@@ -158,6 +188,16 @@
       "Resources": [
         { "Item": "Orange_Legendary_ShardStone", "Amount": 1 },
         { "Item": "ShardLegendary", "Amount": 7 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Orange_Mythic_to_Ancient",
+      "Product": "Orange_Ancient_ShardStone",
+      "Amount": 1,
+      "Type": "ShardUpgrade",
+      "Resources": [
+        { "Item": "Orange_Mythic_ShardStone", "Amount": 1 },
+        { "Item": "ShardMythic", "Amount": 8 }
       ]
     },
     {
@@ -201,6 +241,16 @@
       ]
     },
     {
+      "Name": "ShardStoneUpgrade_Pink_Mythic_to_Ancient",
+      "Product": "Pink_Ancient_ShardStone",
+      "Amount": 1,
+      "Type": "ShardUpgrade",
+      "Resources": [
+        { "Item": "Pink_Mythic_ShardStone", "Amount": 1 },
+        { "Item": "ShardMythic", "Amount": 8 }
+      ]
+    },
+    {
       "Name": "ShardStoneUpgrade_Black_Magic_to_Rare",
       "Product": "Black_Rare_ShardStone",
       "Amount": 1,
@@ -238,6 +288,16 @@
       "Resources": [
         { "Item": "Black_Legendary_ShardStone", "Amount": 1 },
         { "Item": "ShardLegendary", "Amount": 7 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Black_Mythic_to_Ancient",
+      "Product": "Black_Ancient_ShardStone",
+      "Amount": 1,
+      "Type": "ShardUpgrade",
+      "Resources": [
+        { "Item": "Black_Mythic_ShardStone", "Amount": 1 },
+        { "Item": "ShardMythic", "Amount": 8 }
       ]
     },
     {
@@ -281,6 +341,16 @@
       ]
     },
     {
+      "Name": "ShardStoneUpgrade_White_Mythic_to_Ancient",
+      "Product": "White_Ancient_ShardStone",
+      "Amount": 1,
+      "Type": "ShardUpgrade",
+      "Resources": [
+        { "Item": "White_Mythic_ShardStone", "Amount": 1 },
+        { "Item": "ShardMythic", "Amount": 8 }
+      ]
+    },
+    {
       "Name": "ShardStoneUpgrade_Green_Magic_to_Rare",
       "Product": "Green_Rare_ShardStone",
       "Amount": 1,
@@ -318,6 +388,16 @@
       "Resources": [
         { "Item": "Green_Legendary_ShardStone", "Amount": 1 },
         { "Item": "ShardLegendary", "Amount": 7 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Green_Mythic_to_Ancient",
+      "Product": "Green_Ancient_ShardStone",
+      "Amount": 1,
+      "Type": "ShardUpgrade",
+      "Resources": [
+        { "Item": "Green_Mythic_ShardStone", "Amount": 1 },
+        { "Item": "ShardMythic", "Amount": 8 }
       ]
     },
     {
@@ -361,6 +441,16 @@
       ]
     },
     {
+      "Name": "ShardStoneUpgrade_Purple_Mythic_to_Ancient",
+      "Product": "Purple_Ancient_ShardStone",
+      "Amount": 1,
+      "Type": "ShardUpgrade",
+      "Resources": [
+        { "Item": "Purple_Mythic_ShardStone", "Amount": 1 },
+        { "Item": "ShardMythic", "Amount": 8 }
+      ]
+    },
+    {
       "Name": "ShardStoneUpgrade_Grey_Magic_to_Rare",
       "Product": "Grey_Rare_ShardStone",
       "Amount": 1,
@@ -398,6 +488,16 @@
       "Resources": [
         { "Item": "Grey_Legendary_ShardStone", "Amount": 1 },
         { "Item": "ShardLegendary", "Amount": 7 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Grey_Mythic_to_Ancient",
+      "Product": "Grey_Ancient_ShardStone",
+      "Amount": 1,
+      "Type": "ShardUpgrade",
+      "Resources": [
+        { "Item": "Grey_Mythic_ShardStone", "Amount": 1 },
+        { "Item": "ShardMythic", "Amount": 8 }
       ]
     },
     {
@@ -441,6 +541,16 @@
       ]
     },
     {
+      "Name": "ShardStoneUpgrade_DarkRed_Mythic_to_Ancient",
+      "Product": "DarkRed_Ancient_ShardStone",
+      "Amount": 1,
+      "Type": "ShardUpgrade",
+      "Resources": [
+        { "Item": "DarkRed_Mythic_ShardStone", "Amount": 1 },
+        { "Item": "ShardMythic", "Amount": 8 }
+      ]
+    },
+    {
       "Name": "ShardStoneUpgrade_DarkGreen_Magic_to_Rare",
       "Product": "DarkGreen_Rare_ShardStone",
       "Amount": 1,
@@ -478,6 +588,16 @@
       "Resources": [
         { "Item": "DarkGreen_Legendary_ShardStone", "Amount": 1 },
         { "Item": "ShardLegendary", "Amount": 7 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_DarkGreen_Mythic_to_Ancient",
+      "Product": "DarkGreen_Ancient_ShardStone",
+      "Amount": 1,
+      "Type": "ShardUpgrade",
+      "Resources": [
+        { "Item": "DarkGreen_Mythic_ShardStone", "Amount": 1 },
+        { "Item": "ShardMythic", "Amount": 8 }
       ]
     },
     {
@@ -521,6 +641,16 @@
       ]
     },
     {
+      "Name": "ShardStoneUpgrade_DarkBlue_Mythic_to_Ancient",
+      "Product": "DarkBlue_Ancient_ShardStone",
+      "Amount": 1,
+      "Type": "ShardUpgrade",
+      "Resources": [
+        { "Item": "DarkBlue_Mythic_ShardStone", "Amount": 1 },
+        { "Item": "ShardMythic", "Amount": 8 }
+      ]
+    },
+    {
       "Name": "ShardStoneUpgrade_DarkPurple_Magic_to_Rare",
       "Product": "DarkPurple_Rare_ShardStone",
       "Amount": 1,
@@ -558,6 +688,16 @@
       "Resources": [
         { "Item": "DarkPurple_Legendary_ShardStone", "Amount": 1 },
         { "Item": "ShardLegendary", "Amount": 7 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_DarkPurple_Mythic_to_Ancient",
+      "Product": "DarkPurple_Ancient_ShardStone",
+      "Amount": 1,
+      "Type": "ShardUpgrade",
+      "Resources": [
+        { "Item": "DarkPurple_Mythic_ShardStone", "Amount": 1 },
+        { "Item": "ShardMythic", "Amount": 8 }
       ]
     },
     {
@@ -601,6 +741,16 @@
       ]
     },
     {
+      "Name": "ShardStoneUpgrade_Golden_Mythic_to_Ancient",
+      "Product": "Golden_Ancient_ShardStone",
+      "Amount": 1,
+      "Type": "ShardUpgrade",
+      "Resources": [
+        { "Item": "Golden_Mythic_ShardStone", "Amount": 1 },
+        { "Item": "ShardMythic", "Amount": 8 }
+      ]
+    },
+    {
       "Name": "ShardStoneUpgrade_LightBlue_Magic_to_Rare",
       "Product": "LightBlue_Rare_ShardStone",
       "Amount": 1,
@@ -638,6 +788,16 @@
       "Resources": [
         { "Item": "LightBlue_Legendary_ShardStone", "Amount": 1 },
         { "Item": "ShardLegendary", "Amount": 7 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_LightBlue_Mythic_to_Ancient",
+      "Product": "LightBlue_Ancient_ShardStone",
+      "Amount": 1,
+      "Type": "ShardUpgrade",
+      "Resources": [
+        { "Item": "LightBlue_Mythic_ShardStone", "Amount": 1 },
+        { "Item": "ShardMythic", "Amount": 8 }
       ]
     },
     {
@@ -681,6 +841,16 @@
       ]
     },
     {
+      "Name": "ShardStoneUpgrade_LightGreen_Mythic_to_Ancient",
+      "Product": "LightGreen_Ancient_ShardStone",
+      "Amount": 1,
+      "Type": "ShardUpgrade",
+      "Resources": [
+        { "Item": "LightGreen_Mythic_ShardStone", "Amount": 1 },
+        { "Item": "ShardMythic", "Amount": 8 }
+      ]
+    },
+    {
       "Name": "ShardStoneUpgrade_Peach_Magic_to_Rare",
       "Product": "Peach_Rare_ShardStone",
       "Amount": 1,
@@ -721,6 +891,16 @@
       ]
     },
     {
+      "Name": "ShardStoneUpgrade_Peach_Mythic_to_Ancient",
+      "Product": "Peach_Ancient_ShardStone",
+      "Amount": 1,
+      "Type": "ShardUpgrade",
+      "Resources": [
+        { "Item": "Peach_Mythic_ShardStone", "Amount": 1 },
+        { "Item": "ShardMythic", "Amount": 8 }
+      ]
+    },
+    {
       "Name": "ShardStoneUpgrade_Firewalker_Epic_to_Legendary",
       "Product": "Firewalker_Legendary_ShardStone",
       "Amount": 1,
@@ -743,6 +923,17 @@
       ]
     },
     {
+      "Name": "ShardStoneUpgrade_Firewalker_Mythic_to_Ancient",
+      "Product": "Firewalker_Ancient_ShardStone",
+      "Amount": 1,
+      "Type": "ShardUpgrade",
+      "Resources": [
+        { "Item": "Firewalker_Mythic_ShardStone", "Amount": 1 },
+        { "Item": "ShardMythic", "Amount": 8 },
+        { "Item": "RunestoneMythic", "Amount": 2 }
+      ]
+    },
+    {
       "Name": "ShardStoneUpgrade_Stormcaller_Epic_to_Legendary",
       "Product": "Stormcaller_Legendary_ShardStone",
       "Amount": 1,
@@ -762,6 +953,17 @@
         { "Item": "Stormcaller_Legendary_ShardStone", "Amount": 1 },
         { "Item": "ShardLegendary", "Amount": 7 },
         { "Item": "RunestoneLegendary", "Amount": 2 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Stormcaller_Mythic_to_Ancient",
+      "Product": "Stormcaller_Ancient_ShardStone",
+      "Amount": 1,
+      "Type": "ShardUpgrade",
+      "Resources": [
+        { "Item": "Stormcaller_Mythic_ShardStone", "Amount": 1 },
+        { "Item": "ShardMythic", "Amount": 8 },
+        { "Item": "RunestoneMythic", "Amount": 2 }
       ]
     },
     {
@@ -794,6 +996,17 @@
       "Resources": [
         { "Item": "Eikthyr_Legendary_ShardStone", "Amount": 1 },
         { "Item": "ShardLegendary", "Amount": 7 },
+        { "Item": "TrophyEikthyr", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Eikthyr_Mythic_to_Ancient",
+      "Product": "Eikthyr_Ancient_ShardStone",
+      "Amount": 1,
+      "Type": "ShardUpgrade",
+      "Resources": [
+        { "Item": "Eikthyr_Mythic_ShardStone", "Amount": 1 },
+        { "Item": "ShardMythic", "Amount": 8 },
         { "Item": "TrophyEikthyr", "Amount": 1 }
       ]
     },
@@ -831,6 +1044,17 @@
       ]
     },
     {
+      "Name": "ShardStoneUpgrade_Elder_Mythic_to_Ancient",
+      "Product": "Elder_Ancient_ShardStone",
+      "Amount": 1,
+      "Type": "ShardUpgrade",
+      "Resources": [
+        { "Item": "Elder_Mythic_ShardStone", "Amount": 1 },
+        { "Item": "ShardMythic", "Amount": 8 },
+        { "Item": "TrophyTheElder", "Amount": 1 }
+      ]
+    },
+    {
       "Name": "ShardStoneUpgrade_Bonemass_Epic_to_Legendary",
       "Product": "Bonemass_Legendary_ShardStone",
       "Amount": 1,
@@ -849,6 +1073,17 @@
       "Resources": [
         { "Item": "Bonemass_Legendary_ShardStone", "Amount": 1 },
         { "Item": "ShardLegendary", "Amount": 7 },
+        { "Item": "TrophyBonemass", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Bonemass_Mythic_to_Ancient",
+      "Product": "Bonemass_Ancient_ShardStone",
+      "Amount": 1,
+      "Type": "ShardUpgrade",
+      "Resources": [
+        { "Item": "Bonemass_Mythic_ShardStone", "Amount": 1 },
+        { "Item": "ShardMythic", "Amount": 8 },
         { "Item": "TrophyBonemass", "Amount": 1 }
       ]
     },
@@ -875,6 +1110,17 @@
       ]
     },
     {
+      "Name": "ShardStoneUpgrade_Moder_Mythic_to_Ancient",
+      "Product": "Moder_Ancient_ShardStone",
+      "Amount": 1,
+      "Type": "ShardUpgrade",
+      "Resources": [
+        { "Item": "Moder_Mythic_ShardStone", "Amount": 1 },
+        { "Item": "ShardMythic", "Amount": 8 },
+        { "Item": "TrophyDragonQueen", "Amount": 1 }
+      ]
+    },
+    {
       "Name": "ShardStoneUpgrade_Yagluth_Legendary_to_Mythic",
       "Product": "Yagluth_Mythic_ShardStone",
       "Amount": 1,
@@ -882,6 +1128,17 @@
       "Resources": [
         { "Item": "Yagluth_Legendary_ShardStone", "Amount": 1 },
         { "Item": "ShardLegendary", "Amount": 7 },
+        { "Item": "TrophyGoblinKing", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Yagluth_Mythic_to_Ancient",
+      "Product": "Yagluth_Ancient_ShardStone",
+      "Amount": 1,
+      "Type": "ShardUpgrade",
+      "Resources": [
+        { "Item": "Yagluth_Mythic_ShardStone", "Amount": 1 },
+        { "Item": "ShardMythic", "Amount": 8 },
         { "Item": "TrophyGoblinKing", "Amount": 1 }
       ]
     },
@@ -894,6 +1151,28 @@
         { "Item": "Queen_Legendary_ShardStone", "Amount": 1 },
         { "Item": "ShardLegendary", "Amount": 7 },
         { "Item": "TrophySeekerQueen", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Queen_Mythic_to_Ancient",
+      "Product": "Queen_Ancient_ShardStone",
+      "Amount": 1,
+      "Type": "ShardUpgrade",
+      "Resources": [
+        { "Item": "Queen_Mythic_ShardStone", "Amount": 1 },
+        { "Item": "ShardMythic", "Amount": 8 },
+        { "Item": "TrophySeekerQueen", "Amount": 1 }
+      ]
+    },
+    {
+      "Name": "ShardStoneUpgrade_Fader_Mythic_to_Ancient",
+      "Product": "Fader_Ancient_ShardStone",
+      "Amount": 1,
+      "Type": "ShardUpgrade",
+      "Resources": [
+        { "Item": "Fader_Mythic_ShardStone", "Amount": 1 },
+        { "Item": "ShardMythic", "Amount": 8 },
+        { "Item": "TrophyFader", "Amount": 1 }
       ]
     }
   ]

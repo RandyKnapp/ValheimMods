@@ -15,7 +15,7 @@ namespace EquipmentAndQuickSlots {
                 return;
             _initialized = true;
 
-            new Terminal.ConsoleCommand("eaqs_validate", "Revalidate EAQS slots: relocates overlapping, out-of-grid and misplaced slot items", args => {
+            Register("eaqs_validate", "Revalidate EAQS slots: relocates overlapping, out-of-grid and misplaced slot items", args => {
                 if (Player.m_localPlayer == null) {
                     args.Context.AddString("No local player");
                     return;
@@ -26,7 +26,7 @@ namespace EquipmentAndQuickSlots {
                 args.Context.AddString("EAQS: slot and item validation queued");
             });
 
-            new Terminal.ConsoleCommand("invcheck", "Prints the player inventory grid contents and slot assignments", args => {
+            Register("invcheck", "Prints the player inventory grid contents and slot assignments", args => {
                 var player = Player.m_localPlayer;
                 if (player == null) {
                     args.Context.AddString("No local player");
@@ -45,7 +45,7 @@ namespace EquipmentAndQuickSlots {
                 }
             });
 
-            new Terminal.ConsoleCommand("eaqs_api", "Prints EAQS API version, endpoints and slot states", args => {
+            Register("eaqs_api", "Prints EAQS API version, endpoints and slot states", args => {
                 args.Context.AddString($"API version {API.GetApiVersion()}, plugin {API.GetPluginId()} {API.GetPluginVersion()}");
                 args.Context.AddString($"Endpoints: {string.Join(", ", API.GetEndpointNames())}");
                 args.Context.AddString($"Slots: {API.GetSlotIdsJson()}");
@@ -55,7 +55,7 @@ namespace EquipmentAndQuickSlots {
                 }
             });
 
-            new Terminal.ConsoleCommand("eaqs_restorebackup", "(cheat) Restores the slot-content backup into free slots", args => {
+            Register("eaqs_restorebackup", "Restores the slot-content backup into free slots", args => {
                 var player = Player.m_localPlayer;
                 if (player == null) {
                     args.Context.AddString("No local player");
@@ -65,9 +65,9 @@ namespace EquipmentAndQuickSlots {
                 args.Context.AddString(InventoryBackup.TryRestoreBackup(player)
                     ? "EAQS: backup restored"
                     : "EAQS: no backup restored (missing, empty, or slots occupied)");
-            }, isCheat: true);
+            });
 
-            new Terminal.ConsoleCommand("breakequipment", "(cheat) Sets durability of all equipped items to zero", args => {
+            Register("breakequipment", "Sets durability of all equipped items to zero", args => {
                 var player = Player.m_localPlayer;
                 if (player == null)
                     return;
@@ -77,9 +77,9 @@ namespace EquipmentAndQuickSlots {
                         item.m_durability = 0;
                 }
                 args.Context.AddString("EAQS: equipped items broken");
-            }, isCheat: true);
+            });
 
-            new Terminal.ConsoleCommand("dropall", "(cheat) Drops the entire player inventory on the ground", args => {
+            Register("dropall", "Drops the entire player inventory on the ground", args => {
                 var player = Player.m_localPlayer;
                 if (player == null)
                     return;
@@ -89,7 +89,30 @@ namespace EquipmentAndQuickSlots {
                     player.DropItem(inventory, item, item.m_stack);
                 }
                 args.Context.AddString("EAQS: inventory dropped");
-            }, isCheat: true);
+            });
+        }
+
+        /// <summary>
+        /// Registers a console command behind the world's admin list: a solo player or host always
+        /// passes, a client only when its user id is on the server's adminlist.txt (which the server
+        /// syncs to every client, so both sides read the same list).
+        /// </summary>
+        /// <remarks>
+        /// The check has to live in the action. Nothing in the game reads
+        /// Terminal.ConsoleCommand.OnlyAdmin, and only the ConsoleEventFailable overload folds that flag
+        /// into OnlyServer - the ConsoleEvent overload used here drops it, so passing onlyAdmin: true
+        /// would do nothing. OnlyServer would be wrong regardless: it rejects the command on any client
+        /// of a dedicated server, admin or not.
+        /// </remarks>
+        private static void Register(string name, string description, Terminal.ConsoleEvent action) {
+            new Terminal.ConsoleCommand(name, description, args => {
+                if (ZNet.instance == null || !ZNet.instance.LocalPlayerIsAdminOrHost()) {
+                    args.Context?.AddString($"'{name}' requires admin.");
+                    return;
+                }
+
+                action(args);
+            });
         }
     }
 }

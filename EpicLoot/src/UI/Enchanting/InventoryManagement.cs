@@ -116,7 +116,7 @@ public class InventoryManagement
 
     private void AddItem(ref Inventory inventory, string item, int amount)
     {
-        ItemDrop.ItemData result = inventory.AddItem(item, amount, 1, 0, 0, string.Empty);
+        ItemDrop.ItemData result = inventory.AddItem(item, amount, 1, 0, 0, string.Empty, cheated: false);
 
         if (result == null)
         {

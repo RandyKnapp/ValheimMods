@@ -32,7 +32,7 @@ Two consequences worth knowing before you write glue by hand:
 - **`ref`, not `out`.** The shim's reflection transport reads mutated arguments back out of the `object[]`
   that `MethodInfo.Invoke` fills in, which does not work with `out`. Endpoints like `TryGetRarity` take
   `ref int rarity`. The typed shim presents them as normal `out` parameters.
-- **Rarity is an `int`.** `0`=Magic, `1`=Rare, `2`=Epic, `3`=Legendary, `4`=Mythic. Call
+- **Rarity is an `int`.** `0`=Magic, `1`=Rare, `2`=Epic, `3`=Legendary, `4`=Mythic, `5`=Ancient. Call
   `GetRarityCount()` rather than hard-coding 5.
 
 ## Versioning

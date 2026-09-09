@@ -9,7 +9,7 @@ namespace EpicLoot;
 public static partial class TerminalManager {
     private static List<string> GetMagicShardOptions(string[] args) {
         return args.Length switch {
-            2 => ["Magic", "Rare", "Epic", "Legendary", "Mythic"],
+            2 => [.. Enum.GetNames(typeof(ItemRarity))],
             _ => []
         };
     }
@@ -24,7 +24,7 @@ public static partial class TerminalManager {
         ItemRarity? requested = null;
         if (args.Length >= 2) {
             if (!Enum.TryParse(args[1], true, out ItemRarity parsed)) {
-                args.Context.AddString($"> Unknown rarity '{args[1]}'. Use Magic/Rare/Epic/Legendary/Mythic.");
+                args.Context.AddString($"> Unknown rarity '{args[1]}'. Use {string.Join("/", Enum.GetNames(typeof(ItemRarity)))}.");
                 return;
             }
             requested = parsed;

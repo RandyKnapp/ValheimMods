@@ -29,10 +29,7 @@ namespace EpicLoot.Crafting
                 _audioSource.playOnAwake = false;
             }
 
-            var uiSFX = GameObject.Find("sfx_gui_button");
-            if (uiSFX && _audioSource != null)
-                _audioSource.outputAudioMixerGroup = uiSFX.GetComponent<AudioSource>().outputAudioMixerGroup;
-            _audioSource.volume = EnchantingUIController.GetAudioLevel();
+            EnchantingUIController.SetupUIAudioSource(_audioSource);
         }
 
         [UsedImplicitly]
@@ -100,7 +97,6 @@ namespace EpicLoot.Crafting
 
             _audioSource.loop = true;
             _audioSource.clip = EpicAssets.ItemLoopSFX;
-            _audioSource.volume = 0.5f;
             _audioSource.Play();
 
             var rarity = fromItem.GetRarity();
@@ -180,7 +176,7 @@ namespace EpicLoot.Crafting
         {
             _audioSource.loop = false;
             _audioSource.Stop();
-            _audioSource.PlayOneShot(EpicAssets.AugmentItemSFX, _audioSource.volume);
+            _audioSource.PlayOneShot(EpicAssets.AugmentItemSFX);
             gameObject.SetActive(false);
         }
     }

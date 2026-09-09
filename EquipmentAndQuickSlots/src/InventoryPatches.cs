@@ -54,6 +54,50 @@ namespace EquipmentAndQuickSlots {
             }
         }
 
+        // Vanilla sells inventory rows at Haldor: Player.SetInventorySize stores the count in the
+        // "invrows" player key, shrinks the inventory to exactly that many rows, and then calls
+        // Humanoid.DropInvalidItems -- which throws everything outside the new bounds on the
+        // ground. Player.OnSpawned re-applies the stored count on EVERY spawn, so without this the
+        // entire slot region (worn armor, quick slots) landed in a pile at the player's feet on
+        // every single login.
+        [HarmonyPatch(typeof(Player), nameof(Player.SetInventorySize))]
+        private static class Player_SetInventorySize_FollowVanillaRows {
+            // Ahead of the resize, so the slot cells (and their contents) are already under the new
+            // visible rows by the time vanilla measures the inventory against them.
+            [HarmonyPriority(Priority.First)]
+            private static void Prefix(Player __instance, int rows) {
+                if (__instance != CurrentPlayer)
+                    return;
+
+                // The same clamp Player.SetInventorySize applies to the value it stores.
+                SetBaseRows(Mathf.Clamp(rows, 0, 9));
+            }
+
+            // SetHeight() cut the inventory down to the visible rows; the slot rows have to exist
+            // again before anything else reads the height.
+            [HarmonyPriority(Priority.Last)]
+            private static void Postfix(Player __instance) {
+                if (__instance == CurrentPlayer)
+                    __instance.m_inventory.m_height = FullHeight;
+            }
+        }
+
+        // DropInvalidItems is called from inside SetInventorySize while the height is still just the
+        // visible rows, so every slot cell reads as out of bounds. Put the real height back before
+        // the scan: after the prefix above, the only positions left outside it are genuine
+        // corruption, which vanilla is welcome to drop.
+        [HarmonyPatch(typeof(Humanoid), nameof(Humanoid.DropInvalidItems))]
+        private static class Humanoid_DropInvalidItems_KeepSlotRegion {
+            [HarmonyPriority(Priority.First)]
+            private static void Prefix(Humanoid __instance) {
+                if (__instance != CurrentPlayer)
+                    return;
+
+                __instance.m_inventory.m_height = FullHeight;
+                SlotValidation.ValidateItems();
+            }
+        }
+
         [HarmonyPatch(typeof(Player), nameof(Player.Update))]
         private static class Player_Update_UpdateInventoryHeight {
             private static void Postfix(Player __instance) {
@@ -372,7 +416,7 @@ namespace EquipmentAndQuickSlots {
         // ---------------------------------------------------------------------------------------
         // AddItem rerouting
 
-        [HarmonyPatch(typeof(Inventory), nameof(Inventory.AddItem), typeof(ItemDrop.ItemData), typeof(int), typeof(int), typeof(int))]
+        [HarmonyPatch(typeof(Inventory), nameof(Inventory.AddItem), typeof(ItemDrop.ItemData), typeof(int), typeof(int), typeof(int), typeof(bool))]
         private static class Inventory_AddItem_ItemData_amount_x_y_TargetPositionRerouting {
             [HarmonyPriority(Priority.Last)]
             private static void Prefix(Inventory __instance, ItemDrop.ItemData item, ref int x, ref int y) {
@@ -491,7 +535,7 @@ namespace EquipmentAndQuickSlots {
             }
         }
 
-        [HarmonyPatch(typeof(Inventory), nameof(Inventory.AddItem), typeof(string), typeof(int), typeof(int), typeof(int), typeof(long), typeof(string), typeof(Vector2i), typeof(bool))]
+        [HarmonyPatch(typeof(Inventory), nameof(Inventory.AddItem), typeof(string), typeof(int), typeof(int), typeof(int), typeof(long), typeof(string), typeof(Vector2i), typeof(bool), typeof(bool), typeof(bool))]
         public static class Inventory_AddItem_ByName_FindAppropriateSlot {
             public static ItemDrop.ItemData itemToFindSlot = null;
 
@@ -514,7 +558,7 @@ namespace EquipmentAndQuickSlots {
             private static void Postfix() => itemToFindSlot = null;
         }
 
-        [HarmonyPatch(typeof(Inventory), nameof(Inventory.AddItem), typeof(string), typeof(int), typeof(float), typeof(Vector2i), typeof(bool), typeof(int), typeof(int), typeof(long), typeof(string), typeof(Dictionary<string, string>), typeof(int), typeof(bool))]
+        [HarmonyPatch(typeof(Inventory), nameof(Inventory.AddItem), typeof(string), typeof(int), typeof(float), typeof(Vector2i), typeof(bool), typeof(int), typeof(int), typeof(long), typeof(string), typeof(Dictionary<string, string>), typeof(int), typeof(bool), typeof(bool), typeof(bool))]
         public static class Inventory_AddItem_OnLoad_Marker {
             public static bool inCall = false;
 

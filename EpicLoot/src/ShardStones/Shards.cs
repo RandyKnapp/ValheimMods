@@ -198,9 +198,7 @@ namespace EpicLoot.ShardStones {
                     continue;
                 }
                 if (def.Rarities == null || def.Rarities.Count == 0) {
-                    def.Rarities = new List<ItemRarity> {
-                        ItemRarity.Magic, ItemRarity.Rare, ItemRarity.Epic, ItemRarity.Legendary, ItemRarity.Mythic
-                    };
+                    def.Rarities = new List<ItemRarity>(Rarities.All);
                 }
                 if (def.TypeEffects == null) {
                     def.TypeEffects = new Dictionary<ShardSlotCategory, ShardEffectDefinition>();
@@ -523,7 +521,7 @@ namespace EpicLoot.ShardStones {
         // Categories whose shards are mutually exclusive: a player may wear at most one socketed
         // shard of each such category at a time. Exclusivity is a property of the category, so it
         // applies uniformly to every color in it.
-        private static readonly HashSet<ShardCategory> ExclusiveCategories = new HashSet<ShardCategory>
+        internal static readonly HashSet<ShardCategory> ExclusiveCategories = new HashSet<ShardCategory>
         {
             ShardCategory.Boss,
             ShardCategory.Unique

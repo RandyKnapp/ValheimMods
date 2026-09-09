@@ -90,6 +90,14 @@ namespace EquipmentAndQuickSlots {
             Dictionary<string, HashSet<string>> pathToButtonNames = new Dictionary<string, HashSet<string>>();
 
             foreach (KeyValuePair<string, ZInput.ButtonDef> button in __instance.m_buttons) {
+                // ButtonDef.GetActionPath reads bindings[0] with no count check of its own. This
+                // runs from a finalizer on ResetKBMButtons/Load, i.e. part-way through ZInput.Reset,
+                // and the Sept 2026 rebind flow clears a layout's buttons before re-adding them - so
+                // a def can legitimately be sitting here with no bindings at all. Letting that throw
+                // took the exception out through ZInput.Initialize and broke input entirely.
+                if (button.Value?.ButtonAction == null || button.Value.ButtonAction.bindings.Count == 0)
+                    continue;
+
                 AddButtonPath(button.Value.GetActionPath(effective: true), button.Key);
                 AddButtonPath(button.Value.GetActionPath(effective: false), button.Key);
             }
@@ -268,10 +276,10 @@ namespace EquipmentAndQuickSlots {
         private static class ZInput_SimilarHotkeyOnBind {
             private static IEnumerable<MethodBase> TargetMethods() {
                 yield return AccessTools.Method(typeof(ZInput), nameof(ZInput.ResetKBMButtons));
-                yield return AccessTools.Method(typeof(ZInput), nameof(ZInput.ResetGamepadButtonsGeneric));
-                yield return AccessTools.Method(typeof(ZInput), nameof(ZInput.ResetGamepadToClassic));
-                yield return AccessTools.Method(typeof(ZInput), nameof(ZInput.ResetGamepadToAlt1));
-                yield return AccessTools.Method(typeof(ZInput), nameof(ZInput.ResetGamepadToAlt2));
+                yield return AccessTools.Method(typeof(ZInput), nameof(ZInput.AddGenericGamepadButtons));
+                yield return AccessTools.Method(typeof(ZInput), nameof(ZInput.AddGamepadClassicButtons));
+                yield return AccessTools.Method(typeof(ZInput), nameof(ZInput.AddGamepadAlt1Buttons));
+                yield return AccessTools.Method(typeof(ZInput), nameof(ZInput.AddGamepadAlt2Buttons));
                 yield return AccessTools.Method(typeof(ZInput), nameof(ZInput.OnRebindComplete));
                 yield return AccessTools.Method(typeof(ZInput), nameof(ZInput.ResetToDefault));
                 yield return AccessTools.Method(typeof(ZInput), nameof(ZInput.Load));

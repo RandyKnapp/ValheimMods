@@ -8,10 +8,25 @@ namespace EpicLoot.General
     internal static class Extensions
     {
         /// <summary>
-        /// Take any list of Objects and return it with Fischer-Yates shuffle
+        /// Take any list of Objects and return it with Fischer-Yates shuffle, drawing from the
+        /// global unseeded RNG. Loot rolls want this; a caller that must be reproducible wants
+        /// the overload below.
         /// </summary>
         /// <returns></returns>
         public static List<T> shuffleList<T>(this List<T> inputList)
+        {
+            return inputList.shuffleList(null);
+        }
+
+        /// <summary>
+        /// Fischer-Yates shuffle. A null <paramref name="random"/> draws from the global Unity RNG;
+        /// a seeded System.Random makes the result reproducible for a caller that owns its own
+        /// stream. UnityEngine.Random.Range(int, int) and System.Random.Next(int, int) are both
+        /// max-exclusive, and the loop consumes exactly Count draws either way, so the two paths
+        /// are interchangeable.
+        /// </summary>
+        /// <returns></returns>
+        public static List<T> shuffleList<T>(this List<T> inputList, System.Random random)
         {
             T p = default;
             List<T> tempList = new List<T>();
@@ -19,7 +34,7 @@ namespace EpicLoot.General
             int count = inputList.Count;
             for (int i = 0; i < count; i++)
             {
-                int r = UnityEngine.Random.Range(i, count);
+                int r = random == null ? UnityEngine.Random.Range(i, count) : random.Next(i, count);
                 p = tempList[i];
                 tempList[i] = tempList[r];
                 tempList[r] = p;

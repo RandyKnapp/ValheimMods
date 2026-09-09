@@ -1,3 +1,3 @@
-**1.0.7**
+**1.0.8**
 
-* Existing release; changelog begins here.
+* Deep North release

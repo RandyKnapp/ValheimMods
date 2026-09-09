@@ -123,7 +123,7 @@ public static class TransferMagicalEffects
     // DoCrafting adds the crafted item through the Vector2i overload; the bool overload merely delegates
     // to this one, so patching here is the single choke point that reliably captures the crafted item.
     [HarmonyPatch(typeof(Inventory), nameof(Inventory.AddItem), new []{typeof(string), typeof(int), typeof(int),
-        typeof(int), typeof(long), typeof(string), typeof(Vector2i), typeof(bool)})]
+        typeof(int), typeof(long), typeof(string), typeof(Vector2i), typeof(bool), typeof(bool), typeof(bool)})]
     static class InventoryAddItemPatch
     {
         [UsedImplicitly]

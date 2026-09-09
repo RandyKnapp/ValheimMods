@@ -2,7 +2,7 @@
 
 All data is sourced from [`config/shardstones.json`](config/shardstones.json), keyed by shard color → slot → effect.
 Standard shards (Core/Dark/Light) define one effect per broad slot; Boss shards use a single **uniform** effect that
-applies to any socket. Effect power scales by rarity (Magic → Rare → Epic → Legendary → Mythic).
+applies to any socket. Effect power scales by rarity (Magic → Rare → Epic → Legendary → Mythic → Ancient).
 
 ## Core shards
 

@@ -24,7 +24,7 @@ namespace EpicLoot.MagicItemEffects
         // m_useDurability into the ObjectDB prefab's shared instance.
         private static readonly ConditionalWeakTable<ItemDrop.ItemData, ItemDrop.ItemData.SharedData> originalShared = new();
 
-        [HarmonyPatch(typeof(Inventory), nameof(Inventory.AddItem), typeof(ItemDrop.ItemData), typeof(int), typeof(int), typeof(int))]
+        [HarmonyPatch(typeof(Inventory), nameof(Inventory.AddItem), typeof(ItemDrop.ItemData), typeof(int), typeof(int), typeof(int), typeof(bool))]
         public static class Indestructible_Inventory_AddItem_Patch
         {
             [UsedImplicitly]

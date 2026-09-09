@@ -13,10 +13,10 @@ namespace EpicLoot;
 [HarmonyPatch(typeof(InventoryGrid), nameof(InventoryGrid.UpdateGui), typeof(Player), typeof(ItemDrop.ItemData))]
 public static class InventoryGrid_UpdateGui_MagicItemComponent_Patch
 {
-    public static void UpdateGuiElements(InventoryGrid.Element element, bool used)
+    public static void UpdateGuiElements(InventoryElement element, bool used)
     {
         element.m_used = used;
-        Transform magicItemTransform = element.m_go.transform.Find("magicItem");
+        Transform magicItemTransform = element.gameObject.transform.Find("magicItem");
         if (magicItemTransform != null)
         {
             Image magicItem = magicItemTransform.GetComponent<Image>();
@@ -26,7 +26,7 @@ public static class InventoryGrid_UpdateGui_MagicItemComponent_Patch
             }
         }
 
-        Transform setItemTransform = element.m_go.transform.Find("setItem");
+        Transform setItemTransform = element.gameObject.transform.Find("setItem");
         if (setItemTransform != null)
         {
             Image setItem = setItemTransform.GetComponent<Image>();
@@ -37,9 +37,9 @@ public static class InventoryGrid_UpdateGui_MagicItemComponent_Patch
         }
     }
 
-    public static void UpdateGuiItems(ItemDrop.ItemData itemData, InventoryGrid.Element element)
+    public static void UpdateGuiItems(ItemDrop.ItemData itemData, InventoryElement element)
     {
-        API.ApplyMagicItemBackground(element.m_go, element.m_equiped.gameObject, itemData, true);
+        API.ApplyMagicItemBackground(element.gameObject, element.m_equiped.gameObject, itemData, true);
     }
 
     [UsedImplicitly]
@@ -58,14 +58,38 @@ public static class InventoryGrid_UpdateGui_MagicItemComponent_Patch
         }
 
         System.Reflection.FieldInfo elementUsedField =
-            AccessTools.DeclaredField(typeof(InventoryGrid.Element), nameof(InventoryGrid.Element.m_used));
+            AccessTools.DeclaredField(typeof(InventoryElement), nameof(InventoryElement.m_used));
         System.Reflection.FieldInfo elementQueuedField =
-            AccessTools.DeclaredField(typeof(InventoryGrid.Element), nameof(InventoryGrid.Element.m_queued));
+            AccessTools.DeclaredField(typeof(InventoryElement), nameof(InventoryElement.m_queued));
+
+        // Vanilla clears every cell at the top of UpdateGui:
+        //     foreach (InventoryElement element in m_elements) { element.m_used = false; ... }
+        // The Sept 2026 update added a second store (m_canBeDroppedOn = false) to that loop body,
+        // which made the compiler emit a `dup` between `get_Current` and the m_used write. The
+        // element-producing pair is therefore no longer at a fixed offset, so walk back over the
+        // optional `dup` rather than hard-coding i-2/i-3 as before. Ldc_I4_0 is what separates this
+        // clearing store from the `m_used = true` one later in the method.
+        bool IsElementClearStore(int i)
+        {
+            if (i < 4 || instrs[i].opcode != OpCodes.Stfld || !elementUsedField.Equals(instrs[i].operand))
+            {
+                return false;
+            }
+
+            if (instrs[i - 1].opcode != OpCodes.Ldc_I4_0)
+            {
+                return false;
+            }
+
+            int j = instrs[i - 2].opcode == OpCodes.Dup ? i - 3 : i - 2;
+            return instrs[j].opcode == OpCodes.Call && instrs[j - 1].opcode == OpCodes.Ldloca_S;
+        }
 
         for (int i = 0; i < instrs.Count; ++i)
         {
-            if (i > 6 && instrs[i].opcode == OpCodes.Stfld && instrs[i].operand.Equals(elementUsedField) && instrs[i - 1].opcode == OpCodes.Ldc_I4_0
-                && instrs[i - 2].opcode == OpCodes.Call && instrs[i - 3].opcode == OpCodes.Ldloca_S)
+            // Replacing the stfld with the call is stack-neutral - both consume (element, bool) and
+            // return nothing - so the duplicate the `dup` left for m_canBeDroppedOn survives intact.
+            if (IsElementClearStore(i))
             {
                 //Element Spot
                 CodeInstruction callInstruction = new CodeInstruction(OpCodes.Call,

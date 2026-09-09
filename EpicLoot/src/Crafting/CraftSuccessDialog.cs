@@ -1,4 +1,5 @@
 ﻿using Common;
+using EpicLoot.CraftingV2;
 using JetBrains.Annotations;
 using TMPro;
 using UnityEngine;
@@ -23,7 +24,10 @@ namespace EpicLoot.Crafting
             if (_audioSource == null)
             {
                 _audioSource = gameObject.AddComponent<AudioSource>();
+                _audioSource.playOnAwake = false;
             }
+
+            EnchantingUIController.SetupUIAudioSource(_audioSource);
         }
 
         [UsedImplicitly]
@@ -79,7 +83,7 @@ namespace EpicLoot.Crafting
 
             if (item.IsMagic())
             {
-                _audioSource.PlayOneShot(EpicLoot.GetMagicItemDropSFX(item.GetRarity()), _audioSource.volume);
+                _audioSource.PlayOneShot(EpicLoot.GetMagicItemDropSFX(item.GetRarity()));
             }
         }
 

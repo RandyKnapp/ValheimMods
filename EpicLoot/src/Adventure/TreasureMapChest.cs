@@ -38,16 +38,16 @@ namespace EpicLoot.Adventure
 
                 var biomeConfig = AdventureDataManager.Config.TreasureMap.BiomeInfo.Find(x => x.GetBiome() == biome);
                 if (biomeConfig?.ForestTokens > 0)
-                    container.m_inventory.AddItem("ForestToken", biomeConfig.ForestTokens, 1, 0, 0, string.Empty);
+                    container.m_inventory.AddItem("ForestToken", biomeConfig.ForestTokens, 1, 0, 0, string.Empty, cheated: false);
 
                 if (biomeConfig?.IronTokens > 0)
-                    container.m_inventory.AddItem("IronBountyToken", biomeConfig.IronTokens, 1, 0, 0, string.Empty);
+                    container.m_inventory.AddItem("IronBountyToken", biomeConfig.IronTokens, 1, 0, 0, string.Empty, cheated: false);
 
                 if (biomeConfig?.GoldTokens > 0)
-                    container.m_inventory.AddItem("GoldBountyToken", biomeConfig.GoldTokens, 1, 0, 0, string.Empty);
+                    container.m_inventory.AddItem("GoldBountyToken", biomeConfig.GoldTokens, 1, 0, 0, string.Empty, cheated: false);
 
                 if (biomeConfig?.Coins > 0)
-                    container.m_inventory.AddItem("Coins", biomeConfig.Coins, 1, 0, 0, string.Empty);
+                    container.m_inventory.AddItem("Coins", biomeConfig.Coins, 1, 0, 0, string.Empty, cheated: false);
 
                 container.Save();
             }
@@ -138,7 +138,7 @@ namespace EpicLoot.Adventure
         }
     }
 
-    [HarmonyPatch(typeof(Container), nameof(Container.RPC_OpenRespons))]
+    [HarmonyPatch(typeof(Container), nameof(Container.RPC_OpenResponse))]
     public static class Container_RPC_OpenRespons_Patch
     {
         public static void Postfix(Container __instance, long uid, bool granted)

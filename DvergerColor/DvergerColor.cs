@@ -11,7 +11,7 @@ namespace DvergerColor
     public class DvergerColor : BaseUnityPlugin
     {
         public const string PluginId = "randyknapp.mods.dvergercolor";
-        public const string Version = "1.0.7";
+        public const string Version = "1.0.8";
 
         public static ConfigEntry<Color> Color;
         public static ConfigEntry<int> MaxSteps;

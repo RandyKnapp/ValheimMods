@@ -129,7 +129,7 @@ namespace EquipmentAndQuickSlots {
             UtilitySlotCount = BindServerConfig("Equipment Slots", "Utility Slot Count", 1, "Number of utility items (belts, the Wishbone, Megingjord) that may be worn at once. The game itself allows one; raising this is a balance change. You can never wear two copies of the same item.", false, 1, Slots.MaxUtilitySlots);
             UtilitySlotCount.SettingChanged += (_, _) => MultiUtility.OnUtilitySlotCountChanged();
             ExtraInventoryRows = BindServerConfig("Inventory", "Extra Inventory Rows", 0, "Additional visible inventory rows on top of the game's four. The equipment and quick slots move down with the grid.", false, 0, Slots.MaxExtraRows);
-            ExtraInventoryRows.SettingChanged += (_, _) => Slots.OnExtraRowsChanged();
+            ExtraInventoryRows.SettingChanged += (_, _) => Slots.OnVisibleRowsChanged();
             BaseCarryWeight = BindServerConfig("Inventory", "Base Carry Weight", VanillaCarryWeight, "The player's base carry weight before belts and other modifiers. 300 is the game default and leaves other mods' carry-weight changes untouched.", false, 50f, 5000f);
             BaseCarryWeight.SettingChanged += (_, _) => InventoryPatches.ApplyBaseCarryWeight(Player.m_localPlayer);
 

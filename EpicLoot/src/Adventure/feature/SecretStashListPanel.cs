@@ -19,9 +19,14 @@ namespace EpicLoot.Adventure.Feature
             _merchantPanel = merchantPanel;
         }
 
-        public override bool NeedsRefresh(bool currenciesChanged)
+        public override bool NeedsRefresh()
         {
-            return currenciesChanged || _currentInterval != AdventureDataManager.SecretStash.GetCurrentInterval();
+            return _currentInterval != AdventureDataManager.SecretStash.GetCurrentInterval();
+        }
+
+        public override void UpdateAffordability(Currencies currencies)
+        {
+            ForEachElement(x => x.ApplyAffordability(currencies));
         }
 
         public override void RefreshButton(Currencies playerCurrencies)

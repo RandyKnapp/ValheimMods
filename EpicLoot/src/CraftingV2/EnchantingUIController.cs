@@ -1,4 +1,4 @@
-
+﻿
 using EpicLoot.Biomes;
 using EpicLoot.Config;
 using EpicLoot.Crafting;
@@ -13,6 +13,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using UnityEngine;
+using UnityEngine.Audio;
 using Random = UnityEngine.Random;
 
 namespace EpicLoot.CraftingV2
@@ -39,8 +40,96 @@ namespace EpicLoot.CraftingV2
 
     public class EnchantingUIController : MonoBehaviour
     {
+        /// <summary>
+        /// The mixer group Valheim routes its own GUI sounds through, resolved from the vanilla
+        /// sfx_gui_button source. Cached because it is looked up once per UI audio source and
+        /// GameObject.Find is not cheap; the group itself is an asset, so the reference survives
+        /// scene loads. Stays null until the GUI scene is up, and is retried until it resolves.
+        /// </summary>
+        private static AudioMixerGroup _uiMixerGroup;
+
+        /// <summary>Every UI audio source we manage, so a config change can be applied live.</summary>
+        private static readonly List<AudioSource> UIAudioSources = new List<AudioSource>();
+
+        private static AudioMixerGroup GetUIMixerGroup()
+        {
+            if (_uiMixerGroup == null)
+            {
+                GameObject uiSFX = GameObject.Find("sfx_gui_button");
+                AudioSource sfxSource = uiSFX != null ? uiSFX.GetComponent<AudioSource>() : null;
+                if (sfxSource != null)
+                {
+                    _uiMixerGroup = sfxSource.outputAudioMixerGroup;
+                }
+            }
+
+            return _uiMixerGroup;
+        }
+
         internal static float GetAudioLevel() {
-            return AudioMan.GetSFXVolume() * ELConfig.UIAudioVolumeAdjustment.Value;
+            // A source routed through the GUI mixer group already has the player's master and SFX
+            // sliders applied to it by the mixer, so only our own multiplier belongs here --
+            // folding GetSFXVolume() in as well attenuated everything twice. If the group could
+            // not be resolved the source plays unmixed, so then the sliders do have to be applied
+            // by hand or the sound would ignore them entirely.
+            float configLevel = ELConfig.UIAudioVolumeAdjustment.Value;
+            return GetUIMixerGroup() != null ? configLevel : AudioMan.GetSFXVolume() * configLevel;
+        }
+
+        /// <summary>
+        /// Routes a UI audio source through the GUI mixer group, sets its volume from the config,
+        /// and remembers it so <see cref="RefreshUIAudioLevels"/> can update it when that config
+        /// changes. Safe to call repeatedly on the same source.
+        /// </summary>
+        internal static void SetupUIAudioSource(AudioSource audioSource)
+        {
+            if (audioSource == null)
+            {
+                return;
+            }
+
+            AudioMixerGroup mixerGroup = GetUIMixerGroup();
+            if (mixerGroup != null)
+            {
+                audioSource.outputAudioMixerGroup = mixerGroup;
+            }
+
+            audioSource.volume = GetAudioLevel();
+
+            UIAudioSources.RemoveAll(source => source == null);
+            if (!UIAudioSources.Contains(audioSource))
+            {
+                UIAudioSources.Add(audioSource);
+            }
+        }
+
+        /// <summary>
+        /// <see cref="SetupUIAudioSource"/> for every source under <paramref name="root"/>, including
+        /// the ones on inactive children -- those are the tabs and list elements that have not been
+        /// opened yet, and the plain GetComponentsInChildren overload used to skip them.
+        /// </summary>
+        internal static void SetupUIAudioSources(GameObject root)
+        {
+            if (root == null)
+            {
+                return;
+            }
+
+            foreach (AudioSource audioSource in root.GetComponentsInChildren<AudioSource>(true))
+            {
+                SetupUIAudioSource(audioSource);
+            }
+        }
+
+        /// <summary>Applies the current audio level to every source registered so far.</summary>
+        internal static void RefreshUIAudioLevels()
+        {
+            float level = GetAudioLevel();
+            UIAudioSources.RemoveAll(source => source == null);
+            foreach (AudioSource audioSource in UIAudioSources)
+            {
+                audioSource.volume = level;
+            }
         }
 
         internal static bool UpgradesActive(EnchantingFeature feature, out bool featureActive)
@@ -557,7 +646,7 @@ namespace EpicLoot.CraftingV2
                 }
             }
 
-            Game.instance.GetPlayerProfile().m_playerStats.m_stats[PlayerStatType.Crafts]++;
+            Game.instance.GetPlayerProfile().IncrementStat(PlayerStatType.Crafts);
             Gogan.LogEvent("Game", "Enchanted", item.m_shared.m_name, 1);
 
             return successDialog.gameObject;
@@ -1228,7 +1317,7 @@ namespace EpicLoot.CraftingV2
                 }
             }
 
-            Game.instance.GetPlayerProfile().m_playerStats.m_stats[PlayerStatType.Crafts]++;
+            Game.instance.GetPlayerProfile().IncrementStat(PlayerStatType.Crafts);
             Gogan.LogEvent("Game", "RuneEnhanced", item.m_shared.m_name, 1);
 
             return successDialog.gameObject;
@@ -1330,10 +1419,7 @@ namespace EpicLoot.CraftingV2
             choiceDialog.transform.SetParent(EnchantingTableUI.instance.transform);
 
             // Fix audio sources
-            foreach (AudioSource audioSource in choiceDialog.GetComponentsInChildren<AudioSource>())
-            {
-                audioSource.volume = GetAudioLevel();
-            }
+            SetupUIAudioSources(choiceDialog.gameObject);
 
             RectTransform rt = (RectTransform)choiceDialog.transform;
             rt.pivot = new Vector2(0.5f, 0.5f);
@@ -1384,7 +1470,7 @@ namespace EpicLoot.CraftingV2
 
             API.WithChangeReason(API.ChangeReason.Augment, () => item.SaveMagicItem(magicItem));
 
-            Game.instance.GetPlayerProfile().m_playerStats.m_stats[PlayerStatType.Crafts]++;
+            Game.instance.GetPlayerProfile().IncrementStat(PlayerStatType.Crafts);
             Gogan.LogEvent("Game", "Augmented", item.m_shared.m_name, 1);
 
             EquipmentEffectCache.Reset(Player.m_localPlayer);
@@ -1411,32 +1497,7 @@ namespace EpicLoot.CraftingV2
             }
 
             ItemRarity rarity = item.GetRarity();
-            List<ItemAmountConfig> costList;
-            switch (rarity)
-            {
-                case ItemRarity.Magic:
-                    costList = EnchantCostsHelper.Config.DisenchantCosts.Magic;
-                    break;
-
-                case ItemRarity.Rare:
-                    costList = EnchantCostsHelper.Config.DisenchantCosts.Rare;
-                    break;
-
-                case ItemRarity.Epic:
-                    costList = EnchantCostsHelper.Config.DisenchantCosts.Epic;
-                    break;
-
-                case ItemRarity.Legendary:
-                    costList = EnchantCostsHelper.Config.DisenchantCosts.Legendary;
-                    break;
-
-                case ItemRarity.Mythic:
-                    costList = EnchantCostsHelper.Config.DisenchantCosts.Mythic;
-                    break;
-
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+            List<ItemAmountConfig> costList = EnchantCostsHelper.Config.DisenchantCosts.GetForRarity(rarity);
 
             Tuple<float, float> featureValues = EnchantingTableUI.instance.SourceTable.GetFeatureCurrentValue(EnchantingFeature.Disenchant);
             int reducedCost = 0;

@@ -134,7 +134,7 @@ namespace EpicLoot.ShardStones {
             // Gamepad: park the cursor on the first socket and hand it focus, the way opening a real
             // container does. Harmless to skip on mouse, where focus follows the pointer.
             if (ZInput.IsGamepadActive()) {
-                invGui.m_containerGrid.SetSelection(new Vector2i(0, 0));
+                invGui.m_containerGrid.SetGamepadSelection(new Vector2i(0, 0));
                 invGui.SetActiveGroup(0);
             }
         }

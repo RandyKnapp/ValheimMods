@@ -51,24 +51,15 @@ namespace EpicLoot_UnityLib
                 _defaultButtonLabelText = _useTMP ? _tmpButtonLabel.text : _buttonLabel.text;
             }
 
-            GameObject uiSFX = GameObject.Find("sfx_gui_button");
-            if (uiSFX && Audio != null)
-            {
-                Audio.outputAudioMixerGroup = uiSFX.GetComponent<AudioSource>().outputAudioMixerGroup;
-                Audio.volume = EnchantingUIController.GetAudioLevel();
-            }
-
-            foreach (AudioSource audioSource in this.GetComponentsInChildren<AudioSource>())
-            {
-                audioSource.volume = EnchantingUIController.GetAudioLevel();
-            }
+            EnchantingUIController.SetupUIAudioSource(Audio);
+            EnchantingUIController.SetupUIAudioSources(gameObject);
         }
 
         protected virtual void OnMainButtonClicked()
         {
             if (MainActionSFX != null)
             {
-                Audio.PlayOneShot(MainActionSFX, Audio.volume);
+                Audio.PlayOneShot(MainActionSFX);
             }
 
             if (_inProgress)
@@ -126,7 +117,7 @@ namespace EpicLoot_UnityLib
             AudioClip clip = GetCompleteAudioClip();
             if (Audio != null && clip != null)
             {
-                Audio.PlayOneShot(clip, Audio.volume);
+                Audio.PlayOneShot(clip);
             }
         }
 

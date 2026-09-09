@@ -218,10 +218,7 @@ namespace EpicLoot_UnityLib
 
             _choiceDialog = EnchantingUIController.AugmentItem(item, _augmentIndex);
 
-            foreach (AudioSource audioSource in _choiceDialog.GetComponentsInChildren<AudioSource>())
-            {
-                audioSource.volume = EnchantingUIController.GetAudioLevel();
-            }
+            EnchantingUIController.SetupUIAudioSources(_choiceDialog);
 
             Lock();
         }
@@ -241,6 +238,7 @@ namespace EpicLoot_UnityLib
             // First AUGMENTABLE effect (or -1 for none): defaulting blindly to 0 let the Augment
             // button operate on an effect whose selector was disabled as non-augmentable.
             _augmentIndex = _AugmentSelectors.FindIndex(selector => selector.interactable);
+            HighlightSelectedAugment();
             OnAugmentIndexChanged();
         }
 
@@ -270,10 +268,7 @@ namespace EpicLoot_UnityLib
                 GameObject enchantmentListElement = Instantiate(EnchantmentListPrefab, EnchantList);
                 Text enchantmentElement = enchantmentListElement.GetComponentInChildren<Text>();
                 Toggle enchantmentbutton = enchantmentListElement.GetComponent<Toggle>();
-                foreach (AudioSource audioSource in enchantmentListElement.GetComponentsInChildren<AudioSource>())
-                {
-                    audioSource.volume = EnchantingUIController.GetAudioLevel();
-                }
+                EnchantingUIController.SetupUIAudioSources(enchantmentListElement);
 
                 _AugmentSelectors.Add(enchantmentbutton);
                 enchantmentbutton.onValueChanged.AddListener((isOn) =>
@@ -296,6 +291,21 @@ namespace EpicLoot_UnityLib
                 enchantmentListElement.SetActive(true);
 
                 enchantIndex++;
+            }
+
+            // Rebuilt selectors all come back unchecked (e.g. after an augment completes),
+            // which left nothing highlighted while _augmentIndex kept driving the cost and
+            // the Augment button.
+            HighlightSelectedAugment();
+        }
+
+        // Matches the selector toggles to _augmentIndex without notifying, so restoring the
+        // highlight does not re-enter SelectAugmentIndex or replay the selection sound.
+        private void HighlightSelectedAugment()
+        {
+            for (int index = 0; index < _AugmentSelectors.Count; ++index)
+            {
+                _AugmentSelectors[index].SetIsOnWithoutNotify(index == _augmentIndex);
             }
         }
 

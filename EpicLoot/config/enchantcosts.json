@@ -29,6 +29,12 @@
         "Item": "IronBountyToken",
         "Amount": 9
       }
+    ],
+    "Ancient": [
+      {
+        "Item": "IronBountyToken",
+        "Amount": 11
+      }
     ]
   },
   "DisenchantProducts": [
@@ -70,6 +76,14 @@
       "Rarity": "Mythic",
       "Products": [
         { "Item": "ShardMythic", "Amount": 2 }
+      ]
+    },
+    {
+      "IsMagic": true,
+      "ItemTypes": [ "Material" ],
+      "Rarity": "Ancient",
+      "Products": [
+        { "Item": "ShardAncient", "Amount": 2 }
       ]
     },
     {
@@ -178,6 +192,28 @@
         },
         {
           "Item": "EssenceMythic",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "IsMagic": true,
+      "ItemTypes": [
+        "OneHandedWeapon",
+        "Bow",
+        "TwoHandedWeapon",
+        "TwoHandedWeaponLeft",
+        "Torch",
+        "Tool"
+      ],
+      "Rarity": "Ancient",
+      "Products": [
+        {
+          "Item": "DustAncient",
+          "Amount": 1
+        },
+        {
+          "Item": "EssenceAncient",
           "Amount": 1
         }
       ]
@@ -303,6 +339,31 @@
         },
         {
           "Item": "ReagentMythic",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "IsMagic": true,
+      "ItemTypes": [
+        "Shield",
+        "Helmet",
+        "Chest",
+        "Legs",
+        "Shoulder",
+        "Utility",
+        "Trinket",
+        "None",
+        "Misc"
+      ],
+      "Rarity": "Ancient",
+      "Products": [
+        {
+          "Item": "DustAncient",
+          "Amount": 1
+        },
+        {
+          "Item": "ReagentAncient",
           "Amount": 1
         }
       ]
@@ -939,6 +1000,24 @@
       ]
     },
     {
+      "IsUnidentified": true,
+      "Rarity": "Ancient",
+      "Products": [
+        {
+          "Item": "DustAncient",
+          "Amount": 1
+        },
+        {
+          "Item": "ReagentAncient",
+          "Amount": 1
+        },
+        {
+          "Item": "EssenceAncient",
+          "Amount": 1
+        }
+      ]
+    },
+    {
       "IsMagic": true,
       "ItemTypes": [ "Material" ],
       "AmmoTypeSuffixes": [ "ShardStone" ],
@@ -991,6 +1070,17 @@
         { "Item": "DustMythic", "Amount": 2 },
         { "Item": "ReagentMythic", "Amount": 2 },
         { "Item": "EssenceMythic", "Amount": 2 }
+      ]
+    },
+    {
+      "IsMagic": true,
+      "ItemTypes": [ "Material" ],
+      "AmmoTypeSuffixes": [ "ShardStone" ],
+      "Rarity": "Ancient",
+      "Products": [
+        { "Item": "DustAncient", "Amount": 2 },
+        { "Item": "ReagentAncient", "Amount": 2 },
+        { "Item": "EssenceAncient", "Amount": 2 }
       ]
     }
   ],
@@ -1116,6 +1206,31 @@
         },
         {
           "Item": "EssenceMythic",
+          "Amount": 5
+        }
+      ]
+    },
+    {
+      "ItemTypes": [
+        "OneHandedWeapon",
+        "Bow",
+        "TwoHandedWeapon",
+        "TwoHandedWeaponLeft",
+        "Torch",
+        "Tool"
+      ],
+      "Rarity": "Ancient",
+      "Cost": [
+        {
+          "Item": "RunestoneAncient",
+          "Amount": 1
+        },
+        {
+          "Item": "DustAncient",
+          "Amount": 5
+        },
+        {
+          "Item": "EssenceAncient",
           "Amount": 5
         }
       ]
@@ -1256,6 +1371,34 @@
         },
         {
           "Item": "ReagentMythic",
+          "Amount": 5
+        }
+      ]
+    },
+    {
+      "ItemTypes": [
+        "Shield",
+        "Helmet",
+        "Chest",
+        "Legs",
+        "Shoulder",
+        "Utility",
+        "Trinket",
+        "None",
+        "Misc"
+      ],
+      "Rarity": "Ancient",
+      "Cost": [
+        {
+          "Item": "RunestoneAncient",
+          "Amount": 1
+        },
+        {
+          "Item": "DustAncient",
+          "Amount": 5
+        },
+        {
+          "Item": "ReagentAncient",
           "Amount": 5
         }
       ]
@@ -1389,6 +1532,31 @@
     },
     {
       "ItemTypes": [
+        "OneHandedWeapon",
+        "Bow",
+        "TwoHandedWeapon",
+        "TwoHandedWeaponLeft",
+        "Torch",
+        "Tool"
+      ],
+      "Rarity": "Ancient",
+      "Cost": [
+        {
+          "Item": "ShardAncient",
+          "Amount": 1
+        },
+        {
+          "Item": "DustAncient",
+          "Amount": 1
+        },
+        {
+          "Item": "EssenceAncient",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "ItemTypes": [
         "Shield",
         "Helmet",
         "Chest",
@@ -1523,6 +1691,34 @@
         },
         {
           "Item": "ReagentMythic",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "ItemTypes": [
+        "Shield",
+        "Helmet",
+        "Chest",
+        "Legs",
+        "Shoulder",
+        "Utility",
+        "Trinket",
+        "None",
+        "Misc"
+      ],
+      "Rarity": "Ancient",
+      "Cost": [
+        {
+          "Item": "ShardAncient",
+          "Amount": 1
+        },
+        {
+          "Item": "DustAncient",
+          "Amount": 1
+        },
+        {
+          "Item": "ReagentAncient",
           "Amount": 1
         }
       ]
@@ -1700,6 +1896,32 @@
           "Amount": 1
         }
       ]
+    },
+    {
+      "ItemTypes": [
+        "OneHandedWeapon",
+        "Bow",
+        "TwoHandedWeapon",
+        "TwoHandedWeaponLeft",
+        "Torch",
+        "Tool",
+        "Shield",
+        "Helmet",
+        "Chest",
+        "Legs",
+        "Shoulder",
+        "Utility",
+        "Trinket",
+        "None",
+        "Misc"
+      ],
+      "Rarity": "Ancient",
+      "Cost": [
+        {
+          "Item": "RunestoneAncient",
+          "Amount": 1
+        }
+      ]
     }
   ],
   "RuneEtchCosts": [
@@ -1832,6 +2054,32 @@
           "Amount": 10
         }
       ]
+    },
+    {
+      "ItemTypes": [
+        "OneHandedWeapon",
+        "Bow",
+        "TwoHandedWeapon",
+        "TwoHandedWeaponLeft",
+        "Torch",
+        "Tool",
+        "Shield",
+        "Helmet",
+        "Chest",
+        "Legs",
+        "Shoulder",
+        "Utility",
+        "Trinket",
+        "None",
+        "Misc"
+      ],
+      "Rarity": "Ancient",
+      "Cost": [
+        {
+          "Item": "DustAncient",
+          "Amount": 10
+        }
+      ]
     }
   ],
   "IdentifyTypes": {
@@ -1863,6 +2111,9 @@
           "Tier6Everything"
         ],
         "AshLands": [
+          "Tier7Everything"
+        ],
+        "DeepNorth": [
           "Tier7Everything"
         ]
       },
@@ -1901,6 +2152,9 @@
           "Tier6Weapons"
         ],
         "AshLands": [
+          "Tier7Weapons"
+        ],
+        "DeepNorth": [
           "Tier7Weapons"
         ]
       },
@@ -1953,6 +2207,10 @@
         "AshLands": [
           "Tier7Armor",
           "Tier7Shields"
+        ],
+        "DeepNorth": [
+          "Tier7Armor",
+          "Tier7Shields"
         ]
       },
       "Costs": [
@@ -1977,7 +2235,8 @@
         "Mountain": [ "Tier3Tools", "ModUtility", "Tier4Trinkets" ],
         "Plains": [ "Tier3Tools", "ModUtility", "Tier5Trinkets" ],
         "Mistlands": [ "Tier6Tools", "ModUtility", "Tier6Trinkets" ],
-        "AshLands": [ "Tier6Tools", "ModUtility", "Tier7Trinkets" ]
+        "AshLands": [ "Tier6Tools", "ModUtility", "Tier7Trinkets" ],
+        "DeepNorth": [ "Tier6Tools", "ModUtility", "Tier7Trinkets" ]
       },
       "Costs": [
         {
@@ -2023,6 +2282,12 @@
             "Item": "Flint",
             "Amount": 5
           }
+        ],
+        "Ancient": [
+          {
+            "Item": "Flint",
+            "Amount": 6
+          }
         ]
       }
     },
@@ -2056,6 +2321,12 @@
           {
             "Item": "Bronze",
             "Amount": 5
+          }
+        ],
+        "Ancient": [
+          {
+            "Item": "Bronze",
+            "Amount": 6
           }
         ]
       }
@@ -2091,6 +2362,12 @@
             "Item": "Iron",
             "Amount": 5
           }
+        ],
+        "Ancient": [
+          {
+            "Item": "Iron",
+            "Amount": 6
+          }
         ]
       }
     },
@@ -2124,6 +2401,12 @@
           {
             "Item": "Iron",
             "Amount": 5
+          }
+        ],
+        "Ancient": [
+          {
+            "Item": "Iron",
+            "Amount": 6
           }
         ]
       }
@@ -2159,6 +2442,12 @@
             "Item": "Silver",
             "Amount": 5
           }
+        ],
+        "Ancient": [
+          {
+            "Item": "Silver",
+            "Amount": 6
+          }
         ]
       }
     },
@@ -2192,6 +2481,12 @@
           {
             "Item": "BlackMetal",
             "Amount": 5
+          }
+        ],
+        "Ancient": [
+          {
+            "Item": "BlackMetal",
+            "Amount": 6
           }
         ]
       }
@@ -2227,6 +2522,12 @@
             "Item": "Eitr",
             "Amount": 5
           }
+        ],
+        "Ancient": [
+          {
+            "Item": "Eitr",
+            "Amount": 6
+          }
         ]
       }
     },
@@ -2261,6 +2562,12 @@
             "Item": "FlametalNew",
             "Amount": 5
           }
+        ],
+        "Ancient": [
+          {
+            "Item": "FlametalNew",
+            "Amount": 6
+          }
         ]
       }
     },
@@ -2268,32 +2575,38 @@
       "CostByRarity": {
         "Magic": [
           {
-            "Item": "FlametalNew",
+            "Item": "Gold",
             "Amount": 1
           }
         ],
         "Rare": [
           {
-            "Item": "FlametalNew",
+            "Item": "Gold",
             "Amount": 2
           }
         ],
         "Epic": [
           {
-            "Item": "FlametalNew",
+            "Item": "Gold",
             "Amount": 3
           }
         ],
         "Legendary": [
           {
-            "Item": "FlametalNew",
+            "Item": "Gold",
             "Amount": 4
           }
         ],
         "Mythic": [
           {
-            "Item": "FlametalNew",
+            "Item": "Gold",
             "Amount": 5
+          }
+        ],
+        "Ancient": [
+          {
+            "Item": "Gold",
+            "Amount": 6
           }
         ]
       }

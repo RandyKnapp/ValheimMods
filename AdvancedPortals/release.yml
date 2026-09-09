@@ -14,12 +14,8 @@ version_const: Version
 deploy:
   enabled: true
 
-  # The Thunderstore/Hexium team these publish under.
+# The Thunderstore/Hexium team these publish under.
 author_name: RandyKnapp
-
-# Copy the build into this machine's mod manager profiles after every build
-deploy:
-  enabled: true
 
 publish:
   thunderstore:

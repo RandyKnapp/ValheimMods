@@ -181,7 +181,7 @@ public void Awake()
     var Definition = new MagicItemEffectDefinition("Blink", "Blink", "Teleport to impact point");
     Definition.Requirements.ExternalRequirements.Add("MyMod.RequiresBow");
     Definition.Requirements.AllowedSkillTypes.Add(Skills.SkillType.Bows, Skills.SkillType.Spears);
-    Definition.Requirements.AllowedRarities.Add(ItemRarity.Epic, ItemRarity.Legendary, ItemRarity.Mythic);
+    Definition.Requirements.AllowedRarities.Add(ItemRarity.Epic, ItemRarity.Legendary, ItemRarity.Mythic, ItemRarity.Ancient);
     Definition.SelectionWeight = 1;
 }
 

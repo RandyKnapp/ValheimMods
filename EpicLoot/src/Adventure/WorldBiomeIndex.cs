@@ -831,7 +831,7 @@ namespace EpicLoot.Adventure
             Heightmap.Biome biome)
         {
             Vector3 zonePos = ZoneSystem.GetZonePos(ZoneSystem.GetZone(new Vector3(point.x, 0f, point.y)));
-            const float half = ZoneSystem.c_ZoneHalfSize;
+            const float half = ZoneSystem.c_ZoneSizeHalf;
 
             return worldGenerator.GetBiome(zonePos.x - half, zonePos.z - half) == biome &&
                 worldGenerator.GetBiome(zonePos.x + half, zonePos.z - half) == biome &&

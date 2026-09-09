@@ -280,7 +280,7 @@ namespace EpicLoot.MagicItemEffects.Shards
             // AddItem returns the added item on success and null on failure (full inventory, missing
             // prefab), so keep adding while it succeeds and spill whatever is left when it stops.
             while (remaining > 0
-                && player.GetInventory().AddItem(prefabName, 1, quality, variant, 0L, "", pickedUp: true) != null)
+                && player.GetInventory().AddItem(prefabName, 1, quality, variant, 0L, "", cheated: false, pickedUp: true) != null)
             {
                 remaining--;
             }

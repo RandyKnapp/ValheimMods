@@ -33,8 +33,15 @@ namespace EpicLoot.Adventure.Feature
             int currentInterval = GetCurrentInterval();
 
             AdventureSaveData saveData = Player.m_localPlayer.GetAdventureSaveData();
-            foreach (Heightmap.Biome biome in Player.m_localPlayer.m_knownBiome)
+            // m_knownBiome holds vanilla localization tokens now, so walk the registry - the only
+            // thing that maps back to a Heightmap.Biome - and keep the ones the player has discovered.
+            foreach (Heightmap.Biome biome in BiomeDataManager.BiomesInOrder.Select(d => d.Biome))
             {
+                if (!BiomeDataManager.IsDiscoveredBy(Player.m_localPlayer, biome))
+                {
+                    continue;
+                }
+
                 string lootTableName = $"TreasureMapChest_{BiomeDataManager.GetName(biome)}";
                 bool lootTableExists = LootRoller.GetLootTable(lootTableName).Count > 0;
 

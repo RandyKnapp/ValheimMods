@@ -24,6 +24,12 @@ namespace EpicLoot.Adventure
 
         public event Action<TreasureMapItemInfo> OnSelected;
 
+        /// <summary>
+        /// The authored "affordable" cost colour, captured before anything greys it out. See the
+        /// note on <see cref="ApplyAffordability"/>.
+        /// </summary>
+        private Color _costTextColor = Color.white;
+
         public void Awake()
         {
             Button = GetComponent<Button>();
@@ -37,6 +43,7 @@ namespace EpicLoot.Adventure
             PurchasedLabel = transform.Find("Purchased").gameObject;
             PurchasedLabel.SetActive(false);
             CoinsCostText = transform.Find("Price/PriceElementCoins/Amount").GetComponent<Text>();
+            _costTextColor = CoinsCostText.color;
 
             var iconMaterial = InventoryGui.instance.m_dragItemPrefab.transform.Find("icon").GetComponent<Image>().material;
             if (iconMaterial != null)
@@ -45,32 +52,47 @@ namespace EpicLoot.Adventure
             }
         }
 
+        /// <summary>
+        /// Applies everything that depends on WHICH map this row shows. Anything that depends on
+        /// what the player can currently pay for belongs in <see cref="ApplyAffordability"/>, which
+        /// this ends by calling.
+        /// </summary>
         public void SetItem(TreasureMapItemInfo itemInfo, int currentCoins)
         {
             ItemInfo = itemInfo;
-            CanAfford = Price <= currentCoins || Player.m_localPlayer.NoCostCheat();
             AlreadyPurchased = itemInfo.AlreadyPurchased;
 
             var displayName = Localization.instance.Localize("$mod_epicloot_treasuremap_name", BiomeDataManager.GetLocalizationToken(Biome), (itemInfo.Interval + 1).ToString());
 
-            Icon.color = (CanAfford && !AlreadyPurchased) ? Color.white : new Color(1.0f, 0.0f, 1.0f, 0.0f);
             NameText.text = Localization.instance.Localize(displayName);
-            NameText.color = (CanAfford && !AlreadyPurchased) ? Color.white : Color.gray;
             PriceContainer.SetActive(!AlreadyPurchased);
             PurchasedLabel.SetActive(AlreadyPurchased);
 
             CoinsCostText.text = Price.ToString();
             CoinsCostText.transform.parent.gameObject.SetActive(Price > 0);
-            if (!CanAfford)
-            {
-                CoinsCostText.color = Color.grey;
-            }
+
+            ApplyAffordability(currentCoins);
 
             Button.onClick.RemoveAllListeners();
             Button.onClick.AddListener(() => OnSelected?.Invoke(ItemInfo));
 
             Tooltip.m_topic = Localization.instance.Localize(displayName);
             Tooltip.m_text = Localization.instance.Localize(GetTooltip());
+        }
+
+        /// <summary>
+        /// Re-applies only the visuals that depend on the player's coin count, in place. EVERY
+        /// branch must assign both states -- the panel updates rows on a currency change instead of
+        /// rebuilding them, so the old one-way grey on the cost text would have stuck forever.
+        /// </summary>
+        public void ApplyAffordability(int currentCoins)
+        {
+            CanAfford = Price <= currentCoins || Player.m_localPlayer.NoCostCheat();
+            var available = CanAfford && !AlreadyPurchased;
+
+            Icon.color = available ? Color.white : new Color(1.0f, 0.0f, 1.0f, 0.0f);
+            NameText.color = available ? Color.white : Color.gray;
+            CoinsCostText.color = CanAfford ? _costTextColor : Color.grey;
         }
 
         private string GetTooltip()

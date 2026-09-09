@@ -28,6 +28,8 @@ namespace EpicLoot_UnityLib
         {
             base.Awake();
 
+            EnsureRarityButtons();
+
             if (RarityButtons.Count > 0)
             {
                 _toggleGroup = RarityButtons[0].group;
@@ -45,13 +47,55 @@ namespace EpicLoot_UnityLib
             }
         }
 
+        // The prefab is authored with one toggle per rarity of its day, and RefreshRarity casts a toggle's
+        // index straight to ItemRarity. When the enum has outgrown the prefab (a bundle that predates a
+        // rarity), the last toggle is cloned for each missing tier so every rarity stays selectable. The
+        // authored prefab is still the real fix; this only keeps an older bundle usable.
+        private void EnsureRarityButtons()
+        {
+            if (RarityButtons == null || RarityButtons.Count == 0)
+            {
+                return;
+            }
+
+            while (RarityButtons.Count < Rarities.Count)
+            {
+                Toggle template = RarityButtons[RarityButtons.Count - 1];
+                var rarity = (ItemRarity)RarityButtons.Count;
+                GameObject clone = Instantiate(template.gameObject, template.transform.parent);
+                clone.name = $"EnchantRaritySelector ({(int)rarity})";
+
+                // The panel root was localized before this tab ever woke, so the clone's label is
+                // localized here rather than left as a token.
+                foreach (Text label in clone.GetComponentsInChildren<Text>(true))
+                {
+                    label.text = Localization.instance.Localize($"$mod_epicloot_{rarity}");
+                }
+
+                if (clone.TryGetComponent(out SetRarityColor rarityColor))
+                {
+                    rarityColor.SetRarity(rarity);
+                }
+
+                Toggle toggle = clone.GetComponent<Toggle>();
+                toggle.group = template.group;
+                toggle.isOn = false;
+                RarityButtons.Add(toggle);
+
+                // The selector column is a fixed-height vertical layout; give it room for one more row.
+                if (template.transform.parent is RectTransform column &&
+                    template.transform is RectTransform templateRect)
+                {
+                    float spacing = column.TryGetComponent(out VerticalLayoutGroup layout) ? layout.spacing : 0f;
+                    column.sizeDelta = new Vector2(column.sizeDelta.x, column.sizeDelta.y + templateRect.sizeDelta.y + spacing);
+                }
+            }
+        }
+
         [UsedImplicitly]
         public void OnEnable()
         {
-            foreach(AudioSource audioSource in this.GetComponentsInChildren<AudioSource>())
-            {
-                audioSource.volume = EnchantingUIController.GetAudioLevel();
-            }
+            EnchantingUIController.SetupUIAudioSources(gameObject);
 
             _rarity = ItemRarity.Magic;
             OnRarityChanged();
@@ -186,7 +230,8 @@ namespace EpicLoot_UnityLib
 
         protected override AudioClip GetCompleteAudioClip()
         {
-            return EnchantCompleteSFX[(int)_rarity];
+            // A bundle that predates a rarity has fewer clips than toggles; the top clip covers the rest.
+            return EnchantCompleteSFX[Mathf.Min((int)_rarity, EnchantCompleteSFX.Length - 1)];
         }
 
         public void RefreshAvailableItems()

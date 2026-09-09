@@ -8,7 +8,13 @@ namespace EpicLoot.Adventure.Feature
 {
     public interface IMerchantListPanel
     {
-        bool NeedsRefresh(bool currenciesChanged);
+        /// <summary>
+        /// True only when the offers themselves are stale -- i.e. the refresh interval rolled over.
+        /// A currency change is NOT a reason to rebuild; that is what
+        /// <see cref="UpdateAffordability"/> is for.
+        /// </summary>
+        bool NeedsRefresh();
+        void UpdateAffordability(Currencies currencies);
         void RefreshButton(Currencies playerCurrencies);
         void UpdateRefreshTime();
         void RefreshItems(Currencies currencies);
@@ -69,11 +75,34 @@ namespace EpicLoot.Adventure.Feature
             RefreshTime = refreshTime;
         }
 
-        public abstract bool NeedsRefresh(bool currenciesChanged);
+        public abstract bool NeedsRefresh();
         public abstract void RefreshItems(Currencies currencies);
         public abstract void UpdateRefreshTime();
         public abstract void RefreshButton(Currencies playerCurrencies);
         protected abstract void OnMainButtonClicked();
+
+        /// <summary>
+        /// Re-applies affordability visuals to the rows already on screen. Deliberately does NOT
+        /// touch the row set: rebuilding on every coin change wiped the player's selection
+        /// (<see cref="DestroyAllListElementsInList"/> resets the index), snapped the scroll position
+        /// and re-instantiated every candidate ItemDrop. Panels whose rows do not depend on currency
+        /// leave this a no-op.
+        /// </summary>
+        public virtual void UpdateAffordability(Currencies currencies)
+        {
+        }
+
+        protected void ForEachElement(Action<T> action)
+        {
+            for (var i = 0; i < List.childCount; i++)
+            {
+                var child = List.GetChild(i).GetComponent<T>();
+                if (child != null)
+                {
+                    action(child);
+                }
+            }
+        }
 
         public virtual Button GetMainButton()
         {

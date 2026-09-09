@@ -19,6 +19,21 @@ namespace EpicLoot.Crafting
         public List<ItemAmountConfig> Epic = new List<ItemAmountConfig>();
         public List<ItemAmountConfig> Legendary = new List<ItemAmountConfig>();
         public List<ItemAmountConfig> Mythic = new List<ItemAmountConfig>();
+        public List<ItemAmountConfig> Ancient = new List<ItemAmountConfig>();
+
+        public List<ItemAmountConfig> GetForRarity(ItemRarity rarity)
+        {
+            switch (rarity)
+            {
+                case ItemRarity.Magic: return Magic;
+                case ItemRarity.Rare: return Rare;
+                case ItemRarity.Epic: return Epic;
+                case ItemRarity.Legendary: return Legendary;
+                case ItemRarity.Mythic: return Mythic;
+                case ItemRarity.Ancient: return Ancient;
+                default: throw new ArgumentOutOfRangeException(nameof(rarity), rarity, null);
+            }
+        }
     }
 
     [Serializable]

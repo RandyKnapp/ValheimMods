@@ -579,9 +579,13 @@ namespace EpicLoot.ShardStones {
         }
 
         // True when any equipped magic item other than `excluding` already holds a shard of `category`.
-        public static bool IsExclusiveCategoryEquipped(Player player, ShardCategory category, ItemDrop.ItemData excluding) {
+        // `displaced` names the worn items an in-flight Humanoid.EquipItem is about to unequip, so the
+        // equip guard can measure against the loadout the equip will produce rather than the one it
+        // starts from. The socketing path passes nothing -- there, no equipment is moving.
+        public static bool IsExclusiveCategoryEquipped(Player player, ShardCategory category,
+            ItemDrop.ItemData excluding, EquipDisplacement.Displaced displaced = default) {
             foreach (var equipped in player.GetMagicEquipment()) {
-                if (equipped == excluding || !equipped.IsMagic(out var magicItem)) {
+                if (equipped == excluding || displaced.Contains(equipped) || !equipped.IsMagic(out var magicItem)) {
                     continue;
                 }
 

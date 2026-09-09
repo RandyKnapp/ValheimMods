@@ -28,7 +28,7 @@ namespace EpicLoot.Adventure
             // because Newtonsoft appends to pre-initialized collections).
             if (Config?.SecretStash != null && Config.SecretStash.RollsPerRarity.Count == 0)
             {
-                Config.SecretStash.RollsPerRarity = new List<int> { 1, 1, 1, 1, 1 };
+                Config.SecretStash.RollsPerRarity = Enumerable.Repeat(1, Rarities.Count).ToList();
             }
 
             // Every load path - first load, embedded-default fallback, file-watcher hot reload and the

@@ -17,12 +17,12 @@ public sealed class EpicAssets
     public static Sprite AugaSetItemSprite;
     public static Sprite GenericItemBgSprite;
     public static Sprite AugaItemBgSprite;
-    public static GameObject[] MagicItemLootBeamPrefabs = new GameObject[5];
+    public static GameObject[] MagicItemLootBeamPrefabs = new GameObject[Rarities.Count];
     public static readonly Dictionary<string, GameObject[]> CraftingMaterialPrefabs =
         new Dictionary<string, GameObject[]>();
     public static Sprite SmallButtonEnchantOverlay;
     public static Sprite DodgeBuffSprite;
-    public static AudioClip[] MagicItemDropSFX = new AudioClip[5];
+    public static AudioClip[] MagicItemDropSFX = new AudioClip[Rarities.Count];
     public static AudioClip ItemLoopSFX;
     public static AudioClip AugmentItemSFX;
     public static GameObject MerchantPanel;

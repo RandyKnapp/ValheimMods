@@ -72,15 +72,16 @@
     <Warning Condition=" '$(ModToolsAvailable)' != 'true' " Text="mod-tools is not installed on this machine, or this repo is not set up. Skipping release checks, packaging and deploy. Install it with `rake install` from a clone of the tools repo; see its SETUP.md." />
   </Target>
 
-  <Target Name="ReleaseChecks" BeforeTargets="Build" Condition=" '$(ModToolsAvailable)' == 'true' AND '$(Configuration)' == 'Release' ">
+  <!-- After the build, not before it. `check` packages as well as checks
+       now, and packaging reads the assembly the compile just produced, so
+       a BeforeTargets hook would stage the previous one. The cost is that
+       a bad version story is reported after the compile rather than
+       instead of it; the build still fails, one step later. -->
+  <Target Name="ReleaseChecks" AfterTargets="Build" Condition=" '$(ModToolsAvailable)' == 'true' AND '$(Configuration)' == 'Release' ">
     <Exec Command="$(ModTools) check --root &quot;$(RepoRoot).&quot;" />
   </Target>
 
-  <Target Name="ReleasePackage" AfterTargets="Build" Condition=" '$(ModToolsAvailable)' == 'true' AND '$(Configuration)' == 'Release' ">
-    <Exec Command="$(ModTools) package --root &quot;$(RepoRoot).&quot;" />
-  </Target>
-
-  <!-- No Configuration condition, unlike the two above: every build lands
+  <!-- No Configuration condition, unlike the one above: every build lands
        in the test profiles, Debug and Release alike. Declared last so it
        runs after a GenerateMdb target defined earlier in this file, whose
        .mdb it copies. Does nothing unless release.yml enables deploy. -->

@@ -19,7 +19,7 @@ namespace EpicLoot.Adventure.Feature
             _merchantPanel = merchantPanel;
         }
 
-        public override bool NeedsRefresh(bool currenciesChanged)
+        public override bool NeedsRefresh()
         {
             return _currentInterval != AdventureDataManager.Bounties.GetCurrentInterval();
         }
@@ -134,7 +134,7 @@ namespace EpicLoot.Adventure.Feature
             AbandonButtonIcon = AbandonButton.transform.Find("Icon").GetComponent<Image>();
         }
 
-        public override bool NeedsRefresh(bool currenciesChanged)
+        public override bool NeedsRefresh()
         {
             return _currentInterval != AdventureDataManager.Bounties.GetCurrentInterval();
         }

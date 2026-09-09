@@ -66,7 +66,7 @@ namespace EpicLoot.Crafting
         }
     }
 
-    [HarmonyPatch(typeof(Inventory), nameof(Inventory.Load))]
+    [HarmonyPatch(typeof(Inventory), nameof(Inventory.Load), typeof(ZPackage))]
     public static class Inventory_Load_Patch
     {
         public static void Postfix(Inventory __instance)

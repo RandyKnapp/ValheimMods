@@ -37,6 +37,7 @@ namespace EpicLoot
         public EpicItemNameConfig Epic;
         public List<ItemNameEntry> Legendary;
         public List<ItemNameEntry> Mythic;
+        public List<ItemNameEntry> Ancient;
     }
 
     public static class MagicItemNames
@@ -81,7 +82,10 @@ namespace EpicLoot
                     return GetLegendaryName(item, magicItem);
 
                 case ItemRarity.Mythic:
-                    return GetMythicName(item, magicItem);
+                    return GetTopTierName(Config.Mythic, "$mod_epicloot_basicmythicnameformat", item, magicItem);
+
+                case ItemRarity.Ancient:
+                    return GetTopTierName(Config.Ancient, "$mod_epicloot_basicancientnameformat", item, magicItem);
 
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -223,9 +227,12 @@ namespace EpicLoot
             return string.Format(format, baseName);
         }
 
-        private static string GetMythicName(ItemDrop.ItemData item, MagicItem magicItem)
+        // Mythic and above: a curated name from itemnames.json when one fits, else "{Tier} {Item}".
+        // The list may be null -- itemnames.json ships no section for these tiers.
+        private static string GetTopTierName(List<ItemNameEntry> nameEntries, string formatToken,
+            ItemDrop.ItemData item, MagicItem magicItem)
         {
-            var allowedNames = GetAllowedNamesFromListAllRequired(Config.Mythic, item, magicItem);
+            var allowedNames = GetAllowedNamesFromListAllRequired(nameEntries, item, magicItem);
             var name = GetRandomStringFromList(allowedNames);
 
             if (!string.IsNullOrEmpty(name))
@@ -233,7 +240,7 @@ namespace EpicLoot
                 return name;
             }
 
-            var format = Localization.instance.Localize("$mod_epicloot_basicmythicnameformat");
+            var format = Localization.instance.Localize(formatToken);
             var baseName = TranslateAndCapitalize(item.m_shared.m_name);
             return string.Format(format, baseName);
         }

@@ -40,6 +40,16 @@
       ]
     },
     {
+      "Name": "Recipe_ShardAncientUpgrade",
+      "Product": "ShardAncient",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "ShardMythic", "Amount": 5 },
+        { "Item": "Coins", "Amount": 20 }
+      ]
+    },
+    {
       "Name": "Recipe_DustRareUpgrade",
       "Product": "DustRare",
       "Amount": 1,
@@ -76,6 +86,16 @@
       "Resources": [
         { "Item": "DustLegendary",  "Amount": 5  },
         { "Item": "Coins",          "Amount": 15 }
+      ]
+    },
+    {
+      "Name": "Recipe_DustAncientUpgrade",
+      "Product": "DustAncient",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "DustMythic",  "Amount": 5  },
+        { "Item": "Coins", "Amount": 20 }
       ]
     },
     {
@@ -118,6 +138,16 @@
       ]
     },
     {
+      "Name": "Recipe_ReagentAncientUpgrade",
+      "Product": "ReagentAncient",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "ReagentMythic", "Amount": 5  },
+        { "Item": "Coins", "Amount": 20 }
+      ]
+    },
+    {
       "Name": "Recipe_EssenceRareUpgrade",
       "Product": "EssenceRare",
       "Amount": 1,
@@ -157,6 +187,16 @@
       ]
     },
     {
+      "Name": "Recipe_EssenceAncientUpgrade",
+      "Product": "EssenceAncient",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "EssenceMythic", "Amount": 5  },
+        { "Item": "Coins", "Amount": 20 }
+      ]
+    },
+    {
       "Name": "Recipe_RunestoneRareUpgrade",
       "Product": "RunestoneRare",
       "Amount": 1,
@@ -193,6 +233,16 @@
       "Resources": [
         { "Item": "RunestoneLegendary", "Amount": 5  },
         { "Item": "Coins",              "Amount": 15 }
+      ]
+    },
+    {
+      "Name": "Recipe_RunestoneAncientUpgrade",
+      "Product": "RunestoneAncient",
+      "Amount": 1,
+      "Type": "Upgrade",
+      "Resources": [
+        { "Item": "RunestoneMythic", "Amount": 5  },
+        { "Item": "Coins", "Amount": 20 }
       ]
     },
     {
@@ -243,6 +293,16 @@
       "Resources": [
         { "Item": "EssenceMythic", "Amount": 2 },
         { "Item": "DustMythic",    "Amount": 2 }
+      ]
+    },
+    {
+      "Name": "Recipe_AncientDustAndEssenceToShard_Conversion",
+      "Product": "ShardAncient",
+      "Amount": 1,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "EssenceAncient", "Amount": 2 },
+        { "Item": "DustAncient", "Amount": 2 }
       ]
     },
     {
@@ -361,7 +421,8 @@
         { "Item": "ShardLegendary", "Amount": 2 },
         { "Item": "Coins",          "Amount": 4 }
       ]
-    },{
+    },
+    {
       "Name": "Recipe_MythicShardToDust_Conversion",
       "Product": "DustMythic",
       "Amount": 1,
@@ -369,6 +430,16 @@
       "Resources": [
         { "Item": "ShardMythic", "Amount": 2 },
         { "Item": "Coins",          "Amount": 4 }
+      ]
+    },
+    {
+      "Name": "Recipe_AncientShardToDust_Conversion",
+      "Product": "DustAncient",
+      "Amount": 1,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "ShardAncient", "Amount": 2 },
+        { "Item": "Coins", "Amount": 4 }
       ]
     },
     {
@@ -382,6 +453,16 @@
       ]
     },
     {
+      "Name": "Recipe_AncientShardToEssence_Conversion",
+      "Product": "EssenceAncient",
+      "Amount": 1,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "ShardAncient", "Amount": 2 },
+        { "Item": "Coins", "Amount": 4 }
+      ]
+    },
+    {
       "Name": "Recipe_MythicShardToReagent_Conversion",
       "Product": "ReagentMythic",
       "Amount": 1,
@@ -389,6 +470,16 @@
       "Resources": [
         { "Item": "ShardMythic", "Amount": 2 },
         { "Item": "Coins",          "Amount": 4 }
+      ]
+    },
+    {
+      "Name": "Recipe_AncientShardToReagent_Conversion",
+      "Product": "ReagentAncient",
+      "Amount": 1,
+      "Type": "Convert",
+      "Resources": [
+        { "Item": "ShardAncient", "Amount": 2 },
+        { "Item": "Coins", "Amount": 4 }
       ]
     },
     {

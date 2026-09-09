@@ -70,6 +70,9 @@
     </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="Unity.InputSystem">
+      <HintPath>$(GamePathManaged)Unity.InputSystem.dll</HintPath>
+    </Reference>
     <Reference Include="Unity.TextMeshPro">
       <HintPath>$(GamePathManaged)Unity.TextMeshPro.dll</HintPath>
     </Reference>

@@ -23,8 +23,8 @@ public static partial class TerminalManager
         lootDrop = LootRoller.ResolveLootDrop(lootDrop);
         if (lootDrop.Rarity == null)
         {
-            lootDrop.Rarity = [100, 0, 0, 0, 0];
-            args.Context.PrintError($"No rarity table was found for {loot_info.Value[0]} using default: [100, 0, 0, 0, 0]");
+            lootDrop.Rarity = LootRoller.GetSingleRarityWeights(ItemRarity.Magic);
+            args.Context.PrintError($"No rarity table was found for {loot_info.Value[0]} using default: 100% Magic");
         }
 
         var rarityBase = LootRoller.GetRarityWeights(lootDrop.Rarity, 0);
@@ -43,7 +43,7 @@ public static partial class TerminalManager
 
         var rarityBaseTotal = rarityBase.Sum(x => x.Value);
         var rarityLuckTotal = rarityLuck.Sum(x => x.Value);
-        for (var index = 0; index < 5; index++)
+        for (var index = 0; index < Rarities.Count; index++)
         {
             var rarity = (ItemRarity)index;
             var color = EpicLoot.GetRarityColor(rarity);

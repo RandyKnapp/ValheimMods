@@ -20,9 +20,14 @@ namespace EpicLoot.Adventure.Feature
             _merchantPanel = merchantPanel;
         }
 
-        public override bool NeedsRefresh(bool currenciesChanged)
+        public override bool NeedsRefresh()
         {
-            return currenciesChanged || _currentInterval != AdventureDataManager.TreasureMaps.GetCurrentInterval();
+            return _currentInterval != AdventureDataManager.TreasureMaps.GetCurrentInterval();
+        }
+
+        public override void UpdateAffordability(Currencies currencies)
+        {
+            ForEachElement(x => x.ApplyAffordability(currencies.Coins));
         }
 
         public override void RefreshButton(Currencies playerCurrencies)
@@ -82,6 +87,14 @@ namespace EpicLoot.Adventure.Feature
                 if (player != null)
                 {
                     StoreGui.instance.m_buyEffects?.Create(player.transform.position, Quaternion.identity);
+                }
+
+                // AlreadyPurchased lives in AdventureSaveData, not in the currency counts, so nothing
+                // else would pick it up now that a coin change no longer rebuilds the list. Buying a
+                // map clears the selection, the same as accepting a bounty does.
+                if (_merchantPanel != null)
+                {
+                    RefreshItems(_merchantPanel.GetPlayerCurrencies());
                 }
             }
 

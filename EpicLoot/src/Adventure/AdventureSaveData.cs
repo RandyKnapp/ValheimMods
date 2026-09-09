@@ -152,13 +152,38 @@ namespace EpicLoot.Adventure
         }
     }
 
-    
+    /// <summary>
+    /// One gamble offer the player has already taken this interval. Only the identity and the
+    /// interval are stored -- the offer itself is regenerated deterministically from the interval
+    /// seed, so there is nothing else worth persisting.
+    /// </summary>
+    [Serializable]
+    public class PurchasedGambleInfo
+    {
+        public int Interval;
+        public string GambleID = "";
+
+        public void ToPackage(ZPackage pkg)
+        {
+            pkg.Write(Interval);
+            pkg.Write(GambleID);
+        }
+
+        public static PurchasedGambleInfo FromPackage(ZPackage pkg)
+        {
+            var result = new PurchasedGambleInfo();
+            result.Interval = pkg.ReadInt();
+            result.GambleID = pkg.ReadString();
+            return result;
+        }
+    }
 
     [Serializable]
     public class AdventureSaveDataList
     {
         // Format version for the compact binary save. Bump when the layout changes.
-        public const int Version = 1;
+        // 2: AdventureSaveData gained PurchasedGambles.
+        public const int Version = 2;
 
         public List<AdventureSaveData> AllSaveData = new List<AdventureSaveData>();
 
@@ -175,12 +200,12 @@ namespace EpicLoot.Adventure
         public static AdventureSaveDataList FromPackage(ZPackage pkg)
         {
             var result = new AdventureSaveDataList();
-            pkg.ReadInt(); // Version (reserved for future format branching)
+            var version = pkg.ReadInt();
             var count = pkg.ReadInt();
             result.AllSaveData = new List<AdventureSaveData>(count);
             for (var index = 0; index < count; index++)
             {
-                result.AllSaveData.Add(AdventureSaveData.FromPackage(pkg));
+                result.AllSaveData.Add(AdventureSaveData.FromPackage(pkg, version));
             }
             return result;
         }
@@ -193,6 +218,7 @@ namespace EpicLoot.Adventure
         public int NumberOfTreasureMapsOrBountiesStarted;
         public List<TreasureMapChestInfo> TreasureMaps = new();
         public List<BountyInfo> Bounties = new();
+        public List<PurchasedGambleInfo> PurchasedGambles = new();
 
         [NonSerialized] public bool DebugMode;
         [NonSerialized] public int IntervalOverride;
@@ -213,9 +239,16 @@ namespace EpicLoot.Adventure
             {
                 bounty.ToPackage(pkg);
             }
+
+            // Save format v2.
+            pkg.Write(PurchasedGambles.Count);
+            foreach (var gamble in PurchasedGambles)
+            {
+                gamble.ToPackage(pkg);
+            }
         }
 
-        public static AdventureSaveData FromPackage(ZPackage pkg)
+        public static AdventureSaveData FromPackage(ZPackage pkg, int version)
         {
             var result = new AdventureSaveData();
             result.WorldID = pkg.ReadLong();
@@ -235,6 +268,20 @@ namespace EpicLoot.Adventure
                 result.Bounties.Add(BountyInfo.FromPackage(pkg));
             }
 
+            // A v1 blob ends here. This MUST stay gated on the version: several worlds are written
+            // back to back, so reading a count that is not there would either desync every later
+            // world or throw -- and AdventureComponent.Deserialize answers a throw by discarding the
+            // whole blob, losing every bounty and treasure map the player owns.
+            if (version >= 2)
+            {
+                var gambleCount = pkg.ReadInt();
+                result.PurchasedGambles = new List<PurchasedGambleInfo>(gambleCount);
+                for (var index = 0; index < gambleCount; index++)
+                {
+                    result.PurchasedGambles.Add(PurchasedGambleInfo.FromPackage(pkg));
+                }
+            }
+
             return result;
         }
 
@@ -244,7 +291,8 @@ namespace EpicLoot.Adventure
         /// never read again. Current-interval records are kept: pruning them would let the same
         /// map/bounty reappear as available this interval.
         /// </summary>
-        public int PruneStaleRecords(int currentBountyInterval, int currentTreasureInterval)
+        public int PruneStaleRecords(int currentBountyInterval, int currentTreasureInterval,
+            int currentGambleInterval)
         {
             var removed = Bounties.RemoveAll(x =>
                 (x.State == BountyState.Claimed || x.State == BountyState.Abandoned)
@@ -254,7 +302,31 @@ namespace EpicLoot.Adventure
                 x.State == TreasureMapState.Found
                 && x.Interval < currentTreasureInterval);
 
+            // A gamble record is only ever read against the current interval's offers, and the
+            // offers themselves are regenerated, so an elapsed interval's records are dead weight.
+            removed += PurchasedGambles.RemoveAll(x => x.Interval < currentGambleInterval);
+
             return removed;
+        }
+
+        /// <summary>
+        /// Records that a gamble offer was taken. Called regardless of whether removal is currently
+        /// enabled -- the config gates only whether <see cref="HasPurchasedGamble"/> is consulted, so
+        /// switching it on mid-interval behaves the same as having had it on all along.
+        /// </summary>
+        public void PurchasedGamble(int interval, string gambleID)
+        {
+            if (string.IsNullOrEmpty(gambleID) || HasPurchasedGamble(interval, gambleID))
+            {
+                return;
+            }
+
+            PurchasedGambles.Add(new PurchasedGambleInfo { Interval = interval, GambleID = gambleID });
+        }
+
+        public bool HasPurchasedGamble(int interval, string gambleID)
+        {
+            return PurchasedGambles.Exists(x => x.Interval == interval && x.GambleID == gambleID);
         }
 
         public bool PurchasedTreasureMap(TreasureMapChestInfo chestInfo)

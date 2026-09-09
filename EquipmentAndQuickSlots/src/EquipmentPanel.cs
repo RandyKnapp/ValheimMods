@@ -426,10 +426,10 @@ namespace EquipmentAndQuickSlots {
             Transform activeParent = cellRoot ? cellRoot : grid.m_gridRoot;
 
             for (int i = 0; i < Math.Min(slots.Length, grid.m_elements.Count - startIndex); ++i) {
-                InventoryGrid.Element element = grid.m_elements[startIndex + i];
+                InventoryElement element = grid.m_elements[startIndex + i];
                 Slot slot = slots[i];
 
-                GameObject go = element?.m_go;
+                GameObject go = element?.gameObject;
                 if (!go)
                     continue;
 
@@ -452,7 +452,7 @@ namespace EquipmentAndQuickSlots {
             }
 
             for (int i = startIndex + slots.Length; i < grid.m_elements.Count; i++)
-                ParkHiddenCell(grid.m_elements[i]?.m_go, hiddenCellRoot);
+                ParkHiddenCell(grid.m_elements[i]?.gameObject, hiddenCellRoot);
         }
 
         private static bool DragItemFits(Slot slot, ItemDrop.ItemData dragItem) {

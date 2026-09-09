@@ -25,6 +25,13 @@ namespace EpicLoot.Adventure
 
         private static readonly StringBuilder _sb = new StringBuilder();
 
+        /// <summary>
+        /// The authored "affordable" cost colour, captured before anything greys it out.
+        /// <see cref="ApplyAffordability"/> restores this rather than assuming white, so the prefab
+        /// (and Auga's colour pass over it) stays the authority on what affordable looks like.
+        /// </summary>
+        private Color _costTextColor = Color.white;
+
         public void Awake()
         {
             Button = GetComponent<Button>();
@@ -38,6 +45,7 @@ namespace EpicLoot.Adventure
             ForestTokenCostText = transform.Find("Price/ForestTokens/Amount").GetComponent<Text>();
             IronBountyTokenCostText = transform.Find("Price/IronBountyToken/Amount").GetComponent<Text>();
             GoldBountyTokenCostText = transform.Find("Price/GoldBountyToken/Amount").GetComponent<Text>();
+            _costTextColor = CoinsCostText.color;
 
             var iconMaterial = InventoryGui.instance.m_dragItemPrefab.transform.Find("icon").GetComponent<Image>().material;
             if (iconMaterial != null)
@@ -56,14 +64,17 @@ namespace EpicLoot.Adventure
                    || Player.m_localPlayer.NoCostCheat();
         }
 
+        /// <summary>
+        /// Applies everything that depends on WHICH item this row shows. Anything that depends on
+        /// what the player can currently pay for belongs in <see cref="ApplyAffordability"/>, which
+        /// this ends by calling -- the panel re-runs that alone on a currency change rather than
+        /// rebuilding the row.
+        /// </summary>
         public void SetItem(SecretStashItemInfo itemInfo, Currencies currencies)
         {
             ItemInfo = itemInfo;
-            var canAfford = CanAfford(currencies);
 
             Icon.sprite = ItemInfo.Item.GetIcon();
-            Icon.color = canAfford ? Color.white : new Color(1.0f, 0.0f, 1.0f, 0.0f);
-            NameText.text = Localization.instance.Localize(ItemInfo.Item.GetDecoratedName(canAfford ? null : "#808080ff"));
 
             CoinsCostText.text = ItemInfo.Cost.Coins.ToString();
             CoinsCostText.transform.parent.gameObject.SetActive(ItemInfo.Cost.Coins > 0);
@@ -77,38 +88,21 @@ namespace EpicLoot.Adventure
             GoldBountyTokenCostText.text = ItemInfo.Cost.GoldBountyTokens.ToString();
             GoldBountyTokenCostText.transform.parent.gameObject.SetActive(ItemInfo.Cost.GoldBountyTokens > 0);
 
-            if (!canAfford)
-            {
-                CoinsCostText.color = Color.grey;
-                ForestTokenCostText.color = Color.grey;
-                IronBountyTokenCostText.color = Color.grey;
-                GoldBountyTokenCostText.color = Color.grey;
-            }
-
             MagicBG.enabled = itemInfo.GuaranteedRarity || ItemInfo.Item.UseMagicBackground();
-            if (canAfford)
-            {
-                MagicBG.color = itemInfo.GuaranteedRarity ? EpicLoot.GetRarityColorARGB(itemInfo.Rarity) : ItemInfo.Item.GetRarityColor();
-            }
-            else
-            {
-                MagicBG.color = new Color(1.0f, 0.0f, 1.0f, 0.0f);
-            }
+
             Button.onClick.RemoveAllListeners();
             Button.onClick.AddListener(() => OnSelected?.Invoke(ItemInfo));
 
             if (ItemInfo.IsGamble)
             {
-                var color = canAfford ? (itemInfo.GuaranteedRarity ? EpicLoot.GetRarityColor(itemInfo.Rarity) : "white") : "#808080ff";
-                var rarityDisplay = itemInfo.GuaranteedRarity ? EpicLoot.GetRarityDisplayName(itemInfo.Rarity) : "$mod_epicloot_merchant_unknown";
-                NameText.text = Localization.instance.Localize($"<color={color}>{rarityDisplay} {ItemInfo.Item.m_shared.m_name}</color>");
-
                 if (EpicLoot.HasAuga)
                 {
                     //Auga.API.Tooltip_MakeSimpleTooltip(gameObject);
                 }
 
-                Tooltip.m_topic = NameText.text;
+                // The affordable spelling on purpose: a tooltip heading has no business greying out,
+                // and building it here keeps GetGambleTooltip off the per-currency-change path.
+                Tooltip.m_topic = BuildGambleName(true);
                 Tooltip.m_text = GetGambleTooltip();
             }
             else
@@ -123,6 +117,47 @@ namespace EpicLoot.Adventure
                     Tooltip.m_text = Localization.instance.Localize(ItemInfo.Item.GetTooltip());
                 }
             }
+
+            ApplyAffordability(currencies);
+        }
+
+        /// <summary>
+        /// Re-applies only the visuals that depend on what the player can currently pay for, in
+        /// place. EVERY branch here must assign both states: the merchant panel updates rows on a
+        /// currency change instead of rebuilding them, so a colour left over from the previous state
+        /// would stick. (The one-way `if (!canAfford)` this replaced got away with it only because
+        /// rows were always freshly instantiated from the prefab.)
+        /// </summary>
+        public void ApplyAffordability(Currencies currencies)
+        {
+            var canAfford = CanAfford(currencies);
+            var costColor = canAfford ? _costTextColor : Color.grey;
+
+            Icon.color = canAfford ? Color.white : new Color(1.0f, 0.0f, 1.0f, 0.0f);
+
+            CoinsCostText.color = costColor;
+            ForestTokenCostText.color = costColor;
+            IronBountyTokenCostText.color = costColor;
+            GoldBountyTokenCostText.color = costColor;
+
+            MagicBG.color = canAfford
+                ? (ItemInfo.GuaranteedRarity ? EpicLoot.GetRarityColorARGB(ItemInfo.Rarity) : ItemInfo.Item.GetRarityColor())
+                : new Color(1.0f, 0.0f, 1.0f, 0.0f);
+
+            NameText.text = ItemInfo.IsGamble ?
+                BuildGambleName(canAfford) :
+                Localization.instance.Localize(ItemInfo.Item.GetDecoratedName(canAfford ? null : "#808080ff"));
+        }
+
+        private string BuildGambleName(bool canAfford)
+        {
+            var color = canAfford ?
+                (ItemInfo.GuaranteedRarity ? EpicLoot.GetRarityColor(ItemInfo.Rarity) : "white") :
+                "#808080ff";
+            var rarityDisplay = ItemInfo.GuaranteedRarity ?
+                EpicLoot.GetRarityDisplayName(ItemInfo.Rarity) :
+                "$mod_epicloot_merchant_unknown";
+            return Localization.instance.Localize($"<color={color}>{rarityDisplay} {ItemInfo.Item.m_shared.m_name}</color>");
         }
 
         private string GetGambleTooltip()
@@ -139,21 +174,16 @@ namespace EpicLoot.Adventure
                 rarityChance = AdventureDataManager.Config.Gamble.GambleRarityChanceByRarity[(int)ItemInfo.Rarity];
             }
 
-            var labels = new[]
-            {
-                "$mod_epicloot_gamble_tooltip_nonmagic",
-                EpicLoot.GetRarityDisplayName(ItemRarity.Magic),
-                EpicLoot.GetRarityDisplayName(ItemRarity.Rare),
-                EpicLoot.GetRarityDisplayName(ItemRarity.Epic),
-                EpicLoot.GetRarityDisplayName(ItemRarity.Legendary),
-                EpicLoot.GetRarityDisplayName(ItemRarity.Mythic)
-            };
+            // Column 0 is the non-magic chance, then one column per rarity, matching GambleRarityChance.
+            var labels = new[] { "$mod_epicloot_gamble_tooltip_nonmagic" }
+                .Concat(Rarities.All.Select(EpicLoot.GetRarityDisplayName))
+                .ToArray();
 
             var totalWeight = AdventureDataManager.Config.Gamble.GambleRarityChance.Sum();
-            for (var i = 0; i < 6; ++i)
+            for (var i = 0; i < labels.Length; ++i)
             {
                 var color = i == 0 ? "white" : EpicLoot.GetRarityColor((ItemRarity) (i - 1));
-                var percent = rarityChance[i] / totalWeight * 100;
+                var percent = (i < rarityChance.Length ? rarityChance[i] : 0) / totalWeight * 100;
                 if (percent >= 0.01)
                 {
                     _sb.AppendLine($"<color={color}>{labels[i]}: {percent:0.#}%</color>");

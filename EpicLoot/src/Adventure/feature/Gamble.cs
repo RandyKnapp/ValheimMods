@@ -1,4 +1,5 @@
-﻿using EpicLoot.GatedItemType;
+﻿using EpicLoot.Config;
+using EpicLoot.GatedItemType;
 using System.Collections.Generic;
 using System.Linq;
 using Random = System.Random;
@@ -10,6 +11,13 @@ namespace EpicLoot.Adventure.Feature
         public override AdventureFeatureType Type => AdventureFeatureType.Gamble;
         public override int RefreshInterval => AdventureDataManager.Config.Gamble.RefreshInterval;
 
+        /// <summary>
+        /// Building the candidate pool draws a variable number of times (once per gamble type, per
+        /// valid boss tier, plus fallback recursion), so it gets its own stream. Selection stays on
+        /// stream 0 -- the seed this feature has always used.
+        /// </summary>
+        private const int PoolStream = 1;
+
         public List<SecretStashItemInfo> GetGambleItems()
         {
             var player = Player.m_localPlayer;
@@ -20,7 +28,7 @@ namespace EpicLoot.Adventure.Feature
 
             var random = GetRandom();
 
-            List<SecretStashItemInfo> availableGambles = GetAvailableGambles();
+            List<SecretStashItemInfo> availableGambles = GetAvailableGambles(GetRandom(PoolStream));
             RollOnListNTimes(random, availableGambles, AdventureDataManager.Config.Gamble.GamblesCount,
                 out List<SecretStashItemInfo> results);
 
@@ -82,10 +90,54 @@ namespace EpicLoot.Adventure.Feature
 
             results = SortListByRarity(results);
 
+            // Offers the player already took this interval drop out for the rest of it. Filtering
+            // after the roll rather than before it keeps the roll interval-deterministic: the list
+            // only ever shrinks, the remaining offers never shuffle or get replaced.
+            if (ELConfig.RemovePurchasedGambles.Value)
+            {
+                var saveData = player.GetAdventureSaveData();
+                var interval = GetCurrentInterval();
+                results.RemoveAll(x => saveData.HasPurchasedGamble(interval, GetGambleID(x)));
+            }
+
             return results;
         }
 
-        private List<SecretStashItemInfo> GetAvailableGambles()
+        /// <summary>
+        /// Identifies one offer well enough to record that it was bought.
+        ///
+        /// The same item can appear both as a plain coin gamble and as a token gamble with a
+        /// guaranteed rarity, and those are separate offers that have to be bought separately -- so
+        /// the rarity is part of the key. Within one currency tier the pool never holds the same item
+        /// twice, because GetAvailableGambles passes allowDuplicate: false.
+        /// </summary>
+        public static string GetGambleID(SecretStashItemInfo itemInfo)
+        {
+            return itemInfo.GuaranteedRarity ? $"{itemInfo.ItemID}|{itemInfo.Rarity}" : itemInfo.ItemID;
+        }
+
+        /// <summary>
+        /// Records a taken offer. Deliberately not gated on the config: the setting controls whether
+        /// the record is *read*, so turning it on mid-interval behaves the same as having had it on
+        /// all along. Re-recording the same offer is a no-op.
+        /// </summary>
+        public void RecordGamblePurchase(Player player, SecretStashItemInfo itemInfo)
+        {
+            if (player == null || itemInfo == null || !itemInfo.IsGamble)
+            {
+                return;
+            }
+
+            player.GetAdventureSaveData().PurchasedGamble(GetCurrentInterval(), GetGambleID(itemInfo));
+        }
+
+        /// <summary>
+        /// <paramref name="random"/> is threaded all the way down to the shuffle inside
+        /// GatedItemTypeHelper. Without it the pool was drawn from the global Unity RNG, so both its
+        /// contents AND its order changed on every call -- and since the stock is chosen by index,
+        /// the merchant rerolled every time the panel opened, after every purchase, and on relog.
+        /// </summary>
+        private List<SecretStashItemInfo> GetAvailableGambles(Random random)
         {
             var availableGambles = new List<SecretStashItemInfo>();
             var selectedItems = new HashSet<string>();
@@ -113,7 +165,7 @@ namespace EpicLoot.Adventure.Feature
                     List<string> validBosses = GatedItemTypeHelper.DetermineValidBosses(gatingMode, false);
 
                     var itemId = GatedItemTypeHelper.GetGatedItemFromType(
-                        itemConfig, gatingMode, selectedItems, validBosses, false, false, false);
+                        itemConfig, gatingMode, selectedItems, validBosses, false, false, false, random);
                     if (string.IsNullOrEmpty(itemId))
                     {
                         continue;
@@ -158,6 +210,9 @@ namespace EpicLoot.Adventure.Feature
 
             var nonMagicWeight = gambleRarity.Length > 0 ? gambleRarity[0] : 1;
 
+            // Deliberately unseeded: this is the roll made when the player BUYS the gamble, not the
+            // stock list. Tying it to the interval seed would make every gamble bought within one
+            // interval come out the same rarity. Same goes for the RollLootTable call below.
             var random = new Random();
             var totalWeight = gambleRarity.Sum();
             var nonMagic = (random.NextDouble() * totalWeight) < nonMagicWeight;
@@ -166,14 +221,12 @@ namespace EpicLoot.Adventure.Feature
                 return itemInfo.Item.Clone();
             }
 
-            var rarityTable = new[]
+            // Column 0 was the non-magic weight (handled above); columns 1.. are one per rarity.
+            var rarityTable = new float[Rarities.Count];
+            for (var i = 0; i < rarityTable.Length; i++)
             {
-                gambleRarity.Length > 1 ? gambleRarity[1] : 1,
-                gambleRarity.Length > 2 ? gambleRarity[2] : 1,
-                gambleRarity.Length > 3 ? gambleRarity[3] : 1,
-                gambleRarity.Length > 4 ? gambleRarity[4] : 1,
-                gambleRarity.Length > 5 ? gambleRarity[5] : 1
-            };
+                rarityTable[i] = gambleRarity.Length > i + 1 ? gambleRarity[i + 1] : 1;
+            }
 
             var lootTable = new LootTable()
             {

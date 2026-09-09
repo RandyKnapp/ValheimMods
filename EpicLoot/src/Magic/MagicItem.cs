@@ -15,7 +15,19 @@ namespace EpicLoot
         Rare,
         Epic,
         Legendary,
-        Mythic
+        Mythic,
+        Ancient
+    }
+
+    // The one place that knows how many rarities there are. Anything sized or bounded by the rarity
+    // count reads these instead of spelling out a literal, so the next tier is an enum member plus
+    // data rather than a hunt through the code for fives. Rarity is serialized by ordinal, so new
+    // members are only ever appended.
+    public static class Rarities
+    {
+        public static readonly ItemRarity[] All = (ItemRarity[])Enum.GetValues(typeof(ItemRarity));
+        public static readonly int Count = All.Length;
+        public static readonly ItemRarity Highest = All[All.Length - 1];
     }
 
     [Serializable]

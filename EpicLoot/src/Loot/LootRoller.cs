@@ -58,12 +58,33 @@ namespace EpicLoot
                 { ItemRarity.Epic,      new[] { new[] { 0f, 50f }, new[] { 1f, 45f }, new[] { 2f,  5f } } },
                 { ItemRarity.Legendary, new[] { new[] { 0f, 15f }, new[] { 1f, 55f }, new[] { 2f, 30f } } },
                 { ItemRarity.Mythic,    new[] { new[] { 0f,  5f }, new[] { 1f, 30f }, new[] { 2f, 40f }, new[] { 3f, 25f } } },
+                { ItemRarity.Ancient,   new[] { new[] { 1f, 20f }, new[] { 2f, 40f }, new[] { 3f, 30f }, new[] { 4f, 10f } } },
             };
 
-        // Socket counts are read on every magic item roll, so config complaints are logged once per rarity
-        // and reset whenever the loot config is (re)loaded.
+        // Ceiling on how many effects a MagicEffectsCount entry may ask for. A roll asks the effect pool
+        // for this many distinct effects, so a runaway config value would spin on a pool it cannot fill.
+        public const int MaxEffectCount = 12;
+
+        // Mirrors the MagicEffectsCount block in config/loottables.json; used when that block is missing a
+        // rarity, which is the normal case for a loottables.json written before a rarity was added and kept
+        // by the player-changes check in FilePatching. Keep the two in sync.
+        private static readonly Dictionary<ItemRarity, float[][]> DefaultMagicEffectsCount =
+            new Dictionary<ItemRarity, float[][]>
+            {
+                { ItemRarity.Magic,     new[] { new[] { 1f, 80f }, new[] { 2f, 18f }, new[] { 3f, 2f } } },
+                { ItemRarity.Rare,      new[] { new[] { 2f, 80f }, new[] { 3f, 18f }, new[] { 4f, 2f } } },
+                { ItemRarity.Epic,      new[] { new[] { 3f, 80f }, new[] { 4f, 18f }, new[] { 5f, 2f } } },
+                { ItemRarity.Legendary, new[] { new[] { 4f, 80f }, new[] { 5f, 18f }, new[] { 6f, 2f } } },
+                { ItemRarity.Mythic,    new[] { new[] { 5f, 80f }, new[] { 6f, 18f }, new[] { 7f, 2f } } },
+                { ItemRarity.Ancient,   new[] { new[] { 6f, 80f }, new[] { 7f, 18f }, new[] { 8f, 2f } } },
+            };
+
+        // Socket and effect counts are read on every magic item roll, so config complaints are logged once
+        // per rarity and reset whenever the loot config is (re)loaded.
         private static readonly HashSet<ItemRarity> _warnedMissingSocketCounts = new HashSet<ItemRarity>();
         private static readonly HashSet<ItemRarity> _warnedInvalidSocketCounts = new HashSet<ItemRarity>();
+        private static readonly HashSet<ItemRarity> _warnedMissingEffectCounts = new HashSet<ItemRarity>();
+        private static readonly HashSet<ItemRarity> _warnedInvalidEffectCounts = new HashSet<ItemRarity>();
 
         private static WeightedRandomCollection<KeyValuePair<int, float>> _weightedDropCountTable;
         private static WeightedRandomCollection<LootDrop> _weightedLootTable;
@@ -109,6 +130,8 @@ namespace EpicLoot
             LootTables.Clear();
             _warnedMissingSocketCounts.Clear();
             _warnedInvalidSocketCounts.Clear();
+            _warnedMissingEffectCounts.Clear();
+            _warnedInvalidEffectCounts.Clear();
           
             AddItemSets(lootConfig.ItemSets);
             AddLootTables(lootConfig.LootTables);
@@ -379,25 +402,18 @@ namespace EpicLoot
                     ItemRarity itemRollRarity = rarity;
                     if (luckUpgradesRarity == true)
                     {
-                        LootDrop lootdrop = new() { Rarity = [] };
                         // TODO: Expose this as a config?
-                        switch (rarity)
+                        // Most of the weight stays on the rolled rarity and the rest moves one tier up;
+                        // the top tier has nowhere to go.
+                        LootDrop lootdrop = new() { Rarity = new float[Rarities.Count] };
+                        if (rarity == Rarities.Highest)
                         {
-                            case ItemRarity.Magic:
-                                lootdrop.Rarity = [100 - luckUpgradesRarityFactor, luckUpgradesRarityFactor, 0, 0, 0];
-                                break;
-                            case ItemRarity.Rare:
-                                lootdrop.Rarity = [0, 100 - luckUpgradesRarityFactor, luckUpgradesRarityFactor, 0, 0];
-                                break;
-                            case ItemRarity.Epic:
-                                lootdrop.Rarity = [0, 0, 100 - luckUpgradesRarityFactor, luckUpgradesRarityFactor, 0];
-                                break;
-                            case ItemRarity.Legendary:
-                                lootdrop.Rarity = [0, 0, 0, 100 - luckUpgradesRarityFactor, luckUpgradesRarityFactor];
-                                break;
-                            case ItemRarity.Mythic:
-                                lootdrop.Rarity = [0, 0, 0, 0, 100];
-                                break;
+                            lootdrop.Rarity[(int)rarity] = 100;
+                        }
+                        else
+                        {
+                            lootdrop.Rarity[(int)rarity] = 100 - luckUpgradesRarityFactor;
+                            lootdrop.Rarity[(int)rarity + 1] = luckUpgradesRarityFactor;
                         }
                         itemRollRarity = RollItemRarity(lootdrop, luckFactor);
                     }
@@ -1211,6 +1227,11 @@ namespace EpicLoot
         public static int RollEffectCountPerRarity(ItemRarity rarity)
         {
             var countPercents = GetEffectCountsPerRarity(rarity, true);
+            if (countPercents.Count == 0)
+            {
+                return 0;
+            }
+
             _weightedEffectCountTable.Setup(countPercents, x => x.Value);
             return _weightedEffectCountTable.Roll().Key;
         }
@@ -1316,37 +1337,79 @@ namespace EpicLoot
                 case ItemRarity.Epic: return socketCounts.Epic;
                 case ItemRarity.Legendary: return socketCounts.Legendary;
                 case ItemRarity.Mythic: return socketCounts.Mythic;
+                case ItemRarity.Ancient: return socketCounts.Ancient;
+                default: throw new ArgumentOutOfRangeException(nameof(rarity), rarity, null);
+            }
+        }
+
+        private static float[][] GetConfiguredEffectCounts(ItemRarity rarity)
+        {
+            var effectCounts = Config?.MagicEffectsCount;
+            if (effectCounts == null)
+            {
+                return null;
+            }
+
+            switch (rarity)
+            {
+                case ItemRarity.Magic: return effectCounts.Magic;
+                case ItemRarity.Rare: return effectCounts.Rare;
+                case ItemRarity.Epic: return effectCounts.Epic;
+                case ItemRarity.Legendary: return effectCounts.Legendary;
+                case ItemRarity.Mythic: return effectCounts.Mythic;
+                case ItemRarity.Ancient: return effectCounts.Ancient;
                 default: throw new ArgumentOutOfRangeException(nameof(rarity), rarity, null);
             }
         }
 
         public static List<KeyValuePair<int, float>> GetEffectCountsPerRarity(ItemRarity rarity, bool useEnchantingUpgrades)
         {
-            List<KeyValuePair<int, float>> result;
-            switch (rarity)
+            var configured = GetConfiguredEffectCounts(rarity);
+            if (ArrayUtils.IsNullOrEmpty(configured))
             {
-                case ItemRarity.Magic:
-                    result = Config.MagicEffectsCount.Magic.Select(x => 
-                        new KeyValuePair<int, float>((int)x[0], x[1])).ToList();
-                    break;
-                case ItemRarity.Rare:
-                    result = Config.MagicEffectsCount.Rare.Select(x => 
-                        new KeyValuePair<int, float>((int)x[0], x[1])).ToList();
-                    break;
-                case ItemRarity.Epic:
-                    result = Config.MagicEffectsCount.Epic.Select(x => 
-                        new KeyValuePair<int, float>((int)x[0], x[1])).ToList();
-                    break;
-                case ItemRarity.Legendary:
-                    result = Config.MagicEffectsCount.Legendary.Select(x => 
-                        new KeyValuePair<int, float>((int)x[0], x[1])).ToList();
-                    break;
-                case ItemRarity.Mythic:
-                    result = Config.MagicEffectsCount.Mythic.Select(x => 
-                        new KeyValuePair<int, float>((int)x[0], x[1])).ToList();
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(rarity), rarity, null);
+                // A loottables.json written before this rarity existed keeps winning over the embedded
+                // default (see FilePatching.LoadPatchedJSON), and this runs mid-roll on a drop that has
+                // already picked its rarity -- so fall back rather than throwing the whole roll away and
+                // handing out an unenchanted item.
+                if (_warnedMissingEffectCounts.Add(rarity))
+                {
+                    EpicLoot.LogWarning($"loottables.json has no MagicEffectsCount entry for {rarity}, " +
+                        $"using the built-in default distribution. Accept the config update prompt on " +
+                        $"startup, or add a \"{rarity}\" row to the \"MagicEffectsCount\" block in " +
+                        $"loottables.json, to configure it.");
+                }
+
+                configured = DefaultMagicEffectsCount[rarity];
+            }
+
+            var result = new List<KeyValuePair<int, float>>();
+            var droppedEntry = false;
+            foreach (var entry in configured)
+            {
+                if (entry == null || entry.Length < 2)
+                {
+                    droppedEntry = true;
+                    continue;
+                }
+
+                // A roll asks the effect pool for this many distinct effects, so an out-of-range entry is
+                // dropped instead of trusted. A negative weight goes too, since WeightedRandomCollection
+                // would quietly skew the whole table.
+                var count = (int)entry[0];
+                if (count < 0 || count > MaxEffectCount || entry[1] < 0)
+                {
+                    droppedEntry = true;
+                    continue;
+                }
+
+                result.Add(new KeyValuePair<int, float>(count, entry[1]));
+            }
+
+            if (droppedEntry && _warnedInvalidEffectCounts.Add(rarity))
+            {
+                EpicLoot.LogWarning($"MagicEffectsCount entries for {rarity} in loottables.json were " +
+                    $"ignored: each entry must be [count, weight] with a count between 0 and " +
+                    $"{MaxEffectCount} and a weight of 0 or more.");
             }
 
             var featureValues = useEnchantingUpgrades && EnchantingTableUI.instance && EnchantingTableUI.instance.SourceTable
@@ -1483,9 +1546,9 @@ namespace EpicLoot
             return best;
         }
 
-        private static float[] GetSingleRarityWeights(ItemRarity rarity)
+        internal static float[] GetSingleRarityWeights(ItemRarity rarity)
         {
-            var weights = new float[5];
+            var weights = new float[Rarities.Count];
             weights[(int)rarity] = 1;
             return weights;
         }
@@ -1505,14 +1568,14 @@ namespace EpicLoot
 
         public static Dictionary<ItemRarity, float> GetRarityWeights(float[] rarity, float luckFactor)
         {
-            var rarityWeights = new Dictionary<ItemRarity, float>()
+            // Positional: index N is the weight of rarity ordinal N. A shorter array leaves the higher
+            // rarities at 0, which is what keeps every pre-existing five-entry table valid.
+            var rarityWeights = new Dictionary<ItemRarity, float>();
+            foreach (ItemRarity itemRarity in Rarities.All)
             {
-                { ItemRarity.Magic, rarity.Length >= 1 ? rarity[0] : 0 },
-                { ItemRarity.Rare, rarity.Length >= 2 ? rarity[1] : 0 },
-                { ItemRarity.Epic, rarity.Length >= 3 ? rarity[2] : 0 },
-                { ItemRarity.Legendary, rarity.Length >= 4 ? rarity[3] : 0 },
-                { ItemRarity.Mythic, rarity.Length >= 5 ? rarity[4] : 0 }
-            };
+                var index = (int)itemRarity;
+                rarityWeights[itemRarity] = rarity.Length > index ? rarity[index] : 0;
+            }
 
             return ModifyRarityByLuck(rarityWeights, luckFactor);
         }
@@ -1798,7 +1861,7 @@ namespace EpicLoot
             IReadOnlyDictionary<ItemRarity, float> rarityWeights, float luckFactor = 0)
         {
             var results = new Dictionary<ItemRarity, float>();
-            for (var rarity = ItemRarity.Magic; rarity <= ItemRarity.Mythic; rarity++)
+            for (var rarity = ItemRarity.Magic; rarity <= Rarities.Highest; rarity++)
             {
                 var skewFactor = GetSkewFactor(rarity);
                 results.Add(rarity, rarityWeights[rarity] * GetSkewedLuckFactor(luckFactor, skewFactor));
@@ -1816,6 +1879,7 @@ namespace EpicLoot
                 case ItemRarity.Epic: return 0.2f;
                 case ItemRarity.Legendary: return 1;
                 case ItemRarity.Mythic: return 1.1f;
+                case ItemRarity.Ancient: return 1.2f;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(rarity), rarity, null);
             }
@@ -1835,8 +1899,8 @@ namespace EpicLoot
             lootDrop = ResolveLootDrop(lootDrop, 0, consumeRarityItems: false);
             if (lootDrop.Rarity == null)
             {
-                lootDrop.Rarity = [100, 0, 0, 0, 0];
-                EpicLoot.LogWarning($"No rarity table was found for {loot_info.Value[0]} using default: [100, 0, 0, 0, 0]");
+                lootDrop.Rarity = GetSingleRarityWeights(ItemRarity.Magic);
+                EpicLoot.LogWarning($"No rarity table was found for {loot_info.Value[0]} using default: 100% Magic");
             }
 
             var rarityBase = GetRarityWeights(lootDrop.Rarity, 0);

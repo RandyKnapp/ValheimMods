@@ -163,11 +163,29 @@ namespace EpicLoot.GatedItemType
         }
 
         /// <summary>
-        /// Attempts to get a valid item of the specified type.
+        /// Attempts to get a valid item of the specified type, picking from the global unseeded RNG.
         /// </summary>
         public static string GetGatedItemFromType(string itemType, GatedItemTypeMode mode,
             HashSet<string> currentSelected, List<string> validBosses, bool allowDuplicate = false,
             bool allowTypeFallback = false, bool allowItemFallback = false)
+        {
+            return GetGatedItemFromType(itemType, mode, currentSelected, validBosses,
+                allowDuplicate, allowTypeFallback, allowItemFallback, null);
+        }
+
+        /// <summary>
+        /// Attempts to get a valid item of the specified type.
+        ///
+        /// A non-null <paramref name="random"/> makes the pick reproducible for a caller that owns a
+        /// seeded stream -- the merchant's gamble stock, which must stay fixed for its whole refresh
+        /// interval. Null keeps the global unseeded RNG, which is what every loot path wants.
+        ///
+        /// Every parameter is required here on purpose: giving the three bools defaults on both
+        /// overloads would make the existing shorter calls ambiguous (CS0121).
+        /// </summary>
+        public static string GetGatedItemFromType(string itemType, GatedItemTypeMode mode,
+            HashSet<string> currentSelected, List<string> validBosses, bool allowDuplicate,
+            bool allowTypeFallback, bool allowItemFallback, System.Random random)
         {
             // No bosses defeated yet is the NORMAL early-game state under
             // BossKillUnlocksCurrentBiomeItems -- fall back to the type's configured fallback item,
@@ -186,7 +204,7 @@ namespace EpicLoot.GatedItemType
             foreach (string boss in validBosses)
             {
                 item = GetGatedItemFromBossTier(itemType, boss, currentSelected,
-                    mode, new HashSet<string>(), allowTypeFallback, allowDuplicate);
+                    mode, new HashSet<string>(), random, allowTypeFallback, allowDuplicate);
 
                 if (item != null)
                 {
@@ -210,6 +228,7 @@ namespace EpicLoot.GatedItemType
             HashSet<string> currentSelected,
             GatedItemTypeMode mode,
             HashSet<string> typesSearched,
+            System.Random random,
             bool allowFallback = true,
             bool allowDuplicate = false)
         {
@@ -218,7 +237,10 @@ namespace EpicLoot.GatedItemType
                 List<string> items = ItemsByTypeAndBoss[itemType][boss];
                 bool gated = true;
 
-                foreach (string item in items.shuffleList())
+                // Seeded when the caller supplied a stream -- the merchant's gamble stock depends on
+                // this shuffle being reproducible for the whole refresh interval. Do NOT drop back to
+                // the parameterless overload here.
+                foreach (string item in items.shuffleList(random))
                 {
                     gated = CheckIfItemNeedsGate(mode, item);
                     if (gated)
@@ -244,7 +266,7 @@ namespace EpicLoot.GatedItemType
                     !typesSearched.Contains(fallback.Type))
                 {
                     return GetGatedItemFromBossTier(fallback.Type,
-                        boss, currentSelected, mode, typesSearched, false, true);
+                        boss, currentSelected, mode, typesSearched, random, false, true);
                 }
             }
 

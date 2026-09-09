@@ -441,6 +441,7 @@ namespace EpicLoot
             public ValueDef Epic;
             public ValueDef Legendary;
             public ValueDef Mythic;
+            public ValueDef Ancient;
 
             public ValueDef GetValueDefForRarity(ItemRarity rarity)
             {
@@ -456,6 +457,8 @@ namespace EpicLoot
                         return Legendary;
                     case ItemRarity.Mythic:
                         return Mythic;
+                    case ItemRarity.Ancient:
+                        return Ancient;
                     default:
                         EpicLoot.LogWarning($"Unknown rarity: {rarity}, returning Magic values");
                         return Magic;
@@ -554,6 +557,8 @@ namespace EpicLoot
                     return ValuesPerRarity.Legendary;
                 case ItemRarity.Mythic:
                     return ValuesPerRarity.Mythic;
+                case ItemRarity.Ancient:
+                    return ValuesPerRarity.Ancient;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(itemRarity), itemRarity, null);
             }
@@ -612,7 +617,8 @@ namespace EpicLoot
                         Rare = new MagicItemEffectDefinition.ValueDef() { Increment = 2, MaxValue = 15, MinValue = 1 },
                         Epic = new MagicItemEffectDefinition.ValueDef() { Increment = 3, MaxValue = 20, MinValue = 1 },
                         Legendary = new MagicItemEffectDefinition.ValueDef() { Increment = 4, MaxValue = 25, MinValue = 1 },
-                        Mythic = new MagicItemEffectDefinition.ValueDef() { Increment = 5, MaxValue = 30, MinValue = 1 }
+                        Mythic = new MagicItemEffectDefinition.ValueDef() { Increment = 5, MaxValue = 30, MinValue = 1 },
+                        Ancient = new MagicItemEffectDefinition.ValueDef() { Increment = 6, MaxValue = 35, MinValue = 1 }
                     },
                     Requirements = new MagicItemEffectRequirements() { NoRoll = true },
                     Type = type,

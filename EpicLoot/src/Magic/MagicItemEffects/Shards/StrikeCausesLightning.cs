@@ -104,7 +104,7 @@ namespace EpicLoot.MagicItemEffects.Shards {
 
             // Specifically set the damage source to null which will become ZDOID.NONE, because we do not want to chain these strikes, each lightning strike requires a new proc from the player.
             // If we set the source to the player, then the lightning strike will be considered a player attack and can chain to other enemies in range, which is not what we want.
-            DamageInRadius.DamageEnemiesInRadius(null, __instance.transform.position,
+            DamageInRadius.DamageEnemiesInRadius(null, __instance.GetCenterPoint(),
                 EffectConfig.Get(MagicEffectType.StrikeCausesLightning, RadiusKey, DefaultRadius),
                 new HitData.DamageTypes {
                     m_lightning = value * EffectConfig.Get(MagicEffectType.StrikeCausesLightning,

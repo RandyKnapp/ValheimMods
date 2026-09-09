@@ -102,16 +102,20 @@ public static partial class TerminalManager
         return Enum.TryParse(arg, true, out T result) ? result : defaultValue;
     }
     
+    // A single-rarity weight table for a rarity name, or an even spread when the name is not one.
     private static float[] GetRarityTable(string rarityName)
     {
-        return rarityName.ToLowerInvariant() switch
+        if (Enum.TryParse(rarityName, true, out ItemRarity rarity))
         {
-            "magic" => [1, 0, 0, 0, 0],
-            "rare" => [0, 1, 0, 0, 0],
-            "epic" => [0, 0, 1, 0, 0],
-            "legendary" => [0, 0, 0, 1, 0],
-            "mythic" => [0, 0, 0, 0, 1],
-            _ => [1, 1, 1, 1, 1]
-        };
+            return LootRoller.GetSingleRarityWeights(rarity);
+        }
+
+        var table = new float[Rarities.Count];
+        for (var i = 0; i < table.Length; i++)
+        {
+            table[i] = 1;
+        }
+
+        return table;
     }
 }

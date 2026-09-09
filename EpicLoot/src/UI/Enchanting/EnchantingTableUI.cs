@@ -34,13 +34,7 @@ namespace EpicLoot_UnityLib
         {
             Localization.instance.Localize(transform);
 
-            GameObject uiSFX = GameObject.Find("sfx_gui_button");
-            if (uiSFX)
-            {
-                Audio.outputAudioMixerGroup =
-                    uiSFX.GetComponent<AudioSource>().outputAudioMixerGroup;
-                Audio.volume = EnchantingUIController.GetAudioLevel();
-            }
+            EnchantingUIController.SetupUIAudioSource(Audio);
 
             instance.SetupTabs();
 
@@ -242,12 +236,12 @@ namespace EpicLoot_UnityLib
 
         public void PlayTabSelectSFX()
         {
-            Audio.PlayOneShot(TabClickSFX, Audio.volume);
+            Audio.PlayOneShot(TabClickSFX);
         }
 
         public void PlayEnchantBonusSFX()
         {
-            Audio.PlayOneShot(EnchantBonusSFX, Audio.volume);
+            Audio.PlayOneShot(EnchantBonusSFX);
         }
     }
 }

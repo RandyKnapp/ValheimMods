@@ -67,7 +67,7 @@ namespace EpicLoot.General
                 return;
             }
 
-            if (player.GetInventory().AddItem(CoinsPrefab, amount, 1, 0, 0, string.Empty) != null)
+            if (player.GetInventory().AddItem(CoinsPrefab, amount, 1, 0, 0, string.Empty, cheated: false) != null)
             {
                 return;
             }

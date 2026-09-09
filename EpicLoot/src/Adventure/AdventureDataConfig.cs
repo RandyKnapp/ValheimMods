@@ -50,8 +50,21 @@ namespace EpicLoot.Adventure
         public int ForestTokenGamblesCount;
         public int IronBountyGamblesCount;
         public int GoldBountyGamblesCount;
-        public float[] GambleRarityChance = new float[5];
-        public float[][] GambleRarityChanceByRarity = { new float[5], new float[5], new float[5], new float[5], new float[5] };
+        // Index 0 of GambleRarityChance (and of every row below) is the non-magic weight, then one
+        // column per rarity in ordinal order. Rows are indexed by the guaranteed rarity.
+        public float[] GambleRarityChance = new float[Rarities.Count + 1];
+        public float[][] GambleRarityChanceByRarity = BuildEmptyGambleRarityChanceByRarity();
+
+        private static float[][] BuildEmptyGambleRarityChanceByRarity()
+        {
+            var rows = new float[Rarities.Count][];
+            for (var i = 0; i < rows.Length; i++)
+            {
+                rows[i] = new float[Rarities.Count + 1];
+            }
+
+            return rows;
+        }
         public float ForestTokenGambleCoinsCost = 1.0f;
         public int ForestTokenGambleCostMin = 5;
         public int ForestTokenGambleCostMax = 10;

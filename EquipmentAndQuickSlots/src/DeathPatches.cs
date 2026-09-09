@@ -195,7 +195,6 @@ namespace EquipmentAndQuickSlots {
                     __instance.m_container.m_inventory.m_height = targetHeight;
 
                     __instance.m_container.m_lastRevision = 0;
-                    __instance.m_container.m_lastDataString = "";
                     __instance.m_container.Load();
                 }
             }

@@ -738,7 +738,7 @@ namespace EpicLoot.Magic
                 return Config.TierRarityProbabilities[tier].ToArray();
             }
 
-            return [97, 2, 1, 0, 0];
+            return [97, 2, 1, 0, 0, 0];
         }
 
         public static string DetermineBossLevelForItem(ItemDrop.ItemData item)

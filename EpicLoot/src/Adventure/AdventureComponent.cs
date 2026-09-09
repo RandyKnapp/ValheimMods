@@ -103,17 +103,20 @@ namespace EpicLoot.Adventure
         private void PruneStaleRecords()
         {
             if (ZNet.m_world == null || EnvMan.instance == null
-                || AdventureDataManager.Bounties == null || AdventureDataManager.TreasureMaps == null)
+                || AdventureDataManager.Bounties == null || AdventureDataManager.TreasureMaps == null
+                || AdventureDataManager.Gamble == null)
             {
                 return;
             }
 
             var currentBountyInterval = AdventureDataManager.Bounties.GetCurrentInterval();
             var currentTreasureInterval = AdventureDataManager.TreasureMaps.GetCurrentInterval();
+            var currentGambleInterval = AdventureDataManager.Gamble.GetCurrentInterval();
 
             foreach (var saveData in SaveData.AllSaveData)
             {
-                saveData.PruneStaleRecords(currentBountyInterval, currentTreasureInterval);
+                saveData.PruneStaleRecords(currentBountyInterval, currentTreasureInterval,
+                    currentGambleInterval);
             }
         }
     }

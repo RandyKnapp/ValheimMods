@@ -153,6 +153,7 @@
     "mod_epicloot_socket_tip_permanent": "(permanent)",
     "mod_epicloot_legendary_brokkrgift": "Legendary Brokkr's Gift",
     "mod_epicloot_mythic_brokkrgift": "Mythic Brokkr's Gift",
+    "mod_epicloot_ancient_brokkrgift": "Ancient Brokkr's Gift",
     "mod_epicloot_slotchisel_introduce": "An extremely powerful artifact, said to embed a shard slot into any magic item.",
     "mod_epicloot_slotchisel_hint": "Drag onto a magic item to add a shard slot",
     "mod_epicloot_slotchisel_confirm_title": "Add Shard Slot?",
@@ -1895,6 +1896,7 @@
     "mod_epicloot_epicnameformat": "{0} {1}",
     "mod_epicloot_basiclegendarynameformat": "Legendary {0}",
     "mod_epicloot_basicmythicnameformat": "Mythic {0}",
+    "mod_epicloot_basicancientnameformat": "Ancient {0}",
 
     "mod_epicloot_rare_prefix1": "Strange",
     "mod_epicloot_rare_prefix2": "Rare",
@@ -2159,6 +2161,7 @@
     "mod_epicloot_Epic": "Epic",
     "mod_epicloot_Legendary": "Legendary",
     "mod_epicloot_Mythic": "Mythic",
+    "mod_epicloot_Ancient": "Ancient",
     "mod_epicloot_search_placeholder": "Search...",
     "mod_epicloot_no_active_adventures": "No active adventures",
     "mod_epicloot_set_bonuses": "Set Bonuses",

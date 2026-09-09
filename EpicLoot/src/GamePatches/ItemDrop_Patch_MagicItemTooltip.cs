@@ -98,7 +98,7 @@ public static class MagicTooltipPatches
 
     // Set the content of the tooltip
     [HarmonyPatch(typeof(ItemDrop.ItemData), nameof(ItemDrop.ItemData.GetTooltip),
-        typeof(ItemDrop.ItemData), typeof(int), typeof(bool), typeof(float), typeof(int))]
+        typeof(ItemDrop.ItemData), typeof(int), typeof(bool), typeof(float), typeof(int), typeof(bool))]
     public static class MagicItemTooltip_ItemDrop_Patch
     {
         [UsedImplicitly]

@@ -21,7 +21,7 @@ namespace EpicLoot.MagicItemEffects
             }
         }
 
-        [HarmonyPatch(typeof(SEMan), nameof(SEMan.AddStatusEffect), typeof(int), typeof(bool), typeof(int), typeof(float))]
+        [HarmonyPatch(typeof(SEMan), nameof(SEMan.AddStatusEffect), typeof(int), typeof(bool), typeof(int), typeof(float), typeof(short))]
         public static class Waterproof_SEMan_AddStatusEffect_Patch
         {
             public static bool Prefix(SEMan __instance, int nameHash)

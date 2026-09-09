@@ -319,6 +319,7 @@ namespace EpicLoot.Magic.MagicItemEffects.Helpers {
                 Epic = Value(valuesPerRarity, ItemRarity.Epic),
                 Legendary = Value(valuesPerRarity, ItemRarity.Legendary),
                 Mythic = Value(valuesPerRarity, ItemRarity.Mythic),
+                Ancient = Value(valuesPerRarity, ItemRarity.Ancient),
             };
         }
 

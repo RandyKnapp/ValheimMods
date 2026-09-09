@@ -191,10 +191,44 @@ public static partial class TerminalManager
     private static void PrintAvailableBounties(Terminal.ConsoleEventArgs args)
     {
         int interval = args.TryParameterInt(1, AdventureDataManager.Bounties.GetCurrentInterval());
-        List<BountyInfo> availableBounties = AdventureDataManager.Bounties.GetAvailableBounties(interval, false);
+        var filtered = new List<BountiesAdventureFeature.BountyFilterNote>();
+        List<BountyInfo> availableBounties =
+            AdventureDataManager.Bounties.GetAvailableBounties(interval, false, filtered);
         if (availableBounties.Count <= 0)
         {
-            args.Context.PrintInfo($"Bounties for Interval {interval}: (None)");
+            var sb = new StringBuilder();
+            sb.AppendLine($"Bounties for Interval {interval}: (None)");
+            int configured = AdventureDataManager.Config?.Bounties?.Targets?.Count ?? 0;
+            sb.AppendLine($"{configured} target(s) configured, {filtered.Count} filtered out:");
+            foreach (var group in filtered
+                .GroupBy(x => new { x.Reason, Biome = x.Biome == Heightmap.Biome.None ? x.ConfiguredBiome : BiomeDataManager.GetName(x.Biome) })
+                .OrderBy(g => g.Key.Biome))
+            {
+                sb.AppendLine($"  {group.Key.Biome,-14} {group.Count(),3} target(s) - {group.Key.Reason}" +
+                    $"   [{string.Join(", ", group.Take(4).Select(x => x.TargetID))}{(group.Count() > 4 ? ", ..." : "")}]");
+            }
+
+            if (configured > 0 && filtered.Count == 0)
+            {
+                sb.AppendLine("  nothing was filtered - the roll itself produced no bounties.");
+            }
+
+            // A biome with no Targets entry at all never reaches the filter, so it would otherwise be
+            // invisible above - which is exactly how DeepNorth went unnoticed. Name those explicitly.
+            var configuredBiomes = (AdventureDataManager.Config?.Bounties?.Targets ?? new List<BountyTargetConfig>())
+                .Select(x => x.GetBiome())
+                .ToHashSet();
+            var noTargets = BiomeDataManager.BiomesInOrder
+                .Where(d => !configuredBiomes.Contains(d.Biome))
+                .Select(d => d.Name)
+                .ToList();
+            if (noTargets.Count > 0)
+            {
+                sb.AppendLine($"Biomes with no bounty targets configured at all: {string.Join(", ", noTargets)}");
+            }
+
+            sb.AppendLine("Run 'biomes' to see which biomes the player has actually discovered.");
+            args.Context.PrintInfo(sb.ToString());
         }
         else
         {

@@ -77,6 +77,9 @@ namespace Common {
             if (reverse_order) {
                 resourceDefinitions.Reverse();
             }
+            // ConfigFile.Bind writes the whole file when SaveOnConfigSet is on, and WireConfigDefs binds
+            // ~10 entries per item. Suppress that and flush once at the end instead.
+            ModContext.SaveOnSet(false);
             WireConfigDefs();
 
             // BatchSetup runs from plugin Awake, before any world exists -- ZNet.instance is always null
@@ -118,7 +121,7 @@ namespace Common {
                 AddedItems.Add(itemdef.DisplayName, itemdef.Prefab);
                 string section = $"{itemdef.Category} - {itemdef.Name}";
                 itemdef.CraftableCfg = ConfigBinder.BindServerConfig(section, $"{itemdef.DisplayName}-craftable", itemdef.Craftable, $"Enable/Disable the crafting recipe for {itemdef.Name}.");
-                itemdef.StationLVLCfg = ConfigBinder.BindServerConfig(section, $"{itemdef.DisplayName}-stationRequiredLevel", itemdef.ReqStationlevel, $"Sets the required minimum crafting station level to craft {itemdef.Name}", true, 1, 4);
+                itemdef.StationLVLCfg = ConfigBinder.BindServerConfig(section, $"{itemdef.DisplayName}-stationRequiredLevel", itemdef.ReqStationlevel, $"Sets the required minimum crafting station level to craft {itemdef.Name}", true, 1, 10);
                 itemdef.CraftAmountCfg = ConfigBinder.BindServerConfig(section, $"{itemdef.DisplayName}-craftAmount", itemdef.CraftAmount, $"Sets the amount of {itemdef.Name} crafted per recipe.", true, 1, 50);
                 itemdef.CraftedAtCfg = ConfigBinder.BindServerConfig(section, $"{itemdef.DisplayName}-craftedAt", itemdef.CraftedAt, $"Sets the crafting station for {itemdef.Name}.");
                 // Setup the modifiable stats that this item has defined
@@ -486,6 +489,22 @@ namespace Common {
                     break;
                 case ItemStat.tool_level:
                     itemData.m_shared.m_toolTier = (int)updatedValue;
+                    break;
+                // Food
+                case ItemStat.food_health:
+                    itemData.m_shared.m_food = updatedValue;
+                    break;
+                case ItemStat.food_stamina:
+                    itemData.m_shared.m_foodStamina = updatedValue;
+                    break;
+                case ItemStat.food_eitr:
+                    itemData.m_shared.m_foodEitr = updatedValue;
+                    break;
+                case ItemStat.food_regen:
+                    itemData.m_shared.m_foodRegen = updatedValue;
+                    break;
+                case ItemStat.food_duration:
+                    itemData.m_shared.m_foodBurnTime = updatedValue;
                     break;
                 default:
                     ModLogger.LogWarning($"Unknown item stat {target_attribute} for {itemData.m_shared.m_name}");

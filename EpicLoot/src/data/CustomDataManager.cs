@@ -747,7 +747,7 @@ namespace EpicLoot.Data {
 
             ApplyPatch("Inventory.AddItem(ItemData,int,int,int)", () =>
                 harmony.Patch(AccessTools.DeclaredMethod(typeof(Inventory), nameof(Inventory.AddItem),
-                    new[] { typeof(ItemDrop.ItemData), typeof(int), typeof(int), typeof(int) }),
+                    new[] { typeof(ItemDrop.ItemData), typeof(int), typeof(int), typeof(int), typeof(bool) }),
                     prefix: new HarmonyMethod(AccessTools.DeclaredMethod(typeof(ItemInfo),
                         nameof(CheckItemDataStackableAddItem))),
                     postfix: new HarmonyMethod(AccessTools.DeclaredMethod(typeof(ItemInfo),
@@ -810,7 +810,7 @@ namespace EpicLoot.Data {
 
             ApplyPatch("Inventory.AddItem(string,...)", () =>
                 harmony.Patch(AccessTools.DeclaredMethod(typeof(Inventory), nameof(Inventory.AddItem), new[] {
-                    typeof(string), typeof(int), typeof(int), typeof(int), typeof(long), typeof(string), typeof(bool) }),
+                    typeof(string), typeof(int), typeof(int), typeof(int), typeof(long), typeof(string), typeof(bool), typeof(bool) }),
                     postfix: new HarmonyMethod(AccessTools.DeclaredMethod(typeof(ItemInfo),
                         nameof(RegisterForceLoadedTypesAddItem)), Priority.First)));
 

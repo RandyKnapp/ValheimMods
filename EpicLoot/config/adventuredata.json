@@ -22,9 +22,13 @@
       { "Item": "ShardMythic",      "CoinsCost": 600 },
       { "Item": "DustMythic",       "CoinsCost": 600 },
       { "Item": "ReagentMythic",    "CoinsCost": 600 },
-      { "Item": "EssenceMythic",    "CoinsCost": 600 }
+      { "Item": "EssenceMythic",    "CoinsCost": 600 },
+      { "Item": "ShardAncient",     "CoinsCost": 1000 },
+      { "Item": "DustAncient",      "CoinsCost": 1000 },
+      { "Item": "ReagentAncient",   "CoinsCost": 1000 },
+      { "Item": "EssenceAncient",   "CoinsCost": 1000 }
     ],
-    "RollsPerRarity": [1, 1, 1, 1, 1],
+    "RollsPerRarity": [1, 1, 1, 1, 1, 1],
     "RandomItems": [
     ],
     "RandomItemsCount": 0,
@@ -60,13 +64,14 @@
       "Misc"
     ],
     "GamblesCount": 4,
-    "GambleRarityChance": [ 10, 68, 15, 4, 2, 1 ],
+    "GambleRarityChance": [ 10, 68, 15, 4, 2, 0.75, 0.25 ],
     "GambleRarityChanceByRarity" : [
-      [ 0, 90, 9, 1, 0, 0 ],
-      [ 0, 0, 90, 9, 1, 0 ],
-      [ 0, 0, 0, 90, 9, 1 ],
-      [ 0, 0, 0, 0, 90, 10 ],
-      [ 0, 0, 0, 0, 0, 100 ]
+      [ 0, 90, 9, 1, 0, 0, 0 ],
+      [ 0, 0, 90, 9, 1, 0, 0 ],
+      [ 0, 0, 0, 90, 9, 1, 0 ],
+      [ 0, 0, 0, 0, 90, 9, 1 ],
+      [ 0, 0, 0, 0, 0, 90, 10 ],
+      [ 0, 0, 0, 0, 0, 0, 100 ]
     ],
     "ForestTokenGamblesCount": 2,
     "ForestTokenGambleCoinsCost": 1.5,
@@ -264,7 +269,8 @@
       { "Biome": "Mountain",    "Cost": 400, "ForestTokens": 20, "MinRadius": 2000, "MaxRadius": 6000 },
       { "Biome": "Plains",      "Cost": 500, "ForestTokens": 25, "MinRadius": 3000, "MaxRadius": 6000 },
       { "Biome": "Mistlands",   "Cost": 600, "ForestTokens": 30, "MinRadius": 5000, "MaxRadius": 9000 },
-      { "Biome": "AshLands",    "Cost": 700, "ForestTokens": 35, "MinRadius": 8000, "MaxRadius": 10500 }
+      { "Biome": "AshLands",    "Cost": 700, "ForestTokens": 35, "MinRadius": 8000, "MaxRadius": 10500 },
+      { "Biome": "DeepNorth",   "Cost": 800, "ForestTokens": 40, "MinRadius": 8000, "MaxRadius": 10500 }
     ],
     "StartRadiusMin": 0,
     "StartRadiusMax": 500,
@@ -277,7 +283,8 @@
       { "Item": "RunestoneRare",      "ForestTokenCost": 10 },
       { "Item": "RunestoneEpic",      "ForestTokenCost": 15 },
       { "Item": "RunestoneLegendary", "ForestTokenCost": 20 },
-      { "Item": "RunestoneMythic",    "ForestTokenCost": 25 }
+      { "Item": "RunestoneMythic",    "ForestTokenCost": 25 },
+      { "Item": "RunestoneAncient",   "ForestTokenCost": 30 }
     ] 
   },
   "Bounties": {
@@ -378,7 +385,14 @@
       { "Biome": "AshLands",    "TargetID": "Morgen_NonSleeping","RewardGold": 5, "RewardIron": 5, "RewardCoins": 600 },
       { "Biome": "AshLands",    "TargetID": "Charred_Melee",   "RewardGold": 3, "RewardIron": 5, "RewardCoins": 600 },
       { "Biome": "AshLands",    "TargetID": "Charred_Melee",   "RewardGold": 5, "RewardIron": 9, "RewardCoins": 650, "Adds":
-      [ { "ID": "Charred_Archer",  "Count": 2 }, { "ID": "Charred_Twitcher",  "Count": 2 } ] }
+      [ { "ID": "Charred_Archer",  "Count": 2 }, { "ID": "Charred_Twitcher",  "Count": 2 } ] },
+
+      { "Biome": "DeepNorth",   "TargetID": "JotunWarrior",     "RewardGold": 6, "RewardIron": 6, "RewardCoins": 700 },
+      { "Biome": "DeepNorth",   "TargetID": "JotunWitch",       "RewardGold": 6, "RewardIron": 6, "RewardCoins": 700 },
+      { "Biome": "DeepNorth",   "TargetID": "TrollFrost",       "RewardGold": 7, "RewardIron": 8, "RewardCoins": 800 },
+      { "Biome": "DeepNorth",   "TargetID": "Skeleton_DeepNorth","RewardGold": 4, "RewardIron": 6, "RewardCoins": 700 },
+      { "Biome": "DeepNorth",   "TargetID": "Greydwarf_Frozen", "RewardGold": 6, "RewardIron": 10, "RewardCoins": 750, "Adds":
+      [ { "ID": "Greydwarf_Shaman_Frozen", "Count": 2 }, { "ID": "Skeleton_DeepNorth", "Count": 2 } ] }
     ],
     "Names": {
       "ChanceForSpecialName": 0.01,
@@ -764,6 +778,12 @@
         { "Item": "EssenceMythic",    "Amount": 10 },
         { "Item": "ReagentMythic",    "Amount": 10 },
         { "Item": "DustMythic",       "Amount": 10 }
+      ],
+      "Ancient": [
+        { "Item": "GoldBountyToken",  "Amount": 3  },
+        { "Item": "EssenceAncient",   "Amount": 10 },
+        { "Item": "ReagentAncient",   "Amount": 10 },
+        { "Item": "DustAncient",      "Amount": 10 }
       ]
     }
   }

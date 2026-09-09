@@ -180,8 +180,9 @@ namespace EquipmentAndQuickSlots {
         public static int ActiveExtraUtilitySlots => ValConfig.EquipmentSlotsEnabled.Value ? ExtraWearableUtilityItems : 0;
 
         // The visible rows are whatever the vanilla inventory (or a rows mod like moreslots)
-        // established before we appended the hidden slot rows — captured once at Player.Awake —
-        // plus the server-synced extra rows. The hidden slot rows always sit directly below.
+        // established before we appended the hidden slot rows — captured once at Player.Awake, then
+        // kept in step with the character's own vanilla row count (Player.SetInventorySize) — plus
+        // the server-synced extra rows. The hidden slot rows always sit directly below.
         public static int BaseRows { get; private set; } = VanillaInventoryHeight;
         public const int MaxExtraRows = 5;
         public static int ExtraRows => Mathf.Clamp(ValConfig.ExtraInventoryRows?.Value ?? 0, 0, MaxExtraRows);
@@ -212,11 +213,30 @@ namespace EquipmentAndQuickSlots {
             BaseRows = Mathf.Max(1, inventory.m_height);
         }
 
-        // The extra-row count changed (config edit, or the server's value arriving on join): the
-        // slot region moves with the visible rows. Slot residents move with their slots; anything
-        // from the visible grid that now finds itself on a slot cell it doesn't belong in is moved
-        // back into the visible grid (or a free slot) — never dropped, never lost.
-        internal static void OnExtraRowsChanged() {
+        // The character's vanilla row count. Haldor sells inventory rows (the "invrows" player key,
+        // applied through Player.SetInventorySize), so this is per character rather than per
+        // install and it can grow mid-session — and Player.OnSpawned re-applies the stored count on
+        // every single spawn. The slot region always sits directly below the visible rows, so it
+        // has to move with them before vanilla measures the inventory against the new height.
+        internal static void SetBaseRows(int rows) {
+            rows = Mathf.Max(1, rows);
+            if (rows == BaseRows)
+                return;
+
+            // Ungated: this moves the player's gear, and a report about misplaced items has to be
+            // answerable from the log even with logging turned off.
+            EquipmentAndQuickSlots.LogInfo($"Vanilla inventory rows changed {BaseRows} -> {rows}; the slot region moves with them");
+            _baseRowsCaptured = true;
+            BaseRows = rows;
+            OnVisibleRowsChanged();
+        }
+
+        // The visible row count changed (config edit, the server's value arriving on join, or the
+        // character's own vanilla row count): the slot region moves with it. Slot residents move
+        // with their slots; anything from the visible grid that now finds itself on a slot cell it
+        // doesn't belong in is moved back into the visible grid (or a free slot) — never dropped,
+        // never lost.
+        internal static void OnVisibleRowsChanged() {
             Inventory inventory = PlayerInventory;
             if (inventory == null) {
                 UpdateSlotsGridPosition();

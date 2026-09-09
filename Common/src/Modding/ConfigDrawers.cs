@@ -184,6 +184,10 @@ namespace Common {
                 ItemStat.durability, ItemStat.durability_per_level, ItemStat.max_item_level,
                 ItemStat.tool_level, ItemStat.movement_speed, ItemStat.amount
             }),
+            new KeyValuePair<string, ItemStat[]>("Food", new[] {
+                ItemStat.food_health, ItemStat.food_stamina, ItemStat.food_eitr,
+                ItemStat.food_regen, ItemStat.food_duration
+            }),
         };
 
         // Hides the item's sub-entries and turns CraftableCfg into the single visible drawer row.

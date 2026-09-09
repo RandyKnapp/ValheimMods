@@ -67,7 +67,7 @@ public static partial class TerminalManager
     {
         return args.Length switch
         {
-            2 => ["magic", "rare", "epic", "legendary", "mythic"],
+            2 => System.Enum.GetNames(typeof(ItemRarity)).Select(x => x.ToLowerInvariant()).ToList(),
             3 => GetValidMagicItemNames(),
             _ => []
         };

@@ -22,19 +22,24 @@ namespace EpicLoot.ShardStones {
     public static class ShardSlotChisel {
         public const string LegendaryPrefab = "ShardSlotChiselLegendary";
         public const string MythicPrefab = "ShardSlotChiselMythic";
+        public const string AncientPrefab = "ShardSlotChiselAncient";
 
-        // Only two tiers exist. Anything else (a config-patched prefab, say) falls back to the Legendary
+        // Three tiers exist. Anything else (a config-patched prefab, say) falls back to the Legendary
         // numbers rather than granting nothing at all.
         private static int SlotsAddedBy(ItemRarity chiselRarity) {
-            return chiselRarity == ItemRarity.Mythic
-                ? ELConfig.MythicGiftSlotsAdded.Value
-                : ELConfig.LegendaryGiftSlotsAdded.Value;
+            switch (chiselRarity) {
+                case ItemRarity.Ancient: return ELConfig.AncientGiftSlotsAdded.Value;
+                case ItemRarity.Mythic: return ELConfig.MythicGiftSlotsAdded.Value;
+                default: return ELConfig.LegendaryGiftSlotsAdded.Value;
+            }
         }
 
         private static float SuccessChanceFor(ItemRarity chiselRarity) {
-            return chiselRarity == ItemRarity.Mythic
-                ? ELConfig.MythicGiftSuccessChance.Value
-                : ELConfig.LegendaryGiftSuccessChance.Value;
+            switch (chiselRarity) {
+                case ItemRarity.Ancient: return ELConfig.AncientGiftSuccessChance.Value;
+                case ItemRarity.Mythic: return ELConfig.MythicGiftSuccessChance.Value;
+                default: return ELConfig.LegendaryGiftSuccessChance.Value;
+            }
         }
 
         /// <summary>

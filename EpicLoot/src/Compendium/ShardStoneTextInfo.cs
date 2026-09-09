@@ -58,7 +58,7 @@ public class ShardStoneTextInfo(string topic) : MagicTextInfo(topic)
         List<string> content = [];
 
         // Effect names carry the shard's rarity colour, keyed off the LOWEST rarity it exists at: every
-        // colour reaches Mythic, so the tier it becomes obtainable at is the only axis that varies.
+        // colour reaches the top rarity, so the tier it becomes obtainable at is the only axis that varies.
         string rarityColor = EpicLoot.GetRarityColor(rarities.Count > 0 ? rarities[0] : ItemRarity.Magic);
 
         if (rarities.Count > 0)

@@ -144,7 +144,7 @@ namespace EpicLoot
     /// on hold), but Container.TakeAll is public and quick-loot mods call it. Synchronous for the
     /// same reason as OnDestroyed.
     /// </summary>
-    [HarmonyPatch(typeof(Container), nameof(Container.RPC_TakeAllRespons))]
+    [HarmonyPatch(typeof(Container), nameof(Container.RPC_TakeAllResponse))]
     public static class Container_RPC_TakeAllRespons_Patch
     {
         public static void Prefix(Container __instance, bool granted)

@@ -8,12 +8,12 @@
     "Rune": -1
   },
   "MaximumFeatureLevels": {
-    "Sacrifice": 6,
-    "ConvertMaterials": 6,
-    "Enchant": 6,
-    "Augment": 6,
-    "Disenchant": 6,
-    "Rune": 6
+    "Sacrifice": 7,
+    "ConvertMaterials": 7,
+    "Enchant": 7,
+    "Augment": 7,
+    "Disenchant": 7,
+    "Rune": 7
   },
   "UpgradeCosts": {
     "Sacrifice": [
@@ -46,6 +46,11 @@
         { "Item": "SurtlingCore", "Amount": 30 },
         { "Item": "FlametalNew", "Amount": 4 },
         { "Item": "TrophyMorgen", "Amount": 1 }
+      ],
+      [
+        { "Item": "SurtlingCore", "Amount": 36 },
+        { "Item": "Gold", "Amount": 4 },
+        { "Item": "TrophyBarka", "Amount": 1 }
       ]
     ],
     "ConvertMaterials": [
@@ -83,6 +88,11 @@
         { "Item": "Blackwood", "Amount": 30 },
         { "Item": "CelestialFeather", "Amount": 8 },
         { "Item": "ProustitePowder", "Amount": 10 }
+      ],
+      [
+        { "Item": "Frostwood", "Amount": 30 },
+        { "Item": "MooseSinew", "Amount": 8 },
+        { "Item": "SealBlubber", "Amount": 10 }
       ]
     ],
     "Enchant": [
@@ -120,6 +130,11 @@
         { "Item": "DustMythic", "Amount": 5 },
         { "Item": "MorgenHeart", "Amount": 10 },
         { "Item": "FlametalNew", "Amount": 2 }
+      ],
+      [
+        { "Item": "DustAncient", "Amount": 5 },
+        { "Item": "FrozenKingDrop", "Amount": 2 },
+        { "Item": "Gold", "Amount": 2 }
       ]
     ],
     "Augment": [
@@ -157,6 +172,11 @@
         { "Item": "ShardMythic", "Amount": 3 },
         { "Item": "ShieldCore", "Amount": 5 },
         { "Item": "Coins", "Amount": 700 }
+      ],
+      [
+        { "Item": "ShardAncient", "Amount": 3 },
+        { "Item": "AncientGemstoneBlack", "Amount": 5 },
+        { "Item": "Coins", "Amount": 800 }
       ]
     ],
     "Disenchant": [
@@ -187,6 +207,10 @@
       [
         { "Item": "ForestToken", "Amount": 150 },
         { "Item": "MushroomSmokePuff", "Amount": 80 }
+      ],
+      [
+        { "Item": "ForestToken", "Amount": 180 },
+        { "Item": "Lingonberry", "Amount": 100 }
       ]
     ],
     "Rune": [
@@ -217,15 +241,19 @@
       [
         { "Item": "MoltenCore", "Amount": 5 },
         { "Item": "FlametalNew", "Amount": 2 }
+      ],
+      [
+        { "Item": "FrostCore", "Amount": 5 },
+        { "Item": "Gold", "Amount": 2 }
       ]
     ]
   },
   "UpgradeValues": {
-    "Sacrifice": [ [0, 100], [3, 102], [6, 104], [10, 106], [15, 108], [20, 110], [25, 112] ],
-    "ConvertMaterials": [ [5, 5], [4, 5], [4, 4], [3, 4], [3, 3], [2, 3], [2, 2] ],
-    "Enchant": [ [0, 0], [1, 2], [2, 4], [3, 6], [4, 8], [5, 10], [6, 12] ],
-    "Augment": [ [2, 0], [3, 0], [4, 0], [4, 25], [5, 25], [5, 50], [6, 50] ],
-    "Disenchant": [ [0, 0], [3, 0], [6, 0], [10, 1], [15, 2], [20, 3], [25, 4] ],
-    "Rune": [ [0, 90], [3, 95], [6, 100], [10, 102], [15, 104], [20, 106], [25, 108] ]
+    "Sacrifice": [ [0, 100], [3, 102], [6, 104], [10, 106], [15, 108], [20, 110], [25, 112], [30, 114] ],
+    "ConvertMaterials": [ [5, 5], [4, 5], [4, 4], [3, 4], [3, 3], [2, 3], [2, 2], [1, 2] ],
+    "Enchant": [ [0, 0], [1, 2], [2, 4], [3, 6], [4, 8], [5, 10], [6, 12], [7, 14] ],
+    "Augment": [ [2, 0], [3, 0], [4, 0], [4, 25], [5, 25], [5, 50], [6, 50], [6, 75] ],
+    "Disenchant": [ [0, 0], [3, 0], [6, 0], [10, 1], [15, 2], [20, 3], [25, 4], [30, 5] ],
+    "Rune": [ [0, 90], [3, 95], [6, 100], [10, 102], [15, 104], [20, 106], [25, 108], [30, 110] ]
   }
 }

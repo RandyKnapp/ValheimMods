@@ -1,4 +1,4 @@
-using EpicLoot.Adventure;
+﻿using EpicLoot.Adventure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -158,6 +158,114 @@ namespace EpicLoot.Biomes
         public static bool IsKnown(Heightmap.Biome biome)
         {
             return _byBiome.ContainsKey(biome);
+        }
+
+        /// <summary>
+        /// Whether the player has discovered this biome. Distinct from <see cref="IsKnown"/>, which
+        /// asks whether the registry knows the biome at all.
+        ///
+        /// Vanilla's <see cref="Player.m_knownBiome"/> became a <c>HashSet&lt;string&gt;</c> in the
+        /// Sept 2026 update, but the strings are *not* the "$biome_x" tokens
+        /// <see cref="BiomeSector.GetBiomeName"/> returns: <see cref="Player.AddKnownBiome"/> stores
+        /// <see cref="BiomeSector.GetName"/>, which runs that token through
+        /// <see cref="Localization.Localize(string)"/>. So the set holds display names ("Meadows"),
+        /// decorated by whatever AltBiome name prefix/suffix/override the sector carries. Three forms
+        /// are therefore accepted, cheapest first:
+        ///
+        /// 1. the raw token, written by <see cref="MarkDiscoveredBy"/> and by the
+        ///    Player.AddKnownBiome postfix in Biome_Patch.cs, and also what a pre-ChunkedNorth save
+        ///    migrates to when Player.Load converts the old enum list;
+        /// 2. the plain localized name, which is what every sector produces while nothing decorates
+        ///    biome names - all 32 vanilla AltBiomes leave those fields empty;
+        /// 3. the name of any single sector of the biome, asked of vanilla's own
+        ///    <see cref="Player.IsBiomeKnown"/>. Only reached when some AltBiome actually renames a
+        ///    biome, because it walks every sector of the biome and the merchant re-resolves every
+        ///    bounty target on each refresh.
+        /// </summary>
+        public static bool IsDiscoveredBy(Player player, Heightmap.Biome biome)
+        {
+            if (player == null || player.m_knownBiome.Count == 0)
+            {
+                return false;
+            }
+
+            string token = BiomeSector.GetBiomeName(biome);
+            if (player.m_knownBiome.Contains(token))
+            {
+                return true;
+            }
+
+            if (Localization.instance != null && player.m_knownBiome.Contains(Localization.instance.Localize(token)))
+            {
+                return true;
+            }
+
+            return AnyAltBiomeRenames() && AnySectorKnownBy(player, biome);
+        }
+
+        /// <summary>
+        /// Whether any loaded AltBiome decorates the name of the sectors it sits on. False on a stock
+        /// world, which is what keeps the sector walk in <see cref="IsDiscoveredBy"/> off the merchant
+        /// refresh path entirely.
+        /// </summary>
+        private static bool AnyAltBiomeRenames()
+        {
+            List<AltBiome> altBiomes = AltBiomeList.m_altBiomes;
+            if (altBiomes == null)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < altBiomes.Count; i++)
+            {
+                AltBiome alt = altBiomes[i];
+                if (alt != null && (!string.IsNullOrEmpty(alt.m_namePrefix) ||
+                    !string.IsNullOrEmpty(alt.m_nameSuffix) || !string.IsNullOrEmpty(alt.m_nameOverride)))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Asks vanilla whether the player knows any individual sector of the biome. The sector table
+        /// only ever holds the vanilla <see cref="Heightmap.Biome"/> values - its dictionary is seeded
+        /// from <c>Enum.GetValues</c> and its point map is a <see cref="Heightmap.BiomeIndex"/> grid -
+        /// so a biome another mod adds simply misses here and rests on the token forms above.
+        /// </summary>
+        private static bool AnySectorKnownBy(Player player, Heightmap.Biome biome)
+        {
+            AltBiomeWorldData biomeData = WorldGenerator.instance?.m_world?.m_biomeData;
+            if (biomeData == null || !biomeData.IsReady ||
+                !biomeData.Biomes.TryGetValue(biome, out BiomeTypeInfo info))
+            {
+                return false;
+            }
+
+            List<BiomeSector> sectors = info.Sectors;
+            for (int i = 0; i < sectors.Count; i++)
+            {
+                if (player.IsBiomeKnown(sectors[i]))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Records a biome as discovered without the <see cref="BiomeSector"/> that
+        /// <see cref="Player.AddKnownBiome"/> now requires - one cannot be synthesised for a biome the
+        /// world has not generated. Writes the raw token rather than the localized name vanilla would:
+        /// it survives a language change, and it leaves vanilla free to still show the "biome found"
+        /// message if the player later walks in for real.
+        /// </summary>
+        public static void MarkDiscoveredBy(Player player, Heightmap.Biome biome)
+        {
+            player?.m_knownBiome.Add(BiomeSector.GetBiomeName(biome));
         }
 
         /// <summary>Registry name, else the enum name, else the number a custom value prints as.</summary>

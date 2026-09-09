@@ -32,7 +32,20 @@ namespace EpicLoot.Adventure.Feature
 
         public Random GetRandom()
         {
-            return GetRandomForInterval(GetCurrentInterval(), RefreshInterval);
+            return GetRandom(0);
+        }
+
+        /// <summary>
+        /// An independent random stream for the same interval.
+        ///
+        /// Salting keeps a variable number of draws in one phase from shifting another: the gamble
+        /// feature builds its candidate pool from one stream and picks from it with another, so
+        /// adding an iteminfo.json entry -- or the player killing a boss -- cannot perturb the
+        /// selection roll. Stream 0 is the original seed exactly, so no existing stock moves.
+        /// </summary>
+        public Random GetRandom(int stream)
+        {
+            return GetRandomForInterval(GetCurrentInterval(), RefreshInterval, stream);
         }
 
         public virtual void OnZNetStart()
@@ -96,9 +109,12 @@ namespace EpicLoot.Adventure.Feature
             return unchecked(worldSeed + playerId + currentInterval * 1000 + intervalDays * 100);
         }
 
-        protected static Random GetRandomForInterval(int currentInterval, int intervalDays)
+        protected static Random GetRandomForInterval(int currentInterval, int intervalDays, int stream = 0)
         {
-            return new Random(GetSeedForInterval(currentInterval, intervalDays));
+            // stream 0 must stay byte-identical to the pre-existing seed, or every feature's stock
+            // shifts on upgrade. 7919 is just a prime large enough that no stream collides with
+            // another interval's stream 0 (which move in steps of 1000).
+            return new Random(unchecked(GetSeedForInterval(currentInterval, intervalDays) + stream * 7919));
         }
 
         public static ItemDrop CreateItemDrop(string prefabName)

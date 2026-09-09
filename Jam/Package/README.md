@@ -5,13 +5,39 @@ Source: [Github](https://github.com/RandyKnapp/ValheimMods/tree/main/Jam)
 Patreon: [patreon.com/randyknapp](https://www.patreon.com/randyknapp)
 Discord: [RandyKnapp's Mod Community](https://discord.gg/ZNhYeavv3C)
 
-## Version 1.1.0!
+## Version 2.0.0!
 
-As of the 1.1.0 update Jotunn is required to run this mod. A version check will be performed on server connection to ensure all players have the mod installed properly.
+Jotunn is required to run this mod. A version check will be performed on server connection to ensure all players have the mod installed properly.
 
-Configurations should sync on servers and live update on changing the randyknapp.mods.jam.cfg file. The old json file is no longer supported, please use the new bepinex configurations!
+**Upgrading from 1.x: every config entry has been renamed and your existing settings will reset to the
+defaults.** Write down anything you want to keep before updating. The recipe format changed too - see
+below.
+
+Configurations sync from the server and live update on changing the randyknapp.mods.jam.cfg file.
 
 Please note that any jams crafted will retain their values on a live configuration change until they are reloaded!
+
+## Configuration
+
+Each jam gets its own `Food - <Jam Name>` section in `BepInEx/config/randyknapp.mods.jam.cfg`. In
+Configuration Manager it appears as a single collapsible row per jam. Every key is prefixed with the
+jam's name without spaces (`RaspberryJam-`, `SweetenedRaspberryJam-`, ...):
+
+| Key | What it does |
+| --- | --- |
+| `-craftable` | Whether the jam can be crafted at all. A disabled jam is also removed from the Serving Tray. |
+| `-craftedAt` | Crafting station prefab. Defaults to `piece_cauldron`. |
+| `-stationRequiredLevel` | Minimum station level required. |
+| `-craftAmount` | How many jars one craft produces. Defaults to 4. |
+| `-recipe` | The ingredients, see the format below. |
+| `-food_health` | Health the jam grants. |
+| `-food_stamina` | Stamina the jam grants. |
+| `-food_eitr` | Eitr the jam grants. |
+| `-food_regen` | Health regen per tick. |
+| `-food_duration` | How long the jam lasts, in seconds. |
+
+Recipes are written as `Prefab,Amount,AmountPerLevel` entries joined by `|`, for example
+`Raspberry,8,0|Honey,4,0`. `AmountPerLevel` is unused for food and should stay `0`.
 
 ## Jams
 
@@ -59,7 +85,7 @@ The following lists the jams with default configurations and prefab names:
 
 ### Savory Eitrian Jam **x4**:
 * Recipe: 4 Magecap, 4 Jotunn Puffs, 2 Onions, 2 Honey
-* Effect: Lasts 25 minutes, 35 HP, 60 stamina, 30 Eitr, 3HP regen per second
+* Effect: Lasts 25 minutes, 35 HP, 55 stamina, 30 Eitr, 3HP regen per second
 * Prefab Name: MushroomJam
 
 ### Rich Eitrian Jam **x4**:
@@ -73,6 +99,14 @@ The following lists the jams with default configurations and prefab names:
 * ThunderStore: When using a thunderstore mod manager the files should be placed in the correct directory for you. Dependencies should install automatically.
 
 ## Changelog
+
+### 2.0.0
+* **Breaking:** all config entries renamed and existing settings reset to defaults. Jams now live in `Food - <Jam Name>` sections.
+* **Breaking:** recipe format is now `Item,Amount,AmountPerLevel|...` instead of `Item:Amount,...`.
+* Crafting station, minimum station level and craft amount are now configurable per jam.
+* Recipes are re-applied when the ObjectDB is rebuilt, so they no longer revert after joining a server.
+* Config changes apply live and are batched, removing the hitch on a server config sync.
+* Removed the long-unused `config/recipes.json`.
 
 ### 1.1.0
 * Now requires Jotunn to run, please install this new dependency!

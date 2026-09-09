@@ -15,12 +15,38 @@ public static partial class TerminalManager
         {
             string keys = definition.BossDefeatedKeys.Count == 0 ? "(ungated)" : string.Join(", ", definition.BossDefeatedKeys);
             string defeated = BiomeDataManager.HasAllBossKeys(definition.Biome) ? "defeated" : "not defeated";
-            string known = Player.m_localPlayer != null && Player.m_localPlayer.m_knownBiome.Contains(definition.Biome) ?
+            string known = BiomeDataManager.IsDiscoveredBy(Player.m_localPlayer, definition.Biome) ?
                 "known" : "not known";
             string origin = definition.IsLegacy ? ", legacy Bounties.Bosses" : definition.IsVanilla ? "" : ", custom";
             string display = Localization.instance.Localize(BiomeDataManager.GetLocalizationToken(definition.Biome));
             sb.AppendLine($"{definition.Index} - {definition.Name} (id {(int)definition.Biome}{origin}): " +
                 $"keys {keys}, {defeated}, {known}, color {definition.Color}, shown as \"{display}\"");
+        }
+
+        // The raw set vanilla actually keeps, and the two strings IsDiscoveredBy matches against it.
+        // Printing both sides is the only way to tell "the player has been nowhere" apart from
+        // "the player has been there but the recorded name does not match what we look for".
+        Player player = Player.m_localPlayer;
+        sb.AppendLine();
+        if (player == null)
+        {
+            sb.AppendLine("Player.m_knownBiome: no local player");
+        }
+        else
+        {
+            sb.AppendLine($"Player.m_knownBiome holds {player.m_knownBiome.Count} entry(s):");
+            foreach (string entry in player.m_knownBiome)
+            {
+                sb.AppendLine($"    \"{entry}\"");
+            }
+
+            sb.AppendLine("Looked up as:");
+            foreach (BiomeDefinition definition in BiomeDataManager.BiomesInOrder)
+            {
+                string token = BiomeSector.GetBiomeName(definition.Biome);
+                string localized = Localization.instance == null ? "(no Localization)" : Localization.instance.Localize(token);
+                sb.AppendLine($"    {definition.Name,-14} token \"{token}\" -> localized \"{localized}\"");
+            }
         }
 
         args.Context.PrintInfo(sb.ToString());
@@ -44,7 +70,7 @@ public static partial class TerminalManager
 
         // The same path the game takes when the player first walks into a biome, so bounties and
         // treasure maps for a custom biome can be tested without the biome mod generating terrain.
-        player.AddKnownBiome(biome);
+        BiomeDataManager.MarkDiscoveredBy(player, biome);
         args.Context.PrintInfo($"> {BiomeDataManager.GetName(biome)} is now a known biome");
     }
 

@@ -55,7 +55,15 @@ namespace Common {
         durability_per_level,
         max_item_level,
         amount,
-        tool_level
+        tool_level,
+        // Food items. Valheim keeps these on the same m_shared block as the combat stats above, so
+        // they ride the same config/apply path; nothing here is meaningful on a non-consumable.
+        food_health,
+        food_stamina,
+        food_eitr,
+        food_regen,
+        /// <summary>Seconds the food stays active (m_foodBurnTime).</summary>
+        food_duration
     }
 
     /// <summary>
@@ -76,7 +84,9 @@ namespace Common {
         Pickaxes,
         Magics,
         /// <summary>Catch-all for non-weapon craftables (jewellery, belts, trinkets).</summary>
-        Misc
+        Misc,
+        /// <summary>Consumables that use the food_* stats.</summary>
+        Food
     }
 
     /// <summary>

@@ -173,6 +173,14 @@ namespace EpicLoot_UnityLib
             return DisplayNameLocID;
         }
 
+        public float GetHoverOffset()
+        {
+            // Hoverable gained this member in the Sept 2026 game update. All 52 vanilla
+            // implementers return a serialized m_hoverOffset; zero keeps the enchanting
+            // table's hover text exactly where it has always been.
+            return 0f;
+        }
+
         private string FormatFeatureName(string featureName)
         {
             return string.Format($"el.et.v1.{featureName}");

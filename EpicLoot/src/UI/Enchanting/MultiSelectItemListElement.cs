@@ -66,16 +66,7 @@ namespace EpicLoot_UnityLib
                 ItemTooltip.m_tooltipPrefab = StoreGui.instance.m_listElement.GetComponent<UITooltip>().m_tooltipPrefab;
             }
 
-            if (Audio != null)
-            {
-                GameObject uiSFX = GameObject.Find("sfx_gui_button");
-                if (uiSFX != null)
-                {
-                    Audio.outputAudioMixerGroup = uiSFX.GetComponent<AudioSource>().outputAudioMixerGroup;
-                }
-
-                Audio.volume = EnchantingUIController.GetAudioLevel();
-            }
+            EnchantingUIController.SetupUIAudioSource(Audio);
 
             if (!ReadOnly)
             {
@@ -283,7 +274,7 @@ namespace EpicLoot_UnityLib
 
             if (Audio != null && !ReadOnly && !noSound && prevQuantity != _selectedQuantity)
             {
-                Audio.PlayOneShot(OnClickSFX, EnchantingUIController.GetAudioLevel());
+                Audio.PlayOneShot(OnClickSFX);
             }
 
             Refresh();

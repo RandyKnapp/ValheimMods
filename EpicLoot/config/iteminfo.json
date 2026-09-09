@@ -31,6 +31,14 @@
           "SwordNiedhogg",
           "THSwordSlayer",
           "SwordDyrnwyn"
+        ],
+        "defeated_frozenking_p3": [
+          "SwordGold",
+          "SwordGold_FrostFire",
+          "SwordGold_BloodLightning",
+          "THSwordGold",
+          "THSwordGold_FrostFire",
+          "THSwordGold_BloodLightning"
         ]
       }
     },
@@ -63,6 +71,11 @@
         ],
         "defeated_fader": [
           "AxeBerzerkr"
+        ],
+        "defeated_frozenking_p3": [
+          "AxeGold",
+          "AxeGold_FrostFire",
+          "AxeGold_BloodLightning"
         ]
       }
     },
@@ -86,7 +99,12 @@
         ],
         "defeated_goblinking": [],
         "defeated_queen": [],
-        "defeated_fader": []
+        "defeated_fader": [],
+        "defeated_frozenking_p3": [
+          "BattleaxeGold",
+          "BattleaxeGold_FrostFire",
+          "BattleaxeGold_BloodLightning"
+        ]
       }
     },
     {
@@ -117,7 +135,13 @@
         "defeated_queen": [
           "KnifeSkollAndHati"
         ],
-        "defeated_fader": []
+        "defeated_fader": [],
+        "defeated_frozenking_p3": [
+          "KnifeGold",
+          "KnifeGold_FrostFire",
+          "KnifeGold_BloodLightning",
+          "KnifeVoid"
+        ]
       }
     },
     {
@@ -142,7 +166,12 @@
           "FistBjornUndeadClaw"
         ],
         "defeated_queen": [],
-        "defeated_fader": []
+        "defeated_fader": [],
+        "defeated_frozenking_p3": [
+          "FistGold",
+          "FistGold_FrostFire",
+          "FistGold_BloodLightning"
+        ]
       }
     },
     {
@@ -169,6 +198,12 @@
           "StaffLightning",
           "StaffRedTroll",
           "StaffGreenRoots"
+        ],
+        "defeated_frozenking_p3": [
+          "StaffFrostOrbs",
+          "StaffOrbofAhri",
+          "StaffSpiritCaller",
+          "StaffThunderBlood"
         ]
       }
     },
@@ -200,6 +235,11 @@
         "defeated_queen": [],
         "defeated_fader": [
           "MaceEldner"
+        ],
+        "defeated_frozenking_p3": [
+          "MaceGold",
+          "MaceGold_FrostFire",
+          "MaceGold_BloodLightning"
         ]
       }
     },
@@ -225,7 +265,12 @@
         "defeated_queen": [
           "SledgeDemolisher"
         ],
-        "defeated_fader": []
+        "defeated_fader": [],
+        "defeated_frozenking_p3": [
+          "SledgeGold",
+          "SledgeGold_FrostFire",
+          "SledgeGold_BloodLightning"
+        ]
       }
     },
     {
@@ -252,7 +297,12 @@
         "defeated_queen": [
           "AtgeirHimminAfl"
         ],
-        "defeated_fader": []
+        "defeated_fader": [],
+        "defeated_frozenking_p3": [
+          "AtgeirGold",
+          "AtgeirGold_FrostFire",
+          "AtgeirGold_BloodLightning"
+        ]
       }
     },
     {
@@ -284,6 +334,11 @@
         ],
         "defeated_fader": [
           "SpearSplitner"
+        ],
+        "defeated_frozenking_p3": [
+          "SpearGold",
+          "SpearGold_FrostFire",
+          "SpearGold_BloodLightning"
         ]
       }
     },
@@ -309,7 +364,8 @@
           "PickaxeBlackMetal"
         ],
         "defeated_queen": [],
-        "defeated_fader": []
+        "defeated_fader": [],
+        "defeated_frozenking_p3": []
       }
     },
     {
@@ -339,6 +395,14 @@
         ],
         "defeated_fader": [
           "BowAshlands"
+        ],
+        "defeated_frozenking_p3": [
+          "BowGold",
+          "BowGold_FrostFire",
+          "BowGold_BloodLightning",
+          "CrossbowGold",
+          "CrossbowGold_FrostFire",
+          "CrossbowGold_BloodLightning"
         ]
       }
     },
@@ -362,7 +426,10 @@
         "defeated_queen": [
           "ShieldCarapaceBuckler"
         ],
-        "defeated_fader": []
+        "defeated_fader": [],
+        "defeated_frozenking_p3": [
+          "ShieldGoldBuckler"
+        ]
       }
     },
     {
@@ -391,6 +458,9 @@
         ],
         "defeated_fader": [
           "ShieldFlametal"
+        ],
+        "defeated_frozenking_p3": [
+          "ShieldGold"
         ]
       }
     },
@@ -419,6 +489,9 @@
         "defeated_queen": [],
         "defeated_fader": [
           "ShieldFlametalTower"
+        ],
+        "defeated_frozenking_p3": [
+          "ShieldGoldTower"
         ]
       }
     },
@@ -460,6 +533,11 @@
           "ArmorFlametalChest",
           "ArmorAshlandsMediumChest",
           "ArmorMageChest_Ashlands"
+        ],
+        "defeated_frozenking_p3": [
+          "ArmorDeepNorthHeavyChest",
+          "ArmorDeepNorthMediumChest",
+          "ArmorDeepNorthMageChest"
         ]
       }
     },
@@ -501,6 +579,11 @@
           "ArmorFlametalLegs",
           "ArmorAshlandsMediumlegs",
           "ArmorMageLegs_Ashlands"
+        ],
+        "defeated_frozenking_p3": [
+          "ArmorDeepNorthHeavylegs",
+          "ArmorDeepNorthMediumlegs",
+          "ArmorDeepNorthMagelegs"
         ]
       }
     },
@@ -540,6 +623,11 @@
           "HelmetFlametal",
           "HelmetAshlandsMediumHood",
           "HelmetMage_Ashlands"
+        ],
+        "defeated_frozenking_p3": [
+          "HelmetDNHeavy",
+          "HelmetDNMediumHood",
+          "HelmetDNMage"
         ]
       }
     },
@@ -571,6 +659,10 @@
         "defeated_fader": [
           "CapeAsh",
           "CapeAsksvin"
+        ],
+        "defeated_frozenking_p3": [
+          "CapeDeepNorth",
+          "CapeDeepNorthMage"
         ]
       }
     },
@@ -590,7 +682,8 @@
         "defeated_dragon": [],
         "defeated_goblinking": [],
         "defeated_queen": [],
-        "defeated_fader": []
+        "defeated_fader": [],
+        "defeated_frozenking_p3": []
       }
     },
     {
@@ -613,7 +706,8 @@
         "defeated_dragon": [],
         "defeated_goblinking": [],
         "defeated_queen": [],
-        "defeated_fader": []
+        "defeated_fader": [],
+        "defeated_frozenking_p3": []
       }
     },
     {
@@ -637,7 +731,8 @@
         "defeated_queen": [
           "Demister"
         ],
-        "defeated_fader": []
+        "defeated_fader": [],
+        "defeated_frozenking_p3": []
       }
     },
     {
@@ -673,6 +768,10 @@
         "defeated_fader": [
           "TrinketFlametalEitr",
           "TrinketFlametalStaminaHealth"
+        ],
+        "defeated_frozenking_p3": [
+          "TrinketBloodGoldHealth",
+          "TrinketBloodGoldStamina"
         ]
       }
     }

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using EpicLoot.Config;
+using UnityEngine;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
@@ -18,9 +19,14 @@ namespace EpicLoot.Adventure.Feature
             _merchantPanel = merchantPanel;
         }
 
-        public override bool NeedsRefresh(bool currenciesChanged)
+        public override bool NeedsRefresh()
         {
-            return currenciesChanged || _currentInterval != AdventureDataManager.Gamble.GetCurrentInterval();
+            return _currentInterval != AdventureDataManager.Gamble.GetCurrentInterval();
+        }
+
+        public override void UpdateAffordability(Currencies currencies)
+        {
+            ForEachElement(x => x.ApplyAffordability(currencies));
         }
 
         public override void RefreshButton(Currencies playerCurrencies)
@@ -65,9 +71,27 @@ namespace EpicLoot.Adventure.Feature
         {
             var player = Player.m_localPlayer;
             var selectedItem = GetSelectedItem();
-            if (player != null && selectedItem != null)
+            if (player == null || selectedItem == null)
             {
-                _merchantPanel.BuyItem(player, selectedItem);
+                return;
+            }
+
+            // Captured before the rebuild below destroys the row that holds it.
+            var itemInfo = selectedItem.ItemInfo;
+            if (!_merchantPanel.BuyItem(player, selectedItem))
+            {
+                return;
+            }
+
+            AdventureDataManager.Gamble.RecordGamblePurchase(player, itemInfo);
+
+            if (ELConfig.RemovePurchasedGambles.Value)
+            {
+                // The offer is gone from the list now, so the rows have to be rebuilt -- a currency
+                // change on its own only recolours them. This clears the selection, which is right:
+                // the row the player had selected no longer exists. The cached currencies are one
+                // frame stale (the coins were just spent); the next Update fixes the colours.
+                RefreshItems(_merchantPanel.GetPlayerCurrencies());
             }
         }
     }

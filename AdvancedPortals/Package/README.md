@@ -14,21 +14,40 @@ Adds three new portals to provide a lore-friendly and balanced way to reduce the
   * **Black Marble Portal:** Allows teleporting anything
     * *Requires:* 20 Black Marble, BlackMetal 5, 2 Refined Eitr
 
-## Version 1.1.0!
+## Version 1.2.0!
 
-As of the 1.1.0 update Jotunn is required to run this mod. A version check will be performed on server connection to ensure all players have the mod installed properly.
+Portals are now fully configurable building pieces. Alongside the recipe and teleport settings, you can
+change each portal's build category, whether it needs a crafting station at all, and which station that is.
+Every setting applies live, without restarting the game.
 
-Configurations should sync on servers and live update on changing the randyknapp.mods.advancedportals.cfg file.
+**Upgrading from 1.1.x:** the config file has been reorganised and your previous customisations will not
+carry over. Delete `randyknapp.mods.advancedportals.cfg` and re-apply any changes you had made.
+
+Jotunn is required. A version check runs on server connection to make sure every player has the mod
+installed properly. Settings are synced from the server and can be edited live, either in the in-game
+Configuration Manager or by editing `randyknapp.mods.advancedportals.cfg`.
 
 ## Configuration:
 
-Each portal can be configured:
+Each portal has its own config section named after it: `[Ancient Portal]`, `[Obsidian Portal]`,
+`[Black Marble Portal]`. Every setting is server-synced and only editable by an admin.
 
-  * Enabled: Enable building the portal. Existing portals of this type will not be removed.
-  * Recipe: Items needed to build the portal in the format "ITEM1:QUANTITY,ITEM2:QUANTITY,..." where each ITEM is the item ID ([found here](https://valheim-modding.github.io/Jotunn/data/objects/item-list.html)), and QUANTITY is an integer.
-  * Allowed Items: Items allowed to teleport through the portal in the format: "ITEM1,ITEM2,ITEM3,..." where ITEM is the item ID.
-  * Allow Everything: Allow all items through the portal.
-  * Use All Previous: For the Obsidian portal also include the Allowed Items from the Ancient portal. For the Black Marble portal also include the Allowed Items from both the Ancient and Obsidian portals.
+  * **Enabled:** Allow building this portal. Existing portals of this type are not removed.
+  * **Building Cost:** What it costs to build, as `ITEM,QUANTITY,REFUNDABLE` entries separated by `|`.
+    ITEM is the item ID ([found here](https://valheim-modding.github.io/Jotunn/data/objects/item-list.html)),
+    QUANTITY is a whole number, and REFUNDABLE is `true` or `false` for whether you get it back on removal.
+    For example: `ElderBark,20,true|Iron,5,true|SurtlingCore,2,true`
+  * **Requires Workbench:** Whether a crafting station is needed to build this portal at all.
+  * **Workbench:** Which crafting station is required, e.g. `piece_workbench`, `forge`, `blackforge`,
+    `piece_artisanstation`. Ignored when Requires Workbench is off.
+  * **Piece Category:** Which tab of the hammer build menu the portal appears in.
+  * **Allowed Items:** Items allowed to teleport through the portal, as `ITEM1, ITEM2, ITEM3, ...`
+  * **Allow Everything:** Allow all items through the portal. Overrides Allowed Items.
+  * **Use All Previous:** Also allow everything the portals listed above this one allow. The Obsidian
+    portal inherits from the Ancient portal; the Black Marble portal inherits from both.
+
+In the in-game Configuration Manager each portal is a single collapsible row under **Building Pieces**,
+with a table editor for the build cost. The teleport settings appear under the portal's own section.
 
 ## Installation:
 

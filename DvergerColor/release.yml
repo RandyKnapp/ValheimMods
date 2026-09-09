@@ -10,6 +10,9 @@ assembly: ImprovedDvergerCirclet
 # This repository predates the tool and spells the version constant its own way.
 version_const: Version
 
+# The Thunderstore/Hexium team these publish under.
+author_name: RandyKnapp
+
 # The directory and the plugin source say DvergerColor; the assembly (and the
 # Thunderstore package) say ImprovedDvergerCirclet.
 plugin_source: DvergerColor.cs

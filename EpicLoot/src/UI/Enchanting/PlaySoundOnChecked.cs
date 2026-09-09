@@ -16,6 +16,7 @@ namespace EpicLoot_UnityLib
         {
             _toggle = GetComponent<Toggle>();
             _toggle.onValueChanged.AddListener(OnToggleChanged);
+            EnchantingUIController.SetupUIAudioSource(Audio);
         }
 
         public void OnDestroy()
@@ -27,8 +28,7 @@ namespace EpicLoot_UnityLib
         {
             if (Audio != null && SFX != null && _toggle.isOn)
             {
-                Audio.volume = EnchantingUIController.GetAudioLevel();
-                Audio.PlayOneShot(SFX, Audio.volume);
+                Audio.PlayOneShot(SFX);
             }
         }
     }

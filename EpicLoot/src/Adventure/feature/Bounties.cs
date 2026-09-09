@@ -43,7 +43,23 @@ namespace EpicLoot.Adventure.Feature
             }
         }
 
-        public List<BountyInfo> GetAvailableBounties(int interval, bool removeAcceptedBounties = true)
+        /// <summary>Why one configured bounty target was not offered. Diagnostics only.</summary>
+        public sealed class BountyFilterNote
+        {
+            public string TargetID;
+            public string ConfiguredBiome;
+            public Heightmap.Biome Biome;
+            public string Reason;
+        }
+
+        /// <param name="diagnostics">
+        /// When non-null, every target dropped by the filter is recorded here with the reason. The
+        /// bounty list is silent by design - an empty merchant panel looks identical whether the
+        /// config is empty, the prefabs are missing or the player has been nowhere - so the console
+        /// command feeds this in to say which.
+        /// </param>
+        public List<BountyInfo> GetAvailableBounties(int interval, bool removeAcceptedBounties = true,
+            List<BountyFilterNote> diagnostics = null)
         {
             var player = Player.m_localPlayer;
             var random = GetRandomForInterval(interval, RefreshInterval);
@@ -55,12 +71,24 @@ namespace EpicLoot.Adventure.Feature
                 ComputeUnlockedBiomes(ELConfig.BossBountyMode.Value, key => ZoneSystem.instance.GetGlobalKey(key)) :
                 null;
 
+            void Note(BountyTargetConfig config, Heightmap.Biome biome, string reason)
+            {
+                diagnostics?.Add(new BountyFilterNote
+                {
+                    TargetID = config.TargetID,
+                    ConfiguredBiome = config.Biome,
+                    Biome = biome,
+                    Reason = reason
+                });
+            }
+
             foreach (var targetConfig in AdventureDataManager.Config.Bounties.Targets)
             {
                 // Only targets that exist in this game count, regardless of what the config says
                 if (PrefabManager.Instance.GetPrefab(targetConfig.TargetID) == null)
                 {
                     EpicLoot.Log($"Could not find bounty prefab {targetConfig.TargetID}");
+                    Note(targetConfig, Heightmap.Biome.None, "prefab not found");
                     continue;
                 }
 
@@ -69,13 +97,21 @@ namespace EpicLoot.Adventure.Feature
                 Heightmap.Biome biome = targetConfig.GetBiome();
                 if (biome == Heightmap.Biome.None)
                 {
+                    Note(targetConfig, biome, "biome name does not resolve");
                     continue;
                 }
 
-                if ((bossBountiesGated && !unlockedBiomes.Contains(biome)) || !player.m_knownBiome.Contains(biome))
+                if (bossBountiesGated && !unlockedBiomes.Contains(biome))
                 {
-                    // Remove the results of undefeated biome bosses &
+                    // Remove the results of undefeated biome bosses
+                    Note(targetConfig, biome, "biome boss not defeated");
+                    continue;
+                }
+
+                if (!BiomeDataManager.IsDiscoveredBy(player, biome))
+                {
                     // Remove the results that the player doesn't know about yet
+                    Note(targetConfig, biome, "biome not discovered");
                     continue;
                 }
 
