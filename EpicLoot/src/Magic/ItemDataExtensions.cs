@@ -428,6 +428,16 @@ public static class ItemDataExtensions
     /// </summary>
     public static void InitializeCustomData(this ItemDrop.ItemData itemData)
     {
+        // Opening a pre-1.0 world runs ZDOMan.ConvertContainers, which loads and re-saves every chest through
+        // a temporary Inventory. Its items are bare ItemData (AddTempItem sets m_dropPrefab, never m_shared),
+        // and the Inventory.Load postfix still sees them: MagicItemComponent.FirstLoad reading m_shared.m_name
+        // threw out of ZNet.LoadOldWorld and aborted the world load. Skipping loses nothing -- vanilla writes
+        // m_customData back verbatim, and the item is initialized for real when the chest is next loaded.
+        if (itemData?.m_shared == null)
+        {
+            return;
+        }
+
         // Shards rebuild their own magic data from m_shared.m_ammoType, so they need neither the prefab
         // reference nor its baked custom data. Done ahead of the m_dropPrefab check so a shard is healed
         // even when the prefab is unresolved. Cheap no-op for everything else.

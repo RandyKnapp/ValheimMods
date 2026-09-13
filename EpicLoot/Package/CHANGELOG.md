@@ -1,3 +1,9 @@
+**0.14.5**
+* Additional safety checks for world upgrades
+* Fix for edge cases that could cause the trader UI to not show up
+* Fix for existing loot pools that already contain invalid items
+
+
 **0.14.4**
 * Adds safety checks for data lookup issues
 * Prevents the item auto-sorter from adding new hidden, unused items to the loot pool

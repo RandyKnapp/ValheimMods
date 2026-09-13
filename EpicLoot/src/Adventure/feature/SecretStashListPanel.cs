@@ -51,13 +51,16 @@ namespace EpicLoot.Adventure.Feature
 
         public override void RefreshItems(Currencies currencies)
         {
-            _currentInterval = AdventureDataManager.SecretStash.GetCurrentInterval();
-
-            DestroyAllListElementsInList();
+            // Gathered before the old rows are destroyed. The other order left the stash permanently
+            // empty whenever the gather threw: nothing puts rows back until the next refresh, and the
+            // next refresh throws in the same place.
             var items = AdventureDataManager.SecretStash.GetSecretStashItems();
             var forestTokenItems = AdventureDataManager.SecretStash.GetForestTokenItems();
-
             var allItems = items.Concat(forestTokenItems).ToList();
+
+            _currentInterval = AdventureDataManager.SecretStash.GetCurrentInterval();
+            DestroyAllListElementsInList();
+
             for (var index = 0; index < allItems.Count; index++)
             {
                 var itemInfo = allItems[index];

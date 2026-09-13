@@ -113,6 +113,7 @@ namespace EpicLoot.Magic
                 string.IsNullOrEmpty(i.m_itemData.m_shared.m_dlc) &&
                 !string.IsNullOrEmpty(i.m_itemData.m_shared.m_description) &&
                 EpicLoot.IsAllowedMagicItemType(i.m_itemData) &&
+                !LootDenyList.IsDenied(i.name) &&
                 !AttackKillsWielder(i.m_itemData)).ToList();
 
             EpicLoot.Log($"Checking all equipment in game.");
@@ -174,59 +175,68 @@ namespace EpicLoot.Magic
         }
 
         /// <summary>
-        /// True for a prop weapon that kills whoever swings it, which must never be offered to a player.
+        /// True for a weapon that kills whoever swings it: its attack sets m_attackKillsSelf, which
+        /// Attack.Trigger (assembly_valheim/Attack.cs:578) answers with 9,999,999 untyped true damage to the
+        /// wielder via ApplyDamage as the swing completes.
         ///
-        /// <para>The Deep North update added 28 "SP_" prefabs (SP_AxeBronze, SP_BowDraugrFang,
-        /// SP_SwordBlackmetal, ...) as scripted-NPC props. They are indistinguishable from real gear by every
-        /// other test in the scan above -- full ItemDrops with m_autoPickup, a description, no DLC flag and a
-        /// real item type -- and they even share the vanilla display token ($item_axe_bronze), so they sail
-        /// into iteminfo.json and from there into the loot lists. What sets them apart is that their PRIMARY
-        /// attack carries m_attackKillsSelf, and Attack.Trigger (assembly_valheim/Attack.cs:578) answers that
-        /// with 9,999,999 untyped true damage to the wielder via ApplyDamage the instant the swing completes
-        /// -- no damage text, no attacker, straight past Character.Damage. Their secondary attack does not set
-        /// it, which is why only the basic attack is fatal.</para>
-        ///
-        /// <para>Tested on the flag rather than the "SP_" name prefix, so a prop added under some other naming
-        /// convention later is excluded too.</para>
+        /// <para>This is the BACKSTOP, not the main defence. The Deep North SP_ weapons set the flag, but
+        /// their FW_ twins and every prop armor piece do not, and they are otherwise field-for-field
+        /// identical to real gear -- so the known props are excluded by name through
+        /// <see cref="LootDenyList"/>. The flag test stays to catch a self-killing prop that a later update
+        /// adds under a name the deny list does not know yet.</para>
         /// </summary>
         private static bool AttackKillsWielder(ItemDrop.ItemData item)
         {
-            return item.m_shared.m_attack?.m_attackKillsSelf == true ||
-                item.m_shared.m_secondaryAttack?.m_attackKillsSelf == true;
+            return item?.m_shared != null &&
+                (item.m_shared.m_attack?.m_attackKillsSelf == true ||
+                 item.m_shared.m_secondaryAttack?.m_attackKillsSelf == true);
         }
 
         /// <summary>
-        /// Purges every <see cref="AttackKillsWielder"/> prop item from an already-written config, matched on
-        /// prefab name -- the same identity EnsureItemsInConfigMutating writes.
+        /// Purges prop items from an already-written iteminfo config: anything on <see cref="LootDenyList"/>,
+        /// plus any item whose attack kills its wielder. Matched on prefab name -- the identity
+        /// EnsureItemsInConfigMutating writes.
+        ///
+        /// <para>Runs on the merged result rather than relying on the equipment scan alone, because an entry
+        /// already in iteminfo.json is carried forward before any ignore check is consulted
+        /// (EnsureItemsInConfigMutating's "already in the config" branch), so a prop written by an earlier
+        /// build would otherwise be kept forever.</para>
         /// </summary>
         private static void RemovePropItemsFromConfig(List<ItemTypeInfo> config, List<ItemDrop> allItems)
         {
-            HashSet<string> propNames = new HashSet<string>(allItems
-                .Where(i => i.m_itemData?.m_shared != null && AttackKillsWielder(i.m_itemData))
+            HashSet<string> selfKilling = new HashSet<string>(allItems
+                .Where(i => AttackKillsWielder(i.m_itemData))
                 .Select(i => i.name));
 
-            if (propNames.Count == 0)
+            SortedSet<string> removedNames = new SortedSet<string>(StringComparer.Ordinal);
+            bool IsProp(string name)
             {
-                return;
+                if (!LootDenyList.IsDenied(name) && !selfKilling.Contains(name))
+                {
+                    return false;
+                }
+
+                removedNames.Add(name);
+                return true;
             }
 
             int removed = 0;
             foreach (ItemTypeInfo itemType in config)
             {
 #pragma warning disable 612 // Items is obsolete, but a config written by an older build may still use it.
-                removed += itemType.Items.RemoveAll(propNames.Contains);
+                removed += itemType.Items.RemoveAll(IsProp);
 #pragma warning restore 612
                 foreach (KeyValuePair<string, List<string>> byBoss in itemType.ItemsByBoss)
                 {
-                    removed += byBoss.Value.RemoveAll(propNames.Contains);
+                    removed += byBoss.Value.RemoveAll(IsProp);
                 }
             }
 
             if (removed > 0)
             {
-                EpicLoot.LogWarningForce($"Removed {removed} self-killing prop item entries from iteminfo.json " +
-                    $"(e.g. {string.Join(", ", propNames.OrderBy(x => x).Take(3))}). These are NPC props whose " +
-                    "basic attack kills whoever swings it; they must never be player loot.");
+                EpicLoot.LogWarningForce($"Removed {removed} prop item entries ({removedNames.Count} distinct) " +
+                    $"from iteminfo.json: {string.Join(", ", removedNames)}. These are NPC props -- invisible " +
+                    "when worn, and in some cases killing whoever attacks with them -- and must never be loot.");
             }
         }
 
@@ -714,6 +724,15 @@ namespace EpicLoot.Magic
                 return false;
             }
 
+            // Denied props are rejected before anything else. The ObjectDB fallback at the bottom accepts ANY
+            // real ItemDrop, which is exactly how SP_/FW_ entries survived every rewrite once written.
+            // Rejecting here deletes them from ItemSets, loot table Loot lists and RarityItems maps alike.
+            if (LootDenyList.IsDenied(name))
+            {
+                EpicLoot.Log($"REMOVING denied prop item {name} from the loot configuration.");
+                return false;
+            }
+
             if (metaLootTables != null && name.Contains("."))
             {
                 string reference = name.Split('.')[0];
@@ -731,8 +750,10 @@ namespace EpicLoot.Magic
 
             // ObjectDB.m_items also holds a few vanilla non-item prefabs (SnowRoller, ...), which
             // LootRoller can never spawn as a drop, so a name has to resolve to an actual ItemDrop.
+            // ...and a self-killing prop the deny list does not know yet is rejected on its flag.
             GameObject prefab = ObjectDB.instance.GetItemPrefab(name);
-            return prefab != null && prefab.TryGetComponent(out ItemDrop _);
+            return prefab != null && prefab.TryGetComponent(out ItemDrop itemDrop) &&
+                !AttackKillsWielder(itemDrop.m_itemData);
         }
 
         // Drops only the unresolvable rarities from an entry's per-rarity map, leaving the entry itself

@@ -103,10 +103,12 @@ namespace EpicLoot.Adventure.Feature
 
         public override void RefreshItems(Currencies currencies)
         {
-            _currentInterval = AdventureDataManager.TreasureMaps.GetCurrentInterval();
-
-            DestroyAllListElementsInList();
+            // Gathered before the destroy, for the reason given in SecretStashListPanel.
             System.Collections.Generic.List<TreasureMapItemInfo> allItems = AdventureDataManager.TreasureMaps.GetTreasureMaps();
+
+            _currentInterval = AdventureDataManager.TreasureMaps.GetCurrentInterval();
+            DestroyAllListElementsInList();
+
             for (int index = 0; index < allItems.Count; index++)
             {
                 TreasureMapItemInfo itemInfo = allItems[index];
