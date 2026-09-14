@@ -37,6 +37,11 @@ namespace EpicLoot.MagicItemEffects.Shards {
             { DischargeIgnoreWindowKey, DefaultDischargeIgnoreWindow },
         };
 
+        public static void RegisterDisplayValues() {
+            MagicItem.RegisterDisplayValues(MagicEffectType.ShockingCharge,
+                value => new object[] { GetDamageFraction(value) * 100f, (float)GetMaxCharges() });
+        }
+
         // Clamped to at least 1 so a misconfiguration can't discharge on every hit through a zero threshold.
         private static int GetMaxCharges() {
             return EffectConfig.GetIntAtLeast(MagicEffectType.ShockingCharge,

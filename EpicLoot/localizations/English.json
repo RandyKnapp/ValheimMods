@@ -656,7 +656,7 @@
     "mod_epicloot_me_stormrider_display": "+{0}% Movement Speed in Storms",
     "mod_epicloot_me_stormrider_desc": "+{0}% movement speed while a storm rages.",
 
-    "mod_epicloot_me_shockingcharge_display": "Shocking Charge",
+    "mod_epicloot_me_shockingcharge_display": "Shocking Charge: {0:0.#}% Banked Damage after {1} Hits",
     "mod_epicloot_me_shockingcharge_desc": "Your combat hits build charges. At max charge, the next hit unleashes a forward lightning shockwave that deals a portion of your previous hits' damage.",
     "mod_epicloot_me_forestsaid_display": "Forest's Aid",
     "mod_epicloot_me_forestsaid_desc": "When you are hit, ensnaring roots erupt and immobilize nearby enemies.",
