@@ -658,17 +658,17 @@
 
     "mod_epicloot_me_shockingcharge_display": "Shocking Charge",
     "mod_epicloot_me_shockingcharge_desc": "Your combat hits build charges. At max charge, the next hit unleashes a forward lightning shockwave that deals a portion of your previous hits' damage.",
-    "mod_epicloot_me_forestsaid_display": "Forest's Aid",
+    "mod_epicloot_me_forestsaid_display": "Forest's Aid: {0:0.#}m Radius, {1:0.#}s Cooldown",
     "mod_epicloot_me_forestsaid_desc": "When you are hit, ensnaring roots erupt and immobilize nearby enemies.",
-    "mod_epicloot_me_corpserot_display": "Corpse Rot",
+    "mod_epicloot_me_corpserot_display": "Corpse Rot: {0:0.#} Poison, {1:0.#}s Cooldown, {2:0.#}m Radius",
     "mod_epicloot_me_corpserot_desc": "Enemies you kill can burst in a cloud of venom, poisoning nearby foes.",
-    "mod_epicloot_me_icyretribution_display": "Icy Retribution",
+    "mod_epicloot_me_icyretribution_display": "Icy Retribution: {0:0.#} Frost, {1:0.#}s Cooldown",
     "mod_epicloot_me_icyretribution_desc": "When you are hit, detonate a frost nova around you. Cooldown scales with rarity.",
     "mod_epicloot_me_meteorsummoner_display": "Meteor Summoner: {0}x Hit Damage",
     "mod_epicloot_me_meteorsummoner_desc": "Every {1} weapon hits, your next hit calls down a fiery meteor on the target that deals {0}x that hit's damage as fire.",
-    "mod_epicloot_me_everflow_display": "Queen's Everflow",
+    "mod_epicloot_me_everflow_display": "Queen's Everflow: +{0:0.#}% Regen per Stack (max {1}, {2:0.#}s)",
     "mod_epicloot_me_everflow_desc": "Killing a creature grants a stacking buff that boosts your health, stamina and eitr regeneration.",
-    "mod_epicloot_me_necroticfire_display": "Necrotic Fire",
+    "mod_epicloot_me_necroticfire_display": "Necrotic Fire: {0:0.#}% Physical as Fire and Poison",
     "mod_epicloot_me_necroticfire_desc": "Strips all physical damage from your weapon and adds that full amount as both fire and poison damage.",
 
 

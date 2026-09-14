@@ -23,6 +23,35 @@ namespace EpicLoot.MagicItemEffects.Shards {
             { CooldownPerRarityKey, DefaultCooldownPerRarity },
         };
 
+        public static void RegisterDisplayValues() {
+            MagicItem.RegisterDisplayValues(MagicEffectType.IcyRetribution,
+                value => new object[] { GetFrostDamage(value), GetCooldownFromValue(value) });
+        }
+
+        private static float GetFrostDamage(float value) {
+            return value * EffectConfig.Get(MagicEffectType.IcyRetribution,
+                FrostPerTierKey, DefaultFrostPerTier);
+        }
+
+        // The display provider receives the stored shard value but not its source rarity. Select the closest
+        // configured value so custom rarity ramps still show the cooldown used by that rarity.
+        private static float GetCooldownFromValue(float value) {
+            ItemRarity closestRarity = ItemRarity.Epic;
+            float closestDifference = float.MaxValue;
+            ShardStones.ShardEffectDefinition effect =
+                ShardStones.Shards.ShardDefinitions.Get(ShardStones.ShardType.Moder)?.UniformEffect;
+            if (effect != null) {
+                foreach (KeyValuePair<ItemRarity, float> entry in effect.ValuesPerRarity) {
+                    float difference = Mathf.Abs(entry.Value - value);
+                    if (difference < closestDifference) {
+                        closestDifference = difference;
+                        closestRarity = entry.Key;
+                    }
+                }
+            }
+            return GetCooldown(closestRarity);
+        }
+
         // Visual: our own trimmed copy of the fenring's ice nova, built and cached by FrostNovaFx so the
         // fenring's full-length nova is left untouched. Played at the helper's default speed.
         private const string NovaTemplateName = "EL_ModerIcyRetributionNova";
@@ -58,8 +87,7 @@ namespace EpicLoot.MagicItemEffects.Shards {
             DamageInRadius.DamageEnemiesInRadius(player, player.GetCenterPoint(),
                 EffectConfig.Get(MagicEffectType.IcyRetribution, RadiusKey, DefaultRadius),
                 new HitData.DamageTypes {
-                    m_frost = value * EffectConfig.Get(MagicEffectType.IcyRetribution,
-                        FrostPerTierKey, DefaultFrostPerTier)
+                    m_frost = GetFrostDamage(value)
                 });
             ShowCooldown(player, GetCooldown(player));
         }
@@ -68,10 +96,14 @@ namespace EpicLoot.MagicItemEffects.Shards {
         // 140s at Epic, +20s for each rarity above it (Legendary 160s, Mythic 180s). Floored just above zero:
         // a ttl of 0 is "no timeout" to vanilla, which would gate the shard permanently.
         private static float GetCooldown(Player player) {
-            var stepsAboveEpic = Mathf.Max(0, (int)GetEffectRarity(player) - (int)ItemRarity.Epic);
-            var baseCooldown = EffectConfig.Get(MagicEffectType.IcyRetribution,
+            return GetCooldown(GetEffectRarity(player));
+        }
+
+        private static float GetCooldown(ItemRarity rarity) {
+            int stepsAboveEpic = Mathf.Max(0, (int)rarity - (int)ItemRarity.Epic);
+            float baseCooldown = EffectConfig.Get(MagicEffectType.IcyRetribution,
                 BaseCooldownKey, DefaultBaseCooldown);
-            var perRarity = EffectConfig.Get(MagicEffectType.IcyRetribution,
+            float perRarity = EffectConfig.Get(MagicEffectType.IcyRetribution,
                 CooldownPerRarityKey, DefaultCooldownPerRarity);
             return Mathf.Max(0.1f, baseCooldown + stepsAboveEpic * perRarity);
         }

@@ -23,6 +23,11 @@ namespace EpicLoot.MagicItemEffects.Shards {
             { BuffDurationKey, DefaultBuffDuration },
         };
 
+        public static void RegisterDisplayValues() {
+            MagicItem.RegisterDisplayValues(MagicEffectType.Everflow,
+                value => new object[] { value, (float)GetMaxStacks(), GetBuffDuration() });
+        }
+
         private const string BuffName = "EL_QueenEverflow";
         private static readonly int BuffHash = BuffName.GetStableHashCode();
         private static SE_QueenEverflow _buffPrototype;

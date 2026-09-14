@@ -27,6 +27,23 @@ namespace EpicLoot.MagicItemEffects.Shards {
             { RadiusPerTierKey, DefaultRadiusPerTier },
         };
 
+        public static void RegisterDisplayValues() {
+            MagicItem.RegisterDisplayValues(MagicEffectType.ForestsAid,
+                value => new object[] { GetRadius(value), GetCooldown(value) });
+        }
+
+        private static float GetRadius(float value) {
+            return EffectConfig.Get(MagicEffectType.ForestsAid, BaseRadiusKey, DefaultBaseRadius)
+                + value * EffectConfig.Get(MagicEffectType.ForestsAid, RadiusPerTierKey, DefaultRadiusPerTier);
+        }
+
+        private static float GetCooldown(float value) {
+            return Mathf.Max(0.1f,
+                EffectConfig.Get(MagicEffectType.ForestsAid, CooldownKey, DefaultCooldown)
+                + value * EffectConfig.Get(MagicEffectType.ForestsAid,
+                    CooldownPerValueKey, DefaultCooldownPerValue));
+        }
+
         private const string ImmobilizeSE = "ImmobilizedAshlands";
         private const string HitFxPrefab = "fx_natureweapon_hit";
         private static readonly int ImmobilizeHash = ImmobilizeSE.GetStableHashCode();
@@ -55,14 +72,8 @@ namespace EpicLoot.MagicItemEffects.Shards {
                 return;
             }
 
-            var radius = EffectConfig.Get(MagicEffectType.ForestsAid, BaseRadiusKey, DefaultBaseRadius)
-                + value * EffectConfig.Get(MagicEffectType.ForestsAid, RadiusPerTierKey, DefaultRadiusPerTier);
-            // Cooldown floored just above zero: a ttl of 0 is "no timeout" to vanilla, which would gate the
-            // shard permanently rather than removing the cooldown.
-            var cooldown = Mathf.Max(0.1f,
-                EffectConfig.Get(MagicEffectType.ForestsAid, CooldownKey, DefaultCooldown)
-                + value * EffectConfig.Get(MagicEffectType.ForestsAid,
-                    CooldownPerValueKey, DefaultCooldownPerValue));
+            float radius = GetRadius(value);
+            float cooldown = GetCooldown(value);
 
             Immobilize(player, radius);
             ShowCooldown(player, cooldown);

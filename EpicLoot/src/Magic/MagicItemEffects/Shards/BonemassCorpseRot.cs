@@ -24,6 +24,20 @@ namespace EpicLoot.MagicItemEffects.Shards {
             { PoisonPerTierKey, DefaultPoisonPerTier },
         };
 
+        public static void RegisterDisplayValues() {
+            MagicItem.RegisterDisplayValues(MagicEffectType.CorpseRot,
+                value => new object[] { GetPoisonDamage(value), GetCooldown(), GetRadius() });
+        }
+
+        private static float GetPoisonDamage(float value) {
+            return value * EffectConfig.Get(MagicEffectType.CorpseRot,
+                PoisonPerTierKey, DefaultPoisonPerTier);
+        }
+
+        private static float GetRadius() {
+            return EffectConfig.Get(MagicEffectType.CorpseRot, RadiusKey, DefaultRadius);
+        }
+
         // Floored just above zero: a ttl of 0 is "no timeout" to vanilla, which would gate the shard
         // permanently rather than removing the cooldown.
         private static float GetCooldown() {
@@ -66,10 +80,9 @@ namespace EpicLoot.MagicItemEffects.Shards {
                 var center = __instance.GetCenterPoint();
                 SpawnExplosionFx(__instance.transform.position);
                 DamageInRadius.DamageEnemiesInRadius(player, center,
-                    EffectConfig.Get(MagicEffectType.CorpseRot, RadiusKey, DefaultRadius),
+                    GetRadius(),
                     new HitData.DamageTypes {
-                        m_poison = value * EffectConfig.Get(MagicEffectType.CorpseRot,
-                            PoisonPerTierKey, DefaultPoisonPerTier)
+                        m_poison = GetPoisonDamage(value)
                     });
                 ShowCooldown(player);
             }
