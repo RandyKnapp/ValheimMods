@@ -564,39 +564,6 @@ namespace EquipmentAndQuickSlots {
             }
         }
 
-        // Vanilla gamepad navigation walks the raw grid; steer the selection off reserved and
-        // inactive slot cells (their elements are hidden) onto the nearest active slot.
-        [HarmonyPatch(typeof(InventoryGrid), "UpdateGamepad")]
-        private static class InventoryGrid_UpdateGamepad_SkipInactiveSlotCells {
-            private static void Postfix(InventoryGrid __instance) {
-                if (!InventoryGui.instance || __instance != InventoryGui.instance.m_playerGrid)
-                    return;
-
-                Vector2i sel = __instance.m_selected;
-                if (sel.y < VisibleRows)
-                    return;
-
-                int slotIndex = (sel.y - VisibleRows) * InventoryWidth + sel.x;
-                if (slotIndex >= 0 && slotIndex < slots.Length && slots[slotIndex].IsActive)
-                    return;
-
-                int best = -1;
-                int bestDist = int.MaxValue;
-                for (int i = 0; i < slots.Length; i++) {
-                    if (!slots[i].IsActive)
-                        continue;
-
-                    int dist = Math.Abs(i - slotIndex);
-                    if (dist < bestDist) {
-                        bestDist = dist;
-                        best = i;
-                    }
-                }
-
-                __instance.m_selected = best >= 0 ? slots[best].GridPosition : new Vector2i(Math.Min(sel.x, InventoryWidth - 1), VisibleRows - 1);
-            }
-        }
-
         [HarmonyPatch(typeof(InventoryGrid), nameof(InventoryGrid.UpdateGui))]
         private static class InventoryGrid_UpdateGui_RelocateSlotElements {
             private static void Postfix(InventoryGrid __instance) {

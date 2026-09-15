@@ -10,6 +10,21 @@ assembly: MinimalStatusEffects
 # This repository predates the tool and spells the version constant its own way.
 version_const: Version
 
+# The Thunderstore/Hexium team these publish under.
+author_name: RandyKnapp
+
 # Copy the build into this machine's mod manager profiles after every build.
 deploy:
   enabled: true
+
+publish:
+  thunderstore:
+    enabled: true
+  nexus:
+    enabled: true
+    mod_id: 75
+    file_id: 467302
+  github:
+    enabled: true
+  discord:
+    enabled: true

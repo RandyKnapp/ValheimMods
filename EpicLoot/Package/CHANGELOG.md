@@ -1,3 +1,6 @@
+**0.14.6**
+* Destroying an enchanting table now refunds the full upgrade cost of every unlocked feature. Amounts above an item's stack size (Surtling Cores, berries, mushrooms, fish) were previously lost
+
 **0.14.5**
 * Additional safety checks for world upgrades
 * Fix for edge cases that could cause the trader UI to not show up

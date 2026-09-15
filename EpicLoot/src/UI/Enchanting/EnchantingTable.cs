@@ -210,7 +210,7 @@ namespace EpicLoot_UnityLib
             }
         }
 
-        private static int GetDefaultFeatureLevel(EnchantingFeature feature)
+        public static int GetDefaultFeatureLevel(EnchantingFeature feature)
         {
             if (!EnchantingUIController.UpgradesActive(feature, out bool featureActive))
             {

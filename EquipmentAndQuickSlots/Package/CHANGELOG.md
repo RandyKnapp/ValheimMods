@@ -1,3 +1,9 @@
+**3.1.3**
+* Controller navigation in the inventory follows the equipment panel's layout: the D-pad moves
+  between the inventory, the equipment cells, the quick slots and API slots in the direction
+  pressed, an open chest can be reached with the D-pad again, and the controller tooltip follows
+  the selection onto slot cells.
+
 **3.1.2**
 * Fixes item placement change when secondary sources change the inventory size
 * Console commands need devcommands again
