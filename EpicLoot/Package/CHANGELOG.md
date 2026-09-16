@@ -1,3 +1,7 @@
+**0.14.7**
+* Recompiled against current game build (fixes building destruction issues)
+
+
 **0.14.6**
 * Destroying an enchanting table now refunds the full upgrade cost of every unlocked feature. Amounts above an item's stack size (Surtling Cores, berries, mushrooms, fish) were previously lost
 * Optimizes bounty and treasure chests spawning, now spawns the target considerably earlier

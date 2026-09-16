@@ -86,6 +86,13 @@
     <EmbeddedResource Remove="config-patches\**" />
     <None Remove="config-patches\**" />
     <None Remove="localizations\*" />
+    <!-- A stray copy of the Unity ExternalLibraries folder sits under this project. The default
+         glob put its DLLs into @(None), and ResolveAssemblyReference checks @(None) before any
+         HintPath, so every vanilla, BepInEx and Jotunn reference resolved to that snapshot instead
+         of the installed game. A Valheim update then built green against the old API and failed
+         at runtime: PlayerProfile.s_bypassCheatChecks became a property, and the compiled field
+         read threw MissingFieldException from Piece.DropResources, blocking every piece removal. -->
+    <None Remove="ValheimUnity\**" />
   </ItemGroup>
 
   <ItemGroup>
