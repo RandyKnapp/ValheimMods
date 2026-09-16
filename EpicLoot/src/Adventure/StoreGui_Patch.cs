@@ -9,12 +9,37 @@ namespace EpicLoot.Adventure
         public static GameObject MerchantPanel;
         public static GameObject TemperPanel;
 
+        /// <summary>
+        /// A finalizer rather than a postfix, because Harmony skips every postfix once the original
+        /// throws -- and StoreGui.Show activates its own window *before* calling FillList, so a throw
+        /// in there leaves the vanilla store on screen with no adventure panel beside it and nothing
+        /// naming EpicLoot in the log. FillList reads `tradeItem.m_tooltip.Length` with no null check,
+        /// so any mod that adds trader stock from code without setting m_tooltip/m_name to "" (Unity's
+        /// serializer would have) takes this panel down with it.
+        ///
+        /// It does not swallow the exception: a void finalizer leaves whatever came in to keep
+        /// propagating, so the offending mod is still reported.
+        /// </summary>
         [HarmonyPatch(nameof(StoreGui.Show))]
-        [HarmonyPostfix]
-        public static void Show_Postfix(StoreGui __instance)
+        [HarmonyFinalizer]
+        public static void Show_Finalizer(StoreGui __instance)
         {
-            // Show runs its body only when the trader or the visibility changed, but the postfix runs
-            // either way, and Hide leaves m_trader null -- so never assume it is there.
+            try
+            {
+                OpenPanelFor(__instance);
+            }
+            catch (System.Exception e)
+            {
+                // Returning an exception from a finalizer replaces the original one, which would bury
+                // whatever actually broke Show. Report and let that one through untouched.
+                EpicLoot.LogErrorForce($"[StoreGui] Failed to open the EpicLoot trader panel:\n{e}");
+            }
+        }
+
+        private static void OpenPanelFor(StoreGui __instance)
+        {
+            // Show runs its body only when the trader or the visibility changed, but this runs either
+            // way, and Hide leaves m_trader null -- so never assume it is there.
             if (!EpicLoot.IsAdventureModeEnabled() || __instance == null || __instance.m_trader == null)
             {
                 return;

@@ -1,5 +1,7 @@
 **0.14.6**
 * Destroying an enchanting table now refunds the full upgrade cost of every unlocked feature. Amounts above an item's stack size (Surtling Cores, berries, mushrooms, fish) were previously lost
+* Optimizes bounty and treasure chests spawning, now spawns the target considerably earlier
+* Fixes Epicloot trader UI not showing up when other mods break the trader (your other mods are still breaking your game, just not breaking Epicloot)
 
 **0.14.5**
 * Additional safety checks for world upgrades

@@ -1,4 +1,5 @@
-﻿using EpicLoot.Data;
+﻿using EpicLoot.Biomes;
+using EpicLoot.Data;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -33,23 +34,52 @@ namespace EpicLoot.Adventure
 
         private BoolZNetProperty isBounty { get; set; }
 
-        /// <summary>Frames to settle before the first search attempt.</summary>
-        private const int InitialSearchDelayFrames = 300;
+        /// <summary>
+        /// Seconds to wait before re-attempting a search that found nowhere to spawn. A blocked search
+        /// usually stays blocked until a ward comes down, but a retry is cheap now that the search
+        /// itself takes frames rather than seconds.
+        /// </summary>
+        private const float RetrySearchDelaySeconds = 10f;
 
         /// <summary>
-        /// Frames to wait before re-attempting a search that found nowhere to spawn. Longer than the
-        /// initial delay because a blocked search usually stays blocked until a ward comes down.
+        /// Seconds between lookups of a creature prefab ZNetScene does not have. Only re-installing the
+        /// mod that adds it can fix that, so there is no point asking often.
         /// </summary>
-        private const int RetrySearchDelayFrames = 1800;
+        private const float MissingPrefabRetrySeconds = 30f;
+
+        /// <summary>How long the search waits for a world biome index that is still building.</summary>
+        private const float IndexWaitTimeoutSeconds = 10f;
+
+        /// <summary>How often the search re-checks whether the area around the start point has loaded.</summary>
+        private const float AreaPollSeconds = 0.25f;
 
         private const int SpawnAttemptsPerBand = 100;
+
+        /// <summary>
+        /// Candidates evaluated before yielding a frame. Each one is two raycasts and a walk over the
+        /// loaded wards, so this keeps a search that rejects everything to a few milliseconds a frame.
+        /// </summary>
+        private const int CandidatesPerFrame = 10;
 
         /// <summary>Set once a missing creature prefab has been reported, so it is logged one time.</summary>
         private bool reportedMissingPrefab = false;
 
-        private int currentUpdates = 0;
-        private int updatesRequired = InitialSearchDelayFrames;
+        /// <summary>Set once an exhausted search has been reported at Force level for this instance.</summary>
+        private bool reportedExhausted = false;
+
+        /// <summary>Time.time before which Update will not start (or restart) a search.</summary>
+        private float nextSearchTime = 0f;
         private bool startedPlacement = false;
+
+        // Timing for the placement log line, measured from when this client started searching.
+        private float searchStartTime;
+        private float areaReadyTime;
+        private int candidatesRejected;
+        private int placedBand;
+
+        private static readonly List<ZDO> ZoneObjectsScratch = new();
+        private readonly Dictionary<Vector2s, bool> zoneReadyCache = new();
+
         private Vector3 defaultSpawn = new(1, 1, 1);
         private BountyInfo defaultBounty = new();
         private TreasureMapChestInfo defaultTreasure = new();
@@ -93,9 +123,8 @@ namespace EpicLoot.Adventure
                 return;
             }
 
-            if (currentUpdates < updatesRequired)
+            if (Time.time < nextSearchTime)
             {
-                currentUpdates += 1;
                 return;
             }
 
@@ -217,6 +246,7 @@ namespace EpicLoot.Adventure
                 }
             }
 
+            LogPlacement($"bounty target '{bounty.Target.MonsterID}'", bounty.Biome);
             placed.ForceSet(true);
         }
 
@@ -244,23 +274,76 @@ namespace EpicLoot.Adventure
             }
 
             treasureChest.Setup(treasure.PlayerID, treasure.Biome, treasure.Interval);
+            LogPlacement("treasure chest", treasure.Biome);
             placed.ForceSet(true);
+        }
+
+        /// <summary>
+        /// One always-visible line per placement. Every other line on this path is gated, which is why
+        /// "my bounty never spawned" reports used to arrive with logs that said nothing at all. When
+        /// the spawn point was chosen by another client (or before this instance was loaded), there is
+        /// no local search to time and only the fact of placement is reported.
+        /// </summary>
+        private void LogPlacement(string what, Heightmap.Biome biome)
+        {
+            string biomeName = BiomeDataManager.GetName(biome);
+            if (searchStartTime <= 0f)
+            {
+                EpicLoot.LogForce($"Adventure {what} ({biomeName}) placed at a spawn point chosen earlier.");
+                return;
+            }
+
+            EpicLoot.LogForce($"Adventure {what} ({biomeName}) placed after {Time.time - searchStartTime:0.0}s: " +
+                $"area wait {areaReadyTime - searchStartTime:0.0}s, {candidatesRejected} spots rejected, " +
+                $"ring {placedBand}.");
         }
 
         internal IEnumerator DeterminespawnPoint(Vector3 startingSpawnPoint,
             Heightmap.Biome biome, WaterPlacement waterPlacement = WaterPlacement.Reject)
         {
+            searchStartTime = Time.time;
+            candidatesRejected = 0;
+            zoneReadyCache.Clear();
+
             // The owner of this spawner is not necessarily the player who bought it, so the biome
-            // index may never have been built on this client. Start it now; the waits below give it
-            // far longer than it needs, and IsOpenWater falls back safely if it is somehow not ready.
+            // index may never have been built on this client. A build takes a fraction of a second;
+            // IsOpenWater falls back safely if it is somehow still not ready when the wait gives up.
             WorldBiomeIndex.EnsureBuilt();
 
-            yield return new WaitForSeconds(5);
-
-            while (!ZNetScene.instance.IsAreaReady(startingSpawnPoint))
+            float indexDeadline = Time.unscaledTime + IndexWaitTimeoutSeconds;
+            while (WorldBiomeIndex.State == BiomeIndexState.Building && Time.unscaledTime < indexDeadline)
             {
-                yield return new WaitForSeconds(1f);
+                yield return null;
+                if (!StillOwner())
+                {
+                    AbandonSearch();
+                    yield break;
+                }
             }
+
+            // This used to be a fixed 300 frames plus five seconds, then vanilla's IsAreaReady polled
+            // once a second -- 10-15s of nothing after arriving, before the search had even begun.
+            // IsAreaSettled waits exactly as long as loading actually takes.
+            while (!IsAreaSettled(startingSpawnPoint))
+            {
+                yield return new WaitForSeconds(AreaPollSeconds);
+                if (!StillOwner())
+                {
+                    AbandonSearch();
+                    yield break;
+                }
+            }
+
+            // One frame so colliders created this frame are in the physics scene before the raycasts.
+            yield return null;
+            if (!StillOwner())
+            {
+                AbandonSearch();
+                yield break;
+            }
+
+            areaReadyTime = Time.time;
+            zoneReadyCache.Clear();
 
             // TODO: If bounties get their own minimap area radius config this must choose the correct one
             float radius = AdventureDataManager.Config.TreasureMap.MinimapAreaRadius;
@@ -277,6 +360,7 @@ namespace EpicLoot.Adventure
             Vector3 determinedSpawn = startingSpawnPoint;
             bool foundSpawn = false;
             PrivateArea blockingWard = null;
+            int candidatesThisFrame = 0;
 
             // Band 0 is the original search disc. Every band after it is an annulus one MinimapAreaRadius
             // further out - the smallest step that can escape a ward, since a ward vetoes everything
@@ -299,10 +383,26 @@ namespace EpicLoot.Adventure
                     determinedSpawn = startingSpawnPoint + new Vector3(
                         Mathf.Cos(sampleAngle) * sampleRadius, 0, Mathf.Sin(sampleAngle) * sampleRadius);
 
-                    if (spawnLocationAttempts > 1 && spawnLocationAttempts % 10 == 0)
+                    // Spread the work over frames. This used to sleep a whole second after every ten
+                    // rejected candidates, so a cluttered or partly flooded area cost up to 10s per
+                    // band -- a minute across every band -- before anything could appear.
+                    if (++candidatesThisFrame >= CandidatesPerFrame)
                     {
-                        // Sleep to avoid locking the thread
-                        yield return new WaitForSeconds(1f);
+                        candidatesThisFrame = 0;
+                        yield return null;
+                        if (!StillOwner())
+                        {
+                            AbandonSearch();
+                            yield break;
+                        }
+                    }
+
+                    // A candidate whose zone has not finished creating its objects would pass the
+                    // floor test straight through a rock that simply does not exist yet.
+                    if (!IsCandidateZoneReady(ZoneSystem.GetZone(determinedSpawn)))
+                    {
+                        spawnLocationAttempts += 1;
+                        continue;
                     }
 
                     ZoneSystem.instance.GetGroundData(
@@ -370,8 +470,12 @@ namespace EpicLoot.Adventure
                     }
 
                     foundSpawn = true;
+                    placedBand = band;
                     break;
                 }
+
+                // Only failures increment the attempt counter, so it is exactly this band's rejections.
+                candidatesRejected += spawnLocationAttempts;
 
                 if (!foundSpawn && band < maxExpansions)
                 {
@@ -385,13 +489,27 @@ namespace EpicLoot.Adventure
 
             if (!foundSpawn)
             {
-                EpicLoot.LogWarning(
+                string message =
                     "Could not find a valid adventure spawn point after exhausting every search band. " +
                     $"Start=({startingSpawnPoint.x:0.##}, {startingSpawnPoint.y:0.##}, {startingSpawnPoint.z:0.##}), " +
                     $"Biome={biome}, SearchRadius={radius:0.##}, Expansions={maxExpansions}, " +
                     $"Ward={AdventureWardCheck.DescribeWard(blockingWard)}. " +
                     "Leaving the spawner in place to retry - it is not safe to discard a bounty or " +
-                    "treasure map the player has already paid for.");
+                    "treasure map the player has already paid for.";
+
+                // This is the one outcome that really does leave a paid-for spawn missing, so the first
+                // report must reach a default-level log. Later retries stay gated: a player waiting in
+                // the area would otherwise get this line every RetrySearchDelaySeconds.
+                if (!reportedExhausted)
+                {
+                    reportedExhausted = true;
+                    EpicLoot.LogWarningForce(message);
+                }
+                else
+                {
+                    EpicLoot.LogWarning(message);
+                }
+
                 ParkAndRetry();
                 yield break;
             }
@@ -435,8 +553,139 @@ namespace EpicLoot.Adventure
         private void ParkAndRetry()
         {
             startedPlacement = false;
-            currentUpdates = 0;
-            updatesRequired = RetrySearchDelayFrames;
+            nextSearchTime = Time.time + RetrySearchDelaySeconds;
+        }
+
+        /// <summary>
+        /// Whether this client still owns the spawner. Checked after every yield in the search, since
+        /// ownership moves to another player when the current owner leaves the area.
+        /// </summary>
+        private bool StillOwner()
+        {
+            return zNetView != null && zNetView.IsValid() && zNetView.IsOwner();
+        }
+
+        /// <summary>
+        /// Drops a search this client no longer owns. Without this the coroutine ran to the end
+        /// regardless, and its <c>spawnPoint.ForceSet</c> claimed ownership back from whoever had taken
+        /// over -- two clients searching and both reaching the spawn is how a bounty spawns twice.
+        /// No retry delay: if ownership comes back, searching again right away is correct.
+        /// </summary>
+        private void AbandonSearch()
+        {
+            EpicLoot.Log("Adventure spawner changed owner mid-search; leaving the search to the new owner.");
+            startedPlacement = false;
+        }
+
+        /// <summary>
+        /// Whether the area around <paramref name="point"/> has finished loading, as far as this client
+        /// can load it. Vanilla <see cref="ZNetScene.IsAreaReady"/> requires the point's zone and all
+        /// eight around it, but a client only creates objects inside its own near simulation area. On a
+        /// low Simulation Distance setting that area is too small to contain all nine zones unless the
+        /// player stands in the point's own zone, and on the non-classic setting it never covers them
+        /// from a diagonal zone, so a player waiting inside the map circle could wait forever. Zones this
+        /// client cannot load are skipped rather than waited on.
+        /// </summary>
+        private bool IsAreaSettled(Vector3 point)
+        {
+            // Nothing is "near" a dedicated server's reference position; keep vanilla's rule for
+            // server-side simulation mods, which are the only way a server owns this spawner.
+            if (ZNet.instance.IsDedicated())
+            {
+                return ZNetScene.instance.IsAreaReady(point);
+            }
+
+            Vector2s centre = ZoneSystem.GetZone(point);
+            if (!IsZoneInLocalNearArea(centre))
+            {
+                // The owner has to come closer before the point itself can load.
+                return false;
+            }
+
+            for (int y = centre.y - 1; y <= centre.y + 1; y++)
+            {
+                for (int x = centre.x - 1; x <= centre.x + 1; x++)
+                {
+                    var zone = new Vector2s(x, y);
+                    if (IsZoneInLocalNearArea(zone) && !IsZoneInstantiated(zone))
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Whether a search candidate's zone is loaded and populated, cached for the rest of the search.
+        /// A zone outside the near area is rejected outright, as GetGroundData would do for it anyway.
+        /// </summary>
+        private bool IsCandidateZoneReady(Vector2s zone)
+        {
+            // A dedicated server has no near area of its own (see IsAreaSettled); leave candidates to
+            // the GetGroundData check, as before.
+            if (ZNet.instance.IsDedicated())
+            {
+                return true;
+            }
+
+            if (!zoneReadyCache.TryGetValue(zone, out bool ready))
+            {
+                ready = IsZoneInLocalNearArea(zone) && IsZoneInstantiated(zone);
+                zoneReadyCache[zone] = ready;
+            }
+
+            return ready;
+        }
+
+        /// <summary>
+        /// Whether ZNetScene creates the objects of <paramref name="zone"/> on this client. The same
+        /// shape ZDOMan.FindSectorObjects uses for the near area: a square of NearSimulationDistance
+        /// zones, trimmed to a circle unless the setting is classic.
+        /// </summary>
+        private static bool IsZoneInLocalNearArea(Vector2s zone)
+        {
+            Vector2s centre = ZoneSystem.GetZone(ZNet.instance.GetReferencePosition());
+            SimulationDistance distance = ZNet.instance.GetSyncedSimulationDistance();
+            int near = distance.NearSimulationDistance;
+            int ring = Mathf.Max(Mathf.Abs(zone.x - centre.x), Mathf.Abs(zone.y - centre.y));
+
+            if (ring == 0)
+            {
+                return true;
+            }
+
+            return ring <= near &&
+                (distance.IsClassic || ZoneSystem.instance.ZonesWithinRadius(centre, zone, near));
+        }
+
+        /// <summary>
+        /// Vanilla <see cref="ZNetScene.IsAreaReady"/> narrowed to a single zone: the zone is loaded and
+        /// every object in it with a known prefab has been created.
+        /// </summary>
+        private static bool IsZoneInstantiated(Vector2s zone)
+        {
+            if (!ZoneSystem.instance.IsZoneLoaded(zone))
+            {
+                return false;
+            }
+
+            ZoneObjectsScratch.Clear();
+            ZDOMan.instance.FindSectorObjects(zone, new SimulationDistance(0, 0), ZoneObjectsScratch);
+
+            bool ready = true;
+            foreach (ZDO zdo in ZoneObjectsScratch)
+            {
+                if (ZNetScene.instance.IsPrefabZDOValid(zdo) && !ZNetScene.instance.HaveInstance(zdo))
+                {
+                    ready = false;
+                    break;
+                }
+            }
+
+            ZoneObjectsScratch.Clear();
+            return ready;
         }
 
         /// <summary>
@@ -445,7 +694,7 @@ namespace EpicLoot.Adventure
         ///
         /// Spawning bails without setting <c>placed</c>, and Update re-enters it on the very next frame,
         /// so before this the spawner retried a lookup that cannot succeed **every frame for as long as
-        /// the player stayed near the bounty**. Back off to the same delay a failed location search uses,
+        /// the player stayed near the bounty**. Back off for <see cref="MissingPrefabRetrySeconds"/>,
         /// and report it once at Error rather than per-frame at Warning -- Warning is invisible at the
         /// default Log Level, which is why this failed silently.
         ///
@@ -464,8 +713,7 @@ namespace EpicLoot.Adventure
 
             // Delay the next attempt without clearing startedPlacement -- the spawn point is fine, it is
             // only the prefab that is missing, so there is nothing to re-search for.
-            currentUpdates = 0;
-            updatesRequired = RetrySearchDelayFrames;
+            nextSearchTime = Time.time + MissingPrefabRetrySeconds;
         }
 
         /// <summary>
