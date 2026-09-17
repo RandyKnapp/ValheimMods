@@ -104,12 +104,13 @@ namespace EpicLoot.Adventure
         public float RadiusInterval = 500;
         public float MinimapAreaRadius = 100;
         /// <summary>
-        /// How many times the adventure spawn search may push its sampling ring further out when
-        /// everything inside the map circle is blocked (almost always by a ward). Each band steps out
-        /// by one <see cref="MinimapAreaRadius"/>, which is the minimum that can escape a ward's
-        /// veto, since a ward rejects points within its own radius + MinimapAreaRadius. Set to 0 to
-        /// restore the old behaviour of never searching outside the circle.
+        /// Ignored. The adventure spawn search used to push out past the map circle when a ward covered
+        /// it, which needed the buyer's own client to redraw the circle - any other machine placing the
+        /// spawn (another player who arrived first, or the dedicated server) could not, and left the
+        /// bounty unplaced. Placement now never leaves the circle. Kept so existing config files and
+        /// patches that set it still load.
         /// </summary>
+        [Obsolete]
         public int MaxSpawnSearchExpansions = 5;
 
         /// <summary>

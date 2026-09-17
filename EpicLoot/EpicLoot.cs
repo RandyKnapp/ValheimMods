@@ -38,7 +38,7 @@ namespace EpicLoot;
 public sealed class EpicLoot : BaseUnityPlugin {
     public const string PluginId = "randyknapp.mods.epicloot";
     public const string DisplayName = "Epic Loot";
-    public const string Version = "0.14.7";
+    public const string Version = "0.14.8";
 
     private static string ConfigFileName = PluginId + ".cfg";
     private static string ConfigFileFullPath = BepInEx.Paths.ConfigPath + Path.DirectorySeparatorChar + ConfigFileName;
@@ -121,6 +121,9 @@ public sealed class EpicLoot : BaseUnityPlugin {
         // Scheduled (non-per-frame) effect drivers, on their own DontDestroyOnLoad objects.
         MagicItemEffects.Shards.PoisonAdrenalinePulse.Create();
         MagicItemEffects.Shards.StormFuryPulse.Create();
+
+        // Logs, from the buyer's side, a bounty or treasure map that has not appeared at its map circle.
+        AdventureSpawnWatchdog.Create();
 
         // Main file config watcher
         SetupWatcher();
@@ -636,7 +639,7 @@ public sealed class EpicLoot : BaseUnityPlugin {
     }
 
     private static void LoadBountySpawner() {
-        GameObject bounty_spawner = EpicAssets.AssetBundle.LoadAsset<GameObject>("EL_SpawnController");
+        GameObject bounty_spawner = EpicAssets.AssetBundle.LoadAsset<GameObject>(AdventureSpawnController.PrefabName);
 
         if (bounty_spawner == null) {
             LogErrorForce("Unable to find bounty spawner asset! This mod will not behave as expected!");

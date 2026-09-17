@@ -109,7 +109,7 @@ namespace EpicLoot.Adventure.Feature
             }
 
             Quaternion rotation = Quaternion.Euler(0f, UnityEngine.Random.Range(0f, 360f), 0f);
-            GameObject gameObject = PrefabManager.Instance.GetPrefab("EL_SpawnController");
+            GameObject gameObject = PrefabManager.Instance.GetPrefab(AdventureSpawnController.PrefabName);
             GameObject created_go = Object.Instantiate(gameObject, spawnPoint, rotation);
             AdventureSpawnController asc = created_go.GetComponent<AdventureSpawnController>();
             asc.SetTreasure(treasure_details);

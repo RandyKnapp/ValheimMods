@@ -1,3 +1,8 @@
+**0.14.8**
+* Controller update for 9/17
+* Increases placement allowance for bounties/treasures
+* Removes bounty/treasure relocation due to the potential for schisms
+
 **0.14.7**
 * Recompiled against current game build (fixes building destruction issues)
 

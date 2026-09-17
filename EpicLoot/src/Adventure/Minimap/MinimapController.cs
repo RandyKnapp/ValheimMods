@@ -16,6 +16,18 @@ public class MinimapController : MonoBehaviour
 
     public const float AreaScale = 2.1f;
 
+    /// <summary>
+    /// The adventure circle's diameter in metres - Minimap.PinData.m_worldSize is a diameter, vanilla
+    /// sets it to an event's range * 2.
+    /// </summary>
+    public static float AreaWorldSize => Mathf.Max(0f, AdventureDataManager.Config.TreasureMap.MinimapAreaRadius) * AreaScale;
+
+    /// <summary>
+    /// The radius of the circle drawn for a bounty or a treasure map. AdventureSpawnController places
+    /// inside it, so the map and the spawn cannot disagree about where the circle is.
+    /// </summary>
+    public static float AreaRadius => AreaWorldSize * 0.5f;
+
     public static readonly Dictionary<Tuple<int, Heightmap.Biome>, AreaPinInfo> TreasureMapPins = new();
     public static readonly Dictionary<string, AreaPinInfo> BountyPins = new();
     public static bool DebugMode;
@@ -343,7 +355,7 @@ public class MinimapController : MonoBehaviour
 
         //Add Area Pin
         newPin.Area = _minimap.AddPin(newPin.Position, Minimap.PinType.EventArea, string.Empty, false, false);
-        newPin.Area.m_worldSize = AdventureDataManager.Config.TreasureMap.MinimapAreaRadius * AreaScale;
+        newPin.Area.m_worldSize = AreaWorldSize;
 
         //Add Pin
         newPin.Pin = _minimap.AddPin(newPin.Position, newPin.Type, newPin.Name, false, false);

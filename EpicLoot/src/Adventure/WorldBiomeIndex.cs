@@ -503,8 +503,8 @@ namespace EpicLoot.Adventure
         ///
         /// Validation is seed-only on purpose: nothing here loads a zone, so nothing here can see
         /// terrain colliders, wards or player bases. AdventureSpawnController.DeterminespawnPoint
-        /// does that check with an expanding band search once the player is actually near the point,
-        /// and remains the authority on where a bounty or chest finally lands.
+        /// does that check once someone is actually near the point, and decides where inside the map
+        /// circle centred here a bounty or chest finally lands.
         /// </summary>
         internal static bool TryFindPoint(Heightmap.Biome biome, float minRadius, float maxRadius,
             bool requireBand, out Vector3 point, out int candidatesTried)
@@ -609,8 +609,8 @@ namespace EpicLoot.Adventure
         }
 
         /// <summary>
-        /// Area-uniform sample of the annulus, so points do not bunch against its inner edge. Same
-        /// formula AdventureSpawnController uses for its search bands.
+        /// Area-uniform sample of the annulus, so points do not bunch against its inner edge. The
+        /// same idea AdventureSpawnController uses to sample the map circle.
         /// </summary>
         private static Vector2 SampleAnchor(float minRadius, float maxRadius)
         {
@@ -823,9 +823,9 @@ namespace EpicLoot.Adventure
         /// the 64m zone, and Heightmap.GetBiome returns the nearest-corner-weighted winner among
         /// those four -- short-circuiting to one answer for the whole zone when they agree. So a
         /// point can sit well inside a swamp and still be reported as meadows by the GetGroundData
-        /// check AdventureSpawnController runs before it places anything, which would send the
-        /// placement search off expanding bands for no reason. Four extra GetBiome calls make it a
-        /// guarantee instead.
+        /// check AdventureSpawnController runs before it places anything, which would reject every
+        /// spot in the circle and leave the spawn on a fallback for no reason. Four extra GetBiome
+        /// calls make it a guarantee instead.
         /// </summary>
         private static bool ZoneAgreesOnBiome(WorldGenerator worldGenerator, Vector2 point,
             Heightmap.Biome biome)
