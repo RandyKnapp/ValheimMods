@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using HarmonyLib;
+using UnityEngine;
 
 namespace EpicLoot
 {
@@ -130,6 +131,131 @@ namespace EpicLoot
 
             __instance.m_hiddenFrames = 2;
             TraderDiagnostics.NoteRepaired();
+        }
+    }
+
+    /// <summary>
+    /// Vanilla StoreGui.Update closes the window on `ZInput.GetButtonDown("Use")` -- the very press
+    /// that just opened it. Nothing consumes that press: GetButtonDown is a frame-latched flag that
+    /// any number of callers read, and Player.Interact leaves it set. So whether the store survives
+    /// its own opening frame comes down to which of Player.Update and StoreGui.Update Unity happens
+    /// to run first, and neither script declares an execution order:
+    ///
+    ///   StoreGui.Update first -- the panel is still inactive, Update returns at the top. Fine, and
+    ///                            this is the order the game normally ends up in.
+    ///   Player.Update first   -- Show activates the panel, then Update sees it active with the press
+    ///                            still latched and hides it again in the same frame.
+    ///
+    /// The second order draws nothing at all (activated and deactivated between two renders) and
+    /// Hide() logs nothing, so it reaches us as "Use on the trader does nothing, and there is no
+    /// error in the log". Relogging rebuilds both objects and can put the order back; a zone reload
+    /// cannot, which is exactly the shape of the reports.
+    ///
+    /// Vanilla already knows about this hazard: InventoryGui guards the identical branch with
+    /// `(m_shownFrames > 1) &amp; flag2`, refusing to close on the frame it opened. StoreGui has no
+    /// m_shownFrames at all. This gives it that guard the way InventoryGui itself does it, with
+    /// ZInput.ResetButtonStatus. Player.Interact has already consumed the press to open the store by
+    /// the time this runs, so nothing later in the frame is left owing it.
+    ///
+    /// On a client that wins the ordering race this is inert: Show has not run yet when the prefix
+    /// does, so the opening frame is never the current one.
+    /// </summary>
+    [HarmonyPatch(typeof(StoreGui))]
+    public static class StoreGui_KeepOpenOnItsOpeningFrame
+    {
+        /// <summary>Frame the window last went from closed to open. Never Time.frameCount otherwise.</summary>
+        private static int _openedFrame = int.MinValue;
+
+        /// <summary>Was the window already open when the Show now running started?</summary>
+        private static bool _wasOpenBeforeShow;
+
+        /// <summary>One line per session: the Update order does not change once it has been seen.</summary>
+        private static bool _reported;
+
+        /// <summary>
+        /// Update is private, which is the kind of member a game update quietly renames. Gating the
+        /// whole class on it keeps a miss from throwing out of CreateAndPatchAll, and leaves the Show
+        /// bookkeeping off too -- it is of no use on its own.
+        /// </summary>
+        public static bool Prepare()
+        {
+            return AccessTools.Method(typeof(StoreGui), nameof(StoreGui.Update)) != null;
+        }
+
+        [HarmonyPatch(nameof(StoreGui.Show))]
+        [HarmonyPrefix]
+        [HarmonyPriority(Priority.First)]
+        public static void Show_Prefix(StoreGui __instance)
+        {
+            _wasOpenBeforeShow = IsOpen(__instance);
+        }
+
+        /// <summary>
+        /// A finalizer rather than a postfix, for the same reason the adventure panel uses one:
+        /// FillList can throw after Show has already activated the window, and a half-filled window
+        /// still on screen is the one worth protecting -- letting the same press close it again is
+        /// how that throw went unreported in the first place.
+        ///
+        /// Only the closed-to-open transition counts. Show also runs its body for a press aimed at a
+        /// different trader while the window is up, and pressing Use again on the same trader is the
+        /// player asking to close it; recording either of those would swallow a close the player
+        /// meant.
+        /// </summary>
+        [HarmonyPatch(nameof(StoreGui.Show))]
+        [HarmonyFinalizer]
+        [HarmonyPriority(Priority.Last)]
+        public static void Show_Finalizer(StoreGui __instance)
+        {
+            if (!_wasOpenBeforeShow && IsOpen(__instance))
+            {
+                _openedFrame = Time.frameCount;
+            }
+        }
+
+        [HarmonyPatch(nameof(StoreGui.Update))]
+        [HarmonyPrefix]
+        [HarmonyPriority(Priority.First)]
+        public static void Update_Prefix(StoreGui __instance)
+        {
+            // Vanilla's own first act is to return here, and every Hide it can reach is below that
+            // line, so a closed store costs one bool per frame and nothing else.
+            if (!IsOpen(__instance))
+            {
+                return;
+            }
+
+            var use = ZInput.GetButtonDown("Use");
+
+            // Read here, before vanilla's ResetButtonStatus("JoyButtonB") on the line above its own
+            // Hide() call makes the gamepad close unreadable from the Hide prefix.
+            TraderDiagnostics.NoteUpdateCloseInputs(use, ZInput.GetKeyDown(KeyCode.Escape),
+                ZInput.GetButtonDown("JoyButtonB"));
+
+            if (!use || Time.frameCount != _openedFrame)
+            {
+                return;
+            }
+
+            ZInput.ResetButtonStatus("Use");
+
+            if (_reported)
+            {
+                return;
+            }
+
+            _reported = true;
+            EpicLoot.LogWarningForce(
+                "[Trader] This client runs Player.Update before StoreGui.Update, so the Use press that " +
+                "opens the store is still latched when StoreGui.Update reads it, and vanilla would have " +
+                "closed the window in the same frame it opened -- with nothing drawn and nothing logged. " +
+                "Swallowing that one press so the window stays open, which is the guard InventoryGui " +
+                "already has and StoreGui does not. If the trader looked like it was ignoring you, this " +
+                "was why.");
+        }
+
+        private static bool IsOpen(StoreGui storeGui)
+        {
+            return storeGui != null && storeGui.m_rootPanel != null && storeGui.m_rootPanel.activeSelf;
         }
     }
 }

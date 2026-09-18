@@ -1,4 +1,4 @@
-using EpicLoot.ShardStones;
+﻿using EpicLoot.ShardStones;
 
 namespace EpicLoot;
 
@@ -23,7 +23,7 @@ public partial class MagicTooltip
             // socket for good, so the commitment has to be stated here too.
             if (color != ShardType.None)
             {
-                AppendBlanketRemovalWarning(ShardSocketManager.GetRemovalPolicy(color, null, rarity));
+                AppendBlanketRemovalWarning(ShardSocketManager.GetRemovalPolicy(color, null));
             }
             return;
         }
@@ -34,7 +34,7 @@ public partial class MagicTooltip
         // ends up granting -- i.e. the BreakAll/Permanent modes. When one of those is on, say so once
         // up front instead of repeating a marker on every line, and note that it covers the slots not
         // even listed below (those that grant nothing).
-        var blanket = ShardSocketManager.GetRemovalPolicy(color, null, rarity);
+        var blanket = ShardSocketManager.GetRemovalPolicy(color, null);
 
         // A uniform shard (e.g. a boss shard) grants one effect on every slot it is allowed into.
         if (def.UniformEffect != null)
@@ -95,7 +95,7 @@ public partial class MagicTooltip
             return "";
         }
 
-        var policy = ShardSocketManager.GetRemovalPolicy(color, new MagicItemEffect(effectType, value), rarity);
+        var policy = ShardSocketManager.GetRemovalPolicy(color, new MagicItemEffect(effectType, value));
         switch (policy)
         {
             case SocketRemoval.BreakOnly:

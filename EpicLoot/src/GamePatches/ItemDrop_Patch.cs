@@ -59,6 +59,33 @@ namespace EpicLoot
         }
     }
 
+    // ArmorStand cannot use LoadFromExternalZDO: it stores one item per slot, so it needs the indexed
+    // overload and calls the static LoadFromZDO directly, which means the patch above never fires for
+    // it. The breakage is the same one -- the stand re-instantiates the item from its prefab, so
+    // Awake/InitializeCustomData caches an empty MagicItemComponent, and only afterwards does
+    // LoadFromZDO swap in the saved m_customData. ItemInfo.Get returns that cached component ahead of
+    // re-reading m_customData, so the enchantment data sits on the item while its MagicItem stays null
+    // and the item reads as mundane -- until something rebuilds the ItemData (dropping it again clones
+    // it, which is why that "fixes" it).
+    // Only the indexed form needs this; index < 0 is ItemDrop.Load and LoadFromExternalZDO, both covered.
+    [HarmonyPatch(typeof(ItemDrop), nameof(ItemDrop.LoadFromZDO))]
+    public static class ItemDrop_LoadFromZDO_Patch
+    {
+        public static void Postfix(ItemDrop.ItemData itemData, int index)
+        {
+            if (index < 0 || itemData?.m_shared == null)
+            {
+                return;
+            }
+
+            itemData.Data().Get<MagicItemComponent>()?.Load();
+
+            // LoadFromZDO clears m_customData before repopulating it, so a shard taken off a stand can
+            // land here with its magic data gone. Its identity is in m_shared, so rebuild from that.
+            Shards.EnsureShardMetadata(itemData);
+        }
+    }
+
     [HarmonyPatch(typeof(Inventory), nameof(Inventory.Load), typeof(ZPackage))]
     public static class Inventory_Load_Patch
     {

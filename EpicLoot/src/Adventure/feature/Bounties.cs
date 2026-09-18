@@ -277,6 +277,7 @@ namespace EpicLoot.Adventure.Feature
                     }
 
                     saveData.NumberOfTreasureMapsOrBountiesStarted++;
+                    player.SaveAdventureSaveData();
 
                     // Spawn monster initializer
                     SpawnBountyInitilizer(bounty, spawnPoint, Vector3.zero);
@@ -359,6 +360,12 @@ namespace EpicLoot.Adventure.Feature
 
                 RemoveMinimapPin(bountyInfo);
             }
+
+            // Persist on every credited kill, not just on completion: the add counts above are
+            // progress in their own right. This also covers the offline kill ledger, which replays
+            // through here after the server has already deleted the logs it sent -- an unwritten
+            // credit from that path cannot be recovered.
+            PlayerExtensions_Adventure.PersistLocalPlayerAdventureData();
         }
 
         public void ClaimBountyReward(BountyInfo bountyInfo)
@@ -376,6 +383,7 @@ namespace EpicLoot.Adventure.Feature
             }
 
             bountyInfo.State = BountyState.Claimed;
+            player.SaveAdventureSaveData();
 
             MessageHud.instance.ShowBiomeFoundMsg("$mod_epicloot_bounties_claimedmsg", true);
 
@@ -401,6 +409,7 @@ namespace EpicLoot.Adventure.Feature
             if (saveData != null && bountyInfo != null && saveData.BountyIsInProgress(bountyInfo.Interval, bountyInfo.ID))
             {
                 saveData.AbandonedBounty(bountyInfo.ID);
+                PlayerExtensions_Adventure.PersistLocalPlayerAdventureData();
                 RemoveMinimapPin(bountyInfo);
             }
         }

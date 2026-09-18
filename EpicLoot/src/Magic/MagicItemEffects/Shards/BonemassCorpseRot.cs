@@ -24,6 +24,16 @@ namespace EpicLoot.MagicItemEffects.Shards {
             { PoisonPerTierKey, DefaultPoisonPerTier },
         };
 
+        // Tooltip: "Corpse Rot: {0} Poison" -- the same value * PoisonPerTier the burst deals, so the
+        // shown number rises with the shard's rarity instead of the effect reading as a flat name.
+        public static void RegisterDisplayValues() {
+            MagicItem.RegisterDisplayValues(MagicEffectType.CorpseRot,
+                value => new object[] {
+                    value * EffectConfig.Get(MagicEffectType.CorpseRot,
+                        PoisonPerTierKey, DefaultPoisonPerTier),
+                });
+        }
+
         // Floored just above zero: a ttl of 0 is "no timeout" to vanilla, which would gate the shard
         // permanently rather than removing the cooldown.
         private static float GetCooldown() {

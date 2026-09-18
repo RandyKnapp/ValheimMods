@@ -1783,7 +1783,7 @@ namespace EpicLoot
             var currentEffect = magicItem.Effects[effectIndex];
             
 
-            var valuelessEffect = MagicItemEffectDefinitions.IsValuelessEffect(currentEffect.EffectType, rarity);
+            var valuelessEffect = MagicItemEffectDefinitions.IsValuelessEffect(currentEffect.EffectType);
             var availableEffects = MagicItemEffectDefinitions.GetAvailableEffects(item, magicItem, valuelessEffect ? 
                 -1 : effectIndex);
 
@@ -1822,7 +1822,7 @@ namespace EpicLoot
 
                 results.Add(newEffect);
                 currentEffectTypes.Add(newEffect.EffectType);
-                var newEffectIsValueless = MagicItemEffectDefinitions.IsValuelessEffect(newEffect.EffectType, rarity);
+                var newEffectIsValueless = MagicItemEffectDefinitions.IsValuelessEffect(newEffect.EffectType);
                 if (newEffectIsValueless)
                 {
                     availableEffects.RemoveAll(x => x.Type == newEffect.EffectType);

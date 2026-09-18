@@ -662,16 +662,34 @@ namespace EpicLoot
             return results;
         }
 
-        public static bool IsValuelessEffect(string effectType, ItemRarity rarity)
+        /// <summary>
+        /// True only for an effect that carries no value at <i>any</i> rarity -- the binary grants
+        /// (Indestructible, Weightless, Warmth, Throwable...) whose magiceffects.json entry has no
+        /// ValuesPerRarity block at all.
+        ///
+        /// Deliberately not "has no value at rarity X": an effect with values at some rarities but not
+        /// that one is a config gap, not a binary effect, and treating the two the same is how a
+        /// legitimately rolled value gets destroyed (see MagicItemComponent.FixupValuelessEffects).
+        /// Callers that really do want the per-rarity question ask GetValuesForRarity directly.
+        /// </summary>
+        public static bool IsValuelessEffect(string effectType)
         {
             var effectDef = Get(effectType);
-            if (effectDef == null)
+            if (effectDef?.ValuesPerRarity == null)
             {
-                EpicLoot.LogWarning($"Checking if unknown effect is valuless ({effectType}/{rarity})");
+                EpicLoot.LogWarning($"Checking if unknown effect is valueless ({effectType})");
                 return false;
             }
 
-            return effectDef.GetValuesForRarity(rarity) == null;
+            foreach (var rarity in Rarities.All)
+            {
+                if (effectDef.ValuesPerRarity.GetValueDefForRarity(rarity) != null)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }

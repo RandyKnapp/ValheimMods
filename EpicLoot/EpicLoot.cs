@@ -38,7 +38,7 @@ namespace EpicLoot;
 public sealed class EpicLoot : BaseUnityPlugin {
     public const string PluginId = "randyknapp.mods.epicloot";
     public const string DisplayName = "Epic Loot";
-    public const string Version = "0.14.9";
+    public const string Version = "0.14.10";
 
     private static string ConfigFileName = PluginId + ".cfg";
     private static string ConfigFileFullPath = BepInEx.Paths.ConfigPath + Path.DirectorySeparatorChar + ConfigFileName;
@@ -154,6 +154,12 @@ public sealed class EpicLoot : BaseUnityPlugin {
         MagicItemEffects.Shards.LuckyLoot.RegisterDisplayValues();
         MagicItemEffects.Shards.Bloodrage.RegisterDisplayValues();
         MagicItemEffects.Shards.MeteorSummoner.RegisterDisplayValues();
+        MagicItemEffects.Shards.EikthyrShockingCharge.RegisterDisplayValues();
+        MagicItemEffects.Shards.ElderForestsAid.RegisterDisplayValues();
+        MagicItemEffects.Shards.BonemassCorpseRot.RegisterDisplayValues();
+        MagicItemEffects.Shards.ModerIcyRetribution.RegisterDisplayValues();
+        MagicItemEffects.Shards.QueenEverflow.RegisterDisplayValues();
+        MagicItemEffects.Shards.NecroticFire.RegisterDisplayValues();
         MagicItemEffects.Shards.BlockAsDodgeAsBlock.RegisterDisplayValues();
         MagicItemEffects.Shards.BlockAsWoodCuttingAndPickaxes.RegisterDisplayValues();
 

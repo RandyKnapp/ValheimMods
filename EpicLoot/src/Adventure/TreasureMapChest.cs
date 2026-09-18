@@ -158,6 +158,7 @@ namespace EpicLoot.Adventure
                     EpicLoot.Log($"Player is opening treasure map chest ({treasureMapChest.Biome}, {treasureMapChest.Interval})!");
                     var saveData = player.GetAdventureSaveData();
                     saveData.FoundTreasureChest(treasureMapChest.Interval, treasureMapChest.Biome);
+                    player.SaveAdventureSaveData();
 
                     zdo.Set("TreasureMapChest.HasBeenFound", true);
 

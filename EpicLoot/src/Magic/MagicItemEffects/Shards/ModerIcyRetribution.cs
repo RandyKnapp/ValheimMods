@@ -7,21 +7,35 @@ namespace EpicLoot.MagicItemEffects.Shards {
     public static class ModerIcyRetribution {
         // All tunable in this effect's Config block in config/shardstones.json, under these key names.
         public const float DefaultRadius = 8f;
-        public const float DefaultFrostPerTier = 8f;       // frost damage per point of value (15..25 -> 120..200)
-        public const float DefaultBaseCooldown = 140f;     // cooldown at Epic (the shard's rarity floor)
-        public const float DefaultCooldownPerRarity = 20f; // added per rarity above Epic
+        public const float DefaultFrostPerTier = 8f;       // frost damage per point of value (15..30 -> 120..240)
+        public const float DefaultBaseCooldown = 200f;     // cooldown at Epic (the shard's rarity floor)
+        public const float DefaultCooldownPerRarity = 20f; // removed per rarity above Epic
+        public const float DefaultMinCooldown = 30f;       // floor, so a retune cannot make it near-instant
 
         private const string RadiusKey = "Radius";
         private const string FrostPerTierKey = "FrostPerTier";
         private const string BaseCooldownKey = "BaseCooldown";
         private const string CooldownPerRarityKey = "CooldownPerRarity";
+        private const string MinCooldownKey = "MinCooldown";
 
         public static readonly Dictionary<string, float> DefaultConfig = new Dictionary<string, float> {
             { RadiusKey, DefaultRadius },
             { FrostPerTierKey, DefaultFrostPerTier },
             { BaseCooldownKey, DefaultBaseCooldown },
             { CooldownPerRarityKey, DefaultCooldownPerRarity },
+            { MinCooldownKey, DefaultMinCooldown },
         };
+
+        // Tooltip: "Icy Retribution: {0} Frost". The cooldown is keyed off the shard's rarity rather than
+        // its value (see GetCooldown), and a provider only receives the value -- summing two socketed
+        // shards would misreport it -- so the cooldown stays in the Shift-detail config lines instead.
+        public static void RegisterDisplayValues() {
+            MagicItem.RegisterDisplayValues(MagicEffectType.IcyRetribution,
+                value => new object[] {
+                    value * EffectConfig.Get(MagicEffectType.IcyRetribution,
+                        FrostPerTierKey, DefaultFrostPerTier),
+                });
+        }
 
         // Visual: our own trimmed copy of the fenring's ice nova, built and cached by FrostNovaFx so the
         // fenring's full-length nova is left untouched. Played at the helper's default speed.
@@ -64,16 +78,18 @@ namespace EpicLoot.MagicItemEffects.Shards {
             ShowCooldown(player, GetCooldown(player));
         }
 
-        // Cooldown length scales with the highest rarity among the equipped IcyRetribution shards: by default
-        // 140s at Epic, +20s for each rarity above it (Legendary 160s, Mythic 180s). Floored just above zero:
-        // a ttl of 0 is "no timeout" to vanilla, which would gate the shard permanently.
+        // Cooldown length shortens with the highest rarity among the equipped IcyRetribution shards: by
+        // default 200s at Epic, -20s for each rarity above it (Legendary 180s, Mythic 160s, Ancient 140s),
+        // never past MinCooldown. Floored just above zero on top of that: a ttl of 0 is "no timeout" to
+        // vanilla, which would gate the shard permanently.
         private static float GetCooldown(Player player) {
             var stepsAboveEpic = Mathf.Max(0, (int)GetEffectRarity(player) - (int)ItemRarity.Epic);
             var baseCooldown = EffectConfig.Get(MagicEffectType.IcyRetribution,
                 BaseCooldownKey, DefaultBaseCooldown);
             var perRarity = EffectConfig.Get(MagicEffectType.IcyRetribution,
                 CooldownPerRarityKey, DefaultCooldownPerRarity);
-            return Mathf.Max(0.1f, baseCooldown + stepsAboveEpic * perRarity);
+            var floor = EffectConfig.Get(MagicEffectType.IcyRetribution, MinCooldownKey, DefaultMinCooldown);
+            return Mathf.Max(0.1f, Mathf.Max(floor, baseCooldown - stepsAboveEpic * perRarity));
         }
 
         // Highest source rarity among the socketed IcyRetribution effects on the player's equipped magic

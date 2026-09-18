@@ -129,6 +129,7 @@ namespace EpicLoot.Adventure.Feature
             }
 
             player.GetAdventureSaveData().PurchasedGamble(GetCurrentInterval(), GetGambleID(itemInfo));
+            player.SaveAdventureSaveData();
         }
 
         /// <summary>

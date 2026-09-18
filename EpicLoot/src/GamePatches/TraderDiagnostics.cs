@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using EpicLoot.Adventure;
@@ -60,6 +60,30 @@ namespace EpicLoot
 
         /// <summary>Frame the store window was last actually opened, for the closed-too-soon check.</summary>
         private static int _lastOpenedFrame = int.MinValue;
+
+        /// <summary>
+        /// The three inputs StoreGui.Update closes on, as they stood at the top of Update. Reading
+        /// them from the Hide prefix instead is quietly wrong: vanilla calls
+        /// ResetButtonStatus("JoyButtonB") on the line directly above its own Hide() call, so a
+        /// gamepad close always reported joyB=False and looked like it had been something else.
+        /// </summary>
+        private static int _closeInputFrame = int.MinValue;
+        private static bool _closeInputUse;
+        private static bool _closeInputEsc;
+        private static bool _closeInputJoyB;
+
+        /// <summary>
+        /// Called from the StoreGui.Update prefix in <see cref="StoreGui_KeepOpenOnItsOpeningFrame"/>,
+        /// which only gets this far while the window is open -- so this costs nothing on a frame
+        /// where there is no store to close.
+        /// </summary>
+        internal static void NoteUpdateCloseInputs(bool use, bool esc, bool joyB)
+        {
+            _closeInputFrame = Time.frameCount;
+            _closeInputUse = use;
+            _closeInputEsc = esc;
+            _closeInputJoyB = joyB;
+        }
 
         internal static bool Recording => _press != null;
 
@@ -269,12 +293,26 @@ namespace EpicLoot
                 ? Vector3.Distance(storeGui.m_trader.transform.position, player.transform.position)
                 : -1f;
 
+            // Hide is also called from outside Update, where there is no snapshot to use. Say so
+            // rather than printing post-reset reads as if they were what Update acted on.
+            var fromUpdate = _closeInputFrame == Time.frameCount;
+            var use = fromUpdate ? _closeInputUse : ZInput.GetButtonDown("Use");
+            var esc = fromUpdate ? _closeInputEsc : ZInput.GetKeyDown(KeyCode.Escape);
+            var joyB = fromUpdate ? _closeInputJoyB : ZInput.GetButtonDown("JoyButtonB");
+
+            // Update's condition needs the viewer to exist *and* be hidden, so "is it null" on its
+            // own never said which of the two we were looking at.
+            var textViewer = TextViewer.instance == null ? "none"
+                : TextViewer.instance.IsVisible() ? "visible"
+                : "hidden";
+
             EpicLoot.LogWarningForce(
                 $"[Trader] The store window closed {sinceOpen} frame(s) after it opened. " +
                 $"traderNull={storeGui.m_trader == null} distance={distance:F1}/{storeGui.m_hideDistance} " +
                 $"invGui={InventoryGui.IsVisible()} map={Minimap.IsOpen()} " +
-                $"use={ZInput.GetButtonDown("Use")} esc={ZInput.GetKeyDown(KeyCode.Escape)} " +
-                $"joyB={ZInput.GetButtonDown("JoyButtonB")} textViewer={(TextViewer.instance != null)}\n" +
+                $"use={use} esc={esc} joyB={joyB}" +
+                $"{(fromUpdate ? "" : " (read at Hide, not at the top of Update)")} " +
+                $"textViewer={textViewer}\n" +
                 new StackTrace(1, false));
         }
 

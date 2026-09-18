@@ -3,6 +3,13 @@
 namespace EpicLoot.MagicItemEffects.Shards {
     // Provides a conversion of physical damage to fire and poison damage based on the player's Necrotic Fire effect value.
     public static class NecroticFire {
+        // Tooltip: "Necrotic Fire: +{0}% Fire and Poison". The shard value is a fraction of the stripped
+        // physical pool paid out as EACH element, so it reads as a percentage rather than a bare 0.2.
+        public static void RegisterDisplayValues() {
+            MagicItem.RegisterDisplayValues(MagicEffectType.NecroticFire,
+                value => new object[] { value * 100f });
+        }
+
         // GetDamage postfix handler invoked by ModifyDamage (per-weapon modifier).
         public static void ModifyWeaponDamage(ItemDrop.ItemData __instance, ref HitData.DamageTypes __result) {
             // Only when the local player has this weapon equipped (also gates the weapon tooltip).

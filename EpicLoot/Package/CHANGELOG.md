@@ -1,3 +1,21 @@
+**0.14.10**
+* Fix for items losing their enchantment when taken off an armor stand
+    * The enchantment data was still on the item, but nothing re-read it, so the item behaved as if it were mundane until it was dropped on the ground again
+* Fix for the trader window not opening at all on some clients
+    * Vanilla closes the store on the same Use press that opened it whenever the game happens to run Player's update before StoreGui's, so the window was created and destroyed in one frame, drawing nothing and logging nothing
+    * The store now ignores that one press, the same way the inventory window already does
+* Fixes for the bounty ledger which could reset when the server was restarted
+    * This could result in bounties being marked incomplete after being completed (but not turned in before a server restart)   
+    * This could also result in bounties not being properly marked as completed if the owner was offline during the kill, and before a server restart
+* Fixes for not persisting bounty or treasuremap data to the character 
+* Fix for magic effect values being permanently reset to 1 when an item was reloaded
+    * An effect was treated as valueless (a yes/no grant like Indestructible) whenever the loaded magiceffects.json had no value block for that item's rarity, and the reset was written straight back to the item
+    * This hit Ancient items on servers whose magiceffects.json predates the Ancient rarity, since a server replaces the client's enchantment definitions on connect
+    * Only effects with no values at any rarity are normalized now; a missing rarity block logs a warning naming the effect and rarity instead of destroying the rolled value
+* Boss shardstones now show what their upgrade does
+    * Shocking Charge, Forest's Aid, Corpse Rot, Icy Retribution, Queen's Everflow and Necrotic Fire had no number in their tooltip at all, so every rarity read identically
+    * All 35 languages carry the new numbersw
+
 **0.14.9**
 * Fix for Grappling hook
 * Trader window diagnostics, please report your log if you have issues opening the trader window

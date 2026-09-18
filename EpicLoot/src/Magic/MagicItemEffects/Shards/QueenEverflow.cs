@@ -23,6 +23,13 @@ namespace EpicLoot.MagicItemEffects.Shards {
             { BuffDurationKey, DefaultBuffDuration },
         };
 
+        // Tooltip: "Queen's Everflow: +{0}% Regen per Stack (max {1})". The shard value IS the per-stack
+        // percentage, so {0} is the raw value; {1} comes from config and stays put as the rarity climbs.
+        public static void RegisterDisplayValues() {
+            MagicItem.RegisterDisplayValues(MagicEffectType.Everflow,
+                value => new object[] { value, (float)GetMaxStacks() });
+        }
+
         private const string BuffName = "EL_QueenEverflow";
         private static readonly int BuffHash = BuffName.GetStableHashCode();
         private static SE_QueenEverflow _buffPrototype;
