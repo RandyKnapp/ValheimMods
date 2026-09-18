@@ -107,6 +107,17 @@ public static class PatchOnHoverFix
             return;
         }
 
+        // UITooltip.m_tooltip is static and outlives a single hover -- OnPointerExit is suppressed
+        // above, so it survives the cursor moving between slots, and MagicTooltipPatches re-enters
+        // OnHoverStart through UITooltip.Set. Everything below is a one-shot migration of the prefab's
+        // children into a scroll view, so a second pass over the same object corrupts it: it finds the
+        // first pass's "Content" (already carrying the copied background) and, within the same frame,
+        // still finds the "Bkg" whose Destroy has not been processed yet.
+        if (Utils.FindChild(tooltipObject.transform, "Scroll View") != null)
+        {
+            return;
+        }
+
         Transform header = Utils.FindChild(tooltipObject.transform, "Topic");
         if (header == null)
         {
@@ -137,11 +148,18 @@ public static class PatchOnHoverFix
         if (bkgtform != null)
         {
             Image backgroundImage = bkgtform.GetComponent<Image>();
+            // AddComponent returns null (after a Unity warning) if the object already carries a
+            // Graphic. The guard at the top of this method is what keeps that from happening; don't
+            // dereference the result blindly, because this runs inside a Harmony postfix and an NRE
+            // here unwinds all the way out of InventoryGui.Update.
             Image contentbkgImage = contentt.gameObject.AddComponent<Image>();
-            contentbkgImage.color = backgroundImage.color;
-            contentbkgImage.sprite = backgroundImage.sprite;
-            contentbkgImage.type = backgroundImage.type;
-            contentbkgImage.raycastTarget = false;
+            if (contentbkgImage != null)
+            {
+                contentbkgImage.color = backgroundImage.color;
+                contentbkgImage.sprite = backgroundImage.sprite;
+                contentbkgImage.type = backgroundImage.type;
+                contentbkgImage.raycastTarget = false;
+            }
             // Remove the header background as it is no longer needed
             GameObject.Destroy(bkgtform.gameObject);
         }

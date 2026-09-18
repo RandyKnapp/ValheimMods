@@ -1,3 +1,8 @@
+**0.14.9**
+* Fix for Grappling hook
+* Trader window diagnostics, please report your log if you have issues opening the trader window
+* Another fix for Joystick controller issues
+
 **0.14.8**
 * Controller update for 9/17
 * Increases placement allowance for bounties/treasures
