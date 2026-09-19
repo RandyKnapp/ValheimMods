@@ -52,8 +52,8 @@ public static class ConfigVersionManager
     /// Refreshes every baseconfig file the player has not edited, and collects the ones they have.
     ///
     /// Must run *before* ELConfig.InitializeConfig so the refreshed contents are what gets
-    /// deserialized. Writing afterwards would rely on the per-file FileSystemWatcher firing part way
-    /// through Awake, which is both asynchronous and unnecessary.
+    /// deserialized, and before the reload scheduler takes its baseline of each file there, so these
+    /// writes are never mistaken for edits.
     /// </summary>
     public static void RefreshUnmodifiedConfigs()
     {
@@ -297,9 +297,9 @@ public static class ConfigVersionManager
     }
 
     /// <summary>
-    /// Backs up every outdated config to a timestamped folder, then rewrites it from the embedded
-    /// default. Writing each file trips its FileSystemWatcher, so the in-memory config reloads
-    /// without a restart (the same mechanism FilePatching.LoadPatchedJSON relies on).
+    /// Backs up every outdated config to a timestamped folder, rewrites it from the embedded default,
+    /// and re-reads the rewritten files so the in-memory config follows without a restart. The reload
+    /// scheduler would get there on its next poll; the player just asked for it, so it is done now.
     /// </summary>
     public static void BackupAndResetOutdatedConfigs()
     {
@@ -345,6 +345,7 @@ public static class ConfigVersionManager
         }
 
         _state.Save();
+        ELConfig.ReloadBaseConfigsFromDisk(updated.Select(name => $"{name}.json").ToList());
         EpicLoot.LogForce($"Updated {updated.Count} Epic Loot config file(s) to version {EpicLoot.Version}. " +
             $"The previous files were backed up to {backupDir}");
     }

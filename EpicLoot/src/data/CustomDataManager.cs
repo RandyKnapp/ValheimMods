@@ -688,9 +688,11 @@ namespace EpicLoot.Data {
                 // inserted an empty int bucket into vanilla's global store just to ask a question.
                 var containsDataCount = zdo.GetInt("dataCount", -1) >= 0;
 
-                if (containsDataCount != true) {
+                // Same dummy-prefab hazard as ItemDataExtensions.InitializeCustomData: m_dropPrefab may be
+                // EpicAssets.DummyPrefab, which carries no ItemDrop, so this must not assume one.
+                if (containsDataCount != true && prefab.TryGetComponent(out ItemDrop dropPrefabItem)) {
                     item.m_itemData.m_customData = new Dictionary<string, string>(
-                        prefab.GetComponent<ItemDrop>().m_itemData.m_customData);
+                        dropPrefabItem.m_itemData.m_customData);
 
                     int num = 0;
                     zdo.Set("dataCount", item.m_itemData.m_customData.Count);

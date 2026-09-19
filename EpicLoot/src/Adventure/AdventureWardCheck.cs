@@ -1,7 +1,20 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 namespace EpicLoot.Adventure
 {
+    /// <summary>How close an adventure spawn point is to a player's ward, nearest first.</summary>
+    internal enum WardProximity
+    {
+        /// <summary>No enabled ward within its radius plus the buffer.</summary>
+        Clear,
+
+        /// <summary>Within a ward's radius plus the buffer, but outside the area the ward protects.</summary>
+        NearWard,
+
+        /// <summary>Inside the area a ward protects.</summary>
+        InsideWard
+    }
+
     /// <summary>
     /// The single definition of "this adventure spawn point is too close to a player's ward".
     ///
@@ -10,30 +23,44 @@ namespace EpicLoot.Adventure
     /// it can mean anything. Picking the world point is seed-only and loads nothing, so
     /// <see cref="PrivateArea.m_allAreas"/> holds no ward from a remote zone and a check there would
     /// have approved every location regardless. The placement search is the one that runs with the
-    /// area genuinely loaded, and it expands its search band when a ward vetoes a candidate.
+    /// area genuinely loaded. It prefers spots clear of wards but never leaves the map circle to find
+    /// one, so a ward only decides where inside the circle a spawn lands.
     /// </summary>
     internal static class AdventureWardCheck
     {
         /// <summary>
-        /// True when an <b>enabled</b> ward covers <paramref name="location"/> once its radius is
-        /// grown by <paramref name="buffer"/>. The <see cref="PrivateArea.IsEnabled"/> test matters:
-        /// a deactivated guard stone protects nothing in vanilla, so it must not veto a spawn either.
-        /// Every vanilla call site pairs the two the same way (PrivateArea.CheckAccess, OnObjectDamaged,
-        /// GetNearbyAreas).
+        /// How close <paramref name="location"/> is to an <b>enabled</b> ward, where "near" means inside
+        /// the ward's radius grown by <paramref name="buffer"/>. The <see cref="PrivateArea.IsEnabled"/>
+        /// test matters: a deactivated guard stone protects nothing in vanilla, so it must not steer a
+        /// spawn either. Every vanilla call site pairs the two the same way (PrivateArea.CheckAccess,
+        /// OnObjectDamaged, GetNearbyAreas). <paramref name="ward"/> is the ward responsible, or null.
         /// </summary>
-        internal static bool TryFindNearbyWard(Vector3 location, float buffer, out PrivateArea ward)
+        internal static WardProximity GetWardProximity(Vector3 location, float buffer, out PrivateArea ward)
         {
+            ward = null;
+            WardProximity proximity = WardProximity.Clear;
+
             foreach (PrivateArea privateArea in PrivateArea.m_allAreas)
             {
-                if (privateArea != null && privateArea.IsEnabled() && privateArea.IsInside(location, buffer))
+                if (privateArea == null || !privateArea.IsEnabled())
+                {
+                    continue;
+                }
+
+                if (privateArea.IsInside(location, 0f))
                 {
                     ward = privateArea;
-                    return true;
+                    return WardProximity.InsideWard;
+                }
+
+                if (proximity == WardProximity.Clear && privateArea.IsInside(location, buffer))
+                {
+                    ward = privateArea;
+                    proximity = WardProximity.NearWard;
                 }
             }
 
-            ward = null;
-            return false;
+            return proximity;
         }
 
         /// <summary>

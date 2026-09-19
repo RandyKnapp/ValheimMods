@@ -178,7 +178,11 @@ namespace EpicLoot.MagicItemEffects
         {
             if (stamcost > 0) { player.UseStamina(stamcost * scale); }
             if (eitrcost > 0) { player.UseEitr(eitrcost * scale); }
-            if (healthcost > 0) { player.UseHealth(healthcost * scale); }
+            // Clamp to leave 1 HP, as vanilla does at both of its own attack-health spends (Attack.cs
+            // DoMeleeAttack / FireProjectileBurst): Character.UseHealth clamps to 0, not 1, so an unclamped
+            // charge here can take the player to 0 and kill them. This runs as a FireProjectileBurst PREFIX,
+            // so vanilla then charges its own (clamped) share in the same method -- ours is on top of that.
+            if (healthcost > 0) { player.UseHealth(Mathf.Min(player.GetHealth() - 1f, healthcost * scale)); }
         }
     }
 

@@ -43,10 +43,21 @@ namespace EpicLoot
 
         private static void AssignEmptyToNull(ref ItemDrop.ItemData data)
         {
-            if (data != null && data.m_dropPrefab == null)
+            if (data == null || data.m_dropPrefab != null)
             {
-                data.m_dropPrefab = EpicAssets.DummyPrefab();
+                return;
             }
+
+            // Try for the real prefab first. The dummy exists only to keep SetupVisEquipment from throwing,
+            // but it is an empty stand-in: an item wearing it renders as nothing, and being non-null while
+            // carrying no ItemDrop it slips past every `m_dropPrefab == null` guard downstream. Stamping it
+            // is the fallback, not the goal.
+            if (data.HealDropPrefab())
+            {
+                return;
+            }
+
+            data.m_dropPrefab = EpicAssets.DummyPrefab();
         }
     }
 }

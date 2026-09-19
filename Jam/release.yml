@@ -22,8 +22,8 @@ publish:
     enabled: true
   nexus:
     enabled: true
-    mod_id: 75
-    file_id: 467302
+    mod_id: 177
+    file_id: 848593
   github:
     enabled: true
   discord:

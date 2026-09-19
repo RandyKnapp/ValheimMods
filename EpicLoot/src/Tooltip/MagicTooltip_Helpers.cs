@@ -46,8 +46,10 @@ public partial class MagicTooltip
     public static float GetAttackStaminaModifierValue(ItemDrop.ItemData item, MagicItem magicItem, out bool hasModifiers)
     {
         hasModifiers = magicItem.HasEffect(MagicEffectType.ModifyAttackStaminaUse);
+        // Subtract the raw effect fraction, not GetModifyAttackValue's (1 - x) MULTIPLIER: subtracting the
+        // multiplier rendered a -13% enchant as "-87%". Mirrors GetBlockStaminaModifierValue below.
         return item.m_shared.m_attackStaminaModifier -
-            ModifyAttackCosts.GetModifyAttackValue(null, item, MagicEffectType.ModifyAttackStaminaUse);
+            magicItem.GetTotalEffectValue(MagicEffectType.ModifyAttackStaminaUse, 0.01f);
     }
 
     public static float GetBlockStaminaModifierValue(ItemDrop.ItemData item, MagicItem magicItem, out bool hasModifiers)

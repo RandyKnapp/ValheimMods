@@ -52,7 +52,7 @@ public class ConfigVersionState
     public Dictionary<string, ConfigVersionEntry> Files = new Dictionary<string, ConfigVersionEntry>();
 
     // Lives outside baseconfig/ so it can never be confused for a config the player should edit, and
-    // so it can never trip the per-file FileSystemWatchers registered in ELConfig.SychronizeConfig.
+    // so writing it can never wake the baseconfig watcher ELConfig.SetupBaseConfigFileWatch installs.
     public static string FilePath => Path.Combine(Paths.ConfigPath, "EpicLoot", "configstate.json");
 
     public static ConfigVersionState Load()

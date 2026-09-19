@@ -73,8 +73,10 @@ namespace EquipmentAndQuickSlots {
                 get; internal set;
             }
 
-            internal void UpdateGridPosition() {
-                ItemDrop.ItemData item = Item;
+            // moveItem: the resident travels with the cell. Off while a character loads, when items
+            // still hold the positions they were saved at (see SetBaseRowsForLoad).
+            internal void UpdateGridPosition(bool moveItem = true) {
+                ItemDrop.ItemData item = moveItem ? Item : null;
                 _gridPos = new Vector2i(_index % InventoryWidth, VisibleRows + _index / InventoryWidth);
                 if (item != null)
                     item.m_gridPos = _gridPos;
@@ -203,6 +205,11 @@ namespace EquipmentAndQuickSlots {
 
         private static bool _baseRowsCaptured;
 
+        // The row count a new Player's inventory is created with (Humanoid builds it 8x4; a rows mod
+        // may change that), captured together with the first BaseRows. A character vanilla has never
+        // resized keeps exactly this many.
+        internal static int PrefabRows { get; private set; } = VanillaInventoryHeight;
+
         internal static void CaptureBaseRows(Inventory inventory) {
             // Captured exactly once, from the first Player.Awake before we ever extend a height —
             // after that any larger height we observe is our own FullHeight, not new base rows.
@@ -210,14 +217,15 @@ namespace EquipmentAndQuickSlots {
                 return;
 
             _baseRowsCaptured = true;
-            BaseRows = Mathf.Max(1, inventory.m_height);
+            BaseRows = PrefabRows = Mathf.Max(1, inventory.m_height);
         }
 
         // The character's vanilla row count. Haldor sells inventory rows (the "invrows" player key,
         // applied through Player.SetInventorySize), so this is per character rather than per
         // install and it can grow mid-session — and Player.OnSpawned re-applies the stored count on
-        // every single spawn. The slot region always sits directly below the visible rows, so it
-        // has to move with them before vanilla measures the inventory against the new height.
+        // every single spawn (normally a no-op by then: SetBaseRowsForLoad already matched it). The
+        // slot region always sits directly below the visible rows, so it has to move with them
+        // before vanilla measures the inventory against the new height.
         internal static void SetBaseRows(int rows) {
             rows = Mathf.Max(1, rows);
             if (rows == BaseRows)
@@ -229,6 +237,24 @@ namespace EquipmentAndQuickSlots {
             _baseRowsCaptured = true;
             BaseRows = rows;
             OnVisibleRowsChanged();
+        }
+
+        // Player.Load: vanilla reads the "invrows" key only after the inventory and applies it only
+        // in OnSpawned, so until then BaseRows is the prefab's count on a fresh launch, or the
+        // previous character's after a character switch. The loaded items still sit exactly where
+        // they were saved, so unlike SetBaseRows nothing moves with the cells: the difference
+        // between the saved layout and this one is the row migration's to resolve, and it can only
+        // do that against the character's real row count.
+        internal static void SetBaseRowsForLoad(int rows) {
+            rows = Mathf.Max(1, rows);
+            if (rows == BaseRows)
+                return;
+
+            // Ungated, like SetBaseRows: it decides where every saved slot position is read from.
+            EquipmentAndQuickSlots.LogInfo($"Loading a character with {rows} vanilla inventory rows; slot cells laid out for {BaseRows} follow, items keep their saved positions");
+            _baseRowsCaptured = true;
+            BaseRows = rows;
+            UpdateSlotsGridPosition(moveResidents: false);
         }
 
         // The visible row count changed (config edit, the server's value arriving on join, or the
@@ -669,13 +695,15 @@ namespace EquipmentAndQuickSlots {
             return true;
         }
 
-        internal static void UpdateSlotsGridPosition() {
+        // moveResidents: false only while a character loads (SetBaseRowsForLoad).
+        internal static void UpdateSlotsGridPosition(bool moveResidents = true) {
             ClearCachedItems();
-            foreach (Slot slot in slots)
-                slot.CacheItem();
+            if (moveResidents)
+                foreach (Slot slot in slots)
+                    slot.CacheItem();
 
             foreach (Slot slot in slots)
-                slot.UpdateGridPosition();
+                slot.UpdateGridPosition(moveResidents);
 
             ClearCachedItems();
 

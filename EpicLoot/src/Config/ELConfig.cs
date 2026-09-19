@@ -803,6 +803,7 @@ internal class ELConfig {
             EnchantingUpgradesRPC, EnchantingTableUpgrades.GetCFG);
         SychronizeConfig<AutoSorterConfiguration>("itemsorter.json", AutoAddEnchantableItems.InitializeConfig,
             AutoSorterConfigurationRPC, AutoAddEnchantableItems.GetCFG);
+        SetupBaseConfigFileWatch(GetOverhaulDirectoryPath());
         SetupPatchConfigFileWatch(FilePatching.PatchesDirPath);
 
         ItemManager.OnItemsRegistered += InitializeRecipeOnReady;
@@ -890,8 +891,8 @@ internal class ELConfig {
         // Setup the initial synchronization for network connection
         SynchronizationManager.Instance.AddInitialSynchronization(targetRPC, SendInitialConfig);
 
-        // Reads the file back into the live config. Shared by the file watcher and by the hot-reload
-        // pass, which cannot wait for the watcher (see ReloadBaseConfigsFromDisk).
+        // Reads the file back into the live config. Shared by the reload scheduler and by the
+        // hot-reload pass, which cannot wait for the poll (see ReloadBaseConfigsFromDisk).
         bool ReloadFromDisk() {
             if (!File.Exists(baseCfgLocation)) {
                 return false;
@@ -903,20 +904,25 @@ internal class ELConfig {
                     throw new InvalidDataException("file deserialized to null");
                 }
 
-                EpicLoot.Log($"Config file {baseCfgLocation} has been modified, updating config.");
                 setupMethod(contents);
             } catch (Exception ex) {
                 EpicLoot.LogWarningForce($"Config file {baseCfgLocation} is invalid and config will not be updated." + ex);
                 return false;
             }
 
-            if (GUIManager.IsHeadless()) {
+            // Forced: at the default log level this is the only evidence an edit was picked up.
+            // IsServer rather than IsHeadless: a player hosting the game is a server too, and its
+            // peers were otherwise left on the definitions they were handed at connect.
+            if (ZNet.instance != null && ZNet.instance.IsServer() && ZNet.instance.m_peers.Count > 0) {
+                List<ZNetPeer> peers = ZNet.instance.m_peers;
                 try {
-                    targetRPC.SendPackage(ZNet.instance.m_peers, SendConfig(JsonConvert.SerializeObject(getConfig())));
-                } catch {
-                    // TODO check
-                    EpicLoot.LogError($"Error while server syncing {filename} configs");
+                    targetRPC.SendPackage(peers, SendConfig(JsonConvert.SerializeObject(getConfig())));
+                    EpicLoot.LogForce($"Reloaded {filename} from disk and pushed it to {peers.Count} connected peer(s).");
+                } catch (Exception ex) {
+                    EpicLoot.LogErrorForce($"Reloaded {filename} from disk but pushing it to peers failed: {ex}");
                 }
+            } else {
+                EpicLoot.LogForce($"Reloaded {filename} from disk.");
             }
 
             return true;
@@ -924,34 +930,16 @@ internal class ELConfig {
 
         // Registered in call order, so the load-order dependencies InitializeConfig encodes
         // (biomedata before adventuredata before iteminfo, shardstones before shardstoneconversions)
-        // still hold on a hot reload. Fourteen independent watchers fire in whatever order the OS
-        // delivers them.
+        // hold on a hot reload too: the reload scheduler applies changed files in this same order.
         BaseConfigReloaders.RemoveAll(reloader => reloader.FileName == filename);
         BaseConfigReloaders.Add((filename, ReloadFromDisk));
 
-        // Encapsulated file watcher modification method for the config file
-        void FileModified(object sender, FileSystemEventArgs e) {
-            if (e.FullPath != baseCfgLocation || !File.Exists(baseCfgLocation)) {
-                return;
-            }
-
-            EpicLoot.Log($"Config file {baseCfgLocation} {e.FullPath} has been modified, attempting to update config.");
-            ReloadFromDisk();
-        }
-
-        // Setup the file watcher for the config file. NotifyFilter must include FileName:
-        // LastWrite alone never reports create/delete/rename actions, which left the
-        // Created/Deleted/Renamed handlers dead and missed editors that save via
-        // write-temp-then-rename.
-        FileSystemWatcher fsw = new FileSystemWatcher(ELConfig.GetOverhaulDirectoryPath());
-        fsw.Created += new FileSystemEventHandler(FileModified);
-        fsw.Changed += new FileSystemEventHandler(FileModified);
-        fsw.Renamed += new RenamedEventHandler(FileModified);
-        fsw.Deleted += new FileSystemEventHandler(FileModified);
-        fsw.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName;
-        fsw.SynchronizingObject = ThreadingHelper.SynchronizingObject;
-        fsw.EnableRaisingEvents = true;
-        fsw.Filter = filename;
+        // Registered after the initial read (and after LoadPatchedJSON's write above), so the file as
+        // it stands now is the baseline and startup writes are never mistaken for edits. The scheduler
+        // polls the file's timestamp and size; the watcher SetupBaseConfigFileWatch installs only asks
+        // it to look sooner. See ConfigFileReloader for why events on their own are not enough on a
+        // server, and why a connected client does not reload.
+        ConfigFileReloader.Watch(baseCfgLocation, ReloadFromDisk);
     }
 
     public static void StartupProcessModifiedLocalizations() {
@@ -1002,24 +990,27 @@ internal class ELConfig {
     /// an empty collection reloads none.
     /// </param>
     internal static void ReloadBaseConfigsFromDisk(ICollection<string> fileNames) {
+        string baseConfigDir = GetOverhaulDirectoryPath();
         foreach ((string fileName, Func<bool> reloadFromDisk) in BaseConfigReloaders) {
             if (fileNames != null && !fileNames.Contains(fileName)) {
                 continue;
             }
 
             reloadFromDisk();
+            // What is on disk is now what is in memory, so the scheduler must not apply it a second
+            // time. Recorded even when the read failed, matching the scheduler's own once-per-edit rule.
+            ConfigFileReloader.MarkApplied(Path.Combine(baseConfigDir, fileName));
         }
     }
 
     /// <summary>
     /// Rebuilds the configs from the patch files on disk and puts the result into the running game.
     ///
-    /// The reload has to be driven from here rather than left to the per-file FileSystemWatchers.
-    /// Those events are asynchronous and are marshalled onto the main thread, so they cannot be
-    /// delivered until this callback returns -- which used to mean the auto-add pass below ran
-    /// against the pre-patch config still in memory and wrote it straight back over the files
-    /// FilePatching had just rebuilt. The patch survived on neither disk nor in memory, and only
-    /// took effect after a restart.
+    /// The reload has to be driven from here rather than left to the reload scheduler. That polls
+    /// the files every couple of seconds, so the auto-add pass below would otherwise run against the
+    /// pre-patch config still in memory and write it straight back over the files FilePatching had
+    /// just rebuilt. The patch survived on neither disk nor in memory, and only took effect after a
+    /// restart.
     /// </summary>
     internal static void RunPatchHotReload() {
         List<string> rebuiltTargets = FilePatching.ReloadAndApplyAllPatches();
@@ -1049,10 +1040,9 @@ internal class ELConfig {
             return;
         }
 
+        // The auto-add pass merges onto the live config, writes the result back out and re-reads the
+        // files it rewrote itself, so nothing here waits on the scheduler.
         AutoAddEnchantableItems.CheckAndAddAllEnchantableItems(false);
-        // The auto-add pass merges onto the live config and writes the result back out, so re-read
-        // the files it rewrote instead of waiting on their watchers.
-        ReloadBaseConfigsFromDisk(AutoAddEnchantableItems.RewrittenConfigFiles);
     }
 
     private static void IngestPatchFilesFromDisk(object s, FileSystemEventArgs e) {
@@ -1084,11 +1074,48 @@ internal class ELConfig {
         PatchReloadDebouncer.Schedule();
     }
 
+    private static FileSystemWatcher _baseConfigWatcher;
+
+    /// <summary>
+    /// One watcher for the whole baseconfig folder. It reloads nothing itself: an event only asks the
+    /// reload scheduler to check the files now instead of on its next poll, so what happens to a file
+    /// is decided by its timestamp and size on the main thread, not by which of an editor's burst of
+    /// events happened to arrive first.
+    /// </summary>
+    public static void SetupBaseConfigFileWatch(string path) {
+        if (_baseConfigWatcher != null) {
+            _baseConfigWatcher.EnableRaisingEvents = false;
+            _baseConfigWatcher.Dispose();
+            _baseConfigWatcher = null;
+        }
+
+        // Filter set through the constructor: Mono's Windows backend copies it to the native watcher
+        // only when EnableRaisingEvents is switched on, so a filter assigned afterwards never applies.
+        FileSystemWatcher watcher = new FileSystemWatcher(path, "*.json");
+        watcher.Created += OnBaseConfigFileEvent;
+        watcher.Changed += OnBaseConfigFileEvent;
+        watcher.Renamed += OnBaseConfigFileEvent;
+        watcher.Deleted += OnBaseConfigFileEvent;
+        // FileName included so an editor that saves by writing a temp file and renaming it over the
+        // config still reports; LastWrite alone only covers writes made in place.
+        watcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.Size;
+        // baseconfig-backup/ is a sibling of this folder, not a child, so there is nothing below it.
+        watcher.IncludeSubdirectories = false;
+        // No SynchronizingObject: the handler only sets a flag the scheduler reads on the main thread.
+        watcher.EnableRaisingEvents = true;
+        _baseConfigWatcher = watcher;
+    }
+
+    private static void OnBaseConfigFileEvent(object sender, FileSystemEventArgs e) {
+        ConfigFileReloader.CheckSoon();
+    }
+
     private static FileSystemWatcher _patchWatcher;
 
     public static void SetupPatchConfigFileWatch(string path) {
         // Replacing rather than stacking: a second watcher on the same tree would just double every
-        // event. The field also keeps the watcher rooted -- a collected one stops raising events.
+        // event. The field is what lets the previous one be disposed; on this Mono runtime the watcher
+        // backends hold every instance statically until Dispose, so it is not what keeps events flowing.
         if (_patchWatcher != null) {
             _patchWatcher.EnableRaisingEvents = false;
             _patchWatcher.Dispose();
@@ -1169,7 +1196,7 @@ internal class ELConfig {
     }
 
     private static IEnumerator OnClientRecieveAutoSorterConfigs(long sender, ZPackage package) {
-        return ApplyClientConfig<AutoSorterConfiguration>("autosorter config", package, AutoAddEnchantableItems.InitializeConfig);
+        return ApplyClientConfig<AutoSorterConfiguration>("itemsorter.json", package, AutoAddEnchantableItems.InitializeConfig);
     }
 
     private static IEnumerator OnClientRecieveShardStonesConfigs(long sender, ZPackage package) {
@@ -1191,6 +1218,11 @@ internal class ELConfig {
             EpicLoot.LogErrorForce($"Server-pushed {name} could not be parsed; keeping the currently loaded config.");
         } else {
             initialize(parsed);
+            // Memory now holds the server's copy, not the local file: forget the file's applied stamp
+            // so the scheduler restores the local copy on its first check after disconnecting.
+            ConfigFileReloader.MarkDirty(Path.Combine(GetOverhaulDirectoryPath(), name));
+            // Forced: at the default log level this is the only sign on a client that a push arrived.
+            EpicLoot.LogForce($"Applied server-pushed {name}.");
         }
         yield return null;
     }

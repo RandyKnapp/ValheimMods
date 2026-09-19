@@ -22,11 +22,11 @@ public class Command : Terminal.ConsoleCommand
         bool onlyAdmin = false, 
         bool hideFromHelp = false, 
         params string[] alternates)
-        // Epic Loot commands are never cheats and never sit behind devcommands, so they run without
-        // `devcommands` enabled, do not trip the cheat-confirmation prompt or flag the profile as
-        // cheated, and stay usable from the chat window (Chat.isAllowedCommand rejects both flags).
-        // The gate is admin instead - see RequireAdmin.
-        : base(command, description, RequireAdmin(command, action), isCheat: false, isNetwork, onlyServer, isSecret, allowInDevBuild, hideBehindDevCommands: false, optionsFetcher, alwaysRefreshTabOptions || options != null, remoteCommand, onlyAdmin)
+        // Every Epic Loot command is a cheat: it needs `devcommands` and the cheat confirmation, and flags
+        // the profile as cheated. Vanilla only enables cheats on the machine running the world
+        // (Terminal.IsCheatsEnabled requires ZNet.IsServer), so a client of a dedicated server needs a mod
+        // that grants them to the server's admins, such as Server Devcommands.
+        : base(command, description, action, isCheat: true, isNetwork, onlyServer, isSecret, allowInDevBuild, hideBehindDevCommands: false, optionsFetcher, alwaysRefreshTabOptions || options != null, remoteCommand, onlyAdmin)
     {
         this.options = options;
         this.hideFromHelp = hideFromHelp;
@@ -42,33 +42,6 @@ public class Command : Terminal.ConsoleCommand
 
         TerminalManager._commands[command] = this;
     }
-
-    /// <summary>
-    /// Wraps a command body in the admin check. Every Epic Loot command spawns items, rewrites
-    /// adventure state or dumps diagnostics, so the gate is the world's admin list rather than
-    /// <c>devcommands</c>: a solo player or host always passes, a client only when its user id is on
-    /// the server's adminlist.txt (which the server syncs to every client, so the check reads the same
-    /// list on both sides).
-    /// </summary>
-    /// <remarks>
-    /// Vanilla's own <c>onlyAdmin</c> constructor flag cannot do this. Nothing in the game ever reads
-    /// <c>ConsoleCommand.OnlyAdmin</c>, and only the <c>ConsoleEventFailable</c> overload folds it into
-    /// <c>OnlyServer</c> - the <c>ConsoleEvent</c> overload used here drops it, so passing it is a
-    /// no-op. Folding it into <c>OnlyServer</c> would be wrong anyway: that rejects the command outright
-    /// on any client of a dedicated server, admin or not. The check therefore lives in the action, which
-    /// also means it re-evaluates per invocation rather than being frozen at registration time, when
-    /// there is no ZNet yet.
-    /// </remarks>
-    private static Terminal.ConsoleEvent RequireAdmin(string command, Terminal.ConsoleEvent action) => args =>
-    {
-        if (ZNet.instance == null || !ZNet.instance.LocalPlayerIsAdminOrHost())
-        {
-            args.Context?.AddString($"'{command}' requires admin.");
-            return;
-        }
-
-        action(args);
-    };
 
     /// <summary>
     /// Options for the argument at <paramref name="argIndex"/> of <paramref name="tokens"/>, where

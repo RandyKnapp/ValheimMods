@@ -98,6 +98,34 @@ namespace EquipmentAndQuickSlots {
             }
         }
 
+        // Vanilla stores the row count with the character but applies it only in OnSpawned, and
+        // Player.Load reads it only after the inventory -- so the saved items come in while BaseRows
+        // is still the prefab's count (fresh launch) or the previous character's (character
+        // switch). Everything after this that reads a saved grid position has to see this
+        // character's layout: the row migration, the legacy 2.x migration and the backup restore
+        // (all lower priority). The resize in OnSpawned then finds the cells already in place.
+        [HarmonyPatch(typeof(Player), nameof(Player.Load))]
+        private static class Player_Load_LayOutSlotsForCharacterRows {
+            [HarmonyPriority(Priority.First)]
+            private static void Postfix(Player __instance) {
+                if (!FejdStartup.instance && !IsValidPlayer(__instance))
+                    return;
+
+                // Exactly what OnSpawned will do: a stored count is applied with SetInventorySize's
+                // clamp; a missing or unreadable one leaves the size a new Player is created with.
+                int rows = __instance.TryGetUniqueKeyValue(Player.InventoryRowsKey, out string stored) && int.TryParse(stored, out int storedRows)
+                    ? Mathf.Clamp(storedRows, 0, 9)
+                    : PrefabRows;
+
+                loadedPlayer = __instance;
+                try {
+                    SetBaseRowsForLoad(rows);
+                } finally {
+                    loadedPlayer = null;
+                }
+            }
+        }
+
         [HarmonyPatch(typeof(Player), nameof(Player.Update))]
         private static class Player_Update_UpdateInventoryHeight {
             private static void Postfix(Player __instance) {
@@ -558,15 +586,22 @@ namespace EquipmentAndQuickSlots {
             private static void Postfix() => itemToFindSlot = null;
         }
 
-        [HarmonyPatch(typeof(Inventory), nameof(Inventory.AddItem), typeof(string), typeof(int), typeof(float), typeof(Vector2i), typeof(bool), typeof(int), typeof(int), typeof(long), typeof(string), typeof(Dictionary<string, string>), typeof(int), typeof(bool), typeof(bool), typeof(bool))]
+        // Brackets each item Inventory.Load adds. Current saves come in through
+        // AddItem(int prefabHash, ItemData, bool) and old ones through LoadOld's string-name overload,
+        // which only hashes the name and forwards -- both end here. Before the Sept 2026 update Load
+        // called the string overload directly; the marker left on it stopped firing without an error,
+        // taking the load guard and the item loss prevention above with it.
+        [HarmonyPatch(typeof(Inventory), nameof(Inventory.AddItem), typeof(int), typeof(int), typeof(float), typeof(Vector2i), typeof(bool), typeof(int), typeof(int), typeof(long), typeof(string), typeof(Dictionary<string, string>), typeof(int), typeof(bool), typeof(bool), typeof(bool))]
         public static class Inventory_AddItem_OnLoad_Marker {
             public static bool inCall = false;
 
             [HarmonyPriority(Priority.First)]
             private static void Prefix() => inCall = true;
 
+            // A finalizer, not a postfix: a marker left on by a throw would let the load-only item
+            // loss prevention act on every failed add afterwards, refused drag & drops included.
             [HarmonyPriority(Priority.First)]
-            private static void Postfix() => inCall = false;
+            private static void Finalizer() => inCall = false;
         }
 
         [HarmonyPatch(typeof(Inventory), nameof(Inventory.CanAddItem), typeof(ItemDrop.ItemData), typeof(int))]

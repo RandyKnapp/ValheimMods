@@ -17,9 +17,9 @@ namespace EpicLoot.Adventure.Feature
     /// with it.
     ///
     /// Everything here is seed-only and therefore blind to terrain colliders, wards and player bases.
-    /// <see cref="AdventureSpawnController.DeterminespawnPoint"/> checks all of those with an
-    /// expanding band search once the player is actually near the point, and stays the authority on
-    /// where the bounty or chest finally lands.
+    /// <see cref="AdventureSpawnController.DeterminespawnPoint"/> checks all of those once someone is
+    /// actually near the point, and decides where inside the map circle the bounty or chest lands.
+    /// The point picked here is the circle's centre and never moves afterwards.
     /// </summary>
     internal static class BountyLocationEarlyCache
     {

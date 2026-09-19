@@ -289,7 +289,7 @@ namespace EpicLoot.Adventure.Feature
         private static void SpawnBountyInitilizer(BountyInfo bounty, Vector3 spawnPoint, Vector3 offset)
         {
             Quaternion rotation = Quaternion.Euler(0f, UnityEngine.Random.Range(0f, 360f), 0f);
-            GameObject gameObject = PrefabManager.Instance.GetPrefab("EL_SpawnController");
+            GameObject gameObject = PrefabManager.Instance.GetPrefab(AdventureSpawnController.PrefabName);
             GameObject created_go = Object.Instantiate(gameObject, spawnPoint, rotation);
             // store the spawn position in the bounty object
             bounty.Position = spawnPoint;

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using EpicLoot;
 using EpicLoot.CraftingV2;
 using UnityEngine;
 using UnityEngine.UI;
@@ -89,14 +90,7 @@ namespace EpicLoot_UnityLib
                     ZInput.ResetButtonStatus("JoyButtonY");
                 }
 
-                if (AvailableEffectsScrollbar != null)
-                {
-                    float rightStickAxis = ZInput.GetJoyRightStickY();
-                    if (Mathf.Abs(rightStickAxis) > 0.5f)
-                    {
-                        AvailableEffectsScrollbar.value = Mathf.Clamp01(AvailableEffectsScrollbar.value + rightStickAxis * -0.1f);
-                    }
-                }
+                GamepadScroll.ApplyRightStickY(AvailableEffectsScrollbar);
             }
 
             if (_choiceDialog != null && !_choiceDialog.activeSelf)

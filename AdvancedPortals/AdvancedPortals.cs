@@ -99,45 +99,41 @@ namespace AdvancedPortals
             Config.Save();
         }
 
+        private FileSystemWatcher _configWatcher;
+
         private void SetupWatcher()
         {
+            // The reload is driven by ConfigFileReloader watching the file's timestamp; the events
+            // below only ask it to look sooner than its own poll would. See that class for why the
+            // events on their own are not enough on a Linux server, and why a connected client does
+            // not reload.
+            //
+            // Nothing to apply by hand once it does: Config.Reload raises SettingChanged for every
+            // entry whose value actually changed, and PieceLoader and Portals both act on that
+            // themselves.
+            ConfigFileReloader.Begin(Config, ConfigFileFullPath);
+
             FileSystemWatcher watcher = new(BepInEx.Paths.ConfigPath, ConfigFileName);
-            watcher.Changed += ReadConfigValues;
-            watcher.Created += ReadConfigValues;
-            watcher.Renamed += ReadConfigValues;
-            watcher.IncludeSubdirectories = true;
+            watcher.Changed += OnConfigFileEvent;
+            watcher.Created += OnConfigFileEvent;
+            watcher.Renamed += OnConfigFileEvent;
+            // FileName included so an editor that saves by writing a temp file and renaming it over
+            // the config still reports; LastWrite alone only covers writes made in place.
+            watcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.Size;
             watcher.SynchronizingObject = ThreadingHelper.SynchronizingObject;
             watcher.EnableRaisingEvents = true;
+            // Not IncludeSubdirectories: the file only ever lives directly in BepInEx/config, and
+            // recursing made Mono register an inotify watch for every subdirectory under it - every
+            // other mod's config folder included - for a filter that can only ever match at the top.
+            //
+            // Held in a field so it can be disposed or replaced later. Mono's watcher backends keep
+            // every instance rooted until Dispose, so this is not what keeps events flowing.
+            _configWatcher = watcher;
         }
 
-        private DateTime _lastReloadTime;
-        private const long RELOAD_DELAY = 10000000; // One second
-
-        private void ReadConfigValues(object sender, FileSystemEventArgs e)
+        private void OnConfigFileEvent(object sender, FileSystemEventArgs e)
         {
-            DateTime now = DateTime.Now;
-            long time = now.Ticks - _lastReloadTime.Ticks;
-            if (!File.Exists(ConfigFileFullPath) || time < RELOAD_DELAY) return;
-
-            // A connected client must not reload: Jotunn has already replaced these values with the
-            // server's, and a reload would clobber them with whatever this machine happens to have on disk.
-            // The main menu (no ZNet yet) and a singleplayer or host session both still reload.
-            if (ZNet.instance != null && !ZNet.instance.IsServer()) return;
-
-            try
-            {
-                APLogger.LogInfo("Attempting to reload configuration...");
-                Config.Reload();
-            }
-            catch
-            {
-                APLogger.LogWarning($"There was an issue loading {ConfigFileName}");
-                return;
-            }
-
-            // Nothing to apply by hand: Config.Reload raises SettingChanged for every entry whose value
-            // actually changed, and PieceLoader and Portals both act on that themselves.
-            _lastReloadTime = now;
+            ConfigFileReloader.CheckSoon();
         }
     }
 }

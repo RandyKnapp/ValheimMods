@@ -112,7 +112,9 @@ namespace EpicLoot.Magic
                 i.m_autoPickup == true &&
                 string.IsNullOrEmpty(i.m_itemData.m_shared.m_dlc) &&
                 !string.IsNullOrEmpty(i.m_itemData.m_shared.m_description) &&
-                EpicLoot.IsAllowedMagicItemType(i.m_itemData)).ToList();
+                EpicLoot.IsAllowedMagicItemType(i.m_itemData) &&
+                !LootDenyList.IsDenied(i.name) &&
+                !AttackKillsWielder(i.m_itemData)).ToList();
 
             EpicLoot.Log($"Checking all equipment in game.");
             foundByCategory = EnsureItemsInConfigMutating(foundByCategory, itemsByCategory, allEquipment);
@@ -133,6 +135,12 @@ namespace EpicLoot.Magic
             // merge dataset and ensure unique values
             List<ItemTypeInfo> newConfig = MergeItemsByBossConfig(itemsByCategory);
 
+            // Strip prop items an EARLIER run already wrote to disk. Filtering allEquipment above only stops
+            // new ones being added; an entry already in iteminfo.json survives unless
+            // AutoRemoveEquipmentNotFound is on, and AddRemoveItemsFromLootLists below would feed it straight
+            // back into the loot tables.
+            RemovePropItemsFromConfig(newConfig, allItems);
+
             // Add/remove items from vendor if enabled.
             AddRemoveItemsFromVendor(newConfig);
 
@@ -142,7 +150,7 @@ namespace EpicLoot.Magic
                 .Select(x => x.m_itemData.m_dropPrefab.name).ToList();
             AddRemoveItemsFromLootLists(magicMats, foundByCategory, newConfig);
 
-            // Write out the new config, which will trigger a reload of the config
+            // Write out the new config; CheckAndAddAllEnchantableItems re-reads every rewritten file once all are written.
             try
             {
                 string contents = JsonConvert.SerializeObject(new ItemInfoConfig() { ItemInfo = newConfig }, Formatting.Indented);
@@ -157,6 +165,78 @@ namespace EpicLoot.Magic
             {
                 EpicLoot.LogError($"Failed to auto-add items to iteminfo.json: {e.Message}");
                 return;
+            }
+
+            // The files above were written from the merged result; put that result into memory now
+            // rather than on the reload scheduler's next poll. Load-bearing for iteminfo: it is only
+            // ever assigned in memory by re-reading it. The scheduler remains the backstop when the
+            // write above failed and returned early.
+            ELConfig.ReloadBaseConfigsFromDisk(RewrittenConfigFiles);
+        }
+
+        /// <summary>
+        /// True for a weapon that kills whoever swings it: its attack sets m_attackKillsSelf, which
+        /// Attack.Trigger (assembly_valheim/Attack.cs:578) answers with 9,999,999 untyped true damage to the
+        /// wielder via ApplyDamage as the swing completes.
+        ///
+        /// <para>This is the BACKSTOP, not the main defence. The Deep North SP_ weapons set the flag, but
+        /// their FW_ twins and every prop armor piece do not, and they are otherwise field-for-field
+        /// identical to real gear -- so the known props are excluded by name through
+        /// <see cref="LootDenyList"/>. The flag test stays to catch a self-killing prop that a later update
+        /// adds under a name the deny list does not know yet.</para>
+        /// </summary>
+        private static bool AttackKillsWielder(ItemDrop.ItemData item)
+        {
+            return item?.m_shared != null &&
+                (item.m_shared.m_attack?.m_attackKillsSelf == true ||
+                 item.m_shared.m_secondaryAttack?.m_attackKillsSelf == true);
+        }
+
+        /// <summary>
+        /// Purges prop items from an already-written iteminfo config: anything on <see cref="LootDenyList"/>,
+        /// plus any item whose attack kills its wielder. Matched on prefab name -- the identity
+        /// EnsureItemsInConfigMutating writes.
+        ///
+        /// <para>Runs on the merged result rather than relying on the equipment scan alone, because an entry
+        /// already in iteminfo.json is carried forward before any ignore check is consulted
+        /// (EnsureItemsInConfigMutating's "already in the config" branch), so a prop written by an earlier
+        /// build would otherwise be kept forever.</para>
+        /// </summary>
+        private static void RemovePropItemsFromConfig(List<ItemTypeInfo> config, List<ItemDrop> allItems)
+        {
+            HashSet<string> selfKilling = new HashSet<string>(allItems
+                .Where(i => AttackKillsWielder(i.m_itemData))
+                .Select(i => i.name));
+
+            SortedSet<string> removedNames = new SortedSet<string>(StringComparer.Ordinal);
+            bool IsProp(string name)
+            {
+                if (!LootDenyList.IsDenied(name) && !selfKilling.Contains(name))
+                {
+                    return false;
+                }
+
+                removedNames.Add(name);
+                return true;
+            }
+
+            int removed = 0;
+            foreach (ItemTypeInfo itemType in config)
+            {
+#pragma warning disable 612 // Items is obsolete, but a config written by an older build may still use it.
+                removed += itemType.Items.RemoveAll(IsProp);
+#pragma warning restore 612
+                foreach (KeyValuePair<string, List<string>> byBoss in itemType.ItemsByBoss)
+                {
+                    removed += byBoss.Value.RemoveAll(IsProp);
+                }
+            }
+
+            if (removed > 0)
+            {
+                EpicLoot.LogWarningForce($"Removed {removed} prop item entries ({removedNames.Count} distinct) " +
+                    $"from iteminfo.json: {string.Join(", ", removedNames)}. These are NPC props -- invisible " +
+                    "when worn, and in some cases killing whoever attacks with them -- and must never be loot.");
             }
         }
 
@@ -276,7 +356,7 @@ namespace EpicLoot.Magic
             }
 
             EpicLoot.Log($"Finished Validating loottable.");
-            // Write out the new config, which will trigger a reload of the config
+            // Write out the new config; CheckAndAddAllEnchantableItems re-reads every rewritten file once all are written.
             try
             {
                 LootConfig newLootConfig = new LootConfig()
@@ -359,7 +439,7 @@ namespace EpicLoot.Magic
             AdventureDataConfig AdventureDataConfigReplacement = AdventureDataManager.Config;
             AdventureDataConfigReplacement.Gamble.GambleCosts = newGambleItems;
 
-            // Write out the new config, which will trigger a reload of the config
+            // Write out the new config; CheckAndAddAllEnchantableItems re-reads every rewritten file once all are written.
             EpicLoot.Log("Writing config.");
             try
             {
@@ -644,6 +724,15 @@ namespace EpicLoot.Magic
                 return false;
             }
 
+            // Denied props are rejected before anything else. The ObjectDB fallback at the bottom accepts ANY
+            // real ItemDrop, which is exactly how SP_/FW_ entries survived every rewrite once written.
+            // Rejecting here deletes them from ItemSets, loot table Loot lists and RarityItems maps alike.
+            if (LootDenyList.IsDenied(name))
+            {
+                EpicLoot.Log($"REMOVING denied prop item {name} from the loot configuration.");
+                return false;
+            }
+
             if (metaLootTables != null && name.Contains("."))
             {
                 string reference = name.Split('.')[0];
@@ -654,10 +743,17 @@ namespace EpicLoot.Magic
                 }
             }
 
-            return validItems.Contains(name)
-                || metaItemSetNames.Contains(name)
-                || magicMats.Contains(name)
-                || ObjectDB.instance.GetItemPrefab(name) != null;
+            if (validItems.Contains(name) || metaItemSetNames.Contains(name) || magicMats.Contains(name))
+            {
+                return true;
+            }
+
+            // ObjectDB.m_items also holds a few vanilla non-item prefabs (SnowRoller, ...), which
+            // LootRoller can never spawn as a drop, so a name has to resolve to an actual ItemDrop.
+            // ...and a self-killing prop the deny list does not know yet is rejected on its flag.
+            GameObject prefab = ObjectDB.instance.GetItemPrefab(name);
+            return prefab != null && prefab.TryGetComponent(out ItemDrop itemDrop) &&
+                !AttackKillsWielder(itemDrop.m_itemData);
         }
 
         // Drops only the unresolvable rarities from an entry's per-rarity map, leaving the entry itself

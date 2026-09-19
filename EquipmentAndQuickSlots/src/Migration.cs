@@ -1,5 +1,6 @@
 ﻿using EquipmentAndQuickSlots.src;
 using HarmonyLib;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using static EquipmentAndQuickSlots.Slots;
@@ -123,8 +124,11 @@ namespace EquipmentAndQuickSlots {
         // past the end of the inventory where nothing can reach them again.
         //
         // The shift is a bijection over the slot region (everything at or below the old first slot
-        // row moves by the same delta), so it cannot make two items collide. Anything that was in
-        // the old visible grid and now finds itself on a slot cell is left to the validation sweep.
+        // row moves by the same delta), so slot contents cannot collide with each other. When the
+        // rows shrank, though, the region lands on rows that held ordinary items. Those are lifted
+        // out before the shift and rehomed after it: left in place, each would share a cell with a
+        // slot item, and the validation sweep settles an overlap by list order -- whichever of the
+        // two happens to come first keeps the cell.
         internal static void MigrateSlotRegionRows(Player player, int previousVisibleRows) {
             int delta = VisibleRows - previousVisibleRows;
             Inventory inventory = player.GetInventory();
@@ -132,29 +136,65 @@ namespace EquipmentAndQuickSlots {
                 return;
 
             int moved = 0;
+            List<ItemDrop.ItemData> displaced = new List<ItemDrop.ItemData>();
             foreach (ItemDrop.ItemData item in inventory.m_inventory) {
-                if (item.m_gridPos.y < previousVisibleRows)
+                if (item.m_gridPos.y < previousVisibleRows) {
+                    // Only possible when the rows shrank: an ordinary item in a row the slot region is
+                    // about to cover (or that is now past the end of the grid). Parked off-grid while
+                    // the region moves, so no cell lookup below can mistake it for a slot's contents.
+                    // It never leaves the inventory, and the sweep rescues off-grid items regardless.
+                    if (item.m_gridPos.y >= VisibleRows) {
+                        displaced.Add(item);
+                        item.m_gridPos = emptyPosition;
+                    }
+
                     continue;
+                }
 
                 item.m_gridPos = new Vector2i(item.m_gridPos.x, item.m_gridPos.y + delta);
                 moved++;
             }
 
-            if (moved == 0)
+            if (moved == 0 && displaced.Count == 0)
                 return;
+
+            ClearCachedItems();
+            foreach (ItemDrop.ItemData item in displaced) {
+                item.m_gridPos = FindHomeForDisplacedItem(inventory, item);
+                ClearCachedItems();
+            }
 
             // Record the new count now: a second Load on this same object would otherwise read the
             // stale marker and shift everything a second time.
             player.m_customData[VisibleRowsKey] = VisibleRows.ToString(CultureInfo.InvariantCulture);
 
-            ClearCachedItems();
             inventory.Changed();
             SlotValidation.ValidateItems();
             SlotValidation.ValidateSlots();
 
             // Ungated: this moved the player's gear, and a report about misplaced items has to
             // be answerable from the log even with logging turned off.
-            EquipmentAndQuickSlots.LogInfo($"Visible rows changed {previousVisibleRows} -> {VisibleRows}; moved {moved} item(s) with the slot region");
+            EquipmentAndQuickSlots.LogInfo($"Visible rows changed {previousVisibleRows} -> {VisibleRows}; moved {moved} item(s) with the slot region"
+                                           + (displaced.Count > 0 ? $" and {displaced.Count} out of the rows it now covers" : ""));
+        }
+
+        // The bottom of the visible grid first, keeping the item near the rows it came from
+        // (FindEmptySlot only scans the visible rows, then offers a free quick slot); then any slot
+        // the item belongs in; then room made by pushing a visible item into a slot. Failing all of
+        // that, the last cell of the region, as for migrated 2.x items: the sweep keeps looking.
+        private static Vector2i FindHomeForDisplacedItem(Inventory inventory, ItemDrop.ItemData item) {
+            Vector2i free = inventory.FindEmptySlot(false);
+            if (free.x >= 0)
+                return free;
+
+            if (TryFindFreeSlotForItem(item, out Slot slot))
+                return slot.GridPosition;
+
+            if (TryMakeFreeSpaceInPlayerInventory(out Vector2i gridPos))
+                return gridPos;
+
+            EquipmentAndQuickSlots.LogWarning($"No room for {item.m_shared.m_name} from a removed inventory row; parking it for validation to relocate");
+            return new Vector2i(InventoryWidth - 1, FullHeight - 1);
         }
 
         private static bool TryGetPreviousVisibleRows(Player player, out int visibleRows) {

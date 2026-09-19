@@ -85,7 +85,12 @@ public static partial class TerminalManager
         for (int i = 0; i < ObjectDB.instance.m_items.Count; ++i)
         {
             var itemPrefab = ObjectDB.instance.m_items[i];
-            var itemData = itemPrefab.GetComponent<ItemDrop>().m_itemData.Clone();
+            if (!itemPrefab.TryGetComponent(out ItemDrop itemDrop))
+            {
+                continue;
+            }
+
+            var itemData = itemDrop.m_itemData.Clone();
             itemData.m_dropPrefab = itemPrefab;
             MagicItem dummyMagicItem = new MagicItem { Rarity = definition.Requirements.AllowedRarities.Count == 0 ? ItemRarity.Magic : definition.Requirements.AllowedRarities.First() };
             if (definition.Requirements.CheckRequirements(itemData, dummyMagicItem))
@@ -119,13 +124,13 @@ public static partial class TerminalManager
         }
 
         GameObject itemPrefab = ObjectDB.instance.GetItemPrefab(itemPrefabNameArg);
-        if (itemPrefab == null)
+        if (itemPrefab == null || !itemPrefab.TryGetComponent(out ItemDrop itemDrop))
         {
             args.Context.PrintWarning($"> Could not find item: {itemPrefabNameArg}");
             return;
         }
 
-        ItemDrop.ItemData fromItemData = itemPrefab.GetComponent<ItemDrop>().m_itemData;
+        ItemDrop.ItemData fromItemData = itemDrop.m_itemData;
         if (!EpicLoot.CanBeMagicItem(fromItemData))
         {
             args.Context.PrintWarning($"> Can't be magic item: {itemPrefabNameArg}");
@@ -320,7 +325,12 @@ public static partial class TerminalManager
             for (int i = 0; i < ObjectDB.instance.m_items.Count; ++i)
             {
                 var itemPrefab = ObjectDB.instance.m_items[i];
-                var itemData = itemPrefab.GetComponent<ItemDrop>().m_itemData.Clone();
+                if (!itemPrefab.TryGetComponent(out ItemDrop itemDrop))
+                {
+                    continue;
+                }
+
+                var itemData = itemDrop.m_itemData.Clone();
                 if (!EpicLoot.CanBeMagicItem(itemData)) continue;
                 itemData.m_dropPrefab = itemPrefab;
                 if (itemInfo.Requirements.CheckRequirements(itemData, dummyMagicItem))

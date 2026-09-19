@@ -39,10 +39,18 @@ namespace EpicLoot.MagicItemEffects
                     MultiJumpCombo = 0;
                     return true;
                 }
-                else
+
+                // Character.Jump() has an airborne branch of its own: it re-pulls an attached
+                // grappling hook. Swallowing the original method used to cost nothing (a jump in
+                // mid-air did nothing at all), but now it eats every grapple re-pull, so hand the
+                // input back to vanilla whenever that branch is the one that wants it. No combo is
+                // spent - a grapple pull is not a jump.
+                if (WantsGrapplePull(__instance))
                 {
-                    MultiJumpCombo++;
+                    return true;
                 }
+
+                MultiJumpCombo++;
 
                 var value = Player.m_localPlayer.GetTotalActiveMagicEffectValue(MagicEffectType.DoubleJump);
                 if (MultiJumpCombo > value)
@@ -53,6 +61,16 @@ namespace EpicLoot.MagicItemEffects
                 MultiJump(__instance, MultiJumpCombo);
                 return false;
             }
+        }
+
+        // Mirrors the grappling condition in Character.Jump(). m_localGrappler is never cleared on
+        // break, so this leans on Unity's overloaded != to treat a destroyed hook as null.
+        private static bool WantsGrapplePull(Character character)
+        {
+            var grappler = GrapplingPoint.m_localGrappler;
+            return grappler != null
+                   && Vector3.Distance(grappler.transform.position, character.transform.position)
+                        > grappler.m_jumpPullMaxDist;
         }
 
         public static void MultiJump(Character player, float jumpsize)

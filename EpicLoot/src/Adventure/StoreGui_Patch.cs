@@ -9,18 +9,50 @@ namespace EpicLoot.Adventure
         public static GameObject MerchantPanel;
         public static GameObject TemperPanel;
 
+        /// <summary>
+        /// A finalizer rather than a postfix, because Harmony skips every postfix once the original
+        /// throws -- and StoreGui.Show activates its own window *before* calling FillList, so a throw
+        /// in there leaves the vanilla store on screen with no adventure panel beside it and nothing
+        /// naming EpicLoot in the log. FillList reads `tradeItem.m_tooltip.Length` with no null check,
+        /// so any mod that adds trader stock from code without setting m_tooltip/m_name to "" (Unity's
+        /// serializer would have) takes this panel down with it.
+        ///
+        /// It does not swallow the exception: a void finalizer leaves whatever came in to keep
+        /// propagating, so the offending mod is still reported.
+        /// </summary>
         [HarmonyPatch(nameof(StoreGui.Show))]
-        [HarmonyPostfix]
-        public static void Show_Postfix(StoreGui __instance)
+        [HarmonyFinalizer]
+        public static void Show_Finalizer(StoreGui __instance)
         {
-            if (!EpicLoot.IsAdventureModeEnabled() || __instance == null)
+            try
+            {
+                OpenPanelFor(__instance);
+            }
+            catch (System.Exception e)
+            {
+                // Returning an exception from a finalizer replaces the original one, which would bury
+                // whatever actually broke Show. Report and let that one through untouched.
+                EpicLoot.LogErrorForce($"[StoreGui] Failed to open the EpicLoot trader panel:\n{e}");
+            }
+        }
+
+        private static void OpenPanelFor(StoreGui __instance)
+        {
+            // Show runs its body only when the trader or the visibility changed, but this runs either
+            // way, and Hide leaves m_trader null -- so never assume it is there.
+            if (!EpicLoot.IsAdventureModeEnabled() || __instance == null || __instance.m_trader == null)
             {
                 return;
             }
 
             if (__instance.m_trader.m_name == "$npc_hildir")
             {
-                if (__instance.transform.Find(nameof(TemperPanel)) == null)
+                var existingTemperPanel = __instance.transform.Find(nameof(TemperPanel));
+                if (existingTemperPanel != null)
+                {
+                    TemperPanel = existingTemperPanel.gameObject;
+                }
+                else
                 {
                     if (TemperPanel != null)
                     {
@@ -42,35 +74,50 @@ namespace EpicLoot.Adventure
                 return;
             }
 
-            if (__instance.transform.Find(nameof(MerchantPanel)) == null)
+            // The hierarchy is the authority, not the static. They can disagree -- the StoreGui.OnDestroy
+            // postfix clears the static while the panel is still parented under a StoreGui that outlived
+            // it, and a panel already in place is found here on every later open. Adopting what is
+            // actually there keeps the SetActive at the end off a null field, which otherwise throws out
+            // of the postfix and leaves the panel closed for the rest of the session.
+            var existingMerchantPanel = __instance.transform.Find(nameof(MerchantPanel));
+            if (existingMerchantPanel != null)
+            {
+                MerchantPanel = existingMerchantPanel.gameObject;
+            }
+            else
             {
                 if (MerchantPanel != null)
                 {
+                    // Orphaned under some other StoreGui: it can never be shown under this one.
                     Object.Destroy(MerchantPanel);
                 }
 
                 MerchantPanel = Object.Instantiate(EpicAssets.MerchantPanel, __instance.transform, false);
+                // Named here rather than relying on MerchantPanel.Awake to do it: Awake does not run
+                // until the object first goes active, and the Find above has to match before that.
+                MerchantPanel.name = nameof(MerchantPanel);
                 MerchantPanel.AddComponent<MerchantPanel>();
             }
 
-            MerchantPanel.gameObject.SetActive(true);
+            MerchantPanel.SetActive(true);
         }
 
         [HarmonyPatch(nameof(StoreGui.Hide))]
         [HarmonyPostfix]
         public static void Hide(StoreGui __instance)
         {
+            // The merchant panel goes first. Running it after the temper panel meant anything thrown
+            // over there left this one active, and an object that is already active gets no OnEnable on
+            // the next open -- which is the call that refreshes every list in it.
+            if (MerchantPanel != null)
+            {
+                MerchantPanel.SetActive(false);
+            }
+
             if (global::EpicLoot.TemperPanel.Instance)
             {
                 global::EpicLoot.TemperPanel.Instance.Hide();
             }
-            
-            if (MerchantPanel == null)
-            {
-                return;
-            }
-
-            MerchantPanel.SetActive(false);
         }
 
         [HarmonyPatch(nameof(StoreGui.OnDestroy))]

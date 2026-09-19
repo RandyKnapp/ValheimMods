@@ -93,26 +93,13 @@ namespace EquipmentAndQuickSlots {
         }
 
         /// <summary>
-        /// Registers a console command behind the world's admin list: a solo player or host always
-        /// passes, a client only when its user id is on the server's adminlist.txt (which the server
-        /// syncs to every client, so both sides read the same list).
+        /// Registers a console command as a cheat: it needs devcommands and the cheat confirmation, and
+        /// flags the profile as cheated. Vanilla only enables cheats on the machine running the world
+        /// (Terminal.IsCheatsEnabled requires ZNet.IsServer), so a client of a dedicated server needs a
+        /// mod that grants them to the server's admins, such as Server Devcommands.
         /// </summary>
-        /// <remarks>
-        /// The check has to live in the action. Nothing in the game reads
-        /// Terminal.ConsoleCommand.OnlyAdmin, and only the ConsoleEventFailable overload folds that flag
-        /// into OnlyServer - the ConsoleEvent overload used here drops it, so passing onlyAdmin: true
-        /// would do nothing. OnlyServer would be wrong regardless: it rejects the command on any client
-        /// of a dedicated server, admin or not.
-        /// </remarks>
         private static void Register(string name, string description, Terminal.ConsoleEvent action) {
-            new Terminal.ConsoleCommand(name, description, args => {
-                if (ZNet.instance == null || !ZNet.instance.LocalPlayerIsAdminOrHost()) {
-                    args.Context?.AddString($"'{name}' requires admin.");
-                    return;
-                }
-
-                action(args);
-            });
+            new Terminal.ConsoleCommand(name, description, action, isCheat: true);
         }
     }
 }

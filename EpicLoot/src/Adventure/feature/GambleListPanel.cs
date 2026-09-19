@@ -51,10 +51,12 @@ namespace EpicLoot.Adventure.Feature
 
         public override void RefreshItems(Currencies currencies)
         {
-            _currentInterval = AdventureDataManager.Gamble.GetCurrentInterval();
-
-            DestroyAllListElementsInList();
+            // Gathered before the destroy, for the reason given in SecretStashListPanel.
             var allItems = AdventureDataManager.Gamble.GetGambleItems();
+
+            _currentInterval = AdventureDataManager.Gamble.GetCurrentInterval();
+            DestroyAllListElementsInList();
+
             for (var index = 0; index < allItems.Count; index++)
             {
                 var itemInfo = allItems[index];

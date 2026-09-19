@@ -38,7 +38,7 @@ namespace EpicLoot;
 public sealed class EpicLoot : BaseUnityPlugin {
     public const string PluginId = "randyknapp.mods.epicloot";
     public const string DisplayName = "Epic Loot";
-    public const string Version = "0.14.2";
+    public const string Version = "0.14.9";
 
     private static string ConfigFileName = PluginId + ".cfg";
     private static string ConfigFileFullPath = BepInEx.Paths.ConfigPath + Path.DirectorySeparatorChar + ConfigFileName;
@@ -121,6 +121,9 @@ public sealed class EpicLoot : BaseUnityPlugin {
         // Scheduled (non-per-frame) effect drivers, on their own DontDestroyOnLoad objects.
         MagicItemEffects.Shards.PoisonAdrenalinePulse.Create();
         MagicItemEffects.Shards.StormFuryPulse.Create();
+
+        // Logs, from the buyer's side, a bounty or treasure map that has not appeared at its map circle.
+        AdventureSpawnWatchdog.Create();
 
         // Main file config watcher
         SetupWatcher();
@@ -636,7 +639,7 @@ public sealed class EpicLoot : BaseUnityPlugin {
     }
 
     private static void LoadBountySpawner() {
-        GameObject bounty_spawner = EpicAssets.AssetBundle.LoadAsset<GameObject>("EL_SpawnController");
+        GameObject bounty_spawner = EpicAssets.AssetBundle.LoadAsset<GameObject>(AdventureSpawnController.PrefabName);
 
         if (bounty_spawner == null) {
             LogErrorForce("Unable to find bounty spawner asset! This mod will not behave as expected!");
@@ -1162,32 +1165,33 @@ public sealed class EpicLoot : BaseUnityPlugin {
         _instance._worldLuckFactor = luckFactor;
     }
 
+    private FileSystemWatcher _configWatcher;
+
     private void SetupWatcher() {
+        // The reload is driven by ConfigFileReloader watching the file's timestamp; the events below
+        // only ask it to look sooner than its own poll would. See that class for why the events on
+        // their own are not enough on a Linux server, and why a connected client does not reload.
+        ConfigFileReloader.Begin(Config, ConfigFileFullPath);
+
         FileSystemWatcher watcher = new(BepInEx.Paths.ConfigPath, ConfigFileName);
-        watcher.Changed += ReadConfigValues;
-        watcher.Created += ReadConfigValues;
-        watcher.Renamed += ReadConfigValues;
-        watcher.IncludeSubdirectories = true;
+        watcher.Changed += OnConfigFileEvent;
+        watcher.Created += OnConfigFileEvent;
+        watcher.Renamed += OnConfigFileEvent;
+        // FileName included so an editor that saves by writing a temp file and renaming it over the
+        // config still reports; LastWrite alone only covers writes made in place.
+        watcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.Size;
         watcher.SynchronizingObject = ThreadingHelper.SynchronizingObject;
         watcher.EnableRaisingEvents = true;
+        // Not IncludeSubdirectories: the file only ever lives directly in BepInEx/config, and
+        // recursing made Mono register an inotify watch for every subdirectory under it - every
+        // other mod's config folder included - for a filter that can only ever match at the top.
+        //
+        // Held in a field so it can be disposed or replaced later. Mono's watcher backends keep every
+        // instance rooted until Dispose, so this is not what keeps events flowing.
+        _configWatcher = watcher;
     }
 
-    private DateTime _lastReloadTime;
-    private const long RELOAD_DELAY = 10000000; // One second
-
-    private void ReadConfigValues(object sender, FileSystemEventArgs e) {
-        var now = DateTime.Now;
-        var time = now.Ticks - _lastReloadTime.Ticks;
-        if (!File.Exists(ConfigFileFullPath) || time < RELOAD_DELAY) return;
-
-        try {
-            Log("Attempting to reload configuration...");
-            Config.Reload();
-        } catch {
-            Log($"There was an issue loading {ConfigFileName}");
-            return;
-        }
-
-        _lastReloadTime = now;
+    private void OnConfigFileEvent(object sender, FileSystemEventArgs e) {
+        ConfigFileReloader.CheckSoon();
     }
 }

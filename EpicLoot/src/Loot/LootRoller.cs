@@ -452,6 +452,15 @@ namespace EpicLoot
                             GatedItemTypeHelper.GetGatedItemNameFromItemOrType(lootDrop.Item, GatedItemTypeMode.Unlimited) :
                             GatedItemTypeHelper.GetGatedItemNameFromItemOrType(lootDrop.Item, EpicLoot.GetGatedItemTypeMode());
 
+                        // Null when the entry resolved to nothing -- which now includes a denied prop. Guard
+                        // before PrefabManager: Jotunn's GetPrefab starts with Dictionary.TryGetValue(name),
+                        // which throws on a null key.
+                        if (string.IsNullOrEmpty(gatedItemName))
+                        {
+                            failures += 1;
+                            continue;
+                        }
+
                         GameObject prefab = PrefabManager.Instance.GetPrefab(gatedItemName);
                         if (prefab == null)
                         {
@@ -608,6 +617,15 @@ namespace EpicLoot
                 // look a prefab up the name is concrete and the drop's Rarity has been pinned to the
                 // rarity that chose it.
                 var lootDrop = ResolveLootDrop(ld, luckFactor);
+
+                // A polluted on-disk loottables.json can still name a denied prop (LootDenyList). Skip it here,
+                // before the drop-type switch, so it cannot come out as itself, as an unidentified stand-in,
+                // or as sacrifice materials either.
+                if (LootDenyList.IsDenied(lootDrop?.Item))
+                {
+                    EpicLoot.Log($"Skipping denied prop item {lootDrop.Item} for ({objectName}).");
+                    continue;
+                }
 
                 var itemName = !string.IsNullOrEmpty(lootDrop?.Item) ? lootDrop.Item : "Invalid Item Name";
                 var rarityLength = lootDrop?.Rarity?.Length != null ? lootDrop.Rarity.Length : -1;

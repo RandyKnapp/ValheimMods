@@ -1,12 +1,14 @@
-﻿using System.Reflection;
-using BepInEx;
+﻿using BepInEx;
 using Common;
 using HarmonyLib;
+using Jotunn.Utils;
+using System.Reflection;
 using UnityEngine;
 
 namespace EquipmentAndQuickSlots {
     [BepInPlugin(PluginId, "Equipment and Quick Slots", Version)]
     [BepInDependency(Jotunn.Main.ModGuid)]
+    [SynchronizationMode(AdminOnlyStrictness.IfOnServer)]
     [BepInDependency("moreslots", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("randyknapp.mods.auga", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("randyknapp.mods.epicloot", BepInDependency.DependencyFlags.SoftDependency)]
@@ -20,7 +22,7 @@ namespace EquipmentAndQuickSlots {
     [BepInIncompatibility("com.bruce.valheim.comfyquickslots")]
     public class EquipmentAndQuickSlots : BaseUnityPlugin {
         public const string PluginId = "randyknapp.mods.equipmentandquickslots";
-        public const string Version = "3.1.1";
+        public const string Version = "3.1.3";
 
         public static Sprite PaperdollMale;
         public static Sprite PaperdollFemale;

@@ -33,12 +33,9 @@ namespace EpicLoot.Crafting
         [UsedImplicitly]
         public void Update()
         {
-            var scrollBar = GetComponentInChildren<Scrollbar>();
-            if (scrollBar != null && ZInput.IsGamepadActive())
+            if (ZInput.IsGamepadActive())
             {
-                var rightStickAxis = ZInput.GetJoyRightStickY();
-                if (Mathf.Abs(rightStickAxis) > 0.5f)
-                    scrollBar.value = Mathf.Clamp01(scrollBar.value + rightStickAxis * -0.1f);
+                GamepadScroll.ApplyRightStickY(GetComponentInChildren<Scrollbar>());
             }
 
             if (ZInput.GetButtonDown("Inventory") || ZInput.GetButtonDown("JoyButtonB") ||

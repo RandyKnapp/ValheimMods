@@ -117,14 +117,7 @@ namespace EpicLoot_UnityLib
                     ZInput.ResetButtonStatus("JoyButtonY");
                 }
 
-                if (EnchantInfoScrollbar != null)
-                {
-                    float rightStickAxis = ZInput.GetJoyRightStickY();
-                    if (Mathf.Abs(rightStickAxis) > 0.5f)
-                    {
-                        EnchantInfoScrollbar.value = Mathf.Clamp01(EnchantInfoScrollbar.value + rightStickAxis * -0.1f);
-                    }
-                }
+                GamepadScroll.ApplyRightStickY(EnchantInfoScrollbar);
             }
 
             if (_successDialog != null && !_successDialog.activeSelf)

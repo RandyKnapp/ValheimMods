@@ -30,7 +30,7 @@ public static partial class TerminalManager
         {
             _tempAllItemNames.Clear();
             _tempAllItemNames.AddRange(ObjectDB.instance.m_items
-                .Where(x => EpicLoot.CanBeMagicItem(x.GetComponent<ItemDrop>().m_itemData))
+                .Where(x => x.TryGetComponent(out ItemDrop itemDrop) && EpicLoot.CanBeMagicItem(itemDrop.m_itemData))
                 .Where(x => x.name != "HelmetDverger" && x.name != "BeltStrength" && x.name != "Wishbone")
                 .Select(x => x.name));
             lastAllItemNameTime = Time.time;

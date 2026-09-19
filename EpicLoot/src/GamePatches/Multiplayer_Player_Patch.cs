@@ -151,6 +151,14 @@ namespace EpicLoot
                 if (itemPrefab?.GetComponent<ItemDrop>()?.m_itemData is ItemDrop.ItemData targetItemData)
                 {
                     itemData = targetItemData.Clone();
+                    // An ObjectDB prefab is never instantiated, so ItemDrop.Awake -- the only thing that
+                    // assigns m_dropPrefab -- has never run on it, and the clone inherits a NULL prefab
+                    // reference. Vanilla does exactly this assignment after the same Clone() in
+                    // Inventory.AddItem(GameObject, int). Without it this stub reaches SetupVisEquipment with
+                    // a null m_dropPrefab, where Humanoid_Patch.AssignEmptyToNull stamps the empty
+                    // EL_DummyPrefab into it: the weapon then renders as nothing, and because the dummy
+                    // carries no ItemDrop component every later InitializeCustomData on that item throws.
+                    itemData.m_dropPrefab = itemPrefab;
                     itemData.m_durability = float.PositiveInfinity;
                     MagicItemComponent magicItemComponent = itemData.Data().GetOrCreate<MagicItemComponent>();
                     MagicItem stubMagicItem = new MagicItem { Rarity = ItemRarity.Legendary, LegendaryID = zdoLegendaryID };

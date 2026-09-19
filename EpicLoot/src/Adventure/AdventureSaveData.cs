@@ -395,55 +395,6 @@ namespace EpicLoot.Adventure
             return false;
         }
 
-        /// <summary>
-        /// Moves a purchased-but-unfound treasure map to a new world position and drags its minimap
-        /// pin along with it. Called when the spawner had to search outside the original map circle
-        /// (almost always because a ward covered it) - without this the pin would keep pointing at a
-        /// spot the chest is not in.
-        /// </summary>
-        public bool RelocateTreasureMap(int interval, Heightmap.Biome biome, Vector3 newPosition)
-        {
-            var treasureMap = GetTreasureMapChestInfo(interval, biome);
-            if (treasureMap == null || treasureMap.State != TreasureMapState.Purchased)
-            {
-                return false;
-            }
-
-            treasureMap.Position = newPosition;
-            // The circle is re-centred on the chest, so any old offset would just skew it back.
-            treasureMap.MinimapCircleOffset = Vector3.zero;
-
-            var key = new Tuple<int, Heightmap.Biome>(interval, biome);
-            if (MinimapController.TreasureMapPins.TryGetValue(key, out var existingPin))
-            {
-                // The queue is drained FIFO, so remove-then-add is a move.
-                MinimapController.AddPinJobToQueue(new PinJob
-                {
-                    Task = MinimapPinQueueTask.RemoveTreasurePin,
-                    DebugMode = DebugMode,
-                    TreasurePin = new KeyValuePair<Tuple<int, Heightmap.Biome>, AreaPinInfo>(key, existingPin)
-                });
-            }
-
-            var pinInfo = new AreaPinInfo
-            {
-                Position = treasureMap.Position + treasureMap.MinimapCircleOffset,
-                Type = EpicLoot.TreasureMapPinType,
-                Name = Localization.instance.Localize("$mod_epicloot_treasurechest_minimappin",
-                    Localization.instance.Localize(BiomeDataManager.GetLocalizationToken(biome)),
-                    (interval + 1).ToString())
-            };
-
-            MinimapController.AddPinJobToQueue(new PinJob
-            {
-                Task = MinimapPinQueueTask.AddTreasurePin,
-                DebugMode = DebugMode,
-                TreasurePin = new KeyValuePair<Tuple<int, Heightmap.Biome>, AreaPinInfo>(key, pinInfo)
-            });
-
-            return true;
-        }
-
         public TreasureMapChestInfo GetTreasureMapChestInfo(int interval, Heightmap.Biome biome)
         {
             return TreasureMaps.Find(x => x.Interval == interval && x.Biome == biome);
@@ -533,50 +484,6 @@ namespace EpicLoot.Adventure
             {
                 bounty.State = BountyState.Abandoned;
             }
-        }
-
-        /// <summary>
-        /// Bounty counterpart to <see cref="RelocateTreasureMap"/>: moves an in-progress bounty's
-        /// world position and its minimap pin when the spawner had to place the targets outside the
-        /// original circle.
-        /// </summary>
-        public bool RelocateBounty(string bountyID, Vector3 newPosition)
-        {
-            var bounty = GetBountyInfoByID(bountyID);
-            if (bounty == null || bounty.State != BountyState.InProgress)
-            {
-                return false;
-            }
-
-            bounty.Position = newPosition;
-            bounty.MinimapCircleOffset = Vector3.zero;
-
-            if (MinimapController.BountyPins.TryGetValue(bountyID, out var existingPin))
-            {
-                MinimapController.AddPinJobToQueue(new PinJob
-                {
-                    Task = MinimapPinQueueTask.RemoveBountyPin,
-                    DebugMode = DebugMode,
-                    BountyPin = new KeyValuePair<string, AreaPinInfo>(bountyID, existingPin)
-                });
-            }
-
-            var pinInfo = new AreaPinInfo
-            {
-                Position = bounty.Position + bounty.MinimapCircleOffset,
-                Type = EpicLoot.BountyPinType,
-                Name = Localization.instance.Localize("$mod_epicloot_bounties_minimappin",
-                    AdventureDataManager.GetBountyName(bounty))
-            };
-
-            MinimapController.AddPinJobToQueue(new PinJob
-            {
-                Task = MinimapPinQueueTask.AddBountyPin,
-                DebugMode = DebugMode,
-                BountyPin = new KeyValuePair<string, AreaPinInfo>(bountyID, pinInfo)
-            });
-
-            return true;
         }
     }
 }

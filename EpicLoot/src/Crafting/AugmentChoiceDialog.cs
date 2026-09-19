@@ -63,13 +63,7 @@ namespace EpicLoot.Crafting
                     ZInput.ResetButtonStatus("JoyButtonA");
                 }
 
-                var scrollBar = GetComponentInChildren<Scrollbar>();
-                if (scrollBar != null)
-                {
-                    var rightStickAxis = ZInput.GetJoyRightStickY();
-                    if (Mathf.Abs(rightStickAxis) > 0.5f)
-                        scrollBar.value = Mathf.Clamp01(scrollBar.value + rightStickAxis * -0.1f);
-                }
+                GamepadScroll.ApplyRightStickY(GetComponentInChildren<Scrollbar>());
             }
 
             for (var index = 0; index < EffectChoiceButtons.Count; index++)

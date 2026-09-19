@@ -1,3 +1,41 @@
+**0.14.9**
+* Fix for Grappling hook
+* Trader window diagnostics, please report your log if you have issues opening the trader window
+* Another fix for Joystick controller issues
+
+**0.14.8**
+* Controller update for 9/17
+* Increases placement allowance for bounties/treasures
+* Removes bounty/treasure relocation due to the potential for schisms
+
+**0.14.7**
+* Recompiled against current game build (fixes building destruction issues)
+
+
+**0.14.6**
+* Destroying an enchanting table now refunds the full upgrade cost of every unlocked feature. Amounts above an item's stack size (Surtling Cores, berries, mushrooms, fish) were previously lost
+* Optimizes bounty and treasure chests spawning, now spawns the target considerably earlier
+* Fixes Epicloot trader UI not showing up when other mods break the trader (your other mods are still breaking your game, just not breaking Epicloot)
+
+**0.14.5**
+* Additional safety checks for world upgrades
+* Fix for edge cases that could cause the trader UI to not show up
+* Fix for existing loot pools that already contain invalid items
+
+
+**0.14.4**
+* Adds safety checks for data lookup issues
+* Prevents the item auto-sorter from adding new hidden, unused items to the loot pool
+
+**0.14.3**
+
+* Improves config synchronization refresh from disk on dedicated Linux servers, now also for the baseconfig json files (magiceffects, loottables, ...): an edit is applied once the file stops changing, and is picked up even when the server never sees a file event (NFS, SFTP, container mounts)
+* A config reloaded on a player-hosted game is now pushed to the connected players, not only from a dedicated server
+* A client connected to a server no longer applies edits to its own baseconfig files until it disconnects, at which point its own files are restored
+* Config reloads and server config pushes now log at the default log level
+* Fixed magicmats spawning broken items (reminder magicmats is a cheat command)
+* Delays main menu welcome message and config prompt until after cutscenes have played
+
 **0.14.2**
 
 * Fixes biome explored not being updated on Deep North

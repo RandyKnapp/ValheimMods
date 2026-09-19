@@ -77,6 +77,13 @@ public class MagicItemComponent : CustomItemData
 
     public override void FirstLoad()
     {
+        // A bare ItemData with no shared data (see ItemDataExtensions.InitializeCustomData) has nothing to
+        // seed. ItemInfo.Add does not catch, so a throw here escapes into whichever vanilla load touched it.
+        if (Item?.m_shared == null)
+        {
+            return;
+        }
+
         if (Item.m_shared.m_name == "$item_helmet_dverger")
         {
             MagicItem magicItem = new MagicItem();

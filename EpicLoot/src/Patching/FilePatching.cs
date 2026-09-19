@@ -409,7 +409,8 @@ namespace EpicLoot.Patching
                     ELConfig.GetDefaultEmbeddedFileLocation($"{filename}.json"));
                 JObject baseJson = JObject.Parse(embeddedConfig);
                 string patchedString = BuildPatchedConfig(filename, baseJson);
-                // Writing the file triggers the config file watcher, which reloads the config in-game.
+                // At startup SychronizeConfig reads the file right after this; on a patch hot reload
+                // RunPatchHotReload re-reads it directly rather than waiting on the reload scheduler.
                 File.WriteAllText(baseCfgFile, patchedString);
 
                 EpicLoot.Log($"Loaded and applied patches for {filename}.json");
