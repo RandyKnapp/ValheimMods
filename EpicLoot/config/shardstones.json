@@ -2407,6 +2407,7 @@
                 "Config": {
                     "MaxCharges": 15,
                     "DamageFraction": 0.3,
+                    "ValueReference": 15,
                     "ConeLength": 4,
                     "ConeMaxWidth": 4,
                     "DischargeIgnoreWindow": 0.3

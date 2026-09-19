@@ -7,19 +7,23 @@ namespace EpicLoot.MagicItemEffects.Shards {
     public static class EikthyrShockingCharge {
         // All tunable in this effect's Config block in config/shardstones.json, under these key names.
         //
-        // Hits required to trigger a discharge, and the portion of the banked combat damage the shockwave
-        // delivers. Cone geometry: reach straight ahead, and the full width of the cone at that reach --
+        // Hits required to trigger a discharge, the portion of the banked combat damage the Epic shard
+        // delivers, and the shard value that represents that reference rarity. Other rarities scale the
+        // damage fraction in direct proportion to their value. Cone geometry: reach straight ahead, and
+        // the full width of the cone at that reach --
         // the half-width grows linearly from 0 at the player to (ConeMaxWidth / 2) at ConeLength. The
         // ignore window is how long after a discharge the shockwave's own hits are kept from rebuilding
         // the charge.
         public const int DefaultMaxCharges = 15;
         public const float DefaultDamageFraction = 0.3f;
+        public const float DefaultValueReference = 15f;
         public const float DefaultConeLength = 4f;
         public const float DefaultConeMaxWidth = 4f;
         public const float DefaultDischargeIgnoreWindow = 0.3f;
 
         private const string MaxChargesKey = "MaxCharges";
         private const string DamageFractionKey = "DamageFraction";
+        private const string ValueReferenceKey = "ValueReference";
         private const string ConeLengthKey = "ConeLength";
         private const string ConeMaxWidthKey = "ConeMaxWidth";
         private const string DischargeIgnoreWindowKey = "DischargeIgnoreWindow";
@@ -27,10 +31,16 @@ namespace EpicLoot.MagicItemEffects.Shards {
         public static readonly Dictionary<string, float> DefaultConfig = new Dictionary<string, float> {
             { MaxChargesKey, DefaultMaxCharges },
             { DamageFractionKey, DefaultDamageFraction },
+            { ValueReferenceKey, DefaultValueReference },
             { ConeLengthKey, DefaultConeLength },
             { ConeMaxWidthKey, DefaultConeMaxWidth },
             { DischargeIgnoreWindowKey, DefaultDischargeIgnoreWindow },
         };
+
+        public static void RegisterDisplayValues() {
+            MagicItem.RegisterDisplayValues(MagicEffectType.ShockingCharge,
+                value => new object[] { GetDamageFraction(value) * 100f, (float)GetMaxCharges() });
+        }
 
         // Clamped to at least 1 so a misconfiguration can't discharge on every hit through a zero threshold.
         private static int GetMaxCharges() {
@@ -42,6 +52,16 @@ namespace EpicLoot.MagicItemEffects.Shards {
         private static float GetConeLength() {
             return Mathf.Max(0.1f,
                 EffectConfig.Get(MagicEffectType.ShockingCharge, ConeLengthKey, DefaultConeLength));
+        }
+
+        // The configured fraction is the Epic baseline. Keeping the reference value configurable preserves
+        // that balance when a server replaces the default rarity ramp.
+        private static float GetDamageFraction(float value) {
+            float referenceValue = Mathf.Max(0.1f, EffectConfig.Get(MagicEffectType.ShockingCharge,
+                ValueReferenceKey, DefaultValueReference));
+            float baseFraction = Mathf.Max(0f, EffectConfig.Get(MagicEffectType.ShockingCharge,
+                DamageFractionKey, DefaultDamageFraction));
+            return baseFraction * value / referenceValue;
         }
 
         private const string ShockwaveFx = "fx_eikthyr_forwardshockwave";
@@ -101,8 +121,7 @@ namespace EpicLoot.MagicItemEffects.Shards {
             _charges = 0;
             _ignoreUntil = Time.time + EffectConfig.Get(MagicEffectType.ShockingCharge,
                 DischargeIgnoreWindowKey, DefaultDischargeIgnoreWindow);
-            var shotDamage = _bankedDamage * EffectConfig.Get(MagicEffectType.ShockingCharge,
-                DamageFractionKey, DefaultDamageFraction);
+            float shotDamage = _bankedDamage * GetDamageFraction(value);
             _bankedDamage = 0f;
             FireShockwave(player, hit.m_dir, shotDamage);
         }
