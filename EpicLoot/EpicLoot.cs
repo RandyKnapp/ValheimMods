@@ -154,6 +154,11 @@ public sealed class EpicLoot : BaseUnityPlugin {
         MagicItemEffects.Shards.LuckyLoot.RegisterDisplayValues();
         MagicItemEffects.Shards.Bloodrage.RegisterDisplayValues();
         MagicItemEffects.Shards.MeteorSummoner.RegisterDisplayValues();
+        MagicItemEffects.Shards.ElderForestsAid.RegisterDisplayValues();
+        MagicItemEffects.Shards.BonemassCorpseRot.RegisterDisplayValues();
+        MagicItemEffects.Shards.ModerIcyRetribution.RegisterDisplayValues();
+        MagicItemEffects.Shards.QueenEverflow.RegisterDisplayValues();
+        MagicItemEffects.Shards.NecroticFire.RegisterDisplayValues();
         MagicItemEffects.Shards.BlockAsDodgeAsBlock.RegisterDisplayValues();
         MagicItemEffects.Shards.BlockAsWoodCuttingAndPickaxes.RegisterDisplayValues();
 
