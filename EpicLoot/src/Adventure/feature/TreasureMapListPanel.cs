@@ -13,6 +13,7 @@ namespace EpicLoot.Adventure.Feature
         public TreasureMapListPanel(MerchantPanel merchantPanel, TreasureMapListElement elementPrefab)
             : base(
                 merchantPanel.transform.Find("TreasureMap/Panel/ItemList") as RectTransform,
+                merchantPanel.transform.Find("TreasureMap/Title"),
                 elementPrefab,
                 merchantPanel.transform.Find("TreasureMap/TreasureMapBuyButton").GetComponent<Button>(),
                 merchantPanel.transform.Find("TreasureMap/TimeLeft").GetComponent<Text>())

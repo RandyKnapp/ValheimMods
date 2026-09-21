@@ -20,14 +20,37 @@ namespace EpicLoot.Adventure.Feature
         void RefreshItems(Currencies currencies);
 
         Button GetMainButton();
+
+        /// <summary>
+        /// The button the gamepad's secondary action presses, or null for a panel that has none.
+        /// </summary>
+        Button GetSecondaryButton();
+
+        /// <summary>The list's on-screen heading, which the gamepad hints hang off.</summary>
+        Transform GetHeader();
+
+        int GetItemCount();
+        int GetSelectedIndex();
+
+        /// <summary>
+        /// Selects the row at <paramref name="index"/> exactly as clicking it would, scrolls it into
+        /// view and hands it the EventSystem selection. Returns false when the index is off the end,
+        /// which is how the caller knows navigation ran out of list.
+        /// </summary>
+        bool SelectIndex(int index);
+
+        void ClearSelection();
     }
 
     public abstract class MerchantListPanel<T> : IMerchantListPanel where T : Component, IMerchantPanelListElement
     {
         public RectTransform List;
+        public Transform Header;
         public T ElementPrefab;
         public Button MainButton;
         public Text RefreshTime;
+
+        private readonly ScrollRectEnsureVisible _ensureVisible;
 
         protected int _currentInterval = -1;
         protected int _selectedItemIndex = -1;
@@ -65,14 +88,37 @@ namespace EpicLoot.Adventure.Feature
             _actionInFlight = false;
         }
 
-        protected MerchantListPanel(RectTransform list, T elementPrefab, Button button, [CanBeNull] Text refreshTime)
+        protected MerchantListPanel(RectTransform list, Transform header, T elementPrefab, Button button,
+            [CanBeNull] Text refreshTime)
         {
             List = list;
+            Header = header;
+            _ensureVisible = list.GetComponentInParent<ScrollRectEnsureVisible>();
             ElementPrefab = elementPrefab;
             ElementPrefab.gameObject.SetActive(false);
+            DisableNavigation(elementPrefab);
             MainButton = button;
             MainButton.onClick.AddListener(OnMainButtonClicked);
             RefreshTime = refreshTime;
+        }
+
+        /// <summary>
+        /// Applied to the prefab every row is cloned from. A selected row is what gives the gamepad
+        /// its tooltip, but Unity's directional navigation acts on that same selection: left or right
+        /// walked it straight out of the focused list and into the next column's rows, which the panel
+        /// knows nothing about. The lists are only entered with the bumpers.
+        /// </summary>
+        private static void DisableNavigation(T elementPrefab)
+        {
+            Button button = elementPrefab.GetButton();
+            if (button == null)
+            {
+                return;
+            }
+
+            Navigation navigation = button.navigation;
+            navigation.mode = Navigation.Mode.None;
+            button.navigation = navigation;
         }
 
         public abstract bool NeedsRefresh();
@@ -107,6 +153,62 @@ namespace EpicLoot.Adventure.Feature
         public virtual Button GetMainButton()
         {
             return MainButton;
+        }
+
+        public virtual Button GetSecondaryButton()
+        {
+            return null;
+        }
+
+        public Transform GetHeader()
+        {
+            return Header;
+        }
+
+        public int GetItemCount()
+        {
+            return List.childCount;
+        }
+
+        public int GetSelectedIndex()
+        {
+            return _selectedItemIndex;
+        }
+
+        public bool SelectIndex(int index)
+        {
+            if (index < 0 || index >= List.childCount)
+            {
+                return false;
+            }
+
+            OnItemSelected(index);
+
+            T element = GetSelectedItem();
+            if (element == null)
+            {
+                return false;
+            }
+
+            if (_ensureVisible != null)
+            {
+                _ensureVisible.CenterOnItem((RectTransform)element.transform);
+            }
+
+            // The row's UITooltip watches the EventSystem selection when a gamepad is driving, so this
+            // is what puts the item's tooltip on screen for a player with no pointer to hover with.
+            Button button = element.GetButton();
+            if (button != null)
+            {
+                button.Select();
+            }
+
+            return true;
+        }
+
+        public void ClearSelection()
+        {
+            OnItemSelected(-1);
         }
 
         protected void UpdateRefreshTime(int seconds)

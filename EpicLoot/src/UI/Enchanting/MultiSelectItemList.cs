@@ -31,7 +31,7 @@ namespace EpicLoot_UnityLib
         public string GetDisplayNameSuffix() => string.Empty;
     }
 
-    public class MultiSelectItemList : MonoBehaviour
+    public class MultiSelectItemList : MonoBehaviour, IGamepadFocusPane
     {
         public enum SortMode { Rarity, Name, Quantity }
 
@@ -90,84 +90,7 @@ namespace EpicLoot_UnityLib
                 return;
             }
 
-            int elementCount = ListContainer.childCount;
-            MultiSelectItemListElement focusedElement = GetFocusedElement();
-            if (focusedElement == null)
-            {
-                return;
-            }
-
-            int focusedElementIndex = focusedElement.transform.GetSiblingIndex();
-            GridLayoutGroup grid = ListContainer.GetComponent<GridLayoutGroup>();
-            if (ListContainer.GetComponent<VerticalLayoutGroup>() != null)
-            {
-                if (focusedElementIndex > 0 && ZInput.GetButtonDown("JoyLStickUp"))
-                {
-                    focusedElement.GiveFocus(false);
-                    MultiSelectItemListElement newElement = GetElement(focusedElementIndex - 1);
-                    newElement.GiveFocus(true);
-                    CenterOnItem(newElement);
-                    ZInput.ResetButtonStatus("JoyLStickUp");
-                }
-                else if (focusedElementIndex < elementCount - 1 && ZInput.GetButtonDown("JoyLStickDown"))
-                {
-                    focusedElement.GiveFocus(false);
-                    MultiSelectItemListElement newElement = GetElement(focusedElementIndex + 1);
-                    newElement.GiveFocus(true);
-                    CenterOnItem(newElement);
-                    ZInput.ResetButtonStatus("JoyLStickDown");
-                }
-                else if (ZInput.GetButtonDown("JoyLStickLeft"))
-                {
-                    ZInput.ResetButtonStatus("JoyLStickLeft");
-                }
-                else if (ZInput.GetButtonDown("JoyLStickRight"))
-                {
-                    ZInput.ResetButtonStatus("JoyLStickRight");
-                }
-            }
-            else if (grid != null)
-            {
-                int columnCount = grid.constraintCount;
-
-                if (focusedElementIndex >= columnCount &&
-                    ZInput.GetButtonDown("JoyLStickUp"))
-                {
-                    focusedElement.GiveFocus(false);
-                    MultiSelectItemListElement newElement = GetElement(focusedElementIndex - columnCount);
-                    newElement.GiveFocus(true);
-                    CenterOnItem(newElement);
-                    ZInput.ResetButtonStatus("JoyLStickUp");
-                }
-                else if (focusedElementIndex < elementCount - columnCount &&
-                    ZInput.GetButtonDown("JoyLStickDown"))
-                {
-                    focusedElement.GiveFocus(false);
-                    MultiSelectItemListElement newElement = GetElement(focusedElementIndex + columnCount);
-                    newElement.GiveFocus(true);
-                    CenterOnItem(newElement);
-                    ZInput.ResetButtonStatus("JoyLStickDown");
-                }
-                else if ((focusedElementIndex % columnCount) > 0 &&
-                    ZInput.GetButtonDown("JoyLStickLeft"))
-                {
-                    focusedElement.GiveFocus(false);
-                    MultiSelectItemListElement newElement = GetElement(focusedElementIndex - 1);
-                    newElement.GiveFocus(true);
-                    CenterOnItem(newElement);
-                    ZInput.ResetButtonStatus("JoyLStickLeft");
-                }
-                else if ((focusedElementIndex % columnCount) < columnCount - 1 &&
-                    focusedElementIndex < elementCount - 1 &&
-                    ZInput.GetButtonDown("JoyLStickRight"))
-                {
-                    focusedElement.GiveFocus(false);
-                    MultiSelectItemListElement newElement = GetElement(focusedElementIndex + 1);
-                    newElement.GiveFocus(true);
-                    CenterOnItem(newElement);
-                    ZInput.ResetButtonStatus("JoyLStickRight");
-                }
-            }
+            UpdateGamepadNavigation();
 
             if (Multiselect && SelectAllToggle != null)
             {
@@ -189,6 +112,90 @@ namespace EpicLoot_UnityLib
                     ZInput.ResetButtonStatus("JoyRStick");
                 }
             }
+        }
+
+        // Deliberately no ZInput.ResetButtonStatus on the navigation buttons: a reset clears the held state
+        // ZInput's own key repeat runs off, which costs a held stick every repeat past the first.
+        private void UpdateGamepadNavigation()
+        {
+            GridLayoutGroup grid = ListContainer.GetComponent<GridLayoutGroup>();
+            int columnCount = grid != null ? GetColumnCount(grid) : 1;
+
+            int step;
+            bool horizontal = false;
+            if (ZInput.GetButtonDown("JoyLStickUp"))
+            {
+                step = -columnCount;
+            }
+            else if (ZInput.GetButtonDown("JoyLStickDown"))
+            {
+                step = columnCount;
+            }
+            else if (columnCount > 1 && ZInput.GetButtonDown("JoyLStickLeft"))
+            {
+                step = -1;
+                horizontal = true;
+            }
+            else if (columnCount > 1 && ZInput.GetButtonDown("JoyLStickRight"))
+            {
+                step = 1;
+                horizontal = true;
+            }
+            else
+            {
+                return;
+            }
+
+            List<MultiSelectItemListElement> visible = new List<MultiSelectItemListElement>();
+            ForeachVisibleElement((_, element) => visible.Add(element));
+            if (visible.Count == 0)
+            {
+                return;
+            }
+
+            MultiSelectItemListElement focusedElement = GetFocusedElement();
+            int currentIndex = focusedElement != null ? visible.IndexOf(focusedElement) : -1;
+            if (currentIndex < 0)
+            {
+                if (focusedElement != null)
+                {
+                    focusedElement.GiveFocus(false);
+                }
+
+                visible[0].GiveFocus(true);
+                CenterOnItem(visible[0]);
+                return;
+            }
+
+            int newIndex = currentIndex + step;
+            if (horizontal)
+            {
+                if (newIndex < 0 || newIndex >= visible.Count ||
+                    newIndex / columnCount != currentIndex / columnCount)
+                {
+                    return;
+                }
+            }
+            else if (newIndex >= visible.Count)
+            {
+                newIndex = visible.Count - 1;
+            }
+
+            if (newIndex < 0 || newIndex == currentIndex)
+            {
+                return;
+            }
+
+            focusedElement.GiveFocus(false);
+            visible[newIndex].GiveFocus(true);
+            CenterOnItem(visible[newIndex]);
+        }
+
+        private static int GetColumnCount(GridLayoutGroup grid)
+        {
+            return grid.constraint == GridLayoutGroup.Constraint.FixedColumnCount
+                ? Mathf.Max(1, grid.constraintCount)
+                : 1;
         }
 
         private void CenterOnItem(MultiSelectItemListElement element)
@@ -719,6 +726,16 @@ namespace EpicLoot_UnityLib
         {
             return ListContainer != null && ListContainer.GetComponent<GridLayoutGroup>() != null;
         }
+
+        public int GetFocusedIndex()
+        {
+            MultiSelectItemListElement focusedElement = GetFocusedElement();
+            return focusedElement != null ? focusedElement.transform.GetSiblingIndex() : -1;
+        }
+
+        public bool ShowSortHint => Sortable && SortByDropdown != null && SortByDropdown.isActiveAndEnabled;
+        public bool ShowSelectAllHint => Multiselect && SelectAllToggle != null && SelectAllToggle.isActiveAndEnabled;
+        public bool ShowSelectHint => !ReadOnly && GetFocusedElement() != null;
 
         public void InitWithExistingItems()
         {

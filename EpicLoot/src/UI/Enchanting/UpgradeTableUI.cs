@@ -35,6 +35,47 @@ namespace EpicLoot_UnityLib
             }
         }
 
+        public override void Update()
+        {
+            base.Update();
+
+            if (_locked || !ZInput.IsGamepadActive())
+            {
+                return;
+            }
+
+            // Deliberately no ZInput.ResetButtonStatus on the navigation buttons: a reset clears the held
+            // state ZInput's own key repeat runs off, which costs a held stick every repeat past the first.
+            int step;
+            if (ZInput.GetButtonDown("JoyLStickUp"))
+            {
+                step = -1;
+            }
+            else if (ZInput.GetButtonDown("JoyLStickDown"))
+            {
+                step = 1;
+            }
+            else
+            {
+                return;
+            }
+
+            List<MultiSelectItemListElement> available = GetAvailableButtons();
+            if (available.Count == 0)
+            {
+                return;
+            }
+
+            int currentIndex = available.FindIndex(x => x.HasGamepadFocus());
+            int newIndex = currentIndex < 0 ? 0 : Mathf.Clamp(currentIndex + step, 0, available.Count - 1);
+            if (newIndex == currentIndex)
+            {
+                return;
+            }
+
+            FocusButton(available[newIndex]);
+        }
+
         public void OnEnable()
         {
             if (EnchantingTableUI.instance.SourceTable != null)
@@ -90,6 +131,8 @@ namespace EpicLoot_UnityLib
                 bool featureIsEnabled = EnchantingTableUI.instance.SourceTable.IsFeatureAvailable((EnchantingFeature)index);
                 button.gameObject.SetActive(featureIsEnabled);
             }
+
+            RefreshGamepadFocus();
 
             if (_selectedFeature >= 0)
             {
@@ -161,6 +204,31 @@ namespace EpicLoot_UnityLib
 
             CostList.gameObject.SetActive(!maxLevel && _selectedFeature >= 0);
             MainButton.interactable = !maxLevel && canAfford;
+        }
+
+        private List<MultiSelectItemListElement> GetAvailableButtons()
+        {
+            return _featureButtons.Where(x => x.gameObject.activeSelf).ToList();
+        }
+
+        private void RefreshGamepadFocus()
+        {
+            List<MultiSelectItemListElement> available = GetAvailableButtons();
+            if (available.Count == 0 || available.Any(x => x.HasGamepadFocus()))
+            {
+                return;
+            }
+
+            MultiSelectItemListElement selectedButton = _selectedFeature >= 0 ? _featureButtons[_selectedFeature] : null;
+            FocusButton(selectedButton != null && available.Contains(selectedButton) ? selectedButton : available[0]);
+        }
+
+        private void FocusButton(MultiSelectItemListElement button)
+        {
+            foreach (MultiSelectItemListElement featureButton in _featureButtons)
+            {
+                featureButton.GiveFocus(featureButton == button);
+            }
         }
 
         private string GenerateFeatureInfoText()
