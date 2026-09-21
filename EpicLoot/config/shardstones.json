@@ -1,4 +1,4 @@
-﻿{
+{
     "Global": {
         "Values": {
             "MovementPenaltyReference": 0.4,
@@ -1410,12 +1410,12 @@
                 "MeleeWeapon": {
                     "EffectType": "AddPoisonDamage",
                     "ValuesPerRarity": {
-                        "Magic": 10,
-                        "Rare": 20,
-                        "Epic": 30,
-                        "Legendary": 40,
-                        "Mythic": 50,
-                        "Ancient": 60
+                        "Magic": 4,
+                        "Rare": 5,
+                        "Epic": 6,
+                        "Legendary": 7,
+                        "Mythic": 8,
+                        "Ancient": 9
                     }
                 },
                 "RangedWeapon": {

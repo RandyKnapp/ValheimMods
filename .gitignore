@@ -96,12 +96,10 @@ ValheimUnity/Assets/ExternalLibraries/EpicLoot-UnityLib.dll
 ValheimUnity/Packages/packages-lock.json
 
 # Manual adds
-Common
 ValheimMods.sln
 *.env
 /EpicLoot/shardstone_testing_matrix.csv
 /.gitignore
-/Common/Common.projitems
 /EpicLoot/EpicLoot.csproj
 /EpicLoot/EpicLoot.sln
 /EpicLoot/shardstone_testing_matrix.csv
