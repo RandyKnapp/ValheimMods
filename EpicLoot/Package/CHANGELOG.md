@@ -1,3 +1,18 @@
+**0.14.11**
+* Gamepad support for the enchanting table (Thanks ksavila!)
+* Gamepad support for the merchant panel (Thanks ksavila!)
+* The Compendium's magic pages now open when navigated to with a gamepad, and the right stick scrolls them
+* The bounty and treasure map pin filters moved into the vanilla map's pin filter panel, beside the boss and death filters
+    * They toggle the same way the vanilla filters do and can be reached with the d-pad, so they no longer take the gamepad triggers
+    * Selecting one no longer lets you place your own map pins with the bounty or treasure icon
+* Fix for cancelling a sacrifice or identify not stopping it
+    * The countdown kept running after the cancel, so the items were consumed anyway
+* Fix for the Rune tab's action button reading "Apply Rune" after every finished action, even in Extract mode
+* Deep North trophies can now be sacrificed
+* Items auto-added from other mods now recognize the Deep North materials, so gear crafted from them is gated behind the Biome boss
+* Dark Green shardstones on melee weapons now imbue 4/5/6/7/8/9% poison damage (Magic to Ancient), down from 10/20/30/40/50/60%
+* Translations updated for all 34 non-English languages
+
 **0.14.10**
 * Fix for items losing their enchantment when taken off an armor stand
     * The enchantment data was still on the item, but nothing re-read it, so the item behaved as if it were mundane until it was dropped on the ground again
