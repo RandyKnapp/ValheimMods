@@ -12,6 +12,7 @@ namespace EpicLoot.Adventure.Feature
         public SecretStashListPanel(MerchantPanel merchantPanel, BuyListElement elementPrefab) 
             : base(
                 merchantPanel.transform.Find("SecretStash/Panel/ItemList") as RectTransform,
+                merchantPanel.transform.Find("SecretStash/Title"),
                 elementPrefab,
                 merchantPanel.transform.Find("SecretStash/SecretStashBuyButton").GetComponent<Button>(),
                 merchantPanel.transform.Find("SecretStash/TimeLeft").GetComponent<Text>())

@@ -58,6 +58,21 @@ public class MagicTextList
     private void SetOverlayHeight(float height) =>
         _overlayRect.sizeDelta = new Vector2(_overlayRect.sizeDelta.x, Mathf.Max(height, MagicPages.instance.MinHeight));
 
+    public bool IsEnabled => _obj.activeSelf;
+
+    public void ScrollBy(float pixels)
+    {
+        RectTransform viewport = _scrollRect.viewport ? _scrollRect.viewport : _scrollRect.transform as RectTransform;
+        float scrollable = _scrollRect.content.rect.height - viewport!.rect.height;
+        if (scrollable <= 0f)
+        {
+            return;
+        }
+
+        _scrollRect.verticalNormalizedPosition =
+            Mathf.Clamp01(_scrollRect.verticalNormalizedPosition + (pixels / scrollable));
+    }
+
     public void Clear()
     {
         foreach (MagicTextGroup group in Elements)

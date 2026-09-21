@@ -33,9 +33,13 @@ namespace EpicLoot_UnityLib
 
         SacrificeMode _sacrificeMode = SacrificeMode.Sacrifice;
 
+        private readonly List<GameObject> _identifyCategoryHints = new List<GameObject>();
+
         public override void Awake()
         {
             base.Awake();
+
+            CreateIdentifyCategoryHint();
 
             SacrificeToggle.onValueChanged.AddListener((isOn) => {
                 SacrificeModeSelected(isOn);
@@ -65,11 +69,103 @@ namespace EpicLoot_UnityLib
             List<InventoryItemListElement> items = EnchantingUIController.GetSacrificeItems();
             _sacrificeMode = SacrificeMode.Sacrifice;
             IdentifyStylePanel.SetActive(false);
+            ShowIdentifyCategoryHint(false);
             IdentifyToggle.isOn = false;
             SacrificeToggle.isOn = true;
             AvailableItems.ClearFilter();
             AvailableItems.SetItems(items.Cast<IListElement>().ToList());
             AvailableItems.DeselectAll();
+        }
+
+        // The row's glyphs are fixed sprites, and the bundle ships only an up/down d-pad: the clone wears
+        // the same one turned on its side.
+        private void CreateIdentifyCategoryHint()
+        {
+            Transform bottomRow = transform.Find("GamepadHints/BottomRow");
+            if (bottomRow == null)
+            {
+                return;
+            }
+
+            Transform spacing = bottomRow.Find("Spacing");
+            Transform label = bottomRow.Find("Quantity");
+            Transform glyph = bottomRow.Find("QuantityButton");
+            if (spacing == null || label == null || glyph == null)
+            {
+                return;
+            }
+
+            GameObject spacingClone = Instantiate(spacing.gameObject, bottomRow, false);
+            spacingClone.name = "Spacing";
+
+            GameObject labelClone = Instantiate(label.gameObject, bottomRow, false);
+            labelClone.name = "IdentifyCategory";
+            Text labelText = labelClone.GetComponentInChildren<Text>(true);
+            if (labelText != null)
+            {
+                labelText.text = Localization.instance.Localize("$mod_epicloot_enchanting_identifycategory");
+            }
+
+            GameObject glyphClone = Instantiate(glyph.gameObject, bottomRow, false);
+            glyphClone.name = "IdentifyCategoryButton";
+            Transform icon = glyphClone.transform.Find("Icon");
+            if (icon != null)
+            {
+                icon.localEulerAngles = new Vector3(0f, 0f, 90f);
+            }
+
+            _identifyCategoryHints.Add(spacingClone);
+            _identifyCategoryHints.Add(labelClone);
+            _identifyCategoryHints.Add(glyphClone);
+            ShowIdentifyCategoryHint(false);
+        }
+
+        private void ShowIdentifyCategoryHint(bool visible)
+        {
+            foreach (GameObject hint in _identifyCategoryHints)
+            {
+                if (hint != null && hint.activeSelf != visible)
+                {
+                    hint.SetActive(visible);
+                }
+            }
+        }
+
+        protected override void OnDPadHorizontal(int direction)
+        {
+            if (_locked || _sacrificeMode != SacrificeMode.Identify)
+            {
+                return;
+            }
+
+            int optionCount = IdentifyStyle.options.Count;
+            if (optionCount == 0)
+            {
+                return;
+            }
+
+            IdentifyStyle.value = (IdentifyStyle.value + direction + optionCount) % optionCount;
+        }
+
+        public override void Update()
+        {
+            base.Update();
+
+            if (_locked || !ZInput.IsGamepadActive() || !ZInput.GetButtonDown("JoyButtonY"))
+            {
+                return;
+            }
+
+            ZInput.ResetButtonStatus("JoyButtonY");
+
+            if (_sacrificeMode == SacrificeMode.Sacrifice)
+            {
+                IdentifyToggle.isOn = true;
+            }
+            else
+            {
+                SacrificeToggle.isOn = true;
+            }
         }
 
         protected override void DoMainAction()
@@ -188,10 +284,11 @@ namespace EpicLoot_UnityLib
             Warning.text = Localization.instance.Localize("$mod_epicloot_sacrifice_warning");
             Warning.color = Color.red;
             Explainer.text = Localization.instance.Localize("$mod_epicloot_sacrifice_productsexplainer");
-            MainButton.GetComponentInChildren<Text>().text = Localization.instance.Localize("$mod_epicloot_sacrifice");
+            SetMainButtonLabel("$mod_epicloot_sacrifice");
             OnSelectedItemsChanged();
             IdentifyStylePanel.SetActive(false);
             CostList.gameObject.SetActive(false);
+            ShowIdentifyCategoryHint(false);
         }
 
         private void IdentifyModeSelected(bool isOn)
@@ -211,9 +308,10 @@ namespace EpicLoot_UnityLib
             OnSelectedItemsChanged();
             Warning.text = Localization.instance.Localize("$mod_epicloot_identify_explain");
             Warning.color = new Color(1f, 0.631f, 0.235f);
-            MainButton.GetComponentInChildren<Text>().text = Localization.instance.Localize("$mod_epicloot_identify");
+            SetMainButtonLabel("$mod_epicloot_identify");
             IdentifyStylePanel.SetActive(true);
             CostList.gameObject.SetActive(true);
+            ShowIdentifyCategoryHint(true);
         }
 
         private void RefreshAvailableItems()
@@ -311,26 +409,31 @@ namespace EpicLoot_UnityLib
 
         public override void Cancel()
         {
-            if (_sacrificeMode == SacrificeMode.Sacrifice)
-            {
-                if (_useTMP)
-                {
-                    _tmpButtonLabel.text = Localization.instance.Localize("$mod_epicloot_sacrifice");
-                }
-                else
-                {
-                    _buttonLabel.text = Localization.instance.Localize("$mod_epicloot_sacrifice");
-                }
-            }
-            if (SacrificeMode.Identify == _sacrificeMode)
-            {
-                if (_buttonLabel != null)
-                {
-                    _buttonLabel.text = Localization.instance.Localize("$mod_epicloot_identify");
-                }
-            }
+            base.Cancel();
+            RefreshMainButtonLabel();
+        }
 
-            Unlock();
+        private void RefreshMainButtonLabel()
+        {
+            SetMainButtonLabel(_sacrificeMode == SacrificeMode.Identify
+                ? "$mod_epicloot_identify"
+                : "$mod_epicloot_sacrifice");
+        }
+
+        private void SetMainButtonLabel(string token)
+        {
+            string text = Localization.instance.Localize(token);
+            if (_useTMP)
+            {
+                if (_tmpButtonLabel != null)
+                {
+                    _tmpButtonLabel.text = text;
+                }
+            }
+            else if (_buttonLabel != null)
+            {
+                _buttonLabel.text = text;
+            }
         }
         
         public override void DeselectAll()

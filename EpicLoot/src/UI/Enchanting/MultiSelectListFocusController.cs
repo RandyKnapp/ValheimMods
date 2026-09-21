@@ -3,6 +3,17 @@ using UnityEngine;
 
 namespace EpicLoot_UnityLib
 {
+    public interface IGamepadFocusPane
+    {
+        int GetItemCount();
+        int GetFocusedIndex();
+        void GiveFocus(bool focused, int tryFocusIndex);
+        bool IsGrid();
+        bool ShowSortHint { get; }
+        bool ShowSelectAllHint { get; }
+        bool ShowSelectHint { get; }
+    }
+
     public class MultiSelectListFocusController : MonoBehaviour
     {
         public List<MultiSelectItemList> Lists = new List<MultiSelectItemList>();
@@ -10,56 +21,91 @@ namespace EpicLoot_UnityLib
         public GameObject[] SelectAllHints;
         public GameObject[] SelectHints;
 
-        private int _focusedListIndex;
+        private readonly List<IGamepadFocusPane> _panes = new List<IGamepadFocusPane>();
+        private List<IGamepadFocusPane> _paneOverride;
+        private int _focusedPaneIndex;
         private bool _gamepadWasEnabled;
 
+        // For panels whose panes are not all MultiSelectItemLists, or that want a different order than the
+        // prefab's. Call it before this component is enabled.
+        public void SetPanes(IEnumerable<IGamepadFocusPane> panes)
+        {
+            _paneOverride = new List<IGamepadFocusPane>(panes);
+            RebuildPanes();
+            ClampFocusedPane();
+        }
 
         public void OnEnable()
         {
-            _focusedListIndex = 0;
-            for (int index = 0; index < Lists.Count; index++)
+            RebuildPanes();
+
+            _focusedPaneIndex = 0;
+            for (int index = 0; index < _panes.Count; index++)
             {
-                if (Lists[index] == null)
-                {
-                    continue;
-                }
-                Lists[index].GiveFocus(index == _focusedListIndex, 0);
+                _panes[index].GiveFocus(index == _focusedPaneIndex, 0);
             }
 
             RefreshHints();
         }
 
+        private void RebuildPanes()
+        {
+            _panes.Clear();
+
+            if (_paneOverride != null)
+            {
+                foreach (IGamepadFocusPane pane in _paneOverride)
+                {
+                    if (pane != null)
+                    {
+                        _panes.Add(pane);
+                    }
+                }
+
+                return;
+            }
+
+            foreach (MultiSelectItemList list in Lists)
+            {
+                if (list != null)
+                {
+                    _panes.Add(list);
+                }
+            }
+        }
+
+        private void ClampFocusedPane()
+        {
+            _focusedPaneIndex = _panes.Count > 0 ? Mathf.Clamp(_focusedPaneIndex, 0, _panes.Count - 1) : 0;
+        }
+
         public void Update()
         {
-            if (Lists.Count == 0)
+            if (_panes.Count == 0)
             {
                 return;
             }
 
-            MultiSelectItemList currentList = Lists[_focusedListIndex];
+            ClampFocusedPane();
+
+            IGamepadFocusPane currentPane = _panes[_focusedPaneIndex];
             int loopCount = 0;
-            int itemCount = currentList.GetItemCount();
-            while (itemCount == 0)
+            while (currentPane.GetItemCount() == 0)
             {
-                currentList.GiveFocus(false, 0);
+                currentPane.GiveFocus(false, 0);
 
-                _focusedListIndex = (_focusedListIndex + 1) % Lists.Count;
-                currentList = Lists[_focusedListIndex];
-                if (currentList == null)
-                {
-                    continue;
-                }
+                _focusedPaneIndex = (_focusedPaneIndex + 1) % _panes.Count;
+                currentPane = _panes[_focusedPaneIndex];
 
-                itemCount = currentList.GetItemCount();
-                if (currentList.GetItemCount() > 0)
+                if (currentPane.GetItemCount() > 0)
                 {
-                    currentList.GiveFocus(true, 0);
+                    currentPane.GiveFocus(true, 0);
                     RefreshHints();
                     break;
                 }
 
                 loopCount++;
-                if (loopCount >= Lists.Count)
+                if (loopCount >= _panes.Count)
                 {
                     return;
                 }
@@ -67,28 +113,28 @@ namespace EpicLoot_UnityLib
 
             if (ZInput.IsGamepadActive())
             {
-                int newFocusedIndex = _focusedListIndex;
+                int newFocusedIndex = _focusedPaneIndex;
                 if (ZInput.GetButtonDown("JoyTabLeft"))
                 {
-                    newFocusedIndex = Mathf.Max(_focusedListIndex - 1, 0);
+                    newFocusedIndex = Mathf.Max(_focusedPaneIndex - 1, 0);
                     ZInput.ResetButtonStatus("JoyTabLeft");
                 }
                 else if (ZInput.GetButtonDown("JoyTabRight"))
                 {
-                    newFocusedIndex = Mathf.Min(_focusedListIndex + 1, Lists.Count - 1);
+                    newFocusedIndex = Mathf.Min(_focusedPaneIndex + 1, _panes.Count - 1);
                     ZInput.ResetButtonStatus("JoyTabRight");
                 }
 
-                if (newFocusedIndex != _focusedListIndex)
+                if (newFocusedIndex != _focusedPaneIndex)
                 {
-                    int offset = newFocusedIndex - _focusedListIndex;
-                    if (Lists[newFocusedIndex].GetItemCount() == 0)
+                    int offset = newFocusedIndex - _focusedPaneIndex;
+                    if (_panes[newFocusedIndex].GetItemCount() == 0)
                     {
-                        newFocusedIndex = (newFocusedIndex + offset + Lists.Count) % Lists.Count;
+                        newFocusedIndex = (newFocusedIndex + offset + _panes.Count) % _panes.Count;
                     }
-                    if (Lists[newFocusedIndex].GetItemCount() == 0)
+                    if (_panes[newFocusedIndex].GetItemCount() == 0)
                     {
-                        newFocusedIndex = _focusedListIndex;
+                        newFocusedIndex = _focusedPaneIndex;
                     }
                 }
 
@@ -105,16 +151,14 @@ namespace EpicLoot_UnityLib
 
         public void FocusList(int newFocusedIndex)
         {
-            MultiSelectItemList list = Lists[_focusedListIndex];
-            MultiSelectItemListElement currentFocusElement = list.GetFocusedElement();
-            int currentFocusIndex = currentFocusElement != null ? currentFocusElement.transform.GetSiblingIndex() : -1;
-            if (newFocusedIndex != _focusedListIndex && newFocusedIndex >= 0 && newFocusedIndex < Lists.Count)
+            int currentFocusIndex = _panes[_focusedPaneIndex].GetFocusedIndex();
+            if (newFocusedIndex != _focusedPaneIndex && newFocusedIndex >= 0 && newFocusedIndex < _panes.Count)
             {
-                _focusedListIndex = newFocusedIndex;
-                for (int index = 0; index < Lists.Count; index++)
+                _focusedPaneIndex = newFocusedIndex;
+                for (int index = 0; index < _panes.Count; index++)
                 {
-                    bool isGrid = Lists[index].IsGrid();
-                    Lists[index].GiveFocus(index == _focusedListIndex, isGrid ? 0 : currentFocusIndex);
+                    bool isGrid = _panes[index].IsGrid();
+                    _panes[index].GiveFocus(index == _focusedPaneIndex, isGrid ? 0 : currentFocusIndex);
                 }
 
                 RefreshHints();
@@ -123,23 +167,21 @@ namespace EpicLoot_UnityLib
 
         private void RefreshHints()
         {
-            if (!isActiveAndEnabled || !ZInput.IsGamepadActive() || Lists.Count == 0)
+            if (!isActiveAndEnabled || !ZInput.IsGamepadActive() || _panes.Count == 0)
                 return;
 
-            MultiSelectItemList focusedList = Lists[_focusedListIndex];
+            IGamepadFocusPane focusedPane = _panes[_focusedPaneIndex];
             foreach (GameObject hint in SortHints)
             {
-                hint.SetActive(focusedList.Sortable && focusedList.SortByDropdown != null &&
-                    focusedList.SortByDropdown.isActiveAndEnabled);
+                hint.SetActive(focusedPane.ShowSortHint);
             }
             foreach (GameObject hint in SelectAllHints)
             {
-                hint.SetActive(focusedList.Multiselect && focusedList.SelectAllToggle != null &&
-                    focusedList.SelectAllToggle.isActiveAndEnabled);
+                hint.SetActive(focusedPane.ShowSelectAllHint);
             }
             foreach (GameObject hint in SelectHints)
             {
-                hint.SetActive(!focusedList.ReadOnly && focusedList.GetFocusedElement() != null);
+                hint.SetActive(focusedPane.ShowSelectHint);
             }
         }
     }
