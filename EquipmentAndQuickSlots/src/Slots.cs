@@ -82,9 +82,15 @@ namespace EquipmentAndQuickSlots {
                     item.m_gridPos = _gridPos;
             }
 
-            public bool IsShortcutDown() => IsActive && _getShortcut != null && Player.m_localPlayer?.TakeInput() == true && PreventSimilarHotkeys.IsShortcutDown(_getShortcut());
+            // Vanilla's TakeInput only blocks while the build menu's search box has focus. With the
+            // menu open and the box unfocused, letters typed as a search ("bench" -> B) still reach
+            // the game, so hotkeys also stand down whenever the piece selection is visible, as the
+            // vanilla hotbar does.
+            private static bool CanUseHotkeys() => Player.m_localPlayer?.TakeInput() == true && !Hud.IsPieceSelectionVisible();
+
+            public bool IsShortcutDown() => IsActive && _getShortcut != null && CanUseHotkeys() && PreventSimilarHotkeys.IsShortcutDown(_getShortcut());
             public bool IsShortcutDownWithItem() => Item != null && IsShortcutDown();
-            public bool IsShortcutPressed() => IsActive && _getShortcut != null && Player.m_localPlayer?.TakeInput() == true && PreventSimilarHotkeys.IsShortcutPressed(_getShortcut());
+            public bool IsShortcutPressed() => IsActive && _getShortcut != null && CanUseHotkeys() && PreventSimilarHotkeys.IsShortcutPressed(_getShortcut());
             public bool IsShortcutPressedWithItem() => Item != null && IsShortcutPressed();
 
             public KeyboardShortcut GetShortcut() => _getShortcut == null ? KeyboardShortcut.Empty : _getShortcut();

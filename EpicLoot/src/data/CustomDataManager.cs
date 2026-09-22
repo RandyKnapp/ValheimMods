@@ -656,8 +656,17 @@ namespace EpicLoot.Data {
 
         private static void ResetCurrentlyUpgradingItem() => currentlyUpgradingItem = null;
 
+        // Only the item that takes the upgraded item's place may inherit its data. At the Forge of
+        // Potential (a CraftingStation with m_upgrader) the attempt can instead break the item, and vanilla
+        // then refunds part of the recipe through AddItem -> ItemDrop.Awake while currentlyUpgradingItem
+        // is still set -- so the first refunded ingredient (an iron sword's Wood) took the destroyed item's
+        // enchantments and sockets, and Transfer Enchants to Crafted Items carried them into whatever was
+        // crafted from it next. Success and the level-down outcome both re-add the same item by name.
+        private static bool IsUpgradeResult(ItemDrop item) =>
+            item.m_itemData.m_shared?.m_name is { } name && name == currentlyUpgradingItem.m_shared?.m_name;
+
         private static void CopyCustomDataFromUpgradedItem(ItemDrop item) {
-            if (currentlyUpgradingItem is not null) {
+            if (currentlyUpgradingItem is not null && IsUpgradeResult(item)) {
                 item.m_itemData.m_customData = currentlyUpgradingItem.m_customData;
                 if (ItemExtensions.itemInfo.TryGetValue(item.m_itemData, out ItemInfo info)) {
                     info.ItemData = item.m_itemData;

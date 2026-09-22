@@ -344,6 +344,7 @@ namespace EpicLoot.Adventure
             // a few metres per minion; the spread is held to the margin the search left inside the circle.
             float circleRadius = MinimapController.AreaRadius;
             float minionSpread = Mathf.Clamp(circleRadius * (1f - SearchRadiusFraction), 0f, MaxMinionSpread);
+            var placedZdos = new List<ZDO>(prefabs.Count);
 
             for (var index = 0; index < prefabs.Count; index++)
             {
@@ -377,8 +378,10 @@ namespace EpicLoot.Adventure
                 var creature = UnityEngine.Object.Instantiate(prefab, spawnAt, Quaternion.identity);
                 var bountyTarget = creature.AddComponent<BountyTarget>();
                 bountyTarget.Initialize(bounty, prefab.name, isAdd);
+                AddPlacedZdo(creature, placedZdos);
             }
 
+            AdventureSpawnSaveMarker.MarkPlaced(placedZdos);
             LogPlacement($"bounty target '{bounty.Target.MonsterID}'", bounty.Biome);
             placed.ForceSet(true);
         }
@@ -407,8 +410,24 @@ namespace EpicLoot.Adventure
             }
 
             treasureChest.Setup(treasure.PlayerID, treasure.Biome, treasure.Interval);
+
+            var placedZdos = new List<ZDO>(1);
+            AddPlacedZdo(treasureChestObject, placedZdos);
+            AdventureSpawnSaveMarker.MarkPlaced(placedZdos);
+
             LogPlacement("treasure chest", treasure.Biome);
             placed.ForceSet(true);
+        }
+
+        /// <summary>
+        /// Collects the ZDO of an object this spawner just placed, for <see cref="AdventureSpawnSaveMarker"/>.
+        /// </summary>
+        private static void AddPlacedZdo(GameObject placedObject, List<ZDO> placedZdos)
+        {
+            if (placedObject.TryGetComponent(out ZNetView view) && view.GetZDO() != null)
+            {
+                placedZdos.Add(view.GetZDO());
+            }
         }
 
         /// <summary>
