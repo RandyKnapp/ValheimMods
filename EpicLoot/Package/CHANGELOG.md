@@ -1,3 +1,6 @@
+**0.14.12**
+* Fixes a bug with the new save system which would cause Bounties to get lost
+
 **0.14.11**
 * Gamepad support for the enchanting table (Thanks ksavila!)
 * Gamepad support for the merchant panel (Thanks ksavila!)
