@@ -58,6 +58,10 @@ namespace EpicLoot.MagicItemEffects
             return lowHealthThreshold;
         }
 
+        // Expects the hit as it stands after the block, resistances and armor (see
+        // SharedPlayerPostArmorDamagePatch), so it only applies what vanilla still does to it before the damage
+        // lands: fire, poison and spirit are split off into damage over time, the rest is scaled by the world's
+        // damage-taken rate, and a creature's world-level bonus is added flat (HitData.GetTotalDamage).
         public static bool PlayerWillBecomeHealthCritical(Player player, HitData hit)
         {
             if (PlayerHasLowHealth(player))
@@ -67,17 +71,13 @@ namespace EpicLoot.MagicItemEffects
 
             float lowHealthPercentage = Mathf.Min(ModifyWithLowHealth.GetLowHealthPercentage(player), 1.0f) * player.GetMaxHealth();
             float currentHealth = player.GetHealth();
-            float hitTotalDamage = hit.m_damage.EpicLootGetTotalDamageAgainstPlayer();
 
-            float armorValue = player.GetBodyArmor();
-            hitTotalDamage = HitData.DamageTypes.ApplyArmor(hitTotalDamage, armorValue);
+            HitData.DamageTypes damage = hit.m_damage;
+            float typedDamage = damage.GetTotalDamage();
+            float instantDamage = (typedDamage - damage.m_fire - damage.m_poison - damage.m_spirit) * Game.m_localDamgeTakenRate +
+                (hit.GetTotalDamage() - typedDamage);
 
-            if ((currentHealth - hitTotalDamage) < lowHealthPercentage)
-            {
-                return true;
-            }
-
-            return false;
+            return currentHealth - instantDamage < lowHealthPercentage;
         }
     }
 }

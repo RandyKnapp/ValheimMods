@@ -7,6 +7,7 @@ using EpicLoot.GatedItemType;
 using EpicLoot.ShardStones;
 using EpicLoot_UnityLib;
 using Jotunn.Managers;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -718,7 +719,7 @@ namespace EpicLoot.CraftingV2
         internal static bool IsIdentifyGated(List<ItemDrop.ItemData> items)
         {
             GatedItemTypeMode mode = EpicLoot.GetGatedItemTypeMode();
-            if (mode == GatedItemTypeMode.Unlimited || mode == GatedItemTypeMode.PlayerMustKnowRecipe)
+            if (!GatedItemTypeHelper.UsesBossBiomeCap(mode))
             {
                 return false;
             }
@@ -745,46 +746,136 @@ namespace EpicLoot.CraftingV2
             return false;
         }
 
-        internal static List<InventoryItemListElement> LootRollSelectedItems(
-            string filter, List<Tuple<ItemDrop.ItemData, int>> items, float powerModifier)
+        // Identifies the selected stacks and settles up for them. Every stack is rolled first, and unless
+        // each one rolled exactly as many items as it asked for, the whole identify is abandoned before
+        // anything is charged or removed (a short roll used to eat the inputs and keep the cost). Only
+        // then is the cost re-checked, the inputs removed, the cost paid and the results handed over --
+        // all for what was actually removed, should an input come up short. Returns null when nothing
+        // was identified.
+        internal static List<InventoryItemListElement> LootRollSelectedItems(string filter,
+            List<Tuple<ItemDrop.ItemData, int>> items, float costModifier, float powerModifier)
         {
             IdentifyTypeConfig category = SelectLootIdentifyDetails(filter);
+            Player player = Player.m_localPlayer;
 
-            if (category == null)
+            if (category == null || player == null || items == null || items.Count == 0)
             {
-                return new List<InventoryItemListElement>();
+                return null;
             }
 
-            Player player = Player.m_localPlayer;
-            List<ItemDrop.ItemData> totalRolledItems = new List<ItemDrop.ItemData>();
+            // The inputs as they are now, not as they were when the countdown started.
+            List<ItemDrop.ItemData> heldItems = InventoryManagement.Instance.GetAllItems() ?? new List<ItemDrop.ItemData>();
+            foreach (Tuple<ItemDrop.ItemData, int> itemstack in items)
+            {
+                ItemDrop.ItemData input = itemstack.Item1;
+                if (input == null || itemstack.Item2 <= 0 || !input.IsUnidentified() ||
+                    input.m_stack < itemstack.Item2 || !heldItems.Contains(input))
+                {
+                    EpicLoot.LogWarning("Identify cancelled: a selected item is no longer available. Nothing was consumed.");
+                    return null;
+                }
+            }
+
+            // Roll everything before touching the inventory. Rolled items only exist as ItemData until
+            // they are given, so an abandoned identify just drops them.
+            List<List<ItemDrop.ItemData>> rolledPerStack = new List<List<ItemDrop.ItemData>>();
             foreach (Tuple<ItemDrop.ItemData, int> itemstack in items)
             {
                 Heightmap.Biome biome = EnchantHelper.GetBiomeFromUnidentifiedItem(itemstack.Item1);
                 List<LootTable> selectedLootTables = GetLootTablesForIdentifyStyle(category, biome);
                 List<ItemDrop.ItemData> rolledItems = LootRoller.RollLootNoTableWithSpecifics(
                     player.transform.position, selectedLootTables, itemstack.Item2, itemstack.Item1.GetRarity(), true, 2, powerModifier);
-                InventoryManagement.Instance.RemoveExactItem(itemstack.Item1, itemstack.Item2);
-                totalRolledItems.AddRange(rolledItems);
 
-                foreach (ItemDrop.ItemData item in rolledItems)
+                if (rolledItems.Count != itemstack.Item2)
                 {
-                    InventoryManagement.Instance.GiveItem(item);
+                    EpicLoot.LogWarningForce($"Identify cancelled: {itemstack.Item1.m_shared.m_name} rolled " +
+                        $"{rolledItems.Count} of {itemstack.Item2} items. Nothing was consumed. Check the identify " +
+                        "loot lists in enchantcosts.json and the loot tables they name.");
+                    return null;
+                }
+
+                rolledPerStack.Add(rolledItems);
+            }
+
+            List<InventoryItemListElement> cost = GetIdentifyCostForCategory(filter, items, costModifier);
+            if (!EnchantingTableUIPanelBase.LocalPlayerCanAffordCost(cost))
+            {
+                EpicLoot.LogWarning("Identify cancelled: the cost can no longer be paid. Nothing was consumed.");
+                player.Message(MessageHud.MessageType.Center, "$msg_missingrequirement");
+                return null;
+            }
+
+            // Inputs before the cost: the inputs are the one step that can come up short (an inventory
+            // provider that no longer holds the stack), and a stack that yields nothing costs nothing.
+            List<ItemDrop.ItemData> identifiedItems = new List<ItemDrop.ItemData>();
+            List<Tuple<ItemDrop.ItemData, int>> removedStacks = new List<Tuple<ItemDrop.ItemData, int>>();
+            bool cameUpShort = false;
+            for (int index = 0; index < items.Count; index++)
+            {
+                Tuple<ItemDrop.ItemData, int> itemstack = items[index];
+                int removed = InventoryManagement.Instance.RemoveExactItem(itemstack.Item1, itemstack.Item2);
+                if (removed < itemstack.Item2)
+                {
+                    cameUpShort = true;
+                    EpicLoot.LogWarningForce($"Identify: only {removed} of {itemstack.Item2} " +
+                        $"{itemstack.Item1.m_shared.m_name} could be removed; identifying that many.");
+                }
+
+                if (removed > 0)
+                {
+                    identifiedItems.AddRange(rolledPerStack[index].Take(removed));
+                    removedStacks.Add(new Tuple<ItemDrop.ItemData, int>(itemstack.Item1, removed));
                 }
             }
-            
+
+            if (identifiedItems.Count == 0)
+            {
+                return null;
+            }
+
+            if (!player.NoCostCheat())
+            {
+                // Charged for what was actually identified: the cost checked above unless a stack came
+                // up short, in which case it is worked out again for what was removed.
+                List<InventoryItemListElement> charged = cameUpShort
+                    ? GetIdentifyCostForCategory(filter, removedStacks, costModifier)
+                    : cost;
+
+                foreach (InventoryItemListElement costElement in charged)
+                {
+                    InventoryManagement.Instance.RemoveItem(costElement.GetItem());
+                }
+            }
+
+            foreach (ItemDrop.ItemData item in identifiedItems)
+            {
+                InventoryManagement.Instance.GiveItem(item);
+            }
+
             EquipmentEffectCache.Reset(player);
-            return totalRolledItems.Select(item => new InventoryItemListElement() { Item = item }).ToList();
+            return identifiedItems.Select(item => new InventoryItemListElement() { Item = item }).ToList();
         }
 
-        internal static List<InventoryItemListElement> GetPotentialItemRollsByCategory(string filter, List<ItemDrop.ItemData> itemsSelected)
+        // The items an identify could hand out, for the preview list. An entry progression gating would
+        // replace (or a denied prop) is left out, since the roll would never give that item; the
+        // substitute is not listed because picking it is a roll. hasLoot reports whether the loot lists
+        // name any item at all, gated or not, which is what decides whether identifying can work.
+        internal static List<InventoryItemListElement> GetPotentialItemRollsByCategory(string filter,
+            List<ItemDrop.ItemData> itemsSelected, out bool hasLoot)
         {
             IdentifyTypeConfig category = SelectLootIdentifyDetails(filter);
             List<string> resultItemNames = new List<string>();
+            hasLoot = false;
 
             if (category == null || Player.m_localPlayer == null)
             {
                 return new List<InventoryItemListElement>();
             }
+
+            // The same mode the roll itself uses (LootRoller.RollLootNoTableWithSpecifics).
+            GatedItemTypeMode gatedMode = LootRoller.CheatDisableGating
+                ? GatedItemTypeMode.Unlimited
+                : EpicLoot.GetGatedItemTypeMode();
 
             List<Heightmap.Biome> biomesCovered = new List<Heightmap.Biome> { };
 
@@ -820,6 +911,12 @@ namespace EpicLoot.CraftingV2
             {
                 ObjectDB.instance.TryGetItemPrefab(item, out GameObject founditem);
                 if (founditem == null)
+                {
+                    continue;
+                }
+
+                hasLoot = true;
+                if (!GatedItemTypeHelper.IsItemAvailableUngated(item, gatedMode))
                 {
                     continue;
                 }
@@ -1129,10 +1226,12 @@ namespace EpicLoot.CraftingV2
             if (!float.IsNaN(powerModifier) && powerModifier < 999f && powerModifier > 0 && effect.EffectValue > 1)
             {
                 runeEffect.EffectValue = effect.EffectValue * powerModifier;
-                // Get() synthesizes a fallback for a missing definition (removed content mod,
-                // deleted shard grid slot) -- the raw dictionary index threw KeyNotFound here.
-                var valueDef = MagicItemEffectDefinitions.Get(effect.EffectType)?.ValuesPerRarity?
-                    .GetValueDefForRarity(selectedItem.GetRarity());
+                // TryGet, not the raw dictionary index (which threw KeyNotFound for a removed content
+                // mod or a deleted shard grid slot) and not Get(), whose stand-in would cap the rune to
+                // made-up numbers. The cap stays on the rarity table even for uniques, deliberately.
+                var valueDef = MagicItemEffectDefinitions.TryGet(effect.EffectType, out var effectDef)
+                    ? effectDef.ValuesPerRarity?.GetValueDefForRarity(selectedItem.GetRarity())
+                    : null;
                 if (valueDef != null)
                 {
                     float maxDefaultValue = valueDef.MaxValue;
@@ -1193,7 +1292,7 @@ namespace EpicLoot.CraftingV2
 
         // Applies the item-reduction side effect after a rune has been extracted from it.
         // reduceRarity: also drop the item one rarity tier and clamp remaining effect values down.
-        // If no rolled effects remain, the item is reverted to a plain, non-magic item.
+        // If no rolled effects and no sockets remain, the item is reverted to a plain, non-magic item.
         internal static void ReduceItemAfterRuneExtract(ItemDrop.ItemData item, int targetEnchant, bool reduceRarity)
         {
             MagicItem magicItem = item.GetMagicItem();
@@ -1202,20 +1301,11 @@ namespace EpicLoot.CraftingV2
                 return;
             }
 
-            magicItem.Effects.RemoveAt(targetEnchant);
+            ItemRarity previousRarity = magicItem.Rarity;
 
-            // Drop stale augmented-effect bookkeeping so the augmented pip can't point at the wrong effect.
-            magicItem.AugmentedEffectIndex = -1;
-            magicItem.AugmentedEffectIndices?.Clear();
-
-            // No rolled effects left -> revert to a plain, non-magic item. Dropping the component does
-            // not write through SetMagicItem, so raise the change event by hand.
-            if (magicItem.Effects.Count == 0)
-            {
-                item.Data().Remove<MagicItemComponent>();
-                API.RaiseMagicItemChanged(item, API.ChangeReason.Rune);
-                return;
-            }
+            // Shifts the augmented/tempered markers of the later effects down with them, so each pip
+            // still sits on the effect it was earned by.
+            magicItem.RemoveEffectAt(targetEnchant);
 
             if (reduceRarity && magicItem.Rarity > ItemRarity.Magic)
             {
@@ -1225,7 +1315,9 @@ namespace EpicLoot.CraftingV2
                 foreach (MagicItemEffect effect in magicItem.Effects)
                 {
                     MagicItemEffectDefinition.ValueDef values =
-                        MagicItemEffectDefinitions.Get(effect.EffectType)?.GetValuesForRarity(magicItem.Rarity);
+                        MagicItemEffectDefinitions.TryGet(effect.EffectType, out MagicItemEffectDefinition effectDef)
+                            ? effectDef.GetValuesForRarity(magicItem.Rarity)
+                            : null;
                     if (values != null && effect.EffectValue > values.MaxValue)
                     {
                         effect.EffectValue = values.MaxValue;
@@ -1233,54 +1325,113 @@ namespace EpicLoot.CraftingV2
                 }
             }
 
+            // No rolled effects and no sockets left -> revert to a plain, non-magic item. Dropping the
+            // component does not write through SetMagicItem, so raise the change event by hand. An item
+            // with sockets stays magic with zero effects (the same state TransferMagicalEffects creates),
+            // since dropping the component would destroy the socket capacity and everything socketed.
+            if (magicItem.Effects.Count == 0 && magicItem.SocketCount <= 0 && magicItem.Sockets.Count == 0)
+            {
+                item.Data().Remove<MagicItemComponent>();
+                API.RaiseMagicItemChanged(item, API.ChangeReason.Rune);
+                return;
+            }
+
+            // Generated names are built from the rarity, and a Rare's from its first two effects; a
+            // unique keeps the name its legendary entry gave it.
+            bool nameFromEffects = magicItem.Rarity == ItemRarity.Rare && targetEnchant < 2;
+            if (string.IsNullOrEmpty(magicItem.LegendaryID) && (magicItem.Rarity != previousRarity || nameFromEffects))
+            {
+                magicItem.DisplayName = MagicItemNames.GetNameForItem(item, magicItem);
+            }
+
             API.WithChangeReason(API.ChangeReason.Rune, () => item.SaveMagicItem(magicItem));
         }
 
-        internal static GameObject RuneEnhanceItemAndReturnSuccess(ItemDrop.ItemData item, ItemDrop.ItemData rune, int enchantment)
+        // Whether the rune tab may extract or overwrite the effect at this index: it has to exist and
+        // have a registered definition that allows it. An unknown effect is never runified.
+        internal static bool CanRunifyEffect(MagicItem magicItem, int index)
         {
-            List<MagicItemEffect> runeEffects = rune.GetMagicItem().Effects;
+            return magicItem != null && index >= 0 && index < magicItem.Effects.Count &&
+                MagicItemEffectDefinitions.TryGet(magicItem.Effects[index].EffectType, out MagicItemEffectDefinition effectDef) &&
+                effectDef.CanBeRunified;
+        }
 
-            if (runeEffects.Count > 1)
+        // Works out what etching the rune onto the item produces, on a copy: the item itself is not
+        // touched, so the caller can take the rune and the cost before committing the result with
+        // ApplyRuneEtch -- and nothing is lost if either of those fails. Returns null when the etch
+        // cannot be made (no magic data, no rune effects, target index out of range).
+        internal static MagicItem BuildRuneEtchResult(ItemDrop.ItemData item, ItemDrop.ItemData rune, int enchantment)
+        {
+            MagicItem source = item?.GetMagicItem();
+            List<MagicItemEffect> runeEffects = rune?.GetMagicItem()?.Effects;
+            if (source == null || runeEffects == null || runeEffects.Count == 0 ||
+                enchantment < 0 || enchantment >= source.Effects.Count)
             {
-                foreach (MagicItemEffect effect in runeEffects)
+                return null;
+            }
+
+            // The same JSON round trip MagicItemComponent does on every load, so the copy is exactly
+            // what the item would carry.
+            MagicItem result = JsonConvert.DeserializeObject<MagicItem>(JsonConvert.SerializeObject(source));
+
+            for (int runeIndex = 0; runeIndex < runeEffects.Count; runeIndex++)
+            {
+                // Copied, never shared: the rune's effect objects stay with the rune (and the rest of
+                // its stack), and a later edit to one must not reach into the other.
+                MagicItemEffect effect = new MagicItemEffect(runeEffects[runeIndex].EffectType,
+                    runeEffects[runeIndex].EffectValue);
+
+                // The first rune effect replaces the target enchantment
+                if (runeIndex == 0)
                 {
-                    // Replace the target enchantment
-                    if (runeEffects.IndexOf(effect) == 0)
-                    {
-                        item.GetMagicItem().Effects[enchantment] = effect;
-                        continue;
-                    }
-
-                    // Skip or replace existing effects with the same effect type
-                    if (item.GetMagicItem().Effects.Any(x => x.EffectType == effect.EffectType))
-                    {
-                        // If the item already has this effect, but with a lower value, replace it.
-                        // Same-TYPE comparison: the old test matched any effect on the item with a
-                        // smaller value, so a weaker rune could overwrite a stronger existing
-                        // effect because some unrelated effect happened to roll low.
-                        if (item.GetMagicItem().Effects.Any(x =>
-                            x.EffectType == effect.EffectType && x.EffectValue < effect.EffectValue))
-                        {
-                            int index = item.GetMagicItem().Effects.FindIndex(x => x.EffectType == effect.EffectType);
-                            item.GetMagicItem().Effects[index] = effect;
-                        }
-
-                        // If the item already has this effect, skip it
-                        continue;
-                    }
-
-                    // Add additional effects
-                    item.GetMagicItem().Effects.Add(effect);
+                    SetEtchedEffect(result, enchantment, effect);
+                    continue;
                 }
-            }
-            else
-            {
-                item.GetMagicItem().Effects[enchantment] = rune.GetMagicItem().Effects[0];
+
+                // Skip or replace existing effects with the same effect type
+                if (result.Effects.Any(x => x.EffectType == effect.EffectType))
+                {
+                    // If the item already has this effect, but with a lower value, replace it.
+                    // Same-TYPE comparison: the old test matched any effect on the item with a
+                    // smaller value, so a weaker rune could overwrite a stronger existing
+                    // effect because some unrelated effect happened to roll low.
+                    int index = result.Effects.FindIndex(x =>
+                        x.EffectType == effect.EffectType && x.EffectValue < effect.EffectValue);
+                    if (index >= 0)
+                    {
+                        SetEtchedEffect(result, index, effect);
+                    }
+
+                    // If the item already has this effect, skip it
+                    continue;
+                }
+
+                // Add additional effects
+                result.Effects.Add(effect);
             }
 
-            MagicItem magicItem = item.GetMagicItem();
-            API.WithChangeReason(API.ChangeReason.Rune, () => item.SaveMagicItem(magicItem));
+            return result;
+        }
 
+        // An etch overwrites the whole effect in that slot, so a tempered marker earned by the value
+        // that was there goes with it.
+        private static void SetEtchedEffect(MagicItem magicItem, int index, MagicItemEffect effect)
+        {
+            magicItem.Effects[index] = effect;
+            magicItem.TemperedEffectIndices.Remove(index);
+        }
+
+        // Commits a result from BuildRuneEtchResult to the item.
+        internal static void ApplyRuneEtch(ItemDrop.ItemData item, MagicItem etchedMagicItem)
+        {
+            API.WithChangeReason(API.ChangeReason.Rune, () => item.SaveMagicItem(etchedMagicItem));
+
+            Game.instance.GetPlayerProfile().IncrementStat(PlayerStatType.Crafts);
+            Gogan.LogEvent("Game", "RuneEnhanced", item.m_shared.m_name, 1);
+        }
+
+        internal static GameObject ShowRuneEtchSuccessDialog(ItemDrop.ItemData item)
+        {
             CraftSuccessDialog successDialog;
             //if (EpicLoot.HasAuga)
             //{
@@ -1317,9 +1468,6 @@ namespace EpicLoot.CraftingV2
                 }
             }
 
-            Game.instance.GetPlayerProfile().IncrementStat(PlayerStatType.Crafts);
-            Gogan.LogEvent("Game", "RuneEnhanced", item.m_shared.m_name, 1);
-
             return successDialog.gameObject;
         }
 
@@ -1335,13 +1483,11 @@ namespace EpicLoot.CraftingV2
                 for (int index = 0; index < augmentableEffects.Count; index++)
                 {
                     MagicItemEffect augmentableEffect = augmentableEffects[index];
-                    MagicItemEffectDefinition effectDef = MagicItemEffectDefinitions.Get(augmentableEffect.EffectType);
-                    bool canAugment = (effectDef != null && effectDef.CanBeAugmented);
-                    if (runecheck)
-                    {
-                        // Rune check if it is for the Rune UI, Augment if not
-                        canAugment = (effectDef != null && effectDef.CanBeRunified);
-                    }
+                    // Rune check if it is for the Rune UI, Augment if not
+                    bool canAugment = runecheck
+                        ? CanRunifyEffect(magicItem, index)
+                        : MagicItemEffectDefinitions.TryGet(augmentableEffect.EffectType, out MagicItemEffectDefinition effectDef) &&
+                            effectDef.CanBeAugmented;
 
                     string text = AugmentHelper.GetAugmentSelectorText(magicItem, index, augmentableEffects, rarity);
                     string color = EpicLoot.GetRarityColor(rarity);

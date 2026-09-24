@@ -1,5 +1,6 @@
 using EpicLoot.Biomes;
 using EpicLoot.Data;
+using Jotunn.Managers;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -284,6 +285,31 @@ namespace EpicLoot.Adventure
             }
         }
 
+        /// <summary>
+        /// Drops a spawner for <paramref name="bountyInfo"/> at <paramref name="position"/>. Buying a
+        /// bounty and the buyer-side recovery of a lost one (<see cref="AdventureSpawnWatchdog"/>) both
+        /// come through here, so a recovered spawner is built exactly like a bought one.
+        /// </summary>
+        internal static void CreateForBounty(BountyInfo bountyInfo, Vector3 position)
+        {
+            AdventureSpawnController spawner = Create(position);
+            spawner.SetBounty(bountyInfo);
+            spawner.SetIsBounty();
+        }
+
+        /// <summary>Treasure-map counterpart to <see cref="CreateForBounty"/>.</summary>
+        internal static void CreateForTreasure(TreasureMapChestInfo treasureInfo, Vector3 position)
+        {
+            Create(position).SetTreasure(treasureInfo);
+        }
+
+        private static AdventureSpawnController Create(Vector3 position)
+        {
+            Quaternion rotation = Quaternion.Euler(0f, UnityEngine.Random.Range(0f, 360f), 0f);
+            GameObject prefab = PrefabManager.Instance.GetPrefab(PrefabName);
+            return UnityEngine.Object.Instantiate(prefab, position, rotation).GetComponent<AdventureSpawnController>();
+        }
+
         public void SetBounty(BountyInfo bountyInfo)
         {
             bounty.ForceSet(bountyInfo);
@@ -312,14 +338,23 @@ namespace EpicLoot.Adventure
         private void SpawnBountyTargets(BountyInfo bounty)
         {
             Vector3 point = spawnPoint.Get();
-            var mainPrefab = ZNetScene.instance.GetPrefab(bounty.Target.MonsterID);
-            if (mainPrefab == null)
+
+            // Only what the bounty still needs. A bought bounty always needs everything; one the
+            // watchdog re-created carries the buyer's progress, where Slain means the target is dead
+            // and each add's Count is how many of it are left.
+            var prefabs = new List<(GameObject Prefab, bool IsAdd)>();
+            if (!bounty.Slain)
             {
-                ReportMissingPrefab("target", bounty.ID, bounty.Target.MonsterID);
-                return;
+                var mainPrefab = ZNetScene.instance.GetPrefab(bounty.Target.MonsterID);
+                if (mainPrefab == null)
+                {
+                    ReportMissingPrefab("target", bounty.ID, bounty.Target.MonsterID);
+                    return;
+                }
+
+                prefabs.Add((mainPrefab, false));
             }
 
-            var prefabs = new List<GameObject>() { mainPrefab };
             foreach (var addConfig in bounty.Adds)
             {
                 for (var i = 0; i < addConfig.Count; i++)
@@ -330,8 +365,20 @@ namespace EpicLoot.Adventure
                         ReportMissingPrefab("add", bounty.ID, addConfig.MonsterID);
                         return;
                     }
-                    prefabs.Add(prefab);
+                    prefabs.Add((prefab, true));
                 }
+            }
+
+            string what = bounty.Slain
+                ? $"bounty minions of '{bounty.Target.MonsterID}'"
+                : $"bounty target '{bounty.Target.MonsterID}'";
+
+            // A bounty with nothing left is complete and never reaches a spawner; this is only a guard.
+            if (prefabs.Count == 0)
+            {
+                EpicLoot.LogForce($"Adventure {what} ({BiomeDataManager.GetName(bounty.Biome)}) had nothing left to spawn.");
+                placed.ForceSet(true);
+                return;
             }
 
             // An open-water bounty's targets swim, so they hold the water line the search settled on
@@ -346,11 +393,8 @@ namespace EpicLoot.Adventure
             float minionSpread = Mathf.Clamp(circleRadius * (1f - SearchRadiusFraction), 0f, MaxMinionSpread);
             var placedZdos = new List<ZDO>(prefabs.Count);
 
-            for (var index = 0; index < prefabs.Count; index++)
+            foreach ((GameObject prefab, bool isAdd) in prefabs)
             {
-                var prefab = prefabs[index];
-                var isAdd = index > 0;
-
                 Vector3 spawnAt = point;
                 if (isAdd && minionSpread > 0f)
                 {
@@ -382,7 +426,7 @@ namespace EpicLoot.Adventure
             }
 
             AdventureSpawnSaveMarker.MarkPlaced(placedZdos);
-            LogPlacement($"bounty target '{bounty.Target.MonsterID}'", bounty.Biome);
+            LogPlacement(what, bounty.Biome);
             placed.ForceSet(true);
         }
 
@@ -946,7 +990,7 @@ namespace EpicLoot.Adventure
         /// shape ZDOMan.FindSectorObjects uses for the near area: a square of NearSimulationDistance
         /// zones, trimmed to a circle unless the setting is classic.
         /// </summary>
-        private static bool IsZoneInLocalNearArea(Vector2s zone)
+        internal static bool IsZoneInLocalNearArea(Vector2s zone)
         {
             Vector2s centre = ZoneSystem.GetZone(ZNet.instance.GetReferencePosition());
             SimulationDistance distance = ZNet.instance.GetSyncedSimulationDistance();
@@ -966,7 +1010,7 @@ namespace EpicLoot.Adventure
         /// Vanilla <see cref="ZNetScene.IsAreaReady"/> narrowed to a single zone: the zone is loaded and
         /// every object in it with a known prefab has been created.
         /// </summary>
-        private static bool IsZoneInstantiated(Vector2s zone)
+        internal static bool IsZoneInstantiated(Vector2s zone)
         {
             return ZoneSystem.instance.IsZoneLoaded(zone) && !TryFindUninstantiatedObject(zone, out _);
         }

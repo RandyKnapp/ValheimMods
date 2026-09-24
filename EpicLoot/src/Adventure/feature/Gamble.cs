@@ -247,12 +247,23 @@ namespace EpicLoot.Adventure.Feature
                 }
             };
 
+            // Restored in a finally: these are process-wide statics, and a roll that throws would
+            // otherwise leave gating disabled for every later drop in the session.
             var previousDisabledState = LootRoller.CheatDisableGating;
-            LootRoller.CheatDisableGating = true;
-            LootRoller.CheatRollingItem = true;
-            var loot = LootRoller.RollLootTable(lootTable, 1, "Gamble", Player.m_localPlayer.transform.position);
-            LootRoller.CheatRollingItem = false;
-            LootRoller.CheatDisableGating = previousDisabledState;
+            var previousRollingState = LootRoller.CheatRollingItem;
+            List<ItemDrop.ItemData> loot;
+            try
+            {
+                LootRoller.CheatDisableGating = true;
+                LootRoller.CheatRollingItem = true;
+                loot = LootRoller.RollLootTable(lootTable, 1, "Gamble", Player.m_localPlayer.transform.position);
+            }
+            finally
+            {
+                LootRoller.CheatRollingItem = previousRollingState;
+                LootRoller.CheatDisableGating = previousDisabledState;
+            }
+
             return loot.Count > 0 ? loot[0] : null;
         }
     }

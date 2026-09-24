@@ -15,26 +15,48 @@ namespace EpicLoot.src.Magic.MagicItemEffects.Helpers {
     //    apply an effect to the TARGET (Slow, Paralyze); those check the local player's effect here (attacker
     //    side) but apply it via an RPC to the target's owner, where movement/AI is authoritative.
     //
+    // Two kinds of hit skip handlers:
+    //  * A self-inflicted hit (Blood Block's cost) triggers none: it is a price, not an attack, so it must not
+    //    crit itself, pay Mercenary, lifesteal its own blood back, or Slow/Paralyze the player.
+    //  * A bonus hit (HitSource.IsBonusHit -- damage EpicLoot deals on its own: Reflect, novas, the meteor,
+    //    chain lightning, ...) skips the weapon-strike handlers. It keeps the ones keyed on the damage type
+    //    (poison, fire, lightning) and the kill rewards.
+    //
     // Each effect keeps its own guard (is-local-attacker / has-effect) inside its handler, so the order among
     // Normal-priority handlers is not load-bearing. Executioner keeps its original ordering relative to other
     // mods via the Priority.Last prefix below.
     [HarmonyPatch(typeof(Character), nameof(Character.Damage))]
     internal static class SharedCharacterDamagePatch {
+        private static bool IsSelfInflicted(Character target, Character attacker) {
+            return attacker != null && attacker == target;
+        }
+
         [HarmonyPrefix]
         private static void EarlyPreDamagePatch(Character __instance, HitData hit) {
             if (hit == null) {
                 return;
             }
             Character attacker = hit.GetAttacker();
+            if (IsSelfInflicted(__instance, attacker)) {
+                return;
+            }
+            bool strike = !HitSource.IsBonusHit;
             // Attacker side -- modify the outgoing hit before it lands.
-            EitrImbueAttack.ModifyOutgoingHit(hit, attacker);
+            if (strike) {
+                EitrImbueAttack.ModifyOutgoingHit(hit, attacker);
+            }
             IncreaseAllPoisonDamageDone.ModifyOutgoingHit(hit, attacker);
             PoisonToTrueDamage.ModifyOutgoingHit(__instance, hit, attacker);
-            Mercenary.ModifyOutgoingHit(hit, attacker);
-            Wager.ModifyOutgoingHit(__instance, hit, attacker);
-            ChanceDoubleDamage.ModifyOutgoingHit(hit, attacker);
-            ChanceToCritOnHit.ModifyOutgoingHit(hit, attacker);
+            if (strike) {
+                Mercenary.ModifyOutgoingHit(hit, attacker);
+                Wager.ModifyOutgoingHit(__instance, hit, attacker);
+                ChanceDoubleDamage.ModifyOutgoingHit(hit, attacker);
+                ChanceToCritOnHit.ModifyOutgoingHit(hit, attacker);
+            }
             ModifySummonDamage.ModifyOutgoingHit(hit, attacker);
+            if (!strike) {
+                return;
+            }
             // Attacker-side reads that used to live (incorrectly) on the RPC_Damage dispatcher:
             // both read the local attacker's magic effects; the stagger tagger routes its write to
             // the target's owner.
@@ -53,7 +75,11 @@ namespace EpicLoot.src.Magic.MagicItemEffects.Helpers {
             if (hit == null) {
                 return;
             }
-            ExecutionerCheckDamage_Character_Damage_Patch.ModifyOutgoingHit(__instance, hit);
+            if (!HitSource.IsBonusHit && !IsSelfInflicted(__instance, hit.GetAttacker())) {
+                ExecutionerCheckDamage_Character_Damage_Patch.ModifyOutgoingHit(__instance, hit);
+            }
+            // Last, so it sees fire/lightning that any earlier prefix converted into the hit.
+            ElementalHitVariant.ModifyOutgoingHit(hit, hit.GetAttacker());
         }
 
         [HarmonyPostfix]
@@ -62,28 +88,37 @@ namespace EpicLoot.src.Magic.MagicItemEffects.Helpers {
                 return;
             }
             Character attacker = hit.GetAttacker();
+            if (IsSelfInflicted(__instance, attacker)) {
+                return;
+            }
+            bool strike = !HitSource.IsBonusHit;
             // Wager settles first: it consumes the stake its own prefix parked for THIS hit, and several
             // handlers below (ChainLightning, MeteorSummoner) deal further damage, which re-enters this
             // patch and would otherwise clear the stake before it could be refunded.
-            Wager.OnDamageDealt(__instance, hit);
+            if (strike) {
+                Wager.OnDamageDealt(__instance, hit);
 
-            // On-hit reactions (attacker side unless the handler guards otherwise).
-            AddLifeSteal.CheckAndDoLifeSteal(hit, attacker);
-            BloodDrinker.OnDamageDealt(hit, attacker);
-            AddEitrLeech.OnDamageDealt(hit, attacker);
-            ChainLightning.OnDamageDealt(__instance, hit, attacker);
-            StrikeCausesLightning.OnDamageDealt(__instance, hit, attacker);
-            ApplySlow_Character_Damage_Patch.OnDamageDealt(__instance, hit, attacker);
-            Paralyze.OnDamaged(__instance, hit, attacker);
-            StaggerOnDamageTaken_Character_Damage_Patch.OnDamageDealt(__instance, hit, attacker);
-            HealthGainPerXDamageDone.OnDamageDealt(hit, attacker);
-            LifeGainOnHit.OnDamageDealt(hit, attacker);
+                // On-hit reactions (attacker side unless the handler guards otherwise).
+                AddLifeSteal.CheckAndDoLifeSteal(hit, attacker);
+                BloodDrinker.OnDamageDealt(hit, attacker);
+                AddEitrLeech.OnDamageDealt(hit, attacker);
+                ChainLightning.OnDamageDealt(__instance, hit, attacker);
+                StrikeCausesLightning.OnDamageDealt(__instance, hit, attacker);
+                ApplySlow_Character_Damage_Patch.OnDamageDealt(__instance, hit, attacker);
+                Paralyze.OnDamaged(__instance, hit, attacker);
+                StaggerOnDamageTaken_Character_Damage_Patch.OnDamageDealt(__instance, hit, attacker);
+                HealthGainPerXDamageDone.OnDamageDealt(hit, attacker);
+                LifeGainOnHit.OnDamageDealt(hit, attacker);
+            }
+            // Keyed on the damage type or the kill, so a bonus hit earns these too.
             GainAdrenalineWhenApplyingPoison.OnDamageDealt(__instance, hit, attacker);
             BurningAdrenaline.OnDamageDealt(hit, attacker);
             StaminaOnKill.OnDamageDealt(__instance, hit, attacker);
             Conduit.OnDamageDealt(__instance, hit, attacker);
-            EikthyrShockingCharge.OnDamageDealt(__instance, hit, attacker);
-            MeteorSummoner.OnDamageDealt(__instance, hit, attacker);
+            if (strike) {
+                EikthyrShockingCharge.OnDamageDealt(__instance, hit, attacker);
+                MeteorSummoner.OnDamageDealt(__instance, hit, attacker);
+            }
             QueenEverflow.OnDamageDealt(__instance, hit, attacker);
         }
     }

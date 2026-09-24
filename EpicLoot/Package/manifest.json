@@ -1,6 +1,6 @@
 {
   "name": "EpicLoot",
-  "version_number": "0.14.12",
+  "version_number": "0.14.13",
   "website_url": "https://discord.gg/ZNhYeavv3C",
   "description": "Adds loot drops, magic items, and enchanting to Valheim.",
     "dependencies": [

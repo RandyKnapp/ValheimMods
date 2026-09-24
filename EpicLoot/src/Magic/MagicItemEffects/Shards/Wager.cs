@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using EpicLoot.General;
+using EpicLoot.src.Magic.MagicItemEffects.Helpers;
 using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects.Shards {
@@ -83,10 +84,9 @@ namespace EpicLoot.MagicItemEffects.Shards {
                 return;
             }
 
-            // Predicted lethality (see StaminaOnKill): against a remote-owned victim the post-hit
-            // health is not visible yet, and the old plain check silently ATE the stake on every
-            // real kill in multiplayer.
-            if (__instance.GetHealth() - hit.GetTotalDamage() > 0f) {
+            // Against a remote-owned victim the post-hit health is not visible yet, so IsLethalHit estimates it;
+            // against one this client owns, the hit has already landed.
+            if (!MagicEffectsHelper.IsLethalHit(__instance, hit)) {
                 return; // the bet was lost -- the stake is gone
             }
 

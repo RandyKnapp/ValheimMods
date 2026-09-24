@@ -87,8 +87,7 @@ namespace EpicLoot.ShardStones {
                 return true;
             }
 
-            var def = MagicItemEffectDefinitions.Get(effect.EffectType);
-            if (def == null) {
+            if (!MagicItemEffectDefinitions.TryGet(effect.EffectType, out var def)) {
                 reason = "$mod_epicloot_socket_invalidinput";
                 return false;
             }
@@ -159,8 +158,7 @@ namespace EpicLoot.ShardStones {
                 return true;
             }
 
-            var def = MagicItemEffectDefinitions.Get(effect.EffectType);
-            if (def == null) {
+            if (!MagicItemEffectDefinitions.TryGet(effect.EffectType, out var def)) {
                 reason = "$mod_epicloot_socket_invalidinput";
                 return false;
             }

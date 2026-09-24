@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using EpicLoot.Config;
-using EpicLoot.LegendarySystem;
 using UnityEngine;
 
 namespace EpicLoot;
@@ -40,28 +39,30 @@ public class TemperData
     private readonly int indexOfEffect;
 
     // The value range a temper of this effect works against: the legendary/mythic guaranteed-effect
-    // range when the item is a unique, the rarity table otherwise -- the same resolution the detailed
-    // tooltip uses (MagicItem.GetEffectDetailBlock). Null means the effect has no rolled value at this
-    // rarity (a valueless effect like Warmth) and cannot be tempered.
+    // range when the unique declares one, the rarity table otherwise -- the same resolution the detailed
+    // tooltip uses (MagicItemEffectDefinitions.GetRollRange). Stock legendaries.json declares no such
+    // range, so falling back to the rarity table is what keeps a unique's effects temperable at all.
+    // Null means the effect has no rolled value at this rarity (a valueless effect like Warmth) and
+    // cannot be tempered.
     private static MagicItemEffectDefinition.ValueDef ResolveValues(MagicItem magicItem,
         MagicItemEffectDefinition def)
     {
-        return string.IsNullOrEmpty(magicItem.LegendaryID)
-            ? def.GetValuesForRarity(magicItem.Rarity)
-            : UniqueLegendaryHelper.GetLegendaryEffectValues(magicItem.LegendaryID, def.Type);
+        return MagicItemEffectDefinitions.GetRollRange(def, magicItem.Rarity, magicItem.LegendaryID);
+    }
+
+    // The range the temper panel shows and steps against for this effect on this item. Null for an
+    // effect with no registered definition as well: a stand-in's made-up range is nothing to temper by.
+    public static MagicItemEffectDefinition.ValueDef GetTemperRange(MagicItem magicItem, MagicItemEffect effect)
+    {
+        return MagicItemEffectDefinitions.GetRollRange(magicItem, effect.EffectType);
     }
 
     // Whether the effect can be tempered at all: it needs a value range and a positive increment to
     // step by. The enchantment list uses this to leave untemperable effects out entirely.
     public static bool IsTemperable(MagicItem magicItem, MagicItemEffect effect)
     {
-        MagicItemEffectDefinition def = MagicItemEffectDefinitions.Get(effect.EffectType);
-        if (def == null)
-        {
-            return false;
-        }
-
-        MagicItemEffectDefinition.ValueDef values = ResolveValues(magicItem, def);
+        // An effect with no registered definition has no real range to temper against.
+        MagicItemEffectDefinition.ValueDef values = GetTemperRange(magicItem, effect);
         return values != null && values.Increment > 0f && values.MaxValue > 0f;
     }
 
@@ -71,8 +72,9 @@ public class TemperData
 
         magicItem = itemData.GetMagicItem();
         selectedEffect = magicItem.GetEffects(effectType)[0];
+        // Get() for display (never null); the range itself comes only from a registered definition.
         selectedDefinition = MagicItemEffectDefinitions.Get(effectType);
-        selectedValues = ResolveValues(magicItem, selectedDefinition);
+        selectedValues = GetTemperRange(magicItem, selectedEffect);
         rarityColor = EpicLoot.GetRarityColor(magicItem.Rarity);
 
         // The panel filters untemperable effects out via IsTemperable, so this only trips if a config
@@ -187,8 +189,10 @@ public class TemperData
 
             if (effect.EffectType == effectToReduce)
             {
-                MagicItemEffectDefinition def = MagicItemEffectDefinitions.Get(effect.EffectType);
-                MagicItemEffectDefinition.ValueDef values = def != null ? ResolveValues(magicItem, def) : null;
+                MagicItemEffectDefinition.ValueDef values =
+                    MagicItemEffectDefinitions.TryGet(effect.EffectType, out MagicItemEffectDefinition def)
+                        ? ResolveValues(magicItem, def)
+                        : null;
                 // SelectWeightedEffect only offers effects with a value range, but guard anyway -- a
                 // failed lookup must degrade to "nothing reduced", never throw mid-temper.
                 if (values != null)
@@ -197,9 +201,10 @@ public class TemperData
                     _tempValue = newValue.EffectValue;
                     _tempIncrement = values.Increment;
                     // A failure can never push an effect below the worst legitimate roll for the
-                    // rarity. An effect already at (or somehow below) MinValue just stays put.
-                    newValue.EffectValue = Mathf.Max(values.MinValue,
-                        newValue.EffectValue - values.Increment);
+                    // rarity. An effect already at (or somehow below) MinValue just stays put: the
+                    // outer Min stops the floor from raising it.
+                    newValue.EffectValue = Mathf.Min(newValue.EffectValue,
+                        Mathf.Max(values.MinValue, newValue.EffectValue - values.Increment));
                     _tempUpdatedValue = newValue.EffectValue;
                     _tempEffect = newValue;
                 }
@@ -227,8 +232,7 @@ public class TemperData
         for (int i = 0; i < effects.Count; ++i)
         {
             MagicItemEffect effect = effects[i];
-            MagicItemEffectDefinition def = MagicItemEffectDefinitions.Get(effect.EffectType);
-            MagicItemEffectDefinition.ValueDef values = def != null ? ResolveValues(magicItem, def) : null;
+            MagicItemEffectDefinition.ValueDef values = GetTemperRange(magicItem, effect);
             if (values == null || values.MaxValue <= 0f) continue;
             float num = effect.EffectValue / values.MaxValue;
             candidates.Add(effect);

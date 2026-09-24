@@ -58,6 +58,13 @@ namespace EpicLoot.MagicItemEffects
             // equipped weapon. Melee hits derive from the live weapon per hit.
             float multiplier = ExecutionerMultiplier ?? ReadExecutionerValue(player);
 
+            // No Executioner on the attack: nothing to spend, so the target stays executable by a later hit
+            // that does carry it.
+            if (multiplier <= 1f)
+            {
+                return;
+            }
+
             if (__instance.GetHealth() / __instance.GetMaxHealth() < 0.2f)
             {
                 hit.m_damage.Modify(multiplier);

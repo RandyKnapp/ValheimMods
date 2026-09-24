@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using EpicLoot.src.Magic.MagicItemEffects.Helpers;
+using UnityEngine;
 
 
 namespace EpicLoot.MagicItemEffects {
@@ -10,7 +11,9 @@ namespace EpicLoot.MagicItemEffects {
             }
 
             var player = attacker as Player;
-            var weapon = player?.GetCurrentWeapon();
+            // The weapon that dealt this hit -- for an arrow or a thrown weapon, the one that fired it -- not
+            // whatever is in the right hand now.
+            var weapon = MagicEffectsHelper.GetActiveWeapon(player);
             if (weapon == null || weapon.GetMagicItem()?.HasEffect(nameof(MagicEffectType.ChainLightning), includeSocketed: true) != true) {
                 return;
             }
@@ -47,6 +50,8 @@ namespace EpicLoot.MagicItemEffects {
             }
 
             var instance = Object.Instantiate(prefab, target.transform.position, Quaternion.identity);
+            // Its hits (and every jump's, which clones this live object) are bonus hits, not weapon strikes.
+            HitSource.MarkBonusSource(instance);
 
             var aoe = instance.GetComponent<Aoe>();
             if (aoe != null) {

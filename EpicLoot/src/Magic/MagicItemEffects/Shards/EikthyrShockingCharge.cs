@@ -209,7 +209,7 @@ namespace EpicLoot.MagicItemEffects.Shards {
                 };
                 hit.m_damage.m_lightning = lightningDamage;
                 hit.SetAttacker(player);
-                character.Damage(hit);
+                HitSource.DealBonusDamage(character, hit);
             }
         }
 

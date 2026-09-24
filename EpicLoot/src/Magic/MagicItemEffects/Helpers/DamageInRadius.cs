@@ -27,7 +27,7 @@ namespace EpicLoot.src.Magic.MagicItemEffects.Helpers {
                     m_ranged = true,
                 };
                 hit.SetAttacker(attacker);
-                character.Damage(hit);
+                HitSource.DealBonusDamage(character, hit);
             }
         }
     }

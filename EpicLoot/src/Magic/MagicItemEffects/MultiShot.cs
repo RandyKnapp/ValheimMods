@@ -163,10 +163,13 @@ namespace EpicLoot.MagicItemEffects
         }
 
         /// <summary>
-        /// Restore the attack damages to previous state if changed by the prefix.
+        /// Restore the attack damages to previous state if changed by the prefix. A finalizer, not a
+        /// postfix: m_shared is shared by every weapon of that kind, so an exception mid-burst would
+        /// otherwise leave all of them at the reduced damage until the game restarts.
         /// </summary>
         [HarmonyPatch(typeof(Attack), nameof(Attack.FireProjectileBurst))]
-        public static void Postfix(Attack __instance, ref HitData.DamageTypes? __state)
+        [HarmonyFinalizer]
+        public static void Attack_FireProjectileBurst_Finalizer(Attack __instance, HitData.DamageTypes? __state)
         {
             if (__state != null)
             {

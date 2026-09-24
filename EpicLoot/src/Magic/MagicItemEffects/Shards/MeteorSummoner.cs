@@ -131,6 +131,9 @@ namespace EpicLoot.MagicItemEffects.Shards {
             var velocity = (targetPos - spawnPos).normalized * speed;
 
             var meteor = Object.Instantiate(prefab, spawnPos, Quaternion.LookRotation(velocity));
+            // A bonus hit, not a weapon strike: no crits, stakes or on-hit procs on the meteor's damage (or on
+            // whatever it spawns on impact).
+            HitSource.MarkBonusSource(meteor);
             var projectile = meteor.GetComponent<Projectile>();
             if (projectile == null) {
                 return;

@@ -5,8 +5,14 @@ namespace EpicLoot.Magic.MagicItemEffects;
 
 public class AutoMeads
 {
-    // Prefix handler invoked by CharacterDamageDispatch (victim-side): auto-drink a healing mead when the
-    // incoming hit would drop the local player to critical health.
+    // True while AutoMeads is drinking for a hit that is about to drop the player to critical health. The
+    // player's health is still above the threshold at that moment, so Instant Mead (ModifyMeads) reads this
+    // as well as the current health -- otherwise the pre-emptive drink always came out as a slow mead.
+    public static bool DrinkingForCriticalHit { get; private set; }
+
+    // Invoked by SharedPlayerPostArmorDamagePatch (victim-side), once the hit has been through the block,
+    // resistances and armor: auto-drink one healing mead when the hit will drop the local player to critical
+    // health, or when they are already there.
     public static void OnIncomingHit(Character __instance, HitData hit)
     {
         if (__instance is not Player player ||
@@ -28,7 +34,23 @@ public class AutoMeads
                 !player.m_seman.HaveStatusEffect(item.m_shared.m_consumeStatusEffect.NameHash()) &&
                 !player.m_seman.HaveStatusEffectCategory(item.m_shared.m_consumeStatusEffect.m_category))
             {
-                player.ConsumeItem(inventory, item);
+                bool consumed;
+                DrinkingForCriticalHit = true;
+                try
+                {
+                    consumed = player.ConsumeItem(inventory, item);
+                }
+                finally
+                {
+                    DrinkingForCriticalHit = false;
+                }
+
+                // One mead per hit: meads from other mods that don't share vanilla's category would
+                // otherwise all be drunk at once.
+                if (consumed)
+                {
+                    return;
+                }
             }
         }
     }

@@ -1,6 +1,7 @@
 using EpicLoot.Biomes;
 using JetBrains.Annotations;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -8,7 +9,8 @@ namespace EpicLoot.Adventure
 {
     /// <summary>
     /// Checks, from the buyer's side, that a bounty or treasure map actually appears once the buyer is
-    /// standing at its map circle, and logs what it can see when it does not.
+    /// standing at its map circle, logs what it can see when it does not, and re-creates the spawner
+    /// when there is none left to place it.
     ///
     /// The placement itself runs on whichever machine owns the spawner (see
     /// <see cref="AdventureSpawnController"/>), which is often not the buyer's. That machine logs its own
@@ -17,8 +19,15 @@ namespace EpicLoot.Adventure
     /// in, which is enough to tell "another machine is stuck placing it" from "nobody is placing it"
     /// from "it was placed and is gone".
     ///
+    /// Only the last case is repaired. With no spawner and nothing it placed anywhere near the circle,
+    /// the bounty or map could never be finished, so the buyer drops a new spawner carrying the record
+    /// from their own save data - the biome, interval and bounty ID it was bought with, and a bounty's
+    /// progress so far. A spawner that still exists is left alone: another machine may be placing it.
+    ///
     /// Everything here reads ZDOs the client already holds: the buyer is at the circle, so the server
-    /// has synced the objects around it.
+    /// has synced the objects around it. Recovery additionally requires that the whole circle is inside
+    /// the area the server syncs to this client (<see cref="CanSeeWholeCircle"/>), since an original
+    /// that is merely out of sight would otherwise be duplicated.
     /// </summary>
     internal class AdventureSpawnWatchdog : MonoBehaviour
     {
@@ -44,6 +53,12 @@ namespace EpicLoot.Adventure
 
             /// <summary>Seen in place; nothing more to check this session.</summary>
             public bool Resolved;
+
+            /// <summary>A replacement spawner was dropped; never a second one this session.</summary>
+            public bool Recovered;
+
+            /// <summary>Said once that recovery is waiting for the whole circle to be in sight.</summary>
+            public bool DeferralLogged;
         }
 
         private struct Snapshot
@@ -206,6 +221,91 @@ namespace EpicLoot.Adventure
                 EpicLoot.LogWarningForce($"{DescribeSpawn(bounty, map)} has not appeared {waited:0}s after you reached " +
                     $"its map circle at ({centre.x:0}, {centre.z:0}). {DescribeSpawner(snapshot)}");
             }
+
+            // A report made on an earlier visit snapshots as soon as the player is back, before the ZDOs
+            // around the circle have had time to arrive, so recovery waits out the full delay on this
+            // visit whatever was reported before.
+            if (snapshot.Spawner != null || watch.Recovered || waited < AdventureSpawnController.OverdueSeconds)
+            {
+                return;
+            }
+
+            Vector3 spawnerPosition = bounty != null ? bounty.Position : map.Position;
+            if (!CanSeeWholeCircle(centre, spawnerPosition))
+            {
+                if (!watch.DeferralLogged)
+                {
+                    watch.DeferralLogged = true;
+                    EpicLoot.LogForce($"{DescribeSpawn(bounty, map)} will be re-created once its whole map circle is " +
+                        "inside this client's simulation area, so that an original out of sight is not duplicated. " +
+                        "Move towards the circle's centre.");
+                }
+
+                return;
+            }
+
+            watch.Recovered = true;
+            Recover(bounty, map, centre);
+        }
+
+        /// <summary>
+        /// Drops a new spawner at the circle, carrying the record from the buyer's save data. The
+        /// spawner copies the record into its ZDO, so the save data itself is untouched. It belongs to
+        /// this machine, and the buyer is standing right there, so it places straight away.
+        /// </summary>
+        private static void Recover(BountyInfo bounty, TreasureMapChestInfo map, Vector3 centre)
+        {
+            string remaining;
+            if (bounty != null)
+            {
+                AdventureSpawnController.CreateForBounty(bounty, centre);
+                int adds = bounty.Adds.Sum(x => x.Count);
+                remaining = bounty.Slain ? $"its {adds} remaining minion(s)" : $"the target and {adds} minion(s)";
+            }
+            else
+            {
+                AdventureSpawnController.CreateForTreasure(map, centre);
+                remaining = "a new chest";
+            }
+
+            EpicLoot.LogForce($"{DescribeSpawn(bounty, map)}: re-created its spawner at the map circle " +
+                $"({centre.x:0}, {centre.z:0}) from your save data. It will place {remaining}.");
+        }
+
+        /// <summary>
+        /// Whether this machine would hold the ZDOs of the original spawner and anything it placed, had
+        /// they still existed: every zone the circle touches, and the zone the original spawner was
+        /// dropped in. A client is only sent the objects in its near simulation area - the same area
+        /// <see cref="AdventureSpawnController"/> places in - so on the lowest Simulation Distance a
+        /// player at the edge of the circle cannot see its far side. The server holds every ZDO.
+        /// </summary>
+        private static bool CanSeeWholeCircle(Vector3 centre, Vector3 spawnerPosition)
+        {
+            if (ZNet.instance.IsServer())
+            {
+                return true;
+            }
+
+            float radius = MinimapController.AreaRadius;
+            Vector2s min = ZoneSystem.GetZone(centre - new Vector3(radius, 0f, radius));
+            Vector2s max = ZoneSystem.GetZone(centre + new Vector3(radius, 0f, radius));
+            for (int y = min.y; y <= max.y; y++)
+            {
+                for (int x = min.x; x <= max.x; x++)
+                {
+                    if (!IsZoneInSight(new Vector2s(x, y)))
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return IsZoneInSight(ZoneSystem.GetZone(spawnerPosition));
+        }
+
+        private static bool IsZoneInSight(Vector2s zone)
+        {
+            return AdventureSpawnController.IsZoneInLocalNearArea(zone) && AdventureSpawnController.IsZoneInstantiated(zone);
         }
 
         /// <summary>

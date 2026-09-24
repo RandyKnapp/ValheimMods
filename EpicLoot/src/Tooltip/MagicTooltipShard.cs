@@ -41,8 +41,7 @@ public partial class MagicTooltip
         {
             if (def.UniformEffect.ValuesPerRarity.TryGetValue(rarity, out var uniformValue))
             {
-                var uniformDef = MagicItemEffectDefinitions.Get(def.UniformEffect.EffectType);
-                if (uniformDef != null)
+                if (MagicItemEffectDefinitions.TryGet(def.UniformEffect.EffectType, out var uniformDef))
                 {
                     var allSlots = Localization.instance.Localize("$mod_epicloot_shard_allslots");
                     var uniformText = MagicItem.GetEffectText(uniformDef, uniformValue);
@@ -69,8 +68,7 @@ public partial class MagicTooltip
                 continue;
             }
 
-            var effectMagicDef = MagicItemEffectDefinitions.Get(effectDef.EffectType);
-            if (effectMagicDef == null)
+            if (!MagicItemEffectDefinitions.TryGet(effectDef.EffectType, out var effectMagicDef))
             {
                 continue;
             }

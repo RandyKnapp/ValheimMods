@@ -1,6 +1,7 @@
 ﻿using EpicLoot.Crafting;
 using EpicLoot.GatedItemType;
 using EpicLoot.General;
+using EpicLoot.LegendarySystem;
 using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
@@ -584,6 +585,8 @@ namespace EpicLoot
         public static void Initialize(MagicItemEffectsList config)
         {
             AllDefinitions.Clear();
+            // A reload may drop definitions that were present before; let each one warn again.
+            FallbackDefinitions.Clear();
             foreach (var magicItemEffectDefinition in config.MagicItemEffects)
             {
                 Add(magicItemEffectDefinition);
@@ -606,10 +609,39 @@ namespace EpicLoot
             AllDefinitions.Add(effectDef.Type, effectDef);
         }
 
+        // Stand-ins handed out by Get() for types with no registered definition, one per type so the
+        // "definition missing" warning is logged once rather than on every tooltip redraw.
+        private static readonly Dictionary<string, MagicItemEffectDefinition> FallbackDefinitions =
+            new Dictionary<string, MagicItemEffectDefinition>();
+
+        /// <summary>
+        /// The registered definition for <paramref name="type"/>, if there is one. Use this wherever an
+        /// unknown effect must be left out (rolling, tempering, rune extraction, augmenting): unlike
+        /// <see cref="Get"/> it never fabricates a stand-in.
+        /// </summary>
+        public static bool TryGet(string type, out MagicItemEffectDefinition effectDef)
+        {
+            effectDef = null;
+            return type != null && AllDefinitions.TryGetValue(type, out effectDef) && effectDef != null;
+        }
+
+        /// <summary>
+        /// Never null: an unknown type gets a synthesized stand-in (NoRoll, blank display text, generic
+        /// value ranges) so display code cannot NRE on an effect whose definition was removed. Anything
+        /// that acts on the definition rather than showing it should use <see cref="TryGet"/>.
+        /// </summary>
         public static MagicItemEffectDefinition Get(string type)
         {
-            AllDefinitions.TryGetValue(type, out MagicItemEffectDefinition effectDef);
-            if (effectDef == null) {
+            // Registered definitions are checked first on every call, so one that arrives after a
+            // fallback was handed out (a late API registration, a config reload) takes over at once.
+            if (TryGet(type, out MagicItemEffectDefinition effectDef))
+            {
+                return effectDef;
+            }
+
+            string key = type ?? string.Empty;
+            if (!FallbackDefinitions.TryGetValue(key, out effectDef))
+            {
                 EpicLoot.LogWarning($"Enchantment definition missing for: {type}");
                 effectDef = new MagicItemEffectDefinition() {
                     ValuesPerRarity = new MagicItemEffectDefinition.ValuesPerRarityDef() {
@@ -623,8 +655,59 @@ namespace EpicLoot
                     Requirements = new MagicItemEffectRequirements() { NoRoll = true },
                     Type = type,
                 };
+                FallbackDefinitions[key] = effectDef;
             }
+
             return effectDef;
+        }
+
+        /// <summary>
+        /// The value range an effect on an item rolls and tempers against. In order: an explicit
+        /// override (the shard preview passes a zero-width one on purpose), then the guaranteed-effect
+        /// Values block of the item's legendary/mythic when it has one, then the rarity table. Stock
+        /// legendaries.json gives no guaranteed effect a Values block, so a unique's effects normally
+        /// land on the rarity table too. Null means the effect carries no value at that rarity.
+        /// </summary>
+        public static MagicItemEffectDefinition.ValueDef GetRollRange(MagicItemEffectDefinition def,
+            ItemRarity rarity, string legendaryID = null, MagicItemEffectDefinition.ValueDef valuesOverride = null)
+        {
+            if (valuesOverride != null)
+            {
+                return valuesOverride;
+            }
+
+            if (def == null)
+            {
+                return null;
+            }
+
+            if (!string.IsNullOrEmpty(legendaryID))
+            {
+                MagicItemEffectDefinition.ValueDef legendaryValues =
+                    UniqueLegendaryHelper.GetLegendaryEffectValues(legendaryID, def.Type);
+                if (legendaryValues != null)
+                {
+                    return legendaryValues;
+                }
+            }
+
+            return def.GetValuesForRarity(rarity);
+        }
+
+        /// <summary><see cref="GetRollRange(MagicItemEffectDefinition, ItemRarity, string, MagicItemEffectDefinition.ValueDef)"/>
+        /// by type. An effect with no registered definition has no range (unless overridden).</summary>
+        public static MagicItemEffectDefinition.ValueDef GetRollRange(string effectType, ItemRarity rarity,
+            string legendaryID = null, MagicItemEffectDefinition.ValueDef valuesOverride = null)
+        {
+            return TryGet(effectType, out MagicItemEffectDefinition def)
+                ? GetRollRange(def, rarity, legendaryID, valuesOverride)
+                : valuesOverride;
+        }
+
+        /// <summary>The roll range of <paramref name="effectType"/> on this particular item.</summary>
+        public static MagicItemEffectDefinition.ValueDef GetRollRange(MagicItem magicItem, string effectType)
+        {
+            return magicItem == null ? null : GetRollRange(effectType, magicItem.Rarity, magicItem.LegendaryID);
         }
 
         public static Dictionary<string, float> GetEffectConfig(string type)
@@ -674,10 +757,17 @@ namespace EpicLoot
         /// </summary>
         public static bool IsValuelessEffect(string effectType)
         {
-            var effectDef = Get(effectType);
-            if (effectDef?.ValuesPerRarity == null)
+            // An unknown effect is never treated as binary, so its stored value is left alone. Not warned
+            // here: every item load passes through this, and Get() already reports the missing
+            // definition once per type wherever the effect is shown.
+            if (!TryGet(effectType, out var effectDef))
             {
-                EpicLoot.LogWarning($"Checking if unknown effect is valueless ({effectType})");
+                return false;
+            }
+
+            if (effectDef.ValuesPerRarity == null)
+            {
+                EpicLoot.LogWarning($"Checking if effect without a ValuesPerRarity block is valueless ({effectType})");
                 return false;
             }
 

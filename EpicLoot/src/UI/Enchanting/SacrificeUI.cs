@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using EpicLoot;
+using EpicLoot.Crafting;
 using EpicLoot.CraftingV2;
 using JetBrains.Annotations;
 using UnityEngine;
@@ -194,20 +195,18 @@ namespace EpicLoot_UnityLib
             float powerModifier = GetPowerModifier(featureValues.Item2);
             List<InventoryItemListElement> cost = EnchantingUIController.GetIdentifyCostForCategory(filterType, unidentifiedItems, costReduction);
 
+            // Cancel on every way out: returning without it left the button reading "Cancel".
             if (!LocalPlayerCanAffordCost(cost))
             {
+                Player.m_localPlayer.Message(MessageHud.MessageType.Center, "$msg_missingrequirement");
+                Cancel();
+                RefreshAvailableItems();
                 return;
             }
 
-            if (!Player.m_localPlayer.NoCostCheat())
-            {
-                foreach (InventoryItemListElement costElement in cost)
-                {
-                    InventoryManagement.Instance.RemoveItem(costElement.GetItem());
-                }
-            }
-
-            List<InventoryItemListElement> identifiedItems = EnchantingUIController.LootRollSelectedItems(filterType, unidentifiedItems, powerModifier);
+            // Rolls, re-checks the cost, charges it, removes the inputs and hands the results over --
+            // or, if any stack cannot be identified in full, does none of that.
+            EnchantingUIController.LootRollSelectedItems(filterType, unidentifiedItems, costReduction, powerModifier);
 
             Cancel();
             RefreshAvailableItems();
@@ -227,16 +226,61 @@ namespace EpicLoot_UnityLib
         private void SacrificeItems()
         {
             List<Tuple<IListElement, int>> selectedItems = AvailableItems.GetSelectedItems<IListElement>();
-            List<InventoryItemListElement> sacrificeProducts = EnchantingUIController.GetSacrificeProducts(selectedItems
-                .Select(x => new Tuple<ItemDrop.ItemData, int>(x.Item1.GetItem(), x.Item2)).ToList());
 
             Cancel();
+
+            // Remove first, pay out after: the products and the returned socket stones follow from what
+            // was actually taken, so an item that is no longer there yields nothing.
+            Player player = Player.m_localPlayer;
+            List<Tuple<ItemDrop.ItemData, int>> sacrificedItems = new List<Tuple<ItemDrop.ItemData, int>>();
+            List<InventoryItemListElement> reclaimedSockets = new List<InventoryItemListElement>();
+            foreach (Tuple<IListElement, int> selectedItem in selectedItems)
+            {
+                ItemDrop.ItemData sacrificed = selectedItem.Item1.GetItem();
+                int amount = selectedItem.Item2;
+                // Re-asked now rather than trusted from the list: an external filter (API
+                // RegisterSacrificeFilter) may have started vetoing the item during the countdown.
+                if (sacrificed == null || amount <= 0 || EnchantCostsHelper.GetSacrificeProducts(sacrificed) == null)
+                {
+                    continue;
+                }
+
+                // Socketed stones are the player's property, not part of the sacrifice yield: the
+                // non-Locked ones go back once the item is gone, the same policy disenchanting uses.
+                // Kept apart from the products so the double-yield bonus never doubles them.
+                List<InventoryItemListElement> sockets =
+                    sacrificed.IsMagic(out MagicItem sacrificedMagicItem) && sacrificedMagicItem.Sockets.Count > 0
+                        ? EnchantingUIController.ReclaimSockets(sacrificedMagicItem)
+                        : null;
+
+                // Listed while equipped when ShowEquippedAndHotbarItemsInSacrificeTab is on, and vanilla
+                // never auto-unequips a removed item (ghost stats and visuals).
+                if (player != null && player.IsItemEquiped(sacrificed))
+                {
+                    player.UnequipItem(sacrificed, false);
+                }
+
+                int removed = InventoryManagement.Instance.RemoveExactItem(sacrificed, amount);
+                if (removed <= 0)
+                {
+                    Debug.LogWarning($"[Sacrifice] {sacrificed.m_shared.m_name} could not be removed; skipped.");
+                    continue;
+                }
+
+                sacrificedItems.Add(new Tuple<ItemDrop.ItemData, int>(sacrificed, removed));
+                if (sockets != null)
+                {
+                    reclaimedSockets.AddRange(sockets);
+                }
+            }
+
+            List<InventoryItemListElement> sacrificeProducts = EnchantingUIController.GetSacrificeProducts(sacrificedItems);
 
             Tuple<float, float> chanceToDoubleEntry =
                 EnchantingTableUI.instance.SourceTable.GetFeatureCurrentValue(EnchantingFeature.Sacrifice);
             float chanceToDouble = float.IsNaN(chanceToDoubleEntry.Item1) ? 0.0f : chanceToDoubleEntry.Item1 / 100.0f;
 
-            if (Random.Range(0.0f, 1.0f) < chanceToDouble)
+            if (sacrificeProducts.Count > 0 && Random.Range(0.0f, 1.0f) < chanceToDouble)
             {
                 EnchantingTableUI.instance.PlayEnchantBonusSFX();
                 BonusPanel.Show();
@@ -247,20 +291,7 @@ namespace EpicLoot_UnityLib
                 }
             }
 
-            foreach (Tuple<IListElement, int> selectedItem in selectedItems)
-            {
-                // Socketed stones are the player's property, not part of the sacrifice yield: hand the
-                // non-Locked ones back before the item is destroyed, the same policy disenchanting uses.
-                // Given separately from sacrificeProducts so the double-yield bonus never doubles them.
-                ItemDrop.ItemData sacrificed = selectedItem.Item1.GetItem();
-                if (sacrificed.IsMagic(out MagicItem sacrificedMagicItem) && sacrificedMagicItem.Sockets.Count > 0)
-                {
-                    GiveItemsToPlayer(EnchantingUIController.ReclaimSockets(sacrificedMagicItem));
-                }
-
-                InventoryManagement.Instance.RemoveExactItem(sacrificed, selectedItem.Item2);
-            }
-
+            GiveItemsToPlayer(reclaimedSockets);
             GiveItemsToPlayer(sacrificeProducts);
 
             RefreshAvailableItems();
@@ -346,7 +377,8 @@ namespace EpicLoot_UnityLib
             {
                 string identifyFilter = IdentifyStyle.options[IdentifyStyle.value].text;
                 List<InventoryItemListElement> potentialIdentifyItems =
-                    EnchantingUIController.GetPotentialItemRollsByCategory(identifyFilter, selectedItems.Select(x => x.Item1.GetItem()).ToList());
+                    EnchantingUIController.GetPotentialItemRollsByCategory(identifyFilter,
+                        selectedItems.Select(x => x.Item1.GetItem()).ToList(), out bool hasIdentifyLoot);
                 SacrificeProducts.SetItems(potentialIdentifyItems.Cast<IListElement>().ToList());
 
                 // Say so when progression gating will identify a selected item below its own biome.
@@ -365,7 +397,10 @@ namespace EpicLoot_UnityLib
                 CostList.SetItems(cost.Cast<IListElement>().ToList());
                 canAfford = LocalPlayerCanAffordIdentifyCost(cost);
 
-                if (potentialIdentifyItems.Count() == 0)
+                // Whether the loot lists name anything at all, not whether the preview shows anything:
+                // the preview hides entries gating would replace, and the roll still hands out those
+                // replacements.
+                if (!hasIdentifyLoot)
                 {
                     canAfford = false;
                 }

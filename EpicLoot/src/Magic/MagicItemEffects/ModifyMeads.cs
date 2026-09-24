@@ -47,7 +47,7 @@ namespace EpicLoot.Magic.MagicItemEffects
             SE_Stats returnEffect = seStats;
 
             if (Player.m_localPlayer.HasActiveMagicEffect(MagicEffectType.InstantMead) &&
-                ModifyWithLowHealth.PlayerHasLowHealth(Player.m_localPlayer))
+                (ModifyWithLowHealth.PlayerHasLowHealth(Player.m_localPlayer) || AutoMeads.DrinkingForCriticalHit))
             {
                 returnEffect = TryCreateInstantMead(returnEffect);
             }

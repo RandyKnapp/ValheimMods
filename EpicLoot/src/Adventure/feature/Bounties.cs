@@ -12,7 +12,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
-using Object = UnityEngine.Object;
 using Random = System.Random;
 
 namespace EpicLoot.Adventure.Feature
@@ -289,14 +288,10 @@ namespace EpicLoot.Adventure.Feature
 
         private static void SpawnBountyInitilizer(BountyInfo bounty, Vector3 spawnPoint, Vector3 offset)
         {
-            Quaternion rotation = Quaternion.Euler(0f, UnityEngine.Random.Range(0f, 360f), 0f);
-            GameObject gameObject = PrefabManager.Instance.GetPrefab(AdventureSpawnController.PrefabName);
-            GameObject created_go = Object.Instantiate(gameObject, spawnPoint, rotation);
             // store the spawn position in the bounty object
             bounty.Position = spawnPoint;
-            // Pass the bounty data to this object, save it to the ZNetView
-            created_go.GetComponent<AdventureSpawnController>().SetBounty(bounty);
-            created_go.GetComponent<AdventureSpawnController>().SetIsBounty();
+            // Pass the bounty data to the spawner, which saves it to its ZNetView
+            AdventureSpawnController.CreateForBounty(bounty, spawnPoint);
             Minimap.instance.ShowPointOnMap(spawnPoint + offset);
         }
 

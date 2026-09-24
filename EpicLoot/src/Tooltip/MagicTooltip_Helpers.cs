@@ -101,12 +101,24 @@ public partial class MagicTooltip
     }
 
     /// <summary>
-    /// Adds the magic effect bonus and the m_timedBlockBonus (a multiplier to base block power)
+    /// How much stronger a parry is than a normal block with this item. Vanilla multiplies the parry's block
+    /// power by m_timedBlockBonus, and ModifyParry raises the base block power a parry starts from
+    /// (ModifyBlock.GetBlockPowerValue), so the two multiply -- adding them understated the bonus.
     /// </summary>
     public static float GetParryBonusValue(ItemDrop.ItemData item, MagicItem magicItem, int quality, out bool hasModifiers)
     {
         hasModifiers = magicItem.HasEffect(MagicEffectType.ModifyParry) ||
             magicItem.HasEffect(MagicEffectType.ModifyParryLowHealth);
-        return item.m_shared.m_timedBlockBonus + ModifyBlock.GetMultiplier(null, MagicEffectType.ModifyParry, item);
+
+        // The same base block power vanilla's GetBaseBlockPower returns, before EpicLoot's postfixes.
+        float baseBlock = item.m_shared.m_blockPower + Mathf.Max(0, quality - 1) * item.m_shared.m_blockPowerPerLevel;
+        Player player = ModifyBlock.RunModifyBlockPatchs(item) ? Player.m_localPlayer : null;
+        float normalBlock = ModifyBlock.GetBlockPowerValue(player, item, baseBlock, false);
+        if (normalBlock <= 0f)
+        {
+            return item.m_shared.m_timedBlockBonus;
+        }
+
+        return item.m_shared.m_timedBlockBonus * ModifyBlock.GetBlockPowerValue(player, item, baseBlock, true) / normalBlock;
     }
 }

@@ -133,7 +133,11 @@ namespace EpicLoot.Crafting
                 var button = EffectChoiceButtons[index];
                 button.gameObject.SetActive(true);
                 var text = button.GetComponentInChildren<Text>();
-                text.text = Localization.instance.Localize((index == 0 ? "<color=white>($mod_epicloot_augment_keep)</color> " : "") + MagicItem.GetEffectText(effect, rarity, true));
+                // Option 0 is the effect the item already carries (RollAugmentEffects puts it first), so
+                // it shows the item's own range; the new options were rolled from the rarity table.
+                var legendaryID = index == 0 ? magicItem.LegendaryID : null;
+                text.text = Localization.instance.Localize((index == 0 ? "<color=white>($mod_epicloot_augment_keep)</color> " : "") +
+                    MagicItem.GetEffectText(effect, rarity, true, legendaryID));
                 text.color = rarityColor;
 
                 //if (EpicLoot.HasAuga)

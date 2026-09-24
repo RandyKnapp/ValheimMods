@@ -6,8 +6,8 @@ namespace EpicLoot.MagicItemEffects.Shards {
     // Absorbs a portion of incoming damage by spending Eitr
     public static class EitrShield {
         static GameObject effect = null;
-        // Prefix handler invoked by CharacterRpcDamageDispatch (victim-side incoming modifier; runs after
-        // avoidance so a fully-avoided hit never spends eitr).
+        // Invoked by SharedPlayerPostArmorDamagePatch (victim-side): after the bubble, block, resistances and
+        // armor, so eitr is only spent on damage that would actually land.
         public static void ModifyIncoming(Character __instance, HitData hit) {
             if (hit == null || __instance != Player.m_localPlayer) {
                 return;

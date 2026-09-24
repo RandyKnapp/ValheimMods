@@ -198,8 +198,9 @@ public class MagicItemComponent : CustomItemData
 
     private static void WarnOnceAboutMissingRarityValues(string effectType, ItemRarity rarity)
     {
-        var effectDef = MagicItemEffectDefinitions.Get(effectType);
-        if (effectDef?.ValuesPerRarity?.GetValueDefForRarity(rarity) != null)
+        // An unknown effect is not a rarity gap; Get() reports the missing definition itself.
+        if (!MagicItemEffectDefinitions.TryGet(effectType, out var effectDef) ||
+            effectDef.ValuesPerRarity?.GetValueDefForRarity(rarity) != null)
         {
             return;
         }

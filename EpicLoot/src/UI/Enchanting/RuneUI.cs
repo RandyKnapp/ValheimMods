@@ -51,6 +51,9 @@ namespace EpicLoot_UnityLib
             public Toggle Toggle;
             public GameObject FocusGlow;
             public RowHover Hover;
+            // False for an effect the rune tab may not touch (CanBeRunified off, or no definition), so
+            // Unlock knows to leave that row disabled.
+            public bool Selectable;
         }
 
         private class RowHover : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
@@ -429,13 +432,19 @@ namespace EpicLoot_UnityLib
                     enchantmentElement.text = effect.Item1;
                 }
 
+                // Dimming the row was all that marked an effect with CanBeRunified off, and it could
+                // still be selected, extracted and overwritten. Same treatment as the augment tab.
+                bool selectable = effect.Item2;
+                enchantmentbutton.interactable = selectable && !_locked;
+
                 enchantmentListElement.SetActive(true);
 
                 _enchantmentRows.Add(new EnchantmentRow
                 {
                     Toggle = enchantmentbutton,
                     FocusGlow = CreateRowFocusGlow(enchantmentListElement.transform),
-                    Hover = enchantmentListElement.AddComponent<RowHover>()
+                    Hover = enchantmentListElement.AddComponent<RowHover>(),
+                    Selectable = selectable
                 });
             }
 
@@ -575,72 +584,22 @@ namespace EpicLoot_UnityLib
             float powerModifier = GetPowerModifier(featureValues.Item2);
             ItemDrop.ItemData item = selectedItem.Item1.GetItem();
 
-            if (_runeAction == RuneAction.Extract)
+            // Everything below acts on the selection as it stands when the countdown ends, so check it
+            // still describes an item the player holds and an effect the rune tab may touch (and the
+            // one the cost was shown for).
+            if (item != _selectedItem || !InventoryManagement.Instance.GetAllItems().Contains(item) ||
+                !EnchantingUIController.CanRunifyEffect(item.GetMagicItem(), _selectedEnchantmentIndex))
             {
-                List<InventoryItemListElement> cost = EnchantingUIController.GetRuneExtractCost(item, _selectedRarity, costReduction);
-                ItemDrop.ItemData RuneWithEnchant = EnchantingUIController.BuildEnchantedRune(item, _selectedEnchantmentIndex, powerModifier);
-
-                if (RuneWithEnchant == null)
-                {
-                    return;
-                }
-
-                Player player = Player.m_localPlayer;
-                if (!player.NoCostCheat())
-                {
-                    if (!LocalPlayerCanAffordCost(cost))
-                    {
-                        return;
-                    }
-
-                    foreach (InventoryItemListElement costElement in cost)
-                    {
-                        InventoryManagement.Instance.RemoveItem(costElement.GetItem());
-                    }
-                }
-
-                // Apply the configured effect to the source item. The rune was already built above.
-                switch (EnchantingUIController.GetRuneExtractMode())
-                {
-                    case RuneExtractMode.KeepItem:
-                        // Item returned untouched.
-                        break;
-                    case RuneExtractMode.ReduceEnchants:
-                        EnchantingUIController.ReduceItemAfterRuneExtract(item, _selectedEnchantmentIndex, reduceRarity: false);
-                        break;
-                    case RuneExtractMode.ReduceEnchantsAndRarity:
-                        EnchantingUIController.ReduceItemAfterRuneExtract(item, _selectedEnchantmentIndex, reduceRarity: true);
-                        break;
-                    case RuneExtractMode.DestroyItem:
-                        // Socketed stones are the player's property: hand the non-Locked ones back
-                        // before the item is destroyed, the same policy disenchanting uses.
-                        if (item.IsMagic(out MagicItem extractedMagicItem) && extractedMagicItem.Sockets.Count > 0)
-                        {
-                            GiveItemsToPlayer(EnchantingUIController.ReclaimSockets(extractedMagicItem));
-                        }
-                        InventoryManagement.Instance.RemoveExactItem(item, 1);
-                        break;
-                }
-
-                InventoryManagement.Instance.GiveItem(RuneWithEnchant);
-                CostList.SetItems(new List<IListElement>());
+                AbortMainAction("the selected item or enchantment is no longer valid");
+                return;
             }
-            else if (_runeAction == RuneAction.Etch)
+
+            bool completed = _runeAction == RuneAction.Extract
+                ? ExtractSelectedEnchantment(item, costReduction, powerModifier)
+                : _runeAction == RuneAction.Etch && EtchSelectedRune(item, costReduction);
+            if (!completed)
             {
-                // Modify an existing item and destroy the selected Rune
-                ItemDrop.ItemData rune = AvailableRunes.GetSingleSelectedItem<InventoryItemListElement>().Item1.GetItem();
-                ItemDrop.ItemData itemToEtch = selectedItem?.Item1.GetItem();
-
-                if (_successDialog != null)
-                {
-                    Destroy(_successDialog);
-                }
-
-                _successDialog = EnchantingUIController.RuneEnhanceItemAndReturnSuccess(itemToEtch, rune, _selectedEnchantmentIndex);
-                _successDialog.SetActive(true);
-                // Remove the rune from the inventory
-                InventoryManagement.Instance.RemoveExactItem(rune, 1);
-                CostList.SetItems(new List<IListElement>());
+                return;
             }
 
             DeselectAll();
@@ -649,6 +608,158 @@ namespace EpicLoot_UnityLib
             _selectedEnchantmentIndex = -1;
             CostList.SetItems(new List<IListElement>());
             AvailableRunes.SetItems(new List<IListElement>());
+        }
+
+        private bool ExtractSelectedEnchantment(ItemDrop.ItemData item, float costReduction, float powerModifier)
+        {
+            List<InventoryItemListElement> cost = EnchantingUIController.GetRuneExtractCost(item, _selectedRarity, costReduction);
+            ItemDrop.ItemData RuneWithEnchant = EnchantingUIController.BuildEnchantedRune(item, _selectedEnchantmentIndex, powerModifier);
+
+            if (RuneWithEnchant == null)
+            {
+                AbortMainAction("the rune could not be built");
+                return false;
+            }
+
+            Player player = Player.m_localPlayer;
+            bool noCost = player.NoCostCheat();
+            if (!noCost && !LocalPlayerCanAffordCost(cost))
+            {
+                AbortMainAction("the cost can no longer be paid", missingRequirements: true);
+                return false;
+            }
+
+            RuneExtractMode mode = EnchantingUIController.GetRuneExtractMode();
+            List<InventoryItemListElement> reclaimedSockets = null;
+            if (mode == RuneExtractMode.DestroyItem)
+            {
+                // Socketed stones are the player's property: the non-Locked ones are handed back once
+                // the item is gone, the same policy disenchanting uses. Read before it goes.
+                if (item.IsMagic(out MagicItem extractedMagicItem) && extractedMagicItem.Sockets.Count > 0)
+                {
+                    reclaimedSockets = EnchantingUIController.ReclaimSockets(extractedMagicItem);
+                }
+
+                // Vanilla never auto-unequips a removed item: destroying an equipped piece (listed when
+                // ShowEquippedAndHotbarItemsInSacrificeTab is on) would leave its stats and visuals.
+                if (player.IsItemEquiped(item))
+                {
+                    player.UnequipItem(item, false);
+                }
+
+                // Taken before anything is charged or handed out, so an item that could not be
+                // removed costs nothing and yields nothing.
+                if (InventoryManagement.Instance.RemoveExactItem(item, 1) < 1)
+                {
+                    AbortMainAction("the item could not be removed");
+                    return false;
+                }
+            }
+
+            if (!noCost)
+            {
+                foreach (InventoryItemListElement costElement in cost)
+                {
+                    InventoryManagement.Instance.RemoveItem(costElement.GetItem());
+                }
+            }
+
+            // Apply the configured effect to the source item. The rune was already built above.
+            switch (mode)
+            {
+                case RuneExtractMode.KeepItem:
+                case RuneExtractMode.DestroyItem:
+                    // Item returned untouched, or already removed above.
+                    break;
+                case RuneExtractMode.ReduceEnchants:
+                    EnchantingUIController.ReduceItemAfterRuneExtract(item, _selectedEnchantmentIndex, reduceRarity: false);
+                    break;
+                case RuneExtractMode.ReduceEnchantsAndRarity:
+                    EnchantingUIController.ReduceItemAfterRuneExtract(item, _selectedEnchantmentIndex, reduceRarity: true);
+                    break;
+            }
+
+            if (reclaimedSockets != null)
+            {
+                GiveItemsToPlayer(reclaimedSockets);
+            }
+
+            InventoryManagement.Instance.GiveItem(RuneWithEnchant);
+            return true;
+        }
+
+        // Modifies the existing item and consumes the selected rune. The etch is worked out on a copy
+        // first; the rune and then the cost are taken, and only then is the result written to the item,
+        // so a failure at any step leaves the item, the rune and the materials where they were.
+        private bool EtchSelectedRune(ItemDrop.ItemData item, float costReduction)
+        {
+            ItemDrop.ItemData rune = AvailableRunes.GetSingleSelectedItem<InventoryItemListElement>()?.Item1.GetItem();
+            string targetEffect = EnchantingUIController.GetSelectedEnchantmentNameByIndex(item, _selectedEnchantmentIndex);
+            if (rune == null || rune == item || !InventoryManagement.Instance.GetAllItems().Contains(rune) ||
+                !EnchantingUIController.GetApplyableRunesforItem(item, targetEffect).Any(x => x.GetItem() == rune))
+            {
+                AbortMainAction("the selected rune is no longer available for this enchantment");
+                return false;
+            }
+
+            // The same cost CheckIfActionDoable showed and gated the button on.
+            List<InventoryItemListElement> cost = EnchantingUIController.GetRuneEtchCost(item, _selectedRarity, costReduction);
+            bool noCost = Player.m_localPlayer.NoCostCheat();
+            if (!noCost && !LocalPlayerCanAffordCost(cost))
+            {
+                AbortMainAction("the cost can no longer be paid", missingRequirements: true);
+                return false;
+            }
+
+            MagicItem etched = EnchantingUIController.BuildRuneEtchResult(item, rune, _selectedEnchantmentIndex);
+            if (etched == null)
+            {
+                AbortMainAction("the etch could not be applied");
+                return false;
+            }
+
+            // The rune first: the cost is only taken once the rune is actually gone.
+            if (InventoryManagement.Instance.RemoveExactItem(rune, 1) < 1)
+            {
+                AbortMainAction("the rune could not be removed");
+                return false;
+            }
+
+            if (!noCost)
+            {
+                foreach (InventoryItemListElement costElement in cost)
+                {
+                    InventoryManagement.Instance.RemoveItem(costElement.GetItem());
+                }
+            }
+
+            EnchantingUIController.ApplyRuneEtch(item, etched);
+
+            if (_successDialog != null)
+            {
+                Destroy(_successDialog);
+            }
+
+            _successDialog = EnchantingUIController.ShowRuneEtchSuccessDialog(item);
+            _successDialog.SetActive(true);
+            return true;
+        }
+
+        // A main action that could not go ahead: nothing was taken or changed. The panel is already
+        // unlocked (DoMainAction cancels first); rebuild the lists so they show what is really there
+        // now, and let the button state follow the fresh selection.
+        private void AbortMainAction(string reason, bool missingRequirements = false)
+        {
+            Debug.LogWarning($"[Rune] {(_runeAction == RuneAction.Etch ? "Etch" : "Extract")} cancelled: {reason}.");
+            if (missingRequirements)
+            {
+                Player.m_localPlayer?.Message(MessageHud.MessageType.Center, "$msg_missingrequirement");
+            }
+            RefreshAvailableItems();
+            _selectedEnchantmentIndex = -1;
+            CostList.SetItems(new List<IListElement>());
+            AvailableRunes.SetItems(new List<IListElement>());
+            CheckIfActionDoable();
         }
 
         // base.Cancel restores _defaultButtonLabelText, which Awake captured from the prefab's shipped
@@ -737,7 +848,8 @@ namespace EpicLoot_UnityLib
         {
             bool state = true;
 
-            if (_selectedItem == null || _selectedEnchantmentIndex == -1)
+            if (_selectedItem == null || _selectedEnchantmentIndex == -1 ||
+                !EnchantingUIController.CanRunifyEffect(_selectedItem.GetMagicItem(), _selectedEnchantmentIndex))
             {
                 state = false;
                 MainButton.interactable = false;
@@ -804,6 +916,16 @@ namespace EpicLoot_UnityLib
             RuneExtractButton.interactable = false;
             RuneEtchButton.interactable = false;
             MainButton.interactable = false;
+
+            // The countdown acts on _selectedEnchantmentIndex when it ends; changing the row mid-way
+            // used to etch or extract a different effect from the one the cost was shown for.
+            foreach (EnchantmentRow row in _enchantmentRows)
+            {
+                if (row.Toggle != null)
+                {
+                    row.Toggle.interactable = false;
+                }
+            }
         }
 
         public override void Unlock()
@@ -812,6 +934,14 @@ namespace EpicLoot_UnityLib
 
             RuneExtractButton.interactable = true;
             RuneEtchButton.interactable = true;
+
+            foreach (EnchantmentRow row in _enchantmentRows)
+            {
+                if (row.Toggle != null)
+                {
+                    row.Toggle.interactable = row.Selectable;
+                }
+            }
         }
 
         public override void DeselectAll()

@@ -1,3 +1,39 @@
+**0.14.13**
+* Adds a repair system for bounties/treasure which had not previous spawned, due to 1.0 save migration
+* Fix for rune etching being free
+    * The rune tab's effect list is now locked during the countdown
+* Tempering Fixes 
+    * Fix for tempering an item without paying for it
+    * Fix for effects on unique legendaries and mythics not being temperable at all
+    * A failed temper no longer raises an effect that was below its rarity's minimum up to the minimum
+* Fix for identifying items consuming them without giving anything back
+* Fix for identifying several items at once handing back more items than were identified
+* The identify preview only lists items progression gating will actually hand out
+* In the "Player Must Have Crafted Item" drop mode, identifying no longer caps items at the biome of the last boss killed
+* Fix for extracting the last enchantment from a socketed item destroying its sockets and the shardstones in them
+* Extracting an enchantment no longer resets the item's augment history (which reset the rising re-augment cost), and augmented/tempered markers stay on the effects that earned them
+* Sacrifice, identify, rune etching and rune extraction only pay out for items they actually removed (no cost when cancelled, no gain either)
+* Unknown magic effects (a typo in legendaries.json, a removed mod) are skipped instead of being given made-up value ranges, and the missing-definition warning is logged once
+* Hold-Shift ranges, temper ranges and the augment and rune lists now show the correct range for effects on unique items
+* Blood Block's self-damage no longer triggers any effect
+* Forest's Aid and Icy Retribution now need an attacker; falls, lava and drowning no longer trigger them
+* Damage dealt by effects themselves is no longer treated as a weapon strike
+    * Reflect, Eikthyr's charge, Frost AOE, Trailblazer, the meteor, Icy Retribution, Corpse Rot and chain lightning no longer crit, double, pay Wager or Mercenary per target, lifesteal, execute, Slow, Paralyze or build Eikthyr charges
+* Fix for Reflect and other effects reading a creature's attack as your weapon whenever your game controlled the attacking creature
+* Arrows and thrown weapons now use the effects of the weapon that fired them
+* Executioner is only used up by a hit that carries Executioner
+* Fix for Wager refunding its stake on hits that did not kill (single player and hosts); Stamina on Kill and Queen's Everflow used the same check
+* Fix for Triple Shot and Double Magic Shot able to leave every weapon of that kind at reduced damage until restart, if an error happened mid-shot
+* Fix for Explosive Arrows' explosion hurting players without PvP enabled
+* The parry bonus in shield tooltips now shows the real multiplier
+* Fix for Immovable blocks failing silently once the stagger bar filled
+* Fix for blocked hits being converted to elemental damage twice
+* Eitr Shield and Coinplated now only pay for damage that gets past the Staff of Protection bubble, blocking, resistances and armor
+* Automatic Mead now judges the damage that will actually land, drinks at most one mead per hit, and works with Instant Mead
+* Skill enchantments now count wherever the game reads the skill level
+* Skill enchantments now add weapon damage past skill 100
+
+
 **0.14.12**
 * Fixes a bug with the new save system which would cause Bounties to get lost
 

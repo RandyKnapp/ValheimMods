@@ -426,10 +426,11 @@ public class TemperPanel : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     }
 
     private bool ConsumeRequirements(Player player) {
-        if (!selectedItemElement) {
-            return false;
-        }
-        if (!TemperMan.IsTemperableRarity(selectedItemElement._magicItem.Rarity)) {
+        // Re-checked here, at completion, not just when the button was enabled: vanilla
+        // ConsumeResources quietly takes only what is present, so materials spent (or sold to the
+        // trader) during the countdown used to buy a temper at a discount. HaveRequirements also
+        // carries the rarity check and the no-cost cheat.
+        if (!HaveRequirements(player)) {
             return false;
         }
         if (player.NoCostCheat()) {
@@ -472,6 +473,10 @@ public class TemperPanel : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
             element.SetItem(item);
             element.index = i;
             element.button.onClick.AddListener(() => {
+                // A temper in progress acts on the selection it started with.
+                if (IsTempering()) {
+                    return;
+                }
                 SetSelectedItem(element);
             });
         }
@@ -555,12 +560,16 @@ public class TemperPanel : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
             instance.SetActive(true);
             if (instance.TryGetComponent(out EnchantmentElement element)) {
                 element.selected.color = EpicLoot.GetRarityColorARGB(selectedItemElement._magicItem.Rarity);
-                element.SetEffect(effect, selectedItemElement._magicItem.Rarity);
+                element.SetEffect(effect, selectedItemElement._magicItem);
                 // List position, NOT the effect index: gamepad navigation walks
                 // EnchantmentElement.elements by this value, and skipping untemperable effects
                 // above desyncs the two (the up-branch then indexed past the end of the list).
                 element.index = listIndex++;
                 element.button.onClick.AddListener(() => {
+                    // A temper in progress acts on the selection it started with.
+                    if (IsTempering()) {
+                        return;
+                    }
                     SetSelectedEnchantment(element);
                 });
                 if (!string.IsNullOrEmpty(selectedEffect) && effect.EffectType == selectedEffect) {
@@ -614,8 +623,17 @@ public class TemperPanel : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     public void UpdateTemperButton() {
         temperButton.interactable = CanTemper();
     }
+    // True while the countdown runs. Selection input is ignored for that long -- the temper completes
+    // against whatever is selected when it ends, so re-selecting mid-way used to temper a different
+    // item or effect than the one started (and paid for). The guard sits on the input paths, not in
+    // SetSelectedItem/SetSelectedEnchantment: OnTemper calls those itself while the panel is up.
+    public bool IsTempering() => progressPanel != null && progressPanel.activeSelf;
+
     public void OnStartTemper() {
-        if (!Player.m_localPlayer || temperData == null) {
+        // The button's interactable state is only refreshed on selection changes, so it can be
+        // stale; check again rather than trusting it.
+        if (IsTempering() || !CanTemper()) {
+            UpdateTemperButton();
             return;
         }
         progressBar.SetValue(0f);
@@ -645,6 +663,10 @@ public class TemperPanel : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         progressPanel.SetActive(false);
         progressTimer = -1f;
         temperButton.gameObject.SetActive(true);
+        StopStartEffects();
+    }
+
+    private void StopStartEffects() {
         if (startEffects != null) {
             for (int i = 0; i < startEffects.Length; ++i) {
                 GameObject effect = startEffects[i];
@@ -660,8 +682,18 @@ public class TemperPanel : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         if (!Player.m_localPlayer || temperData == null) {
             return;
         }
-        if (!ConsumeRequirements(Player.m_localPlayer)) {
-            EpicLoot.LogWarning("Tried to temper, but failed to consume requirements");
+        // The item may have left the inventory during the countdown (sold, dropped); a temper would
+        // only charge for an item the player no longer has.
+        if (!selectedItemElement || !Player.m_localPlayer.GetInventory().ContainsItem(selectedItemElement._item) ||
+            !ConsumeRequirements(Player.m_localPlayer)) {
+            EpicLoot.LogWarning("Tried to temper, but the item or the requirements were no longer there");
+            // Treated like a cancel: nothing was taken, the item is untouched and the start effects
+            // stop. UpdateProgress puts the temper button back once this returns.
+            StopStartEffects();
+            Player.m_localPlayer.Message(MessageHud.MessageType.Center, "$msg_missingrequirement");
+            FillRequirementList();
+            UpdateCurrencies();
+            UpdateTemperButton();
             return;
         }
         // The outcome is decided here, at execution -- not at selection -- so re-selecting an
@@ -680,6 +712,10 @@ public class TemperPanel : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
                 Player.m_localPlayer.GetInventory().RemoveOneItem(itemToRemove);
                 ItemElement.elements.Remove(selectedItemElement);
                 Destroy(selectedItemElement.gameObject);
+                // Gamepad up/down steps by index; without closing the gap it skipped an entry.
+                for (int i = 0; i < ItemElement.elements.Count; ++i) {
+                    ItemElement.elements[i].index = i;
+                }
                 SetSelectedItem(null);
                 UpdateLog(Localization.instance.Localize($"<color={TemperData.FAIL_RED}>{itemToRemove.GetDisplayName()} destroyed</color>"));
                 temperDoneEffects.Create(Player.m_localPlayer.transform.position, Quaternion.identity);
@@ -728,6 +764,17 @@ public class TemperPanel : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
             bool didTakeGamepadInput = takeGamepadInput;
 
             gamepadPanelHints.SetActive(true);
+
+            // Everything below except the tooltip scrolling moves or clears the selection, and a temper
+            // in progress completes against the selection it started with. The progress panel's
+            // cancel button still answers.
+            if (IsTempering()) {
+                if (takeGamepadInput) {
+                    UpdateGamepadTooltipScroll();
+                }
+                return;
+            }
+
             if (!takeGamepadInput && ZInput.GetButtonDown("JoyTabRight")) {
                 selectedFrame.enabled = true;
                 takeGamepadInput = true;
@@ -843,27 +890,31 @@ public class TemperPanel : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
                     }
                 }
 
-                if (ZInput.GetButton("JoyRStickUp")) {
-                    if (ZInput.GetButton("JoyRTrigger")) {
-                        infoTooltip._scrollbar.value = Mathf.Clamp01(infoTooltip._scrollbar.value + 0.1f);
-                    } else {
-                        logTooltip._scrollbar.value = Mathf.Clamp01(logTooltip._scrollbar.value + 0.1f);
-                    }
-                }
-
-                if (ZInput.GetButton("JoyRStickDown")) {
-                    if (ZInput.GetButton("JoyRTrigger")) {
-                        infoTooltip._scrollbar.value = Mathf.Clamp01(infoTooltip._scrollbar.value - 0.1f);
-                    } else {
-                        logTooltip._scrollbar.value = Mathf.Clamp01(logTooltip._scrollbar.value - 0.1f);
-                    }
-                }
+                UpdateGamepadTooltipScroll();
             } else {
                 if (!isFirstChild || selectedItemElement) {
                     transform.SetAsFirstSibling();
                     isFirstChild = true;
                     SetSelectedItem(null);
                 }
+            }
+        }
+    }
+
+    private void UpdateGamepadTooltipScroll() {
+        if (ZInput.GetButton("JoyRStickUp")) {
+            if (ZInput.GetButton("JoyRTrigger")) {
+                infoTooltip._scrollbar.value = Mathf.Clamp01(infoTooltip._scrollbar.value + 0.1f);
+            } else {
+                logTooltip._scrollbar.value = Mathf.Clamp01(logTooltip._scrollbar.value + 0.1f);
+            }
+        }
+
+        if (ZInput.GetButton("JoyRStickDown")) {
+            if (ZInput.GetButton("JoyRTrigger")) {
+                infoTooltip._scrollbar.value = Mathf.Clamp01(infoTooltip._scrollbar.value - 0.1f);
+            } else {
+                logTooltip._scrollbar.value = Mathf.Clamp01(logTooltip._scrollbar.value - 0.1f);
             }
         }
     }

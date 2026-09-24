@@ -284,7 +284,9 @@ namespace EpicLoot_UnityLib
             EnchantingTableUI.instance.UnlockTabs();
         }
 
-        protected static bool LocalPlayerCanAffordCost(List<InventoryItemListElement> cost)
+        // Internal as well as protected: EnchantingUIController re-checks the identify cost with it after
+        // rolling, right before charging.
+        protected internal static bool LocalPlayerCanAffordCost(List<InventoryItemListElement> cost)
         {
             if (Player.m_localPlayer.NoCostCheat())
             {

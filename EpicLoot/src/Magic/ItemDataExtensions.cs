@@ -207,8 +207,10 @@ public static class ItemDataExtensions
             return false;
         }
 
-        return itemData.GetMagicItem().Effects.Select(effect => MagicItemEffectDefinitions.Get(effect.EffectType))
-            .Any(effectDef => effectDef.CanBeAugmented);
+        // An effect with no registered definition is never augmentable.
+        return itemData.GetMagicItem().Effects.Any(effect =>
+            MagicItemEffectDefinitions.TryGet(effect.EffectType, out MagicItemEffectDefinition effectDef) &&
+            effectDef.CanBeAugmented);
     }
 
     public static bool CanBeRunified(this ItemDrop.ItemData itemData)
@@ -218,8 +220,10 @@ public static class ItemDataExtensions
             return false;
         }
 
-        return itemData.GetMagicItem().Effects.Select(effect => MagicItemEffectDefinitions.Get(effect.EffectType))
-            .Any(effectDef => effectDef.CanBeRunified);
+        // An effect with no registered definition is never extracted or overwritten by a rune.
+        return itemData.GetMagicItem().Effects.Any(effect =>
+            MagicItemEffectDefinitions.TryGet(effect.EffectType, out MagicItemEffectDefinition effectDef) &&
+            effectDef.CanBeRunified);
     }
 
     // Shardstones and Brokkr's Gifts carry a cosmetic MagicItem -- a rarity and nothing else -- purely
@@ -561,9 +565,7 @@ public static class ItemDataExtensions
                 foreach (SetBonusInfo setBonusInfo in setInfo.SetBonuses.OrderBy(x => x.Count))
                 {
                     bool hasEquipped = currentSetEquipped.Count >= setBonusInfo.Count;
-                    MagicItemEffectDefinition effectDef = MagicItemEffectDefinitions.Get(setBonusInfo.Effect.Type);
-
-                    if (effectDef == null)
+                    if (!MagicItemEffectDefinitions.TryGet(setBonusInfo.Effect.Type, out MagicItemEffectDefinition effectDef))
                     {
                         EpicLoot.LogError($"Set Tooltip: Could not find effect ({setBonusInfo.Effect.Type}) " +
                             $"for set ({setInfo.ID}) bonus ({setBonusInfo.Count})!");
