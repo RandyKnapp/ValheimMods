@@ -1,3 +1,10 @@
+**0.14.14**
+* Fix for bounty creatures losing their extra health once they were loaded again or another player's game took them over
+    * With StarLevelSystem the bonus is now kept on the creature, and needs StarLevelSystem 1.18.2 to apply on every player's game
+    * Without StarLevelSystem, a bounty creature loaded at full health no longer drops back to its normal health
+* Bounty targets now scale as StarLevelSystem bosses from the moment they spawn, not only after a reload
+* StarLevelSystem no longer deletes, copies or re-levels bounty targets and their minions (needs StarLevelSystem 1.18.2)
+
 **0.14.13**
 * Adds a repair system for bounties/treasure which had not previous spawned, due to 1.0 save migration
 * Fix for rune etching being free

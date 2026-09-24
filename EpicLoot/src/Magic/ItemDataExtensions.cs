@@ -320,6 +320,10 @@ public static class ItemDataExtensions
     {
         // TODO: improve performace of this call
         List<string> results = new List<string>();
+        // One entry per display token, not per prefab. Deep North registers SP_/FW_ NPC prop copies of
+        // set armour (SP_ArmorTrollLeatherChest, FW_CapeTrollHide, ...) that keep the real item's
+        // m_name and m_setName, so without this the troll set listed its tunic, pants and cape three times.
+        HashSet<string> seen = new HashSet<string>();
         foreach (GameObject itemPrefab in ObjectDB.instance.m_items)
         {
             if (itemPrefab == null)
@@ -335,7 +339,7 @@ public static class ItemDataExtensions
                 continue;
             }
 
-            if (itemDrop.m_itemData.m_shared.m_setName == setName)
+            if (itemDrop.m_itemData.m_shared.m_setName == setName && seen.Add(itemDrop.m_itemData.m_shared.m_name))
             {
                 results.Add(itemDrop.m_itemData.m_shared.m_name);
             }
