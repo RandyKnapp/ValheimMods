@@ -1,11 +1,14 @@
-﻿namespace EpicLoot.MagicItemEffects
+﻿using EpicLoot.src.Magic.MagicItemEffects.Helpers;
+
+namespace EpicLoot.MagicItemEffects
 {
     public class ReflectiveDamage_Character_Damage_Patch
     {
         private static bool _isApplyingReflectiveDmg;
 
-        // Prefix handler invoked by CharacterDamageDispatch (victim-side, runs at Priority.Last so it
-        // reflects the fully-modified incoming damage).
+        // Prefix handler invoked by SharedCharacterRpcDamagePatch (victim-side, runs last in that prefix so
+        // it reflects the hit after the conversion, resistance and night reductions). The reflected hit is
+        // a bonus hit: it gets none of the local player's weapon-strike effects.
         public static void OnIncomingHit(Character __instance, HitData hit)
         {
             var attacker = hit.GetAttacker();
@@ -26,7 +29,7 @@
                     try
                     {
                         _isApplyingReflectiveDmg = true;
-                        attacker.Damage(hitData);
+                        HitSource.DealBonusDamage(attacker, hitData);
                     }
                     finally
                     {

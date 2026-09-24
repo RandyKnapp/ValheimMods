@@ -2,6 +2,7 @@
 using EpicLoot.MagicItemEffects;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace EpicLoot;
@@ -157,6 +158,15 @@ public class MagicItemComponent : CustomItemData
         Indestructible.Revert(Item);
     }
 
+    // A binary effect (Indestructible, Weightless, Throwable...) must sit at the default value of 1:
+    // older saves and hand-edited data can carry a stale number that would otherwise show up in the
+    // tooltip. "Binary" is deliberately judged across every rarity rather than at this item's own
+    // rarity -- Load() writes the result straight back to m_customData, so a per-rarity test would
+    // permanently flatten a legitimately rolled value whenever the loaded definitions simply lack a
+    // block for that rarity. That happens for real: a dedicated server replaces the client's
+    // definitions wholesale on connect (ELConfig.ApplyClientConfig), so a server config that predates
+    // a newly added rarity would otherwise reset every effect on every item of that rarity to 1 --
+    // once, silently, and irreversibly. Report the gap instead, and leave the value alone.
     private void FixupValuelessEffects()
     {
         if (MagicItem == null)
@@ -166,13 +176,45 @@ public class MagicItemComponent : CustomItemData
 
         foreach (MagicItemEffect effect in MagicItem.Effects)
         {
-            if (MagicItemEffectDefinitions.IsValuelessEffect(effect.EffectType, MagicItem.Rarity) &&
-                !Mathf.Approximately(effect.EffectValue, 1))
+            if (MagicItemEffectDefinitions.IsValuelessEffect(effect.EffectType))
             {
-                EpicLoot.Log($"Fixing up effect on {MagicItem.DisplayName}: effect={effect.EffectType}");
-                effect.EffectValue = 1;
+                if (!Mathf.Approximately(effect.EffectValue, 1))
+                {
+                    EpicLoot.Log($"Fixing up effect on {MagicItem.DisplayName}: effect={effect.EffectType}");
+                    effect.EffectValue = 1;
+                }
+
+                continue;
             }
+
+            WarnOnceAboutMissingRarityValues(effect.EffectType, MagicItem.Rarity);
         }
+    }
+
+    // Types already reported by WarnOnceAboutMissingRarityValues. Every item entering the world passes
+    // through Load(), so an unguarded warning would repeat per item per load; the interesting fact is
+    // which effect/rarity pairs have no values, and that is a property of the config, not of the item.
+    private static readonly HashSet<string> ReportedRarityGaps = new HashSet<string>();
+
+    private static void WarnOnceAboutMissingRarityValues(string effectType, ItemRarity rarity)
+    {
+        // An unknown effect is not a rarity gap; Get() reports the missing definition itself.
+        if (!MagicItemEffectDefinitions.TryGet(effectType, out var effectDef) ||
+            effectDef.ValuesPerRarity?.GetValueDefForRarity(rarity) != null)
+        {
+            return;
+        }
+
+        if (!ReportedRarityGaps.Add($"{effectType}/{rarity}"))
+        {
+            return;
+        }
+
+        // Forced: this is a silent data problem otherwise -- the effect renders with a blank value
+        // everywhere (tooltip, enchant preview) and cannot be rolled at this rarity.
+        EpicLoot.LogWarningForce($"Enchantment '{effectType}' has no values for rarity {rarity} in the " +
+            "loaded magiceffects.json. Items carrying it at that rarity will show a blank value. If you " +
+            "are on a dedicated server, the server's copy of magiceffects.json is the one in use.");
     }
 }
 

@@ -186,7 +186,9 @@ namespace EpicLoot.Crafting
             string pip = EpicLoot.GetMagicEffectPip(magicItem.IsEffectAugmented(i));
             bool free = EnchantCostsHelper.EffectIsDeprecated(augmentableEffects[i].EffectType);
 
-            return $"{pip} {Localization.instance.Localize(MagicItem.GetEffectText(augmentableEffects[i], rarity, true))}" +
+            // The item's own legendary ID: these are effects already on the item, so a unique shows the
+            // range its legendary entry declares (if any) rather than the plain rarity table.
+            return $"{pip} {Localization.instance.Localize(MagicItem.GetEffectText(augmentableEffects[i], rarity, true, magicItem.LegendaryID))}" +
                 $"{(free ? " [<color=yellow>*FREE</color>]" : "")}";
         }
 

@@ -39,15 +39,18 @@ public class EnchantmentElement : MonoBehaviour, IPointerEnterHandler, IPointerE
         elements.Add(this);
     }
 
-    public void SetEffect(MagicItemEffect effect, ItemRarity rarity)
+    // Takes the whole item rather than its rarity: a unique's range comes from its legendary entry when
+    // that declares one, and the row must show the same range the temper will actually step against.
+    public void SetEffect(MagicItemEffect effect, MagicItem magicItem)
     {
+        ItemRarity rarity = magicItem.Rarity;
         _effect = effect;
         _definition = MagicItemEffectDefinitions.Get(effect.EffectType);
-        _values = _definition.GetValuesForRarity(rarity);
+        _values = TemperData.GetTemperRange(magicItem, effect);
         string text = MagicItem.GetEffectTextGeneric(_definition, $"<b><color=yellow>{effect.EffectValue}</color></b>");
-        canBeTempered = _values != null;
+        canBeTempered = TemperData.IsTemperable(magicItem, effect);
         label.text = text;
-        if (_values == null)
+        if (!canBeTempered)
         {
             button.interactable = false;
             label.color = Color.gray;

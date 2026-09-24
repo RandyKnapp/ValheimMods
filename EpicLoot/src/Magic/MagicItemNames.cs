@@ -107,8 +107,7 @@ namespace EpicLoot
             }
 
             var firstEffect = magicItem.Effects[0];
-            var effectDef = MagicItemEffectDefinitions.Get(firstEffect.EffectType);
-            if (effectDef == null)
+            if (!MagicItemEffectDefinitions.TryGet(firstEffect.EffectType, out var effectDef))
             {
                 return null;
             }
@@ -129,8 +128,7 @@ namespace EpicLoot
             }
 
             var secondEffect = magicItem.Effects[1];
-            var effectDef = MagicItemEffectDefinitions.Get(secondEffect.EffectType);
-            if (effectDef == null)
+            if (!MagicItemEffectDefinitions.TryGet(secondEffect.EffectType, out var effectDef))
             {
                 return null;
             }

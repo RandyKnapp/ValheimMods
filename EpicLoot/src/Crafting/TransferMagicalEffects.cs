@@ -44,8 +44,8 @@ public static class TransferMagicalEffects
         {
             foreach (var effect in source.Effects)
             {
-                var def = MagicItemEffectDefinitions.Get(effect.EffectType);
-                if (def == null)
+                // An effect with no registered definition is not carried over.
+                if (!MagicItemEffectDefinitions.TryGet(effect.EffectType, out var def))
                     continue;
 
                 // Same legality check the socket/rune system uses: allowed on this item type/rarity and
@@ -83,8 +83,8 @@ public static class TransferMagicalEffects
                 if (socket.ShardType == ShardType.None && socket.Effect != null)
                 {
                     // A runestone carries a fixed effect; keep it only if valid on the crafted item.
-                    var def = MagicItemEffectDefinitions.Get(socket.Effect.EffectType);
-                    if (def != null && def.Requirements.CheckRequirements(CraftedItem, newMagicItem, socket.Effect.EffectType, checklootroll: false))
+                    if (MagicItemEffectDefinitions.TryGet(socket.Effect.EffectType, out var def) &&
+                        def.Requirements.CheckRequirements(CraftedItem, newMagicItem, socket.Effect.EffectType, checklootroll: false))
                         carried.Effect = new MagicItemEffect(socket.Effect.EffectType, socket.Effect.EffectValue);
                 }
 

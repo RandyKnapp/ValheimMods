@@ -1,4 +1,5 @@
 ﻿using EpicLoot.General;
+using EpicLoot.src.Magic.MagicItemEffects.Helpers;
 using HarmonyLib;
 using Jotunn.Managers;
 using System.Collections.Generic;
@@ -72,6 +73,16 @@ namespace EpicLoot.MagicItemEffects
                     return;
                 }
 
+                // The explosion needs the shooter as its owner: every one of Aoe.ShouldHit's filters (the
+                // prefab's m_hitOwner / m_hitFriendly off) only applies when there is an owner, and the hits
+                // carry it as their attacker, which is what vanilla's PvP check in RPC_Damage keys on. An
+                // ownerless explosion hit every character in range -- players without PvP, tames and the
+                // shooter included. With no live shooter to own it, there is no explosion.
+                if (instance.m_owner == null)
+                {
+                    return;
+                }
+
                 GameObject prefab = PrefabManager.Instance.GetPrefab(EpicAssets.ExplosiveArrow);
 
                 if (prefab == null)
@@ -89,6 +100,20 @@ namespace EpicLoot.MagicItemEffects
                     EpicLoot.LogError("Cannot find Explosive Arrow Aoe! Magic Effect will not work as expected.");
                     return;
                 }
+
+                // Set directly rather than through Aoe.Setup, which would also apply the weapon's upgrade and
+                // world-level bonuses on top of the damage worked out below.
+                aoe.m_owner = instance.m_owner;
+
+                // PvP: the explosion hits what the arrow itself could (vanilla Projectile.IsValidTarget). With
+                // the archer's PvP off that is enemies only; with it on, friendlies as well, and vanilla's
+                // RPC_Damage then spares any player whose own PvP is off. Every player shares one m_name
+                // ("Human"), so m_hitSame has to follow too, or the same-kind filter drops them all.
+                bool pvp = instance.m_owner.IsPVPEnabled();
+                aoe.m_hitFriendly = pvp;
+                aoe.m_hitSame = pvp;
+                // Damage the effect deals on its own, not a weapon strike (see HitSource).
+                HitSource.MarkBonusSource(spawnedObject);
 
                 float explodingArrowStrength = explodingArrowValue * instance.m_damage.EpicLootGetTotalDamage();
                 aoe.m_damage.m_fire = explodingArrowStrength;

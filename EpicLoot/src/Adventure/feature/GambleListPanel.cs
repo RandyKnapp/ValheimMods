@@ -12,6 +12,7 @@ namespace EpicLoot.Adventure.Feature
         public GambleListPanel(MerchantPanel merchantPanel, BuyListElement elementPrefab) 
             : base(
                 merchantPanel.transform.Find("Gamble/Panel/ItemList") as RectTransform,
+                merchantPanel.transform.Find("Gamble/Title"),
                 elementPrefab,
                 merchantPanel.transform.Find("Gamble/GambleBuyButton").GetComponent<Button>(),
                 merchantPanel.transform.Find("Gamble/TimeLeft").GetComponent<Text>())

@@ -17,6 +17,9 @@ public class MagicPages : MonoBehaviour
     public const int MEDIUM_FONT_SIZE = 20;
     public const int FONT_SIZE = 18;
 
+    private const float GAMEPAD_SCROLL_SPEED = 1000f;
+    private const float GAMEPAD_STICK_DEADZONE = 0.5f;
+
     public float MinWidth { get; private set; }
     public float MinHeight { get; private set; }
 
@@ -75,6 +78,8 @@ public class MagicPages : MonoBehaviour
 
     public void Update()
     {
+        UpdateGamepadScroll();
+
         //  makes search field glow when focused
         if (wasGlowing && !InSearchField())
         {
@@ -85,6 +90,20 @@ public class MagicPages : MonoBehaviour
         {
             Search.EnableGlow(true);
             wasGlowing = true;
+        }
+    }
+
+    private void UpdateGamepadScroll()
+    {
+        if (!MagicPagesTextArea.IsEnabled || !ZInput.IsGamepadActive())
+        {
+            return;
+        }
+
+        float rightStickAxis = ZInput.GetJoyRightStickY();
+        if (Mathf.Abs(rightStickAxis) > GAMEPAD_STICK_DEADZONE)
+        {
+            MagicPagesTextArea.ScrollBy(-rightStickAxis * GAMEPAD_SCROLL_SPEED * Time.unscaledDeltaTime);
         }
     }
 

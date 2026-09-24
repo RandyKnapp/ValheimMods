@@ -368,7 +368,8 @@ namespace EpicLoot
 
         public bool CanBeDisenchanted()
         {
-            return !Effects.Any(x => !MagicItemEffectDefinitions.Get(x.EffectType)?.CanBeDisenchanted ?? false);
+            // An effect with no registered definition does not block disenchanting.
+            return Effects.All(x => !MagicItemEffectDefinitions.TryGet(x.EffectType, out var def) || def.CanBeDisenchanted);
         }
 
         // Per-effect override that supplies the full ordered set of {0},{1},... format args for an
@@ -505,9 +506,7 @@ namespace EpicLoot
         {
             var effectDef = MagicItemEffectDefinitions.Get(effect.EffectType);
             var result = GetEffectText(effectDef, effect.EffectValue);
-            var values = valuesOverride ?? (string.IsNullOrEmpty(legendaryID) ?
-                effectDef.GetValuesForRarity(rarity) :
-                UniqueLegendaryHelper.GetLegendaryEffectValues(legendaryID, effect.EffectType));
+            var values = MagicItemEffectDefinitions.GetRollRange(effectDef, rarity, legendaryID, valuesOverride);
             if (showRange && values != null)
             {
                 if (!Mathf.Approximately(values.MinValue, values.MaxValue))
@@ -537,15 +536,12 @@ namespace EpicLoot
         public static string GetEffectDetailBlock(MagicItemEffect effect, ItemRarity rarity,
             string legendaryID, MagicItemEffectDefinition.ValueDef valuesOverride, string indent)
         {
-            var effectDef = MagicItemEffectDefinitions.Get(effect.EffectType);
-            if (effectDef == null)
+            if (!MagicItemEffectDefinitions.TryGet(effect.EffectType, out var effectDef))
             {
                 return string.Empty;
             }
 
-            var values = valuesOverride ?? (string.IsNullOrEmpty(legendaryID) ?
-                effectDef.GetValuesForRarity(rarity) :
-                UniqueLegendaryHelper.GetLegendaryEffectValues(legendaryID, effect.EffectType));
+            var values = MagicItemEffectDefinitions.GetRollRange(effectDef, rarity, legendaryID, valuesOverride);
 
             var block = new StringBuilder();
 
@@ -607,7 +603,62 @@ namespace EpicLoot
 
             SetEffectAsAugmented(index);
 
+            // The augment dialog's "keep" choice hands back the very same effect object; anything else
+            // is a new roll, and the tempered marker belonged to the value it replaces. The value
+            // comparison only covers a keep whose effect was re-read from the item in between.
+            var oldEffect = Effects[index];
+            var unchanged = ReferenceEquals(oldEffect, newEffect) ||
+                (oldEffect != null && newEffect != null && oldEffect.EffectType == newEffect.EffectType &&
+                 Mathf.Approximately(oldEffect.EffectValue, newEffect.EffectValue));
+            if (!unchanged)
+            {
+                TemperedEffectIndices.Remove(index);
+            }
+
             Effects[index] = newEffect;
+        }
+
+        // Removes the effect at index and keeps the per-index history (augmented and tempered markers)
+        // pointing at the same effects: the removed index's markers go with it and every later index
+        // shifts down one.
+        public void RemoveEffectAt(int index)
+        {
+            if (index < 0 || index >= Effects.Count)
+            {
+                EpicLoot.LogError("Tried to remove effect on magic item outside of the range of the effects list!");
+                return;
+            }
+
+            Effects.RemoveAt(index);
+
+            if (AugmentedEffectIndex == index)
+            {
+                AugmentedEffectIndex = -1;
+            }
+            else if (AugmentedEffectIndex > index)
+            {
+                AugmentedEffectIndex--;
+            }
+
+            RemoveHistoryIndex(AugmentedEffectIndices, index);
+            RemoveHistoryIndex(TemperedEffectIndices, index);
+        }
+
+        private static void RemoveHistoryIndex(List<int> indices, int removedIndex)
+        {
+            if (indices == null)
+            {
+                return;
+            }
+
+            indices.RemoveAll(x => x == removedIndex);
+            for (var i = 0; i < indices.Count; i++)
+            {
+                if (indices[i] > removedIndex)
+                {
+                    indices[i]--;
+                }
+            }
         }
 
         public bool HasBeenAugmented()
@@ -659,8 +710,8 @@ namespace EpicLoot
         {
             foreach (var effect in Effects)
             {
-                var effectDef = MagicItemEffectDefinitions.Get(effect.EffectType);
-                if (effectDef != null && !string.IsNullOrEmpty(effectDef.EquipFx))
+                if (MagicItemEffectDefinitions.TryGet(effect.EffectType, out var effectDef) &&
+                    !string.IsNullOrEmpty(effectDef.EquipFx))
                 {
                     mode = effectDef.EquipFxMode;
                     return effectDef.EquipFx;

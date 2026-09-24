@@ -10,6 +10,10 @@ namespace EpicLoot.Adventure
     [RequireComponent(typeof(Character))]
     public class BountyTarget : MonoBehaviour
     {
+        // Set once a StarLevelSystem API call has thrown (an installed SLS whose creature methods no longer match
+        // the bundled shim), so every later bounty creature goes straight to EpicLoot's own health multiplier.
+        private static bool _starLevelsUnusable;
+
         private BountyInfo _bountyInfo;
         private string _monsterID;
         private bool _isAdd;
@@ -99,24 +103,15 @@ namespace EpicLoot.Adventure
             _zdo.Set(BountyTargetComponent.BountyTargetNameKey, GetTargetName(_character.m_name, isAdd, bounty.TargetName));
 
             _character.SetLevel(GetTargetLevel(bounty, monsterID, isAdd));
-            if (StarLevelSystem.API.IsAvailable)
-            {
-                StarLevelSystem.API.SetCreatureBaseAttribute(_character, 0, GetMaxHealthModifier(bounty, isAdd));
-                StarLevelSystem.API.ApplyCreatureUpdates(_character); // Flush changes to the creature
-            }
-            else
-            {
-                _character.SetMaxHealth(GetModifiedMaxHealth(_character, bounty, isAdd));
-            }
             _character.m_baseAI.SetPatrolPoint();
 
-            Reinitialize();
+            Reinitialize(spawning: true);
         }
 
         /// <summary>
-        /// Initialize custom data from the character zdo.
+        /// Initialize custom data from the character zdo. Runs at spawn and on every load, on every peer.
         /// </summary>
-        public void Reinitialize()
+        public void Reinitialize(bool spawning = false)
         {
             // Read unconditionally -- see the note in Initialize. OnDeath runs on whichever machine owns
             // the creature, and under serverside simulation that is the dedicated server, so the server
@@ -151,28 +146,84 @@ namespace EpicLoot.Adventure
             _isAdd = _zdo.GetBool(BountyTargetComponent.IsAddKey);
 
             _character.m_name = _zdo.GetString(BountyTargetComponent.BountyTargetNameKey);
-            _character.m_boss = !_zdo.GetBool(BountyTargetComponent.IsAddKey);
+            // Before the health bonus: StarLevelSystem reads IsBoss() when it builds this creature's stats (boss
+            // health and damage per star, boss modifiers), and it has to get the same answer at spawn as on a load.
+            // It used to build them at spawn before this was set, and after it on every load.
+            _character.m_boss = !_isAdd;
+
+            ApplyHealthBonus(spawning);
+        }
+
+        /// <summary>
+        /// Gives the creature its bounty health multiplier. This is not a one-off at spawn: vanilla's Character.Awake
+        /// resets an undamaged creature's max health to base x level whenever its owner loads it, and StarLevelSystem
+        /// rebuilds its stats on every peer and every load, so the bonus is re-established each time.
+        /// </summary>
+        private void ApplyHealthBonus(bool spawning)
+        {
+            float multiplier = GetMaxHealthModifier(_bountyInfo, _isAdd);
+            bool isOwner = _character.m_nview.IsOwner();
+
+            if (StarLevelSystem.API.IsAvailable && !_starLevelsUnusable)
+            {
+                try
+                {
+                    if (isOwner)
+                    {
+                        // Keeps StarLevelSystem from deleting or copying a bounty creature for its spawn-rate and
+                        // disabled-spawn rules, or rerolling its level against its level caps. Repeated on load so
+                        // creatures spawned before this call existed are covered too; older SLS builds ignore it.
+                        StarLevelSystem.API.SetCreatureSpawnManaged(_character, true);
+                    }
+
+                    // SLS saves this on the creature when the owner sets it, so every peer's stats and every later
+                    // load keep it. Older SLS builds only keep it in this peer's view, which is why every peer sets it.
+                    StarLevelSystem.API.SetCreatureBaseAttribute(_character, 0, multiplier);
+                    if (isOwner)
+                    {
+                        // A forced apply, which keeps the damage already taken: repairs a max health vanilla reset on
+                        // load, and one an older build left with non-boss scaling.
+                        StarLevelSystem.API.ApplyCreatureUpdates(_character);
+                    }
+                    return;
+                }
+                catch (Exception e)
+                {
+                    _starLevelsUnusable = true;
+                    EpicLoot.LogWarningForce("StarLevelSystem's creature API could not be used; bounty creature " +
+                        $"health falls back to EpicLoot's own multiplier for this session. {e}");
+                }
+            }
+
+            if (!isOwner)
+            {
+                return;
+            }
+
+            if (spawning)
+            {
+                _character.SetMaxHealth(_character.GetMaxHealth() * multiplier);
+                return;
+            }
+
+            // On a load, only undo vanilla's reset. Any other max health was set on purpose, by the spawn above or
+            // by another mod, and is left alone.
+            float currentMax = _character.GetMaxHealth();
+            if (!Mathf.Approximately(currentMax, _character.GetMaxHealthBase() * _character.GetLevel()))
+            {
+                return;
+            }
+
+            float damageTaken = currentMax - _character.GetHealth();
+            float target = currentMax * multiplier;
+            _character.SetMaxHealth(target);
+            _character.SetHealth(target - damageTaken);
         }
 
         private void DestroyInstance()
         {
             _zdo.SetOwner(ZDOMan.GetSessionID());
             _character.m_nview.Destroy();
-        }
-
-        private static float GetModifiedMaxHealth(Character character, BountyInfo bounty, bool isAdd)
-        {
-            if (isAdd)
-            {
-                return character.GetMaxHealth() * AdventureDataManager.Config.Bounties.AddsHealthMultiplier;
-            }
-
-            if (bounty.RewardGold > 0)
-            {
-                return character.GetMaxHealth() * AdventureDataManager.Config.Bounties.GoldHealthMultiplier;
-            }
-
-            return character.GetMaxHealth() * AdventureDataManager.Config.Bounties.IronHealthMultiplier;
         }
 
         private static float GetMaxHealthModifier(BountyInfo bounty, bool isAdd)

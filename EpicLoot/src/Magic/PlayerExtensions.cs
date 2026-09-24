@@ -1,4 +1,5 @@
 ﻿using EpicLoot.LegendarySystem;
+using EpicLoot.src.Magic.MagicItemEffects.Helpers;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -94,6 +95,11 @@ public static class PlayerExtensions
         if (ignoreThisItem != null && player.IsItemEquiped(ignoreThisItem) && ignoreThisItem.IsMagic(out MagicItem magicItem))
         {
             totalValue -= magicItem.GetTotalEffectValue(effectType, scale, includeSocketed: true);
+        }
+        else if (ignoreThisItem == null)
+        {
+            // Only non-zero while a thrown weapon's projectile is landing (see HitSource.FiringWeapon).
+            totalValue += MagicEffectsHelper.GetFiringWeaponAdjustment(player, effectType, scale);
         }
 
         return totalValue;

@@ -1,3 +1,82 @@
+**0.14.14**
+* Fix for bounty creatures losing their extra health once they were loaded again or another player's game took them over
+    * With StarLevelSystem the bonus is now kept on the creature, and needs StarLevelSystem 1.18.2 to apply on every player's game
+    * Without StarLevelSystem, a bounty creature loaded at full health no longer drops back to its normal health
+* Bounty targets now scale as StarLevelSystem bosses from the moment they spawn, not only after a reload
+* StarLevelSystem no longer deletes, copies or re-levels bounty targets and their minions (needs StarLevelSystem 1.18.2)
+
+**0.14.13**
+* Adds a repair system for bounties/treasure which had not previous spawned, due to 1.0 save migration
+* Fix for rune etching being free
+    * The rune tab's effect list is now locked during the countdown
+* Tempering Fixes 
+    * Fix for tempering an item without paying for it
+    * Fix for effects on unique legendaries and mythics not being temperable at all
+    * A failed temper no longer raises an effect that was below its rarity's minimum up to the minimum
+* Fix for identifying items consuming them without giving anything back
+* Fix for identifying several items at once handing back more items than were identified
+* The identify preview only lists items progression gating will actually hand out
+* In the "Player Must Have Crafted Item" drop mode, identifying no longer caps items at the biome of the last boss killed
+* Fix for extracting the last enchantment from a socketed item destroying its sockets and the shardstones in them
+* Extracting an enchantment no longer resets the item's augment history (which reset the rising re-augment cost), and augmented/tempered markers stay on the effects that earned them
+* Sacrifice, identify, rune etching and rune extraction only pay out for items they actually removed (no cost when cancelled, no gain either)
+* Unknown magic effects (a typo in legendaries.json, a removed mod) are skipped instead of being given made-up value ranges, and the missing-definition warning is logged once
+* Hold-Shift ranges, temper ranges and the augment and rune lists now show the correct range for effects on unique items
+* Blood Block's self-damage no longer triggers any effect
+* Forest's Aid and Icy Retribution now need an attacker; falls, lava and drowning no longer trigger them
+* Damage dealt by effects themselves is no longer treated as a weapon strike
+    * Reflect, Eikthyr's charge, Frost AOE, Trailblazer, the meteor, Icy Retribution, Corpse Rot and chain lightning no longer crit, double, pay Wager or Mercenary per target, lifesteal, execute, Slow, Paralyze or build Eikthyr charges
+* Fix for Reflect and other effects reading a creature's attack as your weapon whenever your game controlled the attacking creature
+* Arrows and thrown weapons now use the effects of the weapon that fired them
+* Executioner is only used up by a hit that carries Executioner
+* Fix for Wager refunding its stake on hits that did not kill (single player and hosts); Stamina on Kill and Queen's Everflow used the same check
+* Fix for Triple Shot and Double Magic Shot able to leave every weapon of that kind at reduced damage until restart, if an error happened mid-shot
+* Fix for Explosive Arrows' explosion hurting players without PvP enabled
+* The parry bonus in shield tooltips now shows the real multiplier
+* Fix for Immovable blocks failing silently once the stagger bar filled
+* Fix for blocked hits being converted to elemental damage twice
+* Eitr Shield and Coinplated now only pay for damage that gets past the Staff of Protection bubble, blocking, resistances and armor
+* Automatic Mead now judges the damage that will actually land, drinks at most one mead per hit, and works with Instant Mead
+* Skill enchantments now count wherever the game reads the skill level
+* Skill enchantments now add weapon damage past skill 100
+
+
+**0.14.12**
+* Fixes a bug with the new save system which would cause Bounties to get lost
+
+**0.14.11**
+* Gamepad support for the enchanting table (Thanks ksavila!)
+* Gamepad support for the merchant panel (Thanks ksavila!)
+* The Compendium's magic pages now open when navigated to with a gamepad, and the right stick scrolls them
+* The bounty and treasure map pin filters moved into the vanilla map's pin filter panel, beside the boss and death filters
+    * They toggle the same way the vanilla filters do and can be reached with the d-pad, so they no longer take the gamepad triggers
+    * Selecting one no longer lets you place your own map pins with the bounty or treasure icon
+* Fix for cancelling a sacrifice or identify not stopping it
+    * The countdown kept running after the cancel, so the items were consumed anyway
+* Fix for the Rune tab's action button reading "Apply Rune" after every finished action, even in Extract mode
+* Deep North trophies can now be sacrificed
+* Items auto-added from other mods now recognize the Deep North materials, so gear crafted from them is gated behind the Biome boss
+* Dark Green shardstones on melee weapons now imbue 4/5/6/7/8/9% poison damage (Magic to Ancient), down from 10/20/30/40/50/60%
+* Translations updated for all 34 non-English languages
+
+**0.14.10**
+* Fix for items losing their enchantment when taken off an armor stand
+    * The enchantment data was still on the item, but nothing re-read it, so the item behaved as if it were mundane until it was dropped on the ground again
+* Fix for the trader window not opening at all on some clients
+    * Vanilla closes the store on the same Use press that opened it whenever the game happens to run Player's update before StoreGui's, so the window was created and destroyed in one frame, drawing nothing and logging nothing
+    * The store now ignores that one press, the same way the inventory window already does
+* Fixes for the bounty ledger which could reset when the server was restarted
+    * This could result in bounties being marked incomplete after being completed (but not turned in before a server restart)   
+    * This could also result in bounties not being properly marked as completed if the owner was offline during the kill, and before a server restart
+* Fixes for not persisting bounty or treasuremap data to the character 
+* Fix for magic effect values being permanently reset to 1 when an item was reloaded
+    * An effect was treated as valueless (a yes/no grant like Indestructible) whenever the loaded magiceffects.json had no value block for that item's rarity, and the reset was written straight back to the item
+    * This hit Ancient items on servers whose magiceffects.json predates the Ancient rarity, since a server replaces the client's enchantment definitions on connect
+    * Only effects with no values at any rarity are normalized now; a missing rarity block logs a warning naming the effect and rarity instead of destroying the rolled value
+* Boss shardstones now show what their upgrade does
+    * Shocking Charge, Forest's Aid, Corpse Rot, Icy Retribution, Queen's Everflow and Necrotic Fire had no number in their tooltip at all, so every rarity read identically
+    * All 35 languages carry the new numbersw
+
 **0.14.9**
 * Fix for Grappling hook
 * Trader window diagnostics, please report your log if you have issues opening the trader window

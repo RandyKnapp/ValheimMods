@@ -588,6 +588,35 @@ namespace EpicLoot.GatedItemType
         }
 
         /// <summary>
+        /// Whether the mode holds a whole biome tier back until its bosses are down. Only the two
+        /// BossKill modes do: Unlimited gates nothing, and the recipe/crafted modes gate item by item
+        /// (known recipe, crafted material) while treating every boss tier as reachable -- the same
+        /// split DetermineValidBosses makes.
+        /// </summary>
+        public static bool UsesBossBiomeCap(GatedItemTypeMode mode)
+        {
+            return mode != GatedItemTypeMode.Unlimited &&
+                mode != GatedItemTypeMode.PlayerMustKnowRecipe &&
+                mode != GatedItemTypeMode.PlayerMustHaveCraftedItem;
+        }
+
+        /// <summary>
+        /// True when a loot roll naming this exact item would hand that item out under the mode, rather
+        /// than replacing it with a gated substitute or dropping it (a denied prop). The same per-item
+        /// check GetGatedItemNameFromItemOrType makes; an item iteminfo.json does not list is ungated.
+        /// Rolls nothing, so previews can use it.
+        /// </summary>
+        public static bool IsItemAvailableUngated(string itemName, GatedItemTypeMode mode)
+        {
+            if (string.IsNullOrEmpty(itemName) || LootDenyList.IsDenied(itemName))
+            {
+                return false;
+            }
+
+            return mode == GatedItemTypeMode.Unlimited || !CheckIfItemNeedsGate(mode, itemName, out _);
+        }
+
+        /// <summary>
         /// Returns a valid biome defined in the BiomesInOrder list based off the GatedItemTypeMode.
         /// </summary>
         public static Heightmap.Biome GetCurrentOrLowerBiomeByDefeatedBossSettings(Heightmap.Biome biome, GatedItemTypeMode mode)
@@ -599,7 +628,7 @@ namespace EpicLoot.GatedItemType
                 return biome;
             }
 
-            if (mode == GatedItemTypeMode.Unlimited || mode == GatedItemTypeMode.PlayerMustKnowRecipe)
+            if (!UsesBossBiomeCap(mode))
             {
                 return biome;
             }

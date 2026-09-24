@@ -1410,12 +1410,12 @@
                 "MeleeWeapon": {
                     "EffectType": "AddPoisonDamage",
                     "ValuesPerRarity": {
-                        "Magic": 10,
-                        "Rare": 20,
-                        "Epic": 30,
-                        "Legendary": 40,
-                        "Mythic": 50,
-                        "Ancient": 60
+                        "Magic": 4,
+                        "Rare": 5,
+                        "Epic": 6,
+                        "Legendary": 7,
+                        "Mythic": 8,
+                        "Ancient": 9
                     }
                 },
                 "RangedWeapon": {
@@ -2405,7 +2405,9 @@
                     "Ancient": 30
                 },
                 "Config": {
-                    "MaxCharges": 15,
+                    "MaxCharges": 18,
+                    "ChargesPerValue": 0.3,
+                    "MinCharges": 6,
                     "DamageFraction": 0.3,
                     "ConeLength": 4,
                     "ConeMaxWidth": 4,
@@ -2434,8 +2436,9 @@
                     "Ancient": 30
                 },
                 "Config": {
-                    "Cooldown": 30,
+                    "Cooldown": 60,
                     "CooldownPerValue": 1.5,
+                    "MinCooldown": 10,
                     "BaseRadius": 6,
                     "RadiusPerTier": 0.15
                 }
@@ -2487,8 +2490,9 @@
                     "Ancient": 30
                 },
                 "Config": {
-                    "BaseCooldown": 140,
+                    "BaseCooldown": 200,
                     "CooldownPerRarity": 20,
+                    "MinCooldown": 30,
                     "Radius": 8,
                     "FrostPerTier": 8
                 }

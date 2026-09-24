@@ -76,8 +76,7 @@ public static partial class TerminalManager
     private static List<string> GetValidMagicItemNamesWithRequirements(string effectType)
     {
         List<string> result = [];
-        var definition = MagicItemEffectDefinitions.Get(effectType);
-        if (definition == null)
+        if (!MagicItemEffectDefinitions.TryGet(effectType, out var definition))
         {
             return result;
         }
@@ -116,8 +115,7 @@ public static partial class TerminalManager
         string itemPrefabNameArg = args.GetString(2);
         args.Context.PrintInfo($"magicitem - {itemPrefabNameArg} with effect: {effectArg}");
 
-        MagicItemEffectDefinition magicItemEffectDef = MagicItemEffectDefinitions.Get(effectArg);
-        if (magicItemEffectDef == null)
+        if (!MagicItemEffectDefinitions.TryGet(effectArg, out MagicItemEffectDefinition magicItemEffectDef))
         {
             args.Context.PrintWarning($"> Could not find effect: {effectArg}");
             return;

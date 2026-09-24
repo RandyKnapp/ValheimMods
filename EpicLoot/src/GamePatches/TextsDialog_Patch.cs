@@ -29,41 +29,29 @@ internal static class TextsDialog_UpdateTextsList_Patch
     }
 }
 
-[HarmonyPatch(typeof(TextsDialog), nameof(TextsDialog.OnSelectText))]
-internal static class TextsDialog_OnSelectText_Patch
+[HarmonyPatch(typeof(TextsDialog), nameof(TextsDialog.ShowText), typeof(TextsDialog.TextInfo))]
+internal static class TextsDialog_ShowText_Patch
 {
-    private static bool Prefix(TextsDialog __instance, TextsDialog.TextInfo text)
+    private static void Postfix(TextsDialog __instance, TextsDialog.TextInfo text)
     {
         if (!__instance.TryGetComponent(out MagicPages component))
         {
-            return true;
+            return;
         }
 
         component.Reset();
-        if (text is not MagicTextInfo magicInfo)
+        if (text is MagicTextInfo magicInfo)
         {
-            return true;
+            component.OnSelectText(magicInfo);
         }
-
-        component.OnSelectText(magicInfo);
-
-        foreach (TextsDialog.TextInfo element in __instance.m_texts)
-        {
-            element.m_selected.SetActive(false);
-        }
-
-        magicInfo.m_selected.SetActive(true);
-        
-        __instance.StartCoroutine(__instance.FocusOnCurrentLevel(__instance.m_leftScrollRect,
-            __instance.m_listRoot, magicInfo.m_selected.transform as RectTransform));
-        return false;
     }
 }
 
 [HarmonyPatch(typeof(TextsDialog), nameof(TextsDialog.Setup))]
 internal static class TextsDialog_Setup_Patch
 {
-    private static void Postfix(TextsDialog __instance) => __instance.GetComponent<MagicPages>()?.Reset();
+    // Prefix, because Setup ends in ShowText(0) and a postfix would wipe the page it just built.
+    private static void Prefix(TextsDialog __instance) => __instance.GetComponent<MagicPages>()?.Reset();
 }
 
 [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.Hide))]

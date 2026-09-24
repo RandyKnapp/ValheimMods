@@ -1,4 +1,5 @@
 ﻿using EpicLoot.General;
+using EpicLoot.src.Magic.MagicItemEffects.Helpers;
 using HarmonyLib;
 using JetBrains.Annotations;
 using System.Collections;
@@ -146,7 +147,7 @@ namespace EpicLoot.MagicItemEffects
                 hitData.m_damage.m_frost = _frostDamage;
                 hitData.SetAttacker(_player);
 
-                characterCollider.Damage(hitData);
+                HitSource.DealBonusDamage(characterCollider, hitData);
             }
 
             ZNetScene.instance.Destroy(gameObject);

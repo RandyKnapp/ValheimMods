@@ -7,25 +7,52 @@ namespace EpicLoot.MagicItemEffects.Shards {
     // When the player takes damage, immobilizes nearby enemies for a short duration. The radius and cooldown scale with the shard value.
     public static class ElderForestsAid {
         // Both the radius and the cooldown scale with the shard value: radius is BaseRadius plus
-        // RadiusPerTier per point, cooldown is Cooldown plus CooldownPerValue per point -- so a stronger
-        // shard reaches further but fires less often. All tunable in this effect's Config block in
-        // config/shardstones.json, under these key names.
-        public const float DefaultCooldown = 30f;
+        // RadiusPerTier per point, cooldown is Cooldown MINUS CooldownPerValue per point, floored at
+        // MinCooldown -- so a stronger shard reaches further AND fires more often. At the shipped ramp
+        // that is 7.5m / 45s at Rare through 10.5m / 15s at Ancient. All tunable in this effect's Config
+        // block in config/shardstones.json, under these key names.
+        public const float DefaultCooldown = 60f;
         public const float DefaultCooldownPerValue = 1.5f;
+        public const float DefaultMinCooldown = 10f;
         public const float DefaultBaseRadius = 6f;
         public const float DefaultRadiusPerTier = 0.15f;
 
         private const string CooldownKey = "Cooldown";
         private const string CooldownPerValueKey = "CooldownPerValue";
+        private const string MinCooldownKey = "MinCooldown";
         private const string BaseRadiusKey = "BaseRadius";
         private const string RadiusPerTierKey = "RadiusPerTier";
 
         public static readonly Dictionary<string, float> DefaultConfig = new Dictionary<string, float> {
             { CooldownKey, DefaultCooldown },
             { CooldownPerValueKey, DefaultCooldownPerValue },
+            { MinCooldownKey, DefaultMinCooldown },
             { BaseRadiusKey, DefaultBaseRadius },
             { RadiusPerTierKey, DefaultRadiusPerTier },
         };
+
+        private static float GetRadius(float value) {
+            return EffectConfig.Get(MagicEffectType.ForestsAid, BaseRadiusKey, DefaultBaseRadius)
+                + value * EffectConfig.Get(MagicEffectType.ForestsAid, RadiusPerTierKey, DefaultRadiusPerTier);
+        }
+
+        // Shrinks as the shard value grows, never past MinCooldown. Floored just above zero on top of
+        // that, because a ttl of 0 is "no timeout" to vanilla, which would gate the shard permanently
+        // rather than removing the cooldown.
+        private static float GetCooldown(float value) {
+            var cooldown = EffectConfig.Get(MagicEffectType.ForestsAid, CooldownKey, DefaultCooldown)
+                - value * EffectConfig.Get(MagicEffectType.ForestsAid,
+                    CooldownPerValueKey, DefaultCooldownPerValue);
+            var floor = EffectConfig.Get(MagicEffectType.ForestsAid, MinCooldownKey, DefaultMinCooldown);
+            return Mathf.Max(0.1f, Mathf.Max(floor, cooldown));
+        }
+
+        // Tooltip: "Forest's Aid: {0}m, {1}s Cooldown" -- both read through the same helpers the effect
+        // runs on, so the shown numbers follow a retune and visibly improve with the shard's rarity.
+        public static void RegisterDisplayValues() {
+            MagicItem.RegisterDisplayValues(MagicEffectType.ForestsAid,
+                value => new object[] { GetRadius(value), GetCooldown(value) });
+        }
 
         private const string ImmobilizeSE = "ImmobilizedAshlands";
         private const string HitFxPrefab = "fx_natureweapon_hit";
@@ -55,17 +82,8 @@ namespace EpicLoot.MagicItemEffects.Shards {
                 return;
             }
 
-            var radius = EffectConfig.Get(MagicEffectType.ForestsAid, BaseRadiusKey, DefaultBaseRadius)
-                + value * EffectConfig.Get(MagicEffectType.ForestsAid, RadiusPerTierKey, DefaultRadiusPerTier);
-            // Cooldown floored just above zero: a ttl of 0 is "no timeout" to vanilla, which would gate the
-            // shard permanently rather than removing the cooldown.
-            var cooldown = Mathf.Max(0.1f,
-                EffectConfig.Get(MagicEffectType.ForestsAid, CooldownKey, DefaultCooldown)
-                + value * EffectConfig.Get(MagicEffectType.ForestsAid,
-                    CooldownPerValueKey, DefaultCooldownPerValue));
-
-            Immobilize(player, radius);
-            ShowCooldown(player, cooldown);
+            Immobilize(player, GetRadius(value));
+            ShowCooldown(player, GetCooldown(value));
         }
 
         private static void Immobilize(Player player, float radius) {

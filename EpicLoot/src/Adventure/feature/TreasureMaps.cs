@@ -1,11 +1,9 @@
 ﻿using EpicLoot.Biomes;
-using Jotunn.Managers;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace EpicLoot.Adventure.Feature
 {
@@ -108,11 +106,9 @@ namespace EpicLoot.Adventure.Feature
                 return false;
             }
 
-            Quaternion rotation = Quaternion.Euler(0f, UnityEngine.Random.Range(0f, 360f), 0f);
-            GameObject gameObject = PrefabManager.Instance.GetPrefab(AdventureSpawnController.PrefabName);
-            GameObject created_go = Object.Instantiate(gameObject, spawnPoint, rotation);
-            AdventureSpawnController asc = created_go.GetComponent<AdventureSpawnController>();
-            asc.SetTreasure(treasure_details);
+            PlayerExtensions_Adventure.PersistLocalPlayerAdventureData();
+
+            AdventureSpawnController.CreateForTreasure(treasure_details, spawnPoint);
 
             Vector2 offset2 = UnityEngine.Random.insideUnitCircle *
                 (AdventureDataManager.Config.TreasureMap.MinimapAreaRadius * 0.8f);

@@ -12,7 +12,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
-using Object = UnityEngine.Object;
 using Random = System.Random;
 
 namespace EpicLoot.Adventure.Feature
@@ -277,6 +276,7 @@ namespace EpicLoot.Adventure.Feature
                     }
 
                     saveData.NumberOfTreasureMapsOrBountiesStarted++;
+                    player.SaveAdventureSaveData();
 
                     // Spawn monster initializer
                     SpawnBountyInitilizer(bounty, spawnPoint, Vector3.zero);
@@ -288,14 +288,10 @@ namespace EpicLoot.Adventure.Feature
 
         private static void SpawnBountyInitilizer(BountyInfo bounty, Vector3 spawnPoint, Vector3 offset)
         {
-            Quaternion rotation = Quaternion.Euler(0f, UnityEngine.Random.Range(0f, 360f), 0f);
-            GameObject gameObject = PrefabManager.Instance.GetPrefab(AdventureSpawnController.PrefabName);
-            GameObject created_go = Object.Instantiate(gameObject, spawnPoint, rotation);
             // store the spawn position in the bounty object
             bounty.Position = spawnPoint;
-            // Pass the bounty data to this object, save it to the ZNetView
-            created_go.GetComponent<AdventureSpawnController>().SetBounty(bounty);
-            created_go.GetComponent<AdventureSpawnController>().SetIsBounty();
+            // Pass the bounty data to the spawner, which saves it to its ZNetView
+            AdventureSpawnController.CreateForBounty(bounty, spawnPoint);
             Minimap.instance.ShowPointOnMap(spawnPoint + offset);
         }
 
@@ -359,6 +355,12 @@ namespace EpicLoot.Adventure.Feature
 
                 RemoveMinimapPin(bountyInfo);
             }
+
+            // Persist on every credited kill, not just on completion: the add counts above are
+            // progress in their own right. This also covers the offline kill ledger, which replays
+            // through here after the server has already deleted the logs it sent -- an unwritten
+            // credit from that path cannot be recovered.
+            PlayerExtensions_Adventure.PersistLocalPlayerAdventureData();
         }
 
         public void ClaimBountyReward(BountyInfo bountyInfo)
@@ -376,6 +378,7 @@ namespace EpicLoot.Adventure.Feature
             }
 
             bountyInfo.State = BountyState.Claimed;
+            player.SaveAdventureSaveData();
 
             MessageHud.instance.ShowBiomeFoundMsg("$mod_epicloot_bounties_claimedmsg", true);
 
@@ -401,6 +404,7 @@ namespace EpicLoot.Adventure.Feature
             if (saveData != null && bountyInfo != null && saveData.BountyIsInProgress(bountyInfo.Interval, bountyInfo.ID))
             {
                 saveData.AbandonedBounty(bountyInfo.ID);
+                PlayerExtensions_Adventure.PersistLocalPlayerAdventureData();
                 RemoveMinimapPin(bountyInfo);
             }
         }

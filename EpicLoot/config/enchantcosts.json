@@ -405,7 +405,9 @@
         "$item_trophy_surtling",
         "$item_trophy_wolf",
         "$item_trophy_wraith",
-        "$item_trophy_bjorn"
+        "$item_trophy_bjorn",
+        "$item_trophy_deer_white",
+        "$item_trophy_blob_frost"
       ],
       "Products": [
         {
@@ -431,7 +433,8 @@
         "$item_trophy_ulv",
         "$item_trophy_growth",
         "$item_trophy_tick",
-        "$item_trophy_hare"
+        "$item_trophy_hare",
+        "$item_trophy_writhan"
       ],
       "Products": [
         {
@@ -476,11 +479,33 @@
         "$item_trophy_charredmage",
         "$item_trophy_charredmelee",
         "$item_trophy_fallenvalkyrie",
-        "$item_trophy_morgen"
+        "$item_trophy_morgen",
+        "$item_trophy_blob_lava"
       ],
       "Products": [
         {
           "Item": "ShardMythic",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "ItemTypes": [
+        "Trophy"
+      ],
+      "ItemNames": [
+        "$item_trophy_seal",
+        "$item_trophy_moose",
+        "$item_trophy_elaking",
+        "$item_trophy_mole",
+        "$item_trophy_blob_morkhalla",
+        "$item_trophy_jotunwarrior",
+        "$item_trophy_jotunwitch",
+        "$item_trophy_barka"
+      ],
+      "Products": [
+        {
+          "Item": "ShardAncient",
           "Amount": 1
         }
       ]
@@ -579,6 +604,17 @@
       "Products": [
         {
           "Item": "RunestoneMythic",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "ItemNames": [
+        "$item_frozenking_drop"
+      ],
+      "Products": [
+        {
+          "Item": "RunestoneAncient",
           "Amount": 1
         }
       ]

@@ -172,8 +172,16 @@ public class InventoryManagement
 
     // Both removal paths spend the player's own inventory first and only charge the shortfall to
     // external providers, matching how the read paths above report availability.
-    public void RemoveExactItem(ItemDrop.ItemData item, int amount)
+    // Returns how many were actually removed, which is less than amount when the item (or part of its
+    // stack) was no longer anywhere the table can reach. Callers that hand something out in exchange
+    // must pay out for that number, not for what they asked for.
+    public int RemoveExactItem(ItemDrop.ItemData item, int amount)
     {
+        if (item == null || amount <= 0)
+        {
+            return 0;
+        }
+
         Inventory inventory = GetInventory();
 
         int taken = 0;
@@ -187,8 +195,10 @@ public class InventoryManagement
         int shortfall = amount - taken;
         if (shortfall > 0)
         {
-            API.RemoveExactProviderItem(item, shortfall);
+            taken += API.RemoveExactProviderItem(item, shortfall);
         }
+
+        return taken;
     }
 
     public void RemoveItem(ItemDrop.ItemData item)

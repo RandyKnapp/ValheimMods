@@ -243,7 +243,7 @@ namespace EpicLoot.MagicItemEffects.Shards {
                 hit.m_damage.m_fire = _tickDamage;
                 hit.m_hitType = HitData.HitType.Burning;
                 hit.SetAttacker(_owner);
-                character.Damage(hit);
+                HitSource.DealBonusDamage(character, hit);
             }
         }
     }

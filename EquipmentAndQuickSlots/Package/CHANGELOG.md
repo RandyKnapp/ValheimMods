@@ -1,3 +1,7 @@
+**3.1.4**
+* Quick slot hotkeys no longer fire while the build menu (hammer, cultivator, feaster) is open,
+  so typing a piece search like "bench" no longer uses the item in a quick slot.
+
 **3.1.3**
 * Controller navigation in the inventory follows the equipment panel's layout: the D-pad moves
   between the inventory, the equipment cells, the quick slots and API slots in the direction

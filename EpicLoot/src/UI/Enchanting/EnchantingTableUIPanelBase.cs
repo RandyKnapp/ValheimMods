@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using EpicLoot.CraftingV2;
 using TMPro;
 using UnityEngine;
@@ -9,6 +10,8 @@ namespace EpicLoot_UnityLib
     public abstract class EnchantingTableUIPanelBase : MonoBehaviour
     {
         public const float CountdownTime = 0.8f;
+
+        public const string MainActionButton = "JoyButtonX";
 
         public MultiSelectItemList AvailableItems;
         public Button MainButton;
@@ -26,6 +29,8 @@ namespace EpicLoot_UnityLib
         protected bool _useTMP = false;
         protected string _defaultButtonLabelText;
         protected bool _locked;
+
+        private GameObject _mainButtonGamepadHint;
 
         protected abstract void DoMainAction();
         protected abstract void OnSelectedItemsChanged();
@@ -49,10 +54,79 @@ namespace EpicLoot_UnityLib
                 }
                 
                 _defaultButtonLabelText = _useTMP ? _tmpButtonLabel.text : _buttonLabel.text;
+                _mainButtonGamepadHint = FindGamepadHint(MainButton.transform);
             }
 
             EnchantingUIController.SetupUIAudioSource(Audio);
             EnchantingUIController.SetupUIAudioSources(gameObject);
+        }
+
+        // Matches the prefab's glyph child by name: "Hint" in most panels, "Hint-1" in the ones with two.
+        private static GameObject FindGamepadHint(Transform button)
+        {
+            for (int i = 0; i < button.childCount; ++i)
+            {
+                Transform child = button.GetChild(i);
+                if (child.name.StartsWith("Hint", StringComparison.Ordinal))
+                {
+                    return child.gameObject;
+                }
+            }
+
+            return null;
+        }
+
+        private void UpdateMainButtonGamepadInput()
+        {
+            if (MainButton == null)
+            {
+                return;
+            }
+
+            bool usable = ZInput.IsGamepadActive() && (_inProgress || !_locked) && MainButton.IsInteractable();
+
+            if (_mainButtonGamepadHint != null && _mainButtonGamepadHint.activeSelf != usable)
+            {
+                _mainButtonGamepadHint.SetActive(usable);
+            }
+
+            if (usable && ZInput.GetButtonDown(MainActionButton))
+            {
+                ZInput.ResetButtonStatus(MainActionButton);
+                OnMainButtonClicked();
+            }
+        }
+
+        // The d-pad's horizontal axis still moves the player's hotbar selection behind this panel, so it
+        // is eaten here whether or not the panel answers it.
+        private void UpdateDPadHorizontalInput()
+        {
+            if (!ZInput.IsGamepadActive())
+            {
+                return;
+            }
+
+            int direction;
+            if (ZInput.GetButtonDown("JoyDPadLeft"))
+            {
+                direction = -1;
+                ZInput.ResetButtonStatus("JoyDPadLeft");
+            }
+            else if (ZInput.GetButtonDown("JoyDPadRight"))
+            {
+                direction = 1;
+                ZInput.ResetButtonStatus("JoyDPadRight");
+            }
+            else
+            {
+                return;
+            }
+
+            OnDPadHorizontal(direction);
+        }
+
+        protected virtual void OnDPadHorizontal(int direction)
+        {
         }
 
         protected virtual void OnMainButtonClicked()
@@ -78,6 +152,9 @@ namespace EpicLoot_UnityLib
 
         public virtual void Update()
         {
+            UpdateMainButtonGamepadInput();
+            UpdateDPadHorizontalInput();
+
             if (ProgressBar != null)
             {
                 ProgressBar.gameObject.SetActive(_inProgress);
@@ -207,7 +284,9 @@ namespace EpicLoot_UnityLib
             EnchantingTableUI.instance.UnlockTabs();
         }
 
-        protected static bool LocalPlayerCanAffordCost(List<InventoryItemListElement> cost)
+        // Internal as well as protected: EnchantingUIController re-checks the identify cost with it after
+        // rolling, right before charging.
+        protected internal static bool LocalPlayerCanAffordCost(List<InventoryItemListElement> cost)
         {
             if (Player.m_localPlayer.NoCostCheat())
             {

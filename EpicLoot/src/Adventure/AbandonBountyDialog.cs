@@ -23,14 +23,14 @@ namespace EpicLoot.Adventure
             NoButton.onClick.AddListener(OnNoButtonClicked);
         }
 
-        private void OnYesButtonClicked()
+        public void OnYesButtonClicked()
         {
             AdventureDataManager.Bounties.AbandonBounty(_bountyInfo);
             MerchantPanel.OnAbandonBounty();
             Close();
         }
 
-        private void OnNoButtonClicked()
+        public void OnNoButtonClicked()
         {
             Close();
         }

@@ -1,9 +1,17 @@
-﻿namespace EpicLoot.MagicItemEffects.Shards {
+﻿using UnityEngine;
+
+namespace EpicLoot.MagicItemEffects.Shards {
     // Provides a conversion of incoming physical damage into elemental damage based on the player's active magic effects.
     public static class IncomingPhysicalConversion {
         // Prefix handler invoked by CharacterRpcDamageDispatch (victim-side incoming modifier). The
         // dispatcher calls this before ModifyResistance so the converted element is then reduced by the
-        // player's matching percentage resistance
+        // player's matching percentage resistance.
+        //
+        // With IsBlocked (from the BlockAttack postfix) it converts the on-block shares only. The general
+        // shares were already converted by the RPC_Damage prefix, which runs before vanilla's BlockAttack on
+        // this same HitData; adding them again converted a blocked hit twice (30% became 51%). The on-block
+        // shares are meant as a share of the original physical damage, of which only (1 - general) is left
+        // here, so they are scaled up to match.
         public static void ModifyIncoming(Character __instance, HitData hit, bool IsBlocked = false, bool IsParry = false) {
             if (__instance != Player.m_localPlayer) {
                 return;
@@ -16,10 +24,15 @@
             float toLightning = player.GetTotalActiveMagicEffectValue(MagicEffectType.PhysToLightning, 0.01f);
 
             if (IsBlocked) {
-                toFire += player.GetTotalActiveMagicEffectValue(MagicEffectType.PhysToFireOnBlock, 0.01f);
-                toFrost += player.GetTotalActiveMagicEffectValue(MagicEffectType.PhysToFrostOnBlock, 0.01f);
-                toPoison += player.GetTotalActiveMagicEffectValue(MagicEffectType.PhysToPoisonOnBlock, 0.01f);
-                toLightning += player.GetTotalActiveMagicEffectValue(MagicEffectType.PhysToLightningOnBlock, 0.01f);
+                float remaining = 1f - Mathf.Min(1f, toFire + toFrost + toPoison + toLightning);
+                if (remaining <= 0f) {
+                    return;
+                }
+
+                toFire = player.GetTotalActiveMagicEffectValue(MagicEffectType.PhysToFireOnBlock, 0.01f) / remaining;
+                toFrost = player.GetTotalActiveMagicEffectValue(MagicEffectType.PhysToFrostOnBlock, 0.01f) / remaining;
+                toPoison = player.GetTotalActiveMagicEffectValue(MagicEffectType.PhysToPoisonOnBlock, 0.01f) / remaining;
+                toLightning = player.GetTotalActiveMagicEffectValue(MagicEffectType.PhysToLightningOnBlock, 0.01f) / remaining;
             }
 
             float total = toFire + toFrost + toPoison + toLightning;

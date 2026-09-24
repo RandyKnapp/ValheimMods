@@ -32,9 +32,10 @@ public class MinimapController : MonoBehaviour
     public static readonly Dictionary<string, AreaPinInfo> BountyPins = new();
     public static bool DebugMode;
 
-    private static GameObject _adventureToggleContainer;
-    private static AdventureToggle _adventureBountyToggle;
-    private static AdventureToggle _adventureTreasureToggle;
+    private static AdventurePinFilter _bountyPinFilter;
+    private static AdventurePinFilter _treasurePinFilter;
+
+    private static readonly List<PanelLayout> VanillaPanelLayout = new();
 
     public virtual void Awake()
     {
@@ -57,23 +58,13 @@ public class MinimapController : MonoBehaviour
                 m_icon = EpicAssets.MapIconBounty
             });
         }
-
-        SetupToggles();
     }
 
     private void Start()
     {
-        if (_minimap.m_visibleIconTypes.Length < (int)EpicLoot.TreasureMapPinType + 1)
-        {
-            _minimap.m_visibleIconTypes = new bool[(int)EpicLoot.TreasureMapPinType + 1];
-
-            for (int index = 0; index < _minimap.m_visibleIconTypes.Length; ++index)
-            {
-                _minimap.m_visibleIconTypes[index] = true;
-            }
-        }
-
-        RefreshAdventureToggleContainer();
+        EnsureVisibleIconTypeCapacity();
+        SetupPinFilters();
+        RefreshAdventurePinFilters();
     }
 
     public virtual void Update()
@@ -95,59 +86,281 @@ public class MinimapController : MonoBehaviour
         MinimapPinQueue.Clear();
         TreasureMapPins.Clear();
         BountyPins.Clear();
-        Destroy(_adventureToggleContainer);
+
+        _bountyPinFilter?.Destroy();
+        _treasurePinFilter?.Destroy();
+        _bountyPinFilter = null;
+        _treasurePinFilter = null;
+        VanillaPanelLayout.Clear();
     }
 
-    private void SetupToggles()
+    private void EnsureVisibleIconTypeCapacity()
     {
-        GameObject original = Utils.FindChild(_minimap.transform, "SharedPanel").gameObject;
-        
-        GameObject container = new GameObject("AdventureToggleContainer");
-        RectTransform rect = container.AddComponent<RectTransform>();
-        rect.SetParent(original.transform.parent);
+        int required = (int)EpicLoot.TreasureMapPinType + 1;
 
-        rect.anchorMin = new Vector2(0f, 0f);
-        rect.anchorMax = new Vector2(0f, 0f);
-        rect.pivot = new Vector2(0f, 1f);
-        rect.sizeDelta = new Vector2(250f, 42f);
-        rect.anchoredPosition = new Vector2(20f, 60f);
-        // TODO: add repositioning configuration to be compatible with other mods
-
-        HorizontalLayoutGroup layout = container.AddComponent<HorizontalLayoutGroup>();
-        layout.childForceExpandWidth = false;
-        layout.childForceExpandHeight = false;
-        layout.childControlWidth = false;
-        layout.childControlHeight = false;
-        layout.spacing = 5f;
-
-        _adventureBountyToggle = new AdventureToggle(original, rect, "Bounty", ToggleBounties);
-        _adventureBountyToggle.SetIcon(EpicAssets.MapIconBounty);
-        _adventureBountyToggle.SetGamepadKey("JoyLTrigger");
-        _adventureBountyToggle.SetLabel("$mod_epicloot_merchant_bounties");
-        _adventureBountyToggle.toggle.isOn = true;
-
-        _adventureTreasureToggle = new AdventureToggle(original, rect, "Treasure", ToggleTreasureMaps);
-        _adventureTreasureToggle.SetIcon(EpicAssets.MapIconTreasureMap);
-        _adventureTreasureToggle.SetGamepadKey("JoyRTrigger");
-        _adventureTreasureToggle.SetLabel("$mod_epicloot_merchant_treasuremaps");
-        _adventureTreasureToggle.toggle.isOn = true;
-
-        _adventureToggleContainer = container;
-    }
-
-    /// <summary>
-    /// When not connected to a world, the container stays active. When connected and Adventure Mode is disabled, the container is hidden.
-    /// </summary>
-    public static void RefreshAdventureToggleContainer()
-    {
-        if (_adventureToggleContainer == null)
+        if (_minimap.m_visibleIconTypes != null && _minimap.m_visibleIconTypes.Length >= required)
         {
-            EpicLoot.LogError("There was an issue setting adventure data for the minimap, toggle container is null!");
             return;
         }
 
-        bool show = ShowAdventureToggleContainer();
-        _adventureToggleContainer.SetActive(show);
+        bool[] resized = new bool[required];
+
+        for (int index = 0; index < resized.Length; ++index)
+        {
+            resized[index] = _minimap.m_visibleIconTypes == null ||
+                             index >= _minimap.m_visibleIconTypes.Length ||
+                             _minimap.m_visibleIconTypes[index];
+        }
+
+        _minimap.m_visibleIconTypes = resized;
+    }
+
+    private void SetupPinFilters()
+    {
+        if (_minimap.m_selectedIconDeath == null || _minimap.m_selectedIconBoss == null)
+        {
+            EpicLoot.LogError("Could not find the minimap pin filter panel, adventure pins cannot be filtered!");
+            return;
+        }
+
+        _bountyPinFilter = new AdventurePinFilter(_minimap, EpicLoot.BountyPinType, EpicAssets.MapIconBounty,
+            "$mod_epicloot_merchant_bounties");
+        _treasurePinFilter = new AdventurePinFilter(_minimap, EpicLoot.TreasureMapPinType, EpicAssets.MapIconTreasureMap,
+            "$mod_epicloot_merchant_treasuremaps");
+    }
+
+    /// <summary>
+    /// Sizes the filter panel to however many adventure filters are currently shown, so hiding them leaves the
+    /// vanilla layout exactly as it was found.
+    /// </summary>
+    private static void LayoutPinFilterPanel()
+    {
+        RestorePinFilterPanel();
+
+        int addedIcons = (_bountyPinFilter is { Active: true } ? 1 : 0) +
+                         (_treasurePinFilter is { Active: true } ? 1 : 0);
+
+        if (addedIcons > 0)
+        {
+            GrowPinFilterPanel(addedIcons);
+        }
+    }
+
+    private static void GrowPinFilterPanel(int addedIcons)
+    {
+        Minimap minimap = Minimap.instance;
+
+        if (minimap == null || minimap.m_selectedIconDeath == null || minimap.m_selectedIconBoss == null)
+        {
+            return;
+        }
+
+        if (minimap.m_selectedIconDeath.transform.parent is not RectTransform firstIcon ||
+            minimap.m_selectedIconBoss.transform.parent is not RectTransform secondIcon ||
+            firstIcon.parent is not RectTransform panel || panel.parent == null)
+        {
+            return;
+        }
+
+        float step = (secondIcon.anchoredPosition.y - firstIcon.anchoredPosition.y) * addedIcons;
+        if (step == 0f)
+        {
+            return;
+        }
+
+        bool upwards = step > 0f;
+        float growth = Mathf.Abs(step);
+        float panelEdge = panel.localPosition.y + (upwards ? panel.rect.yMax : panel.rect.yMin);
+        float panelCenterX = panel.localPosition.x + panel.rect.center.x;
+        float panelWidth = panel.rect.width;
+
+        Capture(panel);
+        panel.sizeDelta += new Vector2(0f, growth);
+        panel.anchoredPosition += new Vector2(0f, upwards ? growth * panel.pivot.y : -growth * (1f - panel.pivot.y));
+
+        List<RectTransform> column = new() { panel };
+
+        foreach (RectTransform sibling in panel.parent.Cast<Transform>().OfType<RectTransform>())
+        {
+            if (sibling == panel || sibling.rect.width > panelWidth * 2f)
+            {
+                continue;
+            }
+
+            if (Mathf.Abs(sibling.localPosition.x + sibling.rect.center.x - panelCenterX) > panelWidth * 0.5f)
+            {
+                continue;
+            }
+
+            float siblingEdge = sibling.localPosition.y + (upwards ? sibling.rect.yMin : sibling.rect.yMax);
+            if (upwards ? siblingEdge < panelEdge : siblingEdge > panelEdge)
+            {
+                continue;
+            }
+
+            // Nothing names the pin icon panel or the d-pad hint, so they are picked out by sitting past the
+            // filter panel in its own narrow column. Re-check this if the vanilla map layout changes.
+            Capture(sibling);
+            sibling.localPosition += new Vector3(0f, upwards ? growth : -growth, 0f);
+            column.Add(sibling);
+        }
+
+        KeepIconColumnOnMap(minimap, column);
+    }
+
+    /// <summary>
+    /// Growing the panel pushes the column the added icons' worth of height off the end of the map, so the whole
+    /// column slides back the other way by as much of that as the gap at the far end can take.
+    /// </summary>
+    private static void KeepIconColumnOnMap(Minimap minimap, List<RectTransform> column)
+    {
+        if (minimap.m_mapImageLarge == null)
+        {
+            return;
+        }
+
+        Vector3[] corners = new Vector3[4];
+        minimap.m_mapImageLarge.rectTransform.GetWorldCorners(corners);
+        float mapBottom = corners[0].y;
+        float mapTop = corners[1].y;
+
+        float columnBottom = float.MaxValue;
+        float columnTop = float.MinValue;
+
+        foreach (RectTransform rect in column)
+        {
+            rect.GetWorldCorners(corners);
+            columnBottom = Mathf.Min(columnBottom, corners[0].y);
+            columnTop = Mathf.Max(columnTop, corners[1].y);
+        }
+
+        float roomAbove = mapTop - columnTop;
+        float roomBelow = columnBottom - mapBottom;
+        float shift = 0f;
+
+        if (roomBelow < 0f)
+        {
+            shift = Mathf.Min(-roomBelow, Mathf.Max(0f, roomAbove));
+        }
+        else if (roomAbove < 0f)
+        {
+            shift = -Mathf.Min(-roomAbove, Mathf.Max(0f, roomBelow));
+        }
+
+        if (shift == 0f)
+        {
+            return;
+        }
+
+        foreach (RectTransform rect in column)
+        {
+            rect.position += new Vector3(0f, shift, 0f);
+        }
+    }
+
+    private static void Capture(RectTransform rect)
+    {
+        VanillaPanelLayout.Add(new PanelLayout(rect));
+    }
+
+    private static void RestorePinFilterPanel()
+    {
+        foreach (PanelLayout layout in VanillaPanelLayout)
+        {
+            layout.Restore();
+        }
+
+        VanillaPanelLayout.Clear();
+    }
+
+    /// <summary>
+    /// Minimap walks m_selectedIcons in insertion order for d-pad navigation, so the adventure filters have to be
+    /// rebuilt into it next to the boss and death filters they sit beside rather than appended.
+    /// </summary>
+    private static void RebuildSelectedIcons()
+    {
+        Minimap minimap = Minimap.instance;
+
+        if (minimap == null)
+        {
+            return;
+        }
+
+        Dictionary<Minimap.PinType, Image> rebuilt = new();
+        bool inserted = false;
+
+        foreach (KeyValuePair<Minimap.PinType, Image> entry in minimap.m_selectedIcons)
+        {
+            if (IsAdventurePinType(entry.Key))
+            {
+                continue;
+            }
+
+            rebuilt[entry.Key] = entry.Value;
+
+            if (entry.Key != Minimap.PinType.Boss)
+            {
+                continue;
+            }
+
+            AddSelectedIcon(rebuilt, _bountyPinFilter);
+            AddSelectedIcon(rebuilt, _treasurePinFilter);
+            inserted = true;
+        }
+
+        if (!inserted)
+        {
+            AddSelectedIcon(rebuilt, _bountyPinFilter);
+            AddSelectedIcon(rebuilt, _treasurePinFilter);
+        }
+
+        minimap.m_selectedIcons = rebuilt;
+    }
+
+    private static void AddSelectedIcon(Dictionary<Minimap.PinType, Image> icons, AdventurePinFilter filter)
+    {
+        if (filter is { Active: true })
+        {
+            icons[filter.pinType] = filter.selected;
+        }
+    }
+
+    private readonly struct PanelLayout
+    {
+        private readonly RectTransform _rect;
+        private readonly Vector2 _sizeDelta;
+        private readonly Vector3 _localPosition;
+
+        public PanelLayout(RectTransform rect)
+        {
+            _rect = rect;
+            _sizeDelta = rect.sizeDelta;
+            _localPosition = rect.localPosition;
+        }
+
+        public void Restore()
+        {
+            if (_rect == null)
+            {
+                return;
+            }
+
+            _rect.sizeDelta = _sizeDelta;
+            _rect.localPosition = _localPosition;
+        }
+    }
+
+    /// <summary>
+    /// When not connected to a world, the filters stay active. When connected and Adventure Mode is disabled, they are hidden.
+    /// </summary>
+    public static void RefreshAdventurePinFilters()
+    {
+        bool show = ShowAdventurePinFilters();
+
+        _bountyPinFilter?.SetActive(show);
+        _treasurePinFilter?.SetActive(show);
+        LayoutPinFilterPanel();
+        RebuildSelectedIcons();
 
         PinJob pinJob = new PinJob
         {
@@ -157,17 +370,34 @@ public class MinimapController : MonoBehaviour
         AddPinJobToQueue(pinJob);
     }
 
+    public static void OnPinFilterToggled(Minimap.PinType type)
+    {
+        if (type == EpicLoot.BountyPinType)
+        {
+            ToggleBounties(ShowAdventureBountyPins());
+        }
+        else if (type == EpicLoot.TreasureMapPinType)
+        {
+            ToggleTreasureMaps(ShowAdventureTreasurePins());
+        }
+    }
+
+    public static bool IsAdventurePinType(Minimap.PinType type)
+    {
+        return type == EpicLoot.BountyPinType || type == EpicLoot.TreasureMapPinType;
+    }
+
     private static bool ShowAdventureBountyPins()
     {
-        return _adventureBountyToggle.toggle.isOn;
+        return _bountyPinFilter == null || _bountyPinFilter.Visible;
     }
 
     private static bool ShowAdventureTreasurePins()
     {
-        return _adventureTreasureToggle.toggle.isOn;
+        return _treasurePinFilter == null || _treasurePinFilter.Visible;
     }
 
-    private static bool ShowAdventureToggleContainer()
+    private static bool ShowAdventurePinFilters()
     {
         // TODO: add more configuration options to hide minimap buttons as needed
         // Will need to ensure places this is used maintian logic if changed.
@@ -186,7 +416,7 @@ public class MinimapController : MonoBehaviour
 
     private static void RefreshBounties(bool show)
     {
-        if (ShowAdventureToggleContainer() && show)
+        if (ShowAdventurePinFilters() && show)
         {
             AdventureSaveData adventureSaveData = Player.m_localPlayer.GetAdventureSaveData();
             if (adventureSaveData == null) return;
@@ -246,7 +476,7 @@ public class MinimapController : MonoBehaviour
             return;
         }
 
-        if (ShowAdventureToggleContainer() && show)
+        if (ShowAdventurePinFilters() && show)
         {
             AdventureSaveData adventureSaveData = Player.m_localPlayer.GetAdventureSaveData();
             if (adventureSaveData == null)

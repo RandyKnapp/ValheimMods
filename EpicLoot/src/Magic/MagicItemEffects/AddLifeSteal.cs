@@ -13,16 +13,7 @@ namespace EpicLoot.MagicItemEffects
                 return;
             }
 
-            ItemDrop.ItemData weapon;
-            if (Attack_Patch.ActiveAttack != null && Attack_Patch.ActiveAttack.m_weapon != null)
-            {
-                weapon = Attack_Patch.ActiveAttack.m_weapon;
-            }
-            else
-            {
-                weapon = player.GetCurrentWeapon();
-            }
-
+            ItemDrop.ItemData weapon = MagicEffectsHelper.GetActiveWeapon(player);
             if (weapon == null || !weapon.IsMagic())
             {
                 return;

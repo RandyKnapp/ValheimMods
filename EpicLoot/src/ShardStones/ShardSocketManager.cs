@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using EpicLoot.Config;
 using EpicLoot.Crafting;
@@ -87,8 +87,7 @@ namespace EpicLoot.ShardStones {
                 return true;
             }
 
-            var def = MagicItemEffectDefinitions.Get(effect.EffectType);
-            if (def == null) {
+            if (!MagicItemEffectDefinitions.TryGet(effect.EffectType, out var def)) {
                 reason = "$mod_epicloot_socket_invalidinput";
                 return false;
             }
@@ -117,7 +116,7 @@ namespace EpicLoot.ShardStones {
                     occupants.Add(new SocketOccupant(socket.ShardType, socket.Effect));
                 }
             }
-            if (!CheckDuplicateEffect(color, effect, rarity, occupants, out reason)) {
+            if (!CheckDuplicateEffect(color, effect, occupants, out reason)) {
                 return false;
             }
 
@@ -159,8 +158,7 @@ namespace EpicLoot.ShardStones {
                 return true;
             }
 
-            var def = MagicItemEffectDefinitions.Get(effect.EffectType);
-            if (def == null) {
+            if (!MagicItemEffectDefinitions.TryGet(effect.EffectType, out var def)) {
                 reason = "$mod_epicloot_socket_invalidinput";
                 return false;
             }
@@ -184,7 +182,7 @@ namespace EpicLoot.ShardStones {
                     occupants.Add(new SocketOccupant(otherColor, otherEffect));
                 }
             }
-            if (!CheckDuplicateEffect(color, effect, rarity, occupants, out reason)) {
+            if (!CheckDuplicateEffect(color, effect, occupants, out reason)) {
                 return false;
             }
 
@@ -208,7 +206,7 @@ namespace EpicLoot.ShardStones {
         // rune vs rune, rune vs shard, two colors landing on one effect -- stays under
         // AllowDuplicateSocketedEffects, so nothing about those changes when stacking is off.
         private static bool CheckDuplicateEffect(ShardType inputColor, MagicItemEffect effect,
-            ItemRarity inputRarity, List<SocketOccupant> occupants, out string reason) {
+            List<SocketOccupant> occupants, out string reason) {
             reason = null;
 
             foreach (var occupant in occupants) {
@@ -233,7 +231,7 @@ namespace EpicLoot.ShardStones {
                 // An effect with no rarity-scaled value (Warmth, say) is a yes/no grant: a second one
                 // adds nothing whether it is decayed or not, so stacking it would only cost the player
                 // a socket. Same notion of "valueless" the BreakValueless removal mode uses.
-                if (MagicItemEffectDefinitions.IsValuelessEffect(effect.EffectType, inputRarity)) {
+                if (MagicItemEffectDefinitions.IsValuelessEffect(effect.EffectType)) {
                     reason = "$mod_epicloot_socket_nostackbinary";
                     return false;
                 }
@@ -356,9 +354,8 @@ namespace EpicLoot.ShardStones {
 
         // How the given socketed entry is allowed to leave its socket. Derived live from config and the
         // socket's own data -- nothing is persisted, so a config change applies to every existing item
-        // immediately. `sourceRarity` is the shard/runestone's own rarity, the same key the shard grid
-        // is indexed by in ResolveSocketedEffect.
-        public static SocketRemoval GetRemovalPolicy(ShardType color, MagicItemEffect effect, ItemRarity sourceRarity) {
+        // immediately.
+        public static SocketRemoval GetRemovalPolicy(ShardType color, MagicItemEffect effect) {
             if (color == ShardType.None) {
                 switch (ELConfig.RuneSocketRemovalMode.Value) {
                     case RuneSocketMode.Break:
@@ -372,7 +369,7 @@ namespace EpicLoot.ShardStones {
 
             switch (ELConfig.ShardSocketRemovalMode.Value) {
                 case ShardSocketMode.BreakValueless:
-                    return IsValuelessGrant(effect, sourceRarity) ? SocketRemoval.BreakOnly : SocketRemoval.Free;
+                    return IsValuelessGrant(effect) ? SocketRemoval.BreakOnly : SocketRemoval.Free;
                 case ShardSocketMode.BreakAll:
                     return SocketRemoval.BreakOnly;
                 case ShardSocketMode.Permanent:
@@ -386,14 +383,14 @@ namespace EpicLoot.ShardStones {
         public static SocketRemoval GetRemovalPolicy(SocketedEffect socket) {
             return socket == null
                 ? SocketRemoval.Free
-                : GetRemovalPolicy(socket.ShardType, socket.Effect, socket.SourceRarity);
+                : GetRemovalPolicy(socket.ShardType, socket.Effect);
         }
 
         // Policy for a socketable item sitting in the socket grid (UI). Anything that isn't a valid
         // socketable has no policy to enforce.
         public static SocketRemoval GetRemovalPolicy(ItemDrop.ItemData equipment, ItemDrop.ItemData socketed) {
             return ResolveSocketedEffect(equipment, socketed, out var effect, out var color, out var rarity)
-                ? GetRemovalPolicy(color, effect, rarity)
+                ? GetRemovalPolicy(color, effect)
                 : SocketRemoval.Free;
         }
 
@@ -402,9 +399,8 @@ namespace EpicLoot.ShardStones {
         // per-rarity number (that number is meaningless for a binary effect). A shard that grants
         // nothing at all in a slot is deliberately NOT valueless in this sense: the player gained
         // nothing from it, so it owes no commitment and stays freely removable.
-        private static bool IsValuelessGrant(MagicItemEffect effect, ItemRarity sourceRarity) {
-            return effect != null &&
-                MagicItemEffectDefinitions.IsValuelessEffect(effect.EffectType, sourceRarity);
+        private static bool IsValuelessGrant(MagicItemEffect effect) {
+            return effect != null && MagicItemEffectDefinitions.IsValuelessEffect(effect.EffectType);
         }
 
         // The player-facing reason a socketed item may not simply be dragged out.

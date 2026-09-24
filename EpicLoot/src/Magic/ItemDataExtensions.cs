@@ -207,8 +207,10 @@ public static class ItemDataExtensions
             return false;
         }
 
-        return itemData.GetMagicItem().Effects.Select(effect => MagicItemEffectDefinitions.Get(effect.EffectType))
-            .Any(effectDef => effectDef.CanBeAugmented);
+        // An effect with no registered definition is never augmentable.
+        return itemData.GetMagicItem().Effects.Any(effect =>
+            MagicItemEffectDefinitions.TryGet(effect.EffectType, out MagicItemEffectDefinition effectDef) &&
+            effectDef.CanBeAugmented);
     }
 
     public static bool CanBeRunified(this ItemDrop.ItemData itemData)
@@ -218,8 +220,10 @@ public static class ItemDataExtensions
             return false;
         }
 
-        return itemData.GetMagicItem().Effects.Select(effect => MagicItemEffectDefinitions.Get(effect.EffectType))
-            .Any(effectDef => effectDef.CanBeRunified);
+        // An effect with no registered definition is never extracted or overwritten by a rune.
+        return itemData.GetMagicItem().Effects.Any(effect =>
+            MagicItemEffectDefinitions.TryGet(effect.EffectType, out MagicItemEffectDefinition effectDef) &&
+            effectDef.CanBeRunified);
     }
 
     // Shardstones and Brokkr's Gifts carry a cosmetic MagicItem -- a rarity and nothing else -- purely
@@ -316,6 +320,10 @@ public static class ItemDataExtensions
     {
         // TODO: improve performace of this call
         List<string> results = new List<string>();
+        // One entry per display token, not per prefab. Deep North registers SP_/FW_ NPC prop copies of
+        // set armour (SP_ArmorTrollLeatherChest, FW_CapeTrollHide, ...) that keep the real item's
+        // m_name and m_setName, so without this the troll set listed its tunic, pants and cape three times.
+        HashSet<string> seen = new HashSet<string>();
         foreach (GameObject itemPrefab in ObjectDB.instance.m_items)
         {
             if (itemPrefab == null)
@@ -331,7 +339,7 @@ public static class ItemDataExtensions
                 continue;
             }
 
-            if (itemDrop.m_itemData.m_shared.m_setName == setName)
+            if (itemDrop.m_itemData.m_shared.m_setName == setName && seen.Add(itemDrop.m_itemData.m_shared.m_name))
             {
                 results.Add(itemDrop.m_itemData.m_shared.m_name);
             }
@@ -561,9 +569,7 @@ public static class ItemDataExtensions
                 foreach (SetBonusInfo setBonusInfo in setInfo.SetBonuses.OrderBy(x => x.Count))
                 {
                     bool hasEquipped = currentSetEquipped.Count >= setBonusInfo.Count;
-                    MagicItemEffectDefinition effectDef = MagicItemEffectDefinitions.Get(setBonusInfo.Effect.Type);
-
-                    if (effectDef == null)
+                    if (!MagicItemEffectDefinitions.TryGet(setBonusInfo.Effect.Type, out MagicItemEffectDefinition effectDef))
                     {
                         EpicLoot.LogError($"Set Tooltip: Could not find effect ({setBonusInfo.Effect.Type}) " +
                             $"for set ({setInfo.ID}) bonus ({setBonusInfo.Count})!");

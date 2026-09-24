@@ -12,6 +12,7 @@ namespace EpicLoot
                 __instance.gameObject.AddComponent<BountyManagmentSystem>();
             
             AdventureDataManager.Bounties.RegisterRPC(__instance.m_routedRpc);
+            AdventureSpawnSaveMarker.RegisterRPC(__instance.m_routedRpc);
         }
     }
 

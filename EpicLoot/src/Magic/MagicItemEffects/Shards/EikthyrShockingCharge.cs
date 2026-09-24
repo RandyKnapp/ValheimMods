@@ -7,18 +7,26 @@ namespace EpicLoot.MagicItemEffects.Shards {
     public static class EikthyrShockingCharge {
         // All tunable in this effect's Config block in config/shardstones.json, under these key names.
         //
-        // Hits required to trigger a discharge, and the portion of the banked combat damage the shockwave
-        // delivers. Cone geometry: reach straight ahead, and the full width of the cone at that reach --
-        // the half-width grows linearly from 0 at the player to (ConeMaxWidth / 2) at ConeLength. The
-        // ignore window is how long after a discharge the shockwave's own hits are kept from rebuilding
-        // the charge.
-        public const int DefaultMaxCharges = 15;
+        // Hits required to trigger a discharge: MaxCharges is the threshold at a shard value of zero,
+        // ChargesPerValue is how many hits each point of value shaves off it, and MinCharges is the floor
+        // it may never drop below. This is what the shard's rarity buys -- at the shipped ramp a Rare
+        // Eikthyr shard discharges every 15 hits and an Ancient one every 9.
+        //
+        // DamageFraction is the portion of the banked combat damage the shockwave delivers. Cone geometry:
+        // reach straight ahead, and the full width of the cone at that reach -- the half-width grows
+        // linearly from 0 at the player to (ConeMaxWidth / 2) at ConeLength. The ignore window is how long
+        // after a discharge the shockwave's own hits are kept from rebuilding the charge.
+        public const int DefaultMaxCharges = 18;
+        public const float DefaultChargesPerValue = 0.3f;
+        public const int DefaultMinCharges = 6;
         public const float DefaultDamageFraction = 0.3f;
         public const float DefaultConeLength = 4f;
         public const float DefaultConeMaxWidth = 4f;
         public const float DefaultDischargeIgnoreWindow = 0.3f;
 
         private const string MaxChargesKey = "MaxCharges";
+        private const string ChargesPerValueKey = "ChargesPerValue";
+        private const string MinChargesKey = "MinCharges";
         private const string DamageFractionKey = "DamageFraction";
         private const string ConeLengthKey = "ConeLength";
         private const string ConeMaxWidthKey = "ConeMaxWidth";
@@ -26,16 +34,37 @@ namespace EpicLoot.MagicItemEffects.Shards {
 
         public static readonly Dictionary<string, float> DefaultConfig = new Dictionary<string, float> {
             { MaxChargesKey, DefaultMaxCharges },
+            { ChargesPerValueKey, DefaultChargesPerValue },
+            { MinChargesKey, DefaultMinCharges },
             { DamageFractionKey, DefaultDamageFraction },
             { ConeLengthKey, DefaultConeLength },
             { ConeMaxWidthKey, DefaultConeMaxWidth },
             { DischargeIgnoreWindowKey, DefaultDischargeIgnoreWindow },
         };
 
-        // Clamped to at least 1 so a misconfiguration can't discharge on every hit through a zero threshold.
-        private static int GetMaxCharges() {
-            return EffectConfig.GetIntAtLeast(MagicEffectType.ShockingCharge,
+        // Hits needed to discharge at the given shard value. Rounded rather than truncated so a fractional
+        // rate lands on the nearer threshold, then clamped at both ends: never above the configured ceiling
+        // (so a negative rate cannot make a shard worse than no shard) and never below MinCharges or 1, so
+        // a misconfiguration can only weaken the effect rather than turn every hit into a discharge.
+        private static int GetChargesNeeded(float value) {
+            var ceiling = EffectConfig.GetIntAtLeast(MagicEffectType.ShockingCharge,
                 MaxChargesKey, DefaultMaxCharges, 1);
+            var perValue = EffectConfig.Get(MagicEffectType.ShockingCharge,
+                ChargesPerValueKey, DefaultChargesPerValue);
+            var floor = Mathf.Clamp(EffectConfig.GetIntAtLeast(MagicEffectType.ShockingCharge,
+                MinChargesKey, DefaultMinCharges, 1), 1, ceiling);
+            return Mathf.Clamp(Mathf.RoundToInt(ceiling - value * perValue), floor, ceiling);
+        }
+
+        // Tooltip: "Shocking Charge: Every {0} Hits", with {1} the discharge's share of the banked damage.
+        // Both are derived from the same helpers the effect runs on, so a retune moves the shown text too.
+        public static void RegisterDisplayValues() {
+            MagicItem.RegisterDisplayValues(MagicEffectType.ShockingCharge,
+                value => new object[] {
+                    (float)GetChargesNeeded(value),
+                    EffectConfig.Get(MagicEffectType.ShockingCharge,
+                        DamageFractionKey, DefaultDamageFraction) * 100f,
+                });
         }
 
         // Floored above zero: the cone test divides by the reach.
@@ -58,7 +87,11 @@ namespace EpicLoot.MagicItemEffects.Shards {
         private static bool _indicatorMissingLogged;
         // Live charge state, read by SE_ShockingChargeIndicator for its icon text and removal check.
         public static int CurrentCharges => _charges;
-        public static int MaxChargeCount => GetMaxCharges();
+        // The HUD indicator's denominator: the threshold for the value the player is actually carrying,
+        // not the configured ceiling, so the counter matches what it takes to fire.
+        public static int MaxChargeCount => GetChargesNeeded(Player.m_localPlayer != null
+            ? Player.m_localPlayer.GetTotalActiveMagicEffectValue(MagicEffectType.ShockingCharge, 1f)
+            : 0f);
 
         // Postfix handler invoked by CharacterDamageDispatch (on-hit reaction).
         public static void OnDamageDealt(Character __instance, HitData hit, Character attacker) {
@@ -91,7 +124,7 @@ namespace EpicLoot.MagicItemEffects.Shards {
 
             _bankedDamage += contributed;
 
-            if (++_charges < GetMaxCharges()) {
+            if (++_charges < GetChargesNeeded(value)) {
                 ShowIndicator(player);
                 return;
             }
@@ -176,7 +209,7 @@ namespace EpicLoot.MagicItemEffects.Shards {
                 };
                 hit.m_damage.m_lightning = lightningDamage;
                 hit.SetAttacker(player);
-                character.Damage(hit);
+                HitSource.DealBonusDamage(character, hit);
             }
         }
 

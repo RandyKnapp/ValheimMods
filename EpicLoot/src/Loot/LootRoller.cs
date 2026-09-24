@@ -424,8 +424,11 @@ namespace EpicLoot
                         looteqrare.Add(new LootDrop() { Item = ld.Item, Weight = ld.Weight, Rarity = [1] });
                     }
 
+                    // Never ask a table for more than is still owed: several tables share one category,
+                    // and a pass after a gating failure used to roll the full per-table count again,
+                    // so an identify handed back more items than it was paid for.
                     _weightedLootTable.Setup(looteqrare.ToArray(), x => x.Weight);
-                    List<LootDrop> selectedDrops = _weightedLootTable.Roll(lootPerCategory);
+                    List<LootDrop> selectedDrops = _weightedLootTable.Roll(Math.Min(lootPerCategory, numResults - results.Count));
 
                     EpicLoot.Log($"Available Loot ({lt.Loot.Length}) for table: {lt.Object}");
                     foreach (LootDrop lootDrop in lt.Loot)
@@ -438,6 +441,11 @@ namespace EpicLoot
                     EpicLoot.Log($"Selected Drops from: {lt.Object} - {selectedDrops.Count}");
                     foreach (LootDrop lootDrop in selectedDrops)
                     {
+                        if (results.Count >= numResults)
+                        {
+                            break;
+                        }
+
                         string itemName = !string.IsNullOrEmpty(lootDrop?.Item) ? lootDrop.Item : "Invalid Item Name";
                         int rarityLength = lootDrop?.Rarity?.Length != null ? lootDrop.Rarity.Length : -1;
                         EpicLoot.Log($"Item: {itemName} - Rarity Count: {rarityLength} - Weight: {lootDrop.Weight}");
@@ -1122,7 +1130,14 @@ namespace EpicLoot
         {
             var cheatLegendary = !string.IsNullOrEmpty(CheatForceLegendary);
             var cheatMythic = !string.IsNullOrEmpty(CheatForceMythic);
-            
+
+            // Every rolled value is multiplied by this, so a mis-authored upgrade value (0 or negative
+            // in enchantingupgrades.json) would otherwise zero out the whole item.
+            if (float.IsNaN(powerlevelMod) || powerlevelMod <= 0f)
+            {
+                powerlevelMod = 1f;
+            }
+
             if (cheatMythic)
             {
                 rarity = ItemRarity.Mythic;
@@ -1189,8 +1204,7 @@ namespace EpicLoot
 
                     foreach (var guaranteedMagicEffect in itemInfo.GuaranteedMagicEffects)
                     {
-                        var effectDef = MagicItemEffectDefinitions.Get(guaranteedMagicEffect.Type);
-                        if (effectDef == null)
+                        if (!MagicItemEffectDefinitions.TryGet(guaranteedMagicEffect.Type, out var effectDef))
                         {
                             EpicLoot.LogError($"Could not find magic effect (Type={guaranteedMagicEffect.Type}) " +
                                 $"while creating legendary/mythic item (ID={itemInfo.ID})");
@@ -1218,7 +1232,9 @@ namespace EpicLoot
                 _weightedEffectTable.Setup(availableEffects, x => x.SelectionWeight);
                 var effectDef = _weightedEffectTable.Roll();
 
-                var effect = RollEffect(effectDef, magicItem.Rarity);
+                // Same power scaling as the guaranteed effects above. Only identification passes
+                // anything but 1 (the Sacrifice upgrade's "identified item power").
+                var effect = RollEffect(effectDef, magicItem.Rarity, null, powerlevelMod);
                 magicItem.Effects.Add(effect);
             }
 
@@ -1783,7 +1799,7 @@ namespace EpicLoot
             var currentEffect = magicItem.Effects[effectIndex];
             
 
-            var valuelessEffect = MagicItemEffectDefinitions.IsValuelessEffect(currentEffect.EffectType, rarity);
+            var valuelessEffect = MagicItemEffectDefinitions.IsValuelessEffect(currentEffect.EffectType);
             var availableEffects = MagicItemEffectDefinitions.GetAvailableEffects(item, magicItem, valuelessEffect ? 
                 -1 : effectIndex);
 
@@ -1822,7 +1838,7 @@ namespace EpicLoot
 
                 results.Add(newEffect);
                 currentEffectTypes.Add(newEffect.EffectType);
-                var newEffectIsValueless = MagicItemEffectDefinitions.IsValuelessEffect(newEffect.EffectType, rarity);
+                var newEffectIsValueless = MagicItemEffectDefinitions.IsValuelessEffect(newEffect.EffectType);
                 if (newEffectIsValueless)
                 {
                     availableEffects.RemoveAll(x => x.Type == newEffect.EffectType);

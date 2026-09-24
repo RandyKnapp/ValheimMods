@@ -23,6 +23,13 @@ namespace EpicLoot.MagicItemEffects.Shards {
             { BuffDurationKey, DefaultBuffDuration },
         };
 
+        // Tooltip: "Queen's Everflow: +{0}% Regen per Stack (max {1})". The shard value IS the per-stack
+        // percentage, so {0} is the raw value; {1} comes from config and stays put as the rarity climbs.
+        public static void RegisterDisplayValues() {
+            MagicItem.RegisterDisplayValues(MagicEffectType.Everflow,
+                value => new object[] { value, (float)GetMaxStacks() });
+        }
+
         private const string BuffName = "EL_QueenEverflow";
         private static readonly int BuffHash = BuffName.GetStableHashCode();
         private static SE_QueenEverflow _buffPrototype;
@@ -36,10 +43,9 @@ namespace EpicLoot.MagicItemEffects.Shards {
                 return;
             }
 
-            // Only fire on a kill. Predicted lethality: against a remote-owned victim the RPC
-            // carrying this hit has not executed yet, so GetHealth() still reads pre-hit health and
-            // a plain <= 0 check never fired in multiplayer.
-            if (__instance.GetHealth() - hit.GetTotalDamage() > 0f) {
+            // Only fire on a kill. Against a remote-owned victim the RPC carrying this hit has not executed
+            // yet, so IsLethalHit estimates the post-hit health; against one this client owns, it has.
+            if (!MagicEffectsHelper.IsLethalHit(__instance, hit)) {
                 return;
             }
 

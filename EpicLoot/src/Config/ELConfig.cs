@@ -675,7 +675,7 @@ internal class ELConfig {
             global::EpicLoot.TemperPanel.Instance?.ApplyConfiguredPosition();
         TemperPanelPositionY.SettingChanged += (_, _) =>
             global::EpicLoot.TemperPanel.Instance?.ApplyConfiguredPosition();
-        _adventureModeEnabled.SettingChanged += (_, _) => MinimapController.RefreshAdventureToggleContainer();
+        _adventureModeEnabled.SettingChanged += (_, _) => MinimapController.RefreshAdventurePinFilters();
         RemovePurchasedGambles.SettingChanged += (_, _) => {
             // Only while the merchant is actually open -- rebuilding a hidden panel would
             // instantiate every candidate ItemDrop for nothing, and it re-rolls on show anyway.
