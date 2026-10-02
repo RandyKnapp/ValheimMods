@@ -960,7 +960,18 @@ public sealed class EpicLoot : BaseUnityPlugin {
     }
 
     public static AssetBundle LoadAssetBundle(string filename) {
-        return AssetBundleLoader.LoadFromResources(filename, typeof(EpicLoot).Assembly);
+        var assembly = typeof(EpicLoot).Assembly;
+        // The default bundle is built for StandaloneWindows and has no Metal shaders, which makes
+        // every bundled material render pink on macOS. Prefer the macOS build when it is embedded.
+        if (Application.platform == RuntimePlatform.OSXPlayer) {
+            string osxFilename = filename + "_osx";
+            string osxResource = $"{assembly.GetName().Name}.{osxFilename}";
+            if (Array.IndexOf(assembly.GetManifestResourceNames(), osxResource) >= 0) {
+                return AssetBundleLoader.LoadFromResources(osxFilename, assembly);
+            }
+            LogWarningForce($"No macOS build of asset bundle '{filename}' is embedded; its materials may render pink.");
+        }
+        return AssetBundleLoader.LoadFromResources(filename, assembly);
     }
 
     /// <summary>

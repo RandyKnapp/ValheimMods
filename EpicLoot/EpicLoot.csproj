@@ -99,6 +99,11 @@
     <EmbeddedResource Include="..\ValheimUnity\AssetBundles\epicloot">
       <Link>epicloot</Link>
     </EmbeddedResource>
+    <!-- macOS (Metal) build of the same bundle; loaded instead of the Windows one on macOS. -->
+    <EmbeddedResource Include="..\ValheimUnity\AssetBundles\osx\epicloot" Condition="Exists('..\ValheimUnity\AssetBundles\osx\epicloot')">
+      <Link>epicloot_osx</Link>
+      <LogicalName>EpicLoot.epicloot_osx</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="config\*.json" />
     <EmbeddedResource Include="config\*\*\*.json" />
     <EmbeddedResource Include="localizations\*.json" />
