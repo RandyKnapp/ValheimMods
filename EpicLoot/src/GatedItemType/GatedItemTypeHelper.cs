@@ -28,6 +28,7 @@ namespace EpicLoot.GatedItemType
     {
         public List<string> RequiredBosses { get; set; }
         public string Type { get; set; }
+        public bool Enchantable { get; set; }
     }
 
     public class Fallback
@@ -126,6 +127,7 @@ namespace EpicLoot.GatedItemType
                         AllItemsWithDetails.Add(item, new GatedItemDetails()
                         {
                             Type = info.Type,
+                            Enchantable = info.Enchantable,
                             RequiredBosses = new List<string>() { itemByBoss.Key }
                         });
                     }

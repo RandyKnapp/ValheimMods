@@ -475,6 +475,7 @@ namespace EpicLoot.Magic
                         IgnoredItems = item.Value.IgnoredItems.Distinct().ToList(),
                         ItemFallback = item.Value.ItemFallback,
                         Type = item.Value.Type,
+                        Enchantable = item.Value.Enchantable,
                         ItemsByBoss = itemsByBossUniques
                     };
 
@@ -496,6 +497,13 @@ namespace EpicLoot.Magic
                 // not consult the configured answer (ItemTypeClassifier.GetItemInfoType) -- doing so
                 // would make the sorter self-confirming and unable to ever re-sort a mis-filed item.
                 string itemType = ItemTypeClassifier.ClassifyFromFields(item.m_itemData);
+                // Keep the configured type for non-equippable items explicitly allowed to be enchanted.
+                if (!item.m_itemData.IsEquipable() && item.m_itemData.m_dropPrefab != null &&
+                    GatedItemTypeHelper.AllItemsWithDetails.TryGetValue(item.m_itemData.m_dropPrefab.name, out GatedItemDetails details) &&
+                    details.Enchantable)
+                {
+                    itemType = details.Type;
+                }
                 string itemName = item.name;
                 // Check if the item is already in the config
                 // If it is, add it to the foundBy
