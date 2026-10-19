@@ -68,17 +68,20 @@ namespace EpicLoot.Crafting
 
             if (NameText != null)
             {
+                NameText.enabled = true;
                 NameText.text = Localization.instance.Localize(item.GetDecoratedName());
             }
 
             if (Description != null)
             {
+                Description.enabled = true;
                 Description.text = Localization.instance.Localize(item.GetTooltip());
                 MagicTextShimmer.Ensure(Description);
             }
 
             if (Icon != null)
             {
+                Icon.enabled = true;
                 Icon.sprite = item.GetIcon();
             }
 
