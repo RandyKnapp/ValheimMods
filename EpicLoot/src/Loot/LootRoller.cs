@@ -1151,7 +1151,9 @@ namespace EpicLoot
 
             var magicItem = new MagicItem { Rarity = rarity };
 
-            magicItem.SocketCount = CheatSocketCount >= 0 ? CheatSocketCount : RollSocketCountPerRarity(magicItem.Rarity);
+            magicItem.SocketCount = GatedItemTypeHelper.IsSocketable(baseItem)
+                ? (CheatSocketCount >= 0 ? CheatSocketCount : RollSocketCountPerRarity(magicItem.Rarity))
+                : 0;
 
             var effectCount = CheatEffectCount >= 1 ? CheatEffectCount : RollEffectCountPerRarity(magicItem.Rarity);
 

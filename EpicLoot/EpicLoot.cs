@@ -894,7 +894,10 @@ public sealed class EpicLoot : BaseUnityPlugin {
             case ItemDrop.ItemData.ItemType.AmmoNonEquipable:
                 return false;
             default:
-                return item.IsEquipable();
+                return item.IsEquipable() ||
+                    (item.m_dropPrefab != null &&
+                     GatedItemTypeHelper.AllItemsWithDetails.TryGetValue(item.m_dropPrefab.name, out GatedItemDetails details) &&
+                     details.Enchantable);
         }
     }
 

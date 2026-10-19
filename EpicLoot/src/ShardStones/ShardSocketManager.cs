@@ -66,6 +66,11 @@ namespace EpicLoot.ShardStones {
                 return false;
             }
 
+            if (!GatedItemType.GatedItemTypeHelper.IsSocketable(equipment)) {
+                reason = "$mod_epicloot_socket_unavailable";
+                return false;
+            }
+
             if (color != ShardType.None && effect == null) {
                 reason = "$mod_epicloot_socket_shardunsupported";
                 return false;

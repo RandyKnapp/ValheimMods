@@ -64,7 +64,7 @@ public static class TransferMagicalEffects
             .OrderByDescending(m => m.SocketCount)
             .ThenByDescending(m => m.Rarity)
             .FirstOrDefault();
-        if (socketSource != null && socketSource.SocketCount > 0)
+        if (socketSource != null && socketSource.SocketCount > 0 && GatedItemType.GatedItemTypeHelper.IsSocketable(CraftedItem))
         {
             newMagicItem.SocketCount = socketSource.SocketCount; // capacity, including any open slots
             foreach (var socket in socketSource.Sockets)

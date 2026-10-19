@@ -28,6 +28,8 @@ namespace EpicLoot.GatedItemType
     {
         public List<string> RequiredBosses { get; set; }
         public string Type { get; set; }
+        public bool Enchantable { get; set; }
+        public bool Socketable { get; set; } = true;
     }
 
     public class Fallback
@@ -38,6 +40,13 @@ namespace EpicLoot.GatedItemType
 
     public static class GatedItemTypeHelper
     {
+        public static bool IsSocketable(ItemDrop.ItemData item)
+        {
+            return item != null && (item.m_dropPrefab == null ||
+                !AllItemsWithDetails.TryGetValue(item.m_dropPrefab.name, out GatedItemDetails details) ||
+                details.Socketable);
+        }
+
         public static ItemInfoConfig GatedConfig;
 
         public static Dictionary<string, Dictionary<string, List<string>>> ItemsByTypeAndBoss =
@@ -126,6 +135,8 @@ namespace EpicLoot.GatedItemType
                         AllItemsWithDetails.Add(item, new GatedItemDetails()
                         {
                             Type = info.Type,
+                            Enchantable = info.Enchantable,
+                            Socketable = info.Socketable,
                             RequiredBosses = new List<string>() { itemByBoss.Key }
                         });
                     }

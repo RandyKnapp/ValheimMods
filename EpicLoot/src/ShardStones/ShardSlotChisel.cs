@@ -52,6 +52,11 @@ namespace EpicLoot.ShardStones {
             slotsGranted = 0;
             reason = null;
 
+            if (!GatedItemType.GatedItemTypeHelper.IsSocketable(target)) {
+                reason = "$mod_epicloot_socket_unavailable";
+                return false;
+            }
+
             if (chisel == null || target == null) {
                 reason = "$mod_epicloot_slotchisel_notmagic";
                 return false;
