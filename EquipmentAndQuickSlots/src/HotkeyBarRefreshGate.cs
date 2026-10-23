@@ -93,6 +93,10 @@ namespace EquipmentAndQuickSlots {
             _lastRefreshTime = Time.unscaledTime;
         }
 
+        // Forces a refresh of every bar, for a change the fingerprint cannot see that announces
+        // itself (Item Favorite Framework marks).
+        internal static void Invalidate() => _inventoryRevision++;
+
         private void Grow(int size) {
             _items = new ItemDrop.ItemData[size];
             _stacks = new int[size];

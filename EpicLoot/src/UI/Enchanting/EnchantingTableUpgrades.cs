@@ -11,7 +11,8 @@ namespace EpicLoot_UnityLib
         Enchant,
         Augment,
         Disenchant,
-        Rune
+        Rune,
+        Storage
     }
 
     [Serializable]
@@ -30,6 +31,7 @@ namespace EpicLoot_UnityLib
         public List<List<ItemAmount>> Augment;
         public List<List<ItemAmount>> Disenchant;
         public List<List<ItemAmount>> Rune;
+        public List<List<ItemAmount>> Storage;
     }
 
     [Serializable]
@@ -41,6 +43,7 @@ namespace EpicLoot_UnityLib
         public List<float[]> Augment;
         public List<float[]> Disenchant;
         public List<float[]> Rune;
+        public List<float[]> Storage;
     }
 
     [Serializable]
@@ -67,7 +70,64 @@ namespace EpicLoot_UnityLib
 
         public static void InitializeConfig(EnchantingUpgradesConfig config)
         {
+            EnsureStorageDefaults(config);
             Config = config;
+        }
+
+        // Storage came after enchantingupgrades.json shipped, and an on-disk copy from before it wins until the
+        // player accepts the config update. Without these such a file left Storage free to unlock, one level
+        // deep and unlimited. Keep in sync with the shipped config.
+        private static void EnsureStorageDefaults(EnchantingUpgradesConfig config)
+        {
+            if (config == null)
+            {
+                return;
+            }
+
+            if (config.DefaultFeatureLevels != null && !config.DefaultFeatureLevels.ContainsKey(EnchantingFeature.Storage))
+            {
+                config.DefaultFeatureLevels[EnchantingFeature.Storage] = EnchantingTable.FeatureLockedSentinel;
+            }
+
+            if (config.MaximumFeatureLevels != null && !config.MaximumFeatureLevels.ContainsKey(EnchantingFeature.Storage))
+            {
+                config.MaximumFeatureLevels[EnchantingFeature.Storage] = 7;
+            }
+
+            if (config.UpgradeCosts != null && config.UpgradeCosts.Storage == null)
+            {
+                config.UpgradeCosts.Storage = new List<List<ItemAmount>>
+                {
+                    Costs(("FineWood", 20), ("Resin", 10), ("Coins", 50)),
+                    Costs(("Bronze", 4), ("FineWood", 20)),
+                    Costs(("Iron", 4), ("ElderBark", 20), ("IronBountyToken", 5)),
+                    Costs(("Silver", 4), ("Crystal", 10), ("IronBountyToken", 10)),
+                    Costs(("BlackMetal", 30), ("LinenThread", 20)),
+                    Costs(("BlackCore", 3), ("Eitr", 10), ("YggdrasilWood", 20)),
+                    Costs(("MoltenCore", 3), ("FlametalNew", 10), ("Blackwood", 20)),
+                    Costs(("FrostCore", 3), ("Gold", 10), ("Frostwood", 20))
+                };
+            }
+
+            if (config.UpgradeValues != null && config.UpgradeValues.Storage == null)
+            {
+                config.UpgradeValues.Storage = new List<float[]>
+                {
+                    new float[] { 100 }, new float[] { 200 }, new float[] { 300 }, new float[] { 500 },
+                    new float[] { 750 }, new float[] { 1000 }, new float[] { 2000 }, new float[] { 0 }
+                };
+            }
+        }
+
+        private static List<ItemAmount> Costs(params (string item, int amount)[] costs)
+        {
+            List<ItemAmount> result = new List<ItemAmount>(costs.Length);
+            foreach ((string item, int amount) in costs)
+            {
+                result.Add(new ItemAmount { Item = item, Amount = amount });
+            }
+
+            return result;
         }
 
         public static EnchantingUpgradesConfig GetCFG()
@@ -91,6 +151,8 @@ namespace EpicLoot_UnityLib
                     return "$mod_epicloot_disenchant";
                 case EnchantingFeature.Rune:
                     return "$mod_epicloot_runemanagement";
+                case EnchantingFeature.Storage:
+                    return "$mod_epicloot_storage";
                 default:
                     return "";
             }
@@ -112,6 +174,8 @@ namespace EpicLoot_UnityLib
                     return "$mod_epicloot_featureinfo_disenchant";
                 case EnchantingFeature.Rune:
                     return "$mod_epicloot_featureinfo_runes";
+                case EnchantingFeature.Storage:
+                    return "$mod_epicloot_featureinfo_storage";
                 default:
                     return "";
             }
@@ -141,12 +205,20 @@ namespace EpicLoot_UnityLib
                 case EnchantingFeature.Rune:
                     description = "$mod_epicloot_featureupgrade_runes";
                     break;
+                case EnchantingFeature.Storage:
+                    description = "$mod_epicloot_featureupgrade_storage";
+                    break;
                 default:
                     description = "";
                     break;
             }
 
             Tuple<float, float> values = table.GetFeatureValue(feature, level);
+            if (feature == EnchantingFeature.Storage && !(values.Item1 > 0))
+            {
+                return Localization.instance.Localize("$mod_epicloot_featureupgrade_storage_unlimited");
+            }
+
             return Localization.instance.Localize(description,
                 values.Item1.ToString(), values.Item2.ToString());
         }
@@ -168,6 +240,7 @@ namespace EpicLoot_UnityLib
                 EnchantingFeature.Augment => Config.UpgradeCosts.Augment,
                 EnchantingFeature.Disenchant => Config.UpgradeCosts.Disenchant,
                 EnchantingFeature.Rune => Config.UpgradeCosts.Rune,
+                EnchantingFeature.Storage => Config.UpgradeCosts.Storage,
                 _ => throw new ArgumentOutOfRangeException(nameof(feature), feature, null)
             };
 

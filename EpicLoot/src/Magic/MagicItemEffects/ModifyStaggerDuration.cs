@@ -56,32 +56,46 @@ namespace EpicLoot.MagicItemEffects
         }
     }
 
-    [HarmonyPatch(typeof(CharacterAnimEvent), nameof(CharacterAnimEvent.CustomFixedUpdate))]
-    public static class ModifyStaggerDuration_CharacterAnimEvent_FixedUpdate_Patch
+    // Stretches a stagger by slowing the animator while it plays. Vanilla starts every stagger at
+    // speed 1 (Character.RPC_Stagger), and some stagger clips retime themselves with Speed animation
+    // events (Fuling berserker, seekers). AnimationSpeedManager hands this handler each fresh vanilla
+    // speed and marks the result, so the stagger lasts factor x its vanilla length on every creature,
+    // without compounding frame to frame or flattening those events. The speed must stay relative:
+    // deriving it from the clip length instead makes every stagger a flat length, which shortens it
+    // on any creature whose stagger clip runs longer than that.
+    [HarmonyPatch(typeof(Game), nameof(Game.Awake))]
+    public static class ModifyStaggerDuration_AnimationHandler_Patch
     {
-        [UsedImplicitly]
-        private static void Prefix(Character ___m_character, ref Animator ___m_animator)
+        private static bool _registered;
+
+        public static double ModifyStaggerSpeed(Character character, double speed)
         {
-            if (___m_character.IsStaggering() && ___m_animator.speed > 0.001f)
+            if (character == null || character.m_nview == null || !character.IsStaggering())
             {
-                if (!(___m_character.m_nview?.GetZDO() is ZDO zdo))
-                {
-                    return;
-                }
-
-                var speedupfactor = zdo.GetFloat(ModifyStaggerDuration.ZdoKey);
-
-                if (speedupfactor > 1f)
-                {
-                    var animatorClipInfos = ___m_animator.GetCurrentAnimatorClipInfo(0);
-                    if (animatorClipInfos.Length > 0)
-                    {
-                        var speed = animatorClipInfos[0].clip.length / speedupfactor * (animatorClipInfos[0].clip.name == "stagger2" ? 2 : 1);
-
-                        ___m_animator.speed = speed;
-                    }
-                }
+                return speed;
             }
+
+            ZDO zdo = character.m_nview.GetZDO();
+            if (zdo == null)
+            {
+                return speed;
+            }
+
+            float factor = zdo.GetFloat(ModifyStaggerDuration.ZdoKey);
+            return factor > 1f ? speed / factor : speed;
+        }
+
+        [UsedImplicitly]
+        private static void Postfix()
+        {
+            // Game.Awake runs once per world load; registering again would divide by the factor twice.
+            if (_registered)
+            {
+                return;
+            }
+
+            _registered = true;
+            AnimationSpeedManager.Add(ModifyStaggerSpeed);
         }
     }
 
@@ -147,9 +161,9 @@ namespace EpicLoot.MagicItemEffects
                 var character = target.GetComponent<Character>();
                 if (character != null && __instance != null && __instance.m_nview != null && __instance.m_nview.GetZDO() is ZDO zdo)
                 {
+                    // Routed like the melee and block tags: the shooter rarely owns the target's ZDO.
                     var staggerValue = zdo.GetFloat(ModifyStaggerDuration.ZdoKey, 1f);
-                    if (character.m_nview != null && character.m_nview.GetZDO() != null)
-                        character.m_nview.GetZDO().Set(ModifyStaggerDuration.ZdoKey, staggerValue);
+                    ModifyStaggerDuration.TagTarget(character, staggerValue);
                 }
             }
         }

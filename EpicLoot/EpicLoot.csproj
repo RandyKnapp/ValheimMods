@@ -113,14 +113,20 @@
   <ItemGroup>
     <PackageReference Include="JotunnLib" Version="2.*" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <!-- Not used by EpicLoot: restored only so CopyAssembliesToUnity (BuildTasks.props) can stage it.
+         Jotunn 2.30 references YamlDotNet, and without it the Unity editor refuses to load Jotunn and
+         every DLL referencing it (EpicLoot, AdvancedPortals), which strips their components from the
+         bundles. In game it comes from the ValheimModding-YamlDotNet package; 16.3.0's net47 build is
+         the same file. -->
   </ItemGroup>
 
   <!-- Stage the merged EpicLoot.dll into the Unity project so the enchanting-UI prefabs bind to it
-       (replaces the old EpicLoot-UnityLib.dll authoring plugin). Guarded so a bare `dotnet build`
-       without SolutionDir skips it instead of failing. Run `-t:CopyAssembliesToUnity` (from
-       BuildTasks.props) to refresh the BepInEx/Jotunn/Valheim dependency DLLs alongside it when
-       they change. -->
-  <Target Name="CopyToUnityForAuthoring" AfterTargets="Build" Condition="Exists('$(SolutionUnity)')">
+       (replaces the old EpicLoot-UnityLib.dll authoring plugin). CopyAssembliesToUnity (from
+       BuildTasks.props) refreshes the game, BepInEx and Jotunn DLLs beside it on the same build.
+       Guarded on a real Unity project: when SolutionDir used to be empty, SolutionUnity resolved to a
+       relative ValheimUnity\ and this copy seeded a stray tree under EpicLoot\, whose existence then
+       satisfied the old Exists('$(SolutionUnity)') check. -->
+  <Target Name="CopyToUnityForAuthoring" AfterTargets="Build" Condition="Exists('$(SolutionUnity)ProjectSettings\ProjectVersion.txt')">
     <Message Text="Staging EpicLoot.dll into Unity ExternalLibraries for prefab authoring" Importance="high" />
     <Copy SourceFiles="$(TargetDir)$(TargetFileName)" DestinationFolder="$(SolutionUnity)Assets\ExternalLibraries" />
   </Target>

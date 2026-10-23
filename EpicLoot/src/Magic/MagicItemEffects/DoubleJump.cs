@@ -29,6 +29,13 @@ namespace EpicLoot.MagicItemEffects
         {
             public static bool Prefix(Character __instance)
             {
+                // An Earthshaker dive is committed: no air jump (it would spend a charge and blind the dive's
+                // landing check for 0.1 s) and no grapple re-pull. Checked first, ahead of everything below.
+                if (Earthshaker.IsDiving(__instance))
+                {
+                    return false;
+                }
+
                 if (Player.m_localPlayer == null || __instance != Player.m_localPlayer)
                 {
                     return true;
@@ -50,15 +57,18 @@ namespace EpicLoot.MagicItemEffects
                     return true;
                 }
 
-                MultiJumpCombo++;
-
                 var value = Player.m_localPlayer.GetTotalActiveMagicEffectValue(MagicEffectType.DoubleJump);
-                if (MultiJumpCombo > value)
+                if (MultiJumpCombo + 1 > value)
                 {
                     return false;
                 }
 
-                MultiJump(__instance, MultiJumpCombo);
+                // A charge is spent only by a jump that launched: one refused for stamina, a stagger and so on
+                // used to cost it all the same.
+                if (MultiJump(__instance, MultiJumpCombo + 1))
+                {
+                    MultiJumpCombo++;
+                }
                 return false;
             }
         }
@@ -73,17 +83,18 @@ namespace EpicLoot.MagicItemEffects
                         > grappler.m_jumpPullMaxDist;
         }
 
-        public static void MultiJump(Character player, float jumpsize)
+        // Whether the jump launched.
+        public static bool MultiJump(Character player, float jumpsize)
         {
             if (player.IsEncumbered() || player.InDodge() || player.IsKnockedBack() || player.IsStaggering())
             {
-                return;
+                return false;
             }
 
-            if (!player.HaveStamina(player.m_jumpStaminaUsage))
+            if (!HaveJumpStamina(player))
             {
                 Hud.instance.StaminaBarEmptyFlash();
-                return;
+                return false;
             }
 
             float speed = player.m_speed;
@@ -109,7 +120,22 @@ namespace EpicLoot.MagicItemEffects
             if (!(jump.x <= 0f) || !(jump.y <= 0f) || !(jump.z <= 0f))
             {
                 player.ForceJump(jump);
+                return true;
             }
+
+            return false;
+        }
+
+        // Checked against what the jump will actually cost, as Player.OnJump (run by ForceJump) charges it:
+        // equipment, Jump Stamina enchantments and status effects included, not the unmodified base cost.
+        private static bool HaveJumpStamina(Character character)
+        {
+            var baseCost = character.m_jumpStaminaUsage;
+            var cost = baseCost - baseCost * character.GetEquipmentMovementModifier() +
+                baseCost * character.GetEquipmentJumpStaminaModifier();
+            character.m_seman.ModifyJumpStaminaUsage(cost, ref cost);
+            cost *= Game.m_moveStaminaRate * Game.m_staminaRate;
+            return cost <= 0f || character.HaveStamina(cost);
         }
     }
 }

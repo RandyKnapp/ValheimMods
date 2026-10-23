@@ -19,7 +19,7 @@ public partial class MagicTooltip {
         bool physDamage = magicItem.HasEffect(MagicEffectType.ModifyPhysicalDamage);
         bool elemDamage = magicItem.HasEffect(MagicEffectType.ModifyElementalDamage);
 
-        bool coinHoarderDamage = localPlayer.HasActiveMagicEffect(MagicEffectType.CoinHoarder, out float _cv);
+        bool coinHoarderDamage = CoinHoarder.GetDamageBonus(localPlayer) > 0f;
         bool spellswordDamage = magicItem.HasEffect(MagicEffectType.SpellSword);
 
         bool allCheck = allDamage || coinHoarderDamage || spellswordDamage;
@@ -125,10 +125,18 @@ public partial class MagicTooltip {
     }
 
     private void AddEitrUse() {
+        // Conjured Arrows (a set bonus) makes every shot of a bow cost eitr. The figure is the attack's own cost
+        // call, so every modifier is already in it.
+        if (ConjuredArrows.TryGetShotCost(item, out float conjuredCost)) {
+            text.Append($"\n$item_eitruse: <color={magicColor}>{conjuredCost:0.#}</color>");
+            return;
+        }
+
         // TODO: place logic into helper method
         bool hasSpellSword = magicItem.HasEffect(MagicEffectType.SpellSword);
 
-        if (item.m_shared.m_attack.m_attackEitr <= 0f || !hasSpellSword) {
+        // Spellsword gives a weapon an eitr cost it would not otherwise have.
+        if (item.m_shared.m_attack.m_attackEitr <= 0f && !hasSpellSword) {
             return;
         }
 
@@ -138,8 +146,15 @@ public partial class MagicTooltip {
 
         string magicAttackEitrColor = hasAttackEitrModifier ? magicColor : "orange";
 
+        // Same order as the game: Spellsword's extra eitr (half the base stamina cost) is added first,
+        // then ModifyAttackEitrUse scales the whole cost.
+        float baseEitrUse = item.m_shared.m_attack.m_attackEitr;
+        if (hasSpellSword) {
+            baseEitrUse += Spellsword.GetAdditionalSpellswordAttackEitr(item.m_shared.m_attack.m_attackStamina);
+        }
+
         float eitrUsePercentage = 1 - magicItem.GetTotalEffectValue(MagicEffectType.ModifyAttackEitrUse, 0.01f);
-        float totalEitrUse = eitrUsePercentage * item.m_shared.m_attack.m_attackEitr;
+        float totalEitrUse = eitrUsePercentage * baseEitrUse;
 
         // TODO: find an appropriate way to display all the information from multishot.
         // This is half implemented and untested here.
@@ -152,10 +167,6 @@ public partial class MagicTooltip {
             int projectiles = Mathf.RoundToInt(configuration[MultiShot.PROJECTILES_KEY]);
             additionalEtir = $"/{totalEitrUse * projectiles}:0.#";
         }*/
-
-        if (hasSpellSword) {
-            totalEitrUse += Spellsword.GetAdditionalSpellswordAttackEitr(totalEitrUse);
-        }
 
         text.Append($"\n$item_eitruse: <color={magicAttackEitrColor}>{totalEitrUse:0.#}</color>");
     }
@@ -190,7 +201,17 @@ public partial class MagicTooltip {
 
     private void AddHealthUsePercentage() {
         if (item.m_shared.m_attack.m_attackHealthPercentage > 0f) {
-            text.Append($"\n$item_healthuse: <color=orange>{item.m_shared.m_attack.m_attackHealthPercentage:0.#%}</color>");
+            // Already a percentage (40 = 40% of current health), so no "%" format specifier, which would
+            // multiply by 100. Attack.GetAttackHealth folds this into the same cost ModifyAttackHealthUse
+            // scales, so the reduction applies here too.
+            bool magicAttackHealth = magicItem.HasEffect(MagicEffectType.ModifyAttackHealthUse);
+            string magicAttackHealthColor = magicAttackHealth ? magicColor : "orange";
+
+            float effectValue = magicItem.GetTotalEffectValue(MagicEffectType.ModifyAttackHealthUse, 0.01f);
+            float healthUsePercentage = ModifyAttackCosts.GetEffectPercentage(effectValue) *
+                item.m_shared.m_attack.m_attackHealthPercentage;
+
+            text.Append($"\n$item_healthuse: <color={magicAttackHealthColor}>{healthUsePercentage:0.#}%</color>");
         }
     }
 
@@ -231,7 +252,10 @@ public partial class MagicTooltip {
 
     private void AddKnockback() {
         if (item.m_shared.m_attackForce > 0f) {
-            text.AppendFormat("\n$item_knockback: <color=orange>{0}</color>", item.m_shared.m_attackForce);
+            bool hasCloseQuarter = magicItem.HasEffect(MagicEffectType.CloseQuarter, includeSocketed: true);
+            string knockbackColor = hasCloseQuarter ? magicColor : "orange";
+            text.AppendFormat("\n$item_knockback: <color={0}>{1:0.#}</color>",
+                knockbackColor, CloseQuarter.GetKnockback(item, magicItem));
         }
     }
 }

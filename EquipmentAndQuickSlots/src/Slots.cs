@@ -86,7 +86,7 @@ namespace EquipmentAndQuickSlots {
             // menu open and the box unfocused, letters typed as a search ("bench" -> B) still reach
             // the game, so hotkeys also stand down whenever the piece selection is visible, as the
             // vanilla hotbar does.
-            private static bool CanUseHotkeys() => Player.m_localPlayer?.TakeInput() == true && !Hud.IsPieceSelectionVisible();
+            internal static bool CanUseHotkeys() => Player.m_localPlayer?.TakeInput() == true && !Hud.IsPieceSelectionVisible();
 
             public bool IsShortcutDown() => IsActive && _getShortcut != null && CanUseHotkeys() && PreventSimilarHotkeys.IsShortcutDown(_getShortcut());
             public bool IsShortcutDownWithItem() => Item != null && IsShortcutDown();
@@ -595,6 +595,10 @@ namespace EquipmentAndQuickSlots {
             return key.Equals(KeyboardShortcut.Empty) ? "" : key.ToString();
         }
 
+        // The label is a keyboard name, so on a controller the combo's glyphs replace it
+        private static string GetQuickSlotShortcutText(int index) =>
+            ZInput.IsGamepadActive() ? GamepadQuickSlots.GetComboText(index) : GetQuickSlotText(index);
+
         internal static void InitializeSlots() {
             int index = 0;
 
@@ -619,7 +623,7 @@ namespace EquipmentAndQuickSlots {
                     null,
                     () => IsQuickSlotAvailable(quickIndex),
                     () => ValConfig.QuickSlotKeys[quickIndex].Value,
-                    () => GetQuickSlotText(quickIndex));
+                    () => GetQuickSlotShortcutText(quickIndex));
             }
 
             AddReservedSlot();

@@ -89,6 +89,7 @@ crashlytics-build.properties
 # Unity
 ValheimUnity/Assets/ExternalLibraries/*
 ValheimUnity/AssetBundles/*.manifest
+ValheimUnity/AssetBundles/epicloot
 ValheimUnity/Assets/ExternalLibraries/*.dll
 ValheimUnity/Assets/ExternalLibraries/valheim/*.dll
 ValheimUnity/UserSettings

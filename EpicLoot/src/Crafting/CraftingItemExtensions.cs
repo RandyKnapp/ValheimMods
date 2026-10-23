@@ -69,6 +69,13 @@ namespace EpicLoot.Crafting
                 item.m_shared.m_ammoType.EndsWith("Runestone");
         }
 
+        // A rune made by the Rune page's Set Extract: an etched runestone whose MagicItem carries a SetID
+        // and no effects. Says nothing about whether that set still exists.
+        public static bool IsSetRune(this ItemDrop.ItemData item)
+        {
+            return item.IsRunestone() && item.IsMagic(out MagicItem magicItem) && !string.IsNullOrEmpty(magicItem.SetID);
+        }
+
         public static ItemRarity GetRunestoneRarity(this ItemDrop.ItemData item)
         {
             return item.GetCraftingMaterialRarity();

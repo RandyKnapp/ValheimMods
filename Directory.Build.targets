@@ -32,4 +32,111 @@
     <Reference Update="Splatform" Publicize="true" />
   </ItemGroup>
 
+  <!-- ==================== embedded asset bundle check ====================
+       EpicLoot, EquipmentAndQuickSlots, Jam and AdvancedPortals embed a bundle from
+       ValheimUnity\AssetBundles. The compiler embeds whatever file is there, so a bundle that is
+       empty, truncated or still being written by a Unity build produced a DLL that loaded no assets
+       in game: Unity logged "Unable to read header from archive file", the mod logged "Unable to
+       load asset bundle!", and every later use of an asset threw (the Hud.Awake ability bar first).
+
+       A UnityFS file starts with "UnityFS\0", a format version (uint32), the "5.x.x" and engine
+       revision strings, then the total file size (int64, big-endian). Checking the signature and
+       that size against the file catches all three cases before anything is compiled. -->
+  <UsingTask TaskName="CheckUnityBundles" TaskFactory="RoslynCodeTaskFactory"
+             AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+    <ParameterGroup>
+      <Bundles ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
+    </ParameterGroup>
+    <Task>
+      <!-- Type="Method", not "Fragment": a fragment's Execute ends in `return true`, so an error
+           logged from it never failed the target and CoreCompile ran anyway. -->
+      <Code Type="Method" Language="cs"><![CDATA[
+        public override bool Execute()
+        {
+            foreach (var item in Bundles)
+            {
+                string path = item.GetMetadata("FullPath");
+                string problem;
+                try
+                {
+                    using (var stream = new System.IO.FileStream(path, System.IO.FileMode.Open,
+                               System.IO.FileAccess.Read, System.IO.FileShare.ReadWrite))
+                    {
+                        problem = ReadHeader(stream);
+                    }
+                }
+                catch (System.Exception e)
+                {
+                    problem = e.Message;
+                }
+
+                if (problem != null)
+                {
+                    Log.LogError("Asset bundle '{0}' cannot be embedded: {1}. Rebuild the asset bundles in " +
+                        "ValheimUnity and let that build finish before compiling, or this mod loads no assets in game.",
+                        path, problem);
+                }
+            }
+            return !Log.HasLoggedErrors;
+        }
+
+        private static string ReadHeader(System.IO.Stream stream)
+        {
+            if (ReadString(stream, 16) != "UnityFS")
+            {
+                return "it is not a UnityFS bundle (" + stream.Length + " bytes)";
+            }
+            ReadBigEndian(stream, 4);
+            if (ReadString(stream, 64) == null || ReadString(stream, 64) == null)
+            {
+                return "its header is cut short";
+            }
+            long recorded = ReadBigEndian(stream, 8);
+            if (recorded < 0)
+            {
+                return "its header is cut short";
+            }
+            if (recorded != stream.Length)
+            {
+                return "its header records " + recorded + " bytes but the file has " + stream.Length +
+                    " (truncated, or Unity is still writing it)";
+            }
+            return null;
+        }
+
+        // A NUL-terminated string, or null when the file ends first or it runs past max.
+        private static string ReadString(System.IO.Stream stream, int max)
+        {
+            var text = new System.Text.StringBuilder();
+            for (int b = stream.ReadByte(); b != 0; b = stream.ReadByte())
+            {
+                if (b < 0 || text.Length == max) { return null; }
+                text.Append((char)b);
+            }
+            return text.ToString();
+        }
+
+        private static long ReadBigEndian(System.IO.Stream stream, int count)
+        {
+            long value = 0;
+            for (int i = 0; i < count; i++)
+            {
+                int b = stream.ReadByte();
+                if (b < 0) { return -1; }
+                value = (value << 8) | (uint)b;
+            }
+            return value;
+        }
+      ]]></Code>
+    </Task>
+  </UsingTask>
+
+  <Target Name="CheckEmbeddedAssetBundles" BeforeTargets="CoreCompile">
+    <ItemGroup>
+      <_EmbeddedAssetBundle Include="@(EmbeddedResource)"
+                            Condition="$([System.String]::Copy('%(FullPath)').Replace('\', '/').Contains('/ValheimUnity/AssetBundles/'))" />
+    </ItemGroup>
+    <CheckUnityBundles Bundles="@(_EmbeddedAssetBundle)" Condition="'@(_EmbeddedAssetBundle)' != ''" />
+  </Target>
+
 </Project>

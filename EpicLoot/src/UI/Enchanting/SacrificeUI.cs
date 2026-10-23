@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using EpicLoot;
+using EpicLoot.Compatibility;
 using EpicLoot.Crafting;
 using EpicLoot.CraftingV2;
 using JetBrains.Annotations;
@@ -151,7 +152,14 @@ namespace EpicLoot_UnityLib
         {
             base.Update();
 
-            if (_locked || !ZInput.IsGamepadActive() || !ZInput.GetButtonDown("JoyButtonY"))
+            if (_locked || !ZInput.IsGamepadActive())
+            {
+                return;
+            }
+
+            SacrificeProducts.ScrollWithRightStick();
+
+            if (!ZInput.GetButtonDown("JoyButtonY"))
             {
                 return;
             }
@@ -185,7 +193,9 @@ namespace EpicLoot_UnityLib
         private void IdentifyItems()
         {
             List<Tuple<IListElement, int>> selectedItems = AvailableItems.GetSelectedItems<IListElement>();
+            // Favorited while the table was open: leave it out rather than identify it away.
             List<Tuple<ItemDrop.ItemData, int>> unidentifiedItems = selectedItems
+                .Where(x => !ItemFavorites.IsProtected(x.Item1.GetItem()))
                 .Select(x => new Tuple<ItemDrop.ItemData, int>(x.Item1.GetItem(), x.Item2)).ToList();
             string filterType = IdentifyStyle.options[IdentifyStyle.value].text;
             Tuple<float, float> featureValues =
@@ -233,13 +243,16 @@ namespace EpicLoot_UnityLib
             Player player = Player.m_localPlayer;
             List<Tuple<ItemDrop.ItemData, int>> sacrificedItems = new List<Tuple<ItemDrop.ItemData, int>>();
             List<InventoryItemListElement> reclaimedSockets = new List<InventoryItemListElement>();
+            List<ItemDrop.ItemData> unavailableItems = new List<ItemDrop.ItemData>();
             foreach (Tuple<IListElement, int> selectedItem in selectedItems)
             {
                 ItemDrop.ItemData sacrificed = selectedItem.Item1.GetItem();
                 int amount = selectedItem.Item2;
                 // Re-asked now rather than trusted from the list: an external filter (API
-                // RegisterSacrificeFilter) may have started vetoing the item during the countdown.
-                if (sacrificed == null || amount <= 0 || EnchantCostsHelper.GetSacrificeProducts(sacrificed) == null)
+                // RegisterSacrificeFilter) may have started vetoing the item during the countdown, or the
+                // player may have favorited it.
+                if (sacrificed == null || amount <= 0 || EnchantCostsHelper.GetSacrificeProducts(sacrificed) == null ||
+                    ItemFavorites.IsProtected(sacrificed))
                 {
                     continue;
                 }
@@ -260,6 +273,11 @@ namespace EpicLoot_UnityLib
                 }
 
                 int removed = InventoryManagement.Instance.RemoveExactItem(sacrificed, amount);
+                if (removed < amount)
+                {
+                    unavailableItems.Add(sacrificed);
+                }
+
                 if (removed <= 0)
                 {
                     Debug.LogWarning($"[Sacrifice] {sacrificed.m_shared.m_name} could not be removed; skipped.");
@@ -292,6 +310,7 @@ namespace EpicLoot_UnityLib
 
             GiveItemsToPlayer(reclaimedSockets);
             GiveItemsToPlayer(sacrificeProducts);
+            NotifyItemsUnavailable(unavailableItems.ToArray());
 
             RefreshAvailableItems();
             AvailableItems.GiveFocus(true, 0);

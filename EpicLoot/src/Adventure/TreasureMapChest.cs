@@ -34,9 +34,14 @@ namespace EpicLoot.Adventure
                 zdo.Set("creator", playerID);
 
                 var items = LootRoller.RollLootTable(LootTableName, 1, LootTableName, transform.position);
-                items.ForEach(item => container.m_inventory.AddItem(item));
-
                 var biomeConfig = AdventureDataManager.Config.TreasureMap.BiomeInfo.Find(x => x.GetBiome() == biome);
+
+                // The token and coin stacks below still need a slot each once Prosperity's bonus rolls
+                // have filled the chest.
+                var rewardStacks = (biomeConfig?.ForestTokens > 0 ? 1 : 0) + (biomeConfig?.IronTokens > 0 ? 1 : 0) +
+                    (biomeConfig?.GoldTokens > 0 ? 1 : 0) + (biomeConfig?.Coins > 0 ? 1 : 0);
+                ContainerCapacity.AddItems(container, items, rewardStacks);
+
                 if (biomeConfig?.ForestTokens > 0)
                     container.m_inventory.AddItem("ForestToken", biomeConfig.ForestTokens, 1, 0, 0, string.Empty, cheated: false);
 

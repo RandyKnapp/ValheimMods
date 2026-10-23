@@ -1,3 +1,8 @@
+**3.2.0**
+* Quick slots can now be used from a controller with a button combination that can be changed in the config.
+* The quick slot bar and the equipment panel show each quick slot's controller buttons while playing on a controller.
+* With Item Favorite Framework installed, the quick slot bar shows its favorite and trash marks.
+
 **3.1.4**
 * Quick slot hotkeys no longer fire while the build menu (hammer, cultivator, feaster) is open,
   so typing a piece search like "bench" no longer uses the item in a quick slot.

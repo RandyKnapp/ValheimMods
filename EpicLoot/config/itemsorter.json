@@ -58,7 +58,8 @@
         "LeatherScraps",
         "DeerHide"
       ],
-      "BiomeSpecificCraftingStations": []
+      "BiomeSpecificCraftingStations": [],
+      "Creatures": { "ReferenceHealth": 15, "Weak": "Tier0Mob", "Normal": "Tier0Mob", "Strong": "Tier1Mob", "Elite": "Tier1Mob", "Boss": "Tier2Mob" }
     },
     "Blackforest": {
       "Tier": "Tier2",
@@ -73,7 +74,15 @@
         "BjornHide",
         "BjornPaw"
       ],
-      "BiomeSpecificCraftingStations": []
+      "BiomeSpecificCraftingStations": [],
+      "Creatures": { "ReferenceHealth": 80, "Weak": "Tier1Mob", "Normal": "Tier2Mob", "Strong": "Tier2Mob", "Elite": "Tier3EliteMob", "Boss": "Tier3EliteMob" }
+    },
+    "Ocean": {
+      "Tier": "Tier2",
+      "BossKey": "defeated_gdking",
+      "BiomeMaterials": [],
+      "BiomeSpecificCraftingStations": [],
+      "Creatures": { "ReferenceHealth": 400, "Weak": "Tier3Mob", "Normal": "Tier5Mob", "Strong": "Tier5Mob", "Elite": "Tier5EliteMob", "Boss": "Tier5EliteMob" }
     },
     "Swamp": {
       "Tier": "Tier3",
@@ -88,7 +97,8 @@
         "Ooze",
         "WrithanRoots"
       ],
-      "BiomeSpecificCraftingStations": []
+      "BiomeSpecificCraftingStations": [],
+      "Creatures": { "ReferenceHealth": 100, "Weak": "Tier3Mob", "Normal": "Tier3Mob", "Strong": "Tier4Mob", "Elite": "Tier4EliteMob", "Boss": "Tier4EliteMob" }
     },
     "Mountain": {
       "Tier": "Tier4",
@@ -102,7 +112,8 @@
       ],
       "BiomeSpecificCraftingStations": [
         "piece_artisanstation"
-      ]
+      ],
+      "Creatures": { "ReferenceHealth": 90, "Weak": "Tier4Mob", "Normal": "Tier4Mob", "Strong": "Tier5Mob", "Elite": "Tier5EliteMob", "Boss": "Tier5EliteMob" }
     },
     "Plains": {
       "Tier": "Tier5",
@@ -112,9 +123,11 @@
         "BlackMetal",
         "LinenThread",
         "UndeadBjornRibcage",
-        "TrophyBjornUndead"
+        "TrophyBjornUndead",
+        "LoxPelt"
       ],
-      "BiomeSpecificCraftingStations": []
+      "BiomeSpecificCraftingStations": [],
+      "Creatures": { "ReferenceHealth": 175, "Weak": "Tier5Mob", "Normal": "Tier5Mob", "Strong": "Tier6Mob", "Elite": "Tier6EliteMob", "Boss": "Tier6EliteMob" }
     },
     "Mistlands": {
       "Tier": "Tier6",
@@ -132,7 +145,8 @@
       "BiomeSpecificCraftingStations": [
         "piece_magetable",
         "blackforge"
-      ]
+      ],
+      "Creatures": { "ReferenceHealth": 350, "Weak": "Tier6Mob", "Normal": "Tier7Mob", "Strong": "Tier7Mob", "Elite": "Tier7EliteMob", "Boss": "Tier7EliteMob" }
     },
     "Ashlands": {
       "Tier": "Tier7",
@@ -147,7 +161,8 @@
         "GemstoneRed",
         "CelestialFeather"
       ],
-      "BiomeSpecificCraftingStations": []
+      "BiomeSpecificCraftingStations": [],
+      "Creatures": { "ReferenceHealth": 600, "Weak": "Tier7Mob", "Normal": "Tier8Mob", "Strong": "Tier8Mob", "Elite": "Tier8EliteMob", "Boss": "Tier8EliteMob" }
     },
     "DeepNorth": {
       "Tier": "Tier8",
@@ -231,7 +246,8 @@
         "MoldSword",
         "MoldSword2H"
       ],
-      "BiomeSpecificCraftingStations": []
+      "BiomeSpecificCraftingStations": [],
+      "Creatures": { "ReferenceHealth": 400, "Weak": "Tier8Mob", "Normal": "Tier8Mob", "Strong": "Tier9Mob", "Elite": "Tier9EliteMob", "Boss": "Tier9EliteMob" }
     }
   },
   "TierRarityProbabilities": {
@@ -255,5 +271,36 @@
     "defeated_queen": 1300,
     "defeated_fader": 1600,
     "defeated_frozenking_p3": 1900
+  },
+  "CreatureSorter": {
+    "HealthRatios": { "Weak": 0.55, "Strong": 1.5, "Elite": 2.5 },
+    "SkipPassive": true,
+    "ScanLocations": true,
+    "ExcludeFactions": [ "Players", "PlayerSpawned", "TrainingDummy" ],
+    "ExcludeNames": [ "*_Summoned", "*_spiritcaller", "Aspect_*", "*_Fader", "staff_*", "*Test" ],
+    "VariantSuffixes": [ "_sleeping", "_noarcher", "_cave", "_nochest", "_NonSleeping" ],
+    "FactionBiomes": {
+      "ForestMonsters": "BlackForest",
+      "Undead": "Swamp",
+      "MountainMonsters": "Mountain",
+      "PlainsMonsters": "Plains",
+      "SeaMonsters": "Ocean",
+      "MistlandsMonsters": "Mistlands",
+      "Dverger": "Mistlands",
+      "Demon": "AshLands",
+      "DeepNorth": "DeepNorth"
+    },
+    "ClassExtras": {
+      "Boss": { "Modifiers": { "DropRate": 10, "BonusDrops": 1, "RarityShift": 0.2 } }
+    },
+    "Overrides": {
+      "Hen": { "Skip": true },
+      "BlobFrost": { "Skip": true },
+      "SeekerBrood": { "Skip": true },
+      "Ghost_Void": { "Skip": true },
+      "Ghost_old": { "Skip": true },
+      "FrozenKing": { "Skip": true },
+      "DvergerTest": { "Skip": true }
+    }
   }
 }

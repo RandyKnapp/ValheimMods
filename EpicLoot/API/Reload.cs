@@ -132,31 +132,9 @@ public static partial class API
     /// </summary>
     private static void ReloadExternalLegendary()
     {
-        foreach (KeyValuePair<ItemRarity, List<LegendaryInfo>> kvp in ExternalLegendaryItems)
-        {
-            switch (kvp.Key)
-            {
-                case ItemRarity.Legendary:
-                    UniqueLegendaryHelper.Config.LegendaryItems.AddRange(kvp.Value);
-                    break;
-                case ItemRarity.Mythic:
-                    UniqueLegendaryHelper.Config.MythicItems.AddRange(kvp.Value);
-                    break;
-            }
-        }
-
-        foreach (KeyValuePair<ItemRarity, List<LegendarySetInfo>> kvp in ExternalLegendarySets)
-        {
-            switch (kvp.Key)
-            {
-                case ItemRarity.Legendary:
-                    UniqueLegendaryHelper.Config.LegendarySets.AddRange(kvp.Value);
-                    break;
-                case ItemRarity.Mythic:
-                    UniqueLegendaryHelper.Config.MythicSets.AddRange(kvp.Value);
-                    break;
-            }
-        }
+        // Every rarity lives in the one pool now; each entry's Rarities says where it rolls.
+        UniqueLegendaryHelper.Config.LegendaryItems.AddRange(ExternalLegendaryItems);
+        UniqueLegendaryHelper.Config.LegendarySets.AddRange(ExternalLegendarySets);
 
         OnReload?.Invoke("Reloaded external legendary abilities");
     }

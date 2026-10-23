@@ -25,6 +25,7 @@ namespace EpicLoot_UnityLib
         private List<IGamepadFocusPane> _paneOverride;
         private int _focusedPaneIndex;
         private bool _gamepadWasEnabled;
+        private bool _allPanesEmpty;
 
         // For panels whose panes are not all MultiSelectItemLists, or that want a different order than the
         // prefab's. Call it before this component is enabled.
@@ -88,28 +89,26 @@ namespace EpicLoot_UnityLib
 
             ClampFocusedPane();
 
-            IGamepadFocusPane currentPane = _panes[_focusedPaneIndex];
-            int loopCount = 0;
-            while (currentPane.GetItemCount() == 0)
+            if (_panes[_focusedPaneIndex].GetItemCount() == 0)
             {
-                currentPane.GiveFocus(false, 0);
-
-                _focusedPaneIndex = (_focusedPaneIndex + 1) % _panes.Count;
-                currentPane = _panes[_focusedPaneIndex];
-
-                if (currentPane.GetItemCount() > 0)
+                int nextPaneIndex = FindNextPaneWithItems();
+                if (nextPaneIndex < 0)
                 {
-                    currentPane.GiveFocus(true, 0);
-                    RefreshHints();
-                    break;
-                }
-
-                loopCount++;
-                if (loopCount >= _panes.Count)
-                {
+                    _allPanesEmpty = true;
                     return;
                 }
+
+                _panes[_focusedPaneIndex].GiveFocus(false, 0);
+                _focusedPaneIndex = nextPaneIndex;
+                _panes[_focusedPaneIndex].GiveFocus(true, 0);
+                RefreshHints();
             }
+            else if (_allPanesEmpty)
+            {
+                RefreshHints();
+            }
+
+            _allPanesEmpty = false;
 
             if (ZInput.IsGamepadActive())
             {
@@ -147,6 +146,20 @@ namespace EpicLoot_UnityLib
             }
 
             _gamepadWasEnabled = ZInput.IsGamepadActive();
+        }
+
+        private int FindNextPaneWithItems()
+        {
+            for (int offset = 1; offset < _panes.Count; offset++)
+            {
+                int index = (_focusedPaneIndex + offset) % _panes.Count;
+                if (_panes[index].GetItemCount() > 0)
+                {
+                    return index;
+                }
+            }
+
+            return -1;
         }
 
         public void FocusList(int newFocusedIndex)

@@ -14,9 +14,11 @@ public static partial class API
     /// <remarks>
     /// 1 - Queries, providers (inventory / equipment / sacrifice), lifecycle events, loot generation,
     ///     item slot and icon decoration.
+    /// 2 - Adventure: GetActiveBounties, GetBountyPinType, adventure-data-changed and bounty-target-slain
+    ///     events.
     /// </remarks>
     [PublicAPI]
-    public const int ApiVersion = 1;
+    public const int ApiVersion = 2;
 
     /// <returns><see cref="ApiVersion"/>, as a call so reflection consumers can read it without
     /// resolving a const field (which would be inlined at their compile time, not ours).</returns>

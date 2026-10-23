@@ -55,6 +55,7 @@ public class ItemElement : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         string displayName = Localization.instance.Localize(_item.GetDisplayName());
         label.text = $"<color={_rarityColor}>{displayName}</color>";
         uiTooltip.Set(label.text, _item.GetTooltip(), TemperPanel.Instance.tooltipAnchor);
+        Compatibility.ItemFavorites.UpdateStar(icon, _item);
     }
     
     public void OnPointerEnter(PointerEventData eventData)

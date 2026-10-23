@@ -74,6 +74,13 @@ namespace EpicLoot.Patching
         ];
         public static MultiValueDictionary<string, Patch> PatchesPerFile = new MultiValueDictionary<string, Patch>();
 
+        private const string LootTablesTarget = "loottables";
+
+        // Loot table patch warnings already given this load, so a patch aimed at a deprecated path says
+        // so once rather than on every rebuild. Cleared when patches reload, so an edited patch file is
+        // checked again.
+        private static readonly HashSet<string> _warnedLootPatches = new HashSet<string>();
+
         /// <summary>
         /// Rebuilds every patched config file on disk. Returns the target names (no extension) whose
         /// files were rewritten, so the caller can pull exactly those back into the live config --
@@ -85,6 +92,7 @@ namespace EpicLoot.Patching
             // rebuilt from the embedded default, or it keeps the stale patched output forever.
             List<string> previousTargets = new List<string>(Keys);
             PatchesPerFile.Clear();
+            _warnedLootPatches.Clear();
             LoadAllPatches();
             ApplyAllPatches();
 
@@ -335,6 +343,19 @@ namespace EpicLoot.Patching
                 .ThenBy(x => x.SourceFile, StringComparer.OrdinalIgnoreCase)
                 .ToList();
 
+            // Loot tables are kept in the LeveledLoot form throughout: the base is converted before the
+            // first patch and the tree again after every patch, so each patch sees (and is judged against)
+            // the current form, and one that writes a flat table is named as the one that did.
+            bool lootTables = IsLootTablesTarget(targetFile);
+            if (lootTables)
+            {
+                List<string> baseConverted = LootTableMigration.NormalizeJson(sourceJson);
+                if (baseConverted.Count > 0)
+                {
+                    EpicLoot.Log($"Converted {baseConverted.Count} flat loot table(s) in the default loottables.json.");
+                }
+            }
+
             foreach (Patch patch in patches)
             {
                 try
@@ -348,6 +369,11 @@ namespace EpicLoot.Patching
                     // previous launch's output on disk.
                     EpicLoot.LogErrorForce($"Patch ({patch.SourceFile}, {patch.Path}) for " +
                         $"({patch.TargetFile}) threw and was skipped: {e.Message}");
+                }
+
+                if (lootTables)
+                {
+                    ConvertLootTablesWrittenByPatch(sourceJson, patch);
                 }
             }
 
@@ -397,6 +423,13 @@ namespace EpicLoot.Patching
                     ELConfig.CreateBaseConfigurations(baseCfgFile, $"{filename}.json");
                 }
 
+                // A file no patch rebuilds keeps whatever form it was written in, so it is upgraded here,
+                // once, with a backup; a patched one is converted as it is rebuilt below.
+                if (IsLootTablesTarget(filename))
+                {
+                    LootConfigFile.ConvertLegacyFileOnDisk();
+                }
+
                 return;
             }
 
@@ -423,11 +456,28 @@ namespace EpicLoot.Patching
 
         public static void ApplyPatch(JObject json, Patch patch)
         {
-            List<JToken> selectedTokens = json.SelectTokens(patch.Path).ToList();
+            string path = patch.Path;
+            bool lootTables = IsLootTablesTarget(patch.TargetFile);
+            if (lootTables && LootTableMigration.TryRedirectLegacyPath(path, out string redirected))
+            {
+                // Flat tables no longer exist by the time a patch runs, so a path into one would select
+                // nothing. That data is level 1 now; point the patch there instead of losing it.
+                WarnLootPatchOnce(patch, "redirect", $"Patch ({patch.SourceFile}) targets a loot table's " +
+                    $"deprecated flat path ({patch.Path}); it was applied to ({redirected}) instead. " +
+                    "Please update the patch.");
+                path = redirected;
+            }
+
+            List<JToken> selectedTokens = json.SelectTokens(path).ToList();
+            if (lootTables && selectedTokens.Count == 0)
+            {
+                WarnMissingLootLevel(json, patch, path);
+            }
+
             // Removals that have already happened are allowed to re-run without warnings, since they are no-ops
             if (patch.Require && selectedTokens.Count == 0 && patch.Action != PatchAction.Remove)
             {
-                EpicLoot.LogErrorForce($"Required Patch ({patch.SourceFile}) path ({patch.Path}) " +
+                EpicLoot.LogErrorForce($"Required Patch ({patch.SourceFile}) path ({path}) " +
                     $"failed to select any tokens in target file ({patch.TargetFile})!");
                 return;
             }
@@ -448,6 +498,85 @@ namespace EpicLoot.Patching
                     case PatchAction.MultiAdd: ApplyPatch_MultiAdd(token, patch); break;
                     default: break;
                 }
+            }
+        }
+
+        private static bool IsLootTablesTarget(string targetFile)
+        {
+            return string.Equals(targetFile, LootTablesTarget, StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static void WarnLootPatchOnce(Patch patch, string kind, string message)
+        {
+            if (_warnedLootPatches.Add($"{kind}|{patch.SourceFile}|{patch.Path}"))
+            {
+                EpicLoot.LogWarningForce(message);
+            }
+        }
+
+        // Runs after every loot table patch: anything the patch wrote in the flat form (a whole table, or
+        // Drops/Loot merged onto one) is converted on the spot and the patch is named for it.
+        private static void ConvertLootTablesWrittenByPatch(JObject json, Patch patch)
+        {
+            List<string> converted;
+            try
+            {
+                converted = LootTableMigration.NormalizeJson(json);
+            }
+            catch (Exception e)
+            {
+                EpicLoot.LogErrorForce($"Converting the loot tables written by patch ({patch.SourceFile}, " +
+                    $"{patch.Path}) failed: {e.Message}");
+                return;
+            }
+
+            if (converted.Count > 0)
+            {
+                WarnLootPatchOnce(patch, "flat", $"Patch ({patch.SourceFile}, {patch.Path}) wrote " +
+                    $"{converted.Count} loot table(s) in the deprecated flat Drops/Loot form " +
+                    $"({LootConfigFile.Summarize(converted)}). They were converted to LeveledLoot level 1; " +
+                    "please update the patch to write \"LeveledLoot\": [ { \"Level\": 1, \"Drops\": ..., " +
+                    "\"Loot\": ... } ] instead.");
+            }
+        }
+
+        // Loot tables now author a few anchor levels and extrapolate the rest, so a patch aimed at one
+        // specific level of a template can find that level gone. Say which levels there are.
+        private static void WarnMissingLootLevel(JObject json, Patch patch, string path)
+        {
+            if (!LootTableMigration.TryGetLevelFilter(path, out string tablesPath, out int level))
+            {
+                return;
+            }
+
+            List<JToken> tables;
+            try
+            {
+                tables = json.SelectTokens(tablesPath).ToList();
+            }
+            catch (Exception)
+            {
+                return;
+            }
+
+            List<string> found = new List<string>();
+            foreach (JToken token in tables)
+            {
+                if (token is not JObject table || table["LeveledLoot"] is not JArray levels)
+                {
+                    continue;
+                }
+
+                string levelList = string.Join(", ", levels.OfType<JObject>().Select(def => (string)def["Level"]));
+                found.Add($"{(string)table["Object"]} has level(s) {levelList}");
+            }
+
+            if (found.Count > 0)
+            {
+                WarnLootPatchOnce(patch, "level", $"Patch ({patch.SourceFile}) path ({patch.Path}) asks for " +
+                    $"loot table level {level}, which does not exist: {string.Join("; ", found)}. Loot tables " +
+                    "now define a few anchor levels and scale the rest with StarScaling; target an existing " +
+                    "level instead.");
             }
         }
 

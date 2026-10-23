@@ -22,65 +22,101 @@ namespace EpicLoot.MagicItemEffects
             __result += SkillIncrease(__instance.m_player, skillType) / 100f;
         }
 
+        // Runs from every GetSkillFactor (the HUD reads one per frame while a bow is drawn, and the Interconnected and
+        // skill-as-skill effects read more inside it), so it allocates nothing: a switch for the one-skill effects and
+        // the shards' own static arrays for the rest.
         public static int SkillIncrease(Player player, SkillType skillType)
         {
-            var increase = 0;
-            
-            void check(string effect, params SkillType[] type)
+            int increase = 0;
+
+            string single = null;
+            switch (skillType)
             {
-                if (type.Contains(skillType))
-                {
-                    increase += (int) player.GetTotalActiveMagicEffectValue(effect);
-                }
+                case SkillType.Swords: single = MagicEffectType.AddSwordsSkill; break;
+                case SkillType.Knives: single = MagicEffectType.AddKnivesSkill; break;
+                case SkillType.Clubs: single = MagicEffectType.AddClubsSkill; break;
+                case SkillType.Polearms: single = MagicEffectType.AddPolearmsSkill; break;
+                case SkillType.Spears: single = MagicEffectType.AddSpearsSkill; break;
+                case SkillType.Blocking: single = MagicEffectType.AddBlockingSkill; break;
+                case SkillType.Axes:
+                case SkillType.WoodCutting: single = MagicEffectType.AddAxesSkill; break;
+                case SkillType.Bows: single = MagicEffectType.AddBowsSkill; break;
+                case SkillType.Crossbows: single = MagicEffectType.AddCrossbowsSkill; break;
+                case SkillType.Unarmed: single = MagicEffectType.AddUnarmedSkill; break;
+                case SkillType.Pickaxes: single = MagicEffectType.AddPickaxesSkill; break;
+                case SkillType.Fishing: single = MagicEffectType.AddFishingSkill; break;
+                case SkillType.ElementalMagic: single = MagicEffectType.AddElementalMagicSkill; break;
+                case SkillType.BloodMagic: single = MagicEffectType.AddBloodMagicSkill; break;
+                case SkillType.Run:
+                case SkillType.Jump:
+                case SkillType.Swim:
+                case SkillType.Sneak: single = MagicEffectType.AddMovementSkills; break;
+                case SkillType.Crafting:
+                case SkillType.Cooking: single = MagicEffectType.AddCrafterSkills; break;
+            }
+            if (single != null)
+            {
+                increase += (int) player.GetTotalActiveMagicEffectValue(single);
             }
 
-
-
-            void SkillsAsSkills(string effect, SkillType[] type, SkillType[] asType) 
+            if (Contains(Shards.IncreaseMeleeSkills.MeleeSkills, skillType))
             {
-                if (_inSkillsAsSkills) return;
-                if (type.Contains(skillType)) 
-                {
-                    _inSkillsAsSkills = true;
-
-                    float effectValue = player.GetTotalActiveMagicEffectValue(effect);
-                    try 
-                    {
-                        for (int i = 0; i < asType.Length; ++i) 
-                        {
-                            if (asType[i] == skillType) continue;
-                            var asTotal = player.m_skills.GetSkillFactor(asType[i]); // skills total post bonuses
-                            increase += (int)(asTotal * effectValue);
-                        }
-                    } 
-                    finally 
-                    {
-                        _inSkillsAsSkills = false;
-                    }
-                }
+                increase += (int) player.GetTotalActiveMagicEffectValue(MagicEffectType.IncreaseMeleeSkills);
+            }
+            if (Contains(src.Magic.MagicItemEffects.Shards.IncreaseRangedSkills.RangedSkills, skillType))
+            {
+                increase += (int) player.GetTotalActiveMagicEffectValue(MagicEffectType.IncreaseRangedSkills);
             }
 
-            check(MagicEffectType.AddSwordsSkill, SkillType.Swords);
-            check(MagicEffectType.AddKnivesSkill, SkillType.Knives);
-            check(MagicEffectType.AddClubsSkill, SkillType.Clubs);
-            check(MagicEffectType.AddPolearmsSkill, SkillType.Polearms);
-            check(MagicEffectType.AddSpearsSkill, SkillType.Spears);
-            check(MagicEffectType.AddBlockingSkill, SkillType.Blocking);
-            check(MagicEffectType.AddAxesSkill, SkillType.Axes);
-            check(MagicEffectType.AddAxesSkill, SkillType.WoodCutting);
-            check(MagicEffectType.AddBowsSkill, SkillType.Bows);
-            check(MagicEffectType.AddCrossbowsSkill, SkillType.Crossbows);
-            check(MagicEffectType.AddUnarmedSkill, SkillType.Unarmed);
-            check(MagicEffectType.AddPickaxesSkill, SkillType.Pickaxes);
-            check(MagicEffectType.AddFishingSkill, SkillType.Fishing);
-            check(MagicEffectType.AddElementalMagicSkill, SkillType.ElementalMagic);
-            check(MagicEffectType.AddBloodMagicSkill, SkillType.BloodMagic);
-            check(MagicEffectType.AddMovementSkills, SkillType.Run, SkillType.Jump, SkillType.Swim, SkillType.Sneak);
-            check(MagicEffectType.AddCrafterSkills, SkillType.Crafting, SkillType.Cooking);
-            check(MagicEffectType.IncreaseMeleeSkills, Shards.IncreaseMeleeSkills.MeleeSkills);
-            SkillsAsSkills(MagicEffectType.BlockAsDodgeAsBlock, Shards.BlockAsDodgeAsBlock.type, Shards.BlockAsDodgeAsBlock.asType);
-            SkillsAsSkills(MagicEffectType.BlockAsWoodCuttingAndPickaxes, Shards.BlockAsWoodCuttingAndPickaxes.type, Shards.BlockAsWoodCuttingAndPickaxes.asType);
+            increase += SkillsAsSkills(player, skillType, MagicEffectType.BlockAsDodgeAsBlock,
+                Shards.BlockAsDodgeAsBlock.type, Shards.BlockAsDodgeAsBlock.asType);
+            increase += SkillsAsSkills(player, skillType, MagicEffectType.BlockAsWoodCuttingAndPickaxes,
+                Shards.BlockAsWoodCuttingAndPickaxes.type, Shards.BlockAsWoodCuttingAndPickaxes.asType);
 
+            if (skillType != SkillType.None && skillType != SkillType.All)
+            {
+                increase += (int) player.GetTotalActiveMagicEffectValue(MagicEffectType.AddAllSkills);
+            }
+            increase += Interconnected.GetBonusLevels(player, skillType);
+
+            return increase;
+        }
+
+        private static bool Contains(SkillType[] types, SkillType skillType)
+        {
+            for (int i = 0; i < types.Length; i++)
+            {
+                if (types[i] == skillType)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private static int SkillsAsSkills(Player player, SkillType skillType, string effect, SkillType[] type, SkillType[] asType)
+        {
+            if (_inSkillsAsSkills || !Contains(type, skillType))
+            {
+                return 0;
+            }
+
+            int increase = 0;
+            _inSkillsAsSkills = true;
+            float effectValue = player.GetTotalActiveMagicEffectValue(effect);
+            try
+            {
+                for (int i = 0; i < asType.Length; ++i)
+                {
+                    if (asType[i] == skillType) continue;
+                    var asTotal = player.m_skills.GetSkillFactor(asType[i]); // skills total post bonuses
+                    increase += (int)(asTotal * effectValue);
+                }
+            }
+            finally
+            {
+                _inSkillsAsSkills = false;
+            }
             return increase;
         }
     }

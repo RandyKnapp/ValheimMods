@@ -94,6 +94,13 @@ namespace EpicLoot.Adventure
             SaveData.ToPackage(pkg);
             pkg.SetPos(0);
             _player.m_customData[SaveDataKey] = pkg.GetBase64();
+
+            // Every adventure state change is persisted through here, which makes this the one place to tell
+            // other mods about it.
+            if (_player == Player.m_localPlayer)
+            {
+                API.RaiseAdventureDataChanged();
+            }
         }
 
         /// <summary>

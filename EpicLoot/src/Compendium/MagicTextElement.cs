@@ -1,4 +1,4 @@
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
 
@@ -12,7 +12,7 @@ namespace EpicLoot.Compendium;
 // The outline that legacy Text got from an Outline component comes from the font's "- Outline"
 // material variant here; both materials are shared, and per-line colour is a vertex colour, so no
 // material instances are created.
-public class MagicTextElement
+public class MagicTextElement : IMagicTextPart
 {
     private readonly GameObject _obj;
     private readonly RectTransform _rect;
@@ -77,6 +77,14 @@ public class MagicTextElement
     }
 
     public float GetHeight() => _rect.sizeDelta.y;
+    public RectTransform Rect => _rect;
+
+    public void Fit(float width, float minHeight)
+    {
+        _rect.sizeDelta = new Vector2(width, _rect.sizeDelta.y);
+        float height = Mathf.Max(GetTextPreferredHeight(_text, _rect), minHeight);
+        _rect.sizeDelta = new Vector2(width, height);
+    }
 
     // Expects an already-lower-cased query -- MagicTextGroup lowers it once for the whole group.
     public bool IsMatch(string query) => _searchText.Contains(query);

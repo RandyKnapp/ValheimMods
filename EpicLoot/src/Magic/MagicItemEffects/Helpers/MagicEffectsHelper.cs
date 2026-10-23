@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
 namespace EpicLoot.src.Magic.MagicItemEffects.Helpers
 {
@@ -151,10 +153,32 @@ namespace EpicLoot.src.Magic.MagicItemEffects.Helpers
             return false;
         }
 
+        // Set-bonus-only totals share EquipmentEffectCache with the full per-effect totals, under their own key.
+        private static readonly Dictionary<string, string> _setEffectCacheKeys = new Dictionary<string, string>();
+
         public static float GetTotalActiveSetEffectValue(Player player, string effectType, float scale = 1.0f)
         {
-            var setEffects = player.GetAllActiveSetMagicEffects(effectType);
-            return setEffects.Count > 0 ? scale * setEffects.Sum(x => x.EffectValue) : 0;
+            if (player == null || effectType == null)
+            {
+                return 0;
+            }
+
+            // ModifyArmor reads this from every ItemData.GetArmor, so it is memoized like
+            // GetTotalActiveMagicEffectValue rather than re-walking the set tiers each call.
+            if (!_setEffectCacheKeys.TryGetValue(effectType, out string cacheKey))
+            {
+                cacheKey = "set|" + effectType;
+                _setEffectCacheKeys[effectType] = cacheKey;
+            }
+
+            if (!EquipmentEffectCache.TryGetValue(player, cacheKey, out float? cached))
+            {
+                var setEffects = player.GetAllActiveSetMagicEffects(effectType);
+                cached = setEffects.Count > 0 ? setEffects.Sum(x => x.EffectValue) : (float?)null;
+                EquipmentEffectCache.Store(player, cacheKey, cached);
+            }
+
+            return scale * (cached ?? 0);
         }
 
         // --- Shared guards/lookups for effect dispatchers -------------------------------------------
@@ -202,12 +226,54 @@ namespace EpicLoot.src.Magic.MagicItemEffects.Helpers
         }
 
         /// <summary>
+        /// Teleports the player to <paramref name="point"/>, turning it to <paramref name="rotation"/> when one is
+        /// given. The player's rigidbody interpolates, and Unity drops a transform change on an interpolated body
+        /// unless Physics.SyncTransforms follows it, so the body is moved too, as vanilla's UnderWorldCheck does.
+        /// Setting only the transform left the player where they were.
+        /// </summary>
+        public static void MovePlayer(Player player, Vector3 point, Quaternion? rotation = null)
+        {
+            if (rotation.HasValue)
+            {
+                player.transform.SetPositionAndRotation(point, rotation.Value);
+            }
+            else
+            {
+                player.transform.position = point;
+            }
+
+            var body = player.m_body;
+            if (body != null)
+            {
+                body.position = point;
+                if (rotation.HasValue)
+                {
+                    body.rotation = rotation.Value;
+                }
+                body.linearVelocity = Vector3.zero;
+            }
+
+            // Fall damage would otherwise count from the height the player left.
+            player.m_maxAirAltitude = point.y;
+            Physics.SyncTransforms();
+
+            // The camera glides after a move under 20 m; a teleport should cut.
+            if (GameCamera.instance != null)
+            {
+                GameCamera.instance.m_playerPos = point;
+            }
+        }
+
+        /// <summary>
         /// Whether <paramref name="hit"/> killed <paramref name="target"/>, for a Character.Damage postfix on the
         /// attacker's client. When this client owns the target, Character.Damage has already run RPC_Damage
         /// synchronously (ZRoutedRpc handles a call to its own peer immediately), so the health is post-hit and
         /// is read as-is -- subtracting the hit again refunded Wager on hits that left the target alive. A
-        /// remote target has not taken the hit yet, so its owner's resistance, armor and difficulty scaling are
-        /// estimated here; fire, poison and spirit arrive as damage over time and never kill on the hit itself.
+        /// remote target has not taken the hit yet, so its owner's sneak-attack bonus, stagger bonus, resistance
+        /// (of the weak spot struck, if any), armor and difficulty scaling are estimated here, in RPC_Damage's
+        /// order; fire, poison and spirit arrive as damage over time and never kill on the hit itself. Two things
+        /// the owner knows and this client cannot: a creature's five-minute sneak-attack cooldown (a calm creature
+        /// is taken to allow one) and a remote player's armor (their gear is not synced here).
         /// </summary>
         public static bool IsLethalHit(Character target, HitData hit)
         {
@@ -222,13 +288,21 @@ namespace EpicLoot.src.Magic.MagicItemEffects.Helpers
             }
 
             HitData estimate = hit.Clone();
-            estimate.ApplyResistance(target.GetDamageModifiers(), out _);
+            BaseAI baseAI = target.GetBaseAI();
+            Character attacker = hit.GetAttacker();
+            if (baseAI != null && !baseAI.IsAlerted() && estimate.m_backstabBonus > 1f &&
+                (!ZoneSystem.instance.GetGlobalKey(GlobalKeys.PassiveMobs) || attacker == null ||
+                    !baseAI.CanSeeTarget(attacker)))
+            {
+                estimate.ApplyModifier(estimate.m_backstabBonus);
+            }
+            if (!target.IsPlayer() && target.IsStaggering())
+            {
+                estimate.ApplyModifier(2f);
+            }
+            estimate.ApplyResistance(target.GetDamageModifiers(target.GetWeakSpot(estimate.m_weakSpot)), out _);
             if (!target.IsPlayer())
             {
-                if (target.IsStaggering())
-                {
-                    estimate.ApplyModifier(2f);
-                }
                 if (Game.m_worldLevel > 0)
                 {
                     estimate.ApplyArmor(Game.m_worldLevel * Game.instance.m_worldLevelEnemyBaseAC);

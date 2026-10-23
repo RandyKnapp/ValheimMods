@@ -2,6 +2,7 @@
 using EpicLoot_UnityLib;
 using HarmonyLib;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -22,18 +23,38 @@ namespace EpicLoot.CraftingV2
                 return;
             }
 
+            // Vanilla flags every drop of a piece that was placed with the no-cost cheat. Read the flag through
+            // vanilla's IsCheated: since 1.0.20 s_cheated holds a revision number, and the old bool value of 1
+            // left on pieces from earlier builds no longer counts, so GetBool would still flag those refunds.
+            var nview = __instance.GetComponent<ZNetView>();
+            bool cheated = nview != null && nview.IsValid() &&
+                nview.GetZDO().IsCheated() && !PlayerProfile.s_bypassCheatChecks;
+            Vector3 dropPosition = __instance.transform.position +
+                Vector3.up * __instance.m_returnResourceHeightOffset;
+
+            if (nview != null && nview.IsValid())
+            {
+                foreach (KeyValuePair<string, int> stored in EnchantingTableStash.ReadCounts(nview.GetZDO()))
+                {
+                    GameObject prefab = ObjectDB.instance.GetItemPrefab(stored.Key);
+                    ItemDrop itemDrop = prefab != null ? prefab.GetComponent<ItemDrop>() : null;
+                    if (itemDrop == null || stored.Value <= 0)
+                    {
+                        continue;
+                    }
+
+                    ItemDrop.ItemData item = itemDrop.m_itemData.Clone();
+                    item.m_dropPrefab = prefab;
+                    item.m_stack = stored.Value;
+                    DropCostItem(item, dropPosition, hitData, cheated);
+                }
+            }
+
             if (!ELConfig.EnchantingTableUpgradesActive.Value)
             {
                 // Do not drop upgrade costs when disabled
                 return;
             }
-
-            // Vanilla flags every drop of a piece that was placed with the no-cost cheat.
-            var nview = __instance.GetComponent<ZNetView>();
-            bool cheated = nview != null && nview.IsValid() &&
-                nview.GetZDO().GetBool(ZDOVars.s_cheated) && !PlayerProfile.s_bypassCheatChecks;
-            Vector3 dropPosition = __instance.transform.position +
-                Vector3.up * __instance.m_returnResourceHeightOffset;
 
             foreach (EnchantingFeature feature in Enum.GetValues(typeof(EnchantingFeature)))
             {
@@ -85,6 +106,27 @@ namespace EpicLoot.CraftingV2
                 // one behind; never let a zero-stack prefab turn this into an endless loop.
                 dropCount -= Mathf.Max(1, itemDrop.m_itemData.m_stack);
             }
+        }
+    }
+
+    [HarmonyPatch(typeof(Player), nameof(Player.CheckCanRemovePiece))]
+    public static class Player_CheckCanRemovePiece_Patch
+    {
+        public static void Postfix(Player __instance, Piece piece, ref bool __result)
+        {
+            if (!__result || piece == null)
+            {
+                return;
+            }
+
+            EnchantingTable table = piece.GetComponent<EnchantingTable>();
+            if (table == null || table.Stash == null || table.Stash.TotalCount == 0)
+            {
+                return;
+            }
+
+            __instance.Message(MessageHud.MessageType.Center, "$mod_epicloot_storage_cantremove");
+            __result = false;
         }
     }
 }

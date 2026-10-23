@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects;
@@ -43,26 +43,71 @@ public static class ModifyResistance
 
     private static float GetCappedResistanceValue(Player player, string effect, float additionalResistance = 0f)
     {
-        float resistance = player.GetTotalActiveMagicEffectValue(effect, 0.01f) + additionalResistance;
-        float resistanceCap;
+        return 1f - GetResistanceFraction(player, effect, additionalResistance);
+    }
 
+    public static string GetResistanceEffect(HitData.DamageType type)
+    {
+        switch (type)
+        {
+            case HitData.DamageType.Blunt: return MagicEffectType.AddBluntResistancePercentage;
+            case HitData.DamageType.Slash: return MagicEffectType.AddSlashingResistancePercentage;
+            case HitData.DamageType.Pierce: return MagicEffectType.AddPiercingResistancePercentage;
+            case HitData.DamageType.Chop: return MagicEffectType.AddChoppingResistancePercentage;
+            case HitData.DamageType.Fire: return MagicEffectType.AddFireResistancePercentage;
+            case HitData.DamageType.Frost: return MagicEffectType.AddFrostResistancePercentage;
+            case HitData.DamageType.Lightning: return MagicEffectType.AddLightningResistancePercentage;
+            case HitData.DamageType.Poison: return MagicEffectType.AddPoisonResistancePercentage;
+            case HitData.DamageType.Spirit: return MagicEffectType.AddSpiritResistancePercentage;
+            default: return null;
+        }
+    }
+
+    public static string GetGroupResistanceEffect(HitData.DamageType type)
+    {
+        switch (type)
+        {
+            case HitData.DamageType.Blunt:
+            case HitData.DamageType.Slash:
+            case HitData.DamageType.Pierce:
+            case HitData.DamageType.Chop:
+                return MagicEffectType.AddPhysicalResistancePercentage;
+            case HitData.DamageType.Fire:
+            case HitData.DamageType.Frost:
+            case HitData.DamageType.Lightning:
+            case HitData.DamageType.Poison:
+            case HitData.DamageType.Spirit:
+                return MagicEffectType.AddElementalResistancePercentage;
+            default:
+                return null;
+        }
+    }
+
+    public static float GetResistanceCap(string effect)
+    {
         Dictionary<string, float> cfg = MagicItemEffectDefinitions.GetEffectConfig(effect);
         if (cfg == null || !cfg.ContainsKey("MaxResistance"))
         {
-            resistanceCap = 1f;
+            return 1f;
         }
-        else
+
+        float resistanceCap = Mathf.Clamp01(cfg["MaxResistance"] / 100f);
+        if (resistanceCap > 1f)
         {
-            resistanceCap = Mathf.Clamp01(cfg["MaxResistance"] / 100f);
-            if (resistanceCap > 1f)
-            {
-                EpicLoot.LogWarning($"Resistance calculated to 100%, player immune. " +
-                    $"Suggested to reduce max resistance below 100 in your configuration.");
-            }
+            EpicLoot.LogWarning($"Resistance calculated to 100%, player immune. " +
+                $"Suggested to reduce max resistance below 100 in your configuration.");
         }
 
-        resistance = Mathf.Clamp(resistance, 0f, resistanceCap);
+        return resistanceCap;
+    }
 
-        return 1f - resistance;
+    public static float GetUncappedResistanceFraction(Player player, string effect, float additionalResistance = 0f)
+    {
+        return player.GetTotalActiveMagicEffectValue(effect, 0.01f) + additionalResistance;
+    }
+
+    public static float GetResistanceFraction(Player player, string effect, float additionalResistance = 0f)
+    {
+        return Mathf.Clamp(GetUncappedResistanceFraction(player, effect, additionalResistance), 0f, GetResistanceCap(effect));
     }
 }

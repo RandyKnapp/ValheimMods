@@ -26,11 +26,15 @@ namespace EpicLoot_UnityLib
         private int _augmentIndex;
         private GameObject _choiceDialog;
         private List<Toggle> _AugmentSelectors = new List<Toggle>();
+        private ScrollRectEnsureVisible _enchantListEnsureVisible;
 
         public override void Awake()
         {
             base.Awake();
+            AvailableItems.AddEquippedSortMode();
             MagicTextShimmer.Ensure(AvailableEffectsText);
+            _enchantListEnsureVisible = EnchantList.GetComponentInParent<ScrollRectEnsureVisible>(true);
+            EffectListRow.FitRowsToList(EnchantList);
         }
 
         [UsedImplicitly]
@@ -88,6 +92,12 @@ namespace EpicLoot_UnityLib
                             nextAugmentIndex = (nextAugmentIndex + 1) % activeAugmentCount;
                         }
                         _AugmentSelectors[nextAugmentIndex].isOn = true;
+
+                        // An item with many effects scrolls the list; keep the pick in view.
+                        if (_enchantListEnsureVisible != null)
+                        {
+                            _enchantListEnsureVisible.CenterOnItem((RectTransform)_AugmentSelectors[nextAugmentIndex].transform);
+                        }
                     }
                     ZInput.ResetButtonStatus("JoyButtonY");
                 }
@@ -190,6 +200,19 @@ namespace EpicLoot_UnityLib
             }
 
             ItemDrop.ItemData item = selectedItem.Item1.GetItem();
+
+            // Checked before paying: the item may have left the inventory, or its chest reloaded and
+            // replaced it, since it was selected. An augment only lasts on an item whose storage saves it.
+            if (!InventoryManagement.Instance.IsEditable(item))
+            {
+                Debug.LogWarning("[Augment Item] Cancelled: the item is no longer held anywhere the change would be saved.");
+                NotifyItemsUnavailable(item);
+                Cancel();
+                AvailableItems.SetItems(EnchantingUIController.GetAugmentableItems().Cast<IListElement>().ToList());
+                DeselectAll();
+                return;
+            }
+
             List<InventoryItemListElement> cost = EnchantingUIController.GetAugmentCost(item, _augmentIndex);
 
             Player player = Player.m_localPlayer;
@@ -198,6 +221,7 @@ namespace EpicLoot_UnityLib
                 if (!LocalPlayerCanAffordCost(cost))
                 {
                     Debug.LogError("[Augment Item] ERROR: Tried to augment item but could not afford the cost. This should not happen!");
+                    player.Message(MessageHud.MessageType.Center, "$msg_missingrequirement");
                     return;
                 }
 
@@ -280,6 +304,7 @@ namespace EpicLoot_UnityLib
                     enchantmentElement.text = effect.Item1;
                     MagicTextShimmer.Ensure(enchantmentElement);
                 }
+                EffectListRow.Fit(enchantmentListElement, enchantmentElement);
 
                 if (effect.Item2 == false)
                 {

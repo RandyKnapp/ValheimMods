@@ -18,6 +18,19 @@ namespace EpicLoot.Crafting
         private AudioSource _audioSource;
         private bool _isAugaPanel;
 
+        private static int _inputCloseFrame = -1;
+
+        /// <summary>
+        /// True on the frame a press closed one of these dialogs, and the frame after. The window
+        /// underneath (the store, the enchanting table) closes on the same B and Escape, and update order
+        /// against it is not fixed: one that runs after the dialog has closed would close too.
+        /// ZInput.ResetButtonStatus cannot consume a raw key, so those windows ask this instead. The next
+        /// frame counts as well because a gamepad press reads as down until ZInput next updates, which
+        /// can fall on either side of them.
+        /// </summary>
+        public static bool ClosedByInputJustNow =>
+            _inputCloseFrame >= 0 && Time.frameCount - _inputCloseFrame <= 1;
+
         [UsedImplicitly]
         public void Awake()
         {
@@ -40,9 +53,16 @@ namespace EpicLoot.Crafting
             }
 
             if (ZInput.GetButtonDown("Inventory") || ZInput.GetButtonDown("JoyButtonB") ||
-                (ZInput.GetButtonDown("JoyButtonY") || ZInput.GetKeyDown(KeyCode.Escape)) ||
+                ZInput.GetButtonDown("JoyButtonY") || ZInput.GetKeyDown(KeyCode.Escape) ||
                 ZInput.GetButtonDown("JoyButtonA"))
             {
+                // Update order against the panel underneath is not fixed: left unconsumed, the A that
+                // closes this is read again by the merchant panel as a second gamble purchase, and the
+                // B or Escape closes the store or the enchanting table as well (see ClosedByInputJustNow).
+                // Y is left alone: vanilla opens the inventory on it, which is meant to close the store.
+                ZInput.ResetButtonStatus("JoyButtonA");
+                ZInput.ResetButtonStatus("JoyButtonB");
+                _inputCloseFrame = Time.frameCount;
                 Close();
             }
         }
@@ -216,6 +236,12 @@ namespace EpicLoot.Crafting
             dialog.Description.rectTransform.anchoredPosition += new Vector2(0, -110);
             dialog.Description.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 460);
             dialog.Icon = Instantiate(inventoryGui.m_recipeIcon, dialog.Frame);
+
+            // The crafting panel disables these three templates while it has no recipe selected, and a copy
+            // keeps that state, which left the dialog with a blank name, description or icon.
+            dialog.NameText.enabled = true;
+            dialog.Description.enabled = true;
+            dialog.Icon.enabled = true;
 
             var scrollview = ConvertToScrollingDescription(dialog.Description, dialog.Frame);
             var svrt = (RectTransform)scrollview.transform;

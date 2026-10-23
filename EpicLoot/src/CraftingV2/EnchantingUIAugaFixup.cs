@@ -72,16 +72,34 @@ namespace EpicLoot.CraftingV2
                     AugaFixupMultiselectPrefab(convertUI.Products.ElementPrefab.gameObject);
                     AugaFixupMultiselectPrefab(convertUI.CostList.ElementPrefab.gameObject);
 
+                    foreach (var modeButton in convertUI.ModeButtons)
+                    {
+                        AugaFixupModeSelectButton(modeButton);
+                    }
+
                     var modeButtonContainer = (RectTransform)convertUI.ModeButtons[0].transform.parent;
                     modeButtonContainer.anchoredPosition = new Vector2(-20, modeButtonContainer.anchoredPosition.y);
                 }
                 else if (panelBase is EnchantUI enchantUI)
                 {
                     AugaFixupMultiselectPrefab(enchantUI.CostList.ElementPrefab.gameObject);
+
+                    // Any rarity toggle the prefab lacks is cloned first: the forwarding click listener
+                    // added below is not copied by Instantiate, so a toggle cloned later would not click.
+                    enchantUI.EnsureRarityButtons();
+                    foreach (var rarityButton in enchantUI.RarityButtons)
+                    {
+                        AugaFixupRaritySelectButton(rarityButton);
+                    }
                 }
                 else if (panelBase is AugmentUI augmentUI)
                 {
                     AugaFixupMultiselectPrefab(augmentUI.CostList.ElementPrefab.gameObject);
+                }
+                else if (panelBase is StashUI stashUI)
+                {
+                    AugaFixupMultiselectPrefab(stashUI.MaterialsList.ElementPrefab.gameObject);
+                    AugaFixupMultiselectPrefab(stashUI.ShardstonesList.ElementPrefab.gameObject);
                 }
             }
 

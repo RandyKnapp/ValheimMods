@@ -1,6 +1,8 @@
 using HarmonyLib;
 using JetBrains.Annotations;
+using System.Collections.Generic;
 using System.Reflection;
+using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 
 namespace EpicLoot.MagicItemEffects
@@ -31,6 +33,33 @@ namespace EpicLoot.MagicItemEffects
             public static void Prefix(Inventory __instance, ref ItemDrop.ItemData item)
             {
                 Sync(item);
+            }
+        }
+
+        // The one drain site that ignores m_useDurability: Player.DamageArmorDurability wears a random worn
+        // armor piece regardless, so an indestructible piece kept losing durability, unseen, and showed as
+        // broken once the effect came off. Vanilla's pick is kept, so the other pieces wear no faster; the
+        // write is just skipped for a piece that does not use durability.
+        [HarmonyPatch(typeof(Player), nameof(Player.DamageArmorDurability))]
+        public static class Indestructible_Player_DamageArmorDurability_Patch
+        {
+            [UsedImplicitly]
+            public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+            {
+                CodeMatcher codeMatcher = new CodeMatcher(instructions);
+                codeMatcher.MatchStartForward(new CodeMatch(OpCodes.Stfld,
+                        AccessTools.Field(typeof(ItemDrop.ItemData), nameof(ItemDrop.ItemData.m_durability))))
+                    .ThrowIfNotMatch("Unable to patch Player.DamageArmorDurability for Indestructible.")
+                    .SetAndAdvance(OpCodes.Call, AccessTools.Method(typeof(Indestructible), nameof(SetArmorDurability)));
+                return codeMatcher.Instructions();
+            }
+        }
+
+        private static void SetArmorDurability(ItemDrop.ItemData item, float durability)
+        {
+            if (item.m_shared.m_useDurability)
+            {
+                item.m_durability = durability;
             }
         }
 

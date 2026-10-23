@@ -10,8 +10,11 @@ namespace EpicLoot.MagicItemEffects
     [HarmonyPatch(typeof(CharacterDrop), nameof(CharacterDrop.GenerateDropList))]
     public static class Riches_CharacterDrop_GenerateDropList_Patch
     {
-        private static float richesValue = 0f;
-        private static float lastUpdateCheck = 0;
+        // Player-ZDO key holding the local player's Riches, mirrored by Multiplayer_Player_Patch.UpdateRichesAndLuck.
+        // A float: diminishing shard stacking gives fractional totals, which the old int key "el-rch" truncated.
+        public const string ZdoValueKey = "el-rich";
+        private const float PlayerScanRange = 100f;
+
         public static readonly Dictionary<string, float> DefaultRichesTable = new Dictionary<string, float> {
             { "SilverNecklace", 30 },
             { "Ruby", 20 },
@@ -75,53 +78,57 @@ namespace EpicLoot.MagicItemEffects
         [UsedImplicitly]
         private static void Postfix(CharacterDrop __instance, ref List<KeyValuePair<GameObject, int>> __result)
         {
-            // Only do network updates for riches every minute
-            if (lastUpdateCheck < Time.time) {
-                lastUpdateCheck = Time.time + 5f;
-
-                var playerList = new List<Player>();
-                Player.GetPlayersInRange(__instance.m_character.transform.position, 100f, playerList);
-
-                richesValue = playerList.Sum(player => player.m_nview.GetZDO().GetInt("el-rch")) * 0.01f;
+            // Summed per death over the players near this creature: the drop list is built on the creature's owner,
+            // which may have no local player, so each player's total is read off their ZDO.
+            var playerList = new List<Player>();
+            Player.GetPlayersInRange(__instance.transform.position, PlayerScanRange, playerList);
+            var richesValue = 0f;
+            foreach (var player in playerList)
+            {
+                var zdo = player?.m_nview?.GetZDO();
+                if (zdo != null)
+                {
+                    richesValue += zdo.GetFloat(ZdoValueKey) * 0.01f;
+                }
             }
+
             // No riches present in the area, so nothing to do.
             if (richesValue <= 0) {
                 return;
             }
-            var richesRandomRoll = Random.Range(0f, 1f);
 
-            if (richesValue > 1) {
-                richesRandomRoll = Mathf.RoundToInt(richesRandomRoll * richesValue);
+            // Riches is the chance of a payout, certain from 100% up. Comparing two uniform rolls used to make it
+            // about 50% at any strength up to 100%.
+            if (richesValue < 1f && Random.value >= richesValue) {
+                return;
             }
 
-            float richesActivateRoll = Random.Range(0f, 1f);
-            if (richesActivateRoll < richesRandomRoll) {
+            // The payout budget, in table cost points; above 100% it grows in proportion.
+            float richesValueRoll = Random.Range(0f, 1f) * 100f * Mathf.Max(1f, richesValue);
 
-                // Riches table not setup, so we need to update it
+            // Riches table not setup, so we need to update it
+            if (RichesTable.Count == 0) {
+                UpdateRichesOnEffectSetup();
+                // Still empty (nothing configured/resolvable): bail rather than indexing into
+                // an empty table from inside CharacterDrop.GenerateDropList.
                 if (RichesTable.Count == 0) {
-                    UpdateRichesOnEffectSetup();
-                    // Still empty (nothing configured/resolvable): bail rather than indexing into
-                    // an empty table from inside CharacterDrop.GenerateDropList.
-                    if (RichesTable.Count == 0) {
-                        return;
-                    }
+                    return;
                 }
+            }
 
-                // Randomly select _one_ loot item from the list, scale it based on the riches value, and add it to the drop list.
-                // (int overload of Random.Range is max-exclusive; Count-1 made the last entry unreachable.)
-                int selected = Random.Range(0, RichesTable.Count);
-                float richesValueRoll = richesRandomRoll * 100;
-                float richesCost = RichesTable[RichesTable.Keys.ElementAt(selected)];
-                float richesAmount = richesValueRoll / richesCost;
-                int amount = richesAmount < 1 ? 0 : Mathf.RoundToInt(richesAmount);
-                GameObject selectedPrefab = RichesTable.Keys.ElementAt(selected);
-                if (amount == 0 && LowestCostEntry.Key != null) {
-                    amount = Mathf.RoundToInt(richesValueRoll / LowestCostEntry.Value);
-                    selectedPrefab = LowestCostEntry.Key;
-                }
-                if (amount >= 1) {
-                    __result.Add(new KeyValuePair<GameObject, int>(selectedPrefab, amount));
-                }
+            // Randomly select _one_ loot item from the list, scale it based on the riches value, and add it to the drop list.
+            // (int overload of Random.Range is max-exclusive; Count-1 made the last entry unreachable.)
+            int selected = Random.Range(0, RichesTable.Count);
+            float richesCost = RichesTable[RichesTable.Keys.ElementAt(selected)];
+            float richesAmount = richesValueRoll / richesCost;
+            int amount = richesAmount < 1 ? 0 : Mathf.RoundToInt(richesAmount);
+            GameObject selectedPrefab = RichesTable.Keys.ElementAt(selected);
+            if (amount == 0 && LowestCostEntry.Key != null) {
+                amount = Mathf.RoundToInt(richesValueRoll / LowestCostEntry.Value);
+                selectedPrefab = LowestCostEntry.Key;
+            }
+            if (amount >= 1) {
+                __result.Add(new KeyValuePair<GameObject, int>(selectedPrefab, amount));
             }
         }
     }

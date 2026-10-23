@@ -6,7 +6,12 @@ public static class StaggerOnDamageTaken_Character_Damage_Patch
 {
     public static void OnDamageDealt(Character __instance, HitData hit, Character attacker)
     {
-        if (hit == null || __instance == null)
+        // IsValid() (not just a null check), as in Slow and Paralyze: a creature that died is destroyed from its
+        // own FixedUpdate, and ZNetScene.Destroy nulls the ZDO at once while its colliders linger to the end of
+        // the frame, so an Aoe resolving later in that frame still hits it and Stagger's InvokeRPC would NRE.
+        // A dead target is skipped the way vanilla's own stagger in RPC_Damage skips it.
+        if (hit == null || __instance == null || __instance.m_nview == null || !__instance.m_nview.IsValid()
+            || __instance.IsDead())
         {
             return;
         }

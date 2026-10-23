@@ -146,25 +146,15 @@ public static partial class API
         return TryToRarity(rarity, out ItemRarity value) ? LootRoller.RollEffectCountPerRarity(value) : 0;
     }
 
-    /// <param name="rarity">rarity ordinal; only Legendary and Mythic have entries</param>
-    /// <returns>Every registered legendary/mythic id at that rarity, including API-registered ones.</returns>
+    /// <param name="rarity">rarity ordinal</param>
+    /// <returns>Every unique id (set pieces included) that rolls at that rarity, including API-registered
+    /// ones. Empty for a rarity nothing is enabled at.</returns>
     [PublicAPI]
     public static List<string> GetLegendaryIDs(int rarity)
     {
-        if (!TryToRarity(rarity, out ItemRarity value))
-        {
-            return new List<string>();
-        }
-
-        switch (value)
-        {
-            case ItemRarity.Legendary:
-                return UniqueLegendaryHelper.LegendaryInfo.Keys.ToList();
-            case ItemRarity.Mythic:
-                return UniqueLegendaryHelper.MythicInfo.Keys.ToList();
-            default:
-                return new List<string>();
-        }
+        return TryToRarity(rarity, out ItemRarity value)
+            ? UniqueLegendaryHelper.GetUniquesEnabledAt(value)
+            : new List<string>();
     }
 
     /// <param name="legendaryID">A legendary or mythic id</param>

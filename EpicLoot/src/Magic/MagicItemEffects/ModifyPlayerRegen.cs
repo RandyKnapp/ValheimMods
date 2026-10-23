@@ -127,6 +127,8 @@ public static class ModifyPlayerRegen
             regenValue += player.GetTotalActiveMagicEffectValue(effect, 0.01f);
         });
 
+        GiantsBlood.ApplyHealthRegen(player, magicEffect, ref regenValue);
+
         return regenValue;
     }
 

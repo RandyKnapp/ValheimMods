@@ -55,6 +55,48 @@ public static class ItemBackgroundHelper
         return magicItemTransform.GetComponent<Image>();
     }
 
+    public static void UpdateIconSetMarker(Image icon, ItemDrop.ItemData item)
+    {
+        if (icon == null)
+        {
+            return;
+        }
+
+        Transform existing = icon.transform.Find(IconSetMarkerName);
+        if (item == null || !item.IsSetItem())
+        {
+            if (existing != null)
+            {
+                existing.gameObject.SetActive(false);
+            }
+
+            return;
+        }
+
+        Image marker = existing != null ? existing.GetComponent<Image>() : CreateIconSetMarker(icon);
+        marker.color = ColorUtility.TryParseHtmlString(EpicLoot.GetSetItemColor(), out Color color) ? color : Color.white;
+        marker.gameObject.SetActive(true);
+    }
+
+    private static Image CreateIconSetMarker(Image icon)
+    {
+        GameObject go = new GameObject(IconSetMarkerName, typeof(RectTransform), typeof(Image));
+        RectTransform rect = (RectTransform)go.transform;
+        rect.SetParent(icon.transform, false);
+        rect.anchorMin = new Vector2(0f, -IconSetMarkerDrop);
+        rect.anchorMax = new Vector2(1f, 1f - IconSetMarkerDrop);
+        rect.offsetMin = Vector2.zero;
+        rect.offsetMax = Vector2.zero;
+
+        Image marker = go.GetComponent<Image>();
+        marker.sprite = EpicLoot.GetSetItemSprite();
+        marker.raycastTarget = false;
+        return marker;
+    }
+
+    private const string IconSetMarkerName = "EL_SetItemMarker";
+    private const float IconSetMarkerDrop = 0.15f;
+
     /// <summary>
     /// Swaps the slot's vanilla "equiped" overlay (a translucent blue fill) for Epic Loot's frame.
     /// Unconditional per slot, and deliberately separate from the rarity background above: the

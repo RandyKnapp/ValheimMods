@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+using EpicLoot.src.Magic.MagicItemEffects.Helpers;
+using HarmonyLib;
 using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects
@@ -17,7 +18,8 @@ namespace EpicLoot.MagicItemEffects
                 Vector3 weaponPosition = __instance.transform.position;
                 Vector3 targetPosition = weaponPosition + __instance.transform.TransformDirection(__instance.m_spawnOffset);
                 if (Player.m_localPlayer != null && Player.m_localPlayer == __instance.m_owner) {
-                    Player.m_localPlayer.transform.position = targetPosition;
+                    // Moving only the transform was undone by the interpolating rigidbody, so the player never left.
+                    MagicEffectsHelper.MovePlayer(Player.m_localPlayer, targetPosition);
                 }
             }
         }

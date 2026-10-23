@@ -11,6 +11,7 @@ using EpicLoot.General;
 using EpicLoot.Magic;
 using EpicLoot.Magic.MagicItemEffects.Helpers;
 using EpicLoot.MagicItemEffects;
+using EpicLoot_UnityLib;
 using HarmonyLib;
 using JetBrains.Annotations;
 using Jotunn.Configs;
@@ -35,10 +36,11 @@ namespace EpicLoot;
 [BepInDependency("vapok.mods.adventurebackpacks", BepInDependency.DependencyFlags.SoftDependency)]
 [BepInDependency("kg.ValheimEnchantmentSystem", BepInDependency.DependencyFlags.SoftDependency)]
 [BepInDependency("org.bepinex.plugins.steadyregeneration", BepInDependency.DependencyFlags.SoftDependency)]
+[BepInDependency(ItemFavoriteFrameworkAPI.ItemFavorites.PluginGuid, BepInDependency.DependencyFlags.SoftDependency)]
 public sealed class EpicLoot : BaseUnityPlugin {
     public const string PluginId = "randyknapp.mods.epicloot";
     public const string DisplayName = "Epic Loot";
-    public const string Version = "0.14.13";
+    public const string Version = "0.15.0";
 
     private static string ConfigFileName = PluginId + ".cfg";
     private static string ConfigFileFullPath = BepInEx.Paths.ConfigPath + Path.DirectorySeparatorChar + ConfigFileName;
@@ -79,8 +81,12 @@ public sealed class EpicLoot : BaseUnityPlugin {
     };
 
     public static bool AlwaysDropCheat = false;
-    public const Minimap.PinType BountyPinType = (Minimap.PinType)800;
-    public const Minimap.PinType TreasureMapPinType = (Minimap.PinType)801;
+    /// <summary>
+    /// The bounty and treasure map pin types: the next free slots at the end of the minimap's filter array, taken
+    /// each time a map starts (<see cref="Adventure.MinimapController"/>). -1, which matches no pin, until then.
+    /// </summary>
+    public static Minimap.PinType BountyPinType { get; internal set; } = (Minimap.PinType)(-1);
+    public static Minimap.PinType TreasureMapPinType { get; internal set; } = (Minimap.PinType)(-1);
     /// <summary>Project Auga is installed and its API is attached; set in Awake, see <see cref="InitializeAuga"/>.</summary>
     public static bool HasAuga;
 
@@ -116,9 +122,18 @@ public sealed class EpicLoot : BaseUnityPlugin {
         AddLocalizations();
         LoadAssets();
         _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), PluginId);
+        // Registers with the shared Mod Config launcher (main menu + pause menu) and, on a user's first
+        // run, queues the setup wizard on the shared startup popup queue, which opens it once the main
+        // menu is ready.
+        QuickConfig.QuickConfigureTool.Init();
+        // Opens behind the wizard (a notice, not a welcome). After LoadAssets, which loads its prefab.
+        ConfigUpdatePrompt.Init();
 
         LootTableLoaded?.Invoke();
         RegisterMagicEffectEvents();
+
+        // Wishlist conditions and magic item names for Item Favorite Framework, when it is installed.
+        Compatibility.ItemFavorites.RegisterLootIntegration();
 
         // Scheduled (non-per-frame) effect drivers, on their own DontDestroyOnLoad objects.
         MagicItemEffects.Shards.PoisonAdrenalinePulse.Create();
@@ -126,6 +141,10 @@ public sealed class EpicLoot : BaseUnityPlugin {
 
         // Logs, from the buyer's side, a bounty or treasure map that has not appeared at its map circle.
         AdventureSpawnWatchdog.Create();
+
+        // Builds the enchanting table window hidden on each world's first spawn, behind the loading screen,
+        // so opening a table for the first time no longer stalls the game.
+        Game.m_playerInitialSpawn += EnchantingTableUI.PrepareForWorld;
 
         // Main file config watcher
         SetupWatcher();
@@ -135,6 +154,7 @@ public sealed class EpicLoot : BaseUnityPlugin {
         // Register per-effect tooltip display-value providers (effects that show more than one number).
         // These are keyed by effect-type constant and don't depend on config load, so register once here.
         MagicItemEffects.BulkupEffect.RegisterDisplayValues();
+        MagicItemEffects.GiantsBlood.RegisterDisplayValues();
         Magic.MagicItemEffects.DartingThoughts.RegisterDisplayValues();
         MagicItemEffects.Shards.HealthGainPerXDamageDone.RegisterDisplayValues();
         MagicItemEffects.Shards.HealthOnEitrUse.RegisterDisplayValues();
@@ -164,6 +184,27 @@ public sealed class EpicLoot : BaseUnityPlugin {
         MagicItemEffects.Shards.NecroticFire.RegisterDisplayValues();
         MagicItemEffects.Shards.BlockAsDodgeAsBlock.RegisterDisplayValues();
         MagicItemEffects.Shards.BlockAsWoodCuttingAndPickaxes.RegisterDisplayValues();
+        MagicItemEffects.OverwhelmingLaunch.RegisterDisplayValues();
+        MagicItemEffects.Artillery.RegisterDisplayValues();
+        MagicItemEffects.Assassin.RegisterDisplayValues();
+        MagicItemEffects.NineSteps.RegisterDisplayValues();
+        MagicItemEffects.Hexen.RegisterDisplayValues();
+        MagicItemEffects.Sniper.RegisterDisplayValues();
+        MagicItemEffects.Frostwalker.RegisterDisplayValues();
+        MagicItemEffects.SpiritAnimal.RegisterDisplayValues();
+        MagicItemEffects.Earthshaker.RegisterDisplayValues();
+        MagicItemEffects.ConjuredArrows.RegisterDisplayValues();
+        MagicItemEffects.DeepWell.RegisterDisplayValues();
+        MagicItemEffects.EitrBarrier.RegisterDisplayValues();
+        MagicItemEffects.EitrInfusion.RegisterDisplayValues();
+        MagicItemEffects.QuarryMark.RegisterDisplayValues();
+        MagicItemEffects.HelsHarvest.RegisterDisplayValues();
+        MagicItemEffects.Vanish.RegisterDisplayValues();
+        MagicItemEffects.Firebrand.RegisterDisplayValues();
+        MagicItemEffects.LifeSiphon.RegisterDisplayValues();
+        MagicItemEffects.KineticQuake.RegisterDisplayValues();
+        MagicItemEffects.ShieldThrow.RegisterDisplayValues();
+        MagicItemEffects.CoinHoarder.RegisterDisplayValues();
 
         // This needs to not run until after the game is loaded, otherwise it will not be able to find the ObjectDB
         MagicItemEffectDefinitions.OnSetupMagicItemEffectDefinitions += Riches_CharacterDrop_GenerateDropList_Patch.UpdateRichesOnEffectSetup;
@@ -257,6 +298,14 @@ public sealed class EpicLoot : BaseUnityPlugin {
         return enabled == null || threshold == null || (enabled.Value && threshold.Value <= level);
     }
 
+    /// <summary>
+    /// Whether a Log* call at this level would be written. The interpolated message is built before
+    /// Log sees it, so a loop that exists only to log (loot table listings) checks this first.
+    /// </summary>
+    public static bool IsLogEnabled(LogLevel level) {
+        return ShouldLog(level);
+    }
+
     public static void Log(string message) {
         if (ShouldLog(LogLevel.Info)) {
             LogSink.LogInfo(message);
@@ -329,7 +378,6 @@ public sealed class EpicLoot : BaseUnityPlugin {
         EpicAssets.OffSetSFX = assetBundle.LoadAsset<AudioClip>("sfx_offset");
         EpicAssets.DebugTextPrefab = assetBundle.LoadAsset<GameObject>("DebugText");
         EpicAssets.AbilityBar = assetBundle.LoadAsset<GameObject>("AbilityBar");
-        EpicAssets.WelcomMessagePrefab = assetBundle.LoadAsset<GameObject>("WelcomeMessage");
         EpicAssets.ConfigMessagePrefab = assetBundle.LoadAsset<GameObject>("ConfigMessage");
         EpicAssets.SocketMessagePrefab = assetBundle.LoadAsset<GameObject>("SocketMessage");
 
@@ -364,9 +412,9 @@ public sealed class EpicLoot : BaseUnityPlugin {
         RegisterStatusEffects();
 
         PrefabManager.OnPrefabsRegistered += SetupAndvaranaut;
-        // Runs during ZNetScene setup (after IceSpikes is registered, while AudioMan exists) so the
-        // frost-cone SFX is routed through the volume mixer instead of playing at full volume.
-        PrefabManager.OnPrefabsRegistered += FrostAOE.HookUpIceSpikesAudio;
+        // Runs during ZNetScene setup, once the vanilla mixer is loaded, so the bundle prefabs that play sound
+        // go through the game's volume sliders instead of playing at full volume.
+        PrefabManager.OnPrefabsRegistered += ResolveAudioMixerMocks;
         // Registers our player-faction, tamed clone of the vanilla 'Bat' into ZNetScene on every client each
         // world load (fires as a ZNetScene.Awake postfix), so the SummonBat trinket shard can spawn a
         // reload-safe pet that stays friendly. Idempotent -- built once and re-injected each ZNetScene.
@@ -377,12 +425,35 @@ public sealed class EpicLoot : BaseUnityPlugin {
         // nothing at all, so they are load-bearing, not cosmetic.
         PrefabManager.OnPrefabsRegistered += MagicItemEffects.Shards.StrikeCausesLightning.RegisterVisualPrefab;
         PrefabManager.OnPrefabsRegistered += MagicItemEffects.Shards.Trailblazer.RegisterVfxPrefab;
+        // The frost novas of the Frost Wave and Icy Retribution shards are networked clones of the fenring
+        // nova; every client must have them registered before a proc's ZDO arrives, or other players log a
+        // missing prefab hash and never see the nova.
+        PrefabManager.OnPrefabsRegistered += MagicItemEffects.Shards.AdrenalineFrostWave.RegisterNovaPrefab;
+        PrefabManager.OnPrefabsRegistered += MagicItemEffects.Shards.ModerIcyRetribution.RegisterNovaPrefab;
+        // The Conjured Arrows set bonus fires a networked glowing copy of the frost arrow, so it is registered
+        // the same way, along with the off-inventory ammo item it is shot from.
+        PrefabManager.OnPrefabsRegistered += MagicItemEffects.ConjuredArrows.RegisterPrefabs;
+        // The Eitr Barrier's purple bubble and its hit and break fx are networked recoloured copies of the Staff of
+        // Protection's, so other players see them too.
+        PrefabManager.OnPrefabsRegistered += MagicItemEffects.EitrBarrier.RegisterPrefabs;
+        // Hel's Harvest raises thralls, a networked copy of the summoned skeleton under its own name.
+        PrefabManager.OnPrefabsRegistered += MagicItemEffects.HelsHarvest.RegisterPrefabs;
+        // Firebrand's nova visual is a networked copy of Brenna's that goes off at once rather than after her wind-up.
+        PrefabManager.OnPrefabsRegistered += MagicItemEffects.Firebrand.RegisterPrefabs;
+        // After every RegisterPrefabs above: builds what the set effects would otherwise build on first use (wings,
+        // snow, ice, fx copies) and compiles their code, behind the loading screen instead of mid-fight.
+        PrefabManager.OnPrefabsRegistered += MagicItemEffects.SetEffectWarmup.OnPrefabsRegistered;
         ItemManager.OnItemsRegistered += SetupStatusEffects;
+        // legendaries.json problems are reported once every mod has registered its uniques and sets
+        // through the API, so a set whose pieces another mod adds is not reported as broken.
+        ItemManager.OnItemsRegistered += LegendarySystem.UniqueLegendaryHelper.EnableValidation;
         LoadUnidentifiedItems();
         ShardStones.Shards.CreateAndLoadShardItems();
         LoadShardSlotChisels();
         // Needs to trigger late in order to get all potentially added items by other mods.
         // Subscribed via the stored handler so the self-unsubscribe inside actually matches.
+        // A headless server never loads the minimap; it runs the pass from the world load instead
+        // (AutoAddEnchantableItems.RunOnHeadlessWorldLoad).
         MinimapManager.OnVanillaMapDataLoaded += AutoAddEnchantableItems.OnMapDataLoadedHandler;
 
         EpicAssets.AssertAssetIntegrety();
@@ -443,7 +514,7 @@ public sealed class EpicLoot : BaseUnityPlugin {
 
         PieceLoader.Register(new PieceLoader.BuildPiece {
             Name = "Enchanting Table",
-            Prefab = "piece_enchantingtable",
+            Prefab = EnchantingTable.PrefabName,
             Category = PieceCategories.Crafting,
             RequiresWorkbench = false,
             AllowedInDungeons = false,
@@ -767,6 +838,22 @@ public sealed class EpicLoot : BaseUnityPlugin {
         ItemManager.OnItemsRegistered += () => ObjectDB.instance.m_StatusEffects.Add(EpicAssets.DodgeBuffStatusEffect);
     }
 
+    /// <summary>
+    /// Points the audio of the bundle prefabs loaded at startup at the vanilla mixer groups their JVLmock_
+    /// groups name (see <see cref="AudioMixerMocks"/>). None of these is registered with fixReference, so
+    /// Jotunn never resolves them on its own. Instances created from them afterwards inherit the vanilla group.
+    /// </summary>
+    private static void ResolveAudioMixerMocks() {
+        AudioMixerMocks.Resolve(EpicAssets.IceSpikesVFX, "SFX");
+        AudioMixerMocks.Resolve(EpicAssets.BulwarkMagicShieldSFX, "SFX");
+        AudioMixerMocks.Resolve(EpicAssets.UndyingSFX, "SFX");
+        AudioMixerMocks.Resolve(EpicAssets.BerserkerSFX, "SFX");
+        AudioMixerMocks.Resolve(EpicAssets.DodgeBuffSFX, "SFX");
+        foreach (GameObject lootBeam in EpicAssets.MagicItemLootBeamPrefabs) {
+            AudioMixerMocks.Resolve(lootBeam, "Ambient");
+        }
+    }
+
     [UsedImplicitly]
     void OnDestroy() {
         Config.Save();
@@ -937,8 +1024,10 @@ public sealed class EpicLoot : BaseUnityPlugin {
         return item.m_shared.m_icons.Length > 0;
     }
 
+    // The prefab name, which is what loot tables are keyed by: strips "(Clone)" and also the " (1)" a
+    // copy placed inside a location prefab carries (the memorial site's FallenWarrior (1)).
     public static string GetCharacterCleanName(Character character) {
-        return character.name.Replace("(Clone)", "").Trim();
+        return global::Utils.GetPrefabName(character.gameObject);
     }
 
     public static string GetSetItemColor() {

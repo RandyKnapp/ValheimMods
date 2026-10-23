@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using EpicLoot.Config;
 using EpicLoot.CraftingV2;
 using TMPro;
 using UnityEngine;
@@ -26,10 +27,15 @@ namespace EpicLoot_UnityLib
 
         public static EnchantingTableUI instance { get; set; }
 
+        // How many frames IsVisible still answers true after the window hides, so the press that closed it
+        // is not read again as opening the pause menu.
+        private const int HiddenGraceFrames = 2;
+
         private int _hiddenFrames;
         private GameObject[] _gamepadHintContainers = Array.Empty<GameObject>();
         private bool _gamepadHintsShown = true;
         private bool _correctingTab;
+        private bool _setUp;
 
         public void Awake()
         {
@@ -38,6 +44,20 @@ namespace EpicLoot_UnityLib
 
         public void Start()
         {
+            Setup();
+        }
+
+        // Runs once per window: from Start, or straight after creation in PrepareForWorld, while Root is still
+        // active, so the Auga fixup below sees the same active objects it would on a first open.
+        private void Setup()
+        {
+            if (_setUp)
+            {
+                return;
+            }
+
+            _setUp = true;
+
             Localization.instance.Localize(transform);
 
             EnchantingUIController.SetupUIAudioSource(Audio);
@@ -46,11 +66,79 @@ namespace EpicLoot_UnityLib
             // feature status wiring below have to see the buttons that stay.
             EnchantingUIAugaFixup.AugaFixup(this);
 
-            instance.SetupTabs();
-            instance.CollectGamepadHints();
+            SetupTabs();
+            CollectGamepadHints();
         }
 
-        private static void CreateUI(EnchantingTable source)
+        /// <summary>
+        /// Builds the window hidden, so the first time the player uses a table it only has to fill its lists.
+        /// Creating it the first time took several hundred milliseconds: instantiating the prefab, waking every
+        /// page, localizing the whole tree and compiling all of that code. This runs on each world's first
+        /// spawn (Game.m_playerInitialSpawn), in the same frame the player appears and while the loading screen
+        /// still covers it. The window then lives as long as the in-game GUI, until logout.
+        /// </summary>
+        public static void PrepareForWorld()
+        {
+            if (instance != null || ZNetScene.instance == null)
+            {
+                return;
+            }
+
+            GameObject tablePrefab = ZNetScene.instance.GetPrefab(EnchantingTable.PrefabName);
+            EnchantingTable table = tablePrefab != null ? tablePrefab.GetComponent<EnchantingTable>() : null;
+            if (table == null || table.EnchantingUIPrefab == null)
+            {
+                return;
+            }
+
+            try
+            {
+                CreateUI(table.EnchantingUIPrefab);
+                if (instance == null)
+                {
+                    return;
+                }
+
+                instance.Setup();
+                instance.SelectStartingTab();
+            }
+            catch (Exception e)
+            {
+                // Handlers after this one on Game.m_playerInitialSpawn, and the rest of vanilla's spawn
+                // frame, must still run. Show builds or finishes the window the usual way.
+                Debug.LogError($"[EpicLoot] Could not prepare the enchanting table window: {e}");
+            }
+            finally
+            {
+                if (instance != null)
+                {
+                    instance.Root.SetActive(false);
+                    instance.Scrim.SetActive(false);
+                    instance._hiddenFrames = HiddenGraceFrames + 1;
+                }
+            }
+        }
+
+        // What TabHandler.Start would otherwise do on the first Show: open the default page, which wakes it and
+        // fills its list now rather than then. Not through the tab's onClick, which would play the tab sound
+        // under the loading screen. SetActiveTab also marks a tab as chosen, so TabHandler.Start leaves the page
+        // alone. A default page the config has turned off is skipped forward, as OnActiveTabChanged would.
+        private void SelectStartingTab()
+        {
+            int tabCount = TabHandler.m_tabs.Count;
+            int defaultIndex = Math.Max(0, TabHandler.m_tabs.FindIndex(tab => tab.m_default));
+            for (int offset = 0; offset < tabCount; ++offset)
+            {
+                int candidate = (defaultIndex + offset) % tabCount;
+                if (IsTabAvailable(candidate))
+                {
+                    TabHandler.SetActiveTab(candidate, forceSelect: true, invokeOnClick: false);
+                    return;
+                }
+            }
+        }
+
+        private static void CreateUI(GameObject enchantingUIPrefab)
         {
             if (StoreGui.instance == null)
             {
@@ -61,12 +149,12 @@ namespace EpicLoot_UnityLib
             int siblingIndex = StoreGui.instance.transform.GetSiblingIndex() + 1;
 
             // Call to arms compatibility: increase scroll sensitivity
-            foreach (ScrollRect scrollRect in source.EnchantingUIPrefab.GetComponentsInChildren<ScrollRect>(true))
+            foreach (ScrollRect scrollRect in enchantingUIPrefab.GetComponentsInChildren<ScrollRect>(true))
             {
                 scrollRect.scrollSensitivity = 800f;
             }
 
-            GameObject enchantingUI = Instantiate(source.EnchantingUIPrefab, inGameGui);
+            GameObject enchantingUI = Instantiate(enchantingUIPrefab, inGameGui);
             enchantingUI.transform.SetSiblingIndex(siblingIndex);
 
             // TODO: Reduce duplicate code, mock this inside unity in the future
@@ -215,7 +303,9 @@ namespace EpicLoot_UnityLib
                 _correctingTab = true;
                 try
                 {
-                    TabHandler.SetActiveTab(candidate);
+                    // Silent while closed: a live config change can move the tab of the window built at
+                    // spawn, and onClick is the tab sound.
+                    TabHandler.SetActiveTab(candidate, invokeOnClick: Root.activeSelf);
                 }
                 finally
                 {
@@ -270,7 +360,7 @@ namespace EpicLoot_UnityLib
         {
             if (instance == null)
             {
-                CreateUI(source);
+                CreateUI(source.EnchantingUIPrefab);
             }
 
             if (instance == null)
@@ -280,6 +370,11 @@ namespace EpicLoot_UnityLib
             }
 
             instance.SourceTable = source;
+            InventoryManagement.ActiveStash = source.Stash;
+            if (ELConfig.AutoDepositMaterials.Value && source.Stash != null && source.Stash.CanDeposit && source.Stash.HasAccess())
+            {
+                source.Stash.DepositAll();
+            }
 
             // On first creation the prefab is instantiated already-active, so every panel and tab
             // FeatureStatus ran OnEnable before SourceTable was assigned and skipped subscribing to
@@ -310,11 +405,12 @@ namespace EpicLoot_UnityLib
             instance.Root.SetActive(false);
             instance.Scrim.SetActive(false);
             instance.SourceTable = null;
+            InventoryManagement.ActiveStash = null;
         }
 
         public static bool IsVisible()
         {
-            return instance != null && ((instance._hiddenFrames <= 2) ||
+            return instance != null && ((instance._hiddenFrames <= HiddenGraceFrames) ||
                 (instance.Root != null && instance.Root.activeSelf));
         }
 
@@ -362,9 +458,11 @@ namespace EpicLoot_UnityLib
                 return;
             }
 
+            // A result dialog that closed itself on this press earlier in the frame has already used it.
             bool disallowClose = (Chat.instance != null && Chat.instance.HasFocus()) ||
                 Console.IsVisible() || Menu.IsVisible() || (TextViewer.instance != null &&
-                TextViewer.instance.IsVisible()) || Player.m_localPlayer.InCutscene();
+                TextViewer.instance.IsVisible()) || Player.m_localPlayer.InCutscene() ||
+                EpicLoot.Crafting.CraftSuccessDialog.ClosedByInputJustNow;
 
             if (disallowClose)
             {

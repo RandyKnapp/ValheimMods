@@ -1,42 +1,94 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Target Name="CopyAssembliesToUnity">
-    <Message Text="Copy assemblies to Unity" Importance="high" />
-    <Copy SourceFiles="$(BepinexPath)core\BepInEx.dll" DestinationFolder="$(SolutionUnity)Assets\ExternalLibraries" />
-    <Copy SourceFiles="$(BepinexPath)core\0Harmony.dll" DestinationFolder="$(SolutionUnity)Assets\ExternalLibraries" />
-    <Copy SourceFiles="$(BepinexPath)core\Mono.Cecil.dll" DestinationFolder="$(SolutionUnity)Assets\ExternalLibraries" />
-    <Copy SourceFiles="$(BepinexPath)core\MonoMod.Utils.dll" DestinationFolder="$(SolutionUnity)Assets\ExternalLibraries" />
-    <Copy SourceFiles="$(BepinexPath)core\MonoMod.RuntimeDetour.dll" DestinationFolder="$(SolutionUnity)Assets\ExternalLibraries" />
-    <Copy SourceFiles="$(TargetDir)Jotunn.dll" DestinationFolder="$(SolutionUnity)Assets\ExternalLibraries" />
-    <!-- EpicLoot.dll runtime dependency closure (needed when authoring/baking the enchanting UI prefabs
-         against the merged EpicLoot assembly in the Unity editor). Guarded so a missing package/lib on a
-         given machine doesn't fail the copy target. -->
-    <Copy SourceFiles="$(GamePathManaged)Newtonsoft.Json.dll" DestinationFolder="$(SolutionUnity)Assets\ExternalLibraries" Condition="Exists('$(GamePathManaged)Newtonsoft.Json.dll')" />
-    <Copy SourceFiles="$(SolutionDir)Libs\System.Runtime.Serialization.dll" DestinationFolder="$(SolutionUnity)Assets\ExternalLibraries" Condition="Exists('$(SolutionDir)Libs\System.Runtime.Serialization.dll')" />
-    <Copy SourceFiles="$(GamePathManaged)\Assembly-CSharp.dll" DestinationFolder="$(SolutionUnity)Assets\ExternalLibraries\valheim" />
-    <Copy SourceFiles="$(GamePathManaged)\assembly_valheim.dll" DestinationFolder="$(SolutionUnity)Assets\ExternalLibraries\valheim" />
-    <Copy SourceFiles="$(GamePathManaged)\assembly_utils.dll" DestinationFolder="$(SolutionUnity)Assets\ExternalLibraries\valheim" />
-    <Copy SourceFiles="$(GamePathManaged)\assembly_postprocessing.dll" DestinationFolder="$(SolutionUnity)Assets\ExternalLibraries\valheim" />
-    <Copy SourceFiles="$(GamePathManaged)\assembly_sunshafts.dll" DestinationFolder="$(SolutionUnity)Assets\ExternalLibraries\valheim" />
-    <Copy SourceFiles="$(GamePathManaged)\assembly_guiutils.dll" DestinationFolder="$(SolutionUnity)Assets\ExternalLibraries\valheim" />
-    <Copy SourceFiles="$(GamePathManaged)\assembly_lux.dll" DestinationFolder="$(SolutionUnity)Assets\ExternalLibraries\valheim" />
-    <Copy SourceFiles="$(GamePathManaged)\assembly_simplemeshcombine.dll" DestinationFolder="$(SolutionUnity)Assets\ExternalLibraries\valheim" />
-    <Copy SourceFiles="$(GamePathManaged)\assembly_googleanalytics.dll" DestinationFolder="$(SolutionUnity)Assets\ExternalLibraries\valheim" />
-    <Copy SourceFiles="$(GamePathManaged)\PlayFab.dll" DestinationFolder="$(SolutionUnity)Assets\ExternalLibraries\valheim" />
-    <Copy SourceFiles="$(GamePathManaged)\PlayFabParty.dll" DestinationFolder="$(SolutionUnity)Assets\ExternalLibraries\valheim" />
-    <Copy SourceFiles="$(GamePathManaged)\Splatform.dll" DestinationFolder="$(SolutionUnity)Assets\ExternalLibraries\valheim" />
-    <Copy SourceFiles="$(GamePathManaged)\Splatform.Steam.dll" DestinationFolder="$(SolutionUnity)Assets\ExternalLibraries\valheim" />
-    <Copy SourceFiles="$(GamePathManaged)\gui_framework.dll" DestinationFolder="$(SolutionUnity)Assets\ExternalLibraries\valheim" />
-    <Copy SourceFiles="$(GamePathManaged)\com.rlabrecque.steamworks.net.dll" DestinationFolder="$(SolutionUnity)Assets\ExternalLibraries\valheim" />
-    <Copy SourceFiles="$(GamePathManaged)\SoftReferenceableAssets.dll" DestinationFolder="$(SolutionUnity)Assets\ExternalLibraries\valheim" />
-    <!-- ItemDrop.ItemData.SharedData reaches VisEquipment, which holds MagicaCloth colliders. Without this
-         closure Mono cannot load SharedData in the editor and Unity silently drops every item's shared data
-         from the bundle. -->
-    <Copy SourceFiles="$(GamePathManaged)\MagicaClothV2.dll" DestinationFolder="$(SolutionUnity)Assets\ExternalLibraries\valheim" Condition="Exists('$(GamePathManaged)\MagicaClothV2.dll')" />
-    <Copy SourceFiles="$(GamePathManaged)\Unity.Burst.dll" DestinationFolder="$(SolutionUnity)Assets\ExternalLibraries\valheim" Condition="Exists('$(GamePathManaged)\Unity.Burst.dll')" />
-    <Copy SourceFiles="$(GamePathManaged)\Unity.Burst.Unsafe.dll" DestinationFolder="$(SolutionUnity)Assets\ExternalLibraries\valheim" Condition="Exists('$(GamePathManaged)\Unity.Burst.Unsafe.dll')" />
-    <Copy SourceFiles="$(GamePathManaged)\Unity.Collections.dll" DestinationFolder="$(SolutionUnity)Assets\ExternalLibraries\valheim" Condition="Exists('$(GamePathManaged)\Unity.Collections.dll')" />
-    <Copy SourceFiles="$(GamePathManaged)\Unity.Collections.LowLevel.ILSupport.dll" DestinationFolder="$(SolutionUnity)Assets\ExternalLibraries\valheim" Condition="Exists('$(GamePathManaged)\Unity.Collections.LowLevel.ILSupport.dll')" />
-    <Copy SourceFiles="$(GamePathManaged)\Unity.Mathematics.dll" DestinationFolder="$(SolutionUnity)Assets\ExternalLibraries\valheim" Condition="Exists('$(GamePathManaged)\Unity.Mathematics.dll')" />
+  <!-- Keeps the ValheimUnity project's ExternalLibraries in step with what the game runs, on every
+       build. Bundles serialize each component through the editor's copy of its assembly, so a stale
+       or shadowed game DLL there silently strips prefabs: in Sept 2026 a hand-copied 2025
+       assembly_utils at the top level shadowed valheim/, Character failed to load in the editor, and
+       every ItemDrop in the epicloot and jamassets bundles was written as an empty stub.
+
+       Imported only by EpicLoot.csproj: EpicLoot owns the Unity project (its prefabs bind to
+       EpicLoot.dll) and is the one project whose output carries the JotunnLib package's Jotunn.dll;
+       the others ship Libs\Jotunn.dll, which would flip the editor's copy back and forth.
+
+       The guard requires a real Unity project, so a mis-resolved SolutionUnity can never create a
+       stray ExternalLibraries tree beside a project again. -->
+  <Target Name="CopyAssembliesToUnity" AfterTargets="Build"
+          Condition="Exists('$(SolutionUnity)ProjectSettings\ProjectVersion.txt')">
+    <PropertyGroup>
+      <_UnityLibs>$(SolutionUnity)Assets\ExternalLibraries\</_UnityLibs>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <_UnityGameAssembly Include="$(GamePathManaged)Assembly-CSharp.dll" />
+      <_UnityGameAssembly Include="$(GamePathManaged)assembly_valheim.dll" />
+      <_UnityGameAssembly Include="$(GamePathManaged)assembly_utils.dll" />
+      <_UnityGameAssembly Include="$(GamePathManaged)assembly_postprocessing.dll" />
+      <_UnityGameAssembly Include="$(GamePathManaged)assembly_sunshafts.dll" />
+      <_UnityGameAssembly Include="$(GamePathManaged)assembly_guiutils.dll" />
+      <_UnityGameAssembly Include="$(GamePathManaged)assembly_lux.dll" />
+      <_UnityGameAssembly Include="$(GamePathManaged)assembly_simplemeshcombine.dll" />
+      <_UnityGameAssembly Include="$(GamePathManaged)assembly_googleanalytics.dll" />
+      <_UnityGameAssembly Include="$(GamePathManaged)PlayFab.dll" />
+      <_UnityGameAssembly Include="$(GamePathManaged)PlayFabParty.dll" />
+      <_UnityGameAssembly Include="$(GamePathManaged)Splatform.dll" />
+      <_UnityGameAssembly Include="$(GamePathManaged)Splatform.Steam.dll" />
+      <_UnityGameAssembly Include="$(GamePathManaged)gui_framework.dll" />
+      <_UnityGameAssembly Include="$(GamePathManaged)com.rlabrecque.steamworks.net.dll" />
+      <_UnityGameAssembly Include="$(GamePathManaged)SoftReferenceableAssets.dll" />
+
+      <_UnityLoaderAssembly Include="$(BepinexPath)core\BepInEx.dll" />
+      <_UnityLoaderAssembly Include="$(BepinexPath)core\0Harmony.dll" />
+      <_UnityLoaderAssembly Include="$(BepinexPath)core\Mono.Cecil.dll" />
+      <_UnityLoaderAssembly Include="$(BepinexPath)core\MonoMod.Utils.dll" />
+      <_UnityLoaderAssembly Include="$(BepinexPath)core\MonoMod.RuntimeDetour.dll" />
+      <_UnityLoaderAssembly Include="$(TargetDir)Jotunn.dll" />
+      <!-- Jotunn's own dependency: the editor will not load Jotunn, or anything referencing it, without it. -->
+      <_UnityLoaderAssembly Include="$(PkgYamlDotNet)\lib\net47\YamlDotNet.dll"
+                            Condition="'$(PkgYamlDotNet)' != '' And Exists('$(PkgYamlDotNet)\lib\net47\YamlDotNet.dll')" />
+      <!-- EpicLoot.dll runtime dependency closure (needed when authoring/baking the enchanting UI prefabs
+           against the merged EpicLoot assembly in the Unity editor). Guarded so a missing package/lib on a
+           given machine doesn't fail the copy target. -->
+      <_UnityLoaderAssembly Include="$(SolutionDir)Packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll"
+                            Condition="Exists('$(SolutionDir)Packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll')" />
+      <_UnityLoaderAssembly Include="$(SolutionDir)Libs\System.Runtime.Serialization.dll"
+                            Condition="Exists('$(SolutionDir)Libs\System.Runtime.Serialization.dll')" />
+
+      <!-- Unity loads one assembly per name, so a same-named copy in the other folder shadows the one
+           kept current here. Each staged DLL's .meta is left alone (only the .dll is overwritten), which
+           keeps the GUIDs prefabs reference; a shadow goes together with its .meta. -->
+      <_UnityShadowAssembly Include="@(_UnityGameAssembly->'$(_UnityLibs)%(Filename)%(Extension)')" />
+      <_UnityShadowAssembly Include="@(_UnityGameAssembly->'$(_UnityLibs)%(Filename)%(Extension).meta')" />
+      <_UnityShadowAssembly Include="@(_UnityLoaderAssembly->'$(_UnityLibs)valheim\%(Filename)%(Extension)')" />
+      <_UnityShadowAssembly Include="@(_UnityLoaderAssembly->'$(_UnityLibs)valheim\%(Filename)%(Extension).meta')" />
+      <_UnityShadowFound Include="@(_UnityShadowAssembly)" Condition="Exists('%(FullPath)')" />
+
+      <!-- The Copy task's CopiedFiles output also lists files it skipped as unchanged, so work out
+           what will really change up front: a copy keeps the source's timestamp, so a destination
+           whose timestamp differs (or that is missing) is one this build replaces. -->
+      <_UnityGameAssembly>
+        <SourceTime>%(ModifiedTime)</SourceTime>
+      </_UnityGameAssembly>
+      <_UnityLoaderAssembly>
+        <SourceTime>%(ModifiedTime)</SourceTime>
+      </_UnityLoaderAssembly>
+      <_UnityStagedAssembly Include="@(_UnityGameAssembly->'$(_UnityLibs)valheim\%(Filename)%(Extension)')" />
+      <_UnityStagedAssembly Include="@(_UnityLoaderAssembly->'$(_UnityLibs)%(Filename)%(Extension)')" />
+      <_UnityChangedAssembly Include="@(_UnityStagedAssembly)"
+                             Condition="'%(_UnityStagedAssembly.ModifiedTime)' != '%(_UnityStagedAssembly.SourceTime)'" />
+    </ItemGroup>
+
+    <!-- SkipUnchangedFiles keeps an up-to-date build from touching anything, so Unity only reimports
+         after a real game, BepInEx or Jotunn update. An editor holding a DLL open warns rather than
+         failing the build. -->
+    <Copy SourceFiles="@(_UnityGameAssembly)" DestinationFolder="$(_UnityLibs)valheim"
+          SkipUnchangedFiles="true" Retries="3" RetryDelayMilliseconds="500" ContinueOnError="WarnAndContinue" />
+    <Copy SourceFiles="@(_UnityLoaderAssembly)" DestinationFolder="$(_UnityLibs)"
+          SkipUnchangedFiles="true" Retries="3" RetryDelayMilliseconds="500" ContinueOnError="WarnAndContinue" />
+    <Delete Files="@(_UnityShadowFound)" ContinueOnError="WarnAndContinue" />
+
+    <Message Importance="high" Condition="'@(_UnityChangedAssembly)' != ''"
+             Text="Unity ExternalLibraries updated: @(_UnityChangedAssembly->'%(Filename)%(Extension)', ', '). Rebuild the asset bundles if a game assembly changed." />
+    <Message Importance="high" Condition="'@(_UnityShadowFound)' != ''"
+             Text="Unity ExternalLibraries: removed shadowing duplicates @(_UnityShadowFound, ', ')" />
   </Target>
 </Project>

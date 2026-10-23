@@ -84,7 +84,7 @@ public class MagicTextList
         foreach (MagicTextGroup group in Elements)
         {
             group.Title.Destroy();
-            foreach (MagicTextElement element in group.Content) element.Destroy();
+            foreach (IMagicTextPart element in group.Content) element.Destroy();
         }
 
         Elements.Clear();
@@ -104,6 +104,29 @@ public class MagicTextList
 
         MagicTextGroup group = new MagicTextGroup(titleElement, contentElements.ToArray());
         Elements.Add(group);
+    }
+
+    public MagicTextTable AddTable(params MagicTableColumn[] columns)
+    {
+        MagicTextTable table = new MagicTextTable(_layout.transform, _template, MagicPages.instance.MinWidth - 10f,
+            columns, ResizeOverlay);
+        Elements.Add(new MagicTableGroup(table));
+        return table;
+    }
+
+    public bool HasTables => Elements.Any(x => x is MagicTableGroup);
+
+    public void SetAllExpanded(bool expanded)
+    {
+        foreach (MagicTextGroup group in Elements)
+        {
+            if (group is MagicTableGroup tableGroup)
+            {
+                tableGroup.Table.SetAllExpanded(expanded);
+            }
+        }
+
+        ResizeOverlay();
     }
 
     public void Enable(bool enable) => _obj.SetActive(enable);

@@ -753,7 +753,7 @@ PlayerSettings:
     Nintendo Switch: system_io_compression;thunderkit
     PS4: system_io_compression;thunderkit
     Stadia: system_io_compression;thunderkit
-    Standalone: system_io_compression;thunderkit
+    Standalone: system_io_compression;thunderkit;MAGICACLOTH2
     WebGL: system_io_compression;thunderkit
     Windows Store Apps: system_io_compression;thunderkit
     XboxOne: system_io_compression;thunderkit

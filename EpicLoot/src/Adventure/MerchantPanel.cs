@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace EpicLoot.Adventure
@@ -40,7 +39,7 @@ namespace EpicLoot.Adventure
         }
     }
 
-    public class MerchantPanel : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
+    public class MerchantPanel : MonoBehaviour
     {
         public readonly List<IMerchantListPanel> Panels = new List<IMerchantListPanel>();
 
@@ -58,12 +57,13 @@ namespace EpicLoot.Adventure
         private readonly Currencies _currencies = new Currencies(-1);
         public static MerchantPanel Instance => _instance;
         // The button, not its label: a legacy Text normally, a TMP_Text once Auga has replaced the button.
-        private static Transform _acceptBountyButton;
+        // The button's own label: Auga's TMP one, else the prefab's legacy Text. Resolved before the gamepad
+        // hints are built, since their glyph is a TMP text under the same button.
+        private static Component _acceptBountyLabel;
         private static MerchantPanel _instance;
         private AudioSource _audioSource;
 
         private RectTransform _rt;
-        private Vector2 _dragOffset;
 
         /// <summary>
         /// Indices into <see cref="Panels"/> that threw since this window was opened. Cleared by
@@ -182,7 +182,9 @@ namespace EpicLoot.Adventure
                 EpicLootAuga.ReplaceButton(transform.Find("Bounties/AbandonBountyButton").GetComponent<Button>(), true);
             }
             
-            _acceptBountyButton = transform.Find("Bounties/AcceptBountyButton");
+            Transform acceptBountyButton = transform.Find("Bounties/AcceptBountyButton");
+            _acceptBountyLabel = acceptBountyButton == null ? null
+                : (Component)acceptBountyButton.GetComponentInChildren<TMP_Text>(true) ?? acceptBountyButton.GetComponentInChildren<Text>(true);
 
             Panels.Add(new SecretStashListPanel(this, buyListPrefab));
             Panels.Add(new GambleListPanel(this, buyListPrefab));
@@ -232,17 +234,24 @@ namespace EpicLoot.Adventure
                 }
             }
 
-            // Capture the prefab baseline position, make the panel draggable, and apply the
-            // configured horizontal position. Done at the end of Awake so the root Graphic
-            // (which may be swapped by the Auga background replacement above) is final.
+            // Apply the configured position and make the panel movable (Left Alt, or the corner handle).
+            // Done at the end of Awake so the root Graphic (which may be swapped by the Auga background
+            // replacement above) is final, and so the Auga fixups never see the drag handle.
             _rt = (RectTransform)transform;
             var backgroundImage = GetComponent<Image>();
             if (backgroundImage != null)
             {
+                // Still a raycast target, so presses on the panel's empty areas stop at the panel.
                 backgroundImage.raycastTarget = true;
             }
 
             ApplyConfiguredPosition();
+            TraderPanelDrag.Attach(_rt, position =>
+            {
+                // Persists automatically because cfg.SaveOnConfigSet is true.
+                ELConfig.TraderPanelPositionX.Value = position.x;
+                ELConfig.TraderPanelPositionY.Value = position.y;
+            });
 
             // Last, so the hints it builds are not swept up by the Auga fixups above.
             Gamepad = new MerchantPanelGamepad(this, Panels);
@@ -250,9 +259,9 @@ namespace EpicLoot.Adventure
 
         public static void SetAcceptBountyLabel(string label)
         {
-            if (_acceptBountyButton != null)
+            if (_acceptBountyLabel != null)
             {
-                EpicLootAuga.SetLabel(_acceptBountyButton, label);
+                EpicLootAuga.SetLabel(_acceptBountyLabel, label);
             }
         }
 
@@ -329,33 +338,6 @@ namespace EpicLoot.Adventure
             }
 
             _rt.anchoredPosition = new Vector2(ELConfig.TraderPanelPositionX.Value, ELConfig.TraderPanelPositionY.Value);
-        }
-
-        public void OnBeginDrag(PointerEventData eventData)
-        {
-            var parent = (RectTransform)_rt.parent;
-            if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                    parent, eventData.position, eventData.pressEventCamera, out var localPoint))
-            {
-                _dragOffset = _rt.anchoredPosition - localPoint;
-            }
-        }
-
-        public void OnDrag(PointerEventData eventData)
-        {
-            var parent = (RectTransform)_rt.parent;
-            if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                    parent, eventData.position, eventData.pressEventCamera, out var localPoint))
-            {
-                _rt.anchoredPosition = localPoint + _dragOffset;
-            }
-        }
-
-        public void OnEndDrag(PointerEventData eventData)
-        {
-            // Persists automatically because cfg.SaveOnConfigSet is true.
-            ELConfig.TraderPanelPositionX.Value = _rt.anchoredPosition.x;
-            ELConfig.TraderPanelPositionY.Value = _rt.anchoredPosition.y;
         }
 
         public Currencies GetPlayerCurrencies()

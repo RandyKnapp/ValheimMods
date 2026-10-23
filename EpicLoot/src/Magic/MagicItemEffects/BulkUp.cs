@@ -60,8 +60,10 @@ public static class BulkupEffect
         if (Player.m_localPlayer.HasActiveMagicEffect(MagicEffectType.BulkUp, out float bulkupValue, 0.01f))
         {
             bulkupValue = Mathf.Clamp01(bulkupValue);
-            // Reduce regen by bulk up percent
-            regen -= bulkupValue;
+            // Reduce regen by bulk up percent, taking at most the regen that is left. The penalty is
+            // subtracted from a multiplier other status effects may already have lowered, so
+            // an uncapped subtraction could push it below zero and turn every regen tick into a drain.
+            regen -= Mathf.Min(bulkupValue, Mathf.Max(regen, 0f));
         }
 
         return regen;

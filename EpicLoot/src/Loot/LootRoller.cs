@@ -39,6 +39,18 @@ namespace EpicLoot
         public static readonly Dictionary<string, LootItemSet> ItemSets = new Dictionary<string, LootItemSet>();
         public static readonly Dictionary<string, List<LootTable>> LootTables = new Dictionary<string, List<LootTable>>();
 
+        // A RefObject entry's own StarMultiplier/Modifiers/StarScaling, keyed by its Object. The entry
+        // shares its template's table list (so tables added to the template later still reach every
+        // creature using it), which leaves this the only place that creature's own tuning lives.
+        private static readonly Dictionary<string, LootTable> CreatureOverrides = new Dictionary<string, LootTable>();
+
+        // Keys whose list is currently another key's (a RefObject entry), so a table of the key's own never
+        // lands in the template's shared list.
+        private static readonly HashSet<string> _aliasKeys = new HashSet<string>();
+
+        // Loot-config complaints that would otherwise repeat on every kill; reset on each (re)load.
+        private static readonly HashSet<string> _warnedLootTables = new HashSet<string>();
+
         // Biome shard drops name their item set "ShardStone_{Biome}" using the Heightmap.Biome enum name, the
         // same convention as TreasureMapChest_{Biome} and {Biome}_{Rarity}_Unidentified. This one covers a biome
         // with no set of its own — a modded biome, or Heightmap.Biome.None.
@@ -60,10 +72,6 @@ namespace EpicLoot
                 { ItemRarity.Mythic,    new[] { new[] { 0f,  5f }, new[] { 1f, 30f }, new[] { 2f, 40f }, new[] { 3f, 25f } } },
                 { ItemRarity.Ancient,   new[] { new[] { 1f, 20f }, new[] { 2f, 40f }, new[] { 3f, 30f }, new[] { 4f, 10f } } },
             };
-
-        // Ceiling on how many effects a MagicEffectsCount entry may ask for. A roll asks the effect pool
-        // for this many distinct effects, so a runaway config value would spin on a pool it cannot fill.
-        public const int MaxEffectCount = 12;
 
         // Mirrors the MagicEffectsCount block in config/loottables.json; used when that block is missing a
         // rarity, which is the normal case for a loottables.json written before a rarity was added and kept
@@ -95,8 +103,7 @@ namespace EpicLoot
         private static WeightedRandomCollection<KeyValuePair<int, float>> _weightedEffectCountTable;
         private static WeightedRandomCollection<KeyValuePair<int, float>> _weightedSocketCountTable;
         private static WeightedRandomCollection<KeyValuePair<ItemRarity, float>> _weightedRarityTable;
-        private static WeightedRandomCollection<LegendaryInfo> _weightedLegendaryTable;
-        private static WeightedRandomCollection<LegendaryInfo> _weightedMythicTable;
+        private static WeightedRandomCollection<LegendaryInfo> _weightedUniqueTable;
         public static bool CheatRollingItem = false;
         public static int CheatEffectCount;
         public static int CheatSocketCount = -1;
@@ -105,8 +112,10 @@ namespace EpicLoot
         public static int CheatEffectRarityTier;
         public static bool CheatEffectRarityFirstOnly;
         public static string ForcedMagicEffect = "";
-        public static string CheatForceLegendary;
-        public static string CheatForceMythic;
+        // The magicsetitem / magicitemset console commands: the unique (or set piece) to roll and the
+        // rarity to roll it at.
+        public static string CheatForceUniqueID;
+        public static ItemRarity? CheatForceUniqueRarity;
 
         public static void Initialize(LootConfig lootConfig)
         {
@@ -125,11 +134,13 @@ namespace EpicLoot
             _weightedEffectCountTable = new WeightedRandomCollection<KeyValuePair<int, float>>();
             _weightedSocketCountTable = new WeightedRandomCollection<KeyValuePair<int, float>>();
             _weightedRarityTable = new WeightedRandomCollection<KeyValuePair<ItemRarity, float>>();
-            _weightedLegendaryTable = new WeightedRandomCollection<LegendaryInfo>();
-            _weightedMythicTable = new WeightedRandomCollection<LegendaryInfo>();
+            _weightedUniqueTable = new WeightedRandomCollection<LegendaryInfo>();
 
             ItemSets.Clear();
             LootTables.Clear();
+            CreatureOverrides.Clear();
+            _aliasKeys.Clear();
+            _warnedLootTables.Clear();
             _warnedMissingSocketCounts.Clear();
             _warnedInvalidSocketCounts.Clear();
             _warnedMissingEffectCounts.Clear();
@@ -137,6 +148,7 @@ namespace EpicLoot
           
             AddItemSets(lootConfig.ItemSets);
             AddLootTables(lootConfig.LootTables);
+            EliteRunestoneTables.OnLootTablesLoaded();
 
             // Initialize clears LootTables, so anything an external plugin registered through
             // API.AddLootTables has just been wiped. Same contract as the other config subsystems'
@@ -209,6 +221,14 @@ namespace EpicLoot
                 return;
             }
 
+            // The config file and patches are converted before they get here; this is what catches a
+            // flat table handed in through the API or edited into the file while the game runs.
+            if (LootTableMigration.Normalize(lootTable) && _warnedLootTables.Add($"flat:{key}"))
+            {
+                EpicLoot.LogWarningForce($"Loot table '{key}' uses the deprecated flat Drops/Loot form. " +
+                    "It was converted to LeveledLoot level 1; please update it to LeveledLoot.");
+            }
+
             if (!LootTables.ContainsKey(key))
             {
                 LootTables.Add(key, new List<LootTable>());
@@ -217,58 +237,78 @@ namespace EpicLoot
             var refKey = lootTable.RefObject;
             if (string.IsNullOrEmpty(refKey))
             {
+                // A table of the key's own (an API table for a creature that also has a RefObject entry,
+                // such as one the creature sorter wrote) replaces the alias. Appended, it would join the
+                // template's shared list and roll for every creature on that template.
+                if (_aliasKeys.Remove(key))
+                {
+                    LootTables[key] = new List<LootTable>();
+                    CreatureOverrides.Remove(key);
+                }
+
                 LootTables[key].Add(lootTable);
             }
             else
             {
                 if (!LootTables.ContainsKey(refKey))
                 {
-                    EpicLoot.LogError("Loot table missing RefObject name!");
+                    EpicLoot.LogError($"Loot table '{key}' references missing RefObject '{refKey}'!");
                     return;
                 }
                 else
                 {
                     LootTables[key] = LootTables[refKey];
+                    _aliasKeys.Add(key);
+                    if (lootTable.StarMultiplier != null || lootTable.Modifiers != null || lootTable.StarScaling != null)
+                    {
+                        CreatureOverrides[key] = lootTable;
+                    }
+                    else
+                    {
+                        CreatureOverrides.Remove(key);
+                    }
                 }
             }
+        }
+
+        /// <summary>The RefObject entry carrying an object's own loot tuning, or null when it has none.</summary>
+        public static LootTable GetCreatureOverride(string objectName)
+        {
+            return objectName != null && CreatureOverrides.TryGetValue(objectName, out var entry) ? entry : null;
         }
 
         public static List<GameObject> RollLootTableAndSpawnObjects(List<LootTable> lootTables,
             int level, string objectName, Vector3 dropPoint)
         {
-            return RollLootTableInternal(lootTables, level, objectName, dropPoint, true);
+            return RollLootTableAndSpawnObjects(lootTables, level, objectName, dropPoint, true);
         }
 
-        public static List<GameObject> RollLootTableAndSpawnObjects(LootTable lootTable, 
+        // allowBonusRolls false keeps Prosperity out of a roll that is itself a bonus (Lucky Loot's), so
+        // the two loot multipliers never compound.
+        public static List<GameObject> RollLootTableAndSpawnObjects(List<LootTable> lootTables,
+            int level, string objectName, Vector3 dropPoint, bool allowBonusRolls)
+        {
+            var output = LootOutput.ForObjects();
+            RollLootTableInternal(lootTables, level, objectName, dropPoint, output, allowBonusRolls);
+            return output.Objects;
+        }
+
+        public static List<GameObject> RollLootTableAndSpawnObjects(LootTable lootTable,
             int level, string objectName, Vector3 dropPoint)
         {
-            return RollLootTableInternal(lootTable, level, objectName, dropPoint, true);
+            var output = LootOutput.ForObjects();
+            RollLootTableInternal(lootTable, level, objectName, dropPoint, output);
+            return output.Objects;
         }
 
+        // Chests, treasure maps and gambles. Each drop is built as ItemData straight from its prefab (see
+        // LootOutput), so no world object is spawned just to have its data cloned off it.
         public static List<ItemDrop.ItemData> RollLootTable(List<LootTable> lootTables,
             int level, string objectName, Vector3 dropPoint)
         {
-            var results = new List<ItemDrop.ItemData>();
-            var gameObjects = RollLootTableInternal(lootTables, level, objectName, dropPoint, false);
-            foreach (var itemObject in gameObjects)
-            {
-                results.Add(itemObject.GetComponent<ItemDrop>().m_itemData.Clone());
-
-                // ZNetScene.Destroy is the right call either way: it no-ops the ZDO half when the
-                // ZNetView never registered (the normal case here, since these are spawned with
-                // m_forceDisableInit), and unregisters properly if it did. Plain Object.Destroy would
-                // strand a live entry in ZNetScene.m_instances in that second case.
-                if (ZNetScene.instance != null)
-                {
-                    ZNetScene.instance.Destroy(itemObject);
-                }
-                else
-                {
-                    Object.Destroy(itemObject);
-                }
-            }
-
-            return results;
+            var output = LootOutput.ForItems();
+            RollLootTableInternal(lootTables, level, objectName, dropPoint, output, true);
+            return output.Items;
         }
 
         public static List<ItemDrop.ItemData> RollLootTable(LootTable lootTable,
@@ -289,21 +329,109 @@ namespace EpicLoot
             return RollLootTable(lootTable, level, objectName, dropPoint);
         }
 
-        private static List<GameObject> RollLootTableInternal(IEnumerable<LootTable> lootTables,
-            int level, string objectName, Vector3 dropPoint, bool initializeObject)
+        private static void RollLootTableInternal(IEnumerable<LootTable> lootTables,
+            int level, string objectName, Vector3 dropPoint, LootOutput output, bool allowBonusRolls)
         {
-            var results = new List<GameObject>();
-            foreach (var lootTable in lootTables)
+            var tables = lootTables.ToList();
+
+            // Prosperity repeats the whole roll -- drop count, drop type and rarity all re-rolled -- exactly
+            // as a second kill would. Cheat spawns and gambles asked for one specific result, and every
+            // one of them sets CheatRollingItem, so AnyItemSpawnCheatsActive keeps them out.
+            var passes = 1;
+            if (allowBonusRolls && !AnyItemSpawnCheatsActive())
             {
-                results.AddRange(RollLootTableInternal(lootTable, level, objectName, dropPoint, initializeObject));
+                var bonusRolls = global::EpicLoot.Magic.MagicItemEffects.Prosperity.RollBonusRolls(dropPoint);
+                if (bonusRolls > 0)
+                {
+                    EpicLoot.Log($"Prosperity: {bonusRolls} bonus loot rolls for {objectName}.");
+                    passes += bonusRolls;
+                }
             }
-            return results;
+
+            for (var pass = 0; pass < passes; pass++)
+            {
+                foreach (var lootTable in tables)
+                {
+                    RollLootTableInternal(lootTable, level, objectName, dropPoint, output);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Where one roll's drops go. A creature kill or a console spawn wants live world objects. A
+        /// chest, a treasure map or a gamble only wants the ItemData, and building that straight from the
+        /// prefab, the way vanilla's DropTable fills a chest, skips instantiating a whole world object per
+        /// drop (renderers, colliders, rigidbody, every component's Awake) only to clone its data and
+        /// destroy it again.
+        /// </summary>
+        private sealed class LootOutput
+        {
+            public readonly List<GameObject> Objects;
+            public readonly List<ItemDrop.ItemData> Items;
+
+            private LootOutput(List<GameObject> objects, List<ItemDrop.ItemData> items)
+            {
+                Objects = objects;
+                Items = items;
+            }
+
+            public static LootOutput ForObjects() => new LootOutput(new List<GameObject>(), null);
+
+            public static LootOutput ForItems() => new LootOutput(null, new List<ItemDrop.ItemData>());
+
+            /// <summary>
+            /// Creates one drop of <paramref name="prefab"/> and returns its ItemData, or null when the
+            /// prefab has no ItemDrop. <paramref name="itemDrop"/> is the spawned object's component, and
+            /// null for a data-only drop, which has nothing to save to.
+            /// </summary>
+            public ItemDrop.ItemData Create(GameObject prefab, Vector3 dropPoint, out ItemDrop itemDrop)
+            {
+                if (Objects != null)
+                {
+                    var spawned = SpawnLootForDrop(prefab, dropPoint, true);
+                    Objects.Add(spawned);
+                    itemDrop = spawned.GetComponent<ItemDrop>();
+                    return itemDrop != null ? itemDrop.m_itemData : null;
+                }
+
+                itemDrop = null;
+                var itemData = CreateLootItemData(prefab);
+                if (itemData != null)
+                {
+                    Items.Add(itemData);
+                }
+
+                return itemData;
+            }
+        }
+
+        /// <summary>
+        /// A drop's ItemData made from its prefab without instantiating it: the clone, m_dropPrefab and
+        /// world level vanilla's DropTable gives chest contents, plus the ItemData half of what EpicLoot's
+        /// ItemDrop.Awake postfixes do to a spawned drop, since no Awake runs here.
+        /// </summary>
+        internal static ItemDrop.ItemData CreateLootItemData(GameObject prefab)
+        {
+            var prefabDrop = prefab.GetComponent<ItemDrop>();
+            if (prefabDrop == null || prefabDrop.m_itemData == null)
+            {
+                return null;
+            }
+
+            var itemData = prefabDrop.m_itemData.Clone();
+            itemData.m_dropPrefab = prefab;
+            // The prefab's copy keeps the world level it was built with, not this world's, and items of
+            // different world levels never stack together.
+            itemData.m_worldLevel = Game.m_worldLevel;
+            itemData.InitializeCustomData();
+            Crafting.ItemDrop_Awake_Patch.InitializeItemData(itemData, out _);
+            return itemData;
         }
 
         public static bool AnyItemSpawnCheatsActive()
         {
             return CheatRollingItem || CheatDisableGating || CheatForceMagicEffect ||
-                !string.IsNullOrEmpty(CheatForceLegendary) || !string.IsNullOrEmpty(CheatForceMythic) ||
+                !string.IsNullOrEmpty(CheatForceUniqueID) ||
                 CheatEffectCount > 0 || CheatEffectRarityTier > 0;
         }
 
@@ -313,7 +441,7 @@ namespace EpicLoot
 
             foreach(LootTable lt in LootTables)
             {
-                foreach(LootDrop ld in lt.Loot)
+                foreach(LootDrop ld in GetLevelOneLoot(lt))
                 {
                     if (ItemSets.ContainsKey(ld.Item))
                     {
@@ -420,8 +548,9 @@ namespace EpicLoot
                         itemRollRarity = RollItemRarity(lootdrop, luckFactor);
                     }
 
+                    LootDrop[] tableLoot = GetLevelOneLoot(lt);
                     List<LootDrop> looteqrare = new List<LootDrop>();
-                    foreach(LootDrop ld in lt.Loot)
+                    foreach(LootDrop ld in tableLoot)
                     {
                         looteqrare.Add(new LootDrop() { Item = ld.Item, Weight = ld.Weight, Rarity = [1] });
                     }
@@ -432,8 +561,8 @@ namespace EpicLoot
                     _weightedLootTable.Setup(looteqrare.ToArray(), x => x.Weight);
                     List<LootDrop> selectedDrops = _weightedLootTable.Roll(Math.Min(lootPerCategory, numResults - results.Count));
 
-                    EpicLoot.Log($"Available Loot ({lt.Loot.Length}) for table: {lt.Object}");
-                    foreach (LootDrop lootDrop in lt.Loot)
+                    EpicLoot.Log($"Available Loot ({tableLoot.Length}) for table: {lt.Object}");
+                    foreach (LootDrop lootDrop in tableLoot)
                     {
                         string itemName = lootDrop?.Item ?? "Invalid/Null";
                         float weight = lootDrop?.Weight ?? -1;
@@ -483,6 +612,13 @@ namespace EpicLoot
                         {
                             // The existence check above used PrefabManager -- a different registry --
                             // so ObjectDB can still miss the name.
+                            failures += 1;
+                            continue;
+                        }
+
+                        ItemDrop prefabItemDrop = selectedPrefab.GetComponent<ItemDrop>();
+                        if (prefabItemDrop == null || !EpicLoot.CanBeMagicItem(prefabItemDrop.m_itemData))
+                        {
                             failures += 1;
                             continue;
                         }
@@ -542,76 +678,93 @@ namespace EpicLoot
             return results;
         }
 
-        private static List<GameObject> RollLootTableInternal(LootTable lootTable,
-            int level, string objectName, Vector3 dropPoint, bool initializeObject)
+        private static void RollLootTableInternal(LootTable lootTable,
+            int level, string objectName, Vector3 dropPoint, LootOutput output)
         {
-            var results = new List<GameObject>();
             if (lootTable == null || level <= 0 || string.IsNullOrEmpty(objectName))
             {
-                return results;
+                return;
             }
+
+            // A third-party caller may hand a flat table straight in, past AddLootTable.
+            LootTableMigration.Normalize(lootTable);
 
             var luckFactor = GetLuckFactor(dropPoint);
-
-            var drops = GetDropsForLevel(lootTable, level);
-            if (drops.Count == 0)
+            var plan = PlanRoll(lootTable, level, objectName);
+            if (plan.DropsAnchor == null)
             {
-                return results;
+                if (_warnedLootTables.Add($"nodrops:{lootTable.Object}:{plan.Scaling.EffectiveLevel}"))
+                {
+                    EpicLoot.LogWarning($"Loot table ({lootTable.Object}) has no Drops at or below level " +
+                        $"{plan.Scaling.EffectiveLevel:0.##} (rolled for {objectName}); nothing drops.");
+                }
+
+                return;
             }
 
+            var drops = LootScalingMath.ScaleDropChance(ToDropList(plan.DropsAnchor.Drops), plan.DropChanceAdd);
             if (EpicLoot.AlwaysDropCheat)
             {
                 drops = drops.Where(x => x.Key > 0).ToList();
             }
-            else if (Mathf.Abs(ELConfig.GlobalDropRateModifier.Value - 1) > float.Epsilon)
+            else
             {
-                var clampedDropRate = Mathf.Clamp(ELConfig.GlobalDropRateModifier.Value, 0, 4);
-                var modifiedDrops = new List<KeyValuePair<int, float>>();
-                foreach (var dropPair in drops)
-                {
-                    if (dropPair.Key == 0)
-                        modifiedDrops.Add(new KeyValuePair<int, float>(dropPair.Key, dropPair.Value / clampedDropRate));
-                    else
-                        modifiedDrops.Add(new KeyValuePair<int, float>(dropPair.Key, dropPair.Value * clampedDropRate));
-                }
-
-                drops = modifiedDrops;
+                var dropRate = Mathf.Clamp(ELConfig.GlobalDropRateModifier.Value, 0, 4) * plan.DropRate;
+                drops = LootScalingMath.ApplyDropRate(drops, dropRate);
             }
 
             _weightedDropCountTable.Setup(drops, dropPair => dropPair.Value);
-            var dropCountRollResult = _weightedDropCountTable.Roll();
-            var dropCount = dropCountRollResult.Key;
-
-            if (dropCount == 0)
+            if (_weightedDropCountTable.TotalWeight <= 0)
             {
-                return results;
+                return;
             }
 
-            var loot = GetLootForLevel(lootTable, level);
+            var dropCount = _weightedDropCountTable.Roll().Key;
+            dropCount = LootScalingMath.AddBonusDrops(dropCount, plan.BonusDrops, Random.value,
+                plan.Scaling.Scaling.MaxDrops);
 
-            if (loot == null)
+            if (dropCount <= 0)
             {
-                loot = new LootDrop[] { };
+                return;
             }
 
-            EpicLoot.Log($"Available Loot ({loot.Length}) for table: {lootTable.Object} for level {level}");
-            foreach (var lootDrop in loot)
+            var loot = plan.LootAnchor?.Loot ?? Array.Empty<LootDrop>();
+            var lootSteps = plan.Scaling.LootSteps;
+
+            // These listings build a string per entry (and re-weigh each one) whether or not the line is
+            // written, so skip them entirely at the default log level.
+            var logInfo = EpicLoot.IsLogEnabled(LogLevel.Info);
+            if (logInfo)
             {
-                var itemName = lootDrop?.Item ?? "Invalid/Null";
-                var rarity = lootDrop?.Rarity?.Length ?? -1;
-                var weight = lootDrop?.Weight ?? -1;
-                EpicLoot.Log($"Item: {itemName} - Rarity Count: {rarity} - Weight: {weight}");
+                EpicLoot.Log($"Available Loot ({loot.Length}) for table: {lootTable.Object} for level {level} " +
+                    $"(effective {plan.Scaling.EffectiveLevel:0.##}, {lootSteps:0.##} past level {plan.LootAnchor?.Level})");
+                foreach (var lootDrop in loot)
+                {
+                    var itemName = lootDrop?.Item ?? "Invalid/Null";
+                    var rarity = lootDrop?.Rarity?.Length ?? -1;
+                    var weight = LootScalingMath.ScaledWeight(lootDrop, lootSteps);
+                    EpicLoot.Log($"Item: {itemName} - Rarity Count: {rarity} - Weight: {weight}");
+                }
             }
 
-            _weightedLootTable.Setup(loot, x => x.Weight);
+            _weightedLootTable.Setup(loot, x => LootScalingMath.ScaledWeight(x, lootSteps));
+            if (_weightedLootTable.TotalWeight <= 0)
+            {
+                EpicLoot.Log($"Every loot entry of ({lootTable.Object}) weighs 0 at level {level}; nothing drops.");
+                return;
+            }
+
             var selectedDrops = _weightedLootTable.Roll(dropCount);
 
-            EpicLoot.Log($"Selected Drops: {lootTable.Object} for level {level}");
-            foreach (var lootDrop in selectedDrops)
+            if (logInfo)
             {
-                var itemName = !string.IsNullOrEmpty(lootDrop?.Item) ? lootDrop.Item : "Invalid Item Name";
-                var rarityLength = lootDrop?.Rarity?.Length != null ? lootDrop.Rarity.Length : -1;
-                EpicLoot.Log($"Item: {itemName} - Rarity Count: {rarityLength} - Weight: {lootDrop.Weight}");
+                EpicLoot.Log($"Selected Drops: {lootTable.Object} for level {level}");
+                foreach (var lootDrop in selectedDrops)
+                {
+                    var itemName = !string.IsNullOrEmpty(lootDrop?.Item) ? lootDrop.Item : "Invalid Item Name";
+                    var rarityLength = lootDrop?.Rarity?.Length != null ? lootDrop.Rarity.Length : -1;
+                    EpicLoot.Log($"Item: {itemName} - Rarity Count: {rarityLength} - Weight: {lootDrop.Weight}");
+                }
             }
 
 
@@ -626,7 +779,7 @@ namespace EpicLoot
                 // Resolution consumes any per-rarity map on the entry, so by the time the branches below
                 // look a prefab up the name is concrete and the drop's Rarity has been pinned to the
                 // rarity that chose it.
-                var lootDrop = ResolveLootDrop(ld, luckFactor);
+                var lootDrop = ResolveLootDrop(ld, luckFactor, true, plan.Scaling);
 
                 // A polluted on-disk loottables.json can still name a denied prop (LootDenyList). Skip it here,
                 // before the drop-type switch, so it cannot come out as itself, as an unidentified stand-in,
@@ -642,26 +795,28 @@ namespace EpicLoot
                 EpicLoot.Log($"Item: {itemName} - Rarity Count: {rarityLength} - Weight: {lootDrop.Weight}");
 
                 // A drop that is already a shard — rolled from an elite creature's bonus shard set or from a
-                // boss's shard table — must not be re-rolled into a biome shard, nor sacrificed for
-                // materials. The unidentified category needs no such guard: IsAllowedMagicItemType rejects
-                // a Material.
+                // boss's shard table — a runestone (Elite Runestone Drops), an enchanting material (a
+                // rarity-keyed set such as EnchantingMats) or a Brokkr's Gift (the ShardSlotChisel set) must
+                // not be re-rolled into a biome shard, nor sacrificed for materials: the table picked exactly
+                // this item, often by its rarity. The unidentified category needs no such guard:
+                // IsAllowedMagicItemType rejects a Material or a Misc item.
                 var isShardDrop = lootDrop.Item != null &&
                     lootDrop.Item.EndsWith(global::EpicLoot.ShardStones.Shards.ShardIndicator, StringComparison.Ordinal);
 
-                var dropType = SelectDropType(lootDrop, isShardDrop, cheatsActive);
+                var dropType = SelectDropType(lootDrop, isShardDrop || IsKeptAsIsDrop(lootDrop), cheatsActive);
                 EpicLoot.Log($"Drop type for {lootDrop.Item}: {dropType}");
 
                 var spawned = false;
                 switch (dropType)
                 {
                     case LootDropType.ShardStone:
-                        spawned = TrySpawnBiomeShard(lootDrop, ref dropPoint, luckFactor, initializeObject, results);
+                        spawned = TrySpawnBiomeShard(lootDrop, ref dropPoint, luckFactor, output);
                         break;
                     case LootDropType.Unidentified:
-                        spawned = TrySpawnUnidentified(lootDrop, ref dropPoint, luckFactor, initializeObject, results);
+                        spawned = TrySpawnUnidentified(lootDrop, ref dropPoint, luckFactor, output);
                         break;
                     case LootDropType.Materials:
-                        spawned = TrySpawnMaterials(lootDrop, dropPoint, luckFactor, results);
+                        spawned = TrySpawnMaterials(lootDrop, dropPoint, luckFactor, output);
                         break;
                 }
 
@@ -670,11 +825,9 @@ namespace EpicLoot
                 // loot table actually named is what keeps a failure from silently eating the drop.
                 if (!spawned)
                 {
-                    SpawnNormalItem(lootDrop, objectName, dropPoint, luckFactor, initializeObject, results);
+                    SpawnNormalItem(lootDrop, objectName, dropPoint, luckFactor, output);
                 }
             }
-
-            return results;
         }
 
         // Rolls what a single drop becomes. The four Balance drop ratios are relative weights, not
@@ -682,7 +835,9 @@ namespace EpicLoot
         // that category. Categories this particular drop cannot become are left out of the roll entirely
         // rather than rolled and then rejected — an ineligible category in the pool would silently eat
         // the drop's chance of becoming any of the others.
-        private static LootDropType SelectDropType(LootDrop lootDrop, bool isShardDrop, bool cheatsActive)
+        // keepAsIs: the drop is a shard, a runestone, an enchanting material or a Brokkr's Gift, which stays
+        // itself rather than becoming a biome shard or sacrifice materials.
+        private static LootDropType SelectDropType(LootDrop lootDrop, bool keepAsIs, bool cheatsActive)
         {
             // Item spawn cheats asked for a specific thing; never substitute anything for it.
             if (cheatsActive)
@@ -693,7 +848,7 @@ namespace EpicLoot
             var candidates = new List<KeyValuePair<LootDropType, float>>();
             AddDropTypeCandidate(candidates, LootDropType.Item, ELConfig.ItemDropRatio.Value);
 
-            if (!isShardDrop)
+            if (!keepAsIs)
             {
                 AddDropTypeCandidate(candidates, LootDropType.ShardStone, ELConfig.ShardStoneDropRatio.Value);
                 AddDropTypeCandidate(candidates, LootDropType.Materials, ELConfig.MaterialsDropRatio.Value);
@@ -727,6 +882,23 @@ namespace EpicLoot
             }
         }
 
+        // Runestones and the Dust/Essence/Reagent materials, i.e. what the enchanting table consumes, and
+        // Brokkr's Gift. The gift is a Misc item, so without this the Misc sacrifice entry would turn it
+        // into Dust and Reagent.
+        private static bool IsKeptAsIsDrop(LootDrop lootDrop)
+        {
+            if (lootDrop.Item.IsNullOrWhiteSpace() || ObjectDB.instance == null)
+            {
+                return false;
+            }
+
+            var prefab = ObjectDB.instance.GetItemPrefab(lootDrop.Item);
+            var itemDrop = prefab != null ? prefab.GetComponent<ItemDrop>() : null;
+            return itemDrop != null &&
+                (itemDrop.m_itemData.IsRunestone() || itemDrop.m_itemData.IsMagicCraftingMaterial() ||
+                 itemDrop.m_itemData.IsShardSlotChisel());
+        }
+
         // True when the drop names an equippable item, i.e. one an unidentified item could stand in for.
         private static bool IsAllowedUnidentifiedDrop(LootDrop lootDrop)
         {
@@ -744,7 +916,7 @@ namespace EpicLoot
         // (ShardStone_{Biome} in loottables.json), which resolves to one of the ShardT1..ShardT7 tier sets,
         // so the whole biome preset stays config-patchable.
         private static bool TrySpawnBiomeShard(LootDrop lootDrop, ref Vector3 dropPoint, float luckFactor,
-            bool initializeObject, List<GameObject> results)
+            LootOutput output)
         {
             ZoneSystem.instance.GetGroundData(ref dropPoint, out var _, out var shardBiome, out var _, out var _);
 
@@ -782,16 +954,21 @@ namespace EpicLoot
             }
 
             EpicLoot.Log($"Adding {shardDrop.Item} shard stone for biome {shardBiome}");
-            var shardObject = SpawnLootForDrop(shardPrefab, dropPoint, initializeObject);
-            var shardItemDrop = shardObject.GetComponent<ItemDrop>();
+            var shardData = output.Create(shardPrefab, dropPoint, out var shardItemDrop);
+            if (shardData == null)
+            {
+                return false;
+            }
 
             // Identity already rides on the prefab's shared data and Awake restores the cosmetic MagicItem,
             // but stamping and saving here keeps the intent explicit and matches the unidentified path.
             // Both calls are idempotent.
-            global::EpicLoot.ShardStones.Shards.EnsureShardMetadata(shardItemDrop.m_itemData);
-            shardItemDrop.Save();
+            global::EpicLoot.ShardStones.Shards.EnsureShardMetadata(shardData);
+            if (shardItemDrop != null)
+            {
+                shardItemDrop.Save();
+            }
 
-            results.Add(shardObject);
             return true;
         }
 
@@ -799,7 +976,7 @@ namespace EpicLoot
         // gating the item's own progression where that is known, falling back to the biome at the drop
         // point.
         private static bool TrySpawnUnidentified(LootDrop lootDrop, ref Vector3 dropPoint, float luckFactor,
-            bool initializeObject, List<GameObject> results)
+            LootOutput output)
         {
             var rarity = RollItemRarity(lootDrop, luckFactor);
 
@@ -835,37 +1012,26 @@ namespace EpicLoot
             }
 
             EpicLoot.Log($"Adding {rarity} unidentified item");
-            var randomRotation = Quaternion.Euler(0.0f, Random.Range(0.0f, 360.0f), 0.0f);
-
-            // m_forceDisableInit is a global that ZNetView.Awake reads to decide whether to register a
-            // ZDO at all. Restore whatever it was, in a finally: leaving it stuck true makes every
-            // later ZNetView awake unregistered, which strands null-ZDO entries in ZNetScene.m_instances
-            // and NREs ZNetScene.RemoveObjects every frame for the rest of the session.
-            var priorForceDisableInit = ZNetView.m_forceDisableInit;
-            GameObject lootdrop;
-            try
+            var itemData = output.Create(prefab, dropPoint, out var itemDrop);
+            if (itemData == null)
             {
-                ZNetView.m_forceDisableInit = !initializeObject;
-                lootdrop = Object.Instantiate(prefab, dropPoint, randomRotation);
-                // Ensure that the unidentified item has the correct magic item data for the rarity
-                var id = lootdrop.GetComponent<ItemDrop>();
-                var mic = id.m_itemData.Data().GetOrCreate<MagicItemComponent>();
-                mic.SetMagicItem(new MagicItem
-                {
-                    Rarity = rarity,
-                    IsUnidentified = true,
-                });
-                // Persist the rarity/unidentified state into the ZDO so a real world drop survives reload.
-                // No-op for the container path where the ZNetView was disabled (Save early-returns on
-                // invalid nview).
-                id.Save();
-            }
-            finally
-            {
-                ZNetView.m_forceDisableInit = priorForceDisableInit;
+                return false;
             }
 
-            results.Add(lootdrop);
+            // Ensure that the unidentified item has the correct magic item data for the rarity
+            var mic = itemData.Data().GetOrCreate<MagicItemComponent>();
+            mic.SetMagicItem(new MagicItem
+            {
+                Rarity = rarity,
+                IsUnidentified = true,
+            });
+
+            // Persist the rarity/unidentified state into the ZDO so a real world drop survives reload.
+            if (itemDrop != null)
+            {
+                itemDrop.Save();
+            }
+
             return true;
         }
 
@@ -873,7 +1039,7 @@ namespace EpicLoot
         // false when nothing could be spawned — an item with no sacrifice products for the rolled rarity
         // drops as itself rather than as nothing at all.
         private static bool TrySpawnMaterials(LootDrop lootDrop, Vector3 dropPoint, float luckFactor,
-            List<GameObject> results)
+            LootOutput output)
         {
             GameObject prefab = null;
 
@@ -911,16 +1077,19 @@ namespace EpicLoot
                     continue;
                 }
 
-                var materialItem = SpawnLootForDrop(materialPrefab, dropPoint, true);
-                var materialItemDrop = materialItem.GetComponent<ItemDrop>();
-                materialItemDrop.m_itemData.m_stack = itemAmountConfig.Amount;
-
-                if (materialItemDrop.m_itemData.IsMagicCraftingMaterial())
+                var materialData = output.Create(materialPrefab, dropPoint, out _);
+                if (materialData == null)
                 {
-                    materialItemDrop.m_itemData.m_variant = EpicLoot.GetRarityIconIndex(rarity);
+                    continue;
                 }
 
-                results.Add(materialItem);
+                materialData.m_stack = itemAmountConfig.Amount;
+
+                if (materialData.IsMagicCraftingMaterial())
+                {
+                    materialData.m_variant = EpicLoot.GetRarityIconIndex(rarity);
+                }
+
                 spawnedAny = true;
             }
 
@@ -930,7 +1099,7 @@ namespace EpicLoot
         // The default path: spawn the item the loot table named, gated by boss progression, and roll its
         // magic item data when the item is eligible for one.
         private static void SpawnNormalItem(LootDrop lootDrop, string objectName, Vector3 dropPoint,
-            float luckFactor, bool initializeObject, List<GameObject> results)
+            float luckFactor, LootOutput output)
         {
             var gatedItemName = (CheatDisableGating) ?
                 GatedItemTypeHelper.GetGatedItemNameFromItemOrType(lootDrop.Item, GatedItemTypeMode.Unlimited) :
@@ -950,12 +1119,10 @@ namespace EpicLoot
                 return;
             }
 
-            var item = SpawnLootForDrop(itemPrefab, dropPoint, initializeObject);
-            var itemDrop = item.GetComponent<ItemDrop>();
+            var itemData = output.Create(itemPrefab, dropPoint, out var itemDrop);
 
-            if (itemDrop != null && EpicLoot.CanBeMagicItem(itemDrop.m_itemData) && !ArrayUtils.IsNullOrEmpty(lootDrop.Rarity))
+            if (itemData != null && EpicLoot.CanBeMagicItem(itemData) && !ArrayUtils.IsNullOrEmpty(lootDrop.Rarity))
             {
-                var itemData = itemDrop.m_itemData;
                 var magicItemComponent = itemData.Data().GetOrCreate<MagicItemComponent>();
                 var magicItem = RollMagicItem(lootDrop, itemData, luckFactor);
 
@@ -965,13 +1132,14 @@ namespace EpicLoot
                 }
 
                 API.WithChangeReason(API.ChangeReason.LootRoll, () => magicItemComponent.SetMagicItem(magicItem));
-                itemDrop.m_itemData = itemData;
-                itemDrop.Save();
+                if (itemDrop != null)
+                {
+                    itemDrop.Save();
+                }
+
                 InitializeMagicItem(itemData);
                 API.RaiseLootGenerated(itemData);
             }
-
-            results.Add(item);
         }
 
         public static GameObject SpawnLootForDrop(GameObject itemPrefab, Vector3 dropPoint, bool initializeObject)
@@ -979,9 +1147,11 @@ namespace EpicLoot
             Quaternion randomRotation = Quaternion.Euler(0.0f, Random.Range(0.0f, 360.0f), 0.0f);
 
             // Save and restore rather than assigning false: Instantiate runs the new object's Awake
-            // chain (ItemDrop.Awake, ItemDataManager, our own postfixes), any of which can throw, and
-            // the chest path can run nested inside another instantiate. A stranded true here breaks
-            // ZNetScene for the rest of the session — see the comment in TrySpawnUnidentified.
+            // chain (ItemDrop.Awake, ItemDataManager, our own postfixes), any of which can throw, and a
+            // caller may already be inside another instantiate. m_forceDisableInit is a global that
+            // ZNetView.Awake reads to decide whether to register a ZDO at all, so a stranded true makes
+            // every later ZNetView awake unregistered, which strands null-ZDO entries in
+            // ZNetScene.m_instances and NREs ZNetScene.RemoveObjects every frame for the session.
             var priorForceDisableInit = ZNetView.m_forceDisableInit;
             try
             {
@@ -1006,6 +1176,17 @@ namespace EpicLoot
         // exactly what it is trying to report on rather than perform.
         public static LootDrop ResolveLootDrop(LootDrop lootDrop, float luckFactor = 0f, bool consumeRarityItems = true)
         {
+            return ResolveLootDrop(lootDrop, luckFactor, consumeRarityItems, null);
+        }
+
+        // scaling is the rolling table's star-scaling context, or null outside a table roll. The entry's
+        // Rarity is promoted exactly once, by the context of whichever table supplied it: this one for
+        // its own Rarity and for what an ItemSet hands down, a referenced table's own context for what a
+        // "Table.Level" reference hands down. It happens before any RarityItems map is consumed, so the
+        // rarity that picks the item is the promoted one.
+        public static LootDrop ResolveLootDrop(LootDrop lootDrop, float luckFactor, bool consumeRarityItems,
+            LootScalingContext scaling)
+        {
             var result = new LootDrop
             {
                 Item = lootDrop.Item,
@@ -1013,6 +1194,12 @@ namespace EpicLoot
                 Weight = lootDrop.Weight,
                 RarityItems = lootDrop.RarityItems
             };
+            var context = scaling;
+            if (context != null && !ArrayUtils.IsNullOrEmpty(result.Rarity))
+            {
+                result.Rarity = context.Promote(result.Rarity);
+            }
+
             var needsResolve = true;
 
             // Every branch below can hand the loop another name to resolve, so a cyclic config (set A
@@ -1062,24 +1249,37 @@ namespace EpicLoot
                     if (ArrayUtils.IsNullOrEmpty(result.Rarity))
                     {
                         result.Rarity = ArrayUtils.Copy(itemSetResult.Rarity);
+                        if (context != null)
+                        {
+                            result.Rarity = context.Promote(result.Rarity);
+                        }
                     }
                 }
-                else if (IsLootTableRefence(result.Item, out var lootList))
+                else if (TryResolveTableReference(result.Item, context, out var lootList, out var referenceContext))
                 {
                     if (lootList.Length == 0)
                     {
                         EpicLoot.LogError($"Tried to roll using loot table reference ({result.Item}) but its loot list was empty!");
                         break;
                     }
-                    _weightedLootTable.Setup(lootList, x => x.Weight);
+                    var referenceSteps = referenceContext.LootSteps;
+                    _weightedLootTable.Setup(lootList, x => LootScalingMath.ScaledWeight(x, referenceSteps));
+                    if (_weightedLootTable.TotalWeight <= 0)
+                    {
+                        EpicLoot.LogError($"Tried to roll using loot table reference ({result.Item}) but every entry weighs 0 there!");
+                        break;
+                    }
                     var referenceResult = _weightedLootTable.Roll();
                     result.Item = referenceResult.Item;
                     result.Weight = referenceResult.Weight;
                     result.RarityItems = referenceResult.RarityItems;
                     if (ArrayUtils.IsNullOrEmpty(result.Rarity))
                     {
-                        result.Rarity = ArrayUtils.Copy(referenceResult.Rarity);
+                        result.Rarity = referenceContext.Promote(ArrayUtils.Copy(referenceResult.Rarity));
                     }
+
+                    // Whatever the referenced entry resolves into next inherits under its table's scaling.
+                    context = referenceContext;
                 }
                 else
                 {
@@ -1090,9 +1290,16 @@ namespace EpicLoot
             return result;
         }
 
-        private static bool IsLootTableRefence(string lootDropItem, out LootDrop[] lootList)
+        // "Table.N" rolls Table's loot list as a level N creature would; "Table.*" rolls it at the level
+        // the referencing table is rolling at, so an elite template can defer its gear to the matching
+        // normal template at every level with one entry. Either way the referenced table's own
+        // StarScaling decides its item mix and rarity -- the rolling creature's star multiplier reaches it
+        // only through the level "*" passes on.
+        internal static bool TryResolveTableReference(string lootDropItem, LootScalingContext rolling,
+            out LootDrop[] lootList, out LootScalingContext referenceContext)
         {
             lootList = null;
+            referenceContext = null;
             var parts = lootDropItem.Split('.');
             if (parts.Length != 2)
             {
@@ -1101,25 +1308,92 @@ namespace EpicLoot
 
             var objectName = parts[0];
             var levelText = parts[1];
-            if (!int.TryParse(levelText, out var level))
+            float effectiveLevel;
+            if (levelText == "*")
+            {
+                effectiveLevel = rolling?.EffectiveLevel ?? 1f;
+            }
+            else if (int.TryParse(levelText, out var level))
+            {
+                effectiveLevel = LootScalingMath.EffectiveLevel(level, GlobalStarLootScaling);
+            }
+            else
             {
                 EpicLoot.LogError($"Tried to get a loot table reference from '{lootDropItem}' but could not parse the level value ({levelText})!");
                 return false;
             }
 
-            if (LootTables.ContainsKey(objectName))
+            if (!LootTables.TryGetValue(objectName, out var tables))
             {
-                var lootTable = LootTables[objectName].FirstOrDefault();
-                if (lootTable != null)
-                {
-                    lootList = GetLootForLevel(lootTable, level);
-                    return true;
-                }
-
-                EpicLoot.LogError($"UNLIKELY: LootTables contains entry for {objectName} but no valid loot tables! Weird!");
+                return false;
             }
 
-            return false;
+            var lootTable = tables.FirstOrDefault();
+            if (lootTable == null)
+            {
+                EpicLoot.LogError($"UNLIKELY: LootTables contains entry for {objectName} but no valid loot tables! Weird!");
+                return false;
+            }
+
+            LootTableMigration.Normalize(lootTable);
+            var plan = PlanRollAt(lootTable, effectiveLevel, null, rolling?.RarityExtra ?? 0f);
+            lootList = plan.LootAnchor?.Loot ?? Array.Empty<LootDrop>();
+            referenceContext = plan.Scaling;
+            return true;
+        }
+
+        // Stars count this many times over everywhere (the Balance "Star Loot Scaling" entry).
+        private static float GlobalStarLootScaling =>
+            ELConfig.StarLootScaling == null ? 1f : Mathf.Clamp(ELConfig.StarLootScaling.Value, 0f, 3f);
+
+        /// <summary>
+        /// Works out one table's roll for a creature: its effective level (stars times the creature's,
+        /// the table's and the global multiplier), the anchor levels its Drops and Loot come from, and the
+        /// scaling for the distance past them. objectName picks up the creature's own RefObject tuning.
+        /// </summary>
+        internal static LootRollPlan PlanRoll(LootTable lootTable, int level, string objectName)
+        {
+            var own = GetCreatureOverride(objectName);
+            if (own == lootTable)
+            {
+                own = null;
+            }
+
+            var multiplier = (own?.StarMultiplier ?? 1f) * (lootTable.StarMultiplier ?? 1f) * GlobalStarLootScaling;
+            return PlanRollAt(lootTable, LootScalingMath.EffectiveLevel(level, multiplier), own, 0f);
+        }
+
+        internal static LootRollPlan PlanRollAt(LootTable lootTable, float effectiveLevel, LootTable own,
+            float inheritedRarityExtra)
+        {
+            var ownScaling = EliteRunestoneTables.IsEliteRunestoneTable(lootTable) ? null : own?.StarScaling;
+            var scaling = LootScalingMath.MergeScaling(ownScaling, lootTable.StarScaling,
+                Config?.DefaultStarScaling ?? LootScalingMath.CodeDefaultStarScaling);
+
+            var dropsAnchor = LootScalingMath.FindAnchor(lootTable.LeveledLoot, effectiveLevel,
+                def => !ArrayUtils.IsNullOrEmpty(def.Drops));
+            var lootAnchor = LootScalingMath.FindAnchor(lootTable.LeveledLoot, effectiveLevel,
+                def => !ArrayUtils.IsNullOrEmpty(def.Loot));
+            var dropSteps = dropsAnchor == null ? 0f : LootScalingMath.Steps(effectiveLevel, dropsAnchor.Level);
+            var lootSteps = lootAnchor == null ? 0f : LootScalingMath.Steps(effectiveLevel, lootAnchor.Level);
+
+            return new LootRollPlan
+            {
+                DropsAnchor = dropsAnchor,
+                LootAnchor = lootAnchor,
+                DropChanceAdd = scaling.DropChance * dropSteps,
+                DropRate = (own?.Modifiers?.DropRate ?? 1f) * (lootTable.Modifiers?.DropRate ?? 1f),
+                BonusDrops = (own?.Modifiers?.BonusDrops ?? 0f) + (lootTable.Modifiers?.BonusDrops ?? 0f) +
+                    scaling.BonusDrops * dropSteps,
+                Scaling = new LootScalingContext
+                {
+                    EffectiveLevel = effectiveLevel,
+                    LootSteps = lootSteps,
+                    RarityExtra = inheritedRarityExtra + (own?.Modifiers?.RarityShift ?? 0f) +
+                        (lootTable.Modifiers?.RarityShift ?? 0f),
+                    Scaling = scaling
+                }
+            };
         }
 
         public static MagicItem RollMagicItem(LootDrop lootDrop, ItemDrop.ItemData baseItem, float luckFactor, float powerlevelMod = 1f)
@@ -1130,8 +1404,11 @@ namespace EpicLoot
 
         public static MagicItem RollMagicItem(ItemRarity rarity, ItemDrop.ItemData baseItem, float luckFactor, float powerlevelMod = 1f)
         {
-            var cheatLegendary = !string.IsNullOrEmpty(CheatForceLegendary);
-            var cheatMythic = !string.IsNullOrEmpty(CheatForceMythic);
+            LegendaryInfo forcedUnique = null;
+            if (!string.IsNullOrEmpty(CheatForceUniqueID))
+            {
+                UniqueLegendaryHelper.TryGetLegendaryInfo(CheatForceUniqueID, out forcedUnique);
+            }
 
             // Every rolled value is multiplied by this, so a mis-authored upgrade value (0 or negative
             // in enchantingupgrades.json) would otherwise zero out the whole item.
@@ -1140,13 +1417,9 @@ namespace EpicLoot
                 powerlevelMod = 1f;
             }
 
-            if (cheatMythic)
+            if (forcedUnique != null && CheatForceUniqueRarity.HasValue)
             {
-                rarity = ItemRarity.Mythic;
-            }
-            else if (cheatLegendary)
-            {
-                rarity = ItemRarity.Legendary;
+                rarity = CheatForceUniqueRarity.Value;
             }
 
             var magicItem = new MagicItem { Rarity = rarity };
@@ -1157,44 +1430,12 @@ namespace EpicLoot
 
             var effectCount = CheatEffectCount >= 1 ? CheatEffectCount : RollEffectCountPerRarity(magicItem.Rarity);
 
-            if (rarity == ItemRarity.Legendary || rarity == ItemRarity.Mythic)
+            // Uniques and set pieces roll at whichever rarities legendaries.json enables them for, not only
+            // Legendary and Mythic. A rarity nothing is enabled at spends no extra random rolls.
+            LegendaryInfo itemInfo = forcedUnique ?? RollUniqueInfo(rarity, baseItem, magicItem);
+            if (itemInfo != null)
             {
-                LegendaryInfo itemInfo = null;
-                if (cheatMythic)
-                {
-                    UniqueLegendaryHelper.TryGetLegendaryInfo(CheatForceMythic, out itemInfo);
-                }
-                else if (cheatLegendary)
-                {
-                    UniqueLegendaryHelper.TryGetLegendaryInfo(CheatForceLegendary, out itemInfo);
-                }
-
-                if (itemInfo == null)
-                {
-                    var roll = Random.Range(0.0f, 1.0f);
-                    var rollSetItem = roll < ELConfig.SetItemDropChance.Value;
-                    EpicLoot.Log($"Rolling Legendary/Mythic: set={rollSetItem} ({roll:#.##}/{ELConfig.SetItemDropChance.Value})");
-                    if (rarity == ItemRarity.Legendary)
-                    {
-                        var availableLegendaries = UniqueLegendaryHelper.GetAvailableLegendaries(baseItem, magicItem, rollSetItem);
-                        EpicLoot.Log($"Available Legendaries: {string.Join(", ", availableLegendaries.Select(x => x.ID))}");
-                        _weightedLegendaryTable.Setup(availableLegendaries, x => x.SelectionWeight);
-                        itemInfo = _weightedLegendaryTable.Roll();
-                    }
-                    else
-                    {
-                        var availableMythics = UniqueLegendaryHelper.GetAvailableMythics(baseItem, magicItem, rollSetItem);
-                        EpicLoot.Log($"Available Mythics: {string.Join(", ", availableMythics.Select(x => x.ID))}");
-                        _weightedMythicTable.Setup(availableMythics, x => x.SelectionWeight);
-                        itemInfo = _weightedMythicTable.Roll();
-                    }
-                }
-
-                if (itemInfo.IsSetItem)
-                {
-                    var setID = UniqueLegendaryHelper.GetSetForLegendaryItem(itemInfo);
-                    magicItem.SetID = setID;
-                }
+                magicItem.SetID = UniqueLegendaryHelper.GetSetForLegendaryItem(itemInfo);
 
                 if (!UniqueLegendaryHelper.IsGenericLegendary(itemInfo))
                 {
@@ -1215,7 +1456,8 @@ namespace EpicLoot
                             continue;
                         }
 
-                        var effect = RollEffect(effectDef, rarity, guaranteedMagicEffect.Values, powerlevelMod);
+                        var effect = RollEffect(effectDef, rarity,
+                            UniqueLegendaryHelper.ResolveValues(guaranteedMagicEffect, rarity), powerlevelMod);
                         magicItem.Effects.Add(effect);
                         effectCount--;
                     }
@@ -1248,6 +1490,44 @@ namespace EpicLoot
             }
 
             return magicItem;
+        }
+
+        /// <summary>
+        /// Picks the unique a fresh <paramref name="rarity"/> item becomes, or null for a plain item. With
+        /// probability SetItemDropChance it tries a set piece first; when no set piece enabled at this
+        /// rarity fits the item it falls through to the regular unique roll rather than making the item
+        /// generic. The regular roll includes <see cref="UniqueLegendaryHelper.GenericLegendaryInfo"/>.
+        /// </summary>
+        private static LegendaryInfo RollUniqueInfo(ItemRarity rarity, ItemDrop.ItemData baseItem, MagicItem magicItem)
+        {
+            if (UniqueLegendaryHelper.AnySetEnabledAt(rarity))
+            {
+                var roll = Random.Range(0.0f, 1.0f);
+                var rollSetItem = roll < ELConfig.SetItemDropChance.Value;
+                EpicLoot.Log($"Rolling {rarity} unique: set={rollSetItem} ({roll:#.##}/{ELConfig.SetItemDropChance.Value})");
+                if (rollSetItem)
+                {
+                    var availablePieces = UniqueLegendaryHelper.GetAvailableSetPieces(baseItem, magicItem, rarity);
+                    if (availablePieces.Count > 0)
+                    {
+                        EpicLoot.Log($"Available {rarity} set pieces: {string.Join(", ", availablePieces.Select(x => x.ID))}");
+                        _weightedUniqueTable.Setup(availablePieces, x => x.SelectionWeight);
+                        return _weightedUniqueTable.Roll();
+                    }
+
+                    EpicLoot.Log($"No {rarity} set piece fits {baseItem.m_shared.m_name}; rolling a regular unique instead.");
+                }
+            }
+
+            if (!UniqueLegendaryHelper.AnyUniqueEnabledAt(rarity))
+            {
+                return null;
+            }
+
+            var availableUniques = UniqueLegendaryHelper.GetAvailableUniques(baseItem, magicItem, rarity);
+            EpicLoot.Log($"Available {rarity} uniques: {string.Join(", ", availableUniques.Select(x => x.ID))}");
+            _weightedUniqueTable.Setup(availableUniques, x => x.SelectionWeight);
+            return _weightedUniqueTable.Roll();
         }
 
         // internal rather than private: API.TryMakeMagicItem reproduces the full drop flow for external
@@ -1430,11 +1710,11 @@ namespace EpicLoot
                     continue;
                 }
 
-                // A roll asks the effect pool for this many distinct effects, so an out-of-range entry is
-                // dropped instead of trusted. A negative weight goes too, since WeightedRandomCollection
-                // would quietly skew the whole table.
+                // No upper bound: RollMagicItem stops once the item's eligible effect pool is used up, so
+                // a count larger than the pool just yields every effect that pool can give. A negative
+                // weight is dropped, since WeightedRandomCollection would quietly skew the whole table.
                 var count = (int)entry[0];
-                if (count < 0 || count > MaxEffectCount || entry[1] < 0)
+                if (count < 0 || entry[1] < 0)
                 {
                     droppedEntry = true;
                     continue;
@@ -1446,8 +1726,8 @@ namespace EpicLoot
             if (droppedEntry && _warnedInvalidEffectCounts.Add(rarity))
             {
                 EpicLoot.LogWarning($"MagicEffectsCount entries for {rarity} in loottables.json were " +
-                    $"ignored: each entry must be [count, weight] with a count between 0 and " +
-                    $"{MaxEffectCount} and a weight of 0 or more.");
+                    $"ignored: each entry must be [count, weight] with a count of 0 or more and a " +
+                    $"weight of 0 or more.");
             }
 
             var featureValues = useEnchantingUpgrades && EnchantingTableUI.instance && EnchantingTableUI.instance.SourceTable
@@ -1670,12 +1950,7 @@ namespace EpicLoot
 
             List<LootDrop> setDrops = new List<LootDrop>();
             CheckForSet(name, setDrops, out List<LootDrop> setResults);
-            LootTable lootTableFromRefs = new LootTable()
-            {
-                Object = name,
-                Drops = [[1, 1]],
-                Loot = setResults.ToArray(),
-            };
+            LootTable lootTableFromRefs = LootTable.Simple(name, [[1, 1]], setResults.ToArray());
 
             results.Add(lootTableFromRefs);
 
@@ -1739,36 +2014,44 @@ namespace EpicLoot
             return results;
         }
 
+        // The authored Drops a level falls back to (the highest level at or below it that has any), without
+        // star scaling. useNextHighestIfNotPresent: false asks for that exact level only.
         public static List<KeyValuePair<int, float>> GetDropsForLevel([NotNull] LootTable lootTable,
             int level, bool useNextHighestIfNotPresent = true)
         {
-            if (level <= 3 && !ArrayUtils.IsNullOrEmpty(lootTable.Drops))
+            var found = FindLevel(lootTable, level, useNextHighestIfNotPresent, def => !ArrayUtils.IsNullOrEmpty(def.Drops));
+            if (found != null)
             {
-                if (lootTable.LeveledLoot.Any(x => x.Level == level))
-                {
-                    EpicLoot.LogWarning($"Duplicated leveled drops for ({lootTable.Object} lvl {level}), using 'Drops'");
-                }
-
-                return ToDropList(lootTable.Drops);
+                return ToDropList(found.Drops);
             }
 
-            for (var lvl = level; lvl >= 1; --lvl)
+            if (useNextHighestIfNotPresent)
             {
-                var found = lootTable.LeveledLoot.Find(x => x.Level == lvl);
-                if (found != null && !ArrayUtils.IsNullOrEmpty(found.Drops))
-                {
-                    return ToDropList(found.Drops);
-                }
-
-                if (!useNextHighestIfNotPresent)
-                {
-                    return null;
-                }
+                EpicLoot.LogError($"Could not find any leveled drops for ({lootTable.Object} lvl {level}), " +
+                    $"but a loot table exists for this object!");
             }
 
-            EpicLoot.LogError($"Could not find any leveled drops for ({lootTable.Object} lvl {level}), " +
-                $"but a loot table exists for this object!");
             return null;
+        }
+
+        private static LeveledLootDef FindLevel(LootTable lootTable, int level, bool orBelow,
+            Func<LeveledLootDef, bool> has)
+        {
+            LootTableMigration.Normalize(lootTable);
+            if (orBelow)
+            {
+                return LootScalingMath.FindAnchor(lootTable.LeveledLoot, level, has);
+            }
+
+            return lootTable.LeveledLoot?.Find(def => def != null && def.Level == level && has(def));
+        }
+
+        // The loot list a level-1 roll of this table draws from, or an empty one. Quiet on purpose: the
+        // identify and gating paths ask this of every table in a category.
+        internal static LootDrop[] GetLevelOneLoot(LootTable lootTable)
+        {
+            return FindLevel(lootTable, 1, true, def => !ArrayUtils.IsNullOrEmpty(def.Loot))?.Loot
+                ?? Array.Empty<LootDrop>();
         }
 
         private static List<KeyValuePair<int, float>> ToDropList(float[][] drops)
@@ -1776,35 +2059,23 @@ namespace EpicLoot
             return drops.Select(x => new KeyValuePair<int, float>((int) x[0], x[1])).ToList();
         }
 
+        // The authored Loot list a level falls back to, as written: no WeightPerStar and no rarity
+        // promotion. PlanRoll is what a real roll uses.
         public static LootDrop[] GetLootForLevel([NotNull] LootTable lootTable, int level,
             bool useNextHighestIfNotPresent = true)
         {
-            
-            if (level <= 3 && !ArrayUtils.IsNullOrEmpty(lootTable.Loot))
+            var found = FindLevel(lootTable, level, useNextHighestIfNotPresent, def => !ArrayUtils.IsNullOrEmpty(def.Loot));
+            if (found != null)
             {
-                if (lootTable.LeveledLoot.Any(x => x.Level == level))
-                {
-                    EpicLoot.LogWarning($"Duplicated leveled loot for ({lootTable.Object} lvl {level}), using 'Loot'");
-                }
-                return lootTable.Loot.ToArray();
+                return found.Loot.ToArray();
             }
 
-            for (var lvl = level; lvl >= 1; --lvl)
+            if (useNextHighestIfNotPresent)
             {
-                var found = lootTable.LeveledLoot.Find(x => x.Level == lvl);
-                if (found != null && !ArrayUtils.IsNullOrEmpty(found.Loot))
-                {
-                    return found.Loot.ToArray();
-                }
-
-                if (!useNextHighestIfNotPresent)
-                {
-                    return null;
-                }
+                EpicLoot.LogError($"Could not find any leveled loot for ({lootTable.Object} lvl {level}), " +
+                    $"but a loot table exists for this object!");
             }
 
-            EpicLoot.LogError($"Could not find any leveled loot for ({lootTable.Object} lvl {level}), " +
-                $"but a loot table exists for this object!");
             return null;
         }
 
@@ -1827,11 +2098,10 @@ namespace EpicLoot
 
             var rarity = magicItem.Rarity;
             var currentEffect = magicItem.Effects[effectIndex];
-            
 
-            var valuelessEffect = MagicItemEffectDefinitions.IsValuelessEffect(currentEffect.EffectType);
-            var availableEffects = MagicItemEffectDefinitions.GetAvailableEffects(item, magicItem, valuelessEffect ? 
-                -1 : effectIndex);
+            // The effect being replaced is left out of the candidate checks, valueless or not; GetAvailableEffects
+            // only offers it back when it has a value to re-roll.
+            var availableEffects = MagicItemEffectDefinitions.GetAvailableEffects(item, magicItem, effectIndex);
 
             var augmentChoices = 2;
             var featureValues = EnchantingTableUI.instance.SourceTable.GetFeatureCurrentValue(EnchantingFeature.Augment);
@@ -1889,19 +2159,23 @@ namespace EpicLoot
             }
         }
 
+        // Player-ZDO key holding the local player's Luck, mirrored by Multiplayer_Player_Patch.UpdateRichesAndLuck.
+        // A float: diminishing shard stacking gives fractional totals, which the old int key "el-luk" truncated.
+        public const string LuckZdoValueKey = "el-luck";
+
         public static float GetLuckFactor(Vector3 fromPoint)
         {
             var luckFactor = EpicLoot.GetWorldLuckFactor();
             var players = new List<Player>();
             Player.GetPlayersInRange(fromPoint, 100f, players);
 
-            if (players.Count > 0)
+            foreach (var player in players)
             {
-                var totalLuckFactor = players
-                    .Select(x => x.m_nview.GetZDO().GetInt("el-luk") * 0.01f)
-                    .DefaultIfEmpty(0)
-                    .Sum();
-                luckFactor += totalLuckFactor;
+                var zdo = player?.m_nview?.GetZDO();
+                if (zdo != null)
+                {
+                    luckFactor += zdo.GetFloat(LuckZdoValueKey) * 0.01f;
+                }
             }
 
             return luckFactor;
@@ -1916,7 +2190,7 @@ namespace EpicLoot
                 var index = 0;
                 foreach (var player in players)
                 {
-                    Debug.LogWarning($"{index++}: {player?.m_name}: {player?.m_nview?.GetZDO()?.GetInt("el-luk")}");
+                    Debug.LogWarning($"{index++}: {player?.m_name}: {player?.m_nview?.GetZDO()?.GetFloat(LuckZdoValueKey)}");
                 }
             }
         }

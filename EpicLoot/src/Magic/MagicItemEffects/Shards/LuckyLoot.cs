@@ -113,11 +113,10 @@ namespace EpicLoot.MagicItemEffects.Shards {
         // Player.m_localPlayer. Writing this the way Headhunter does would silently disable the effect in
         // the most common multiplayer topology.
         //
-        // Unlike Riches this takes the max rather than the sum, and does not cache. Max, because the value
-        // is simultaneously a chance and (through Multiplier) a drop multiple -- summing two players' 10%
-        // into 20% would imply an 11x multiplier rather than 6x. No cache, because Riches' 5-second one is
-        // a single scalar shared across every creature in the world, and a player scan on death is cheap
-        // when deaths are rare relative to frames.
+        // Unlike Riches this takes the max rather than the sum, because the value is simultaneously a
+        // chance and (through Multiplier) a drop multiple -- summing two players' 10% into 20% would imply
+        // an 11x multiplier rather than 6x. Scanned per death, as Riches is: a player scan is cheap when
+        // deaths are rare relative to frames.
         private static float BestNearbyValue(Vector3 position) {
             var players = new List<Player>();
             Player.GetPlayersInRange(position, PlayerScanRange, players);
@@ -184,19 +183,26 @@ namespace EpicLoot.MagicItemEffects.Shards {
                 }
             }
 
+            var maxAdded = GetMaxAddedUnitsPerDeath();
+            var maxPerEntry = GetMaxUnitsPerEntry();
             var added = 0;
             for (var i = 0; i < dropList.Count; i++) {
-                if (added >= GetMaxAddedUnitsPerDeath()) {
+                if (added >= maxAdded) {
                     break;
                 }
 
+                // Only items are multiplied. A drop list can also spawn creatures (BlobElite drops Blobs),
+                // and multiplying those would turn one kill into a swarm.
                 var prefab = dropList[i].Key;
-                if (prefab == null || excluded.Contains(prefab) || IsProtected(prefab)) {
+                if (prefab == null || prefab.GetComponent<ItemDrop>() == null || excluded.Contains(prefab) ||
+                    IsProtected(prefab)) {
                     continue;
                 }
 
+                // Clamped to what is left of the per-death allowance, so the last entry multiplied cannot
+                // overshoot it.
                 var amount = dropList[i].Value;
-                var newAmount = Mathf.Min(amount * multiplier, GetMaxUnitsPerEntry());
+                var newAmount = Mathf.Min(amount * multiplier, maxPerEntry, amount + (maxAdded - added));
                 if (newAmount > amount) {
                     added += newAmount - amount;
                     dropList[i] = new KeyValuePair<GameObject, int>(prefab, newAmount);
@@ -206,9 +212,10 @@ namespace EpicLoot.MagicItemEffects.Shards {
 
         // Trophies and the two named boss keys are never multiplied.
         //
-        // The name check is not redundant with the m_onePerPlayer guard: EpicLoot's own
-        // CharacterDrop_GenerateDropList_Patch.Prefix *clears* m_onePerPlayer on Wishbone and CryptKey
-        // under the non-default boss drop modes, so that guard is defeatable by config. Excluding all
+        // The name check is not redundant with the m_onePerPlayer guard: that flag is only as reliable as
+        // whoever authored the drop, and a drop-table mod can clear it on Wishbone or CryptKey. (EpicLoot's
+        // own CharacterDrop_GenerateDropList_Patch suspends it while vanilla builds the list, but restores it
+        // in a postfix that runs ahead of this one.) Excluding all
         // trophies on top of that keeps Lucky Loot out of Headhunter's lane (DarkRed head) and draws a
         // legible line: Lucky Loot multiplies materials, not trophies.
         private static bool IsProtected(GameObject prefab) {
@@ -244,7 +251,8 @@ namespace EpicLoot.MagicItemEffects.Shards {
         }
 
         // Re-rolls the creature's EpicLoot magic-item table extraRolls more times. Normal rarity and
-        // gating rules apply to each roll, so a roll legitimately producing nothing is expected.
+        // gating rules apply to each roll, so a roll legitimately producing nothing is expected. Prosperity
+        // is left off these rolls; it already had its turn on the kill's own roll.
         public static void RollBonusEpicLootDrops(string characterName, int level, Vector3 dropPoint,
             int extraRolls) {
             if (extraRolls <= 0 || string.IsNullOrEmpty(characterName)) {
@@ -253,7 +261,7 @@ namespace EpicLoot.MagicItemEffects.Shards {
 
             EpicLoot.Log($"Lucky Loot: rolling {extraRolls} bonus magic item drops for {characterName}.");
             for (var i = 0; i < extraRolls; i++) {
-                EpicLootDropsHelper.OnCharacterDeath(characterName, level, dropPoint);
+                EpicLootDropsHelper.OnCharacterDeath(characterName, level, dropPoint, allowBonusRolls: false);
             }
         }
 

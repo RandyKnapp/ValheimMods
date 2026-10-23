@@ -1,4 +1,6 @@
 ﻿using EpicLoot.src.Magic.MagicItemEffects.Helpers;
+using HarmonyLib;
+using JetBrains.Annotations;
 using UnityEngine;
 
 
@@ -52,13 +54,38 @@ namespace EpicLoot.MagicItemEffects {
             var instance = Object.Instantiate(prefab, target.transform.position, Quaternion.identity);
             // Its hits (and every jump's, which clones this live object) are bonus hits, not weapon strikes.
             HitSource.MarkBonusSource(instance);
+            // Cloned into every jump as well, which is what lets the patch below find this chain's strikes.
+            instance.AddComponent<ChainStrike>();
 
             var aoe = instance.GetComponent<Aoe>();
             if (aoe != null) {
-                aoe.m_chainChance = 0.8f; // I dont even know what this actually does. Testing remains inconclusive
-                aoe.m_chainStartChanceFalloff = 0.8f; // .5->.8 which is default. Chains fall off sooner now. Same as Vanilla
+                // The chance this strike jumps on, falling by the falloff with each jump (applied below).
+                aoe.m_chainChance = 0.8f;
+                aoe.m_chainStartChanceFalloff = 0.8f;
                 aoe.m_owner = player;
                 aoe.m_damage.m_lightning *= player.GetTotalActiveMagicEffectValue(MagicEffectType.ChainLightning, .01f); // damage of lightning. This works.
+            }
+        }
+
+        // Marks a strike of an EpicLoot chain. Instantiate copies components, so each jump carries it too.
+        public sealed class ChainStrike : MonoBehaviour {
+        }
+
+        // Vanilla hands each jump its parent's chance times the falloff (m_chainChance) but rolls the jump against
+        // the prefab's fixed m_chainStartChance, so the chance and falloff set above were never used and every
+        // strike jumped at the prefab's 80%. Roll this chain's strikes against their own falling chance. Only
+        // checked until the strike's one chain roll (m_chainDelay goes negative after it).
+        [HarmonyPatch(typeof(Aoe), nameof(Aoe.CustomFixedUpdate))]
+        private static class Aoe_CustomFixedUpdate_Patch {
+            [UsedImplicitly]
+            private static void Prefix(Aoe __instance) {
+                if (__instance.m_chainStartChance <= 0f || __instance.m_chainDelay < 0f ||
+                    __instance.m_chainChance <= 0f || __instance.m_chainStartChance == __instance.m_chainChance ||
+                    !__instance.TryGetComponent(out ChainStrike _)) {
+                    return;
+                }
+
+                __instance.m_chainStartChance = __instance.m_chainChance;
             }
         }
     }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using EpicLoot.Biomes;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -28,6 +29,11 @@ public class MinimapController : MonoBehaviour
     /// </summary>
     public static float AreaRadius => AreaWorldSize * 0.5f;
 
+    public const float PinDetailZoom = 0.1f;
+
+    private const float RewardIconSize = 20f;
+    private const float RewardRowGap = 2f;
+
     public static readonly Dictionary<Tuple<int, Heightmap.Biome>, AreaPinInfo> TreasureMapPins = new();
     public static readonly Dictionary<string, AreaPinInfo> BountyPins = new();
     public static bool DebugMode;
@@ -37,32 +43,18 @@ public class MinimapController : MonoBehaviour
 
     private static readonly List<PanelLayout> VanillaPanelLayout = new();
 
+    private static readonly Color VanillaAreaFill = new Color32(255, 15, 0, 112);
+    private static readonly Color GoldAreaRim = new Color32(245, 218, 83, 255);
+    private static Sprite _goldAreaSprite;
+
     public virtual void Awake()
     {
         _minimap = GetComponent<Minimap>();
-
-        if (!_minimap.m_icons.Exists(x => x.m_name == EpicLoot.TreasureMapPinType))
-        {
-            _minimap.m_icons.Add(new Minimap.SpriteData
-            {
-                m_name = EpicLoot.TreasureMapPinType,
-                m_icon = EpicAssets.MapIconTreasureMap
-            });
-        }
-
-        if (!_minimap.m_icons.Exists(x => x.m_name == EpicLoot.BountyPinType))
-        {
-            _minimap.m_icons.Add(new Minimap.SpriteData
-            {
-                m_name = EpicLoot.BountyPinType,
-                m_icon = EpicAssets.MapIconBounty
-            });
-        }
     }
 
     private void Start()
     {
-        EnsureVisibleIconTypeCapacity();
+        RegisterPinTypes();
         SetupPinFilters();
         RefreshAdventurePinFilters();
     }
@@ -79,6 +71,103 @@ public class MinimapController : MonoBehaviour
         {
             ProcessMinimapPinTask(MinimapPinQueue.Dequeue());
         }
+
+        UpdatePinDetails();
+    }
+
+    private void UpdatePinDetails()
+    {
+        bool showPinDetails = _minimap.LargeZoom <= PinDetailZoom;
+
+        foreach (AreaPinInfo pinInfo in BountyPins.Values)
+        {
+            if (pinInfo.RewardRow != null)
+            {
+                if (pinInfo.RewardRow.activeSelf != showPinDetails)
+                {
+                    pinInfo.RewardRow.SetActive(showPinDetails);
+                }
+
+                continue;
+            }
+
+            if (!showPinDetails || pinInfo.Rewards == null || pinInfo.Rewards.Count == 0)
+            {
+                continue;
+            }
+
+            TMP_Text label = pinInfo.Pin?.m_NamePinData?.PinNameText;
+            if (label != null && label.gameObject.activeInHierarchy)
+            {
+                pinInfo.RewardRow = CreateRewardRow(label, pinInfo.Rewards);
+            }
+        }
+    }
+
+    private static GameObject CreateRewardRow(TMP_Text label, List<KeyValuePair<Sprite, int>> rewards)
+    {
+        label.ForceMeshUpdate();
+        Bounds textBounds = label.textBounds;
+
+        RectTransform row = CreateLayoutRow("EpicLootBountyRewards", label.rectTransform, 8f);
+        // TextMeshProUGUI.Awake warns about a missing default font unless one is already assigned, and Awake
+        // only waits for that while the hierarchy is inactive.
+        row.gameObject.SetActive(false);
+        row.anchorMin = label.rectTransform.pivot;
+        row.anchorMax = label.rectTransform.pivot;
+        row.pivot = new Vector2(0.5f, 1f);
+        row.anchoredPosition = new Vector2(textBounds.center.x, textBounds.min.y - RewardRowGap);
+
+        ContentSizeFitter fitter = row.gameObject.AddComponent<ContentSizeFitter>();
+        fitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
+        fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+        foreach (KeyValuePair<Sprite, int> reward in rewards)
+        {
+            RectTransform entry = CreateLayoutRow("Reward", row, 2f);
+
+            Image icon = new GameObject("Icon", typeof(RectTransform)).AddComponent<Image>();
+            icon.transform.SetParent(entry, false);
+            icon.sprite = reward.Key;
+            icon.preserveAspect = true;
+            icon.raycastTarget = false;
+
+            LayoutElement iconLayout = icon.gameObject.AddComponent<LayoutElement>();
+            iconLayout.preferredWidth = RewardIconSize;
+            iconLayout.preferredHeight = RewardIconSize;
+
+            // Parented before the text is added, so its Awake waits for the inactive row. A new GameObject starts
+            // active at the scene root, where Awake would run (and warn) before the font below is set.
+            GameObject countObject = new GameObject("Count", typeof(RectTransform));
+            countObject.transform.SetParent(entry, false);
+            TextMeshProUGUI count = countObject.AddComponent<TextMeshProUGUI>();
+            count.font = label.font;
+            count.fontSharedMaterial = label.fontSharedMaterial;
+            count.fontSize = label.fontSize;
+            count.color = label.color;
+            count.textWrappingMode = TextWrappingModes.NoWrap;
+            count.raycastTarget = false;
+            count.text = reward.Value.ToString();
+        }
+
+        row.gameObject.SetActive(true);
+        return row.gameObject;
+    }
+
+    private static RectTransform CreateLayoutRow(string name, RectTransform parent, float spacing)
+    {
+        GameObject row = new GameObject(name, typeof(RectTransform));
+        row.transform.SetParent(parent, false);
+
+        HorizontalLayoutGroup layout = row.AddComponent<HorizontalLayoutGroup>();
+        layout.spacing = spacing;
+        layout.childAlignment = TextAnchor.MiddleCenter;
+        layout.childControlWidth = true;
+        layout.childControlHeight = true;
+        layout.childForceExpandWidth = false;
+        layout.childForceExpandHeight = false;
+
+        return (RectTransform)row.transform;
     }
 
     private void OnDestroy()
@@ -94,25 +183,36 @@ public class MinimapController : MonoBehaviour
         VanillaPanelLayout.Clear();
     }
 
-    private void EnsureVisibleIconTypeCapacity()
+    /// <summary>
+    /// Appends the bounty and treasure map pin types to the end of the filter array, as TargetPortal, Jewelcrafting
+    /// and VentureValheim do with theirs. The fixed 800/801 used before padded the array with ~780 unused slots,
+    /// and mods that walk every slot paid for each: TargetPortal toggles them all when its portal map opens and
+    /// again when it closes, and every vanilla ToggleIconFilter spawns a gamepad vibration sound, so each portal
+    /// trip spawned ~1600 of them and flooded the log with "Ran out of virtual channels".
+    /// </summary>
+    private void RegisterPinTypes()
     {
-        int required = (int)EpicLoot.TreasureMapPinType + 1;
+        bool[] current = _minimap.m_visibleIconTypes ?? Enumerable.Repeat(true, Enum.GetValues(typeof(Minimap.PinType)).Length).ToArray();
 
-        if (_minimap.m_visibleIconTypes != null && _minimap.m_visibleIconTypes.Length >= required)
-        {
-            return;
-        }
+        EpicLoot.BountyPinType = (Minimap.PinType)current.Length;
+        EpicLoot.TreasureMapPinType = (Minimap.PinType)(current.Length + 1);
 
-        bool[] resized = new bool[required];
-
-        for (int index = 0; index < resized.Length; ++index)
-        {
-            resized[index] = _minimap.m_visibleIconTypes == null ||
-                             index >= _minimap.m_visibleIconTypes.Length ||
-                             _minimap.m_visibleIconTypes[index];
-        }
-
+        bool[] resized = new bool[current.Length + 2];
+        Array.Copy(current, resized, current.Length);
+        resized[(int)EpicLoot.BountyPinType] = true;
+        resized[(int)EpicLoot.TreasureMapPinType] = true;
         _minimap.m_visibleIconTypes = resized;
+
+        _minimap.m_icons.Add(new Minimap.SpriteData
+        {
+            m_name = EpicLoot.BountyPinType,
+            m_icon = EpicAssets.MapIconBounty
+        });
+        _minimap.m_icons.Add(new Minimap.SpriteData
+        {
+            m_name = EpicLoot.TreasureMapPinType,
+            m_icon = EpicAssets.MapIconTreasureMap
+        });
     }
 
     private void SetupPinFilters()
@@ -427,12 +527,7 @@ public class MinimapController : MonoBehaviour
                 string key = bounty.ID;
                 if (!BountyPins.ContainsKey(key))
                 {
-                    AreaPinInfo pinInfo = new AreaPinInfo
-                    {
-                        Position = bounty.Position + bounty.MinimapCircleOffset,
-                        Type = EpicLoot.BountyPinType,
-                        Name = Localization.instance.Localize("$mod_epicloot_bounties_minimappin", AdventureDataManager.GetBountyName(bounty))
-                    };
+                    AreaPinInfo pinInfo = CreateBountyPinInfo(bounty);
 
                     PinJob pinJob = new PinJob
                     {
@@ -459,6 +554,81 @@ public class MinimapController : MonoBehaviour
             }
         }
     }
+
+    public static AreaPinInfo CreateBountyPinInfo(BountyInfo bounty)
+    {
+        bool isGold = bounty.RewardGold > 0;
+
+        return new AreaPinInfo
+        {
+            Position = bounty.Position + bounty.MinimapCircleOffset,
+            Type = EpicLoot.BountyPinType,
+            Name = Localization.instance.Localize("$mod_epicloot_bounties_minimappin", AdventureDataManager.GetBountyName(bounty)),
+            Icon = AdventureDataManager.GetTrophyIconForMonster(bounty.Target.MonsterID, isGold),
+            AreaIcon = isGold ? GetGoldAreaSprite() : null,
+            Rewards = GetBountyRewards(bounty)
+        };
+    }
+
+    private static List<KeyValuePair<Sprite, int>> GetBountyRewards(BountyInfo bounty)
+    {
+        List<KeyValuePair<Sprite, int>> rewards = new();
+        AddBountyReward(rewards, "IronBountyToken", bounty.RewardIron);
+        AddBountyReward(rewards, "GoldBountyToken", bounty.RewardGold);
+        AddBountyReward(rewards, "Coins", bounty.RewardCoins);
+        return rewards;
+    }
+
+    private static void AddBountyReward(List<KeyValuePair<Sprite, int>> rewards, string itemName, int amount)
+    {
+        if (amount <= 0)
+        {
+            return;
+        }
+
+        GameObject prefab = ObjectDB.instance != null ? ObjectDB.instance.GetItemPrefab(itemName) : null;
+        ItemDrop itemDrop = prefab != null ? prefab.GetComponent<ItemDrop>() : null;
+        if (itemDrop != null)
+        {
+            rewards.Add(new KeyValuePair<Sprite, int>(itemDrop.m_itemData.GetIcon(), amount));
+        }
+    }
+
+    private static Sprite GetGoldAreaSprite()
+    {
+        if (_goldAreaSprite != null)
+        {
+            return _goldAreaSprite;
+        }
+
+        const int size = 128;
+        const float rimWidth = 5f;
+        float radius = size * 0.5f;
+        Vector2 center = new Vector2(radius, radius);
+        Color[] pixels = new Color[size * size];
+
+        for (int y = 0; y < size; ++y)
+        {
+            for (int x = 0; x < size; ++x)
+            {
+                float distance = Vector2.Distance(new Vector2(x + 0.5f, y + 0.5f), center);
+                Color color = Color.Lerp(VanillaAreaFill, GoldAreaRim, Mathf.Clamp01(distance - (radius - rimWidth) + 0.5f));
+                color.a *= Mathf.Clamp01(radius - distance + 0.5f);
+                pixels[y * size + x] = color;
+            }
+        }
+
+        Texture2D texture = new Texture2D(size, size, TextureFormat.RGBA32, false)
+        {
+            wrapMode = TextureWrapMode.Clamp
+        };
+        texture.SetPixels(pixels);
+        texture.Apply();
+
+        _goldAreaSprite = Sprite.Create(texture, new Rect(0f, 0f, size, size), new Vector2(0.5f, 0.5f));
+        return _goldAreaSprite;
+    }
+
     private static void ToggleTreasureMaps(bool show)
     {
         if (Player.m_localPlayer == null)
@@ -586,9 +756,17 @@ public class MinimapController : MonoBehaviour
         //Add Area Pin
         newPin.Area = _minimap.AddPin(newPin.Position, Minimap.PinType.EventArea, string.Empty, false, false);
         newPin.Area.m_worldSize = AreaWorldSize;
+        if (newPin.AreaIcon != null)
+        {
+            newPin.Area.m_icon = newPin.AreaIcon;
+        }
 
         //Add Pin
         newPin.Pin = _minimap.AddPin(newPin.Position, newPin.Type, newPin.Name, false, false);
+        if (newPin.Icon != null)
+        {
+            newPin.Pin.m_icon = newPin.Icon;
+        }
 
         //Add Debug Pin
         if (pinJob.DebugMode)

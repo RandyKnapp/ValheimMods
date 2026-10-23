@@ -20,6 +20,11 @@ namespace EpicLoot.Magic
             public Dictionary<string, SortingData> BiomeSorterData = new Dictionary<string, SortingData>();
             public Dictionary<string, List<float>> TierRarityProbabilities = new Dictionary<string, List<float>>();
             public Dictionary<string, int> VendorCostByBiomeKey = new Dictionary<string, int>();
+
+            // How creatures without a loot table are given one; see CreatureSorter. Left null when absent
+            // so a file that predates it falls through to the code-side defaults field by field.
+            [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+            public CreatureSorterConfig CreatureSorter;
         }
 
         public class SortingData
@@ -29,11 +34,17 @@ namespace EpicLoot.Magic
             public List<string> BiomeMaterials { get; set; } = new List<string>();
             public List<string> BiomeSpecificCraftingStations { get; set; } = new List<string>();
 
+            // The loot table template each class of creature in this biome gets from the creature sorter.
+            [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+            public CreatureLadder Creatures { get; set; }
         }
 
         public static void InitializeConfig(AutoSorterConfiguration config)
         {
             Config = config;
+            // The creature rules live in this file too; a live edit (or a patch) re-sorts the creatures
+            // while a world is loaded. At startup nothing is loaded yet and this does nothing.
+            CreatureSorterRunner.RunIfWorldLoaded("itemsorter.json reload");
         }
 
         public static AutoSorterConfiguration GetCFG()
@@ -51,6 +62,45 @@ namespace EpicLoot.Magic
         // scan -- and rewrite iteminfo/loottables/adventuredata on disk -- on every world join.
         public static readonly Action OnMapDataLoadedHandler = () => CheckAndAddAllEnchantableItems();
 
+        private static bool _ranOnHeadlessServer;
+
+        /// <summary>
+        /// The trigger for a headless (dedicated) server, which never fires the minimap hook: Minimap.Update
+        /// returns before LoadMapData when there is no graphics device. Called from the creature sorter's
+        /// ZoneSystem.SetupLocations postfix, after the sorter, which is the order a host gets too. Once per
+        /// session, like the minimap hook's self-unsubscribe.
+        /// </summary>
+        internal static void RunOnHeadlessWorldLoad()
+        {
+            if (!Jotunn.Managers.GUIManager.IsHeadless() || _ranOnHeadlessServer || !OwnsItemConfig())
+            {
+                return;
+            }
+
+            _ranOnHeadlessServer = true;
+            CheckAndAddAllEnchantableItems();
+        }
+
+        /// <summary>
+        /// Re-arms the minimap hook, so the pass runs on the next world this machine loads itself even if it
+        /// already ran this session. For a patch rebuild the pass cannot follow straight away (no world is
+        /// loaded, or this client is on someone else's server): the rebuilt files start from the embedded
+        /// defaults, without the items the pass adds.
+        /// </summary>
+        internal static void RunOnNextWorldLoad()
+        {
+            // Removed first: a handler that is still subscribed would otherwise be added twice and run twice.
+            Jotunn.Managers.MinimapManager.OnVanillaMapDataLoaded -= OnMapDataLoadedHandler;
+            Jotunn.Managers.MinimapManager.OnVanillaMapDataLoaded += OnMapDataLoadedHandler;
+        }
+
+        // Same rule as the creature sorter's: a dedicated server, a host or single player. Not a client on
+        // someone else's server, and not the main menu (no world, so nothing to scan).
+        private static bool OwnsItemConfig()
+        {
+            return ZNet.instance != null && ZNet.instance.IsServer();
+        }
+
         /// <summary>
         /// The baseconfig files this pass writes back out. A caller that needs the live config to
         /// match disk without waiting on the file watchers reloads exactly these.
@@ -60,6 +110,18 @@ namespace EpicLoot.Magic
 
         public static void CheckAndAddAllEnchantableItems(bool deregister = true)
         {
+            // The pass merges onto the LIVE configs and writes the result over this machine's own baseconfig
+            // files. On a client connected to someone else's server those are the server's push
+            // (ELConfig.ApplyClientConfig), so running here copied the server's loottables, iteminfo and
+            // adventuredata over the player's own files, and the reload at the end skips the scheduler's
+            // connected-client rule. The server runs the pass and its configs reach clients in the push.
+            // Checked before unsubscribing, so a world this session later loads itself still gets the pass.
+            if (!OwnsItemConfig())
+            {
+                EpicLoot.Log("Equipment auto-add skipped: this client is connected to a server, whose configs are in effect.");
+                return;
+            }
+
             if (deregister)
             {
                 Jotunn.Managers.MinimapManager.OnVanillaMapDataLoaded -= OnMapDataLoadedHandler;
@@ -71,6 +133,8 @@ namespace EpicLoot.Magic
             }
 
             List<ItemTypeInfo> currentConfigs = GatedItemTypeHelper.GatedConfig.ItemInfo;
+            // Taken before the passes below, which replace these entries' lists in place.
+            Dictionary<string, HashSet<string>> previousTypes = TypesByItem(currentConfigs);
 
             Dictionary<string, ItemTypeInfo> itemsByCategory = new Dictionary<string, ItemTypeInfo>();
             Dictionary<string, ItemTypeInfo> foundByCategory = new Dictionary<string, ItemTypeInfo>();
@@ -148,7 +212,7 @@ namespace EpicLoot.Magic
                 i.m_itemData.m_dropPrefab != null &&
                 (i.m_itemData.IsMagicCraftingMaterial() || i.m_itemData.IsRunestone()))
                 .Select(x => x.m_itemData.m_dropPrefab.name).ToList();
-            AddRemoveItemsFromLootLists(magicMats, foundByCategory, newConfig);
+            AddRemoveItemsFromLootLists(magicMats, foundByCategory, newConfig, previousTypes);
 
             // Write out the new config; CheckAndAddAllEnchantableItems re-reads every rewritten file once all are written.
             try
@@ -235,14 +299,15 @@ namespace EpicLoot.Magic
             if (removed > 0)
             {
                 EpicLoot.LogWarningForce($"Removed {removed} prop item entries ({removedNames.Count} distinct) " +
-                    $"from iteminfo.json: {string.Join(", ", removedNames)}. These are NPC props -- invisible " +
-                    "when worn, and in some cases killing whoever attacks with them -- and must never be loot.");
+                    $"from iteminfo.json: {string.Join(", ", removedNames)}. These are creature weapons and NPC " +
+                    "props -- some invisible when worn, some killing whoever attacks with them -- and must never be loot.");
             }
         }
 
         private static void AddRemoveItemsFromLootLists(List<string> magicMats,
             Dictionary<string, ItemTypeInfo> foundByCategory,
-            List<ItemTypeInfo> newConfig)
+            List<ItemTypeInfo> newConfig,
+            Dictionary<string, HashSet<string>> previousTypes)
         {
             if (!ELConfig.AutoAddRemoveEquipmentFromLootLists.Value)
             {
@@ -253,9 +318,18 @@ namespace EpicLoot.Magic
             LootConfig defaultcfg = LootRoller.Config;
             List<LootTable> updatedLootTables = [];
             List<LootItemSet> updatedItemSets = [];
+            Dictionary<string, HashSet<string>> newTypes = TypesByItem(newConfig);
 
             // entry of all of the currently defined meta sets as they are valid targets also
             List<string> metaItemSetNames = LootRoller.Config.ItemSets.Select(x => x.Name).ToList();
+            // Every table name up front: a reference to a table further down the file -- or a boss table's
+            // reference to its own level 1 -- is as valid as one to a table above it. ItemSets are checked
+            // against it too: a set member or a rarity-keyed set's map may name "Table.N" as well.
+            List<string> metaLootTables = LootRoller.Config.LootTables
+                .Where(x => !string.IsNullOrEmpty(x?.Object))
+                .Select(x => x.Object)
+                .Distinct()
+                .ToList();
             // List of all of the currently valid items so we can always determine if its at least valid
             List<string> validItems = [];
             foreach (ItemTypeInfo entry in foundByCategory.Values)
@@ -270,13 +344,28 @@ namespace EpicLoot.Magic
             {
                 List<LootDrop> entries = new List<LootDrop>();
                 List<string> addedItems = new List<string>();
+                // The item categories a tiered set (Tier6Weapons) is filled from; null for any other set.
+                List<string> setCategories = null;
+                bool tiered = DetermineTierAndType(lis.Name, out string tier, out string loottype);
+                if (tiered)
+                {
+                    Config.LootSetsToItemCategories.TryGetValue(loottype, out setCategories);
+                }
+
                 // Validate existing entries in the lootset
                 EpicLoot.Log($"Checking LootSet entry: {lis.Name}");
                 foreach (LootDrop loot in lis.Loot)
                 {
-                    if (IsValidLootEntryName(loot.Item, metaItemSetNames, null, validItems, magicMats))
+                    if (WasRefiledOutOf(loot.Item, setCategories, previousTypes, newTypes))
                     {
-                        PruneRarityItems(loot, lis.Name, metaItemSetNames, null, validItems, magicMats);
+                        EpicLoot.Log($"{loot.Item} is now filed under {string.Join(", ", newTypes[loot.Item])} " +
+                            $"and is removed from {lis.Name}.");
+                        continue;
+                    }
+
+                    if (IsValidLootEntryName(loot.Item, metaItemSetNames, metaLootTables, validItems, magicMats))
+                    {
+                        PruneRarityItems(loot, lis.Name, metaItemSetNames, metaLootTables, validItems, magicMats);
                         entries.Add(loot);
                         addedItems.Add(loot.Item);
                         continue;
@@ -285,7 +374,7 @@ namespace EpicLoot.Magic
                     EpicLoot.Log($"{loot.Item} is not a found item and will be removed from the loot tables.");
                 }
 
-                if (DetermineTierAndType(lis.Name, out string tier, out string loottype))
+                if (tiered)
                 {
                     string bosskey = "none";
                     foreach (KeyValuePair<string, SortingData> entry in Config.BiomeSorterData)
@@ -334,51 +423,102 @@ namespace EpicLoot.Magic
             }
 
             EpicLoot.Log($"Checking loot tables for invalid entries.");
-            List<string> metaLootTables = new List<string>();
-            //LootRoller.Config.LootTables
             foreach (LootTable lt in LootRoller.Config.LootTables)
             {
-                List<LootDrop> updatedLootDrop = new List<LootDrop>();
-
-                // Valid existing entries. Only lt.Loot is validated -- LeveledLoot is deliberately left
-                // untouched. Boss drops live there (Eikthyr_{Rarity}_ShardStone and friends), and a
-                // level-gated entry has no independent existence to check that ValidateLootList would
-                // not already cover, so validating it only adds ways to delete working loot.
-                if (lt.Loot != null)
+                if (lt == null)
                 {
-                    updatedLootDrop.AddRange(ValidateLootList(lt, metaLootTables, metaItemSetNames, validItems, magicMats));
+                    continue;
                 }
 
-                LootTable ltc = lt;
-                ltc.Loot = updatedLootDrop.ToArray();
-                updatedLootTables.Add(ltc);
-                metaLootTables.Add(lt.Object);
+                // Every level's list is validated, the same way the old flat Loot was: since the flat form
+                // was folded into LeveledLoot, that is where chest loot lives. A list that would come out
+                // empty is left as written instead -- with nothing valid left to roll it was already
+                // broken, and emptying it on disk would make a validation gap permanent.
+                if (lt.LeveledLoot != null)
+                {
+                    foreach (LeveledLootDef level in lt.LeveledLoot)
+                    {
+                        if (level?.Loot == null || level.Loot.Length == 0)
+                        {
+                            continue;
+                        }
+
+                        string owner = $"{lt.Object} level {level.Level}";
+                        List<LootDrop> valid = ValidateLootList(owner, level.Loot, metaLootTables,
+                            metaItemSetNames, validItems, magicMats);
+                        if (valid.Count == 0)
+                        {
+                            EpicLoot.LogWarning($"Loot table {owner}: no entry passed validation. Keeping " +
+                                "it as written; it will drop nothing until its entries are fixed.");
+                            continue;
+                        }
+
+                        level.Loot = valid.ToArray();
+                    }
+                }
+
+                updatedLootTables.Add(lt);
             }
 
             EpicLoot.Log($"Finished Validating loottable.");
             // Write out the new config; CheckAndAddAllEnchantableItems re-reads every rewritten file once all are written.
-            try
+            // A copy of the live config, not a new one built field by field, so every other root field
+            // (DefaultStarScaling, and anything added later) is written back too.
+            LootConfig newLootConfig = LootRoller.Config.ShallowCopy();
+            newLootConfig.ItemSets = updatedItemSets.ToArray();
+            newLootConfig.LootTables = updatedLootTables.ToArray();
+            LootConfigFile.Write(newLootConfig, "equipment auto-add");
+        }
+
+        // Item prefab name -> every iteminfo.json type that lists it, under any boss key.
+        private static Dictionary<string, HashSet<string>> TypesByItem(IEnumerable<ItemTypeInfo> config)
+        {
+            Dictionary<string, HashSet<string>> types = new Dictionary<string, HashSet<string>>(StringComparer.Ordinal);
+            foreach (ItemTypeInfo itemType in config)
             {
-                LootConfig newLootConfig = new LootConfig()
+                if (itemType?.ItemsByBoss == null)
                 {
-                    ItemSets = updatedItemSets.ToArray(),
-                    LootTables = updatedLootTables.ToArray(),
-                    MagicEffectsCount = LootRoller.Config.MagicEffectsCount,
-                    SocketCounts = LootRoller.Config.SocketCounts,
-                    RestrictedItems = LootRoller.Config.RestrictedItems
-                };
-                string contents = JsonConvert.SerializeObject(newLootConfig, Formatting.Indented);
-                string overhaulFileLocation = Path.Combine(ELConfig.GetOverhaulDirectoryPath(), "loottables.json");
-                string previousContents = File.Exists(overhaulFileLocation) ? File.ReadAllText(overhaulFileLocation) : null;
-                File.WriteAllText(overhaulFileLocation, contents);
-                // Claim this as the mod's own output ONLY when the baseline it merged over was also
-                // ours -- a player-edited baseline must stay flagged as the player's.
-                ConfigVersionManager.RecordWrittenContent("loottables", contents, previousContents);
+                    continue;
+                }
+
+                foreach (List<string> items in itemType.ItemsByBoss.Values)
+                {
+                    if (items == null)
+                    {
+                        continue;
+                    }
+
+                    foreach (string item in items)
+                    {
+                        if (string.IsNullOrEmpty(item))
+                        {
+                            continue;
+                        }
+
+                        if (!types.TryGetValue(item, out HashSet<string> itemTypes))
+                        {
+                            itemTypes = new HashSet<string>(StringComparer.Ordinal);
+                            types.Add(item, itemTypes);
+                        }
+
+                        itemTypes.Add(itemType.Type);
+                    }
+                }
             }
-            catch (Exception e)
-            {
-                EpicLoot.LogError($"Failed to auto-update loottables.json: {e.Message}");
-            }
+
+            return types;
+        }
+
+        // True when this pass moved the item out of every category a tiered set is filled from (the grappling
+        // hook, once filed under Bows, now under Tools): its entry in that set is the sorter's own stale output,
+        // and validation alone keeps any real item. Only a move made on this pass counts, so an entry put in a
+        // set by hand stays -- the shipped Torch in Tier0Weapons is a Torches item.
+        private static bool WasRefiledOutOf(string item, List<string> setCategories,
+            Dictionary<string, HashSet<string>> previousTypes, Dictionary<string, HashSet<string>> newTypes)
+        {
+            return setCategories != null && !string.IsNullOrEmpty(item) &&
+                previousTypes.TryGetValue(item, out HashSet<string> before) && before.Overlaps(setCategories) &&
+                newTypes.TryGetValue(item, out HashSet<string> after) && !after.Overlaps(setCategories);
         }
 
         private static void AddRemoveItemsFromVendor(List<ItemTypeInfo> newConfig)
@@ -542,7 +682,7 @@ namespace EpicLoot.Magic
                     continue;
                 }
 
-                string key = DetermineBossLevelForItem(item.m_itemData);
+                string key = DetermineBossLevelForItem(item);
                 bool uncraftableFound = false;
                 foreach(KeyValuePair<string, List<string>> uncraftable in Config.UncraftableItemsAlwaysAllowed)
                 {
@@ -698,20 +838,25 @@ namespace EpicLoot.Magic
             return itemsByCategory;
         }
 
-        private static List<LootDrop> ValidateLootList(LootTable lt,
+        private static List<LootDrop> ValidateLootList(string owner, LootDrop[] lootList,
             List<string> metaLootTables, List<string> metaItemSetNames, List<string> validItems,
             List<string> magicMats)
         {
             List<LootDrop> updatedLootDrop = new List<LootDrop>();
-            foreach (LootDrop loot in lt.Loot)
+            foreach (LootDrop loot in lootList)
             {
-                if (!IsValidLootEntryName(loot.Item, metaItemSetNames, metaLootTables, validItems, magicMats))
+                if (loot == null)
                 {
-                    EpicLoot.Log($"REMOVING: Loot table ({lt.Object}) Item {loot.Item} not found.");
                     continue;
                 }
 
-                PruneRarityItems(loot, lt.Object, metaItemSetNames, metaLootTables, validItems, magicMats);
+                if (!IsValidLootEntryName(loot.Item, metaItemSetNames, metaLootTables, validItems, magicMats))
+                {
+                    EpicLoot.Log($"REMOVING: Loot table ({owner}) Item {loot.Item} not found.");
+                    continue;
+                }
+
+                PruneRarityItems(loot, owner, metaItemSetNames, metaLootTables, validItems, magicMats);
                 updatedLootDrop.Add(loot);
             }
             return updatedLootDrop;
@@ -724,7 +869,8 @@ namespace EpicLoot.Magic
         // "Object.Level" reference to another table, or any other real prefab -- which is what covers
         // shard stones and every non-equipment item a table may drop.
         //
-        // metaLootTables is null for the ItemSet pass, where table references are not a valid target.
+        // Both passes accept table references: ResolveLootDrop follows one from an ItemSet member or a
+        // rarity map as readily as from a table, so rejecting it here would delete a working entry.
         private static bool IsValidLootEntryName(string name, List<string> metaItemSetNames,
             List<string> metaLootTables, List<string> validItems, List<string> magicMats)
         {
@@ -846,15 +992,10 @@ namespace EpicLoot.Magic
             return [97, 2, 1, 0, 0, 0];
         }
 
-        public static string DetermineBossLevelForItem(ItemDrop.ItemData item)
+        public static string DetermineBossLevelForItem(ItemDrop itemDrop)
         {
-            if (item == null || ObjectDB.instance == null)
-            {
-                return NONE;
-            }
-
-            Recipe itemRecipe = ObjectDB.instance.GetRecipe(item);
-            if (itemRecipe == null || itemRecipe.m_enabled == false || itemRecipe.m_resources == null)
+            Recipe itemRecipe = FindEnabledRecipe(itemDrop);
+            if (itemRecipe == null || itemRecipe.m_resources == null)
             {
                 return NONE;
             }
@@ -882,6 +1023,30 @@ namespace EpicLoot.Magic
             }
 
             return NONE;
+        }
+
+        /// <summary>
+        /// The enabled recipe that crafts this exact prefab. Not ObjectDB.GetRecipe: that matches on
+        /// m_shared.m_name, the display token, which creature weapons copy from the item they imitate. The
+        /// Dvergr rogues' DvergerArbalest_shoot* are all "$item_crossbow_arbalest", so they were handed the real
+        /// Arbalest's recipe, passed Only Add Equipment With Recipes and were filed beside it.
+        /// </summary>
+        private static Recipe FindEnabledRecipe(ItemDrop itemDrop)
+        {
+            if (itemDrop == null || ObjectDB.instance == null)
+            {
+                return null;
+            }
+
+            foreach (Recipe recipe in ObjectDB.instance.m_recipes)
+            {
+                if (recipe != null && recipe.m_enabled && recipe.m_item != null && recipe.m_item.name == itemDrop.name)
+                {
+                    return recipe;
+                }
+            }
+
+            return null;
         }
     }
 }

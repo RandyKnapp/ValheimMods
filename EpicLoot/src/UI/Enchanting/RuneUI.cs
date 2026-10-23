@@ -3,8 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using EpicLoot;
+using EpicLoot.Compatibility;
 using EpicLoot.CraftingV2;
 using TMPro;
+using EpicLoot.LegendarySystem;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -31,20 +33,64 @@ namespace EpicLoot_UnityLib
         public AudioClip RunicActionCompleted;
 
 
+        private const string SetEtchButtonName = "ModeSetEtchButton";
+        private const string SetExtractButtonName = "ModeSetExtractButton";
+
         private readonly List<EnchantmentRow> _enchantmentRows = new List<EnchantmentRow>();
         private EnchantmentColumn _enchantmentColumn;
+        private ScrollRectEnsureVisible _enchantListEnsureVisible;
+        // The frame a rebuild asked for the focused row to be scrolled into view, or -1. Served on a later
+        // frame, once the layout has placed the new rows.
+        private int _focusScrollRequestFrame = -1;
         private GameObject _rowFocusTemplate;
         private RuneAction _runeAction;
         private GameObject _successDialog;
         private ItemDrop.ItemData _selectedItem;
-        private ItemDrop.ItemData _selectedOverrideRune;
         private ItemRarity _selectedRarity = ItemRarity.Magic;
         private int _selectedEnchantmentIndex = -1;
+
+        // Found by name under ModeSelectors (see BindSetModeButtons), not serialized, so RuneUI gains no
+        // fields the prefab has to be rewired for.
+        private Toggle _setEtchButton;
+        private Toggle _setExtractButton;
+        // Every mode toggle with the action it selects, in the column's visual order (gamepad Y order).
+        private readonly List<ModeToggle> _modes = new List<ModeToggle>();
+
+        // The two column titles, and what the prefab shipped in them, restored for the effect modes.
+        private TMP_Text _enchantHeader;
+        private TMP_Text _runesHeader;
+        private string _enchantHeaderDefault;
+        private string _runesHeaderDefault;
 
         private enum RuneAction
         {
             Extract,
-            Etch
+            Etch,
+            SetExtract,
+            SetEtch
+        }
+
+        private struct ModeToggle
+        {
+            public Toggle Toggle;
+            public RuneAction Action;
+        }
+
+        private bool IsSetMode => _runeAction == RuneAction.SetExtract || _runeAction == RuneAction.SetEtch;
+
+        // Whether the current mode rewrites the selected item, rather than taking it or leaving it be. Such
+        // an item has to sit where that change is saved (InventoryManagement.IsEditable).
+        private bool EditsSelectedItem()
+        {
+            switch (_runeAction)
+            {
+                case RuneAction.Extract:
+                    return EnchantingUIController.RuneExtractEditsItem();
+                case RuneAction.SetExtract:
+                    return EnchantingUIController.SetExtractEditsItem();
+                default:
+                    return true;
+            }
         }
 
         private class EnchantmentRow
@@ -98,6 +144,7 @@ namespace EpicLoot_UnityLib
                 int count = GetItemCount();
                 _focusIndex = focused && count > 0 ? Mathf.Clamp(tryFocusIndex, 0, count - 1) : -1;
                 _owner.RefreshEnchantmentFocus();
+                _owner.ScrollToFocusedRow();
             }
 
             // The rows are rebuilt whenever the selected item changes, which empties the column for a
@@ -119,6 +166,7 @@ namespace EpicLoot_UnityLib
 
                 _focusIndex = Mathf.Clamp(_focusIndex + step, 0, count - 1);
                 _owner.RefreshEnchantmentFocus();
+                _owner.ScrollToFocusedRow();
             }
 
             public void SubmitFocused()
@@ -144,15 +192,24 @@ namespace EpicLoot_UnityLib
 
             base.Awake();
 
-            RuneExtractButton.onValueChanged.AddListener((isOn) =>
-            {
-                ExtractModeSelected(isOn);
-            });
+            MakeEnchantListScroll();
+            EffectListRow.FitRowsToList(EnchantList);
+            BindSetModeButtons();
 
-            RuneEtchButton.onValueChanged.AddListener((isOn) =>
-            {
-                EtchModeSelected(isOn);
-            });
+            // Only the toggle turning on selects: a group change also turns the previous one off, and
+            // acting on that as well rebuilt every list twice per switch.
+            RegisterMode(RuneEtchButton, RuneAction.Etch);
+            RegisterMode(RuneExtractButton, RuneAction.Extract);
+            RegisterMode(_setEtchButton, RuneAction.SetEtch);
+            RegisterMode(_setExtractButton, RuneAction.SetExtract);
+            _modes.Sort((a, b) => a.Toggle.transform.GetSiblingIndex().CompareTo(b.Toggle.transform.GetSiblingIndex()));
+
+            _enchantHeader = transform.Find("EnchantmentSelector/ProductsLabel")?.GetComponent<TMP_Text>();
+            _runesHeader = AvailableRunesWindow != null
+                ? AvailableRunesWindow.transform.Find("ProductsLabel")?.GetComponent<TMP_Text>()
+                : null;
+            _enchantHeaderDefault = _enchantHeader != null ? _enchantHeader.text : null;
+            _runesHeaderDefault = _runesHeader != null ? _runesHeader.text : null;
 
             AvailableRunes.OnSelectedItemsChanged += OnSelectedOverrideRuneChanged;
 
@@ -182,12 +239,171 @@ namespace EpicLoot_UnityLib
             }
         }
 
+        // The prefab's EnchantmentSelector ships its ScrollRect disabled, with no mask, and EnchantList a
+        // fixed height, so from about the eighth effect the rows spilled out of the column -- unclipped and
+        // still clickable -- over the rune list below. Rebuilt here as a clipped list that grows with its
+        // rows and scrolls. The viewport and components are only added when missing, so this is safe over
+        // a bundle that fixes the prefab.
+        private void MakeEnchantListScroll()
+        {
+            ScrollRect scroll = EnchantList != null ? EnchantList.GetComponentInParent<ScrollRect>(true) : null;
+            if (scroll == null)
+            {
+                return;
+            }
+
+            RectTransform selector = (RectTransform)scroll.transform;
+            if (scroll.viewport == null && EnchantList.parent == selector)
+            {
+                // Masked on a child, not on the selector itself: the column's header sits above the
+                // selector's rect and would be clipped. Stretched over the whole selector, because
+                // ScrollRectEnsureVisible measures against the ScrollRect's own rect.
+                GameObject viewportObject = new GameObject("Viewport", typeof(RectTransform), typeof(RectMask2D));
+                viewportObject.layer = selector.gameObject.layer;
+                RectTransform viewport = (RectTransform)viewportObject.transform;
+                viewport.SetParent(selector, false);
+                viewport.anchorMin = Vector2.zero;
+                viewport.anchorMax = Vector2.one;
+                viewport.offsetMin = Vector2.zero;
+                viewport.offsetMax = Vector2.zero;
+                viewport.SetSiblingIndex(EnchantList.GetSiblingIndex());
+                EnchantList.SetParent(viewport, false);
+                scroll.viewport = viewport;
+            }
+
+            // Hung from the top so it grows downwards and a short list sits where it always did.
+            EnchantList.anchorMin = new Vector2(EnchantList.anchorMin.x, 1f);
+            EnchantList.anchorMax = new Vector2(EnchantList.anchorMax.x, 1f);
+            EnchantList.pivot = new Vector2(EnchantList.pivot.x, 1f);
+            EnchantList.anchoredPosition = new Vector2(EnchantList.anchoredPosition.x, 0f);
+
+            if (!EnchantList.TryGetComponent(out ContentSizeFitter fitter))
+            {
+                fitter = EnchantList.gameObject.AddComponent<ContentSizeFitter>();
+            }
+            fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+            scroll.content = EnchantList;
+            scroll.horizontal = false;
+            scroll.vertical = true;
+            scroll.movementType = ScrollRect.MovementType.Clamped;
+            scroll.verticalScrollbarVisibility = ScrollRect.ScrollbarVisibility.AutoHide;
+            scroll.enabled = true;
+
+            // Added after the content is set: it reads the content and finds the mask when it initializes.
+            if (!scroll.TryGetComponent(out _enchantListEnsureVisible))
+            {
+                _enchantListEnsureVisible = scroll.gameObject.AddComponent<ScrollRectEnsureVisible>();
+            }
+        }
+
+        // Keeps the gamepad's row in view, the way the item and rune lists keep theirs.
+        private void ScrollToFocusedRow()
+        {
+            int focusIndex = _enchantmentColumn.GetFocusedIndex();
+            if (_enchantListEnsureVisible == null || !ZInput.IsGamepadActive() ||
+                focusIndex < 0 || focusIndex >= _enchantmentRows.Count)
+            {
+                return;
+            }
+
+            Toggle toggle = _enchantmentRows[focusIndex].Toggle;
+            if (toggle != null)
+            {
+                _enchantListEnsureVisible.CenterOnItem((RectTransform)toggle.transform);
+            }
+        }
+
+        // The Set Etch / Set Extract toggles are authored in the prefab next to the other modes. A bundle
+        // that predates them gets a clone of the extract toggle instead, so the modes still work before
+        // the asset bundle is rebuilt.
+        private void BindSetModeButtons()
+        {
+            _setEtchButton = FindOrCloneModeButton(SetEtchButtonName, "$mod_epicloot_rune_setetch");
+            _setExtractButton = FindOrCloneModeButton(SetExtractButtonName, "$mod_epicloot_rune_setextract");
+        }
+
+        private Toggle FindOrCloneModeButton(string buttonName, string labelToken)
+        {
+            Transform column = RuneExtractButton != null ? RuneExtractButton.transform.parent : null;
+            if (column == null)
+            {
+                return null;
+            }
+
+            Transform existing = column.Find(buttonName);
+            if (existing != null && existing.TryGetComponent(out Toggle authored))
+            {
+                return authored;
+            }
+
+            // The extract toggle rather than the etch one: it ships off, so the clone never joins the
+            // group switched on, which would fire a mode change in the middle of Awake.
+            GameObject clone = Instantiate(RuneExtractButton.gameObject, column);
+            clone.name = buttonName;
+            Transform hint = column.Find("Hint");
+            clone.transform.SetSiblingIndex(hint != null ? hint.GetSiblingIndex() : column.childCount - 1);
+
+            Toggle toggle = clone.GetComponent<Toggle>();
+            toggle.onValueChanged.RemoveAllListeners();
+            toggle.group = RuneExtractButton.group;
+            toggle.SetIsOnWithoutNotify(false);
+
+            // The panel root was localized before this tab woke, so the clone's label is set here.
+            foreach (TMP_Text label in clone.GetComponentsInChildren<TMP_Text>(true))
+            {
+                label.text = Localization.instance.Localize(labelToken);
+            }
+
+            // The column is a fixed-height vertical layout; give it room for one more row.
+            if (column is RectTransform columnRect && RuneExtractButton.transform is RectTransform templateRect)
+            {
+                float spacing = column.TryGetComponent(out VerticalLayoutGroup layout) ? layout.spacing : 0f;
+                columnRect.sizeDelta = new Vector2(columnRect.sizeDelta.x,
+                    columnRect.sizeDelta.y + templateRect.sizeDelta.y + spacing);
+            }
+
+            return toggle;
+        }
+
+        private void RegisterMode(Toggle toggle, RuneAction action)
+        {
+            if (toggle == null)
+            {
+                return;
+            }
+
+            toggle.onValueChanged.AddListener(isOn =>
+            {
+                if (isOn)
+                {
+                    SelectMode(action);
+                }
+            });
+            _modes.Add(new ModeToggle { Toggle = toggle, Action = action });
+        }
+
         [UsedImplicitly]
         public void OnEnable()
         {
-            RuneExtractButton.isOn = false;
-            RuneEtchButton.isOn = true;
-            EtchModeSelected(true);
+            // A config without any set has nothing to extract or etch, so its modes are not offered.
+            bool anySet = UniqueLegendaryHelper.AllSets.Count > 0;
+            if (_setEtchButton != null)
+            {
+                _setEtchButton.gameObject.SetActive(anySet);
+            }
+
+            if (_setExtractButton != null)
+            {
+                _setExtractButton.gameObject.SetActive(anySet);
+            }
+
+            foreach (ModeToggle mode in _modes)
+            {
+                mode.Toggle.SetIsOnWithoutNotify(mode.Toggle == RuneEtchButton);
+            }
+
+            SelectMode(RuneAction.Etch);
         }
 
         public override void Update()
@@ -228,21 +444,33 @@ namespace EpicLoot_UnityLib
 
             RefreshEnchantmentFocus();
 
+            if (_focusScrollRequestFrame >= 0 && Time.frameCount > _focusScrollRequestFrame)
+            {
+                _focusScrollRequestFrame = -1;
+                ScrollToFocusedRow();
+            }
+
             if (!_locked && ZInput.IsGamepadActive() && ZInput.GetButtonDown("JoyButtonY"))
             {
                 ZInput.ResetButtonStatus("JoyButtonY");
-
-                // Named rather than cycled through the ToggleGroup: it also holds ModeImbueButton, which the
-                // prefab ships deactivated.
-                if (_runeAction == RuneAction.Etch)
-                {
-                    RuneExtractButton.isOn = true;
-                }
-                else
-                {
-                    RuneEtchButton.isOn = true;
-                }
+                CycleMode();
             }
+        }
+
+        // Steps through the registered modes rather than the ToggleGroup: the group also holds
+        // ModeImbueButton, which the prefab ships deactivated, and the set modes may be hidden.
+        private void CycleMode()
+        {
+            List<ModeToggle> available = _modes
+                .Where(x => x.Toggle.gameObject.activeInHierarchy && x.Toggle.interactable)
+                .ToList();
+            if (available.Count == 0)
+            {
+                return;
+            }
+
+            int current = available.FindIndex(x => x.Action == _runeAction);
+            available[(current + 1) % available.Count].Toggle.isOn = true;
         }
 
         // The gamepad's A is bound to Unity's Submit axis as well as to JoyButtonA, so any toggle left
@@ -345,41 +573,157 @@ namespace EpicLoot_UnityLib
                 return;
             }
 
-            // Set the enchantments to be selected based on the enchantments on this item
-            List<Tuple<string, bool>> info = EnchantingUIController.GetEnchantmentEffects(_selectedItem, true);
-            RefreshSelectableEnchantments();
-            UpdateDisplayAvailableOverwriteEnchantments(); //TODO remove?
-
-            // Set enchantment list to the enchantments of the selected item
-            Tuple<float, float> featureValues =
-                EnchantingTableUI.instance.SourceTable.GetFeatureCurrentValue(EnchantingFeature.Rune);
-
-            float costReduction = GetCostReduction(featureValues.Item1);
-
-            CostLabel.enabled = true;
-            List<InventoryItemListElement> cost;
-
-            if (_runeAction == RuneAction.Extract)
+            if (IsSetMode)
             {
-                cost = EnchantingUIController.GetRuneExtractCost(_selectedItem, _selectedRarity, costReduction);
-            }
-            else if (_runeAction == RuneAction.Etch)
-            {
-                cost = EnchantingUIController.GetRuneEtchCost(_selectedItem, _selectedRarity, costReduction);
+                // Set modes have no effect to pick: the middle column previews the set instead.
+                if (_runeAction == RuneAction.SetEtch)
+                {
+                    RefreshSetRunes();
+                }
+
+                RefreshSetPreview();
             }
             else
             {
-                cost = new List<InventoryItemListElement>();
+                // Set the enchantments to be selected based on the enchantments on this item
+                RefreshSelectableEnchantments();
+                UpdateDisplayAvailableOverwriteEnchantments();
             }
 
-            CostList.SetItems(cost.Cast<IListElement>().ToList());
+            CostLabel.enabled = true;
+            CostList.SetItems(GetCostDisplay(GetCurrentCost(_selectedItem)));
 
             CheckIfActionDoable();
         }
 
+        private float GetCurrentCostReduction()
+        {
+            Tuple<float, float> featureValues =
+                EnchantingTableUI.instance.SourceTable.GetFeatureCurrentValue(EnchantingFeature.Rune);
+            return GetCostReduction(featureValues.Item1);
+        }
+
+        // What the current mode charges for the item, keyed on its rarity: the source's for an extract,
+        // the target's for an etch.
+        private List<InventoryItemListElement> GetCurrentCost(ItemDrop.ItemData item)
+        {
+            float costReduction = GetCurrentCostReduction();
+            switch (_runeAction)
+            {
+                case RuneAction.Extract:
+                    return EnchantingUIController.GetRuneExtractCost(item, _selectedRarity, costReduction);
+                case RuneAction.Etch:
+                    return EnchantingUIController.GetRuneEtchCost(item, _selectedRarity, costReduction);
+                case RuneAction.SetExtract:
+                    return EnchantingUIController.GetRuneSetExtractCost(item, _selectedRarity, costReduction);
+                case RuneAction.SetEtch:
+                    return EnchantingUIController.GetRuneSetEtchCost(item, _selectedRarity, costReduction);
+                default:
+                    return new List<InventoryItemListElement>();
+            }
+        }
+
+        // The cost grid: the materials, led in Set Etch by the set rune it consumes. The rune is shown
+        // only -- it is never part of the affordability check or the by-name payment, since it is taken
+        // as that exact item.
+        private List<IListElement> GetCostDisplay(List<InventoryItemListElement> cost)
+        {
+            List<IListElement> display = new List<IListElement>();
+            ItemDrop.ItemData rune = _runeAction == RuneAction.SetEtch ? GetSelectedRune() : null;
+            if (rune != null)
+            {
+                ItemDrop.ItemData shown = rune.Clone();
+                shown.m_stack = 1;
+                display.Add(new InventoryItemListElement { Item = shown });
+            }
+
+            display.AddRange(cost);
+            return display;
+        }
+
+        private ItemDrop.ItemData GetSelectedRune()
+        {
+            return AvailableRunes.GetSingleSelectedItem<InventoryItemListElement>()?.Item1.GetItem();
+        }
+
+        // Set Etch: the set runes the player owns that fit the selected item.
+        private void RefreshSetRunes()
+        {
+            List<InventoryItemListElement> runes = _selectedItem != null
+                ? EnchantingUIController.GetApplyableSetRunesForItem(_selectedItem)
+                : new List<InventoryItemListElement>();
+            AvailableRunes.SetItems(runes.Cast<IListElement>().ToList());
+        }
+
+        // The middle column in the set modes: read-only lines describing what the action will do.
+        private void RefreshSetPreview()
+        {
+            ClearEnchantmentList();
+            if (_selectedItem == null)
+            {
+                return;
+            }
+
+            string setColor = EpicLoot.EpicLoot.GetSetItemColor();
+            if (_runeAction == RuneAction.SetExtract)
+            {
+                if (!EnchantingUIController.TryGetSetExtractSource(_selectedItem, out LegendarySetInfo set))
+                {
+                    return;
+                }
+
+                MagicItem magicItem = _selectedItem.GetMagicItem();
+                AddInfoRow($"<color={setColor}>{set.Name}</color>");
+                AddInfoRow($"<color={magicItem.GetColorString()}>{_selectedItem.GetDisplayName()}</color>");
+            }
+            else if (_runeAction == RuneAction.SetEtch)
+            {
+                ItemDrop.ItemData rune = GetSelectedRune();
+                if (rune == null ||
+                    !EnchantingUIController.TryResolveSetEtch(_selectedItem, rune, out LegendarySetInfo set, out LegendaryInfo piece))
+                {
+                    AddInfoRow("<color=#c0c0c0ff>$mod_epicloot_rune_set_selectrune</color>");
+                    return;
+                }
+
+                AddInfoRow($"<color={setColor}>{set.Name}</color>");
+                AddInfoRow(Localization.instance.Localize("$mod_epicloot_rune_set_becomes",
+                    $"<color={EpicLoot.EpicLoot.GetRarityColor(_selectedRarity)}>{Localization.instance.Localize(piece.Name)}</color>"));
+            }
+        }
+
+        // One line of text in the enchantment column, built from the row prefab with its checkbox hidden.
+        // Not tracked in _enchantmentRows, so gamepad focus and Lock/Unlock never see it; ClearEnchantmentList
+        // still destroys it with everything else under EnchantList.
+        private void AddInfoRow(string text)
+        {
+            GameObject row = Instantiate(EnchantmentListPrefab, EnchantList);
+            if (row.TryGetComponent(out Toggle toggle))
+            {
+                toggle.onValueChanged.RemoveAllListeners();
+                toggle.group = null;
+                toggle.SetIsOnWithoutNotify(false);
+                toggle.interactable = false;
+                if (toggle.targetGraphic != null && toggle.targetGraphic.gameObject != row)
+                {
+                    toggle.targetGraphic.gameObject.SetActive(false);
+                }
+            }
+
+            TMP_Text label = row.GetComponentInChildren<TMP_Text>(true);
+            if (label != null)
+            {
+                label.richText = true;
+                label.text = Localization.instance.Localize(text);
+            }
+            EffectListRow.Fit(row, label);
+
+            row.SetActive(true);
+        }
+
         public void UpdateDisplayAvailableOverwriteEnchantments()
         {
-            if (_selectedItem == null || _runeAction == RuneAction.Extract || _selectedEnchantmentIndex <= -1)
+            if (_selectedItem == null || _runeAction != RuneAction.Etch || _selectedEnchantmentIndex <= -1)
             {
                 AvailableRunes.SetItems(new List<IListElement>());
                 MainButton.interactable = false;
@@ -404,6 +748,9 @@ namespace EpicLoot_UnityLib
             _enchantmentRows.Clear();
             _enchantmentColumn.ClampFocus();
             _selectedEnchantmentIndex = -1;
+
+            // Back to the top for the next item or mode.
+            EnchantList.anchoredPosition = new Vector2(EnchantList.anchoredPosition.x, 0f);
         }
 
         private void RefreshSelectableEnchantments()
@@ -433,6 +780,7 @@ namespace EpicLoot_UnityLib
                     enchantmentElement.text = effect.Item1;
                     MagicTextShimmer.Ensure(enchantmentElement);
                 }
+                EffectListRow.Fit(enchantmentListElement, enchantmentElement);
 
                 // Dimming the row was all that marked an effect with CanBeRunified off, and it could
                 // still be selected, extracted and overwritten. Same treatment as the augment tab.
@@ -452,6 +800,10 @@ namespace EpicLoot_UnityLib
 
             _enchantmentColumn.ClampFocus();
             RefreshEnchantmentFocus();
+
+            // ClampFocus keeps the old row index, which may now sit below the fold of a list that just
+            // went back to the top.
+            _focusScrollRequestFrame = Time.frameCount;
         }
 
         // Indexed off the tracked rows, not off EnchantList: a rebuild leaves the previous rows parented
@@ -502,29 +854,89 @@ namespace EpicLoot_UnityLib
 
         public void ExtractModeSelected(bool enabled)
         {
-            _runeAction = RuneAction.Extract;
-            RefreshMainButtonLabel();
-            Warning.text = Localization.instance.Localize(EnchantingUIController.GetRuneExtractWarningKey());
+            if (enabled)
+            {
+                SelectMode(RuneAction.Extract);
+            }
+        }
 
-            // Deselect runes and clear them
-            AvailableRunesWindow.SetActive(false);
+        public void EtchModeSelected(bool enabled)
+        {
+            if (enabled)
+            {
+                SelectMode(RuneAction.Etch);
+            }
+        }
+
+        private void SelectMode(RuneAction action)
+        {
+            _runeAction = action;
+            RefreshMainButtonLabel();
+            Warning.text = Localization.instance.Localize(GetWarningKey(action));
+
+            // The rune column is only for the two etches; whatever it held belongs to the previous mode.
+            AvailableRunesWindow.SetActive(action == RuneAction.Etch || action == RuneAction.SetEtch);
             if (AvailableRunes.GetItemCount() > 0)
             {
                 AvailableRunes.SetItems(new List<IListElement>());
             }
 
-            NewModeSelected(enabled);
+            RefreshColumnHeaders();
+            NewModeSelected(true);
         }
 
-        public void EtchModeSelected(bool enabled)
+        private static string GetWarningKey(RuneAction action)
         {
-            _runeAction = RuneAction.Etch;
-            RefreshMainButtonLabel();
-            Warning.text = Localization.instance.Localize("$mod_epicloot_rune_etch_warning");
+            switch (action)
+            {
+                case RuneAction.Extract:
+                    return EnchantingUIController.GetRuneExtractWarningKey();
+                case RuneAction.SetExtract:
+                    return EnchantingUIController.GetRuneSetExtractWarningKey();
+                case RuneAction.SetEtch:
+                    return "$mod_epicloot_rune_setetch_warning";
+                case RuneAction.Etch:
+                default:
+                    return "$mod_epicloot_rune_etch_warning";
+            }
+        }
 
-            AvailableRunesWindow.SetActive(true);
+        private void RefreshColumnHeaders()
+        {
+            switch (_runeAction)
+            {
+                case RuneAction.SetExtract:
+                    SetHeader(_enchantHeader, _enchantHeaderDefault, "$mod_epicloot_rune_set_preview");
+                    break;
+                case RuneAction.SetEtch:
+                    SetHeader(_enchantHeader, _enchantHeaderDefault, "$mod_epicloot_rune_set_result");
+                    SetHeader(_runesHeader, _runesHeaderDefault, "$mod_epicloot_rune_set_runes_header");
+                    break;
+                default:
+                    SetHeader(_enchantHeader, _enchantHeaderDefault, null);
+                    SetHeader(_runesHeader, _runesHeaderDefault, null);
+                    break;
+            }
+        }
 
-            NewModeSelected(enabled);
+        // A null token puts back what the prefab shipped. Auga upper-cases these titles, so a replacement
+        // follows the shipped text's casing.
+        private static void SetHeader(TMP_Text header, string shipped, string token)
+        {
+            if (header == null)
+            {
+                return;
+            }
+
+            if (token == null)
+            {
+                header.text = shipped;
+                return;
+            }
+
+            string text = Localization.instance.Localize(token);
+            bool upperCase = !string.IsNullOrEmpty(shipped) && shipped.Any(char.IsLetter) && shipped == shipped.ToUpperInvariant();
+            header.text = upperCase ? text.ToUpperInvariant() : text;
         }
 
         private void NewModeSelected(bool enabled)
@@ -587,18 +999,39 @@ namespace EpicLoot_UnityLib
             ItemDrop.ItemData item = selectedItem.Item1.GetItem();
 
             // Everything below acts on the selection as it stands when the countdown ends, so check it
-            // still describes an item the player holds and an effect the rune tab may touch (and the
-            // one the cost was shown for).
-            if (item != _selectedItem || !InventoryManagement.Instance.GetAllItems().Contains(item) ||
-                !EnchantingUIController.CanRunifyEffect(item.GetMagicItem(), _selectedEnchantmentIndex))
+            // still describes an item the player holds (somewhere that saves the change, for a mode that
+            // rewrites it) and, for the effect modes, an effect the rune tab may touch (and the one the
+            // cost was shown for). The set modes re-check their own rules.
+            bool stillHeld = EditsSelectedItem()
+                ? InventoryManagement.Instance.IsEditable(item)
+                : InventoryManagement.Instance.GetAllItems().Contains(item);
+            if (item != _selectedItem || !stillHeld ||
+                (!IsSetMode && !EnchantingUIController.CanRunifyEffect(item.GetMagicItem(), _selectedEnchantmentIndex)))
             {
-                AbortMainAction("the selected item or enchantment is no longer valid");
+                AbortMainAction("the selected item or enchantment is no longer valid", unavailable: stillHeld ? null : item);
                 return;
             }
 
-            bool completed = _runeAction == RuneAction.Extract
-                ? ExtractSelectedEnchantment(item, costReduction, powerModifier)
-                : _runeAction == RuneAction.Etch && EtchSelectedRune(item, costReduction);
+            bool completed;
+            switch (_runeAction)
+            {
+                case RuneAction.Extract:
+                    completed = ExtractSelectedEnchantment(item, costReduction, powerModifier);
+                    break;
+                case RuneAction.Etch:
+                    completed = EtchSelectedRune(item, costReduction);
+                    break;
+                case RuneAction.SetExtract:
+                    completed = ExtractSelectedSet(item, costReduction);
+                    break;
+                case RuneAction.SetEtch:
+                    completed = EtchSelectedSetRune(item, costReduction);
+                    break;
+                default:
+                    completed = false;
+                    break;
+            }
+
             if (!completed)
             {
                 return;
@@ -614,6 +1047,13 @@ namespace EpicLoot_UnityLib
 
         private bool ExtractSelectedEnchantment(ItemDrop.ItemData item, float costReduction, float powerModifier)
         {
+            // Favorited while the table was open. Only the modes that keep the item may still extract.
+            if (EnchantingUIController.GetRuneExtractMode() != RuneExtractMode.KeepItem && ItemFavorites.IsProtected(item))
+            {
+                AbortMainAction("the item is favorited");
+                return false;
+            }
+
             List<InventoryItemListElement> cost = EnchantingUIController.GetRuneExtractCost(item, _selectedRarity, costReduction);
             ItemDrop.ItemData RuneWithEnchant = EnchantingUIController.BuildEnchantedRune(item, _selectedEnchantmentIndex, powerModifier);
 
@@ -697,10 +1137,11 @@ namespace EpicLoot_UnityLib
         {
             ItemDrop.ItemData rune = AvailableRunes.GetSingleSelectedItem<InventoryItemListElement>()?.Item1.GetItem();
             string targetEffect = EnchantingUIController.GetSelectedEnchantmentNameByIndex(item, _selectedEnchantmentIndex);
-            if (rune == null || rune == item || !InventoryManagement.Instance.GetAllItems().Contains(rune) ||
+            bool runeHeld = rune != null && InventoryManagement.Instance.GetAllItems().Contains(rune);
+            if (!runeHeld || rune == item ||
                 !EnchantingUIController.GetApplyableRunesforItem(item, targetEffect).Any(x => x.GetItem() == rune))
             {
-                AbortMainAction("the selected rune is no longer available for this enchantment");
+                AbortMainAction("the selected rune is no longer available for this enchantment", unavailable: runeHeld ? null : rune);
                 return false;
             }
 
@@ -747,16 +1188,143 @@ namespace EpicLoot_UnityLib
             return true;
         }
 
+        // Turns the item's set into a set rune. The same order as an effect extract: everything that can
+        // fail is checked, and a destroyed item is taken, before anything is charged or handed out.
+        private bool ExtractSelectedSet(ItemDrop.ItemData item, float costReduction)
+        {
+            // Favorited while the table was open; every set extract mode strips or destroys the item.
+            if (ItemFavorites.IsProtected(item))
+            {
+                AbortMainAction("the item is favorited");
+                return false;
+            }
+
+            List<InventoryItemListElement> cost = EnchantingUIController.GetRuneSetExtractCost(item, _selectedRarity, costReduction);
+            ItemDrop.ItemData setRune = EnchantingUIController.BuildSetRune(item);
+            if (setRune == null)
+            {
+                AbortMainAction("the item is no longer a piece of a known set, or the set rune could not be built");
+                return false;
+            }
+
+            Player player = Player.m_localPlayer;
+            bool noCost = player.NoCostCheat();
+            if (!noCost && !LocalPlayerCanAffordCost(cost))
+            {
+                AbortMainAction("the cost can no longer be paid", missingRequirements: true);
+                return false;
+            }
+
+            RuneSetExtractMode mode = EnchantingUIController.GetRuneSetExtractMode();
+            List<InventoryItemListElement> reclaimedSockets = null;
+            if (mode == RuneSetExtractMode.DestroyItem)
+            {
+                // Socketed stones that are not Locked go back to the player, as for a destroying extract.
+                if (item.IsMagic(out MagicItem extractedMagicItem) && extractedMagicItem.Sockets.Count > 0)
+                {
+                    reclaimedSockets = EnchantingUIController.ReclaimSockets(extractedMagicItem);
+                }
+
+                if (player.IsItemEquiped(item))
+                {
+                    player.UnequipItem(item, false);
+                }
+
+                if (InventoryManagement.Instance.RemoveExactItem(item, 1) < 1)
+                {
+                    AbortMainAction("the item could not be removed");
+                    return false;
+                }
+            }
+
+            if (!noCost)
+            {
+                foreach (InventoryItemListElement costElement in cost)
+                {
+                    InventoryManagement.Instance.RemoveItem(costElement.GetItem());
+                }
+            }
+
+            if (mode == RuneSetExtractMode.StripSet)
+            {
+                EnchantingUIController.StripSetAfterExtract(item);
+            }
+
+            if (reclaimedSockets != null)
+            {
+                GiveItemsToPlayer(reclaimedSockets);
+            }
+
+            InventoryManagement.Instance.GiveItem(setRune);
+            return true;
+        }
+
+        // Makes the item a piece of the selected set rune's set. Worked out on a copy first; the rune and
+        // then the cost are taken, and only then is the result written, as for an effect etch.
+        private bool EtchSelectedSetRune(ItemDrop.ItemData item, float costReduction)
+        {
+            ItemDrop.ItemData rune = GetSelectedRune();
+            bool runeHeld = rune != null && InventoryManagement.Instance.GetAllItems().Contains(rune);
+            if (!runeHeld || rune == item ||
+                !EnchantingUIController.GetApplyableSetRunesForItem(item).Any(x => x.GetItem() == rune))
+            {
+                AbortMainAction("the selected set rune is no longer available for this item", unavailable: runeHeld ? null : rune);
+                return false;
+            }
+
+            // The configured materials; the rune itself is taken below as that exact item.
+            List<InventoryItemListElement> cost = EnchantingUIController.GetRuneSetEtchCost(item, _selectedRarity, costReduction);
+            bool noCost = Player.m_localPlayer.NoCostCheat();
+            if (!noCost && !LocalPlayerCanAffordCost(cost))
+            {
+                AbortMainAction("the cost can no longer be paid", missingRequirements: true);
+                return false;
+            }
+
+            MagicItem etched = EnchantingUIController.BuildSetEtchResult(item, rune);
+            if (etched == null)
+            {
+                AbortMainAction("the set rune no longer fits this item");
+                return false;
+            }
+
+            if (InventoryManagement.Instance.RemoveExactItem(rune, 1) < 1)
+            {
+                AbortMainAction("the set rune could not be removed");
+                return false;
+            }
+
+            if (!noCost)
+            {
+                foreach (InventoryItemListElement costElement in cost)
+                {
+                    InventoryManagement.Instance.RemoveItem(costElement.GetItem());
+                }
+            }
+
+            EnchantingUIController.ApplySetEtch(item, etched);
+
+            if (_successDialog != null)
+            {
+                Destroy(_successDialog);
+            }
+
+            _successDialog = EnchantingUIController.ShowRuneEtchSuccessDialog(item);
+            _successDialog.SetActive(true);
+            return true;
+        }
+
         // A main action that could not go ahead: nothing was taken or changed. The panel is already
         // unlocked (DoMainAction cancels first); rebuild the lists so they show what is really there
         // now, and let the button state follow the fresh selection.
-        private void AbortMainAction(string reason, bool missingRequirements = false)
+        private void AbortMainAction(string reason, bool missingRequirements = false, ItemDrop.ItemData unavailable = null)
         {
-            Debug.LogWarning($"[Rune] {(_runeAction == RuneAction.Etch ? "Etch" : "Extract")} cancelled: {reason}.");
+            Debug.LogWarning($"[Rune] {_runeAction} cancelled: {reason}.");
             if (missingRequirements)
             {
                 Player.m_localPlayer?.Message(MessageHud.MessageType.Center, "$msg_missingrequirement");
             }
+            NotifyItemsUnavailable(unavailable);
             RefreshAvailableItems();
             _selectedEnchantmentIndex = -1;
             CostList.SetItems(new List<IListElement>());
@@ -768,9 +1336,21 @@ namespace EpicLoot_UnityLib
         // "$mod_epicloot_rune_slot" label, so every finished action relabelled the button "Apply Rune".
         private void RefreshMainButtonLabel()
         {
-            SetMainButtonLabel(_runeAction == RuneAction.Extract
-                ? "$mod_epicloot_rune_extract"
-                : "$mod_epicloot_rune_etch");
+            switch (_runeAction)
+            {
+                case RuneAction.Extract:
+                    SetMainButtonLabel("$mod_epicloot_rune_extract");
+                    break;
+                case RuneAction.SetExtract:
+                    SetMainButtonLabel("$mod_epicloot_rune_setextract_action");
+                    break;
+                case RuneAction.SetEtch:
+                    SetMainButtonLabel("$mod_epicloot_rune_setetch_action");
+                    break;
+                default:
+                    SetMainButtonLabel("$mod_epicloot_rune_etch");
+                    break;
+            }
         }
 
         private void SetMainButtonLabel(string token)
@@ -790,21 +1370,35 @@ namespace EpicLoot_UnityLib
         public void RefreshAvailableItems()
         {
             List<InventoryItemListElement> items;
-            if (_runeAction == RuneAction.Extract)
+            switch (_runeAction)
             {
-                items = EnchantingUIController.GetRuneExtractItems();
-            }
-            else if (_runeAction == RuneAction.Etch)
-            {
-                items = EnchantingUIController.GetRuneEtchItems();
-            }
-            else
-            {
-                items = new List<InventoryItemListElement>();
+                case RuneAction.Extract:
+                    items = EnchantingUIController.GetRuneExtractItems();
+                    break;
+                case RuneAction.Etch:
+                    items = EnchantingUIController.GetRuneEtchItems();
+                    break;
+                case RuneAction.SetExtract:
+                    items = EnchantingUIController.GetRuneSetExtractItems();
+                    break;
+                case RuneAction.SetEtch:
+                    items = EnchantingUIController.GetRuneSetEtchItems();
+                    break;
+                default:
+                    items = new List<InventoryItemListElement>();
+                    break;
             }
 
             AvailableItems.SetItems(items.Cast<IListElement>().ToList());
-            RefreshSelectableEnchantments();
+            if (IsSetMode)
+            {
+                ClearEnchantmentList();
+            }
+            else
+            {
+                RefreshSelectableEnchantments();
+            }
+
             AvailableItems.DeselectAll();
             OnSelectedItemsChanged();
         }
@@ -822,59 +1416,81 @@ namespace EpicLoot_UnityLib
             else
             {
                 ClearEnchantmentList();
+                if (IsSetMode)
+                {
+                    // Nothing selected, nothing to preview or pay for.
+                    _selectedItem = null;
+                    CostList.SetItems(new List<IListElement>());
+                    AvailableRunes.SetItems(new List<IListElement>());
+                    MainButton.interactable = false;
+                }
             }
         }
 
         protected void OnSelectedOverrideRuneChanged()
         {
-            Tuple<InventoryItemListElement, int> rune = AvailableRunes.GetSingleSelectedItem<InventoryItemListElement>();
-            if (rune?.Item1.GetItem() != null)
+            if (_runeAction == RuneAction.SetEtch)
             {
-                _selectedOverrideRune = rune.Item1.GetItem();
-                CheckIfActionDoable();
+                RefreshSetPreview();
             }
-            else
-            {
-                _selectedOverrideRune = null;
-            }
+
+            // Also on a deselect, which used to leave the button enabled for a rune no longer chosen.
+            CheckIfActionDoable();
         }
 
         private void CheckIfActionDoable()
         {
-            bool state = true;
+            MainButton.interactable = IsActionDoable();
+        }
 
-            if (_selectedItem == null || _selectedEnchantmentIndex == -1 ||
-                !EnchantingUIController.CanRunifyEffect(_selectedItem.GetMagicItem(), _selectedEnchantmentIndex))
+        private bool IsActionDoable()
+        {
+            if (_selectedItem == null)
             {
-                state = false;
-                MainButton.interactable = false;
-                return;
+                return false;
             }
 
-            // Check costs, ignored if nocost mode
-            Tuple<float, float> featureValues = EnchantingTableUI.instance.SourceTable.GetFeatureCurrentValue(EnchantingFeature.Rune);
-            float costReduction = GetCostReduction(featureValues.Item1);
-
-            if (_runeAction == RuneAction.Etch)
+            switch (_runeAction)
             {
-                List<InventoryItemListElement> cost = EnchantingUIController.GetRuneEtchCost(_selectedItem, _selectedRarity, costReduction);
-                CostList.SetItems(cost.Cast<IListElement>().ToList());
-                state = LocalPlayerCanAffordRuneCost(cost);
+                case RuneAction.Extract:
+                case RuneAction.Etch:
+                    if (_selectedEnchantmentIndex == -1 ||
+                        !EnchantingUIController.CanRunifyEffect(_selectedItem.GetMagicItem(), _selectedEnchantmentIndex))
+                    {
+                        return false;
+                    }
+                    break;
+                case RuneAction.SetExtract:
+                    if (!EnchantingUIController.TryGetSetExtractSource(_selectedItem, out _))
+                    {
+                        return false;
+                    }
+                    break;
+            }
 
-                if (_selectedOverrideRune == null)
+            // Shown before the rune check, so selecting or clearing a Set Etch rune updates the grid.
+            List<InventoryItemListElement> cost = GetCurrentCost(_selectedItem);
+            CostList.SetItems(GetCostDisplay(cost));
+
+            if (_runeAction == RuneAction.Etch || _runeAction == RuneAction.SetEtch)
+            {
+                // Read from the list rather than a cached field: SetItems drops the selection without
+                // raising the list's change event.
+                ItemDrop.ItemData rune = GetSelectedRune();
+                if (rune == null)
                 {
-                    // Etching but does not have an override rune selected
-                    state = false;
+                    return false;
+                }
+
+                if (_runeAction == RuneAction.SetEtch &&
+                    !EnchantingUIController.TryResolveSetEtch(_selectedItem, rune, out _, out _))
+                {
+                    return false;
                 }
             }
-            else if (_runeAction == RuneAction.Extract)
-            {
-                List<InventoryItemListElement> cost = EnchantingUIController.GetRuneExtractCost(_selectedItem, _selectedRarity, costReduction);
-                CostList.SetItems(cost.Cast<IListElement>().ToList());
-                state = LocalPlayerCanAffordRuneCost(cost);
-            }
 
-            MainButton.interactable = state;
+            // Ignored in no-cost mode.
+            return LocalPlayerCanAffordRuneCost(cost);
         }
 
         internal static float GetCostReduction(float value)
@@ -908,8 +1524,11 @@ namespace EpicLoot_UnityLib
         {
             base.Lock();
 
-            RuneExtractButton.interactable = false;
-            RuneEtchButton.interactable = false;
+            foreach (ModeToggle mode in _modes)
+            {
+                mode.Toggle.interactable = false;
+            }
+
             MainButton.interactable = false;
 
             // The countdown acts on _selectedEnchantmentIndex when it ends; changing the row mid-way
@@ -927,8 +1546,10 @@ namespace EpicLoot_UnityLib
         {
             base.Unlock();
 
-            RuneExtractButton.interactable = true;
-            RuneEtchButton.interactable = true;
+            foreach (ModeToggle mode in _modes)
+            {
+                mode.Toggle.interactable = true;
+            }
 
             foreach (EnchantmentRow row in _enchantmentRows)
             {

@@ -2,18 +2,24 @@
 using JetBrains.Annotations;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 
 namespace EpicLoot;
 
 public static partial class API
 {
+    /// <param name="type">A rarity name (or ordinal). It is the rarity the unique rolls at when the json
+    /// carries no "Rarities" list of its own.</param>
+    /// <param name="json">Serialized LegendaryInfo</param>
+    /// <returns>A key for <see cref="UpdateLegendaryItem"/>, or null on failure</returns>
     [PublicAPI]
     public static string AddLegendaryItem(string type, string json)
     {
         try
         {
-            if (!Enum.TryParse(type, true, out ItemRarity rarity))
+            if (!TryParseRarity(type, out ItemRarity rarity))
             {
+                OnError?.Invoke($"AddLegendaryItem: unknown rarity '{type}'.");
                 return null;
             }
 
@@ -24,19 +30,8 @@ public static partial class API
                 return null;
             }
 
-            switch (rarity)
-            {
-                case ItemRarity.Legendary:
-                    UniqueLegendaryHelper.Config.LegendaryItems.Add(config);
-                    UniqueLegendaryHelper.LegendaryInfo[config.ID] = config;
-                    break;
-                case ItemRarity.Mythic:
-                    UniqueLegendaryHelper.Config.MythicItems.Add(config);
-                    UniqueLegendaryHelper.MythicInfo[config.ID] = config;
-                    break;
-            }
-
-            ExternalLegendaryItems.AddOrSet(rarity, config);
+            UniqueLegendaryHelper.RegisterUnique(config, rarity);
+            ExternalLegendaryItems.Add(config);
             return RuntimeRegistry.Register(config);
         }
         catch
@@ -62,7 +57,15 @@ public static partial class API
                 return false;
             }
 
+            List<ItemRarity> rarities = legendaryInfo.Rarities;
             legendaryInfo.CopyFieldsFrom(config);
+            // An update that does not mention rarities keeps the ones the unique was registered with.
+            if (legendaryInfo.Rarities == null || legendaryInfo.Rarities.Count == 0)
+            {
+                legendaryInfo.Rarities = rarities;
+            }
+
+            UniqueLegendaryHelper.RefreshDerived();
             return true;
         }
         catch
@@ -72,13 +75,18 @@ public static partial class API
         }
     }
 
+    /// <param name="type">A rarity name (or ordinal). It is the rarity the set's pieces roll at when the
+    /// json carries no "Rarities" list of its own.</param>
+    /// <param name="json">Serialized LegendarySetInfo</param>
+    /// <returns>A key for <see cref="UpdateLegendarySet"/>, or null on failure</returns>
     [PublicAPI]
     public static string AddLegendarySet(string type, string json)
     {
         try
         {
-            if (!Enum.TryParse(type, true, out ItemRarity rarity))
+            if (!TryParseRarity(type, out ItemRarity rarity))
             {
+                OnError?.Invoke($"AddLegendarySet: unknown rarity '{type}'.");
                 return null;
             }
 
@@ -89,27 +97,8 @@ public static partial class API
                 return null;
             }
 
-            switch (rarity)
-            {
-                case ItemRarity.Legendary:
-                    UniqueLegendaryHelper.LegendarySets[config.ID] = config;
-                    UniqueLegendaryHelper.Config.LegendarySets.Add(config);
-                    foreach (var name in config.LegendaryIDs)
-                    {
-                        UniqueLegendaryHelper.LegendaryItemsToSetMap[name] = config;
-                    }
-                    break;
-                case ItemRarity.Mythic:
-                    UniqueLegendaryHelper.MythicSets[config.ID] = config;
-                    UniqueLegendaryHelper.Config.MythicSets.Add(config);
-                    foreach (var name in config.LegendaryIDs)
-                    {
-                        UniqueLegendaryHelper.MythicItemsToSetMap[name] = config;
-                    }
-                    break;
-            }
-
-            ExternalLegendarySets.AddOrSet(rarity, config);
+            UniqueLegendaryHelper.RegisterSet(config, rarity);
+            ExternalLegendarySets.Add(config);
             return RuntimeRegistry.Register(config);
         }
         catch
@@ -135,7 +124,15 @@ public static partial class API
                 return false;
             }
 
+            List<ItemRarity> rarities = legendarySetInfo.Rarities;
             legendarySetInfo.CopyFieldsFrom(config);
+            if (legendarySetInfo.Rarities == null || legendarySetInfo.Rarities.Count == 0)
+            {
+                legendarySetInfo.Rarities = rarities;
+            }
+
+            // Rebuilds the piece-to-set map, so a changed LegendaryIDs list takes effect immediately.
+            UniqueLegendaryHelper.RefreshDerived();
             return true;
         }
         catch
@@ -143,5 +140,10 @@ public static partial class API
             OnError?.Invoke("Failed to parse legendary set from external plugin");
             return false;
         }
+    }
+
+    private static bool TryParseRarity(string type, out ItemRarity rarity)
+    {
+        return Enum.TryParse(type, true, out rarity) && Enum.IsDefined(typeof(ItemRarity), rarity);
     }
 }

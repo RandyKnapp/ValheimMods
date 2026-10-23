@@ -2118,6 +2118,442 @@
       ]
     }
   ],
+  "RuneSetExtractCosts": [
+    {
+      "ItemTypes": [
+        "OneHandedWeapon",
+        "Bow",
+        "TwoHandedWeapon",
+        "TwoHandedWeaponLeft",
+        "Torch",
+        "Tool",
+        "Shield",
+        "Helmet",
+        "Chest",
+        "Legs",
+        "Shoulder",
+        "Utility",
+        "Trinket",
+        "None",
+        "Misc"
+      ],
+      "Rarity": "Magic",
+      "Cost": [
+        {
+          "Item": "RunestoneMagic",
+          "Amount": 1
+        },
+        {
+          "Item": "DustMagic",
+          "Amount": 10
+        },
+        {
+          "Item": "ShardMagic",
+          "Amount": 5
+        },
+        {
+          "Item": "IronBountyToken",
+          "Amount": 5
+        }
+      ]
+    },
+    {
+      "ItemTypes": [
+        "OneHandedWeapon",
+        "Bow",
+        "TwoHandedWeapon",
+        "TwoHandedWeaponLeft",
+        "Torch",
+        "Tool",
+        "Shield",
+        "Helmet",
+        "Chest",
+        "Legs",
+        "Shoulder",
+        "Utility",
+        "Trinket",
+        "None",
+        "Misc"
+      ],
+      "Rarity": "Rare",
+      "Cost": [
+        {
+          "Item": "RunestoneRare",
+          "Amount": 1
+        },
+        {
+          "Item": "DustRare",
+          "Amount": 10
+        },
+        {
+          "Item": "ShardRare",
+          "Amount": 5
+        },
+        {
+          "Item": "IronBountyToken",
+          "Amount": 8
+        }
+      ]
+    },
+    {
+      "ItemTypes": [
+        "OneHandedWeapon",
+        "Bow",
+        "TwoHandedWeapon",
+        "TwoHandedWeaponLeft",
+        "Torch",
+        "Tool",
+        "Shield",
+        "Helmet",
+        "Chest",
+        "Legs",
+        "Shoulder",
+        "Utility",
+        "Trinket",
+        "None",
+        "Misc"
+      ],
+      "Rarity": "Epic",
+      "Cost": [
+        {
+          "Item": "RunestoneEpic",
+          "Amount": 1
+        },
+        {
+          "Item": "DustEpic",
+          "Amount": 10
+        },
+        {
+          "Item": "ShardEpic",
+          "Amount": 5
+        },
+        {
+          "Item": "IronBountyToken",
+          "Amount": 12
+        }
+      ]
+    },
+    {
+      "ItemTypes": [
+        "OneHandedWeapon",
+        "Bow",
+        "TwoHandedWeapon",
+        "TwoHandedWeaponLeft",
+        "Torch",
+        "Tool",
+        "Shield",
+        "Helmet",
+        "Chest",
+        "Legs",
+        "Shoulder",
+        "Utility",
+        "Trinket",
+        "None",
+        "Misc"
+      ],
+      "Rarity": "Legendary",
+      "Cost": [
+        {
+          "Item": "RunestoneLegendary",
+          "Amount": 1
+        },
+        {
+          "Item": "DustLegendary",
+          "Amount": 10
+        },
+        {
+          "Item": "ShardLegendary",
+          "Amount": 5
+        },
+        {
+          "Item": "GoldBountyToken",
+          "Amount": 3
+        }
+      ]
+    },
+    {
+      "ItemTypes": [
+        "OneHandedWeapon",
+        "Bow",
+        "TwoHandedWeapon",
+        "TwoHandedWeaponLeft",
+        "Torch",
+        "Tool",
+        "Shield",
+        "Helmet",
+        "Chest",
+        "Legs",
+        "Shoulder",
+        "Utility",
+        "Trinket",
+        "None",
+        "Misc"
+      ],
+      "Rarity": "Mythic",
+      "Cost": [
+        {
+          "Item": "RunestoneMythic",
+          "Amount": 1
+        },
+        {
+          "Item": "DustMythic",
+          "Amount": 10
+        },
+        {
+          "Item": "ShardMythic",
+          "Amount": 5
+        },
+        {
+          "Item": "GoldBountyToken",
+          "Amount": 5
+        }
+      ]
+    },
+    {
+      "ItemTypes": [
+        "OneHandedWeapon",
+        "Bow",
+        "TwoHandedWeapon",
+        "TwoHandedWeaponLeft",
+        "Torch",
+        "Tool",
+        "Shield",
+        "Helmet",
+        "Chest",
+        "Legs",
+        "Shoulder",
+        "Utility",
+        "Trinket",
+        "None",
+        "Misc"
+      ],
+      "Rarity": "Ancient",
+      "Cost": [
+        {
+          "Item": "RunestoneAncient",
+          "Amount": 1
+        },
+        {
+          "Item": "DustAncient",
+          "Amount": 10
+        },
+        {
+          "Item": "ShardAncient",
+          "Amount": 5
+        },
+        {
+          "Item": "GoldBountyToken",
+          "Amount": 8
+        }
+      ]
+    }
+  ],
+  "RuneSetEtchCosts": [
+    {
+      "ItemTypes": [
+        "OneHandedWeapon",
+        "Bow",
+        "TwoHandedWeapon",
+        "TwoHandedWeaponLeft",
+        "Torch",
+        "Tool",
+        "Shield",
+        "Helmet",
+        "Chest",
+        "Legs",
+        "Shoulder",
+        "Utility",
+        "Trinket",
+        "None",
+        "Misc"
+      ],
+      "Rarity": "Magic",
+      "Cost": [
+        {
+          "Item": "EssenceMagic",
+          "Amount": 10
+        },
+        {
+          "Item": "ReagentMagic",
+          "Amount": 10
+        },
+        {
+          "Item": "IronBountyToken",
+          "Amount": 8
+        }
+      ]
+    },
+    {
+      "ItemTypes": [
+        "OneHandedWeapon",
+        "Bow",
+        "TwoHandedWeapon",
+        "TwoHandedWeaponLeft",
+        "Torch",
+        "Tool",
+        "Shield",
+        "Helmet",
+        "Chest",
+        "Legs",
+        "Shoulder",
+        "Utility",
+        "Trinket",
+        "None",
+        "Misc"
+      ],
+      "Rarity": "Rare",
+      "Cost": [
+        {
+          "Item": "EssenceRare",
+          "Amount": 10
+        },
+        {
+          "Item": "ReagentRare",
+          "Amount": 10
+        },
+        {
+          "Item": "IronBountyToken",
+          "Amount": 12
+        }
+      ]
+    },
+    {
+      "ItemTypes": [
+        "OneHandedWeapon",
+        "Bow",
+        "TwoHandedWeapon",
+        "TwoHandedWeaponLeft",
+        "Torch",
+        "Tool",
+        "Shield",
+        "Helmet",
+        "Chest",
+        "Legs",
+        "Shoulder",
+        "Utility",
+        "Trinket",
+        "None",
+        "Misc"
+      ],
+      "Rarity": "Epic",
+      "Cost": [
+        {
+          "Item": "EssenceEpic",
+          "Amount": 10
+        },
+        {
+          "Item": "ReagentEpic",
+          "Amount": 10
+        },
+        {
+          "Item": "IronBountyToken",
+          "Amount": 16
+        }
+      ]
+    },
+    {
+      "ItemTypes": [
+        "OneHandedWeapon",
+        "Bow",
+        "TwoHandedWeapon",
+        "TwoHandedWeaponLeft",
+        "Torch",
+        "Tool",
+        "Shield",
+        "Helmet",
+        "Chest",
+        "Legs",
+        "Shoulder",
+        "Utility",
+        "Trinket",
+        "None",
+        "Misc"
+      ],
+      "Rarity": "Legendary",
+      "Cost": [
+        {
+          "Item": "EssenceLegendary",
+          "Amount": 10
+        },
+        {
+          "Item": "ReagentLegendary",
+          "Amount": 10
+        },
+        {
+          "Item": "GoldBountyToken",
+          "Amount": 5
+        }
+      ]
+    },
+    {
+      "ItemTypes": [
+        "OneHandedWeapon",
+        "Bow",
+        "TwoHandedWeapon",
+        "TwoHandedWeaponLeft",
+        "Torch",
+        "Tool",
+        "Shield",
+        "Helmet",
+        "Chest",
+        "Legs",
+        "Shoulder",
+        "Utility",
+        "Trinket",
+        "None",
+        "Misc"
+      ],
+      "Rarity": "Mythic",
+      "Cost": [
+        {
+          "Item": "EssenceMythic",
+          "Amount": 10
+        },
+        {
+          "Item": "ReagentMythic",
+          "Amount": 10
+        },
+        {
+          "Item": "GoldBountyToken",
+          "Amount": 8
+        }
+      ]
+    },
+    {
+      "ItemTypes": [
+        "OneHandedWeapon",
+        "Bow",
+        "TwoHandedWeapon",
+        "TwoHandedWeaponLeft",
+        "Torch",
+        "Tool",
+        "Shield",
+        "Helmet",
+        "Chest",
+        "Legs",
+        "Shoulder",
+        "Utility",
+        "Trinket",
+        "None",
+        "Misc"
+      ],
+      "Rarity": "Ancient",
+      "Cost": [
+        {
+          "Item": "EssenceAncient",
+          "Amount": 10
+        },
+        {
+          "Item": "ReagentAncient",
+          "Amount": 10
+        },
+        {
+          "Item": "GoldBountyToken",
+          "Amount": 12
+        }
+      ]
+    }
+  ],
   "IdentifyTypes": {
     "Random": {
       "localization": "$mod_epicloot_identify_random",

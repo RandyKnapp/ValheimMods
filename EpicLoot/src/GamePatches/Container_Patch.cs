@@ -46,7 +46,7 @@ namespace EpicLoot
             }
 
             // Vanilla only calls AddDefaultItems on the ZDO owner, so this write is safe.
-            zdo.Set(PendingChestLoot.PendingKey, true);
+            zdo.Set(PendingChestLoot.PendingKeyHash, true);
         }
     }
 
@@ -59,7 +59,7 @@ namespace EpicLoot
             // as well — this is the only place the registry is populated, and it covers both a
             // freshly generated chest and one rehydrated from a ZDO in a later session.
             var zdo = __instance.m_nview == null ? null : __instance.m_nview.GetZDO();
-            if (zdo != null && zdo.IsValid() && zdo.GetBool(PendingChestLoot.PendingKey))
+            if (zdo != null && zdo.IsValid() && zdo.GetBool(PendingChestLoot.PendingKeyHash))
             {
                 PendingChestLoot.Register(__instance);
             }

@@ -11,6 +11,11 @@ namespace EpicLoot_UnityLib
         public ItemRarity Rarity = (ItemRarity)(-1);
         public Graphic[] Graphics;
 
+        // Every woken instance, so a rarity colour setting change can recolour them. The enchanting table UI is
+        // built once per session, and each instance otherwise reads the colours only when it wakes or its
+        // rarity is set -- the buttons kept their old colours while the text around them took the new ones.
+        private static readonly List<SetRarityColor> _instances = new List<SetRarityColor>();
+
         private readonly Dictionary<Graphic, Color> _defaultColors = new Dictionary<Graphic, Color>();
         private bool _awake;
 
@@ -22,7 +27,21 @@ namespace EpicLoot_UnityLib
             }
 
             _awake = true;
+            _instances.Add(this);
             Refresh();
+        }
+
+        public void OnDestroy()
+        {
+            _instances.Remove(this);
+        }
+
+        public static void RefreshAll()
+        {
+            foreach (SetRarityColor instance in _instances)
+            {
+                instance.Refresh();
+            }
         }
 
         /// <summary>Swaps one of the coloured graphics for another (the Auga fixup replaces the label), keeping its default colour.</summary>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using EpicLoot;
 using EpicLoot.Config;
 using EpicLoot.CraftingV2;
@@ -44,6 +45,7 @@ namespace EpicLoot_UnityLib
         private int _selectedQuantity;
         private bool _locked;
         private bool _hasGamepadFocus;
+        private List<string> _enchantmentSearchNames;
 
         public void Awake()
         {
@@ -180,6 +182,7 @@ namespace EpicLoot_UnityLib
         {
             bool sameItem = _item == item;
             _item = item;
+            _enchantmentSearchNames = null;
 
             if (_item?.GetItem() == null)
             {
@@ -228,6 +231,11 @@ namespace EpicLoot_UnityLib
             {
                 Deselect(true);
             }
+
+            // Every time, empty rows included: rows are pooled and would keep the last item's star. Cost and
+            // product rows are read-only, and a star on "5 Magic Dust" would only say dust is favorited.
+            EpicLoot.Compatibility.ItemFavorites.UpdateStar(ItemIcon, ReadOnly ? null : _item?.GetItem());
+            ItemBackgroundHelper.UpdateIconSetMarker(ItemIcon, _item?.GetItem());
 
             RefreshGamepadFocusIndicator();
 
@@ -369,6 +377,44 @@ namespace EpicLoot_UnityLib
         public IListElement GetListElement()
         {
             return _item;
+        }
+
+        /// <summary>
+        /// The item's enchantments as the search box matches them, socketed ones included so it finds what
+        /// the tooltip lists. Built on first use and dropped by SetItem, which every change to the row goes
+        /// through (the re-population after an enchant, augment or etch, a sort change), so it is never
+        /// staler than the name label.
+        /// </summary>
+        public IReadOnlyList<string> GetEnchantmentSearchNames()
+        {
+            if (_enchantmentSearchNames != null)
+            {
+                return _enchantmentSearchNames;
+            }
+
+            _enchantmentSearchNames = new List<string>();
+            MagicItem magicItem = _item?.GetItem()?.GetMagicItem();
+            if (magicItem == null)
+            {
+                return _enchantmentSearchNames;
+            }
+
+            foreach (MagicItemEffect effect in magicItem.GetEffects(includeSocketed: true))
+            {
+                if (!MagicItemEffectDefinitions.TryGet(effect.EffectType, out MagicItemEffectDefinition definition) ||
+                    string.IsNullOrEmpty(definition.DisplayText))
+                {
+                    continue;
+                }
+
+                string name = ItemSearchFilter.NormalizeEffectName(Localization.instance.Localize(definition.DisplayText));
+                if (name.Length > 0)
+                {
+                    _enchantmentSearchNames.Add(name);
+                }
+            }
+
+            return _enchantmentSearchNames;
         }
 
         public int GetSelectedQuantity()

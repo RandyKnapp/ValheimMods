@@ -15,6 +15,9 @@ public class InventoryManagement
         get => _instance;
     }
 
+    // The storage of the enchanting table whose window is open; null otherwise.
+    internal static EnchantingTableStash ActiveStash;
+
     private void SendMessage(string message, int amount, Sprite icon)
     {
         Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft,
@@ -46,7 +49,7 @@ public class InventoryManagement
         }
 
         List<ItemDrop.ItemData> items = inventory.GetAllItems();
-        if (!API.AnyInventoryProviders)
+        if (!API.AnyInventoryProviders && ActiveStash == null)
         {
             return items;
         }
@@ -54,8 +57,74 @@ public class InventoryManagement
         // Inventory.GetAllItems hands back the live m_inventory list, so appending to it would inject
         // container items into the player's actual inventory. Copy first.
         List<ItemDrop.ItemData> combined = new List<ItemDrop.ItemData>(items);
+        if (ActiveStash != null)
+        {
+            combined.AddRange(ActiveStash.GetSnapshotItems());
+        }
+
         API.AppendProviderItems(combined);
         return combined;
+    }
+
+    // What an action that changes an item in place (enchant, augment, etch, a reducing extract, a set strip,
+    // disenchant) may target: GetAllItems less the providers listed under Spend-Only Storage Mods. Those
+    // never save such a change, so the item would revert when their storage reloads, after the materials
+    // were spent. Consuming actions keep using GetAllItems, since a removal is saved.
+    public List<ItemDrop.ItemData> GetEditableItems()
+    {
+        Inventory inventory = GetInventory();
+        if (inventory == null)
+        {
+            return null;
+        }
+
+        List<ItemDrop.ItemData> items = inventory.GetAllItems();
+        if (!API.AnyInventoryProviders)
+        {
+            return items;
+        }
+
+        List<ItemDrop.ItemData> combined = new List<ItemDrop.ItemData>(items);
+        API.AppendProviderItems(combined, forEditing: true);
+        return combined;
+    }
+
+    // Re-checked right before an in-place change is paid for: the item must still be somewhere that change
+    // can be saved. Providers are asked again, so a chest that reloaded since the list was built (replacing
+    // the instance) fails here instead of taking the materials.
+    public bool IsEditable(ItemDrop.ItemData item)
+    {
+        if (item == null)
+        {
+            return false;
+        }
+
+        Inventory inventory = GetInventory();
+        if (inventory != null && inventory.ContainsItem(item))
+        {
+            return true;
+        }
+
+        List<ItemDrop.ItemData> editable = GetEditableItems();
+        return editable != null && editable.Contains(item);
+    }
+
+    // Call after changing an item in place. The player's own inventory is saved with the character; an
+    // item a provider offered is handed back to that provider to save where it lives.
+    public void CommitItemEdit(ItemDrop.ItemData item)
+    {
+        if (item == null || !API.AnyInventoryProviders)
+        {
+            return;
+        }
+
+        Inventory inventory = GetInventory();
+        if (inventory != null && inventory.ContainsItem(item))
+        {
+            return;
+        }
+
+        API.SaveProviderItem(item);
     }
 
     public bool HasItem(ItemDrop.ItemData item)
@@ -73,26 +142,40 @@ public class InventoryManagement
         Inventory inventory = GetInventory();
 
         int count = inventory == null ? 0 : inventory.CountItems(item);
-        return count + API.CountProviderItems(item);
+        return count + CountStashItems(item) + API.CountProviderItems(item);
     }
 
     public int CountProviderItem(ItemDrop.ItemData item)
     {
-        return API.CountProviderItems(item.m_shared.m_name);
+        return CountStashItems(item.m_shared.m_name) + API.CountProviderItems(item.m_shared.m_name);
+    }
+
+    private static int CountStashItems(string item)
+    {
+        return ActiveStash != null ? ActiveStash.GetCountBySharedName(item) : 0;
     }
 
     public void GiveItem(string item, int amount)
     {
         Debug.Log($"Attempting to give item {item} with amount {amount}");
-        Inventory inventory = GetInventory();
-        if (inventory != null)
+        if (amount <= 0)
         {
-            AddItem(ref inventory, item, amount);
+            return;
         }
-        else
+
+        GameObject prefab = ObjectDB.instance.GetItemPrefab(item);
+        ItemDrop.ItemData itemData = prefab != null ? LootRoller.CreateLootItemData(prefab) : null;
+        if (itemData == null)
         {
-            DropItem(item, amount);
+            Debug.LogWarning($"Could not give item {item}: no such item prefab");
+            return;
         }
+
+        // Not vanilla's Inventory.AddItem(name, ...): when the inventory fills, that drops a bare prefab
+        // (a stack of one) and still returns the item as added, so a full player claiming bounties got one
+        // coin or token per reward. The ItemData path adds what fits and drops the rest at its real size.
+        itemData.m_stack = amount;
+        GiveItem(itemData);
     }
 
     public bool GiveItem(ItemDrop.ItemData item)
@@ -119,16 +202,6 @@ public class InventoryManagement
         return true;
     }
 
-    private void AddItem(ref Inventory inventory, string item, int amount)
-    {
-        ItemDrop.ItemData result = inventory.AddItem(item, amount, 1, 0, 0, string.Empty, cheated: false);
-
-        if (result == null)
-        {
-            DropItem(item, amount);
-        }
-    }
-
     private void AddItem(ref Inventory inventory, ItemDrop.ItemData item)
     {
         if (inventory.AddItem(item))
@@ -138,27 +211,6 @@ public class InventoryManagement
         else
         {
             DropItem(item);
-        }
-    }
-
-    private void DropItem(string item, int amount)
-    {
-        Debug.Log($"Attempting to drop item {item} with amount {amount}");
-        Player player = Player.m_localPlayer;
-        GameObject prefab = ObjectDB.instance.GetItemPrefab(item);
-
-        if (prefab != null)
-        {
-            GameObject go = GameObject.Instantiate(prefab,
-                player.transform.position + player.transform.forward + player.transform.up,
-                player.transform.rotation);
-
-            ItemDrop itemdrop = go.GetComponent<ItemDrop>();
-            itemdrop.SetStack(amount);
-            itemdrop.GetComponent<Rigidbody>().linearVelocity = Vector3.up * 5f;
-
-            SendMessage($"$msg_dropped {itemdrop.m_itemData.m_shared.m_name}",
-                itemdrop.m_itemData.m_stack, itemdrop.m_itemData.GetIcon());
         }
     }
 
@@ -187,6 +239,11 @@ public class InventoryManagement
             return 0;
         }
 
+        if (ActiveStash != null && ActiveStash.TryGetSnapshotPrefab(item, out string stashPrefab))
+        {
+            return ActiveStash.Take(stashPrefab, amount);
+        }
+
         Inventory inventory = GetInventory();
 
         int taken = 0;
@@ -206,12 +263,12 @@ public class InventoryManagement
         return taken;
     }
 
-    public void RemoveItem(ItemDrop.ItemData item)
+    public int RemoveItem(ItemDrop.ItemData item)
     {
-        RemoveItem(item.m_shared.m_name, item.m_stack);
+        return RemoveItem(item.m_shared.m_name, item.m_stack);
     }
 
-    public void RemoveItem(string item, int amount)
+    public int RemoveItem(string item, int amount)
     {
         Inventory inventory = GetInventory();
 
@@ -223,11 +280,18 @@ public class InventoryManagement
             taken = before - inventory.CountItems(item);
         }
 
+        if (ActiveStash != null && amount - taken > 0)
+        {
+            taken += ActiveStash.TakeBySharedName(item, amount - taken);
+        }
+
         int shortfall = amount - taken;
         if (shortfall > 0)
         {
-            API.RemoveProviderItems(item, shortfall);
+            taken += API.RemoveProviderItems(item, shortfall);
         }
+
+        return taken;
     }
 
     public List<ItemDrop.ItemData> GetBoundItems()

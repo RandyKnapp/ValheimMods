@@ -87,10 +87,14 @@ namespace Common {
             // dedicated server this early.
             bool on_server = Common.Utils.IsServer();
 
+            // The prefabs are registered everywhere, a dedicated server included: without them the server's
+            // ZNetScene treats every placed or dropped copy in its active area as an invalid prefab and
+            // destroys it, and its ObjectDB lookups by name fail.
+            BatchAddItems();
+
             if (on_server == false) {
-                // This is not needed on the server
-                // The server does not actually do anything with prefabs, and is not responsible for modifying them
-                BatchAddItems();
+                // Live-retuning the local player's and in-world items, the archery target and the recipe
+                // reconciliation only matter where a player crafts and plays.
                 SetupOnChange();
                 ItemManager.OnItemsRegistered += AddAmmoItemsToArcheryTarget;
                 // Re-apply config driven recipe values whenever the ObjectDB is (re)built. Jotunn re-adds the

@@ -26,19 +26,18 @@ namespace EpicLoot.MagicItemEffects
         {
             if (Player.m_localPlayer != null && Player.m_localPlayer.GetTotalActiveMagicEffectValue(MagicEffectType.QuickDraw, 0.01f) is float crossbowReloadSpeed)
             {
-                // Parenthesized: '&&' binds tighter than '||', so a zero-value effect with a
-                // reload-secondary weapon used to enter this branch and overwrite vanilla's
-                // skill-lerped reload time with the raw base value.
-                if (crossbowReloadSpeed > 0 &&
-                    (__instance.m_shared.m_attack.m_requiresReload || __instance.m_shared.m_secondaryAttack.m_requiresReload))
+                if (crossbowReloadSpeed > 0)
                 {
+                    // Scale vanilla's own time, which the crossbow skill already brings down to half at 100.
+                    // Recomputing from the base reload time threw that away, so at high skill the bonus
+                    // reloaded slower than having none.
                     if (__instance.m_shared.m_attack.m_requiresReload)
                     {
-                        __result = __instance.m_shared.m_attack.m_reloadTime * (1f - crossbowReloadSpeed);
+                        __result *= 1f - crossbowReloadSpeed;
                     }
-
-                    if (__instance.m_shared.m_secondaryAttack.m_requiresReload)
+                    else if (__instance.m_shared.m_secondaryAttack.m_requiresReload)
                     {
+                        // Vanilla only knows the primary attack's reload and returns a flat 1 s otherwise.
                         __result = __instance.m_shared.m_secondaryAttack.m_reloadTime * (1f - crossbowReloadSpeed);
                     }
                 }

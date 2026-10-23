@@ -35,7 +35,6 @@ public sealed class EpicAssets
     public static AudioClip OffSetSFX;
     public static GameObject DebugTextPrefab;
     public static GameObject AbilityBar;
-    public static GameObject WelcomMessagePrefab;
     public static GameObject ConfigMessagePrefab;
     public static GameObject SocketMessagePrefab;
 

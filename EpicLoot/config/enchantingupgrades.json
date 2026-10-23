@@ -5,7 +5,8 @@
     "Enchant": -1,
     "Augment": -1,
     "Disenchant": -1,
-    "Rune": -1
+    "Rune": -1,
+    "Storage": -1
   },
   "MaximumFeatureLevels": {
     "Sacrifice": 7,
@@ -13,7 +14,8 @@
     "Enchant": 7,
     "Augment": 7,
     "Disenchant": 7,
-    "Rune": 7
+    "Rune": 7,
+    "Storage": 7
   },
   "UpgradeCosts": {
     "Sacrifice": [
@@ -246,6 +248,46 @@
         { "Item": "FrostCore", "Amount": 5 },
         { "Item": "Gold", "Amount": 2 }
       ]
+    ],
+    "Storage": [
+      [
+        { "Item": "FineWood", "Amount": 20 },
+        { "Item": "Resin", "Amount": 10 },
+        { "Item": "Coins", "Amount": 50 }
+      ],
+      [
+        { "Item": "Bronze", "Amount": 4 },
+        { "Item": "FineWood", "Amount": 20 }
+      ],
+      [
+        { "Item": "Iron", "Amount": 4 },
+        { "Item": "ElderBark", "Amount": 20 },
+        { "Item": "IronBountyToken", "Amount": 5 }
+      ],
+      [
+        { "Item": "Silver", "Amount": 4 },
+        { "Item": "Crystal", "Amount": 10 },
+        { "Item": "IronBountyToken", "Amount": 10 }
+      ],
+      [
+        { "Item": "BlackMetal", "Amount": 30 },
+        { "Item": "LinenThread", "Amount": 20 }
+      ],
+      [
+        { "Item": "BlackCore", "Amount": 3 },
+        { "Item": "Eitr", "Amount": 10 },
+        { "Item": "YggdrasilWood", "Amount": 20 }
+      ],
+      [
+        { "Item": "MoltenCore", "Amount": 3 },
+        { "Item": "FlametalNew", "Amount": 10 },
+        { "Item": "Blackwood", "Amount": 20 }
+      ],
+      [
+        { "Item": "FrostCore", "Amount": 3 },
+        { "Item": "Gold", "Amount": 10 },
+        { "Item": "Frostwood", "Amount": 20 }
+      ]
     ]
   },
   "UpgradeValues": {
@@ -254,6 +296,7 @@
     "Enchant": [ [0, 0], [1, 2], [2, 4], [3, 6], [4, 8], [5, 10], [6, 12], [7, 14] ],
     "Augment": [ [2, 0], [3, 0], [4, 0], [4, 25], [5, 25], [5, 50], [6, 50], [6, 75] ],
     "Disenchant": [ [0, 0], [3, 0], [6, 0], [10, 1], [15, 2], [20, 3], [25, 4], [30, 5] ],
-    "Rune": [ [0, 90], [3, 95], [6, 100], [10, 102], [15, 104], [20, 106], [25, 108], [30, 110] ]
+    "Rune": [ [0, 90], [3, 95], [6, 100], [10, 102], [15, 104], [20, 106], [25, 108], [30, 110] ],
+    "Storage": [ [100], [200], [300], [500], [750], [1000], [2000], [0] ]
   }
 }

@@ -75,6 +75,7 @@ namespace EpicLoot
         public static string CoinHoarder = nameof(CoinHoarder);
         public static string Weightless = nameof(Weightless);
         public static string LifeSteal = nameof(LifeSteal);
+        public static string LifeAfterKill = nameof(LifeAfterKill);
         public static string EitrLeech = nameof(EitrLeech);
         public static string Bloodlust = nameof(Bloodlust);
         public static string AddCarryWeight = nameof(AddCarryWeight);
@@ -102,6 +103,7 @@ namespace EpicLoot
         public static string AddBloodMagicSkill = nameof(AddBloodMagicSkill);
         public static string AddMovementSkills = nameof(AddMovementSkills);
         public static string AddCrafterSkills = nameof(AddCrafterSkills);
+        public static string AddAllSkills = nameof(AddAllSkills);
         public static string ModifyStaggerDuration = nameof(ModifyStaggerDuration);
         public static string QuickLearner = nameof(QuickLearner);
         public static string RecallWeapon = nameof(RecallWeapon);
@@ -111,6 +113,7 @@ namespace EpicLoot
         public static string FeatherFall = nameof(FeatherFall);
         public static string ModifyDiscoveryRadius = nameof(ModifyDiscoveryRadius);
         public static string FreeBuild = nameof(FreeBuild);
+        public static string GreenThumb = nameof(GreenThumb);
         public static string Comfortable = nameof(Comfortable);
         public static string ModifyLowHealth = nameof(ModifyLowHealth);
         public static string ModifyMovementSpeedLowHealth = nameof(ModifyMovementSpeedLowHealth);
@@ -131,7 +134,9 @@ namespace EpicLoot
         public static string Duelist = nameof(Duelist);
         public static string Immovable = nameof(Immovable);
         public static string ModifyStaggerDamage = nameof(ModifyStaggerDamage);
+        public static string CloseQuarter = nameof(CloseQuarter);
         public static string Luck = nameof(Luck);
+        public static string Prosperity = nameof(Prosperity);
         public static string ModifyParryWindow = nameof(ModifyParryWindow);
         public static string Slow = nameof(Slow);
         public static string FrostDamageAOE = nameof(FrostDamageAOE);
@@ -152,6 +157,10 @@ namespace EpicLoot
 
         public static string Bulwark = nameof(Bulwark);
         public static string Undying = nameof(Undying);
+        public static string GiantsBlood = nameof(GiantsBlood);
+        public static string SlightlyWeakToFire = nameof(SlightlyWeakToFire);
+        public static string WeakToFire = nameof(WeakToFire);
+        public static string VeryWeakToFire = nameof(VeryWeakToFire);
 
         public static void Initialize()
         {

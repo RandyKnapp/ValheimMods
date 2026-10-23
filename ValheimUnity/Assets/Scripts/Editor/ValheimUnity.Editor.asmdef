@@ -1,0 +1,36 @@
+{
+    "name": "ValheimUnity.Editor",
+    "rootNamespace": "",
+    "references": [
+        "Unity.TextMeshPro",
+        "UnityEngine.UI",
+        "MagicaClothV2"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "EpicLoot.dll",
+        "Jotunn.dll",
+        "BepInEx.dll",
+        "0Harmony.dll",
+        "Newtonsoft.Json.dll",
+        "assembly_valheim.dll",
+        "assembly_utils.dll",
+        "assembly_guiutils.dll",
+        "assembly_postprocessing.dll",
+        "assembly_sunshafts.dll",
+        "assembly_lux.dll",
+        "assembly_simplemeshcombine.dll",
+        "gui_framework.dll",
+        "Splatform.dll",
+        "SoftReferenceableAssets.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

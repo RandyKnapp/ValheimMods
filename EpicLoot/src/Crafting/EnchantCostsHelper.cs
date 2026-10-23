@@ -38,7 +38,59 @@ namespace EpicLoot.Crafting
 
             Config = config;
             EnsureShardStoneSacrificeProducts();
+            EnsureRuneSetCosts();
             OnSetupEnchantingCosts?.Invoke();
+        }
+
+        // The Set Extract / Set Etch costs, as a code-side default for the same reason as the shardstone
+        // yield below: an on-disk enchantcosts.json from before these sections existed wins until the
+        // player accepts the config-update prompt, and without a row the tab would offer a set transfer
+        // for nothing. Per rarity, so a file that prices only some tiers keeps its own rows. Mirrors the
+        // RuneSetExtractCosts / RuneSetEtchCosts sections shipped in config/enchantcosts.json.
+        private static void EnsureRuneSetCosts()
+        {
+            Config.RuneSetExtractCosts ??= new List<RuneCostConfig>();
+            Config.RuneSetEtchCosts ??= new List<RuneCostConfig>();
+
+            // Token amounts per rarity, Magic first; a tier appended later reuses the last amount.
+            int[] extractTokens = { 5, 8, 12, 3, 5, 8 };
+            int[] etchTokens = { 8, 12, 16, 5, 8, 12 };
+
+            foreach (ItemRarity rarity in Rarities.All)
+            {
+                ItemRarity tier = rarity;
+                // Iron bounty tokens below Legendary, gold from Legendary up.
+                string token = rarity < ItemRarity.Legendary ? "IronBountyToken" : "GoldBountyToken";
+
+                if (!Config.RuneSetExtractCosts.Exists(x => x != null && x.Rarity == tier))
+                {
+                    Config.RuneSetExtractCosts.Add(new RuneCostConfig
+                    {
+                        Rarity = rarity,
+                        Cost = new List<ItemAmountConfig>
+                        {
+                            new ItemAmountConfig { Item = $"Runestone{rarity}", Amount = 1 },
+                            new ItemAmountConfig { Item = $"Dust{rarity}", Amount = 10 },
+                            new ItemAmountConfig { Item = $"Shard{rarity}", Amount = 5 },
+                            new ItemAmountConfig { Item = token, Amount = extractTokens[Math.Min((int)rarity, extractTokens.Length - 1)] }
+                        }
+                    });
+                }
+
+                if (!Config.RuneSetEtchCosts.Exists(x => x != null && x.Rarity == tier))
+                {
+                    Config.RuneSetEtchCosts.Add(new RuneCostConfig
+                    {
+                        Rarity = rarity,
+                        Cost = new List<ItemAmountConfig>
+                        {
+                            new ItemAmountConfig { Item = $"Essence{rarity}", Amount = 10 },
+                            new ItemAmountConfig { Item = $"Reagent{rarity}", Amount = 10 },
+                            new ItemAmountConfig { Item = token, Amount = etchTokens[Math.Min((int)rarity, etchTokens.Length - 1)] }
+                        }
+                    });
+                }
+            }
         }
 
         // The shardstone sacrifice yield, as a code-side default. config/enchantcosts.json ships the same five
@@ -337,7 +389,7 @@ namespace EpicLoot.Crafting
                 itemtype = item.m_shared.m_itemType;
             }
 
-            List<RuneCostConfig> cfg = new List<RuneCostConfig>();
+            List<RuneCostConfig> cfg = null;
             switch (operation)
             {
                 case RuneActions.Extract:
@@ -346,11 +398,17 @@ namespace EpicLoot.Crafting
                 case RuneActions.Etch:
                     cfg = Config.RuneEtchCosts;
                     break;
+                case RuneActions.SetExtract:
+                    cfg = Config.RuneSetExtractCosts;
+                    break;
+                case RuneActions.SetEtch:
+                    cfg = Config.RuneSetEtchCosts;
+                    break;
             }
 
-            RuneCostConfig configEntry = cfg.Find(x =>
+            RuneCostConfig configEntry = (cfg ?? new List<RuneCostConfig>()).Find(x =>
             {
-                if (x.Rarity != rarity)
+                if (x == null || x.Rarity != rarity)
                 {
                     return false;
                 }

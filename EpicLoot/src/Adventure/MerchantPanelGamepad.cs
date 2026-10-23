@@ -14,15 +14,17 @@ namespace EpicLoot.Adventure
     /// <summary>
     /// Gamepad navigation for the merchant panel. The bumpers walk one chain -- the vanilla store
     /// list, then each of this panel's lists left to right -- the left stick and d-pad move the
-    /// selection inside the focused list, X presses that list's action button and Y abandons a
+    /// selection inside the focused list, A presses that list's action button and X abandons a
     /// bounty.
     /// </summary>
     public class MerchantPanelGamepad
     {
         public const string NextListButton = "JoyTabRight";
         public const string PrevListButton = "JoyTabLeft";
-        public const string MainActionButton = "JoyButtonX";
-        public const string SecondaryActionButton = "JoyButtonY";
+        public const string MainActionButton = "JoyButtonA";
+        public const string SecondaryActionButton = "JoyButtonX";
+        public const string DialogConfirmButton = "JoyButtonA";
+        public const string DialogCancelButton = "JoyButtonB";
 
         private const int Unfocused = -1;
         private const float GlyphSize = 28f;
@@ -38,6 +40,8 @@ namespace EpicLoot.Adventure
         private readonly MerchantPanel _panel;
         private readonly List<IMerchantListPanel> _lists;
         private readonly List<ListHints> _hints = new List<ListHints>();
+        private readonly TMP_Text _abandonYesHint;
+        private readonly TMP_Text _abandonNoHint;
 
         private int _focusedIndex = Unfocused;
         private bool _fontsApplied;
@@ -53,6 +57,19 @@ namespace EpicLoot.Adventure
             {
                 _hints.Add(CreateHints(list));
             }
+
+            AbandonBountyDialog abandonDialog = panel.AbandonBountyDialog;
+            if (abandonDialog != null)
+            {
+                Button yesButton = abandonDialog.YesButton;
+                Button noButton = abandonDialog.NoButton;
+                Vector2 offset = new Vector2(GlyphSize * 0.6f, 0f);
+
+                _abandonYesHint = CreateGlyph(yesButton != null ? yesButton.transform : null, DialogConfirmButton,
+                    new Vector2(0f, 0.5f), -offset);
+                _abandonNoHint = CreateGlyph(noButton != null ? noButton.transform : null, DialogCancelButton,
+                    new Vector2(1f, 0.5f), offset);
+            }
         }
 
         public void Update()
@@ -66,6 +83,13 @@ namespace EpicLoot.Adventure
 
             if (IsBlocked())
             {
+                // A row's gamepad tooltip follows the EventSystem selection, and the abandon dialog
+                // already shows that bounty.
+                if (IsAbandonDialogOpen() && EventSystem.current != null)
+                {
+                    EventSystem.current.SetSelectedGameObject(null);
+                }
+
                 RefreshHints(false);
                 return;
             }
@@ -94,17 +118,17 @@ namespace EpicLoot.Adventure
         /// </summary>
         public bool UpdateDialogs()
         {
-            AbandonBountyDialog abandonDialog = _panel.AbandonBountyDialog;
-            if (abandonDialog != null && abandonDialog.gameObject.activeSelf)
+            if (IsAbandonDialogOpen())
             {
-                if (ZInput.GetButtonDown("JoyButtonA"))
+                AbandonBountyDialog abandonDialog = _panel.AbandonBountyDialog;
+                if (ZInput.GetButtonDown(DialogConfirmButton))
                 {
-                    ZInput.ResetButtonStatus("JoyButtonA");
+                    ZInput.ResetButtonStatus(DialogConfirmButton);
                     abandonDialog.OnYesButtonClicked();
                 }
-                else if (ZInput.GetButtonDown("JoyButtonB") || ZInput.GetKeyDown(KeyCode.Escape))
+                else if (ZInput.GetButtonDown(DialogCancelButton) || ZInput.GetKeyDown(KeyCode.Escape))
                 {
-                    ZInput.ResetButtonStatus("JoyButtonB");
+                    ZInput.ResetButtonStatus(DialogCancelButton);
                     abandonDialog.OnNoButtonClicked();
                 }
 
@@ -114,16 +138,24 @@ namespace EpicLoot.Adventure
             return AnyDialogOpen();
         }
 
-        private bool AnyDialogOpen()
+        private bool IsAbandonDialogOpen()
         {
             AbandonBountyDialog abandonDialog = _panel.AbandonBountyDialog;
-            if (abandonDialog != null && abandonDialog.gameObject.activeSelf)
+            return abandonDialog != null && abandonDialog.gameObject.activeSelf;
+        }
+
+        private bool AnyDialogOpen()
+        {
+            if (IsAbandonDialogOpen())
             {
                 return true;
             }
 
+            // Still "open" for the frame its own Update closed it, so the B or Escape that closed it does
+            // not close the store as well.
             CraftSuccessDialog gambleDialog = _panel.GambleSuccessDialog;
-            return gambleDialog != null && gambleDialog.gameObject.activeSelf;
+            return gambleDialog != null &&
+                (gambleDialog.gameObject.activeSelf || CraftSuccessDialog.ClosedByInputJustNow);
         }
 
         public void Release()
@@ -183,6 +215,10 @@ namespace EpicLoot.Adventure
             if (focused.GetSelectedIndex() < 0)
             {
                 focused.SelectIndex(0);
+            }
+            else if (EventSystem.current != null && EventSystem.current.currentSelectedGameObject == null)
+            {
+                focused.SelectIndex(focused.GetSelectedIndex());
             }
 
             if (ZInput.GetButtonDown(PrevListButton))
@@ -400,6 +436,10 @@ namespace EpicLoot.Adventure
                 SetHint(hints.MainAction, focused && IsUsable(list.GetMainButton()));
                 SetHint(hints.SecondaryAction, focused && IsUsable(list.GetSecondaryButton()));
             }
+
+            bool dialogHints = ZInput.IsGamepadActive() && IsAbandonDialogOpen();
+            SetHint(_abandonYesHint, dialogHints);
+            SetHint(_abandonNoHint, dialogHints);
         }
 
         private static bool IsUsable(Button button)
@@ -438,6 +478,9 @@ namespace EpicLoot.Adventure
                 applied &= ApplyFont(hints.SecondaryAction);
             }
 
+            applied &= ApplyFont(_abandonYesHint);
+            applied &= ApplyFont(_abandonNoHint);
+
             _fontsApplied = applied;
         }
 
@@ -470,6 +513,13 @@ namespace EpicLoot.Adventure
             {
                 MerchantPanel panel = MerchantPanel.Instance;
                 if (panel == null || !panel.gameObject.activeSelf || panel.Gamepad == null)
+                {
+                    return true;
+                }
+
+                // Vanilla opens the inventory on Y whatever is showing here, and StoreGui.Update is
+                // what closes the store under it. Skipped for a dialog, the store stayed up behind it.
+                if (InventoryGui.IsVisible())
                 {
                     return true;
                 }

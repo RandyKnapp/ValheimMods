@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using EpicLoot.Magic.MagicItemEffects;
+using HarmonyLib;
 using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
@@ -27,10 +28,12 @@ namespace EpicLoot.src.Magic.MagicItemEffects.Shards {
 
                     var se = __instance.GetSEMan().GetStatusEffect(item.m_shared.m_consumeStatusEffect.NameHash());
                     if (se != null && se.m_ttl > 0f) {
-                        // Restamp from the prototype's base duration: re-drinking the same potion
-                        // reuses the live clone (vanilla only resets its clock), so multiplying its
-                        // m_ttl again compounded the bonus without limit.
-                        se.m_ttl = item.m_shared.m_consumeStatusEffect.m_ttl * (1f + fraction);
+                        // Restamp from the base duration: re-drinking the same potion reuses the live
+                        // clone (vanilla only resets its clock), so multiplying its m_ttl again compounded
+                        // the bonus without limit. The base keeps Meads Cooldown's cut, which restamping
+                        // from the bottle's own duration used to throw away.
+                        se.m_ttl = ModifyMeads.GetDrinkDuration(__instance, item.m_shared.m_consumeStatusEffect) *
+                            (1f + fraction);
                     }
                 }
             }

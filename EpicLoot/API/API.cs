@@ -21,8 +21,9 @@ public static partial class API
     
     private static readonly Dictionary<string, MagicItemEffectDefinition> ExternalMagicItemEffectDefinitions = new();
     private static readonly Dictionary<string, AbilityDefinition> ExternalAbilities = new();
-    private static readonly Dictionary<ItemRarity, List<LegendaryInfo>> ExternalLegendaryItems = new();
-    private static readonly Dictionary<ItemRarity, List<LegendarySetInfo>> ExternalLegendarySets = new();
+    // Each entry already carries its Rarities (filled from the registration's rarity when it had none).
+    private static readonly List<LegendaryInfo> ExternalLegendaryItems = new();
+    private static readonly List<LegendarySetInfo> ExternalLegendarySets = new();
     private static readonly Dictionary<string, UnityEngine.Object> ExternalAssets = new();
     private static readonly List<MaterialConversion> ExternalMaterialConversions = new();
     private static readonly List<RecipeConfig> ExternalRecipes = new();
@@ -89,7 +90,7 @@ public static partial class API
     [PublicAPI]
     public static bool HasLegendaryItem(Player player, string legendaryItemID)
     {
-        foreach (ItemDrop.ItemData item in player.GetInventory().GetEquippedItems())
+        foreach (ItemDrop.ItemData item in player.GetMagicEquipment())
         {
             if (item.IsMagic(out var magicItem) && magicItem.LegendaryID == legendaryItemID) return true;
         }
@@ -103,17 +104,19 @@ public static partial class API
     /// <param name="player"></param>
     /// <param name="legendarySetID"></param>
     /// <param name="count"></param>
-    /// <returns>true if player has full set</returns>
+    /// <param name="count">Set to the number of distinct set pieces equipped.</param>
+    /// <returns>true if player has full set: enough pieces for every set bonus, at any rarities</returns>
     [PublicAPI]
     public static bool HasLegendarySet(Player player, string legendarySetID, ref int count)
     {
-        if (!UniqueLegendaryHelper.TryGetLegendarySetInfo(legendarySetID, out LegendarySetInfo legendarySetInfo, out ItemRarity _))
+        if (!UniqueLegendaryHelper.TryGetLegendarySetInfo(legendarySetID, out LegendarySetInfo legendarySetInfo))
         {
             return false;
         }
 
-        count = player.GetMagicEquippedSetPieces(legendarySetID).Count;
-        return count >= legendarySetInfo.LegendaryIDs.Count;
+        LegendarySetProgress progress = SetBonusEvaluator.GetSetProgress(player, legendarySetInfo);
+        count = progress.Count;
+        return progress.IsFull;
     }
     /// <param name="type"><see cref="MagicEffectType"/></param>
     /// <returns>serialized object of magic effect definition if found</returns>

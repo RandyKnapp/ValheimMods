@@ -5,43 +5,43 @@
   "RequireAll": true,
   "Patches": [
     {
-      "Path": "$.LootTables[?(@.Object == 'TreasureMapChest_Meadows')].Loot",
+      "Path": "$.LootTables[?(@.Object == 'TreasureMapChest_Meadows')].LeveledLoot[?(@.Level == 1)].Loot",
       "Action": "Append",
       "Value": 
         { "Item": "IronBountyToken", "Weight": 1 }
     },
     {
-      "Path": "$.LootTables[?(@.Object == 'TreasureMapChest_BlackForest')].Loot",
+      "Path": "$.LootTables[?(@.Object == 'TreasureMapChest_BlackForest')].LeveledLoot[?(@.Level == 1)].Loot",
       "Action": "Append",
       "Value": 
         { "Item": "IronBountyToken", "Weight": 1 }
     },
     {
-      "Path": "$.LootTables[?(@.Object == 'TreasureMapChest_Swamp')].Loot",
+      "Path": "$.LootTables[?(@.Object == 'TreasureMapChest_Swamp')].LeveledLoot[?(@.Level == 1)].Loot",
       "Action": "Append",
       "Value": 
         { "Item": "IronBountyToken", "Weight": 1 }
     },
     {
-      "Path": "$.LootTables[?(@.Object == 'TreasureMapChest_Mountain')].Loot",
+      "Path": "$.LootTables[?(@.Object == 'TreasureMapChest_Mountain')].LeveledLoot[?(@.Level == 1)].Loot",
       "Action": "Append",
       "Value": 
         { "Item": "IronBountyToken", "Weight": 1 }
     },
     {
-      "Path": "$.LootTables[?(@.Object == 'TreasureMapChest_Plains')].Loot",
+      "Path": "$.LootTables[?(@.Object == 'TreasureMapChest_Plains')].LeveledLoot[?(@.Level == 1)].Loot",
       "Action": "Append",
       "Value": 
         { "Item": "IronBountyToken", "Weight": 1 }
     },
     {
-      "Path": "$.LootTables[?(@.Object == 'TreasureMapChest_Mistlands')].Loot",
+      "Path": "$.LootTables[?(@.Object == 'TreasureMapChest_Mistlands')].LeveledLoot[?(@.Level == 1)].Loot",
       "Action": "Append",
       "Value": 
         { "Item": "IronBountyToken", "Weight": 1 }
     },
     {
-      "Path": "$.LootTables[?(@.Object == 'TreasureMapChest_AshLands')].Loot",
+      "Path": "$.LootTables[?(@.Object == 'TreasureMapChest_AshLands')].LeveledLoot[?(@.Level == 1)].Loot",
       "Action": "Append",
       "Value": 
         { "Item": "IronBountyToken", "Weight": 1 }

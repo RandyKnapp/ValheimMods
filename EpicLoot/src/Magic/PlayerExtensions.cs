@@ -31,8 +31,18 @@ public static class PlayerExtensions
         return player.GetMagicEquipment();
     }
 
+    // While set, totals for this one effect type read as absent. The compendium measures what each effect
+    // contributes to a weapon by re-running GetDamage with the effect suppressed; checked before the cache so
+    // nothing cached is ever the suppressed value.
+    public static string SuppressedEffectType;
+
     public static List<MagicItemEffect> GetAllActiveMagicEffects(this Player player, string effectType = null)
     {
+        if (effectType != null && effectType == SuppressedEffectType)
+        {
+            return new List<MagicItemEffect>();
+        }
+
         IEnumerable<MagicItemEffect> equipEffects = player.GetMagicEquipment()
             .Where(x => x.IsMagic())
             .SelectMany(x => x.GetMagicItem().GetEffects(effectType, includeSocketed: true));
@@ -43,16 +53,21 @@ public static class PlayerExtensions
     public static List<MagicItemEffect> GetAllActiveSetMagicEffects(this Player player, string effectType = null)
     {
         List<MagicItemEffect> activeSetEffects = new List<MagicItemEffect>();
-        HashSet<LegendarySetInfo> equippedSets = player.GetEquippedSets();
-        foreach (LegendarySetInfo setInfo in equippedSets)
+        foreach (LegendarySetProgress progress in SetBonusEvaluator.GetEquippedSetProgress(player))
         {
-            int count = player.GetMagicEquippedSetPieces(setInfo.ID).Count;
-            foreach (SetBonusInfo setBonusInfo in setInfo.SetBonuses)
+            foreach (SetBonusInfo setBonusInfo in progress.Set.SetBonuses)
             {
-                if (count >= setBonusInfo.Count && (effectType == null || setBonusInfo.Effect.Type == effectType))
+                if (setBonusInfo.Effect == null || (effectType != null && setBonusInfo.Effect.Type != effectType))
                 {
-                    MagicItemEffect effect = new MagicItemEffect(setBonusInfo.Effect.Type, setBonusInfo.Effect.Values?.MinValue ?? MagicItemEffect.DefaultValue);
-                    activeSetEffects.Add(effect);
+                    continue;
+                }
+
+                // Each bonus applies at its own tier, so mixed-rarity pieces still count toward the set.
+                ItemRarity? tier = progress.GetTier(setBonusInfo);
+                if (tier.HasValue)
+                {
+                    activeSetEffects.Add(new MagicItemEffect(setBonusInfo.Effect.Type,
+                        SetBonusEvaluator.GetBonusValue(setBonusInfo, tier.Value)));
                 }
             }
         }
@@ -67,7 +82,7 @@ public static class PlayerExtensions
         {
             if (itemData.IsMagic(out MagicItem magicItem) && magicItem.IsLegendarySetItem())
             {
-                if (UniqueLegendaryHelper.TryGetLegendarySetInfo(magicItem.SetID, out LegendarySetInfo setInfo, out ItemRarity rarity))
+                if (UniqueLegendaryHelper.TryGetLegendarySetInfo(magicItem.SetID, out LegendarySetInfo setInfo))
                 {
                     sets.Add(setInfo);
                 }
@@ -80,17 +95,12 @@ public static class PlayerExtensions
     public static float GetTotalActiveMagicEffectValue(this Player player, string effectType,
         float scale = 1.0f, ItemDrop.ItemData ignoreThisItem = null)
     {
-        // TryGetValue/Store rather than the Func overload: this runs several times per fixed tick from
-        // GetMaxCarryWeight, ModifyStaminaRegen and GetArmor, and the closure that overload's delegate
-        // captures would be allocated on every one of those calls even though nearly all of them hit.
-        if (!EquipmentEffectCache.TryGetValue(player, effectType, out float? cached))
+        if (effectType == SuppressedEffectType)
         {
-            List<MagicItemEffect> allEffects = player.GetAllActiveMagicEffects(effectType);
-            cached = allEffects.Count > 0 ? allEffects.Select(x => x.EffectValue).Sum() : (float?)null;
-            EquipmentEffectCache.Store(player, effectType, cached);
+            return 0f;
         }
 
-        float totalValue = scale * (cached ?? 0);
+        float totalValue = scale * (GetCachedTotal(player, effectType) ?? 0);
 
         if (ignoreThisItem != null && player.IsItemEquiped(ignoreThisItem) && ignoreThisItem.IsMagic(out MagicItem magicItem))
         {
@@ -112,12 +122,34 @@ public static class PlayerExtensions
         return effectValue != 0f;
     }
 
+    // Presence rather than a non-zero total: an effect that rolled 0 still counts as present. Memoized like
+    // the total, so it is safe on per-tick paths (GiantsBlood's GetDamageModifiers postfix, the status
+    // effect indicators), where rebuilding the active-effect list on every call cost an equipment walk each.
     public static bool HasActiveMagicEffect(this Player player, string effectType)
     {
-        if (player == null) return false;
-        List<MagicItemEffect> effects = player.GetAllActiveMagicEffects(effectType.ToString());
+        if (player == null || effectType == SuppressedEffectType)
+        {
+            return false;
+        }
 
-        return effects.Count > 0;
+        return GetCachedTotal(player, effectType).HasValue;
+    }
+
+    // The memoized sum of one effect type's active values: null when nothing provides it, a float (which
+    // can be 0) when something does. TryGetValue/Store rather than the Func overload: this runs several
+    // times per fixed tick from GetMaxCarryWeight, ModifyStaminaRegen and GetArmor, and the closure that
+    // overload's delegate captures would be allocated on every one of those calls even though nearly all
+    // of them hit. Callers check SuppressedEffectType first, so the suppressed value is never cached.
+    private static float? GetCachedTotal(Player player, string effectType)
+    {
+        if (!EquipmentEffectCache.TryGetValue(player, effectType, out float? cached))
+        {
+            List<MagicItemEffect> allEffects = player.GetAllActiveMagicEffects(effectType);
+            cached = allEffects.Count > 0 ? allEffects.Select(x => x.EffectValue).Sum() : (float?)null;
+            EquipmentEffectCache.Store(player, effectType, cached);
+        }
+
+        return cached;
     }
 
     public static List<ItemDrop.ItemData> GetEquippedSetPieces(this Player player, string setName)
@@ -125,6 +157,10 @@ public static class PlayerExtensions
         return player.GetInventory().GetEquippedItems().Where(x => x.IsPartOfSet(setName)).ToList();
     }
 
+    /// <summary>
+    /// Every equipped item of the set, duplicates of one piece included. For bonus counting use
+    /// <see cref="SetBonusEvaluator.GetSetProgress(Player, LegendarySetInfo)"/>, which counts each piece once.
+    /// </summary>
     public static List<ItemDrop.ItemData> GetMagicEquippedSetPieces(this Player player, string setName)
     {
         return player.GetMagicEquipment().Where(x => x.IsPartOfSet(setName)).ToList();

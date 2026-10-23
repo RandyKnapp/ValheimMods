@@ -826,6 +826,9 @@
       "DisplayText": "$mod_epicloot_me_increasetreedrop_display",
       "Description": "$mod_epicloot_me_increasetreedrop_desc",
       "Requirements": {
+        "AllowedSkillTypes": [
+          "Axes"
+        ],
         "ItemHasChopDamage": true
       },
       "ValuesPerRarity": {
@@ -3669,6 +3672,11 @@
           "Increment": 0.5
         }
       },
+      "Config": {
+        "LinearGrowth": 1,
+        "LinearCutoff": 1000,
+        "Scalar": 6.258
+      },
       "SelectionWeight": 10,
       "Prefixes": [
         "$mod_epicloot_me_coinhoarder_prefix1"
@@ -3828,6 +3836,68 @@
       ],
       "Suffixes": [
         "$mod_epicloot_me_lifesteal_suffix1"
+      ]
+    },
+    {
+      "Type": "LifeAfterKill",
+      "DisplayText": "$mod_epicloot_me_lifeafterkill_display",
+      "Description": "$mod_epicloot_me_lifeafterkill_desc",
+      "Requirements": {
+        "AllowedItemTypes": [
+          "OneHandedWeapon",
+          "TwoHandedWeapon",
+          "TwoHandedWeaponLeft",
+          "Bow"
+        ],
+        "ExcludedSkillTypes": [
+          "Pickaxes"
+        ],
+        "AllowedRarities": [
+          "Rare",
+          "Epic",
+          "Legendary",
+          "Mythic",
+          "Ancient"
+        ],
+        "ExcludedItemNames": [
+          "$item_fishingrod",
+          "$item_graplinghook"
+        ],
+        "ItemUsesStaminaOnAttack": true
+      },
+      "ValuesPerRarity": {
+        "Rare": {
+          "MinValue": 3,
+          "MaxValue": 12,
+          "Increment": 1
+        },
+        "Epic": {
+          "MinValue": 6,
+          "MaxValue": 18,
+          "Increment": 1
+        },
+        "Legendary": {
+          "MinValue": 10,
+          "MaxValue": 25,
+          "Increment": 1
+        },
+        "Mythic": {
+          "MinValue": 14,
+          "MaxValue": 32,
+          "Increment": 1
+        },
+        "Ancient": {
+          "MinValue": 18,
+          "MaxValue": 40,
+          "Increment": 1
+        }
+      },
+      "SelectionWeight": 5,
+      "Prefixes": [
+        "$mod_epicloot_me_lifeafterkill_prefix1"
+      ],
+      "Suffixes": [
+        "$mod_epicloot_me_lifeafterkill_suffix1"
       ]
     },
     {
@@ -5372,6 +5442,58 @@
       ]
     },
     {
+      "Type": "GreenThumb",
+      "DisplayText": "$mod_epicloot_me_greenthumb_display",
+      "Description": "$mod_epicloot_me_greenthumb_desc",
+      "Requirements": {
+        "AllowedItemNames": [
+          "$item_cultivator"
+        ]
+      },
+      "ValuesPerRarity": {
+        "Magic": {
+          "MinValue": 5,
+          "MaxValue": 15,
+          "Increment": 1
+        },
+        "Rare": {
+          "MinValue": 10,
+          "MaxValue": 20,
+          "Increment": 1
+        },
+        "Epic": {
+          "MinValue": 15,
+          "MaxValue": 30,
+          "Increment": 1
+        },
+        "Legendary": {
+          "MinValue": 25,
+          "MaxValue": 40,
+          "Increment": 1
+        },
+        "Mythic": {
+          "MinValue": 35,
+          "MaxValue": 50,
+          "Increment": 1
+        },
+        "Ancient": {
+          "MinValue": 45,
+          "MaxValue": 60,
+          "Increment": 1
+        }
+      },
+      "Config": {
+        "Max": 75
+      },
+      "SelectionWeight": 10,
+      "Prefixes": [
+        "$mod_epicloot_me_greenthumb_prefix1"
+      ],
+      "Suffixes": [
+        "$mod_epicloot_me_greenthumb_suffix1"
+      ]
+    },
+    {
       "Type": "RecallWeapon",
       "DisplayText": "$mod_epicloot_me_recallweapon_display",
       "Description": "$mod_epicloot_me_recallweapon_desc",
@@ -6713,10 +6835,72 @@
       ]
     },
     {
+      "Type": "CloseQuarter",
+      "DisplayText": "$mod_epicloot_me_closequarter_display",
+      "Description": "$mod_epicloot_me_closequarter_desc",
+      "Requirements": {
+        "AllowedItemTypes": [
+          "OneHandedWeapon",
+          "TwoHandedWeapon",
+          "TwoHandedWeaponLeft"
+        ],
+        "ExcludedSkillTypes": [
+          "Pickaxes",
+          "ElementalMagic",
+          "BloodMagic"
+        ],
+        "ExcludedItemNames": [
+          "$item_fishingrod"
+        ]
+      },
+      "ValuesPerRarity": {
+        "Magic": {
+          "MinValue": 20,
+          "MaxValue": 30,
+          "Increment": 1
+        },
+        "Rare": {
+          "MinValue": 30,
+          "MaxValue": 40,
+          "Increment": 1
+        },
+        "Epic": {
+          "MinValue": 40,
+          "MaxValue": 55,
+          "Increment": 1
+        },
+        "Legendary": {
+          "MinValue": 55,
+          "MaxValue": 70,
+          "Increment": 1
+        },
+        "Mythic": {
+          "MinValue": 70,
+          "MaxValue": 85,
+          "Increment": 1
+        },
+        "Ancient": {
+          "MinValue": 85,
+          "MaxValue": 100,
+          "Increment": 1
+        }
+      },
+      "SelectionWeight": 10,
+      "Prefixes": [
+        "$mod_epicloot_me_closequarter_prefix1"
+      ],
+      "Suffixes": [
+        "$mod_epicloot_me_closequarter_suffix1"
+      ]
+    },
+    {
       "Type": "Luck",
       "DisplayText": "$mod_epicloot_me_luck_display",
       "Description": "$mod_epicloot_me_luck_desc",
       "Requirements": {
+        "ExclusiveEffectTypes": [
+          "Prosperity"
+        ],
         "AllowedItemTypes": [
           "Helmet",
           "Chest",
@@ -6764,6 +6948,66 @@
       ],
       "Suffixes": [
         "$mod_epicloot_me_luck_suffix1"
+      ]
+    },
+    {
+      "Type": "Prosperity",
+      "DisplayText": "$mod_epicloot_me_prosperity_display",
+      "Description": "$mod_epicloot_me_prosperity_desc",
+      "Requirements": {
+        "ExclusiveEffectTypes": [
+          "Luck"
+        ],
+        "AllowedItemTypes": [
+          "Helmet",
+          "Chest",
+          "Legs",
+          "Shoulder",
+          "Utility",
+          "Trinket"
+        ]
+      },
+      "ValuesPerRarity": {
+        "Magic": {
+          "MinValue": 1,
+          "MaxValue": 9,
+          "Increment": 1
+        },
+        "Rare": {
+          "MinValue": 3,
+          "MaxValue": 12,
+          "Increment": 1
+        },
+        "Epic": {
+          "MinValue": 6,
+          "MaxValue": 16,
+          "Increment": 1
+        },
+        "Legendary": {
+          "MinValue": 9,
+          "MaxValue": 22,
+          "Increment": 1
+        },
+        "Mythic": {
+          "MinValue": 12,
+          "MaxValue": 30,
+          "Increment": 1
+        },
+        "Ancient": {
+          "MinValue": 15,
+          "MaxValue": 38,
+          "Increment": 1
+        }
+      },
+      "Config": {
+        "BonusRollsMax": 3
+      },
+      "SelectionWeight": 5,
+      "Prefixes": [
+        "$mod_epicloot_me_prosperity_prefix1"
+      ],
+      "Suffixes": [
+        "$mod_epicloot_me_prosperity_suffix1"
       ]
     },
     {
@@ -7232,6 +7476,7 @@
     {
       "Type": "Bulwark",
       "DisplayText": "$mod_epicloot_set_me_bulwark",
+      "Description": "$mod_epicloot_set_me_bulwark_desc",
       "Requirements": {
         "NoRoll": true
       },
@@ -7257,6 +7502,7 @@
     {
       "Type": "Undying",
       "DisplayText": "$mod_epicloot_set_me_undying",
+      "Description": "$mod_epicloot_set_me_undying_desc",
       "Requirements": {
         "NoRoll": true
       },
@@ -7265,6 +7511,7 @@
     {
       "Type": "FrostDamageAOE",
       "DisplayText": "$mod_epicloot_set_me_frostdamageaoe_display",
+      "Description": "$mod_epicloot_set_me_frostdamageaoe_desc",
       "Requirements": {
         "NoRoll": true
       },
@@ -7289,10 +7536,697 @@
     {
       "Type": "Berserker",
       "DisplayText": "$mod_epicloot_set_me_berserker",
+      "Description": "$mod_epicloot_set_me_berserker_desc",
       "Requirements": {
         "NoRoll": true
       },
       "Ability": "Berserker"
+    },
+    {
+      "Type": "OverwhelmingLaunch",
+      "DisplayText": "$mod_epicloot_set_me_overwhelminglaunch",
+      "Description": "$mod_epicloot_set_me_overwhelminglaunch_desc",
+      "Requirements": {
+        "NoRoll": true
+      },
+      "CanBeAugmented": false,
+      "CanBeDisenchanted": false,
+      "CanBeRunified": false,
+      "ValuesPerRarity": {
+        "Legendary": {
+          "MinValue": 50,
+          "MaxValue": 50,
+          "Increment": 1
+        },
+        "Mythic": {
+          "MinValue": 50,
+          "MaxValue": 50,
+          "Increment": 1
+        },
+        "Ancient": {
+          "MinValue": 50,
+          "MaxValue": 50,
+          "Increment": 1
+        }
+      },
+      "Config": {
+        "MaxDistance": 30,
+        "ProjectileSpeed": 25,
+        "HangTime": 0.2,
+        "Radius": 4,
+        "StaggerMultiplier": 2,
+        "CostScale": 3,
+        "ThrowAnimationSpeed": 1.3
+      }
+    },
+    {
+      "Type": "Artillery",
+      "DisplayText": "$mod_epicloot_set_me_artillery",
+      "Description": "$mod_epicloot_set_me_artillery_desc",
+      "Requirements": {
+        "NoRoll": true
+      },
+      "CanBeAugmented": false,
+      "CanBeDisenchanted": false,
+      "CanBeRunified": false,
+      "ValuesPerRarity": {
+        "Magic": { "MinValue": 10, "MaxValue": 10, "Increment": 1 },
+        "Rare": { "MinValue": 15, "MaxValue": 15, "Increment": 1 },
+        "Epic": { "MinValue": 20, "MaxValue": 20, "Increment": 1 },
+        "Legendary": { "MinValue": 25, "MaxValue": 25, "Increment": 1 },
+        "Mythic": { "MinValue": 30, "MaxValue": 30, "Increment": 1 },
+        "Ancient": { "MinValue": 35, "MaxValue": 35, "Increment": 1 }
+      },
+      "Config": {
+        "MaxDistance": 60,
+        "Gravity": 30,
+        "ArcHeight": 0.2,
+        "Radius": 2.5,
+        "TripleShotSpread": 0.15
+      }
+    },
+    {
+      "Type": "Assassin",
+      "DisplayText": "$mod_epicloot_set_me_assassin",
+      "Description": "$mod_epicloot_set_me_assassin_desc",
+      "Requirements": {
+        "NoRoll": true
+      },
+      "CanBeAugmented": false,
+      "CanBeDisenchanted": false,
+      "CanBeRunified": false,
+      "ValuesPerRarity": {
+        "Magic": { "MinValue": 125, "MaxValue": 125, "Increment": 1 },
+        "Rare": { "MinValue": 150, "MaxValue": 150, "Increment": 1 },
+        "Epic": { "MinValue": 175, "MaxValue": 175, "Increment": 1 },
+        "Legendary": { "MinValue": 200, "MaxValue": 200, "Increment": 1 },
+        "Mythic": { "MinValue": 225, "MaxValue": 225, "Increment": 1 },
+        "Ancient": { "MinValue": 250, "MaxValue": 250, "Increment": 1 }
+      },
+      "Config": {
+        "MaxDistance": 20,
+        "HoverTime": 2,
+        "Cooldown": 340,
+        "CooldownPerValue": 0.8,
+        "MinCooldown": 30
+      }
+    },
+    {
+      "Type": "CoilingVenom",
+      "DisplayText": "$mod_epicloot_set_me_coilingvenom",
+      "Description": "$mod_epicloot_set_me_coilingvenom_desc",
+      "Requirements": {
+        "NoRoll": true
+      },
+      "CanBeAugmented": false,
+      "CanBeDisenchanted": false,
+      "CanBeRunified": false,
+      "ValuesPerRarity": {
+        "Magic": { "MinValue": 20, "MaxValue": 20, "Increment": 1 },
+        "Rare": { "MinValue": 30, "MaxValue": 30, "Increment": 1 },
+        "Epic": { "MinValue": 40, "MaxValue": 40, "Increment": 1 },
+        "Legendary": { "MinValue": 50, "MaxValue": 50, "Increment": 1 },
+        "Mythic": { "MinValue": 60, "MaxValue": 60, "Increment": 1 },
+        "Ancient": { "MinValue": 70, "MaxValue": 70, "Increment": 1 }
+      }
+    },
+    {
+      "Type": "NineSteps",
+      "DisplayText": "$mod_epicloot_set_me_ninesteps",
+      "Description": "$mod_epicloot_set_me_ninesteps_desc",
+      "Requirements": {
+        "NoRoll": true
+      },
+      "CanBeAugmented": false,
+      "CanBeDisenchanted": false,
+      "CanBeRunified": false,
+      "ValuesPerRarity": {
+        "Magic": { "MinValue": 145, "MaxValue": 145, "Increment": 1 },
+        "Rare": { "MinValue": 130, "MaxValue": 130, "Increment": 1 },
+        "Epic": { "MinValue": 115, "MaxValue": 115, "Increment": 1 },
+        "Legendary": { "MinValue": 100, "MaxValue": 100, "Increment": 1 },
+        "Mythic": { "MinValue": 85, "MaxValue": 85, "Increment": 1 },
+        "Ancient": { "MinValue": 70, "MaxValue": 70, "Increment": 1 }
+      },
+      "Config": {
+        "Steps": 9,
+        "StepInterval": 0.5,
+        "Slow": 40
+      }
+    },
+    {
+      "Type": "SlightlyWeakToFire",
+      "DisplayText": "$mod_epicloot_me_slightlyweaktofire_display",
+      "Description": "$mod_epicloot_me_slightlyweaktofire_desc",
+      "Requirements": {
+        "NoRoll": true
+      },
+      "CanBeAugmented": false,
+      "CanBeDisenchanted": false,
+      "CanBeRunified": false
+    },
+    {
+      "Type": "WeakToFire",
+      "DisplayText": "$mod_epicloot_me_weaktofire_display",
+      "Description": "$mod_epicloot_me_weaktofire_desc",
+      "Requirements": {
+        "NoRoll": true
+      },
+      "CanBeAugmented": false,
+      "CanBeDisenchanted": false,
+      "CanBeRunified": false
+    },
+    {
+      "Type": "VeryWeakToFire",
+      "DisplayText": "$mod_epicloot_me_veryweaktofire_display",
+      "Description": "$mod_epicloot_me_veryweaktofire_desc",
+      "Requirements": {
+        "NoRoll": true
+      },
+      "CanBeAugmented": false,
+      "CanBeDisenchanted": false,
+      "CanBeRunified": false
+    },
+    {
+      "Type": "GiantsBlood",
+      "DisplayText": "$mod_epicloot_set_me_giantsblood",
+      "Description": "$mod_epicloot_set_me_giantsblood_desc",
+      "Requirements": {
+        "NoRoll": true
+      },
+      "CanBeAugmented": false,
+      "CanBeDisenchanted": false,
+      "CanBeRunified": false,
+      "ValuesPerRarity": {
+        "Legendary": { "MinValue": 10, "MaxValue": 10, "Increment": 1 },
+        "Mythic": { "MinValue": 10, "MaxValue": 10, "Increment": 1 },
+        "Ancient": { "MinValue": 10, "MaxValue": 10, "Increment": 1 }
+      }
+    },
+    {
+      "Type": "Hexen",
+      "DisplayText": "$mod_epicloot_set_me_hexen",
+      "Description": "$mod_epicloot_set_me_hexen_desc",
+      "Requirements": {
+        "NoRoll": true
+      },
+      "CanBeAugmented": false,
+      "CanBeDisenchanted": false,
+      "CanBeRunified": false,
+      "ValuesPerRarity": {
+        "Magic": { "MinValue": 6, "MaxValue": 6, "Increment": 0.5 },
+        "Rare": { "MinValue": 5, "MaxValue": 5, "Increment": 0.5 },
+        "Epic": { "MinValue": 4, "MaxValue": 4, "Increment": 0.5 },
+        "Legendary": { "MinValue": 3, "MaxValue": 3, "Increment": 0.5 },
+        "Mythic": { "MinValue": 2.5, "MaxValue": 2.5, "Increment": 0.5 },
+        "Ancient": { "MinValue": 2, "MaxValue": 2, "Increment": 0.5 }
+      },
+      "Config": {
+        "Scale": 0.6,
+        "MinEitr": 10
+      }
+    },
+    {
+      "Type": "Sniper",
+      "DisplayText": "$mod_epicloot_set_me_sniper",
+      "Description": "$mod_epicloot_set_me_sniper_desc",
+      "Requirements": {
+        "NoRoll": true
+      },
+      "CanBeAugmented": false,
+      "CanBeDisenchanted": false,
+      "CanBeRunified": false,
+      "ValuesPerRarity": {
+        "Magic": { "MinValue": 0.5, "MaxValue": 0.5, "Increment": 0.1 },
+        "Rare": { "MinValue": 0.6, "MaxValue": 0.6, "Increment": 0.1 },
+        "Epic": { "MinValue": 0.7, "MaxValue": 0.7, "Increment": 0.1 },
+        "Legendary": { "MinValue": 0.8, "MaxValue": 0.8, "Increment": 0.1 },
+        "Mythic": { "MinValue": 1, "MaxValue": 1, "Increment": 0.1 },
+        "Ancient": { "MinValue": 1.2, "MaxValue": 1.2, "Increment": 0.1 }
+      },
+      "Config": {
+        "SpeedBonusPerValue": 1.25,
+        "DrawTimeBonusPerValue": 1.25,
+        "MinDistance": 15
+      }
+    },
+    {
+      "Type": "Frostwalker",
+      "DisplayText": "$mod_epicloot_set_me_frostwalker",
+      "Description": "$mod_epicloot_set_me_frostwalker_desc",
+      "Requirements": {
+        "NoRoll": true
+      },
+      "CanBeAugmented": false,
+      "CanBeDisenchanted": false,
+      "CanBeRunified": false,
+      "ValuesPerRarity": {
+        "Magic": { "MinValue": 4.5, "MaxValue": 4.5, "Increment": 0.5 },
+        "Rare": { "MinValue": 4, "MaxValue": 4, "Increment": 0.5 },
+        "Epic": { "MinValue": 3.5, "MaxValue": 3.5, "Increment": 0.5 },
+        "Legendary": { "MinValue": 3, "MaxValue": 3, "Increment": 0.5 },
+        "Mythic": { "MinValue": 2.5, "MaxValue": 2.5, "Increment": 0.5 },
+        "Ancient": { "MinValue": 2, "MaxValue": 2, "Increment": 0.5 }
+      },
+      "Config": {
+        "AshlandsDrainMultiplier": 3,
+        "MinEitr": 10,
+        "Radius": 3,
+        "ChunkSize": 4
+      }
+    },
+    {
+      "Type": "SpiritAnimal",
+      "DisplayText": "$mod_epicloot_set_me_spiritanimal",
+      "Description": "$mod_epicloot_set_me_spiritanimal_desc",
+      "Requirements": {
+        "NoRoll": true
+      },
+      "CanBeAugmented": false,
+      "CanBeDisenchanted": false,
+      "CanBeRunified": false,
+      "ValuesPerRarity": {
+        "Magic": { "MinValue": 100, "MaxValue": 100, "Increment": 5 },
+        "Rare": { "MinValue": 100, "MaxValue": 100, "Increment": 5 },
+        "Epic": { "MinValue": 100, "MaxValue": 100, "Increment": 5 },
+        "Legendary": { "MinValue": 100, "MaxValue": 100, "Increment": 5 },
+        "Mythic": { "MinValue": 115, "MaxValue": 115, "Increment": 5 },
+        "Ancient": { "MinValue": 130, "MaxValue": 130, "Increment": 5 }
+      },
+      "Config": {
+        "Lifetime": 120,
+        "ReturnDelay": 30,
+        "CombatTimeout": 10,
+        "LeashDistance": 60
+      }
+    },
+    {
+      "Type": "Earthshaker",
+      "DisplayText": "$mod_epicloot_set_me_earthshaker",
+      "Description": "$mod_epicloot_set_me_earthshaker_desc",
+      "Requirements": {
+        "NoRoll": true
+      },
+      "CanBeAugmented": false,
+      "CanBeDisenchanted": false,
+      "CanBeRunified": false,
+      "ValuesPerRarity": {
+        "Magic": { "MinValue": 50, "MaxValue": 50, "Increment": 50 },
+        "Rare": { "MinValue": 100, "MaxValue": 100, "Increment": 50 },
+        "Epic": { "MinValue": 150, "MaxValue": 150, "Increment": 50 },
+        "Legendary": { "MinValue": 200, "MaxValue": 200, "Increment": 50 },
+        "Mythic": { "MinValue": 250, "MaxValue": 250, "Increment": 50 },
+        "Ancient": { "MinValue": 300, "MaxValue": 300, "Increment": 50 }
+      },
+      "Config": {
+        "Radius": 5,
+        "FallPerRadiusMetre": 15,
+        "MaxRadius": 0,
+        "MinHeight": 3,
+        "LowDivePenalty": 50,
+        "StaminaCost": 25,
+        "DiveSpeed": 30,
+        "MinDiveAngle": 45,
+        "SteerRate": 60,
+        "StaggerMultiplier": 2,
+        "PushForce": 80,
+        "WeightThreshold": 300,
+        "WeightPerPercent": 10,
+        "MaxWeightBonus": 300,
+        "FallThreshold": 5,
+        "FallBonusPerMetre": 2,
+        "MaxFallBonus": 0
+      }
+    },
+    {
+      "Type": "PiercingBolts",
+      "DisplayText": "$mod_epicloot_set_me_piercingbolts",
+      "Description": "$mod_epicloot_set_me_piercingbolts_desc",
+      "Requirements": {
+        "NoRoll": true
+      },
+      "CanBeAugmented": false,
+      "CanBeDisenchanted": false,
+      "CanBeRunified": false,
+      "ValuesPerRarity": {
+        "Magic": { "MinValue": 50, "MaxValue": 50, "Increment": 1 },
+        "Rare": { "MinValue": 55, "MaxValue": 55, "Increment": 1 },
+        "Epic": { "MinValue": 65, "MaxValue": 65, "Increment": 1 },
+        "Legendary": { "MinValue": 75, "MaxValue": 75, "Increment": 1 },
+        "Mythic": { "MinValue": 85, "MaxValue": 85, "Increment": 1 },
+        "Ancient": { "MinValue": 95, "MaxValue": 95, "Increment": 1 }
+      }
+    },
+    {
+      "Type": "ElementalArchery",
+      "DisplayText": "$mod_epicloot_set_me_elementalarchery",
+      "Description": "$mod_epicloot_set_me_elementalarchery_desc",
+      "Requirements": {
+        "NoRoll": true
+      },
+      "CanBeAugmented": false,
+      "CanBeDisenchanted": false,
+      "CanBeRunified": false
+    },
+    {
+      "Type": "ConjuredArrows",
+      "DisplayText": "$mod_epicloot_set_me_conjuredarrows",
+      "Description": "$mod_epicloot_set_me_conjuredarrows_desc",
+      "Requirements": {
+        "NoRoll": true
+      },
+      "CanBeAugmented": false,
+      "CanBeDisenchanted": false,
+      "CanBeRunified": false,
+      "ValuesPerRarity": {
+        "Magic": { "MinValue": 50, "MaxValue": 50, "Increment": 1 },
+        "Rare": { "MinValue": 60, "MaxValue": 60, "Increment": 1 },
+        "Epic": { "MinValue": 70, "MaxValue": 70, "Increment": 1 },
+        "Legendary": { "MinValue": 80, "MaxValue": 80, "Increment": 1 },
+        "Mythic": { "MinValue": 90, "MaxValue": 90, "Increment": 1 },
+        "Ancient": { "MinValue": 100, "MaxValue": 100, "Increment": 1 }
+      },
+      "Config": {
+        "EitrCost": 8
+      }
+    },
+    {
+      "Type": "ConvertHealthToEitr",
+      "DisplayText": "$mod_epicloot_set_me_converthealthtoeitr",
+      "Description": "$mod_epicloot_set_me_converthealthtoeitr_desc",
+      "Requirements": {
+        "NoRoll": true
+      },
+      "CanBeAugmented": false,
+      "CanBeDisenchanted": false,
+      "CanBeRunified": false,
+      "ValuesPerRarity": {
+        "Magic": { "MinValue": 20, "MaxValue": 20, "Increment": 1 },
+        "Rare": { "MinValue": 20, "MaxValue": 20, "Increment": 1 },
+        "Epic": { "MinValue": 20, "MaxValue": 20, "Increment": 1 },
+        "Legendary": { "MinValue": 20, "MaxValue": 20, "Increment": 1 },
+        "Mythic": { "MinValue": 20, "MaxValue": 20, "Increment": 1 },
+        "Ancient": { "MinValue": 20, "MaxValue": 20, "Increment": 1 }
+      }
+    },
+    {
+      "Type": "DeepWell",
+      "DisplayText": "$mod_epicloot_set_me_deepwell",
+      "Description": "$mod_epicloot_set_me_deepwell_desc",
+      "Requirements": {
+        "NoRoll": true
+      },
+      "CanBeAugmented": false,
+      "CanBeDisenchanted": false,
+      "CanBeRunified": false,
+      "ValuesPerRarity": {
+        "Magic": { "MinValue": 30, "MaxValue": 30, "Increment": 1 },
+        "Rare": { "MinValue": 30, "MaxValue": 30, "Increment": 1 },
+        "Epic": { "MinValue": 30, "MaxValue": 30, "Increment": 1 },
+        "Legendary": { "MinValue": 30, "MaxValue": 30, "Increment": 1 },
+        "Mythic": { "MinValue": 30, "MaxValue": 30, "Increment": 1 },
+        "Ancient": { "MinValue": 30, "MaxValue": 30, "Increment": 1 }
+      },
+      "Config": {
+        "EitrRegenReduction": 30
+      }
+    },
+    {
+      "Type": "EitrBarrier",
+      "DisplayText": "$mod_epicloot_set_me_eitrbarrier",
+      "Description": "$mod_epicloot_set_me_eitrbarrier_desc",
+      "Requirements": {
+        "NoRoll": true
+      },
+      "CanBeAugmented": false,
+      "CanBeDisenchanted": false,
+      "CanBeRunified": false,
+      "ValuesPerRarity": {
+        "Magic": { "MinValue": 10, "MaxValue": 10, "Increment": 1 },
+        "Rare": { "MinValue": 15, "MaxValue": 15, "Increment": 1 },
+        "Epic": { "MinValue": 20, "MaxValue": 20, "Increment": 1 },
+        "Legendary": { "MinValue": 25, "MaxValue": 25, "Increment": 1 },
+        "Mythic": { "MinValue": 30, "MaxValue": 30, "Increment": 1 },
+        "Ancient": { "MinValue": 35, "MaxValue": 35, "Increment": 1 }
+      },
+      "Config": {
+        "Cooldown": 5,
+        "MinEitr": 5,
+        "DamagePerEitr": 1
+      }
+    },
+    {
+      "Type": "Interconnected",
+      "DisplayText": "$mod_epicloot_set_me_interconnected",
+      "Description": "$mod_epicloot_set_me_interconnected_desc",
+      "Requirements": {
+        "NoRoll": true
+      },
+      "CanBeAugmented": false,
+      "CanBeDisenchanted": false,
+      "CanBeRunified": false,
+      "ValuesPerRarity": {
+        "Magic": { "MinValue": 5, "MaxValue": 5, "Increment": 1 },
+        "Rare": { "MinValue": 10, "MaxValue": 10, "Increment": 1 },
+        "Epic": { "MinValue": 15, "MaxValue": 15, "Increment": 1 },
+        "Legendary": { "MinValue": 20, "MaxValue": 20, "Increment": 1 },
+        "Mythic": { "MinValue": 25, "MaxValue": 25, "Increment": 1 },
+        "Ancient": { "MinValue": 30, "MaxValue": 30, "Increment": 1 }
+      }
+    },
+    {
+      "Type": "AddAllSkills",
+      "DisplayText": "$mod_epicloot_set_me_addallskills",
+      "Description": "$mod_epicloot_set_me_addallskills_desc",
+      "Requirements": {
+        "NoRoll": true
+      },
+      "CanBeAugmented": false,
+      "CanBeDisenchanted": false,
+      "CanBeRunified": false,
+      "ValuesPerRarity": {
+        "Magic": { "MinValue": 5, "MaxValue": 5, "Increment": 1 },
+        "Rare": { "MinValue": 5, "MaxValue": 5, "Increment": 1 },
+        "Epic": { "MinValue": 5, "MaxValue": 5, "Increment": 1 },
+        "Legendary": { "MinValue": 5, "MaxValue": 5, "Increment": 1 },
+        "Mythic": { "MinValue": 5, "MaxValue": 5, "Increment": 1 },
+        "Ancient": { "MinValue": 5, "MaxValue": 5, "Increment": 1 }
+      }
+    },
+    {
+      "Type": "EitrInfusion",
+      "DisplayText": "$mod_epicloot_set_me_eitrinfusion",
+      "Description": "$mod_epicloot_set_me_eitrinfusion_desc",
+      "Requirements": {
+        "NoRoll": true
+      },
+      "CanBeAugmented": false,
+      "CanBeDisenchanted": false,
+      "CanBeRunified": false,
+      "ValuesPerRarity": {
+        "Magic": { "MinValue": 25, "MaxValue": 25, "Increment": 1 },
+        "Rare": { "MinValue": 30, "MaxValue": 30, "Increment": 1 },
+        "Epic": { "MinValue": 35, "MaxValue": 35, "Increment": 1 },
+        "Legendary": { "MinValue": 40, "MaxValue": 40, "Increment": 1 },
+        "Mythic": { "MinValue": 45, "MaxValue": 45, "Increment": 1 },
+        "Ancient": { "MinValue": 50, "MaxValue": 50, "Increment": 1 }
+      },
+      "Config": {
+        "MinEitr": 20,
+        "EitrPerSecond": 4,
+        "MaxSeconds": 0
+      }
+    },
+    {
+      "Type": "QuarryMark",
+      "DisplayText": "$mod_epicloot_set_me_quarrymark",
+      "Description": "$mod_epicloot_set_me_quarrymark_desc",
+      "Requirements": {
+        "NoRoll": true
+      },
+      "CanBeAugmented": false,
+      "CanBeDisenchanted": false,
+      "CanBeRunified": false,
+      "ValuesPerRarity": {
+        "Magic": { "MinValue": 25, "MaxValue": 25, "Increment": 1 },
+        "Rare": { "MinValue": 50, "MaxValue": 50, "Increment": 1 },
+        "Epic": { "MinValue": 75, "MaxValue": 75, "Increment": 1 },
+        "Legendary": { "MinValue": 100, "MaxValue": 100, "Increment": 1 },
+        "Mythic": { "MinValue": 125, "MaxValue": 125, "Increment": 1 },
+        "Ancient": { "MinValue": 150, "MaxValue": 150, "Increment": 1 }
+      },
+      "Config": {
+        "MarkDuration": 10,
+        "StaminaRefund": 25
+      }
+    },
+    {
+      "Type": "HelsHarvest",
+      "DisplayText": "$mod_epicloot_set_me_helsharvest",
+      "Description": "$mod_epicloot_set_me_helsharvest_desc",
+      "Requirements": {
+        "NoRoll": true
+      },
+      "CanBeAugmented": false,
+      "CanBeDisenchanted": false,
+      "CanBeRunified": false,
+      "ValuesPerRarity": {
+        "Magic": { "MinValue": 1, "MaxValue": 1, "Increment": 1 },
+        "Rare": { "MinValue": 1, "MaxValue": 1, "Increment": 1 },
+        "Epic": { "MinValue": 1, "MaxValue": 1, "Increment": 1 },
+        "Legendary": { "MinValue": 2, "MaxValue": 2, "Increment": 1 },
+        "Mythic": { "MinValue": 3, "MaxValue": 3, "Increment": 1 },
+        "Ancient": { "MinValue": 4, "MaxValue": 4, "Increment": 1 }
+      },
+      "Config": {
+        "Lifetime": 30,
+        "SkillFactorPerLevel": 0.02
+      }
+    },
+    {
+      "Type": "Vanish",
+      "DisplayText": "$mod_epicloot_set_me_vanish",
+      "Description": "$mod_epicloot_set_me_vanish_desc",
+      "Requirements": {
+        "NoRoll": true
+      },
+      "CanBeAugmented": false,
+      "CanBeDisenchanted": false,
+      "CanBeRunified": false,
+      "ValuesPerRarity": {
+        "Magic": { "MinValue": 1.5, "MaxValue": 1.5, "Increment": 0.5 },
+        "Rare": { "MinValue": 2, "MaxValue": 2, "Increment": 0.5 },
+        "Epic": { "MinValue": 2.5, "MaxValue": 2.5, "Increment": 0.5 },
+        "Legendary": { "MinValue": 3, "MaxValue": 3, "Increment": 0.5 },
+        "Mythic": { "MinValue": 4, "MaxValue": 4, "Increment": 0.5 },
+        "Ancient": { "MinValue": 5, "MaxValue": 5, "Increment": 0.5 }
+      },
+      "Config": {
+        "Cooldown": 20,
+        "Radius": 15
+      }
+    },
+    {
+      "Type": "Firebrand",
+      "DisplayText": "$mod_epicloot_set_me_firebrand",
+      "Description": "$mod_epicloot_set_me_firebrand_desc",
+      "Requirements": {
+        "NoRoll": true
+      },
+      "CanBeAugmented": false,
+      "CanBeDisenchanted": false,
+      "CanBeRunified": false,
+      "ValuesPerRarity": {
+        "Magic": { "MinValue": 25, "MaxValue": 25, "Increment": 25 },
+        "Rare": { "MinValue": 35, "MaxValue": 35, "Increment": 25 },
+        "Epic": { "MinValue": 50, "MaxValue": 50, "Increment": 25 },
+        "Legendary": { "MinValue": 75, "MaxValue": 75, "Increment": 25 },
+        "Mythic": { "MinValue": 100, "MaxValue": 100, "Increment": 25 },
+        "Ancient": { "MinValue": 125, "MaxValue": 125, "Increment": 25 }
+      },
+      "Config": {
+        "Radius": 3,
+        "SecondaryPower": 0.5,
+        "PushForce": 40
+      }
+    },
+    {
+      "Type": "LifeSiphon",
+      "DisplayText": "$mod_epicloot_set_me_lifesiphon",
+      "Description": "$mod_epicloot_set_me_lifesiphon_desc",
+      "Requirements": {
+        "NoRoll": true
+      },
+      "CanBeAugmented": false,
+      "CanBeDisenchanted": false,
+      "CanBeRunified": false,
+      "ValuesPerRarity": {
+        "Magic": { "MinValue": 1, "MaxValue": 1, "Increment": 1 },
+        "Rare": { "MinValue": 2, "MaxValue": 2, "Increment": 1 },
+        "Epic": { "MinValue": 3, "MaxValue": 3, "Increment": 1 },
+        "Legendary": { "MinValue": 4, "MaxValue": 4, "Increment": 1 },
+        "Mythic": { "MinValue": 5, "MaxValue": 5, "Increment": 1 },
+        "Ancient": { "MinValue": 6, "MaxValue": 6, "Increment": 1 }
+      },
+      "Config": {
+        "Duration": 30
+      }
+    },
+    {
+      "Type": "KineticQuake",
+      "DisplayText": "$mod_epicloot_set_me_kineticquake",
+      "Description": "$mod_epicloot_set_me_kineticquake_desc",
+      "Requirements": {
+        "NoRoll": true
+      },
+      "CanBeAugmented": false,
+      "CanBeDisenchanted": false,
+      "CanBeRunified": false,
+      "ValuesPerRarity": {
+        "Magic": { "MinValue": 22, "MaxValue": 22, "Increment": 1 },
+        "Rare": { "MinValue": 20, "MaxValue": 20, "Increment": 1 },
+        "Epic": { "MinValue": 18, "MaxValue": 18, "Increment": 1 },
+        "Legendary": { "MinValue": 16, "MaxValue": 16, "Increment": 1 },
+        "Mythic": { "MinValue": 14, "MaxValue": 14, "Increment": 1 },
+        "Ancient": { "MinValue": 12, "MaxValue": 12, "Increment": 1 }
+      },
+      "Config": {
+        "DamagePercent": 300,
+        "Length": 12,
+        "Width": 4,
+        "StepSpacing": 2,
+        "WaveSpeed": 30,
+        "PushForce": 80,
+        "StaggerMultiplier": 2,
+        "MaxStepRise": 2.5,
+        "FxScale": 0.5
+      }
+    },
+    {
+      "Type": "ShieldThrow",
+      "DisplayText": "$mod_epicloot_set_me_shieldthrow",
+      "Description": "$mod_epicloot_set_me_shieldthrow_desc",
+      "Requirements": {
+        "NoRoll": true
+      },
+      "CanBeAugmented": false,
+      "CanBeDisenchanted": false,
+      "CanBeRunified": false,
+      "ValuesPerRarity": {
+        "Legendary": { "MinValue": 100, "MaxValue": 100, "Increment": 1 },
+        "Mythic": { "MinValue": 125, "MaxValue": 125, "Increment": 1 },
+        "Ancient": { "MinValue": 150, "MaxValue": 150, "Increment": 1 }
+      },
+      "Config": {
+        "MaxDistance": 15,
+        "ProjectileSpeed": 30,
+        "HangTime": 0.1,
+        "ThrowAnimationSpeed": 1.3,
+        "StaggerMultiplier": 1.5,
+        "HitRadius": 0.75,
+        "StaminaCost": 20,
+        "MaxGaugeBonusPercent": 300,
+        "GaugeCapacity": 5,
+        "GaugeDecayDelay": 10,
+        "GaugeDecayRate": 20,
+        "PushForce": 40
+      }
+    },
+    {
+      "Type": "ReduceStaggerTaken",
+      "DisplayText": "$mod_epicloot_me_reducestaggertaken_display",
+      "Description": "$mod_epicloot_me_reducestaggertaken_desc",
+      "Requirements": {
+        "NoRoll": true
+      },
+      "CanBeAugmented": false,
+      "CanBeDisenchanted": false,
+      "CanBeRunified": false,
+      "ValuesPerRarity": {
+        "Legendary": { "MinValue": 30, "MaxValue": 30, "Increment": 1 },
+        "Mythic": { "MinValue": 30, "MaxValue": 30, "Increment": 1 },
+        "Ancient": { "MinValue": 30, "MaxValue": 30, "Increment": 1 }
+      }
     }
   ]
 }

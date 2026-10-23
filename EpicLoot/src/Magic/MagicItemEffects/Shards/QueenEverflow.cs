@@ -34,6 +34,7 @@ namespace EpicLoot.MagicItemEffects.Shards {
         private static readonly int BuffHash = BuffName.GetStableHashCode();
         private static SE_QueenEverflow _buffPrototype;
         private static bool _iconMissingLogged;
+        private static readonly KillCredit _credit = new KillCredit();
 
         // Postfix handler invoked by CharacterDamageDispatch (on-hit reaction).
         public static void OnDamageDealt(Character __instance, HitData hit, Character attacker) {
@@ -43,9 +44,10 @@ namespace EpicLoot.MagicItemEffects.Shards {
                 return;
             }
 
-            // Only fire on a kill. Against a remote-owned victim the RPC carrying this hit has not executed
-            // yet, so IsLethalHit estimates the post-hit health; against one this client owns, it has.
-            if (!MagicEffectsHelper.IsLethalHit(__instance, hit)) {
+            // Only fire on a kill, and once per kill however many hits land as the victim dies (KillCredit).
+            // Against a remote-owned victim the RPC carrying this hit has not executed yet, so the post-hit
+            // health is estimated; against one this client owns, it has.
+            if (!_credit.TryClaim(__instance, hit)) {
                 return;
             }
 

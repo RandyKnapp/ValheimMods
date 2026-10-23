@@ -1,4 +1,5 @@
-﻿using EpicLoot.General;
+﻿using EpicLoot.Config;
+using EpicLoot.General;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -31,6 +32,25 @@ namespace EpicLoot.MagicItemEffects
             return name + "LowHealth";
         }
 
+        /// <summary>
+        /// The enchantments that only act at critical health: every ...LowHealth variant (which includes the
+        /// ModifyLowHealth threshold) and the two meads that fire there. The suffix is matched rather than a
+        /// list kept, so a variant added later, or one another mod registers, is covered too.
+        /// </summary>
+        public static bool IsHealthCriticalEffect(string effectType)
+        {
+            return effectType != null &&
+                (effectType.EndsWith("LowHealth", StringComparison.Ordinal) ||
+                 effectType == MagicEffectType.InstantMead || effectType == MagicEffectType.AutoMead);
+        }
+
+        /// <summary>False for a health critical effect while the Health Critical Enchantments config is off.</summary>
+        public static bool MayRoll(string effectType)
+        {
+            return ELConfig.HealthCriticalEffectsEnabled == null || ELConfig.HealthCriticalEffectsEnabled.Value ||
+                !IsHealthCriticalEffect(effectType);
+        }
+
         public static bool PlayerHasLowHealth(Player player)
         {
             return player != null && player.GetHealth() / player.GetMaxHealth() <= Mathf.Min(GetLowHealthPercentage(player), 1.0f);
@@ -58,6 +78,17 @@ namespace EpicLoot.MagicItemEffects
             return lowHealthThreshold;
         }
 
+        public static float GetLowHealthDisplayPercent(Player player)
+        {
+            return Mathf.Round(Mathf.Clamp01(GetLowHealthPercentage(player)) * 1000f) / 10f;
+        }
+
+        public static bool PlayerHasHealthCriticalEffects(Player player)
+        {
+            return player != null && player.GetAllActiveMagicEffects().Exists(x =>
+                x.EffectType != MagicEffectType.ModifyLowHealth && IsHealthCriticalEffect(x.EffectType));
+        }
+
         // Expects the hit as it stands after the block, resistances and armor (see
         // SharedPlayerPostArmorDamagePatch), so it only applies what vanilla still does to it before the damage
         // lands: fire, poison and spirit are split off into damage over time, the rest is scaled by the world's
@@ -78,6 +109,22 @@ namespace EpicLoot.MagicItemEffects
                 (hit.GetTotalDamage() - typedDamage);
 
             return currentHealth - instantDamage < lowHealthPercentage;
+        }
+
+        // A damage-over-time tick (burning, poison, smoke) as Character.ApplyDamage is handed it: unlike a hit it
+        // lands whole, fire and poison included, scaled only by the world's damage-taken rate.
+        public static bool PlayerWillBecomeHealthCriticalFromTick(Player player, HitData hit)
+        {
+            if (PlayerHasLowHealth(player))
+            {
+                return true;
+            }
+
+            float lowHealthPercentage = Mathf.Min(ModifyWithLowHealth.GetLowHealthPercentage(player), 1.0f) * player.GetMaxHealth();
+            float typedDamage = hit.m_damage.GetTotalDamage();
+            float damage = typedDamage * Game.m_localDamgeTakenRate + (hit.GetTotalDamage() - typedDamage);
+
+            return player.GetHealth() - damage < lowHealthPercentage;
         }
     }
 }

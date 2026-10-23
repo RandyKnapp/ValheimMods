@@ -215,8 +215,10 @@ namespace EquipmentAndQuickSlots {
                 for (int i = 0; i < __instance.m_elements.Count; i++) {
                     Transform binding = __instance.m_elements[i].m_go.transform.Find("binding");
                     if (binding && binding.GetComponent<TMP_Text>() is TMP_Text text)
-                        text.text = !ZInput.IsGamepadActive() ? slots[QuickSlotStartIndex + i].GetShortcutText() : string.Empty;
+                        text.text = slots[QuickSlotStartIndex + i].GetShortcutText();
                 }
+
+                ItemFavoritesCompat.UpdateQuickBarMarks(__instance);
             }
 
             [HarmonyFinalizer]

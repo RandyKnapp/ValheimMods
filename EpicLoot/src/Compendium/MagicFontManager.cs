@@ -73,34 +73,86 @@ public static class MagicFontManager
         if (m_fontAssets.TryGetValue(option, out TMP_FontData asset)) return asset;
 
         TMP_Attributes attributes = option.GetAttributeOfType<TMP_Attributes>();
-        TMP_FontAsset[] assets = Resources.FindObjectsOfTypeAll<TMP_FontAsset>();
-        Material[] materials = Resources.FindObjectsOfTypeAll<Material>();
+        List<TMP_FontAsset> fonts = Resources.FindObjectsOfTypeAll<TMP_FontAsset>()
+            .Where(x => x.name == attributes.fontName)
+            .ToList();
+        List<Material> materials = Resources.FindObjectsOfTypeAll<Material>()
+            .Where(x => x.name == attributes.materialName)
+            .ToList();
 
-        TMP_FontAsset matchFont = assets.FirstOrDefault(x => x.name == attributes.fontName);
-        Material matchMaterial = materials.FirstOrDefault(x => x.name == attributes.materialName);
-        TMP_FontData data = new TMP_FontData { font = matchFont, material = matchMaterial};
+        TMP_FontData data = PickFontAndMaterial(fonts, materials);
 
         // A partial resolve is still cached: Apply runs once per compendium line, and the two
         // FindObjectsOfTypeAll scans above walk every loaded object. RetryFailedLookups drops these
-        // entries once per page open, which is where a "not loaded yet" miss gets its second chance.
-        if (matchFont == null || matchMaterial == null)
+        // entries, which is where a "not loaded yet" miss gets its second chance.
+        if (data.font == null && fonts.Count > 0)
         {
             WarnOnce(_warnedLookups, $"{attributes.fontName}|{attributes.materialName}",
-                $"{option}: font '{attributes.fontName}' {(matchFont == null ? "NOT FOUND" : "ok")}, " +
-                $"material '{attributes.materialName}' {(matchMaterial == null ? "NOT FOUND" : "ok")}");
+                $"{option}: {fonts.Count} font asset(s) named '{attributes.fontName}' are loaded, but none has a " +
+                $"default material, so TextMeshPro cannot render with any of them. Another mod most likely ships " +
+                $"a broken copy of this font. Keeping the panel's own font.");
+        }
+        else if (data.font == null || data.material == null)
+        {
+            WarnOnce(_warnedLookups, $"{attributes.fontName}|{attributes.materialName}",
+                $"{option}: font '{attributes.fontName}' {(data.font == null ? "NOT FOUND" : "ok")}, " +
+                $"material '{attributes.materialName}' {(data.material == null ? "NOT FOUND" : "ok")}");
         }
 
         m_fontAssets[option] = data;
         return data;
     }
 
+    // Other mods' asset bundles often carry their own copies of vanilla's fonts and materials under the
+    // same names, and vanilla itself loads two "Valheim-Norsebold - Outline" materials on different
+    // atlases. So a name only narrows the candidates, and the first match can be a copy TMP cannot use:
+    // a font asset whose default material is missing throws from MaterialReference's constructor on every
+    // rebuild of every text using it, whatever material the text itself is given.
+    private static TMP_FontData PickFontAndMaterial(List<TMP_FontAsset> fonts, List<Material> materials)
+    {
+        List<TMP_FontAsset> usable = fonts.Where(x => x.material != null).ToList();
+
+        foreach (TMP_FontAsset font in usable)
+        {
+            Material onAtlas = materials.FirstOrDefault(x => IsOnFontAtlas(font, x));
+            if (onAtlas != null)
+            {
+                return new TMP_FontData { font = font, material = onAtlas };
+            }
+        }
+
+        // No named material samples a usable font's atlas: Apply falls back to the font's own material.
+        return new TMP_FontData { font = usable.FirstOrDefault(), material = materials.FirstOrDefault() };
+    }
+
+    private static bool IsOnFontAtlas(TMP_FontAsset font, Material material)
+    {
+        // atlasTexture dereferences atlasTextures[0] unguarded.
+        if (font == null || material == null || font.atlasTextures == null || font.atlasTextures.Length == 0)
+        {
+            return false;
+        }
+
+        // Public and idempotent; TMP calls it the same way before reading the cached property ids.
+        ShaderUtilities.GetShaderPropertyIDs();
+        if (!material.HasProperty(ShaderUtilities.ID_MainTex))
+        {
+            return false;
+        }
+
+        Texture materialAtlas = material.GetTexture(ShaderUtilities.ID_MainTex);
+        Texture fontAtlas = font.atlasTexture;
+        return materialAtlas != null && fontAtlas != null &&
+               materialAtlas.GetInstanceID() == fontAtlas.GetInstanceID();
+    }
+
     // Drops half-resolved entries so the next call rescans. FindObjectsOfTypeAll only sees loaded
     // objects, so a lookup that ran before an asset was loaded would otherwise stay unresolved for the
-    // session. Called once per compendium page open rather than per line.
+    // session. Called once per compendium page open and per temper panel build, rather than per line.
     public static void RetryFailedLookups()
     {
         List<TMP_FontOptions> failed = m_fontAssets
-            .Where(x => x.Value?.font == null || x.Value.material == null)
+            .Where(x => x.Value?.font == null || x.Value.font.material == null || x.Value.material == null)
             .Select(x => x.Key)
             .ToList();
 
@@ -122,7 +174,7 @@ public static class MagicFontManager
     // This is what made compendium group headings render as a few unreadable specks on the first open
     // of a session and correctly on every open after: they are the only lines that swap material after
     // the element is live, so they were the only ones TMP never got to validate.
-    // Returns false when the font asset could not be resolved, so a caller that latches a
+    // Returns false when no usable font asset could be resolved, so a caller that latches a
     // "fonts loaded" flag can retry on its next open instead of keeping the default font forever.
     public static bool Apply(TMP_Text text, TMP_FontOptions option)
     {
@@ -131,8 +183,11 @@ public static class MagicFontManager
             return false;
         }
 
+        // A font without a default material is never assigned (see PickFontAndMaterial): the text keeps
+        // the font it already renders with. Checked again here in case the material was destroyed after
+        // the lookup was cached.
         TMP_FontData data = GetTMPFont(option);
-        if (data?.font == null)
+        if (data?.font == null || data.font.material == null)
         {
             return false;
         }
@@ -155,19 +210,12 @@ public static class MagicFontManager
 
     private static Material MaterialForCurrentAtlas(TMP_FontAsset font, Material material, TMP_FontOptions option)
     {
-        // atlasTexture dereferences atlasTextures[0] unguarded, and this runs per compendium line.
-        if (material == null || font.atlasTextures == null || font.atlasTextures.Length == 0)
+        if (material == null)
         {
             return font.material;
         }
 
-        // Public and idempotent; TMP calls it the same way before reading the cached property ids.
-        ShaderUtilities.GetShaderPropertyIDs();
-
-        Texture materialAtlas = material.GetTexture(ShaderUtilities.ID_MainTex);
-        Texture fontAtlas = font.atlasTexture;
-        if (materialAtlas != null && fontAtlas != null &&
-            materialAtlas.GetInstanceID() == fontAtlas.GetInstanceID())
+        if (IsOnFontAtlas(font, material))
         {
             return material;
         }

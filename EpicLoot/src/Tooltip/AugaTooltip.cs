@@ -1,5 +1,6 @@
 using System;
 using EpicLoot.Crafting;
+using EpicLoot.LegendarySystem;
 using EpicLoot.MagicItemEffects;
 using EpicLoot.MagicItemEffects.Shards;
 using UnityEngine;
@@ -116,15 +117,13 @@ public static class AugaTooltip
     // The set label the vanilla-UI tooltip heads a magic set item with (MagicTooltip.AddMagicSetLabel).
     private static string GetSetLabel(ItemDrop.ItemData item)
     {
-        if (!item.IsMagicSetItem())
-            return null;
-
-        switch (item.GetRarity())
+        // A set rune carries a SetID too, but it is not a piece of the set.
+        if (item.IsSetRune())
         {
-            case ItemRarity.Legendary: return "$mod_epicloot_legendarysetlabel";
-            case ItemRarity.Mythic: return "$mod_epicloot_mythicsetlabel";
-            default: return null;
+            return "$mod_epicloot_setrune_label";
         }
+
+        return item.IsMagicSetItem() ? UniqueLegendaryHelper.GetSetLabelToken(item.GetRarity()) : null;
     }
 
     /// <summary>
@@ -315,7 +314,7 @@ public static class AugaTooltip
         damages.m_spirit += eitrImbueSpirit;
 
         bool all = magicItem.HasEffect(MagicEffectType.ModifyDamage, true) ||
-            Player.m_localPlayer.HasActiveMagicEffect(MagicEffectType.CoinHoarder, out float _) ||
+            CoinHoarder.GetDamageBonus(Player.m_localPlayer) > 0f ||
             magicItem.HasEffect(MagicEffectType.SpellSword);
         bool physical = all || magicItem.HasEffect(MagicEffectType.ModifyPhysicalDamage);
         bool elemental = all || magicItem.HasEffect(MagicEffectType.ModifyElementalDamage);

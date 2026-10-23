@@ -98,7 +98,9 @@ namespace EpicLoot.GatedItemType
                         return "TowerShields";
                     }
                 case ItemDrop.ItemData.ItemType.Bow:
-                    return "Bows";
+                    // The grappling hook is a Bow-type item that trains no skill; every bow and crossbow
+                    // names Bows or Crossbows. Filed under Bows, it rolled from the Weapons loot sets.
+                    return item.m_shared.m_skillType == Skills.SkillType.None ? "Tools" : "Bows";
                 case ItemDrop.ItemData.ItemType.Helmet:
                     return "HeadArmor";
                 case ItemDrop.ItemData.ItemType.Chest:

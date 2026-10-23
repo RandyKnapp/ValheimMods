@@ -187,9 +187,10 @@ namespace Common {
         /// client-local (BindClientConfig) entries stop hot-reloading while connected to someone
         /// else's server; the pending edit is applied on disconnect, since the stamp is deliberately
         /// left unrecorded while this returns false. Files registered with
-        /// <c>reloadOnConnectedClient: true</c> opt out of the rule.
+        /// <c>reloadOnConnectedClient: true</c> opt out of the rule. Code that re-reads a file itself,
+        /// outside the scheduler, checks this first so it follows the same rule.
         /// </summary>
-        private static bool OwnsConfigOnDisk() {
+        internal static bool OwnsConfigOnDisk() {
             return ZNet.instance == null || ZNet.instance.IsServer();
         }
 

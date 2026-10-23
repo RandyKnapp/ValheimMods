@@ -111,6 +111,10 @@ namespace EpicLoot.Crafting
         public List<ItemAmountConfig> ReAugmentCosts = new List<ItemAmountConfig>();
         public List<RuneCostConfig> RuneExtractCosts = new List<RuneCostConfig>();
         public List<RuneCostConfig> RuneEtchCosts = new List<RuneCostConfig>();
+        // Set Extract is keyed on the source item's rarity, Set Etch on the target's. The set rune a
+        // Set Etch consumes is not listed here: it is taken as that exact item, never by name.
+        public List<RuneCostConfig> RuneSetExtractCosts = new List<RuneCostConfig>();
+        public List<RuneCostConfig> RuneSetEtchCosts = new List<RuneCostConfig>();
         public Dictionary<string, IdentifyTypeConfig> IdentifyTypes = new Dictionary<string, IdentifyTypeConfig>();
         public Dictionary<string, IdentifyCostConfig> IdentifyCosts = new Dictionary<string, IdentifyCostConfig>();
     }

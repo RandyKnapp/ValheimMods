@@ -1,5 +1,5 @@
-﻿using EpicLoot.Config;
-using HarmonyLib;
+﻿using Common;
+using EpicLoot.Config;
 using Jotunn.Managers;
 using System;
 using System.Linq;
@@ -9,26 +9,48 @@ namespace EpicLoot;
 
 /// <summary>
 /// Offers to refresh base configs the player has edited once an update changes their defaults.
-/// Mirrors the WelcomeMessage patch below it: a Postfix on FejdStartup.Start that instantiates a
-/// prefab under the main menu.
+/// Queued on the shared startup popup queue (Common/src/Config/UI) behind the Quick Configure welcome
+/// wizard, rather than opening from its own FejdStartup.Start postfix: the queue opens it once the main
+/// menu has settled and the wizard, if it showed, has closed, so the two never land on top of each other.
 /// </summary>
-[HarmonyPatch(typeof(FejdStartup), nameof(FejdStartup.Start))]
-public static class ConfigUpdatePrompt_FejdStartup_Start_Patch
+public static class ConfigUpdatePrompt
 {
-    private static bool _shownThisSession;
+    private const string QueueKey = "EpicLoot.ConfigUpdate";
 
-    public static void Postfix(FejdStartup __instance)
+    private static GameObject _panel;
+
+    /// <summary>
+    /// From Awake, after ELConfig has run detection and LoadAssets has loaded the prefab. The queue waits
+    /// for the main menu by itself.
+    /// </summary>
+    public static void Init()
     {
         if (!ShouldPrompt())
         {
             return;
         }
 
-        _shownThisSession = true;
+        ConfigUIStartupPopups.Enqueue(QueueKey, ConfigUIStartupPopups.OrderNotice, TryOpen, IsOpen);
+    }
+
+    private static bool IsOpen()
+    {
+        return _panel != null;
+    }
+
+    private static bool TryOpen()
+    {
+        // Asked again as it opens: the welcome wizard ahead of it may have rewritten some of these files.
+        ConfigVersionManager.PruneResolvedOutdated();
+        FejdStartup startup = FejdStartup.instance;
+        if (!ShouldPrompt() || startup == null)
+        {
+            return false;
+        }
 
         try
         {
-            ShowConfigMessage(__instance.transform);
+            ShowConfigMessage(startup.transform);
         }
         catch (Exception e)
         {
@@ -36,13 +58,16 @@ public static class ConfigUpdatePrompt_FejdStartup_Start_Patch
             // the log, so the player still has a way to find out.
             EpicLoot.LogWarningForce($"Could not show the Epic Loot config update prompt.\n{e}");
         }
+
+        // A prompt that failed halfway may still be on screen; if so the queue waits for it like any other.
+        return _panel != null;
     }
 
     private static bool ShouldPrompt()
     {
         // Declines are recorded per file during detection, so anything still listed here is both
         // player-modified and unacknowledged for the current default.
-        if (_shownThisSession || !ConfigVersionManager.DetectionRan || !ConfigVersionManager.HasOutdatedConfigs)
+        if (!ConfigVersionManager.DetectionRan || !ConfigVersionManager.HasOutdatedConfigs)
         {
             return false;
         }
@@ -60,16 +85,15 @@ public static class ConfigUpdatePrompt_FejdStartup_Start_Patch
             return false;
         }
 
-        // Don't stack on top of the first-run welcome panel.
-        return !ConfigVersionManager.WelcomeMessageWillShow;
+        return true;
     }
 
     private static void ShowConfigMessage(Transform parentTransform)
     {
-        GameObject panel = UnityEngine.Object.Instantiate(EpicAssets.ConfigMessagePrefab, parentTransform, false);
-        panel.name = "ConfigMessage";
+        _panel = UnityEngine.Object.Instantiate(EpicAssets.ConfigMessagePrefab, parentTransform, false);
+        _panel.name = "ConfigMessage";
 
-        ConfigMessage configMessage = panel.AddComponent<ConfigMessage>();
+        ConfigMessage configMessage = _panel.AddComponent<ConfigMessage>();
         configMessage.SetMessage(
             Localization.instance.Localize("$el_configupdate_title"),
             BuildBody());

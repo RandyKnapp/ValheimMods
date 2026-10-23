@@ -51,38 +51,69 @@ namespace EpicLoot.MagicItemEffects.Shards {
         private static StatusEffect _cooldownIndicator;
         private static bool _cooldownMissingLogged;
 
-        // Detonates a poison cloud on enemies the local player kills. Mirrors vanilla's own last-hit attribution
-        // (Character.OnDeath, m_lastHit.GetAttacker() == local player).
+        // Player-ZDO key holding the local player's Corpse Rot value, mirrored by
+        // Multiplayer_Player_Patch.UpdateRichesAndLuck on equip/unequip, so the victim's owner can tell whether a
+        // kill needs reporting without an RPC for every death.
+        public const string ZdoValueKey = "el-crot";
+
+        private const string BurstRpc = "EL_CorpseRotBurst";
+
+        // Who made the kill is only known where the victim dies: OnDeath runs on the victim's owner -- another
+        // client or a dedicated server as often as the killer -- and m_lastHit is only set there. So the owner
+        // tells the killer's own client, which bursts with its own shard value and cooldown. Testing for the
+        // local player here, as this used to, only ever worked when the killer owned the victim. A prefix:
+        // OnDeath ends by resetting the victim's ZDO, and it also runs from the death animation on every
+        // client, where only the owner's call counts.
         [HarmonyPatch(typeof(Character), nameof(Character.OnDeath))]
         private static class OnDeath_Patch {
             [UsedImplicitly]
-            private static void Postfix(Character __instance) {
-                var player = Player.m_localPlayer;
-                if (player == null || __instance == player
-                    || __instance.m_lastHit?.GetAttacker() != player) {
+            private static void Prefix(Character __instance) {
+                if (__instance.m_nview == null || !__instance.m_nview.IsValid() || !__instance.m_nview.IsOwner()) {
                     return;
                 }
 
-                if (!player.HasActiveMagicEffect(MagicEffectType.CorpseRot, out var value) || value <= 0f) {
+                if (__instance.m_lastHit?.GetAttacker() is not Player killer || killer == __instance ||
+                    killer.m_nview == null || !killer.m_nview.IsValid() ||
+                    killer.m_nview.GetZDO().GetFloat(ZdoValueKey) <= 0f) {
                     return;
                 }
 
-                // Rate limit: the cooldown indicator doubles as the gate (mirrors ElderForestsAid).
-                // It was wired up but never engaged, so every kill detonated with no cooldown.
-                if (player.GetSEMan().HaveStatusEffect(CooldownHash)) {
-                    return;
-                }
-
-                var center = __instance.GetCenterPoint();
-                SpawnExplosionFx(__instance.transform.position);
-                DamageInRadius.DamageEnemiesInRadius(player, center,
-                    EffectConfig.Get(MagicEffectType.CorpseRot, RadiusKey, DefaultRadius),
-                    new HitData.DamageTypes {
-                        m_poison = value * EffectConfig.Get(MagicEffectType.CorpseRot,
-                            PoisonPerTierKey, DefaultPoisonPerTier)
-                    });
-                ShowCooldown(player);
+                killer.m_nview.InvokeRPC(BurstRpc, __instance.GetCenterPoint(), __instance.transform.position);
             }
+        }
+
+        // Every player carries the RPC; only the local player's copy acts on it.
+        [HarmonyPatch(typeof(Player), nameof(Player.Awake))]
+        private static class Player_Awake_Patch {
+            [UsedImplicitly]
+            private static void Postfix(Player __instance) {
+                __instance.m_nview?.Register<Vector3, Vector3>(BurstRpc,
+                    (sender, center, position) => Burst(__instance, center, position));
+            }
+        }
+
+        private static void Burst(Player player, Vector3 center, Vector3 position) {
+            if (player == null || player != Player.m_localPlayer) {
+                return;
+            }
+
+            if (!player.HasActiveMagicEffect(MagicEffectType.CorpseRot, out var value) || value <= 0f) {
+                return;
+            }
+
+            // Rate limit: the cooldown indicator doubles as the gate (mirrors ElderForestsAid).
+            if (player.GetSEMan().HaveStatusEffect(CooldownHash)) {
+                return;
+            }
+
+            SpawnExplosionFx(position);
+            DamageInRadius.DamageEnemiesInRadius(player, center,
+                EffectConfig.Get(MagicEffectType.CorpseRot, RadiusKey, DefaultRadius),
+                new HitData.DamageTypes {
+                    m_poison = value * EffectConfig.Get(MagicEffectType.CorpseRot,
+                        PoisonPerTierKey, DefaultPoisonPerTier)
+                });
+            ShowCooldown(player);
         }
 
         private static void SpawnExplosionFx(Vector3 position) {

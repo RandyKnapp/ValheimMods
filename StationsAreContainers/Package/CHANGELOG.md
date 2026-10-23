@@ -1,3 +1,9 @@
+**1.0.8**
+* Fixes the mouse cursor disappearing when opening a crafting station with storage.
+* Station storage now opens like a chest, so it also shows in multiplayer and only one player can have it open at a time.
+* Fixes several cases where station storage was counted wrongly when crafting or upgrading.
+* Fixes materials being duplicated when two players crafted from the same station's storage.
+
 **1.0.7**
 * Update for Valheim version 0.219.13 Bog Witch.
 

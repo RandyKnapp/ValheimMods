@@ -1,0 +1,25 @@
+{
+    "name": "MagicaCloth2Example",
+    "rootNamespace": "",
+    "references": [
+        "MagicaClothV2",
+        "Unity.InputSystem"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "MAGICACLOTH2"
+    ],
+    "versionDefines": [
+        {
+            "name": "com.unity.inputsystem",
+            "expression": "1.0.0",
+            "define": "MC2_INPUTSYSTEM"
+        }
+    ],
+    "noEngineReferences": false
+}

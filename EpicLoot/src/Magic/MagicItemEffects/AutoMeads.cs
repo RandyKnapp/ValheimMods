@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using EpicLoot.MagicItemEffects;
+using HarmonyLib;
+using JetBrains.Annotations;
 
 namespace EpicLoot.Magic.MagicItemEffects;
 
@@ -24,6 +26,39 @@ public class AutoMeads
             return;
         }
 
+        DrinkHealingMead(player);
+    }
+
+    // Damage over time (burning, poison, smoke) never reaches RPC_Damage or the hook above: the status effect
+    // hands each tick straight to Character.ApplyDamage, so a player could burn or be poisoned to death with
+    // Auto Mead and a mead in the bag. Each tick is checked here, before it lands.
+    [HarmonyPatch(typeof(Character), nameof(Character.ApplyDamage))]
+    private static class Character_ApplyDamage_Patch
+    {
+        [UsedImplicitly]
+        private static void Prefix(Character __instance, HitData hit)
+        {
+            if (hit == null || __instance is not Player player || player != Player.m_localPlayer ||
+                !IsDamageOverTime(hit.m_hitType) ||
+                !player.HasActiveMagicEffect(MagicEffectType.AutoMead) ||
+                player.m_inventory == null ||
+                !ModifyWithLowHealth.PlayerWillBecomeHealthCriticalFromTick(player, hit))
+            {
+                return;
+            }
+
+            DrinkHealingMead(player);
+        }
+    }
+
+    private static bool IsDamageOverTime(HitData.HitType hitType)
+    {
+        return hitType == HitData.HitType.Burning || hitType == HitData.HitType.Poisoned ||
+            hitType == HitData.HitType.Smoke;
+    }
+
+    private static void DrinkHealingMead(Player player)
+    {
         Inventory inventory = player.m_inventory;
 
         List<ItemDrop.ItemData> items = inventory.GetAllItemsOfType(ItemDrop.ItemData.ItemType.Consumable);

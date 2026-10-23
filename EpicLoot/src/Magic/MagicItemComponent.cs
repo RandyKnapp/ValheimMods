@@ -45,6 +45,10 @@ public class MagicItemComponent : CustomItemData
             // the single funnel for magic-data writes, so paths that never re-equip (tempering,
             // rune etching) get correct totals immediately instead of on the next equip change.
             EquipmentEffectCache.Reset(Player.m_localPlayer);
+            // The loot effects (Luck, Riches, Lucky Loot...) are read off the player ZDO by whichever machine
+            // rolls the loot, so republish them too: socketing, unsocketing and augmenting a worn item
+            // otherwise kept the old values until the next equipment change.
+            Multiplayer_Player_Patch.WatchMultiplayerMagicEffects_Player_Patch.UpdateRichesAndLuck(Player.m_localPlayer);
         }
     }
 

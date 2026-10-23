@@ -14,6 +14,11 @@ and Trinket — plus up to six hotkeyable quick slots.
   after saving under 3.0 — the automatic slot backup protects your items, but the old format is
   not written anymore.
 * Quick slot hotkeys no longer trigger vanilla actions on the same key.
+* Quick slots work on a controller: hold LB and press the D-pad (Up, Right, Down, Left for quick
+  slots 1–4). While a slot holds an item, its combo takes the D-pad press away from the game; with
+  the slot empty, the press does what it normally does. Change the modifier and each slot's button
+  under `Controller` in the config. On the Alternative 1 controller layout LB is also the game's
+  alt key, so LB + D-pad camera and minimap zoom give way to the quick slots there.
 * Optional **extra utility slots** (`Equipment Slots / Utility Slot Count`, 1–3, default 1): wear
   more than one belt, Wishbone or Megingjord. Off by default and server-synced, because it is a
   balance change. You can never wear two copies of the same item, and the extra items show on
@@ -50,6 +55,10 @@ copy `EquipmentAndQuickSlots.dll` into the `BepInEx/plugins` folder.
   Archery's own hotkeys; everything else it does is untouched. Set
   `Compatibility / Better Archery quiver integration` to `false` to switch its quiver off entirely
   instead and use the quick slots for ammo.
+* **Item Favorite Framework** is optional. When it is installed, the quick slot bar shows its star on
+  items you favorited (or that sit in a favorited quick slot) and its trash mark on items you flagged
+  as trash. Turn this off with `Quick Slots / Show favorite marks`. Its own borders already show on the
+  slots in the equipment panel.
 * Other slot mods — AzuExtendedPlayerInventory, ExtendedPlayerInventory, ExtraSlots, ComfyQuickSlots —
   are declared incompatible; BepInEx will not load this mod next to them.
 

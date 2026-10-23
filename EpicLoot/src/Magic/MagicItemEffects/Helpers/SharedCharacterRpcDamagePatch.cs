@@ -14,7 +14,8 @@ namespace EpicLoot.src.Magic.MagicItemEffects.Helpers {
     //  * The postfix runs the on-damage-taken reactions (slow, adrenaline, boss retributions), for hits that
     //    landed: not for one AvoidDamageTaken cancelled, nor one vanilla discards itself.
     //  * The resource-spending mitigations (EitrShield, Coinplated) and AutoMeads are not here: they run from
-    //    SharedPlayerPostArmorDamagePatch below, once the hit has been through the bubble, block and armor.
+    //    SharedPlayerPostArmorDamagePatch below, once the hit has been through the bubble, block and armor. The Eitr
+    //    Barrier set bonus is not here either: like vanilla's bubble, its status effect takes its share of the raw hit.
     //
     // The prefix runs before vanilla's own checks, so it first asks whether vanilla will discard the hit
     // (WillLand) -- otherwise a dodged hit, one from a despawned attacker or a PvP-off hit still spent
@@ -39,6 +40,9 @@ namespace EpicLoot.src.Magic.MagicItemEffects.Helpers {
                 return true;
             }
 
+            // A spirit animal's effective health, and the combat signal for the local player being hit.
+            SpiritAnimal.ModifyIncoming(__instance, hit, attacker);
+
             // NOTE: Opportunist and the melee stagger-duration tagger moved to the attacker-side
             // dispatcher (SharedCharacterDamagePatch): they read the ATTACKER's magic effects, which
             // are empty here whenever a remote client owns the attacker.
@@ -60,6 +64,11 @@ namespace EpicLoot.src.Magic.MagicItemEffects.Helpers {
             // waste a reflect. ReflectDamage runs last (it reflects the hit after these reductions).
             OffSetAttack.ReduceIncomingHit(__instance, hit);
             ReflectiveDamage_Character_Damage_Patch.OnIncomingHit(__instance, hit);
+            CoilingVenom.OnIncomingHit(__instance, hit, attacker);
+
+            // Reads the ATTACKER's mirrored value and siphons the target here, on its owner, before vanilla's
+            // ApplyDamage, so the hit that siphons also heals.
+            LifeSiphon.OnHitLanding(__instance, hit, attacker);
 
             __state = true;
             return true;
@@ -73,6 +82,7 @@ namespace EpicLoot.src.Magic.MagicItemEffects.Helpers {
             // On-damage-taken reactions.
             DamageTakenGivesAdrenaline.OnDamageTaken(__instance, hit);
             Bloodrage.OnDamageTaken(__instance, hit);
+            CoilingVenom.OnDamageTaken(__instance);
             // Retaliation needs someone to retaliate against: not a fall, lava, drowning or the like.
             if (hit.GetAttacker() != null) {
                 ElderForestsAid.OnDamageTaken(__instance, hit);
@@ -121,7 +131,8 @@ namespace EpicLoot.src.Magic.MagicItemEffects.Helpers {
                 return;
             }
 
-            // EitrShield first, so eitr is drained before the purse.
+            // EitrShield covers its share before Coinplated, so eitr is drained before the purse. (The Eitr Barrier set
+            // bonus already took its share of the raw hit, from SE_EitrBarrier.OnDamaged.)
             EitrShield.ModifyIncoming(__instance, hit);
             Coinplated.ModifyIncoming(__instance, hit);
             // Last: it judges the damage that will actually land.

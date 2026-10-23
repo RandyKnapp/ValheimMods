@@ -1,4 +1,5 @@
-﻿using EpicLoot.LegendarySystem;
+﻿using Common;
+using EpicLoot.LegendarySystem;
 using HarmonyLib;
 using System;
 using System.Collections.Generic;
@@ -148,11 +149,8 @@ namespace EpicLoot
             newEffect.name = equipFx;
             if (AudioMan.instance != null)
             {
-                AudioSource[] audioSources = newEffect.GetComponentsInChildren<AudioSource>();
-                foreach (AudioSource audioSource in audioSources)
-                {
-                    audioSource.outputAudioMixerGroup = AudioMan.instance.m_ambientMixer;
-                }
+                // The fx assets are loaded lazily on first equip, so their mock mixer groups are resolved here.
+                AudioMixerMocks.Resolve(newEffect, "Ambient");
             }
 
             return newEffect;

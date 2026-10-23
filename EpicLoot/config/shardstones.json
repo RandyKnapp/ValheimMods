@@ -2560,12 +2560,12 @@
             "UniformEffect": {
                 "EffectType": "NecroticFire",
                 "ValuesPerRarity": {
-                    "Magic": 0.2,
-                    "Rare": 0.4,
+                    "Magic": 0.4,
+                    "Rare": 0.5,
                     "Epic": 0.6,
-                    "Legendary": 0.8,
-                    "Mythic": 1.0,
-                    "Ancient": 1.2
+                    "Legendary": 0.7,
+                    "Mythic": 0.8,
+                    "Ancient": 0.9
                 }
             },
             "TypeEffects": {}

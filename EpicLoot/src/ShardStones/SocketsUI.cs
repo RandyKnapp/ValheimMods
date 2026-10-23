@@ -15,6 +15,12 @@ namespace EpicLoot.ShardStones {
 
         private static bool IsSocketGridOpen => OpenEquipment != null && OpenInventory != null;
 
+        // Whether the keyboard opener needs the Socket Overlay Key held with Use over this item. The
+        // inventory tooltip asks the same question, so its hint names the gesture that will work.
+        public static bool RequiresSocketOverlayKey(ItemDrop.ItemData item) {
+            return ELConfig.AlwaysRequireSocketOverlayKey.Value || ForeignItemContainers.HasContainer(item);
+        }
+
         // Adds `item` to the socket row at `pos` without vanilla's stack merging. Both Inventory.AddItem
         // overloads fold a stackable item into any existing stack of the same name (FindFreeStackItem),
         // and shards stack to 100 with one shared name per colour+rarity -- so two sockets holding
@@ -181,21 +187,22 @@ namespace EpicLoot.ShardStones {
 
                 // Another mod may have made this item a container (a backpack, a BowsBeforeHoes quiver),
                 // in which case plain Use is already its open gesture and belongs to that mod. Hand the
-                // press over untouched and put our overlay behind a modifier for those items only --
-                // everything else keeps the plain-Use gesture it has always had.
-                var hasForeignContainer = ForeignItemContainers.HasContainer(item);
-                if (hasForeignContainer && !Input.GetKey(ELConfig.SocketOverlayModifier.Value)) {
-                    EpicLoot.Log("[SocketsUI] Yielding the Use press over " +
-                        $"{item.m_shared.m_name} to the mod that owns its container.");
+                // press over untouched and put our overlay behind the Socket Overlay Key for those items.
+                // A player whose other mods read plain Use over any item can put every item behind it.
+                if (RequiresSocketOverlayKey(item) && !Input.GetKey(ELConfig.SocketOverlayKey.Value)) {
+                    EpicLoot.Log($"[SocketsUI] Yielding the Use press over {item.m_shared.m_name}: " +
+                        (ELConfig.AlwaysRequireSocketOverlayKey.Value
+                            ? "the Socket Overlay Key is required for every item."
+                            : "another mod owns its container."));
                     return;
                 }
 
                 if (!item.IsMagic(out var magicItem) || !magicItem.HasSockets()) {
                     // Aiming at an item and hitting one without sockets is a miss, not a request to shut
                     // the whole inventory. Swallow the press: Player doesn't read Use while the inventory
-                    // is visible, so nothing else wants it. Reaching here means the press is ours -- a
-                    // container item only gets this far with the modifier held, which is an explicit ask
-                    // for the overlay rather than for the container.
+                    // is visible, so nothing else wants it. Reaching here means the press is ours -- an
+                    // item that needs the Socket Overlay Key only gets this far with it held, which is an
+                    // explicit ask for the overlay rather than for the container or another mod.
                     if (ELConfig.KeepInventoryOpenOverItems.Value) {
                         ZInput.ResetButtonStatus("Use");
                     }

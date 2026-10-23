@@ -24,6 +24,7 @@ internal static class GamepadScroll
 {
     private const float Deadzone = 0.5f;
     private const float Step = -0.1f;
+    private const float PixelsPerSecond = 1000f;
 
     private static bool _stickReadUnavailable;
 
@@ -33,12 +34,40 @@ internal static class GamepadScroll
     /// </summary>
     public static void ApplyRightStickY(Scrollbar scrollbar)
     {
-        if (scrollbar == null || _stickReadUnavailable)
+        if (scrollbar == null || !TryReadRightStickY(out float axis))
         {
             return;
         }
 
-        float axis;
+        scrollbar.value = Mathf.Clamp01(scrollbar.value + axis * Step);
+    }
+
+    public static void ApplyRightStickY(ScrollRect scrollRect)
+    {
+        if (scrollRect == null || scrollRect.content == null)
+        {
+            return;
+        }
+
+        RectTransform viewport = scrollRect.viewport != null ? scrollRect.viewport : (RectTransform)scrollRect.transform;
+        float scrollable = scrollRect.content.rect.height - viewport.rect.height;
+        if (scrollable <= 0f || !TryReadRightStickY(out float axis))
+        {
+            return;
+        }
+
+        float pixels = -axis * PixelsPerSecond * Time.unscaledDeltaTime;
+        scrollRect.verticalNormalizedPosition = Mathf.Clamp01(scrollRect.verticalNormalizedPosition + pixels / scrollable);
+    }
+
+    private static bool TryReadRightStickY(out float axis)
+    {
+        axis = 0f;
+        if (_stickReadUnavailable)
+        {
+            return false;
+        }
+
         try
         {
             axis = ReadRightStickY();
@@ -52,16 +81,13 @@ internal static class GamepadScroll
             EpicLoot.LogWarningForce("Gamepad stick scrolling disabled: ZInput.GetJoyRightStickY() " +
                 $"could not be called ({e.GetType().Name}: {e.Message}). EpicLoot needs a rebuild " +
                 "against the current Valheim version.");
-            return;
+            return false;
         }
 
-        if (Mathf.Abs(axis) > Deadzone)
-        {
-            scrollbar.value = Mathf.Clamp01(scrollbar.value + axis * Step);
-        }
+        return Mathf.Abs(axis) > Deadzone;
     }
 
-    // NoInlining is load-bearing: inlining this into ApplyRightStickY would move the unresolvable
+    // NoInlining is load-bearing: inlining this into TryReadRightStickY would move the unresolvable
     // call site there and the JIT failure would bypass the try/catch above.
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static float ReadRightStickY()

@@ -52,12 +52,37 @@ namespace EpicLoot.Magic.MagicItemEffects
                 returnEffect = TryCreateInstantMead(returnEffect);
             }
 
-            if (Player.m_localPlayer.HasActiveMagicEffect(MagicEffectType.DecreaseMeadCooldown, out float effectValue, 0.01f))
+            // Read off the base mead, not returnEffect: an Instant Mead copy has moved its restoration up front,
+            // so it no longer looks like a mead whose duration is a cooldown, and the cut used to be skipped.
+            if (HasOverTimeValues(seStats) &&
+                Player.m_localPlayer.HasActiveMagicEffect(MagicEffectType.DecreaseMeadCooldown, out float effectValue, 0.01f))
             {
-                returnEffect = TryCreateDecreasedCooldownMead(returnEffect, effectValue);
+                // Never stamp the shared ObjectDB copy; the Instant Mead copy is already this drink's own.
+                if (returnEffect == seStats)
+                {
+                    returnEffect = (SE_Stats)seStats.Clone();
+                }
+                returnEffect.m_ttl = seStats.m_ttl * Mathf.Clamp01(1f - effectValue);
             }
 
             return returnEffect;
+        }
+
+        /// <summary>
+        /// How long a drunk mead's effect lasts before Potion Efficacy: its base duration, cut by Meads Cooldown
+        /// for a mead that restores over time, whose duration is its cooldown. The same cut ModifyMead applies.
+        /// </summary>
+        public static float GetDrinkDuration(Player player, StatusEffect consumeEffect)
+        {
+            StatusEffect dbEffect = ObjectDB.instance?.GetStatusEffect(consumeEffect.NameHash()) ?? consumeEffect;
+            float duration = dbEffect.m_ttl;
+            if (dbEffect is SE_Stats seStats && HasOverTimeValues(seStats) &&
+                player.HasActiveMagicEffect(MagicEffectType.DecreaseMeadCooldown, out float effectValue, 0.01f))
+            {
+                duration *= Mathf.Clamp01(1f - effectValue);
+            }
+
+            return duration;
         }
 
         private static SE_Stats TryCreateInstantMead(SE_Stats effect)
@@ -74,19 +99,6 @@ namespace EpicLoot.Magic.MagicItemEffects
             newStatusEffect.m_healthOverTime = 0f;
             newStatusEffect.m_staminaOverTime = 0f;
             newStatusEffect.m_eitrOverTime = 0f;
-
-            return newStatusEffect;
-        }
-
-        private static SE_Stats TryCreateDecreasedCooldownMead(SE_Stats effect, float value)
-        {
-            if (!HasOverTimeValues(effect))
-            {
-                return effect;
-            }
-
-            SE_Stats newStatusEffect = (SE_Stats)effect.Clone();
-            newStatusEffect.m_ttl *= Mathf.Clamp01(1f - value);
 
             return newStatusEffect;
         }

@@ -61,6 +61,18 @@ public static class EquipmentEffectCache
         }
     }
 
+    /// <summary>
+    /// Drops every player's memoized totals. For changes that are not an equip on one player, such as
+    /// legendaries.json reloading with different set bonuses.
+    /// </summary>
+    public static void ResetAll()
+    {
+        // ConditionalWeakTable has no Clear on net481; a fresh table lets the old one be collected.
+        EquippedValues = new ConditionalWeakTable<Player, Dictionary<string, float?>>();
+        _lastPlayer = null;
+        _lastValues = null;
+    }
+
     private static Dictionary<string, float?> ValuesFor(Player player)
     {
         if (ReferenceEquals(player, _lastPlayer))

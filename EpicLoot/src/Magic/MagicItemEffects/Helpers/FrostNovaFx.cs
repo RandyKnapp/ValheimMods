@@ -2,43 +2,71 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace EpicLoot.src.Magic.MagicItemEffects.Helpers {
-    // Shared ice-nova visual, built from the vanilla fenring nova. Effects that want the nova ask for it by
-    // template name and (optionally) a playback speed; each distinct name gets its own cached, trimmed clone.
+    // Shared ice-nova visual, built from the vanilla fenring nova. Each effect that wants the nova registers
+    // its own named variant (with an optional playback speed) at ZNetScene setup, then spawns it by name.
     //
     // We clone the vanilla prefab and trim it rather than instantiating the shared prefab directly: the
     // original runs its emission bursts three cycles with staggered SFX, which is far too long for a shard
-    // proc, and mutating the shared prefab would change the fenring's own nova. The clone is built while the
-    // source is deactivated so none of its components (particle systems, ZSFX) Awake on the template, then
-    // kept inactive across scene loads as a reusable template.
+    // proc, and mutating the shared prefab would change the fenring's own nova.
+    //
+    // The clone keeps the vanilla ZNetView, ZSyncTransform and TimedDestruction, so a spawn is a networked
+    // object: its ZDO carries the variant's name as the prefab hash, nearby clients build their own copy from
+    // the registered template, and the owner's TimedDestruction removes it for everyone. That only works if
+    // every client has the variant registered before the ZDO arrives, which is why the templates are built
+    // and injected into ZNetScene each world load (RegisterPrefab) instead of lazily on the first proc.
     public static class FrostNovaFx {
         private const string NovaFx = "fx_fenring_icenova";
         private const float SfxDelayReduction = 1.2f;   // trim from each SFX's trigger delay
 
         private static readonly Dictionary<string, GameObject> Templates = new Dictionary<string, GameObject>();
+        private static GameObject _container;   // disabled parent that keeps the templates from Awaking
         private static bool _novaMissingLogged;
+        private static readonly HashSet<string> UnregisteredLogged = new HashSet<string>();
 
-        // Spawns a fresh copy of the named nova template at the position. speedMultiplier > 1 plays the whole
-        // effect faster (1.5 = 50% quicker). The template is built inactive, so the instance starts inactive
-        // too and only begins playing once we activate it.
-        public static void Spawn(string templateName, Vector3 position, float speedMultiplier = 1f) {
-            var template = GetOrCreateTemplate(templateName, speedMultiplier);
+        // Builds (once) and injects into ZNetScene the named nova variant. speedMultiplier > 1 plays the whole
+        // effect faster (1.5 = 50% quicker). Hook from PrefabManager.OnPrefabsRegistered, which fires as a
+        // ZNetScene.Awake postfix on every client and the server each world load. Idempotent; a name that is
+        // registered twice keeps the speed it was first built with.
+        public static void RegisterPrefab(string templateName, float speedMultiplier = 1f) {
+            var zns = ZNetScene.instance;
+            if (zns == null || zns.GetPrefab(templateName) != null) {
+                return;
+            }
+
+            var template = GetOrBuildTemplate(zns, templateName, speedMultiplier);
             if (template == null) {
                 return;
             }
 
-            var instance = Object.Instantiate(template, position, Quaternion.identity);
-            instance.SetActive(true);
+            if (!zns.m_prefabs.Contains(template)) {
+                zns.m_prefabs.Add(template);
+            }
+            zns.m_namedPrefabs[templateName.GetStableHashCode()] = template;
         }
 
-        // Lazily builds (and caches) a shortened, standalone copy of the fenring ice nova under the given
-        // name. Runs on a proc, so ZNetScene is loaded and the source prefab is available; a null source is
-        // logged once and leaves the template unbuilt.
-        private static GameObject GetOrCreateTemplate(string templateName, float speedMultiplier) {
+        // Spawns a fresh networked copy of the registered nova variant at the position. Call it on one client
+        // only (the player whose effect procced); the ZDO shows it to everyone else.
+        public static void Spawn(string templateName, Vector3 position) {
+            var prefab = ZNetScene.instance?.GetPrefab(templateName);
+            if (prefab == null) {
+                if (UnregisteredLogged.Add(templateName)) {
+                    EpicLoot.LogWarning($"FrostNovaFx: '{templateName}' prefab not registered; frost nova visual will not display.");
+                }
+                return;
+            }
+
+            Object.Instantiate(prefab, position, Quaternion.identity);
+        }
+
+        // Builds and caches a shortened copy of the fenring ice nova under the given name. The cache outlives
+        // the world, so later world loads only re-inject it. A missing source is logged once and leaves the
+        // template unbuilt.
+        private static GameObject GetOrBuildTemplate(ZNetScene zns, string templateName, float speedMultiplier) {
             if (Templates.TryGetValue(templateName, out var cached) && cached != null) {
                 return cached;
             }
 
-            var source = ZNetScene.instance?.GetPrefab(NovaFx);
+            var source = zns.GetPrefab(NovaFx);
             if (source == null) {
                 if (!_novaMissingLogged) {
                     EpicLoot.LogWarning($"FrostNovaFx: could not find '{NovaFx}' prefab; frost nova visual will not display.");
@@ -47,15 +75,18 @@ namespace EpicLoot.src.Magic.MagicItemEffects.Helpers {
                 return null;
             }
 
-            // Deactivate the source across the clone so no component (particle systems, ZSFX) wakes up on the
-            // template; restore the source afterwards so the shared prefab is left exactly as it was.
-            var wasActive = source.activeSelf;
-            source.SetActive(false);
-            var template = Object.Instantiate(source);
-            source.SetActive(wasActive);
+            if (_container == null) {
+                _container = new GameObject("EL_FrostNovaContainer");
+                _container.SetActive(false);
+                Object.DontDestroyOnLoad(_container);
+            }
 
+            // Cloning under the disabled container keeps the template inactive-in-hierarchy, so no component
+            // (ZNetView, particle systems, ZSFX) wakes up on it, while activeSelf stays true. That matters for
+            // remote clients: ZNetScene.CreateObject instantiates the registered prefab and never calls
+            // SetActive, so an inactive template would show them nothing.
+            var template = Object.Instantiate(source, _container.transform);
             template.name = templateName;
-            Object.DontDestroyOnLoad(template);
 
             TrimParticleSystems(template);
             TrimSfx(template);
@@ -92,12 +123,13 @@ namespace EpicLoot.src.Magic.MagicItemEffects.Helpers {
 
         // The nova carries three ZSFX sources, each staggered to line up with the original three-cycle visual.
         // Keep only the first and pull SfxDelayReduction seconds off its trigger delay so the audio tracks the
-        // shortened FX (clamped at 0 so nothing ends up with a negative delay).
+        // shortened FX (clamped at 0 so nothing ends up with a negative delay). DestroyImmediate so the extra
+        // sources are gone before the template is ever instantiated.
         private static void TrimSfx(GameObject root) {
             bool found = false;
             foreach (var sfx in root.GetComponentsInChildren<ZSFX>(true)) {
                 if (found) {
-                    Object.Destroy(sfx.gameObject);
+                    Object.DestroyImmediate(sfx.gameObject);
                     continue;
                 }
                 sfx.m_minDelay = Mathf.Max(0f, sfx.m_minDelay - SfxDelayReduction);

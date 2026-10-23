@@ -42,15 +42,10 @@ public static partial class TerminalManager
 
             args.Context.PrintInfo($">  {i + 1} - rarity: [{string.Join(", ", rarityTable)}], item: {item}");
 
-            var loot = new LootTable
-            {
-                Object = "Console",
-                Drops = [[1, 1]],
-                Loot =
-                [
-                    new LootDrop { Item = item, Rarity = rarityTable, Weight = 1 }
-                ]
-            };
+            var loot = LootTable.Simple("Console", [[1, 1]],
+            [
+                new LootDrop { Item = item, Rarity = rarityTable, Weight = 1 }
+            ]);
 
             var randomOffset = Random.insideUnitSphere;
             var dropPoint = Player.m_localPlayer.transform.position +
@@ -139,19 +134,14 @@ public static partial class TerminalManager
         ItemRarity itemRarity = effectRequirements.AllowedRarities.Count == 0 ? ItemRarity.Magic :
             effectRequirements.AllowedRarities.First();
         float[] rarityTable = GetRarityTable(itemRarity.ToString());
-        LootTable loot = new LootTable
-        {
-            Object = "Console",
-            Drops = [[1, 1]],
-            Loot =
-            [
-                new LootDrop
-                {
-                    Item = itemPrefab.name,
-                    Rarity = rarityTable
-                }
-            ]
-        };
+        LootTable loot = LootTable.Simple("Console", [[1, 1]],
+        [
+            new LootDrop
+            {
+                Item = itemPrefab.name,
+                Rarity = rarityTable
+            }
+        ]);
 
         Vector3 randomOffset = UnityEngine.Random.insideUnitSphere;
         Vector3 dropPoint = Player.m_localPlayer.transform.position +
@@ -175,40 +165,71 @@ public static partial class TerminalManager
         };
     }
 
-    private static void SpawnMythicMagicItem(Terminal.ConsoleEventArgs args) =>
-        SpawnLegendary(args, ItemRarity.Mythic);
-
-    private static void SpawnLegendaryMagicItem(Terminal.ConsoleEventArgs args) =>
-        SpawnLegendary(args, ItemRarity.Legendary);
-    
-    private static void SpawnLegendary(Terminal.ConsoleEventArgs args, ItemRarity rarity)
+    // magicsetitem <id> [item|random] [rarity|random]: any unique or set piece, at any rarity.
+    private static void SpawnSetItem(Terminal.ConsoleEventArgs args)
     {
         if (args.Length < 2)
         {
-            args.Context.PrintWarning("> Specify legendaryID, itemID (optional)");
+            args.Context.PrintWarning("> Specify uniqueID, item (optional or random), rarity (optional or random)");
             return;
         }
 
         string legendaryID = args.GetString(1);
-        string itemType = args.GetString(2);
+        string itemArg = args.GetString(2);
+        string rarityArg = args.GetString(3);
 
-        if (rarity == ItemRarity.Legendary)
+        if (!UniqueLegendaryHelper.TryGetLegendaryInfo(legendaryID, out LegendaryInfo itemInfo))
         {
-            args.Context.PrintInfo($"magicitemlegendary - legendaryID:{legendaryID}");
+            args.Context.PrintWarning($"> Could not find unique or set piece: ({legendaryID})");
+            return;
         }
-        else
+
+        List<ItemRarity> enabled = UniqueLegendaryHelper.GetRarities(itemInfo);
+        if (!TryResolveSpawnRarity(args, legendaryID, enabled, rarityArg, out ItemRarity rarity))
         {
-            args.Context.PrintInfo($"magicitemmythic - legendaryID:{legendaryID}");
+            return;
         }
-        
-        SpawnLegendaryHelper(args, legendaryID, rarity, itemType);
+
+        args.Context.PrintInfo($"magicsetitem - id:{legendaryID} rarity:{rarity}");
+        SpawnLegendaryHelper(args, legendaryID, rarity, IsRandomArg(itemArg) ? "" : itemArg);
+    }
+
+    private static bool IsRandomArg(string arg)
+    {
+        return string.IsNullOrEmpty(arg) || arg.Equals("random", System.StringComparison.OrdinalIgnoreCase);
+    }
+
+    // Omitted or "random" picks one of the rarities the unique or set is enabled at. An explicit rarity it
+    // is not enabled at still spawns, with a warning, so any tier can be tested.
+    private static bool TryResolveSpawnRarity(Terminal.ConsoleEventArgs args, string id, List<ItemRarity> enabled,
+        string rarityArg, out ItemRarity rarity)
+    {
+        if (IsRandomArg(rarityArg))
+        {
+            rarity = enabled[Random.Range(0, enabled.Count)];
+            return true;
+        }
+
+        if (!System.Enum.TryParse(rarityArg, true, out rarity) || !System.Enum.IsDefined(typeof(ItemRarity), rarity))
+        {
+            args.Context.PrintWarning($"> Unknown rarity: ({rarityArg})");
+            return false;
+        }
+
+        if (!enabled.Contains(rarity))
+        {
+            args.Context.PrintWarning($"> {id} does not roll at {rarity} (it rolls at {string.Join(", ", enabled)}); " +
+                $"spawning it anyway.");
+        }
+
+        return true;
     }
 
     private static void SpawnLegendaryHelper(Terminal.ConsoleEventArgs args, string legendaryID, ItemRarity rarity, string itemId = "")
     {
         if (!UniqueLegendaryHelper.TryGetLegendaryInfo(legendaryID, out LegendaryInfo itemInfo))
         {
-            args.Context.PrintWarning($"> Could not find legendary/mythic info for legendaryID: ({legendaryID})");
+            args.Context.PrintWarning($"> Could not find unique or set piece: ({legendaryID})");
             return;
         }
 
@@ -242,7 +263,7 @@ public static partial class TerminalManager
 
             if (allowedItems.Count == 0)
             {
-                args.Context.PrintWarning($"> Could not find suitable items with parameter ({itemId}) for legendaryID: ({legendaryID})");
+                args.Context.PrintWarning($"> Could not find suitable items for: ({legendaryID}) at {rarity}");
                 return;
             }
 
@@ -252,32 +273,21 @@ public static partial class TerminalManager
 
         if (string.IsNullOrEmpty(itemId))
         {
-            args.Context.PrintWarning($"> Could not find suitable item for legendaryID: ({legendaryID})");
+            args.Context.PrintWarning($"> Could not find suitable item for: ({legendaryID})");
             return;
         }
 
-        LootTable loot = new LootTable
-        {
-            Object = "Console",
-            Drops = [[1, 1]],
-            Loot =
-            [
-                new LootDrop
-                {
-                    Item = itemId,
-                    Rarity = GetRarityTable(rarity.ToString())
-                }
-            ]
-        };
+        LootTable loot = LootTable.Simple("Console", [[1, 1]],
+        [
+            new LootDrop
+            {
+                Item = itemId,
+                Rarity = GetRarityTable(rarity.ToString())
+            }
+        ]);
 
-        if (rarity == ItemRarity.Legendary)
-        {
-            LootRoller.CheatForceLegendary = legendaryID;
-        }
-        else
-        {
-            LootRoller.CheatForceMythic = legendaryID;
-        }
+        LootRoller.CheatForceUniqueID = legendaryID;
+        LootRoller.CheatForceUniqueRarity = rarity;
 
         bool previousDisableGatingState = LootRoller.CheatDisableGating;
         LootRoller.CheatDisableGating = true;
@@ -288,29 +298,37 @@ public static partial class TerminalManager
         LootRoller.CheatRollingItem = true;
         LootRoller.RollLootTableAndSpawnObjects(loot, 1, loot.Object, dropPoint);
         LootRoller.CheatRollingItem = false;
-        LootRoller.CheatForceLegendary = null;
-        LootRoller.CheatForceMythic = null;
+        LootRoller.CheatForceUniqueID = null;
+        LootRoller.CheatForceUniqueRarity = null;
         LootRoller.CheatDisableGating = previousDisableGatingState;
     }
 
-    private static List<string> GetLegendaryOptions(string[] args)
+    private static List<string> GetSetItemOptions(string[] args)
     {
         return args.Length switch
         {
-            2 => UniqueLegendaryHelper.LegendaryInfo.Keys.ToList(),
-            3 => GetValidLegendaryItemNames(args.GetString(1), ItemRarity.Legendary),
+            2 => UniqueLegendaryHelper.AllUniques.Keys.OrderBy(x => x).ToList(),
+            3 => ["random", .. GetValidLegendaryItemNames(args.GetString(1), GetFirstRarity(args.GetString(1)))],
+            4 => GetRarityOptions(UniqueLegendaryHelper.TryGetLegendaryInfo(args.GetString(1), out LegendaryInfo info)
+                ? UniqueLegendaryHelper.GetRarities(info)
+                : null),
             _ => []
         };
     }
 
-    private static List<string> GetMythicOptions(string[] args)
+    private static ItemRarity GetFirstRarity(string legendaryID)
     {
-        return args.Length switch
-        {
-            2 => UniqueLegendaryHelper.MythicInfo.Keys.ToList(),
-            3 => GetValidLegendaryItemNames(args.GetString(1), ItemRarity.Mythic),
-            _ => []
-        };
+        return UniqueLegendaryHelper.TryGetLegendaryInfo(legendaryID, out LegendaryInfo info)
+            ? UniqueLegendaryHelper.GetRarities(info)[0]
+            : ItemRarity.Legendary;
+    }
+
+    // "random" plus the rarities an ID is enabled at, or every rarity when the ID is unknown.
+    private static List<string> GetRarityOptions(List<ItemRarity> enabled)
+    {
+        List<string> result = ["random"];
+        result.AddRange((enabled ?? Rarities.All.ToList()).Select(x => x.ToString()));
+        return result;
     }
 
     private static List<string> GetValidLegendaryItemNames(string legendaryID, ItemRarity rarity)

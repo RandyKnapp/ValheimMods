@@ -19,6 +19,15 @@ namespace EpicLoot.MagicItemEffects
         private enum PendingShotType { None, TripleBow, DoubleMagic }
         private static PendingShotType _pendingShot = PendingShotType.None;
 
+        // The attack whose current burst fires the extra projectiles, and the share of damage each of them
+        // deals. Set for the length of one FireProjectileBurst.
+        private static Attack _scaledBurstAttack;
+        private static float _scaledBurstDamage = 1f;
+
+        // True while the local player's current attack fires a triple shot (rolled in OnAttackTrigger, before
+        // its bursts), for effects that change how each of its projectiles flies.
+        internal static bool IsTripleShotFiring => _pendingShot == PendingShotType.TripleBow;
+
         private static Dictionary<string, float> GetEffectConfig(string effectType)
         {
             if (MagicItemEffectDefinitions.AllDefinitions != null &&
@@ -71,10 +80,16 @@ namespace EpicLoot.MagicItemEffects
             }
 
             // If a weapon can have both magic effects applied to it this logic will need to be revised.
-            if (player.HasActiveMagicEffect(MagicEffectType.TripleBowShot, out float _))
+            // Triple shot is checked against the weapon too: from a set bonus it is worn on armour, and would
+            // otherwise triple a staff's shots or the grappling hook's.
+            var skill = __instance.GetWeapon().m_shared.m_skillType;
+            if ((skill == Skills.SkillType.Bows || skill == Skills.SkillType.Crossbows) &&
+                player.HasActiveMagicEffect(MagicEffectType.TripleBowShot, out float _))
             {
                 var cfg = GetEffectConfig(MagicEffectType.TripleBowShot);
-                if (RollChance(cfg))
+                // Decided here, before vanilla takes the ammo: a proc the player cannot pay for fires an ordinary shot,
+                // and must not have taken the extra arrows first.
+                if (RollChance(cfg) && CanPayExtraCost(player, __instance, GetCostScale(cfg, 2f)))
                 {
                     _pendingShot = PendingShotType.TripleBow;
                     IsTripleShotActive = true;
@@ -92,12 +107,11 @@ namespace EpicLoot.MagicItemEffects
             }
         }
 
-        // Note: the ref HitData.DamageTypes? __state is set to null if no changes are made
         [HarmonyPatch(typeof(Attack), nameof(Attack.FireProjectileBurst))]
         [HarmonyPrefix]
-        public static void Attack_FireProjectileBurst_Prefix(Attack __instance, ref HitData.DamageTypes? __state)
+        public static void Attack_FireProjectileBurst_Prefix(Attack __instance)
         {
-            __state = null;
+            _scaledBurstAttack = null;
             if (_pendingShot == PendingShotType.None)
             {
                 return;
@@ -109,9 +123,6 @@ namespace EpicLoot.MagicItemEffects
                 return;
             }
 
-            // Record the damages value so it can be restored after changes
-            __state = __instance.GetWeapon().m_shared.m_damages;
-
             if (_pendingShot == PendingShotType.TripleBow)
             {
                 ModifyShot(ref player, ref __instance, GetEffectConfig(MagicEffectType.TripleBowShot), 0.4f, 2f, 1.25f, 3);
@@ -122,19 +133,36 @@ namespace EpicLoot.MagicItemEffects
             }
         }
 
+        private static float GetCostScale(Dictionary<string, float> configuration, float fallback)
+        {
+            return configuration != null && configuration.ContainsKey(COSTSCALE_KEY) ? configuration[COSTSCALE_KEY] : fallback;
+        }
+
         private static bool ModifyShot(ref Player player, ref Attack attack, Dictionary<string, float> configuration,
             float damage, float costScale, float accuracy, int projectiles)
         {
+            costScale = GetCostScale(configuration, costScale);
+
+            // Paid first, so a proc the player cannot afford fires an ordinary shot and costs nothing extra.
+            if (!TryPayExtraCost(player, attack, costScale))
+            {
+                // A cost vanilla charges once per attack is refused once per attack; a per-burst one is retried
+                // each burst. Reset the projectiles in case an earlier burst of this attack was doubled.
+                if (!attack.m_perBurstResourceUsage)
+                {
+                    _pendingShot = PendingShotType.None;
+                }
+
+                attack.m_projectileAccuracy = attack.m_weapon.m_shared.m_attack.m_projectileAccuracy;
+                attack.m_projectiles = attack.m_weapon.m_shared.m_attack.m_projectiles;
+                return false;
+            }
+
             if (configuration != null)
             {
                 if (configuration.ContainsKey(DAMAGE_KEY))
                 {
                     damage = configuration[DAMAGE_KEY];
-                }
-
-                if (configuration.ContainsKey(COSTSCALE_KEY))
-                {
-                    costScale = configuration[COSTSCALE_KEY];
                 }
 
                 if (configuration.ContainsKey(ACCURACY_KEY))
@@ -148,11 +176,11 @@ namespace EpicLoot.MagicItemEffects
                 }
             }
 
-            HitData.DamageTypes weaponDamage = attack.GetWeapon().m_shared.m_damages;
-            weaponDamage.Modify(damage);
-            attack.GetWeapon().m_shared.m_damages = weaponDamage;
-
-            ModifyAttackCost(player, costScale, attack.GetAttackStamina(), attack.GetAttackEitr(), attack.GetAttackHealth());
+            // Applied to each projectile's own HitData as vanilla builds it (Attack_ModifyDamage_Postfix), so the
+            // whole hit is cut. Scaling the weapon's base m_damages left its upgrades, world level and the ammo
+            // at full strength.
+            _scaledBurstAttack = attack;
+            _scaledBurstDamage = damage;
 
             attack.m_projectileAccuracy = attack.m_weapon.m_shared.m_attack.m_projectileAccuracy * accuracy;
 
@@ -162,30 +190,86 @@ namespace EpicLoot.MagicItemEffects
             return true;
         }
 
-        /// <summary>
-        /// Restore the attack damages to previous state if changed by the prefix. A finalizer, not a
-        /// postfix: m_shared is shared by every weapon of that kind, so an exception mid-burst would
-        /// otherwise leave all of them at the reduced damage until the game restarts.
-        /// </summary>
-        [HarmonyPatch(typeof(Attack), nameof(Attack.FireProjectileBurst))]
-        [HarmonyFinalizer]
-        public static void Attack_FireProjectileBurst_Finalizer(Attack __instance, HitData.DamageTypes? __state)
+        // Attack.ModifyDamage runs once per projectile inside FireProjectileBurst, on the finished HitData
+        // (weapon with its upgrades and world level, plus the ammo), just before it is handed to the projectile.
+        [HarmonyPatch(typeof(Attack), nameof(Attack.ModifyDamage))]
+        [HarmonyPostfix]
+        public static void Attack_ModifyDamage_Postfix(Attack __instance, HitData hitData)
         {
-            if (__state != null)
+            if (_scaledBurstAttack != null && __instance == _scaledBurstAttack && hitData != null)
             {
-                __instance.GetWeapon().m_shared.m_damages = __state.Value;
+                hitData.m_damage.Modify(_scaledBurstDamage);
             }
         }
 
-        public static void ModifyAttackCost(Player player, float scale, float stamcost, float eitrcost, float healthcost)
+        /// <summary>
+        /// Ends the burst's damage scaling. A finalizer, not a postfix, so an exception mid-burst cannot leave
+        /// it applying to the attack's later hits.
+        /// </summary>
+        [HarmonyPatch(typeof(Attack), nameof(Attack.FireProjectileBurst))]
+        [HarmonyFinalizer]
+        public static void Attack_FireProjectileBurst_Finalizer()
         {
-            if (stamcost > 0) { player.UseStamina(stamcost * scale); }
-            if (eitrcost > 0) { player.UseEitr(eitrcost * scale); }
-            // Clamp to leave 1 HP, as vanilla does at both of its own attack-health spends (Attack.cs
-            // DoMeleeAttack / FireProjectileBurst): Character.UseHealth clamps to 0, not 1, so an unclamped
-            // charge here can take the player to 0 and kill them. This runs as a FireProjectileBurst PREFIX,
-            // so vanilla then charges its own (clamped) share in the same method -- ours is on top of that.
-            if (healthcost > 0) { player.UseHealth(Mathf.Min(player.GetHealth() - 1f, healthcost * scale)); }
+            _scaledBurstAttack = null;
+        }
+
+        /// <summary>
+        /// Charges what the extra projectiles cost, if the player can pay it. CostScale is the whole attack's cost
+        /// multiplier (the description's "twice the eitr" is 2), and vanilla charges the first 1x itself, so only
+        /// CostScale - 1 is ours. Charging the full CostScale on top made a double shot cost three times.
+        ///
+        /// Vanilla charges its share once, as the attack starts (before any burst), or with m_perBurstResourceUsage
+        /// (Staff of Frost, ...) on every burst, checking and charging right after this prefix and Stop()ing the
+        /// attack when the player cannot pay. In the per-burst case the check has to cover both shares: charging
+        /// ours first left too little for vanilla's, so the eitr was taken and nothing was fired.
+        /// </summary>
+        private static bool TryPayExtraCost(Player player, Attack attack, float costScale)
+        {
+            bool perBurst = attack.m_perBurstResourceUsage;
+            if (!perBurst && attack.m_projectileBurstsFired > 0)
+            {
+                // Paid on this attack's first burst, matching vanilla's one charge per attack.
+                return true;
+            }
+
+            if (!CanPayExtraCost(player, attack, costScale))
+            {
+                return false;
+            }
+
+            float extra = Mathf.Max(0f, costScale - 1f);
+            float extraStamina = attack.GetAttackStamina() * extra;
+            float extraEitr = attack.GetAttackEitr() * extra;
+
+            if (extraStamina > 0f) { player.UseStamina(extraStamina); }
+            if (extraEitr > 0f) { player.UseEitr(extraEitr); }
+
+            // Not gated, as vanilla does not gate its own. Clamp to leave 1 HP, as vanilla does at both of its own
+            // attack-health spends (Attack.cs DoMeleeAttack / FireProjectileBurst): Character.UseHealth clamps to 0,
+            // not 1, so an unclamped charge here can take the player to 0 and kill them.
+            float extraHealth = attack.GetAttackHealth() * extra;
+            if (extraHealth > 0f) { player.UseHealth(Mathf.Min(player.GetHealth() - 1f, extraHealth)); }
+
+            return true;
+        }
+
+        // The check half of TryPayExtraCost: whether the player has what the extra projectiles cost.
+        private static bool CanPayExtraCost(Player player, Attack attack, float costScale)
+        {
+            bool perBurst = attack.m_perBurstResourceUsage;
+            float extra = Mathf.Max(0f, costScale - 1f);
+            float stamina = attack.GetAttackStamina();
+            float eitr = attack.GetAttackEitr();
+            float extraStamina = stamina * extra;
+            float extraEitr = eitr * extra;
+
+            // UseStamina/UseEitr scale by the world's resource rates; vanilla's own HaveStamina/HaveEitr checks do not.
+            if (extraStamina > 0f && !player.HaveStamina((perBurst ? stamina : 0f) + extraStamina * Game.m_staminaRate))
+            {
+                return false;
+            }
+
+            return !(extraEitr > 0f) || player.HaveEitr((perBurst ? eitr : 0f) + extraEitr * Game.m_eitrRate);
         }
     }
 

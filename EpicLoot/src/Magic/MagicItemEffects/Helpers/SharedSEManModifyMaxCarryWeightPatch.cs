@@ -1,4 +1,4 @@
-using EpicLoot.MagicItemEffects;
+﻿using EpicLoot.MagicItemEffects;
 using EpicLoot.MagicItemEffects.Shards;
 using HarmonyLib;
 using JetBrains.Annotations;
@@ -37,6 +37,8 @@ namespace EpicLoot.src.Magic.MagicItemEffects.Helpers {
             NightCarryWeight.ModifyMaxCarryWeight(player, baseLimit, ref limit);
             GainMaxCarryWeightFromRested.ModifyMaxCarryWeight(player, __instance, ref limit);
             CarryWeightForMovementPenalty.ModifyMaxCarryWeight(player, baseLimit, ref limit);
+            
+            GiantsBlood.ModifyMaxCarryWeight(player, baseLimit, ref limit);
 
             // Last -- see the note above.
             TravelLight.ModifyMaxCarryWeight(player, ref limit);

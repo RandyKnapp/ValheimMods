@@ -21,11 +21,14 @@ namespace Jam
 
         public static readonly ManualLogSource JamLogger = BepInEx.Logging.Logger.CreateLogSource(DisplayName);
 
-        public static CustomLocalization Localization = LocalizationManager.Instance.GetLocalization();
+        // Set in Awake, not here: a static initialiser can run before BepInEx has registered this plugin, and Jotunn
+        // then attributes the whole mod - its RPC names included - to Jotunn itself for the rest of the session.
+        public static CustomLocalization Localization;
 
         [UsedImplicitly]
         public void Awake()
         {
+            Localization = LocalizationManager.Instance.GetLocalization();
             // Wires the shared Common layer (ConfigBinder, ModLogger, ConfigChangeDebouncer) to this
             // plugin's config file and logger. Must run before anything binds a config entry.
             ModContext.Initialize(this, JamLogger, DisplayName);

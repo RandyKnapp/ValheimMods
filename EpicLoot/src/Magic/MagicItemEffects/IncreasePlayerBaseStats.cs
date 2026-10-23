@@ -30,7 +30,10 @@ public static class IncreasePlayerBaseStats
         {
             PercentHealth.Apply(__instance, ref hp);
             PercentStamina.Apply(__instance, ref stamina);
+            // Converts the finished health pool, before the eitr multipliers so they scale what it adds.
+            ConvertHealthToEitr.Apply(__instance, ref hp, ref eitr);
             PercentEitr.Apply(__instance, ref eitr);
+            DeepWell.Apply(__instance, ref eitr);
             HeartyEitr.Apply(__instance, hp, ref eitr);
             EnergeticEitr.Apply(__instance, stamina, ref eitr);
         }

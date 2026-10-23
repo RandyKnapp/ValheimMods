@@ -61,7 +61,8 @@ namespace EpicLoot
         // The share of its normal value this socket ended up contributing, < 1 only when same-color
         // stacking decay was applied (see ShardSocketManager.RecomputeSocketValues). Effect.EffectValue
         // already has it baked in; this is kept purely so the tooltip can say why the number is low.
-        // Defaults to 1 so items saved before stacking existed deserialize unchanged.
+        // Defaults to 1 so items saved before stacking existed deserialize unchanged. Always 1 on a
+        // runestone socket: rune diminishing returns are worked out on read (MagicItem.GetSocketEffect).
         public float StackMultiplier = 1f;
 
         public SocketedEffect()
@@ -73,6 +74,14 @@ namespace EpicLoot
             Effect = effect;
             SourcePrefab = sourcePrefab;
             SourceRarity = sourceRarity;
+        }
+
+        // Whether this socket currently grants its effect. A runestone socket sits inert while Allow Rune
+        // Socketing is off; nothing is written to the item, so turning it back on restores the effect.
+        // A method rather than a property so the item JSON never picks it up.
+        public bool IsActive()
+        {
+            return Effect != null && (ShardType != ShardType.None || ShardSocketManager.RuneSocketingEnabled);
         }
     }
 
@@ -159,9 +168,12 @@ namespace EpicLoot
             return $"<color={color}>{EpicLoot.GetRarityDisplayName(Rarity)}</color>";
         }
 
-        // True while the player holds Shift, used to reveal the detailed per-effect tooltip block
-        // (description, roll range, config values). Shared by the magic-item and loose-shard tooltips.
-        public static bool ShowEffectDetails => ZInput.GetKey(KeyCode.LeftShift) || ZInput.GetKey(KeyCode.RightShift);
+        // True while the player holds Shift, or the left trigger on a gamepad (vanilla's inventory
+        // reads that trigger as its Shift), used to reveal the detailed per-effect tooltip block
+        // (description, roll range, config values). Shared by the magic-item and loose-shard tooltips, and by the
+        // set bonus lines on set pieces and set runes (descriptions only).
+        public static bool ShowEffectDetails =>
+            ZInput.GetKey(KeyCode.LeftShift) || ZInput.GetKey(KeyCode.RightShift) || ZInput.GetButton("JoyLTrigger");
 
         public string GetTooltip()
         {
@@ -194,8 +206,9 @@ namespace EpicLoot
             if (SocketCount > 0)
             {
                 tooltip.AppendLine($"$mod_epicloot_sockets ({GetUsedSocketCount()}/{SocketCount}):");
-                foreach (SocketedEffect socket in Sockets)
+                for (var socketIndex = 0; socketIndex < Sockets.Count; socketIndex++)
                 {
+                    SocketedEffect socket = Sockets[socketIndex];
                     if (socket == null)
                     {
                         continue;
@@ -204,13 +217,25 @@ namespace EpicLoot
                     // Inline the socketed item's own icon, resolved from its source prefab
                     var iconTag = ShardTooltipSprites.GetSpriteTag(socket.SourcePrefab);
                     var removalTag = GetSocketRemovalTag(socket);
-                    if (socket.Effect != null)
+                    var socketEffect = GetSocketEffect(socketIndex);
+                    if (socketEffect != null && !socket.IsActive())
                     {
-                        tooltip.AppendLine($"  <color={socketColor}>{iconTag} {GetEffectText(socket.Effect, socket.SourceRarity, false)}</color>{GetSocketStackTag(socket)}{removalTag}");
+                        // A rune held inert by Allow Rune Socketing: still listed, so the player can see
+                        // what it would grant and that it is not granting it.
+                        tooltip.AppendLine($"  <color=#808080>{iconTag} {GetEffectText(socketEffect, socket.SourceRarity, false)} $mod_epicloot_socket_tip_runeinactive</color>");
+                    }
+                    else if (socketEffect != null)
+                    {
+                        tooltip.AppendLine($"  <color={socketColor}>{iconTag} {GetEffectText(socketEffect, socket.SourceRarity, false)}</color>{GetSocketStackTag(GetSocketStackMultiplier(socketIndex))}{removalTag}");
                         if (showRange)
                         {
+                            // A shardstone's value is fixed by the shard grid, not rolled, so it has no range to
+                            // show; the rarity's roll range read as though it did. A runestone keeps its range.
+                            var fixedValue = socket.ShardType != ShardType.None
+                                ? new MagicItemEffectDefinition.ValueDef { MinValue = socketEffect.EffectValue, MaxValue = socketEffect.EffectValue }
+                                : null;
                             tooltip.Append($"<color=#c0c0c0ff>");
-                            tooltip.Append(GetEffectDetailBlock(socket.Effect, socket.SourceRarity, null, null, "     "));
+                            tooltip.Append(GetEffectDetailBlock(socketEffect, socket.SourceRarity, null, fixedValue, "     "));
                             tooltip.Append($"</color>");
                         }
                     }
@@ -249,17 +274,18 @@ namespace EpicLoot
             }
         }
 
-        // Marks a socket whose value was cut by same-color stacking decay, so the reduced number on the
-        // line above reads as the rule working rather than as a bug. Nothing is shown at full strength,
-        // which is every socket unless ShardStackMode.Diminishing is on.
-        private static string GetSocketStackTag(SocketedEffect socket)
+        // Marks a socket whose value was cut by same-color stacking decay or rune diminishing returns, so
+        // the reduced number on the line above reads as the rule working rather than as a bug. Nothing is
+        // shown at full strength, which is every socket unless ShardStackMode.Diminishing or Rune
+        // Diminishing Returns is on.
+        private static string GetSocketStackTag(float stackMultiplier)
         {
-            if (socket.StackMultiplier >= 1f)
+            if (stackMultiplier >= 1f)
             {
                 return "";
             }
 
-            var percent = Mathf.RoundToInt(socket.StackMultiplier * 100f);
+            var percent = Mathf.RoundToInt(stackMultiplier * 100f);
             var label = string.Format(Localization.instance.Localize("$mod_epicloot_socket_tip_stacked"), percent);
             return $" <color=#808080>{label}</color>";
         }
@@ -296,7 +322,58 @@ namespace EpicLoot
         public int GetOpenSocketCount() => Mathf.Max(0, SocketCount - Sockets.Count);
         public bool HasSockets() => SocketCount > 0;
         public bool HasOpenSocket() => GetOpenSocketCount() > 0;
-        public IEnumerable<MagicItemEffect> GetSocketedEffects() => Sockets.Where(x => x?.Effect != null).Select(x => x.Effect);
+        public IEnumerable<MagicItemEffect> GetSocketedEffects()
+        {
+            for (var i = 0; i < Sockets.Count; i++)
+            {
+                if (Sockets[i] != null && Sockets[i].IsActive())
+                {
+                    yield return GetSocketEffect(i);
+                }
+            }
+        }
+
+        // What the socket at `index` grants: its stored effect, or for a runestone cut by Rune Diminishing
+        // Returns, a copy at the reduced value. The stored effect is the rune itself, so it is never decayed
+        // in place (see ShardSocketManager.GetRuneStackMultiplier). Null for an inert shard. Says nothing
+        // about whether the socket is active; callers that sum or apply effects check IsActive() first.
+        public MagicItemEffect GetSocketEffect(int index)
+        {
+            var effect = Sockets[index]?.Effect;
+            if (effect == null)
+            {
+                return null;
+            }
+
+            var multiplier = ShardSocketManager.GetRuneStackMultiplier(this, index);
+            return multiplier < 1f
+                ? new MagicItemEffect(effect.EffectType, DecayedSocketValue(effect.EffectValue, multiplier))
+                : effect;
+        }
+
+        // GetSocketEffect(index).EffectValue without the copy, for SumEffectValue's hot path.
+        private float GetSocketEffectValue(int index)
+        {
+            var value = Sockets[index].Effect.EffectValue;
+            var multiplier = ShardSocketManager.GetRuneStackMultiplier(this, index);
+            return multiplier < 1f ? DecayedSocketValue(value, multiplier) : value;
+        }
+
+        // The share of its normal value the socket at `index` contributes: the baked same-color decay for
+        // a shard, the live diminishing returns for a rune. For the tooltip's strength tag.
+        public float GetSocketStackMultiplier(int index)
+        {
+            var socket = Sockets[index];
+            return socket.ShardType != ShardType.None
+                ? socket.StackMultiplier
+                : ShardSocketManager.GetRuneStackMultiplier(this, index);
+        }
+
+        // Rounded to two decimals, as RecomputeSocketValues rounds decayed shard values.
+        private static float DecayedSocketValue(float value, float multiplier)
+        {
+            return (float)Math.Round(value * multiplier, 2);
+        }
 
         // includeSocketed defaults to false so all crafting/bookkeeping reads (loot roll, augment,
         // rune-extract, disenchant, requirements/exclusivity, names) stay rolled-only. Effect
@@ -338,10 +415,10 @@ namespace EpicLoot
             {
                 for (int i = 0; i < Sockets.Count; i++)
                 {
-                    MagicItemEffect effect = Sockets[i]?.Effect;
-                    if (effect != null && effect.EffectType == effectType)
+                    SocketedEffect socket = Sockets[i];
+                    if (socket != null && socket.IsActive() && socket.Effect.EffectType == effectType)
                     {
-                        total += effect.EffectValue;
+                        total += GetSocketEffectValue(i);
                     }
                 }
             }
@@ -355,7 +432,7 @@ namespace EpicLoot
             {
                 return true;
             }
-            if (includeSocketed && Sockets.Exists(x => x?.Effect != null && x.Effect.EffectType == effectType))
+            if (includeSocketed && Sockets.Exists(x => x != null && x.IsActive() && x.Effect.EffectType == effectType))
             {
                 return true;
             }
@@ -401,6 +478,14 @@ namespace EpicLoot
                     return args;
                 }
             }
+
+            // {1} reads live player state yet ignores the value, so the generic and range probes below
+            // class it as a constant slot and print the real threshold.
+            if (ModifyWithLowHealth.IsHealthCriticalEffect(effectType))
+            {
+                return new object[] { value, ModifyWithLowHealth.GetLowHealthDisplayPercent(Player.m_localPlayer) };
+            }
+
             return new object[] { value };
         }
 
@@ -421,25 +506,43 @@ namespace EpicLoot
             }
         }
 
+        // Per-effect readout of what an effect is doing for the local player right now, when that depends on
+        // more than the rolled value (CoinHoarder: the damage bonus at the coins carried). It is appended in
+        // brackets to a line showing one concrete value -- an item's own tooltip, the compendium's total of
+        // everything worn -- and never to the range and generic previews, which have no single value to
+        // evaluate it at. Kept out of the DisplayText providers because those must stay pure. The args
+        // provider returns null to append nothing.
+        private static readonly Dictionary<string, (string DisplayText, Func<float, object[]> Args)> LiveReadouts = new();
+
+        public static void RegisterLiveReadout(string effectType, string displayText, Func<float, object[]> args)
+        {
+            if (string.IsNullOrEmpty(effectType) || string.IsNullOrEmpty(displayText) || args == null)
+            {
+                return;
+            }
+            LiveReadouts[effectType] = (displayText, args);
+        }
+
         public static string GetEffectText(MagicItemEffectDefinition effectDef, float value)
         {
-            return FormatDisplayText(effectDef.DisplayText, GetDisplayArgs(effectDef.Type, value));
+            var text = FormatDisplayText(effectDef.DisplayText, GetDisplayArgs(effectDef.Type, value));
+            if (string.IsNullOrEmpty(effectDef.Type) || !LiveReadouts.TryGetValue(effectDef.Type, out var readout))
+            {
+                return text;
+            }
+
+            var readoutArgs = readout.Args(value);
+            return readoutArgs == null ? text : $"{text} ({FormatDisplayText(readout.DisplayText, readoutArgs)})";
         }
 
         // The {0},{1},... args for a range preview: each placeholder becomes that derived value's own
         // min-max range. A constant slot (min == max, e.g. a fixed "200") collapses to a single number
-        // rather than a range. A null value def (valueless effect) yields empty strings.
+        // rather than a range. A null value def (valueless effect) leaves the rolled slots empty.
         private static object[] GetRangeArgs(string effectType, MagicItemEffectDefinition.ValueDef values)
         {
             if (values == null)
             {
-                var count = GetDisplayArgs(effectType, 0f).Length;
-                var empties = new object[count];
-                for (var i = 0; i < count; i++)
-                {
-                    empties[i] = string.Empty;
-                }
-                return empties;
+                return GetGenericArgs(effectType, string.Empty);
             }
 
             var argsMin = GetDisplayArgs(effectType, values.MinValue);

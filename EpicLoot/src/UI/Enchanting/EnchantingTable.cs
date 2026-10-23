@@ -8,6 +8,7 @@ namespace EpicLoot_UnityLib
 {
     public class EnchantingTable : MonoBehaviour, Hoverable, Interactable
     {
+        public const string PrefabName = "piece_enchantingtable";
         public const float UseDistance = 2.7f;
         public const string DisplayNameLocID = "mod_epicloot_assets_enchantingtable";
         public const int FeatureUnavailableSentinel = -2;
@@ -16,13 +17,33 @@ namespace EpicLoot_UnityLib
 
         public GameObject EnchantingUIPrefab;
 
+        public EnchantingTableStash Stash { get; private set; }
+
         public event Action<EnchantingFeature, int> OnFeatureLevelChanged;
         public event Action OnAnyFeatureLevelChanged;
         
 
-        private static readonly List<EnchantingFeatureUpgradeRequest> _upgradeRequests = new();
+        // An upgrade the table's owner has not answered yet, with the materials already paid. Nothing used
+        // to end the wait, so an owner leaving before replying kept the payment for good; after
+        // UpgradeResponseTimeout the request is settled from what the table shows (ExpireUpgradeRequests).
+        private class PendingUpgrade
+        {
+            public EnchantingFeatureUpgradeRequest Request;
+            public Player Requester;
+            public float SentTime;
+        }
+
+        // Far beyond a normal round trip, so an answer that is merely slow is not refunded as well as granted.
+        private const float UpgradeResponseTimeout = 20f;
+
+        private static readonly List<PendingUpgrade> _upgradeRequests = new();
+        private static readonly EnchantingFeature[] Features =
+            (EnchantingFeature[])Enum.GetValues(typeof(EnchantingFeature));
+
         private ZNetView _nview;
         private Player _interactingPlayer;
+        private readonly int[] _knownLevels = new int[Features.Length];
+        private uint _knownDataRevision;
 
         public bool Interact(Humanoid user, bool repeat, bool alt)
         {
@@ -51,8 +72,10 @@ namespace EpicLoot_UnityLib
 
             _nview.Register<ZDOID, int, int>("el.TableUpgradeRequest", RPC_TableUpgradeRequest);
             _nview.Register<ZDOID, int, int, bool>("el.TableUpgradeResponse", RPC_TableUpgradeResponse);
+            Stash = new EnchantingTableStash(this, _nview);
 
             InitFeatureLevels();
+            SyncFeatureLevels(raiseEvents: false);
 
             Refresh();
         }
@@ -60,12 +83,17 @@ namespace EpicLoot_UnityLib
         public void RequestTableUpgrade(EnchantingFeature feature, int toLevel, Action<bool> responseCallback)
         {
             ZDOID tableZDO = _nview.GetZDO().m_uid;
-            _upgradeRequests.Add(new EnchantingFeatureUpgradeRequest()
+            _upgradeRequests.Add(new PendingUpgrade()
             {
-                TableZDO = tableZDO,
-                Feature = feature,
-                ToLevel = toLevel,
-                ResponseCallback = responseCallback
+                Request = new EnchantingFeatureUpgradeRequest()
+                {
+                    TableZDO = tableZDO,
+                    Feature = feature,
+                    ToLevel = toLevel,
+                    ResponseCallback = responseCallback
+                },
+                Requester = Player.m_localPlayer,
+                SentTime = Time.time
             });
 
             _nview.InvokeRPC("el.TableUpgradeRequest",tableZDO, (int)feature, toLevel);
@@ -110,39 +138,138 @@ namespace EpicLoot_UnityLib
             //Performs checks,
             //Calls OnTableUpgradeResponse
             EnchantingFeature feature = (EnchantingFeature)featureI;
-            List<EnchantingFeatureUpgradeRequest> listCopy = _upgradeRequests.ToList();
-            foreach (EnchantingFeatureUpgradeRequest request in listCopy)
+            List<PendingUpgrade> listCopy = _upgradeRequests.ToList();
+            foreach (PendingUpgrade pending in listCopy)
             {
+                EnchantingFeatureUpgradeRequest request = pending.Request;
                 if (request.TableZDO == tableZDO && request.Feature == feature && request.ToLevel == toLevel)
                 {
-                    request.ResponseCallback.Invoke(success);
-                    _upgradeRequests.Remove(request);
-                    if (Player.m_localPlayer != null)
-                    {
-                        if (toLevel == 0)
-                        {
-                            Player.m_localPlayer.Message(MessageHud.MessageType.Center,
-                                Localization.instance.Localize("$mod_epicloot_unlockmessage",
-                                EnchantingTableUpgrades.GetFeatureName(feature)));
-                        }
-                        else
-                        {
-                            Player.m_localPlayer.Message(MessageHud.MessageType.Center,
-                                Localization.instance.Localize("$mod_epicloot_upgrademessage",
-                                EnchantingTableUpgrades.GetFeatureName(feature), toLevel.ToString()));
-                        }
-                    }
+                    _upgradeRequests.Remove(pending);
+                    SettleUpgradeRequest(request, success);
                 }
             }
         }
 
+        private static void SettleUpgradeRequest(EnchantingFeatureUpgradeRequest request, bool success)
+        {
+            request.ResponseCallback?.Invoke(success);
+            if (Player.m_localPlayer == null)
+            {
+                return;
+            }
+
+            EnchantingFeature feature = request.Feature;
+            if (!success)
+            {
+                Player.m_localPlayer.Message(MessageHud.MessageType.Center,
+                    Localization.instance.Localize("$mod_epicloot_upgradefailedmessage",
+                    EnchantingTableUpgrades.GetFeatureName(feature)));
+            }
+            else if (request.ToLevel == 0)
+            {
+                Player.m_localPlayer.Message(MessageHud.MessageType.Center,
+                    Localization.instance.Localize("$mod_epicloot_unlockmessage",
+                    EnchantingTableUpgrades.GetFeatureName(feature)));
+            }
+            else
+            {
+                Player.m_localPlayer.Message(MessageHud.MessageType.Center,
+                    Localization.instance.Localize("$mod_epicloot_upgrademessage",
+                    EnchantingTableUpgrades.GetFeatureName(feature), request.ToLevel.ToString()));
+            }
+        }
+
+        // Settles the requests left unanswered past the timeout: as done when the table already shows the
+        // level (only the answer was lost), otherwise as failed, which refunds the payment. An answer that
+        // turns up later finds nothing to settle and is ignored.
+        private static void ExpireUpgradeRequests()
+        {
+            if (_upgradeRequests.Count == 0)
+            {
+                return;
+            }
+
+            float now = Time.time;
+            for (int i = _upgradeRequests.Count - 1; i >= 0; i--)
+            {
+                PendingUpgrade pending = _upgradeRequests[i];
+                if (now - pending.SentTime < UpgradeResponseTimeout)
+                {
+                    continue;
+                }
+
+                _upgradeRequests.RemoveAt(i);
+
+                // The payment came out of this character's inventory; after a logout or world change there is
+                // nobody to hand it back to.
+                if (pending.Requester == null || pending.Requester != Player.m_localPlayer)
+                {
+                    continue;
+                }
+
+                EnchantingFeatureUpgradeRequest request = pending.Request;
+                SettleUpgradeRequest(request, ReadFeatureLevel(request.TableZDO, request.Feature) >= request.ToLevel);
+            }
+        }
+
+        // The level the table's ZDO holds, whether or not the table is loaded here.
+        private static int ReadFeatureLevel(ZDOID tableZDO, EnchantingFeature feature)
+        {
+            ZDO zdo = ZDOMan.instance?.GetZDO(tableZDO);
+            if (zdo == null)
+            {
+                return FeatureUnavailableSentinel;
+            }
+
+            int level = zdo.GetInt(FormatFeatureName(feature.ToString()), FeatureUnavailableSentinel);
+            return level == FeatureUnavailableSentinel ? FeatureUnavailableSentinel : level - 1;
+        }
+
         public void Update()
         {
+            ExpireUpgradeRequests();
+
+            if (_nview != null && _nview.IsValid() && _nview.GetZDO().DataRevision != _knownDataRevision)
+            {
+                SyncFeatureLevels(raiseEvents: true);
+            }
+
+            Stash?.Update();
+
             if (_interactingPlayer != null && EnchantingTableUI.instance != null &&
                 EnchantingTableUI.instance.isActiveAndEnabled && !InUseDistance(_interactingPlayer))
             {
                 EnchantingTableUI.Hide();
                 _interactingPlayer = null;
+            }
+        }
+
+        // Only the owner's SetFeatureLevel raises the level events. Every other client sees an upgrade
+        // arrive as a plain ZDO sync, so the levels are re-read whenever the ZDO's revision moves.
+        private void SyncFeatureLevels(bool raiseEvents)
+        {
+            _knownDataRevision = _nview.GetZDO().DataRevision;
+
+            bool anyChanged = false;
+            foreach (EnchantingFeature feature in Features)
+            {
+                int level = GetFeatureLevel(feature);
+                if (_knownLevels[(int)feature] == level)
+                {
+                    continue;
+                }
+
+                _knownLevels[(int)feature] = level;
+                anyChanged = true;
+                if (raiseEvents)
+                {
+                    OnFeatureLevelChanged?.Invoke(feature, level);
+                }
+            }
+
+            if (anyChanged && raiseEvents)
+            {
+                OnAnyFeatureLevelChanged?.Invoke();
             }
         }
 
@@ -181,7 +308,7 @@ namespace EpicLoot_UnityLib
             return 0f;
         }
 
-        private string FormatFeatureName(string featureName)
+        private static string FormatFeatureName(string featureName)
         {
             return string.Format($"el.et.v1.{featureName}");
         }
@@ -222,8 +349,13 @@ namespace EpicLoot_UnityLib
                 return FeatureUnavailableSentinel;
             }
 
-            return EnchantingTableUpgrades.Config.DefaultFeatureLevels.TryGetValue(feature, out int level) ?
-                level : FeatureUnavailableSentinel;
+            if (EnchantingTableUpgrades.Config.DefaultFeatureLevels.TryGetValue(feature, out int level))
+            {
+                return level;
+            }
+
+            // A server still on an enchantingupgrades.json from before Storage existed: locked, free to unlock.
+            return feature == EnchantingFeature.Storage ? FeatureLockedSentinel : FeatureUnavailableSentinel;
         }
 
         public void Reset()
@@ -280,6 +412,7 @@ namespace EpicLoot_UnityLib
 
             string featureName = feature.ToString();
             _nview.GetZDO().Set(FormatFeatureName(featureName), level+1);
+            _knownLevels[(int)feature] = level;
             OnFeatureLevelChanged?.Invoke(feature, level);
             OnAnyFeatureLevelChanged?.Invoke();
         }
@@ -347,10 +480,11 @@ namespace EpicLoot_UnityLib
                 EnchantingFeature.Augment => EnchantingTableUpgrades.Config.UpgradeValues.Augment,
                 EnchantingFeature.Disenchant => EnchantingTableUpgrades.Config.UpgradeValues.Disenchant,
                 EnchantingFeature.Rune => EnchantingTableUpgrades.Config.UpgradeValues.Rune,
+                EnchantingFeature.Storage => EnchantingTableUpgrades.Config.UpgradeValues.Storage,
                 _ => throw new ArgumentOutOfRangeException(nameof(feature), feature, null)
             };
 
-            if (level >= values.Count)
+            if (values == null || level >= values.Count)
             {
                 return new Tuple<float, float>(float.NaN, float.NaN);
             }

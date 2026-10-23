@@ -178,6 +178,7 @@ namespace EpicLoot_UnityLib
             // yield free products.
             if (!Player.m_localPlayer.NoCostCheat() && !LocalPlayerCanAffordCost(cost))
             {
+                Player.m_localPlayer.Message(MessageHud.MessageType.Center, "$msg_missingrequirement");
                 DeselectAll();
                 RefreshAvailableItems();
                 return;

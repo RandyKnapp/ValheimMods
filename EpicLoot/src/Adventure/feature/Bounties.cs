@@ -470,6 +470,7 @@ namespace EpicLoot.Adventure.Feature
 
             var bounty = BountyInfo.FromPackage(pkg);
             AddSlainBountyTargetToLedger(bounty, monsterID, isAdd);
+            API.RaiseBountyTargetSlain(bounty, monsterID, isAdd);
         }
 
         /// <summary>

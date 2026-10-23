@@ -272,7 +272,7 @@ unique — no effect is shared by two shards.
 | `PotionEfficacy` | LightGreen | Head | +{0}% Potion Duration | Consumed potions and meads last {0}% longer. |
 | `Comfortable` | LightGreen | Chest | Comfort +{0} | When resting and wearing the magic equipment, the player's comfort level is increased by +**X**. |
 | `AddPickaxesSkill` | LightGreen | Legs | Pickaxes Skill +{0} | Increases the player's pickaxes skill level by +**X**. This may cause the skill level to increase above 100. |
-| `RestingHealthRegen` | LightGreen | Shoulders | +{0}% Health Regen While Rested | Increases health regeneration by {0}% while you are Rested. |
+| `RestingHealthRegen` | LightGreen | Shoulders | +{0}% Health Regen While Resting | Increases health regeneration by {0}% while you are resting by a fire. |
 | `AdrenalineIncreasesHealthRegen` | LightGreen | Trinket | Adrenaline Surge: +{0}% Health Regen for {1}s | When your adrenaline fills, gain +{0}% health regen for {1} seconds. Refilling refreshes the buff rather than stacking it. |
 | `BountifulHarvest` | LightGreen | Utility | Bountiful Harvest: {0}% Bonus Yield | {0}% chance to gather a bonus item when harvesting. |
 | `DamageBonusFromPlayerWeight` | Peach | Melee Wpn, Ranged Wpn, Magic Wpn | +Up to {0}% Damage by Pack Weight | Weapon damage scaling with how loaded your pack is, up to +{0}%. |

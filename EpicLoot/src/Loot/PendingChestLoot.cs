@@ -20,12 +20,22 @@ namespace EpicLoot
     {
         public const string PendingKey = "EpicLoot.ChestLootPending";
 
-        // Every trigger patch's fast path is AnyPending, which is false in essentially all play;
-        // only a loaded, still-unrolled chest costs a lookup. That is the reason this is a registry
+        // Container.Awake reads the flag for every container that loads, player-built chests included.
+        public static readonly int PendingKeyHash = PendingKey.GetStableHashCode();
+
+        // Every trigger patch's fast path is AnyPending, and past that a set lookup: only a loaded,
+        // still-unrolled chest does any more work than that. That is the reason this is a registry
         // rather than a per-chest component (GetComponent per call) or a timer (distance checks over
         // every chest in range, which says nothing useful anyway — a dungeon chest sits 5000m from a
         // player standing above it, but an overworld ruin's chests are at ordinary distances).
+        // AnyPending is true whenever any unopened loot chest is loaded, which is much of the time, so
+        // the per-container lookup is the path that actually has to stay cheap.
         private static readonly HashSet<Container> Pending = new HashSet<Container>();
+
+        // A zone unload destroys pending chests behind our back. The driver sweeps them on this period,
+        // so AnyPending falls back to false once the last one is gone.
+        private const float SweepInterval = 5f;
+        private static float _nextSweepTime;
 
         // Chests whose roll was asked for from somewhere it must not run synchronously — a plain
         // accessor that other mods call in bulk, or inside ZNetScene's own object creation. Drained
@@ -52,11 +62,23 @@ namespace EpicLoot
 
         public static void Register(Container container)
         {
-            // Chests leave the set when they roll, but a zone unload destroys them behind our back,
-            // so sweep the corpses here. Registration happens once per chest instantiation, over a
-            // set that is normally empty.
-            Pending.RemoveWhere(x => x == null);
             Pending.Add(container);
+            PendingChestLootDriver.Ensure();
+        }
+
+        /// <summary>
+        /// Drops chests a zone unload destroyed. They leave the set when they roll, but nothing tells us
+        /// when they are unloaded instead, and each one left behind keeps AnyPending true.
+        /// </summary>
+        internal static void SweepUnloaded()
+        {
+            if (Pending.Count == 0 || Time.unscaledTime < _nextSweepTime)
+            {
+                return;
+            }
+
+            _nextSweepTime = Time.unscaledTime + SweepInterval;
+            Pending.RemoveWhere(x => x == null);
         }
 
         /// <summary>
@@ -109,13 +131,20 @@ namespace EpicLoot
         private static void RollInternal(Container container, string containerName,
             List<LootTable> lootTables)
         {
-            var items = LootRoller.RollLootTable(lootTables, 1, container.m_piece.name,
+            // The clean prefab name: the roll looks the chest's own entry (Modifiers, StarScaling) up by it.
+            var items = LootRoller.RollLootTable(lootTables, 1, containerName,
                 container.transform.position);
+            ContainerCapacity.AddItems(container, items);
+
+            if (!EpicLoot.IsLogEnabled(LogLevel.Info))
+            {
+                return;
+            }
+
             EpicLoot.Log($"Rolling on loot table: {containerName}, " +
                 $"spawned {items.Count} items at drop point({container.transform.position.ToString("0")}).");
             foreach (var item in items)
             {
-                container.m_inventory.AddItem(item);
                 EpicLoot.Log($"  - {item.m_shared.m_name}" + (item.IsMagic() ?
                     $": {string.Join(", ", item.GetMagicItem().Effects.Select(x => x.EffectType.ToString()))}" :
                     ""));
@@ -149,25 +178,25 @@ namespace EpicLoot
                 return;
             }
 
-            if (!zdo.GetBool(PendingKey))
+            if (!zdo.GetBool(PendingKeyHash))
             {
                 Pending.Remove(container);
                 return;
             }
 
-            if (!TryGetLootTables(container, out var containerName, out var lootTables))
-            {
-                Pending.Remove(container);
-                zdo.Set(PendingKey, false);
-                return;
-            }
-
-            // We are about to write the flag and the inventory. Whoever is reading a chest's
+            // We are about to write the flag (and, below, the inventory). Whoever is reading a chest's
             // contents is standing at it, so the server's ZDOMan.ReleaseZDOS would hand us this ZDO
             // within a couple of seconds regardless; claiming now just removes that window.
             if (!nview.IsOwner())
             {
                 nview.ClaimOwnership();
+            }
+
+            if (!TryGetLootTables(container, out var containerName, out var lootTables))
+            {
+                Pending.Remove(container);
+                zdo.Set(PendingKeyHash, false);
+                return;
             }
 
             // Clear before anything that can re-enter, not merely before Roll. container.Load() below
@@ -177,7 +206,7 @@ namespace EpicLoot
             // failed roll loses the loot rather than duplicating it, and no peer can observe another
             // peer's items without also observing the cleared flag, since both live in this same ZDO.
             Pending.Remove(container);
-            zdo.Set(PendingKey, false);
+            zdo.Set(PendingKeyHash, false);
 
             // Container polls its ZDO once a second, so m_inventory can be a second stale.
             container.Load();
@@ -244,13 +273,16 @@ namespace EpicLoot
         /// </summary>
         public static void RequestRoll(Container container)
         {
-            if (container == null || !Queued.Add(container))
+            // Everything but a pending chest stops here. These callers run over every container in
+            // range, player-built ones included, so queueing unconditionally filled the queue with
+            // chests that had nothing to roll, and a real one could wait behind a base's worth of them
+            // at MaxRollsPerFrame.
+            if (container == null || !Pending.Contains(container))
             {
                 return;
             }
 
-            DeferredRolls.Enqueue(container);
-            PendingChestLootDriver.Ensure();
+            Enqueue(container);
         }
 
         /// <summary>
@@ -266,7 +298,18 @@ namespace EpicLoot
             }
 
             DirectRollRequests.Add(container);
-            RequestRoll(container);
+            Enqueue(container);
+        }
+
+        private static void Enqueue(Container container)
+        {
+            if (!Queued.Add(container))
+            {
+                return;
+            }
+
+            DeferredRolls.Enqueue(container);
+            PendingChestLootDriver.Ensure();
         }
 
         /// <summary>
@@ -305,9 +348,9 @@ namespace EpicLoot
     }
 
     /// <summary>
-    /// Drives <see cref="PendingChestLoot.PumpDeferredRolls"/>. LateUpdate rather than Update so the
-    /// roll cannot land inside another component's Update — ZNetScene.Update in particular, which
-    /// creates and destroys the very objects a roll would be instantiating.
+    /// Drives <see cref="PendingChestLoot.PumpDeferredRolls"/> and the unloaded-chest sweep. LateUpdate
+    /// rather than Update so the roll cannot land inside another component's Update — ZNetScene.Update
+    /// in particular, which creates and destroys the very objects a roll would be instantiating.
     /// </summary>
     public class PendingChestLootDriver : MonoBehaviour
     {
@@ -328,6 +371,7 @@ namespace EpicLoot
         public void LateUpdate()
         {
             PendingChestLoot.PumpDeferredRolls();
+            PendingChestLoot.SweepUnloaded();
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using JetBrains.Annotations;
 using System.Collections.Generic;
 using System.Linq;
+using EpicLoot.Compatibility;
 using EpicLoot.CraftingV2;
 using TMPro;
 using UnityEngine.UI;
@@ -32,9 +33,27 @@ namespace EpicLoot_UnityLib
             }
 
             ItemDrop.ItemData item = selectedItem.Item1.GetItem();
+            // Favorited while the table was open.
+            if (ItemFavorites.IsProtected(item))
+            {
+                return;
+            }
+
+            // Checked before paying: the item may have left the inventory, or its chest reloaded and
+            // replaced it, since it was selected. Stripping an item whose storage cannot save that would
+            // hand back its socketed stones while the item stays as it was.
+            if (!InventoryManagement.Instance.IsEditable(item))
+            {
+                UnityEngine.Debug.LogWarning("[Disenchant Item] Cancelled: the item is no longer held anywhere the change would be saved.");
+                NotifyItemsUnavailable(item);
+                RefreshAvailableItems();
+                return;
+            }
+
             List<InventoryItemListElement> cost = EnchantingUIController.GetDisenchantCost(item);
             if (!LocalPlayerCanAffordCost(cost))
             {
+                Player.m_localPlayer.Message(MessageHud.MessageType.Center, "$msg_missingrequirement");
                 return;
             }
 

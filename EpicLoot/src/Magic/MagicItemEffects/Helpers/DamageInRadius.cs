@@ -1,16 +1,19 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace EpicLoot.src.Magic.MagicItemEffects.Helpers {
     public static class DamageInRadius {
         // Applies `damage` to every hostile character within `radius` of `center`, crediting `attacker` for
-        // the hit. Iterates the live character list (same approach as ForestsAid) and skips the attacker's own
-        // allies (players and tames) and the dead; bosses are fair game. Poison/fire/frost portions become the
-        // usual stacking damage-over-time, and each victim plays its own elemental hit effect for feedback.
+        // the hit. Skips the attacker's own allies (players and tames) and the dead; bosses are fair game.
+        // Poison/fire/frost portions become the usual stacking damage-over-time, and each victim plays its own
+        // elemental hit effect for feedback.
         public static void DamageEnemiesInRadius(Player attacker, Vector3 center, float radius,
             HitData.DamageTypes damage) {
 
             var radiusSqr = radius * radius;
-            foreach (var character in Character.GetAllCharacters()) {
+            // A copy of the character list: a hit can spawn a character (adrenaline bats, say), and the live
+            // list changing under the loop throws.
+            foreach (var character in new List<Character>(Character.GetAllCharacters())) {
                 if (character == null || character.IsPlayer() || character.IsTamed() || character.IsDead()) {
                     continue;
                 }

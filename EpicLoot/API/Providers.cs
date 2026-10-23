@@ -1,3 +1,4 @@
+using EpicLoot.Config;
 using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
@@ -23,6 +24,10 @@ public static partial class API
         public Func<string, int> CountItem;
         public Func<string, int, int> RemoveItem;
         public Func<ItemDrop.ItemData, int, int> RemoveExactItem;
+        // Optional, set by RegisterInventoryProviderSaveHandler. Without it Epic Loot can change one of
+        // this provider's items in place and nothing writes that change back to where the item lives.
+        public Func<ItemDrop.ItemData, bool> SaveItem;
+        public bool WarnedNoSaveHandler;
     }
 
     private static readonly List<InventoryProvider> InventoryProviders = new();
@@ -104,10 +109,79 @@ public static partial class API
     }
 
     /// <summary>
+    /// Lets Epic Loot hand back an item it changed in place, so the provider can save it where the item
+    /// lives. Enchanting, augmenting, etching, a reducing rune extract, stripping a set and disenchanting
+    /// all rewrite the target item rather than consuming it. For an item from a chest that change exists
+    /// only in memory until the chest saves, and a chest that reloads first (vanilla re-reads it from its
+    /// ZDO after anyone opens it, and whenever the owner's copy arrives) brings the old item back while the
+    /// materials stay spent.
+    /// </summary>
+    /// <remarks>
+    /// Called on the frame of the change, right after Epic Loot re-checked that <c>getItems</c> still
+    /// offers the item, so the item is the instance you served. Save it without reloading the container
+    /// first: a reload replaces the instance and discards the change you were asked to keep.
+    /// A provider with no save handler still has its items edited unless the player lists its id under
+    /// the <c>Spend-Only Storage Mods</c> setting, which is what keeps them out of those actions.
+    /// </remarks>
+    /// <param name="id">The id passed to <see cref="RegisterInventoryProvider"/>; register that first.</param>
+    /// <param name="saveItem">Persists the changed item. Return false when it could not be saved (not
+    /// yours any more, not writable right now); Epic Loot logs that the change may not last.</param>
+    /// <returns>true if set; false if no inventory provider has that id or the callback is null</returns>
+    [PublicAPI]
+    public static bool RegisterInventoryProviderSaveHandler(string id, Func<ItemDrop.ItemData, bool> saveItem)
+    {
+        if (saveItem == null)
+        {
+            OnError?.Invoke($"Failed to register inventory provider save handler '{id}': callback is null");
+            return false;
+        }
+
+        InventoryProvider provider = InventoryProviders.Find(x => x.Id == id);
+        if (provider == null)
+        {
+            OnError?.Invoke($"Failed to register inventory provider save handler: no inventory provider '{id}'");
+            return false;
+        }
+
+        provider.SaveItem = saveItem;
+        OnReload?.Invoke($"Registered inventory provider save handler: {id}");
+        return true;
+    }
+
+    // Spend-Only Storage Mods, parsed. Keyed by the raw value, so an edit to the setting is picked up on
+    // the next read without a change handler.
+    private static string _spendOnlyRaw;
+    private static readonly HashSet<string> SpendOnlyIds = new(StringComparer.OrdinalIgnoreCase);
+
+    /// <returns>true when the player's config keeps this provider's items out of in-place edits.</returns>
+    internal static bool IsSpendOnlyProvider(string id)
+    {
+        string raw = ELConfig.SpendOnlyStorageMods?.Value ?? string.Empty;
+        if (raw != _spendOnlyRaw)
+        {
+            SpendOnlyIds.Clear();
+            foreach (string entry in raw.Split(','))
+            {
+                string trimmed = entry.Trim();
+                if (trimmed.Length > 0)
+                {
+                    SpendOnlyIds.Add(trimmed);
+                }
+            }
+
+            _spendOnlyRaw = raw;
+        }
+
+        return id != null && SpendOnlyIds.Contains(id);
+    }
+
+    /// <summary>
     /// Appends every provider-supplied item to <paramref name="into"/>. The caller must own that list --
     /// never pass a live <c>Inventory.m_inventory</c>.
     /// </summary>
-    internal static void AppendProviderItems(List<ItemDrop.ItemData> into)
+    /// <param name="forEditing">Leave out providers listed under Spend-Only Storage Mods, for an action
+    /// that changes the item in place.</param>
+    internal static void AppendProviderItems(List<ItemDrop.ItemData> into, bool forEditing = false)
     {
         if (!AnyInventoryProviders || into == null)
         {
@@ -116,7 +190,7 @@ public static partial class API
 
         foreach (InventoryProvider provider in InventoryProviders)
         {
-            if (provider.GetItems == null)
+            if (provider.GetItems == null || (forEditing && IsSpendOnlyProvider(provider.Id)))
             {
                 continue;
             }
@@ -248,6 +322,66 @@ public static partial class API
         }
 
         return amount - remaining;
+    }
+
+    /// <summary>
+    /// Hands an item Epic Loot just changed in place to the provider that offered it, so the change is
+    /// saved where the item lives. The caller has already ruled out the player's own inventory.
+    /// </summary>
+    internal static void SaveProviderItem(ItemDrop.ItemData item)
+    {
+        if (!AnyInventoryProviders || item == null)
+        {
+            return;
+        }
+
+        foreach (InventoryProvider provider in InventoryProviders)
+        {
+            if (provider.GetItems == null)
+            {
+                continue;
+            }
+
+            try
+            {
+                List<ItemDrop.ItemData> items = provider.GetItems();
+                if (items == null || !items.Contains(item))
+                {
+                    continue;
+                }
+
+                // Forced, like LogProviderFailure: the change was made and paid for, and it is about to be
+                // lost without anything else saying so.
+                if (provider.SaveItem == null)
+                {
+                    if (!provider.WarnedNoSaveHandler)
+                    {
+                        provider.WarnedNoSaveHandler = true;
+                        EpicLoot.LogWarningForce($"[EpicLoot.API] Changed '{item.m_shared?.m_name}', which inventory " +
+                            $"provider '{provider.Id}' offered, but that provider registered no save handler, so " +
+                            "the change may be lost when its storage reloads. Add its id to the Spend-Only " +
+                            "Storage Mods setting to keep its items out of enchanting, augmenting and etching.");
+                    }
+
+                    return;
+                }
+
+                if (!provider.SaveItem(item))
+                {
+                    EpicLoot.LogWarningForce($"[EpicLoot.API] Inventory provider '{provider.Id}' could not save " +
+                        $"the change to '{item.m_shared?.m_name}'; it may be lost when its storage reloads.");
+                }
+
+                return;
+            }
+            catch (Exception ex)
+            {
+                LogProviderFailure("Inventory", provider.Id, ex);
+            }
+        }
+
+        EpicLoot.LogWarningForce($"[EpicLoot.API] Changed '{item.m_shared?.m_name}', which is neither in the " +
+            "player's inventory nor offered by any inventory provider any more; the change may not be saved.");
     }
 
     #endregion
@@ -435,13 +569,15 @@ public static partial class API
 
     #endregion
 
-    /// <returns>The ids of every registered provider, grouped by family, for diagnostics.</returns>
+    /// <returns>The ids of every registered provider, grouped by family, for diagnostics.
+    /// "InventorySave" lists the inventory providers with a save handler.</returns>
     [PublicAPI]
     public static Dictionary<string, List<string>> GetRegisteredProviders()
     {
         return new Dictionary<string, List<string>>
         {
             ["Inventory"] = InventoryProviders.ConvertAll(x => x.Id),
+            ["InventorySave"] = InventoryProviders.FindAll(x => x.SaveItem != null).ConvertAll(x => x.Id),
             ["Equipment"] = new List<string>(EquipmentProviders.Keys),
             ["Sacrifice"] = new List<string>(SacrificeFilters.Keys)
         };

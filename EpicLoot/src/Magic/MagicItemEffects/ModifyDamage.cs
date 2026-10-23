@@ -19,7 +19,8 @@ public static class ModifyDamage
         {
             if (RunGetDamagePatch(__instance))
             {
-                ApplyMagicDamageModifiers(Player.m_localPlayer, __instance, ref __result);
+                Player player = Player.m_localPlayer;
+                ApplyMagicDamageModifiers(player, __instance, ref __result, CoinHoarder.GetDamageBonus(player));
                 ApplyShardWeaponModifiers(__instance, ref __result);
             }
         }
@@ -36,6 +37,7 @@ public static class ModifyDamage
         DamageIncreaseFromMovementPenalty.ModifyWeaponDamage(item, ref damage);
         IncreaseHarvestDamage.ModifyWeaponDamage(item, ref damage);
         ConvertPhysicalDamageToLightning.ModifyWeaponDamage(item, ref damage);
+        CoilingVenom.ModifyWeaponDamage(ref damage);
         IcyWeight.ModifyWeaponDamage(item, ref damage);
         ReduceArmorIncreaseDamage.ModifyWeaponDamage(item, ref damage);
         NecroticFire.ModifyWeaponDamage(item, ref damage);
@@ -59,7 +61,9 @@ public static class ModifyDamage
         HitData.DamageTypes damage = item.GetDamage();
         if (!RunGetDamagePatch(item))
         {
-            ApplyMagicDamageModifiers(null, item, ref damage);
+            // Not equipped, so GetDamage left it alone. The coin bonus goes in too: it applies to whichever
+            // weapon the player swings, so the tooltip shows what this one deals once equipped.
+            ApplyMagicDamageModifiers(null, item, ref damage, CoinHoarder.GetDamageBonus(Player.m_localPlayer));
         }
 
         return damage;
@@ -67,25 +71,24 @@ public static class ModifyDamage
 
     /// <summary>
     /// Applys all magic effects that modify damage. Leave player blank to always calculate values for the item (for tooltip).
+    /// <paramref name="coinHoarderBonus"/> is added to the all-damage multiplier, whether or not a player is given.
     /// </summary>
-    private static void ApplyMagicDamageModifiers(Player player, ItemDrop.ItemData item, ref HitData.DamageTypes damages)
+    private static void ApplyMagicDamageModifiers(Player player, ItemDrop.ItemData item, ref HitData.DamageTypes damages,
+        float coinHoarderBonus)
     {
         float originalTotalDamage = damages.EpicLootGetTotalDamage();
-        float modifyAll = 1f;
+        float modifyAll = 1f + coinHoarderBonus;
 
         if (player != null)
         {
-            if (player.HasActiveMagicEffect(MagicEffectType.CoinHoarder, out float coinHoarderEffectValue))
-            {
-                modifyAll += CoinHoarder.GetCoinHoarderValue(player, coinHoarderEffectValue);
-            }
-
             if (player.GetSEMan().HaveStatusEffect(EpicAssets.DodgeBuff_SE_Name.GetStableHashCode()) &&
                 player.HasActiveMagicEffect(MagicEffectType.DodgeBuff, out float dodgeBuffValue, 0.01f))
             {
                 modifyAll += dodgeBuffValue;
             }
         }
+        
+        GiantsBlood.ApplyPhysicalDamage(player, ref damages);
 
         if (!item.IsMagic())
         {
@@ -125,6 +128,9 @@ public static class ModifyDamage
                 player, item, MagicEffectType.AddPiercingDamage, 0.01f);
         }
 
+        // Added damage too, so the multipliers below scale it.
+        EitrInfusion.AddInfusedDamage(player, item, ref damages);
+
         // Then modify
 
         if (MagicEffectsHelper.HasActiveMagicEffectOnWeapon(player, item,
@@ -139,7 +145,7 @@ public static class ModifyDamage
             ModifyElementalDamage(ref damages, 1.0f + elementalDamageEffectValue);
         }
 
-        if (MagicEffectsHelper.HasActiveMagicEffectOnWeapon(player, item,
+        if (Spellsword.IsSpellswordWeapon(item) && MagicEffectsHelper.HasActiveMagicEffectOnWeapon(player, item,
             MagicEffectType.SpellSword, out float damageEffectValue, 0.01f))
         {
             modifyAll += damageEffectValue;
@@ -162,7 +168,7 @@ public static class ModifyDamage
         damages.Modify(modifyAll);
     }
 
-    private static void ModifyPhysicalDamage(ref HitData.DamageTypes damages, float modifier)
+    internal static void ModifyPhysicalDamage(ref HitData.DamageTypes damages, float modifier)
     {
         damages.m_blunt *= modifier;
         damages.m_slash *= modifier;

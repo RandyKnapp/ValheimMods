@@ -20,6 +20,11 @@ public static partial class EpicLoot
 
     private static readonly Method API_UnregisterInventoryProvider = new("UnregisterInventoryProvider");
 
+    private static readonly Method API_RegisterInventoryProviderSaveHandler = new(
+        "RegisterInventoryProviderSaveHandler",
+        typeof(string),
+        typeof(Func<ItemDrop.ItemData, bool>));
+
     private static readonly Method API_RegisterEquipmentProvider = new(
         "RegisterEquipmentProvider",
         typeof(string),
@@ -69,6 +74,33 @@ public static partial class EpicLoot
     public static bool UnregisterInventoryProvider(string id)
     {
         return (bool)(API_UnregisterInventoryProvider.Invoke(id)[0] ?? false);
+    }
+
+    /// <summary>
+    /// Lets Epic Loot hand back an item it changed in place, so you can save it where it lives.
+    /// Enchanting, augmenting, etching, a reducing rune extract, stripping a set and disenchanting all
+    /// rewrite the item instead of consuming it. For an item in a chest that change is only in memory until
+    /// the chest saves, and a chest that reloads first (vanilla re-reads it from its ZDO after anyone opens
+    /// it) brings the old item back while the materials stay spent.
+    /// </summary>
+    /// <remarks>
+    /// Called on the frame of the change, right after Epic Loot re-checked that your <c>getItems</c> still
+    /// offers the item. Save without reloading the container first: a reload replaces the instance and
+    /// discards the change. Without a save handler your items are still edited unless the player lists
+    /// your id under Epic Loot's <c>Spend-Only Storage Mods</c> setting. Needs an Epic Loot with save
+    /// handlers; an older one returns false and keeps editing your items unsaved.
+    /// </remarks>
+    /// <param name="id">The id passed to <see cref="RegisterInventoryProvider"/>; register that first.</param>
+    /// <param name="saveItem">Persist the changed item and return true, or false if it could not be saved;
+    /// Epic Loot logs that the change may not last.</param>
+    /// <returns>true if set</returns>
+    [PublicAPI]
+    public static bool RegisterInventoryProviderSaveHandler(string id, Func<ItemDrop.ItemData, bool> saveItem)
+    {
+        object[] result = API_RegisterInventoryProviderSaveHandler.Invoke(id, saveItem);
+        bool output = (bool)(result[0] ?? false);
+        logger.LogDebug($"Registered inventory provider save handler: {id}, {output}");
+        return output;
     }
 
     /// <summary>

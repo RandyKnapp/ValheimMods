@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
+using EpicLoot;
 using EpicLoot.CraftingV2;
 using TMPro;
 using UnityEngine;
@@ -34,9 +34,7 @@ namespace EpicLoot_UnityLib
 
     public class MultiSelectItemList : MonoBehaviour, IGamepadFocusPane
     {
-        public enum SortMode { Rarity, Name, Quantity }
-
-        private static readonly Regex RichTextRegex = new Regex(@"<[^>]*>", RegexOptions.Compiled);
+        public enum SortMode { Rarity, Name, Quantity, Equipped }
 
         public bool Multiselect = true;
         public bool Filterable = true;
@@ -54,12 +52,13 @@ namespace EpicLoot_UnityLib
 
         private bool _locked;
         private bool _hasGamepadFocus;
+        private ScrollRect _scrollRect;
         private ScrollRectEnsureVisible _scrollRectEnsureVisible;
 
         public void Awake()
         {
-            ScrollRect scrollRect = GetComponentInChildren<ScrollRect>();
-            _scrollRectEnsureVisible = scrollRect != null ? scrollRect.GetComponent<ScrollRectEnsureVisible>() : null;
+            _scrollRect = GetComponentInChildren<ScrollRect>();
+            _scrollRectEnsureVisible = _scrollRect != null ? _scrollRect.GetComponent<ScrollRectEnsureVisible>() : null;
 
             if (SelectAllToggle != null)
             {
@@ -79,9 +78,33 @@ namespace EpicLoot_UnityLib
             if (FilterByText != null)
             {
                 FilterByText.onValueChanged.AddListener(OnFilterChanged);
+                SetupFilterTooltip();
             }
 
             Refresh();
+        }
+
+        // The box is too narrow for the search syntax in its placeholder, so it is explained on hover.
+        private void SetupFilterTooltip()
+        {
+            GameObject filterObject = FilterByText.gameObject;
+            UITooltip tooltip = filterObject.GetComponent<UITooltip>();
+            if (tooltip == null)
+            {
+                tooltip = filterObject.AddComponent<UITooltip>();
+            }
+
+            if (EpicLoot.EpicLoot.HasAuga)
+            {
+                Auga.API.Tooltip_MakeSimpleTooltip(filterObject);
+            }
+            else
+            {
+                // The text-only tooltip vanilla uses on the trader's buy button.
+                tooltip.m_tooltipPrefab = StoreGui.instance.m_buyButton.GetComponent<UITooltip>().m_tooltipPrefab;
+            }
+
+            tooltip.Set(string.Empty, "$mod_epicloot_enchanting_filter_tooltip");
         }
 
         public void Update()
@@ -207,6 +230,11 @@ namespace EpicLoot_UnityLib
             }
         }
 
+        public void ScrollWithRightStick()
+        {
+            GamepadScroll.ApplyRightStickY(_scrollRect);
+        }
+
         private void OnFilterChanged(string _)
         {
             Refresh();
@@ -228,11 +256,7 @@ namespace EpicLoot_UnityLib
             if (!Filterable || FilterByText == null || ListContainer == null)
                 return;
 
-            string filterText = FilterByText.text;
-            bool filterIsEmpty = string.IsNullOrEmpty(filterText) || string.IsNullOrWhiteSpace(filterText);
-
-            string[] filterParts = filterIsEmpty ? Array.Empty<string>() :
-                filterText.Split(new []{' '}, StringSplitOptions.RemoveEmptyEntries);
+            ItemSearchFilter.Query query = ItemSearchFilter.Parse(FilterByText.text);
             int elementCount = ListContainer.childCount;
 
             for (int i = 0; i < elementCount; ++i)
@@ -243,24 +267,9 @@ namespace EpicLoot_UnityLib
                     continue;
                 }
 
-                // A row with no name label can't be matched against, so never hide it.
-                bool nameMatches = filterIsEmpty || element.ItemName == null;
-                if (!nameMatches)
-                {
-                    // Strip rich text tags from item name
-                    string itemName = RichTextRegex.Replace(element.ItemName.text ?? string.Empty, string.Empty);
-
-                    foreach (string part in filterParts)
-                    {
-                        if (itemName.IndexOf(part, StringComparison.OrdinalIgnoreCase) >= 0)
-                        {
-                            nameMatches = true;
-                            break;
-                        }
-                    }
-                }
-
-                element.gameObject.SetActive(nameMatches);
+                string itemName = element.ItemName == null ? null : ItemSearchFilter.StripRichText(element.ItemName.text);
+                bool matches = ItemSearchFilter.Matches(query, itemName, element.GetEnchantmentSearchNames);
+                element.gameObject.SetActive(matches);
             }
         }
 
@@ -491,9 +500,24 @@ namespace EpicLoot_UnityLib
                 case SortMode.Quantity:
                     return items.OrderByDescending(x => x.GetItem().m_stack)
                         .ThenBy(x => Localization.instance.Localize(x.GetItem().m_shared.m_name)).ToList();
+                case SortMode.Equipped:
+                    return EnchantingUIController.SortByEquipped(items);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(mode), mode, null);
             }
+        }
+
+        // The dropdown value is cast straight to SortMode, so this only lines up while the prefab's
+        // options are Rarity, Name, Quantity and Equipped is appended right after them.
+        public void AddEquippedSortMode()
+        {
+            if (SortByDropdown == null || SortByDropdown.options.Count != (int)SortMode.Equipped)
+            {
+                return;
+            }
+
+            SortByDropdown.options.Add(new TMP_Dropdown.OptionData(
+                Localization.instance.Localize("$mod_epicloot_enchanting_equipped")));
         }
 
         // The three selection getters below all skip filtered-out rows. Whatever they return is what

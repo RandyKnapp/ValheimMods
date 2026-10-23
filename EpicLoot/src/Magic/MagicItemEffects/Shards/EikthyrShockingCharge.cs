@@ -179,7 +179,9 @@ namespace EpicLoot.MagicItemEffects.Shards {
             var coneLength = GetConeLength();
             var halfMaxWidth = EffectConfig.Get(MagicEffectType.ShockingCharge,
                 ConeMaxWidthKey, DefaultConeMaxWidth) * 0.5f;
-            foreach (var character in Character.GetAllCharacters()) {
+            // A copy of the character list: a hit can spawn a character (adrenaline bats, say), and the live
+            // list changing under the loop throws.
+            foreach (var character in new List<Character>(Character.GetAllCharacters())) {
                 if (character == null || character.IsPlayer() || character.IsTamed() || character.IsDead()) {
                     continue;
                 }

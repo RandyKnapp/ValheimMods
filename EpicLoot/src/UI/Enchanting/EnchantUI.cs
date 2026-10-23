@@ -52,8 +52,9 @@ namespace EpicLoot_UnityLib
         // The prefab is authored with one toggle per rarity of its day, and RefreshRarity casts a toggle's
         // index straight to ItemRarity. When the enum has outgrown the prefab (a bundle that predates a
         // rarity), the last toggle is cloned for each missing tier so every rarity stays selectable. The
-        // authored prefab is still the real fix; this only keeps an older bundle usable.
-        private void EnsureRarityButtons()
+        // authored prefab is still the real fix; this only keeps an older bundle usable. Idempotent; the Auga
+        // fixup calls it before Awake.
+        internal void EnsureRarityButtons()
         {
             if (RarityButtons == null || RarityButtons.Count == 0)
             {
@@ -185,6 +186,17 @@ namespace EpicLoot_UnityLib
             }
 
             ItemDrop.ItemData item = selectedItem.Item1.GetItem();
+
+            // Checked before paying: the item may have left the inventory, or its chest reloaded and
+            // replaced it, since it was selected. An enchant only lasts on an item whose storage saves it.
+            if (!InventoryManagement.Instance.IsEditable(item))
+            {
+                Debug.LogWarning("[Enchant Item] Cancelled: the item is no longer held anywhere the change would be saved.");
+                NotifyItemsUnavailable(item);
+                RefreshAvailableItems();
+                return;
+            }
+
             List<InventoryItemListElement> cost = EnchantingUIController.GetEnchantCost(item, _rarity);
 
             Player player = Player.m_localPlayer;
@@ -193,6 +205,7 @@ namespace EpicLoot_UnityLib
                 if (!LocalPlayerCanAffordCost(cost))
                 {
                     Debug.LogError("[Enchant Item] ERROR: Tried to enchant item but could not afford the cost. This should not happen!");
+                    player.Message(MessageHud.MessageType.Center, "$msg_missingrequirement");
                     return;
                 }
 

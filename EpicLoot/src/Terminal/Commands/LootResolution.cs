@@ -18,7 +18,7 @@ public static partial class TerminalManager
         }
         LootTable table = tables[0];
         LootDrop[] tableForLevel = LootRoller.GetLootForLevel(table, level);
-        if (tableForLevel.Length == 0)
+        if (tableForLevel == null || tableForLevel.Length == 0)
         {
             args.Context.PrintError($"> loot table '{lootTable}' has no entries for level {level}");
             return;

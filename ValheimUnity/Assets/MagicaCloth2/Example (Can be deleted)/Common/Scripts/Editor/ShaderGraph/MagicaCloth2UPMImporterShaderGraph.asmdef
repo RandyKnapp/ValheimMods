@@ -1,0 +1,24 @@
+{
+    "name": "MagicaCloth2UPMImporterShaderGraph",
+    "rootNamespace": "",
+    "references": [],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "!MC2_SHADERGRAPH"
+    ],
+    "versionDefines": [
+        {
+            "name": "com.unity.shadergraph",
+            "expression": "12.0.0",
+            "define": "MC2_SHADERGRAPH"
+        }
+    ],
+    "noEngineReferences": false
+}

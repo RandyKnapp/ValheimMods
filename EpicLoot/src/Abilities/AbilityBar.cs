@@ -4,6 +4,7 @@ using HarmonyLib;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
@@ -17,12 +18,23 @@ namespace EpicLoot.Abilities
         public Text CooldownText;
 
         protected int _index = -1;
+        private bool _shownGamepad;
+        private bool _shownModifier;
+        private InputLayout _shownLayout;
+        private KeyCode _shownButton = KeyCode.None;
+        private string _shownKey;
+        private string _shownModifierPath;
+        private Gamepad _shownPad;
 
         public virtual void Awake()
         {
             Icon = transform.Find("Icon").GetComponent<Image>();
             CooldownProgress = transform.Find("CooldownProgress").GetComponent<Image>();
             Binding = transform.Find("Binding").GetComponent<Text>();
+            Binding.horizontalOverflow = HorizontalWrapMode.Wrap;
+            Binding.resizeTextForBestFit = true;
+            Binding.resizeTextMaxSize = Binding.fontSize;
+            Binding.resizeTextMinSize = Mathf.Max(6, Binding.fontSize / 2);
             CooldownText = transform.Find("CooldownText").GetComponent<Text>();
 
             var iconMaterial = Hud.instance.m_pieceIconPrefab.transform.Find("icon").GetComponent<Image>().material;
@@ -46,12 +58,7 @@ namespace EpicLoot.Abilities
                 Icon.sprite = EpicLoot.LoadAsset<Sprite>(ability.AbilityDef.IconAsset);
             }
 
-            Binding.enabled = ability.AbilityDef.ActivationMode == AbilityActivationMode.Activated;
-            var bindingText = ELConfig.AbilityKeyCodes[_index].Value.ToUpperInvariant();
-            if (Binding.text != bindingText)
-            {
-                Binding.text = bindingText;
-            }
+            RefreshBinding(ability);
 
             var cooldownSecondsRemaining = ability.TimeUntilCooldownEnds();
             var cooldownPercentComplete = ability.PercentCooldownComplete();
@@ -68,6 +75,33 @@ namespace EpicLoot.Abilities
             }
 
             Icon.color = onCooldown ? new Color(1, 0, 1, 0) : Color.white;
+        }
+
+        private void RefreshBinding(Ability ability)
+        {
+            bool gamepad = ZInput.IsGamepadActive();
+            bool modifier = ELConfig.AbilityGamepadUseAltKey?.Value ?? true;
+            var layout = ZInput.InputLayout;
+            var button = gamepad ? AbilityController.GetGamepadButton(_index) : KeyCode.None;
+            var key = gamepad ? null : ELConfig.AbilityKeyCodes[_index].Value;
+            // Within one layout the modifier can still be rebound, and a pad swapped for one with other button names.
+            var modifierPath = gamepad && modifier ? AbilityController.GamepadModifierPath() : null;
+            var pad = gamepad ? Gamepad.current : null;
+            Binding.enabled = ability.IsActivatedAbility() && (gamepad ? button != KeyCode.None : !string.IsNullOrEmpty(key));
+            if (gamepad == _shownGamepad && modifier == _shownModifier && layout == _shownLayout &&
+                button == _shownButton && key == _shownKey && modifierPath == _shownModifierPath && pad == _shownPad)
+            {
+                return;
+            }
+
+            _shownGamepad = gamepad;
+            _shownModifier = modifier;
+            _shownLayout = layout;
+            _shownButton = button;
+            _shownKey = key;
+            _shownModifierPath = modifierPath;
+            _shownPad = pad;
+            Binding.text = gamepad ? AbilityController.GamepadBindingLabel(_index) : key?.ToUpperInvariant() ?? string.Empty;
         }
     }
 

@@ -294,6 +294,14 @@ namespace EpicLoot.Magic.MagicItemEffects.Helpers {
             };
         }
 
+        /// <summary>
+        /// The Config a shard effect has with the given grid block (the shipped one, for Quick Configure's
+        /// page reset): the code defaults with the authored keys overlaid, exactly as a load builds it.
+        /// </summary>
+        internal static Dictionary<string, float> ConfigWith(string type, Dictionary<string, float> authored) {
+            return BuildConfig(type, authored);
+        }
+
         // Code defaults first, the grid entry's authored keys overlaid on top. Merging rather than
         // replacing is what lets a partial "Config" block retune one knob without blanking the rest --
         // and it is why LuckWhileFishing's treasure table survives someone overriding only TripleChance.

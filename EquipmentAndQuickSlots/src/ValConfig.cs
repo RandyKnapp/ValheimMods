@@ -11,6 +11,7 @@ namespace EquipmentAndQuickSlots {
         public static ConfigEntry<bool> ViewDebugSaveData;
         public static ConfigEntry<TextAnchor> QuickSlotsAnchor;
         public static ConfigEntry<Vector2> QuickSlotsPosition;
+        public static ConfigEntry<bool> ShowFavoriteMarks;
         public static ConfigEntry<bool> PreventStackAll;
         public static ConfigEntry<bool> PreventAutoPickup;
         public static ConfigEntry<bool> BackupEnabled;
@@ -22,6 +23,8 @@ namespace EquipmentAndQuickSlots {
         public static ConfigEntry<bool> ShowExtraUtilityItems;
         public static readonly ConfigEntry<KeyboardShortcut>[] QuickSlotKeys = new ConfigEntry<KeyboardShortcut>[MaxQuickSlots];
         public static readonly ConfigEntry<string>[] QuickSlotLabels = new ConfigEntry<string>[MaxQuickSlots];
+        public static ConfigEntry<ControllerButton> QuickSlotControllerModifier;
+        public static readonly ConfigEntry<ControllerButton>[] QuickSlotControllerButtons = new ConfigEntry<ControllerButton>[MaxQuickSlots];
 
         // Add Server synced config entries under here
         public static ConfigEntry<bool> EquipmentSlotsEnabled;
@@ -44,6 +47,11 @@ namespace EquipmentAndQuickSlots {
         // The keys the first three hotkeys shipped with in 2.x; kept so existing config files
         // carry their values (and their None-repair behavior) forward unchanged.
         private static readonly KeyCode[] DefaultQuickSlotKeys = { KeyCode.Z, KeyCode.V, KeyCode.B, KeyCode.None, KeyCode.None, KeyCode.None };
+
+        // Clockwise from the top, as asked for in issue 747
+        private static readonly ControllerButton[] DefaultQuickSlotControllerButtons = {
+            ControllerButton.DPadUp, ControllerButton.DPadRight, ControllerButton.DPadDown, ControllerButton.DPadLeft, ControllerButton.None, ControllerButton.None
+        };
 
         public ValConfig(ConfigFile cf) {
             // ensure all the config values are created
@@ -76,7 +84,13 @@ namespace EquipmentAndQuickSlots {
 
                 // A rebind changes which vanilla actions collide with the hotkey
                 QuickSlotKeys[i].SettingChanged += (_, _) => PreventSimilarHotkeys.FillSimilarHotkey();
+
+                QuickSlotControllerButtons[i] = Config.Bind("Controller", $"Quick slot controller button {i + 1}", DefaultQuickSlotControllerButtons[i],
+                    new ConfigDescription($"Controller button for Quick Slot {i + 1}, pressed while holding the controller modifier. Face buttons go by their Xbox names: A is the bottom button, B the right, X the left, Y the top. While the slot holds an item the press does nothing else; with the slot empty it does whatever the game normally does. None leaves the slot without a controller binding.", null, new ConfigurationManagerAttributes { }));
             }
+
+            QuickSlotControllerModifier = Config.Bind("Controller", "Quick slot controller modifier", ControllerButton.LeftBumper,
+                new ConfigDescription("Hold this controller button and press a quick slot's controller button to use that slot. The modifier keeps doing its own job while held (Run on the default controller layout). None makes the slot buttons work on their own, taking them over from the game whenever their slot holds an item.", null, new ConfigurationManagerAttributes { }));
 
             ViewDebugSaveData = Config.Bind("Toggles", "View Debug Save Data", false,
                 new ConfigDescription("Enable to view the raw legacy save data in the compendium.",
@@ -87,6 +101,9 @@ namespace EquipmentAndQuickSlots {
                 new ConfigDescription("The point on the HUD to anchor the Quick Slots bar. Changing this also changes the pivot of the Quick Slots to that corner.", null, new ConfigurationManagerAttributes { }));
             QuickSlotsPosition = Config.Bind("Quick Slots", "Quick Slots Position", new Vector2(216, 150),
                 new ConfigDescription("The position offset from the Quick Slots Anchor at which to place the Quick Slots.", null, new ConfigurationManagerAttributes { }));
+            ShowFavoriteMarks = Config.Bind("Quick Slots", "Show favorite marks", true,
+                new ConfigDescription("When Item Favorite Framework is installed, items in the quick slots that you favorited or flagged as trash there show its star or trash mark on the quick slot bar.", null, new ConfigurationManagerAttributes { }));
+            ShowFavoriteMarks.SettingChanged += (_, _) => HotkeyBarRefreshGate.Invalidate();
 
             EquipmentPanelPosition = Config.Bind("Equipment Panel", "Equipment Panel Position", new Vector2(615f, 28f),
                 new ConfigDescription("Position of the equipment and quick slot panel, relative to the inventory grid. Drag the panel by its background in-game to move it (hold the drag key, or enable 'Equipment Panel Draggable').", null, new ConfigurationManagerAttributes { }));

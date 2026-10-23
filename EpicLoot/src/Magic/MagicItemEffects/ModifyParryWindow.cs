@@ -48,11 +48,16 @@ public static class ModifyParryWindow
     /// </summary>
     public static bool IsParry()
     {
-        if (Player.m_localPlayer == null)
+        Player player = Player.m_localPlayer;
+        if (player == null)
         {
             return false;
         }
 
-        return Player.m_localPlayer.m_blockTimer != -1f && Player.m_localPlayer.m_blockTimer < 0.25f;
+        // Vanilla's own test (Humanoid.BlockAttack): only a blocker with a parry bonus parries, so an early
+        // block with a tower shield is a plain block.
+        ItemDrop.ItemData blocker = player.GetCurrentBlocker();
+        return blocker != null && blocker.m_shared.m_timedBlockBonus > 1f &&
+            player.m_blockTimer != -1f && player.m_blockTimer < 0.25f;
     }
 }

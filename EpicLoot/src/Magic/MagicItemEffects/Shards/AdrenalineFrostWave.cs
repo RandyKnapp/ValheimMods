@@ -54,6 +54,12 @@ namespace EpicLoot.MagicItemEffects.Shards {
                 value => new object[] { value, GetRadius() });
         }
 
+        // Registers this effect's faster nova variant with ZNetScene, so the networked nova spawned at each
+        // proc shows on other clients. Hooked to PrefabManager.OnPrefabsRegistered in EpicLoot.cs.
+        public static void RegisterNovaPrefab() {
+            FrostNovaFx.RegisterPrefab(NovaTemplateName, NovaSpeed);
+        }
+
         // Registers the chill RPC on every character so a remote-owned target can receive it. Mirrors
         [HarmonyPatch(typeof(Character), nameof(Character.Awake))]
         private static class AddRpc_Character_Awake_Patch {
@@ -74,7 +80,7 @@ namespace EpicLoot.MagicItemEffects.Shards {
             // Spawn the nova visibly above the player's feet, but close to the ground.
             var novaPosition = player.transform.position;
             novaPosition.y += 0.6f;
-            FrostNovaFx.Spawn(NovaTemplateName, novaPosition, NovaSpeed);
+            FrostNovaFx.Spawn(NovaTemplateName, novaPosition);
 
             var center = player.transform.position;
             var radius = GetRadius();

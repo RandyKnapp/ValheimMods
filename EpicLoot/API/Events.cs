@@ -1,4 +1,5 @@
 using JetBrains.Annotations;
+using Newtonsoft.Json;
 using System;
 
 namespace EpicLoot;
@@ -39,6 +40,8 @@ public static partial class API
     private static event Action<ItemDrop.ItemData, string> MagicItemChanged;
     private static event Action<ItemDrop.ItemData> LootGenerated;
     private static event Action<Player, string> BountyCompleted;
+    private static event Action AdventureDataChanged;
+    private static event Action<string> BountyTargetSlain;
 
     // Set while a semantic raise is in flight. SetMagicItem sits underneath every crafting operation, so
     // without this a single enchant would report both "Enchant" and "Unspecified".
@@ -146,6 +149,75 @@ public static partial class API
     }
 
     /// <summary>
+    /// Fires on the local client after the local player's adventure data (bounties, treasure maps) is
+    /// written: a bounty accepted, a target or add slain, a bounty completed, claimed or abandoned, a map
+    /// bought or its chest found, offline kills replayed, and the routine save with the character.
+    /// </summary>
+    /// <remarks>
+    /// Carries no payload; read what you need, e.g. <see cref="GetActiveBounties"/>. It can fire when
+    /// nothing you care about changed (the routine save), so compare before acting on it.
+    /// </remarks>
+    [PublicAPI]
+    public static bool AddAdventureDataChangedListener(Action listener)
+    {
+        if (listener == null)
+        {
+            return false;
+        }
+
+        AdventureDataChanged += listener;
+        return true;
+    }
+
+    /// <returns>true if the listener was non-null</returns>
+    [PublicAPI]
+    public static bool RemoveAdventureDataChangedListener(Action listener)
+    {
+        if (listener == null)
+        {
+            return false;
+        }
+
+        AdventureDataChanged -= listener;
+        return true;
+    }
+
+    /// <summary>
+    /// Fires on the server (a dedicated server or a listen host) each time any bounty creature dies,
+    /// whether or not the bounty's owner is online. Receives JSON
+    /// <c>{ BountyId, PlayerId, MonsterId, IsAdd }</c>; BountyId matches <see cref="GetActiveBounties"/>'s Id
+    /// and PlayerId is the owner.
+    /// </summary>
+    /// <remarks>
+    /// Raised for every kill the server relays, including kills of an abandoned bounty's leftover
+    /// creatures, which the owner no longer gets credit for.
+    /// </remarks>
+    [PublicAPI]
+    public static bool AddBountyTargetSlainListener(Action<string> listener)
+    {
+        if (listener == null)
+        {
+            return false;
+        }
+
+        BountyTargetSlain += listener;
+        return true;
+    }
+
+    /// <returns>true if the listener was non-null</returns>
+    [PublicAPI]
+    public static bool RemoveBountyTargetSlainListener(Action<string> listener)
+    {
+        if (listener == null)
+        {
+            return false;
+        }
+
+        BountyTargetSlain -= listener;
+        return true;
+    }
+
+    /// <summary>
     /// Labels the write performed by <paramref name="write"/>, so the event <c>SetMagicItem</c> raises
     /// carries a real reason token instead of <see cref="ChangeReason.Unspecified"/>. The event still
     /// fires exactly once, from the funnel.
@@ -242,6 +314,60 @@ public static partial class API
             catch (Exception ex)
             {
                 LogListenerFailure("BountyCompleted", ex);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Called from <c>AdventureComponent.Save</c>, which every adventure state change passes through.
+    /// </summary>
+    internal static void RaiseAdventureDataChanged()
+    {
+        if (AdventureDataChanged == null)
+        {
+            return;
+        }
+
+        foreach (Delegate handler in AdventureDataChanged.GetInvocationList())
+        {
+            try
+            {
+                ((Action)handler)();
+            }
+            catch (Exception ex)
+            {
+                LogListenerFailure("AdventureDataChanged", ex);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Called from the server's <c>SlayBountyTarget</c> handler.
+    /// </summary>
+    internal static void RaiseBountyTargetSlain(Adventure.BountyInfo bounty, string monsterID, bool isAdd)
+    {
+        if (BountyTargetSlain == null || bounty?.Target == null)
+        {
+            return;
+        }
+
+        string json = JsonConvert.SerializeObject(new
+        {
+            BountyId = bounty.ID,
+            PlayerId = bounty.PlayerID,
+            MonsterId = monsterID,
+            IsAdd = isAdd
+        });
+
+        foreach (Delegate handler in BountyTargetSlain.GetInvocationList())
+        {
+            try
+            {
+                ((Action<string>)handler)(json);
+            }
+            catch (Exception ex)
+            {
+                LogListenerFailure("BountyTargetSlain", ex);
             }
         }
     }

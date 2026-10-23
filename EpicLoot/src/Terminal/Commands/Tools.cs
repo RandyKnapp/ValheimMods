@@ -41,7 +41,7 @@ public static partial class TerminalManager
             var index = 0;
             foreach (var player in players)
             {
-                args.Context.PrintInfo($"{index++}: {player?.GetPlayerName()}: {player?.m_nview?.GetZDO()?.GetInt("el-luk")}");
+                args.Context.PrintInfo($"{index++}: {player?.GetPlayerName()}: {player?.m_nview?.GetZDO()?.GetFloat(LootRoller.LuckZdoValueKey)}");
             }
         }
     }

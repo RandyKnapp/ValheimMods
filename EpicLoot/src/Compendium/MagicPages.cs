@@ -24,6 +24,13 @@ public class MagicPages : MonoBehaviour
     public float MinHeight { get; private set; }
 
     public MagicSearchField Search;
+    public MagicCollapseButton CollapseAll;
+
+    /// <summary>Whether table rows start folded; kept across pages and dialog opens so the choice sticks.</summary>
+    public static bool Collapsed;
+
+    private const float COLLAPSE_BUTTON_WIDTH = 150f;
+    private const float COLLAPSE_BUTTON_SPACING = 10f;
     public MagicTextList MagicPagesTextArea;
     public GameObject compendiumTextArea;
     [CanBeNull] public MagicTextElement TitleElement;
@@ -82,9 +89,17 @@ public class MagicPages : MonoBehaviour
         {
             MagicPagesTextArea = new MagicTextList(compendiumTextArea, frame);
             MagicPagesTextArea.SetTopPadding(Mathf.RoundToInt(AUGA_SEARCH_BAR_HEIGHT + 2 * AUGA_SEARCH_BAR_MARGIN));
+            float rowWidth = Mathf.Max(MinWidth - 40f, 200f);
+            float searchWidth = rowWidth - COLLAPSE_BUTTON_WIDTH - COLLAPSE_BUTTON_SPACING;
             Search = new MagicSearchField(MagicPagesTextArea.Root);
-            Search.DockTop(Mathf.Max(MinWidth - 40f, 200f), AUGA_SEARCH_BAR_HEIGHT, AUGA_SEARCH_BAR_MARGIN);
+            Search.DockTop(searchWidth, AUGA_SEARCH_BAR_HEIGHT, AUGA_SEARCH_BAR_MARGIN,
+                -(COLLAPSE_BUTTON_WIDTH + COLLAPSE_BUTTON_SPACING) / 2f);
             Search.SetBackgroundColor(new Color(0f, 0f, 0f, 0.5f));
+            CollapseAll = new MagicCollapseButton(MagicPagesTextArea.Root, ToggleCollapsed);
+            CollapseAll.Dock(new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
+                new Vector2(rowWidth / 2f - COLLAPSE_BUTTON_WIDTH / 2f, -AUGA_SEARCH_BAR_MARGIN));
+            CollapseAll.SetSize(COLLAPSE_BUTTON_WIDTH, AUGA_SEARCH_BAR_HEIGHT);
+            CollapseAll.SetBackgroundColor(new Color(0f, 0f, 0f, 0.5f));
             Search.SetFont(MagicFontManager.GetFont(MagicFontManager.FontOptions.AveriaSerifLibre));
             Search.Input.onValueChanged.AddListener(OnSearch);
             IsReady = true;
@@ -97,14 +112,51 @@ public class MagicPages : MonoBehaviour
         RectTransform closeButtonRect = closeButtonImg.GetComponent<RectTransform>();
         Search = new MagicSearchField(frame);
 
-        // Calculate the Seach bar position
-        float spacing = 30f;
-        float buttonEdge = closeButtonRect.position.x + (closeButtonRect.rect.width / 2); // Button is centered
-        float boxEdge = textAreaRect.position.x; // Box is anchored to the bottom right
-        float width = boxEdge - buttonEdge - spacing;
+        // Everything below is measured in the frame's own space: the close button's world position cannot be
+        // mixed with rect widths, which are in canvas units. The search bar runs from the close button to the
+        // text area; the collapse toggle goes left of the close button, narrower than it so it clears the topic
+        // list, or between the close button and the search bar when that gap is too small.
+        float spacing = 16f;
+        RectTransform frameRect = (RectTransform)frame;
+        Vector2 frameOrigin = frameRect.rect.center;
+        Vector3 closeCenter = frameRect.InverseTransformPoint(closeButtonRect.TransformPoint(closeButtonRect.rect.center));
+        float closeWidth = closeButtonRect.rect.width;
         float height = closeButtonRect.rect.height;
-        Vector3 position = new Vector3(buttonEdge + (width / 2) + spacing, closeButtonRect.position.y);
-        Search.SetPosition(position);
+        float closeLeft = closeCenter.x - closeWidth / 2f;
+        float closeRight = closeCenter.x + closeWidth / 2f;
+        float boxLeft = frameRect.InverseTransformPoint(textAreaRect.TransformPoint(new Vector3(textAreaRect.rect.xMin, 0f, 0f))).x;
+        float listRight = frameRect.rect.xMin;
+        RectTransform listRoot = GetComponent<TextsDialog>()?.m_listRoot;
+        if (listRoot != null)
+        {
+            RectTransform listRect = listRoot.parent as RectTransform ?? listRoot;
+            listRight = frameRect.InverseTransformPoint(listRect.TransformPoint(new Vector3(listRect.rect.xMax, 0f, 0f))).x;
+        }
+
+        float toggleWidth = Mathf.Min(closeWidth * 0.6f, closeLeft - listRight - 2f * spacing);
+        float toggleCenterX;
+        float searchLeft = closeRight + spacing;
+        if (toggleWidth >= 90f)
+        {
+            toggleCenterX = closeLeft - spacing - toggleWidth / 2f;
+        }
+        else
+        {
+            toggleWidth = closeWidth * 0.6f;
+            toggleCenterX = closeRight + spacing + toggleWidth / 2f;
+            searchLeft = toggleCenterX + toggleWidth / 2f + spacing;
+        }
+
+        CollapseAll = new MagicCollapseButton(frame, ToggleCollapsed);
+        CollapseAll.SetBackground(closeButtonImg);
+        CollapseAll.SetSize(toggleWidth, height);
+        CollapseAll.Dock(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+            new Vector2(toggleCenterX - frameOrigin.x, closeCenter.y - frameOrigin.y));
+
+        float searchRight = boxLeft - spacing;
+        float width = Mathf.Max(searchRight - searchLeft, 120f);
+        Search.Dock(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+            new Vector2(searchLeft + width / 2f - frameOrigin.x, closeCenter.y - frameOrigin.y));
         Search.SetSize(width, height);
 
         Search.SetBackground(closeButtonImg);
@@ -125,6 +177,7 @@ public class MagicPages : MonoBehaviour
         }
 
         UpdateGamepadScroll();
+        UpdateCollapseButton();
 
         //  makes search field glow when focused
         if (wasGlowing && !InSearchField())
@@ -137,6 +190,28 @@ public class MagicPages : MonoBehaviour
             Search.EnableGlow(true);
             wasGlowing = true;
         }
+    }
+
+    private void UpdateCollapseButton()
+    {
+        if (CollapseAll == null || !CollapseAll.IsEnabled)
+        {
+            return;
+        }
+
+        bool gamepad = ZInput.IsGamepadActive();
+        CollapseAll.ShowHint(gamepad);
+        if (gamepad && MagicPagesTextArea.IsEnabled && ZInput.GetButtonDown("JoyRStick"))
+        {
+            ToggleCollapsed();
+        }
+    }
+
+    public void ToggleCollapsed()
+    {
+        Collapsed = !Collapsed;
+        CollapseAll?.SetCollapsed(Collapsed);
+        MagicPagesTextArea.SetAllExpanded(!Collapsed);
     }
 
     private void UpdateGamepadScroll()
@@ -167,7 +242,7 @@ public class MagicPages : MonoBehaviour
     {
         foreach (MagicTextGroup element in MagicPagesTextArea.Elements)
         {
-            element.Enable(element.IsMatch(query.Trim()));
+            element.Filter(query.Trim());
         }
     }
 
@@ -184,6 +259,7 @@ public class MagicPages : MonoBehaviour
 
         compendiumTextArea.SetActive(true);
         Search.Enable(false);
+        CollapseAll?.Enable(false);
         MagicPagesTextArea.Enable(false);
         MagicPagesTextArea.Clear();
         TitleElement?.Destroy();
@@ -210,5 +286,10 @@ public class MagicPages : MonoBehaviour
         
         text.Build(this);
         MagicPagesTextArea.ResizeOverlay();
+        if (CollapseAll != null)
+        {
+            CollapseAll.SetCollapsed(Collapsed);
+            CollapseAll.Enable(MagicPagesTextArea.HasTables);
+        }
     }
 }

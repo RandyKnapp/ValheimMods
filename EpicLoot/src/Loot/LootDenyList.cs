@@ -14,7 +14,10 @@ namespace EpicLoot
             // Unused Items
             "ShieldKnight",
 
-            // Enemy Items
+            // Enemy Items. The Dvergr rogues' crossbows copy the real Arbalest's name and description,
+            // so every list that shows item names shows a second "Arbalest".
+            "DvergerArbalest_shoot",
+            "DvergerArbalest_shootAshlands",
             "DvergerArbalest_shootDeepNorth",
             "DvergerArbalest",
 

@@ -41,6 +41,12 @@ namespace EpicLoot.MagicItemEffects.Shards {
         // fenring's full-length nova is left untouched. Played at the helper's default speed.
         private const string NovaTemplateName = "EL_ModerIcyRetributionNova";
 
+        // Registers the nova variant with ZNetScene, so the networked nova spawned at each proc shows on other
+        // clients. Hooked to PrefabManager.OnPrefabsRegistered in EpicLoot.cs.
+        public static void RegisterNovaPrefab() {
+            FrostNovaFx.RegisterPrefab(NovaTemplateName);
+        }
+
         // Cooldown HUD indicator (Moder trophy icon with a radial recharge sweep). Built lazily on the first
         // proc -- see GetOrCreateCooldownIndicator -- so ObjectDB is loaded when the trophy is queried. Its
         // presence on the player is also the cooldown gate (checked via CooldownHash below).
@@ -102,7 +108,7 @@ namespace EpicLoot.MagicItemEffects.Shards {
                     continue;
                 }
                 foreach (var socket in magicItem.Sockets) {
-                    if (socket?.Effect == null || socket.Effect.EffectType != MagicEffectType.IcyRetribution) {
+                    if (socket == null || !socket.IsActive() || socket.Effect.EffectType != MagicEffectType.IcyRetribution) {
                         continue;
                     }
                     if (!found || socket.SourceRarity > rarity) {

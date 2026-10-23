@@ -222,15 +222,10 @@ namespace EpicLoot.Crafting
         public static List<MagicItemEffectDefinition> GetAvailableAugments(
             AugmentRecipe recipe, ItemDrop.ItemData item, MagicItem magicItem, ItemRarity rarity)
         {
-            bool valuelessEffect = false;
-            if (recipe.EffectIndex >= 0 && recipe.EffectIndex < magicItem.Effects.Count)
-            {
-                MagicItemEffectDefinition currentEffectDef = MagicItemEffectDefinitions.Get(magicItem.Effects[recipe.EffectIndex].EffectType);
-                valuelessEffect = currentEffectDef.GetValuesForRarity(rarity) == null;
-            }
-
+            // The replaced effect is left out of the checks even when it has no value; GetAvailableEffects
+            // only offers it back when it has a value to re-roll.
             return MagicItemEffectDefinitions.GetAvailableEffects(
-                item.Extended(), item.GetMagicItem(), valuelessEffect ? -1 : recipe.EffectIndex, checkaugment: true);
+                item.Extended(), item.GetMagicItem(), recipe.EffectIndex, checkaugment: true);
         }
 
         public static string GetAugmentSelectorText(MagicItem magicItem, int i,

@@ -13,8 +13,10 @@ namespace EpicLoot.MagicItemEffects
                 return;
             }
 
+            // A plain weapon still lifesteals from set bonuses (Hel's Court is armor only); the other hand's weapon is
+            // left out of the total below either way.
             ItemDrop.ItemData weapon = MagicEffectsHelper.GetActiveWeapon(player);
-            if (weapon == null || !weapon.IsMagic())
+            if (weapon == null)
             {
                 return;
             }

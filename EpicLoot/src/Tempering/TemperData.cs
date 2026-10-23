@@ -14,6 +14,7 @@ public class TemperData
 
     private static float BASE_CHANCE => Mathf.Clamp01(ELConfig.TemperBaseChance.Value);
     private static float OVER_TEMPERED_DECREMENT => Mathf.Clamp01(ELConfig.TemperDecrement.Value);
+    public static bool CAN_DOWNGRADE => ELConfig.TemperFailDowngrades.Value;
     public static bool CAN_DESTROY_ITEM => ELConfig.TemperDestroysItem.Value;
     public static float DESTROY_CHANCE => Mathf.Clamp01(ELConfig.TemperChanceToDestroy.Value);
 
@@ -177,9 +178,18 @@ public class TemperData
             return;
         }
 
+        // Downgrading is off by default: the failure costs only the payment and the item is not
+        // written at all (_tempItem still holds the would-be success).
+        if (!CAN_DOWNGRADE)
+        {
+            _tempUpdatedValue = _tempValue;
+            UpdateLog(FAIL_RED);
+            return;
+        }
+
         _tempItem.Effects.Clear();
 
-        string effectToReduce = SelectWeightedEffect(magicItem.Effects);
+        // Only the effect being tempered can drop, never another effect on the item.
         for (int i = 0; i < magicItem.Effects.Count; ++i)
         {
             MagicItemEffect effect = magicItem.Effects[i];
@@ -187,27 +197,16 @@ public class TemperData
                 effect.EffectType,
                 effect.EffectValue);
 
-            if (effect.EffectType == effectToReduce)
+            if (effect.EffectType == selectedEffect.EffectType)
             {
-                MagicItemEffectDefinition.ValueDef values =
-                    MagicItemEffectDefinitions.TryGet(effect.EffectType, out MagicItemEffectDefinition def)
-                        ? ResolveValues(magicItem, def)
-                        : null;
-                // SelectWeightedEffect only offers effects with a value range, but guard anyway -- a
-                // failed lookup must degrade to "nothing reduced", never throw mid-temper.
-                if (values != null)
-                {
-                    selectedDefinition = def;
-                    _tempValue = newValue.EffectValue;
-                    _tempIncrement = values.Increment;
-                    // A failure can never push an effect below the worst legitimate roll for the
-                    // rarity. An effect already at (or somehow below) MinValue just stays put: the
-                    // outer Min stops the floor from raising it.
-                    newValue.EffectValue = Mathf.Min(newValue.EffectValue,
-                        Mathf.Max(values.MinValue, newValue.EffectValue - values.Increment));
-                    _tempUpdatedValue = newValue.EffectValue;
-                    _tempEffect = newValue;
-                }
+                _tempValue = newValue.EffectValue;
+                // A failure can never push an effect below the worst legitimate roll for the rarity.
+                // An effect already at (or somehow below) MinValue just stays put: the outer Min stops
+                // the floor from raising it.
+                newValue.EffectValue = Mathf.Min(newValue.EffectValue,
+                    Mathf.Max(selectedValues.MinValue, newValue.EffectValue - selectedValues.Increment));
+                _tempUpdatedValue = newValue.EffectValue;
+                _tempEffect = newValue;
             }
 
             _tempItem.Effects.Add(newValue);
@@ -220,45 +219,6 @@ public class TemperData
     {
         string message = MagicItem.GetEffectTextGeneric(selectedDefinition, $"{_tempValue} → {_tempUpdatedValue}");
         TemperPanel.Instance.UpdateLog($"<color={color}>{message}</color>");
-    }
-    // Picks the effect a failure reduces, weighted by how filled-out each effect's roll is. Only
-    // effects with a value range participate: a valueless effect (Warmth) has nothing to reduce, and
-    // handing one back would NRE the reduction above.
-    private string SelectWeightedEffect(List<MagicItemEffect> effects)
-    {
-        List<MagicItemEffect> candidates = new List<MagicItemEffect>();
-        List<float> weights = new List<float>();
-        float maxInclusive = 0.0f;
-        for (int i = 0; i < effects.Count; ++i)
-        {
-            MagicItemEffect effect = effects[i];
-            MagicItemEffectDefinition.ValueDef values = GetTemperRange(magicItem, effect);
-            if (values == null || values.MaxValue <= 0f) continue;
-            float num = effect.EffectValue / values.MaxValue;
-            candidates.Add(effect);
-            weights.Add(num);
-            maxInclusive += num;
-        }
-
-        if (candidates.Count == 0)
-        {
-            // Nothing reducible on the item; the selected effect is temperable by construction, so
-            // fall back to it -- OnFail's null guard then leaves the item untouched if even that fails.
-            return selectedEffect.EffectType;
-        }
-
-        float random = UnityEngine.Random.Range(0.0f, maxInclusive);
-        float value = 0.0f;
-        for (int i = 0; i < candidates.Count; ++i)
-        {
-            value += weights[i];
-            if (value >= random)
-            {
-                return candidates[i].EffectType;
-            }
-        }
-
-        return candidates[candidates.Count - 1].EffectType;
     }
     public string GetTooltip()
     {
@@ -318,5 +278,17 @@ public class TemperData
     }
     public float GetCriticalSuccessChance() => Mathf.Clamp01(1 - selectedEffect.EffectValue / selectedValues.MaxValue);
 
-    public MagicItem GetUpdatedMagicItem() => _tempItem;
+    // Chances of one temper attempt, not of a failure, so success, downgrade and destroy add up to at
+    // most 100% in the info box. The destroy roll comes first on a failure (TemperPanel.OnTemper), so
+    // a downgrade only happens when it misses, and an effect already at its floor cannot drop at all.
+    public float GetDestroyChance() => CAN_DESTROY_ITEM ? (1f - probability) * DESTROY_CHANCE : 0f;
+
+    public float GetDowngradeChance()
+    {
+        if (!CAN_DOWNGRADE || selectedValues == null || selectedEffect.EffectValue <= selectedValues.MinValue)
+        {
+            return 0f;
+        }
+        return (1f - probability) * (CAN_DESTROY_ITEM ? 1f - DESTROY_CHANCE : 1f);
+    }
 }

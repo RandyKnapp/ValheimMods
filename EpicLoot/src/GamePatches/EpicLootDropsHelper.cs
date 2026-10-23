@@ -1,4 +1,6 @@
-﻿using EpicLoot.MagicItemEffects.Shards;
+﻿using BepInEx.Configuration;
+using EpicLoot.Config;
+using EpicLoot.MagicItemEffects.Shards;
 using HarmonyLib;
 using System;
 using System.Collections.Generic;
@@ -53,13 +55,23 @@ namespace EpicLoot
 
         public static void OnCharacterDeath(string characterName, int level, Vector3 dropPoint)
         {
+            OnCharacterDeath(characterName, level, dropPoint, true);
+        }
+
+        /// <param name="allowBonusRolls">False for a roll that is itself a bonus (Lucky Loot's), so
+        /// Prosperity's extra rolls apply to the kill once rather than to every bonus roll too.</param>
+        public static void OnCharacterDeath(string characterName, int level, Vector3 dropPoint, bool allowBonusRolls)
+        {
             List<LootTable> lootTables = LootRoller.GetLootTable(characterName);
             if (lootTables != null && lootTables.Count > 0)
             {
-                List<GameObject> loot = LootRoller.RollLootTableAndSpawnObjects(lootTables, level, characterName, dropPoint);
+                List<GameObject> loot = LootRoller.RollLootTableAndSpawnObjects(lootTables, level, characterName,
+                    dropPoint, allowBonusRolls);
                 EpicLoot.Log($"Rolling on loot table: {characterName} (lvl {level}), " +
                     $"spawned {loot.Count} items at drop point({dropPoint}).");
                 DropItems(loot, dropPoint);
+                // After DropItems, on this machine, which spawned the drops and so owns them.
+                Compatibility.ItemFavorites.RequestLootRolls(loot, characterName, dropPoint);
                 foreach (GameObject l in loot)
                 {
                     ItemDrop.ItemData itemData = l.GetComponent<ItemDrop>().m_itemData;
@@ -190,70 +202,182 @@ namespace EpicLoot
         }
     }
 
+    // Boss per-player drops. Under the OnePerPlayer modes a boss's trophy, Wishbone and CryptKey each
+    // gain one extra copy for every counted player after the first. The late bosses' own drops (Dragon
+    // Tears, Torn Spirit, Majestic Carapace, Fader Relic, Sacrificial Blood) follow their boss's
+    // BossExtraDropMode instead: one extra per nearby player, or the whole drop once per nearby player.
+    // A mode only ever adds to the amount the list already carries (vanilla's roll plus whatever a mod
+    // ahead of us made of it), so it never lowers, replaces or resurrects a drop, and a kill with no one
+    // counted still drops the normal amount.
     [HarmonyPatch(typeof(CharacterDrop), nameof(CharacterDrop.GenerateDropList))]
     public static class CharacterDrop_GenerateDropList_Patch
     {
-        public static void Prefix(CharacterDrop __instance)
+        // Vanilla's m_onePerPlayer (Wishbone, CryptKey) replaces the drop's amount with the whole server's
+        // player count, which would leave nothing for the mode to add to. Where a mode owns such a drop the
+        // flag is suspended for this call only, so vanilla generates the drop's own amount; the postfix puts
+        // it back before any later postfix (Lucky Loot's boss-reward guard) reads it.
+        public static void Prefix(CharacterDrop __instance, out List<CharacterDrop.Drop> __state)
         {
-            if (__instance.m_character != null && __instance.m_character.IsBoss() &&
-                EpicLoot.GetBossTrophyDropMode() != BossDropMode.Default)
+            __state = null;
+            if (!IsBoss(__instance) || __instance.m_drops == null)
             {
-                foreach (CharacterDrop.Drop drop in __instance.m_drops)
+                return;
+            }
+
+            foreach (CharacterDrop.Drop drop in __instance.m_drops)
+            {
+                if (drop != null && drop.m_onePerPlayer && drop.m_prefab != null &&
+                    GetGrowth(drop.m_prefab, out _, out _) != Growth.None)
                 {
-                    if (!(drop.m_prefab == null))
-                    {
-                        if ((drop.m_prefab.name.Equals("Wishbone") && EpicLoot.GetBossWishboneDropMode() != BossDropMode.Default) ||
-                            (drop.m_prefab.name.Equals("CryptKey") && EpicLoot.GetBossCryptKeyDropMode() != BossDropMode.Default))
-                            if (drop.m_onePerPlayer)
-                                drop.m_onePerPlayer = false;
-                    }
+                    drop.m_onePerPlayer = false;
+                    (__state ??= new List<CharacterDrop.Drop>()).Add(drop);
                 }
             }
         }
 
-        public static void Postfix(CharacterDrop __instance, ref List<KeyValuePair<GameObject, int>> __result)
+        public static void Postfix(CharacterDrop __instance, ref List<KeyValuePair<GameObject, int>> __result,
+            List<CharacterDrop.Drop> __state)
         {
-            if (__instance.m_character != null && __instance.m_character.IsBoss() && EpicLoot.GetBossTrophyDropMode() != BossDropMode.Default)
+            RestoreOnePerPlayer(__state);
+
+            if (__result == null || !IsBoss(__instance))
             {
-                for (int index = 0; index < __result.Count; index++)
-                {
-                    KeyValuePair<GameObject, int> entry = __result[index];
-                    GameObject prefab = entry.Key;
-
-                    ItemDrop itemDrop = prefab.GetComponent<ItemDrop>();
-
-                    if (itemDrop == null || itemDrop.m_itemData == null)
-                    {
-                        continue;
-                    }
-
-                    if (itemDrop.m_itemData.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Trophy ||
-                        prefab.name.Equals("Wishbone") ||
-                        prefab.name.Equals("CryptKey"))
-                    {
-                        int dropCount;
-                        List<ZNet.PlayerInfo> playerList = ZNet.instance.GetPlayerList();
-                        switch (EpicLoot.GetBossTrophyDropMode())
-                        {
-                            case BossDropMode.OnePerPlayerOnServer:
-                                dropCount = playerList.Count;
-                                break;
-                            case BossDropMode.OnePerPlayerNearBoss:
-                                Vector3 position = __instance.m_character.transform.position;
-                                float range = EpicLoot.GetBossTrophyDropPlayerRange();
-                                dropCount = Math.Max(Player.GetPlayersInRangeXZ(position, range),
-                                    playerList.Count(x => Vector3.Distance(x.m_position, position) <= range));
-                                break;
-                            default:
-                                dropCount = 1;
-                                break;
-                        }
-
-                        EpicLoot.Log($"Dropping trophies: {dropCount} (mode={EpicLoot.GetBossTrophyDropMode()})");
-                        __result[index] = new KeyValuePair<GameObject, int>(prefab, dropCount);
-                    }
-                }
+                return;
             }
+
+            Vector3 position = __instance.m_character.transform.position;
+            // Once per prefab, so a drop table listing the same trophy twice doesn't pay out twice per player.
+            HashSet<GameObject> extended = new HashSet<GameObject>();
+            for (int index = 0; index < __result.Count; index++)
+            {
+                GameObject prefab = __result[index].Key;
+                int amount = __result[index].Value;
+                // An amount of zero is another mod suppressing the drop; leave it suppressed.
+                if (prefab == null || amount <= 0 || extended.Contains(prefab))
+                {
+                    continue;
+                }
+
+                Growth growth = GetGrowth(prefab, out bool wholeServer, out float range);
+                if (growth == Growth.None)
+                {
+                    continue;
+                }
+
+                extended.Add(prefab);
+                int players = CountPlayers(wholeServer, position, range);
+                if (players <= 1)
+                {
+                    continue;
+                }
+
+                int total = growth == Growth.Multiply ? amount * players : amount + players - 1;
+                EpicLoot.Log($"Boss drop {prefab.name}: {amount} -> {total} for {players} players ({growth})");
+                __result[index] = new KeyValuePair<GameObject, int>(prefab, total);
+            }
+        }
+
+        private enum Growth
+        {
+            None,
+            OneExtraEach,
+            Multiply
+        }
+
+        // Only has work left to do when GenerateDropList threw, since the postfix empties the list.
+        public static void Finalizer(List<CharacterDrop.Drop> __state)
+        {
+            RestoreOnePerPlayer(__state);
+        }
+
+        private static void RestoreOnePerPlayer(List<CharacterDrop.Drop> suspended)
+        {
+            if (suspended == null)
+            {
+                return;
+            }
+
+            foreach (CharacterDrop.Drop drop in suspended)
+            {
+                drop.m_onePerPlayer = true;
+            }
+            suspended.Clear();
+        }
+
+        private static bool IsBoss(CharacterDrop characterDrop)
+        {
+            return characterDrop != null && characterDrop.m_character != null && characterDrop.m_character.IsBoss();
+        }
+
+        // Wishbone, CryptKey and the late bosses' own drops follow their own settings; every other trophy
+        // follows the trophy settings.
+        private static Growth GetGrowth(GameObject prefab, out bool wholeServer, out float range)
+        {
+            switch (prefab.name)
+            {
+                case "Wishbone":
+                    return FromMode(EpicLoot.GetBossWishboneDropMode(), EpicLoot.GetBossWishboneDropPlayerRange(), out wholeServer, out range);
+                case "CryptKey":
+                    return FromMode(EpicLoot.GetBossCryptKeyDropMode(), EpicLoot.GetBossCryptKeyPlayerRange(), out wholeServer, out range);
+                case "DragonTear":
+                    return FromMode(ELConfig.ModerDropMode, ELConfig.ModerDropPlayerRange, out wholeServer, out range);
+                case "YagluthDrop":
+                    return FromMode(ELConfig.YagluthDropMode, ELConfig.YagluthDropPlayerRange, out wholeServer, out range);
+                case "QueenDrop":
+                    return FromMode(ELConfig.QueenDropMode, ELConfig.QueenDropPlayerRange, out wholeServer, out range);
+                case "FaderDrop":
+                    return FromMode(ELConfig.FaderDropMode, ELConfig.FaderDropPlayerRange, out wholeServer, out range);
+                case "FrozenKingDrop":
+                    return FromMode(ELConfig.FrozenKingDropMode, ELConfig.FrozenKingDropPlayerRange, out wholeServer, out range);
+            }
+
+            ItemDrop itemDrop = prefab.GetComponent<ItemDrop>();
+            if (itemDrop?.m_itemData?.m_shared != null &&
+                itemDrop.m_itemData.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Trophy)
+            {
+                return FromMode(EpicLoot.GetBossTrophyDropMode(), EpicLoot.GetBossTrophyDropPlayerRange(), out wholeServer, out range);
+            }
+
+            wholeServer = false;
+            range = 0f;
+            return Growth.None;
+        }
+
+        private static Growth FromMode(BossDropMode mode, float playerRange, out bool wholeServer, out float range)
+        {
+            wholeServer = mode == BossDropMode.OnePerPlayerOnServer;
+            range = playerRange;
+            return mode == BossDropMode.Default ? Growth.None : Growth.OneExtraEach;
+        }
+
+        private static Growth FromMode(ConfigEntry<BossExtraDropMode> mode, ConfigEntry<float> playerRange,
+            out bool wholeServer, out float range)
+        {
+            wholeServer = false;
+            range = playerRange?.Value ?? 0f;
+            switch (mode?.Value ?? BossExtraDropMode.Default)
+            {
+                case BossExtraDropMode.OneExtraPerNearbyPlayer:
+                    return Growth.OneExtraEach;
+                case BossExtraDropMode.MultiplyByNearbyPlayers:
+                    return Growth.Multiply;
+                default:
+                    return Growth.None;
+            }
+        }
+
+        private static int CountPlayers(bool wholeServer, Vector3 position, float range)
+        {
+            List<ZNet.PlayerInfo> playerList = ZNet.instance.GetPlayerList();
+            if (wholeServer)
+            {
+                return playerList.Count;
+            }
+
+            // Characters this machine has loaded, or the server's list for anyone it hasn't. A player
+            // hiding their map position is listed at the world origin, so never counts as near.
+            return Math.Max(Player.GetPlayersInRangeXZ(position, range),
+                playerList.Count(x => x.m_publicPosition && Vector3.Distance(x.m_position, position) <= range));
         }
     }
 }

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using EpicLoot;
 using EpicLoot.CraftingV2;
 using TMPro;
 using UnityEngine;
@@ -12,6 +14,8 @@ namespace EpicLoot_UnityLib
         public const float CountdownTime = 0.8f;
 
         public const string MainActionButton = "JoyButtonX";
+
+        protected virtual string MainActionInput => MainActionButton;
 
         public MultiSelectItemList AvailableItems;
         public Button MainButton;
@@ -44,15 +48,7 @@ namespace EpicLoot_UnityLib
             if (MainButton != null)
             {
                 MainButton.onClick.AddListener(OnMainButtonClicked);
-                foreach (TMP_Text text in MainButton.GetComponentsInChildren<TMP_Text>(true))
-                {
-                    if (text.GetComponent<GamepadGlyph>() == null)
-                    {
-                        _buttonLabel = text;
-                        break;
-                    }
-                }
-
+                _buttonLabel = FindButtonLabel(MainButton);
                 _defaultButtonLabelText = _buttonLabel.text;
                 _mainButtonGamepadHint = FindGamepadHint(MainButton.transform);
             }
@@ -69,10 +65,22 @@ namespace EpicLoot_UnityLib
         public void ReplaceMainButton(Button button)
         {
             MainButton = button;
-            _buttonLabel = button.GetComponentInChildren<Text>();
-            _tmpButtonLabel = _buttonLabel == null ? button.GetComponentInChildren<TMP_Text>() : null;
-            _useTMP = _buttonLabel == null;
+            _buttonLabel = FindButtonLabel(button) ?? _buttonLabel;
             _mainButtonGamepadHint = FindGamepadHint(button.transform);
+        }
+
+        // The button's first text that is not its gamepad glyph.
+        private static TMP_Text FindButtonLabel(Button button)
+        {
+            foreach (TMP_Text text in button.GetComponentsInChildren<TMP_Text>(true))
+            {
+                if (text.GetComponent<GamepadGlyph>() == null)
+                {
+                    return text;
+                }
+            }
+
+            return null;
         }
 
         // Matches the prefab's glyph child by name: "Hint" in most panels, "Hint-1" in the ones with two.
@@ -104,9 +112,9 @@ namespace EpicLoot_UnityLib
                 _mainButtonGamepadHint.SetActive(usable);
             }
 
-            if (usable && ZInput.GetButtonDown(MainActionButton))
+            if (usable && ZInput.GetButtonDown(MainActionInput))
             {
-                ZInput.ResetButtonStatus(MainActionButton);
+                ZInput.ResetButtonStatus(MainActionInput);
                 OnMainButtonClicked();
             }
         }
@@ -304,6 +312,27 @@ namespace EpicLoot_UnityLib
             }
 
             return true;
+        }
+
+        protected internal static void NotifyItemsUnavailable(params ItemDrop.ItemData[] items)
+        {
+            Player player = Player.m_localPlayer;
+            if (player == null || items == null)
+            {
+                return;
+            }
+
+            string names = string.Join(", ", items
+                .Where(x => x?.m_shared != null)
+                .Select(x => Localization.instance.Localize(x.GetDecoratedName()))
+                .Distinct());
+            if (names.Length == 0)
+            {
+                return;
+            }
+
+            player.Message(MessageHud.MessageType.Center,
+                Localization.instance.Localize("$mod_epicloot_item_unavailable", names));
         }
 
         protected static void GiveItemsToPlayer(List<InventoryItemListElement> sacrificeProducts)

@@ -48,6 +48,18 @@ public static partial class EpicLoot
     private static readonly Method API_RemoveBountyCompletedListener = new(
         "RemoveBountyCompletedListener", typeof(Action<Player, string>));
 
+    private static readonly Method API_AddAdventureDataChangedListener = new(
+        "AddAdventureDataChangedListener", typeof(Action));
+
+    private static readonly Method API_RemoveAdventureDataChangedListener = new(
+        "RemoveAdventureDataChangedListener", typeof(Action));
+
+    private static readonly Method API_AddBountyTargetSlainListener = new(
+        "AddBountyTargetSlainListener", typeof(Action<string>));
+
+    private static readonly Method API_RemoveBountyTargetSlainListener = new(
+        "RemoveBountyTargetSlainListener", typeof(Action<string>));
+
     /// <summary>
     /// Fires whenever an item's magic data is written -- enchant, augment, disenchant, rune extract,
     /// temper, socket, unsocket, loot roll, or any other write. The new data is already committed when
@@ -96,5 +108,39 @@ public static partial class EpicLoot
     public static bool RemoveBountyCompletedListener(Action<Player, string> listener)
     {
         return (bool)(API_RemoveBountyCompletedListener.Invoke(listener)[0] ?? false);
+    }
+
+    /// <summary>
+    /// Fires on the local client after the local player's adventure data (bounties, treasure maps) is
+    /// written, including the routine save with the character, so compare before acting. Read the new
+    /// state with <see cref="GetActiveBounties"/>. Requires API 2.
+    /// </summary>
+    [PublicAPI]
+    public static bool AddAdventureDataChangedListener(Action listener)
+    {
+        return (bool)(API_AddAdventureDataChangedListener.Invoke(listener)[0] ?? false);
+    }
+
+    [PublicAPI]
+    public static bool RemoveAdventureDataChangedListener(Action listener)
+    {
+        return (bool)(API_RemoveAdventureDataChangedListener.Invoke(listener)[0] ?? false);
+    }
+
+    /// <summary>
+    /// Fires on the server (or a listen host) each time any bounty creature dies, owner online or not,
+    /// with JSON <c>{ BountyId, PlayerId, MonsterId, IsAdd }</c>. BountyId matches
+    /// <see cref="ActiveBounty.Id"/>. Requires API 2.
+    /// </summary>
+    [PublicAPI]
+    public static bool AddBountyTargetSlainListener(Action<string> listener)
+    {
+        return (bool)(API_AddBountyTargetSlainListener.Invoke(listener)[0] ?? false);
+    }
+
+    [PublicAPI]
+    public static bool RemoveBountyTargetSlainListener(Action<string> listener)
+    {
+        return (bool)(API_RemoveBountyTargetSlainListener.Invoke(listener)[0] ?? false);
     }
 }

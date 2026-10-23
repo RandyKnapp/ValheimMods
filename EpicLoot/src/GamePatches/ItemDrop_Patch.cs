@@ -3,6 +3,7 @@ using EpicLoot.Data;
 using EpicLoot.LootBeams;
 using EpicLoot.ShardStones;
 using HarmonyLib;
+using System.Runtime.CompilerServices;
 
 namespace EpicLoot
 {
@@ -106,8 +107,25 @@ namespace EpicLoot
     [HarmonyPatch(typeof(Container), nameof(Container.Load))]
     public static class Container_Load_Patch
     {
+        // m_lastRevision as of each container's last walk. Container.CheckForChanges calls Load once a
+        // second on every loaded container and Load returns straight away unless the ZDO revision moved,
+        // but a postfix runs either way, so this used to walk every item of every chest in range each
+        // second. m_lastRevision moves on a reload and on every owner-side Save, so comparing it still
+        // reaches items put straight into the inventory without a reload (the DropTable clones vanilla
+        // AddDefaultItems adds) as soon as it used to.
+        private static readonly ConditionalWeakTable<Container, StrongBox<uint>> WalkedRevision =
+            new ConditionalWeakTable<Container, StrongBox<uint>>();
+
         public static void Postfix(Container __instance)
         {
+            var walked = WalkedRevision.GetValue(__instance, _ => new StrongBox<uint>(uint.MaxValue));
+            if (walked.Value == __instance.m_lastRevision)
+            {
+                return;
+            }
+
+            walked.Value = __instance.m_lastRevision;
+
             foreach (ItemDrop.ItemData itemData in __instance.m_inventory.m_inventory)
             {
                 if (itemData.IsMagicCraftingMaterial())

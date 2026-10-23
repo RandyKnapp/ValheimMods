@@ -1,4 +1,5 @@
 ﻿using EpicLoot.Data;
+using EpicLoot.LegendarySystem;
 using EpicLoot.Magic.MagicItemEffects;
 using EpicLoot.MagicItemEffects.Shards;
 using HarmonyLib;
@@ -107,6 +108,11 @@ namespace EpicLoot
 
                 timer[0] = 10f;
 
+                if (__instance == Player.m_localPlayer)
+                {
+                    SetLooks.Publish(__instance);
+                }
+
                 if (__instance != null && __instance != Player.m_localPlayer &&
                     __instance.m_nview != null && __instance.m_nview.GetZDO() is ZDO zdo)
                 {
@@ -126,6 +132,8 @@ namespace EpicLoot
                     {
                         __instance.SetupVisEquipment(__instance.m_visEquipment, false);
                     }
+
+                    SetAura.Refresh(__instance);
                 }
             }
 
@@ -225,13 +233,18 @@ namespace EpicLoot
         [HarmonyPatch]
         public static class WatchMultiplayerMagicEffects_Player_Patch
         {
+            // The cache is reset first: EquipItem unequips the item it displaces from inside its own body, and that
+            // UnequipItem's postfix fills the cache for the loadout without the new item, which this postfix would
+            // otherwise read back.
             [HarmonyPatch(typeof(Humanoid), nameof(Humanoid.EquipItem))]
             [HarmonyPostfix]
             public static void EquipItem_Postfix(Humanoid __instance)
             {
                 if (__instance is Player player)
                 {
+                    EquipmentEffectCache.Reset(player);
                     UpdateRichesAndLuck(player);
+                    SetLooks.Publish(player);
                 }
             }
 
@@ -241,7 +254,9 @@ namespace EpicLoot
             {
                 if (__instance is Player player)
                 {
+                    EquipmentEffectCache.Reset(player);
                     UpdateRichesAndLuck(player);
+                    SetLooks.Publish(player);
                 }
             }
 
@@ -249,8 +264,9 @@ namespace EpicLoot
             {
                 if (player == Player.m_localPlayer && player.m_nview != null && player.m_nview.GetZDO() is ZDO zdo)
                 {
-                    int currentZdoLuck = zdo.GetInt("el-luk");
-                    int currentZdoRiches = zdo.GetInt("el-rch");
+                    // Luck and Riches are floats too: diminishing shard stacking gives fractional totals.
+                    float currentZdoLuck = zdo.GetFloat(LootRoller.LuckZdoValueKey);
+                    float currentZdoRiches = zdo.GetFloat(MagicItemEffects.Riches_CharacterDrop_GenerateDropList_Patch.ZdoValueKey);
                     // Lucky Loot is read by CharacterDrop.GenerateDropList, which runs on the creature's
                     // owner -- a machine that may have no local player at all. Mirroring the value here is
                     // what lets that machine see it. Stored as floats: both effects roll in fractional
@@ -258,20 +274,29 @@ namespace EpicLoot
                     float currentZdoLuckyLoot = zdo.GetFloat(LuckyLoot.ZdoValueKey);
                     // Head Hunter reads on the same GenerateDropList path, for the same reason.
                     float currentZdoHeadHunter = zdo.GetFloat(Headhunter.ZdoValueKey);
+                    // Prosperity is read wherever loot rolls: the creature's or chest's owner.
+                    float currentZdoProsperity = zdo.GetFloat(Prosperity.ZdoValueKey);
+                    // Life Siphon is read by the owner of whatever this player hits.
+                    float currentZdoLifeSiphon = zdo.GetFloat(MagicItemEffects.LifeSiphon.ZdoValueKey);
+                    // Corpse Rot is read by the owner of whatever this player kills.
+                    float currentZdoCorpseRot = zdo.GetFloat(BonemassCorpseRot.ZdoValueKey);
 
-                    int currentLuck = (int)player.GetTotalActiveMagicEffectValue(MagicEffectType.Luck);
-                    int currentRiches = (int)player.GetTotalActiveMagicEffectValue(MagicEffectType.Riches);
+                    float currentLuck = player.GetTotalActiveMagicEffectValue(MagicEffectType.Luck);
+                    float currentRiches = player.GetTotalActiveMagicEffectValue(MagicEffectType.Riches);
                     float currentLuckyLoot = player.GetTotalActiveMagicEffectValue(MagicEffectType.LuckyLoot);
                     float currentHeadHunter = player.GetTotalActiveMagicEffectValue(MagicEffectType.HeadHunter);
+                    float currentProsperity = player.GetTotalActiveMagicEffectValue(MagicEffectType.Prosperity);
+                    float currentLifeSiphon = player.GetTotalActiveMagicEffectValue(MagicEffectType.LifeSiphon);
+                    float currentCorpseRot = player.GetTotalActiveMagicEffectValue(MagicEffectType.CorpseRot);
 
                     if (currentLuck != currentZdoLuck)
                     {
-                        zdo.Set("el-luk", currentLuck);
+                        zdo.Set(LootRoller.LuckZdoValueKey, currentLuck);
                     }
 
                     if (currentRiches != currentZdoRiches)
                     {
-                        zdo.Set("el-rch", currentRiches);
+                        zdo.Set(MagicItemEffects.Riches_CharacterDrop_GenerateDropList_Patch.ZdoValueKey, currentRiches);
                     }
 
                     if (currentLuckyLoot != currentZdoLuckyLoot)
@@ -282,6 +307,21 @@ namespace EpicLoot
                     if (currentHeadHunter != currentZdoHeadHunter)
                     {
                         zdo.Set(Headhunter.ZdoValueKey, currentHeadHunter);
+                    }
+
+                    if (currentProsperity != currentZdoProsperity)
+                    {
+                        zdo.Set(Prosperity.ZdoValueKey, currentProsperity);
+                    }
+
+                    if (currentLifeSiphon != currentZdoLifeSiphon)
+                    {
+                        zdo.Set(MagicItemEffects.LifeSiphon.ZdoValueKey, currentLifeSiphon);
+                    }
+
+                    if (currentCorpseRot != currentZdoCorpseRot)
+                    {
+                        zdo.Set(BonemassCorpseRot.ZdoValueKey, currentCorpseRot);
                     }
                 }
             }

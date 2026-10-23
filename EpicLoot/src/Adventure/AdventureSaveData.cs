@@ -432,12 +432,7 @@ namespace EpicLoot.Adventure
             var key = bounty.ID;
             if (!MinimapController.BountyPins.ContainsKey(key))
             {
-                var pinInfo = new AreaPinInfo
-                {
-                    Position = bounty.Position + bounty.MinimapCircleOffset,
-                    Type = EpicLoot.BountyPinType,
-                    Name = Localization.instance.Localize("$mod_epicloot_bounties_minimappin", AdventureDataManager.GetBountyName(bounty))
-                };
+                var pinInfo = MinimapController.CreateBountyPinInfo(bounty);
 
                 var pinJob = new PinJob
                 {
