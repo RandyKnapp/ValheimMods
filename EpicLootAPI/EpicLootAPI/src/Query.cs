@@ -74,6 +74,7 @@ public static partial class EpicLoot
     }
 
     /// <summary>The rarity of a magic item, magic crafting material, or runestone.</summary>
+    /// <param name="item">the item to check</param>
     /// <param name="rarity">receives the rarity; unchanged when this returns false</param>
     /// <returns>true if the item has a rarity at all</returns>
     [PublicAPI]
@@ -106,6 +107,7 @@ public static partial class EpicLoot
     /// names. The tag overrides whatever color your text component is set to, so pass
     /// <paramref name="colorOverride"/> when you need the name dimmed.
     /// </summary>
+    /// <param name="item">the item to name</param>
     /// <param name="colorOverride">A color replacing the rarity color -- hex ("#808080ff") or a name
     /// ("white"). Null keeps the rarity color.</param>
     [PublicAPI]
@@ -186,6 +188,7 @@ public static partial class EpicLoot
         return (bool)(API_CanBeMagicItem.Invoke(item)[0] ?? false);
     }
 
+    /// <param name="item">the item to check</param>
     /// <param name="effectType"><see cref="EffectType"/></param>
     /// <param name="includeSocketed">count effects granted by socketed shards and runestones</param>
     [PublicAPI]

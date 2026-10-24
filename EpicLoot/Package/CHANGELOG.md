@@ -1,3 +1,6 @@
+**0.15.1**
+* Fix storage tab not showing up when the enchanting table is upgraded to include it
+
 **0.15.0**
 
 Changes:
