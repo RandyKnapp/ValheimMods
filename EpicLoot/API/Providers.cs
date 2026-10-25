@@ -570,7 +570,8 @@ public static partial class API
     #endregion
 
     /// <returns>The ids of every registered provider, grouped by family, for diagnostics.
-    /// "InventorySave" lists the inventory providers with a save handler.</returns>
+    /// "InventorySave" lists the inventory providers with a save handler, "TooltipEditor" the tooltip data
+    /// editors and "TooltipOverride" the plugins overriding the item tooltip.</returns>
     [PublicAPI]
     public static Dictionary<string, List<string>> GetRegisteredProviders()
     {
@@ -579,7 +580,9 @@ public static partial class API
             ["Inventory"] = InventoryProviders.ConvertAll(x => x.Id),
             ["InventorySave"] = InventoryProviders.FindAll(x => x.SaveItem != null).ConvertAll(x => x.Id),
             ["Equipment"] = new List<string>(EquipmentProviders.Keys),
-            ["Sacrifice"] = new List<string>(SacrificeFilters.Keys)
+            ["Sacrifice"] = new List<string>(SacrificeFilters.Keys),
+            ["TooltipEditor"] = ItemTooltip.GetEditorIds(),
+            ["TooltipOverride"] = ItemTooltip.GetOverrideOwners()
         };
     }
 }

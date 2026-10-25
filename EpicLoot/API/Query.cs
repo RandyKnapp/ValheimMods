@@ -131,6 +131,14 @@ public static partial class API
         return GetRarityColorByIndex((int)item.GetRarity());
     }
 
+    /// <returns>The colour Epic Loot draws legendary set pieces, their set label and set lines in (the player's
+    /// Set Item Color setting), as a hex string.</returns>
+    [PublicAPI]
+    public static string GetSetItemColor()
+    {
+        return EpicLoot.GetSetItemColor();
+    }
+
     /// <summary>
     /// Whether this item was added by Epic Loot (shard stone, runestone, crafting material, bounty token,
     /// and so on). Supported replacement for testing <c>m_shared.m_name.StartsWith("$mod_epicloot")</c>.

@@ -90,6 +90,8 @@ crashlytics-build.properties
 ValheimUnity/Assets/ExternalLibraries/*
 ValheimUnity/AssetBundles/*.manifest
 ValheimUnity/AssetBundles/epicloot
+# Written by Mod > Build Asset Bundles beside the bundles; mod-tools reads it to tell whether epicloot is current
+ValheimUnity/AssetBundles/build-record.json*
 ValheimUnity/Assets/ExternalLibraries/*.dll
 ValheimUnity/Assets/ExternalLibraries/valheim/*.dll
 ValheimUnity/UserSettings

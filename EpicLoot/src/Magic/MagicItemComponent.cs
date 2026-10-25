@@ -32,6 +32,8 @@ public class MagicItemComponent : CustomItemData
         // raised here -- it still fires exactly once per write.
         Indestructible.Sync(Item);
         API.RaiseMagicItemChanged(Item);
+        // A panel that rewrites an item shows its new tooltip in the same frame (tempering does).
+        ItemTooltip.InvalidateCache();
 
         if (Player.m_localPlayer == null)
         {

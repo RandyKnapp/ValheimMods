@@ -8,8 +8,14 @@ using Image = UnityEngine.UI.Image;
 
 namespace EpicLoot;
 
+/// <summary>
+/// Epic Loot's tooltip box: the tooltip prefab's content moved into a scroll view sized to its text
+/// (<see cref="TooltipBox"/>), placed beside the cursor every frame, with the Ctrl comparison box beside it.
+/// It applies to every UITooltip, Epic Loot's panels included; while another mod overrides the item tooltip
+/// (<see cref="ItemTooltip.IsOverridden"/>), the inventory grid's tooltip is left to vanilla and that mod.
+/// </summary>
 [HarmonyPatch]
-public static class PatchOnHoverFix
+public static class TooltipBoxPatches
 {
     public const float MIN_WIDTH = 150f;
     public const float MIN_HEIGHT = 350f;
@@ -26,22 +32,75 @@ public static class PatchOnHoverFix
     // every frame the tooltip is shown, so config changes apply live.
     public static float MaxWidth => Mathf.Max(ELConfig.TooltipMaxWidth.Value, MIN_WIDTH);
     public static float MaxHeight => Mathf.Max(ELConfig.TooltipMaxHeight.Value, MIN_HEIGHT);
-    public static string ComparisonTitleString = "";
-    public static string ComparisonTooltipString = "";
-    public static bool ComparisonAdded = false;
-    public static GameObject ComparisonTT = null;
+    // What the Ctrl comparison box shows, set by the inventory grid's tooltip patch each frame; empty for none.
+    private static string comparisonTitle = "";
+    private static string comparisonText = "";
+    private static GameObject comparisonBox;
 
-    // The raw (unlocalized) strings last written into ComparisonTT, so it is only re-localized on a change.
+    // The raw (unlocalized) strings last written into the comparison box, so it is only re-localized on a change.
     private static string shownComparisonTitle;
     private static string shownComparisonText;
 
-    [HarmonyPatch(typeof(UITooltip), nameof(UITooltip.OnPointerExit))]
-    public static class PointerExitDestroyComparison
+    // The UITooltip last asked about, so the per-frame placement does not walk the hierarchy every frame.
+    private static UITooltip checkedOwner;
+    private static bool checkedOwnerIsInventory;
+
+    internal static void SetComparison(string title, string text)
     {
-        static bool Prefix()
+        comparisonTitle = title;
+        comparisonText = text;
+    }
+
+    internal static void ClearComparison()
+    {
+        comparisonText = "";
+    }
+
+    /// <summary>
+    /// A mod took over the item tooltip or gave it back: drop the comparison box and the open tooltip, so the
+    /// next hover builds it the new owner's way.
+    /// </summary>
+    internal static void OnOverrideChanged()
+    {
+        ClearComparison();
+        DestroyComparisonBox();
+        UITooltip.HideTooltip();
+    }
+
+    /// <returns>Whether the tooltip belongs to an inventory grid slot, the tooltip an override takes over.</returns>
+    internal static bool IsInventoryTooltip(UITooltip owner)
+    {
+        if (owner != checkedOwner)
         {
-            return false;
+            checkedOwner = owner;
+            checkedOwnerIsInventory = owner != null && owner.GetComponentInParent<InventoryGrid>() != null;
         }
+
+        return checkedOwnerIsInventory;
+    }
+
+    private static bool LeftToOverride(UITooltip owner)
+    {
+        return ItemTooltip.IsOverridden && IsInventoryTooltip(owner);
+    }
+
+    private static void DestroyComparisonBox()
+    {
+        if (comparisonBox != null)
+        {
+            GameObject.Destroy(comparisonBox);
+        }
+
+        comparisonBox = null;
+    }
+
+    // Vanilla hides the tooltip when the pointer leaves the slot; Epic Loot keeps it (LateUpdate still hides it
+    // once the pointer is off the hovered element).
+    [HarmonyPatch(typeof(UITooltip), nameof(UITooltip.OnPointerExit))]
+    [HarmonyPrefix]
+    public static bool KeepTooltipOnPointerExit(UITooltip __instance)
+    {
+        return LeftToOverride(__instance);
     }
 
     [HarmonyPatch(typeof(InventoryGrid), nameof(InventoryGrid.CreateItemTooltip))]
@@ -53,15 +112,9 @@ public static class PatchOnHoverFix
             return;
         }
 
-        if (ComparisonTooltipString == "")
+        if (comparisonText == "" || ItemTooltip.IsOverridden)
         {
-            if (ComparisonTT != null)
-            {
-                GameObject.Destroy(ComparisonTT);
-            }
-
-            ComparisonTT = null;
-            ComparisonAdded = false;
+            DestroyComparisonBox();
             return;
         }
 
@@ -73,33 +126,27 @@ public static class PatchOnHoverFix
 
         // The comparison is a second copy of the main box beside it. It is rebuilt whenever it is gone:
         // vanilla destroys the whole tooltip, comparison included, when the cursor leaves the slot.
-        if (ComparisonTT == null || ComparisonTT.transform.parent != UITooltip.m_tooltip.transform)
+        if (comparisonBox == null || comparisonBox.transform.parent != UITooltip.m_tooltip.transform)
         {
-            if (ComparisonTT != null)
-            {
-                GameObject.Destroy(ComparisonTT);
-            }
-
-            ComparisonTT = GameObject.Instantiate(mainBox.gameObject, UITooltip.m_tooltip.transform);
-            ComparisonTT.name = ComparisonBoxName;
+            DestroyComparisonBox();
+            comparisonBox = GameObject.Instantiate(mainBox.gameObject, UITooltip.m_tooltip.transform);
+            comparisonBox.name = ComparisonBoxName;
             shownComparisonTitle = null;
             shownComparisonText = null;
         }
 
-        ComparisonAdded = true;
-
         // This runs every frame the slot is hovered, so the text follows the hovered item: moving from a
         // sword to a helmet with Ctrl held compares against the equipped helmet.
-        if (ComparisonTitleString != shownComparisonTitle || ComparisonTooltipString != shownComparisonText)
+        if (comparisonTitle != shownComparisonTitle || comparisonText != shownComparisonText)
         {
-            Transform header = Utils.FindChild(ComparisonTT.transform, "Topic");
-            header.GetComponent<TMP_Text>().text = Localization.instance.Localize(ComparisonTitleString);
-            Transform contentt = Utils.FindChild(ComparisonTT.transform, "Text");
+            Transform header = Utils.FindChild(comparisonBox.transform, "Topic");
+            header.GetComponent<TMP_Text>().text = Localization.instance.Localize(comparisonTitle);
+            Transform contentt = Utils.FindChild(comparisonBox.transform, "Text");
             TMP_Text content = contentt.GetComponent<TMP_Text>();
-            content.text = Localization.instance.Localize(ComparisonTooltipString);
+            content.text = Localization.instance.Localize(comparisonText);
             MagicTextShimmer.Ensure(content);
-            shownComparisonTitle = ComparisonTitleString;
-            shownComparisonText = ComparisonTooltipString;
+            shownComparisonTitle = comparisonTitle;
+            shownComparisonText = comparisonText;
         }
     }
 
@@ -109,12 +156,11 @@ public static class PatchOnHoverFix
     /// </summary>
     [HarmonyPatch(typeof(UITooltip), nameof(UITooltip.OnHoverStart))]
     [HarmonyPostfix]
-    public static void Postfix(GameObject go)
+    public static void SetUpTooltipBox(UITooltip __instance)
     {
-        if (UITooltip.m_tooltip != null)
+        if (UITooltip.m_tooltip != null && !LeftToOverride(__instance))
         {
-            RectTransform transform = (RectTransform)go.transform;
-            AddScrollbar(UITooltip.m_tooltip, transform);
+            AddScrollbar(UITooltip.m_tooltip);
             EnsureShimmer(UITooltip.m_tooltip);
         }
     }
@@ -128,9 +174,7 @@ public static class PatchOnHoverFix
         }
     }
 
-    // hoverTransform is no longer read (placement happens every frame in PlaceTooltip); the signature is
-    // kept because other mods patch this method by it.
-    public static void AddScrollbar(GameObject tooltipObject, RectTransform hoverTransform)
+    private static void AddScrollbar(GameObject tooltipObject)
     {
         if (tooltipObject == null)
         {
@@ -138,7 +182,7 @@ public static class PatchOnHoverFix
         }
 
         // UITooltip.m_tooltip is static and outlives a single hover -- OnPointerExit is suppressed
-        // above, so it survives the cursor moving between slots, and MagicTooltipPatches re-enters
+        // above, so it survives the cursor moving between slots, and TooltipPatches re-enters
         // OnHoverStart through UITooltip.Set. Everything below is a one-shot migration of the prefab's
         // children into a scroll view, so a second pass over the same object corrupts it: it finds the
         // first pass's "Content" (already carrying the copied background) and, within the same frame,
@@ -251,7 +295,8 @@ public static class PatchOnHoverFix
     public static void PlaceTooltip(UITooltip __instance)
     {
         GameObject tooltip = UITooltip.m_tooltip;
-        if (UITooltip.m_current != __instance || tooltip == null || !tooltip.activeInHierarchy)
+        if (UITooltip.m_current != __instance || tooltip == null || !tooltip.activeInHierarchy ||
+            LeftToOverride(__instance))
         {
             return;
         }
@@ -262,8 +307,8 @@ public static class PatchOnHoverFix
             return;
         }
 
-        TooltipBox comparison = ComparisonTT != null && ComparisonTT.transform.parent == tooltip.transform
-            ? ComparisonTT.GetComponent<TooltipBox>() : null;
+        TooltipBox comparison = comparisonBox != null && comparisonBox.transform.parent == tooltip.transform
+            ? comparisonBox.GetComponent<TooltipBox>() : null;
 
         // Worked out in the box's own units from the screen's bottom-left corner: the tooltip canvas is
         // screen-space overlay, so its world position is in pixels and lossyScale is the GUI scale.
@@ -382,17 +427,17 @@ internal class TooltipBox : MonoBehaviour
 
         // Unwrapped widths: the longest line decides the width, and only past the cap does it wrap.
         // The extra pixel keeps TMP from wrapping a line measured to fit exactly.
-        float natural = Mathf.Max(topic.preferredWidth, text.preferredWidth) + 2f * PatchOnHoverFix.PADDING;
-        float width = Mathf.Clamp(Mathf.Ceil(natural) + 1f, Mathf.Min(PatchOnHoverFix.MIN_WIDTH, limit.x), limit.x);
-        float height = LayOut(width, PatchOnHoverFix.PADDING);
+        float natural = Mathf.Max(topic.preferredWidth, text.preferredWidth) + 2f * TooltipBoxPatches.PADDING;
+        float width = Mathf.Clamp(Mathf.Ceil(natural) + 1f, Mathf.Min(TooltipBoxPatches.MIN_WIDTH, limit.x), limit.x);
+        float height = LayOut(width, TooltipBoxPatches.PADDING);
 
         bool scrolls = height > limit.y;
         if (scrolls)
         {
             // The scrollbar is drawn over the right edge; keep the text out from under it, widening
             // the box by the scrollbar where there is room rather than re-wrapping the text.
-            width = Mathf.Min(limit.x, width + PatchOnHoverFix.SCROLLBAR_WIDTH);
-            LayOut(width, PatchOnHoverFix.PADDING + PatchOnHoverFix.SCROLLBAR_WIDTH);
+            width = Mathf.Min(limit.x, width + TooltipBoxPatches.SCROLLBAR_WIDTH);
+            LayOut(width, TooltipBoxPatches.PADDING + TooltipBoxPatches.SCROLLBAR_WIDTH);
             height = limit.y;
         }
 
@@ -421,8 +466,8 @@ internal class TooltipBox : MonoBehaviour
     private float LayOut(float width, float rightPadding)
     {
         box.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
-        int vertical = (int)PatchOnHoverFix.VERTICAL_PADDING;
-        layout.padding = new RectOffset((int)PatchOnHoverFix.PADDING, (int)rightPadding, vertical, vertical);
+        int vertical = (int)TooltipBoxPatches.VERTICAL_PADDING;
+        layout.padding = new RectOffset((int)TooltipBoxPatches.PADDING, (int)rightPadding, vertical, vertical);
         LayoutRebuilder.ForceRebuildLayoutImmediate(content);
         return content.rect.height;
     }
@@ -454,8 +499,6 @@ internal class TooltipBox : MonoBehaviour
 public class ScrollWheelHandler : MonoBehaviour
 {
     private ScrollRect _scrollRect = null;
-    private UITooltip _owner;
-    private bool _ownerIsInventoryItem;
 
     public void Awake()
     {
@@ -478,7 +521,7 @@ public class ScrollWheelHandler : MonoBehaviour
             return;
         }
 
-        if (ZInput.IsGamepadActive() && OwnerIsInventoryItem())
+        if (ZInput.IsGamepadActive() && TooltipBoxPatches.IsInventoryTooltip(UITooltip.m_current))
         {
             GamepadScroll.ApplyRightStickY(_scrollRect);
         }
@@ -493,17 +536,5 @@ public class ScrollWheelHandler : MonoBehaviour
         // Adjust the vertical scroll position.
         float newScrollPosition = _scrollRect.verticalNormalizedPosition + scrollDelta * 0.7f;
         _scrollRect.verticalNormalizedPosition = Mathf.Clamp01(newScrollPosition);
-    }
-
-    private bool OwnerIsInventoryItem()
-    {
-        UITooltip owner = UITooltip.m_current;
-        if (owner != _owner)
-        {
-            _owner = owner;
-            _ownerIsInventoryItem = owner != null && owner.GetComponentInParent<InventoryGrid>() != null;
-        }
-
-        return _ownerIsInventoryItem;
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 
 namespace EpicLoot;
 
@@ -13,14 +14,18 @@ public static partial class TerminalManager
     private static Action<ItemDrop.ItemData, string> _apiChangeLogger;
     private static Action<ItemDrop.ItemData> _apiLootLogger;
 
+    // The owner id the tooltip subcommands use for the override and the test editor.
+    private const string ApiDebugId = "epicloot.debug";
+
     private static readonly List<string> ApiSubcommands =
-        ["version", "query", "providers", "events", "roll"];
+        ["version", "query", "providers", "events", "roll", "tooltip", "tooltipoverride", "tooltipedit"];
 
     private static List<string> GetApiDiagnosticsOptions(string[] args)
     {
         return args.Length switch
         {
             2 => ApiSubcommands,
+            3 when args[1] == "tooltipoverride" || args[1] == "tooltipedit" => ["on", "off"],
             _ => []
         };
     }
@@ -46,12 +51,24 @@ public static partial class TerminalManager
             case "roll":
                 ApiRollOnHeldItem(args);
                 break;
+            case "tooltip":
+                ApiPrintTooltipData(args);
+                break;
+            case "tooltipoverride":
+                ApiSetTooltipOverride(args);
+                break;
+            case "tooltipedit":
+                ApiToggleTooltipEditor(args);
+                break;
             default:
                 Console.instance.Print("> magicapi version   - api version, plugin version, endpoint count");
                 Console.instance.Print("> magicapi query     - run every read-only endpoint against the held item");
                 Console.instance.Print("> magicapi providers - list registered inventory/equipment/sacrifice providers");
                 Console.instance.Print("> magicapi events    - toggle a logging listener for change and loot events");
                 Console.instance.Print("> magicapi roll <rarity> - TryMakeMagicItem on the held item");
+                Console.instance.Print("> magicapi tooltip [details] - write the held item's tooltip data, and its text without Epic Loot, to the log");
+                Console.instance.Print("> magicapi tooltipoverride on|off - claim the item tooltip as a test plugin");
+                Console.instance.Print("> magicapi tooltipedit on|off - a test tooltip data editor (adds a line, drops the first effect)");
                 break;
         }
     }
@@ -140,6 +157,50 @@ public static partial class TerminalManager
         API.AddMagicItemChangedListener(_apiChangeLogger);
         API.AddLootGeneratedListener(_apiLootLogger);
         Console.instance.Print("> API event logging ON (writes to the BepInEx log)");
+    }
+
+    private static void ApiPrintTooltipData(Terminal.ConsoleEventArgs args)
+    {
+        ItemDrop.ItemData item = ApiGetHeldItem();
+        if (item == null)
+        {
+            return;
+        }
+
+        bool details = args.Length >= 3 && args[2].Equals("details", StringComparison.OrdinalIgnoreCase);
+        string json = API.GetItemTooltipData(item, 0, details, true);
+        EpicLoot.LogForce($"[magicapi] GetItemTooltipData({item.m_shared.m_name}): {json}");
+        EpicLoot.LogForce($"[magicapi] GetItemTooltipWithoutEpicLoot({item.m_shared.m_name}): " +
+            API.GetItemTooltipWithoutEpicLoot(item, 0, false, -1f, -1));
+        Console.instance.Print($"> {item.m_shared.m_name}: tooltip data and the text without Epic Loot written to the BepInEx log");
+    }
+
+    private static void ApiSetTooltipOverride(Terminal.ConsoleEventArgs args)
+    {
+        bool on = args.Length < 3 || !args[2].Equals("off", StringComparison.OrdinalIgnoreCase);
+        API.SetTooltipOverride(ApiDebugId, on);
+        Console.instance.Print($"> Tooltip override as '{ApiDebugId}': {(on ? "ON" : "OFF")} (overridden: {API.IsTooltipOverridden()})");
+    }
+
+    private static void ApiToggleTooltipEditor(Terminal.ConsoleEventArgs args)
+    {
+        bool on = args.Length < 3 || !args[2].Equals("off", StringComparison.OrdinalIgnoreCase);
+        if (!on)
+        {
+            Console.instance.Print($"> Test tooltip editor removed: {API.RemoveTooltipDataEditor(ApiDebugId)}");
+            return;
+        }
+
+        bool added = API.AddTooltipDataEditor(ApiDebugId, (_, json) =>
+        {
+            JObject data = JObject.Parse(json);
+            (data["Effects"] as JArray)?.FirstOrDefault()?.Remove();
+            JArray extra = data["Extra"] as JArray ?? new JArray();
+            extra.Add(new JObject { ["Anchor"] = "End", ["Text"] = "<color=#7fff7f>magicapi tooltip editor</color>" });
+            data["Extra"] = extra;
+            return data.ToString();
+        });
+        Console.instance.Print($"> Test tooltip editor added: {added}");
     }
 
     private static void ApiRollOnHeldItem(Terminal.ConsoleEventArgs args)

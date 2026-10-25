@@ -15,6 +15,7 @@ public static partial class EpicLoot
     private static readonly Method API_GetRarityColorByIndex = new("GetRarityColorByIndex");
     private static readonly Method API_GetRarityDisplayNameByIndex = new("GetRarityDisplayNameByIndex");
     private static readonly Method API_GetItemRarityColor = new("GetItemRarityColor");
+    private static readonly Method API_GetSetItemColor = new("GetSetItemColor");
     private static readonly Method API_IsEpicLootItem = new("IsEpicLootItem");
     private static readonly Method API_IsShardStone = new("IsShardStone");
     private static readonly Method API_IsRunestone = new("IsRunestone");
@@ -142,6 +143,14 @@ public static partial class EpicLoot
     public static string GetItemRarityColor(this ItemDrop.ItemData item)
     {
         return (string)(API_GetItemRarityColor.Invoke(item)[0] ?? "#FFFFFF");
+    }
+
+    /// <returns>The colour Epic Loot draws legendary set pieces and set lines in (the player's Set Item Color
+    /// setting), as a hex string; "#FFFFFF" without Epic Loot or before API 3.</returns>
+    [PublicAPI]
+    public static string GetSetItemColor()
+    {
+        return (string)(API_GetSetItemColor.Invoke()[0] ?? "#FFFFFF");
     }
 
     /// <returns>true if this item was added by Epic Loot (shard, runestone, material, bounty token, ...)</returns>

@@ -1188,7 +1188,7 @@ namespace EpicLoot.CraftingV2
                 {
                     Item = entry,
                     Effects = entry.GetMagicItem().Effects.Select(c => new Tuple<string, float>(c.EffectType, c.EffectValue)).ToList(),
-                    EnchantName = entry.GetMagicItem().GetCompactTooltip()
+                    EnchantName = TooltipRenderer.RenderCompactEffects(entry.GetMagicItem())
                 });
             }
             

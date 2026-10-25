@@ -130,36 +130,35 @@ namespace EpicLoot
         // \u25B2 = tempered, \u2666/\u25C6 = plain (Auga uses the first of each pair).
         public string GetMagicEffectPip(int effectIndex)
         {
-            if (EpicLoot.HasAuga)
-            {
-                if (HasBeenAugmented(effectIndex))
-                {
-                    return "\u25BE";
-                }
-
-                if (HasBeenTempered(effectIndex))
-                {
-                    return "\u25B2";
-                }
-
-                return "\u2666";
-            }
-            else
-            {
-                if (HasBeenAugmented(effectIndex))
-                {
-                    return "\u25BC";
-                }
-
-                if (HasBeenTempered(effectIndex))
-                {
-                    return "\u25B2";
-                }
-
-                return "\u25C6";
-            }
-
+            return GetMagicEffectPip(GetEffectMarker(effectIndex));
         }
+
+        /// <param name="marker">One of <see cref="TooltipEffectMarker"/>.</param>
+        public static string GetMagicEffectPip(string marker)
+        {
+            switch (marker)
+            {
+                case TooltipEffectMarker.Augmented:
+                    return EpicLoot.HasAuga ? "\u25BE" : "\u25BC";
+                case TooltipEffectMarker.Tempered:
+                    return "\u25B2";
+                default:
+                    return EpicLoot.HasAuga ? "\u2666" : "\u25C6";
+            }
+        }
+
+        /// <returns>What has been done to the effect at <paramref name="index"/>, as a
+        /// <see cref="TooltipEffectMarker"/>. Augmenting wins over tempering.</returns>
+        public string GetEffectMarker(int index)
+        {
+            if (HasBeenAugmented(index))
+            {
+                return TooltipEffectMarker.Augmented;
+            }
+
+            return HasBeenTempered(index) ? TooltipEffectMarker.Tempered : TooltipEffectMarker.Plain;
+        }
+
         public bool HasBeenAugmented(int index) => AugmentedEffectIndex == index || AugmentedEffectIndices.Contains(index);
         public bool HasBeenTempered(int index) => TemperedEffectIndices.Contains(index);
         public string GetRarityDisplay()
@@ -172,136 +171,11 @@ namespace EpicLoot
         // reads that trigger as its Shift), used to reveal the detailed per-effect tooltip block
         // (description, roll range, config values). Shared by the magic-item and loose-shard tooltips, and by the
         // set bonus lines on set pieces and set runes (descriptions only).
-        public static bool ShowEffectDetails =>
+        public static bool ShowEffectDetails => ForceEffectDetails ||
             ZInput.GetKey(KeyCode.LeftShift) || ZInput.GetKey(KeyCode.RightShift) || ZInput.GetButton("JoyLTrigger");
 
-        public string GetTooltip()
-        {
-            var showRange = ShowEffectDetails;
-
-            var color = GetColorString();
-            var tooltip = new StringBuilder();
-            tooltip.Append($"\n<color={color}>");
-            for (var index = 0; index < Effects.Count; index++)
-            {
-                var effect = Effects[index];
-                var pip = GetMagicEffectPip(index);
-                if (showRange)
-                {
-                    // Header without the inline range; the range and other details go in the block below.
-                    // Close/reopen the rarity color around the dim detail block rather than nesting tags.
-                    tooltip.AppendLine($"{pip} {MagicEffectRarity.Decorate(effect.EffectType, GetEffectText(effect, Rarity, false, LegendaryID), true)}");
-                    tooltip.Append($"</color><color=#c0c0c0ff>");
-                    tooltip.Append(GetEffectDetailBlock(effect, Rarity, LegendaryID, null, "   "));
-                    tooltip.Append($"</color><color={color}>");
-                }
-                else
-                {
-                    tooltip.AppendLine($"{pip} {MagicEffectRarity.Decorate(effect.EffectType, GetEffectText(effect, Rarity, false), true)}");
-                }
-            }
-
-            tooltip.Append($"</color>");
-
-            if (SocketCount > 0)
-            {
-                tooltip.AppendLine($"$mod_epicloot_sockets ({GetUsedSocketCount()}/{SocketCount}):");
-                for (var socketIndex = 0; socketIndex < Sockets.Count; socketIndex++)
-                {
-                    SocketedEffect socket = Sockets[socketIndex];
-                    if (socket == null)
-                    {
-                        continue;
-                    }
-                    var socketColor = EpicLoot.GetRarityColor(socket.SourceRarity);
-                    // Inline the socketed item's own icon, resolved from its source prefab
-                    var iconTag = ShardTooltipSprites.GetSpriteTag(socket.SourcePrefab);
-                    var removalTag = GetSocketRemovalTag(socket);
-                    var socketEffect = GetSocketEffect(socketIndex);
-                    if (socketEffect != null && !socket.IsActive())
-                    {
-                        // A rune held inert by Allow Rune Socketing: still listed, so the player can see
-                        // what it would grant and that it is not granting it.
-                        tooltip.AppendLine($"  <color=#808080>{iconTag} {GetEffectText(socketEffect, socket.SourceRarity, false)} $mod_epicloot_socket_tip_runeinactive</color>");
-                    }
-                    else if (socketEffect != null)
-                    {
-                        tooltip.AppendLine($"  <color={socketColor}>{iconTag} {GetEffectText(socketEffect, socket.SourceRarity, false)}</color>{GetSocketStackTag(GetSocketStackMultiplier(socketIndex))}{removalTag}");
-                        if (showRange)
-                        {
-                            // A shardstone's value is fixed by the shard grid, not rolled, so it has no range to
-                            // show; the rarity's roll range read as though it did. A runestone keeps its range.
-                            var fixedValue = socket.ShardType != ShardType.None
-                                ? new MagicItemEffectDefinition.ValueDef { MinValue = socketEffect.EffectValue, MaxValue = socketEffect.EffectValue }
-                                : null;
-                            tooltip.Append($"<color=#c0c0c0ff>");
-                            tooltip.Append(GetEffectDetailBlock(socketEffect, socket.SourceRarity, null, fixedValue, "     "));
-                            tooltip.Append($"</color>");
-                        }
-                    }
-                    else if (socket.ShardType != ShardType.None)
-                    {
-                        // An inert shard: socketed but has no defined effect for this item type.
-                        tooltip.AppendLine($"  <color={socketColor}>{iconTag} $mod_epicloot_shard_noeffect</color>{removalTag}");
-                    }
-                }
-                for (var i = 0; i < GetOpenSocketCount(); i++)
-                {
-                    tooltip.AppendLine("  \u25CA<color=#808080> $mod_epicloot_empty_socket</color>");
-                }
-            }
-
-            tooltip.AppendLine($"$mod_epicloot_itemtooltip_rarity: {GetRarityDisplay()}<pos=75%>" +
-                $"$mod_epicloot_itemtooltip_effects: <color={color}>{Effects.Count}</color>");
-
-            return tooltip.ToString();
-        }
-
-        // Marks sockets the current config won't let the player simply empty. Driven by the removal
-        // policy rather than by the kind of line being written: an effect with no rarity-scaled value
-        // (Warmth, say) renders as a perfectly normal effect line yet is break-only under
-        // ShardSocketMode.BreakValueless, so without the marker there would be no cue.
-        private static string GetSocketRemovalTag(SocketedEffect socket)
-        {
-            switch (ShardSocketManager.GetRemovalPolicy(socket))
-            {
-                case SocketRemoval.BreakOnly:
-                    return " <color=#808080>$mod_epicloot_socket_tip_breakonly</color>";
-                case SocketRemoval.Locked:
-                    return " <color=#808080>$mod_epicloot_socket_tip_permanent</color>";
-                default:
-                    return "";
-            }
-        }
-
-        // Marks a socket whose value was cut by same-color stacking decay or rune diminishing returns, so
-        // the reduced number on the line above reads as the rule working rather than as a bug. Nothing is
-        // shown at full strength, which is every socket unless ShardStackMode.Diminishing or Rune
-        // Diminishing Returns is on.
-        private static string GetSocketStackTag(float stackMultiplier)
-        {
-            if (stackMultiplier >= 1f)
-            {
-                return "";
-            }
-
-            var percent = Mathf.RoundToInt(stackMultiplier * 100f);
-            var label = string.Format(Localization.instance.Localize("$mod_epicloot_socket_tip_stacked"), percent);
-            return $" <color=#808080>{label}</color>";
-        }
-
-        public string GetCompactTooltip() {
-            var color = GetColorString();
-            var tooltip = new StringBuilder();
-            tooltip.Append($"<color={color}>");
-            for (var index = 0; index < Effects.Count; index++) {
-                tooltip.AppendLine($"{MagicEffectRarity.Decorate(Effects[index].EffectType, 
-                    GetEffectText(Effects[index], Rarity, true), true)}");
-            }
-            tooltip.Append($"</color>");
-
-            return tooltip.ToString();
-        }
+        // Set by the tooltipdebug command to write the detailed tooltips without a key held.
+        internal static bool ForceEffectDetails;
 
         public Color GetColor()
         {

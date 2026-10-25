@@ -48,14 +48,25 @@ public static partial class TerminalManager
 
     private static void DebugTooltip(Terminal.ConsoleEventArgs args)
     {
-        GenerateTooltipTest.GenerateInventoryTooltips(false);
-        args.Context.PrintInfo("> item tooltips written to disk at: .../BepInEx/config/EpicLoot/TooltipTest");
+        WriteTooltips(args, false);
     }
 
     private static void DebugVanillaTooltip(Terminal.ConsoleEventArgs args)
     {
-        GenerateTooltipTest.GenerateInventoryTooltips(true);
-        args.Context.PrintInfo("> item tooltips written to disk at: .../BepInEx/config/EpicLoot/TooltipTest");
+        WriteTooltips(args, true);
+    }
+
+    private static void WriteTooltips(Terminal.ConsoleEventArgs args, bool vanilla)
+    {
+        bool details = args.Length > 1 && args[1].Equals("details", System.StringComparison.OrdinalIgnoreCase);
+        string directory = GenerateTooltipTest.GenerateInventoryTooltips(vanilla, details);
+        if (directory == null)
+        {
+            args.Context.PrintError("> no local player");
+            return;
+        }
+
+        args.Context.PrintInfo($"> item tooltips written to disk at: {directory}");
     }
     
     private static void CheckStackQuality(Terminal.ConsoleEventArgs args)

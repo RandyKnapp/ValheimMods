@@ -16,9 +16,11 @@ public static partial class API
     ///     item slot and icon decoration.
     /// 2 - Adventure: GetActiveBounties, GetBountyPinType, adventure-data-changed and bounty-target-slain
     ///     events.
+    /// 3 - Item tooltip: GetItemTooltipData, tooltip data editors, SetTooltipOverride / IsTooltipOverridden,
+    ///     GetItemTooltipWithoutEpicLoot; GetSetItemColor.
     /// </remarks>
     [PublicAPI]
-    public const int ApiVersion = 2;
+    public const int ApiVersion = 3;
 
     /// <returns><see cref="ApiVersion"/>, as a call so reflection consumers can read it without
     /// resolving a const field (which would be inlined at their compile time, not ours).</returns>

@@ -38,7 +38,7 @@ Two consequences worth knowing before you write glue by hand:
 ## Versioning
 
 ```csharp
-API.ApiVersion            // const int, currently 2
+API.ApiVersion            // const int, currently 3
 API.GetApiVersion()       // same value, as a call
 API.GetPluginVersion()    // "0.13.0"
 API.GetPluginId()         // "randyknapp.mods.epicloot"
@@ -68,6 +68,7 @@ broken before.
 | `EpicLoot.Crafting.EnchantCostsHelper.GetSacrificeProducts` (prefix returning false) | `RegisterSacrificeFilter` |
 | `EpicLoot.Crafting.EnchantTabController.GetEnchantCosts` (the type no longer exists) | `GetEnchantCostsJson` |
 | `EpicLoot.EpicLoot.GetRarityColor` + enumerating the `ItemRarity` enum | `GetRarityColorByIndex`, `GetRarityCount` |
+| `EpicLoot.EpicLoot.GetSetItemColor` | `GetSetItemColor` |
 | `EpicLoot.ItemDataExtensions.IsMagic` / `GetRarity` | `IsMagicItem`, `TryGetRarity` |
 | `m_shared.m_name.StartsWith("$mod_epicloot")` | `IsEpicLootItem` |
 | `LootRoller.RollMagicItem` / `RollEffect` / `InitializeMagicItem` / `GetLuckFactor` via a publicized DLL | `TryMakeMagicItem`, `RollMagicItemJson`, `GetLuckFactor` |
@@ -75,9 +76,11 @@ broken before.
 | `MagicItemComponent.SetMagicItem` | `ApplyMagicItemJson`, or `TryMakeMagicItem` |
 | `MagicItemEffectDefinitions.GetAvailableEffects` / `AllDefinitions` | `GetAvailableEffectTypes`, `GetAllMagicEffectTypes` |
 | Polling for "did this item change?" | `AddMagicItemChangedListener` |
+| Reflecting or patching `MagicTooltip`, `MagicItem.GetTooltip`, `GetSetTooltip`, or parsing `item.GetTooltip()` for Epic Loot's lines | `GetItemTooltipData` |
+| Transpiling Epic Loot's tooltip builders to change a line | `AddTooltipDataEditor` |
+| Patching `InventoryGrid.CreateItemTooltip` / `PatchOnHoverFix` around Epic Loot to draw your own tooltip | `SetTooltipOverride` |
 
-Two things are **not** promoted to the API and remain unsupported internals: `PatchOnHoverFix.AddScrollbar`
-(UI plumbing) and reading Epic Loot's BepInEx config entries directly.
+Reading Epic Loot's BepInEx config entries directly is **not** promoted to the API and remains unsupported.
 
 ---
 
@@ -93,6 +96,7 @@ int    GetRarityCount();
 string GetRarityColorByIndex(int rarity);          // "#AA55FF"
 string GetRarityDisplayNameByIndex(int rarity);    // "$mod_epicloot_Epic"
 string GetItemRarityColor(ItemDrop.ItemData item); // the colour this item's name is drawn in
+string GetSetItemColor();                          // the colour of set pieces and set lines (API 3)
 bool   IsEpicLootItem(ItemDrop.ItemData item);
 bool   IsShardStone(ItemDrop.ItemData item);
 bool   IsRunestone(ItemDrop.ItemData item);
@@ -249,6 +253,110 @@ API.ApplyMagicItemBackground(element.m_go, element.m_equiped, item, inventoryGri
 - `inventoryGrid: true` also draws the legendary set marker; `false` is the hotbar treatment.
 - Child images are created the first time a slot actually needs one, so it is safe to call every frame
   and calling it for empty slots costs nothing.
+
+---
+
+## Item tooltip (API 3)
+
+Epic Loot works out its part of an item's tooltip once, as data, and draws it from that data. You can read
+the data, change it before Epic Loot draws it, or take over drawing the inventory tooltip yourself.
+
+```csharp
+string GetItemTooltipData(ItemDrop.ItemData item, int qualityLevel, bool includeDetails, bool localize);
+bool   AddTooltipDataEditor(string id, Func<ItemDrop.ItemData, string, string> editor);
+bool   RemoveTooltipDataEditor(string id);
+bool   SetTooltipOverride(string ownerId, bool overriding);
+bool   IsTooltipOverridden();
+string GetItemTooltipWithoutEpicLoot(ItemDrop.ItemData item, int qualityLevel, bool crafting,
+                                     float worldLevel, int stackOverride);
+```
+
+### The data
+
+`GetItemTooltipData` returns JSON, or `""` for a null item or before a local player exists.
+`qualityLevel < 1` means the item's own quality. `includeDetails` fills what Epic Loot shows while Shift is
+held. `localize` runs the text fields through the game's localization; ids, kinds and colours are never
+localized.
+
+The data is **Epic Loot's part of the tooltip only**: the title and rarity, the stat lines magic can change,
+effects, sockets, sets, shard and set-rune previews, and the key hints. Plain vanilla lines (crafter,
+teleport, food, ...) are not in it. A trimmed example for an enchanted sword:
+
+```json
+{ "Schema": 1, "Quality": 3, "IncludeDetails": false,
+  "Kind": "Magic", "IsMagic": true, "Title": "<color=#2BFFFF>Sharp Iron Sword</color>",
+  "Rarity": 1, "RarityName": "$mod_epicloot_rare", "RarityColor": "#2BFFFF", "ItemTypeName": "iron sword",
+  "MaterialRarity": -1, "Description": "$item_sword_iron_description",
+  "Stats": [
+    { "Id": "$item_weight", "Value": 0.8, "Modified": false },
+    { "Id": "$inventory_slash", "Value": 81.2, "Min": 64.9, "Max": 81.2, "Modified": true },
+    { "Id": "$item_staminause", "Value": 12.0, "Modified": false } ],
+  "Effects": [
+    { "EffectType": "ModifyPhysicalDamage", "Value": 16, "Text": "+16% Physical Damage",
+      "Marker": "Plain", "RollMin": 10, "RollMax": 20 } ],
+  "Sockets": { "Count": 2, "Used": 1, "Open": 1, "Entries": [
+    { "SourcePrefab": "Red_Rare_ShardStone", "Rarity": 1, "EffectType": "AddFireDamage", "Value": 5,
+      "Text": "+5 Fire Damage", "State": "Active", "StackMultiplier": 1, "Removal": "Free" } ] },
+  "Sets": [], "Hints": [ { "Id": "socket_open", "Text": "[<color=yellow><b>$KEY_Use</b></color>] $mod_epicloot_press_socket" } ],
+  "Extra": [] }
+```
+
+- `Kind`: `Magic`, `Shard`, `SetRune`, `Chisel` (Brokkr's Gift), `Runestone`, `MagicMaterial` or `Mundane`.
+  `IsMagic` is true when Epic Loot draws the whole tooltip.
+- `Stats` are keyed by the vanilla label token they are drawn with (`$item_weight`, `$inventory_slash`,
+  `$se_runstamina`, ...). A line is in the list exactly when Epic Loot draws it. `Modified` says magic
+  changed it. `Secondary` is the figure in brackets (stack weight, block power at skill, the player's total on
+  a modifier line); `Min`/`Max` are a damage line's roll range, or durability as current / maximum. `Variant`
+  marks the special lines: `Bloodlust`, `Indestructible`, and `Percent` for the second `$item_healthuse` line.
+- Effect `Marker` is `Plain`, `Augmented` or `Tempered`. Socket `State` is `Active`, `InactiveRune` (rune
+  socketing is off) or `InertShard`. `Removal` is `Free`, `BreakOnly` or `Locked`.
+- `Sets` holds the vanilla set first when an item is in both kinds. Each has its pieces and bonuses, with
+  `Active`, the `Tier` an active bonus applies at, and the description and activation key with details.
+  `SetColor` is the colour the set label, set sections and set rune lines are drawn in (the player's Set
+  Item Color setting, also `GetSetItemColor()`).
+- Rarities are indices, as everywhere in this API (`-1` for none).
+
+The shim mirrors all of it as `ItemTooltipData` and friends, so `item.GetTooltipData()` hands you objects.
+
+### Changing what Epic Loot draws
+
+An editor gets the data as JSON and returns the edited JSON, or `null` to leave it. Epic Loot's own tooltip,
+Auga's and `GetItemTooltipData` all see the edited data. Change a value, remove an effect or a hint, or add a
+line to `Extra`:
+
+```json
+"Extra": [ { "Anchor": "AfterEffects", "Text": "<color=#7fff7f>Forged by my mod</color>" } ]
+```
+
+`Anchor` is `AfterHeader`, `AfterStats`, `AfterEffects`, `AfterSet` or `End` (an unknown anchor goes at the
+end; on an item Epic Loot does not draw itself, every added line does).
+
+- Editors run in registration order, each getting what the one before returned.
+- They run every frame a tooltip is shown. Keep them cheap.
+- The data an editor gets is unlocalized, as Epic Loot draws it.
+- One that throws or returns something that is not tooltip data is skipped, and logged once.
+- Plain vanilla lines are not in the data, so an editor cannot change them; patch vanilla for those.
+
+Through the shim: `EpicLoot.AddTooltipEditor(id, (item, data) => { ...; return data; })`.
+
+### Drawing the tooltip yourself
+
+`SetTooltipOverride(yourGuid, true)` tells Epic Loot your plugin draws the inventory item tooltip. While any
+plugin holds the override:
+
+- `InventoryGrid.CreateItemTooltip` runs as vanilla, and the `ItemDrop.ItemData.GetTooltip` calls made inside
+  it return vanilla's text.
+- Epic Loot leaves the inventory tooltip's box alone: no resizing, no scrollbar, no Ctrl comparison box.
+- That is all it changes. `GetTooltip` anywhere else (vanilla's crafting panel, other plugins' windows, Epic
+  Loot's own panels) keeps Epic Loot's text, set section and crafting material line.
+- Draw Epic Loot's part from `GetItemTooltipData`, and include the `Hints`, or players never learn how to
+  open sockets. For the rest of the item's text, call `GetItemTooltipWithoutEpicLoot`: it is `GetTooltip`
+  with Epic Loot switched off for that one call (other plugins' additions stay). `qualityLevel < 1` and
+  `worldLevel < 0` mean the item's own, `stackOverride` `-1` its own stack.
+
+Every claim and release is written to the log at info level whatever the logging settings, naming the
+plugin, so a player's log shows who took the tooltip over. Calling it again with the same state does
+nothing. Release it with `false` when your plugin turns its tooltip off.
 
 ---
 
@@ -411,6 +519,9 @@ magicapi query       — every read-only endpoint against the equipped item
 magicapi providers   — registered inventory/equipment/sacrifice provider ids
 magicapi events      — toggle a logging listener for change and loot events
 magicapi roll <n>    — TryMakeMagicItem on the equipped item
+magicapi tooltip [details]        — the equipped item's tooltip data and its text without Epic Loot, to the BepInEx log
+magicapi tooltipoverride on|off   — claim the item tooltip as a test plugin
+magicapi tooltipedit on|off       — a test editor that adds a line and drops the first effect
 ```
 
 `magicapi events` writes to the BepInEx log, so you can confirm your listener would have fired and with

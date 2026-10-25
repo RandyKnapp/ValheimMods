@@ -148,6 +148,37 @@ EpicLoot.AddBountyCompletedListener((player, monsterId) => { /* ... */ });
 `Rune`, `Temper`, `Socket`, `Unsocket`, `LootRoll`, `Transfer`, and `Unspecified` for writes with no
 dedicated call site. Item loading does not raise anything.
 
+### Item tooltip — read it, change it, or draw your own
+`GetTooltipData` returns everything Epic Loot adds to an item's tooltip: title and rarity, the stat lines
+magic changes (with `Modified` set when it did), effects, sockets, sets, shard and set-rune previews, and
+the key hints. Plain vanilla lines (crafter, teleport, food) are not in it.
+
+```c#
+ItemTooltipData? data = item.GetTooltipData(includeDetails: true);
+foreach (TooltipEffect effect in data?.Effects ?? new())
+    AddLine(effect.Text);
+```
+
+Draw the inventory tooltip yourself? Claim it, and the inventory tooltip is vanilla's, box included, until
+you release it. Everywhere else `GetTooltip` keeps Epic Loot's text. Draw Epic Loot's part from the data and
+the rest from `GetTooltipWithoutEpicLoot`. The claim is written to the player's log.
+
+```c#
+EpicLoot.SetTooltipOverride(PluginGUID, true);
+string plain = item.GetTooltipWithoutEpicLoot();   // vanilla's text, other mods' additions kept
+string setColour = EpicLoot.GetSetItemColor();      // also ItemTooltipData.SetColor
+```
+
+Or let Epic Loot draw and change what it draws. Editors run every frame a tooltip is shown, so keep them cheap.
+
+```c#
+EpicLoot.AddTooltipEditor(PluginGUID, (item, data) =>
+{
+    data.Extra.Add(new TooltipLine { Anchor = TooltipAnchor.AfterEffects, Text = "<color=#7fff7f>Mine</color>" });
+    return data;
+});
+```
+
 ### Queries
 Trying to determine if an item is a magic-item? `IsMagicItem` exposes the internal magic check.
 
