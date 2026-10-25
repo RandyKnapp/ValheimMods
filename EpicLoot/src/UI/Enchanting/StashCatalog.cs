@@ -174,8 +174,14 @@ namespace EpicLoot_UnityLib
 
             if (Shards.IsShard(data))
             {
+                ShardType color = Shards.GetShardColor(data);
+                if (color == ShardType.None)
+                {
+                    return null;
+                }
+
                 kind.Kind = StashKind.Shardstone;
-                kind.Color = Shards.GetShardColor(data);
+                kind.Color = color;
                 kind.Rarity = Shards.GetShardRarity(data);
                 kind.Family = "Shardstone";
                 return kind;
