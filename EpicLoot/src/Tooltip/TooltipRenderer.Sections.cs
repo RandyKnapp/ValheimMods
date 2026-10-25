@@ -7,7 +7,7 @@ namespace EpicLoot;
 
 // The magic sections: effects and sockets, sets, a shard's preview and a set rune. The effects and set sections
 // are static so Auga's result dialogs can draw them on their own.
-public partial class TooltipRenderer
+internal partial class TooltipRenderer
 {
     /// <summary>The effect lines, the sockets and the rarity line.</summary>
     public static string RenderEffects(ItemTooltipData data)

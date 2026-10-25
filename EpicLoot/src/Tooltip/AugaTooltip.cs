@@ -178,7 +178,9 @@ public static class AugaTooltip
 
         try
         {
-            ItemTooltipData data = ItemTooltip.GetData(item, item.m_quality, false);
+            // The same key as the rest of the tooltip (GetTooltip, OnItemTooltipCreated), so this is the cached
+            // data; the stat lines do not depend on the details.
+            ItemTooltipData data = ItemTooltip.GetData(item, item.m_quality, MagicItem.ShowEffectDetails);
             if (data != null)
                 Preprocess(magicItem, data, ref label, ref value);
         }

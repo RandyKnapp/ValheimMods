@@ -4,7 +4,7 @@ namespace EpicLoot;
 
 // A loose shard's preview: what it would grant if socketed, at its own rarity, listing only the item types
 // that have a defined effect for this shard color.
-public partial class TooltipGatherer
+internal partial class TooltipGatherer
 {
     private void GatherShardPreview()
     {

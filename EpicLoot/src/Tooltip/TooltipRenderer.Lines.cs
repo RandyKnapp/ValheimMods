@@ -4,7 +4,7 @@ namespace EpicLoot;
 
 // The stat lines, in the order the tooltip draws them. A line magic can change is drawn from data.Stats when it
 // is there; the rest are vanilla's lines read off the item.
-public partial class TooltipRenderer
+internal partial class TooltipRenderer
 {
     private static readonly string[] DamageIds =
     {

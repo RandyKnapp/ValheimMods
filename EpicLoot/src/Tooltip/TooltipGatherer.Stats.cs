@@ -7,7 +7,7 @@ namespace EpicLoot;
 // The stat lines magic can change. Each is added only when the tooltip would draw it, in drawing order, with
 // Modified set when an effect touches it. Lines magic never changes (food, crafter, the swim and sneak
 // modifiers, ...) are left to the renderer.
-public partial class TooltipGatherer
+internal partial class TooltipGatherer
 {
     private void GatherStats()
     {

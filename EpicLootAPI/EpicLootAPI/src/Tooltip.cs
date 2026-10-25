@@ -16,12 +16,20 @@ public static partial class EpicLoot
     private static readonly Method API_IsTooltipOverridden = new("IsTooltipOverridden");
     private static readonly Method API_GetItemTooltipWithoutEpicLoot = new("GetItemTooltipWithoutEpicLoot");
 
-    private static readonly Method API_AddTooltipDataEditor = new(
-        "AddTooltipDataEditor",
+    private static readonly Method API_AddTooltipEditor = new(
+        "AddTooltipEditor",
         typeof(string),
         typeof(Func<ItemDrop.ItemData, string, string>));
 
-    private static readonly Method API_RemoveTooltipDataEditor = new("RemoveTooltipDataEditor");
+    private static readonly Method API_RemoveTooltipEditor = new("RemoveTooltipEditor");
+
+    // The settings Epic Loot serializes with, so an editor that changes nothing hands back the very string it was
+    // given and Epic Loot skips parsing it.
+    private static readonly JsonSerializerSettings TooltipJsonSettings = new()
+    {
+        NullValueHandling = NullValueHandling.Ignore,
+        ObjectCreationHandling = ObjectCreationHandling.Replace
+    };
 
     /// <summary>
     /// Everything Epic Loot contributes to this item's tooltip, after every registered tooltip editor ran.
@@ -45,7 +53,7 @@ public static partial class EpicLoot
 
         try
         {
-            return JsonConvert.DeserializeObject<ItemTooltipData>(json);
+            return JsonConvert.DeserializeObject<ItemTooltipData>(json, TooltipJsonSettings);
         }
         catch
         {
@@ -104,8 +112,10 @@ public static partial class EpicLoot
     /// to <see cref="ItemTooltipData.Extra"/>.
     /// </summary>
     /// <remarks>
-    /// Runs every frame a tooltip is shown, in registration order, so keep it cheap. The data it gets is
-    /// unlocalized, as Epic Loot draws it. An editor that throws is skipped, and Epic Loot logs that once.
+    /// Runs when an item's tooltip is first shown and whenever its data changes while it stays shown, in
+    /// registration order, not every frame: return what follows from the item and the data alone. The data it
+    /// gets is unlocalized, as Epic Loot draws it. An editor that throws is removed and Epic Loot logs it;
+    /// register it again to put it back.
     /// </remarks>
     /// <param name="id">Unique id, normally your plugin GUID</param>
     /// <param name="editor">Given the item and the data, returns the data to use; null leaves it unchanged.</param>
@@ -120,12 +130,12 @@ public static partial class EpicLoot
 
         Func<ItemDrop.ItemData, string, string> jsonEditor = (item, json) =>
         {
-            ItemTooltipData? data = JsonConvert.DeserializeObject<ItemTooltipData>(json);
+            ItemTooltipData? data = JsonConvert.DeserializeObject<ItemTooltipData>(json, TooltipJsonSettings);
             ItemTooltipData? edited = data == null ? null : editor(item, data);
-            return edited == null ? null! : JsonConvert.SerializeObject(edited);
+            return edited == null ? null! : JsonConvert.SerializeObject(edited, TooltipJsonSettings);
         };
 
-        object[] result = API_AddTooltipDataEditor.Invoke(id, jsonEditor);
+        object[] result = API_AddTooltipEditor.Invoke(id, jsonEditor);
         bool output = (bool)(result[0] ?? false);
         logger.LogDebug($"Registered tooltip editor: {id}, {output}");
         return output;
@@ -136,7 +146,7 @@ public static partial class EpicLoot
     [PublicAPI]
     public static bool RemoveTooltipEditor(string id)
     {
-        return (bool)(API_RemoveTooltipDataEditor.Invoke(id)[0] ?? false);
+        return (bool)(API_RemoveTooltipEditor.Invoke(id)[0] ?? false);
     }
 }
 
@@ -152,6 +162,9 @@ public static partial class EpicLoot
 [PublicAPI]
 public class ItemTooltipData
 {
+    /// <summary>The schema this shim describes; <see cref="Schema"/> is what the Epic Loot you run against writes.</summary>
+    public const int CurrentSchema = 1;
+
     /// <summary>Bumped when the meaning of the data changes.</summary>
     public int Schema;
     /// <summary>The quality level the values were worked out at.</summary>
@@ -194,6 +207,20 @@ public class ItemTooltipData
     public List<TooltipHint> Hints = new();
     /// <summary>Lines added by tooltip editors.</summary>
     public List<TooltipLine> Extra = new();
+
+    /// <returns>The stat with this id and variant, or null.</returns>
+    public TooltipStat? GetStat(string id, string? variant = null)
+    {
+        foreach (TooltipStat stat in Stats)
+        {
+            if (stat.Id == id && stat.Variant == variant)
+            {
+                return stat;
+            }
+        }
+
+        return null;
+    }
 }
 
 /// <summary>Values of <see cref="ItemTooltipData.Kind"/>.</summary>

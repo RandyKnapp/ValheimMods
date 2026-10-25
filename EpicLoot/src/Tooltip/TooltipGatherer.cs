@@ -13,9 +13,9 @@ namespace EpicLoot;
 /// </summary>
 /// <remarks>
 /// Call it through <see cref="ItemTooltip.GetData"/>, which caches it for the frame, runs it inside the
-/// Elemental Archery skill scope and applies the registered tooltip data editors.
+/// Elemental Archery skill scope and applies the registered tooltip editors.
 /// </remarks>
-public partial class TooltipGatherer
+internal partial class TooltipGatherer
 {
     private readonly ItemDrop.ItemData item;
     // Null for an item without magic data, which only gets the header, set and hint parts.

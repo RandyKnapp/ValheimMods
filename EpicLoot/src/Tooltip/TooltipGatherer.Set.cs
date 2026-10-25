@@ -10,8 +10,11 @@ namespace EpicLoot;
 
 // The set section of a set piece (vanilla sets and Epic Loot's legendary sets) and the description of the set
 // a set rune carries.
-public partial class TooltipGatherer
+internal partial class TooltipGatherer
 {
+    // Once per item and failure: a tooltip is rebuilt every frame it is shown.
+    private static readonly HashSet<string> LoggedSetFailures = new HashSet<string>();
+
     private void GatherSets()
     {
         try
@@ -21,7 +24,10 @@ public partial class TooltipGatherer
         }
         catch (Exception e)
         {
-            EpicLoot.LogWarning($"[TooltipGatherer] Set section failed for {item.m_shared?.m_name} - {e.Message}");
+            if (LoggedSetFailures.Add($"{item.m_shared?.m_name}|{e.Message}"))
+            {
+                EpicLoot.LogWarning($"[TooltipGatherer] Set section failed for {item.m_shared?.m_name} (logged once): {e}");
+            }
         }
     }
 
@@ -237,15 +243,38 @@ public partial class TooltipGatherer
         return GetMundaneSetPieces(setName);
     }
 
+    // Cached per set name: ObjectDB holds thousands of prefabs, and a set piece's tooltip asks every frame it is
+    // shown. Rebuilt when ObjectDB is replaced (a new world) or grows (a mod adding items after load).
+    private static readonly Dictionary<string, List<string>> MundaneSetPieces = new Dictionary<string, List<string>>();
+    private static ObjectDB _mundaneSetPiecesDb;
+    private static int _mundaneSetPiecesCount;
+
     private static List<string> GetMundaneSetPieces(string setName)
     {
-        // TODO: improve performace of this call
+        ObjectDB db = ObjectDB.instance;
+        if (db == null)
+        {
+            return new List<string>();
+        }
+
+        if (db != _mundaneSetPiecesDb || db.m_items.Count != _mundaneSetPiecesCount)
+        {
+            MundaneSetPieces.Clear();
+            _mundaneSetPiecesDb = db;
+            _mundaneSetPiecesCount = db.m_items.Count;
+        }
+
+        if (MundaneSetPieces.TryGetValue(setName, out List<string> cached))
+        {
+            return cached;
+        }
+
         List<string> results = new List<string>();
         // One entry per display token, not per prefab. Deep North registers SP_/FW_ NPC prop copies of
         // set armour (SP_ArmorTrollLeatherChest, FW_CapeTrollHide, ...) that keep the real item's
         // m_name and m_setName, so without this the troll set listed its tunic, pants and cape three times.
         HashSet<string> seen = new HashSet<string>();
-        foreach (GameObject itemPrefab in ObjectDB.instance.m_items)
+        foreach (GameObject itemPrefab in db.m_items)
         {
             if (itemPrefab == null)
             {
@@ -266,6 +295,7 @@ public partial class TooltipGatherer
             }
         }
 
+        MundaneSetPieces[setName] = results;
         return results;
     }
 

@@ -5,14 +5,14 @@ namespace EpicLoot;
 
 /// <summary>
 /// Draws <see cref="ItemTooltipData"/> as tooltip text. It computes nothing Epic Loot changes: every value magic
-/// touches comes from the data, so what a tooltip data editor changed is what is drawn. The plain vanilla lines
+/// touches comes from the data, so what a tooltip editor changed is what is drawn. The plain vanilla lines
 /// (crafter, teleport, food, ...) are still read off the item here, since they are not part of the data.
 /// </summary>
 /// <remarks>
 /// Text is built with AppendLine where the old builders used it: under Mono on Windows that is "\r\n", and other
 /// mods parse this text, so the line endings are part of what must not change.
 /// </remarks>
-public partial class TooltipRenderer
+internal partial class TooltipRenderer
 {
     private const string InactiveColor = "#808080ff";
     private const string DetailColor = "#c0c0c0ff";

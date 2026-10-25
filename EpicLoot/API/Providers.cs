@@ -570,8 +570,8 @@ public static partial class API
     #endregion
 
     /// <returns>The ids of every registered provider, grouped by family, for diagnostics.
-    /// "InventorySave" lists the inventory providers with a save handler, "TooltipEditor" the tooltip data
-    /// editors and "TooltipOverride" the plugins overriding the item tooltip.</returns>
+    /// "InventorySave" lists the inventory providers with a save handler, "TooltipEditor" the tooltip editors
+    /// and "TooltipOverride" the plugins overriding the item tooltip.</returns>
     [PublicAPI]
     public static Dictionary<string, List<string>> GetRegisteredProviders()
     {

@@ -68,7 +68,7 @@ public static partial class TerminalManager
                 Console.instance.Print("> magicapi roll <rarity> - TryMakeMagicItem on the held item");
                 Console.instance.Print("> magicapi tooltip [details] - write the held item's tooltip data, and its text without Epic Loot, to the log");
                 Console.instance.Print("> magicapi tooltipoverride on|off - claim the item tooltip as a test plugin");
-                Console.instance.Print("> magicapi tooltipedit on|off - a test tooltip data editor (adds a line, drops the first effect)");
+                Console.instance.Print("> magicapi tooltipedit on|off - a test tooltip editor (adds a line, drops the first effect)");
                 break;
         }
     }
@@ -187,11 +187,11 @@ public static partial class TerminalManager
         bool on = args.Length < 3 || !args[2].Equals("off", StringComparison.OrdinalIgnoreCase);
         if (!on)
         {
-            Console.instance.Print($"> Test tooltip editor removed: {API.RemoveTooltipDataEditor(ApiDebugId)}");
+            Console.instance.Print($"> Test tooltip editor removed: {API.RemoveTooltipEditor(ApiDebugId)}");
             return;
         }
 
-        bool added = API.AddTooltipDataEditor(ApiDebugId, (_, json) =>
+        bool added = API.AddTooltipEditor(ApiDebugId, (_, json) =>
         {
             JObject data = JObject.Parse(json);
             (data["Effects"] as JArray)?.FirstOrDefault()?.Remove();

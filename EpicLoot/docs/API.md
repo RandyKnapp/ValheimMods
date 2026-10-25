@@ -77,7 +77,7 @@ broken before.
 | `MagicItemEffectDefinitions.GetAvailableEffects` / `AllDefinitions` | `GetAvailableEffectTypes`, `GetAllMagicEffectTypes` |
 | Polling for "did this item change?" | `AddMagicItemChangedListener` |
 | Reflecting or patching `MagicTooltip`, `MagicItem.GetTooltip`, `GetSetTooltip`, or parsing `item.GetTooltip()` for Epic Loot's lines | `GetItemTooltipData` |
-| Transpiling Epic Loot's tooltip builders to change a line | `AddTooltipDataEditor` |
+| Transpiling Epic Loot's tooltip builders to change a line | `AddTooltipEditor` |
 | Patching `InventoryGrid.CreateItemTooltip` / `PatchOnHoverFix` around Epic Loot to draw your own tooltip | `SetTooltipOverride` |
 
 Reading Epic Loot's BepInEx config entries directly is **not** promoted to the API and remains unsupported.
@@ -263,8 +263,8 @@ the data, change it before Epic Loot draws it, or take over drawing the inventor
 
 ```csharp
 string GetItemTooltipData(ItemDrop.ItemData item, int qualityLevel, bool includeDetails, bool localize);
-bool   AddTooltipDataEditor(string id, Func<ItemDrop.ItemData, string, string> editor);
-bool   RemoveTooltipDataEditor(string id);
+bool   AddTooltipEditor(string id, Func<ItemDrop.ItemData, string, string> editor);
+bool   RemoveTooltipEditor(string id);
 bool   SetTooltipOverride(string ownerId, bool overriding);
 bool   IsTooltipOverridden();
 string GetItemTooltipWithoutEpicLoot(ItemDrop.ItemData item, int qualityLevel, bool crafting,
@@ -332,9 +332,12 @@ line to `Extra`:
 end; on an item Epic Loot does not draw itself, every added line does).
 
 - Editors run in registration order, each getting what the one before returned.
-- They run every frame a tooltip is shown. Keep them cheap.
+- They run when an item's tooltip is first shown and whenever its data changes while it stays shown, not
+  every frame, so an editor may only depend on the item and the data it is given. Return `null` to leave
+  the data as it is.
 - The data an editor gets is unlocalized, as Epic Loot draws it.
-- One that throws or returns something that is not tooltip data is skipped, and logged once.
+- One that throws or returns something that is not tooltip data is removed from the chain and logged;
+  register it again to put it back.
 - Plain vanilla lines are not in the data, so an editor cannot change them; patch vanilla for those.
 
 Through the shim: `EpicLoot.AddTooltipEditor(id, (item, data) => { ...; return data; })`.
@@ -515,11 +518,11 @@ Epic Loot ships a console command that exercises the API from in-game:
 
 ```
 magicapi version     — API version, plugin version, endpoint and rarity list
-magicapi query       — every read-only endpoint against the equipped item
+magicapi query       — every read-only endpoint against the held item
 magicapi providers   — registered inventory/equipment/sacrifice provider ids
 magicapi events      — toggle a logging listener for change and loot events
-magicapi roll <n>    — TryMakeMagicItem on the equipped item
-magicapi tooltip [details]        — the equipped item's tooltip data and its text without Epic Loot, to the BepInEx log
+magicapi roll <n>    — TryMakeMagicItem on the held item
+magicapi tooltip [details]        — the held item's tooltip data and its text without Epic Loot, to the BepInEx log
 magicapi tooltipoverride on|off   — claim the item tooltip as a test plugin
 magicapi tooltipedit on|off       — a test editor that adds a line and drops the first effect
 ```

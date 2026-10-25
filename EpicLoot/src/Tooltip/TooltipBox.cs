@@ -12,7 +12,8 @@ namespace EpicLoot;
 /// Epic Loot's tooltip box: the tooltip prefab's content moved into a scroll view sized to its text
 /// (<see cref="TooltipBox"/>), placed beside the cursor every frame, with the Ctrl comparison box beside it.
 /// It applies to every UITooltip, Epic Loot's panels included; while another mod overrides the item tooltip
-/// (<see cref="ItemTooltip.IsOverridden"/>), the inventory grid's tooltip is left to vanilla and that mod.
+/// (<see cref="ItemTooltip.IsOverridden"/>), the inventory grid's tooltip is left to vanilla and that mod, and
+/// every tooltip is destroyed on pointer exit as in vanilla, so none of Epic Loot's boxes reaches that mod.
 /// </summary>
 [HarmonyPatch]
 public static class TooltipBoxPatches
@@ -95,12 +96,15 @@ public static class TooltipBoxPatches
     }
 
     // Vanilla hides the tooltip when the pointer leaves the slot; Epic Loot keeps it (LateUpdate still hides it
-    // once the pointer is off the hovered element).
+    // once the pointer is off the hovered element). Not while a mod overrides the inventory tooltip: a tooltip
+    // kept alive is reused by the next element hovered (vanilla instantiates one only when it has none), so a
+    // box AddScrollbar already migrated for a crafting or enchanting element would reach the overriding mod's
+    // inventory tooltip sized to the old text, with PlaceTooltip standing aside. Every hover starts fresh instead.
     [HarmonyPatch(typeof(UITooltip), nameof(UITooltip.OnPointerExit))]
     [HarmonyPrefix]
-    public static bool KeepTooltipOnPointerExit(UITooltip __instance)
+    public static bool KeepTooltipOnPointerExit()
     {
-        return LeftToOverride(__instance);
+        return ItemTooltip.IsOverridden;
     }
 
     [HarmonyPatch(typeof(InventoryGrid), nameof(InventoryGrid.CreateItemTooltip))]
@@ -388,8 +392,8 @@ public static class TooltipBoxPatches
 }
 
 /// <summary>
-/// One tooltip box: as wide as its longest line and as tall as its content, each capped by the limit
-/// it is given, and scrolling past the height cap.
+/// One tooltip box: as wide as its longest line (or the width a LayoutElement on the text asks for) and as
+/// tall as its content, each capped by the limit it is given, and scrolling past the height cap.
 /// </summary>
 /// <remarks>
 /// The comparison box is an Instantiate copy of the main one, which does not carry these private
@@ -403,9 +407,13 @@ internal class TooltipBox : MonoBehaviour
     private VerticalLayoutGroup layout;
     private TMP_Text topic;
     private TMP_Text text;
+    // Set by a mod that draws its own content under the tooltip text, empties the text and sizes it to that
+    // content with a LayoutElement (Path of Valheiman's item tooltip). Vanilla's text carries none.
+    private LayoutElement textLayout;
 
     private string fittedTopic;
     private string fittedText;
+    private Vector2 fittedRequest;
     private Vector2 fittedLimit;
     private Vector2 fittedSize;
 
@@ -419,15 +427,20 @@ internal class TooltipBox : MonoBehaviour
 
         string topicValue = topic.text;
         string textValue = text.text;
+        Vector2 request = RequestedSize();
         bool textChanged = topicValue != fittedTopic || textValue != fittedText;
-        if (!textChanged && limit == fittedLimit)
+        // A requested size that changed is content that changed with the text left as it was (the mod's own
+        // details shown, say), so it is fitted again too.
+        if (!textChanged && limit == fittedLimit && request == fittedRequest)
         {
             return true;
         }
 
         // Unwrapped widths: the longest line decides the width, and only past the cap does it wrap.
-        // The extra pixel keeps TMP from wrapping a line measured to fit exactly.
-        float natural = Mathf.Max(topic.preferredWidth, text.preferredWidth) + 2f * TooltipBoxPatches.PADDING;
+        // The extra pixel keeps TMP from wrapping a line measured to fit exactly. A width requested for the
+        // text counts as its longest line; its requested height already reaches LayOut through the layout.
+        float natural = Mathf.Max(Mathf.Max(topic.preferredWidth, text.preferredWidth), request.x) +
+            2f * TooltipBoxPatches.PADDING;
         float width = Mathf.Clamp(Mathf.Ceil(natural) + 1f, Mathf.Min(TooltipBoxPatches.MIN_WIDTH, limit.x), limit.x);
         float height = LayOut(width, TooltipBoxPatches.PADDING);
 
@@ -451,10 +464,26 @@ internal class TooltipBox : MonoBehaviour
 
         fittedTopic = topicValue;
         fittedText = textValue;
+        fittedRequest = request;
         fittedLimit = limit;
         fittedSize = new Vector2(width, height);
         size = fittedSize;
         return true;
+    }
+
+    // The preferred size a LayoutElement on the text asks for, -1 on an axis it leaves alone or without one.
+    // Measuring the text itself would give the width of a text such a mod has emptied: the box would shrink to
+    // the topic and cut its content off.
+    private Vector2 RequestedSize()
+    {
+        if (textLayout == null)
+        {
+            textLayout = text.GetComponent<LayoutElement>();
+        }
+
+        return textLayout != null && textLayout.enabled
+            ? new Vector2(textLayout.preferredWidth, textLayout.preferredHeight)
+            : new Vector2(-1f, -1f);
     }
 
     public void PlaceTopLeft(float left, float top, float scale)

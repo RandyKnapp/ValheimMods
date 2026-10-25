@@ -16,8 +16,8 @@ public static partial class API
     ///     item slot and icon decoration.
     /// 2 - Adventure: GetActiveBounties, GetBountyPinType, adventure-data-changed and bounty-target-slain
     ///     events.
-    /// 3 - Item tooltip: GetItemTooltipData, tooltip data editors, SetTooltipOverride / IsTooltipOverridden,
-    ///     GetItemTooltipWithoutEpicLoot; GetSetItemColor.
+    /// 3 - Item tooltip: GetItemTooltipData, tooltip editors (AddTooltipEditor), SetTooltipOverride /
+    ///     IsTooltipOverridden, GetItemTooltipWithoutEpicLoot; GetSetItemColor.
     /// </remarks>
     [PublicAPI]
     public const int ApiVersion = 3;

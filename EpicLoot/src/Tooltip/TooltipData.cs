@@ -6,7 +6,7 @@ namespace EpicLoot;
 /// <summary>
 /// Everything Epic Loot contributes to one item's tooltip, gathered by <see cref="TooltipGatherer"/> and drawn
 /// by <see cref="TooltipRenderer"/>. It is also the JSON the API hands to other mods (API.GetItemTooltipData)
-/// and the shape tooltip data editors receive and return, so field names are a public contract: add fields,
+/// and the shape tooltip editors receive and return, so field names are a public contract: add fields,
 /// never rename or repurpose one, and bump <see cref="CurrentSchema"/> when the meaning of the data changes.
 /// </summary>
 /// <remarks>
@@ -59,7 +59,7 @@ public class ItemTooltipData
     public TooltipSetRune SetRune;
     /// <summary>Key hints, drawn under the inventory grid's tooltip only.</summary>
     public List<TooltipHint> Hints = new List<TooltipHint>();
-    /// <summary>Lines another mod added through a tooltip data editor. Epic Loot leaves this empty.</summary>
+    /// <summary>Lines another mod added through a tooltip editor. Epic Loot leaves this empty.</summary>
     public List<TooltipLine> Extra = new List<TooltipLine>();
 
     /// <returns>The stat with this id and variant, or null.</returns>

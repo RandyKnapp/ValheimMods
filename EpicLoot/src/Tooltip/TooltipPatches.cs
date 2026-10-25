@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using HarmonyLib;
 using JetBrains.Annotations;
 using UnityEngine;
@@ -14,8 +13,6 @@ namespace EpicLoot;
 /// </summary>
 public static class TooltipPatches
 {
-    private static readonly HashSet<string> LoggedFailures = new HashSet<string>();
-
     [HarmonyPatch(typeof(InventoryGrid), nameof(InventoryGrid.CreateItemTooltip),
         typeof(ItemDrop.ItemData), typeof(UITooltip))]
     public static class InventoryGrid_CreateItemTooltip_Patch
@@ -82,21 +79,23 @@ public static class TooltipPatches
                 return true;
             }
 
+            // A gather that fails is caught, and cached as a miss, in GetData; only the drawing is guarded here.
+            __state = ItemTooltip.GetData(item, qualityLevel, MagicItem.ShowEffectDetails);
+            if (ItemTooltip.Disabled || crafting || __state == null || !__state.IsMagic)
+            {
+                return true;
+            }
+
             try
             {
-                __state = ItemTooltip.GetData(item, qualityLevel, MagicItem.ShowEffectDetails);
-                if (ItemTooltip.Disabled || crafting || __state == null || !__state.IsMagic)
-                {
-                    return true;
-                }
-
                 __result = TooltipRenderer.RenderMagicItem(item, __state);
                 return false;
             }
             catch (Exception e)
             {
-                // Vanilla's text rather than an exception out of InventoryGui.Update every frame.
-                LogFailure(item, e);
+                // Vanilla's text rather than an exception out of InventoryGui.Update every frame. The renderer
+                // draws whatever an editor shaped, so a bad edit lands here.
+                ItemTooltip.LogFailure(item, e);
                 __state = null;
                 return true;
             }
@@ -111,15 +110,14 @@ public static class TooltipPatches
                 return;
             }
 
-            __result = TooltipRenderer.Finish(item, __result, __state);
-        }
-    }
-
-    private static void LogFailure(ItemDrop.ItemData item, Exception e)
-    {
-        if (LoggedFailures.Add($"{item.m_shared?.m_name}|{e.Message}"))
-        {
-            EpicLoot.LogErrorForce($"Tooltip for {item.m_shared?.m_name} failed, showing vanilla's: {e}");
+            try
+            {
+                __result = TooltipRenderer.Finish(item, __result, __state);
+            }
+            catch (Exception e)
+            {
+                ItemTooltip.LogFailure(item, e);
+            }
         }
     }
 }

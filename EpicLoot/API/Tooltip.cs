@@ -1,5 +1,4 @@
 using JetBrains.Annotations;
-using Newtonsoft.Json;
 using System;
 
 namespace EpicLoot;
@@ -18,7 +17,7 @@ namespace EpicLoot;
 public static partial class API
 {
     /// <summary>
-    /// Everything Epic Loot contributes to an item's tooltip, after the registered tooltip data editors have
+    /// Everything Epic Loot contributes to an item's tooltip, after the registered tooltip editors have
     /// run, as JSON.
     /// </summary>
     /// <param name="item">may be null</param>
@@ -38,22 +37,9 @@ public static partial class API
 
         try
         {
-            ItemTooltipData data = ItemTooltip.GetData(item, qualityLevel < 1 ? item.m_quality : qualityLevel, includeDetails);
-            if (data == null)
-            {
-                return "";
-            }
-
-            string json = JsonConvert.SerializeObject(data, ItemTooltip.JsonSettings);
-            if (!localize)
-            {
-                return json;
-            }
-
-            // A copy: the data is cached for the frame and drawn by Epic Loot unlocalized.
-            ItemTooltipData copy = JsonConvert.DeserializeObject<ItemTooltipData>(json, ItemTooltip.JsonSettings);
-            copy.Localize(text => Localization.instance.Localize(text));
-            return JsonConvert.SerializeObject(copy, ItemTooltip.JsonSettings);
+            // Serialized once per frame, localized or not, so a mod drawing its own tooltip can ask for the title,
+            // the body and the hints separately.
+            return ItemTooltip.GetJson(item, qualityLevel < 1 ? item.m_quality : qualityLevel, includeDetails, localize);
         }
         catch (Exception ex)
         {
@@ -126,45 +112,46 @@ public static partial class API
     /// or add a line to <c>Extra</c> with an anchor saying where it goes.
     /// </summary>
     /// <remarks>
-    /// Editors run in registration order, each getting the JSON the one before returned. They run every frame
-    /// a tooltip is shown, so keep them cheap. One that throws or returns something that is not tooltip data
-    /// is skipped and logged once. The data holds Epic Loot's parts only; plain vanilla lines cannot be edited
-    /// here.
+    /// Editors run in registration order, each getting the JSON the one before returned. They run when an item's
+    /// tooltip is first shown and again whenever its gathered data changes while it stays shown, not every frame,
+    /// so an editor's result may depend on the item and the data it is given alone. One that throws or returns
+    /// something that is not tooltip data is removed from the chain and logged; registering it again puts it
+    /// back. The data holds Epic Loot's parts only; plain vanilla lines cannot be edited here.
     /// </remarks>
     /// <param name="id">Unique id, normally your plugin GUID</param>
     /// <param name="editor">Given the item and the data as JSON, returns the edited JSON, or null to leave it
     /// as it is.</param>
     /// <returns>true if registered; false if <paramref name="id"/> is empty or taken, or the editor is null</returns>
     [PublicAPI]
-    public static bool AddTooltipDataEditor(string id, Func<ItemDrop.ItemData, string, string> editor)
+    public static bool AddTooltipEditor(string id, Func<ItemDrop.ItemData, string, string> editor)
     {
         if (string.IsNullOrWhiteSpace(id))
         {
-            OnError?.Invoke("Failed to register tooltip data editor: id is empty");
+            OnError?.Invoke("Failed to register tooltip editor: id is empty");
             return false;
         }
 
         if (editor == null)
         {
-            OnError?.Invoke($"Failed to register tooltip data editor '{id}': callback is null");
+            OnError?.Invoke($"Failed to register tooltip editor '{id}': callback is null");
             return false;
         }
 
         if (ItemTooltip.HasEditor(id))
         {
-            OnError?.Invoke($"Duplicate tooltip data editor: {id}");
+            OnError?.Invoke($"Duplicate tooltip editor: {id}");
             return false;
         }
 
         ItemTooltip.AddEditor(id, editor);
-        OnReload?.Invoke($"Registered tooltip data editor: {id}");
+        OnReload?.Invoke($"Registered tooltip editor: {id}");
         return true;
     }
 
-    /// <param name="id">The id passed to <see cref="AddTooltipDataEditor"/></param>
+    /// <param name="id">The id passed to <see cref="AddTooltipEditor"/></param>
     /// <returns>true if an editor was removed</returns>
     [PublicAPI]
-    public static bool RemoveTooltipDataEditor(string id)
+    public static bool RemoveTooltipEditor(string id)
     {
         return id != null && ItemTooltip.RemoveEditor(id);
     }

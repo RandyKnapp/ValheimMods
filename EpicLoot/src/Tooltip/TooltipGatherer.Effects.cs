@@ -5,7 +5,7 @@ namespace EpicLoot;
 
 // The rolled effects and the sockets. Both read the MagicItem alone, so the enchanting panel's rune list can
 // use them without an item.
-public partial class TooltipGatherer
+internal partial class TooltipGatherer
 {
     internal static List<TooltipEffect> GatherEffects(MagicItem magicItem, bool includeDetails)
     {

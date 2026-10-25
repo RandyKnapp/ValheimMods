@@ -1,6 +1,7 @@
 **0.15.2**
 * Other mods can now read Epic Loot's tooltip information, change it, or draw their own item tooltip instead.
 * The log names any mod that takes over drawing the item tooltip.
+* Item tooltips that other mods draw inside Epic Loot's tooltip box are no longer cut off.
 
 **0.15.1**
 * Fix storage tab not showing up when the enchanting table is upgraded to include it

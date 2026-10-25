@@ -169,7 +169,8 @@ string plain = item.GetTooltipWithoutEpicLoot();   // vanilla's text, other mods
 string setColour = EpicLoot.GetSetItemColor();      // also ItemTooltipData.SetColor
 ```
 
-Or let Epic Loot draw and change what it draws. Editors run every frame a tooltip is shown, so keep them cheap.
+Or let Epic Loot draw and change what it draws. An editor runs when an item's tooltip is shown and whenever its
+data changes, not every frame; return `null` to leave the data as it is.
 
 ```c#
 EpicLoot.AddTooltipEditor(PluginGUID, (item, data) =>

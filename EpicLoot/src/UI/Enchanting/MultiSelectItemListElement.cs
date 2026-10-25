@@ -26,7 +26,9 @@ namespace EpicLoot_UnityLib
         public Button QuantityUpButton;
         public Button QuantityDownButton;
         public UITooltip Tooltip;
-        public UITooltip ItemTooltip;
+        // Was ItemTooltip, a name the static EpicLoot.ItemTooltip class now takes inside this file.
+        [UnityEngine.Serialization.FormerlySerializedAs("ItemTooltip")]
+        public UITooltip ItemHoverTooltip;
         public bool ReadOnly;
         public bool CheckPlayerInventory;
         public bool NoMax;
@@ -68,8 +70,8 @@ namespace EpicLoot_UnityLib
             }
             else
             {
-                ItemTooltip = gameObject.AddComponent<UITooltip>();
-                ItemTooltip.m_tooltipPrefab = StoreGui.instance.m_listElement.GetComponent<UITooltip>().m_tooltipPrefab;
+                ItemHoverTooltip = gameObject.AddComponent<UITooltip>();
+                ItemHoverTooltip.m_tooltipPrefab = StoreGui.instance.m_listElement.GetComponent<UITooltip>().m_tooltipPrefab;
             }
 
             EnchantingUIController.SetupUIAudioSource(Audio);
@@ -199,9 +201,9 @@ namespace EpicLoot_UnityLib
                     Tooltip.m_text = string.Empty;
                 }
                 
-                if (ItemTooltip != null)
+                if (ItemHoverTooltip != null)
                 {
-                    ItemTooltip.Set("", "");
+                    ItemHoverTooltip.Set("", "");
                 }
             }
             else
@@ -221,9 +223,9 @@ namespace EpicLoot_UnityLib
                     ItemName.text += _item.GetDisplayNameSuffix();
                 }
 
-                if (ItemTooltip != null)
+                if (ItemHoverTooltip != null)
                 {
-                    EnchantingUIController.SetItemTooltip(_item.GetItem(), ItemTooltip);
+                    EnchantingUIController.SetItemTooltip(_item.GetItem(), ItemHoverTooltip);
                 }
             }
 
