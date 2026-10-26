@@ -6,6 +6,7 @@
 * Fixes newer BowsBeforeHoes quivers never letting you open their shard slots, and keeps their open prompt in the tooltip.
 * Other mods can tell Epic Loot which items are their containers and when a key press is meant for shard slots.
 * Adds a Vietnamese translation, selectable from the game's language setting.
+* Augment choices are a more even text size, and long effects wrap onto two lines instead of being cut off.
 
 **0.15.1**
 * Fix storage tab not showing up when the enchanting table is upgraded to include it
