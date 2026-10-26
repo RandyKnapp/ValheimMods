@@ -1,10 +1,8 @@
 **0.15.2**
 * Other mods can now read Epic Loot's tooltip information, change it, or draw their own item tooltip instead.
-* The log names any mod that takes over drawing the item tooltip.
-* Item tooltips that other mods draw inside Epic Loot's tooltip box are no longer cut off.
-* Shard slots open with a keyboard shortcut and gamepad buttons you can change, and the defaults no longer clash with backpack and quiver mods.
-* Fixes newer BowsBeforeHoes quivers never letting you open their shard slots, and keeps their open prompt in the tooltip.
-* Other mods can tell Epic Loot which items are their containers and when a key press is meant for shard slots.
+    * The log names any mod that takes over drawing the item tooltip.
+* Makes the shortcut to open shard slots configurable
+    * Fixes newer BowsBeforeHoes quivers never letting you open their shard slots
 * Adds a Vietnamese translation, selectable from the game's language setting.
 * Augment choices are a more even text size, and long effects wrap onto two lines instead of being cut off.
 
