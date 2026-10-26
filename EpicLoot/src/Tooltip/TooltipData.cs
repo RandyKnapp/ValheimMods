@@ -391,6 +391,8 @@ public class TooltipSetRunePiece
 public static class TooltipHintId
 {
     public const string SocketOpen = "socket_open";
+    /// <summary>How another mod's container item opens (BowsBeforeHoes' quiver prompt), drawn ahead of socket_open.</summary>
+    public const string ContainerOpen = "container_open";
     public const string Chisel = "chisel";
     public const string EffectDetails = "effect_details";
 }

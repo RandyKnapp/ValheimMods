@@ -1,4 +1,4 @@
-using EpicLoot.Config;
+using EpicLoot.Compatibility;
 using EpicLoot.Crafting;
 using EpicLoot.LegendarySystem;
 using EpicLoot.ShardStones;
@@ -154,6 +154,14 @@ internal partial class TooltipGatherer
 
     private void GatherHints()
     {
+        // Ahead of the shard slot line: it is how the item opens on its own, which the shard slot gesture
+        // is the exception to.
+        string containerHint = BowsBeforeHoesCompat.GetOpenPrompt(item);
+        if (!string.IsNullOrEmpty(containerHint))
+        {
+            data.Hints.Add(new TooltipHint { Id = TooltipHintId.ContainerOpen, Text = containerHint });
+        }
+
         string socketHint = GetSocketOpenHint();
         if (socketHint != null)
         {
@@ -192,27 +200,17 @@ internal partial class TooltipGatherer
             return null;
         }
 
-        // The $KEY_ tokens must sit in this source string, never inside a translation value:
-        // Localization.Localize is single-pass and never re-scans what Translate() emitted, so a nested
-        // $KEY_Use would reach the screen literally. $KEY_RTrigger / $KEY_ButtonX only resolve to pad
-        // glyphs while a gamepad is active (Localization looks up "Joy" + the binding name), which is
-        // exactly when this branch is taken.
-        // An item another mod turned into a container answers plain Use by opening that container, so
-        // the socket overlay sits behind the Socket Overlay Key there (or on every item, when the player
-        // asked for that) and the hint has to say so. That key has no $KEY_ binding of its own, so its
-        // name goes in raw ("LeftControl + E").
-        string keys;
-        if (ZInput.IsGamepadActive())
+        // The gamepad gesture is written as $KEY_ glyph tokens, which only resolve to pad glyphs while a
+        // gamepad is active (Localization looks up "Joy" + the binding name) -- exactly when that branch is
+        // taken. The keyboard shortcut has no $KEY_ binding of its own, so its key names go in as they are
+        // ("Left Control + E"). No hint where the gesture is turned off, or where it would not open these
+        // slots: a shortcut that is only the Use key leaves another mod's container to that mod.
+        string keys = ZInput.IsGamepadActive()
+            ? SocketOverlayInput.DescribeGamepad()
+            : SocketOverlayInput.IsBlockedFor(item, gamepad: false) ? null : SocketOverlayInput.DescribeShortcut();
+        if (keys == null)
         {
-            keys = "$KEY_RTrigger + $KEY_ButtonX";
-        }
-        else if (SocketsUI.RequiresSocketOverlayKey(item))
-        {
-            keys = $"{ELConfig.SocketOverlayKey.Value} + $KEY_Use";
-        }
-        else
-        {
-            keys = "$KEY_Use";
+            return null;
         }
 
         return $"[<color=yellow><b>{keys}</b></color>] $mod_epicloot_press_socket";

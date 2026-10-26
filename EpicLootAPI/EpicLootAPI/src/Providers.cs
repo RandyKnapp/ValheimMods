@@ -38,6 +38,13 @@ public static partial class EpicLoot
         typeof(Func<ItemDrop.ItemData, bool>));
 
     private static readonly Method API_UnregisterSacrificeFilter = new("UnregisterSacrificeFilter");
+
+    private static readonly Method API_RegisterItemContainer = new(
+        "RegisterItemContainer",
+        typeof(string),
+        typeof(Func<ItemDrop.ItemData, bool>));
+
+    private static readonly Method API_UnregisterItemContainer = new("UnregisterItemContainer");
     private static readonly Method API_InvalidatePlayerEffectCache = new("InvalidatePlayerEffectCache");
     private static readonly Method API_GetRegisteredProviders = new("GetRegisteredProviders");
 
@@ -170,7 +177,35 @@ public static partial class EpicLoot
         return (bool)(API_UnregisterSacrificeFilter.Invoke(id)[0] ?? false);
     }
 
-    /// <returns>Registered provider ids keyed by family ("Inventory", "Equipment", "Sacrifice").</returns>
+    /// <summary>
+    /// Tells Epic Loot which items your mod has turned into containers (a backpack, a quiver, a pouch) that
+    /// open on Use from the inventory. Epic Loot then leaves plain Use over those items to you, and a Socket
+    /// Overlay Shortcut that is only the Use key never opens their shard slots. Containers built on
+    /// Backpacks' <c>ItemContainer</c> are recognised without this. To step aside for Epic Loot's own shard
+    /// slot press, ask <see cref="IsShardSlotPress"/>.
+    /// </summary>
+    /// <param name="id">Unique id, normally your plugin GUID</param>
+    /// <param name="isContainer">Return true for your container items. Called on inventory key presses and
+    /// tooltip draws, so keep it cheap. One that throws is removed; register again to retry.</param>
+    /// <returns>true if registered</returns>
+    [PublicAPI]
+    public static bool RegisterItemContainer(string id, Func<ItemDrop.ItemData, bool> isContainer)
+    {
+        object[] result = API_RegisterItemContainer.Invoke(id, isContainer);
+        bool output = (bool)(result[0] ?? false);
+        logger.LogDebug($"Registered item container: {id}, {output}");
+        return output;
+    }
+
+    /// <param name="id">The id passed to <see cref="RegisterItemContainer"/></param>
+    [PublicAPI]
+    public static bool UnregisterItemContainer(string id)
+    {
+        return (bool)(API_UnregisterItemContainer.Invoke(id)[0] ?? false);
+    }
+
+    /// <returns>Registered provider ids keyed by family ("Inventory", "Equipment", "Sacrifice",
+    /// "ItemContainer", ...).</returns>
     [PublicAPI]
     public static Dictionary<string, List<string>> GetRegisteredProviders()
     {

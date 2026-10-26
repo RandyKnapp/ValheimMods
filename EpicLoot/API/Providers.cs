@@ -33,12 +33,14 @@ public static partial class API
     private static readonly List<InventoryProvider> InventoryProviders = new();
     private static readonly Dictionary<string, Func<Player, List<ItemDrop.ItemData>>> EquipmentProviders = new();
     private static readonly Dictionary<string, Func<ItemDrop.ItemData, bool>> SacrificeFilters = new();
+    private static readonly Dictionary<string, Func<ItemDrop.ItemData, bool>> ItemContainers = new();
 
     // Checked before every provider dispatch. Registration is rare and dispatch is not, so the common
     // case must cost one bool read.
     internal static bool AnyInventoryProviders;
     internal static bool AnyEquipmentProviders;
     internal static bool AnySacrificeFilters;
+    internal static bool AnyItemContainers;
 
     private static void LogProviderFailure(string family, string id, Exception ex)
     {
@@ -569,6 +571,90 @@ public static partial class API
 
     #endregion
 
+    #region Item containers
+
+    /// <summary>
+    /// Tells Epic Loot which items your mod has turned into containers (a backpack, a quiver, a pouch) that
+    /// open on Use from the inventory. Epic Loot then leaves plain Use over those items to you: Keep Inventory
+    /// Open Over Items no longer swallows it, and a Socket Overlay Shortcut that is only the Use key never
+    /// opens their shard slots. Containers built on Backpacks' <c>ItemContainer</c> are recognised without this.
+    /// To step aside for Epic Loot's own shard slot press, ask <see cref="IsShardSlotPress"/>.
+    /// </summary>
+    /// <param name="id">Unique id, normally your plugin GUID</param>
+    /// <param name="isContainer">Return true for your container items. Called on inventory key presses and
+    /// tooltip draws, so keep it cheap. One that throws is logged and removed; register again to retry.</param>
+    /// <returns>true if registered</returns>
+    [PublicAPI]
+    public static bool RegisterItemContainer(string id, Func<ItemDrop.ItemData, bool> isContainer)
+    {
+        if (string.IsNullOrWhiteSpace(id))
+        {
+            OnError?.Invoke("Failed to register item container: id is empty");
+            return false;
+        }
+
+        if (isContainer == null)
+        {
+            OnError?.Invoke($"Failed to register item container '{id}': callback is null");
+            return false;
+        }
+
+        if (ItemContainers.ContainsKey(id))
+        {
+            OnError?.Invoke($"Duplicate item container: {id}");
+            return false;
+        }
+
+        ItemContainers[id] = isContainer;
+        AnyItemContainers = true;
+        OnReload?.Invoke($"Registered item container: {id}");
+        return true;
+    }
+
+    /// <param name="id">The id passed to <see cref="RegisterItemContainer"/></param>
+    /// <returns>true if a registration was removed</returns>
+    [PublicAPI]
+    public static bool UnregisterItemContainer(string id)
+    {
+        bool removed = id != null && ItemContainers.Remove(id);
+        AnyItemContainers = ItemContainers.Count > 0;
+        return removed;
+    }
+
+    /// <returns>true if a registered check claims this item. A check that throws is removed, since it would
+    /// otherwise throw again on every frame the item is hovered.</returns>
+    internal static bool IsRegisteredItemContainer(ItemDrop.ItemData item)
+    {
+        if (!AnyItemContainers || item == null)
+        {
+            return false;
+        }
+
+        string failed = null;
+        try
+        {
+            foreach (KeyValuePair<string, Func<ItemDrop.ItemData, bool>> entry in ItemContainers)
+            {
+                failed = entry.Key;
+                if (entry.Value(item))
+                {
+                    return true;
+                }
+            }
+
+            failed = null;
+        }
+        catch (Exception ex)
+        {
+            LogProviderFailure("Item container", failed, ex);
+            UnregisterItemContainer(failed);
+        }
+
+        return false;
+    }
+
+    #endregion
+
     /// <returns>The ids of every registered provider, grouped by family, for diagnostics.
     /// "InventorySave" lists the inventory providers with a save handler, "TooltipEditor" the tooltip editors
     /// and "TooltipOverride" the plugins overriding the item tooltip.</returns>
@@ -581,6 +667,7 @@ public static partial class API
             ["InventorySave"] = InventoryProviders.FindAll(x => x.SaveItem != null).ConvertAll(x => x.Id),
             ["Equipment"] = new List<string>(EquipmentProviders.Keys),
             ["Sacrifice"] = new List<string>(SacrificeFilters.Keys),
+            ["ItemContainer"] = new List<string>(ItemContainers.Keys),
             ["TooltipEditor"] = ItemTooltip.GetEditorIds(),
             ["TooltipOverride"] = ItemTooltip.GetOverrideOwners()
         };

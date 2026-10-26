@@ -212,6 +212,21 @@ public static partial class API
         return item != null && item.HasMagicEffect(effectType, includeSocketed);
     }
 
+    /// <summary>
+    /// Whether this frame's key press over <paramref name="item"/> is Epic Loot's open-shard-slots gesture
+    /// (the player's Socket Overlay Shortcut, or the gamepad button and modifier) and Epic Loot will act on
+    /// it. A mod that handles inventory presses ahead of Epic Loot -- an <c>InventoryGui.Update</c> prefix
+    /// opening its own container -- should leave the press alone when this is true. Only reads input, so it
+    /// gives the same answer before Epic Loot's handler runs as during it. False for an item without shard
+    /// slots, so your gesture keeps working there.
+    /// </summary>
+    /// <param name="item">the item under the cursor, or the gamepad's selected item; may be null</param>
+    [PublicAPI]
+    public static bool IsShardSlotPress(ItemDrop.ItemData item)
+    {
+        return item != null && ShardStones.SocketOverlayInput.IsShardSlotPress(item);
+    }
+
     /// <returns>Every registered magic effect type id, including any added through the API.</returns>
     [PublicAPI]
     public static List<string> GetAllMagicEffectTypes()

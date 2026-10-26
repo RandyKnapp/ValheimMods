@@ -72,6 +72,7 @@ languages = %w[
   Serbian
   Ukrainian
   Latvian
+  Vietnamese
 ]
 languages.each do |lang|
   puts "Starting translation work for #{lang}"

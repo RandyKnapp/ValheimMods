@@ -15,12 +15,6 @@ namespace EpicLoot.ShardStones {
 
         private static bool IsSocketGridOpen => OpenEquipment != null && OpenInventory != null;
 
-        // Whether the keyboard opener needs the Socket Overlay Key held with Use over this item. The
-        // inventory tooltip asks the same question, so its hint names the gesture that will work.
-        public static bool RequiresSocketOverlayKey(ItemDrop.ItemData item) {
-            return ELConfig.AlwaysRequireSocketOverlayKey.Value || ForeignItemContainers.HasContainer(item);
-        }
-
         // Adds `item` to the socket row at `pos` without vanilla's stack merging. Both Inventory.AddItem
         // overloads fold a stackable item into any existing stack of the same name (FindFreeStackItem),
         // and shards stack to 100 with one shared name per colour+rarity -- so two sockets holding
@@ -145,21 +139,26 @@ namespace EpicLoot.ShardStones {
             }
         }
 
-        // Claim the "Use" press before vanilla InventoryGui.Update consumes it. Vanilla Update reads
-        // GetButtonDown("Use") and, while the inventory is visible, resets the button and Hide()s the
-        // inventory -- all before it calls UpdateContainer. So the overlay's open/toggle has to happen
-        // in an Update prefix (which runs first) and consume the button, or the press never survives to
-        // reach the render path in UpdateContainer.
-        //
-        // Only the keyboard "Use" binding is read here. The gamepad equivalent lives in
-        // InventoryGui_OnRightClickItem_Patch; see the note there for why "JoyUse" cannot be used.
+        // Pressing the gesture again on the item whose slots are open closes them.
+        private static void ToggleSocketOverlay(InventoryGui invGui, ItemDrop.ItemData item) {
+            if (IsSocketGridOpen && item == OpenEquipment) {
+                invGui.CloseContainer();
+            } else {
+                OpenSocketOverlay(invGui, item);
+            }
+        }
+
+        // The opener: the Socket Overlay Shortcut over the item under the cursor, or the gamepad gesture over the
+        // selected one (SocketOverlayInput decides which press is which). It has to be an Update prefix that
+        // consumes the press: vanilla Update reads GetButtonDown("Use") and, while the inventory is visible,
+        // resets the button and Hide()s the inventory, and the player grid reads the gamepad buttons from
+        // inside Update too -- all before UpdateContainer, where the overlay is drawn.
         [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.Update))]
         [HarmonyPriority(Priority.First)]
         public static class InventoryGui_Update_Patch {
             // Priority.First: this is a void prefix that only reads input and, at most, consumes it, so
-            // running ahead of everyone is harmless -- and it is required for the modifier case below.
-            // A container mod's own Update handler must not open the container out from under a
-            // deliberate modifier+Use aimed at the socket overlay.
+            // running ahead of everyone is harmless -- and a container mod's own Update handler must not open
+            // its container out from under a press aimed at the shard slots.
             [UsedImplicitly]
             private static void Prefix(InventoryGui __instance) {
                 if (!InventoryGui.IsVisible()) {
@@ -172,53 +171,83 @@ namespace EpicLoot.ShardStones {
                     return;
                 }
 
-                if (!ZInput.GetButtonDown("Use")) {
+                if (SocketOverlayInput.TryGetPressTarget(__instance, out ItemDrop.ItemData item, out bool gamepad)) {
+                    if (gamepad) {
+                        OnGamepadGesture(__instance, item);
+                    } else {
+                        OnShortcut(__instance, item);
+                    }
                     return;
                 }
 
-                var pos = Input.mousePosition;
-                var item = __instance.m_playerGrid.GetItem(
-                    new Vector2i(Mathf.RoundToInt(pos.x), Mathf.RoundToInt(pos.y)));
+                KeepInventoryOpenOnUse(__instance);
+            }
 
+            private static void OnShortcut(InventoryGui invGui, ItemDrop.ItemData item) {
                 // Over empty space: leave the press for vanilla, so Use still closes the inventory.
                 if (item == null) {
                     return;
                 }
 
-                // Another mod may have made this item a container (a backpack, a BowsBeforeHoes quiver),
-                // in which case plain Use is already its open gesture and belongs to that mod. Hand the
-                // press over untouched and put our overlay behind the Socket Overlay Key for those items.
-                // A player whose other mods read plain Use over any item can put every item behind it.
-                if (RequiresSocketOverlayKey(item) && !Input.GetKey(ELConfig.SocketOverlayKey.Value)) {
-                    EpicLoot.Log($"[SocketsUI] Yielding the Use press over {item.m_shared.m_name}: " +
-                        (ELConfig.AlwaysRequireSocketOverlayKey.Value
-                            ? "the Socket Overlay Key is required for every item."
-                            : "another mod owns its container."));
+                // A shortcut that is only the Use key is another mod's container gesture over that mod's item
+                // (a backpack, a quiver): hand the press over untouched.
+                if (SocketOverlayInput.IsBlockedFor(item, gamepad: false)) {
+                    EpicLoot.Log($"[SocketsUI] Yielding the Use press over {item.m_shared.m_name}: another mod " +
+                        "owns its container, and the Socket Overlay Shortcut is only the Use key.");
                     return;
                 }
 
-                if (!item.IsMagic(out var magicItem) || !magicItem.HasSockets()) {
-                    // Aiming at an item and hitting one without sockets is a miss, not a request to shut
-                    // the whole inventory. Swallow the press: Player doesn't read Use while the inventory
-                    // is visible, so nothing else wants it. Reaching here means the press is ours -- an
-                    // item that needs the Socket Overlay Key only gets this far with it held, which is an
-                    // explicit ask for the overlay rather than for the container or another mod.
-                    if (ELConfig.KeepInventoryOpenOverItems.Value) {
+                bool onUse = SocketOverlayInput.MainKeyIsUse();
+                if (!SocketOverlayInput.HasSockets(item)) {
+                    // Aiming the shortcut at an item and hitting one without sockets is a miss, not a request
+                    // to shut the whole inventory. An item another mod made a container keeps its press.
+                    if (onUse && ELConfig.KeepInventoryOpenOverItems.Value && !ForeignItemContainers.HasContainer(item)) {
                         ZInput.ResetButtonStatus("Use");
                     }
                     return;
                 }
 
-                // We own this Use press. Consume it so vanilla's later GetButtonDown("Use") is false and
-                // it won't Hide() the inventory out from under the overlay.
-                ZInput.ResetButtonStatus("Use");
-
-                // Toggle: pressing Use again on the already-open item closes the overlay.
-                if (IsSocketGridOpen && item == OpenEquipment) {
-                    __instance.CloseContainer();
-                } else {
-                    OpenSocketOverlay(__instance, item);
+                // A shortcut on the Use key: consume Use so vanilla's later GetButtonDown("Use") is false and it
+                // won't Hide() the inventory out from under the overlay, and a container mod's own handler (which
+                // reads Use later, in UpdateContainer) sees no press.
+                if (onUse) {
+                    ZInput.ResetButtonStatus("Use");
                 }
+
+                ToggleSocketOverlay(invGui, item);
+            }
+
+            // Only over an item with shard slots: anywhere else the button keeps doing what vanilla does with it.
+            // Consuming it by name is what stops the player grid from also using or picking up the item.
+            private static void OnGamepadGesture(InventoryGui invGui, ItemDrop.ItemData item) {
+                if (!SocketOverlayInput.HasSockets(item)) {
+                    return;
+                }
+
+                ZInput.ResetButtonStatus(SocketOverlayInput.GamepadButtonName);
+                ToggleSocketOverlay(invGui, item);
+            }
+
+            // Plain Use over an item. Player doesn't read Use while the inventory is visible, so swallowing it
+            // only stops the inventory closing. Another mod's container keeps it: plain Use is the gesture that
+            // container advertises ("Press [Use] to open").
+            private static void KeepInventoryOpenOnUse(InventoryGui invGui) {
+                if (!ELConfig.KeepInventoryOpenOverItems.Value || !ZInput.GetButtonDown("Use")) {
+                    return;
+                }
+
+                var pos = Input.mousePosition;
+                var item = invGui.m_playerGrid.GetItem(new Vector2i(Mathf.RoundToInt(pos.x), Mathf.RoundToInt(pos.y)));
+                if (item == null) {
+                    return;
+                }
+
+                if (ForeignItemContainers.HasContainer(item)) {
+                    EpicLoot.Log($"[SocketsUI] Yielding the Use press over {item.m_shared.m_name}: another mod owns its container.");
+                    return;
+                }
+
+                ZInput.ResetButtonStatus("Use");
             }
         }
 
@@ -461,15 +490,9 @@ namespace EpicLoot.ShardStones {
         }
 
         // Right-click a socketed stone that can only be destroyed to open the break confirmation.
-        // Vanilla's handler just calls Player.UseItem, a no-op for shard/runestone materials.
-        //
-        // This is also where the gamepad opens the overlay, with RT + X. "JoyUse" cannot be used for
-        // that: it maps to FaceButtonA on the classic pad layout and to FaceButtonX on Alt1/Alt2, both
-        // of which InventoryGrid already claims, and ZInput.ResetButtonStatus clears only the named
-        // ButtonDef rather than the shared physical control -- so one press would open the overlay AND
-        // pick the item up. InventoryGrid only ever tests LT alongside X, which leaves RT + X free; it
-        // lands here, and both buttons are bound identically on all three layouts
-        // (ZInput.ResetGamepadButtonsGeneric).
+        // Vanilla's handler just calls Player.UseItem, a no-op for shard/runestone materials. (The gamepad
+        // opens the overlay from InventoryGui_Update_Patch, which consumes its button before the grid reads
+        // it, so the open gesture never reaches here.)
         [HarmonyPatch(typeof(InventoryGui), "OnRightClickItem")]
         public static class InventoryGui_OnRightClickItem_Patch {
             [UsedImplicitly]
@@ -479,16 +502,6 @@ namespace EpicLoot.ShardStones {
                 }
 
                 if (InventoryPromptHost.IsOpen) {
-                    return false;
-                }
-
-                if (grid == __instance.m_playerGrid && ZInput.GetButton("JoyRTrigger") &&
-                    item != null && item.IsMagic(out var magicItem) && magicItem.HasSockets()) {
-                    if (IsSocketGridOpen && item == OpenEquipment) {
-                        __instance.CloseContainer();
-                    } else {
-                        OpenSocketOverlay(__instance, item);
-                    }
                     return false;
                 }
 

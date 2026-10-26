@@ -37,6 +37,7 @@ namespace EpicLoot;
 [BepInDependency("kg.ValheimEnchantmentSystem", BepInDependency.DependencyFlags.SoftDependency)]
 [BepInDependency("org.bepinex.plugins.steadyregeneration", BepInDependency.DependencyFlags.SoftDependency)]
 [BepInDependency(ItemFavoriteFrameworkAPI.ItemFavorites.PluginGuid, BepInDependency.DependencyFlags.SoftDependency)]
+[BepInDependency(Compatibility.BowsBeforeHoesCompat.PluginGuid, BepInDependency.DependencyFlags.SoftDependency)]
 public sealed class EpicLoot : BaseUnityPlugin {
     public const string PluginId = "randyknapp.mods.epicloot";
     public const string DisplayName = "Epic Loot";
@@ -134,6 +135,8 @@ public sealed class EpicLoot : BaseUnityPlugin {
 
         // Wishlist conditions and magic item names for Item Favorite Framework, when it is installed.
         Compatibility.ItemFavorites.RegisterLootIntegration();
+        // BowsBeforeHoes' quiver opener and tooltip make way for shard slots, when it is installed.
+        Compatibility.BowsBeforeHoesCompat.Initialize(_harmony);
 
         // Scheduled (non-per-frame) effect drivers, on their own DontDestroyOnLoad objects.
         MagicItemEffects.Shards.PoisonAdrenalinePulse.Create();

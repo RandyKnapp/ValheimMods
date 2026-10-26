@@ -17,7 +17,8 @@ public static partial class API
     /// 2 - Adventure: GetActiveBounties, GetBountyPinType, adventure-data-changed and bounty-target-slain
     ///     events.
     /// 3 - Item tooltip: GetItemTooltipData, tooltip editors (AddTooltipEditor), SetTooltipOverride /
-    ///     IsTooltipOverridden, GetItemTooltipWithoutEpicLoot; GetSetItemColor.
+    ///     IsTooltipOverridden, GetItemTooltipWithoutEpicLoot; GetSetItemColor. Item containers:
+    ///     RegisterItemContainer / UnregisterItemContainer, IsShardSlotPress.
     /// </remarks>
     [PublicAPI]
     public const int ApiVersion = 3;

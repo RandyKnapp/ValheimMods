@@ -79,6 +79,7 @@ broken before.
 | Reflecting or patching `MagicTooltip`, `MagicItem.GetTooltip`, `GetSetTooltip`, or parsing `item.GetTooltip()` for Epic Loot's lines | `GetItemTooltipData` |
 | Transpiling Epic Loot's tooltip builders to change a line | `AddTooltipEditor` |
 | Patching `InventoryGrid.CreateItemTooltip` / `PatchOnHoverFix` around Epic Loot to draw your own tooltip | `SetTooltipOverride` |
+| Reflecting on Epic Loot's socket key setting or tooltip internals so your container's Use press and Epic Loot's shard slots share the inventory | `RegisterItemContainer`, `IsShardSlotPress` |
 
 Reading Epic Loot's BepInEx config entries directly is **not** promoted to the API and remains unsupported.
 
@@ -231,6 +232,34 @@ API.RegisterSacrificeFilter("my.plugin.guid", item => !IsInMyQuickSlot(item));
 
 Called for every item the tab evaluates, so keep it cheap.
 
+### Item containers
+
+For mods that turn an item into a container opened with Use from the inventory (a backpack, a quiver, a
+pouch). Epic Loot opens an item's shard slots with the player's Socket Overlay Shortcut (Ctrl + E by
+default) or the gamepad gesture (RT + X by default). Register your items so Epic Loot leaves plain Use over
+them to you: Keep Inventory Open Over Items stops swallowing it there, and a shortcut the player set to only
+the Use key no longer opens their shard slots. Containers built on Backpacks' `ItemContainer` are
+recognised without registering.
+
+```csharp
+API.RegisterItemContainer("my.plugin.guid", item => IsMyQuiver(item));
+```
+
+If your own `InventoryGui.Update` prefix opens the container, and it can run before Epic Loot's, leave the
+press alone when it is Epic Loot's:
+
+```csharp
+ItemDrop.ItemData item = gui.m_playerGrid.GetItem(mousePosition);
+if (API.IsShardSlotPress(item))
+{
+    return; // Epic Loot opens this item's shard slots
+}
+```
+
+`IsShardSlotPress` only reads input, so it gives the same answer before Epic Loot's handler runs. It is
+false for an item without shard slots, so your gesture keeps working there. The check you register is
+called on inventory key presses and tooltip draws; one that throws is logged and removed.
+
 `API.GetRegisteredProviders()` returns the registered ids grouped by family, for diagnostics.
 
 ---
@@ -297,7 +326,7 @@ teleport, food, ...) are not in it. A trimmed example for an enchanted sword:
   "Sockets": { "Count": 2, "Used": 1, "Open": 1, "Entries": [
     { "SourcePrefab": "Red_Rare_ShardStone", "Rarity": 1, "EffectType": "AddFireDamage", "Value": 5,
       "Text": "+5 Fire Damage", "State": "Active", "StackMultiplier": 1, "Removal": "Free" } ] },
-  "Sets": [], "Hints": [ { "Id": "socket_open", "Text": "[<color=yellow><b>$KEY_Use</b></color>] $mod_epicloot_press_socket" } ],
+  "Sets": [], "Hints": [ { "Id": "socket_open", "Text": "[<color=yellow><b>Left Control + E</b></color>] $mod_epicloot_press_socket" } ],
   "Extra": [] }
 ```
 
@@ -314,6 +343,9 @@ teleport, food, ...) are not in it. A trimmed example for an enchanted sword:
   `Active`, the `Tier` an active bonus applies at, and the description and activation key with details.
   `SetColor` is the colour the set label, set sections and set rune lines are drawn in (the player's Set
   Item Color setting, also `GetSetItemColor()`).
+- `Hints` are drawn in order under the tooltip. `Id` is `container_open` (how another mod's container
+  opens, such as a BowsBeforeHoes quiver), `socket_open` (the player's shard slot shortcut, or the gamepad
+  gesture while a gamepad is in use), `chisel` (how to use Brokkr's Gift) or `effect_details`.
 - Rarities are indices, as everywhere in this API (`-1` for none).
 
 The shim mirrors all of it as `ItemTooltipData` and friends, so `item.GetTooltipData()` hands you objects.
