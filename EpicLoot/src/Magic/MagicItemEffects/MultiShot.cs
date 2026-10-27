@@ -284,17 +284,26 @@ namespace EpicLoot.MagicItemEffects
         [HarmonyPatch(nameof(Attack.UseAmmo))]
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
+            // m_character.GetInventory().RemoveItem(ammoItem, 1), matched by both calls: the consumable-ammo
+            // ConsumeItem call just before it has the same shape apart from its last argument.
             CodeMatcher codeMatcher = new CodeMatcher(instructions);
             codeMatcher.MatchStartForward(
-                    new CodeMatch(OpCodes.Callvirt),
+                    new CodeMatch(OpCodes.Callvirt, AccessTools.DeclaredMethod(typeof(Humanoid), nameof(Humanoid.GetInventory))),
                     new CodeMatch(OpCodes.Ldarg_1),
                     new CodeMatch(OpCodes.Ldind_Ref),
                     new CodeMatch(OpCodes.Ldc_I4_1),
-                    new CodeMatch(OpCodes.Callvirt))
-                .ThrowIfNotMatch("Unable to ammo removal for tripleshot.")
-                .Advance(4)
-                .RemoveInstructions(1)
-                .InsertAndAdvance(Transpilers.EmitDelegate(CustomRemoveItem));
+                    new CodeMatch(OpCodes.Callvirt, AccessTools.DeclaredMethod(typeof(Inventory), nameof(Inventory.RemoveItem),
+                        new[] { typeof(ItemDrop.ItemData), typeof(int) })));
+            if (codeMatcher.IsInvalid)
+            {
+                EpicLoot.LogWarningForce("Multishot: could not find where Attack.UseAmmo removes the ammo, so extra " +
+                    "shots will not use extra ammo. Another mod may have changed that method.");
+                return codeMatcher.Instructions();
+            }
+
+            // Same stack in and out as the instance call it replaces, and set in place so its labels stay.
+            codeMatcher.Advance(4)
+                .SetAndAdvance(OpCodes.Call, AccessTools.DeclaredMethod(typeof(UseAmmoTranspilerPatch), nameof(CustomRemoveItem)));
             return codeMatcher.Instructions();
         }
 

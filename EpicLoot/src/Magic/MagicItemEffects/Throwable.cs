@@ -1,5 +1,4 @@
 ﻿using HarmonyLib;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -119,7 +118,7 @@ namespace EpicLoot.MagicItemEffects
             yield return AccessTools.Method(typeof(Projectile), nameof(Projectile.DoAOE));
         }
 
-        private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase original)
         {
             ConstructorInfo constructor = AccessTools.Constructor(typeof(HitData));
             MethodInfo restoreToolTier = AccessTools.Method(typeof(Throwable_Projectile_HitData_Patch), nameof(RestoreToolTier));
@@ -137,9 +136,11 @@ namespace EpicLoot.MagicItemEffects
                 }
             }
 
+            // With no match nothing was inserted, so result is the method unchanged.
             if (matches == 0)
             {
-                throw new InvalidOperationException("Throwable: projectile impact HitData creation was not found.");
+                EpicLoot.LogWarningForce($"Throwable: could not find where Projectile.{original?.Name} creates its hit, " +
+                    "so thrown weapons there will not keep their tool tier. Another mod may have changed that method.");
             }
 
             return result;

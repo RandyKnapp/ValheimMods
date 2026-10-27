@@ -587,6 +587,10 @@ namespace EpicLoot.ShardStones {
                             $"(Assets/EpicLoot/Sprites/Shardstones/{shardColor}.png); it will have no icon.");
                     }
                     pid.m_itemData.m_shared.m_icons = new Sprite[] { icon };
+                    // _ShardStone is a variant of CraftingMaterialBase and still carries its m_variant of
+                    // 1, which with one icon makes vanilla's ItemDrop.EnsureValid log an error on every
+                    // world spawn of a shard.
+                    pid.m_itemData.m_variant = 0;
                     // The ammoType is this shard's identity: color and rarity both live here, in shared
                     // data that survives Instantiate. Everything downstream reads it rather than the
                     // prefab name or any baked custom data.

@@ -1,3 +1,8 @@
+**0.15.3**
+* A clash with another mod now only switches off the Epic Loot feature involved, with a warning in the log, instead of stopping the whole mod from loading.
+* Fixes an error logged whenever a shardstone dropped on the ground.
+* Epic Loot loads faster at startup
+
 **0.15.2**
 * Other mods can now read Epic Loot's tooltip information, change it, or draw their own item tooltip instead.
     * The log names any mod that takes over drawing the item tooltip.

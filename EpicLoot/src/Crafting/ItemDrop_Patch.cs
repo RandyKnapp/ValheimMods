@@ -94,6 +94,12 @@ namespace EpicLoot.Crafting
                     var variant = EpicLoot.GetRarityIconIndex(rarity);
                     item.m_variant = variant;
                 }
+                // Shards rolled into chests or rebuilt from sockets before the prefabs were fixed were
+                // saved with the template's variant 1; they have a single icon.
+                else if (item.IsShardStone())
+                {
+                    item.m_variant = 0;
+                }
             }
         }
     }

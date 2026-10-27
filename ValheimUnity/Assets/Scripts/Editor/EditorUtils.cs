@@ -22,7 +22,9 @@ public class EditorUtils
         // for whatever bundles are left in the folder.
         BuildRecord.Delete(stagePath);
 
-        AssetBundleManifest manifest = BuildPipeline.BuildAssetBundles(stagePath, BuildAssetBundleOptions.None, BuildTarget.StandaloneWindows);
+        // Chunk-based (LZ4) rather than the default LZMA. An LZMA bundle is one compressed block, so Unity
+        // unpacks all of it when the mod opens the bundle; LZ4 chunks are unpacked only as their assets load.
+        AssetBundleManifest manifest = BuildPipeline.BuildAssetBundles(stagePath, BuildAssetBundleOptions.ChunkBasedCompression, BuildTarget.StandaloneWindows);
         if (manifest == null)
         {
             Debug.LogError("The asset bundle build failed, so no build record was written.");

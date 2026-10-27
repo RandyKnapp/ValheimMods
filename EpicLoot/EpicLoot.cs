@@ -122,7 +122,8 @@ public sealed class EpicLoot : BaseUnityPlugin {
         InitializeAbilities();
         AddLocalizations();
         LoadAssets();
-        _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), PluginId);
+        _harmony = new Harmony(PluginId);
+        PatchAllClasses(_harmony);
         // Registers with the shared Mod Config launcher (main menu + pause menu) and, on a user's first
         // run, queues the setup wizard on the shared startup popup queue, which opens it once the main
         // menu is ready.
@@ -270,6 +271,24 @@ public sealed class EpicLoot : BaseUnityPlugin {
         }
         // Load the localization patches and additional languages
         ELConfig.StartupProcessModifiedLocalizations();
+    }
+
+    /// <summary>
+    /// Applies every patch class in this assembly, in the order Harmony's PatchAll uses, but each on its own: a
+    /// class that fails (another mod reshaped its target, or a game update moved it) costs that one feature.
+    /// A single PatchAll stopped at the first failure, so every class after it and the rest of Awake never ran.
+    /// Transpilers must still never throw: HarmonyX keeps a failed transpiler registered on its method, so it
+    /// would also break every patch another mod applies to that method later.
+    /// </summary>
+    private static void PatchAllClasses(Harmony harmony) {
+        foreach (Type type in AccessTools.GetTypesFromAssembly(Assembly.GetExecutingAssembly())) {
+            try {
+                harmony.CreateClassProcessor(type).Patch();
+            } catch (Exception e) {
+                LogErrorForce($"Could not apply the patches in {type.FullName}, so that feature will not work: " +
+                    e.GetBaseException().Message);
+            }
+        }
     }
 
     private static void InitializeAbilities() {
@@ -943,7 +962,7 @@ public sealed class EpicLoot : BaseUnityPlugin {
     }
 
     public static AssetBundle LoadAssetBundle(string filename) {
-        return AssetBundleLoader.LoadFromResources(filename, typeof(EpicLoot).Assembly);
+        return AssetBundleLoader.LoadFromResourcesInMemory(filename, typeof(EpicLoot).Assembly);
     }
 
     /// <summary>

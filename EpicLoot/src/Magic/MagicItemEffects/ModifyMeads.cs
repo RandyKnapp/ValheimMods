@@ -27,9 +27,15 @@ namespace EpicLoot.Magic.MagicItemEffects
                     // appended a `short variant` parameter, so it is deliberately not matched here.
                     new CodeMatch(OpCodes.Ldc_I4_1),
                     new CodeMatch(OpCodes.Ldc_I4_0),
-                    new CodeMatch(OpCodes.Ldc_R4))
-                .ThrowIfNotMatch("Unable to patch Player.ConsumeItem for Mead Effects.")
-                .Advance(1)
+                    new CodeMatch(OpCodes.Ldc_R4));
+            if (codeMatcher.IsInvalid)
+            {
+                EpicLoot.LogWarningForce("Mead effects: could not find where Player.ConsumeItem adds a mead's status " +
+                    "effect, so Instant Mead and Meads Cooldown will not work. Another mod may have changed that method.");
+                return codeMatcher.Instructions();
+            }
+
+            codeMatcher.Advance(1)
                 .InsertAndAdvance(Transpilers.EmitDelegate(ModifyMead));
             return codeMatcher.Instructions();
         }
