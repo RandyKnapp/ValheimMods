@@ -3,7 +3,6 @@ using EpicLoot.Biomes;
 using EpicLoot.Compatibility;
 using EpicLoot.Config;
 using EpicLoot.Crafting;
-using EpicLoot.Data;
 using EpicLoot.GatedItemType;
 using EpicLoot.LegendarySystem;
 using EpicLoot.ShardStones;
@@ -443,9 +442,7 @@ namespace EpicLoot.CraftingV2
                 itemData = itemDrop.m_itemData.Clone();
                 itemData.m_dropPrefab = prefab;
                 itemData.m_stack = amount;
-                // Add MagicItemComponent or products will not stack until reloaded.
-                MagicItemComponent magicItem = itemData.Data().GetOrCreate<MagicItemComponent>();
-                itemData.SaveMagicItem(magicItem.MagicItem);
+                // The clone carries the prefab's magic data, so products stack with what the player holds.
                 productSet.Add(itemID, itemData);
             }
         }
@@ -731,8 +728,7 @@ namespace EpicLoot.CraftingV2
             float luckFactor = player.GetTotalActiveMagicEffectValue(MagicEffectType.Luck, 0.01f);
             MagicItem magicItem = LootRoller.RollMagicItem(rarity, item, luckFactor);
 
-            MagicItemComponent magicItemComponent = item.Data().GetOrCreate<MagicItemComponent>();
-            API.WithChangeReason(API.ChangeReason.Enchant, () => magicItemComponent.SetMagicItem(magicItem));
+            API.WithChangeReason(API.ChangeReason.Enchant, () => item.SaveMagicItem(magicItem));
 
             EquipmentEffectCache.Reset(player);
 
@@ -742,7 +738,7 @@ namespace EpicLoot.CraftingV2
 
             CraftSuccessDialog successDialog = CraftSuccessDialog.CreateForCurrentUI(EnchantingTableUI.instance.transform);
 
-            successDialog.Show(item.Extended());
+            successDialog.Show(item);
 
             RectTransform rt = (RectTransform)successDialog.transform;
             rt.pivot = new Vector2(0.5f, 0.5f);
@@ -1238,7 +1234,7 @@ namespace EpicLoot.CraftingV2
             // kept it, so a rune could replace Throwable with Recall); GetAvailableEffects only offers it
             // back when it has a value to re-roll.
             List<MagicItemEffectDefinition> availableEffects = MagicItemEffectDefinitions.GetAvailableEffects(
-                item.Extended(), item.GetMagicItem(), selectedEnchantIndex, checkruneroll: true);
+                item, item.GetMagicItem(), selectedEnchantIndex, checkruneroll: true);
             List<string> availableEffectNames = availableEffects.Select(x => x.Type).ToList();
 
             IEnumerable<ItemDrop.ItemData> selectedItems = InventoryManagement.Instance.GetAllItems()
@@ -1436,8 +1432,7 @@ namespace EpicLoot.CraftingV2
                     : null
             };
 
-            MagicItemComponent magicItemComponent = rune.Data().GetOrCreate<MagicItemComponent>();
-            API.WithChangeReason(API.ChangeReason.Rune, () => magicItemComponent.SetMagicItem(setRune));
+            API.WithChangeReason(API.ChangeReason.Rune, () => rune.SaveMagicItem(setRune));
             return rune;
         }
 
@@ -1612,8 +1607,6 @@ namespace EpicLoot.CraftingV2
                 return null;
             }
 
-            MagicItemComponent magicItemComponent = newItem.Data().GetOrCreate<MagicItemComponent>();
-
             // We might need to rethink how power modifier is checked and applied here. "Has a value" is the
             // definition's call, not the number's: a value test (> 1) skipped real rolls of 1 or less.
             if (!float.IsNaN(powerModifier) && powerModifier < 999f && powerModifier > 0 &&
@@ -1647,7 +1640,7 @@ namespace EpicLoot.CraftingV2
                 Rarity = selectedItem.GetRarity(),
                 Effects = new List<MagicItemEffect> { runeEffect }
             };
-            API.WithChangeReason(API.ChangeReason.Rune, () => magicItemComponent.SetMagicItem(enchantmentsToRune));
+            API.WithChangeReason(API.ChangeReason.Rune, () => newItem.SaveMagicItem(enchantmentsToRune));
 
             return newItem;
         }
@@ -1725,7 +1718,7 @@ namespace EpicLoot.CraftingV2
             // since dropping the component would destroy the socket capacity and everything socketed.
             if (magicItem.Effects.Count == 0 && magicItem.SocketCount <= 0 && magicItem.Sockets.Count == 0)
             {
-                item.Data().Remove<MagicItemComponent>();
+                item.RemoveMagicItem();
                 API.RaiseMagicItemChanged(item, API.ChangeReason.Rune);
                 InventoryManagement.Instance.CommitItemEdit(item);
                 return;
@@ -1831,7 +1824,7 @@ namespace EpicLoot.CraftingV2
         {
             CraftSuccessDialog successDialog = CraftSuccessDialog.CreateForCurrentUI(EnchantingTableUI.instance.transform);
 
-            successDialog.Show(item.Extended());
+            successDialog.Show(item);
 
             RectTransform rt = (RectTransform)successDialog.transform;
             rt.pivot = new Vector2(0.5f, 0.5f);
@@ -1897,7 +1890,7 @@ namespace EpicLoot.CraftingV2
             // The replaced effect is left out of the checks even when it has no value; GetAvailableEffects
             // only offers it back when it has a value to re-roll.
             List<MagicItemEffectDefinition> availableEffects = MagicItemEffectDefinitions.GetAvailableEffects(
-                item.Extended(), item.GetMagicItem(), augmentindex);
+                item, item.GetMagicItem(), augmentindex);
 
             float totalSelectionWeight = availableEffects.Sum(x => x.SelectionWeight);
 
@@ -2107,7 +2100,7 @@ namespace EpicLoot.CraftingV2
                 // it, as enchanting does; keeping the amount would leave the item above full.
                 float? previousDurability = MagicItemEffects.ModifyDurability.GetDurabilityFraction(item);
 
-                item.Data().Remove<MagicItemComponent>();
+                item.RemoveMagicItem();
 
                 MagicItemEffects.ModifyDurability.SetDurabilityFraction(item, previousDurability);
 

@@ -5,7 +5,6 @@ using EpicLoot.Biomes;
 using EpicLoot.Config;
 using EpicLoot.Crafting;
 using EpicLoot.CraftingV2;
-using EpicLoot.Data;
 using EpicLoot.GatedItemType;
 using EpicLoot.General;
 using EpicLoot.Magic;
@@ -710,9 +709,6 @@ public sealed class EpicLoot : BaseUnityPlugin {
                         // Set icons for crafting materials.
                         itemDrop.m_itemData.m_variant = GetRarityIconIndex(rarity);
                     }
-
-                    // Add MagicItemComponent or products will not stack until reloaded.
-                    itemDrop.m_itemData.CreateMagicItem();
                 }
 
                 CustomItem custom = new CustomItem(prefab, false);
@@ -809,13 +805,11 @@ public sealed class EpicLoot : BaseUnityPlugin {
             string prefabName = $"{biomeName}_{rarity}_Unidentified";
             prefab.name = prefabName;
             ItemDrop pid = prefab.GetComponent<ItemDrop>();
-            var magicItemComponent = pid.m_itemData.Data().GetOrCreate<MagicItemComponent>();
             pid.m_itemData.m_dropPrefab = prefab;
-            magicItemComponent.SetMagicItem(new MagicItem {
+            pid.m_itemData.SaveMagicItem(new MagicItem {
                 Rarity = rarity,
                 IsUnidentified = true,
             });
-            magicItemComponent.Save();
             pid.Save();
 
             ItemConfig unidentifiedIC = new ItemConfig() {

@@ -1,18 +1,30 @@
-﻿using EpicLoot.Data;
-using EpicLoot.MagicItemEffects;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using EpicLoot.MagicItemEffects;
+using Newtonsoft.Json;
 using UnityEngine;
 
 namespace EpicLoot;
 
-public class MagicItemComponent : CustomItemData
+// One item's magic: the MagicItem parsed from the item's m_customData entry (see MagicItemData), and the one
+// place it is written back.
+public sealed class MagicItemComponent
 {
-    public const string TypeID = "rkel";
+    public ItemDrop.ItemData Item { get; }
+
     public MagicItem MagicItem;
 
-    protected override bool AllowStackingIdenticalValues { get; set; } = true;
+    // The m_customData string MagicItem was parsed from. MagicItemData.Get compares it by reference with the
+    // entry now under the key, which is how a replaced entry is noticed.
+    internal string Raw;
+
+    internal MagicItemComponent(ItemDrop.ItemData item)
+    {
+        Item = item;
+    }
+
+    // The stored JSON, or "" when there is none.
+    public string Value => MagicItemData.RawOf(Item) ?? "";
 
     public void SetMagicItem(MagicItem magicItem)
     {
@@ -22,8 +34,8 @@ public class MagicItemComponent : CustomItemData
         }
 
         MagicItem = magicItem;
-        Value = Serialize();
-        Save();
+        Raw = Serialize();
+        MagicItemData.Store(Item, Raw);
 
         // Every magic-data write funnels through here (enchant, augment, socket, rune, temper,
         // transfer, loot roll), so this is the one place Indestructible needs to be re-derived and the
@@ -59,97 +71,85 @@ public class MagicItemComponent : CustomItemData
         return JsonConvert.SerializeObject(MagicItem, Formatting.None);
     }
 
-    public void Deserialize()
+    // Re-reads the item's entry. MagicItemData.Get already follows a replaced entry on its own; this is for a
+    // caller that has just written the entry itself.
+    public void Load()
     {
-        try
-        {
-            if (string.IsNullOrEmpty(Value))
-            {
-                return;
-            }
-
-            MagicItem = JsonConvert.DeserializeObject<MagicItem>(Value);
-        }
-        catch (Exception)
-        {
-            EpicLoot.LogError($"[{nameof(MagicItemComponent)}] Could not deserialize MagicItem json data! ({Item?.m_shared?.m_name})"); 
-            throw;
-        }
+        Reload(MagicItemData.RawOf(Item));
     }
 
-    public CustomItemData Clone()
+    // Parses `raw` (null for no magic) and brings the item in line with it. A correction to the stored data
+    // is written back; otherwise equipment is parsed once and never re-serialized.
+    internal void Reload(string raw)
     {
-        return MemberwiseClone() as CustomItemData;
-    }
+        Raw = raw;
+        MagicItem = Parse(raw);
 
-    public override void FirstLoad()
-    {
-        // A bare ItemData with no shared data (see ItemDataExtensions.InitializeCustomData) has nothing to
-        // seed. ItemInfo.Add does not catch, so a throw here escapes into whichever vanilla load touched it.
-        if (Item?.m_shared == null)
+        if (FixupValuelessEffects())
         {
+            SetMagicItemQuietly(MagicItem);
             return;
         }
 
-        if (Item.m_shared.m_name == "$item_helmet_dverger")
+        // A stackable item's magic is compared as text when stacks merge (MagicItemData.StacksWith), so text
+        // an older build's serializer wrote is brought up to date here, or a saved stack would never again
+        // merge with a fresh drop. Stackables carry a rarity and at most an effect, so this is cheap;
+        // equipment never stacks and keeps its text as saved.
+        if (MagicItem != null && Item.m_shared != null && Item.m_shared.m_maxStackSize > 1)
         {
-            MagicItem magicItem = new MagicItem();
-            magicItem.Rarity = ItemRarity.Rare;
-            magicItem.Effects.Add(new MagicItemEffect(MagicEffectType.DvergerCirclet));
-            magicItem.TypeNameOverride = "$mod_epicloot_circlet";
-
-            MagicItem = magicItem;
-        }
-        else if (Item.m_shared.m_name == "$item_beltstrength")
-        {
-            MagicItem magicItem = new MagicItem();
-            magicItem.Rarity = ItemRarity.Rare;
-            magicItem.Effects.Add(new MagicItemEffect(MagicEffectType.Megingjord));
-            magicItem.TypeNameOverride = "$mod_epicloot_belt";
-
-            MagicItem = magicItem;
-        }
-        else if (Item.m_shared.m_name == "$item_wishbone")
-        {
-            MagicItem magicItem = new MagicItem();
-            magicItem.Rarity = ItemRarity.Epic;
-            magicItem.Effects.Add(new MagicItemEffect(MagicEffectType.Wishbone));
-            magicItem.TypeNameOverride = "$mod_epicloot_remains";
-
-            MagicItem = magicItem;
+            string current = Serialize();
+            if (!string.Equals(current, raw, StringComparison.Ordinal))
+            {
+                Raw = current;
+                MagicItemData.Store(Item, current);
+            }
         }
 
-        FixupValuelessEffects();
-        SetMagicItemQuietly();
-    }
-
-    public override void Load()
-    {
-        if (!string.IsNullOrEmpty(Value))
-        {
-            Deserialize();
-        }
-
-        FixupValuelessEffects();
-
-        SetMagicItemQuietly();
-
-        // SetMagicItem bails out on a null MagicItem, so sync here too -- a component with no magic
-        // item still needs the flag reverted if this instance was previously made indestructible.
+        // A component with no magic item still needs the flag reverted if this instance was previously
+        // made indestructible.
         Indestructible.Sync(Item);
     }
 
+    private MagicItem Parse(string raw)
+    {
+        if (raw == null)
+        {
+            return null;
+        }
+
+        try
+        {
+            return JsonConvert.DeserializeObject<MagicItem>(raw);
+        }
+        catch (Exception e)
+        {
+            // Corrupt data must not escape into the vanilla caller that happened to touch this item first
+            // (damage patches, tooltips, the inventory grid all reach here). The item reads as mundane.
+            EpicLoot.LogError($"[{nameof(MagicItemComponent)}] Could not deserialize MagicItem json data! " +
+                $"({Item?.m_shared?.m_name}): {e.Message}");
+            return null;
+        }
+    }
+
+    // Called by MagicItemData.Remove before the entry is dropped, while HasMagicEffect would still report
+    // the effect -- Sync would refuse to revert, so force it.
+    internal void Unload()
+    {
+        Indestructible.Revert(Item);
+    }
+
     /// <summary>
-    /// Normalizing writes done while an item is loading are not changes -- every item entering the world
-    /// passes through here, so raising the API change event would flood listeners at world load.
+    /// A write that is not a change: data normalized while an item loads, or a vanilla item receiving the
+    /// magic it is born with. Every item entering the world may pass through here, so the API change event
+    /// is not raised, or listeners would be flooded at world load.
     /// </summary>
-    private void SetMagicItemQuietly()
+    internal void SetMagicItemQuietly(MagicItem magicItem)
     {
         bool previous = API.SuppressChangeEvents;
         API.SuppressChangeEvents = true;
         try
         {
-            SetMagicItem(MagicItem);
+            SetMagicItem(magicItem);
         }
         finally
         {
@@ -157,29 +157,56 @@ public class MagicItemComponent : CustomItemData
         }
     }
 
-    // ItemInfo.Remove<T> calls this after clearing m_customData but before dropping the component,
-    // so HasMagicEffect would still report the effect -- Sync would refuse to revert. Force it.
-    public override void Unload()
+    // A few vanilla items are magic by nature. An instance with no magic of its own gets its preset when it
+    // is initialized (ItemDataExtensions.InitializeCustomData). Null for every other item.
+    public static MagicItem VanillaMagicFor(string sharedName)
     {
-        Indestructible.Revert(Item);
+        switch (sharedName)
+        {
+            case "$item_helmet_dverger":
+                return new MagicItem
+                {
+                    Rarity = ItemRarity.Rare,
+                    Effects = { new MagicItemEffect(MagicEffectType.DvergerCirclet) },
+                    TypeNameOverride = "$mod_epicloot_circlet"
+                };
+            case "$item_beltstrength":
+                return new MagicItem
+                {
+                    Rarity = ItemRarity.Rare,
+                    Effects = { new MagicItemEffect(MagicEffectType.Megingjord) },
+                    TypeNameOverride = "$mod_epicloot_belt"
+                };
+            case "$item_wishbone":
+                return new MagicItem
+                {
+                    Rarity = ItemRarity.Epic,
+                    Effects = { new MagicItemEffect(MagicEffectType.Wishbone) },
+                    TypeNameOverride = "$mod_epicloot_remains"
+                };
+            default:
+                return null;
+        }
     }
 
     // A binary effect (Indestructible, Weightless, Throwable...) must sit at the default value of 1:
     // older saves and hand-edited data can carry a stale number that would otherwise show up in the
     // tooltip. "Binary" is deliberately judged across every rarity rather than at this item's own
-    // rarity -- Load() writes the result straight back to m_customData, so a per-rarity test would
+    // rarity -- the result is written straight back to m_customData, so a per-rarity test would
     // permanently flatten a legitimately rolled value whenever the loaded definitions simply lack a
     // block for that rarity. That happens for real: a dedicated server replaces the client's
     // definitions wholesale on connect (ELConfig.ApplyClientConfig), so a server config that predates
     // a newly added rarity would otherwise reset every effect on every item of that rarity to 1 --
     // once, silently, and irreversibly. Report the gap instead, and leave the value alone.
-    private void FixupValuelessEffects()
+    // Returns whether anything was corrected.
+    private bool FixupValuelessEffects()
     {
         if (MagicItem == null)
         {
-            return;
+            return false;
         }
 
+        bool changed = false;
         foreach (MagicItemEffect effect in MagicItem.Effects)
         {
             if (MagicItemEffectDefinitions.IsValuelessEffect(effect.EffectType))
@@ -188,6 +215,7 @@ public class MagicItemComponent : CustomItemData
                 {
                     EpicLoot.Log($"Fixing up effect on {MagicItem.DisplayName}: effect={effect.EffectType}");
                     effect.EffectValue = 1;
+                    changed = true;
                 }
 
                 continue;
@@ -195,10 +223,12 @@ public class MagicItemComponent : CustomItemData
 
             WarnOnceAboutMissingRarityValues(effect.EffectType, MagicItem.Rarity);
         }
+
+        return changed;
     }
 
     // Types already reported by WarnOnceAboutMissingRarityValues. Every item entering the world passes
-    // through Load(), so an unguarded warning would repeat per item per load; the interesting fact is
+    // through Reload(), so an unguarded warning would repeat per item per load; the interesting fact is
     // which effect/rarity pairs have no values, and that is a property of the config, not of the item.
     private static readonly HashSet<string> ReportedRarityGaps = new HashSet<string>();
 
@@ -223,4 +253,3 @@ public class MagicItemComponent : CustomItemData
             "are on a dedicated server, the server's copy of magiceffects.json is the one in use.");
     }
 }
-

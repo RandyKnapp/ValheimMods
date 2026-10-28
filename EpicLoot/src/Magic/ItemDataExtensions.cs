@@ -1,6 +1,5 @@
 ﻿using BepInEx;
 using EpicLoot.Crafting;
-using EpicLoot.Data;
 using EpicLoot.LegendarySystem;
 using EpicLoot.MagicItemEffects;
 using EpicLoot.ShardStones;
@@ -17,8 +16,7 @@ public static class ItemDataExtensions
 {
     public static bool IsMagic(this ItemDrop.ItemData itemData)
     {
-        MagicItemComponent magicData = itemData.Data().Get<MagicItemComponent>();
-        return magicData != null && magicData.MagicItem != null;
+        return MagicItemData.Get(itemData) != null;
     }
 
     public static bool IsShardStone(this ItemDrop.ItemData itemData) {
@@ -29,13 +27,7 @@ public static class ItemDataExtensions
 
     public static bool IsUnidentified(this ItemDrop.ItemData itemData)
     {
-        MagicItemComponent mic = itemData.Data().Get<MagicItemComponent>();
-        if (mic == null || mic.MagicItem == null)
-        {
-            return false;
-        }
-
-        return mic.MagicItem.IsUnidentified;
+        return itemData.GetMagicItem()?.IsUnidentified ?? false;
     }
 
     public static bool IsMagic(this ItemDrop.ItemData itemData, out MagicItem magicItem)
@@ -109,31 +101,21 @@ public static class ItemDataExtensions
         return itemData.GetMagicItem()?.HasEffect(effectType, includeSocketed: includeSocketed) ?? false;
     }
 
-    public static void CreateMagicItem(this ItemDrop.ItemData itemData)
-    {
-        MagicItemComponent magicItem = itemData.Data().GetOrCreate<MagicItemComponent>();
-        itemData.SaveMagicItem(magicItem.MagicItem);
-    }
-
+    // The one write path for an item's magic: see MagicItemComponent.SetMagicItem for what a write entails.
     public static void SaveMagicItem(this ItemDrop.ItemData itemData, MagicItem magicItem)
     {
-        itemData.Data().GetOrCreate<MagicItemComponent>().SetMagicItem(magicItem);
+        MagicItemData.GetOrCreate(itemData).SetMagicItem(magicItem);
     }
 
-    public static bool IsExtended(this ItemDrop.ItemData itemData)
+    // Drops the item's magic data, leaving it mundane. Returns whether it had any.
+    public static bool RemoveMagicItem(this ItemDrop.ItemData itemData)
     {
-        return itemData.Data().Get<MagicItemComponent>() != null;
-    }
-
-    public static ItemDrop.ItemData Extended(this ItemDrop.ItemData itemData)
-    {
-        MagicItemComponent value = itemData.Data().GetOrCreate<MagicItemComponent>();
-        return value.Item;
+        return MagicItemData.Remove(itemData);
     }
 
     public static MagicItem GetMagicItem(this ItemDrop.ItemData itemData)
     {
-        return itemData.Data().Get<MagicItemComponent>()?.MagicItem;
+        return MagicItemData.Get(itemData)?.MagicItem;
     }
 
     public static string GetDisplayName(this ItemDrop.ItemData itemData)
@@ -415,14 +397,15 @@ public static class ItemDataExtensions
     }
 
     /// <summary>
-    /// Copies the MagicItemComponent Magic Item from the drop prefab to set the magic data on this instance.
+    /// Gives a fresh instance the magic its prefab carries, and a vanilla item the magic it is born with.
+    /// Runs on ItemDrop.Awake and on every Inventory and Container load.
     /// </summary>
     public static void InitializeCustomData(this ItemDrop.ItemData itemData)
     {
         // Opening a pre-1.0 world runs ZDOMan.ConvertContainers, which loads and re-saves every chest through
         // a temporary Inventory. Its items are bare ItemData (AddTempItem sets m_dropPrefab, never m_shared),
-        // and the Inventory.Load postfix still sees them: MagicItemComponent.FirstLoad reading m_shared.m_name
-        // threw out of ZNet.LoadOldWorld and aborted the world load. Skipping loses nothing -- vanilla writes
+        // and the Inventory.Load postfix still sees them: reading m_shared.m_name here threw out of
+        // ZNet.LoadOldWorld and aborted the world load. Skipping loses nothing -- vanilla writes
         // m_customData back verbatim, and the item is initialized for real when the chest is next loaded.
         if (itemData?.m_shared == null)
         {
@@ -456,15 +439,26 @@ public static class ItemDataExtensions
             return;
         }
 
-        if (EpicLoot.CanBeMagicItem(itemDropPrefab.m_itemData) && !itemData.IsExtended())
-        {
-            MagicItemComponent instanceData = itemData.Data().Add<MagicItemComponent>();
-            MagicItemComponent prefabData = itemDropPrefab.m_itemData.Data().Get<MagicItemComponent>();
+        // A prefab's own magic (a shardstone's rarity, an unidentified item, a Brokkr's Gift, a crafting
+        // material) reaches every instance made from it, so instances stack with each other and with the
+        // ones a save already holds.
+        MagicItemData.CopyFromPrefab(itemData, itemDropPrefab.m_itemData);
 
-            if (instanceData != null && prefabData != null)
-            {
-                instanceData.SetMagicItem(prefabData.MagicItem);
-            }
+        // A few vanilla items are magic by nature (the Dverger circlet, Megingjord, the Wishbone): an
+        // instance with no magic of its own gets its preset, quietly, as on every load. Not when the item
+        // is kept from being magic by config, as before.
+        if (!MagicItemData.HasMagicData(itemData) && EpicLoot.CanBeMagicItem(itemDropPrefab.m_itemData) &&
+            MagicItemComponent.VanillaMagicFor(itemData.m_shared.m_name) is MagicItem preset)
+        {
+            MagicItemData.GetOrCreate(itemData).SetMagicItemQuietly(preset);
+        }
+
+        // A stackable item's magic is compared as text when stacks merge, so a saved stack is read once here,
+        // which brings text from an older build's serializer up to date (MagicItemComponent.Reload) before
+        // a fresh drop is held against it.
+        if (itemData.m_shared.m_maxStackSize > 1 && MagicItemData.HasMagicData(itemData))
+        {
+            MagicItemData.Get(itemData);
         }
     }
 }

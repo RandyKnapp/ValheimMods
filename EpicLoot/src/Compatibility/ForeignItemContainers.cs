@@ -97,9 +97,9 @@ public static class ForeignItemContainers
         return false;
     }
 
-    // The custom data is read directly rather than through ItemExtensions.Data(item, mod) /
-    // ForeignItemInfo on purpose: that bridge only enumerates data the owning mod has already
-    // materialised, so it can report nothing depending on load order. The raw keys are always there.
+    // The custom data is read directly: the keys another mod's ItemDataManager copy writes are always
+    // there, whatever the load order, while asking that mod's own layer for its data can report nothing
+    // until it has materialised the entry.
     private static bool IsContainerKey(string customDataKey)
     {
         if (ContainerKeys.TryGetValue(customDataKey, out bool known))

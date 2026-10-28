@@ -232,7 +232,7 @@ namespace EpicLoot.Crafting
             // The replaced effect is left out of the checks even when it has no value; GetAvailableEffects
             // only offers it back when it has a value to re-roll.
             return MagicItemEffectDefinitions.GetAvailableEffects(
-                item.Extended(), item.GetMagicItem(), recipe.EffectIndex, checkaugment: true);
+                item, item.GetMagicItem(), recipe.EffectIndex, checkaugment: true);
         }
 
         public static string GetAugmentSelectorText(MagicItem magicItem, int i,

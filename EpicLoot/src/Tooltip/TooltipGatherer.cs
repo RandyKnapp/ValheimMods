@@ -109,7 +109,7 @@ internal partial class TooltipGatherer
         data.Rarity = (int)magicItem.Rarity;
         data.RarityName = EpicLoot.GetRarityDisplayName(magicItem.Rarity);
         data.RarityColor = magicItem.GetColorString();
-        data.ItemTypeName = magicItem.GetItemTypeName(item.Extended());
+        data.ItemTypeName = magicItem.GetItemTypeName(item);
 
         // A set rune carries a SetID too, but it is not a piece of the set.
         if (item.IsSetRune())

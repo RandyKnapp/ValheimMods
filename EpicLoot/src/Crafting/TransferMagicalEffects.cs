@@ -20,7 +20,7 @@ public static class TransferMagicalEffects
 
         // Never clobber a crafted item that already carries magic. Fresh crafts are never pre-enchanted,
         // so this only skips items that already have enchants — e.g. upgrading a magic item, whose data
-        // ItemDataManager (CopyCustomDataFromUpgradedItem) re-applies during AddItem, before this postfix.
+        // MagicItemData carries over inside AddItem, before this postfix.
         if (CraftedItem.GetMagicItem() != null)
             return;
 
