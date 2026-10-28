@@ -1,3 +1,6 @@
+**0.15.4**
+* Shard slots now open in their own small panel beside the inventory, so a chest can stay open while you socket, and the panel's position is configurable.
+
 **0.15.3**
 * A clash with another mod now only switches off the Epic Loot feature involved, with a warning in the log, instead of stopping the whole mod from loading.
 * Fixes an error logged whenever a shardstone dropped on the ground.

@@ -591,6 +591,12 @@ namespace EpicLoot.ShardStones {
             var item = baseData.m_itemData.Clone();
             item.m_dropPrefab = prefab;
             item.m_stack = 1;
+            // A prefab's data carries world level 0, and Inventory merges stacks only when the world level
+            // matches (ItemData.IsSameType), so on a New Game+ world a stone handed back from a socket would
+            // never join the player's stacks. Stamp the current level, as vanilla does on every drop it
+            // creates (CharacterDrop, DropTable) and LootRoller does on loot. The socket does not record the
+            // level the stone went in with, so this is the one level it can come back at.
+            item.m_worldLevel = Game.m_worldLevel;
 
             if (socketed.ShardType != ShardType.None) {
                 // Loose shards carry no baked effect (it is derived from the host when socketed), and the

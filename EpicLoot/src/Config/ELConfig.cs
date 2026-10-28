@@ -110,6 +110,7 @@ internal class ELConfig {
     public static ConfigEntry<KeyboardShortcut> SocketOverlayShortcut;
     public static ConfigEntry<SocketGamepadButton> SocketOverlayGamepadButton;
     public static ConfigEntry<SocketGamepadModifier> SocketOverlayGamepadModifier;
+    public static ConfigEntry<Vector2> ShardSlotPanelOffset;
     private const string SocketOverlayShortcutKey = "Socket Overlay Shortcut";
     /// <summary>The settings Socket Overlay Shortcut replaced, and their old defaults; see MigrateSocketOverlayShortcut.</summary>
     private const string LegacySocketOverlayKey = "Socket Overlay Key";
@@ -673,6 +674,11 @@ internal class ELConfig {
             SocketGamepadModifier.RTrigger,
             "The gamepad button held with the Socket Overlay Gamepad Button. None means the button alone, " +
             "with neither trigger held.");
+        ShardSlotPanelOffset = BindClient(SectionSockets, "Shard Slot Panel Offset", new Vector2(10f, -40f),
+            "Where the shard slot panel sits: the distance from the bottom-right corner of the inventory panel " +
+            "to the panel's own top-left corner, in interface units, x to the right and y downwards (negative). " +
+            "The default puts it beside the chest panel, below where Equipment and Quick Slots places its " +
+            "equipment panel. Takes effect while the panel is open.");
 
         // 4 - Enchanting Table
         EnchantingTableUpgradesActive = BindServer(SectionEnchanting, "Upgrades Active", true,

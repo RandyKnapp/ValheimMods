@@ -134,10 +134,10 @@ namespace EpicLoot.ShardStones {
 
             var chiselRarity = chisel.GetShardSlotChiselRarity();
 
-            // The socket overlay sizes its row from SocketCount when it opens, so raising the count while
-            // it is up would leave the grid a slot short. Closing it first reconciles the sockets safely.
-            if (SocketsUI.OpenEquipment == target) {
-                invGui.CloseContainer();
+            // The slot panel sizes its row from SocketCount when it opens, so raising the count while it
+            // is up would leave the grid a slot short. Closing it first reconciles the sockets safely.
+            if (ShardUI.IsOpenFor(target)) {
+                ShardUI.Close();
             }
 
             // Consumed whichever way the roll goes.
@@ -170,7 +170,7 @@ namespace EpicLoot.ShardStones {
         // DropItem -- intercepting downstream would unequip the player's weapon just to put it back. The
         // prefix also lets us clear the cursor before the confirmation opens.
         //
-        // SocketsUI has its own prefix on this method; the two cannot collide, because that one returns
+        // ShardUI has its own prefix on this method; the two cannot collide, because that one returns
         // true immediately whenever a drag is in flight, which is exactly the case claimed here.
         [HarmonyPatch(typeof(InventoryGui), "OnSelectedItem")]
         public static class InventoryGui_OnSelectedItem_Patch {

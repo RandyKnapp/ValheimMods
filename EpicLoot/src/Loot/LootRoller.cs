@@ -56,7 +56,7 @@ namespace EpicLoot
         // with no set of its own — a modded biome, or Heightmap.Biome.None.
         private const string DefaultShardStoneSet = "ShardStone_None";
 
-        // Ceiling on how many sockets a SocketCounts entry may ask for. SocketsUI builds its inventory
+        // Ceiling on how many sockets a SocketCounts entry may ask for. ShardUI builds its slot panel
         // row directly from the socket count, so a runaway config value would break the UI.
         public const int MaxSocketCount = 6;
 
@@ -1597,7 +1597,7 @@ namespace EpicLoot
                     continue;
                 }
 
-                // Nothing else bounds this value and SocketsUI sizes its inventory row straight from the
+                // Nothing else bounds this value and ShardUI sizes its slot row straight from the
                 // socket count, so an out-of-range entry is dropped instead of trusted. A negative weight
                 // goes too, since WeightedRandomCollection would quietly skew the whole table.
                 var count = (int)entry[0];
