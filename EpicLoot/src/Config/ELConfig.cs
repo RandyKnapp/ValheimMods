@@ -112,6 +112,7 @@ internal class ELConfig {
     public static ConfigEntry<SocketGamepadModifier> SocketOverlayGamepadModifier;
     public static ConfigEntry<Vector2> ShardSlotPanelOffset;
     private const string SocketOverlayShortcutKey = "Socket Overlay Shortcut";
+    private const string ShardSlotPanelOffsetKey = "Shard Slot Panel Offset";
     /// <summary>The settings Socket Overlay Shortcut replaced, and their old defaults; see MigrateSocketOverlayShortcut.</summary>
     private const string LegacySocketOverlayKey = "Socket Overlay Key";
     private const KeyCode LegacySocketOverlayKeyDefault = KeyCode.LeftControl;
@@ -658,12 +659,13 @@ internal class ELConfig {
             "still consumed and nothing is added.\n" +
             "Min = 0, Max = 100", new AcceptableValueRange<float>(0f, 100f));
         SocketOverlayShortcut = BindClient(SectionSockets, SocketOverlayShortcutKey,
-            new KeyboardShortcut(KeyCode.E, KeyCode.LeftControl),
+            new KeyboardShortcut(KeyCode.E),
             "The keys that open the shard slots of the inventory item under the cursor, written as the key " +
-            "that is pressed, then the keys held with it: 'E + LeftControl'. When that key is the one bound to " +
-            "Use, a press another mod has already taken is left to it. A shortcut that is only the Use key never " +
-            "opens the shard slots of an item another mod has turned into a container (a backpack, a quiver), " +
-            "because plain Use opens that container.");
+            "that is pressed, then any keys held with it: 'E', or 'E + LeftControl'. When that key is the one " +
+            "bound to Use, a press another mod has already taken is left to it. A shortcut that is only the Use " +
+            "key never opens the shard slots of an item another mod has turned into a container (a backpack, " +
+            "a quiver), because plain Use opens that container; the shard slot panel itself is separate from " +
+            "the chest panel, so it does not compete with such mods for the key.");
         SocketOverlayGamepadButton = BindClient(SectionSockets, "Socket Overlay Gamepad Button",
             SocketGamepadButton.ButtonX,
             "The gamepad button that opens the shard slots of the selected inventory item, pressed with the " +
@@ -674,7 +676,7 @@ internal class ELConfig {
             SocketGamepadModifier.RTrigger,
             "The gamepad button held with the Socket Overlay Gamepad Button. None means the button alone, " +
             "with neither trigger held.");
-        ShardSlotPanelOffset = BindClient(SectionSockets, "Shard Slot Panel Offset", new Vector2(10f, -40f),
+        ShardSlotPanelOffset = BindClient(SectionSockets, ShardSlotPanelOffsetKey, new Vector2(10f, -40f),
             "Where the shard slot panel sits: the distance from the bottom-right corner of the inventory panel " +
             "to the panel's own top-left corner, in interface units, x to the right and y downwards (negative). " +
             "The default puts it beside the chest panel, below where Equipment and Quick Slots places its " +
@@ -1132,8 +1134,23 @@ internal class ELConfig {
     /// the shortcut keeps it. The old lines are taken out of every section they were found under, so they are not
     /// written back and this runs once. Must run before <see cref="ApplyPreviousConfigValues"/>, which clears the
     /// snapshot this reads.
+    ///
+    /// The shortcut's own default then moved from "E + LeftControl" to "E" when the shard slot panel stopped using
+    /// the chest panel. BepInEx writes a default into the file, so a file from the builds in between holds the old
+    /// default as if the player had chosen it. Such a file predates "Shard Slot Panel Offset", which arrived with
+    /// the new default: a stored old default in a file without that entry is replaced, and the snapshot is told,
+    /// since <see cref="ApplyPreviousConfigValues"/> re-applies what the snapshot holds. A file with the entry
+    /// was written by a build with the new default, so "E + LeftControl" there is the player's own choice.
     /// </summary>
     private static void MigrateSocketOverlayShortcut() {
+        string shortcutLocation = $"{SectionSockets}::{SocketOverlayShortcutKey}";
+        if (!PreviousConfigValues.ContainsKey($"{SectionSockets}::{ShardSlotPanelOffsetKey}")
+            && PreviousConfigValues.TryGetValue(shortcutLocation, out string stored)
+            && stored == new KeyboardShortcut(KeyCode.E, KeyCode.LeftControl).Serialize()) {
+            SocketOverlayShortcut.Value = new KeyboardShortcut(KeyCode.E);
+            PreviousConfigValues[shortcutLocation] = SocketOverlayShortcut.Value.Serialize();
+        }
+
         KeyCode? held = null;
         if (TryReadPreviousSocketKey(LegacySocketOverlayKey, out KeyCode key)) {
             if (key != LegacySocketOverlayKeyDefault) {

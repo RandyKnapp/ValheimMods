@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using EpicLoot.Config;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
 namespace EpicLoot.ShardStones {
@@ -22,8 +23,9 @@ namespace EpicLoot.ShardStones {
         // Inset from the panel edge to the cells. The background art overhangs the panel by as much again.
         private const float Pad = 10f;
         private const float TitleTop = 6f;
-        private const float TitleHeight = 26f;
+        private const float TitleHeight = 30f;
         private const float TitleGap = 2f;
+        private const float TitleFontSize = 20f;
 
         // The player grid is group 1 in vanilla's m_uiGroups (0 is the chest, 2 the info bar, 3 crafting).
         private const int PlayerGridGroup = 1;
@@ -124,10 +126,21 @@ namespace EpicLoot.ShardStones {
                 titleRect.pivot = new Vector2(0.5f, 1f);
                 titleRect.anchoredPosition = new Vector2(0f, -TitleTop);
                 titleRect.sizeDelta = new Vector2(0f, TitleHeight);
+                // A copy keeps whatever the chest title was set up with, and that may auto-size to its own
+                // panel's width: in a band this short an auto-sized line shrinks to nothing. Everything that
+                // decides how the text is laid out is set here instead.
+                foreach (ContentSizeFitter fitter in titleGo.GetComponents<ContentSizeFitter>()) {
+                    Object.Destroy(fitter);
+                }
+
                 title = titleGo.GetComponent<TMP_Text>();
                 if (title != null) {
-                    title.alignment = TextAlignmentOptions.Center;
+                    title.enableAutoSizing = false;
+                    title.fontSize = TitleFontSize;
+                    title.textWrappingMode = TextWrappingModes.NoWrap;
                     title.overflowMode = TextOverflowModes.Ellipsis;
+                    title.alignment = TextAlignmentOptions.Center;
+                    title.raycastTarget = false;
                 }
             }
 

@@ -1,7 +1,9 @@
 **0.15.4**
-* Shard slots now open in their own small panel beside the inventory, so a chest can stay open while you socket, and the panel's position is configurable.
-* Item magic data is handled by a smaller layer of Epic Loot's own: items load and stack faster, and plain items no longer carry an empty data entry. Saved items are unchanged.
-* Mods that hooked into Epic Loot's old item data code, such as Drop That's Epic Loot integration and EpicLoot ProgressionFix, need an update from their authors before they work with this version.
+* Shard slots now support opening with chests, backpacks or other inventories
+* Shard Slots default to using E again, configurable
+* Optimizes Epicloot's itemdata cache and shard checks
+* Potion Duration no longer lengthens the cooldown of healing, stamina and eitr meads.
+* API updated to allow creating items
 
 **0.15.3**
 * A clash with another mod now only switches off the Epic Loot feature involved, with a warning in the log, instead of stopping the whole mod from loading.

@@ -141,9 +141,10 @@ namespace EpicLoot.ShardStones {
             _slots = inv;
             _panel = panel;
 
+            // "Loptr Cowl - Shard Slots": the item first, so the panel reads as that item's.
             panel.Show(
-                Localization.instance.Localize("$mod_epicloot_sockets") + ": " +
-                Localization.instance.Localize(item.m_shared.m_name),
+                Localization.instance.Localize(item.m_shared.m_name) + " - " +
+                Localization.instance.Localize("$mod_epicloot_sockets"),
                 magicItem.SocketCount);
             panel.Grid.UpdateInventory(inv, null, invGui.m_dragItem);
 

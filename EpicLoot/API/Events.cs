@@ -30,6 +30,9 @@ public static partial class API
         public const string Transfer = "Transfer";
         public const string AddSocket = "AddSocket";
 
+        /// <summary>A new item made by <see cref="CreateMagicItem"/>, not yet in any inventory.</summary>
+        public const string Create = "Create";
+
         /// <summary>
         /// A write that has no dedicated call site. Every magic-data write funnels through
         /// <c>MagicItemComponent.SetMagicItem</c>, so this is the catch-all that guarantees coverage.

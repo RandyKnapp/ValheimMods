@@ -378,7 +378,7 @@ internal static class QuickConfigBindings {
         IntSlider("TooltipMaxWidth", ELConfig.TooltipMaxWidth, "Tooltip Max Width", BindingScope.Client, 150, 1200);
         IntSlider("TooltipMaxHeight", ELConfig.TooltipMaxHeight, "Tooltip Max Height", BindingScope.Client, 350, 4000);
         ShortcutChoice("SocketOverlayShortcut", ELConfig.SocketOverlayShortcut, "Socket Overlay Shortcut", BindingScope.Client,
-            "E + LeftControl", "E + LeftAlt", "E + LeftShift", "E");
+            "E", "E + LeftControl", "E + LeftAlt", "E + LeftShift");
         FloatSlider("TraderPanelPositionX", ELConfig.TraderPanelPositionX, "Trader Panel X Position", BindingScope.Client, -4000f, 4000f, 1f);
         FloatSlider("TraderPanelPositionY", ELConfig.TraderPanelPositionY, "Trader Panel Y Position", BindingScope.Client, -4000f, 4000f, 1f);
         FloatSlider("TemperPanelPositionX", ELConfig.TemperPanelPositionX, "Temper Panel X Position", BindingScope.Client, -4000f, 4000f, 1f);

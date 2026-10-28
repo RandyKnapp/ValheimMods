@@ -67,6 +67,14 @@ public static class MagicItemData
         }
 
         string raw = RawOf(item);
+        // An item with no entry is answered here, before the cache is consulted: that is the common case on
+        // the hot read paths, and a component it may still have from an entry since removed holds no magic
+        // Get should report.
+        if (raw == null && !create)
+        {
+            return null;
+        }
+
         if (Components.TryGetValue(item, out MagicItemComponent component))
         {
             // The entry was replaced under the component: follow it.
@@ -76,11 +84,6 @@ public static class MagicItemData
             }
 
             return component;
-        }
-
-        if (raw == null && !create)
-        {
-            return null;
         }
 
         component = new MagicItemComponent(item);

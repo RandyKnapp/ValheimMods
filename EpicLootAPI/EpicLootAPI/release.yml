@@ -18,6 +18,7 @@ library_files:
   - src/Ability.cs
   - src/AbilityProxy.cs
   - src/Bounty.cs
+  - src/CreateItem.cs
   - src/CustomRecipe.cs
   - src/EffectType.cs
   - src/Events.cs

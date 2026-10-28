@@ -213,6 +213,34 @@ MagicItem rolled = EpicLoot.RollMagicItem(ItemRarity.Rare, item, luck);
 item.ApplyMagicItem(rolled);
 ```
 
+### Creating items
+Make a new item carrying exactly the effects and set you choose, rather than a roll. Nothing is checked against
+the rules a roll follows, so any effect can go on any item. The item is in no inventory yet: add or drop it
+yourself. Needs Epic Loot with API 4 (`EpicLoot.HasEndpoint("CreateMagicItem")`).
+
+```c#
+// A sword with two chosen effects; leaving a value out rolls it from the rarity's range
+var request = new MagicItemRequest { Prefab = "SwordIron", Rarity = ItemRarity.Epic }
+    .AddEffect(EffectType.ModifyDamage, 12f)
+    .AddEffect(EffectType.ModifyAttackSpeed);
+ItemDrop.ItemData? sword = EpicLoot.CreateMagicItem(request, out string error);
+
+// A piece of a set: Epic Loot picks the piece this item fits, names it and applies the set
+var helmet = EpicLoot.CreateMagicItem(new MagicItemRequest
+{
+    Prefab = "HelmetPadded", Rarity = ItemRarity.Legendary, SetID = "Heimdall"
+}, out error);
+
+// A runestone with one specific effect, and a set rune for Set Etch
+ItemDrop.ItemData? rune = EpicLoot.CreateRunestone(ItemRarity.Legendary, EffectType.ModifyDamage, 20f);
+ItemDrop.ItemData? setRune = EpicLoot.CreateSetRune(ItemRarity.Legendary, "Heimdall");
+
+if (sword != null && !Player.m_localPlayer.GetInventory().AddItem(sword))
+{
+    ItemDrop.DropItem(sword, 1, Player.m_localPlayer.transform.position, Quaternion.identity);
+}
+```
+
 ### Example Magic Effect
 Add a custom magic effect, with its own specific requirements.
 _Implementing_ the actual effect is on you. In this example, a patch on Projectile.OnHit.

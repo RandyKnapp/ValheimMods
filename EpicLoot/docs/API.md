@@ -38,7 +38,7 @@ Two consequences worth knowing before you write glue by hand:
 ## Versioning
 
 ```csharp
-API.ApiVersion            // const int, currently 3
+API.ApiVersion            // const int, currently 4
 API.GetApiVersion()       // same value, as a call
 API.GetPluginVersion()    // "0.13.0"
 API.GetPluginId()         // "randyknapp.mods.epicloot"
@@ -74,6 +74,7 @@ broken before.
 | `LootRoller.RollMagicItem` / `RollEffect` / `InitializeMagicItem` / `GetLuckFactor` via a publicized DLL | `TryMakeMagicItem`, `RollMagicItemJson`, `GetLuckFactor` |
 | `UniqueLegendaryHelper.TryGetLegendaryInfo` / `GetSetForLegendaryItem` | `GetLegendaryInfoJson`, `GetLegendaryIDs` |
 | `MagicItemComponent.SetMagicItem` | `ApplyMagicItemJson`, or `TryMakeMagicItem` |
+| Cloning a prefab, building a `MagicItem` and saving it onto the clone, or making `EtchedRunestone{Rarity}` by name | `CreateMagicItem` |
 | `MagicItemEffectDefinitions.GetAvailableEffects` / `AllDefinitions` | `GetAvailableEffectTypes`, `GetAllMagicEffectTypes` |
 | Polling for "did this item change?" | `AddMagicItemChangedListener` |
 | Reflecting or patching `MagicTooltip`, `MagicItem.GetTooltip`, `GetSetTooltip`, or parsing `item.GetTooltip()` for Epic Loot's lines | `GetItemTooltipData` |
@@ -235,7 +236,7 @@ Called for every item the tab evaluates, so keep it cheap.
 ### Item containers
 
 For mods that turn an item into a container opened with Use from the inventory (a backpack, a quiver, a
-pouch). Epic Loot opens an item's shard slots with the player's Socket Overlay Shortcut (Ctrl + E by
+pouch). Epic Loot opens an item's shard slots with the player's Socket Overlay Shortcut (E by
 default) or the gamepad gesture (RT + X by default). Register your items so Epic Loot leaves plain Use over
 them to you: Keep Inventory Open Over Items stops swallowing it there, and a shortcut the player set to only
 the Use key no longer opens their shard slots. Containers built on Backpacks' `ItemContainer` are
@@ -421,6 +422,7 @@ API.AddBountyTargetSlainListener(json => { /* ... */ });          // API 2, see 
 | `Socket` / `Unsocket` | Adding or removing a shard/runestone |
 | `LootRoll` | A magic item rolled as loot, including via `TryMakeMagicItem` |
 | `Transfer` | Magic effects carried onto a crafted item |
+| `Create` | A new item made by `CreateMagicItem` (API 4), before it is in any inventory |
 | `Unspecified` | A write with no dedicated call site |
 
 `Unspecified` is the catch-all raised from `MagicItemComponent.SetMagicItem`, the single funnel every
@@ -518,6 +520,57 @@ the creature sorter, which only fills in creatures that have none.
 
 ---
 
+## Creating items (API 4)
+
+```csharp
+ItemDrop.ItemData CreateMagicItem(string requestJson, ref string error);
+```
+
+Makes a new item carrying exactly the magic you ask for: a reward with set effects, a quest item, a runestone
+with one specific effect. `TryMakeMagicItem` rolls; this writes what was asked. Returns the item, or null with
+the reason in `error`.
+
+```json
+{
+  "Prefab": "SwordIron",
+  "Runestone": false,
+  "Rarity": 2,
+  "Effects": [ { "EffectType": "ModifyDamage", "EffectValue": 12 }, { "EffectType": "ModifyAttackSpeed" } ],
+  "LegendaryID": "",
+  "SetID": "",
+  "DisplayName": null,
+  "SocketCount": null
+}
+```
+
+| Field | Meaning |
+|---|---|
+| `Prefab` | Any item prefab name. Ignored when `Runestone` is true. |
+| `Runestone` | Create an etched runestone of `Rarity` instead, so you never build its prefab name. |
+| `Rarity` | Rarity ordinal, as everywhere else in the API. |
+| `Effects` | Written in order. An `EffectValue` is written as given; leave it out (or null) to roll it from the item's range, the way a loot roll would. |
+| `LegendaryID` | A unique or set piece. A known one also fills in `SetID` and the item's name, and its guaranteed effect values set the range a missing value rolls in. |
+| `SetID` | A set to join. With no `LegendaryID`, Epic Loot picks the piece this item fits, the way Set Etch does, or the set's first piece when none fits. On a runestone with no effects, this makes a set rune. |
+| `DisplayName` | Null for the unique's name, else a generated name. Runestones are named when shown, so they store none unless you give one. |
+| `SocketCount` | Shard slots, clamped to 0–6. Null rolls them as loot would (none for an item that cannot take slots). Runestones always get 0. |
+
+**Nothing is checked against the rules a roll follows.** Item type, rarity, exclusivity and whether a unique
+fits the item are all ignored, and items that never roll magic are accepted. An effect type Epic Loot does not
+know is kept as well: it does nothing, and the tooltip shows it as unknown. Only a request that cannot be
+built is refused: unreadable JSON, a rarity out of range, a prefab that does not exist, an effect without a
+type, or a NaN or infinite value. A valueless effect (Indestructible, Weightless, ...) reads as 1 whatever you
+write. A set rune should carry no effects; with effects it is also a normal rune.
+
+The item is not placed anywhere, and nothing about it is randomized except the values and slots you left
+out: durability is full and no `OnLootGenerated` event fires, since it is not loot. Add it with
+`Inventory.AddItem(item)`, or drop it with `ItemDrop.DropItem`. The write raises `OnMagicItemChanged` with the
+`Create` reason. Call it once ObjectDB is ready (in a world, or from `ItemManager.OnItemsRegistered`).
+
+The shim wraps it as `CreateMagicItem(MagicItemRequest, out string error)`, plus `CreateRunestone(rarity,
+effectType, value)` and `CreateSetRune(rarity, setID, legendaryID)`.
+
+---
+
 ## Content registration
 
 The older half of the API — adding magic effects, abilities, legendaries and sets, material conversions,
@@ -554,6 +607,8 @@ magicapi query       — every read-only endpoint against the held item
 magicapi providers   — registered inventory/equipment/sacrifice provider ids
 magicapi events      — toggle a logging listener for change and loot events
 magicapi roll <n>    — TryMakeMagicItem on the held item
+magicapi create <prefab|rune> <rarity> [Effect[=value] ...] [set=<SetID>] [unique=<LegendaryID>]
+                     — CreateMagicItem into your inventory; an effect without =value is rolled
 magicapi tooltip [details]        — the held item's tooltip data and its text without Epic Loot, to the BepInEx log
 magicapi tooltipoverride on|off   — claim the item tooltip as a test plugin
 magicapi tooltipedit on|off       — a test editor that adds a line and drops the first effect

@@ -23,7 +23,7 @@ The mod is currently in ***Early Access***! That means it's **not done**! Be pat
 Introducing a large new feature: **Shardstones!**
 
 Shardstones grant a variety of small buffs to allow much greater control over your build.
-  * Press the shard slot shortcut (Ctrl + E by default) on a socketed item in your inventory to open its shard slots in a small panel beside your inventory, then drag in a shardstone or an Etched Runestone.
+  * Press Interact (E by default) on a socketed item in your inventory to open its shard slots in a small panel beside your inventory, then drag in a shardstone or an Etched Runestone.
   * Enchanted items can now drop with shard slots, and the rarer the item the more slots it is likely to have.
   * Shardstones drop all over the world, each biome and boss has their own drops. Maybe you can find a unique shardstone also?
   * Shardstones can be upgraded to a higher rarity in the enchanting table's Convert Materials tab, under its own Upgrade Shardstones mode
