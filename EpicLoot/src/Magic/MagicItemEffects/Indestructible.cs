@@ -1,8 +1,6 @@
 using HarmonyLib;
 using JetBrains.Annotations;
-using System.Collections.Generic;
 using System.Reflection;
-using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 
 namespace EpicLoot.MagicItemEffects
@@ -38,28 +36,74 @@ namespace EpicLoot.MagicItemEffects
 
         // The one drain site that ignores m_useDurability: Player.DamageArmorDurability wears a random worn
         // armor piece regardless, so an indestructible piece kept losing durability, unseen, and showed as
-        // broken once the effect came off. Vanilla's pick is kept, so the other pieces wear no faster; the
-        // write is just skipped for a piece that does not use durability.
+        // broken once the effect came off. Vanilla's pick is kept, so the other pieces wear no faster; a
+        // piece that does not use durability just gets its durability back afterwards.
+        //
+        // A snapshot around the call rather than a transpiler on its durability write: other mods rewrite
+        // that write (Valheim Admin Tool) or wear armor from their own skipping prefix (SeneaL UI's cape
+        // slot), and a transpiler that missed its pattern used to abort all of Epic Loot's patching. First,
+        // so the snapshot is taken before any prefix that wears armor itself. HarmonyX runs every prefix
+        // and postfix even when one of them skips the original.
         [HarmonyPatch(typeof(Player), nameof(Player.DamageArmorDurability))]
         public static class Indestructible_Player_DamageArmorDurability_Patch
         {
             [UsedImplicitly]
-            public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+            [HarmonyPriority(Priority.First)]
+            public static void Prefix(Player __instance, out ArmorDurabilitySnapshot __state)
             {
-                CodeMatcher codeMatcher = new CodeMatcher(instructions);
-                codeMatcher.MatchStartForward(new CodeMatch(OpCodes.Stfld,
-                        AccessTools.Field(typeof(ItemDrop.ItemData), nameof(ItemDrop.ItemData.m_durability))))
-                    .ThrowIfNotMatch("Unable to patch Player.DamageArmorDurability for Indestructible.")
-                    .SetAndAdvance(OpCodes.Call, AccessTools.Method(typeof(Indestructible), nameof(SetArmorDurability)));
-                return codeMatcher.Instructions();
+                __state = new ArmorDurabilitySnapshot(__instance);
+            }
+
+            [UsedImplicitly]
+            public static void Postfix(ArmorDurabilitySnapshot __state)
+            {
+                __state.Restore();
             }
         }
 
-        private static void SetArmorDurability(ItemDrop.ItemData item, float durability)
+        /// <summary>
+        /// The durability of each vanilla armor slot whose item does not use durability, taken before a hit
+        /// wears armor. A struct, so a hit allocates nothing; with no such piece worn it holds nothing.
+        /// </summary>
+        public readonly struct ArmorDurabilitySnapshot
         {
-            if (item.m_shared.m_useDurability)
+            private readonly ItemDrop.ItemData chest, legs, helmet, shoulder;
+            private readonly float chestDurability, legsDurability, helmetDurability, shoulderDurability;
+
+            public ArmorDurabilitySnapshot(Humanoid humanoid)
             {
-                item.m_durability = durability;
+                chest = Keep(humanoid.m_chestItem, out chestDurability);
+                legs = Keep(humanoid.m_legItem, out legsDurability);
+                helmet = Keep(humanoid.m_helmetItem, out helmetDurability);
+                shoulder = Keep(humanoid.m_shoulderItem, out shoulderDurability);
+            }
+
+            public void Restore()
+            {
+                Restore(chest, chestDurability);
+                Restore(legs, legsDurability);
+                Restore(helmet, helmetDurability);
+                Restore(shoulder, shoulderDurability);
+            }
+
+            private static ItemDrop.ItemData Keep(ItemDrop.ItemData item, out float durability)
+            {
+                if (item?.m_shared == null || item.m_shared.m_useDurability)
+                {
+                    durability = 0f;
+                    return null;
+                }
+
+                durability = item.m_durability;
+                return item;
+            }
+
+            private static void Restore(ItemDrop.ItemData item, float durability)
+            {
+                if (item != null)
+                {
+                    item.m_durability = durability;
+                }
             }
         }
 

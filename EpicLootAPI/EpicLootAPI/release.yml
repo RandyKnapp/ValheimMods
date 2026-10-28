@@ -1,0 +1,47 @@
+# Release configuration for mod-tools.
+# Shared settings come from the preset, which ships inside the gem.
+#
+# Inspect what this actually resolves to:
+#   mod-tools print-config
+
+extends:  library-mono
+assembly: EpicLootAPI
+
+# Files packaged beside the DLL and its XML documentation, relative to this
+# directory. Each is also its name inside the zip. The README offers copying
+# src/ as an alternative to the DLL, so every source file ships too -- a new
+# file under src/ has to be added here or the source drop will not compile.
+library_files:
+  - README.md
+  - CHANGELOG.md
+  - src/API.cs
+  - src/Ability.cs
+  - src/AbilityProxy.cs
+  - src/Bounty.cs
+  - src/CreateItem.cs
+  - src/CustomRecipe.cs
+  - src/EffectType.cs
+  - src/Events.cs
+  - src/Helpers.cs
+  - src/Legendary.cs
+  - src/Logger.cs
+  - src/LootGen.cs
+  - src/MagicItem.cs
+  - src/MagicItemEffect.cs
+  - src/MaterialConversion.cs
+  - src/Method.cs
+  - src/Providers.cs
+  - src/Query.cs
+  - src/RunTimeRegistry.cs
+  - src/Sacrifice.cs
+  - src/SecretStash.cs
+  - src/ShardType.cs
+  - src/Tooltip.cs
+  - src/Treasure.cs
+  - src/Visuals.cs
+
+# Released as its own GitHub release on the EpicLootAPI-v tag; the preset keeps
+# it off the repository's Latest badge, which stays with EpicLoot.
+publish:
+  github:
+    enabled: true

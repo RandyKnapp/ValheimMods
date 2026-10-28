@@ -377,8 +377,8 @@ internal static class QuickConfigBindings {
         FloatSlider("UIAudioVolumeAdjustment", ELConfig.UIAudioVolumeAdjustment, "UI Audio Volume", BindingScope.Client, 0f, 1f, 0.05f);
         IntSlider("TooltipMaxWidth", ELConfig.TooltipMaxWidth, "Tooltip Max Width", BindingScope.Client, 150, 1200);
         IntSlider("TooltipMaxHeight", ELConfig.TooltipMaxHeight, "Tooltip Max Height", BindingScope.Client, 350, 4000);
-        KeyCodeChoice("SocketOverlayKey", ELConfig.SocketOverlayKey, "Socket Overlay Key", BindingScope.Client);
-        Toggle("AlwaysRequireSocketOverlayKey", ELConfig.AlwaysRequireSocketOverlayKey, "Always Require Socket Overlay Key", BindingScope.Client);
+        ShortcutChoice("SocketOverlayShortcut", ELConfig.SocketOverlayShortcut, "Socket Overlay Shortcut", BindingScope.Client,
+            "E", "E + LeftControl", "E + LeftAlt", "E + LeftShift");
         FloatSlider("TraderPanelPositionX", ELConfig.TraderPanelPositionX, "Trader Panel X Position", BindingScope.Client, -4000f, 4000f, 1f);
         FloatSlider("TraderPanelPositionY", ELConfig.TraderPanelPositionY, "Trader Panel Y Position", BindingScope.Client, -4000f, 4000f, 1f);
         FloatSlider("TemperPanelPositionX", ELConfig.TemperPanelPositionX, "Temper Panel X Position", BindingScope.Client, -4000f, 4000f, 1f);
@@ -548,6 +548,54 @@ internal static class QuickConfigBindings {
                 if (value is string text && Enum.TryParse(text.Trim(), true, out KeyCode parsed)) { staged.Set(key, parsed); }
             }
         });
+    }
+
+    // A keyboard shortcut, staged as the text the config file writes ("E + LeftControl"). The field takes any
+    // key with held keys after it, or before it, which Normalize turns round; the picker offers the common
+    // combinations, every single key, and None to turn the shortcut off.
+    private static void ShortcutChoice(string key, ConfigEntry<KeyboardShortcut> entry, string name, BindingScope scope,
+        params string[] suggestions) {
+        CfgSlot slot = CfgSlotFor(key, entry);
+        slot.Read = () => entry.Value.Serialize();
+        slot.ReadDefault = () => ((KeyboardShortcut)entry.DefaultValue).Serialize();
+        slot.Write = value => entry.Value = ParseShortcut(value as string) ?? entry.Value;
+        List<string> options = suggestions.Concat(Enum.GetNames(typeof(KeyCode)).Where(n => n != nameof(KeyCode.None)))
+            .Append(nameof(KeyCode.None)).Distinct().ToList();
+        Add(new Binding {
+            Key = key, DisplayName = name, Kind = BindingKind.Key, Scope = scope,
+            Options = () => options,
+            Tooltip = () => QuickConfigTooltip.Of(entry),
+            Get = staged => staged.Get(key, entry.Value.Serialize()),
+            Set = (staged, value) => {
+                if (value is string text) {
+                    KeyboardShortcut? parsed = ParseShortcut(text);
+                    staged.Set(key, parsed?.Serialize() ?? text.Trim());
+                }
+            },
+            Validate = staged => {
+                string value = staged.Get(key, entry.Value.Serialize());
+                return ParseShortcut(value) == null
+                    ? $"{name}: '{value}' is not a key, or keys joined with +, that the game recognises."
+                    : null;
+            }
+        });
+    }
+
+    // Null for text that names no key. KeyboardShortcut.Deserialize logs and returns Empty for an unknown key
+    // name, so each name is checked here first and the shortcut is only built from known ones. Blank (how the
+    // file writes the empty shortcut) or "None" is the empty shortcut, which turns the keyboard gesture off.
+    private static KeyboardShortcut? ParseShortcut(string text) {
+        if (string.IsNullOrWhiteSpace(text) ||
+            string.Equals(text.Trim(), nameof(KeyCode.None), StringComparison.OrdinalIgnoreCase)) {
+            return KeyboardShortcut.Empty;
+        }
+        List<KeyCode> keys = new List<KeyCode>();
+        foreach (string part in text.Split(new[] { '+' }, StringSplitOptions.RemoveEmptyEntries)) {
+            if (!Enum.TryParse(part.Trim(), true, out KeyCode keyCode) || keyCode == KeyCode.None) { return null; }
+            keys.Add(keyCode);
+        }
+        if (keys.Count == 0) { return null; }
+        return SocketOverlayInput.Normalize(new KeyboardShortcut(keys[0], keys.Skip(1).ToArray()));
     }
 
     // A string entry restricted to a fixed set of values (the balance template).

@@ -131,6 +131,14 @@ public static partial class API
         return GetRarityColorByIndex((int)item.GetRarity());
     }
 
+    /// <returns>The colour Epic Loot draws legendary set pieces, their set label and set lines in (the player's
+    /// Set Item Color setting), as a hex string.</returns>
+    [PublicAPI]
+    public static string GetSetItemColor()
+    {
+        return EpicLoot.GetSetItemColor();
+    }
+
     /// <summary>
     /// Whether this item was added by Epic Loot (shard stone, runestone, crafting material, bounty token,
     /// and so on). Supported replacement for testing <c>m_shared.m_name.StartsWith("$mod_epicloot")</c>.
@@ -202,6 +210,21 @@ public static partial class API
     public static bool ItemHasMagicEffect(ItemDrop.ItemData item, string effectType, bool includeSocketed)
     {
         return item != null && item.HasMagicEffect(effectType, includeSocketed);
+    }
+
+    /// <summary>
+    /// Whether this frame's key press over <paramref name="item"/> is Epic Loot's open-shard-slots gesture
+    /// (the player's Socket Overlay Shortcut, or the gamepad button and modifier) and Epic Loot will act on
+    /// it. A mod that handles inventory presses ahead of Epic Loot -- an <c>InventoryGui.Update</c> prefix
+    /// opening its own container -- should leave the press alone when this is true. Only reads input, so it
+    /// gives the same answer before Epic Loot's handler runs as during it. False for an item without shard
+    /// slots, so your gesture keeps working there.
+    /// </summary>
+    /// <param name="item">the item under the cursor, or the gamepad's selected item; may be null</param>
+    [PublicAPI]
+    public static bool IsShardSlotPress(ItemDrop.ItemData item)
+    {
+        return item != null && ShardStones.SocketOverlayInput.IsShardSlotPress(item);
     }
 
     /// <returns>Every registered magic effect type id, including any added through the API.</returns>

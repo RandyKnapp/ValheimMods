@@ -47,6 +47,49 @@ namespace Common {
         }
 
         /// <summary>
+        /// Like <see cref="LoadFromResources"/>, but hands Unity a copy of the bundle in memory instead of the
+        /// resource stream, so the stream is closed before this returns and nothing reads it afterwards.
+        /// Unity keeps its own copy of the bytes for the life of the bundle; the managed array is garbage
+        /// once this returns. Returns null (and logs) on failure.
+        /// </summary>
+        public static AssetBundle LoadFromResourcesInMemory(string filename, Assembly assembly) {
+            if (assembly == null) { throw new ArgumentNullException(nameof(assembly)); }
+
+            string resourceName = $"{assembly.GetName().Name}.{filename}";
+            try {
+                System.Diagnostics.Stopwatch timer = System.Diagnostics.Stopwatch.StartNew();
+                byte[] bytes;
+                using (Stream stream = assembly.GetManifestResourceStream(resourceName)) {
+                    if (stream == null) {
+                        ModLogger.LogError($"Embedded asset bundle '{resourceName}' not found in {assembly.GetName().Name}.");
+                        return null;
+                    }
+                    bytes = new byte[stream.Length];
+                    int read = 0;
+                    while (read < bytes.Length) {
+                        int got = stream.Read(bytes, read, bytes.Length - read);
+                        if (got <= 0) { break; }
+                        read += got;
+                    }
+                    if (read < bytes.Length) {
+                        ModLogger.LogError($"Embedded asset bundle '{resourceName}' ended after {read} of {bytes.Length} bytes.");
+                        return null;
+                    }
+                }
+                AssetBundle bundle = AssetBundle.LoadFromMemory(bytes);
+                if (bundle == null) {
+                    ModLogger.LogError($"Embedded asset bundle '{resourceName}' failed to load.");
+                    return null;
+                }
+                ModLogger.LogDebug($"Loaded embedded asset bundle '{resourceName}' ({bytes.Length / 1024} KB) from memory in {timer.Elapsed.TotalMilliseconds:0} ms.");
+                return bundle;
+            } catch (Exception e) {
+                ModLogger.LogError($"Failed to load embedded asset bundle '{resourceName}': {e.Message}");
+                return null;
+            }
+        }
+
+        /// <summary>
         /// Loads the bundle and assigns it to <see cref="ModContext.AssetBundle"/> so the shared loaders
         /// can find it without being handed one.
         /// </summary>

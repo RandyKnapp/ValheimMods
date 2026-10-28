@@ -1,5 +1,4 @@
 ﻿using EpicLoot.Crafting;
-using EpicLoot.Data;
 using EpicLoot.GatedItemType;
 using EpicLoot.General;
 using HarmonyLib;
@@ -247,14 +246,14 @@ namespace EpicLoot.ShardStones {
             }
 
             var rarity = GetShardRarity(item);
-            var mic = item.Data().GetOrCreate<MagicItemComponent>();
-            if (mic.MagicItem != null && mic.MagicItem.Rarity == rarity) {
+            var existing = item.GetMagicItem();
+            if (existing != null && existing.Rarity == rarity) {
                 return false;
             }
 
-            var magicItem = mic.MagicItem ?? new MagicItem();
+            var magicItem = existing ?? new MagicItem();
             magicItem.Rarity = rarity;
-            mic.SetMagicItem(magicItem);
+            item.SaveMagicItem(magicItem);
             return true;
         }
 
@@ -587,6 +586,10 @@ namespace EpicLoot.ShardStones {
                             $"(Assets/EpicLoot/Sprites/Shardstones/{shardColor}.png); it will have no icon.");
                     }
                     pid.m_itemData.m_shared.m_icons = new Sprite[] { icon };
+                    // _ShardStone is a variant of CraftingMaterialBase and still carries its m_variant of
+                    // 1, which with one icon makes vanilla's ItemDrop.EnsureValid log an error on every
+                    // world spawn of a shard.
+                    pid.m_itemData.m_variant = 0;
                     // The ammoType is this shard's identity: color and rarity both live here, in shared
                     // data that survives Instantiate. Everything downstream reads it rather than the
                     // prefab name or any baked custom data.

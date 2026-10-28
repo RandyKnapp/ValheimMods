@@ -188,11 +188,18 @@ namespace EpicLoot.Crafting
             MagicFontManager.Apply(label, MagicFontManager.TMP_FontOptions.AveriaSerifLibreOutline);
             label.fontStyle = FontStyles.Bold;
             label.alignment = TextAlignmentOptions.Center;
+            // A long effect wraps onto a second line and shrinks before its end is cut off.
             label.textWrappingMode = TextWrappingModes.Normal;
             label.enableAutoSizing = true;
-            label.fontSizeMin = 10;
-            label.fontSizeMax = 16;
-            label.overflowMode = TextOverflowModes.Truncate;
+            label.fontSizeMin = 12;
+            label.fontSizeMax = 21;
+            // The dialog is built hidden, so this label's Awake waits for the first Show, and TMP's Awake
+            // loads its own defaults (18-72 pt auto-size, wrapping, raycast target) over every setting here
+            // unless a font size has been set. Kept from those defaults: the font features (kerning).
+            label.fontSize = 21;
+            label.fontFeatures = new List<UnityEngine.TextCore.OTL_FeatureTag>(TMP_Settings.fontFeatures);
+            label.margin = new Vector4(8, 2, 8, 2);
+            label.overflowMode = TextOverflowModes.Ellipsis;
             label.raycastTarget = false;
             MagicTextShimmer.Ensure(label);
         }
@@ -225,7 +232,7 @@ namespace EpicLoot.Crafting
             // The replaced effect is left out of the checks even when it has no value; GetAvailableEffects
             // only offers it back when it has a value to re-roll.
             return MagicItemEffectDefinitions.GetAvailableEffects(
-                item.Extended(), item.GetMagicItem(), recipe.EffectIndex, checkaugment: true);
+                item, item.GetMagicItem(), recipe.EffectIndex, checkaugment: true);
         }
 
         public static string GetAugmentSelectorText(MagicItem magicItem, int i,

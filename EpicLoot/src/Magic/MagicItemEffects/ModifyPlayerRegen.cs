@@ -1,6 +1,5 @@
 ﻿using EpicLoot.MagicItemEffects.Shards;
 using HarmonyLib;
-using System;
 using System.Collections.Generic;
 using System.Reflection.Emit;
 
@@ -15,59 +14,48 @@ public static class ModifyPlayerRegen
         [HarmonyPatch(typeof(Player), nameof(Player.UpdateFood))]
         private static IEnumerable<CodeInstruction> ModifyHealthRegen_Transpiler(IEnumerable<CodeInstruction> instructions)
         {
-            try
+            CodeMatcher codeMatcher = new CodeMatcher(instructions);
+            codeMatcher.MatchStartForward(
+                    new CodeMatch(OpCodes.Ldloc_S),
+                    new CodeMatch(OpCodes.Ldloc_S),
+                    new CodeMatch(OpCodes.Mul),
+                    new CodeMatch(OpCodes.Stloc_S),
+                    new CodeMatch(OpCodes.Ldarg_0),
+                    new CodeMatch(OpCodes.Ldloc_S),
+                    new CodeMatch(OpCodes.Ldc_I4_1),
+                    new CodeMatch(OpCodes.Call, AccessTools.Method(typeof(Character), nameof(Character.Heal))));
+            if (codeMatcher.IsValid)
             {
-                CodeMatcher codeMatcher = new CodeMatcher(instructions);
-                codeMatcher.MatchStartForward(
-                        new CodeMatch(OpCodes.Ldloc_S),
-                        new CodeMatch(OpCodes.Ldloc_S),
-                        new CodeMatch(OpCodes.Mul),
-                        new CodeMatch(OpCodes.Stloc_S),
-                        new CodeMatch(OpCodes.Ldarg_0),
-                        new CodeMatch(OpCodes.Ldloc_S),
-                        new CodeMatch(OpCodes.Ldc_I4_1),
-                        new CodeMatch(OpCodes.Call, AccessTools.Method(typeof(Character), nameof(Character.Heal))))
-                    .ThrowIfNotMatch("Unable to patch vanilla pattern of Player.UpdateFood for AddHealthRegen effect. " +
-                        "Trying alternative pattern match...")
-                    .Advance(1)
-                    .InsertAndAdvance(Transpilers.EmitDelegate(AddHealthTicks));
+                return codeMatcher.Advance(1)
+                    .InsertAndAdvance(Transpilers.EmitDelegate(AddHealthTicks))
+                    .Instructions();
+            }
 
-                    return codeMatcher.Instructions();
-            }
-            catch (Exception e)
-            {
-                EpicLoot.Log(e.Message);
-            }
+            EpicLoot.Log("Unable to patch vanilla pattern of Player.UpdateFood for AddHealthRegen effect. " +
+                "Trying alternative pattern match...");
 
             // Steady Regeneration mod support
-            try
+            codeMatcher.Start().MatchStartForward(
+                    new CodeMatch(OpCodes.Ldloc_S),
+                    new CodeMatch(OpCodes.Ldloc_S),
+                    new CodeMatch(OpCodes.Mul),
+                    new CodeMatch(OpCodes.Stloc_S),
+                    new CodeMatch(OpCodes.Ldarg_0),
+                    new CodeMatch(OpCodes.Ldloc_S),
+                    new CodeMatch(OpCodes.Ldc_R4),
+                    new CodeMatch(OpCodes.Mul),
+                    new CodeMatch(OpCodes.Ldc_I4_0),
+                    new CodeMatch(OpCodes.Call, AccessTools.Method(typeof(Character), nameof(Character.Heal))));
+            if (codeMatcher.IsValid)
             {
-                CodeMatcher codeMatcher = new CodeMatcher(instructions);
-                codeMatcher.MatchStartForward(
-                        new CodeMatch(OpCodes.Ldloc_S),
-                        new CodeMatch(OpCodes.Ldloc_S),
-                        new CodeMatch(OpCodes.Mul),
-                        new CodeMatch(OpCodes.Stloc_S),
-                        new CodeMatch(OpCodes.Ldarg_0),
-                        new CodeMatch(OpCodes.Ldloc_S),
-                        new CodeMatch(OpCodes.Ldc_R4),
-                        new CodeMatch(OpCodes.Mul),
-                        new CodeMatch(OpCodes.Ldc_I4_0),
-                        new CodeMatch(OpCodes.Call, AccessTools.Method(typeof(Character), nameof(Character.Heal))))
-                    .ThrowIfNotMatch("SteadyRegeneration mod support patch: Unable to patch Player.UpdateFood for AddHealthRegen effect.")
-                    .Advance(1)
-                    .InsertAndAdvance(Transpilers.EmitDelegate(AddHealthTicks));
-
-                return codeMatcher.Instructions();
-            }
-            catch (Exception e)
-            {
-                EpicLoot.Log(e.Message);
+                return codeMatcher.Advance(1)
+                    .InsertAndAdvance(Transpilers.EmitDelegate(AddHealthTicks))
+                    .Instructions();
             }
 
             EpicLoot.LogErrorForce("Mod conflict detected! Modify Health Regen effects WILL NOT WORK!");
 
-            return instructions;
+            return codeMatcher.Instructions();
         }
 
         private static float AddHealthTicks(float value)

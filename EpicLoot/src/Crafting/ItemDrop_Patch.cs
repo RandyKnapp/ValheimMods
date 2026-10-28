@@ -1,5 +1,4 @@
-﻿using EpicLoot.Data;
-using EpicLoot.LootBeams;
+﻿using EpicLoot.LootBeams;
 using HarmonyLib;
 using UnityEngine;
 
@@ -48,25 +47,21 @@ namespace EpicLoot.Crafting
             rarity = isRunestone ? itemData.GetRunestoneRarity() : itemData.GetCraftingMaterialRarity();
             var variant = isRunestone ? 0 : EpicLoot.GetRarityIconIndex(rarity);
 
-            // Ensure unidenfitied items are loaded back up if they somehow become non-magical
-            MagicItemComponent mi = itemData.Data().GetOrCreate<MagicItemComponent>();
-            if (isUnidentified && mi.MagicItem == null)
+            // Ensure unidentified items are loaded back up if they somehow become non-magical
+            if (isUnidentified && !itemData.IsMagic())
             {
-                mi.SetMagicItem(new MagicItem
+                itemData.SaveMagicItem(new MagicItem
                 {
                     Rarity = rarity,
                     IsUnidentified = true,
                 });
-
-                mi.Save();
             }
             // Brokkr's Gift carries a cosmetic MagicItem purely for the rarity-coloured name and
             // background; heal it here so an instance that lost its custom data still renders as
             // its tier rather than as a plain grey item.
-            else if (isChisel && mi.MagicItem == null)
+            else if (isChisel && !itemData.IsMagic())
             {
-                mi.SetMagicItem(new MagicItem { Rarity = rarity });
-                mi.Save();
+                itemData.SaveMagicItem(new MagicItem { Rarity = rarity });
             }
 
             // Both carry a single authored icon rather than the ten-icon rarity array the
@@ -93,6 +88,12 @@ namespace EpicLoot.Crafting
                     var rarity = item.GetCraftingMaterialRarity();
                     var variant = EpicLoot.GetRarityIconIndex(rarity);
                     item.m_variant = variant;
+                }
+                // Shards rolled into chests or rebuilt from sockets before the prefabs were fixed were
+                // saved with the template's variant 1; they have a single icon.
+                else if (item.IsShardStone())
+                {
+                    item.m_variant = 0;
                 }
             }
         }

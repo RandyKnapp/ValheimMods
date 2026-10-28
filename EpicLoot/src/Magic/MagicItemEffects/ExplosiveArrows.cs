@@ -19,10 +19,18 @@ namespace EpicLoot.MagicItemEffects
             codeMatcher.MatchStartForward(
                 new CodeMatch(OpCodes.Ldfld, AccessTools.Field(typeof(Attack), nameof(Attack.m_weapon))),
                 new CodeMatch(OpCodes.Ldloc_S),
-                new CodeMatch(OpCodes.Stfld, AccessTools.Field(typeof(ItemDrop.ItemData), nameof(ItemDrop.ItemData.m_lastProjectile))))
-                .ThrowIfNotMatch("Unable to patch FireProjectileBurst for Exploding Arrows.")
-                .Advance(3).InsertAndAdvance(
-                new CodeInstruction(OpCodes.Ldloc_S, (byte)20),
+                new CodeMatch(OpCodes.Stfld, AccessTools.Field(typeof(ItemDrop.ItemData), nameof(ItemDrop.ItemData.m_lastProjectile))));
+            if (codeMatcher.IsInvalid)
+            {
+                EpicLoot.LogWarningForce("Explosive Arrows: could not find where Attack.FireProjectileBurst keeps the " +
+                    "projectile, so arrows will not explode. Another mod may have changed that method.");
+                return codeMatcher.Instructions();
+            }
+
+            // The projectile is the local the matched store reads, so load that one rather than a local by number.
+            object projectileLocal = codeMatcher.InstructionAt(1).operand;
+            codeMatcher.Advance(3).InsertAndAdvance(
+                new CodeInstruction(OpCodes.Ldloc_S, projectileLocal),
                 new CodeInstruction(OpCodes.Ldarg_0),
                 Transpilers.EmitDelegate(UpdateProjectileHit));
             return codeMatcher.Instructions();
@@ -52,9 +60,15 @@ namespace EpicLoot.MagicItemEffects
             codeMatcher.MatchStartForward(
                     new CodeMatch(OpCodes.Ldarg_0), // Projectile instance
                     new CodeMatch(OpCodes.Ldc_I4_1),
-                    new CodeMatch(OpCodes.Stfld, AccessTools.Field(typeof(Projectile), nameof(Projectile.m_didHit))))
-                .ThrowIfNotMatch("Unable to patch OnHit for Exploding Arrows.")
-                .Advance(3)
+                    new CodeMatch(OpCodes.Stfld, AccessTools.Field(typeof(Projectile), nameof(Projectile.m_didHit))));
+            if (codeMatcher.IsInvalid)
+            {
+                EpicLoot.LogWarningForce("Explosive Arrows: could not find where Projectile.OnHit marks the hit, so " +
+                    "arrows will not explode. Another mod may have changed that method.");
+                return codeMatcher.Instructions();
+            }
+
+            codeMatcher.Advance(3)
                 .InsertAndAdvance(
                     new CodeInstruction(OpCodes.Ldarg_2), // Vector3 hitPoint
                     new CodeInstruction(OpCodes.Ldarg_0), // Projectile instance

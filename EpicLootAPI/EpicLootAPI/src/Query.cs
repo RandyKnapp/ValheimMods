@@ -15,6 +15,7 @@ public static partial class EpicLoot
     private static readonly Method API_GetRarityColorByIndex = new("GetRarityColorByIndex");
     private static readonly Method API_GetRarityDisplayNameByIndex = new("GetRarityDisplayNameByIndex");
     private static readonly Method API_GetItemRarityColor = new("GetItemRarityColor");
+    private static readonly Method API_GetSetItemColor = new("GetSetItemColor");
     private static readonly Method API_IsEpicLootItem = new("IsEpicLootItem");
     private static readonly Method API_IsShardStone = new("IsShardStone");
     private static readonly Method API_IsRunestone = new("IsRunestone");
@@ -22,6 +23,7 @@ public static partial class EpicLoot
     private static readonly Method API_IsUnidentified = new("IsUnidentified");
     private static readonly Method API_CanBeMagicItem = new("CanBeMagicItem");
     private static readonly Method API_ItemHasMagicEffect = new("ItemHasMagicEffect");
+    private static readonly Method API_IsShardSlotPress = new("IsShardSlotPress");
     private static readonly Method API_GetAllMagicEffectTypes = new("GetAllMagicEffectTypes");
     private static readonly Method API_GetEnchantCostsJson = new("GetEnchantCostsJson");
     private static readonly Method API_GetSacrificeProductsJson = new("GetSacrificeProductsJson");
@@ -74,6 +76,7 @@ public static partial class EpicLoot
     }
 
     /// <summary>The rarity of a magic item, magic crafting material, or runestone.</summary>
+    /// <param name="item">the item to check</param>
     /// <param name="rarity">receives the rarity; unchanged when this returns false</param>
     /// <returns>true if the item has a rarity at all</returns>
     [PublicAPI]
@@ -106,6 +109,7 @@ public static partial class EpicLoot
     /// names. The tag overrides whatever color your text component is set to, so pass
     /// <paramref name="colorOverride"/> when you need the name dimmed.
     /// </summary>
+    /// <param name="item">the item to name</param>
     /// <param name="colorOverride">A color replacing the rarity color -- hex ("#808080ff") or a name
     /// ("white"). Null keeps the rarity color.</param>
     [PublicAPI]
@@ -140,6 +144,14 @@ public static partial class EpicLoot
     public static string GetItemRarityColor(this ItemDrop.ItemData item)
     {
         return (string)(API_GetItemRarityColor.Invoke(item)[0] ?? "#FFFFFF");
+    }
+
+    /// <returns>The colour Epic Loot draws legendary set pieces and set lines in (the player's Set Item Color
+    /// setting), as a hex string; "#FFFFFF" without Epic Loot or before API 3.</returns>
+    [PublicAPI]
+    public static string GetSetItemColor()
+    {
+        return (string)(API_GetSetItemColor.Invoke()[0] ?? "#FFFFFF");
     }
 
     /// <returns>true if this item was added by Epic Loot (shard, runestone, material, bounty token, ...)</returns>
@@ -186,12 +198,27 @@ public static partial class EpicLoot
         return (bool)(API_CanBeMagicItem.Invoke(item)[0] ?? false);
     }
 
+    /// <param name="item">the item to check</param>
     /// <param name="effectType"><see cref="EffectType"/></param>
     /// <param name="includeSocketed">count effects granted by socketed shards and runestones</param>
     [PublicAPI]
     public static bool HasMagicEffect(this ItemDrop.ItemData item, string effectType, bool includeSocketed = true)
     {
         return (bool)(API_ItemHasMagicEffect.Invoke(item, effectType, includeSocketed)[0] ?? false);
+    }
+
+    /// <summary>
+    /// Whether this frame's key press over the item is Epic Loot's open-shard-slots gesture (the player's
+    /// Socket Overlay Shortcut, or the gamepad button and modifier) and Epic Loot will act on it. If you
+    /// handle inventory presses ahead of Epic Loot (an <c>InventoryGui.Update</c> prefix opening your own
+    /// container), leave the press alone when this is true. Only reads input, so it gives the same answer
+    /// before Epic Loot's handler runs. False for an item without shard slots.
+    /// </summary>
+    /// <param name="item">the item under the cursor, or the gamepad's selected item</param>
+    [PublicAPI]
+    public static bool IsShardSlotPress(this ItemDrop.ItemData item)
+    {
+        return (bool)(API_IsShardSlotPress.Invoke(item)[0] ?? false);
     }
 
     /// <returns>Every registered magic effect type id, including ones added by other plugins.</returns>

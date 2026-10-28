@@ -127,12 +127,12 @@ public static partial class TerminalManager
             _ = new Command("resetcooldowns", "reset ability cooldowns", ResetAbilityCooldowns);
             _ = new Command("hexen", "become a Hexen (JotunWitch): [off|scale] (toggle at 0.6 if omitted)", Hexen, GetHexenOptions);
             _ = new Command("debugluck", "print players luck factor in console", DebugLuck);
-            _ = new Command("tooltipdebug", "write inventory item tooltips to disk", DebugTooltip);
-            _ = new Command("tooltipdebugvanilla", "write inventory item tooltips to disk, without magic effects", DebugVanillaTooltip);
+            _ = new Command("tooltipdebug", "write inventory item tooltips to disk: [details]", DebugTooltip);
+            _ = new Command("tooltipdebugvanilla", "write inventory item tooltips to disk, without magic effects: [details]", DebugVanillaTooltip);
             _ = new Command("lucktest", "rolls an example loot table with the sepcified luck eg: lucktest Greydwarf 1.0", TestLuck, GetTestLuckOptions);
             _ = new Command("fishlucktest", "samples the lucky fishing treasure roll: [effectValue] [samples]", TestFishingLuck);
             _ = new Command("printconfig", "prints out the Epic Loot current configuration of the specified type", PrintConfig, GetPrintConfigOptions);
-            _ = new Command("magicapi", "exercise the public API: version | query | providers | events | roll [rarity]", ApiDiagnostics, GetApiDiagnosticsOptions);
+            _ = new Command("magicapi", "exercise the public API: version | query | providers | events | roll [rarity] | create | tooltip | tooltipoverride | tooltipedit", ApiDiagnostics, GetApiDiagnosticsOptions);
             _ = new Command("el-help", "print available epic loot commands", Help, hideFromHelp: true);
         }
     }

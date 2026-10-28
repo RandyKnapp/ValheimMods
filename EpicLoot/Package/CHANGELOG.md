@@ -1,3 +1,26 @@
+**0.15.4**
+* Shard slots now support opening with chests, backpacks or other inventories
+* Shard Slots default to using E again, configurable
+* Optimizes Epicloot's itemdata cache and shard checks
+* Potion Duration no longer lengthens the cooldown of healing, stamina and eitr meads.
+* API updated to allow creating items
+
+**0.15.3**
+* A clash with another mod now only switches off the Epic Loot feature involved, with a warning in the log, instead of stopping the whole mod from loading.
+* Fixes an error logged whenever a shardstone dropped on the ground.
+* Epic Loot loads faster at startup
+
+**0.15.2**
+* Other mods can now read Epic Loot's tooltip information, change it, or draw their own item tooltip instead.
+    * The log names any mod that takes over drawing the item tooltip.
+* Makes the shortcut to open shard slots configurable
+    * Fixes newer BowsBeforeHoes quivers never letting you open their shard slots
+* Adds a Vietnamese translation, selectable from the game's language setting.
+* Augment choices are a more even text size, and long effects wrap onto two lines instead of being cut off.
+
+**0.15.1**
+* Fix storage tab not showing up when the enchanting table is upgraded to include it
+
 **0.15.0**
 
 Changes:

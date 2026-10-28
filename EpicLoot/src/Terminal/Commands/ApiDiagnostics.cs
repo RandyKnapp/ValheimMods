@@ -1,6 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using EpicLoot.LegendarySystem;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using UnityEngine;
 
 namespace EpicLoot;
 
@@ -13,14 +18,26 @@ public static partial class TerminalManager
     private static Action<ItemDrop.ItemData, string> _apiChangeLogger;
     private static Action<ItemDrop.ItemData> _apiLootLogger;
 
+    // The owner id the tooltip subcommands use for the override and the test editor.
+    private const string ApiDebugId = "epicloot.debug";
+
     private static readonly List<string> ApiSubcommands =
-        ["version", "query", "providers", "events", "roll"];
+        ["version", "query", "providers", "events", "roll", "create", "tooltip", "tooltipoverride", "tooltipedit"];
 
     private static List<string> GetApiDiagnosticsOptions(string[] args)
     {
         return args.Length switch
         {
             2 => ApiSubcommands,
+            3 when args[1] == "tooltipoverride" || args[1] == "tooltipedit" => ["on", "off"],
+            3 when args[1] == "create" => ["rune", .. GetValidMagicItemNames()],
+            4 when args[1] == "create" => Enumerable.Range(0, Rarities.Count).Select(x => x.ToString()).ToList(),
+            >= 5 when args[1] == "create" =>
+            [
+                .. MagicItemEffectDefinitions.AllDefinitions.Keys,
+                .. UniqueLegendaryHelper.AllSets.Keys.Select(x => "set=" + x),
+                .. UniqueLegendaryHelper.AllUniques.Keys.Select(x => "unique=" + x)
+            ],
             _ => []
         };
     }
@@ -46,12 +63,28 @@ public static partial class TerminalManager
             case "roll":
                 ApiRollOnHeldItem(args);
                 break;
+            case "create":
+                ApiCreateItem(args);
+                break;
+            case "tooltip":
+                ApiPrintTooltipData(args);
+                break;
+            case "tooltipoverride":
+                ApiSetTooltipOverride(args);
+                break;
+            case "tooltipedit":
+                ApiToggleTooltipEditor(args);
+                break;
             default:
                 Console.instance.Print("> magicapi version   - api version, plugin version, endpoint count");
                 Console.instance.Print("> magicapi query     - run every read-only endpoint against the held item");
                 Console.instance.Print("> magicapi providers - list registered inventory/equipment/sacrifice providers");
                 Console.instance.Print("> magicapi events    - toggle a logging listener for change and loot events");
                 Console.instance.Print("> magicapi roll <rarity> - TryMakeMagicItem on the held item");
+                Console.instance.Print("> magicapi create <prefab|rune> <rarity> [Effect[=value] ...] [set=<SetID>] [unique=<LegendaryID>] - CreateMagicItem into your inventory");
+                Console.instance.Print("> magicapi tooltip [details] - write the held item's tooltip data, and its text without Epic Loot, to the log");
+                Console.instance.Print("> magicapi tooltipoverride on|off - claim the item tooltip as a test plugin");
+                Console.instance.Print("> magicapi tooltipedit on|off - a test tooltip editor (adds a line, drops the first effect)");
                 break;
         }
     }
@@ -142,6 +175,50 @@ public static partial class TerminalManager
         Console.instance.Print("> API event logging ON (writes to the BepInEx log)");
     }
 
+    private static void ApiPrintTooltipData(Terminal.ConsoleEventArgs args)
+    {
+        ItemDrop.ItemData item = ApiGetHeldItem();
+        if (item == null)
+        {
+            return;
+        }
+
+        bool details = args.Length >= 3 && args[2].Equals("details", StringComparison.OrdinalIgnoreCase);
+        string json = API.GetItemTooltipData(item, 0, details, true);
+        EpicLoot.LogForce($"[magicapi] GetItemTooltipData({item.m_shared.m_name}): {json}");
+        EpicLoot.LogForce($"[magicapi] GetItemTooltipWithoutEpicLoot({item.m_shared.m_name}): " +
+            API.GetItemTooltipWithoutEpicLoot(item, 0, false, -1f, -1));
+        Console.instance.Print($"> {item.m_shared.m_name}: tooltip data and the text without Epic Loot written to the BepInEx log");
+    }
+
+    private static void ApiSetTooltipOverride(Terminal.ConsoleEventArgs args)
+    {
+        bool on = args.Length < 3 || !args[2].Equals("off", StringComparison.OrdinalIgnoreCase);
+        API.SetTooltipOverride(ApiDebugId, on);
+        Console.instance.Print($"> Tooltip override as '{ApiDebugId}': {(on ? "ON" : "OFF")} (overridden: {API.IsTooltipOverridden()})");
+    }
+
+    private static void ApiToggleTooltipEditor(Terminal.ConsoleEventArgs args)
+    {
+        bool on = args.Length < 3 || !args[2].Equals("off", StringComparison.OrdinalIgnoreCase);
+        if (!on)
+        {
+            Console.instance.Print($"> Test tooltip editor removed: {API.RemoveTooltipEditor(ApiDebugId)}");
+            return;
+        }
+
+        bool added = API.AddTooltipEditor(ApiDebugId, (_, json) =>
+        {
+            JObject data = JObject.Parse(json);
+            (data["Effects"] as JArray)?.FirstOrDefault()?.Remove();
+            JArray extra = data["Extra"] as JArray ?? new JArray();
+            extra.Add(new JObject { ["Anchor"] = "End", ["Text"] = "<color=#7fff7f>magicapi tooltip editor</color>" });
+            data["Extra"] = extra;
+            return data.ToString();
+        });
+        Console.instance.Print($"> Test tooltip editor added: {added}");
+    }
+
     private static void ApiRollOnHeldItem(Terminal.ConsoleEventArgs args)
     {
         ItemDrop.ItemData item = ApiGetHeldItem();
@@ -157,6 +234,78 @@ public static partial class TerminalManager
         if (result)
         {
             Console.instance.Print($"> {API.GetMagicItemJson(item)}");
+        }
+    }
+
+    // magicapi create <prefab|rune> <rarity> [Effect[=value] ...] [set=<SetID>] [unique=<LegendaryID>]: sends
+    // the request through the JSON endpoint, the way a consumer would. An effect without "=value" is rolled.
+    private static void ApiCreateItem(Terminal.ConsoleEventArgs args)
+    {
+        if (args.Length < 4)
+        {
+            Console.instance.Print("> Usage: magicapi create <prefab|rune> <rarity> [Effect[=value] ...] [set=<SetID>] [unique=<LegendaryID>]");
+            return;
+        }
+
+        Player player = Player.m_localPlayer;
+        if (player == null)
+        {
+            Console.instance.Print("> Enter a world with a player first.");
+            return;
+        }
+
+        bool rune = args[2].Equals("rune", StringComparison.OrdinalIgnoreCase);
+        MagicItemRequest request = new MagicItemRequest
+        {
+            Prefab = rune ? null : args[2],
+            Runestone = rune,
+            // An unparsable rarity is passed on as -1, so the endpoint's own error is what shows.
+            Rarity = int.TryParse(args[3], NumberStyles.Integer, CultureInfo.InvariantCulture, out int rarity) ? rarity : -1,
+            Effects = new List<RequestedEffect>()
+        };
+
+        for (int index = 4; index < args.Length; index++)
+        {
+            string[] parts = args[index].Split(new[] { '=' }, 2);
+            string value = parts.Length > 1 ? parts[1] : null;
+            if (parts[0].Equals("set", StringComparison.OrdinalIgnoreCase))
+            {
+                request.SetID = value;
+            }
+            else if (parts[0].Equals("unique", StringComparison.OrdinalIgnoreCase))
+            {
+                request.LegendaryID = value;
+            }
+            else if (value == null)
+            {
+                request.Effects.Add(new RequestedEffect { EffectType = parts[0] });
+            }
+            else if (float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out float effectValue))
+            {
+                request.Effects.Add(new RequestedEffect { EffectType = parts[0], EffectValue = effectValue });
+            }
+            else
+            {
+                Console.instance.Print($"> '{value}' is not a number. Use a period for decimals.");
+                return;
+            }
+        }
+
+        string json = JsonConvert.SerializeObject(request, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+        string error = null;
+        ItemDrop.ItemData item = API.CreateMagicItem(json, ref error);
+        if (item == null)
+        {
+            Console.instance.Print($"> CreateMagicItem failed: {error}");
+            return;
+        }
+
+        Console.instance.Print($"> Created {item.m_dropPrefab.name}: {API.GetMagicItemJson(item)}");
+        if (!player.GetInventory().AddItem(item))
+        {
+            Vector3 position = player.transform.position + player.transform.forward * 2f + Vector3.up;
+            ItemDrop.DropItem(item, item.m_stack, position, Quaternion.identity);
+            Console.instance.Print("> Inventory full: dropped it at your feet.");
         }
     }
 }

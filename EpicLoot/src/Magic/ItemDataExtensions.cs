@@ -1,6 +1,5 @@
 ﻿using BepInEx;
 using EpicLoot.Crafting;
-using EpicLoot.Data;
 using EpicLoot.LegendarySystem;
 using EpicLoot.MagicItemEffects;
 using EpicLoot.ShardStones;
@@ -17,8 +16,7 @@ public static class ItemDataExtensions
 {
     public static bool IsMagic(this ItemDrop.ItemData itemData)
     {
-        MagicItemComponent magicData = itemData.Data().Get<MagicItemComponent>();
-        return magicData != null && magicData.MagicItem != null;
+        return MagicItemData.Get(itemData) != null;
     }
 
     public static bool IsShardStone(this ItemDrop.ItemData itemData) {
@@ -29,13 +27,7 @@ public static class ItemDataExtensions
 
     public static bool IsUnidentified(this ItemDrop.ItemData itemData)
     {
-        MagicItemComponent mic = itemData.Data().Get<MagicItemComponent>();
-        if (mic == null || mic.MagicItem == null)
-        {
-            return false;
-        }
-
-        return mic.MagicItem.IsUnidentified;
+        return itemData.GetMagicItem()?.IsUnidentified ?? false;
     }
 
     public static bool IsMagic(this ItemDrop.ItemData itemData, out MagicItem magicItem)
@@ -109,31 +101,21 @@ public static class ItemDataExtensions
         return itemData.GetMagicItem()?.HasEffect(effectType, includeSocketed: includeSocketed) ?? false;
     }
 
-    public static void CreateMagicItem(this ItemDrop.ItemData itemData)
-    {
-        MagicItemComponent magicItem = itemData.Data().GetOrCreate<MagicItemComponent>();
-        itemData.SaveMagicItem(magicItem.MagicItem);
-    }
-
+    // The one write path for an item's magic: see MagicItemComponent.SetMagicItem for what a write entails.
     public static void SaveMagicItem(this ItemDrop.ItemData itemData, MagicItem magicItem)
     {
-        itemData.Data().GetOrCreate<MagicItemComponent>().SetMagicItem(magicItem);
+        MagicItemData.GetOrCreate(itemData).SetMagicItem(magicItem);
     }
 
-    public static bool IsExtended(this ItemDrop.ItemData itemData)
+    // Drops the item's magic data, leaving it mundane. Returns whether it had any.
+    public static bool RemoveMagicItem(this ItemDrop.ItemData itemData)
     {
-        return itemData.Data().Get<MagicItemComponent>() != null;
-    }
-
-    public static ItemDrop.ItemData Extended(this ItemDrop.ItemData itemData)
-    {
-        MagicItemComponent value = itemData.Data().GetOrCreate<MagicItemComponent>();
-        return value.Item;
+        return MagicItemData.Remove(itemData);
     }
 
     public static MagicItem GetMagicItem(this ItemDrop.ItemData itemData)
     {
-        return itemData.Data().Get<MagicItemComponent>()?.MagicItem;
+        return MagicItemData.Get(itemData)?.MagicItem;
     }
 
     public static string GetDisplayName(this ItemDrop.ItemData itemData)
@@ -331,48 +313,6 @@ public static class ItemDataExtensions
         return 0;
     }
 
-    public static List<string> GetSetPieces(string setName, bool isMundane)
-    {
-        if (!isMundane && UniqueLegendaryHelper.TryGetLegendarySetInfo(setName, out LegendarySetInfo setInfo))
-        {
-            return setInfo.LegendaryIDs;
-        }
-
-        return GetMundaneSetPieces(setName);
-    }
-
-    public static List<string> GetMundaneSetPieces(string setName)
-    {
-        // TODO: improve performace of this call
-        List<string> results = new List<string>();
-        // One entry per display token, not per prefab. Deep North registers SP_/FW_ NPC prop copies of
-        // set armour (SP_ArmorTrollLeatherChest, FW_CapeTrollHide, ...) that keep the real item's
-        // m_name and m_setName, so without this the troll set listed its tunic, pants and cape three times.
-        HashSet<string> seen = new HashSet<string>();
-        foreach (GameObject itemPrefab in ObjectDB.instance.m_items)
-        {
-            if (itemPrefab == null)
-            {
-                EpicLoot.LogError("Null Item left in ObjectDB! (This means that a prefab was deleted and not an instance)");
-                continue;
-            }
-
-            // Vanilla registers some non-item prefabs in ObjectDB.m_items (Deep North added
-            // PropFeastDeepNorth, SnowRoller and FrozenKing_Summon); its own lookups skip them too.
-            if (!itemPrefab.TryGetComponent(out ItemDrop itemDrop))
-            {
-                continue;
-            }
-
-            if (itemDrop.m_itemData.m_shared.m_setName == setName && seen.Add(itemDrop.m_itemData.m_shared.m_name))
-            {
-                results.Add(itemDrop.m_itemData.m_shared.m_name);
-            }
-        }
-
-        return results;
-    }
-
     /// <summary>
     /// Restores a real item prefab to <see cref="ItemDrop.ItemData.m_dropPrefab"/> when it is missing or has
     /// been replaced by <see cref="EpicAssets.DummyName"/>.
@@ -457,14 +397,15 @@ public static class ItemDataExtensions
     }
 
     /// <summary>
-    /// Copies the MagicItemComponent Magic Item from the drop prefab to set the magic data on this instance.
+    /// Gives a fresh instance the magic its prefab carries, and a vanilla item the magic it is born with.
+    /// Runs on ItemDrop.Awake and on every Inventory and Container load.
     /// </summary>
     public static void InitializeCustomData(this ItemDrop.ItemData itemData)
     {
         // Opening a pre-1.0 world runs ZDOMan.ConvertContainers, which loads and re-saves every chest through
         // a temporary Inventory. Its items are bare ItemData (AddTempItem sets m_dropPrefab, never m_shared),
-        // and the Inventory.Load postfix still sees them: MagicItemComponent.FirstLoad reading m_shared.m_name
-        // threw out of ZNet.LoadOldWorld and aborted the world load. Skipping loses nothing -- vanilla writes
+        // and the Inventory.Load postfix still sees them: reading m_shared.m_name here threw out of
+        // ZNet.LoadOldWorld and aborted the world load. Skipping loses nothing -- vanilla writes
         // m_customData back verbatim, and the item is initialized for real when the chest is next loaded.
         if (itemData?.m_shared == null)
         {
@@ -498,226 +439,26 @@ public static class ItemDataExtensions
             return;
         }
 
-        if (EpicLoot.CanBeMagicItem(itemDropPrefab.m_itemData) && !itemData.IsExtended())
-        {
-            MagicItemComponent instanceData = itemData.Data().Add<MagicItemComponent>();
-            MagicItemComponent prefabData = itemDropPrefab.m_itemData.Data().Get<MagicItemComponent>();
+        // A prefab's own magic (a shardstone's rarity, an unidentified item, a Brokkr's Gift, a crafting
+        // material) reaches every instance made from it, so instances stack with each other and with the
+        // ones a save already holds.
+        MagicItemData.CopyFromPrefab(itemData, itemDropPrefab.m_itemData);
 
-            if (instanceData != null && prefabData != null)
-            {
-                instanceData.SetMagicItem(prefabData.MagicItem);
-            }
-        }
-    }
-
-    public static string GetSetTooltip(this ItemDrop.ItemData item)
-    {
-        if (item == null || Player.m_localPlayer == null)
+        // A few vanilla items are magic by nature (the Dverger circlet, Megingjord, the Wishbone): an
+        // instance with no magic of its own gets its preset, quietly, as on every load. Not when the item
+        // is kept from being magic by config, as before.
+        if (!MagicItemData.HasMagicData(itemData) && EpicLoot.CanBeMagicItem(itemDropPrefab.m_itemData) &&
+            MagicItemComponent.VanillaMagicFor(itemData.m_shared.m_name) is MagicItem preset)
         {
-            return String.Empty;
+            MagicItemData.GetOrCreate(itemData).SetMagicItemQuietly(preset);
         }
 
-        StringBuilder text = new StringBuilder();
-
-        try
+        // A stackable item's magic is compared as text when stacks merge, so a saved stack is read once here,
+        // which brings text from an older build's serializer up to date (MagicItemComponent.Reload) before
+        // a fresh drop is held against it.
+        if (itemData.m_shared.m_maxStackSize > 1 && MagicItemData.HasMagicData(itemData))
         {
-            // TODO: Clean up code associated with set data
-            text.Append(GetMundaneSetTooltip(item));
-            text.Append(GetMagicSetTooltip(item));
-        }
-        catch (Exception e)
-        {
-            EpicLoot.LogWarning($"[GetSetTooltip] Error on item {item.m_shared?.m_name} - {e.Message}");
-        }
-
-        return text.ToString();
-    }
-
-    public static string GetMundaneSetTooltip(ItemDrop.ItemData item)
-    {
-        if (string.IsNullOrEmpty(item.m_shared.m_setName))
-        {
-            return String.Empty;
-        }
-
-        string setID = item.m_shared.m_setName;
-        int setSize = item.m_shared.m_setSize;
-
-        return GetSetTooltip(item, setID, setSize, true);
-    }
-
-    public static string GetMagicSetTooltip(ItemDrop.ItemData item)
-    {
-        string setID = item.GetSetID(out bool isMundane);
-
-        if (isMundane)
-        {
-            return String.Empty;
-        }
-
-        int setSize = item.GetSetSize(setID, isMundane);
-
-        return GetSetTooltip(item, setID, setSize, false);
-    }
-
-    private static string GetSetTooltip(ItemDrop.ItemData item, string setID, int setSize, bool isMundane)
-    {
-        if (!isMundane)
-        {
-            LegendarySetInfo magicSetInfo = item.GetLegendarySetInfo();
-            if (magicSetInfo != null)
-            {
-                return GetMagicSetTooltip(item, magicSetInfo);
-            }
-        }
-
-        StringBuilder text = new StringBuilder();
-        List<string> setPieces = GetSetPieces(setID, isMundane);
-        List<ItemDrop.ItemData> currentSetEquipped = Player.m_localPlayer.GetEquippedSetPieces(setID);
-
-        string setDisplayName = GetSetDisplayName(item, isMundane);
-        text.Append($"\n\n<color={EpicLoot.GetSetItemColor()}> $mod_epicloot_set: " +
-            $"{setDisplayName} ({currentSetEquipped.Count}/{setSize}):</color>");
-
-        foreach (string setItemName in setPieces)
-        {
-            bool isEquipped = IsSetItemEquipped(currentSetEquipped, setItemName, isMundane);
-            string color = isEquipped ? "white" : "#808080ff";
-            string displayName = GetSetItemDisplayName(setItemName, isMundane);
-            text.Append($"\n  <color={color}>{displayName}</color>");
-        }
-
-        // A magic set only gets here when its ID is not in legendaries.json (any more): no bonuses to list.
-        if (isMundane)
-        {
-            string setEffectColor = currentSetEquipped.Count == setSize ? EpicLoot.GetSetItemColor() : "#808080ff";
-            float skillLevel = Player.m_localPlayer.GetSkillLevel(item.m_shared.m_skillType);
-            text.Append($"\n<color={setEffectColor}>({setSize}) ‣ " +
-                $"{item.GetSetStatusEffectTooltip(item.m_quality, skillLevel).Replace("\n", " ")}</color>");
-        }
-
-        return text.ToString();
-    }
-
-    // Counts the way bonus application does (SetBonusEvaluator): equipment providers included, each piece
-    // once, each bonus at its own tier.
-    private static string GetMagicSetTooltip(ItemDrop.ItemData item, LegendarySetInfo setInfo)
-    {
-        const string inactiveColor = "#808080ff";
-        StringBuilder text = new StringBuilder();
-        LegendarySetProgress progress = SetBonusEvaluator.GetSetProgress(Player.m_localPlayer, setInfo);
-
-        text.Append($"\n\n<color={EpicLoot.GetSetItemColor()}> $mod_epicloot_set: " +
-            $"{GetSetDisplayName(item, false)} ({progress.Count}/{progress.FullCount}):</color>");
-
-        foreach (string pieceID in setInfo.LegendaryIDs.Distinct())
-        {
-            // An equipped piece shows in the rarity it is worn at, which is what its bonuses tier by.
-            string color = progress.EquippedPieces.TryGetValue(pieceID, out ItemRarity pieceRarity)
-                ? EpicLoot.GetRarityColor(pieceRarity)
-                : inactiveColor;
-            text.Append($"\n  <color={color}>{GetSetItemDisplayName(pieceID, false)}</color>");
-        }
-
-        ItemRarity itemRarity = item.GetRarity();
-        // Shift (the left trigger on a gamepad) puts each bonus's description under its line, as it does for the
-        // item's own effects. No range, since a bonus has one value per tier, and no Config lines: the description
-        // states the numbers that matter, and the bigger bonuses carry a dozen tuning keys.
-        bool showDetails = MagicItem.ShowEffectDetails;
-        foreach (SetBonusInfo setBonusInfo in setInfo.SetBonuses.OrderBy(x => x.Count))
-        {
-            if (setBonusInfo.Effect == null)
-            {
-                continue;
-            }
-
-            if (!MagicItemEffectDefinitions.TryGet(setBonusInfo.Effect.Type, out MagicItemEffectDefinition effectDef))
-            {
-                EpicLoot.LogError($"Set Tooltip: Could not find effect ({setBonusInfo.Effect.Type}) " +
-                    $"for set ({setInfo.ID}) bonus ({setBonusInfo.Count})!");
-                continue;
-            }
-
-            // An inactive bonus previews the value it would have at the hovered item's rarity.
-            ItemRarity? tier = progress.GetTier(setBonusInfo);
-            float value = SetBonusEvaluator.GetBonusValue(setBonusInfo, tier ?? itemRarity);
-            string display = MagicItem.GetEffectText(effectDef, value);
-
-            // The tier only changes anything when the bonus has per-rarity values.
-            string tierTag = tier.HasValue && setBonusInfo.Effect.ValuesPerRarity != null
-                ? $" <color={EpicLoot.GetRarityColor(tier.Value)}>({EpicLoot.GetRarityDisplayName(tier.Value)})</color>"
-                : "";
-
-            text.Append($"\n<color={(tier.HasValue ? EpicLoot.GetSetItemColor() : inactiveColor)}>" +
-                $"({setBonusInfo.Count}) ‣ {display}</color>{tierTag}");
-
-            string detail = showDetails ? SetDescriptions.DescribeSetBonusDetail(effectDef, value) : "";
-            if (detail.Length > 0)
-            {
-                text.Append($"\n<color={(tier.HasValue ? "#c0c0c0ff" : inactiveColor)}>    {detail}</color>");
-            }
-
-            string activationKey = showDetails ? SetAbilityKeys.DescribeActivationKey(effectDef) : "";
-            if (activationKey.Length > 0)
-            {
-                text.Append($"\n<color={(tier.HasValue ? "#c0c0c0ff" : inactiveColor)}>    {activationKey}</color>");
-            }
-        }
-
-        return text.ToString();
-    }
-
-    private static string GetSetItemDisplayName(string setItemName, bool isMundane)
-    {
-        if (isMundane)
-        {
-            return setItemName;
-        }
-        else if (UniqueLegendaryHelper.TryGetLegendaryInfo(setItemName, out LegendaryInfo itemInfo))
-        {
-            return itemInfo.Name;
-        }
-
-        return setItemName;
-    }
-
-    public static string GetSetDisplayName(ItemDrop.ItemData item, bool isMundane)
-    {
-        if (!isMundane)
-        {
-            LegendarySetInfo setInfo = item.GetLegendarySetInfo();
-            if (setInfo != null)
-            {
-                return setInfo.Name;
-            }
-            else
-            {
-                return $"{item.GetSetID()}";
-            }
-        }
-
-        if (item.m_shared.m_setStatusEffect != null && !item.m_shared.m_setStatusEffect.m_name.IsNullOrWhiteSpace())
-        {
-            return item.m_shared.m_setStatusEffect.m_name;
-        }
-
-        if (!item.m_shared.m_setName.IsNullOrWhiteSpace())
-        {
-            return item.m_shared.m_setName;
-        }
-
-        return "<unknown set>";
-    }
-
-    public static bool IsSetItemEquipped(List<ItemDrop.ItemData> currentSetEquipped, string setItemName, bool isMundane)
-    {
-        if (isMundane)
-        {
-            return currentSetEquipped.Find(x => x.m_shared.m_name == setItemName) != null;
-        }
-        else
-        {
-            return currentSetEquipped.Find(x => x.IsMagic(out MagicItem magicItem) && magicItem.LegendaryID == setItemName) != null;
+            MagicItemData.Get(itemData);
         }
     }
 }

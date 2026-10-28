@@ -6,18 +6,20 @@ using HarmonyLib;
 namespace EpicLoot.Compatibility;
 
 /// <summary>
-/// Detects items that another mod has turned into a container -- a backpack, a quiver, a pouch --
-/// using the Backpacks <c>ItemContainer</c> pattern. Those items already own the "Use" press while the
-/// inventory is open (the container's own hint reads "Press [Use] to open"), which is the same gesture
-/// the ShardStone socket overlay uses, so EpicLoot has to know to stand aside.
+/// Detects items that another mod has turned into a container -- a backpack, a quiver, a pouch. Those
+/// items already own the "Use" press while the inventory is open (the container's own hint reads "Press
+/// [Use] to open"), so EpicLoot has to know to stand aside: Keep Inventory Open Over Items leaves their
+/// Use alone, and a Socket Overlay Shortcut that is only the Use key does not open their shard slots.
 ///
-/// Soft in every direction: no assembly reference, no BepInDependency, and any failure degrades to
-/// "not a container", which restores the pre-existing behaviour rather than taking anything down.
+/// Three sources, cheapest first: containers registered through <see cref="API.RegisterItemContainer"/>,
+/// BowsBeforeHoes 2.x quivers (<see cref="BowsBeforeHoesCompat"/>), and anything built on the Backpacks
+/// <c>ItemContainer</c> pattern. Soft in every direction: no assembly reference, and any failure degrades
+/// to "not a container", which restores the pre-existing behaviour rather than taking anything down.
 /// </summary>
 public static class ForeignItemContainers
 {
     // Every ItemContainer namespaces its custom data under the Backpacks GUID, whichever mod actually
-    // declares the subclass -- BowsBeforeHoes, for one, explicitly forces its bundled ItemDataManager
+    // declares the subclass -- BowsBeforeHoes 1.x, for one, explicitly forces its bundled ItemDataManager
     // copy's _modGuid to this value so its quiver shares that space.
     private const string BackpacksGuid = "org.bepinex.plugins.backpacks";
     private const string KeyPrefix = BackpacksGuid + "#";
@@ -53,8 +55,18 @@ public static class ForeignItemContainers
     /// </summary>
     public static bool HasContainer(ItemDrop.ItemData item)
     {
+        if (item == null)
+        {
+            return false;
+        }
+
+        if (API.IsRegisteredItemContainer(item) || BowsBeforeHoesCompat.IsQuiver(item))
+        {
+            return true;
+        }
+
         // Free when Backpacks is not installed, which is the overwhelmingly common case.
-        if (!BackpacksPresent || item?.m_customData == null || item.m_customData.Count == 0)
+        if (!BackpacksPresent || item.m_customData == null || item.m_customData.Count == 0)
         {
             return false;
         }
@@ -85,9 +97,9 @@ public static class ForeignItemContainers
         return false;
     }
 
-    // The custom data is read directly rather than through ItemExtensions.Data(item, mod) /
-    // ForeignItemInfo on purpose: that bridge only enumerates data the owning mod has already
-    // materialised, so it can report nothing depending on load order. The raw keys are always there.
+    // The custom data is read directly: the keys another mod's ItemDataManager copy writes are always
+    // there, whatever the load order, while asking that mod's own layer for its data can report nothing
+    // until it has materialised the entry.
     private static bool IsContainerKey(string customDataKey)
     {
         if (ContainerKeys.TryGetValue(customDataKey, out bool known))

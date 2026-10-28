@@ -16,9 +16,14 @@ public static partial class API
     ///     item slot and icon decoration.
     /// 2 - Adventure: GetActiveBounties, GetBountyPinType, adventure-data-changed and bounty-target-slain
     ///     events.
+    /// 3 - Item tooltip: GetItemTooltipData, tooltip editors (AddTooltipEditor), SetTooltipOverride /
+    ///     IsTooltipOverridden, GetItemTooltipWithoutEpicLoot; GetSetItemColor. Item containers:
+    ///     RegisterItemContainer / UnregisterItemContainer, IsShardSlotPress.
+    /// 4 - Item creation: CreateMagicItem (an item or etched runestone with the given effects, unique or
+    ///     set); the Create change reason.
     /// </remarks>
     [PublicAPI]
-    public const int ApiVersion = 2;
+    public const int ApiVersion = 4;
 
     /// <returns><see cref="ApiVersion"/>, as a call so reflection consumers can read it without
     /// resolving a const field (which would be inlined at their compile time, not ours).</returns>

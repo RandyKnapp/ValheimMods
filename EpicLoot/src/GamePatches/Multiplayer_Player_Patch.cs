@@ -1,5 +1,4 @@
-﻿using EpicLoot.Data;
-using EpicLoot.LegendarySystem;
+﻿using EpicLoot.LegendarySystem;
 using EpicLoot.Magic.MagicItemEffects;
 using EpicLoot.MagicItemEffects.Shards;
 using HarmonyLib;
@@ -168,9 +167,8 @@ namespace EpicLoot
                     // carries no ItemDrop component every later InitializeCustomData on that item throws.
                     itemData.m_dropPrefab = itemPrefab;
                     itemData.m_durability = float.PositiveInfinity;
-                    MagicItemComponent magicItemComponent = itemData.Data().GetOrCreate<MagicItemComponent>();
                     MagicItem stubMagicItem = new MagicItem { Rarity = ItemRarity.Legendary, LegendaryID = zdoLegendaryID };
-                    magicItemComponent.SetMagicItem(stubMagicItem);
+                    itemData.SaveMagicItem(stubMagicItem);
 
                     ForceResetVisEquipment(player, itemData);
                 }

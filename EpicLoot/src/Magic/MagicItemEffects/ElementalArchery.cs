@@ -65,6 +65,16 @@ namespace EpicLoot.MagicItemEffects
             }
         }
 
+        // The same scope as the GetTooltip patch below, for tooltip data worked out without going through
+        // GetTooltip (ItemTooltip.GetData, called by the API).
+        internal static bool EnterTooltipScope(ItemDrop.ItemData item)
+        {
+            Enter(IsActiveFor(Player.m_localPlayer, item), out bool entered);
+            return entered;
+        }
+
+        internal static void ExitTooltipScope(bool entered) => Exit(entered);
+
         private static void Remap(Skills skills, ref Skills.SkillType skillType)
         {
             if (_scopeDepth > 0 && skillType == Skills.SkillType.Bows && skills.m_player != null &&
@@ -171,7 +181,7 @@ namespace EpicLoot.MagicItemEffects
             private static void Finalizer(bool __state) => Exit(__state);
         }
 
-        // The tooltip's damage range and skill level, vanilla's and EpicLoot's alike (MagicTooltip runs inside
+        // The tooltip's damage range and skill level, vanilla's and EpicLoot's alike (TooltipRenderer runs inside
         // this method). Priority.First so the scope is open before EpicLoot's tooltip prefix builds the text.
         [HarmonyPatch(typeof(ItemDrop.ItemData), nameof(ItemDrop.ItemData.GetTooltip),
             typeof(ItemDrop.ItemData), typeof(int), typeof(bool), typeof(float), typeof(int), typeof(bool))]

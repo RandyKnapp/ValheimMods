@@ -17,7 +17,7 @@ PrefabInstance:
     - target: {fileID: 5550469526758701954, guid: 434945b336ef6334381688f8ea97f63c,
         type: 3}
       propertyPath: m_itemData.m_variant
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5550469526758701954, guid: 434945b336ef6334381688f8ea97f63c,
         type: 3}
@@ -28,6 +28,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_itemData.m_shared.m_ammoType
       value: _|ShardStone
+      objectReference: {fileID: 0}
+    - target: {fileID: 5550469526758701954, guid: 434945b336ef6334381688f8ea97f63c,
+        type: 3}
+      propertyPath: m_itemData.m_shared.m_variants
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5550469526758701954, guid: 434945b336ef6334381688f8ea97f63c,
         type: 3}

@@ -30,6 +30,9 @@ public static partial class API
         public const string Transfer = "Transfer";
         public const string AddSocket = "AddSocket";
 
+        /// <summary>A new item made by <see cref="CreateMagicItem"/>, not yet in any inventory.</summary>
+        public const string Create = "Create";
+
         /// <summary>
         /// A write that has no dedicated call site. Every magic-data write funnels through
         /// <c>MagicItemComponent.SetMagicItem</c>, so this is the catch-all that guarantees coverage.
@@ -47,8 +50,9 @@ public static partial class API
     // without this a single enchant would report both "Enchant" and "Unspecified".
     private static string _activeChangeReason;
 
-    // Item load is not a change: MagicItemComponent.Load/FirstLoad call SetMagicItem to normalize data
-    // on every item that enters the world, which would otherwise flood listeners at world load.
+    // Item load is not a change: a MagicItemComponent that corrects stored data while loading, or a vanilla
+    // item given the magic it is born with, writes through SetMagicItem on items entering the world, which
+    // would otherwise flood listeners at world load.
     internal static bool SuppressChangeEvents;
 
     private static void LogListenerFailure(string family, Exception ex)

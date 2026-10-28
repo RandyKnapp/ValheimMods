@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Emit;
-using System.Threading;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -42,25 +41,20 @@ public static class InventoryGrid_UpdateGui_MagicItemComponent_Patch
         API.ApplyMagicItemBackground(element.gameObject, element.m_equiped.gameObject, itemData, true);
     }
 
+    // Both sites are found first and the method is only changed when both are there: one without the other either
+    // hides every magic background or leaves them on emptied cells. Nothing throws, so a reshaped method costs the
+    // backgrounds and nothing else.
     [UsedImplicitly]
     public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
     {
-        bool successPatch1 = false;
-        bool successPatch2 = false;
         List<CodeInstruction> instrs = instructions.ToList();
-
-        int counter = 0;
-
-        CodeInstruction LogMessage(CodeInstruction instruction)
-        {
-            //EpicLoot.Log($"IL_{counter}: Opcode: {instruction.opcode} Operand: {instruction.operand}");
-            return instruction;
-        }
 
         System.Reflection.FieldInfo elementUsedField =
             AccessTools.DeclaredField(typeof(InventoryElement), nameof(InventoryElement.m_used));
         System.Reflection.FieldInfo elementQueuedField =
             AccessTools.DeclaredField(typeof(InventoryElement), nameof(InventoryElement.m_queued));
+        System.Reflection.FieldInfo itemEquippedField =
+            AccessTools.DeclaredField(typeof(ItemDrop.ItemData), nameof(ItemDrop.ItemData.m_equipped));
 
         // Vanilla clears every cell at the top of UpdateGui:
         //     foreach (InventoryElement element in m_elements) { element.m_used = false; ... }
@@ -85,74 +79,89 @@ public static class InventoryGrid_UpdateGui_MagicItemComponent_Patch
             return instrs[j].opcode == OpCodes.Call && instrs[j - 1].opcode == OpCodes.Ldloca_S;
         }
 
+        // `element.m_queued.enabled = (bool)player && ...` loads the cell but not the item. The item is the local
+        // the line above reads m_equipped from (`element.m_equiped.enabled = (bool)player && item.m_equipped`), so
+        // it is looked up by that field and must be an ItemData local, rather than taken from a fixed offset.
+        bool IsItemSite(int i, out object itemLocal)
+        {
+            itemLocal = null;
+            if (i < 2 || i + 3 >= instrs.Count || instrs[i].opcode != OpCodes.Ldloc_S ||
+                instrs[i + 1].opcode != OpCodes.Ldfld || !elementQueuedField.Equals(instrs[i + 1].operand) ||
+                instrs[i + 2].opcode != OpCodes.Ldarg_1 || instrs[i + 3].opcode != OpCodes.Call)
+            {
+                return false;
+            }
+
+            for (int k = i - 1; k >= 1 && k >= i - 8; k--)
+            {
+                if (instrs[k].opcode == OpCodes.Ldfld && itemEquippedField.Equals(instrs[k].operand))
+                {
+                    if (instrs[k - 1].opcode == OpCodes.Ldloc_S && instrs[k - 1].operand is LocalBuilder local &&
+                        local.LocalType == typeof(ItemDrop.ItemData))
+                    {
+                        itemLocal = local;
+                        return true;
+                    }
+
+                    return false;
+                }
+            }
+
+            return false;
+        }
+
+        HashSet<int> clearStores = new HashSet<int>();
+        Dictionary<int, object> itemSites = new Dictionary<int, object>();
+        for (int i = 0; i < instrs.Count; ++i)
+        {
+            if (IsElementClearStore(i))
+            {
+                clearStores.Add(i);
+            }
+            else if (IsItemSite(i, out object itemLocal))
+            {
+                itemSites.Add(i, itemLocal);
+            }
+        }
+
+        if (clearStores.Count == 0 || itemSites.Count == 0)
+        {
+            EpicLoot.LogWarningForce("Could not find where InventoryGrid.UpdateGui " +
+                (clearStores.Count == 0 ? "clears its cells" : "draws each item") +
+                ", so magic items in the inventory will not show their rarity background. " +
+                "Another mod may have changed that method.");
+            return instrs;
+        }
+
+        List<CodeInstruction> patched = new List<CodeInstruction>(instrs.Count + 3 * itemSites.Count);
         for (int i = 0; i < instrs.Count; ++i)
         {
             // Replacing the stfld with the call is stack-neutral - both consume (element, bool) and
             // return nothing - so the duplicate the `dup` left for m_canBeDroppedOn survives intact.
-            if (IsElementClearStore(i))
+            if (clearStores.Contains(i))
             {
-                //Element Spot
                 CodeInstruction callInstruction = new CodeInstruction(OpCodes.Call,
                     AccessTools.DeclaredMethod(typeof(InventoryGrid_UpdateGui_MagicItemComponent_Patch), nameof(UpdateGuiElements)));
-                //Move Any Labels from the instruction position being patched to new instruction.
-                if (instrs[i].labels.Count > 0)
-                {
-                    instrs[i].MoveLabelsTo(callInstruction);
-                }
-
-                //Get Element variable
-                yield return LogMessage(callInstruction);
-                counter++;
-
-                //Skip Stfld Instruction
-                i++;
-
-                successPatch1 = true;
-
+                instrs[i].MoveLabelsTo(callInstruction);
+                patched.Add(callInstruction);
+                continue;
             }
-            else if (i > 6 && instrs[i].opcode == OpCodes.Ldloc_S &&
-                instrs[i + 1].opcode == OpCodes.Ldfld &&
-                instrs[i + 1].operand.Equals(elementQueuedField) &&
-                instrs[i + 2].opcode == OpCodes.Ldarg_1 &&
-                instrs[i + 3].opcode == OpCodes.Call)
+
+            if (itemSites.TryGetValue(i, out object itemLocal))
             {
-                //Item Spot
-                object elementOperand = instrs[i].operand;
-                object itemDataOperand = instrs[i - 5].operand;
-
-                CodeInstruction ldLocsInstruction = new CodeInstruction(OpCodes.Ldloc_S, itemDataOperand);
-                //Move Any Labels from the instruction position being patched to new instruction.
-                if (instrs[i].labels.Count > 0)
-                {
-                    instrs[i].MoveLabelsTo(ldLocsInstruction);
-                }
-
-                //Get Item variable
-                yield return LogMessage(ldLocsInstruction);
-                counter++;
-
-                //Get Element variable
-                yield return LogMessage(new CodeInstruction(OpCodes.Ldloc_S, elementOperand));
-                counter++;
-
-                //Patch Calling Method
-                yield return LogMessage(new CodeInstruction(OpCodes.Call,
+                // UpdateGuiItems(item, element), ahead of the m_queued line; that line's labels move to its start.
+                CodeInstruction loadItem = new CodeInstruction(OpCodes.Ldloc_S, itemLocal);
+                instrs[i].MoveLabelsTo(loadItem);
+                patched.Add(loadItem);
+                patched.Add(new CodeInstruction(OpCodes.Ldloc_S, instrs[i].operand));
+                patched.Add(new CodeInstruction(OpCodes.Call,
                     AccessTools.DeclaredMethod(typeof(InventoryGrid_UpdateGui_MagicItemComponent_Patch), nameof(UpdateGuiItems))));
-                counter++;
-                successPatch2 = true;
             }
 
-            yield return LogMessage(instrs[i]);
-            counter++;
+            patched.Add(instrs[i]);
         }
 
-        if (!successPatch2 || !successPatch1)
-        {
-            EpicLoot.LogError($"InventoryGrid.UpdateGui Transpiler Failed To Patch");
-            EpicLoot.LogError($"!successPatch1: {!successPatch1}");
-            EpicLoot.LogError($"!successPatch2: {!successPatch2}");
-            Thread.Sleep(5000);
-        }
+        return patched;
     }
 }
 
@@ -178,20 +187,11 @@ public static class HotkeyBar_UpdateIcons_Patch
         API.ApplyMagicItemBackground(element.m_go, element.m_equiped, itemData, false);
     }
 
+    // As the inventory grid's: both sites are found first, and the method is only changed when both are there.
     [UsedImplicitly]
     public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
     {
         List<CodeInstruction> instrs = instructions.ToList();
-        bool successPatch1 = false;
-        bool successPatch2 = false;
-
-        int counter = 0;
-
-        CodeInstruction LogMessage(CodeInstruction instruction)
-        {
-            //EpicLoot.Log($"IL_{counter}: Opcode: {instruction.opcode} Operand: {instruction.operand}");
-            return instruction;
-        }
 
         System.Reflection.FieldInfo elementDataEquipedField =
             AccessTools.DeclaredField(typeof(HotkeyBar.ElementData), nameof(HotkeyBar.ElementData.m_equiped));
@@ -202,75 +202,74 @@ public static class HotkeyBar_UpdateIcons_Patch
         System.Reflection.FieldInfo elementUsedField =
             AccessTools.DeclaredField(typeof(HotkeyBar.ElementData), nameof(HotkeyBar.ElementData.m_used));
 
-        for (int i = 0; i < instrs.Count; ++i)
+        // `foreach (ElementData element in m_elements) element.m_used = false;`
+        bool IsElementClearStore(int i)
         {
-            if (i > 6 && instrs[i].opcode == OpCodes.Stfld &&
-                instrs[i].operand.Equals(elementUsedField) &&
+            return i >= 3 && instrs[i].opcode == OpCodes.Stfld && elementUsedField.Equals(instrs[i].operand) &&
                 instrs[i - 1].opcode == OpCodes.Ldc_I4_0 &&
                 instrs[i - 2].opcode == OpCodes.Call &&
-                instrs[i - 3].opcode == OpCodes.Ldloca_S)
+                instrs[i - 3].opcode == OpCodes.Ldloca_S;
+        }
+
+        // `element.m_equiped.SetActive(item.m_equipped);` -- the element and item locals are the two it loads.
+        bool IsEquippedSite(int i)
+        {
+            return i >= 4 && instrs[i].opcode == OpCodes.Callvirt && setActiveMethod.Equals(instrs[i].operand) &&
+                instrs[i - 1].opcode == OpCodes.Ldfld && itemDataEquipedField.Equals(instrs[i - 1].operand) &&
+                instrs[i - 2].opcode == OpCodes.Ldloc_S &&
+                instrs[i - 3].opcode == OpCodes.Ldfld && elementDataEquipedField.Equals(instrs[i - 3].operand) &&
+                instrs[i - 4].opcode == OpCodes.Ldloc_S;
+        }
+
+        HashSet<int> clearStores = new HashSet<int>();
+        HashSet<int> equippedSites = new HashSet<int>();
+        for (int i = 0; i < instrs.Count; ++i)
+        {
+            if (IsElementClearStore(i))
             {
-                //Element Spot
+                clearStores.Add(i);
+            }
+            else if (IsEquippedSite(i))
+            {
+                equippedSites.Add(i);
+            }
+        }
+
+        if (clearStores.Count == 0 || equippedSites.Count == 0)
+        {
+            EpicLoot.LogWarningForce("Could not find where HotkeyBar.UpdateIcons " +
+                (clearStores.Count == 0 ? "clears its slots" : "marks equipped items") +
+                ", so magic items on the hotbar will not show their rarity background. " +
+                "Another mod may have changed that method.");
+            return instrs;
+        }
+
+        List<CodeInstruction> patched = new List<CodeInstruction>(instrs.Count + 3 * equippedSites.Count);
+        for (int i = 0; i < instrs.Count; ++i)
+        {
+            // Stack-neutral like the inventory grid's: the call consumes the (element, bool) the stfld did.
+            if (clearStores.Contains(i))
+            {
                 CodeInstruction callInstruction = new CodeInstruction(OpCodes.Call,
                     AccessTools.DeclaredMethod(typeof(HotkeyBar_UpdateIcons_Patch), nameof(UpdateElements)));
-                //Move Any Labels from the instruction position being patched to new instruction.
-                if (instrs[i].labels.Count > 0)
-                {
-                    instrs[i].MoveLabelsTo(callInstruction);
-                }
-
-                //Get Element variable
-                yield return LogMessage(callInstruction);
-                counter++;
-
-                //Skip Stfld Instruction
-                i++;
-                successPatch1 = true;
+                instrs[i].MoveLabelsTo(callInstruction);
+                patched.Add(callInstruction);
+                continue;
             }
 
-            yield return LogMessage(instrs[i]);
-            counter++;
+            patched.Add(instrs[i]);
 
-            if (i > 6 && instrs[i].opcode == OpCodes.Callvirt &&
-                instrs[i].operand.Equals(setActiveMethod) &&
-                instrs[i - 1].opcode == OpCodes.Ldfld &&
-                instrs[i - 1].operand.Equals(itemDataEquipedField) &&
-                instrs[i - 2].opcode == OpCodes.Ldloc_S &&
-                instrs[i - 3].opcode == OpCodes.Ldfld &&
-                instrs[i - 3].operand.Equals(elementDataEquipedField) &&
-                instrs[i - 4].opcode == OpCodes.Ldloc_S)
+            if (equippedSites.Contains(i))
             {
-                object elementOperand = instrs[i - 4].operand;
-                object itemDataOperand = instrs[i - 2].operand;
-
-                CodeInstruction ldLocInstruction = new CodeInstruction(OpCodes.Ldloc_S, elementOperand);
-                //Move Any Labels from the instruction position being patched to new instruction.
-                if (instrs[i].labels.Count > 0)
-                    instrs[i].MoveLabelsTo(ldLocInstruction);
-
-                //Get Element
-                yield return LogMessage(ldLocInstruction);
-                counter++;
-
-                //Get Item Data
-                yield return LogMessage(new CodeInstruction(OpCodes.Ldloc_S, itemDataOperand));
-                counter++;
-
-                //Patch Calling Method
-                yield return LogMessage(new CodeInstruction(OpCodes.Call,
+                // UpdateIcons(element, item), right after the SetActive.
+                patched.Add(new CodeInstruction(OpCodes.Ldloc_S, instrs[i - 4].operand));
+                patched.Add(new CodeInstruction(OpCodes.Ldloc_S, instrs[i - 2].operand));
+                patched.Add(new CodeInstruction(OpCodes.Call,
                     AccessTools.DeclaredMethod(typeof(HotkeyBar_UpdateIcons_Patch), nameof(UpdateIcons))));
-                counter++;
-                successPatch2 = true;
             }
         }
 
-        if (!successPatch2 || !successPatch1)
-        {
-            EpicLoot.LogError($"HotkeyBar.UpdateIcons Transpiler Failed To Patch");
-            EpicLoot.LogError($"!successPatch1: {!successPatch1}");
-            EpicLoot.LogError($"!successPatch2: {!successPatch2}");
-            Thread.Sleep(5000);
-        }
+        return patched;
     }
 }
 

@@ -4,7 +4,6 @@ using EpicLoot.Adventure;
 using EpicLoot.Biomes;
 using EpicLoot.Config;
 using EpicLoot.Crafting;
-using EpicLoot.Data;
 using EpicLoot.GatedItemType;
 using EpicLoot.General;
 using EpicLoot.LegendarySystem;
@@ -56,7 +55,7 @@ namespace EpicLoot
         // with no set of its own — a modded biome, or Heightmap.Biome.None.
         private const string DefaultShardStoneSet = "ShardStone_None";
 
-        // Ceiling on how many sockets a SocketCounts entry may ask for. SocketsUI builds its inventory
+        // Ceiling on how many sockets a SocketCounts entry may ask for. ShardUI builds its slot panel
         // row directly from the socket count, so a runaway config value would break the UI.
         public const int MaxSocketCount = 6;
 
@@ -651,7 +650,6 @@ namespace EpicLoot
                             continue;
                         }
 
-                        var magicItemComponent = itemDrop.m_itemData.Data().GetOrCreate<MagicItemComponent>();
                         var magicItem = RollMagicItem(itemRollRarity, itemDrop.m_itemData, luckFactor, powerLevelMod);
 
                         if (CheatForceMagicEffect)
@@ -659,7 +657,7 @@ namespace EpicLoot
                             AddDebugMagicEffects(magicItem);
                         }
 
-                        API.WithChangeReason(API.ChangeReason.LootRoll, () => magicItemComponent.SetMagicItem(magicItem));
+                        API.WithChangeReason(API.ChangeReason.LootRoll, () => itemDrop.m_itemData.SaveMagicItem(magicItem));
                         itemDrop.Save();
                         InitializeMagicItem(itemDrop.m_itemData);
                         API.RaiseLootGenerated(itemDrop.m_itemData);
@@ -1019,8 +1017,7 @@ namespace EpicLoot
             }
 
             // Ensure that the unidentified item has the correct magic item data for the rarity
-            var mic = itemData.Data().GetOrCreate<MagicItemComponent>();
-            mic.SetMagicItem(new MagicItem
+            itemData.SaveMagicItem(new MagicItem
             {
                 Rarity = rarity,
                 IsUnidentified = true,
@@ -1123,7 +1120,6 @@ namespace EpicLoot
 
             if (itemData != null && EpicLoot.CanBeMagicItem(itemData) && !ArrayUtils.IsNullOrEmpty(lootDrop.Rarity))
             {
-                var magicItemComponent = itemData.Data().GetOrCreate<MagicItemComponent>();
                 var magicItem = RollMagicItem(lootDrop, itemData, luckFactor);
 
                 if (CheatForceMagicEffect)
@@ -1131,7 +1127,7 @@ namespace EpicLoot
                     AddDebugMagicEffects(magicItem);
                 }
 
-                API.WithChangeReason(API.ChangeReason.LootRoll, () => magicItemComponent.SetMagicItem(magicItem));
+                API.WithChangeReason(API.ChangeReason.LootRoll, () => itemData.SaveMagicItem(magicItem));
                 if (itemDrop != null)
                 {
                     itemDrop.Save();
@@ -1147,7 +1143,7 @@ namespace EpicLoot
             Quaternion randomRotation = Quaternion.Euler(0.0f, Random.Range(0.0f, 360.0f), 0.0f);
 
             // Save and restore rather than assigning false: Instantiate runs the new object's Awake
-            // chain (ItemDrop.Awake, ItemDataManager, our own postfixes), any of which can throw, and a
+            // chain (ItemDrop.Awake and our own postfixes), any of which can throw, and a
             // caller may already be inside another instantiate. m_forceDisableInit is a global that
             // ZNetView.Awake reads to decide whether to register a ZDO at all, so a stranded true makes
             // every later ZNetView awake unregistered, which strands null-ZDO entries in
@@ -1597,7 +1593,7 @@ namespace EpicLoot
                     continue;
                 }
 
-                // Nothing else bounds this value and SocketsUI sizes its inventory row straight from the
+                // Nothing else bounds this value and ShardUI sizes its slot row straight from the
                 // socket count, so an out-of-range entry is dropped instead of trusted. A negative weight
                 // goes too, since WeightedRandomCollection would quietly skew the whole table.
                 var count = (int)entry[0];

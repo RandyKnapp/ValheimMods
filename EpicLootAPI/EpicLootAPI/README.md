@@ -148,6 +148,38 @@ EpicLoot.AddBountyCompletedListener((player, monsterId) => { /* ... */ });
 `Rune`, `Temper`, `Socket`, `Unsocket`, `LootRoll`, `Transfer`, and `Unspecified` for writes with no
 dedicated call site. Item loading does not raise anything.
 
+### Item tooltip — read it, change it, or draw your own
+`GetTooltipData` returns everything Epic Loot adds to an item's tooltip: title and rarity, the stat lines
+magic changes (with `Modified` set when it did), effects, sockets, sets, shard and set-rune previews, and
+the key hints. Plain vanilla lines (crafter, teleport, food) are not in it.
+
+```c#
+ItemTooltipData? data = item.GetTooltipData(includeDetails: true);
+foreach (TooltipEffect effect in data?.Effects ?? new())
+    AddLine(effect.Text);
+```
+
+Draw the inventory tooltip yourself? Claim it, and the inventory tooltip is vanilla's, box included, until
+you release it. Everywhere else `GetTooltip` keeps Epic Loot's text. Draw Epic Loot's part from the data and
+the rest from `GetTooltipWithoutEpicLoot`. The claim is written to the player's log.
+
+```c#
+EpicLoot.SetTooltipOverride(PluginGUID, true);
+string plain = item.GetTooltipWithoutEpicLoot();   // vanilla's text, other mods' additions kept
+string setColour = EpicLoot.GetSetItemColor();      // also ItemTooltipData.SetColor
+```
+
+Or let Epic Loot draw and change what it draws. An editor runs when an item's tooltip is shown and whenever its
+data changes, not every frame; return `null` to leave the data as it is.
+
+```c#
+EpicLoot.AddTooltipEditor(PluginGUID, (item, data) =>
+{
+    data.Extra.Add(new TooltipLine { Anchor = TooltipAnchor.AfterEffects, Text = "<color=#7fff7f>Mine</color>" });
+    return data;
+});
+```
+
 ### Queries
 Trying to determine if an item is a magic-item? `IsMagicItem` exposes the internal magic check.
 
@@ -179,6 +211,34 @@ if (item.CanBeMagicItem())
 // Inspect before applying
 MagicItem rolled = EpicLoot.RollMagicItem(ItemRarity.Rare, item, luck);
 item.ApplyMagicItem(rolled);
+```
+
+### Creating items
+Make a new item carrying exactly the effects and set you choose, rather than a roll. Nothing is checked against
+the rules a roll follows, so any effect can go on any item. The item is in no inventory yet: add or drop it
+yourself. Needs Epic Loot with API 4 (`EpicLoot.HasEndpoint("CreateMagicItem")`).
+
+```c#
+// A sword with two chosen effects; leaving a value out rolls it from the rarity's range
+var request = new MagicItemRequest { Prefab = "SwordIron", Rarity = ItemRarity.Epic }
+    .AddEffect(EffectType.ModifyDamage, 12f)
+    .AddEffect(EffectType.ModifyAttackSpeed);
+ItemDrop.ItemData? sword = EpicLoot.CreateMagicItem(request, out string error);
+
+// A piece of a set: Epic Loot picks the piece this item fits, names it and applies the set
+var helmet = EpicLoot.CreateMagicItem(new MagicItemRequest
+{
+    Prefab = "HelmetPadded", Rarity = ItemRarity.Legendary, SetID = "Heimdall"
+}, out error);
+
+// A runestone with one specific effect, and a set rune for Set Etch
+ItemDrop.ItemData? rune = EpicLoot.CreateRunestone(ItemRarity.Legendary, EffectType.ModifyDamage, 20f);
+ItemDrop.ItemData? setRune = EpicLoot.CreateSetRune(ItemRarity.Legendary, "Heimdall");
+
+if (sword != null && !Player.m_localPlayer.GetInventory().AddItem(sword))
+{
+    ItemDrop.DropItem(sword, 1, Player.m_localPlayer.transform.position, Quaternion.identity);
+}
 ```
 
 ### Example Magic Effect

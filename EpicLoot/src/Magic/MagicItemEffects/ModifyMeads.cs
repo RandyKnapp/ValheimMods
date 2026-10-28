@@ -27,35 +27,60 @@ namespace EpicLoot.Magic.MagicItemEffects
                     // appended a `short variant` parameter, so it is deliberately not matched here.
                     new CodeMatch(OpCodes.Ldc_I4_1),
                     new CodeMatch(OpCodes.Ldc_I4_0),
-                    new CodeMatch(OpCodes.Ldc_R4))
-                .ThrowIfNotMatch("Unable to patch Player.ConsumeItem for Mead Effects.")
-                .Advance(1)
+                    new CodeMatch(OpCodes.Ldc_R4));
+            if (codeMatcher.IsInvalid)
+            {
+                EpicLoot.LogWarningForce("Mead effects: could not find where Player.ConsumeItem adds a mead's status " +
+                    "effect, so Instant Mead, Meads Cooldown and Potion Duration will not work. Another mod may have changed " +
+                    "that method.");
+                return codeMatcher.Instructions();
+            }
+
+            codeMatcher.Advance(1)
                 .InsertAndAdvance(Transpilers.EmitDelegate(ModifyMead));
             return codeMatcher.Instructions();
         }
 
         private static StatusEffect ModifyMead(StatusEffect original)
         {
-            StatusEffect dbEffect = ObjectDB.instance.GetStatusEffect(original.NameHash());
-            if (Player.m_localPlayer == null ||
-                dbEffect is not SE_Stats seStats ||
-                !seStats.CanAdd(Player.m_localPlayer))
+            Player player = Player.m_localPlayer;
+            StatusEffect dbEffect = ObjectDB.instance.GetStatusEffect(original.NameHash()) ?? original;
+            if (player == null || !dbEffect.CanAdd(player))
             {
                 return original;
             }
 
-            SE_Stats returnEffect = seStats;
-
-            if (Player.m_localPlayer.HasActiveMagicEffect(MagicEffectType.InstantMead) &&
-                (ModifyWithLowHealth.PlayerHasLowHealth(Player.m_localPlayer) || AutoMeads.DrinkingForCriticalHit))
+            // A mead that restores health, stamina or eitr over time has no lasting buff: its duration is the
+            // cooldown before the next drink, which Meads Cooldown shortens. Potion Duration lengthens the rest.
+            if (dbEffect is SE_Stats seStats && HasOverTimeValues(seStats))
             {
-                returnEffect = TryCreateInstantMead(returnEffect);
+                return ModifyRestoringMead(player, seStats);
             }
 
-            // Read off the base mead, not returnEffect: an Instant Mead copy has moved its restoration up front,
-            // so it no longer looks like a mead whose duration is a cooldown, and the cut used to be skipped.
-            if (HasOverTimeValues(seStats) &&
-                Player.m_localPlayer.HasActiveMagicEffect(MagicEffectType.DecreaseMeadCooldown, out float effectValue, 0.01f))
+            float durationBonus = player.GetTotalActiveMagicEffectValue(MagicEffectType.PotionEfficacy, 0.01f);
+            // A duration of 0 is an effect that never times out.
+            if (durationBonus <= 0f || dbEffect.m_ttl <= 0f)
+            {
+                return original;
+            }
+
+            // Never stamp the shared ObjectDB copy.
+            StatusEffect lengthened = dbEffect.Clone();
+            lengthened.m_ttl = dbEffect.m_ttl * (1f + durationBonus);
+            return lengthened;
+        }
+
+        private static SE_Stats ModifyRestoringMead(Player player, SE_Stats seStats)
+        {
+            SE_Stats returnEffect = seStats;
+
+            if (player.HasActiveMagicEffect(MagicEffectType.InstantMead) &&
+                (ModifyWithLowHealth.PlayerHasLowHealth(player) || AutoMeads.DrinkingForCriticalHit))
+            {
+                returnEffect = CreateInstantMead(seStats);
+            }
+
+            if (player.HasActiveMagicEffect(MagicEffectType.DecreaseMeadCooldown, out float effectValue, 0.01f))
             {
                 // Never stamp the shared ObjectDB copy; the Instant Mead copy is already this drink's own.
                 if (returnEffect == seStats)
@@ -68,30 +93,8 @@ namespace EpicLoot.Magic.MagicItemEffects
             return returnEffect;
         }
 
-        /// <summary>
-        /// How long a drunk mead's effect lasts before Potion Efficacy: its base duration, cut by Meads Cooldown
-        /// for a mead that restores over time, whose duration is its cooldown. The same cut ModifyMead applies.
-        /// </summary>
-        public static float GetDrinkDuration(Player player, StatusEffect consumeEffect)
+        private static SE_Stats CreateInstantMead(SE_Stats effect)
         {
-            StatusEffect dbEffect = ObjectDB.instance?.GetStatusEffect(consumeEffect.NameHash()) ?? consumeEffect;
-            float duration = dbEffect.m_ttl;
-            if (dbEffect is SE_Stats seStats && HasOverTimeValues(seStats) &&
-                player.HasActiveMagicEffect(MagicEffectType.DecreaseMeadCooldown, out float effectValue, 0.01f))
-            {
-                duration *= Mathf.Clamp01(1f - effectValue);
-            }
-
-            return duration;
-        }
-
-        private static SE_Stats TryCreateInstantMead(SE_Stats effect)
-        {
-            if (!HasOverTimeValues(effect))
-            {
-                return effect;
-            }
-
             SE_Stats newStatusEffect = (SE_Stats)effect.Clone();
             newStatusEffect.m_healthUpFront += newStatusEffect.m_healthOverTime;
             newStatusEffect.m_staminaUpFront += newStatusEffect.m_staminaOverTime;

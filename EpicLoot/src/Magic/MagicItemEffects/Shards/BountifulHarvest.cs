@@ -16,11 +16,18 @@ namespace EpicLoot.MagicItemEffects.Shards {
             private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
                 CodeMatcher codeMatcher = new CodeMatcher(instructions);
                 // The bonus is the int boxed into RPC_Pick's argument array.
-                codeMatcher.MatchStartForward(new CodeMatch(OpCodes.Ldstr, "RPC_Pick"))
-                    .ThrowIfNotMatch("Unable to patch Pickable.Interact for Bountiful Harvest.")
-                    .MatchStartForward(new CodeMatch(OpCodes.Box, typeof(int)))
-                    .ThrowIfNotMatch("Unable to patch Pickable.Interact for Bountiful Harvest.")
-                    .InsertAndAdvance(
+                codeMatcher.MatchStartForward(new CodeMatch(OpCodes.Ldstr, "RPC_Pick"));
+                if (codeMatcher.IsValid) {
+                    codeMatcher.MatchStartForward(new CodeMatch(OpCodes.Box, typeof(int)));
+                }
+
+                if (codeMatcher.IsInvalid) {
+                    EpicLoot.LogWarningForce("Bountiful Harvest: could not find the pick bonus in Pickable.Interact, so " +
+                        "it will not add extra harvest. Another mod may have changed that method.");
+                    return codeMatcher.Instructions();
+                }
+
+                codeMatcher.InsertAndAdvance(
                         new CodeInstruction(OpCodes.Ldarg_0),
                         new CodeInstruction(OpCodes.Ldarg_1),
                         new CodeInstruction(OpCodes.Ldarg_2),

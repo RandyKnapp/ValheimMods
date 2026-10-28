@@ -5,7 +5,6 @@ using EpicLoot.Biomes;
 using EpicLoot.Config;
 using EpicLoot.Crafting;
 using EpicLoot.CraftingV2;
-using EpicLoot.Data;
 using EpicLoot.GatedItemType;
 using EpicLoot.General;
 using EpicLoot.Magic;
@@ -37,10 +36,11 @@ namespace EpicLoot;
 [BepInDependency("kg.ValheimEnchantmentSystem", BepInDependency.DependencyFlags.SoftDependency)]
 [BepInDependency("org.bepinex.plugins.steadyregeneration", BepInDependency.DependencyFlags.SoftDependency)]
 [BepInDependency(ItemFavoriteFrameworkAPI.ItemFavorites.PluginGuid, BepInDependency.DependencyFlags.SoftDependency)]
+[BepInDependency(Compatibility.BowsBeforeHoesCompat.PluginGuid, BepInDependency.DependencyFlags.SoftDependency)]
 public sealed class EpicLoot : BaseUnityPlugin {
     public const string PluginId = "randyknapp.mods.epicloot";
     public const string DisplayName = "Epic Loot";
-    public const string Version = "0.15.0";
+    public const string Version = "0.15.4";
 
     private static string ConfigFileName = PluginId + ".cfg";
     private static string ConfigFileFullPath = BepInEx.Paths.ConfigPath + Path.DirectorySeparatorChar + ConfigFileName;
@@ -121,7 +121,8 @@ public sealed class EpicLoot : BaseUnityPlugin {
         InitializeAbilities();
         AddLocalizations();
         LoadAssets();
-        _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), PluginId);
+        _harmony = new Harmony(PluginId);
+        PatchAllClasses(_harmony);
         // Registers with the shared Mod Config launcher (main menu + pause menu) and, on a user's first
         // run, queues the setup wizard on the shared startup popup queue, which opens it once the main
         // menu is ready.
@@ -134,6 +135,8 @@ public sealed class EpicLoot : BaseUnityPlugin {
 
         // Wishlist conditions and magic item names for Item Favorite Framework, when it is installed.
         Compatibility.ItemFavorites.RegisterLootIntegration();
+        // BowsBeforeHoes' quiver opener and tooltip make way for shard slots, when it is installed.
+        Compatibility.BowsBeforeHoesCompat.Initialize(_harmony);
 
         // Scheduled (non-per-frame) effect drivers, on their own DontDestroyOnLoad objects.
         MagicItemEffects.Shards.PoisonAdrenalinePulse.Create();
@@ -267,6 +270,24 @@ public sealed class EpicLoot : BaseUnityPlugin {
         }
         // Load the localization patches and additional languages
         ELConfig.StartupProcessModifiedLocalizations();
+    }
+
+    /// <summary>
+    /// Applies every patch class in this assembly, in the order Harmony's PatchAll uses, but each on its own: a
+    /// class that fails (another mod reshaped its target, or a game update moved it) costs that one feature.
+    /// A single PatchAll stopped at the first failure, so every class after it and the rest of Awake never ran.
+    /// Transpilers must still never throw: HarmonyX keeps a failed transpiler registered on its method, so it
+    /// would also break every patch another mod applies to that method later.
+    /// </summary>
+    private static void PatchAllClasses(Harmony harmony) {
+        foreach (Type type in AccessTools.GetTypesFromAssembly(Assembly.GetExecutingAssembly())) {
+            try {
+                harmony.CreateClassProcessor(type).Patch();
+            } catch (Exception e) {
+                LogErrorForce($"Could not apply the patches in {type.FullName}, so that feature will not work: " +
+                    e.GetBaseException().Message);
+            }
+        }
     }
 
     private static void InitializeAbilities() {
@@ -688,9 +709,6 @@ public sealed class EpicLoot : BaseUnityPlugin {
                         // Set icons for crafting materials.
                         itemDrop.m_itemData.m_variant = GetRarityIconIndex(rarity);
                     }
-
-                    // Add MagicItemComponent or products will not stack until reloaded.
-                    itemDrop.m_itemData.CreateMagicItem();
                 }
 
                 CustomItem custom = new CustomItem(prefab, false);
@@ -787,13 +805,11 @@ public sealed class EpicLoot : BaseUnityPlugin {
             string prefabName = $"{biomeName}_{rarity}_Unidentified";
             prefab.name = prefabName;
             ItemDrop pid = prefab.GetComponent<ItemDrop>();
-            var magicItemComponent = pid.m_itemData.Data().GetOrCreate<MagicItemComponent>();
             pid.m_itemData.m_dropPrefab = prefab;
-            magicItemComponent.SetMagicItem(new MagicItem {
+            pid.m_itemData.SaveMagicItem(new MagicItem {
                 Rarity = rarity,
                 IsUnidentified = true,
             });
-            magicItemComponent.Save();
             pid.Save();
 
             ItemConfig unidentifiedIC = new ItemConfig() {
@@ -940,7 +956,7 @@ public sealed class EpicLoot : BaseUnityPlugin {
     }
 
     public static AssetBundle LoadAssetBundle(string filename) {
-        return AssetBundleLoader.LoadFromResources(filename, typeof(EpicLoot).Assembly);
+        return AssetBundleLoader.LoadFromResourcesInMemory(filename, typeof(EpicLoot).Assembly);
     }
 
     /// <summary>
