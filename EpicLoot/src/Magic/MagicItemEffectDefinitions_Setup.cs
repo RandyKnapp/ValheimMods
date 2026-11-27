@@ -12,6 +12,7 @@ namespace EpicLoot
         public static string Megingjord = nameof(Megingjord);
         public static string Wishbone = nameof(Wishbone);
         public static string Andvaranaut = nameof(Andvaranaut);
+        public static string SkuldsThread = nameof(SkuldsThread);
         public static string ModifyDamage = nameof(ModifyDamage);
         public static string ModifyPhysicalDamage = nameof(ModifyPhysicalDamage);
         public static string ModifyElementalDamage = nameof(ModifyElementalDamage);

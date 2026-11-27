@@ -9,24 +9,13 @@ public static class ModifyJumpStaminaUsage
     {
         private static void Postfix(Player __instance, ref float __result)
         {
-            if (__instance == null)
-            {
-                return;
-            }
-
             __result -= GetModifyJumpStaminaUsageAmount(__instance);
         }
     }
 
     private static float GetModifyJumpStaminaUsageAmount(Player __instance)
     {
-        float value = 0f;
-        ModifyWithLowHealth.Apply(__instance, MagicEffectType.ModifyJumpStaminaUse, effect =>
-        {
-            value += __instance.GetTotalActiveMagicEffectValue(effect, 0.01f);
-        });
-
-        return value;
+        return ModifyWithLowHealth.Sum(__instance, MagicEffectType.ModifyJumpStaminaUse);
     }
 
     /// <summary>

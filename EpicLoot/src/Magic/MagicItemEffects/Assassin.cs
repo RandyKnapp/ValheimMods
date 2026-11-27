@@ -14,17 +14,11 @@ namespace EpicLoot
 
 namespace EpicLoot.MagicItemEffects
 {
-    // Assassin (4-piece Loki set bonus, NoRoll). Keeping the crosshair on an enemy within MaxDistance for HoverTime
-    // seconds, with a melee weapon drawn, makes the player vanish and reappear behind it, already swinging: the
-    // weapon's primary attack, free of cost, dealing value% of its damage. A cooldown follows, shown on the HUD with
-    // the Fenris hood's icon; it shortens as the value grows, so higher rarities strike harder and more often.
-    //
     // The strike is a real Attack (a clone of the weapon's primary, as Humanoid.StartAttack makes), so vanilla
     // handles the animation, the hit sweep and backstabs, and every on-hit enchantment procs. Holstering the weapon
     // is how a player keeps it from firing. While the crosshair charges, AssassinChargeHud fills a ring around it.
     public static class Assassin
     {
-        // All tunable in this effect's Config block in magiceffects.json, under these key names.
         public const float DefaultMaxDistance = 20f;       // metres from the player to the target
         public const float DefaultHoverTime = 2f;          // seconds the crosshair has to stay on the target
         public const float DefaultCooldown = 340f;         // seconds at value 0; 180 at the Legendary 200
@@ -51,7 +45,6 @@ namespace EpicLoot.MagicItemEffects
         private const string HoodItem = "HelmetFenring";
         private static readonly string[] FxPrefabs = { "fx_JotunWitch_Dodge", "sfx_jotunwitch_dodge" };
 
-        // Tooltip: "... within {2}m for {3}s ... {0}% damage. Cooldown: {1}s" -- {1} follows the value and a retune.
         public static void RegisterDisplayValues()
         {
             MagicItem.RegisterDisplayValues(MagicEffectType.Assassin,
@@ -528,7 +521,7 @@ namespace EpicLoot.MagicItemEffects
             [HarmonyPostfix]
             private static void Postfix(Attack __instance, ref float __result)
             {
-                if (__instance != null && __instance == _strike)
+                if (__instance == _strike)
                 {
                     __result = 0f;
                 }

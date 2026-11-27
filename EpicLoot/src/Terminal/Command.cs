@@ -12,21 +12,13 @@ public class Command : Terminal.ConsoleCommand
         string description, 
         Terminal.ConsoleEvent action, 
         CommandOptions options = null, 
-        bool isNetwork = false, 
-        bool onlyServer = false, 
-        bool isSecret = false, 
-        bool allowInDevBuild = false, 
-        Terminal.ConsoleOptionsFetcher optionsFetcher = null, 
-        bool alwaysRefreshTabOptions = false, 
-        bool remoteCommand = false, 
-        bool onlyAdmin = false, 
         bool hideFromHelp = false, 
         params string[] alternates)
         // Every Epic Loot command is a cheat: it needs `devcommands` and the cheat confirmation, and flags
         // the profile as cheated. Vanilla only enables cheats on the machine running the world
         // (Terminal.IsCheatsEnabled requires ZNet.IsServer), so a client of a dedicated server needs a mod
         // that grants them to the server's admins, such as Server Devcommands.
-        : base(command, description, action, isCheat: true, isNetwork, onlyServer, isSecret, allowInDevBuild, hideBehindDevCommands: false, optionsFetcher, alwaysRefreshTabOptions || options != null, remoteCommand, onlyAdmin)
+        : base(command, description, action, isCheat: true, alwaysRefreshTabOptions: options != null)
     {
         this.options = options;
         this.hideFromHelp = hideFromHelp;
@@ -36,8 +28,7 @@ public class Command : Terminal.ConsoleCommand
         if (options != null) m_tabOptionsFetcher = () => GetTabOptions([command, string.Empty], 1);
         foreach (var alt in alternates)
         {
-            _ = new Command(alt, description, action, options, isNetwork, onlyServer, isSecret,
-                allowInDevBuild, optionsFetcher, alwaysRefreshTabOptions, remoteCommand, onlyAdmin, hideFromHelp: true);
+            _ = new Command(alt, description, action, options, hideFromHelp: true);
         }
 
         TerminalManager._commands[command] = this;

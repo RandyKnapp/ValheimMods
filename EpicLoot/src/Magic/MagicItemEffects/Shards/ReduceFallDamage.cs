@@ -3,7 +3,6 @@ using JetBrains.Annotations;
 using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects.Shards {
-    // Reduces fall damage by a flat amount based on the total value of ReduceFallDamage effects on the player
     public static class ReduceFallDamage {
         [HarmonyPatch(typeof(SEMan), nameof(SEMan.ModifyFallDamage))]
         private static class ModifyFallDamage_Patch {

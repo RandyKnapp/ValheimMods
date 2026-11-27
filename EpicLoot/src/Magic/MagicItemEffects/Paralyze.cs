@@ -22,18 +22,13 @@ namespace EpicLoot.MagicItemEffects
 
     public static class Paralyze
     {
-        // Routed RPC key used to apply the paralyze on the target's OWNER, where movement/AI is
-        // authoritative. Mirrors Slow.RPCKey.
         private const string RpcKey = "epic loot paralyze";
 
-        // Unity object name of the SE prototype -- NameHash() hashes this (GetStableHashCode), so it must be
-        // identical on every client for the add/refresh lookup to line up.
+        // NameHash() hashes the object name, so it must be identical on every client.
         private const string SeName = "EL_Paralyze";
 
         private static SE_Paralyzed _prototype;
 
-        // Registers the paralyze RPC on every character so a remote-owned target can receive it. Mirrors
-        // SlowAddRPC_Character_Awake_Patch.
         [HarmonyPatch(typeof(Character), nameof(Character.Awake))]
         private static class AddRpc_Character_Awake_Patch
         {
@@ -44,9 +39,8 @@ namespace EpicLoot.MagicItemEffects
             }
         }
 
-        // Attacker-side check invoked by CharacterDamageDispatch (Character.Damage postfix). The local player's
-        // Paralyze value and Attack_Patch.ActiveAttack are only readable on the attacker's own client, so the
-        // check must happen here; the SE itself is applied on the target's owner via the RPC below.
+        // Called from SharedCharacterDamagePatch's postfix. The Paralyze value and Attack_Patch.ActiveAttack are
+        // only readable on the attacker's own client; the SE is applied on the target's owner through the RPC.
         public static void OnDamaged(Character __instance, HitData hit, Character attacker)
         {
             // IsValid() (not just a null check): the target can already be dead and destroyed by the time this
@@ -77,15 +71,15 @@ namespace EpicLoot.MagicItemEffects
                 return;
             }
 
-            // Broadcast so the target's owner (and everyone else, harmlessly) adds/refreshes the effect.
-            __instance.m_nview.InvokeRPC(ZRoutedRpc.Everybody, RpcKey, totalParalyzeTime);
+            __instance.m_nview.InvokeRPC(RpcKey, totalParalyzeTime);
         }
 
-        // Adds or refreshes SE_Paralyzed on the character. Runs on every client; only the owner's copy drives
-        // movement/AI, so this is what actually stops a remote-owned target.
+        // Sent to the target's owner only. Vanilla ticks status effects on the owner alone, so a copy added on
+        // any other client never expires, and stops the creature again once ownership moves there.
         private static void RPC_Paralyze(Character character, float duration)
         {
-            if (character == null || character.m_seman == null || duration <= 0f)
+            if (character == null || character.m_seman == null || duration <= 0f ||
+                character.m_nview == null || !character.m_nview.IsOwner())
             {
                 return;
             }
@@ -97,7 +91,6 @@ namespace EpicLoot.MagicItemEffects
                 return;
             }
 
-            // AddStatusEffect(prototype) clones via MemberwiseClone (keeps NameHash), then we set the duration.
             if (character.m_seman.AddStatusEffect(prototype) is SE_Paralyzed added)
             {
                 added.Setup(duration);

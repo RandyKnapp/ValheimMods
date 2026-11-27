@@ -14,12 +14,6 @@ namespace EpicLoot
 
 namespace EpicLoot.MagicItemEffects
 {
-    // Frostwalker (4-piece Rime of Elivagar set bonus, NoRoll). The water freezes under the wearer so they can walk on
-    // it, draining value Eitr per second (AshlandsDrainMultiplier times that over the boiling sea). Natural Eitr regen is
-    // paused on the ice and in the water alike, so breaking through to swim is no way to refill. Wading out to knee depth
-    // or swimming freezes it. Crouching on the ice, or running dry, breaks it, and it stays broken until the wearer is
-    // back on solid ground or presses crouch again while swimming.
-    //
     // The ice is a real collider rather than patched physics: one invisible box under the local player, on the Water
     // layer, excluded from everything but the "character" layer. Vanilla counts any contact below the capsule as ground,
     // so walking, jumping, dodging and footsteps just work, and every water reaction (swimming, Wet, splash steps, the
@@ -35,7 +29,6 @@ namespace EpicLoot.MagicItemEffects
     // player with the first, and FrostwalkerSnow sheds snowflakes around any player with the second.
     public static class Frostwalker
     {
-        // All tunable in this effect's Config block in magiceffects.json, under these key names.
         public const float DefaultAshlandsDrainMultiplier = 3f;   // drain multiplier over the boiling Ashlands sea
         public const float DefaultMinEitr = 10f;                  // Eitr needed before the water will freeze
         public const float DefaultRadius = 3f;                    // metres around (and ahead of) the player of whole ice
@@ -120,7 +113,6 @@ namespace EpicLoot.MagicItemEffects
         // The local player has Frostwalker active, i.e. wears the full set (it is a set-only effect).
         public static bool LocalPlayerHasSet => _hasSet && _player != null && _player == Player.m_localPlayer;
 
-        // Tooltip: "... draining {0} Eitr per second ({1} over the boiling sea) ..."
         public static void RegisterDisplayValues()
         {
             MagicItem.RegisterDisplayValues(MagicEffectType.Frostwalker,

@@ -10,9 +10,7 @@ namespace EpicLoot
 
 namespace EpicLoot.MagicItemEffects
 {
-    // ConvertHealthToEitr (2-piece Mimir's Well set bonus, NoRoll). value% of the finished max health pool is taken
-    // away and added to max eitr, one for one. Unlike HeartyEitr it is a real trade, and it works with no eitr food at
-    // all. Called from IncreasePlayerBaseStats.PostfixPercentOfPool right after PercentHealth, so it converts the final
+    // Called from IncreasePlayerBaseStats.PostfixPercentOfPool right after PercentHealth, so it converts the final
     // health pool and the percent-of-eitr effects that follow (PercentEitr, DeepWell) scale what it adds.
     //
     // No GetBaseFoodHP patch: the food bar's base segment cannot show a cut to every food at once, and the health bar

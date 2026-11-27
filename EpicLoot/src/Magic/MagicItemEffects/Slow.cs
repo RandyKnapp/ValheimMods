@@ -9,13 +9,9 @@ namespace EpicLoot.MagicItemEffects
     {
         public const string RPCKey = "epic loot slow";
 
-        // Slow values are summed across every equipped magic item (including socketed shards), so a heavily
-        // enchanted setup can total 100% or more. Unclamped that yields a multiplier of zero or negative,
-        // which freezes the target outright and leaves its speeds at 0/NaN/negative once the slow expires.
-        // Clamping to a floor keeps the target moving and keeps the restored speeds sane.
-        //
-        // Deliberately a const and not a config value: the multiplier travels over the RPC and is re-clamped
-        // on receipt, so every client has to agree on the bound or they would simulate different speeds.
+        // Slow values sum across every equipped item and can reach 100% or more, which would freeze the target.
+        // A const rather than a config value: the multiplier is re-clamped on receipt, so every client has to
+        // agree on the bound.
         public const float MinMultiplier = 0.1f;
 
         public static float ClampMultiplier(float multiplier) => Mathf.Clamp(multiplier, MinMultiplier, 1f);
@@ -43,11 +39,8 @@ namespace EpicLoot.MagicItemEffects
             // of range value can arrive from a mismatched or modified client.
             Multiplier = ClampMultiplier(Multiplier);
 
-            // Snapshot the originals and restore them verbatim instead of dividing the multiplier back out.
-            // Division only approximately recovers the starting value, so repeated slows drift the
-            // character's speeds, and it has no answer at all if Multiplier is ever zero. Vanilla treats
-            // these four fields as prefab constants and never writes them at runtime, so nothing else is
-            // competing for them.
+            // Restored verbatim rather than divided back out, which drifts over repeated slows. Vanilla never
+            // writes these four fields at runtime, so nothing else competes for them.
             _acceleration = _character.m_acceleration;
             _runSpeed = _character.m_runSpeed;
             _flyFastSpeed = _character.m_flyFastSpeed;
@@ -125,11 +118,8 @@ namespace EpicLoot.MagicItemEffects
 
     public static class ApplySlow_Character_Damage_Patch
     {
-        // Postfix handler invoked by CharacterDamageDispatch (attacker-side, on hit dealt). The Slow value
-        // lives in the local player's inventory, which is only readable on the attacker's own client -- so the
-        // check must happen here, then the slow is applied on the target's owner via the broadcast RPC (that is
-        // where movement is authoritative). Checking it on the RPC_Damage side instead only worked when the
-        // local player also owned the target.
+        // Called from SharedCharacterDamagePatch's postfix. The Slow value is only readable on the attacker's own
+        // client, so it is checked here and the slow is applied on the target's owner through the RPC.
         public static void OnDamageDealt(Character __instance, HitData hit, Character attacker)
         {
             // IsValid() (not just a null check) is required: Character.Damage routes RPC_Damage synchronously
@@ -178,8 +168,7 @@ namespace EpicLoot.MagicItemEffects
         [UsedImplicitly]
         private static void Postfix(Game __instance)
         {
-            // Game.Awake runs once per world load; registering again each time compounded the slow
-            // multiplier (speed * Multiplier^N after N loads in one session).
+            // Game.Awake runs once per world load; registering again would compound the slow multiplier.
             if (_appliedAttackSpeed)
             {
                 return;

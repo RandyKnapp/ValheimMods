@@ -4,7 +4,6 @@ using HarmonyLib;
 using JetBrains.Annotations;
 
 namespace EpicLoot.MagicItemEffects.Shards {
-    // Provides a bonus to XP gain based on the player's movement penalty
     public static class IncreaseXPGainFromMovementPenalty {
         [HarmonyPatch(typeof(Skills), nameof(Skills.RaiseSkill))]
         private static class RaiseSkill_Patch {

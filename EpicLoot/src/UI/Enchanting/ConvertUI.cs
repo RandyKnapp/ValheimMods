@@ -21,7 +21,6 @@ namespace EpicLoot_UnityLib
         public int Amount;
         public List<ConversionRecipeCostUnity> Cost;
 
-        public List<string> GetEffectNames() => new List<string>();
         public string GetEnchantName() => string.Empty;
         public ItemDrop.ItemData GetItem() => Product;
         public string GetDisplayNameSuffix() => Amount > 1 ? $" x{Amount}" : string.Empty;
@@ -54,7 +53,6 @@ namespace EpicLoot_UnityLib
         public MultiSelectItemList CostList;
 
         private TMP_Text _progressLabel;
-        private ToggleGroup _toggleGroup;
         private MaterialConversionType _mode;
 
         public override void Awake()
@@ -65,8 +63,7 @@ namespace EpicLoot_UnityLib
 
             if (ModeButtons.Count > 0)
             {
-                _toggleGroup = ModeButtons[0].group;
-                _toggleGroup.EnsureValidState();
+                ModeButtons[0].group.EnsureValidState();
             }
 
             for (int index = 0; index < ModeButtons.Count; index++)
@@ -173,9 +170,8 @@ namespace EpicLoot_UnityLib
 
             Cancel();
 
-            // Re-check affordability at execution time like every sibling panel: the button state
-            // is only recomputed on selection change, so materials drained in the meantime used to
-            // yield free products.
+            // Re-checked now: the button state is only recomputed on selection change, so materials
+            // drained in the meantime would yield free products.
             if (!Player.m_localPlayer.NoCostCheat() && !LocalPlayerCanAffordCost(cost))
             {
                 Player.m_localPlayer.Message(MessageHud.MessageType.Center, "$msg_missingrequirement");
@@ -184,21 +180,20 @@ namespace EpicLoot_UnityLib
                 return;
             }
 
-            if (!Player.m_localPlayer.NoCostCheat())
+            PayThen(new InventoryManagement.Payment().Cost(cost), receipt =>
             {
-                foreach (InventoryItemListElement costElement in cost)
+                foreach (InventoryItemListElement productElement in allProducts)
                 {
-                    InventoryManagement.Instance.RemoveItem(costElement.GetItem());
+                    InventoryManagement.Instance.GiveItem(productElement.GetItem());
                 }
-            }
 
-            foreach (InventoryItemListElement productElement in allProducts)
+                DeselectAll();
+                RefreshAvailableItems();
+            }, () =>
             {
-                InventoryManagement.Instance.GiveItem(productElement.GetItem());
-            }
-
-            DeselectAll();
-            RefreshAvailableItems();
+                DeselectAll();
+                RefreshAvailableItems();
+            });
         }
 
         public static List<InventoryItemListElement> GetConversionProducts(List<Tuple<ConversionRecipeUnity, int>> selectedRecipes)
@@ -262,9 +257,7 @@ namespace EpicLoot_UnityLib
         public void RefreshAvailableItems()
         {
             List<ConversionRecipeUnity> items = EnchantingUIController.GetConversionRecipes(_mode);
-            AvailableItems.SetItems(items.Cast<IListElement>().ToList());
-            AvailableItems.DeselectAll();
-            OnSelectedItemsChanged();
+            AvailableItems.SetItemsAndDeselect(items.Cast<IListElement>().ToList());
         }
 
         protected override void OnSelectedItemsChanged()
@@ -307,16 +300,11 @@ namespace EpicLoot_UnityLib
             bool featureUnlocked = EnchantingTableUI.instance.SourceTable.IsFeatureUnlocked(EnchantingFeature.ConvertMaterials);
             MainButton.interactable = featureUnlocked && canAfford && selectedRecipes.Count > 0;
         }
-        
+
         public override void Cancel()
         {
             base.Cancel();
             OnModeChanged();
-        }
-
-        public override void DeselectAll()
-        {
-            AvailableItems.DeselectAll();
         }
 
         public override void Lock()

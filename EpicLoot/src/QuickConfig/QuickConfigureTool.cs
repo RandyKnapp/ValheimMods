@@ -12,11 +12,8 @@ using UnityEngine.UI;
 
 namespace EpicLoot.QuickConfig;
 
-// A paged editor over the settings most worlds want to change. Opened from the shared Mod Config
-// launcher, or once on the main menu as the first-time setup, which adds a welcome page in front.
-// Every page can be saved, and the X closes from anywhere. The pages are prefabs from the epicloot
-// bundle (see README.md in this folder); this file is the shell: opening, navigation, saving, and the
-// staged state the pages edit.
+// The Quick Configure shell: opening, navigation, saving, and the staged state the pages edit. The
+// pages are prefabs from the epicloot bundle (contract in README.md in this folder).
 internal static class QuickConfigureTool {
     private const string LauncherEntry = "Epic Loot";
     internal const string PanelAsset = "QuickConfigPanel";
@@ -48,7 +45,6 @@ internal static class QuickConfigureTool {
         internal RowBinder Binder;
     }
 
-    // --- runtime state ---
     private static GameObject panelRoot;
     // Every page that was built, and the ones in the Back/Next sequence; currentPage indexes the latter.
     private static List<PageInstance> pages;
@@ -153,10 +149,6 @@ internal static class QuickConfigureTool {
         }
     }
 
-    // ------------------------------------------------------------------------------------------------
-    //  First-time setup
-    // ------------------------------------------------------------------------------------------------
-
     // Queued once, from Init, on the startup popup queue every mod carrying Common/src/Config/UI shares:
     // it waits for the main menu to settle and opens the popups one at a time, so this never lands on
     // top of another mod's welcome, or of the config update prompt queued behind it. Whether this user
@@ -174,11 +166,6 @@ internal static class QuickConfigureTool {
         return IsOpen;
     }
 
-    // ------------------------------------------------------------------------------------------------
-    //  Panel
-    // ------------------------------------------------------------------------------------------------
-
-    // The launcher's entry point.
     internal static void OpenPanel() {
         OpenPanel(tutorial: false);
     }
@@ -339,10 +326,6 @@ internal static class QuickConfigureTool {
             SetStatus("", true);
         }
     }
-
-    // ------------------------------------------------------------------------------------------------
-    //  Advanced pages
-    // ------------------------------------------------------------------------------------------------
 
     /// <summary>Whether every page is in the Back/Next sequence, or only <see cref="BasicPages"/>.</summary>
     internal static bool AdvancedPagesShown => advancedToggleMissing
@@ -553,10 +536,6 @@ internal static class QuickConfigureTool {
         }
     }
 
-    // ------------------------------------------------------------------------------------------------
-    //  Save
-    // ------------------------------------------------------------------------------------------------
-
     private static void OnSaveClicked() {
         TrySave(closeAfter: false);
     }
@@ -565,8 +544,8 @@ internal static class QuickConfigureTool {
         TrySave(closeAfter: true);
     }
 
-    // A preset over a hand-edited magiceffects.json asks first; the save resumes from the prompt. Only the
-    // host is asked: a server admin's rewrite happens on the server, which backs its own file up.
+    // A preset over a hand-edited template file asks first; the save resumes from the prompt. Only the
+    // host is asked: a server admin's rewrite happens on the server, which backs its own files up.
     private static void TrySave(bool closeAfter) {
         if (staged == null || baseline == null) { return; }
         // The server is still answering the last Save. Its answer finishes this one too, closing the
@@ -578,7 +557,7 @@ internal static class QuickConfigureTool {
         }
         if (IsHost() && overhaulBackupConfirmed == false
             && BalancePreset.NeedsOverhaulRewrite(staged, baseline)
-            && ConfigVersionManager.IsPlayerModified(BalancePreset.MagicEffectsConfigName)) {
+            && BalancePreset.AnyTemplateFilePlayerModified()) {
             bool shown = QuickConfigConfirm.Show("$mod_epicloot_cfg_backup_confirm_title", "$mod_epicloot_cfg_backup_confirm_body",
                 "$mod_epicloot_cfg_keep_editing", null, "$mod_epicloot_cfg_backup_continue",
                 onKeep: null,
@@ -588,7 +567,7 @@ internal static class QuickConfigureTool {
                     TrySave(closeAfter);
                 });
             if (shown) { return; }
-            // No confirm prefab: still back the file up, which is the safe half of the question.
+            // No confirm prefab: still back the files up, which is the safe half of the question.
             overhaulBackupConfirmed = true;
         }
 
@@ -653,7 +632,7 @@ internal static class QuickConfigureTool {
         // 2. The balance preset's overhaul rewrite, then each changed JSON file (magiceffects.json last,
         //    so a rewrite never races an edit of the same file). The host writes its own; a server
         //    admin's are sent to the server after the .cfg push below, so the server already has the
-        //    new Balance Template when it rewrites magiceffects.json.
+        //    new Balance Template when it rewrites the template files.
         string serverRewrite = null;
         bool sendToServer = false;
         if (IsHost()) {
@@ -661,11 +640,11 @@ internal static class QuickConfigureTool {
                 if (BalancePreset.ApplyOverhaulRewrite(overhaulBackupConfirmed, out string rewriteMessage)) {
                     notes.Add(rewriteMessage);
                     staged.PresetPressed = null;
-                    // The file is new; staged Effect Tuning values now come from it, not the old copy.
-                    // The baseline takes it too, so the fresh template is not written back over itself
-                    // as an edit; staged shard effects still differ from it and are saved below.
-                    BalancePreset.ReloadMagicEffects(staged);
-                    BalancePreset.ReloadMagicEffects(baseline);
+                    // The files are new; staged values of them now come from them, not the old copies.
+                    // The baseline takes them too, so the fresh templates are not written back over
+                    // themselves as edits.
+                    BalancePreset.ReloadTemplateFiles(staged);
+                    BalancePreset.ReloadTemplateFiles(baseline);
                 } else {
                     failures.Add(rewriteMessage);
                 }
@@ -716,12 +695,12 @@ internal static class QuickConfigureTool {
     //    are measured from. Rows that failed to write keep their staged values and stay marked unsaved.
     private static bool CompleteSave(List<string> failures, List<string> notes, ICollection<string> writtenFiles,
         int cfgWritten, bool serverRewritten, out string message) {
-        // The server rewrote magiceffects.json: staged Effect Tuning values now come from the new file,
-        // as they do right after the host's own rewrite. Only matters for a save that failed in part,
-        // since a complete one takes everything below.
+        // The server rewrote the template files: staged values of them now come from the new files, as
+        // they do right after the host's own rewrite. Only matters for a save that failed in part, since
+        // a complete one takes everything below.
         if (serverRewritten) {
             staged.PresetPressed = null;
-            BalancePreset.ReloadMagicEffects(staged);
+            BalancePreset.ReloadTemplateFiles(staged);
         }
 
         baseline = StagedConfig.Snapshot();

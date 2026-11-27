@@ -17,19 +17,22 @@ public class TreasureBountyTextInfo(string topic) : MagicTextInfo(topic)
         List<string> content = new();
         AdventureSaveData saveData = Player.m_localPlayer.GetAdventureSaveData();
 
-        bool hasValues = false;
+        List<TreasureMapChestInfo> sortedTreasureMaps = saveData.TreasureMaps
+            .Where(x => x.State == TreasureMapState.Purchased)
+            .OrderBy(x => BiomeDataManager.GetOrder(x.Biome))
+            .ToList();
+        // A bounty with no target is a broken save entry; it has no name or classification to show.
+        List<BountyInfo> sortedBounties = saveData.Bounties
+            .Where(x => x.Target != null && (x.State == BountyState.InProgress || x.State == BountyState.Complete))
+            .OrderBy(x => x.State)
+            .ToList();
 
-        if (saveData.TreasureMaps.Count > 0)
+        if (sortedTreasureMaps.Count > 0)
         {
-            hasValues = true;
-            IOrderedEnumerable<TreasureMapChestInfo> sortedTreasureMaps = saveData.TreasureMaps
-                .Where(x => x.State == TreasureMapState.Purchased)
-                .OrderBy(x => GetBiomeOrder(x.Biome));
-            
             foreach (TreasureMapChestInfo treasureMap in sortedTreasureMaps)
             {
                 content.Add($" - $mod_epicloot_merchant_treasuremaps: " +
-                            $"<color={GetBiomeColor(treasureMap.Biome)}>{BiomeDataManager.GetLocalizationToken(treasureMap.Biome)} " +
+                            $"<color={BiomeDataManager.GetColor(treasureMap.Biome)}>{BiomeDataManager.GetLocalizationToken(treasureMap.Biome)} " +
                             $"#{treasureMap.Interval + 1}</color>");
             }
 
@@ -40,24 +43,16 @@ public class TreasureBountyTextInfo(string topic) : MagicTextInfo(topic)
             content.Clear();
         }
 
-        if (saveData.Bounties.Count > 0)
+        if (sortedBounties.Count > 0)
         {
-            hasValues = true;
-            IOrderedEnumerable<BountyInfo> sortedBounties = saveData.Bounties.OrderBy(x => x.State);
-            
             foreach (BountyInfo bounty in sortedBounties)
             {
-                if (bounty.State != BountyState.InProgress && bounty.State != BountyState.Complete)
-                {
-                    continue;
-                }
-
                 string targetName = AdventureDataManager.GetBountyName(bounty);
                 content.Add($" - <size={MagicPages.LARGE_FONT_SIZE}>{targetName}</size>  " +
                     $"<color=#c0c0c0ff>$mod_epicloot_activebounties_classification:</color> " +
                     $"<color=#d66660>{AdventureDataManager.GetMonsterName(bounty.Target.MonsterID)}</color>, ");
 
-                string info = $" $mod_epicloot_activebounties_biome: <color={GetBiomeColor(bounty.Biome)}>{BiomeDataManager.GetLocalizationToken(bounty.Biome)}</color>";
+                string info = $" $mod_epicloot_activebounties_biome: <color={BiomeDataManager.GetColor(bounty.Biome)}>{BiomeDataManager.GetLocalizationToken(bounty.Biome)}</color>";
 
                 string status = "";
                 switch (bounty.State)
@@ -88,19 +83,9 @@ public class TreasureBountyTextInfo(string topic) : MagicTextInfo(topic)
                                             + $"$mod_epicloot_activebounties</size></color>", content.ToArray());
         }
 
-        if (!hasValues)
+        if (sortedTreasureMaps.Count == 0 && sortedBounties.Count == 0)
         {
             instance.MagicPagesTextArea.Add("$mod_epicloot_no_active_adventures");
         }
-    }
-
-    public static string GetBiomeColor(Heightmap.Biome biome)
-    {
-        return BiomeDataManager.GetColor(biome);
-    }
-
-    public static float GetBiomeOrder(Heightmap.Biome biome)
-    {
-        return BiomeDataManager.GetOrder(biome);
     }
 }

@@ -15,13 +15,6 @@ namespace EpicLoot
 
 namespace EpicLoot.MagicItemEffects
 {
-    // Shield Throw (4-piece Svalinn's Arc set bonus, NoRoll). A hotkey hurls the shield in the left hand where the
-    // player aims. It flies in a straight line through every creature until it meets terrain or something solid (or
-    // reaches MaxDistance), then flies back to the hand. Each enemy it passes takes a hit on the way out and another on
-    // the way back, for the effect value in percent of the shield's block power as blunt (100 / 125 / 150 at Legendary /
-    // Mythic / Ancient), with knockback and stagger. Block power already carries the Blocking skill and EpicLoot's block
-    // power effects.
-    //
     // The gauge: damage the player blocks with the shield (the exact amount vanilla takes off a held block, read where
     // BlockAttack hands it to HitData.BlockDamage, so guard breaks never count) is stored, up to GaugeCapacity times the
     // shield's block power. GaugeDecayDelay seconds after the last block it drains at GaugeDecayRate percent of full per
@@ -38,7 +31,6 @@ namespace EpicLoot.MagicItemEffects
     // routes to each target's owner.
     public static class ShieldThrow
     {
-        // All tunable in this effect's Config block in magiceffects.json, under these key names.
         public const float DefaultMaxDistance = 15f;          // metres; the shield turns back here in open air
         public const float DefaultProjectileSpeed = 30f;      // metres/second, out and back
         public const float DefaultHangTime = 0.1f;            // seconds it rests where it turned
@@ -78,7 +70,6 @@ namespace EpicLoot.MagicItemEffects
         private static float GaugeDecayRate => EffectConfig.GetClamped(MagicEffectType.ShieldThrow, GaugeDecayRateKey, DefaultGaugeDecayRate, 1f, 100f);
         private static float PushForce => EffectConfig.GetClamped(MagicEffectType.ShieldThrow, PushForceKey, DefaultPushForce, 0f, 300f);
 
-        // Tooltip: "... for {0}% of your block power ... for up to +{1}% damage ... Costs {2} stamina."
         public static void RegisterDisplayValues()
         {
             MagicItem.RegisterDisplayValues(MagicEffectType.ShieldThrow, value => new object[] { value, MaxGaugeBonusPercent, StaminaCost });
@@ -184,8 +175,6 @@ namespace EpicLoot.MagicItemEffects
                 shield.m_dropPrefab != null ? shield : null;
         }
 
-        internal static bool IsInFlight => _flight != null;
-
         private static float BlockPower(Player player, ItemDrop.ItemData shield)
         {
             return shield.GetBlockPower(player.GetSkillFactor(Skills.SkillType.Blocking));
@@ -193,8 +182,6 @@ namespace EpicLoot.MagicItemEffects
 
         // The gauge as the HUD and the throw see it, 0-1, against the shield in hand now.
         private static float GaugeFraction => _capacity > 0f ? Mathf.Clamp01(_stored / _capacity) : 0f;
-
-        // ---- The gauge ----
 
         // SharedHumanoidBlockAttackPatch prefix: measure this block if it is the local player's, with the bonus.
         public static void BeforeBlock(Humanoid blocker)
@@ -211,7 +198,7 @@ namespace EpicLoot.MagicItemEffects
         }
 
         // SharedHumanoidBlockAttackPatch postfix, ahead of its __result gate, so the flag always clears.
-        public static void AfterBlock(Humanoid blocker)
+        public static void AfterBlock()
         {
             _measuring = false;
         }
@@ -243,8 +230,6 @@ namespace EpicLoot.MagicItemEffects
                 _stored = Mathf.Max(0f, _stored - reference * GaugeDecayRate / 100f * dt);
             }
         }
-
-        // ---- Input and the windup ----
 
         private static KeyCode Bound(ConfigEntry<KeyCode> entry) => entry?.Value ?? KeyCode.None;
 
@@ -400,8 +385,6 @@ namespace EpicLoot.MagicItemEffects
         {
             return _owner != null && ReferenceEquals(character, _owner) && IsThrowing(_owner) ? speed * ThrowAnimationSpeed : speed;
         }
-
-        // ---- The throw ----
 
         internal static Vector3 LeftHandPosition(Player player)
         {
@@ -648,8 +631,6 @@ namespace EpicLoot.MagicItemEffects
             return true;
         }
 
-        // ---- HUD ----
-
         private static void RefreshGauge(Hud hud)
         {
             var player = Player.m_localPlayer;
@@ -664,8 +645,6 @@ namespace EpicLoot.MagicItemEffects
 
             GaugeBar.Refresh(hud, show, fraction, _shownBonusText);
         }
-
-        // ---- Patches ----
 
         [HarmonyPatch(typeof(Player), nameof(Player.Update))]
         private static class Player_Update_Patch
@@ -732,7 +711,7 @@ namespace EpicLoot.MagicItemEffects
             [HarmonyPrefix]
             private static bool Prefix(Attack __instance)
             {
-                if (__instance == null || __instance != _windup)
+                if (__instance != _windup)
                 {
                     return true;
                 }
@@ -757,7 +736,7 @@ namespace EpicLoot.MagicItemEffects
             [HarmonyPostfix]
             private static void Postfix(Attack __instance, ref float __result)
             {
-                if (__instance != null && __instance == _windup)
+                if (__instance == _windup)
                 {
                     __result = 0f;
                 }

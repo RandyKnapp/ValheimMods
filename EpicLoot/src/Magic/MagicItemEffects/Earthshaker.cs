@@ -15,13 +15,6 @@ namespace EpicLoot
 
 namespace EpicLoot.MagicItemEffects
 {
-    // Earthshaker (4-piece Freyja's Falcon set bonus). A hotkey pressed in mid-air dives the player toward where they
-    // aim, at least MinDiveAngle below the horizon, steering after the aim at a limited turn rate, and on touching
-    // down slams an area: the effect value as damage, half blunt and half pierce, raised by the inventory's weight
-    // over a threshold and by how far the player fell. The area, and the impact's look, grow with the fall too. A dive
-    // can start at any height, but one begun with less than MinHeight of clear air below deals LowDivePenalty percent
-    // less damage.
-    //
     // The dive runs on the diver's client. Every physics step the velocity is forced along the dive direction (an
     // UpdateMotion postfix, the last motion code in Character.CustomFixedUpdate) and a capsule cast looks one step
     // ahead. The player's body uses discrete collision with a 2 m/s depenetration limit, so left to vanilla a 30 m/s
@@ -33,7 +26,6 @@ namespace EpicLoot.MagicItemEffects
     // slam's size (a networked fx prefab spawns at its own size only).
     public static class Earthshaker
     {
-        // All tunable in this effect's Config block in magiceffects.json, under these key names.
         public const float DefaultRadius = 5f;
         public const float DefaultMinHeight = 3f;
         public const float DefaultLowDivePenalty = 50f;     // percent less damage from a dive begun under MinHeight
@@ -123,7 +115,6 @@ namespace EpicLoot.MagicItemEffects
         private const string FeatherFxPrefab = "fx_raven_despawn";
         private const float LocalFxLifetime = 10f;           // a fallback, should a copy have no TimedDestruction
 
-        // Tooltip: every number in the text follows a retune of its config key.
         public static void RegisterDisplayValues()
         {
             MagicItem.RegisterDisplayValues(MagicEffectType.Earthshaker, value => new object[]
@@ -1068,7 +1059,6 @@ namespace EpicLoot.MagicItemEffects
 
         private class Wing
         {
-            public Transform Root;
             public Transform[] Segments;
             public Transform[] Feathers;
             public SkinnedMeshRenderer Renderer;
@@ -1438,7 +1428,6 @@ namespace EpicLoot.MagicItemEffects
 
             var wing = new Wing
             {
-                Root = root,
                 Segments = new Transform[SegmentCount],
                 Feathers = new Transform[_feathers.Length],
                 Renderer = renderer,
@@ -1500,26 +1489,23 @@ namespace EpicLoot.MagicItemEffects
         }
 
         // The left wing is the right one mirrored through a negative scale on its root.
-        private static Wing BuildWing(Transform anchor, float side)
+        private static void BuildWing(Transform anchor, float side)
         {
-            var wing = new Wing
-            {
-                Root = new GameObject(side > 0f ? "RightWing" : "LeftWing").transform,
-                Segments = new Transform[SegmentCount],
-                Feathers = new Transform[_feathers.Length],
-            };
-            wing.Root.SetParent(anchor, false);
-            wing.Root.localPosition = new Vector3(RootSpacing * side, 0f, 0f);
-            wing.Root.localScale = new Vector3(WingScale * side, WingScale, WingScale);
+            Transform root = new GameObject(side > 0f ? "RightWing" : "LeftWing").transform;
+            var segments = new Transform[SegmentCount];
+            var feathers = new Transform[_feathers.Length];
+            root.SetParent(anchor, false);
+            root.localPosition = new Vector3(RootSpacing * side, 0f, 0f);
+            root.localScale = new Vector3(WingScale * side, WingScale, WingScale);
 
-            Transform parent = wing.Root;
+            Transform parent = root;
             float offset = 0f;
             for (int i = 0; i < SegmentCount; i++)
             {
                 var segment = new GameObject(i == Arm ? "Arm" : i == Forearm ? "Forearm" : "Hand").transform;
                 segment.SetParent(parent, false);
                 segment.localPosition = new Vector3(offset, 0f, 0f);
-                wing.Segments[i] = segment;
+                segments[i] = segment;
                 parent = segment;
                 offset = _segmentLengths[i];
             }
@@ -1528,25 +1514,23 @@ namespace EpicLoot.MagicItemEffects
             {
                 var def = _feathers[i];
                 var feather = new GameObject("Feather" + i).transform;
-                feather.SetParent(wing.Segments[def.Segment], false);
+                feather.SetParent(segments[def.Segment], false);
                 feather.localPosition = new Vector3(def.Along * _segmentLengths[def.Segment], def.Lift, def.Lead);
-                wing.Feathers[i] = feather;
+                feathers[i] = feather;
             }
 
             var bones = new Transform[SegmentCount + _feathers.Length];
-            wing.Segments.CopyTo(bones, 0);
-            wing.Feathers.CopyTo(bones, SegmentCount);
+            segments.CopyTo(bones, 0);
+            feathers.CopyTo(bones, SegmentCount);
 
-            var renderer = wing.Root.gameObject.AddComponent<SkinnedMeshRenderer>();
+            var renderer = root.gameObject.AddComponent<SkinnedMeshRenderer>();
             renderer.sharedMesh = _mesh;
             renderer.sharedMaterial = _material;
             renderer.bones = bones;
-            renderer.rootBone = wing.Root;
+            renderer.rootBone = root;
             renderer.quality = SkinQuality.Bone1;
             renderer.localBounds = new Bounds(Vector3.zero, Vector3.one * 7f);
             renderer.updateWhenOffscreen = false;
-            wing.Renderer = renderer;
-            return wing;
         }
 
         private static bool EnsureAssets()

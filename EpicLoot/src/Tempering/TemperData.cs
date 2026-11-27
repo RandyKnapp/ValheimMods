@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using EpicLoot.Config;
+using Newtonsoft.Json;
 using UnityEngine;
 
 namespace EpicLoot;
@@ -26,25 +27,20 @@ public class TemperData
 
     private readonly string rarityColor;
 
+    // The success preview the panel shows. It is never saved: SaveToLiveItem writes the outcome.
     private readonly MagicItem _tempItem;
     private float _tempValue;
     private float _tempIncrement;
     private float _tempUpdatedValue;
-    private MagicItemEffect _tempEffect;
 
     public readonly float probability;
-    // Rolled by RollOutcome when the temper actually executes (materials consumed), not at selection
-    // time -- re-selecting an enchantment in the panel must not silently reroll a pending outcome.
+    // Rolled by RollOutcome when the temper executes, so re-selecting in the panel never rerolls it.
     public bool success { get; private set; }
     private bool critical;
     private readonly int indexOfEffect;
 
-    // The value range a temper of this effect works against: the legendary/mythic guaranteed-effect
-    // range when the unique declares one, the rarity table otherwise -- the same resolution the detailed
-    // tooltip uses (MagicItemEffectDefinitions.GetRollRange). Stock legendaries.json declares no such
-    // range, so falling back to the rarity table is what keeps a unique's effects temperable at all.
-    // Null means the effect has no rolled value at this rarity (a valueless effect like Warmth) and
-    // cannot be tempered.
+    // The same range the detailed tooltip shows. Null for an effect with no rolled value at this rarity
+    // (a valueless effect like Warmth).
     private static MagicItemEffectDefinition.ValueDef ResolveValues(MagicItem magicItem,
         MagicItemEffectDefinition def)
     {
@@ -58,11 +54,9 @@ public class TemperData
         return MagicItemEffectDefinitions.GetRollRange(magicItem, effect.EffectType);
     }
 
-    // Whether the effect can be tempered at all: it needs a value range and a positive increment to
-    // step by. The enchantment list uses this to leave untemperable effects out entirely.
+    // A temper needs a value range and a positive increment to step by.
     public static bool IsTemperable(MagicItem magicItem, MagicItemEffect effect)
     {
-        // An effect with no registered definition has no real range to temper against.
         MagicItemEffectDefinition.ValueDef values = GetTemperRange(magicItem, effect);
         return values != null && values.Increment > 0f && values.MaxValue > 0f;
     }
@@ -95,16 +89,12 @@ public class TemperData
             Rarity = magicItem.Rarity,
             TypeNameOverride = magicItem.TypeNameOverride,
             AugmentedEffectIndex = magicItem.AugmentedEffectIndex,
-            // Copied, not aliased: OnSuccess mutates these lists, and sharing them with the live
-            // item mutated it before (and independently of) the save.
             AugmentedEffectIndices = new List<int>(magicItem.AugmentedEffectIndices),
             TemperedEffectIndices = new List<int>(magicItem.TemperedEffectIndices),
             DisplayName = magicItem.DisplayName,
             LegendaryID = magicItem.LegendaryID,
             SetID = magicItem.SetID,
             IsUnidentified = magicItem.IsUnidentified,
-            // SaveMagicItem replaces the payload wholesale -- omitting the socket state destroyed
-            // every socketed shard/runestone (and the socket capacity) on both temper outcomes.
             SocketCount = magicItem.SocketCount,
             Sockets = magicItem.Sockets.Select(socket => new SocketedEffect
             {
@@ -132,15 +122,13 @@ public class TemperData
                 _tempIncrement = selectedValues.Increment;
                 newValue.EffectValue += selectedValues.Increment;
                 _tempUpdatedValue = newValue.EffectValue;
-                _tempEffect = newValue;
                 indexOfEffect = i;
             }
             _tempItem.Effects.Add(newValue);
         }
     }
 
-    // Decides this temper's outcome. Called by TemperPanel.OnTemper at execution (after the
-    // requirements are consumed), so selecting/deselecting in the panel can never reroll it.
+    // Called by TemperPanel.OnTemper once the requirements are consumed.
     public void RollOutcome()
     {
         // Defensive-path instance (no value range resolved): never succeeds, never crits, and the
@@ -158,19 +146,13 @@ public class TemperData
 
     public void OnSuccess()
     {
-        if (critical)
+        float steps = critical ? 2f : 1f;
+        if (SaveToLiveItem(value => value + _tempIncrement * steps, markTempered: true))
         {
-            _tempEffect.EffectValue += _tempIncrement;
-            _tempUpdatedValue = _tempEffect.EffectValue;
+            UpdateLog(critical ? CRIT_SUCCESS_GOLD : SUCCESS_GREEN);
         }
-        if (!_tempItem.TemperedEffectIndices.Contains(indexOfEffect))
-        {
-            _tempItem.TemperedEffectIndices.Add(indexOfEffect);
-        }
-        API.WithChangeReason(API.ChangeReason.Temper, () => itemData.SaveMagicItem(_tempItem));
-        UpdateLog(critical ? CRIT_SUCCESS_GOLD : SUCCESS_GREEN);
-
     }
+
     public void OnFail()
     {
         if (_tempItem == null)
@@ -178,43 +160,52 @@ public class TemperData
             return;
         }
 
-        // Downgrading is off by default: the failure costs only the payment and the item is not
-        // written at all (_tempItem still holds the would-be success).
+        // Downgrading is off by default: the failure costs only the payment and the item is not written.
         if (!CAN_DOWNGRADE)
         {
+            _tempValue = selectedEffect.EffectValue;
             _tempUpdatedValue = _tempValue;
             UpdateLog(FAIL_RED);
             return;
         }
 
-        _tempItem.Effects.Clear();
-
-        // Only the effect being tempered can drop, never another effect on the item.
-        for (int i = 0; i < magicItem.Effects.Count; ++i)
+        // A failure never takes an effect below the worst legitimate roll, and never raises one already below it.
+        if (SaveToLiveItem(value => Mathf.Min(value, Mathf.Max(selectedValues.MinValue, value - selectedValues.Increment)),
+                markTempered: false))
         {
-            MagicItemEffect effect = magicItem.Effects[i];
-            MagicItemEffect newValue = new MagicItemEffect(
-                effect.EffectType,
-                effect.EffectValue);
+            UpdateLog(FAIL_RED);
+        }
+    }
 
-            if (effect.EffectType == selectedEffect.EffectType)
-            {
-                _tempValue = newValue.EffectValue;
-                // A failure can never push an effect below the worst legitimate roll for the rarity.
-                // An effect already at (or somehow below) MinValue just stays put: the outer Min stops
-                // the floor from raising it.
-                newValue.EffectValue = Mathf.Min(newValue.EffectValue,
-                    Mathf.Max(selectedValues.MinValue, newValue.EffectValue - selectedValues.Increment));
-                _tempUpdatedValue = newValue.EffectValue;
-                _tempEffect = newValue;
-            }
-
-            _tempItem.Effects.Add(newValue);
+    /// <summary>
+    /// Writes the outcome onto a copy of the item as it is now, changing only the tempered effect. The item may
+    /// have changed since the effect was selected (a shard socketed or removed), so the selection-time copy
+    /// is never written back.
+    /// </summary>
+    private bool SaveToLiveItem(System.Func<float, float> outcome, bool markTempered)
+    {
+        MagicItem live = itemData.GetMagicItem();
+        if (live == null || indexOfEffect >= live.Effects.Count ||
+            live.Effects[indexOfEffect].EffectType != selectedEffect.EffectType)
+        {
+            EpicLoot.LogWarning("The tempered item changed its enchantments during the temper; it was left unchanged.");
+            return false;
         }
 
-        API.WithChangeReason(API.ChangeReason.Temper, () => itemData.SaveMagicItem(_tempItem));
-        UpdateLog(FAIL_RED);
+        MagicItem result = JsonConvert.DeserializeObject<MagicItem>(JsonConvert.SerializeObject(live));
+        MagicItemEffect effect = result.Effects[indexOfEffect];
+        _tempValue = effect.EffectValue;
+        effect.EffectValue = outcome(effect.EffectValue);
+        _tempUpdatedValue = effect.EffectValue;
+        if (markTempered && !result.TemperedEffectIndices.Contains(indexOfEffect))
+        {
+            result.TemperedEffectIndices.Add(indexOfEffect);
+        }
+
+        API.WithChangeReason(API.ChangeReason.Temper, () => itemData.SaveMagicItem(result));
+        return true;
     }
+
     private void UpdateLog(string color)
     {
         string message = MagicItem.GetEffectTextGeneric(selectedDefinition, $"{_tempValue} → {_tempUpdatedValue}");

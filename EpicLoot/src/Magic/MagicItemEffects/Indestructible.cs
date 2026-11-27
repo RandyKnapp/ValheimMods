@@ -1,6 +1,5 @@
 using HarmonyLib;
 using JetBrains.Annotations;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 
 namespace EpicLoot.MagicItemEffects
@@ -16,9 +15,6 @@ namespace EpicLoot.MagicItemEffects
     // lazily constructed yet.
     public static class Indestructible
     {
-        private static readonly MethodInfo memberwiseCloner = AccessTools.DeclaredMethod(typeof(object), "MemberwiseClone");
-        private static ItemDrop.ItemData.SharedData Clone(this ItemDrop.ItemData.SharedData sharedData) => (ItemDrop.ItemData.SharedData)memberwiseCloner.Invoke(sharedData, new object[]{});
-
         // The SharedData an item had before we swapped in our private copy. Restoring this exact
         // instance keeps the revert cheap and exact -- no prefab lookup, and no chance of writing
         // m_useDurability into the ObjectDB prefab's shared instance.
@@ -35,13 +31,12 @@ namespace EpicLoot.MagicItemEffects
         }
 
         // The one drain site that ignores m_useDurability: Player.DamageArmorDurability wears a random worn
-        // armor piece regardless, so an indestructible piece kept losing durability, unseen, and showed as
-        // broken once the effect came off. Vanilla's pick is kept, so the other pieces wear no faster; a
-        // piece that does not use durability just gets its durability back afterwards.
+        // armor piece regardless. Vanilla's pick is kept, so the other pieces wear no faster; a piece that does
+        // not use durability just gets its durability back afterwards.
         //
         // A snapshot around the call rather than a transpiler on its durability write: other mods rewrite
         // that write (Valheim Admin Tool) or wear armor from their own skipping prefix (SeneaL UI's cape
-        // slot), and a transpiler that missed its pattern used to abort all of Epic Loot's patching. First,
+        // slot), and a transpiler that misses its pattern breaks every later patch on the method. First,
         // so the snapshot is taken before any prefix that wears armor itself. HarmonyX runs every prefix
         // and postfix even when one of them skips the original.
         [HarmonyPatch(typeof(Player), nameof(Player.DamageArmorDurability))]

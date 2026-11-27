@@ -6,20 +6,14 @@ using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects.Shards
 {
-    // Provides a chance to increase the number of fish caught and to pull up bonus treasure while fishing
-    //
     // Hooked on FishingFloat.Catch rather than Fish.Pickup: Fish.Pickup returns true as soon as it has
     // *fired* the RequestPickup RPC, and RPC_RequestPickup drops requests within 2s of each other, so a
     // Pickup postfix can pay out for a catch the player never received. Catch also only runs for actual
     // rod fishing (from the float owner's FixedUpdate, with the rod owner passed in), which is what this
     // effect is meant to reward. Everything below is a local inventory operation on the fisher's own
     // client, so there is no ownership question.
-    //
-    // Shard values are authored as whole-number percents, hence the 0.01f.
     public static class LuckWhileFishing
     {
-        // Config keys that are tunables rather than loot prefabs. Matched explicitly so a future tunable
-        // that happens to collide with a prefab name can never be silently rolled as treasure.
         public const string TripleChanceKey = "TripleChance";
         public const string RollBaseKey = "RollBase";
         public const string RollPerValueKey = "RollPerValue";
@@ -47,11 +41,8 @@ namespace EpicLoot.MagicItemEffects.Shards
         public const float DefaultRollCurve = 2f;
         public const float DefaultFloorFraction = 0.05f;
 
-        // Default Config block, registered in ShardEffectDefinitions.EffectConfigs. The four roll-shape
-        // tunables above, plus prefab name -> value threshold, mirroring the Riches entry in
-        // magiceffects.json. The grid entry's own "Config" in shardstones.json overlays this per key, so
-        // retuning one number leaves the rest of the treasure table intact; setting an entry to 0 removes
-        // it from the table.
+        // The roll-shape tunables plus prefab name -> value threshold, as in the Riches entry in
+        // magiceffects.json. Setting an entry to 0 removes it from the table.
         public static readonly Dictionary<string, float> DefaultConfig = new Dictionary<string, float>
         {
             { TripleChanceKey, DefaultTripleChance },
@@ -85,7 +76,6 @@ namespace EpicLoot.MagicItemEffects.Shards
 
         private static readonly Vector2Int SingleUnit = new Vector2Int(1, 1);
 
-        // Tooltip: "... {0}% ... ({1}% of those ...)" -- {1} surfaces the triple-catch sub-roll.
         public static void RegisterDisplayValues()
         {
             MagicItem.RegisterDisplayValues(MagicEffectType.LuckWhileFishing,
@@ -112,13 +102,11 @@ namespace EpicLoot.MagicItemEffects.Shards
                     return;
                 }
 
-                // Roll A -- bonus treasure.
                 if (Random.value < chance && TryRollTreasure(chance * 100f, out var prefabName, out var amount))
                 {
                     __result = GrantTreasure(player, fish, prefabName, amount, __result);
                 }
 
-                // Roll B -- multi-catch.
                 if (Random.value < chance)
                 {
                     var extra = Random.Range(0f, 100f) < GetTripleChance() ? 2 : 1;

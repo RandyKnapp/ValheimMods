@@ -32,13 +32,6 @@ public static class MetalShaderSidecars
     // Jotunn swaps a JVLmock_ shader for the game's own when the prefab is registered with fixReference.
     const string MockPrefix = "JVLmock_";
 
-    [MenuItem("Mod/Build Metal Shader Sidecars")]
-    public static void BuildFromMenu()
-    {
-        string projectRootDir = Path.GetFullPath(Path.Combine(Application.dataPath, ".."));
-        Build(projectRootDir, Path.Combine(projectRootDir, "AssetBundles"));
-    }
-
     // Builds from the asset database, not from the Windows bundles, so it does not need them to be current.
     public static void Build(string projectRootDir, string stagePath)
     {

@@ -51,7 +51,7 @@ namespace EpicLoot
                 }
             }
 
-            EpicLoot.LogWarningForce($"[flare] rarity marker U+{(int)_tierGlyph:X4}");
+            EpicLoot.Log($"Effect rarity marker: U+{(int)_tierGlyph:X4}");
         }
 
         private static readonly float[] TierRatioCeilings = { 0.35f, 0.125f, 0.0625f };

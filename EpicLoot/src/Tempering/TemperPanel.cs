@@ -20,16 +20,15 @@ public class TemperPanel : MonoBehaviour {
     public static TemperPanel Instance;
     public static implicit operator bool(TemperPanel i) => i != null;
     private const float TIME_TO_TEMPER = 2f;
-    public StoreGui _storeGui;
 
     [Header("Background")]
     public Image frame;
     public Image selectedFrame;
 
     [Header("List Elements")]
-    public GameObject itemListPrefab;
-    public GameObject enchantmentListPrefab;
-    public GameObject requirementListPrefab;
+    public ItemElement itemListPrefab;
+    public EnchantmentElement enchantmentListPrefab;
+    public RequirementElement requirementListPrefab;
 
     [Header("List Roots")]
     public RectTransform itemListRoot;
@@ -42,22 +41,18 @@ public class TemperPanel : MonoBehaviour {
     public TextSizeFitter itemTooltip;
     public TextSizeFitter infoTooltip;
     public TextSizeFitter logTooltip;
-    private static readonly StringBuilder logSB = new StringBuilder();
-    public UITooltip sundialTooltip;
 
     [Header("Button Objects")]
     public Button temperButton;
     public GameObject progressPanel;
     public Button cancelButton;
     public GuiBar progressBar;
-    public float progressTimer;
 
     [Header("Gamepad Objects")]
     public RectTransform tooltipAnchor;
     public GameObject gamepadPanelHints;
 
     [Header("Currency Objects")]
-    public GameObject currencies;
     public Image coinsImage;
     public TextMeshProUGUI coinsText;
     public Image forestImage;
@@ -67,96 +62,43 @@ public class TemperPanel : MonoBehaviour {
     public Image goldImage;
     public TextMeshProUGUI goldText;
 
-    [Header("Effects")]
-    public EffectList temperStartEffects;
-    public EffectList temperDoneEffects;
-    public GameObject[] startEffects;
+    private static readonly StringBuilder logSB = new StringBuilder();
 
-    [Header("Temporary Values")]
-    public ItemElement selectedItemElement;
-    public EnchantmentElement selectedEnchantmentElement;
+    private StoreGui _storeGui;
+    private RectTransform _rt;
+    private EffectList temperStartEffects;
+    private EffectList temperDoneEffects;
+    private GameObject[] startEffects;
+    private float progressTimer;
+
+    private ItemElement selectedItemElement;
+    private EnchantmentElement selectedEnchantmentElement;
     private TemperData temperData;
 
-    [Header("Gamepad Variables")]
-    public bool takeGamepadInput;
-    public bool isItemListFocused;
-    public bool isFirstChild = true;
-
-    private RectTransform _rt;
+    private bool takeGamepadInput;
+    private bool isItemListFocused;
+    private bool isFirstChild = true;
 
     public void Awake() {
         Instance = this;
         _storeGui = transform.parent.GetComponent<StoreGui>();
-
-        frame = transform.Find("Frame").GetComponent<Image>();
-        selectedFrame = transform.Find("SelectedFrame").GetComponent<Image>();
-        itemListRoot = transform.Find("Inventory/Panel/ItemList").GetComponent<RectTransform>();
-        itemListEnsureVisible = transform.Find("Inventory/Panel").GetComponent<ScrollRectEnsureVisible>();
-        enchantmentsListRoot = transform.Find("Enchantments/Panel/ItemList").GetComponent<RectTransform>();
-        enchantmentListEnsureVisible = transform.Find("Enchantments/Panel").GetComponent<ScrollRectEnsureVisible>();
-        requirementListRoot = transform.Find("Requirements/Panel/ItemList").GetComponent<RectTransform>();
-        itemTooltip = transform.Find("Tooltip/Panel/ItemList").gameObject.AddComponent<TextSizeFitter>();
-        sundialTooltip = transform.Find("Sundial").GetComponent<UITooltip>();
-
-        temperButton = transform.Find("Temper/Button").GetComponent<Button>();
-        infoTooltip = transform.Find("Info/Panel/ItemList").gameObject.AddComponent<TextSizeFitter>();
-        logTooltip = transform.Find("Log/Panel/ItemList").gameObject.AddComponent<TextSizeFitter>();
-
-        itemListPrefab = transform.Find("Inventory/Panel/ItemElement").gameObject;
-        itemListPrefab.AddComponent<ItemElement>();
-        requirementListPrefab = transform.Find("Requirements/Panel/ItemElement").gameObject;
-        requirementListPrefab.AddComponent<RequirementElement>();
-        enchantmentListPrefab = transform.Find("Enchantments/Panel/ItemElement").gameObject;
-        enchantmentListPrefab.AddComponent<EnchantmentElement>();
-
-        currencies = transform.Find("Currencies").gameObject;
-        coinsImage = transform.Find("Currencies/Coins").GetComponent<Image>();
-        coinsText = transform.Find("Currencies/CoinsCount").GetComponent<TextMeshProUGUI>();
-        forestImage = transform.Find("Currencies/ForestTokens").GetComponent<Image>();
-        forestText = transform.Find("Currencies/ForestTokensCount").GetComponent<TextMeshProUGUI>();
-        ironImage = transform.Find("Currencies/BountyTokensIron").GetComponent<Image>();
-        ironText = transform.Find("Currencies/BountyTokensIronCount").GetComponent<TextMeshProUGUI>();
-        goldImage = transform.Find("Currencies/BountyTokensGold").GetComponent<Image>();
-        goldText = transform.Find("Currencies/BountyTokensGoldCount").GetComponent<TextMeshProUGUI>();
-        progressPanel = transform.Find("Temper/Progress").gameObject;
-        cancelButton = progressPanel.transform.Find("CancelButton").GetComponent<Button>();
-        progressBar = progressPanel.transform.Find("ProgressBar").GetComponent<GuiBar>();
-
-        gamepadPanelHints = transform.Find("gamepad_hint").gameObject;
-        tooltipAnchor = transform.Find("TooltipAnchor").GetComponent<RectTransform>();
-
-        gamepadPanelHints.SetActive(false);
-        progressPanel.SetActive(false);
-        selectedFrame.enabled = false;
-        logTooltip.autoScrollToBottom = true;
+        _rt = (RectTransform)transform;
 
         cancelButton.onClick.AddListener(OnCancel);
         temperButton.onClick.AddListener(OnStartTemper);
-        temperButton.interactable = false;
 
         temperStartEffects = ZNetScene.instance.GetPrefab("forge").GetComponent<CraftingStation>().m_craftItemEffects;
         temperDoneEffects = _storeGui.m_buyEffects;
 
+        Localization.instance.Localize(transform);
         LoadCurrencyIcons();
         SetUITooltipPrefabs();
         LoadButtonSfx();
         LoadImageSprites();
         FixScrollSensitivity();
         LocalizeUIGamePads();
-        LocalizeTitles();
-        LocalizeButtons();
-        SetSundialTooltip();
 
         transform.SetAsFirstSibling();
-        isFirstChild = true;
-
-        // Cache the root RectTransform, apply the saved position and make the panel movable (Left Alt,
-        // or the corner handle). The frame stays a raycast target, so presses on the panel's empty
-        // areas stop at the panel.
-        _rt = (RectTransform)transform;
-        if (frame != null) {
-            frame.raycastTarget = true;
-        }
         ApplyConfiguredPosition();
         TraderPanelDrag.Attach(_rt, position => {
             // Persists automatically because cfg.SaveOnConfigSet is true.
@@ -172,18 +114,6 @@ public class TemperPanel : MonoBehaviour {
         _rt.anchoredPosition = new Vector2(ELConfig.TemperPanelPositionX.Value, ELConfig.TemperPanelPositionY.Value);
     }
 
-    private void LocalizeTitles() {
-        transform.Find("Inventory/Title").GetComponent<TextMeshProUGUI>().text = Localization.instance.Localize("$settings_inventory");
-        transform.Find("Enchantments/Title").GetComponent<TextMeshProUGUI>().text = Localization.instance.Localize("$mod_epicloot_enchantments");
-        transform.Find("Tooltip/Title").GetComponent<TextMeshProUGUI>().text = Localization.instance.Localize("$mod_epicloot_output");
-        transform.Find("Log/Title").GetComponent<TextMeshProUGUI>().text = Localization.instance.Localize("$mod_epicloot_history");
-        transform.Find("Info/Title").GetComponent<TextMeshProUGUI>().text = Localization.instance.Localize("$mod_epicloot_info");
-        transform.Find("Requirements/Title").GetComponent<TextMeshProUGUI>().text = Localization.instance.Localize("$mod_epicloot_requirements");
-    }
-    private void LocalizeButtons() {
-        temperButton.transform.Find("Text").GetComponent<TextMeshProUGUI>().text = Localization.instance.Localize("$mod_epicloot_temper");
-        cancelButton.transform.Find("Text").GetComponent<TextMeshProUGUI>().text = Localization.instance.Localize("$menu_cancel");
-    }
     private void LoadCurrencyIcons() {
         ItemDrop.ItemData coins = ObjectDB.instance.GetItemPrefab("Coins").GetComponent<ItemDrop>().m_itemData;
         ItemDrop.ItemData forestTokens = ObjectDB.instance.GetItemPrefab("ForestToken").GetComponent<ItemDrop>().m_itemData;
@@ -213,36 +143,29 @@ public class TemperPanel : MonoBehaviour {
             }
         }
     }
-    private void SetSundialTooltip() {
-        // Intentionally empty for now: the tooltip copy needs proper localization before it ships.
-        // See the git history for the draft English text this replaced.
-    }
     private void LoadButtonSfx() {
         ButtonSfx sfx = InventoryGui.instance.GetComponentInChildren<ButtonSfx>(true);
         if (sfx != null) {
-            Button[] buttons = GetComponentsInChildren<Button>(true);
-            for (int i = 0; i < buttons.Length; ++i) {
-                Button button = buttons[i];
-                button.gameObject.AddComponent<ButtonSfx>().m_sfxPrefab = sfx.m_sfxPrefab;
+            ButtonSfx[] buttonSfx = GetComponentsInChildren<ButtonSfx>(true);
+            for (int i = 0; i < buttonSfx.Length; ++i) {
+                buttonSfx[i].m_sfxPrefab = sfx.m_sfxPrefab;
             }
         }
     }
     private void LoadImageSprites() {
-        frame.sprite = EpicAssets.MerchantPanel.GetComponent<Image>().sprite;
         Image selectedImg = InventoryGui.instance.transform.Find("root/Player/selected_frame/selected (1)").GetComponent<Image>();
         selectedFrame.sprite = selectedImg.sprite;
         selectedFrame.color = selectedImg.color;
         frame.material = _storeGui.transform.Find("Store/SellPanel").GetComponent<Image>().material;
-        temperButton.spriteState = _storeGui.m_buyButton.GetComponent<Button>().spriteState; ;
+        temperButton.spriteState = _storeGui.m_buyButton.GetComponent<Button>().spriteState;
         temperButton.image.sprite = _storeGui.m_buyButton.image.sprite;
-
-        transform.Find("Sundial").GetComponent<Image>().sprite = EpicAssets.MerchantPanel.transform.Find("Sundial").GetComponent<Image>().sprite;
 
         Sprite itemBkg = _storeGui.transform.Find("Store/ItemList/Items/ItemElement/bkg").GetComponent<Image>().sprite;
         Material itemMaterial = _storeGui.transform.Find("Store/ItemList/Items/ItemElement/icon").GetComponent<Image>().material;
         Color selectedColor = _storeGui.transform.Find("Store/ItemList/Items/ItemElement/selected").GetComponent<Image>().color;
 
-        progressBar.m_barImage.sprite = itemBkg;
+        // m_barImage is filled in by GuiBar.Awake, which has not run while the progress panel starts hidden.
+        progressBar.m_bar.GetComponent<Image>().sprite = itemBkg;
 
         Image[] images = GetComponentsInChildren<Image>(true);
         for (int i = 0; i < images.Length; ++i) {
@@ -261,8 +184,6 @@ public class TemperPanel : MonoBehaviour {
                 if (image.name == "Selected") {
                     image.color = selectedColor;
                 }
-            } else if (image.name == "MagicBG") {
-                image.sprite = EpicAssets.GenericItemBgSprite;
             } else if (image.name == "Icon") {
                 image.material = itemMaterial;
             }
@@ -281,9 +202,6 @@ public class TemperPanel : MonoBehaviour {
         for (int i = 0; i < hints.Length; ++i) {
             TextMeshProUGUI tmp = hints[i];
             GamepadGlyph.Localize(tmp, tmp.name);
-            if (tmp.name.StartsWith("JoyDPad")) {
-                tmp.gameObject.SetActive(false);
-            }
         }
         GamepadGlyph.LocalizeHints(gameObject);
     }
@@ -406,7 +324,7 @@ public class TemperPanel : MonoBehaviour {
     private bool ConsumeRequirements(Player player) {
         // Re-checked here, at completion, not just when the button was enabled: vanilla
         // ConsumeResources quietly takes only what is present, so materials spent (or sold to the
-        // trader) during the countdown used to buy a temper at a discount. HaveRequirements also
+        // trader) during the countdown would buy a temper at a discount. HaveRequirements also
         // carries the rarity check and the no-cost cheat.
         if (!HaveRequirements(player)) {
             return false;
@@ -446,9 +364,8 @@ public class TemperPanel : MonoBehaviour {
 
         for (int i = 0; i < magicItems.Count; ++i) {
             ItemDrop.ItemData item = magicItems[i];
-            GameObject instance = Instantiate(itemListPrefab, itemListRoot);
-            instance.SetActive(true);
-            ItemElement element = instance.GetComponent<ItemElement>();
+            ItemElement element = Instantiate(itemListPrefab, itemListRoot);
+            element.gameObject.SetActive(true);
             element.SetItem(item);
             element.index = i;
             element.button.onClick.AddListener(() => {
@@ -531,79 +448,55 @@ public class TemperPanel : MonoBehaviour {
         for (int i = 0; i < effects.Count; ++i) {
             MagicItemEffect effect = effects[i];
             // A valueless effect (Warmth, Indestructible) has no roll range to temper against --
-            // selecting one used to NRE in TemperData. Leave them out of the list entirely.
+            // leave them out of the list entirely.
             if (!TemperData.IsTemperable(selectedItemElement._magicItem, effect)) {
                 continue;
             }
-            GameObject instance = Instantiate(enchantmentListPrefab, enchantmentsListRoot);
-            instance.SetActive(true);
-            if (instance.TryGetComponent(out EnchantmentElement element)) {
-                element.selected.color = EpicLoot.GetRarityColorARGB(selectedItemElement._magicItem.Rarity);
-                element.SetEffect(effect, selectedItemElement._magicItem);
-                // List position, NOT the effect index: gamepad navigation walks
-                // EnchantmentElement.elements by this value, and skipping untemperable effects
-                // above desyncs the two (the up-branch then indexed past the end of the list).
-                element.index = listIndex++;
-                element.button.onClick.AddListener(() => {
-                    // A temper in progress acts on the selection it started with.
-                    if (IsTempering()) {
-                        return;
-                    }
-                    SetSelectedEnchantment(element);
-                });
-                if (!string.IsNullOrEmpty(selectedEffect) && effect.EffectType == selectedEffect) {
-                    SetSelectedEnchantment(element);
+            EnchantmentElement element = Instantiate(enchantmentListPrefab, enchantmentsListRoot);
+            element.gameObject.SetActive(true);
+            element.selected.color = EpicLoot.GetRarityColorARGB(selectedItemElement._magicItem.Rarity);
+            element.SetEffect(effect, selectedItemElement._magicItem);
+            // List position, NOT the effect index: gamepad navigation walks
+            // EnchantmentElement.elements by this value, and skipping untemperable effects
+            // above desyncs the two (the up-branch then indexed past the end of the list).
+            element.index = listIndex++;
+            element.button.onClick.AddListener(() => {
+                // A temper in progress acts on the selection it started with.
+                if (IsTempering()) {
+                    return;
                 }
+                SetSelectedEnchantment(element);
+            });
+            if (!string.IsNullOrEmpty(selectedEffect) && effect.EffectType == selectedEffect) {
+                SetSelectedEnchantment(element);
             }
         }
     }
+
     public void FillRequirementList() {
         for (int i = 0; i < requirementListRoot.childCount; ++i) {
-            Transform child = requirementListRoot.GetChild(i);
-            UnityEngine.Object.Destroy(child.gameObject);
+            Destroy(requirementListRoot.GetChild(i).gameObject);
         }
         RequirementElement.elements.Clear();
 
-        if (!selectedItemElement) {
-            for (int i = 0; i < TemperMan.MaxRequirementRows; ++i) {
-                GameObject instance = UnityEngine.Object.Instantiate(requirementListPrefab, requirementListRoot);
-                instance.SetActive(true);
-                if (instance.TryGetComponent(out RequirementElement element)) {
-                    element.Set(null);
-                }
-            }
-        } else {
-            TemperRequirement[] requirements = TemperMan.GetResolvedRequirements(selectedItemElement._magicItem.Rarity);
-            // Display only: this list has no ScrollRect, so extra rows would spill outside the panel.
-            // HaveRequirements/ConsumeRequirements still walk the full array, so a long cost list is
-            // charged in full even though only the first few rows are shown.
-            int displayCount = Mathf.Min(requirements.Length, TemperMan.MaxRequirementRows);
-            for (int i = 0; i < displayCount; ++i) {
-                TemperRequirement requirement = requirements[i];
-                GameObject instance = UnityEngine.Object.Instantiate(requirementListPrefab, requirementListRoot);
-                instance.SetActive(true);
-                if (instance.TryGetComponent(out RequirementElement element)) {
-                    element.Set(requirement);
-                }
-            }
-
-            if (RequirementElement.elements.Count < TemperMan.MaxRequirementRows) {
-                int difference = TemperMan.MaxRequirementRows - RequirementElement.elements.Count;
-                for (int i = 0; i < difference; ++i) {
-                    GameObject instance = UnityEngine.Object.Instantiate(requirementListPrefab, requirementListRoot);
-                    instance.SetActive(true);
-                    if (instance.TryGetComponent(out RequirementElement element)) {
-                        element.Set(null);
-                    }
-                }
-            }
+        // Display only: this list has no ScrollRect, so extra rows would spill outside the panel.
+        // HaveRequirements/ConsumeRequirements still walk the full array, so a long cost list is
+        // charged in full even though only the first few rows are shown. Empty rows pad it out.
+        TemperRequirement[] requirements = selectedItemElement
+            ? TemperMan.GetResolvedRequirements(selectedItemElement._magicItem.Rarity)
+            : [];
+        for (int i = 0; i < TemperMan.MaxRequirementRows; ++i) {
+            RequirementElement element = Instantiate(requirementListPrefab, requirementListRoot);
+            element.gameObject.SetActive(true);
+            element.Set(i < requirements.Length ? requirements[i] : null);
         }
     }
+
     public void UpdateTemperButton() {
         temperButton.interactable = CanTemper();
     }
     // True while the countdown runs. Selection input is ignored for that long -- the temper completes
-    // against whatever is selected when it ends, so re-selecting mid-way used to temper a different
+    // against whatever is selected when it ends, so re-selecting mid-way would temper a different
     // item or effect than the one started (and paid for). The guard sits on the input paths, not in
     // SetSelectedItem/SetSelectedEnchantment: OnTemper calls those itself while the panel is up.
     public bool IsTempering() => progressPanel != null && progressPanel.activeSelf;

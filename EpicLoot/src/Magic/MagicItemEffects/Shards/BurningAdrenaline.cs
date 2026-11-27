@@ -1,7 +1,6 @@
 ﻿namespace EpicLoot.MagicItemEffects.Shards {
-    // Provides a bonus to adrenaline based on the fire damage dealt by the player.
     public static class BurningAdrenaline {
-        // Postfix handler invoked by CharacterDamageDispatch (on-hit reaction).
+        // Postfix handler invoked by SharedCharacterDamagePatch (on-hit reaction).
         public static void OnDamageDealt(HitData hit, Character attacker) {
             if (hit == null || hit.m_damage.m_fire <= 0f || attacker != Player.m_localPlayer) {
                 return;

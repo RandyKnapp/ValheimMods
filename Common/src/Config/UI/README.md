@@ -240,6 +240,9 @@ makes it usable for lists a dropdown never could be.
 `SetParent(parent)` and no `worldPositionStays: false`, which corrupts the toggle's scale. **Never call
 `CreateToggle` directly** — go through `AddToggle`.
 
+Every button goes through `ClickSoundOnly`. Jotunn gives a button a select sound as well as its click, and a
+mouse press selects the button, so otherwise one click plays both.
+
 ## Input blocking
 
 Every `InputField` in a Valheim UI leaks keystrokes into the game. `CreatePanel` attaches a

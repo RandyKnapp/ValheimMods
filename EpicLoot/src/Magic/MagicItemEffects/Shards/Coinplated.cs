@@ -4,16 +4,12 @@ using Jotunn.Managers;
 using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects.Shards {
-    // Coinplated: spend a portion of your coin purse to absorb incoming damage.
-    //
     //   pool     = purse * PoolPercent%              coins committed this hit
     //   absorbed = min(incomingDamage, pool * efficiency)
     //   spent    = ceil(absorbed / efficiency)       <= pool, so a chip hit costs a few coins
     //
-    // Higher efficiency therefore means fewer coins per point of damage blocked (Magic pays 2 coins per
-    // damage, Mythic ~1.11)
+    // Higher efficiency therefore means fewer coins per point of damage blocked.
     public static class Coinplated {
-        // Config default, registered in ShardEffectDefinitions.EffectConfigs.
         public const float DefaultPoolPercent = 10f;
         private const string PoolPercentKey = "PoolPercent";
         public static readonly Dictionary<string, float> DefaultConfig = new Dictionary<string, float> {
@@ -22,8 +18,7 @@ namespace EpicLoot.MagicItemEffects.Shards {
 
         private static GameObject effect = null;
 
-        // Tooltip: the rolled value is a whole-number percent, but the readable figure is damage blocked
-        // per coin spent (50..90 -> 0.5..0.9). Providers must be PURE -- this only reads config.
+        // The rolled value is a whole-number percent; the readable figure is damage blocked per coin spent.
         public static void RegisterDisplayValues() {
             MagicItem.RegisterDisplayValues(MagicEffectType.Coinplated, value => new object[]
             {
@@ -41,7 +36,6 @@ namespace EpicLoot.MagicItemEffects.Shards {
 
             var player = Player.m_localPlayer;
 
-            // Socketed on chest armour, so this is a player-wide effect.
             float efficiency = player.GetTotalActiveMagicEffectValue(MagicEffectType.Coinplated, 0.01f);
             if (efficiency <= 0f) {
                 return;

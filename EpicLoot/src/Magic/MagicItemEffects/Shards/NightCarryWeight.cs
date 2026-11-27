@@ -1,5 +1,4 @@
 namespace EpicLoot.MagicItemEffects.Shards {
-    // Provides a bonus to carry weight at night
     public static class NightCarryWeight {
         // ModifyMaxCarryWeight handler invoked by SharedSEManModifyMaxCarryWeightPatch.
         public static void ModifyMaxCarryWeight(Player player, float baseLimit, ref float limit) {

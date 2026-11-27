@@ -20,7 +20,6 @@ namespace EpicLoot.MagicItemEffects
                 return;
             }
 
-            //EpicLoot.LogErrorForce("Setting Demister range multiplier!");
             forceField.endRange *= (1 + magicEffectValue);
         }
     }
@@ -46,14 +45,12 @@ namespace EpicLoot.MagicItemEffects
                 return;
             }
 
-            // First time set up
             var nview = __instance.m_ballInstance.GetComponent<ZNetView>();
             if (nview != null && nview.GetZDO() != null && nview.GetZDO().IsOwner())
             {
                 Player player = (Player)__instance.m_character;
                 if (player.HasActiveMagicEffect(MagicEffectType.ModifyWispRange, out float effectValue, 0.01f))
                 {
-                    //EpicLoot.LogErrorForce("Setting Demister range on zdo!");
                     nview.GetZDO().Set(ModifyWispRange.DEMISTER_ZDO, effectValue);
 
                     var demister = __instance.m_ballInstance.GetComponentInChildren<Demister>();

@@ -6,18 +6,8 @@ using Random = System.Random;
 
 namespace EpicLoot.Adventure.Feature
 {
-    public enum AdventureFeatureType
-    {
-        None,
-        SecretStash,
-        Gamble,
-        TreasureMaps,
-        Bounties
-    }
-
     public abstract class AdventureFeature
     {
-        public abstract AdventureFeatureType Type { get; }
         public abstract int RefreshInterval { get; }
 
         public int GetSecondsUntilRefresh()
@@ -75,7 +65,6 @@ namespace EpicLoot.Adventure.Feature
 
         protected static int GetNextMultiple(int n, int multiple)
         {
-            // TODO: Disable features when interval is set to or less than 0.
             if (multiple == 0)
             {
                 return 0;
@@ -86,7 +75,6 @@ namespace EpicLoot.Adventure.Feature
 
         protected static int GetCurrentInterval(int intervalDays)
         {
-            // TODO: Disable features when interval is set to or less than 0.
             if (intervalDays == 0)
             {
                 return 0;
@@ -185,39 +173,15 @@ namespace EpicLoot.Adventure.Feature
         protected static void RollOnListNTimes<T>(Random random, List<T> list, int n, out List<T> results)
         {
             results = new List<T>();
-            HashSet<int> indexes = new HashSet<int>();
-            if (n > list.Count)
-            {
-                // Return all items
-                for (int i = 0; i < list.Count; i++)
-                {
-                    var item = list[i];
-                    results.Add(item);
-                    indexes.Add(i);
-                }
-
-                return;
-            }
-
-            int count = 0;
-
-            while (count < n)
-            {
-                var index = random.Next(0, list.Count);
-                if (!indexes.Contains(index))
-                {
-                    var item = list[index];
-                    results.Add(item);
-                    indexes.Add(index);
-                    count++;
-                }
-            }
+            RollOnListNTimesUnique(random, list, n, results);
         }
 
+        /// <summary>
+        /// Appends N items picked from the list without duplicates to results.
+        /// </summary>
         protected static void RollOnListNTimesUnique<T>(Random random, List<T> list, int n, List<T> results)
         {
             HashSet<int> indexes = new HashSet<int>();
-            // Return all items
             if (n > list.Count)
             {
                 for (int i = 0; i < list.Count; i++) {

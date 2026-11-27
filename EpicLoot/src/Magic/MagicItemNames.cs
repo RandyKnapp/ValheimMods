@@ -278,7 +278,7 @@ namespace EpicLoot
             return results;
         }
 
-        // Everything that isn't a weapon or shield has Swords set as its skill... wtf
+        // SharedData.m_skillType defaults to Swords, so it only means something on weapons and shields.
         public static bool IsValidTypeForSkillCheck(ItemDrop.ItemData.ItemType itemType)
         {
             return itemType == ItemDrop.ItemData.ItemType.OneHandedWeapon

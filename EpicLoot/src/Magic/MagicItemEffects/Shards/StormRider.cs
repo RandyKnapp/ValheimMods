@@ -4,7 +4,6 @@ using HarmonyLib;
 using JetBrains.Annotations;
 
 namespace EpicLoot.MagicItemEffects.Shards {
-    // Provides a bonus to movement speed while in stormy weather
     public static class StormRider {
         // Vanilla EnvSetup names whose weather counts as a storm. Compared case-insensitively against the
         // current environment name (EnvSetup.m_name).

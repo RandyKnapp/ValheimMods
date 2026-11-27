@@ -56,8 +56,11 @@ namespace EpicLoot.MagicItemEffects
             }
 
             player.HasActiveMagicEffect(MagicEffectType.NineSteps, out float doomThreshold);
-            EpicLoot.Log($"[NineSteps] Tagged {Utils.GetPrefabName(victim.gameObject)}: {hit.m_damage.m_poison:0.##} poison outgoing, " +
-                (doomThreshold > 0f ? $"doom threshold {doomThreshold:0.#}%" : "Nine Steps not active"));
+            if (EpicLoot.IsLogEnabled(LogLevel.Info))
+            {
+                EpicLoot.Log($"[NineSteps] Tagged {Utils.GetPrefabName(victim.gameObject)}: {hit.m_damage.m_poison:0.##} poison outgoing, " +
+                    (doomThreshold > 0f ? $"doom threshold {doomThreshold:0.#}%" : "Nine Steps not active"));
+            }
             victim.m_nview.InvokeRPC(RpcKey, player.GetZDOID(), doomThreshold);
         }
 

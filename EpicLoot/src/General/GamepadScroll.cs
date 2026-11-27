@@ -6,19 +6,12 @@ using UnityEngine.UI;
 namespace EpicLoot;
 
 /// <summary>
-/// Right-stick scrolling for the crafting/enchanting panels.
-///
-/// This exists as a choke point on purpose. Valheim keeps reshaping ZInput -- the 2026-09-17 patch
-/// turned <c>GetJoyRightStickY(bool smooth)</c> into a parameterless method -- and Mono reports an
-/// unresolvable callee by failing to JIT the *whole* method that contains the call, before a single
-/// line of it runs (the give-away in a log is a MissingMethodException with an empty stack trace).
-/// Four panels read the stick straight from their own <c>Update</c>, so one renamed getter killed
-/// <c>base.Update()</c> too: the enchant/augment countdown never reached <c>DoMainAction</c> and the
-/// craft-success dialog, whose only <c>Close()</c> caller is its <c>Update</c>, could not be
-/// dismissed. The enchanting table looked dead for keyboard players as well, because the JIT failure
-/// happens regardless of the <c>IsGamepadActive</c> guard around it.
-///
-/// Routing the read through here keeps that blast radius at "stick scrolling stops working".
+/// Right-stick scrolling for the crafting/enchanting panels, read through one choke point on purpose.
+/// Valheim keeps reshaping ZInput, and Mono reports an unresolvable callee by failing to JIT the
+/// *whole* method that contains the call, before a single line runs (a MissingMethodException with an
+/// empty stack trace), whatever <c>IsGamepadActive</c> guard surrounds it. Read straight from a panel's
+/// <c>Update</c>, one renamed getter stops that whole Update (and <c>base.Update()</c>) for keyboard
+/// players too; read here, it only stops stick scrolling.
 /// </summary>
 internal static class GamepadScroll
 {

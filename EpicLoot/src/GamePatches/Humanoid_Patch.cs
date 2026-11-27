@@ -5,8 +5,8 @@ namespace EpicLoot
     [HarmonyPatch(typeof(Humanoid))]
     public static class Humanoid_Patch
     {
-        // Handle ItemDrop.ItemData that have null m_dropPrefab values to prevent NRE in method.
-        // TODO: Validate if this is needed, or can be fixed in a better way.
+        // Vanilla reads m_dropPrefab.name of every equipped item with no null check, and an item built
+        // without ItemDrop.Awake (another mod's, or a code clone) can carry a null m_dropPrefab.
         [HarmonyPatch(nameof(Humanoid.SetupVisEquipment))]
         [HarmonyPrefix]
         public static void SetupVisEquipment_Prefix(Humanoid __instance, VisEquipment visEq, bool isRagdoll)

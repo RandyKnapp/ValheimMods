@@ -56,11 +56,7 @@ namespace EpicLoot
 
             var oldRt = (RectTransform)button.transform;
             var rt = (RectTransform)newButton.transform;
-            rt.anchorMin = oldRt.anchorMin;
-            rt.anchorMax = oldRt.anchorMax;
-            rt.pivot = oldRt.pivot;
-            rt.anchoredPosition = oldRt.anchoredPosition;
-            rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, oldRt.rect.width);
+            CopyPlacement(oldRt, rt);
             rt.SetSiblingIndex(oldRt.GetSiblingIndex());
 
             newButton.interactable = button.interactable;
@@ -95,6 +91,15 @@ namespace EpicLoot
             newButton.gameObject.SetActive(button.gameObject.activeSelf);
             Object.DestroyImmediate(button.gameObject);
             return newButton;
+        }
+
+        private static void CopyPlacement(RectTransform from, RectTransform to)
+        {
+            to.anchorMin = from.anchorMin;
+            to.anchorMax = from.anchorMax;
+            to.pivot = from.pivot;
+            to.anchoredPosition = from.anchoredPosition;
+            to.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, from.rect.width);
         }
 
         /// <summary>The label of a button, whichever kind of text component carries it.</summary>
@@ -274,7 +279,10 @@ namespace EpicLoot
 
             foreach (var text in obj.GetComponentsInChildren<TMP_Text>(true))
             {
-                if (IsHeaderFont(text.font != null ? text.font.name : null))
+                // A VanillaFont picks its text's font when its page first opens, so the enchanting table's page
+                // titles keep the game's face. Only a page already open here would keep a swap: that is the Upgrade
+                // page, and the bold face's taller line truncates its title to nothing.
+                if (IsHeaderFont(text.font != null ? text.font.name : null) && text.GetComponent<VanillaFont>() == null)
                 {
                     var bold = GetBoldTmpFont();
                     if (bold != null)
@@ -339,11 +347,7 @@ namespace EpicLoot
 
             var oldRt = (RectTransform)button.transform;
             var rt = (RectTransform)newButton.transform;
-            rt.anchorMin = oldRt.anchorMin;
-            rt.anchorMax = oldRt.anchorMax;
-            rt.pivot = oldRt.pivot;
-            rt.anchoredPosition = oldRt.anchoredPosition;
-            rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, oldRt.rect.width);
+            CopyPlacement(oldRt, rt);
 
             newButton.transform.Find("Text").GetComponent<TMP_Text>().text = button.transform.Find("Text").GetComponent<TMP_Text>().text;
             newButton.transform.Find("Image").GetComponent<Image>().sprite = button.transform.Find("Image").GetComponent<Image>().sprite;

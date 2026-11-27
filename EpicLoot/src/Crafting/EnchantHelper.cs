@@ -20,8 +20,7 @@ namespace EpicLoot.Crafting
 
             foreach (ItemAmountConfig itemAmountConfig in enchantCostDef)
             {
-                // Two-step lookup: GetItemPrefab returns null for an unknown name, so chaining
-                // .GetComponent off it NRE'd before the guard could log (cf. AugmentHelper).
+                // Two-step lookup: GetItemPrefab returns null for an unknown name.
                 GameObject prefabObject = ObjectDB.instance.GetItemPrefab(itemAmountConfig.Item);
                 ItemDrop prefab = prefabObject != null ? prefabObject.GetComponent<ItemDrop>() : null;
                 if (prefab == null)

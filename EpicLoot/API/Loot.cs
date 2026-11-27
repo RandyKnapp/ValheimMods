@@ -273,29 +273,40 @@ public static partial class API
             OnError?.Invoke("Failed to parse loot tables from external plugin");
             return false;
         }
-        if (tables == null)
+
+        // A null entry would be kept for every later loot table reload, which would then throw each time.
+        tables?.RemoveAll(x => x == null);
+        if (tables == null || tables.Count == 0)
         {
             return false;
         }
 
-        // AddLootTable appends, so the previous instances have to be dropped by reference first or both
-        // versions would roll.
-        LootRoller.RemoveLootTables(existing);
-        ExternalLootTables.RemoveAll(existing);
+        try
+        {
+            // AddLootTable appends, so the previous instances have to be dropped by reference first or both
+            // versions would roll.
+            LootRoller.RemoveLootTables(existing);
+            ExternalLootTables.RemoveAll(existing);
 
-        ExternalLootTables.AddRange(tables);
-        existing.Clear();
-        existing.AddRange(tables);
+            ExternalLootTables.AddRange(tables);
+            existing.Clear();
+            existing.AddRange(tables);
 
-        LootRoller.AddLootTables(tables);
-        return true;
+            LootRoller.AddLootTables(tables);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            OnError?.Invoke($"Failed to update loot tables passed in through external plugin: {ex.Message}");
+            return false;
+        }
     }
 
     private static readonly List<LootTable> ExternalLootTables = new();
 
     /// <summary>
     /// Re-applies cached external loot tables into <see cref="LootRoller.LootTables"/>. Subscribed to
-    /// <see cref="EpicLoot.LootTableLoaded"/> in the API static constructor.
+    /// <see cref="LootRoller.OnSetupLootTables"/> in the API static constructor.
     /// </summary>
     private static void ReloadExternalLootTables()
     {

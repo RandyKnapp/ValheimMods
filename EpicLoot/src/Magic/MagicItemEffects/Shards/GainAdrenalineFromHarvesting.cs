@@ -2,8 +2,6 @@
 using JetBrains.Annotations;
 
 namespace EpicLoot.MagicItemEffects.Shards {
-    // Provides adrenaline when harvesting trees and rocks.
-    // TODO: consider supporting destructibles (small rocks/trees/bushes)
     public static class GainAdrenalineFromHarvesting {
         private static void OnHarvestHit(HitData hit) {
             if (hit == null || hit.GetAttacker() != Player.m_localPlayer) {

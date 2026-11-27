@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects.Shards {
-    // Provides a temporary health regeneration buff on adrenaline activation
     public static class AdrenalineIncreasesHealthRegen {
-        // Seconds of buff granted per 1 point of shard value -- what turns the single rarity ramp into both
-        // a regen percentage and a duration. Tunable as "SecondsPerPercent" in this effect's Config block in
-        // config/shardstones.json.
+        // Seconds of buff per point of shard value: what turns the single rarity ramp into both a regen
+        // percentage and a duration.
         public const float DefaultSecondsPerPercent = 0.5f;
 
         private const string SecondsPerPercentKey = "SecondsPerPercent";
@@ -21,15 +19,12 @@ namespace EpicLoot.MagicItemEffects.Shards {
         private static SE_AdrenalineSurge _buffPrototype;
         private static bool _iconMissingLogged;
 
-        // Tooltip: "Adrenaline Surge: +{0}% Health Regen for {1}s" -- {1} surfaces the derived duration. Pure,
-        // as the provider contract requires (MagicItem.RegisterDisplayValues): it only reads the effect config.
         public static void RegisterDisplayValues() {
             MagicItem.RegisterDisplayValues(MagicEffectType.AdrenalineIncreasesHealthRegen,
                 value => new object[] { value, value * GetSecondsPerPercent() });
         }
 
-        // Called by SharedPlayerAddAdrenalinePatch, which owns the Player.AddAdrenaline patch and the
-        // fill/pop detection (including the local-player and no-adrenaline-source guards).
+        // SharedPlayerAddAdrenalinePatch has already checked the local player and the adrenaline source.
         public static void OnAdrenalineActivated(Player player) {
             var percent = player.GetTotalActiveMagicEffectValue(MagicEffectType.AdrenalineIncreasesHealthRegen);
             if (percent <= 0f) {
@@ -72,7 +67,6 @@ namespace EpicLoot.MagicItemEffects.Shards {
                 return _buffPrototype;
             }
 
-            // The LightGreen shardstone's own icon -- same sprite the shard items use (see Shards.cs).
             var icon = EpicAssets.AssetBundle?.LoadAsset<Sprite>("Assets/EpicLoot/Sprites/Shardstones/LightGreen.png");
             if (icon == null) {
                 if (!_iconMissingLogged) {

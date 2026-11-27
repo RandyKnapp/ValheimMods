@@ -17,12 +17,6 @@ namespace EpicLoot
 
 namespace EpicLoot.MagicItemEffects
 {
-    // Kinetic Quake (4-piece Hrungnir's Stand set bonus, NoRoll). Every attack the player blocks stores a charge; the
-    // effect value is how many it takes (16 / 14 / 12 at Legendary / Mythic / Ancient). Once charged, the next attack
-    // blocked releases a rock shockwave: a line of eruptions racing Length metres along the blocking direction, hitting
-    // every enemy in a Width-wide band once, as the wave reaches it, for DamagePercent of the shield's block power as
-    // blunt, with stagger and knockback.
-    //
     // What counts: a held block -- BlockAttack returned true, the guard did not break (AddStaggerDamage said no) and
     // stamina remained, which is vanilla's own success flag -- against an attack that has an attacker, vanilla's
     // condition for block adrenaline. Guard breaks never count, though vanilla grants adrenaline for them. Armed is
@@ -38,7 +32,6 @@ namespace EpicLoot.MagicItemEffects
     // orbiting the player, from an int the owner mirrors to the player ZDO.
     public static class KineticQuake
     {
-        // All tunable in this effect's Config block in magiceffects.json, under these key names.
         public const float DefaultDamagePercent = 300f;  // of the shield's current block power
         public const float DefaultLength = 12f;          // metres the wave travels
         public const float DefaultWidth = 4f;            // metres; the full width of the band it hits
@@ -69,8 +62,6 @@ namespace EpicLoot.MagicItemEffects
         private static float MaxStepRise => EffectConfig.GetClamped(MagicEffectType.KineticQuake, MaxStepRiseKey, DefaultMaxStepRise, 0.5f, 10f);
         private static float FxScale => EffectConfig.GetClamped(MagicEffectType.KineticQuake, FxScaleKey, DefaultFxScale, 0.1f, 2f);
 
-        // Tooltip: "... At {0} charges, the next attack you block releases a rock shockwave {2}m ahead, dealing {1}% of
-        // your block power as blunt damage."
         public static void RegisterDisplayValues()
         {
             MagicItem.RegisterDisplayValues(MagicEffectType.KineticQuake, value => new object[] { value, DamagePercent, Length });

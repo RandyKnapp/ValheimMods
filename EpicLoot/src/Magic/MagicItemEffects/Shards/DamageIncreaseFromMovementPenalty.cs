@@ -1,7 +1,6 @@
 ﻿using EpicLoot.src.Magic.MagicItemEffects.Helpers;
 
 namespace EpicLoot.MagicItemEffects.Shards {
-    // Provides a bonus to damage based on the player's movement penalty.
     public static class DamageIncreaseFromMovementPenalty {
         // GetDamage postfix handler invoked by ModifyDamage (per-weapon modifier).
         public static void ModifyWeaponDamage(ItemDrop.ItemData __instance, ref HitData.DamageTypes __result) {

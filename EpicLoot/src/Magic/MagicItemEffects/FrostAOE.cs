@@ -118,7 +118,10 @@ namespace EpicLoot.MagicItemEffects
 
             foreach (var characterCollider in Colliders)
             {
-                if (characterCollider == null || characterCollider == _player)
+                // What the caster's own attacks may hit, as for Explosive Arrows: enemies only with PvP off, so the
+                // spikes spare the caster's tames and summons. Vanilla's RPC_Damage spares players without PvP.
+                if (characterCollider == null || characterCollider == _player ||
+                    (!_player.IsPVPEnabled() && !BaseAI.IsEnemy(_player, characterCollider)))
                 {
                     continue;
                 }

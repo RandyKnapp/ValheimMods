@@ -62,12 +62,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\Editor\EditorUtils.cs" />
-    <Compile Include="Assets\Scripts\Editor\PrefabYaml.cs" />
-    <Compile Include="Assets\Scripts\Editor\LegacyTextToTmp.cs" />
-    <Compile Include="Assets\Scripts\Editor\QuickConfigPrefabBuilder.cs" />
-    <Compile Include="Assets\Scripts\Editor\GamepadGlyphTools.cs" />
     <Compile Include="Assets\Scripts\Editor\MetalShaderSidecars.cs" />
-    <Compile Include="Assets\Scripts\Editor\PanelTmpMigration.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Scripts\Editor\ValheimUnity.Editor.asmdef" />
@@ -585,66 +580,6 @@
       <HintPath>Library\PackageCache\com.unity.ext.nunit@031a54704bff\net40\unity-custom\nunit.framework.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="EpicLoot">
-      <HintPath>Assets\ExternalLibraries\EpicLoot.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Jotunn">
-      <HintPath>Assets\ExternalLibraries\Jotunn.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="BepInEx">
-      <HintPath>Assets\ExternalLibraries\BepInEx.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="0Harmony">
-      <HintPath>Assets\ExternalLibraries\0Harmony.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>Assets\ExternalLibraries\Newtonsoft.Json.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="assembly_valheim">
-      <HintPath>Assets\ExternalLibraries\valheim\assembly_valheim.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="assembly_utils">
-      <HintPath>Assets\ExternalLibraries\valheim\assembly_utils.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="assembly_guiutils">
-      <HintPath>Assets\ExternalLibraries\valheim\assembly_guiutils.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="assembly_postprocessing">
-      <HintPath>Assets\ExternalLibraries\valheim\assembly_postprocessing.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="assembly_sunshafts">
-      <HintPath>Assets\ExternalLibraries\valheim\assembly_sunshafts.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="assembly_lux">
-      <HintPath>Assets\ExternalLibraries\valheim\assembly_lux.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="assembly_simplemeshcombine">
-      <HintPath>Assets\ExternalLibraries\valheim\assembly_simplemeshcombine.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="gui_framework">
-      <HintPath>Assets\ExternalLibraries\valheim\gui_framework.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Splatform">
-      <HintPath>Assets\ExternalLibraries\valheim\Splatform.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="SoftReferenceableAssets">
-      <HintPath>Assets\ExternalLibraries\valheim\SoftReferenceableAssets.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="UnityEditor.iOS.Extensions.Xcode">
       <HintPath>C:\Program Files\Unity\Hub\Editor\6000.0.75f1\Editor\Data\PlaybackEngines\MacStandaloneSupport\UnityEditor.iOS.Extensions.Xcode.dll</HintPath>
       <Private>False</Private>
@@ -1149,16 +1084,12 @@
       <HintPath>C:\Program Files\Unity\Hub\Editor\6000.0.75f1\Editor\Data\UnityReferenceAssemblies\unity-4.8-api\Facades\System.Xml.XPath.XDocument.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Unity.TextMeshPro">
-      <HintPath>Library\ScriptAssemblies\Unity.TextMeshPro.dll</HintPath>
+    <Reference Include="UnityEditor.UI">
+      <HintPath>Library\ScriptAssemblies\UnityEditor.UI.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.UI">
       <HintPath>Library\ScriptAssemblies\UnityEngine.UI.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityEditor.UI">
-      <HintPath>Library\ScriptAssemblies\UnityEditor.UI.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.TestRunner">
@@ -1171,10 +1102,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="MagicaClothV2.csproj">
-      <Project>{490B7080-855D-8A57-993D-ACF5B8823542}</Project>
-      <Name>MagicaClothV2</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="GenerateTargetFrameworkMonikerAttribute" />

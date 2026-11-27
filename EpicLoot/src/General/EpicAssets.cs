@@ -18,8 +18,6 @@ public sealed class EpicAssets
     public static Sprite GenericItemBgSprite;
     public static Sprite AugaItemBgSprite;
     public static GameObject[] MagicItemLootBeamPrefabs = new GameObject[Rarities.Count];
-    public static readonly Dictionary<string, GameObject[]> CraftingMaterialPrefabs =
-        new Dictionary<string, GameObject[]>();
     public static Sprite SmallButtonEnchantOverlay;
     public static Sprite DodgeBuffSprite;
     public static AudioClip[] MagicItemDropSFX = new AudioClip[Rarities.Count];
@@ -33,7 +31,6 @@ public sealed class EpicAssets
     public static AudioClip AbandonBountySFX;
     public static AudioClip DoubleJumpSFX;
     public static GameObject OffSetSFX;
-    public static GameObject DebugTextPrefab;
     public static GameObject AbilityBar;
     public static GameObject ConfigMessagePrefab;
     public static GameObject SocketMessagePrefab;

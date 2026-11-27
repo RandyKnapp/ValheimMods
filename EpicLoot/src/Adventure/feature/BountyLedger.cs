@@ -17,6 +17,8 @@ namespace EpicLoot.Adventure.Feature
         public long WorldID;
         public int Version;
         public bool ConvertedGlobalKeys;
+        private const int MaxKillLogsPerPlayer = 500;
+
         public Dictionary<long, List<BountyKillLog>> KillLogsPerPlayer = new Dictionary<long, List<BountyKillLog>>();
 
         public List<BountyKillLog> GetAllKillLogs(long playerID)
@@ -37,6 +39,12 @@ namespace EpicLoot.Adventure.Feature
                 list = new List<BountyKillLog>();
                 KillLogsPerPlayer.Add(playerID, list);
             }
+            // Far beyond any real backlog for one offline player; it only bounds a flood.
+            if (list.Count >= MaxKillLogsPerPlayer)
+            {
+                return;
+            }
+
             list.Add(new BountyKillLog { BountyID = bountyID, MonsterID = monsterID, IsAdd = isAdd });
         }
     }

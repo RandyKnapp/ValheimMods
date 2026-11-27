@@ -5,12 +5,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects.Shards {
-    // Provides a bonus to move speed at the cost of carry weight
     public static class TravelLight {
-        // Max carry weight removed per 1 point of shard value (i.e. per 1% of move speed gained), and the
-        // backstop that stops stacked sources pushing the carry cap to zero or below. Tunable as
-        // "CarryWeightPerValue" and "MinResultingCarryWeight" in this effect's Config block in
-        // config/shardstones.json.
+        // MinResultingCarryWeight stops stacked sources pushing the carry cap to zero or below.
         public const float DefaultCarryWeightPerValue = 10f;
         public const float DefaultMinResultingCarryWeight = 50f;
 
@@ -34,8 +30,6 @@ namespace EpicLoot.MagicItemEffects.Shards {
                 MinResultingCarryWeightKey, DefaultMinResultingCarryWeight));
         }
 
-        // Tooltip: "+{0}% Move Speed, -{1} Carry Weight" -- {1} is derived from the rolled value and the
-        // configured rate, so the shown cost follows a retune instead of the baked-in default.
         public static void RegisterDisplayValues() {
             MagicItem.RegisterDisplayValues(MagicEffectType.TravelLight,
                 value => new object[] { value, value * GetCarryWeightPerValue() });
@@ -57,13 +51,10 @@ namespace EpicLoot.MagicItemEffects.Shards {
             }
         }
 
-        // ModifyMaxCarryWeight handler invoked by SharedSEManModifyMaxCarryWeightPatch, which runs it
-        // last: the MinResultingCarryWeight clamp measures against the running total, so it has to see
-        // every bonus the other handlers added.
+        // SharedSEManModifyMaxCarryWeightPatch runs this last: the MinResultingCarryWeight clamp measures
+        // against the running total, so it has to see every bonus the other handlers added.
         public static void ModifyMaxCarryWeight(Player player, ref float limit) {
-            // Read the memoized effect value before touching config: this hangs off GetMaxCarryWeight,
-            // which vanilla reaches at 50Hz via UpdateStats -> IsEncumbered, and most players carry no
-            // TravelLight shard at all. The config lookups only happen once that check passes.
+            // Memoized effect value before the config lookups: this hangs off GetMaxCarryWeight at 50Hz.
             var value = player.GetTotalActiveMagicEffectValue(MagicEffectType.TravelLight);
             if (value <= 0f) {
                 return;

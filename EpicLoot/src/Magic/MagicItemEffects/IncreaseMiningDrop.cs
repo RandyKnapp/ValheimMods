@@ -7,53 +7,31 @@ public class IncreaseMiningDrop : IncreaseDrop
 {
     public static IncreaseMiningDrop Instance { get; private set; }
 
+    private static Character _rockAttacker;
+
     static IncreaseMiningDrop()
     {
         Instance = new IncreaseMiningDrop()
         {
             MagicEffect = MagicEffectType.IncreaseMiningDrop,
-            ZDOVar = "el-mining"
+            ZDOVar = "el-mining",
+            LegacyValueScale = 25f,
+            FillerItem = "Stone"
         };
     }
 
-    // Reset ZDO variable on equipment change.
-    // TargetMethods because two class-level [HarmonyPatch] attributes MERGE into one target (the
-    // old form only patched UnequipItem, so the ZDO tag was never cleared on equip).
-    [HarmonyPatch]
-    public static class IncreaseMiningDrop_Player_EquipmentChange_Patches
+    private static bool IsRock(Destructible destructible)
     {
-        public static System.Collections.Generic.IEnumerable<System.Reflection.MethodBase> TargetMethods()
-        {
-            yield return AccessTools.DeclaredMethod(typeof(Humanoid), nameof(Humanoid.EquipItem));
-            yield return AccessTools.DeclaredMethod(typeof(Humanoid), nameof(Humanoid.UnequipItem));
-        }
-        public static void Postfix(Humanoid __instance)
-        {
-            if (__instance == Player.m_localPlayer && __instance.m_nview.IsValid())
-            {
-                if (__instance.m_nview.GetZDO().GetInt(Instance.ZDOVar) != 0)
-                {
-                    __instance.m_nview.GetZDO().Set(Instance.ZDOVar, 0);
-                }
-            }
-        }
-    }
-
-    [HarmonyPatch(typeof(MineRock), nameof(MineRock.Damage))]
-    public static class IncreaseMiningDrop_MineRock_Damage_Patch
-    {
-        private static void Prefix(MineRock __instance, HitData hit)
-        {
-            Instance.DoPrefix(hit);
-        }
+        return destructible.GetDestructibleType() == DestructibleType.Default &&
+            destructible.m_damages.m_chop == HitData.DamageModifier.Immune &&
+            destructible.m_damages.m_pickaxe != HitData.DamageModifier.Immune;
     }
 
     [HarmonyPatch(typeof(MineRock), nameof(MineRock.RPC_Hit))]
     public static class IncreaseMiningDrop_MineRock_RPC_Hit_Patch
     {
-        // The old guard was '__instance.m_nview == null' -- never true, because ZNetScene.Destroy
-        // only resets the ZDO and defers the Unity destroy, so the bonus never dropped here.
-        // Detect "this hit destroyed the area" instead: alive before, dead (or ZDO gone) after.
+        // Vanilla gives no "area destroyed" signal here: ZNetScene.Destroy only resets the ZDO and defers the
+        // Unity destroy, so compare the area's health either side of the hit.
         private static void Prefix(MineRock __instance, int hitAreaIndex, ref float __state)
         {
             __state = -1f;
@@ -74,45 +52,47 @@ public class IncreaseMiningDrop : IncreaseDrop
             bool areaDiedThisHit = zdo == null || zdo.GetFloat("Health" + hitAreaIndex, 1f) <= 0f;
             if (areaDiedThisHit)
             {
-                Instance.TryDropExtraItems(hit.GetAttacker(), __instance.m_dropItems, __instance.transform.position);
+                Instance.Grant(hit.GetAttacker(), __instance.m_dropItems, hit.m_point - hit.m_dir * 0.2f);
             }
         }
     }
 
-    [HarmonyPatch(typeof(MineRock5), nameof(MineRock5.Damage))]
-    public static class IncreaseMiningDrop_MineRock5_Damage_Patch
+    [HarmonyPatch(typeof(MineRock5), nameof(MineRock5.RPC_Damage))]
+    public static class IncreaseMiningDrop_MineRock5_RPC_Damage_Patch
     {
-        private static void Prefix(MineRock5 __instance, HitData hit)
+        private static void Prefix(HitData hit)
         {
-            Instance.DoPrefix(hit);
+            _rockAttacker = hit.GetAttacker();
+            Instance.BeginBatch(hit.m_point);
+        }
+
+        private static void Finalizer()
+        {
+            _rockAttacker = null;
+            Instance.EndBatch();
         }
     }
 
     [HarmonyPatch(typeof(MineRock5), nameof(MineRock5.DamageArea))]
-    public static class IncreaseMiningDrop_MineRock5_RPC_Hit_Patch
+    public static class IncreaseMiningDrop_MineRock5_DamageArea_Patch
     {
-        private static void Postfix(MineRock5 __instance, HitData hit, int hitAreaIndex, ref bool __result)
+        // A destroyed chunk's collider is deactivated inside DamageArea (RPC_SetAreaHealth runs synchronously and
+        // UpdateMesh turns it off), so its bounds are only meaningful before the call.
+        private static void Prefix(MineRock5 __instance, HitData hit, int hitAreaIndex, ref Vector3 __state)
+        {
+            var hitArea = __instance.GetHitArea(hitAreaIndex);
+            __state = (__instance.m_hitEffectAreaCenter && hitArea != null && hitArea.m_collider != null) ?
+                hitArea.m_collider.bounds.center : hit.m_point;
+        }
+
+        private static void Postfix(MineRock5 __instance, HitData hit, bool __result, Vector3 __state)
         {
             if (hit != null && __result)
             {
-                var hitArea = __instance.GetHitArea(hitAreaIndex);
-                Vector3 position = (__instance.m_hitEffectAreaCenter && hitArea.m_collider != null) ?
-                    hitArea.m_collider.bounds.center : hit.m_point;
-                Instance.TryDropExtraItems(hit.GetAttacker(), __instance.m_dropItems, position);
-            }
-        }
-    }
-
-    [HarmonyPatch(typeof(Destructible), nameof(Destructible.Damage))]
-    public static class IncreaseMiningDrop_Destructible_Damage_Patch
-    {
-        private static void Prefix(Destructible __instance, HitData hit)
-        {
-            if (__instance.GetDestructibleType() == DestructibleType.Default &&
-                __instance.m_damages.m_chop == HitData.DamageModifier.Immune &&
-                __instance.m_damages.m_pickaxe != HitData.DamageModifier.Immune)
-            {
-                Instance.DoPrefix(hit);
+                // CheckSupport destroys unsupported chunks with a HitData that has no attacker. It runs synchronously
+                // inside RPC_Damage, so the chunk that started the collapse still names the player responsible.
+                Character attacker = hit.m_hitType == HitData.HitType.Structural ? _rockAttacker : hit.GetAttacker();
+                Instance.Grant(attacker, __instance.m_dropItems, __state);
             }
         }
     }
@@ -122,17 +102,15 @@ public class IncreaseMiningDrop : IncreaseDrop
     {
         private static void Prefix(Destructible __instance, HitData hit)
         {
-            if (hit != null && __instance.GetDestructibleType() == DestructibleType.Default &&
-                __instance.m_damages.m_chop == HitData.DamageModifier.Immune &&
-                __instance.m_damages.m_pickaxe != HitData.DamageModifier.Immune)
+            if (hit == null || !IsRock(__instance))
             {
-                var dropList = __instance.gameObject.GetComponent<DropOnDestroyed>();
-                if (dropList == null)
-                {
-                    return;
-                }
+                return;
+            }
 
-                Instance.TryDropExtraItems(hit.GetAttacker(), dropList.m_dropWhenDestroyed, __instance.transform.position);
+            var dropper = __instance.gameObject.GetComponent<DropOnDestroyed>();
+            if (dropper != null)
+            {
+                Instance.Grant(hit.GetAttacker(), dropper.m_dropWhenDestroyed, GroundedDropPosition(dropper));
             }
         }
     }

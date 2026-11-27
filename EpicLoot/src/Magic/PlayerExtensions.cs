@@ -21,16 +21,6 @@ public static class PlayerExtensions
         return items;
     }
 
-    /// <summary>
-    /// DEPRECATED, DO NOT USE. Kept only because external mods patch it; nothing inside Epic Loot calls
-    /// it, so patching this does not affect effect resolution -- use
-    /// <see cref="API.RegisterEquipmentProvider"/> instead.
-    /// </summary>
-    public static List<ItemDrop.ItemData> GetEquipment(this Player player)
-    {
-        return player.GetMagicEquipment();
-    }
-
     // While set, totals for this one effect type read as absent. The compendium measures what each effect
     // contributes to a weapon by re-running GetDamage with the effect suppressed; checked before the cache so
     // nothing cached is ever the suppressed value.
@@ -44,7 +34,6 @@ public static class PlayerExtensions
         }
 
         IEnumerable<MagicItemEffect> equipEffects = player.GetMagicEquipment()
-            .Where(x => x.IsMagic())
             .SelectMany(x => x.GetMagicItem().GetEffects(effectType, includeSocketed: true));
         List<MagicItemEffect> setEffects = player.GetAllActiveSetMagicEffects(effectType);
         return equipEffects.Concat(setEffects).ToList();
@@ -73,23 +62,6 @@ public static class PlayerExtensions
         }
 
         return activeSetEffects;
-    }
-
-    public static HashSet<LegendarySetInfo> GetEquippedSets(this Player player)
-    {
-        HashSet<LegendarySetInfo> sets = new HashSet<LegendarySetInfo>();
-        foreach (ItemDrop.ItemData itemData in player.GetMagicEquipment())
-        {
-            if (itemData.IsMagic(out MagicItem magicItem) && magicItem.IsLegendarySetItem())
-            {
-                if (UniqueLegendaryHelper.TryGetLegendarySetInfo(magicItem.SetID, out LegendarySetInfo setInfo))
-                {
-                    sets.Add(setInfo);
-                }
-            }
-        }
-
-        return sets;
     }
 
     public static float GetTotalActiveMagicEffectValue(this Player player, string effectType,
@@ -136,10 +108,9 @@ public static class PlayerExtensions
     }
 
     // The memoized sum of one effect type's active values: null when nothing provides it, a float (which
-    // can be 0) when something does. TryGetValue/Store rather than the Func overload: this runs several
-    // times per fixed tick from GetMaxCarryWeight, ModifyStaminaRegen and GetArmor, and the closure that
-    // overload's delegate captures would be allocated on every one of those calls even though nearly all
-    // of them hit. Callers check SuppressedEffectType first, so the suppressed value is never cached.
+    // can be 0) when something does. TryGetValue/Store with no closure, since this runs several times per
+    // fixed tick from GetMaxCarryWeight, ModifyStaminaRegen and GetArmor. Callers check
+    // SuppressedEffectType first, so the suppressed value is never cached.
     private static float? GetCachedTotal(Player player, string effectType)
     {
         if (!EquipmentEffectCache.TryGetValue(player, effectType, out float? cached))
@@ -157,15 +128,6 @@ public static class PlayerExtensions
         return player.GetInventory().GetEquippedItems().Where(x => x.IsPartOfSet(setName)).ToList();
     }
 
-    /// <summary>
-    /// Every equipped item of the set, duplicates of one piece included. For bonus counting use
-    /// <see cref="SetBonusEvaluator.GetSetProgress(Player, LegendarySetInfo)"/>, which counts each piece once.
-    /// </summary>
-    public static List<ItemDrop.ItemData> GetMagicEquippedSetPieces(this Player player, string setName)
-    {
-        return player.GetMagicEquipment().Where(x => x.IsPartOfSet(setName)).ToList();
-    }
-
     public static bool HasEquipmentOfType(this Player player, ItemDrop.ItemData.ItemType type)
     {
         return player.GetMagicEquipment().Exists(x => x != null && x.m_shared.m_itemType == type);
@@ -178,9 +140,7 @@ public static class PlayerExtensions
 
     public static Player GetPlayerWithEquippedItem(ItemDrop.ItemData itemData)
     {
-        // TODO: evaluate if this returns magic items of other players correctly
-        // Hot path (called from ModifyArmor on every GetArmor): manual loop instead of a LINQ
-        // FirstOrDefault(closure) so we don't allocate a capturing closure on every call.
+        // Hot path (ModifyArmor, on every GetArmor): a loop rather than a capturing LINQ closure.
         List<Player> players = Player.s_players;
         for (int i = 0; i < players.Count; i++)
         {

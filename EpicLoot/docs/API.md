@@ -64,7 +64,7 @@ broken before.
 | Instead of patching / reflecting | Call |
 |---|---|
 | `EpicLoot_UnityLib.InventoryManagement.GetAllItems` / `HasItem` / `CountItem` / `RemoveItem` / `RemoveExactItem` | `RegisterInventoryProvider` |
-| `EpicLoot.PlayerExtensions.GetEquipment` (deprecated — internals call `GetMagicEquipment`, so this patch does nothing) | `RegisterEquipmentProvider` |
+| `EpicLoot.PlayerExtensions.GetEquipment` (removed) / `GetMagicEquipment` | `RegisterEquipmentProvider` |
 | `EpicLoot.Crafting.EnchantCostsHelper.GetSacrificeProducts` (prefix returning false) | `RegisterSacrificeFilter` |
 | `EpicLoot.Crafting.EnchantTabController.GetEnchantCosts` (the type no longer exists) | `GetEnchantCostsJson` |
 | `EpicLoot.EpicLoot.GetRarityColor` + enumerating the `ItemRarity` enum | `GetRarityColorByIndex`, `GetRarityCount` |
@@ -142,8 +142,8 @@ broken integration degrades to vanilla behaviour; it does not break the enchanti
 ### Inventory providers
 
 Widen the enchanting table's view of the player's inventory: nearby containers, a backpack, a remote
-stash. Epic Loot spends the player's own inventory first and only charges the shortfall to providers, in
-registration order.
+stash. A cost is spent from the enchanting table's own storage first, then from the player's own inventory,
+and only the shortfall is charged to providers, in registration order.
 
 ```csharp
 API.RegisterInventoryProvider(
@@ -199,7 +199,7 @@ API.RegisterInventoryProviderSaveHandler("my.plugin.guid", item =>
 
 Contribute equipped items for magic effect resolution — extra equipment slots, quick slots, an equipped
 backpack. These feed `PlayerExtensions.GetMagicEquipment`, so contributed items count toward effect
-totals, legendary set bonuses, tooltips and shard socketing alike. Non-magic items are filtered out for
+totals, set bonuses, tooltips and shard socketing alike. Non-magic items are filtered out for
 you, so returning everything is fine.
 
 ```csharp
@@ -280,7 +280,7 @@ API.ApplyMagicItemBackground(element.m_go, element.m_equiped, item, inventoryGri
 ```
 
 - Pass `null` for `item` to clear a slot you are emptying.
-- `inventoryGrid: true` also draws the legendary set marker; `false` is the hotbar treatment.
+- `inventoryGrid: true` also draws the rune marker of a set piece or unique and the unique item effects; `false` is the hotbar treatment.
 - Child images are created the first time a slot actually needs one, so it is safe to call every frame
   and calling it for empty slots costs nothing.
 
@@ -344,6 +344,8 @@ teleport, food, ...) are not in it. A trimmed example for an enchanted sword:
   `Active`, the `Tier` an active bonus applies at, and the description and activation key with details.
   `SetColor` is the colour the set label, set sections and set rune lines are drawn in (the player's Set
   Item Color setting, also `GetSetItemColor()`).
+- `UniqueLabel` is the "<Rarity> Unique Item" line of a named unique that is not a set piece, else null, and
+  `UniqueColor` the colour it is drawn in (the player's Unique Item Color setting).
 - `Hints` are drawn in order under the tooltip. `Id` is `container_open` (how another mod's container
   opens, such as a BowsBeforeHoes quiver), `socket_open` (the player's shard slot shortcut, or the gamepad
   gesture while a gamepad is in use), `chisel` (how to use Brokkr's Gift) or `effect_details`.
@@ -573,7 +575,7 @@ effectType, value)` and `CreateSetRune(rarity, setID, legendaryID)`.
 
 ## Content registration
 
-The older half of the API — adding magic effects, abilities, legendaries and sets, material conversions,
+The older half of the API — adding magic effects, abilities, uniques and sets, material conversions,
 sacrifices, bounty targets, secret stash items and treasure maps — is unchanged and documented with worked
 examples in [the shim README](../../EpicLootAPI/EpicLootAPI/README.md).
 

@@ -16,11 +16,6 @@ namespace EpicLoot
 
 namespace EpicLoot.MagicItemEffects
 {
-    // Artillery (set items only, NoRoll). The wearer's crossbow shots leave as lobbed fireballs: the Staff of
-    // Embers projectile, arced to come down on the point the player aims at, dealing the shot's damage +value%
-    // to everything within Radius metres of the impact. The rarity raises the damage; the radius is the same at
-    // every rarity.
-    //
     // The fireball is still the crossbow's shot: the bolt is spent, its hit data (bolt and crossbow damage, skill,
     // status effects) is the one vanilla built, and the blast is a weapon strike, so on-hit enchantments proc on
     // every target it touches. Only the projectile's owner simulates it (Projectile.FixedUpdate), so the arc,
@@ -31,7 +26,6 @@ namespace EpicLoot.MagicItemEffects
     // each of its fireballs comes down at a random point within TripleShotSpread x range of the aim point instead.
     public static class Artillery
     {
-        // All tunable in this effect's Config block in magiceffects.json, under these key names.
         public const float DefaultMaxDistance = 60f;       // metres; aiming further comes down at this range
         public const float DefaultGravity = 30f;           // metres/second^2 pulling the fireball down
         public const float DefaultArcHeight = 0.2f;        // apex height above the higher end, per metre of range
@@ -55,7 +49,6 @@ namespace EpicLoot.MagicItemEffects
         private static float Radius => Mathf.Max(0f, EffectConfig.Get(MagicEffectType.Artillery, RadiusKey, DefaultRadius));
         private static float TripleShotSpread => EffectConfig.GetClamped(MagicEffectType.Artillery, TripleShotSpreadKey, DefaultTripleShotSpread, 0f, 1f);
 
-        // Tooltip: "... +{0}% damage ... within {1}m" -- {1} follows a retune of Radius.
         public static void RegisterDisplayValues()
         {
             MagicItem.RegisterDisplayValues(MagicEffectType.Artillery, value => new object[] { value, GetRadius() });

@@ -5,11 +5,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects.Shards {
-    // Lays a trail of burning behind the player while moving, damage scaled by the effect value
     public static class Trailblazer {
-        // Tuning knobs, all read from this effect's Config block in config/shardstones.json under these key
-        // names. PatchLifetime additionally seeds the cached VFX template's particle duration and
-        // TimedDestruction timeout; those are baked into the registered prefab, so a lifetime raised past the
+        // PatchLifetime also seeds the cached VFX template's particle duration and TimedDestruction
+        // timeout; those are baked into the registered prefab, so a lifetime raised past the
         // default makes the burn outlast its visual until the next game session. Lowering it is exact,
         // because TrailblazerFire.Init stamps the live value on each spawned patch.
         public const float DefaultMinMoveSpeed = 1.5f;      // horizontal speed required to lay a trail
@@ -38,8 +36,8 @@ namespace EpicLoot.MagicItemEffects.Shards {
                 EffectConfig.Get(MagicEffectType.Trailblazer, PatchLifetimeKey, DefaultPatchLifetime));
         }
 
-        private const string VfxSourcePrefab = "vfx_FireAddFuel"; // vanilla prefab we clone
-        private const string VfxClonePrefab = "EL_TrailblazerFire";  // our registered clone
+        private const string VfxSourcePrefab = "vfx_FireAddFuel";
+        private const string VfxClonePrefab = "EL_TrailblazerFire";
         private static GameObject _vfxContainer; // disabled parent that keeps the template from Awaking
         private static GameObject _vfxTemplate;  // our registered clone (activeSelf == true)
         private static bool _sourceMissingLogged;
@@ -145,7 +143,6 @@ namespace EpicLoot.MagicItemEffects.Shards {
                     return;
                 }
 
-                // Only lay a trail while actually moving along the ground.
                 var velocity = __instance.GetVelocity();
                 velocity.y = 0f;
                 if (velocity.magnitude < EffectConfig.Get(MagicEffectType.Trailblazer,

@@ -19,7 +19,7 @@ internal sealed class ServerSaveResult {
     internal readonly HashSet<string> Written = new HashSet<string>(StringComparer.Ordinal);
     internal readonly List<string> Notes = new List<string>();
     internal readonly List<string> Failures = new List<string>();
-    /// <summary>The server rewrote magiceffects.json from its Balance Template.</summary>
+    /// <summary>The server rewrote the balance template files from its Balance Template.</summary>
     internal bool Rewritten;
 }
 
@@ -91,7 +91,7 @@ internal static class QuickConfigServerSave {
     // ------------------------------------------------------------------------------------------------
 
     /// <summary>
-    /// Sends the staged JSON changes to the server, after it rewrites magiceffects.json from
+    /// Sends the staged JSON changes to the server, after it rewrites the balance template files from
     /// <paramref name="rewriteTemplate"/> when that is not null. <paramref name="done"/> runs once, on a
     /// later frame, with what the server did. False when nothing could be sent (not connected to someone
     /// else's server, or a save is already waiting); done is then never called.
@@ -110,10 +110,10 @@ internal static class QuickConfigServerSave {
         };
         op.Staged.CopyFrom(staged);
         op.Baseline.CopyFrom(baseline);
-        // The rewrite replaces magiceffects.json whole, so edits staged against the old file are dropped,
+        // The rewrite replaces the template files whole, so edits staged against the old ones are dropped,
         // as the host drops them.
         op.Files = staged.DirtyJsonFiles(baseline)
-            .Where(file => rewriteTemplate == null || file != BalancePreset.MagicEffectsFile)
+            .Where(file => rewriteTemplate == null || ELConfig.IsBalanceTemplateFile(file) == false)
             .ToList();
         current = op;
         EnsureWatch();
@@ -235,7 +235,7 @@ internal static class QuickConfigServerSave {
         op.Result.Failures.AddRange(ReadList(package));
 
         foreach (string file in written) { op.Awaited.Add(file); }
-        if (op.Result.Rewritten) { op.Awaited.Add(BalancePreset.MagicEffectsFile); }
+        if (op.Result.Rewritten) { op.Awaited.UnionWith(ELConfig.BalanceTemplateFiles); }
         op.Stage = Stage.AwaitingPush;
         op.Deadline = Time.unscaledTime + PushTimeout;
         Settle(op);
@@ -392,7 +392,7 @@ internal static class QuickConfigServerSave {
             }
 
             if (template.Length > 0) {
-                rewritten = RewriteMagicEffects(template, notes, failures);
+                rewritten = RewriteTemplateFiles(template, notes, failures);
             }
 
             // In the host's order, magiceffects.json last, and only the files the panel edits: the name
@@ -412,7 +412,7 @@ internal static class QuickConfigServerSave {
                 RestoreUnreadable(ELConfig.ReloadBaseConfigsFromDisk(written), previous, written, notes, failures);
             }
             EpicLoot.LogForce($"Quick Configure: {Describe(sender)} saved " +
-                (written.Count > 0 ? string.Join(", ", written) : "no files") + (rewritten ? " and rewrote magiceffects.json" : "") +
+                (written.Count > 0 ? string.Join(", ", written) : "no files") + (rewritten ? " and rewrote the balance template files" : "") +
                 (failures.Count > 0 ? $"; refused: {string.Join(" ", failures)}" : "."));
         }
 
@@ -427,17 +427,16 @@ internal static class QuickConfigServerSave {
     }
 
     // The template is already the server's: the admin's .cfg change is pushed ahead of this request.
-    private static bool RewriteMagicEffects(string template, List<string> notes, List<string> failures) {
+    private static bool RewriteTemplateFiles(string template, List<string> notes, List<string> failures) {
         string serverTemplate = BalancePreset.Normalize(ELConfig.BalanceConfigurationType.Value);
         if (serverTemplate != BalancePreset.Normalize(template)) {
-            failures.Add($"The server's Balance Template is {serverTemplate}, not {template}, so magiceffects.json was not " +
+            failures.Add($"The server's Balance Template is {serverTemplate}, not {template}, so its template files were not " +
                 "rewritten. Save again once the setting has reached the server.");
             return false;
         }
 
-        // The admin cannot be asked about the server's own file, so a hand-edited one is always backed up.
-        bool backup = ConfigVersionManager.IsPlayerModified(BalancePreset.MagicEffectsConfigName);
-        if (BalancePreset.ApplyOverhaulRewrite(backup, out string message)) {
+        // The admin cannot be asked about the server's own files, so a hand-edited one is always backed up.
+        if (BalancePreset.ApplyOverhaulRewrite(backupFirst: true, out string message)) {
             notes.Add(message);
             return true;
         }

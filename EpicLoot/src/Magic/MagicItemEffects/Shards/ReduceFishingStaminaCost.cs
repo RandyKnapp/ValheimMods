@@ -3,7 +3,6 @@ using JetBrains.Annotations;
 using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects.Shards {
-    // Reduces the stamina cost of fishing by a percentage
     public static class ReduceFishingStaminaCost {
         private static bool _inFishingUpdate;
 

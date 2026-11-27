@@ -94,6 +94,7 @@ internal partial class TooltipGatherer
         data.Title = item.GetDecoratedName();
         data.DisplayName = item.GetDisplayName();
         data.SetColor = EpicLoot.GetSetItemColor();
+        data.UniqueColor = EpicLoot.GetUniqueItemColor();
         data.Description = item.GetDescription();
 
         if (item.IsMagicCraftingMaterial() || item.IsRunestone())
@@ -119,6 +120,10 @@ internal partial class TooltipGatherer
         else if (item.IsMagicSetItem())
         {
             data.SetLabel = UniqueLegendaryHelper.GetSetLabelToken(item.GetRarity());
+        }
+        else if (magicItem.IsUniqueLegendary())
+        {
+            data.UniqueLabel = UniqueLegendaryHelper.GetUniqueLabelToken(item.GetRarity());
         }
     }
 

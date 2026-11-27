@@ -2,7 +2,6 @@
 using JetBrains.Annotations;
 
 namespace EpicLoot.MagicItemEffects.Shards {
-    // +% movement speed while the player is on fire
     public static class BurningSpeed {
         private static bool IsBurning(SEMan seman) {
             var effects = seman.GetStatusEffects();

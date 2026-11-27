@@ -108,6 +108,7 @@ public static class EffectType
     public static string ModifyStaggerDuration = nameof(ModifyStaggerDuration);
     public static string QuickLearner = nameof(QuickLearner);
     public static string RecallWeapon = nameof(RecallWeapon);
+    public static string HomingMissile = nameof(HomingMissile);
     public static string ReflectDamage = nameof(ReflectDamage);
     public static string AvoidDamageTaken = nameof(AvoidDamageTaken);
     public static string StaggerOnDamageTaken = nameof(StaggerOnDamageTaken);

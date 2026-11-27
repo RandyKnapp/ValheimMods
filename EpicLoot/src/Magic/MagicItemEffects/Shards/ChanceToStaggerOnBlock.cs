@@ -18,9 +18,8 @@ namespace EpicLoot.MagicItemEffects.Shards {
 
             if (staggerChance > staggerRoll)
             {
-                attacker.Stagger(Vector3.zero); // relative to player or attacker would be intentional choice. Parries are relative
-                                                // to player in vanilla so that staggered enemies face player on parry.
-                                                // making this stagger in place so aoe attacks leave attackers staggering in place
+                // Staggered in place, unlike vanilla's parry stagger, so area attacks leave attackers where they are.
+                attacker.Stagger(Vector3.zero);
             }
         }
     }

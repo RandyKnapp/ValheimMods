@@ -2,15 +2,12 @@ using System;
 using System.Collections.Generic;
 using EpicLoot.MagicItemEffects;
 using UnityEngine;
+using static EpicLoot.Compendium.CompendiumFormat;
 
 namespace EpicLoot.Compendium;
 
 public static class ArmorTextSection
 {
-    private const string BetterColor = "#8aff8aff";
-    private const string WorseColor = "#ff8a8aff";
-    private const string NeutralColor = "#c0c0c0ff";
-    private const string Dash = "<color=#808080ff>-</color>";
     private const float ParryWindowSeconds = 0.25f;
 
     public static void Build(MagicPages instance)
@@ -23,11 +20,7 @@ public static class ArmorTextSection
 
         instance.MagicPagesTextArea.Add("");
         instance.MagicPagesTextArea.Add($"<size={MagicPages.LARGE_FONT_SIZE}>$mod_epicloot_armor</size>");
-        MagicTextTable table = instance.MagicPagesTextArea.AddTable(
-            new MagicTableColumn { Header = "$mod_epicloot_vitals_col_stat", Weight = 0.34f, Outline = true },
-            new MagicTableColumn { Header = "$mod_epicloot_vitals_col_base", Weight = 0.22f, Alignment = TextAnchor.MiddleCenter },
-            new MagicTableColumn { Header = "$mod_epicloot_vitals_col_epicloot", Weight = 0.22f, Alignment = TextAnchor.MiddleCenter },
-            new MagicTableColumn { Header = "$mod_epicloot_vitals_col_total", Weight = 0.22f, Alignment = TextAnchor.MiddleRight });
+        MagicTextTable table = AddStatTable(instance);
 
         AddArmor(player, table);
         AddBlock(player, table);
@@ -65,7 +58,7 @@ public static class ArmorTextSection
         float total = player.GetBodyArmor();
         detail.AddRange(StatSourceLines.GetMagicSources(player, MagicEffectType.ModifyArmor));
         detail.AddRange(StatSourceLines.GetMagicSources(player, MagicEffectType.ModifyArmorLowHealth));
-        AddRow(table, "$item_armor", Decimal(baseArmor), total - baseArmor, Decimal(total), detail, x => Signed(x, "0.#"), true);
+        AddRow(table, "$item_armor", OneDecimal(baseArmor), total - baseArmor, OneDecimal(total), detail, x => Signed(x, "0.#"), true);
     }
 
     private static void AddBlock(Player player, MagicTextTable table)
@@ -88,7 +81,7 @@ public static class ArmorTextSection
             detail.AddRange(StatSourceLines.GetMagicSources(player, MagicEffectType.ModifyBlockPower, include));
             detail.AddRange(StatSourceLines.GetMagicSources(player, MagicEffectType.ModifyBlockPowerLowHealth, include));
             detail.AddRange(StatSourceLines.GetMagicSources(player, MagicEffectType.Duelist, include));
-            AddRow(table, "$item_blockarmor", Decimal(baseBlock), total - baseBlock, Decimal(total), detail,
+            AddRow(table, "$item_blockarmor", OneDecimal(baseBlock), total - baseBlock, OneDecimal(total), detail,
                 x => Signed(x, "0.#"), true);
 
             float parryBase = blocker.m_shared.m_timedBlockBonus;
@@ -112,7 +105,7 @@ public static class ArmorTextSection
             List<string> detail = new();
             detail.AddRange(StatSourceLines.GetMagicSources(player, MagicEffectType.ModifyBlockForce, include));
             detail.AddRange(StatSourceLines.GetMagicSources(player, MagicEffectType.Duelist, include));
-            AddRow(table, "$item_blockforce", Decimal(baseForce), total - baseForce, Decimal(total), detail,
+            AddRow(table, "$item_blockforce", OneDecimal(baseForce), total - baseForce, OneDecimal(total), detail,
                 x => Signed(x, "0.#"), true);
         }
     }
@@ -175,31 +168,5 @@ public static class ArmorTextSection
         AddRow(table, name, Percent(0f), chance, Percent(chance), detail, SignedPercent, true);
     }
 
-    private static void AddRow(MagicTextTable table, string name, string baseText, float magicDelta, string totalText,
-        List<string> detail, Func<float, string> formatDelta, bool higherIsBetter)
-    {
-        bool neutral = Mathf.Abs(magicDelta) < 0.005f;
-        bool better = higherIsBetter ? magicDelta > 0f : magicDelta < 0f;
-        string color = neutral ? NeutralColor : better ? BetterColor : WorseColor;
-        string[] cells =
-        {
-            name,
-            baseText,
-            neutral ? Dash : formatDelta(magicDelta),
-            $"<color={color}>{totalText}</color>",
-        };
-        table.AddRow(cells, detail, true);
-    }
-
-    private static string Decimal(float value) => value.ToString("0.#");
-    private static string Times(float value) => value.ToString("0.#") + "x";
-    private static string Percent(float fraction) => $"{Mathf.RoundToInt(fraction * 100f)}%";
-    private static string SignedPercent(float fraction) => Signed(fraction * 100f) + "%";
     private static string Millis(float value) => string.Format(Localization.instance.Localize("$mod_epicloot_armor_ms"), Mathf.RoundToInt(value));
-
-    private static string Signed(float value, string format = "0")
-    {
-        string text = Mathf.Abs(value).ToString(format);
-        return value < 0f ? $"-{text}" : $"+{text}";
-    }
 }

@@ -17,7 +17,6 @@ public static partial class API
     private static bool ShowLogs = false;
     private static event Action<string> OnReload;
     private static event Action<string> OnError;
-    private static event Action<string> OnDebug;
     
     private static readonly Dictionary<string, MagicItemEffectDefinition> ExternalMagicItemEffectDefinitions = new();
     private static readonly Dictionary<string, AbilityDefinition> ExternalAbilities = new();
@@ -33,9 +32,6 @@ public static partial class API
     private static readonly List<TreasureMapBiomeInfoConfig> ExternalTreasureMaps = new();
     private static readonly Dictionary<string, Dictionary<string, Delegate>> AbilityProxies = new();
 
-    /// <summary>
-    /// Static constructor, runs automatically once before the API class is first used.
-    /// </summary>
     static API()
     {
         LootRoller.OnSetupLootTables += ReloadExternalLootTables;
@@ -52,24 +48,21 @@ public static partial class API
             if (!ShowLogs) return;
             EpicLoot.Log(message);
         };
-        OnError += message =>
-        {
-            if (!ShowLogs) return;
-            EpicLoot.LogWarning(message);
-        };
-        OnDebug += message =>
-        {
-            if (!ShowLogs) return;
-            EpicLoot.LogWarningForce(message);
-        };
+        // Failures are always logged: an API call that fails returns null or false, and the log is the only place
+        // the calling mod's author can see why. SetVerboseLogging only adds the routine registration chatter.
+        OnError += EpicLoot.LogWarningForce;
     }
 
-    /// <param name="name"><see cref="string"/></param>
-    /// <param name="asset"><see cref="Object"/></param>
     /// <returns>True if added to <see cref="EpicAssets.AssetCache"/></returns>
     [PublicAPI]
     public static bool RegisterAsset(string name, UnityEngine.Object asset)
     {
+        if (string.IsNullOrEmpty(name) || asset == null)
+        {
+            OnError?.Invoke("RegisterAsset needs a name and an asset.");
+            return false;
+        }
+
         if (EpicAssets.AssetCache.ContainsKey(name))
         {
             OnError?.Invoke("Duplicate asset: " + name);
@@ -81,15 +74,15 @@ public static partial class API
         return true;
     }
 
-     /// <remarks>
-    /// Can be useful for external plugins to know, so they can design features around it.
-    /// </remarks>
-    /// <param name="player"></param>
-    /// <param name="legendaryItemID"></param>
-    /// <returns>true if player has item</returns>
+    /// <returns>true if the player has the unique item equipped</returns>
     [PublicAPI]
     public static bool HasLegendaryItem(Player player, string legendaryItemID)
     {
+        if (player == null)
+        {
+            return false;
+        }
+
         foreach (ItemDrop.ItemData item in player.GetMagicEquipment())
         {
             if (item.IsMagic(out var magicItem) && magicItem.LegendaryID == legendaryItemID) return true;
@@ -98,12 +91,6 @@ public static partial class API
         return false;
     }
 
-    /// <remarks>
-    /// Can be useful for external plugins to know, so they can design features around it.
-    /// </remarks>
-    /// <param name="player"></param>
-    /// <param name="legendarySetID"></param>
-    /// <param name="count"></param>
     /// <param name="count">Set to the number of distinct set pieces equipped.</param>
     /// <returns>true if player has full set: enough pieces for every set bonus, at any rarities</returns>
     [PublicAPI]
@@ -118,8 +105,9 @@ public static partial class API
         count = progress.Count;
         return progress.IsFull;
     }
+
     /// <param name="type"><see cref="MagicEffectType"/></param>
-    /// <returns>serialized object of magic effect definition if found</returns>
+    /// <returns>the magic effect definition as JSON, or "" if there is none</returns>
     [PublicAPI]
     public static string GetMagicItemEffectDefinition(string type)
     {
@@ -134,8 +122,6 @@ public static partial class API
     /// <param name="player">can be null</param>
     /// <param name="item">can be null</param>
     /// <param name="effectType"><see cref="MagicEffectType"/></param>
-    /// <param name="scale"></param>
-    /// <returns></returns>
     [PublicAPI]
     public static float GetTotalActiveMagicEffectValue(Player player,ItemDrop.ItemData item, string effectType, float scale)
     {
@@ -145,8 +131,6 @@ public static partial class API
     /// <param name="player">can be null</param>
     /// <param name="item">can be null</param>
     /// <param name="effectType"><see cref="MagicEffectType"/></param>
-    /// <param name="scale"></param>
-    /// <returns></returns>
     [PublicAPI]
     public static float GetTotalActiveMagicEffectValueForWeapon(Player player, ItemDrop.ItemData item, string effectType, float scale)
     {
@@ -154,9 +138,9 @@ public static partial class API
     }
 
     /// <param name="player">can be null</param>
-    /// <param name="effectType"></param>
+    /// <param name="effectType"><see cref="MagicEffectType"/></param>
     /// <param name="item">can be null</param>
-    /// <param name="effectValue"><see cref="MagicEffectType"/></param>
+    /// <param name="effectValue">set to the effect's total value</param>
     /// <returns>True if player or item has magic effect</returns>
     [PublicAPI]
     public static bool HasActiveMagicEffect(Player player, string effectType, ItemDrop.ItemData item, ref float effectValue)
@@ -165,9 +149,8 @@ public static partial class API
     }
     
     /// <param name="player">can be null</param>
-    /// <param name="item"></param>
-    /// <param name="effectType"></param>
-    /// <param name="effectValue"><see cref="MagicEffectType"/></param>
+    /// <param name="effectType"><see cref="MagicEffectType"/></param>
+    /// <param name="effectValue">set to the effect's total value</param>
     /// <returns>True if magic effect is on item</returns>
     [PublicAPI]
     public static bool HasActiveMagicEffectOnWeapon(Player player, ItemDrop.ItemData item, string effectType, ref float effectValue)
@@ -175,25 +158,25 @@ public static partial class API
         return MagicEffectsHelper.HasActiveMagicEffectOnWeapon(player, item, effectType, out effectValue);
     }
 
-    /// <remarks>
-    /// Currently hard coded to Modify Armor effect type ???
-    /// </remarks>
-    /// <param name="player"></param>
+    /// <param name="player">can be null</param>
     /// <param name="effectType"><see cref="MagicEffectType"/></param>
-    /// <param name="scale"></param>
-    /// <returns></returns>
+    /// <returns>total value of the effect from the player's active legendary set bonuses</returns>
     [PublicAPI]
     public static float GetTotalActiveSetEffectValue(Player player, string effectType, float scale)
     {
         return MagicEffectsHelper.GetTotalActiveSetEffectValue(player, effectType, scale);
     }
 
-    /// <param name="player"></param>
     /// <param name="effectType">filter by <see cref="MagicEffectType"/></param>
     /// <returns>list of active magic effects on player</returns>
     [PublicAPI]
     public static List<string> GetAllActiveMagicEffects(Player player, string effectType = null)
     {
+        if (player == null)
+        {
+            return new List<string>();
+        }
+
         List<MagicItemEffect> list = player.GetAllActiveMagicEffects(effectType);
         List<string> output = new List<string>();
         foreach (MagicItemEffect item in list)
@@ -204,12 +187,16 @@ public static partial class API
         return output;
     }
 
-    /// <param name="player"></param>
     /// <param name="effectType">filter by <see cref="MagicEffectType"/></param>
     /// <returns>list of active magic effects on set</returns>
     [PublicAPI]
     public static List<string> GetAllActiveSetMagicEffects(Player player, string effectType = null)
     {
+        if (player == null)
+        {
+            return new List<string>();
+        }
+
         List<MagicItemEffect> list = player.GetAllActiveSetMagicEffects(effectType);
         List<string> output = new List<string>();
         foreach (MagicItemEffect item in list)
@@ -220,37 +207,36 @@ public static partial class API
         return output;
     }
     
-    /// <param name="player"></param>
     /// <param name="effectType"><see cref="MagicEffectType"/></param>
-    /// <param name="scale"></param>
-    /// <param name="ignoreThisItem"></param>
     /// <returns>total effect value found on player</returns>
     [PublicAPI]
     public static float GetTotalPlayerActiveMagicEffectValue(Player player, string effectType, float scale,
         ItemDrop.ItemData ignoreThisItem = null)
     {
-        return player.GetTotalActiveMagicEffectValue(effectType, scale, ignoreThisItem);
+        return player == null ? 0f : player.GetTotalActiveMagicEffectValue(effectType, scale, ignoreThisItem);
     }
 
-    /// <param name="player"></param>
     /// <param name="effectType"><see cref="MagicEffectType"/></param>
-    /// <param name="effectValue"></param>
-    /// <param name="scale"></param>
-    /// <param name="ignoreThisItem"></param>
+    /// <param name="effectValue">set to the effect's total value</param>
     /// <returns>True if player has magic effect</returns>
     [PublicAPI]
     public static bool PlayerHasActiveMagicEffect(Player player, string effectType, ref float effectValue,
         float scale = 1.0f, ItemDrop.ItemData ignoreThisItem = null)
     {
+        if (player == null)
+        {
+            effectValue = 0f;
+            return false;
+        }
+
         return player.HasActiveMagicEffect(effectType, out effectValue, scale, ignoreThisItem);
     }
 
-    /// <param name="itemData"></param>
-    /// <returns></returns>
+    /// <returns>the item's magic data as JSON, or null if it has none</returns>
     [PublicAPI]
     public static string GetMagicItemJson(ItemDrop.ItemData itemData)
     {
-        if (!itemData.IsMagic()) return null;
+        if (itemData == null || !itemData.IsMagic()) return null;
         return JsonConvert.SerializeObject(itemData.GetMagicItem());
     }
 }

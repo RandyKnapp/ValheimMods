@@ -3,7 +3,6 @@ using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.TextCore.Text;
 
 namespace EpicLoot.Adventure
 {
@@ -13,6 +12,8 @@ namespace EpicLoot.Adventure
         // Set once a StarLevelSystem API call has thrown (an installed SLS whose creature methods no longer match
         // the bundled shim), so every later bounty creature goes straight to EpicLoot's own health multiplier.
         private static bool _starLevelsUnusable;
+
+        private static readonly List<BountyTarget> _instances = new List<BountyTarget>();
 
         private BountyInfo _bountyInfo;
         private string _monsterID;
@@ -27,9 +28,7 @@ namespace EpicLoot.Adventure
             _character = GetComponent<Character>();
             _character.m_onDeath += OnDeath;
             _zdo = _character.m_nview.GetZDO();
-
-            var beacon = gameObject.AddComponent<Beacon>();
-            beacon.m_range = EpicLoot.GetAndvaranautRange();
+            _instances.Add(this);
 
             if (HasBeenSetup())
             {
@@ -43,7 +42,6 @@ namespace EpicLoot.Adventure
                     if (ai)
                     {
                         ai.SetAlerted(true);
-                        //ai.SetAggravated(true, BaseAI.AggravatedReason.Damage);
                     }
                 }
             }
@@ -52,11 +50,33 @@ namespace EpicLoot.Adventure
         [UsedImplicitly]
         public void OnDestroy()
         {
-            // TODO: save zdo data?
+            _instances.Remove(this);
             if (_character != null)
             {
                 _character.m_onDeath -= OnDeath;
             }
+        }
+
+        public static Character FindClosestInRange(Vector3 point, float range)
+        {
+            Character closest = null;
+            var closestDistance = range;
+            foreach (var instance in _instances)
+            {
+                if (instance._bountyInfo == null || instance._character.IsDead())
+                {
+                    continue;
+                }
+
+                var distance = Vector3.Distance(point, instance.transform.position);
+                if (distance < closestDistance)
+                {
+                    closest = instance._character;
+                    closestDistance = distance;
+                }
+            }
+
+            return closest;
         }
 
         private bool HasBeenSetup()
@@ -77,22 +97,18 @@ namespace EpicLoot.Adventure
                 return;
             }
 
-            var pkg = new ZPackage();
-            _bountyInfo.ToPackage(pkg);
-            // Send death event to server
-            EpicLoot.LogWarning($"SENDING -> RPC_SlayBountyTarget: {_monsterID} ({(_isAdd ? "minion" : "target")})");
-            ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.Everybody, "SlayBountyTarget", pkg, _monsterID, _isAdd);
+            // Only the creature's ID goes to the server, which reads the bounty off that ZDO. OnDeath runs before
+            // vanilla queues the ZDO's destroy, so the server still has it when this arrives.
+            EpicLoot.Log($"Reporting bounty kill: {_monsterID} ({(_isAdd ? "minion" : "target")})");
+            ZRoutedRpc.instance.InvokeRoutedRPC("SlayBountyTarget", _zdo.m_uid, _monsterID, _isAdd);
         }
 
         public void Initialize(BountyInfo bounty, string monsterID, bool isAdd)
         {
             _zdo.Set(BountyTargetComponent.BountyIDKey, bounty.ID);
 
-            // Written unconditionally. This used to be skipped on a dedicated server on the assumption
-            // that a dedicated server never spawns or simulates a bounty target -- true on a vanilla
-            // server, but false when a mod (e.g. Serverside Simulations) hands world simulation to the
-            // server. There, the server is the spawn controller's owner, so skipping the write left the
-            // data unwritten for everyone and no client could ever complete the bounty.
+            // Written on a dedicated server too: a mod such as Serverside Simulations hands world
+            // simulation to the server, which then owns the spawn controller and the creature.
             var pkg = new ZPackage();
             bounty.ToPackage(pkg);
             pkg.SetPos(0);
@@ -132,23 +148,12 @@ namespace EpicLoot.Adventure
                 return;
             }
 
-            // TODO: clean up abandoned bounties?
-            // Currently does not track if abandoned on the zdo
-            /*if (_bountyInfo.State == BountyState.Abandoned)
-            {
-                // Destroy abandoned bounties
-                EpicLoot.Log("Destroying abandoned bounty!");
-                DestroyInstance();
-                return;
-            }*/
-
             _monsterID = _zdo.GetString(BountyTargetComponent.MonsterIDKey);
             _isAdd = _zdo.GetBool(BountyTargetComponent.IsAddKey);
 
             _character.m_name = _zdo.GetString(BountyTargetComponent.BountyTargetNameKey);
             // Before the health bonus: StarLevelSystem reads IsBoss() when it builds this creature's stats (boss
             // health and damage per star, boss modifiers), and it has to get the same answer at spawn as on a load.
-            // It used to build them at spawn before this was set, and after it on every load.
             _character.m_boss = !_isAdd;
 
             ApplyHealthBonus(spawning);
@@ -312,32 +317,6 @@ namespace EpicLoot.Adventure
             public static void Postfix(Character __instance)
             {
                 StartBountyTarget(__instance);
-            }
-        }
-
-        /// <summary>
-        /// Remove the beacon of bounty targets when they take damage. Uses TargetMethods because two
-        /// class-level [HarmonyPatch] attributes MERGE into a single target (the old form only
-        /// patched Character.OnDamaged -- and Humanoid overrides it without calling base, so the
-        /// beacon never cleared for real bounty targets, which are all Humanoids).
-        /// </summary>
-        [HarmonyPatch]
-        public static class Character_OnDamaged_Patch
-        {
-            public static System.Collections.Generic.IEnumerable<System.Reflection.MethodBase> TargetMethods()
-            {
-                yield return AccessTools.DeclaredMethod(typeof(Character), "OnDamaged");
-                yield return AccessTools.DeclaredMethod(typeof(Humanoid), "OnDamaged");
-            }
-
-            public static void Postfix(Character __instance)
-            {
-                var target = __instance.GetComponent<BountyTarget>();
-                if (target)
-                {
-                    var beacon = __instance.GetComponent<Beacon>();
-                    UnityEngine.Object.Destroy(beacon);
-                }
             }
         }
     }

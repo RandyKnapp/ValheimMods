@@ -212,16 +212,10 @@ namespace EpicLoot.Crafting
             var inventoryGui = InventoryGui.instance;
             var newDialog = Instantiate(inventoryGui.m_variantDialog, parent);
             var dialog = newDialog.gameObject.AddComponent<CraftSuccessDialog>();
-            //Destroy(newDialog);
             dialog.gameObject.name = "CraftingSuccessDialog";
 
             dialog.Frame = dialog.gameObject.transform.Find("VariantFrame").gameObject.RectTransform();
             dialog.Frame.gameObject.name = "Frame";
-            for (var i = 1; i < dialog.Frame.childCount; ++i)
-            {
-                var child = dialog.Frame.GetChild(i);
-                //Destroy(child.gameObject);
-            }
             dialog.Frame.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 380);
             dialog.Frame.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 550);
             dialog.Frame.anchoredPosition += new Vector2(20, -270);

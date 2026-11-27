@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects.Shards {
-    // Provides a reactive frost nova when the player takes damage, with a scaling damage and cooldown based on rarity.
     public static class ModerIcyRetribution {
-        // All tunable in this effect's Config block in config/shardstones.json, under these key names.
         public const float DefaultRadius = 8f;
-        public const float DefaultFrostPerTier = 8f;       // frost damage per point of value (15..30 -> 120..240)
+        public const float DefaultFrostPerTier = 8f;       // frost damage per point of value
         public const float DefaultBaseCooldown = 200f;     // cooldown at Epic (the shard's rarity floor)
         public const float DefaultCooldownPerRarity = 20f; // removed per rarity above Epic
         public const float DefaultMinCooldown = 30f;       // floor, so a retune cannot make it near-instant
@@ -26,9 +24,8 @@ namespace EpicLoot.MagicItemEffects.Shards {
             { MinCooldownKey, DefaultMinCooldown },
         };
 
-        // Tooltip: "Icy Retribution: {0} Frost". The cooldown is keyed off the shard's rarity rather than
-        // its value (see GetCooldown), and a provider only receives the value -- summing two socketed
-        // shards would misreport it -- so the cooldown stays in the Shift-detail config lines instead.
+        // The cooldown is keyed off the shard's rarity rather than its value, and a provider only receives
+        // the value, so the cooldown stays in the Shift-detail config lines instead.
         public static void RegisterDisplayValues() {
             MagicItem.RegisterDisplayValues(MagicEffectType.IcyRetribution,
                 value => new object[] {
@@ -37,32 +34,25 @@ namespace EpicLoot.MagicItemEffects.Shards {
                 });
         }
 
-        // Visual: our own trimmed copy of the fenring's ice nova, built and cached by FrostNovaFx so the
-        // fenring's full-length nova is left untouched. Played at the helper's default speed.
         private const string NovaTemplateName = "EL_ModerIcyRetributionNova";
 
-        // Registers the nova variant with ZNetScene, so the networked nova spawned at each proc shows on other
-        // clients. Hooked to PrefabManager.OnPrefabsRegistered in EpicLoot.cs.
         public static void RegisterNovaPrefab() {
             FrostNovaFx.RegisterPrefab(NovaTemplateName);
         }
 
-        // Cooldown HUD indicator (Moder trophy icon with a radial recharge sweep). Built lazily on the first
-        // proc -- see GetOrCreateCooldownIndicator -- so ObjectDB is loaded when the trophy is queried. Its
-        // presence on the player is also the cooldown gate (checked via CooldownHash below).
+        // The cooldown indicator's presence on the player is also the cooldown gate.
         private const string CooldownName = "EL_IcyRetributionCooldown";
         private static readonly int CooldownHash = CooldownName.GetStableHashCode();
         private static StatusEffect _cooldownIndicator;
         private static bool _cooldownMissingLogged;
 
-        // Postfix handler invoked by CharacterRpcDamageDispatch (on-damage-taken reaction).
+        // Postfix handler invoked by SharedCharacterRpcDamagePatch (on-damage-taken reaction).
         public static void OnDamageTaken(Character __instance, HitData hit) {
             var player = Player.m_localPlayer;
             if (__instance != player || hit == null) {
                 return;
             }
 
-            // The visible cooldown status effect is the gate: while it's present the shard stays inert.
             if (player.GetSEMan().HaveStatusEffect(CooldownHash)) {
                 return;
             }
@@ -71,7 +61,7 @@ namespace EpicLoot.MagicItemEffects.Shards {
             if (value <= 0f) {
                 return;
             }
-            // Spawn the nova at visibly above the players feet, but close to the ground
+            // Just above the player's feet, so the nova is visible but close to the ground.
             Vector3 playerNovaPosition = player.transform.position;
             playerNovaPosition.y += 0.6f;
             FrostNovaFx.Spawn(NovaTemplateName, playerNovaPosition);
@@ -84,10 +74,9 @@ namespace EpicLoot.MagicItemEffects.Shards {
             ShowCooldown(player, GetCooldown(player));
         }
 
-        // Cooldown length shortens with the highest rarity among the equipped IcyRetribution shards: by
-        // default 200s at Epic, -20s for each rarity above it (Legendary 180s, Mythic 160s, Ancient 140s),
-        // never past MinCooldown. Floored just above zero on top of that: a ttl of 0 is "no timeout" to
-        // vanilla, which would gate the shard permanently.
+        // Shortens with the highest rarity among the equipped IcyRetribution shards, never past MinCooldown.
+        // Floored just above zero on top of that: a ttl of 0 is "no timeout" to vanilla, which would gate the
+        // shard permanently.
         private static float GetCooldown(Player player) {
             var stepsAboveEpic = Mathf.Max(0, (int)GetEffectRarity(player) - (int)ItemRarity.Epic);
             var baseCooldown = EffectConfig.Get(MagicEffectType.IcyRetribution,
@@ -98,8 +87,7 @@ namespace EpicLoot.MagicItemEffects.Shards {
             return Mathf.Max(0.1f, Mathf.Max(floor, baseCooldown - stepsAboveEpic * perRarity));
         }
 
-        // Highest source rarity among the socketed IcyRetribution effects on the player's equipped magic
-        // items. Defaults to Epic (the shard's rarity floor) if none is found.
+        // Defaults to Epic, the shard's rarity floor.
         private static ItemRarity GetEffectRarity(Player player) {
             var rarity = ItemRarity.Epic;
             var found = false;
@@ -120,10 +108,8 @@ namespace EpicLoot.MagicItemEffects.Shards {
             return rarity;
         }
 
-        // Adds the recharge indicator to the player with the rarity-scaled cooldown as its lifetime. We set
-        // m_ttl on the shared prototype before adding; AddStatusEffect clones it (MemberwiseClone), so the
-        // added instance carries this cooldown. Activation is gated on the effect's absence, so it's never
-        // already present here.
+        // m_ttl is set on the shared prototype before adding; AddStatusEffect clones it (MemberwiseClone), so
+        // the added instance carries this cooldown.
         private static void ShowCooldown(Player player, float cooldown) {
             var indicator = GetOrCreateCooldownIndicator();
             if (indicator != null) {
@@ -132,9 +118,8 @@ namespace EpicLoot.MagicItemEffects.Shards {
             }
         }
 
-        // Lazily builds the cooldown indicator prototype. Runs on a proc, so ObjectDB is loaded and the Moder
-        // (dragon) trophy icon is available. A null icon would render as an invisible HUD entry, so if the
-        // trophy lookup fails we log once and leave _cooldownIndicator null.
+        // Built on the first proc, when ObjectDB is loaded. A null icon would render as an invisible HUD entry,
+        // so a failed trophy lookup leaves the indicator null.
         private static StatusEffect GetOrCreateCooldownIndicator() {
             if (_cooldownIndicator != null) {
                 return _cooldownIndicator;

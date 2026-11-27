@@ -39,21 +39,27 @@ public static class ItemTooltip
     {
         public int Quality;
         public bool IncludeDetails;
+        // What visibly changes on the same item within the cache window.
+        public int Stack;
+        public float Durability;
+        public bool Equipped;
         public ItemTooltipData Data;
         // The data as JSON, for the API; serialized on first use within the frame.
         public string Json;
         public string LocalizedJson;
     }
 
-    // One frame's worth: the hovered tooltip is rebuilt every frame (vanilla InventoryGrid.UpdateGui calls
-    // CreateItemTooltip each frame), the text, title and hints read the data separately, Auga asks once per
-    // stat line, and a mod drawing its own tooltip asks for the JSON more than once.
+    // Kept for a quarter of a second, not a frame: vanilla InventoryGrid.UpdateGui rebuilds the hovered tooltip
+    // every frame, the text, title and hints read the data separately, Auga asks once per stat line, and a mod
+    // drawing its own tooltip asks for the JSON more than once. Live parts (durability, a readout, set progress)
+    // catch up within that window; a magic data write or an editor change drops it at once (InvalidateCache).
+    private const float CacheSeconds = 0.25f;
     private static readonly Dictionary<ItemDrop.ItemData, CacheEntry> Cache = new Dictionary<ItemDrop.ItemData, CacheEntry>();
-    private static int _cacheFrame = -1;
+    private static float _cacheExpiry = -1f;
 
     /// <summary>
-    /// The tooltip data of <paramref name="item"/> after the registered editors have run. Shared within the
-    /// frame, so treat it as read-only.
+    /// The tooltip data of <paramref name="item"/> after the registered editors have run. Shared for a
+    /// quarter of a second, so treat it as read-only.
     /// </summary>
     /// <returns>null without an item or a local player, or when working it out failed (logged once)</returns>
     public static ItemTooltipData GetData(ItemDrop.ItemData item, int qualityLevel, bool includeDetails)
@@ -61,7 +67,7 @@ public static class ItemTooltip
         return GetEntry(item, qualityLevel, includeDetails)?.Data;
     }
 
-    /// <summary>The same data as JSON, localized or not, serialized once per frame.</summary>
+    /// <summary>The same data as JSON, localized or not, serialized once per cache window.</summary>
     /// <returns>"" where <see cref="GetData"/> returns null</returns>
     internal static string GetJson(ItemDrop.ItemData item, int qualityLevel, bool includeDetails, bool localize)
     {
@@ -99,19 +105,25 @@ public static class ItemTooltip
             return null;
         }
 
-        if (Time.frameCount != _cacheFrame)
+        float now = Time.unscaledTime;
+        if (now >= _cacheExpiry || now < _cacheExpiry - CacheSeconds)
         {
             Cache.Clear();
-            _cacheFrame = Time.frameCount;
+            _cacheExpiry = now + CacheSeconds;
         }
 
         if (Cache.TryGetValue(item, out CacheEntry entry) && entry.Quality == qualityLevel &&
-            entry.IncludeDetails == includeDetails)
+            entry.IncludeDetails == includeDetails && entry.Stack == item.m_stack &&
+            entry.Durability == item.m_durability && entry.Equipped == item.m_equipped)
         {
             return entry;
         }
 
-        entry = new CacheEntry { Quality = qualityLevel, IncludeDetails = includeDetails };
+        entry = new CacheEntry
+        {
+            Quality = qualityLevel, IncludeDetails = includeDetails,
+            Stack = item.m_stack, Durability = item.m_durability, Equipped = item.m_equipped
+        };
         try
         {
             // Bows read the Elemental Magic skill while the tooltip is worked out, as they do in ItemData.GetTooltip
@@ -150,6 +162,7 @@ public static class ItemTooltip
     {
         Cache.Clear();
         EditorRuns.Clear();
+        _inventoryTextItem = null;
     }
 
     internal static void LogFailure(ItemDrop.ItemData item, Exception e)
@@ -205,13 +218,46 @@ public static class ItemTooltip
     }
 
     /// <summary>The inventory grid's tooltip: the text with the key hints under it, and the title.</summary>
+    // The hovered item's finished text, kept for the data cache's window under what visibly changes it.
+    private static ItemDrop.ItemData _inventoryTextItem;
+    private static int _inventoryTextQuality;
+    private static int _inventoryTextStack;
+    private static float _inventoryTextDurability;
+    private static bool _inventoryTextEquipped;
+    private static bool _inventoryTextDetails;
+    private static float _inventoryTextExpiry;
+    private static string _inventoryText;
+    private static string _inventoryTitle;
+
     internal static string GetInventoryText(ItemDrop.ItemData item, out string title)
     {
+        bool details = MagicItem.ShowEffectDetails;
+        float now = Time.unscaledTime;
+        if (ReferenceEquals(item, _inventoryTextItem) && now < _inventoryTextExpiry && now >= _inventoryTextExpiry - CacheSeconds &&
+            item.m_quality == _inventoryTextQuality && item.m_stack == _inventoryTextStack &&
+            item.m_durability == _inventoryTextDurability && item.m_equipped == _inventoryTextEquipped &&
+            details == _inventoryTextDetails)
+        {
+            title = _inventoryTitle;
+            return _inventoryText;
+        }
+
         string tooltip = item.GetTooltip();
         // The same key ItemData.GetTooltip gathered under, so this is the cached data (or the cached miss).
-        ItemTooltipData data = GetData(item, item.m_quality, MagicItem.ShowEffectDetails);
+        ItemTooltipData data = GetData(item, item.m_quality, details);
         title = data?.Title ?? item.GetDecoratedName();
-        return tooltip + TooltipRenderer.RenderHints(data);
+        string text = tooltip + TooltipRenderer.RenderHints(data);
+
+        _inventoryTextItem = item;
+        _inventoryTextQuality = item.m_quality;
+        _inventoryTextStack = item.m_stack;
+        _inventoryTextDurability = item.m_durability;
+        _inventoryTextEquipped = item.m_equipped;
+        _inventoryTextDetails = details;
+        _inventoryTextExpiry = now + CacheSeconds;
+        _inventoryTitle = title;
+        _inventoryText = text;
+        return text;
     }
 
     #endregion

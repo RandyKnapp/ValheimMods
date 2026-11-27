@@ -127,10 +127,8 @@ public static class ItemFavorites
         return star;
     }
 
-    // ---------------------------------------------------------------------------------------------------
-    // Wishlists and loot rolls (the framework's API 3). An older framework lacks these endpoints, and the
-    // shim then simply does nothing for them, so favorites still work.
-    // ---------------------------------------------------------------------------------------------------
+    // Wishlists and loot rolls are the framework's API 3. An older framework lacks those endpoints, and the
+    // shim then does nothing for them, so favorites still work.
 
     /// <summary>
     /// Registers Epic Loot's wishlist conditions (rarity, unique, set, effects) and its magic item names with

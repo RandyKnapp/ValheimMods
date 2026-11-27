@@ -3,14 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects.Shards {
-    // Provides a charge that builds on combat hits and discharges as a forward lightning shockwave when full.
     public static class EikthyrShockingCharge {
-        // All tunable in this effect's Config block in config/shardstones.json, under these key names.
-        //
         // Hits required to trigger a discharge: MaxCharges is the threshold at a shard value of zero,
         // ChargesPerValue is how many hits each point of value shaves off it, and MinCharges is the floor
-        // it may never drop below. This is what the shard's rarity buys -- at the shipped ramp a Rare
-        // Eikthyr shard discharges every 15 hits and an Ancient one every 9.
+        // it may never drop below.
         //
         // DamageFraction is the portion of the banked combat damage the shockwave delivers. Cone geometry:
         // reach straight ahead, and the full width of the cone at that reach -- the half-width grows
@@ -56,8 +52,6 @@ namespace EpicLoot.MagicItemEffects.Shards {
             return Mathf.Clamp(Mathf.RoundToInt(ceiling - value * perValue), floor, ceiling);
         }
 
-        // Tooltip: "Shocking Charge: Every {0} Hits", with {1} the discharge's share of the banked damage.
-        // Both are derived from the same helpers the effect runs on, so a retune moves the shown text too.
         public static void RegisterDisplayValues() {
             MagicItem.RegisterDisplayValues(MagicEffectType.ShockingCharge,
                 value => new object[] {
@@ -85,7 +79,6 @@ namespace EpicLoot.MagicItemEffects.Shards {
         private static readonly int IndicatorHash = IndicatorName.GetStableHashCode();
         private static StatusEffect _indicator;
         private static bool _indicatorMissingLogged;
-        // Live charge state, read by SE_ShockingChargeIndicator for its icon text and removal check.
         public static int CurrentCharges => _charges;
         // The HUD indicator's denominator: the threshold for the value the player is actually carrying,
         // not the configured ceiling, so the counter matches what it takes to fire.
@@ -93,7 +86,7 @@ namespace EpicLoot.MagicItemEffects.Shards {
             ? Player.m_localPlayer.GetTotalActiveMagicEffectValue(MagicEffectType.ShockingCharge, 1f)
             : 0f);
 
-        // Postfix handler invoked by CharacterDamageDispatch (on-hit reaction).
+        // Postfix handler invoked by SharedCharacterDamagePatch (on-hit reaction).
         public static void OnDamageDealt(Character __instance, HitData hit, Character attacker) {
             if (hit == null || attacker != Player.m_localPlayer || Time.time < _ignoreUntil) {
                 return;
@@ -215,9 +208,7 @@ namespace EpicLoot.MagicItemEffects.Shards {
             }
         }
 
-        // Adds the charge HUD indicator to the player if it isn't already showing. AddStatusEffect clones
-        // the prototype and no-ops when an effect with the same NameHash is present, so the HaveStatusEffect
-        // guard just skips building the prototype on repeat hits.
+        // AddStatusEffect clones the prototype and no-ops on a present NameHash; the guard skips even that.
         private static void ShowIndicator(Player player) {
             var seMan = player.GetSEMan();
             if (seMan.HaveStatusEffect(IndicatorHash)) {
@@ -230,9 +221,8 @@ namespace EpicLoot.MagicItemEffects.Shards {
             }
         }
 
-        // Lazily builds the indicator prototype. Runs on a hit, so ObjectDB is loaded and the Eikthyr
-        // trophy icon is available. A null icon would render as an invisible HUD entry (SEMan only surfaces
-        // effects with an icon), so if the trophy lookup fails we log once and leave _indicator null.
+        // Built on the first charging hit, when ObjectDB is loaded. A null icon would render as an invisible HUD
+        // entry, so a failed trophy lookup leaves the indicator null.
         private static StatusEffect GetOrCreateIndicator() {
             if (_indicator != null) {
                 return _indicator;

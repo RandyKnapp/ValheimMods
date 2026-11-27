@@ -3,7 +3,6 @@ using JetBrains.Annotations;
 using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects.Shards {
-    // Consumes Eitr first for any health costs, then consumes health for the remainder.
     public static class ConsumeEitrFirstForBloodCosts {
         [HarmonyPatch(typeof(Character), nameof(Character.UseHealth))]
         private static class UseHealth_Patch {

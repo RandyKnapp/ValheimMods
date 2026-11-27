@@ -9,7 +9,7 @@ namespace EpicLoot.MagicItemEffects
     {
         public static void Postfix(Projectile __instance, GameObject go, Collider collider, Vector3 normal)
         {
-            if (__instance == null || __instance.m_spawnItem == null) { return; }
+            if (__instance.m_spawnItem == null) { return; }
             var item = __instance.m_spawnItem;
             GameObject terrain_water = go ?? collider?.gameObject;
             if (terrain_water == null) return;
@@ -18,7 +18,7 @@ namespace EpicLoot.MagicItemEffects
                 Vector3 weaponPosition = __instance.transform.position;
                 Vector3 targetPosition = weaponPosition + __instance.transform.TransformDirection(__instance.m_spawnOffset);
                 if (Player.m_localPlayer != null && Player.m_localPlayer == __instance.m_owner) {
-                    // Moving only the transform was undone by the interpolating rigidbody, so the player never left.
+                    // Moving only the transform is undone by the interpolating rigidbody.
                     MagicEffectsHelper.MovePlayer(Player.m_localPlayer, targetPosition);
                 }
             }

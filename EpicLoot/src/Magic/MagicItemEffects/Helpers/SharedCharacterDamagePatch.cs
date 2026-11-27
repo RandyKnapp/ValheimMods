@@ -4,9 +4,7 @@ using EpicLoot.MagicItemEffects.Shards;
 using HarmonyLib;
 
 namespace EpicLoot.src.Magic.MagicItemEffects.Helpers {
-    // Single consolidated Harmony patch for Character.Damage. It replaces the ~21 individual [HarmonyPatch]
-    // classes that each effect used to declare on this same method, calling every effect's handler in a
-    // fixed, explicit order.
+    // Every effect's Character.Damage handler, called in a fixed, explicit order.
     //
     //  * Prefix handlers run before the damage is applied: attacker-side handlers modify the OUTGOING hit
     //    (crits, conversions, imbues). This method runs on the ATTACKER's client, so victim-side (incoming
@@ -29,8 +27,8 @@ namespace EpicLoot.src.Magic.MagicItemEffects.Helpers {
     //    (poison, fire, lightning) and the kill rewards.
     //
     // Each effect keeps its own guard (is-local-attacker / has-effect) inside its handler, so the order among
-    // Normal-priority handlers is not load-bearing. Executioner keeps its original ordering relative to other
-    // mods via the Priority.Last prefix below.
+    // Normal-priority handlers is not load-bearing. Executioner runs from the Priority.Last prefix, after other
+    // mods' prefixes.
     //
     // A handler's exception is logged and stops at the patch method that ran it, as HelsHarvest's OnDeath hook
     // does. Escaping, it would abort whatever vanilla loop called Character.Damage, such as the rest of an
@@ -46,16 +44,26 @@ namespace EpicLoot.src.Magic.MagicItemEffects.Helpers {
         }
 
         private static void LogHandlerError(string stage, Character target, Exception e) {
-            EpicLoot.LogErrorForce($"[SharedCharacterDamagePatch] {stage} on {target.m_name}: {e}");
+            DispatchGuard.Report($"Character.Damage {stage}", e);
+        }
+
+        // The target's health before this hit, which the postfix cannot read (when this client owns the target the hit
+        // has landed by then, and when it does not, it has not), and the attacker, a scene lookup resolved once.
+        private struct HitState {
+            public float HealthBefore;
+            public Character Attacker;
         }
 
         [HarmonyPrefix]
-        private static void EarlyPreDamagePatch(Character __instance, HitData hit) {
+        private static void EarlyPreDamagePatch(Character __instance, HitData hit, out HitState __state) {
+            __state = default;
             if (IsDroppedHit(__instance, hit)) {
                 return;
             }
+            __state.HealthBefore = __instance.GetHealth();
+            __state.Attacker = hit.GetAttacker();
             try {
-                EarlyPreDamage(__instance, hit);
+                EarlyPreDamage(__instance, hit, __state.Attacker);
             } catch (Exception e) {
                 LogHandlerError("prefix", __instance, e);
             }
@@ -75,24 +83,22 @@ namespace EpicLoot.src.Magic.MagicItemEffects.Helpers {
         }
 
         [HarmonyPostfix]
-        private static void PostDamagePatch(Character __instance, HitData hit) {
+        private static void PostDamagePatch(Character __instance, HitData hit, HitState __state) {
             if (IsDroppedHit(__instance, hit)) {
                 return;
             }
             try {
-                PostDamage(__instance, hit);
+                PostDamage(__instance, hit, __state.HealthBefore, __state.Attacker);
             } catch (Exception e) {
                 LogHandlerError("postfix", __instance, e);
             }
         }
 
-        private static void EarlyPreDamage(Character __instance, HitData hit) {
-            Character attacker = hit.GetAttacker();
+        private static void EarlyPreDamage(Character __instance, HitData hit, Character attacker) {
             if (IsSelfInflicted(__instance, attacker)) {
                 return;
             }
             bool strike = !HitSource.IsBonusHit;
-            // Attacker side -- modify the outgoing hit before it lands.
             if (strike) {
                 EitrImbueAttack.ModifyOutgoingHit(hit, attacker);
             }
@@ -111,33 +117,28 @@ namespace EpicLoot.src.Magic.MagicItemEffects.Helpers {
             // Before Opportunist: a sneak attack from hiding uses the hit's backstab bonus up, so Opportunist and
             // vanilla's own backstab cannot apply it again.
             Vanish.ModifyOutgoingHit(__instance, hit, attacker);
-            // Attacker-side reads that used to live (incorrectly) on the RPC_Damage dispatcher:
-            // both read the local attacker's magic effects; the stagger tagger routes its write to
-            // the target's owner.
+            // The stagger tagger routes its write to the target's owner.
             Opportunist_Character_RPC_Damage_Patch.ModifyIncoming(__instance, hit, attacker);
             RPC_TagCharacterOnHit_Character_RPC_Damage_Patch.TagStaggerDuration(__instance, hit, attacker);
             ModifyStaggerDamage_Character_Damage_Patch.ApplyStaggerModifier(__instance, hit, attacker);
             CloseQuarter.ModifyOutgoingHit(hit, attacker);
             QuarryMark.ModifyOutgoingHit(__instance, hit, attacker);
-
-            // NOTE: victim-side incoming-hit handlers (AutoMeads, OffSet, ReflectDamage) live on the
-            // Character.RPC_Damage dispatcher instead -- Character.Damage runs on the attacker's client, so a
-            // victim-side handler here never fires when a remote client owns the attacker.
         }
 
         private static void LastPreDamage(Character __instance, HitData hit) {
-            if (!HitSource.IsBonusHit && !IsSelfInflicted(__instance, hit.GetAttacker())) {
+            // Another mod's prefix in between may have changed the hit's attacker, so it is read again here.
+            Character attacker = hit.GetAttacker();
+            if (!HitSource.IsBonusHit && !IsSelfInflicted(__instance, attacker)) {
                 ExecutionerCheckDamage_Character_Damage_Patch.ModifyOutgoingHit(__instance, hit);
             }
             // Late, so a spirit's strength also scales the flat bonuses other mods' prefixes added.
-            SpiritAnimal.ModifyOutgoingHit(__instance, hit, hit.GetAttacker());
+            SpiritAnimal.ModifyOutgoingHit(__instance, hit, attacker);
             // Last, so it sees fire/lightning that any earlier prefix converted into the hit.
-            ElementalHitVariant.ModifyOutgoingHit(hit, hit.GetAttacker());
-            CoilingVenom.TagOutgoingHit(__instance, hit, hit.GetAttacker());
+            ElementalHitVariant.ModifyOutgoingHit(hit, attacker);
+            CoilingVenom.TagOutgoingHit(__instance, hit, attacker);
         }
 
-        private static void PostDamage(Character __instance, HitData hit) {
-            Character attacker = hit.GetAttacker();
+        private static void PostDamage(Character __instance, HitData hit, float healthBeforeHit, Character attacker) {
             if (IsSelfInflicted(__instance, attacker)) {
                 return;
             }
@@ -147,17 +148,15 @@ namespace EpicLoot.src.Magic.MagicItemEffects.Helpers {
             // patch and would otherwise clear the stake before it could be refunded.
             if (strike) {
                 Wager.OnDamageDealt(__instance, hit);
-
-                // On-hit reactions (attacker side unless the handler guards otherwise).
-                AddLifeSteal.CheckAndDoLifeSteal(hit, attacker);
-                BloodDrinker.OnDamageDealt(hit, attacker);
-                AddEitrLeech.OnDamageDealt(hit, attacker);
+                AddLifeSteal.CheckAndDoLifeSteal(hit, attacker, healthBeforeHit);
+                BloodDrinker.OnDamageDealt(hit, attacker, healthBeforeHit);
+                AddEitrLeech.OnDamageDealt(hit, attacker, healthBeforeHit);
                 ChainLightning.OnDamageDealt(__instance, hit, attacker);
                 StrikeCausesLightning.OnDamageDealt(__instance, hit, attacker);
                 ApplySlow_Character_Damage_Patch.OnDamageDealt(__instance, hit, attacker);
                 Paralyze.OnDamaged(__instance, hit, attacker);
                 StaggerOnDamageTaken_Character_Damage_Patch.OnDamageDealt(__instance, hit, attacker);
-                HealthGainPerXDamageDone.OnDamageDealt(hit, attacker);
+                HealthGainPerXDamageDone.OnDamageDealt(hit, attacker, healthBeforeHit);
                 LifeGainOnHit.OnDamageDealt(hit, attacker);
                 QuarryMark.OnDamageDealt(__instance, hit, attacker);
             }
@@ -166,7 +165,8 @@ namespace EpicLoot.src.Magic.MagicItemEffects.Helpers {
             BurningAdrenaline.OnDamageDealt(hit, attacker);
             StaminaOnKill.OnDamageDealt(__instance, hit, attacker);
             LifeAfterKill.OnDamageDealt(__instance, hit, attacker);
-            Conduit.OnDamageDealt(__instance, hit, attacker);
+            KillsReduceNextBloodCost.OnDamageDealt(__instance, hit, attacker);
+            Conduit.OnDamageDealt(__instance, hit, attacker, healthBeforeHit);
             if (strike) {
                 EikthyrShockingCharge.OnDamageDealt(__instance, hit, attacker);
                 MeteorSummoner.OnDamageDealt(__instance, hit, attacker);

@@ -10,11 +10,6 @@ namespace EpicLoot
 
 namespace EpicLoot.MagicItemEffects
 {
-    // Interconnected (set items only, NoRoll). The skill of the weapon in the wearer's hands gains the effect value
-    // as a percent of its partner skill's level: Bows from Axes or Atgeir, Blood Magic from Clubs or Fists, Elemental
-    // Magic from Swords or Spears, Crossbows from Knives, and each of those back from its ranged or magic partner.
-    // A skill with two partners takes the higher one, never the sum.
-    //
     // Added to AddSkillLevel's SkillIncrease, so it raises the skill factor, the gameplay skill level and the skills
     // panel's bonus like any other skill effect. Only the held weapon's skill gains anything, so the bonus shows on
     // that one row and moves when the weapon is swapped. A partner is read through its full skill factor, gear
@@ -86,39 +81,6 @@ namespace EpicLoot.MagicItemEffects
             {
                 _computing = false;
             }
-        }
-
-        // Diagnostic for the skills panel: every input GetBonusLevels reads for the held weapon's skill, in order.
-        internal static string Describe(Player player)
-        {
-            if (player == null)
-            {
-                return "no player";
-            }
-
-            var weapon = player.GetCurrentWeapon();
-            SkillType held = HeldSkill(player);
-            float percent = player.GetTotalActiveMagicEffectValue(MagicEffectType.Interconnected);
-            var text = new System.Text.StringBuilder();
-            text.Append($"held '{weapon?.m_shared.m_name ?? "none"}' (right '{player.m_rightItem?.m_shared.m_name ?? "none"}', " +
-                $"hidden right '{player.m_hiddenRightItem?.m_shared.m_name ?? "none"}') skill {held}; value {percent:0.##}; " +
-                $"computing {_computing}; ");
-
-            var partners = GetPartners(held);
-            if (partners == null)
-            {
-                text.Append("no partners");
-                return text.ToString();
-            }
-
-            foreach (var partner in partners)
-            {
-                text.Append($"{partner} level {player.m_skills.GetSkill(partner).m_level:0.##} factor " +
-                    $"{player.m_skills.GetSkillFactor(partner):0.###}; ");
-            }
-            text.Append($"bonus {GetBonusLevels(player, held)}; total skill increase " +
-                $"{AddSkillLevel_Skills_GetSkillFactor_Patch.SkillIncrease(player, held)}");
-            return text.ToString();
         }
 
         // Empty hands are the unarmed weapon (Unarmed); a bow or Dead Raiser in the left hand counts too. Inside a

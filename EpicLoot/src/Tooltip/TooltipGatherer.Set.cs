@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace EpicLoot;
 
-// The set section of a set piece (vanilla sets and Epic Loot's legendary sets) and the description of the set
+// The set section of a set piece (vanilla sets and Epic Loot's unique sets) and the description of the set
 // a set rune carries.
 internal partial class TooltipGatherer
 {

@@ -115,7 +115,7 @@ namespace EpicLoot
                     continue;
                 }
 
-                // Several entries at one level: the first wins, the same as the old List.Find walk.
+                // Several entries at one level: the first wins.
                 if (best == null || def.Level > best.Level)
                 {
                     best = def;

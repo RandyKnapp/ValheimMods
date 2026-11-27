@@ -5,10 +5,10 @@ using UnityEngine;
 namespace EpicLoot.MagicItemEffects.Shards {
     public static class ElementalWarding {
         static GameObject fx = null;
-        public static void UseEitrOnBlock(Humanoid __instance, HitData hit) {
+        public static void UseEitrOnBlock(HitData hit) {
             var player = Player.m_localPlayer;
-            if (!player.HasActiveMagicEffect("ElementalWarding")) return;
             float magicEffectValue = player.GetTotalActiveMagicEffectValue(MagicEffectType.ElementalWarding, .01f);
+            if (magicEffectValue == 0f) return;
             float eitrBlockPool = player.GetMaxEitr() * magicEffectValue;
 
             float blockDamageTaken = hit.GetTotalElementalDamage();
@@ -19,7 +19,7 @@ namespace EpicLoot.MagicItemEffects.Shards {
 
             player.UseEitr(reduction);
 
-            if (reduction > 5f) { // arbitrary amount to trigger fx. Its too flashy otherwise. Still might proc everytime
+            if (reduction > 5f) { // fx only on larger reductions; on every block it is too flashy
                 if (fx == null) {
                     fx = PrefabManager.Instance.GetPrefab("fx_StaffShield_Hit");
                 }

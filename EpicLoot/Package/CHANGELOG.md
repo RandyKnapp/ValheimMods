@@ -1,3 +1,97 @@
+**0.16.0**
+* Updated for Valheim 1.0.30
+* Performance improvements for many frequent actions
+* Adds new unique items from Norse myth, and a Homing Missile enchantment that steers thrown Mythic and Ancient weapons onto enemies.
+* The merchant now sells Skuld's Thread, which points the way to nearby bounty targets.
+* Large piles of magic drops no longer slow the game down
+* Named items from legendaries.json are now called unique items everywhere, so they are no longer confused with the Legendary rarity
+    * Unique items now get special display effects, along with indications of their uniqueness in tooltip
+    * Unique items roll one more enchantment than their rarity normally does, and their signature enchantments roll above the normal range
+    * Unique items now roll at Mythic and Ancient as well as Legendary, with stronger signature enchantments at higher rarities
+    
+
+Balance Changes:
+* Balance templates now include shardstones and legendaries
+    * Shardstones already socketed now pick up balance changes without being taken out and put back.
+* Progressive Gating unlocks each biome's gear gradually after its boss falls, dropping it more often the more creatures you kill in that biome.
+* Frost ice spikes no longer hurt your own tames and summons.
+* The Hexen form's attacks now use and train Elemental Magic instead of Swords.
+* Staffs only roll damage enchantments if they deal damage, and summon enchantments if they summon.
+* A misspelled staff role in an enchantment's settings is now skipped with a warning instead of breaking the whole enchantment.
+* Blood magic staffs that deal damage can now roll added elemental damage.
+* Triple Shot now fires every time, with a roll value for how much damage and how much spread is provided
+    * Triple Shot items made before this change get a rolled value of their rarity when first loaded.
+* Smooths out rare enchantments minimal having the best enchantments being very rare, balanced less so and legendary they are even more common
+* Minimal balance template now rolls some of the most power enchants, rarely only at very high rarities
+* Weapon damage enchantments no longer exclude all others
+    * Fire and Frost imbues still can't share a weapon
+    * Blunt, Slash and Pierce damage enchantments now raise only their own damage type and roll only on weapons that deal it.
+    * Poison imbue now builds on physical damage, most from pierce and least from blunt, and no longer on elemental damage.
+    * Lightning imbue now strikes with a random strength on every hit.
+    * Spirit imbue now builds on the weapon's fire, frost, lightning and poison damage, including other imbues.
+* Spirit and Poison imbues now only roll on weapons that deal the damage they build on.
+* Elemental resistances can no longer share an item with each other in any template, and neither can physical resistances.
+* Health Regen and Add Health Regen can now roll on the same item.
+* The Dark Red and Dark Green shards now add Spirit damage on staffs.
+* Coin Hoarder now rolls only on Epic items and above in every template.
+* Damage resistance now has default caps across all rarities
+* The health regen shardstone for shoulders can be set to work while resting, while rested or both, and the Legendary balance template now gives it for both.
+* Attacks, dodges and jumps can no longer be reduced below a tenth of their cost.
+* Eitr Weaving now restores a percentage of max eitr.
+* Stormcaller's lightning strikes deal less damage.
+* Conduit now restores eitr from a pool that refills at your normal eitr regen rate, even in combat.
+* Eitr Leech no longer counts damage past a target's remaining health.
+* Lifesteal, Blood Drinker, Health Gain per X Damage Done and Conduit no longer count damage past a target's remaining health either.
+* Extracting a rune from an enchantment stronger than a normal roll now shows the capped value the rune will hold
+* Mining Drop and Lumberjacking Drop are now Ore Yield and Wood Yield, a percentage bonus. Existing items convert automatically when loaded
+    * The bonus applies evenly across node types, so scrap piles and soft tissue no longer gain far more than ore veins
+    * Stone and plain wood are skipped when the same drop table has something better, so veins give only extra ore
+    * Rock chunks that collapse and logs that break on impact now get the bonus
+    * Bonus drops land in stacks where normal drops land, with a floating +X and a sound
+    * The balance template sets the percentage: half on Minimal, double on Legendary
+* Elemental Resistance now rolls only on helmets and utility items, and Physical Resistance only on chest and leg armor.
+* Luck now only rolls on utility items, and Prosperity only on trinkets.
+
+Bugfixes:
+* Offset Attack no longer rolls on blood magic weapons.
+* Item categories no longer lose their fallback categories when Epic Loot adds items from other mods
+* Tempering an item no longer undoes shardstones socketed or removed while the temper was under way
+* Two players using the same enchanting table can no longer both spend the same stored materials, and an action that cannot be paid for no longer leaves the panel stuck.
+* Bounty and treasure map progress that cannot be read is now kept in the character file instead of being wiped.
+* Blood Rite now counts kills of creatures another player's game controls.
+* Frost Wave and Paralyze no longer leave creatures slowed or frozen again later in multiplayer.
+* Multishot procs are no longer cancelled by nearby monsters attacking between a staff's bursts.
+* Summons keep their summoner's health and damage bonuses whoever's game controls them.
+* Quarry Mark marks from before a death no longer pay out after respawning.
+* A bounty can no longer be bought twice in one period after discovering a new biome, and abandoning a bounty now removes its spawned creatures.
+* The player who bought a treasure map can now always open its chest, even when another player's ward covers it.
+* Improves compatibility with dual wielding mods while in hexen form
+* Placed food shows eat or drink again, and dropped items show their current stack size.
+* Pressing Escape on a socket or Brokkr's Gift confirmation no longer closes the inventory too.
+* One failing magic effect no longer stops the others or the hit itself.
+* Several effects can no longer get stuck on after an error, and extreme values for mead cooldowns, weight reduction and Multishot are capped.
+* Weapon tooltips show attack costs with the same minimum the game applies.
+* Typing in the compendium search no longer triggers game hotkeys.
+* The rune page now lists runes that an item's other enchantments rule out, greyed out with the reason in their tooltip.
+* Picking an item for a rune action now selects its first enchantment, so its runes show straight away.
+* The Orb of Ahri's returning orb and explosion, and Thunderblood's explosion and chain lightning, now get the staff's damage enchantments.
+* Staff projectiles from other mods that spawn copies of themselves no longer add the staff's damage enchantments again on every copy.
+* Magic item console commands now ignore boss progression.
+* Ammo Conservation, Instant Mead and Auto Mead roll as often as intended and give items their own names.
+* Some enchantments, such as Health Regen and Eitr Weaving, can now roll the top of their range.
+* Resistance and Attack Eitr Use enchantments no longer roll a near-useless value on Magic items in the Minimal and Legendary templates.
+* Hildir's tempering panel now shows the right gamepad button on its Temper and Cancel buttons.
+* Paying eitr costs from stamina no longer refunds eitr when you have no stamina.
+* Auga compatibility improvements
+* Items in the quick slots of Equipment and Quick Slots now count as hotbar items at the enchanting table, so they stay out of the sacrifice list when hotbar items are hidden.
+* The enchanting table now pays its costs from its own storage before your inventory and storage mods.
+* The enchanting table's storage can hold unidentified items, and they can be identified straight from it.
+* The optional Epic patches now cover Ancient items and the newer enchantments, unique items and sets, and their unique item values take effect again.
+* The magicsetitem console command is now magicunique (short form miunique); magicsetitem still works
+* Changing how same-colored shardstones stack now updates gear that already has them socketed.
+* Abilities added by other mods no longer lose their actions when that mod updates them.
+* Runes and shardstones that need another enchantment, such as a Recall rune needing Throwing, now accept one socketed on the item, and crafting an item into another keeps them.
+
 **0.15.6**
 * Works with Auga 1.4.1 and newer
 * The shard slot panel no longer covers the quick slots of Equipment and Quick Slots or other mods' panels beside the inventory.

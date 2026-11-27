@@ -81,17 +81,13 @@ public static class TransferMagicalEffects
                 // type AND on what else the crafted item ends up carrying (same-color stacking decay),
                 // so every shard is resolved together once the set is complete, below.
                 if (socket.ShardType == ShardType.None && socket.Effect != null)
-                {
-                    // A runestone carries a fixed effect; keep it only if valid on the crafted item.
-                    if (MagicItemEffectDefinitions.TryGet(socket.Effect.EffectType, out var def) &&
-                        def.Requirements.CheckRequirements(CraftedItem, newMagicItem, socket.Effect.EffectType, checklootroll: false))
-                        carried.Effect = new MagicItemEffect(socket.Effect.EffectType, socket.Effect.EffectValue);
-                }
+                    carried.Effect = new MagicItemEffect(socket.Effect.EffectType, socket.Effect.EffectValue);
 
                 newMagicItem.Sockets.Add(carried);
             }
 
             ShardSocketManager.RecomputeSocketValues(CraftedItem, newMagicItem);
+            DropInvalidRuneEffects(CraftedItem, newMagicItem);
         }
 
         if (newMagicItem.Effects.Count == 0 && newMagicItem.SocketCount == 0)
@@ -100,7 +96,40 @@ public static class TransferMagicalEffects
         newMagicItem.DisplayName = MagicItemNames.GetNameForItem(CraftedItem, newMagicItem);
         API.WithChangeReason(API.ChangeReason.Transfer, () => CraftedItem.SaveMagicItem(newMagicItem));
     }
-    
+
+    // A runestone keeps its fixed effect only if it is valid on the crafted item. The other sockets count
+    // toward its required effects (a Recall rune beside a Throwable rune), so dropping one rune can unmeet
+    // another's requirement, and the pass repeats until nothing changes.
+    private static void DropInvalidRuneEffects(ItemDrop.ItemData item, MagicItem magicItem)
+    {
+        bool dropped;
+        do
+        {
+            dropped = false;
+            for (var i = 0; i < magicItem.Sockets.Count; i++)
+            {
+                var socket = magicItem.Sockets[i];
+                if (socket.ShardType != ShardType.None || socket.Effect == null)
+                    continue;
+
+                var otherEffects = new List<string>();
+                for (var j = 0; j < magicItem.Sockets.Count; j++)
+                {
+                    if (j != i && magicItem.Sockets[j].Effect != null)
+                        otherEffects.Add(magicItem.Sockets[j].Effect.EffectType);
+                }
+
+                if (MagicItemEffectDefinitions.TryGet(socket.Effect.EffectType, out var def) &&
+                    def.Requirements.CheckRequirements(item, magicItem, out _, out _, socket.Effect.EffectType,
+                        checklootroll: false, socketedEffectTypes: otherEffects))
+                    continue;
+
+                socket.Effect = null;
+                dropped = true;
+            }
+        } while (dropped);
+    }
+
     [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.DoCrafting))]
     static class InventoryGuiDoCraftingPatch
     {

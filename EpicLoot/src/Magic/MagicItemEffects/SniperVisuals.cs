@@ -4,10 +4,6 @@ using UnityEngine.Rendering;
 
 namespace EpicLoot.MagicItemEffects
 {
-    // Sniper's look (Egil's Mark), on every client: gold energy gathering at the bow as a Sniper shot is drawn, a flash
-    // when the draw is full, a golden halo, trail and light around the arrow in flight, and a golden burst where it hits.
-    // The bow's own glow while the set is worn is the set's WeaponGlow (SetVisuals).
-    //
     // The draw is mirrored by the shooter to the player ZDO (el-snpd: 0 to 1 in steps of 0.05, 0 unless a Sniper bow is
     // being drawn with the effect active), so every client draws the same charge and flash. Vanilla's own synced
     // "drawpercent" can't stand in for it: it is never reset after a release. The arrow carries a ZDO flag (el-snipe)

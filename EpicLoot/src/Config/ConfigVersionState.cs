@@ -33,7 +33,7 @@ public class ConfigVersionEntry
     /// </summary>
     public string WrittenHash = "";
 
-    /// <summary>Only meaningful for magiceffects, whose embedded source depends on BalanceConfigurationType.</summary>
+    /// <summary>Only meaningful for the balance template files, whose embedded source depends on BalanceConfigurationType.</summary>
     public string Variant = "";
 
     /// <summary>
@@ -99,15 +99,13 @@ public class ConfigVersionState
     }
 
     /// <summary>
-    /// Records a file as being exactly the mod's own output. Any previous decline is dropped: the
-    /// player's edits are no longer present, so there is nothing left to protect.
+    /// Records a file as being exactly the mod's own output. Any recorded decline is kept.
     /// </summary>
     public void Stamp(string configName, string sourceHash, string writtenHash, string variant)
     {
-        // Preserve any recorded decline: the decline is keyed to the SourceHash it was made against
-        // and only consulted while disk content diverges from the default, so carrying it over is
-        // always safe -- dropping it (the old behavior) made the update prompt re-appear after any
-        // runtime rewrite of the file.
+        // The decline is keyed to the SourceHash it was made against and only consulted while disk
+        // content diverges from the default, so carrying it over is always safe; dropping it would
+        // bring the update prompt back after any runtime rewrite of the file.
         Files.TryGetValue(configName, out ConfigVersionEntry previous);
         Files[configName] = new ConfigVersionEntry
         {

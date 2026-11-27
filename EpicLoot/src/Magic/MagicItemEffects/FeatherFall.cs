@@ -12,8 +12,7 @@ namespace EpicLoot.MagicItemEffects
         {
             if (__instance is Player player)
             {
-                // ObjectDB.GetStatusEffect matches StatusEffect.NameHash() == GetStableHashCode;
-                // string.GetHashCode never found it, so FeatherFall never applied.
+                // ObjectDB.GetStatusEffect matches StatusEffect.NameHash(), a GetStableHashCode, not GetHashCode.
                 var slowFall = ObjectDB.instance.GetStatusEffect("SlowFall".GetStableHashCode());
                 if (slowFall == null)
                 {
@@ -23,7 +22,7 @@ namespace EpicLoot.MagicItemEffects
                 
                 EquipmentEffectCache.Reset(player);
 
-                var shouldHaveFeatherFall = player.HasActiveMagicEffect(MagicEffectType.FeatherFall, out float magicEffect);
+                var shouldHaveFeatherFall = player.HasActiveMagicEffect(MagicEffectType.FeatherFall, out float _);
                 var hasFeatherFall = player.m_equipmentStatusEffects.Contains(slowFall);
                 if (!hasFeatherFall && shouldHaveFeatherFall)
                 {

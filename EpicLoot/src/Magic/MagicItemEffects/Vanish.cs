@@ -13,11 +13,6 @@ namespace EpicLoot
 
 namespace EpicLoot.MagicItemEffects
 {
-    // Vanish (3-piece Huldufólk set bonus, NoRoll). A dodge roll with an alerted enemy within Radius, off cooldown,
-    // drops a cloud of smoke: enemies within Radius lose track of the wearer, who stays unseen and unheard for the
-    // effect value in seconds. The wearer's next hit from hiding, with any weapon, is a sneak attack. Cooldown seconds
-    // must pass before the next, counted from the vanish.
-    //
     // The cooldown is the EL_VanishCooldown status effect: Vanish is ready exactly when that is gone, so whatever ends it
     // (its timer, death, a cleanse) readies Vanish too, and the HUD never disagrees. Only when its icon is missing, and so
     // there is no status effect, does a plain timer stand in.
@@ -34,7 +29,6 @@ namespace EpicLoot.MagicItemEffects
     // creature un-alerted by the time the hit arrives) and Opportunist cannot apply it a second time.
     public static class Vanish
     {
-        // Both tunable in this effect's Config block in magiceffects.json, under these key names.
         public const float DefaultCooldown = 20f;
         public const float DefaultRadius = 15f;
 
@@ -71,7 +65,6 @@ namespace EpicLoot.MagicItemEffects
         private static bool _sneakReady;
         private static bool _restoreStealth;
 
-        // Tooltip: "... enemies within {1}m lose sight of you for {0} seconds ... Cooldown: {2} seconds."
         public static void RegisterDisplayValues()
         {
             MagicItem.RegisterDisplayValues(MagicEffectType.Vanish, value => new object[] { value, Radius, Cooldown });

@@ -5,10 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects.Shards {
-    // Provides a stamina restoration effect based on fire damage taken, uses an accumulated threshold.
     public static class Kindling {
-        // Fire damage taken per stamina trigger; higher = a slower trickle. Tunable as "DamagePerTrigger"
-        // in this effect's Config block in config/shardstones.json.
         public const float DefaultDamagePerTrigger = 75f;
 
         private const string DamagePerTriggerKey = "DamagePerTrigger";
@@ -24,15 +21,12 @@ namespace EpicLoot.MagicItemEffects.Shards {
                 EffectConfig.Get(MagicEffectType.Kindling, DamagePerTriggerKey, DefaultDamagePerTrigger));
         }
 
-        // Tooltip: "Restore {0} Stamina per {1} Fire Damage Taken" -- {1} is the configured threshold, so
-        // the shown number follows a retune instead of staying at the baked-in default.
         public static void RegisterDisplayValues() {
             MagicItem.RegisterDisplayValues(MagicEffectType.Kindling,
                 value => new object[] { value, GetDamagePerTrigger() });
         }
 
-        // Cumulative fire damage the local player has taken with the effect active but not yet paid out as
-        // stamina. Carries the sub-threshold remainder across burn ticks.
+        // Carries the sub-threshold remainder across burn ticks.
         private static float _accumulatedFireDamage;
 
         // Postfix rather than prefix so the read happens after vanilla applies Game.m_localDamgeTakenRate to

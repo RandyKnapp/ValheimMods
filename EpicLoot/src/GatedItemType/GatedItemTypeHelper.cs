@@ -3,6 +3,7 @@ using EpicLoot.Adventure.Feature;
 using EpicLoot.Biomes;
 using EpicLoot.General;
 using Jotunn.Managers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -21,7 +22,8 @@ namespace EpicLoot.GatedItemType
         BossKillUnlocksCurrentBiomeItems,
         BossKillUnlocksNextBiomeItems,
         PlayerMustKnowRecipe,
-        PlayerMustHaveCraftedItem
+        PlayerMustHaveCraftedItem,
+        CurrentBiomeGradualUnlock
     }
 
     public class GatedItemDetails
@@ -62,10 +64,57 @@ namespace EpicLoot.GatedItemType
         /// The defeat key of the creature whose drops are rolling right now, counted as set for that roll.
         /// Vanilla's Character.OnDeath sends the key to the server and runs CharacterDrop.OnDeath in the same
         /// frame, so on a client that owns the boss (any dedicated server) the key only arrives a round trip
-        /// later. A boss without a ragdoll (the Queen, the Frozen King) rolls in that frame and used to have
-        /// its own tier's gear swapped for the tier below. Set and cleared around that roll only.
+        /// later. A boss without a ragdoll (the Queen, the Frozen King) rolls in that frame, before the key
+        /// exists. Set and cleared around that roll only.
         /// </summary>
         public static string RollingDefeatKey;
+
+        private static Dictionary<string, string> _shippedTypeFallbacks;
+
+        /// <summary>
+        /// Equipment auto-add used to write every category's "Fallback" as null, so files it touched lost the
+        /// type chain. A null is filled from the shipped file; an empty string stays "no type fallback". The value
+        /// set here is what the next auto-add pass writes back to disk.
+        /// </summary>
+        private static void RestoreMissingTypeFallbacks(ItemInfoConfig config)
+        {
+            if (_shippedTypeFallbacks == null)
+            {
+                _shippedTypeFallbacks = new Dictionary<string, string>();
+                try
+                {
+                    var shipped = Newtonsoft.Json.JsonConvert.DeserializeObject<ItemInfoConfig>(
+                        EpicLoot.ReadEmbeddedResourceFile("EpicLoot.config.iteminfo.json"));
+                    foreach (ItemTypeInfo info in shipped?.ItemInfo ?? new List<ItemTypeInfo>())
+                    {
+                        if (info?.Type != null && !string.IsNullOrEmpty(info.Fallback))
+                        {
+                            _shippedTypeFallbacks[info.Type] = info.Fallback;
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    EpicLoot.LogWarning($"Could not read the shipped iteminfo.json to restore type fallbacks: {e.Message}");
+                }
+            }
+
+            var restored = 0;
+            foreach (ItemTypeInfo info in config.ItemInfo)
+            {
+                if (info?.Type != null && info.Fallback == null &&
+                    _shippedTypeFallbacks.TryGetValue(info.Type, out string fallback))
+                {
+                    info.Fallback = fallback;
+                    restored++;
+                }
+            }
+
+            if (restored > 0)
+            {
+                EpicLoot.LogWarningForce($"iteminfo.json had no \"Fallback\" for {restored} categories; using the shipped ones.");
+            }
+        }
 
         public static void Initialize(ItemInfoConfig config)
         {
@@ -83,8 +132,8 @@ namespace EpicLoot.GatedItemType
             BiomesToBossKeys.Clear();
 
             int deniedCount = 0;
+            RestoreMissingTypeFallbacks(config);
 
-            // Add to required lists
             foreach (ItemTypeInfo info in config.ItemInfo)
             {
                 if (!FallbackByType.ContainsKey(info.Type))
@@ -320,6 +369,12 @@ namespace EpicLoot.GatedItemType
 
         public static string GetGatedItemNameFromItemOrType(string itemOrType, GatedItemTypeMode gatedMode)
         {
+            using GradualUnlock.Scope roll = GradualUnlock.RollFor(gatedMode);
+            return ResolveGatedItemName(itemOrType, gatedMode);
+        }
+
+        private static string ResolveGatedItemName(string itemOrType, GatedItemTypeMode gatedMode)
+        {
             if (string.IsNullOrEmpty(itemOrType))
             {
                 return null;
@@ -336,7 +391,6 @@ namespace EpicLoot.GatedItemType
 
             List<string> bossList = null;
 
-            // Check if this is a loot table category
             if (LootRoller.LootSetContainsEntry(itemOrType))
             {
                 List<LootTable> ltcategory = LootRoller.GetFullyResolvedLootTable(itemOrType);
@@ -351,13 +405,11 @@ namespace EpicLoot.GatedItemType
                     return null;
                 }
                 
-                // Random.Range(int, int) is max-exclusive; Count-1 made the last entry unreachable
-                // (and a 2-entry category always picked the first).
+                // Random.Range(int, int) is max-exclusive.
                 string item = potentialItems[UnityEngine.Random.Range(0, potentialItems.Count)];
                 
                 if (!CheckIfItemNeedsGate(gatedMode, item, out GatedItemDetails itemDetails))
                 {
-                    // This item doesn't need gating, return it, otherwise we setup the category for a fallback
                     return item;
                 }
 
@@ -370,10 +422,8 @@ namespace EpicLoot.GatedItemType
                 bossList = itemDetails.RequiredBosses;
             }
 
-            // Check if this is a category of ItemType
             if (!ItemsByTypeAndBoss.ContainsKey(itemOrType))
             {
-                // Passed string is an item
                 if (gatedMode == GatedItemTypeMode.Unlimited)
                 {
                     return itemOrType;
@@ -544,6 +594,9 @@ namespace EpicLoot.GatedItemType
                 case GatedItemTypeMode.BossKillUnlocksCurrentBiomeItems:
                 case GatedItemTypeMode.BossKillUnlocksNextBiomeItems:
                     return CheckGateBossKill(itemName, mode);
+                case GatedItemTypeMode.CurrentBiomeGradualUnlock:
+                    AllItemsWithDetails.TryGetValue(itemName, out GatedItemDetails gradualDetails);
+                    return CheckGateBossKill(itemName, mode) || !GradualUnlock.IsItemTierOpen(gradualDetails);
                 default:
                     return true; // Fallback, item will be gated- we could not gate it properly
             }
@@ -640,6 +693,7 @@ namespace EpicLoot.GatedItemType
                 return false;
             }
 
+            using GradualUnlock.Scope possible = GradualUnlock.PossibleFor(mode);
             return mode == GatedItemTypeMode.Unlimited || !CheckIfItemNeedsGate(mode, itemName, out _);
         }
 
@@ -650,8 +704,7 @@ namespace EpicLoot.GatedItemType
         {
             if (!BiomesInOrder.Contains(biome))
             {
-                // TODO: Handle biome definitions user defined lists better.
-                // Configurations can have custom biomes not defined in all configuration locations.
+                // A custom biome may be missing from biomedata.json.
                 return biome;
             }
 

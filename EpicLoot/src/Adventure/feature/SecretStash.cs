@@ -26,7 +26,6 @@ namespace EpicLoot.Adventure.Feature
 
     public class SecretStashAdventureFeature : AdventureFeature
     {
-        public override AdventureFeatureType Type => AdventureFeatureType.SecretStash;
         public override int RefreshInterval => AdventureDataManager.Config.SecretStash.RefreshInterval;
 
         public List<SecretStashItemInfo> GetSecretStashItems()

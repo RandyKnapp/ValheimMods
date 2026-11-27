@@ -95,13 +95,14 @@ internal static class PlayerTakeInput_Patch
     }
 }
 
+// Typing in the Compendium's search field reads as chat focus, so the game's hotkeys ignore the keystrokes.
 [HarmonyPatch(typeof(Chat), nameof(Chat.HasFocus))]
 internal static class Chat_HasFocus_Patch
 {
     [UsedImplicitly]
     private static void Postfix(ref bool __result)
     {
-        __result &= !MagicPages.InSearchField();
+        __result |= MagicPages.InSearchField();
     }
 }
 

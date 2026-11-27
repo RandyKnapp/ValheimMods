@@ -18,7 +18,6 @@ namespace EpicLoot.Adventure
     /// </summary>
     internal static class WorldExtent
     {
-        /// <summary>The radius vanilla ships. Everything here is expressed relative to it.</summary>
         internal const float VanillaPlayableRadius = 10000f;
         internal const float VanillaTotalRadius = 10500f;
 
@@ -28,7 +27,6 @@ namespace EpicLoot.Adventure
         /// </summary>
         private const float AssumedEdgeSize = 500f;
 
-        /// <summary>Terrain generates out to here. Vanilla 10000.</summary>
         internal static float PlayableRadius { get; private set; } = VanillaPlayableRadius;
 
         /// <summary>Past here height is hard-clamped to -400. Vanilla 10500.</summary>
@@ -40,12 +38,8 @@ namespace EpicLoot.Adventure
         /// </summary>
         internal static float Stretch { get; private set; } = 1f;
 
-        /// <summary>Where the numbers came from, for the console command and the log line.</summary>
         internal static string Source { get; private set; } = "vanilla";
 
-        /// <summary>
-        /// Factor for rescaling config radii that were authored in metres against a vanilla world.
-        /// </summary>
         internal static float RadiusScale => PlayableRadius / VanillaPlayableRadius;
 
         /// <summary>
@@ -200,10 +194,6 @@ namespace EpicLoot.Adventure
             }
         }
 
-        /// <summary>
-        /// <see cref="TryProbeWorldEdge"/>, rate limited, and re-probed from scratch whenever the
-        /// world changes.
-        /// </summary>
         private static bool TryProbeWorldEdgeThrottled(out float totalRadius)
         {
             if (_probed && Time.unscaledTime - _probedAt < ProbeIntervalSeconds)
@@ -238,7 +228,6 @@ namespace EpicLoot.Adventure
             float outsideHeight = -2f * WorldGenerator.GetHeightMultiplier();
             const float searchCeiling = 1000000f;
 
-            // Establish a bracket: inside must be in-world, outside must be past the edge.
             float inside = 0f;
             float outside = VanillaTotalRadius;
             while (!IsOutside(worldGenerator, outside, outsideHeight))

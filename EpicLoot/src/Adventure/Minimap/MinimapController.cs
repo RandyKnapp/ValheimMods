@@ -63,7 +63,6 @@ public class MinimapController : MonoBehaviour
     {
         if (Player.m_localPlayer == null)
         {
-            // Do not perform operations without access to adventure data
             return;
         }
 
@@ -185,10 +184,9 @@ public class MinimapController : MonoBehaviour
 
     /// <summary>
     /// Appends the bounty and treasure map pin types to the end of the filter array, as TargetPortal, Jewelcrafting
-    /// and VentureValheim do with theirs. The fixed 800/801 used before padded the array with ~780 unused slots,
-    /// and mods that walk every slot paid for each: TargetPortal toggles them all when its portal map opens and
-    /// again when it closes, and every vanilla ToggleIconFilter spawns a gamepad vibration sound, so each portal
-    /// trip spawned ~1600 of them and flooded the log with "Ran out of virtual channels".
+    /// and VentureValheim do with theirs. Fixed high values would pad the array with hundreds of unused slots, and
+    /// TargetPortal toggles every slot when its map opens and closes, each toggle spawning a gamepad vibration
+    /// sound, which floods the log with "Ran out of virtual channels".
     /// </summary>
     private void RegisterPinTypes()
     {
@@ -499,8 +497,6 @@ public class MinimapController : MonoBehaviour
 
     private static bool ShowAdventurePinFilters()
     {
-        // TODO: add more configuration options to hide minimap buttons as needed
-        // Will need to ensure places this is used maintian logic if changed.
         return EpicLoot.IsAdventureModeEnabled();
     }
 
@@ -567,6 +563,18 @@ public class MinimapController : MonoBehaviour
             Icon = AdventureDataManager.GetTrophyIconForMonster(bounty.Target.MonsterID, isGold),
             AreaIcon = isGold ? GetGoldAreaSprite() : null,
             Rewards = GetBountyRewards(bounty)
+        };
+    }
+
+    public static AreaPinInfo CreateTreasurePinInfo(TreasureMapChestInfo chestInfo)
+    {
+        return new AreaPinInfo
+        {
+            Position = chestInfo.Position + chestInfo.MinimapCircleOffset,
+            Type = EpicLoot.TreasureMapPinType,
+            Name = Localization.instance.Localize("$mod_epicloot_treasurechest_minimappin",
+                Localization.instance.Localize(BiomeDataManager.GetLocalizationToken(chestInfo.Biome)),
+                (chestInfo.Interval + 1).ToString())
         };
     }
 
@@ -661,14 +669,7 @@ public class MinimapController : MonoBehaviour
                 Tuple<int, Heightmap.Biome> key = new Tuple<int, Heightmap.Biome>(chestInfo.Interval, chestInfo.Biome);
                 if (!TreasureMapPins.ContainsKey(key))
                 {
-                    AreaPinInfo pinInfo = new AreaPinInfo
-                    {
-                        Position = chestInfo.Position + chestInfo.MinimapCircleOffset,
-                        Type = EpicLoot.TreasureMapPinType,
-                        Name = Localization.instance.Localize("$mod_epicloot_treasurechest_minimappin",
-                            Localization.instance.Localize(BiomeDataManager.GetLocalizationToken(chestInfo.Biome)),
-                            (chestInfo.Interval + 1).ToString())
-                    };
+                    AreaPinInfo pinInfo = CreateTreasurePinInfo(chestInfo);
 
                     PinJob pinJob = new PinJob
                     {
@@ -753,7 +754,6 @@ public class MinimapController : MonoBehaviour
             return;
         }
 
-        //Add Area Pin
         newPin.Area = _minimap.AddPin(newPin.Position, Minimap.PinType.EventArea, string.Empty, false, false);
         newPin.Area.m_worldSize = AreaWorldSize;
         if (newPin.AreaIcon != null)
@@ -761,14 +761,12 @@ public class MinimapController : MonoBehaviour
             newPin.Area.m_icon = newPin.AreaIcon;
         }
 
-        //Add Pin
         newPin.Pin = _minimap.AddPin(newPin.Position, newPin.Type, newPin.Name, false, false);
         if (newPin.Icon != null)
         {
             newPin.Pin.m_icon = newPin.Icon;
         }
 
-        //Add Debug Pin
         if (pinJob.DebugMode)
         {
             newPin.DebugPin = _minimap.AddPin(newPin.Position, Minimap.PinType.Icon3,

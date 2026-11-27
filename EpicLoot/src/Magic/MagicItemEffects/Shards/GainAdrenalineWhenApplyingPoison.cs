@@ -4,11 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects.Shards {
-    // Grants adrenaline every few seconds for each nearby enemy that the local player has poisoned.
     public static class GainAdrenalineWhenApplyingPoison {
-        // Seconds between adrenaline pulses, and how far a poisoned foe can be and still count. Tunable as
-        // "TickInterval" and "Radius" in this effect's Config block in config/shardstones.json;
-        // PoisonAdrenalinePulse re-arms its InvokeRepeating when the interval changes.
+        // PoisonAdrenalinePulse re-arms its InvokeRepeating when TickInterval changes.
         public const float DefaultTickInterval = 3f;
         public const float DefaultRadius = 30f;
 
@@ -41,8 +38,6 @@ namespace EpicLoot.MagicItemEffects.Shards {
         private static readonly Dictionary<Character, float> _poisonedUntil = new Dictionary<Character, float>();
         private static readonly List<Character> _stale = new List<Character>();
 
-        // Tooltip: "Gain {0} Adrenaline every {1}s per Poisoned Foe Nearby" -- {1}/{2} are the configured
-        // interval and radius, so the shown numbers follow a retune instead of the baked-in defaults.
         public static void RegisterDisplayValues() {
             MagicItem.RegisterDisplayValues(MagicEffectType.GainAdrenalineWhenApplyingPoison,
                 value => new object[] { value, GetTickInterval(), GetRadius() });
@@ -52,7 +47,7 @@ namespace EpicLoot.MagicItemEffects.Shards {
             _poisonedUntil.Clear();
         }
 
-        // Postfix handler invoked by CharacterDamageDispatch (on-hit reaction). Records the victim rather
+        // Postfix handler invoked by SharedCharacterDamagePatch (on-hit reaction). Records the victim rather
         // than granting adrenaline; the payout happens on the pulse.
         public static void OnDamageDealt(Character victim, HitData hit, Character attacker) {
             if (victim == null || hit == null || hit.m_damage.m_poison <= 0f || attacker != Player.m_localPlayer) {

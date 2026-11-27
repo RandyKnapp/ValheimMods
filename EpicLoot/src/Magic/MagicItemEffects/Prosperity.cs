@@ -3,9 +3,6 @@ using UnityEngine;
 
 namespace EpicLoot.Magic.MagicItemEffects
 {
-    // Prosperity: a chance for a creature killed, or a chest opened, near the player to roll its whole
-    // EpicLoot loot table again. Luck tilts which rarity a roll lands on; Prosperity adds rolls.
-    //
     // The value is a percentage. Every full 100 is a guaranteed extra roll and the remainder is the chance
     // of one more, so the expected number of EpicLoot drops scales by (1 + value / 100), up to the
     // BonusRollsMax cap. LootRoller.RollLootTableInternal spends the rolls; Lucky Loot's bonus rolls and

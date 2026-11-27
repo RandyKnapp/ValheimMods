@@ -8,31 +8,11 @@ using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
 namespace EpicLoot.ShardStones {
-    /// <summary>
-    /// Where the shard slot panel goes: the nearest spot beside the inventory that no other panel uses, or the
-    /// spot the player dragged it to (Shard Slot Panel Offset).
-    /// </summary>
     public enum ShardSlotPanelPlacement {
         Automatic,
         Manual
     }
 
-    // Epic Loot's shard slot panel: a small window of its own beside the inventory that holds one inventory
-    // grid, one cell per socket of the item whose slots are open. It is built once per InventoryGui from the
-    // pieces vanilla already draws the player panel with (its background, its controller selection frame, the
-    // chest title's text style) and the same cell prefab as the player grid, so a cell here is an ordinary
-    // inventory cell: vanilla's drag and drop, quick-move and right-click route through InventoryGui's own
-    // handlers, and Epic Loot's tooltips and magic-item backgrounds, which patch InventoryGrid for every grid,
-    // apply without any special case.
-    //
-    // Being a panel of its own is the point. A chest and the slots can be open together, and nothing about the
-    // chest panel or vanilla's container bookkeeping is borrowed. ShardUI decides what the cells hold and what
-    // may move.
-    //
-    // No spot beside the inventory is free for every setup: Equipment and Quick Slots hangs its equipment panel
-    // and quick slot row off the inventory's right side, ExtraSlots and AzuEPI do the same, and the chest panel
-    // sits below. So the panel measures what is on screen and takes the free spot nearest the inventory panel's
-    // bottom-right corner (Place), unless the player dragged it somewhere (ShardSlotPanelPlacement.Manual).
     internal sealed class ShardSlotPanel {
         // Inset from the panel edge to the cells. The background art overhangs the panel by as much again.
         private const float Pad = 10f;
@@ -44,12 +24,9 @@ namespace EpicLoot.ShardStones {
         // The player grid is group 1 in vanilla's m_uiGroups (0 is the chest, 2 the info bar, 3 crafting).
         private const int PlayerGridGroup = 1;
 
-        // The spot automatic placement prefers: just off the inventory panel's bottom-right corner, beside the
-        // chest panel.
         private static readonly Vector2 DefaultOffset = new Vector2(10f, -40f);
 
-        // Automatic placement keeps this far from other panels (more than the background art's overhang) and
-        // this far inside the screen edge.
+        // More than the background art's overhang.
         private const float PanelGap = 14f;
         private const float ScreenMargin = 4f;
 
@@ -59,7 +36,6 @@ namespace EpicLoot.ShardStones {
         private const float MinObstacleSize = 4f;
         private const float BackdropFraction = 0.9f;
 
-        // How often automatic placement looks for a change in the window's layout.
         private const float LayoutCheckInterval = 0.25f;
 
         private static ShardSlotPanel _current;
@@ -71,23 +47,20 @@ namespace EpicLoot.ShardStones {
         private readonly UIGroupHandler _group;
         private readonly Vector3[] _corners = new Vector3[4];
 
-        // Automatic placement: the spot found, as an offset from the inventory panel's corner so it follows that
-        // panel, the other panels' rectangles it was checked against, and the layout they were measured from.
         private readonly List<Rect> _obstacles = new List<Rect>();
+        // From the inventory panel's corner, so the panel follows it.
         private Vector2 _autoOffset;
         private bool _hasAutoOffset;
         private int _layoutSignature;
         private float _nextLayoutCheck;
 
-        // A drag of the panel in progress: where the pointer and the panel started.
         private bool _dragging;
         private Vector2 _dragStartPointer;
         private Vector2 _dragStartTopLeft;
 
         public InventoryGrid Grid { get; }
 
-        // False once the InventoryGui this was built for has been torn down (Unity reports a destroyed object
-        // as null), which is the signal to build a fresh one for the next window.
+        // Unity reports a destroyed object as null, so this turns false once the window is torn down.
         public bool IsAlive => _root != null;
 
         public bool IsShown => IsAlive && _root.gameObject.activeSelf;
@@ -102,8 +75,6 @@ namespace EpicLoot.ShardStones {
             Grid = grid;
         }
 
-        // The panel for the live inventory window, built on first use and again after a scene change has
-        // replaced the window. Null when the window has nothing to build from.
         public static ShardSlotPanel Get(InventoryGui gui) {
             if (gui == null) {
                 return null;
@@ -140,8 +111,7 @@ namespace EpicLoot.ShardStones {
                 root.SetSiblingIndex(playerPanel.GetSiblingIndex() + 1);
             }
 
-            // Vanilla's own panel art, so the panel matches the window whatever restyles it. Instantiate keeps
-            // the source's stretch anchors, so the clones fit whatever size the panel is given.
+            // Vanilla's own panel art, so the panel matches whatever restyles the window.
             GameObject dragSurface = null;
             Transform background = playerPanel.Find("Bkg");
             if (background != null) {
@@ -215,8 +185,6 @@ namespace EpicLoot.ShardStones {
             gridRect.pivot = new Vector2(0f, 1f);
             gridRect.anchoredPosition = new Vector2(Pad, -(TitleTop + TitleHeight + TitleGap));
 
-            // InventoryGrid lays its cells out from the top-left of this root and sizes it to the rows it
-            // draws, the same shape vanilla gives its grids.
             var cellsGo = new GameObject("Root", typeof(RectTransform));
             var cells = (RectTransform)cellsGo.transform;
             cells.SetParent(gridRect, false);
@@ -226,9 +194,8 @@ namespace EpicLoot.ShardStones {
             cells.offsetMin = Vector2.zero;
             cells.offsetMax = Vector2.zero;
 
-            // One UI group for the controller: the panel is a stop in the bumper cycle, and while it is the
-            // stop the player grid does not read A or X. Priority 1 is what every inventory panel uses, so
-            // the groups are told apart by InventoryGui's choice alone.
+            // Priority 1 is what every inventory panel uses, so the groups are told apart by InventoryGui's
+            // choice alone.
             var group = rootGo.AddComponent<UIGroupHandler>();
             group.m_groupPriority = 1;
             group.m_enableWhenActiveAndGamepad = frame;
@@ -240,9 +207,7 @@ namespace EpicLoot.ShardStones {
             grid.m_tooltipAnchor = playerGrid.m_tooltipAnchor;
             grid.m_uiGroup = group;
 
-            // The handlers vanilla gives its own two grids in Awake. With these a cell here is an inventory
-            // cell: drag and drop, quick-move, right-click, touch selection and the drop-focus rule all go
-            // through InventoryGui, where ShardUI's patches apply the socket rules.
+            // The handlers vanilla gives its own two grids in Awake.
             grid.m_onSelected += gui.OnSelectedItem;
             grid.m_onRightClick += gui.OnRightClickItem;
             grid.m_onReleased += gui.OnReleasedItem;
@@ -256,7 +221,6 @@ namespace EpicLoot.ShardStones {
             return panel;
         }
 
-        // Sizes the panel for `sockets` cells, titles it, places it and shows it.
         public void Show(string title, int sockets) {
             if (!IsAlive) {
                 return;
@@ -273,7 +237,6 @@ namespace EpicLoot.ShardStones {
                 _title.text = title;
             }
 
-            // Every opening looks for a spot afresh: the panel's size and the panels around it may have changed.
             _hasAutoOffset = false;
             Place();
             _root.gameObject.SetActive(true);
@@ -289,7 +252,6 @@ namespace EpicLoot.ShardStones {
             _root.gameObject.SetActive(false);
         }
 
-        // Hands the controller to the panel's grid.
         public void Focus() {
             if (IsAlive) {
                 _gui.SetActiveGroup(_group, playSound: false);
@@ -298,10 +260,8 @@ namespace EpicLoot.ShardStones {
 
         public bool HasFocus => IsAlive && _group.IsActive;
 
-        // Places the panel relative to the player panel's bottom-right corner, measured through world space so it
-        // follows whatever shape and scale the player panel has: vanilla's, a taller inventory, or another mod's
-        // restyle. Run every frame the panel is up, so an edit to the offset shows at once. Everything here is in
-        // the local space of the panel's parent, the window root the player and chest panels hang from.
+        // Measured through world space so it follows whatever shape and scale the player panel has. Everything
+        // here is in the local space of the panel's parent, the window root.
         public void Place() {
             if (!IsAlive || _playerPanel == null || _dragging) {
                 return;
@@ -320,10 +280,7 @@ namespace EpicLoot.ShardStones {
             SetTopLeft(parent, ClampToScreen(parent, corner + offset));
         }
 
-        // Finds a free spot when the panel opens, and again whenever the window's layout changes in a way that
-        // puts another panel over it (a chest opening below EAQS's quick slots, another mod's panel being
-        // dragged on top of it). A change that leaves the panel clear does not move it, so it does not jump
-        // about while it is in use.
+        // A layout change that leaves the panel clear does not move it, so it does not jump about in use.
         private void PlaceAutomatically(RectTransform parent, Vector2 corner) {
             float now = Time.unscaledTime;
             if (_hasAutoOffset && now < _nextLayoutCheck) {
@@ -503,8 +460,7 @@ namespace EpicLoot.ShardStones {
                 Mathf.Min(rect.xMax, clip.xMax), Mathf.Min(rect.yMax, clip.yMax));
         }
 
-        // A cheap fingerprint of the window's layout: which panels and parts are shown, where and how big. It is
-        // what decides whether the full measurement in CollectObstacles has to run again.
+        // Decides whether the full measurement in CollectObstacles has to run again.
         private int LayoutSignature(RectTransform parent) {
             unchecked {
                 int hash = 17;
@@ -575,7 +531,6 @@ namespace EpicLoot.ShardStones {
         private static Rect PanelRect(Vector2 topLeft, Vector2 size) =>
             new Rect(topLeft.x, topLeft.y - size.y, size.x, size.y);
 
-        // The top-left positions that keep the whole panel on screen.
         private static Rect ScreenBounds(RectTransform parent, Vector2 size) {
             Rect screen = parent.rect;
             float xMin = screen.xMin + ScreenMargin;
@@ -590,8 +545,6 @@ namespace EpicLoot.ShardStones {
             return new Vector2(Mathf.Clamp(topLeft.x, bounds.xMin, bounds.xMax), Mathf.Clamp(topLeft.y, bounds.yMin, bounds.yMax));
         }
 
-        // The panel is anchored and pivoted top-left, so its anchored position is its top-left measured from the
-        // parent's top-left.
         private Vector2 TopLeft(RectTransform parent) {
             Rect rect = parent.rect;
             return new Vector2(rect.xMin + _root.anchoredPosition.x, rect.yMax + _root.anchoredPosition.y);
@@ -605,9 +558,6 @@ namespace EpicLoot.ShardStones {
             }
         }
 
-        // Dragging the panel by its frame. The drop spot is kept as Shard Slot Panel Offset, from the inventory
-        // panel's corner like automatic placement, and placement turns Manual, so the panel opens there from
-        // then on. Setting Shard Slot Panel Placement back to Automatic hands it back to automatic placement.
         private void BeginDrag(PointerEventData data) {
             if (!IsShown || data.button != PointerEventData.InputButton.Left) {
                 return;

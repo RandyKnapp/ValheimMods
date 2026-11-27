@@ -21,8 +21,8 @@ public static partial class API
     /// <param name="equippedOverlay">The slot's "equiped" child. Used as the template for the images
     /// this creates, and restyled to Epic Loot's equipped sprite.</param>
     /// <param name="item">The item in the slot. Null, or an item with no rarity, hides the background.</param>
-    /// <param name="inventoryGrid">true for an inventory grid cell, which also gets the legendary set
-    /// marker; false for a hotbar element, which does not.</param>
+    /// <param name="inventoryGrid">true for an inventory grid cell, which also gets the set or unique
+    /// rune marker and the unique item effects; false for a hotbar element, which does not.</param>
     /// <returns>true if the slot was handled</returns>
     [PublicAPI]
     public static bool ApplyMagicItemBackground(GameObject slotRoot, GameObject equippedOverlay,
@@ -38,11 +38,12 @@ public static partial class API
         ItemBackgroundHelper.ApplyEquippedSprite(equippedOverlay, inventoryGrid);
 
         bool showBackground = item != null && item.UseMagicBackground();
-        bool showSetMarker = inventoryGrid && item != null && item.IsSetItem();
+        string markerColor = inventoryGrid ? ItemBackgroundHelper.GetMarkerColor(item) : null;
+        bool isUnique = item != null && item.IsUniqueItem();
 
         // An empty slot has nothing to show and, until something has been shown in it, nothing to hide
         // either -- so do not build images for every empty cell of every grid.
-        if (!showBackground && !showSetMarker && slotRoot.transform.Find("magicItem") == null)
+        if (!showBackground && markerColor == null && slotRoot.transform.Find("magicItem") == null)
         {
             return true;
         }
@@ -71,10 +72,15 @@ public static partial class API
             Image setItem = setItemTransform.GetComponent<Image>();
             if (setItem != null)
             {
-                setItem.enabled = showSetMarker;
+                setItem.enabled = markerColor != null;
+                if (markerColor != null)
+                {
+                    ItemBackgroundHelper.StyleMarker(setItem, markerColor, isUnique);
+                }
             }
         }
 
+        ItemBackgroundHelper.UpdateUniqueEffects(slotRoot, isUnique);
         return true;
     }
 

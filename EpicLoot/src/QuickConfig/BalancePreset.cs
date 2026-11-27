@@ -7,13 +7,12 @@ using System.IO;
 namespace EpicLoot.QuickConfig;
 
 /// <summary>
-/// The three balance presets the old welcome panel offered, applied to the STAGED values only; the
-/// overhaul rewrite of magiceffects.json happens on Save, after the .cfg batch, on the host or (for a
-/// server admin) on the server.
+/// The three balance presets, applied to the STAGED values only; the
+/// overhaul rewrite of the balance template files happens on Save, after the .cfg batch, on the host or
+/// (for a server admin) on the server.
 /// </summary>
 internal static class BalancePreset {
     internal const string MagicEffectsFile = "magiceffects.json";
-    internal const string MagicEffectsConfigName = "magiceffects";
 
     internal static readonly string[] Names = { "balanced", "minimal", "legendary" };
 
@@ -48,29 +47,23 @@ internal static class BalancePreset {
         staged.Set("MaterialsDropRatio", mix.Materials);
         staged.Set("ShardStoneDropRatio", mix.ShardStone);
         staged.PresetPressed = name;
-        // The rewrite on Save replaces the whole file, so edits staged against the old one are dropped
-        // now rather than written over the fresh template.
-        ReloadMagicEffects(staged);
+        // The rewrite on Save replaces the template files whole, so edits staged against the old ones are
+        // dropped now rather than written over the fresh templates.
+        ReloadTemplateFiles(staged);
         return QuickConfigureTool.L("$mod_epicloot_cfg_preset_resets_effects");
     }
 
-    /// <summary>
-    /// Re-reads the magiceffects.json values of <paramref name="config"/> from the live config. Effect
-    /// Tuning is one value over two files, and re-reading it brings back every effect, so its shard
-    /// effects keep what <paramref name="config"/> held: they live in shardstones.json, which neither a
-    /// preset nor the rewrite touches.
-    /// </summary>
-    internal static void ReloadMagicEffects(StagedConfig config) {
-        EffectConfigsValue before = config.Get<EffectConfigsValue>(QuickConfigBindings.EffectConfigsKey);
-        config.Reload(slot => slot is JsonSlot json && json.File == MagicEffectsFile);
-        EffectConfigsValue after = config.Get<EffectConfigsValue>(QuickConfigBindings.EffectConfigsKey);
-        if (before == null || after == null || ReferenceEquals(before, after)) { return; }
+    /// <summary>Re-reads the values of <paramref name="config"/> held in the balance template files from the live config.</summary>
+    internal static void ReloadTemplateFiles(StagedConfig config) {
+        config.Reload(slot => slot is JsonSlot json && ELConfig.IsBalanceTemplateFile(json.File));
+    }
 
-        foreach (EffectConfigSet set in before.Effects.Values) {
-            if (set.Source == EffectSource.Shard && after.Effects.ContainsKey(set.Type)) {
-                after.Effects[set.Type] = set.Clone();
-            }
+    /// <summary>True when a balance template file on disk is the player's work, so a rewrite should ask and back it up.</summary>
+    internal static bool AnyTemplateFilePlayerModified() {
+        foreach (string file in ELConfig.BalanceTemplateFiles) {
+            if (ConfigVersionManager.IsPlayerModified(Path.GetFileNameWithoutExtension(file))) { return true; }
         }
+        return false;
     }
 
     /// <summary>True when a patch file targets this config ("magiceffects", no extension).</summary>
@@ -78,7 +71,7 @@ internal static class BalancePreset {
         return FilePatching.PatchesPerFile.GetValues(configName, true).Count > 0;
     }
 
-    /// <summary>True when Save must rewrite magiceffects.json: a preset was pressed, or the template changed (host or server admin).</summary>
+    /// <summary>True when Save must rewrite the template files: a preset was pressed, or the template changed (host or server admin).</summary>
     internal static bool NeedsOverhaulRewrite(StagedConfig staged, StagedConfig baseline) {
         if (staged == null || baseline == null || QuickConfigBindings.CanEditFiles() == false) { return false; }
         if (staged.PresetPressed != null) { return true; }
@@ -86,43 +79,51 @@ internal static class BalancePreset {
     }
 
     /// <summary>
-    /// Rewrites baseconfig/magiceffects.json from the embedded overhaul the (already saved) Balance
-    /// Template names, records it as the mod's own content, and reloads it. With backupFirst the
-    /// current file is copied to baseconfig-backup/ first; the host has asked the player by then, and a
-    /// server backs up a hand-edited file for a remote admin without asking.
+    /// Rewrites the balance template files in baseconfig/ from the embedded overhaul the (already saved)
+    /// Balance Template names, records them as the mod's own content, and reloads them. With backupFirst
+    /// each hand-edited file is copied to baseconfig-backup/ first; the host has asked the player by then,
+    /// and a server backs them up for a remote admin without asking.
     /// </summary>
     internal static bool ApplyOverhaulRewrite(bool backupFirst, out string message) {
         message = "";
         string template = ELConfig.BalanceConfigurationType.Value;
+        string[] names = ELConfig.BalanceTemplateFiles;
+        string files = names.Length > 1
+            ? string.Join(", ", names, 0, names.Length - 1) + " and " + names[names.Length - 1]
+            : names[0];
         try {
-            string path = Path.Combine(ELConfig.GetOverhaulDirectoryPath(), MagicEffectsFile);
-            string previousText = File.Exists(path) ? File.ReadAllText(path) : null;
             string backupDir = null;
-            if (backupFirst && previousText != null) {
-                backupDir = ConfigVersionManager.BackupConfigFile(MagicEffectsConfigName);
-            }
+            foreach (string file in ELConfig.BalanceTemplateFiles) {
+                string configName = Path.GetFileNameWithoutExtension(file);
+                string path = Path.Combine(ELConfig.GetOverhaulDirectoryPath(), file);
+                string previousText = File.Exists(path) ? File.ReadAllText(path) : null;
+                bool backup = backupFirst && previousText != null && ConfigVersionManager.IsPlayerModified(configName);
+                if (backup) {
+                    backupDir = ConfigVersionManager.BackupConfigFile(configName, backupDir);
+                }
 
-            // A file that patches target is the template plus those patches, rebuilt the way every launch
-            // rebuilds it; the bare template would drop patch-added effects until the next restart.
-            if (IsPatched(MagicEffectsConfigName)) {
-                FilePatching.LoadPatchedJSON(MagicEffectsConfigName);
-            } else {
-                ELConfig.CreateBaseConfigurations(path, MagicEffectsFile);
+                // A file that patches target is the template plus those patches, rebuilt the way every launch
+                // rebuilds it; the bare template would drop patch-added effects until the next restart.
+                if (IsPatched(configName)) {
+                    FilePatching.LoadPatchedJSON(configName);
+                } else {
+                    ELConfig.CreateBaseConfigurations(path, file);
+                }
+                string newText = File.ReadAllText(path);
+                // This IS the mod's own content. A backed-up file was the player's, and the version
+                // manager would keep it flagged as theirs if it saw that baseline; they chose to replace
+                // it, so the fresh template is recorded as written from scratch.
+                ConfigVersionManager.RecordWrittenContent(configName, newText, backup ? null : previousText);
             }
-            string newText = File.ReadAllText(path);
-            // This IS the mod's own content. A backed-up file was the player's, and the version
-            // manager would keep it flagged as theirs if it saw that baseline; they chose to replace
-            // it, so the fresh template is recorded as written from scratch.
-            ConfigVersionManager.RecordWrittenContent(MagicEffectsConfigName, newText, backupDir != null ? null : previousText);
-            ELConfig.ReloadBaseConfigsFromDisk(new[] { MagicEffectsFile });
+            ELConfig.ReloadBaseConfigsFromDisk(ELConfig.BalanceTemplateFiles);
 
-            message = $"magiceffects.json rewritten from the {template} template" +
-                (backupDir != null ? $"; the previous file was backed up to {backupDir}" : "") + ".";
+            message = $"{files} rewritten from the {template} template" +
+                (backupDir != null ? $"; the edited files were backed up to {backupDir}" : "") + ".";
             EpicLoot.LogForce($"Quick Configure: {message}");
             return true;
         } catch (Exception e) {
-            EpicLoot.LogErrorForce($"Quick Configure could not rewrite magiceffects.json from the {template} template: {e}");
-            message = $"magiceffects.json was not rewritten: {e.Message}";
+            EpicLoot.LogErrorForce($"Quick Configure could not rewrite {files} from the {template} template: {e}");
+            message = $"{files} were not rewritten: {e.Message}";
             return false;
         }
     }

@@ -493,14 +493,6 @@ namespace EpicLoot.MagicItemEffects
             return aura;
         }
 
-        // The middle of a fitted aura's weapon, in world space.
-        internal static Vector3 GetCenter(GameObject aura)
-        {
-            Transform frame = aura.transform.childCount > 0 ? aura.transform.GetChild(0) : aura.transform;
-            Light light = aura.GetComponentInChildren<Light>(true);
-            return light != null ? light.transform.position : frame.position;
-        }
-
         // Where an aura hangs and what its emitters emit from.
         internal struct Fit
         {

@@ -59,8 +59,7 @@ namespace EpicLoot.Magic
         public static readonly string NONE = "none";
 
         // The subscription must be a stored delegate: unsubscribing a freshly written lambda is a
-        // no-op (two lambda sites compile to two different methods), which used to re-run this whole
-        // scan -- and rewrite iteminfo/loottables/adventuredata on disk -- on every world join.
+        // no-op (two lambda sites compile to two different methods).
         public static readonly Action OnMapDataLoadedHandler = () => CheckAndAddAllEnchantableItems();
 
         private static bool _ranOnHeadlessServer;
@@ -73,7 +72,7 @@ namespace EpicLoot.Magic
         /// </summary>
         internal static void RunOnHeadlessWorldLoad()
         {
-            if (!Jotunn.Managers.GUIManager.IsHeadless() || _ranOnHeadlessServer || !OwnsItemConfig())
+            if (!Jotunn.Managers.GUIManager.IsHeadless() || _ranOnHeadlessServer || !CreatureSorterRunner.OwnsLootConfig())
             {
                 return;
             }
@@ -95,13 +94,6 @@ namespace EpicLoot.Magic
             Jotunn.Managers.MinimapManager.OnVanillaMapDataLoaded += OnMapDataLoadedHandler;
         }
 
-        // Same rule as the creature sorter's: a dedicated server, a host or single player. Not a client on
-        // someone else's server, and not the main menu (no world, so nothing to scan).
-        private static bool OwnsItemConfig()
-        {
-            return ZNet.instance != null && ZNet.instance.IsServer();
-        }
-
         /// <summary>
         /// The baseconfig files this pass writes back out. A caller that needs the live config to
         /// match disk without waiting on the file watchers reloads exactly these.
@@ -112,13 +104,10 @@ namespace EpicLoot.Magic
         /// <param name="force">Run even when nothing changed since the last run (see AutoAddRunState).</param>
         public static void CheckAndAddAllEnchantableItems(bool deregister = true, bool force = false)
         {
-            // The pass merges onto the LIVE configs and writes the result over this machine's own baseconfig
-            // files. On a client connected to someone else's server those are the server's push
-            // (ELConfig.ApplyClientConfig), so running here copied the server's loottables, iteminfo and
-            // adventuredata over the player's own files, and the reload at the end skips the scheduler's
-            // connected-client rule. The server runs the pass and its configs reach clients in the push.
-            // Checked before unsubscribing, so a world this session later loads itself still gets the pass.
-            if (!OwnsItemConfig())
+            // The pass merges onto the live configs and writes them over this machine's baseconfig files, so
+            // it must not run where those configs are a server's push. Checked before unsubscribing, so a
+            // world this session later loads itself still gets the pass.
+            if (!CreatureSorterRunner.OwnsLootConfig())
             {
                 EpicLoot.Log("Equipment auto-add skipped: this client is connected to a server, whose configs are in effect.");
                 return;
@@ -190,7 +179,6 @@ namespace EpicLoot.Magic
                 }
                 else
                 {
-                    // Only need to print the error once
                     EpicLoot.LogWarning($"Duplicate Type keys found for {currentConfig.Type}. " +
                         $"Please check your iteminfo.json file and patches for conflicts.");
                 }
@@ -216,7 +204,6 @@ namespace EpicLoot.Magic
             EpicLoot.Log($"Checking all equipment in game.");
             foundByCategory = EnsureItemsInConfigMutating(foundByCategory, itemsByCategory, allEquipment);
 
-            // Compare the found items with the current config, if enabled add items, if enabled remove missing items
             if (ELConfig.AutoRemoveEquipmentNotFound.Value)
             {
                 EpicLoot.Log($"Add/Remove not-found equipment processing.");
@@ -229,20 +216,13 @@ namespace EpicLoot.Magic
             }
 
             EpicLoot.Log("Merging datasets and ensuring no duplicate entries.");
-            // merge dataset and ensure unique values
             List<ItemTypeInfo> newConfig = MergeItemsByBossConfig(itemsByCategory);
 
-            // Strip prop items an EARLIER run already wrote to disk. Filtering allEquipment above only stops
-            // new ones being added; an entry already in iteminfo.json survives unless
-            // AutoRemoveEquipmentNotFound is on, and AddRemoveItemsFromLootLists below would feed it straight
-            // back into the loot tables.
             RemovePropItemsFromConfig(newConfig, selfKilling);
 
-            // Add/remove items from vendor if enabled.
             BaseConfigWriter.Result? vendor = AddRemoveItemsFromVendor(newConfig);
             BaseConfigWriter.Result? loot = AddRemoveItemsFromLootLists(magicMats, foundByCategory, newConfig, previousTypes);
 
-            // Write out the new config; each file is written only when its text changed.
             string contents;
             try
             {
@@ -259,13 +239,9 @@ namespace EpicLoot.Magic
                 return;
             }
 
-            // Put the merged result into memory now rather than on the reload scheduler's next poll. iteminfo
-            // is re-read even when its file did not change: the passes above replaced the live entries' lists
-            // in place, and it is only ever assigned in memory by re-reading it. adventuredata likewise whenever
-            // the vendor step ran, which replaced the live gamble costs and so dropped the ones other mods add
-            // through the API until a reload applies them again. loottables only when written: the in-place
-            // edits validation makes are no change when the text is the same. The scheduler remains the
-            // backstop when the iteminfo write failed and returned early.
+            // Reloaded now rather than on the scheduler's next poll. iteminfo always, since the passes above
+            // replaced its live lists in place; adventuredata whenever the vendor step replaced the live gamble
+            // costs, which dropped the ones other mods add through the API; loottables only when written.
             List<string> reload = ["iteminfo.json"];
             if (vendor != null)
             {
@@ -384,7 +360,6 @@ namespace EpicLoot.Magic
             List<LootItemSet> updatedItemSets = [];
             Dictionary<string, HashSet<string>> newTypes = TypesByItem(newConfig);
 
-            // entry of all of the currently defined meta sets as they are valid targets also
             HashSet<string> metaItemSetNames = new HashSet<string>(LootRoller.Config.ItemSets.Select(x => x.Name), StringComparer.Ordinal);
             // Every table name up front: a reference to a table further down the file -- or a boss table's
             // reference to its own level 1 -- is as valid as one to a table above it. ItemSets are checked
@@ -392,7 +367,6 @@ namespace EpicLoot.Magic
             HashSet<string> metaLootTables = new HashSet<string>(LootRoller.Config.LootTables
                 .Where(x => !string.IsNullOrEmpty(x?.Object))
                 .Select(x => x.Object), StringComparer.Ordinal);
-            // All of the currently valid items so we can always determine if its at least valid
             HashSet<string> validItems = new HashSet<string>(StringComparer.Ordinal);
             foreach (ItemTypeInfo entry in foundByCategory.Values)
             {
@@ -414,7 +388,6 @@ namespace EpicLoot.Magic
                     Config.LootSetsToItemCategories.TryGetValue(loottype, out setCategories);
                 }
 
-                // Validate existing entries in the lootset
                 EpicLoot.Log($"Checking LootSet entry: {lis.Name}");
                 foreach (LootDrop loot in lis.Loot)
                 {
@@ -469,12 +442,9 @@ namespace EpicLoot.Magic
                     }
                 }
 
-                // Keep the set even when validation emptied it. Dropping it here used to turn one bad
-                // entry check into a chain of dead references: metaItemSetNames is snapshotted above,
-                // before any pruning, so every reference to the set survives while the set itself
-                // vanishes -- and a reference that resolves to nothing is reported as a missing item
-                // prefab, miles from the real cause. An empty set is a config problem worth saying out
-                // loud; ResolveLootDrop reports it again if anything actually rolls on it.
+                // Keep the set even when validation emptied it: metaItemSetNames was taken before any
+                // pruning, so references to the set survive, and a missing set would be reported as a
+                // missing item prefab far from the real cause.
                 if (entries.Count == 0)
                 {
                     EpicLoot.LogWarning($"LootSet {lis.Name} has no valid entries left after validation. " +
@@ -492,10 +462,8 @@ namespace EpicLoot.Magic
                     continue;
                 }
 
-                // Every level's list is validated, the same way the old flat Loot was: since the flat form
-                // was folded into LeveledLoot, that is where chest loot lives. A list that would come out
-                // empty is left as written instead -- with nothing valid left to roll it was already
-                // broken, and emptying it on disk would make a validation gap permanent.
+                // A list that would come out empty is left as written: with nothing valid left to roll it
+                // was already broken, and emptying it on disk would make a validation gap permanent.
                 if (lt.LeveledLoot != null)
                 {
                     foreach (LeveledLootDef level in lt.LeveledLoot)
@@ -523,7 +491,6 @@ namespace EpicLoot.Magic
             }
 
             EpicLoot.Log($"Finished Validating loottable.");
-            // Write out the new config; CheckAndAddAllEnchantableItems re-reads every rewritten file once all are written.
             // A copy of the live config, not a new one built field by field, so every other root field
             // (DefaultStarScaling, and anything added later) is written back too.
             LootConfig newLootConfig = LootRoller.Config.ShallowCopy();
@@ -595,7 +562,6 @@ namespace EpicLoot.Magic
             Dictionary<string, SecretStashItemConfig> existingVendorItems = new Dictionary<string, SecretStashItemConfig>();
             HashSet<string> foundItemEntry = new HashSet<string>(StringComparer.Ordinal);
 
-            // Add all of the items currently in the vendor items list
             EpicLoot.Log("Adding Entries to the vendor list.");
             foreach (SecretStashItemConfig gamble in AdventureDataManager.Config.Gamble.GambleCosts)
             {
@@ -607,7 +573,6 @@ namespace EpicLoot.Magic
                 existingVendorItems.Add(gamble.Item, gamble);
             }
 
-            // Check the iteminfo configs for existing and new items
             foreach (ItemTypeInfo itemType in newConfig)
             {
                 foreach (KeyValuePair<string, List<string>> bossEntry in itemType.ItemsByBoss)
@@ -616,7 +581,6 @@ namespace EpicLoot.Magic
                     {
                         if (existingVendorItems.ContainsKey(itemName))
                         {
-                            // Found this entry
                             EpicLoot.Log($"Found existing vendor entry for {itemName} - price {existingVendorItems[itemName].CoinsCost}, keeping it in the list.");
                             foundItemEntry.Add(itemName);
                         }
@@ -634,7 +598,6 @@ namespace EpicLoot.Magic
                 }
             }
 
-            // Remove Items which are not found
             EpicLoot.Log("Removing invalid entries.");
             List<SecretStashItemConfig> newGambleItems = existingVendorItems
                 .Where(x => foundItemEntry.Contains(x.Key)).Select(x => x.Value).ToList();
@@ -642,7 +605,6 @@ namespace EpicLoot.Magic
             AdventureDataConfig AdventureDataConfigReplacement = AdventureDataManager.Config;
             AdventureDataConfigReplacement.Gamble.GambleCosts = newGambleItems;
 
-            // Write out the new config; CheckAndAddAllEnchantableItems re-reads every rewritten file once all are written.
             EpicLoot.Log("Writing config.");
             string contents;
             try
@@ -674,6 +636,7 @@ namespace EpicLoot.Magic
                     ItemTypeInfo uniqueItems = new ItemTypeInfo()
                     {
                         IgnoredItems = item.Value.IgnoredItems.Distinct().ToList(),
+                        Fallback = item.Value.Fallback,
                         ItemFallback = item.Value.ItemFallback,
                         Type = item.Value.Type,
                         Enchantable = item.Value.Enchantable,
@@ -719,8 +682,6 @@ namespace EpicLoot.Magic
             {
                 string itemType = ItemTypeFor(item.m_itemData);
                 string itemName = item.name;
-                // Check if the item is already in the config
-                // If it is, add it to the foundBy
                 if (configured.TryGetValue(itemType, out var inConfig) && foundByCategory.ContainsKey(itemType))
                 {
                     if (inConfig.Ignored.Contains(itemName))
@@ -757,8 +718,6 @@ namespace EpicLoot.Magic
                     continue;
                 }
 
-                // Item already exists in the config | Or we are not auto-adding items
-                //if (itemfound || ELConfig.AutoAddEquipment.Value == false) { continue; }
                 if ((ELConfig.OnlyAddEquipmentWithRecipes.Value == true && key == NONE) ||
                     (key == NONE && itemType == NONE) ||
                     itemType == ItemTypeClassifier.Unknown ||
@@ -769,7 +728,6 @@ namespace EpicLoot.Magic
                 }
 
                 EpicLoot.Log($"{itemType} {key} add {itemName}");
-                // Ensure gating required boss keys exist
                 if (!foundByCategory[itemType].ItemsByBoss.ContainsKey(key))
                 {
                     foundByCategory[itemType].ItemsByBoss.Add(key, new List<string>() { });
@@ -784,7 +742,6 @@ namespace EpicLoot.Magic
             Dictionary<string, ItemTypeInfo> foundByCategory,
             Dictionary<string, ItemTypeInfo> itemsByCategory)
         {
-            // Just add found items, dont remove missing items
             foreach (KeyValuePair<string, ItemTypeInfo> fbc in foundByCategory)
             {
                 if (ELConfig.AutoAddEquipment.Value)
@@ -794,8 +751,6 @@ namespace EpicLoot.Magic
                         continue;
                     }
 
-                    // Merge in the newly-found ignored items (this used to union the list with
-                    // itself -- a no-op -- so add-only mode never picked up new ignored items).
                     itemsByCategory[fbc.Key].IgnoredItems = itemsByCategory[fbc.Key].IgnoredItems
                         .Union(fbc.Value.IgnoredItems).ToList();
 
@@ -924,9 +879,7 @@ namespace EpicLoot.Magic
                 return false;
             }
 
-            // Denied props are rejected before anything else. The ObjectDB fallback at the bottom accepts ANY
-            // real ItemDrop, which is exactly how SP_/FW_ entries survived every rewrite once written.
-            // Rejecting here deletes them from ItemSets, loot table Loot lists and RarityItems maps alike.
+            // Denied props are rejected first: the ObjectDB fallback at the bottom accepts any real ItemDrop.
             if (LootDenyList.IsDenied(name))
             {
                 EpicLoot.Log($"REMOVING denied prop item {name} from the loot configuration.");
@@ -1018,7 +971,6 @@ namespace EpicLoot.Magic
 
             tier = name.Substring(0, 5);
             type = name.Substring(5);
-            // Maybe we want to ensure the everything groups are properly setup? How much loot table validation should we do?
             if (type == "Tier" || type == "Everything")
             {
                 return false;
@@ -1045,13 +997,10 @@ namespace EpicLoot.Magic
                 return NONE;
             }
 
-            // This goes through the biome tiers in reverse order, starting from the highest tier
-            // and checking if the current item has materials from that biome
-            // if not it goes down a biome until it finds materials required to craft the item
-            // if an item does not require any materials or has no recipe, it should be listed in UncraftableItemsAlwaysAllowed
+            // Highest tier first: an item belongs to the highest biome whose station or materials its recipe
+            // uses. An item with no recipe or materials belongs in UncraftableItemsAlwaysAllowed.
             foreach (BiomeSorting biome in _pass?.BiomesHighestFirst ?? PassLookups.BiomesHighestFirstFromConfig())
             {
-                // TODO: Update this logic to use a more concrete biome order list
                 if (itemRecipe.m_craftingStation != null &&
                     biome.Stations.Contains(itemRecipe.m_craftingStation.name))
                 {

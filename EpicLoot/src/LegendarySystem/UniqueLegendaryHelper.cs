@@ -24,19 +24,6 @@ namespace EpicLoot.LegendarySystem
         /// <summary>Set piece ID to the set that lists it.</summary>
         public static readonly Dictionary<string, LegendarySetInfo> ItemsToSetMap = new Dictionary<string, LegendarySetInfo>();
 
-        // Legacy names, kept for mods that read them. They are the unified collections above, so they now
-        // hold every unique and set, not just the Legendary ones. Declared after them: static fields
-        // initialize in source order.
-        public static readonly Dictionary<string, LegendaryInfo> LegendaryInfo = AllUniques;
-        public static readonly Dictionary<string, LegendarySetInfo> LegendarySets = AllSets;
-        public static readonly Dictionary<string, LegendarySetInfo> LegendaryItemsToSetMap = ItemsToSetMap;
-
-        // Legacy read-only views of the entries enabled at Mythic, rebuilt on every change. Writing to them
-        // registers nothing; use API.AddLegendaryItem / AddLegendarySet.
-        public static readonly Dictionary<string, LegendaryInfo> MythicInfo = new Dictionary<string, LegendaryInfo>();
-        public static readonly Dictionary<string, LegendarySetInfo> MythicSets = new Dictionary<string, LegendarySetInfo>();
-        public static readonly Dictionary<string, LegendarySetInfo> MythicItemsToSetMap = new Dictionary<string, LegendarySetInfo>();
-
         public static readonly LegendaryInfo GenericLegendaryInfo = new LegendaryInfo
         {
             ID = nameof(GenericLegendaryInfo)
@@ -45,9 +32,7 @@ namespace EpicLoot.LegendarySystem
         public static event Action OnSetupLegendaryItemConfig;
 
         private static readonly List<ItemRarity> DefaultRarities = new List<ItemRarity> { ItemRarity.Legendary };
-        // The JSON name of LegendaryInfo/LegendarySetInfo.Rarities. Not nameof: inside this class the name
-        // LegendaryInfo binds to the legacy dictionary field, not the type.
-        private const string RaritiesField = "Rarities";
+        private const string RaritiesField = nameof(LegendaryInfo.Rarities);
 
         // Problems found while building the pool, reported by Validate. Messages already logged for the
         // current config are remembered so an API registration's rebuild does not repeat them.
@@ -120,7 +105,6 @@ namespace EpicLoot.LegendarySystem
                 }
             }
 
-            RebuildMythicViews();
             EquipmentEffectCache.ResetAll();
 
             if (_validationEnabled)
@@ -383,37 +367,6 @@ namespace EpicLoot.LegendarySystem
             return result;
         }
 
-        private static void RebuildMythicViews()
-        {
-            MythicInfo.Clear();
-            MythicSets.Clear();
-            MythicItemsToSetMap.Clear();
-
-            foreach (LegendaryInfo info in AllUniques.Values)
-            {
-                if (IsEnabledAt(info, ItemRarity.Mythic))
-                {
-                    MythicInfo[info.ID] = info;
-                }
-            }
-
-            foreach (LegendarySetInfo set in AllSets.Values)
-            {
-                if (IsEnabledAt(set, ItemRarity.Mythic))
-                {
-                    MythicSets[set.ID] = set;
-                }
-            }
-
-            foreach (KeyValuePair<string, LegendarySetInfo> piece in ItemsToSetMap)
-            {
-                if (MythicSets.ContainsKey(piece.Value.ID))
-                {
-                    MythicItemsToSetMap[piece.Key] = piece.Value;
-                }
-            }
-        }
-
         private static void Validate()
         {
             List<string> issues = new List<string>(_buildIssues);
@@ -594,17 +547,15 @@ namespace EpicLoot.LegendarySystem
         }
 
         /// <summary>
-        /// The non-set uniques that can roll on <paramref name="baseItem"/> at <paramref name="rarity"/>,
-        /// plus <see cref="GenericLegendaryInfo"/> (a unique-less item of that rarity).
+        /// The non-set uniques that can roll on <paramref name="baseItem"/> at <paramref name="rarity"/>.
+        /// May be empty; there is no generic entry.
         /// </summary>
         public static List<LegendaryInfo> GetAvailableUniques(ItemDrop.ItemData baseItem, MagicItem magicItem, ItemRarity rarity)
         {
-            List<LegendaryInfo> result = AllUniques.Values
+            return AllUniques.Values
                 .Where(x => !IsSetPiece(x) && IsEnabledAt(x, rarity) &&
                     (x.Requirements == null || x.Requirements.CheckRequirements(baseItem, magicItem)))
                 .ToList();
-            result.Add(GenericLegendaryInfo);
-            return result;
         }
 
         /// <summary>
@@ -691,30 +642,6 @@ namespace EpicLoot.LegendarySystem
             return piece.Requirements == null || piece.Requirements.CheckRequirements(item, probe);
         }
 
-        [Obsolete("Use GetAvailableUniques or GetAvailableSetPieces with a rarity.")]
-        public static IList<LegendaryInfo> GetAvailableLegendaries(ItemDrop.ItemData baseItem, MagicItem magicItem, bool rollSetItem)
-        {
-            return GetAvailableLegacy(baseItem, magicItem, rollSetItem, ItemRarity.Legendary);
-        }
-
-        [Obsolete("Use GetAvailableUniques or GetAvailableSetPieces with a rarity.")]
-        public static IList<LegendaryInfo> GetAvailableMythics(ItemDrop.ItemData baseItem, MagicItem magicItem, bool rollSetItem)
-        {
-            return GetAvailableLegacy(baseItem, magicItem, rollSetItem, ItemRarity.Mythic);
-        }
-
-        private static IList<LegendaryInfo> GetAvailableLegacy(ItemDrop.ItemData baseItem, MagicItem magicItem,
-            bool rollSetItem, ItemRarity rarity)
-        {
-            if (!rollSetItem)
-            {
-                return GetAvailableUniques(baseItem, magicItem, rarity);
-            }
-
-            List<LegendaryInfo> pieces = GetAvailableSetPieces(baseItem, magicItem, rarity);
-            return pieces.Count > 0 ? pieces : new List<LegendaryInfo> { GenericLegendaryInfo };
-        }
-
         /// <summary>The value range an effect rolls with at <paramref name="rarity"/>: its per-rarity
         /// override, else its flat Values. Null when the entry declares neither.</summary>
         public static MagicItemEffectDefinition.ValueDef ResolveValues(GuaranteedMagicEffect effect, ItemRarity rarity)
@@ -738,18 +665,6 @@ namespace EpicLoot.LegendarySystem
             return null;
         }
 
-        [Obsolete("Pass the item's rarity so a per-rarity override is honoured.")]
-        public static MagicItemEffectDefinition.ValueDef GetLegendaryEffectValues(string legendaryID, string effectType)
-        {
-            if (TryGetLegendaryInfo(legendaryID, out LegendaryInfo info) &&
-                info.GuaranteedMagicEffects.TryFind(x => x.Type == effectType, out GuaranteedMagicEffect guaranteedMagicEffect))
-            {
-                return guaranteedMagicEffect.Values;
-            }
-
-            return null;
-        }
-
         public static bool TryGetLegendarySetInfo(string setID, out LegendarySetInfo legendarySetInfo)
         {
             if (string.IsNullOrEmpty(setID))
@@ -759,14 +674,6 @@ namespace EpicLoot.LegendarySystem
             }
 
             return AllSets.TryGetValue(setID, out legendarySetInfo);
-        }
-
-        [Obsolete("Sets are no longer tied to one rarity; use the two-argument overload and GetRarities.")]
-        public static bool TryGetLegendarySetInfo(string setID, out LegendarySetInfo legendarySetInfo, out ItemRarity rarity)
-        {
-            bool found = TryGetLegendarySetInfo(setID, out legendarySetInfo);
-            rarity = found ? GetRarities(legendarySetInfo).Min() : ItemRarity.Magic;
-            return found;
         }
 
         public static string GetSetForLegendaryItem(LegendaryInfo legendary)
@@ -806,6 +713,12 @@ namespace EpicLoot.LegendarySystem
         public static string GetSetLabelToken(ItemRarity rarity)
         {
             return $"$mod_epicloot_{rarity.ToString().ToLowerInvariant()}setlabel";
+        }
+
+        /// <summary>The localization token heading a unique item of <paramref name="rarity"/> in its tooltip.</summary>
+        public static string GetUniqueLabelToken(ItemRarity rarity)
+        {
+            return $"$mod_epicloot_{rarity.ToString().ToLowerInvariant()}uniquelabel";
         }
     }
 }

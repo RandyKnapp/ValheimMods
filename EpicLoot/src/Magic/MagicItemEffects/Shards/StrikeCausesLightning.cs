@@ -3,11 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects.Shards {
-    // Provides a chance for the player to cause lightning strikes on enemies they hit
     public static class StrikeCausesLightning {
-        // Lightning damage per shard-value point, and the blast radius of the strike. Both tunable in this
-        // effect's Config block in config/shardstones.json, under these key names.
-        public const float DefaultDamagePerValue = 6f;
+        public const float DefaultDamagePerValue = 3.6f;
         public const float DefaultRadius = 1f;
 
         private const string DamagePerValueKey = "DamagePerValue";
@@ -18,11 +15,10 @@ namespace EpicLoot.MagicItemEffects.Shards {
             { RadiusKey, DefaultRadius },
         };
 
-        // Visual: our networked, damage-free clone of the vanilla lightning-rod AOE. Built once and registered
-        // into ZNetScene on every client each world load (RegisterVisualPrefab), then instantiated at each proc;
-        // the fresh ZDO syncs the strike to nearby clients and the clone's TimedDestruction cleans it up.
-        private const string VisualSourcePrefab = "lightningAOE";              // vanilla prefab we clone
-        private const string VisualClonePrefab = "EL_StrikeCausesLightningVisual"; // our registered clone
+        // A networked, damage-free clone of the vanilla lightning-rod AOE, registered into ZNetScene on every
+        // client each world load so the ZDO of each spawned strike resolves everywhere.
+        private const string VisualSourcePrefab = "lightningAOE";
+        private const string VisualClonePrefab = "EL_StrikeCausesLightningVisual";
         private const float VisualLifetime = 5f;   // seconds the spawned FX lives before TimedDestruction removes it
         private static GameObject _visualContainer;  // disabled parent that keeps the template from Awaking
         private static GameObject _visualTemplate;   // our registered clone (activeSelf == true)
@@ -89,7 +85,7 @@ namespace EpicLoot.MagicItemEffects.Shards {
             return _visualTemplate;
         }
 
-        // Postfix handler invoked by CharacterDamageDispatch (on-hit reaction).
+        // Postfix handler invoked by SharedCharacterDamagePatch (on-hit reaction).
         public static void OnDamageDealt(Character __instance, HitData hit, Character attacker) {
             var player = Player.m_localPlayer;
             if (hit == null || player == null || __instance == player || attacker != player
@@ -102,8 +98,8 @@ namespace EpicLoot.MagicItemEffects.Shards {
                 return;
             }
 
-            // Specifically set the damage source to null which will become ZDOID.NONE, because we do not want to chain these strikes, each lightning strike requires a new proc from the player.
-            // If we set the source to the player, then the lightning strike will be considered a player attack and can chain to other enemies in range, which is not what we want.
+            // No attacker: a strike credited to the player would count as a player attack and chain on to other
+            // enemies in range; each strike must come from its own proc.
             DamageInRadius.DamageEnemiesInRadius(null, __instance.GetCenterPoint(),
                 EffectConfig.Get(MagicEffectType.StrikeCausesLightning, RadiusKey, DefaultRadius),
                 new HitData.DamageTypes {
@@ -113,7 +109,6 @@ namespace EpicLoot.MagicItemEffects.Shards {
             SpawnVisual(__instance.transform.position);
         }
 
-        // Spawns the registered visual clone at the strike point.
         private static void SpawnVisual(Vector3 position) {
             var prefab = ZNetScene.instance?.GetPrefab(VisualClonePrefab);
             if (prefab == null) {

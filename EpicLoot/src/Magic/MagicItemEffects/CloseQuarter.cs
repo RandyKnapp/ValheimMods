@@ -3,8 +3,6 @@ using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects;
 
-// Close Quarter: the weapon's hits knock enemies back less, so they stay in reach of the next swing.
-// Only the pushback is reduced; damage and stagger are untouched.
 public static class CloseQuarter
 {
     // Prefix handler invoked by SharedCharacterDamagePatch (attacker-side outgoing modifier). Character.Damage

@@ -82,8 +82,8 @@ namespace EpicLoot.Adventure
 
         /// <summary>
         /// Re-applies only the visuals that depend on the player's coin count, in place. EVERY
-        /// branch must assign both states -- the panel updates rows on a currency change instead of
-        /// rebuilding them, so the old one-way grey on the cost text would have stuck forever.
+        /// branch must assign both states: the panel updates rows on a currency change instead of
+        /// rebuilding them, so a state set only one way would stick.
         /// </summary>
         public void ApplyAffordability(int currentCoins)
         {

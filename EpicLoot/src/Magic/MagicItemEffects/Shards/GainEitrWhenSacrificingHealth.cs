@@ -2,7 +2,6 @@
 using JetBrains.Annotations;
 
 namespace EpicLoot.MagicItemEffects.Shards {
-    // Provides a bonus to Eitr when sacrificing health.
     public static class GainEitrWhenSacrificingHealth {
         [HarmonyPatch(typeof(Character), nameof(Character.UseHealth))]
         private static class UseHealth_Patch {

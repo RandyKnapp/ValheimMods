@@ -85,10 +85,12 @@ public static class AugaTooltip
 
         string subtitle = data.SetLabel != null
             ? $"<color={data.SetColor}>{data.SetLabel}</color>, {data.ItemTypeName}"
-            : $"<color={data.RarityColor}><color={data.RarityColor}>{data.RarityName}</color> {data.ItemTypeName}</color>";
+            : data.UniqueLabel != null
+                ? $"<color={data.UniqueColor}>{data.UniqueLabel}</color>, {data.ItemTypeName}"
+                : $"<color={data.RarityColor}><color={data.RarityColor}>{data.RarityName}</color> {data.ItemTypeName}</color>";
         Auga.API.ComplexTooltip_SetSubtitle(complexTooltip, Localization.instance.Localize(subtitle));
 
-        // Differs from Auga's own only for unique legendaries, which carry their own lore.
+        // Differs from Auga's own only for uniques, which carry their own lore.
         Auga.API.ComplexTooltip_SetDescription(complexTooltip, Localization.instance.Localize(data.Description));
 
         // Auga's inventory and crafting tooltips carry the scraped effect text already. EpicLoot's result
@@ -219,7 +221,7 @@ public static class AugaTooltip
                     value = $"<color=red>{bloodlust.Value:0.#}</color>";
                 }
                 // Spellsword changes the cost without the vanilla-UI tooltip colouring it; Auga's line is
-                // coloured either way, as it always was.
+                // coloured either way.
                 else if (stamina != null && (stamina.Modified || magicItem.HasEffect(MagicEffectType.SpellSword)))
                 {
                     value = Colored($"{stamina.Value:0.#}", magicColor);

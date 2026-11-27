@@ -6,12 +6,10 @@ namespace EpicLoot.MagicItemEffects
     [HarmonyPatch]
     public static class DoubleJump
     {
-        // This can use the magic effect system to track more charges in the future
         public static int MultiJumpCombo = 0;
 
-        // Reset on ground contact, not only on a grounded Jump call: walking off a ledge after
-        // using the double jump used to leave the counter latched, refusing the air jump until the
-        // next grounded jump.
+        // Reset on ground contact, not only on a grounded Jump call, so walking off a ledge after an air jump
+        // does not leave the counter latched.
         [HarmonyPatch(typeof(Character), "UpdateGroundContact")]
         public static class Character_UpdateGroundContact_Patch
         {
@@ -47,11 +45,8 @@ namespace EpicLoot.MagicItemEffects
                     return true;
                 }
 
-                // Character.Jump() has an airborne branch of its own: it re-pulls an attached
-                // grappling hook. Swallowing the original method used to cost nothing (a jump in
-                // mid-air did nothing at all), but now it eats every grapple re-pull, so hand the
-                // input back to vanilla whenever that branch is the one that wants it. No combo is
-                // spent - a grapple pull is not a jump.
+                // Character.Jump() has an airborne branch of its own that re-pulls an attached grappling hook,
+                // so the input goes back to vanilla whenever that branch wants it. No combo is spent.
                 if (WantsGrapplePull(__instance))
                 {
                     return true;
@@ -63,9 +58,8 @@ namespace EpicLoot.MagicItemEffects
                     return false;
                 }
 
-                // A charge is spent only by a jump that launched: one refused for stamina, a stagger and so on
-                // used to cost it all the same.
-                if (MultiJump(__instance, MultiJumpCombo + 1))
+                // A charge is spent only by a jump that launched.
+                if (MultiJump(__instance))
                 {
                     MultiJumpCombo++;
                 }
@@ -84,7 +78,7 @@ namespace EpicLoot.MagicItemEffects
         }
 
         // Whether the jump launched.
-        public static bool MultiJump(Character player, float jumpsize)
+        public static bool MultiJump(Character player)
         {
             if (player.IsEncumbered() || player.InDodge() || player.IsKnockedBack() || player.IsStaggering())
             {
@@ -108,13 +102,11 @@ namespace EpicLoot.MagicItemEffects
             }
 
             Vector3 jump = player.m_body.linearVelocity;
-            Vector3 playerUp = (new Vector3() + Vector3.up).normalized;
             float skillOffset = 1f + skillFactor * 0.4f;
             float jumpForce = player.m_jumpForce * skillOffset;
 
-            // Normalize as if on flat ground
             jump.y = 0;
-            jump += playerUp * jumpForce;
+            jump += Vector3.up * jumpForce;
 
             player.m_seman.ApplyStatusEffectJumpMods(ref jump);
             if (!(jump.x <= 0f) || !(jump.y <= 0f) || !(jump.z <= 0f))

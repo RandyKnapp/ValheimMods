@@ -9,28 +9,22 @@ using SkillType = Skills.SkillType;
 using Random = UnityEngine.Random;
 
 namespace EpicLoot.MagicItemEffects.Shards {
-    // Golden head: every scrap of skill XP the player earns carries a small chance to "inspire" them,
-    // dumping a lump of bonus XP into a randomly chosen skill weighted toward the ones they are worst at.
-    //
-    // *** VALUE CONVENTION EXCEPTION -- READ BEFORE TOUCHING ***
-    // Almost every shard effect authors its value as a whole-number percent and reads it back with the
-    // 0.01f scale. Inspiration does NOT: its grid value (10/15/20/25/30) is a count of RAW SKILL
-    // ACCUMULATOR POINTS, read with no scale at all. "Fixing" this for consistency would nerf the effect
-    // by 100x. The only percent here is the proc chance, which lives in the Config block.
+    // VALUE CONVENTION EXCEPTION: almost every shard effect authors its value as a whole-number percent and
+    // reads it back with the 0.01f scale. Inspiration's grid value is a count of RAW SKILL ACCUMULATOR POINTS,
+    // read with no scale; "fixing" this for consistency would nerf the effect by 100x. The only percent here is
+    // the proc chance in the Config block.
     public static class Inspiration {
         // Percent chance to proc on any single skill-XP gain. Deliberately tiny: Skills.RaiseSkill fires
         // roughly once a second while sprinting or swimming, plus once per connecting swing, block, jump
-        // and dodge -- on the order of 1000-2500 calls in an hour of ordinary play. 0.25% lands at a
-        // handful of procs an hour, which is what makes each one feel like an event rather than a passive
-        // XP faucet. Exposed as Config so it can be retuned without a rebuild.
+        // and dodge -- on the order of 1000-2500 calls in an hour of ordinary play, so a tiny chance still
+        // lands a handful of procs an hour.
         public const float DefaultProcChance = 0.25f;
 
         // Skills below this level are never chosen. Level 0-1 skills are usually ones the player has
         // barely touched by accident, and vanilla's curve makes the first two levels nearly free anyway.
         public const float DefaultMinSkillLevel = 2f;
-        // Weight = (100 - level)^2, so level 2 weighs 9604 and level 99 weighs 1. Squared rather than
-        // linear because a linear ramp still hands ~10% of procs to skills where the grant is a rounding
-        // error; the point of the effect is to pull up whatever is lagging. Set it to 0 for a flat pick.
+        // Weight = (100 - level)^exponent. Squared rather than linear because a linear ramp still hands ~10%
+        // of procs to skills where the grant is a rounding error. 0 gives a flat pick.
         public const float DefaultLevelWeightExponent = 2f;
         // Hard stop on the level-walk loop. Nothing should get near this -- the only way to spin is a
         // degenerate zero-cost level requirement.
@@ -72,8 +66,6 @@ namespace EpicLoot.MagicItemEffects.Shards {
         // level. The overshoot is discarded by vanilla anyway, so padding it costs nothing.
         private const float LevelEpsilon = 0.001f;
 
-        // Tooltip: "Inspiration: {1}% Chance of +{0} Skill XP" -- {1} surfaces the configured proc chance.
-        // Pure, as the provider contract requires (MagicItem.RegisterDisplayValues): it only reads config.
         public static void RegisterDisplayValues() {
             MagicItem.RegisterDisplayValues(MagicEffectType.Inspiration,
                 value => new object[] { value, GetProcChance() });
@@ -138,16 +130,10 @@ namespace EpicLoot.MagicItemEffects.Shards {
                 s => Mathf.Pow(Mathf.Max(0.01f, MaxSkillLevel - s.m_level), GetLevelWeightExponent())).Roll();
         }
 
-        // Hands the skill `points` raw accumulator points, spread over as many RaiseSkill calls as it
-        // takes to consume them.
-        //
-        // This is the whole reason the effect needs code rather than a single RaiseSkill call:
-        // Skills.Skill.Raise zeroes m_accumulator when it levels, discarding whatever was left over. One
-        // call with a big factor therefore grants exactly ONE level no matter how large the grant is.
-        // Walking to each boundary in turn, charging only what the boundary actually cost, is what lets a
-        // Mythic proc carry a low skill through several levels at once -- and routing through RaiseSkill
-        // (rather than writing m_level) is what makes vanilla fire OnSkillLevelup and the "$msg_skillup"
-        // message for each one, so the player sees the whole run.
+        // Skills.Skill.Raise zeroes m_accumulator when it levels, so one call with a big factor grants exactly
+        // ONE level however large the grant. Walking to each boundary in turn, charging only what it cost, lets
+        // a proc carry a low skill through several levels; going through RaiseSkill (rather than writing
+        // m_level) makes vanilla fire OnSkillLevelup and "$msg_skillup" for each one.
         private static void Grant(Skills skills, Skills.Skill skill, float points) {
             // Raise() adds m_increseStep * factor * m_skillGainRate, so this is the accumulator points a
             // factor of 1.0 buys for this particular skill.

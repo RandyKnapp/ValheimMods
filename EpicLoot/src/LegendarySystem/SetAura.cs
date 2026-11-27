@@ -22,28 +22,10 @@ namespace EpicLoot.LegendarySystem
 
         public static void Publish(Player player)
         {
-            if (player == null || player != Player.m_localPlayer || player.m_nview == null ||
-                !(player.m_nview.GetZDO() is ZDO zdo))
+            if (SetLooks.PublishFullSet(player, ZdoHash, HasVisuals))
             {
-                return;
+                Refresh(player);
             }
-
-            string setID = "";
-            foreach (LegendarySetProgress progress in SetBonusEvaluator.GetVisibleSetProgress(player))
-            {
-                if (progress.IsFull && HasVisuals(progress.Set))
-                {
-                    setID = progress.Set.ID;
-                    break;
-                }
-            }
-
-            if (zdo.GetString(ZdoHash) != setID)
-            {
-                zdo.Set(ZdoHash, setID);
-            }
-
-            Refresh(player);
         }
 
         public static bool HasVisuals(LegendarySetInfo set)

@@ -67,6 +67,11 @@ copy `EquipmentAndQuickSlots.dll` into the `BepInEx/plugins` folder.
   are declared incompatible; BepInEx will not load this mod next to them.
 
 ### AI Policy
+<!--
+AI_Assisted_Creation: This assembly was partially or fully created with the assistance of generative AI (Claude Code, using Anthropic's Claude models).
+AI_Model_Vendor: Anthropic
+-->
+
 We accept AI-assisted changes. All code, assets etc. Must be reviewed and tested before it will be merged or released.
 
 ### Notes

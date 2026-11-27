@@ -1,5 +1,4 @@
 ﻿using Common;
-using EpicLoot.Biomes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -351,12 +350,7 @@ namespace EpicLoot.Adventure
             var key = new Tuple<int, Heightmap.Biome>(chestInfo.Interval, chestInfo.Biome);
             if (!MinimapController.TreasureMapPins.ContainsKey(key))
             {
-                var pinInfo = new AreaPinInfo
-                {
-                    Position = chestInfo.Position + chestInfo.MinimapCircleOffset,
-                    Type = EpicLoot.TreasureMapPinType,
-                    Name = Localization.instance.Localize("$mod_epicloot_treasurechest_minimappin", Localization.instance.Localize(BiomeDataManager.GetLocalizationToken(chestInfo.Biome)), (chestInfo.Interval + 1).ToString())
-                };
+                var pinInfo = MinimapController.CreateTreasurePinInfo(chestInfo);
 
                 var pinJob = new PinJob
                 {

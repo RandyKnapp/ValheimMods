@@ -14,11 +14,6 @@ namespace EpicLoot
 
 namespace EpicLoot.MagicItemEffects
 {
-    // PiercingBolts (set items only, NoRoll). The wearer's crossbow bolts fly on through every creature in their
-    // path, striking each once, and keep value% of their damage after each one. Terrain, buildings, trees and
-    // rocks still stop them as usual. Reworked from RustyLoot's PiercingShot, which spawned a fresh bolt behind
-    // the first target instead (one extra hit at most).
-    //
     // Vanilla stops a bolt on its first creature: Projectile.OnHit sets m_didHit and, the creature's collider
     // having a rigidbody and bolts having m_stayAfterHitDynamic off, destroys it. The pass-through reuses the
     // switches vanilla's own pass-through projectile (the Orb of Ahri staff) is built on: with

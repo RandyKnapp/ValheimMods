@@ -96,19 +96,6 @@ namespace EpicLoot.Adventure
                 beacon.m_range = EpicLoot.GetAndvaranautRange();
             }
 
-            // TODO Figure out why this damn thing won't float
-            // Idea: It's probably because of the snap to ground chests have? Or gravity physics?
-            /*var rigidbody = gameObject.AddComponent<Rigidbody>();
-            rigidbody.constraints =
-                RigidbodyConstraints.FreezePositionX
-                | RigidbodyConstraints.FreezePositionZ
-                | RigidbodyConstraints.FreezeRotation;
-            rigidbody.collisionDetectionMode = CollisionDetectionMode.Discrete;
-
-            var floating = gameObject.AddComponent<Floating>();
-            floating.m_waterLevelOffset = 0.3f;
-            floating.TerrainCheck();*/
-
             Destroy(gameObject.GetComponent<WearNTear>());
         }
 
@@ -116,24 +103,34 @@ namespace EpicLoot.Adventure
         /// Whether <paramref name="container"/> is a treasure map chest its buyer has not found yet, and
         /// <paramref name="playerID"/> is not that buyer. Private privacy alone does not keep others out:
         /// Server Devcommands lets admins open any private chest (on by default), and other mods share chests.
-        /// Someone else opening it used to finish their own map of that biome and interval instead, and
-        /// flag the chest found, after which the buyer's map could never be finished.
         /// </summary>
         public static bool IsLockedFor(Container container, long playerID)
         {
-            if (!container.TryGetComponent(out TreasureMapChest _))
-            {
-                return false;
-            }
-
-            var zdo = container.m_nview == null ? null : container.m_nview.GetZDO();
-            if (zdo == null || !zdo.IsValid() || zdo.GetBool("TreasureMapChest.HasBeenFound"))
+            var zdo = GetChestZdo(container);
+            if (zdo == null || zdo.GetBool("TreasureMapChest.HasBeenFound"))
             {
                 return false;
             }
 
             var owner = zdo.GetLong(ZDOVars.s_creator);
             return owner != 0L && owner != playerID;
+        }
+
+        public static bool IsBuyer(Container container, long playerID)
+        {
+            var zdo = GetChestZdo(container);
+            return zdo != null && playerID != 0L && zdo.GetLong(ZDOVars.s_creator) == playerID;
+        }
+
+        private static ZDO GetChestZdo(Container container)
+        {
+            if (!container.TryGetComponent(out TreasureMapChest _))
+            {
+                return null;
+            }
+
+            var zdo = container.m_nview == null ? null : container.m_nview.GetZDO();
+            return zdo != null && zdo.IsValid() ? zdo : null;
         }
     }
 
@@ -206,6 +203,69 @@ namespace EpicLoot.Adventure
         }
     }
 
+    /// <summary>
+    /// Lets a chest's buyer open it inside a ward they are not permitted on. Vanilla already does (the chest's
+    /// <see cref="Container.m_checkGuardStone"/> is off), but ward mods (Protective Wards, WardIsLove) refuse every chest
+    /// in a ward from their own prefix on <see cref="Container.Interact"/>, and HarmonyX runs every prefix even after one
+    /// has skipped the method, so no prefix there can overrule them. The buyer's press is taken here instead, one call
+    /// earlier, and handed to vanilla's Container.Interact without anyone's patches. The open request itself still goes
+    /// through <see cref="Container.CheckAccess"/> on the chest's owner, as any open does.
+    /// </summary>
+    [HarmonyPatch(typeof(Player), nameof(Player.Interact))]
+    public static class Player_Interact_TreasureMapChest_Patch
+    {
+        public static bool Prefix(Player __instance, GameObject go, bool hold, bool alt)
+        {
+            if (go == null || go.GetComponentInParent<Interactable>() is not Container container ||
+                !TreasureMapChest.IsBuyer(container, __instance.GetPlayerID()))
+            {
+                return true;
+            }
+
+            // The rest of vanilla's Player.Interact, which wraps the Container.Interact call.
+            if (__instance.InAttack() || __instance.InDodge() || (hold && Time.time - __instance.m_lastHoverInteractTime < 0.2f))
+            {
+                return false;
+            }
+
+            __instance.m_lastHoverInteractTime = Time.time;
+            if (VanillaInteract(container, __instance, hold, alt))
+            {
+                __instance.DoInteractAnimation(container.gameObject);
+            }
+
+            return false;
+        }
+
+        [HarmonyReversePatch]
+        [HarmonyPatch(typeof(Container), nameof(Container.Interact))]
+        public static bool VanillaInteract(Container instance, Humanoid character, bool hold, bool alt) =>
+            throw new NotImplementedException("Harmony reverse patch stub");
+    }
+
+    /// <summary>
+    /// WardIsLove labels every chest in a ward "no access". The buyer, who can open theirs
+    /// (<see cref="Player_Interact_TreasureMapChest_Patch"/>), gets vanilla's text for it.
+    /// </summary>
+    [HarmonyPatch(typeof(Container), nameof(Container.GetHoverText))]
+    public static class Container_GetHoverText_TreasureMapChest_Patch
+    {
+        [HarmonyPriority(Priority.Last)]
+        public static void Postfix(Container __instance, ref string __result)
+        {
+            var player = Player.m_localPlayer;
+            if (player != null && TreasureMapChest.IsBuyer(__instance, player.GetPlayerID()))
+            {
+                __result = VanillaGetHoverText(__instance);
+            }
+        }
+
+        [HarmonyReversePatch]
+        [HarmonyPatch(typeof(Container), nameof(Container.GetHoverText))]
+        public static string VanillaGetHoverText(Container instance) =>
+            throw new NotImplementedException("Harmony reverse patch stub");
+    }
+
     [HarmonyPatch(typeof(Container), nameof(Container.RPC_OpenResponse))]
     public static class Container_RPC_OpenRespons_Patch
     {
@@ -230,8 +290,8 @@ namespace EpicLoot.Adventure
             var saveData = player.GetAdventureSaveData();
             if (zdo.GetBool("TreasureMapChest.HasBeenFound"))
             {
-                // Before the buyer-only lock, another player could open the chest first: it was flagged found
-                // while the buyer's map stayed open. The buyer finishes the map by opening it.
+                // A chest another player opened first in an older build is flagged found while the buyer's map
+                // is still open; the buyer finishes the map by opening it.
                 if (saveData.FoundTreasureChest(treasureMapChest.Interval, treasureMapChest.Biome))
                 {
                     player.SaveAdventureSaveData();

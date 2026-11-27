@@ -41,17 +41,8 @@ namespace EpicLoot.MagicItemEffects
             }
         }
 
-        /// <summary>
-        /// Bloodlust is a property of the WEAPON being swung -- it rewrites that attack's stamina cost into a
-        /// health cost -- so it must be read off the weapon, the way Throwable and ChainLightning read theirs.
-        /// <see cref="MagicEffectsHelper.HasActiveMagicEffectOnWeapon"/> does NOT do that despite its name and
-        /// its weapon argument: it sums the effect across every equipped magic item plus active set bonuses
-        /// and subtracts only the OFF-HAND weapon, so a single Bloodlust source anywhere in the loadout made
-        /// every weapon cost health. Reading the weapon also realigns behaviour with the two places that
-        /// already use per-item semantics -- the tooltip (MagicTooltipWeapon.AddAttackStaminaUse) and
-        /// MagicItemEffectDefinition's ItemUsesHealthOnAttack requirement -- which otherwise disagreed with
-        /// what the game actually charged.
-        /// </summary>
+        // Read off the weapon itself. MagicEffectsHelper.HasActiveMagicEffectOnWeapon, despite its name, sums the
+        // whole loadout, so one Bloodlust anywhere would make every weapon cost health.
         private static bool WeaponHasBloodlust(ItemDrop.ItemData weapon)
         {
             return weapon != null && weapon.IsMagic(out MagicItem magicItem) &&
@@ -70,15 +61,8 @@ namespace EpicLoot.MagicItemEffects
             return WeaponHasBloodlust(weapon) || SetGrantsBloodlust(player, weapon, attack);
         }
 
-        /// <summary>
-        /// Bloodletting granted by a set bonus (Hel's Court) belongs to no weapon, so the limits the weapon version
-        /// gets from its roll requirements in magiceffects.json are checked here, per attack: a melee weapon's
-        /// stamina-paid attack that costs no eitr, never a pickaxe's. That keeps bows, tools, torches and staves
-        /// on their own costs; staves are two-handed weapons whose secondary costs stamina alone, so they are
-        /// left out by skill, as their eitr-paid primary keeps the weapon version from rolling on them. Only set
-        /// bonuses count -- a Bloodlust rolled on another item still changes nothing but its own weapon, for the
-        /// reason above.
-        /// </summary>
+        // A set bonus belongs to no weapon, so the limits the weapon version gets from its roll requirements are
+        // checked here per attack. Staves are left out by skill: their secondary costs stamina alone.
         private static bool SetGrantsBloodlust(Player player, ItemDrop.ItemData weapon, Attack attack)
         {
             if (MagicEffectsHelper.GetTotalActiveSetEffectValue(player, MagicEffectType.Bloodlust) <= 0f)

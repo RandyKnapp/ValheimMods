@@ -8,7 +8,8 @@ namespace EpicLoot.Abilities
         public virtual string CooldownEndKey => CooldownEndKeyFor(AbilityDef.ID);
 
         // The cooldown's end in world time, on the player's ZDO. Every spawn makes a new one, so AbilityCooldownSave
-        // carries the time left over in the character file.
+        // carries the time left over in the character file. EpicLootAPI's AbilityProxy.CooldownEndKey builds the same
+        // key on the other mod's side, so the two must match.
         internal static string CooldownEndKeyFor(string abilityID) => $"EpicLoot.{abilityID}.CooldownEnd";
 
         public AbilityDefinition AbilityDef;

@@ -5,10 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects.Shards {
-    // Provides a small heal over time when the player spends Eitr. The heal is triggered every time the player spends a threshold amount of Eitr.
     public static class HealthOnEitrUse {
-        // Threshold of Eitr spent before the player is healed. Tunable as "EitrPerTrigger" in this
-        // effect's Config block in config/shardstones.json.
         public const float DefaultEitrPerTrigger = 100f;
 
         private const string EitrPerTriggerKey = "EitrPerTrigger";
@@ -24,15 +21,12 @@ namespace EpicLoot.MagicItemEffects.Shards {
                 EffectConfig.Get(MagicEffectType.HealthOnEitrUse, EitrPerTriggerKey, DefaultEitrPerTrigger));
         }
 
-        // Tooltip: "Heal {0} per {1} Eitr Spent" -- {1} is the configured threshold, so the shown number
-        // follows a retune instead of staying at the baked-in default.
         public static void RegisterDisplayValues() {
             MagicItem.RegisterDisplayValues(MagicEffectType.HealthOnEitrUse,
                 value => new object[] { value, GetEitrPerTrigger() });
         }
 
-        // Eitr the local player has spent with the effect active but not yet paid out as a heal. Carries
-        // the sub-threshold remainder across casts.
+        // Carries the sub-threshold remainder across casts.
         private static float _accumulatedEitr;
 
         [HarmonyPatch(typeof(Player), nameof(Player.UseEitr))]

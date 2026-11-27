@@ -1,8 +1,8 @@
 ﻿using HarmonyLib;
 using JetBrains.Annotations;
+using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects.Shards {
-    // Converts a portion of the eitr cost of using a skill into stamina cost instead.
     public static class ConvertEitrCostToStaminaCost {
         [HarmonyPatch(typeof(Player), nameof(Player.UseEitr))]
         private static class UseEitr_Patch {
@@ -17,9 +17,18 @@ namespace EpicLoot.MagicItemEffects.Shards {
                     return;
                 }
 
+                // Only what the stamina on hand can pay moves across. UseStamina stops at zero without
+                // complaint, so refunding the full share on empty stamina would hand out free eitr. It
+                // scales what it charges by the world's stamina rate, so the limit has to as well.
                 var converted = v * fraction;
-                __instance.AddEitr(converted);     // refund the converted portion of the eitr cost...
-                __instance.UseStamina(converted);  // ...and pay it from stamina instead.
+                if (Game.m_staminaRate > 0f) {
+                    converted = Mathf.Min(converted, __instance.GetStamina() / Game.m_staminaRate);
+                }
+
+                if (converted > 0f) {
+                    __instance.AddEitr(converted);     // refund the converted portion of the eitr cost...
+                    __instance.UseStamina(converted);  // ...and pay it from stamina instead.
+                }
             }
         }
     }

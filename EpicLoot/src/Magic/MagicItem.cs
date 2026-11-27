@@ -4,6 +4,7 @@ using EpicLoot.ShardStones;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using UnityEngine;
 
@@ -19,10 +20,8 @@ namespace EpicLoot
         Ancient
     }
 
-    // The one place that knows how many rarities there are. Anything sized or bounded by the rarity
-    // count reads these instead of spelling out a literal, so the next tier is an enum member plus
-    // data rather than a hunt through the code for fives. Rarity is serialized by ordinal, so new
-    // members are only ever appended.
+    // Size and bound anything per rarity with these, never a literal. Rarity is serialized by ordinal,
+    // so new members are only ever appended.
     public static class Rarities
     {
         public static readonly ItemRarity[] All = (ItemRarity[])Enum.GetValues(typeof(ItemRarity));
@@ -43,6 +42,7 @@ namespace EpicLoot
         {
             EffectType = type;
             EffectValue = value;
+            Version = MagicItemEffects.IncreaseDrop.VersionFor(type);
         }
     }
 
@@ -83,6 +83,19 @@ namespace EpicLoot
         {
             return Effect != null && (ShardType != ShardType.None || ShardSocketManager.RuneSocketingEnabled);
         }
+
+        // ShardType.None's number before it was pinned to 404 (it followed Fader). Every rune socket saved before
+        // 0.16.0 carries it.
+        private const int LegacyNone = 97;
+
+        [OnDeserialized]
+        private void OnDeserialized(StreamingContext context)
+        {
+            if ((int)ShardType == LegacyNone)
+            {
+                ShardType = ShardType.None;
+            }
+        }
     }
 
     [Serializable]
@@ -104,19 +117,6 @@ namespace EpicLoot
 
         public MagicItem()
         {
-        }
-
-        public MagicItem(int version, ItemRarity rarity, string typeNameOverride, int augmentedEffectIndex, List<int> augmentedEffectIndices, string displayName, string legendaryID, string setID, bool isUnidentified)
-        {
-            Version = version;
-            Rarity = rarity;
-            TypeNameOverride = typeNameOverride;
-            AugmentedEffectIndex = augmentedEffectIndex;
-            AugmentedEffectIndices = augmentedEffectIndices;
-            DisplayName = displayName;
-            LegendaryID = legendaryID;
-            SetID = setID;
-            IsUnidentified = isUnidentified;
         }
 
         public string GetItemTypeName(ItemDrop.ItemData baseItem)
@@ -151,7 +151,7 @@ namespace EpicLoot
         /// <see cref="TooltipEffectMarker"/>. Augmenting wins over tempering.</returns>
         public string GetEffectMarker(int index)
         {
-            if (HasBeenAugmented(index))
+            if (IsEffectAugmented(index))
             {
                 return TooltipEffectMarker.Augmented;
             }
@@ -159,13 +159,7 @@ namespace EpicLoot
             return HasBeenTempered(index) ? TooltipEffectMarker.Tempered : TooltipEffectMarker.Plain;
         }
 
-        public bool HasBeenAugmented(int index) => AugmentedEffectIndex == index || AugmentedEffectIndices.Contains(index);
         public bool HasBeenTempered(int index) => TemperedEffectIndices.Contains(index);
-        public string GetRarityDisplay()
-        {
-            var color = GetColorString();
-            return $"<color={color}>{EpicLoot.GetRarityDisplayName(Rarity)}</color>";
-        }
 
         // True while the player holds Shift, or the left trigger on a gamepad (vanilla's inventory
         // reads that trigger as its Shift), used to reveal the detailed per-effect tooltip block
@@ -191,7 +185,6 @@ namespace EpicLoot
             return EpicLoot.GetRarityColor(Rarity);
         }
 
-        // Socket helpers
         public int GetUsedSocketCount() => Sockets.Count;
         public int GetOpenSocketCount() => Mathf.Max(0, SocketCount - Sockets.Count);
         public bool HasSockets() => SocketCount > 0;
@@ -249,9 +242,7 @@ namespace EpicLoot
             return (float)Math.Round(value * multiplier, 2);
         }
 
-        // includeSocketed defaults to false so all crafting/bookkeeping reads (loot roll, augment,
-        // rune-extract, disenchant, requirements/exclusivity, names) stay rolled-only. Effect
-        // application and tooltip reads pass includeSocketed: true.
+        // Rolled effects only by default: crafting and bookkeeping never count sockets.
         public List<MagicItemEffect> GetEffects(string effectType = null, bool includeSocketed = false)
         {
             IEnumerable<MagicItemEffect> source = Effects;
@@ -262,18 +253,14 @@ namespace EpicLoot
             return effectType == null ? source.ToList() : source.Where(x => x.EffectType == effectType).ToList();
         }
 
-        // includeSocketed defaults to true here: GetTotalEffectValue is only called from effect
-        // application (per-item patches) and tooltip display, never from crafting/bookkeeping, so
-        // socketed effects should always count toward the aggregate value.
+        // Sockets count by default: this is for effect application and tooltips.
         public float GetTotalEffectValue(string effectType, float scale = 1.0f, bool includeSocketed = true)
         {
             return SumEffectValue(effectType, scale, includeSocketed);
         }
 
-        // Allocation-free equivalent of GetEffects(effectType, includeSocketed).Sum(...) * scale.
-        // Used on the hot per-item effect-application patches (armor/durability) which are called from
-        // vanilla UI/render loops, so it iterates the backing lists directly rather than building
-        // intermediate LINQ lists/iterators each call.
+        // Allocation-free equivalent of GetEffects(effectType, includeSocketed).Sum(...) * scale, for the
+        // per-item patches vanilla calls from its UI and render loops.
         public float SumEffectValue(string effectType, float scale = 1.0f, bool includeSocketed = true)
         {
             float total = 0f;
@@ -637,11 +624,6 @@ namespace EpicLoot
                     indices[i]--;
                 }
             }
-        }
-
-        public bool HasBeenAugmented()
-        {
-            return AugmentedEffectIndex >= 0 && AugmentedEffectIndex < Effects.Count || AugmentedEffectIndices.Count > 0;
         }
 
         public bool IsEffectAugmented(int index)

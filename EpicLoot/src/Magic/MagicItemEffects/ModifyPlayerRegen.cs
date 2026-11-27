@@ -69,7 +69,6 @@ public static class ModifyPlayerRegen
         {
             DoPostfix(__instance, MagicEffectType.ModifyHealthRegen, ref regenMultiplier);
 
-            // Shard health-regen effects that used to declare their own ModifyHealthRegen postfix.
             DayHealthRegen.Apply(__instance, ref regenMultiplier);
             RestingHealthRegen.Apply(__instance, ref regenMultiplier);
             BloodMagicLevelIncreasesHealthRegen.Apply(__instance, ref regenMultiplier);
@@ -81,7 +80,6 @@ public static class ModifyPlayerRegen
         {
             DoPostfix(__instance, MagicEffectType.ModifyStaminaRegen, ref staminaMultiplier);
 
-            // Shard stamina-regen effects that used to declare their own ModifyStaminaRegen postfix.
             DayStaminaRegen.Apply(__instance, ref staminaMultiplier);
             NightStaminaRegenIncrease.Apply(__instance, ref staminaMultiplier);
             StaminaRegenBonusFromPlayerWeight.Apply(__instance, ref staminaMultiplier);
@@ -107,13 +105,7 @@ public static class ModifyPlayerRegen
 
     public static float GetModifyRegenValue(Player player, string magicEffect)
     {
-        var regenValue = 0f;
-        ModifyWithLowHealth.Apply(player, magicEffect, effect =>
-        {
-            // += : Apply invokes this twice at low health (base effect, then the ...LowHealth
-            // variant); '=' made the second call overwrite the base contribution.
-            regenValue += player.GetTotalActiveMagicEffectValue(effect, 0.01f);
-        });
+        var regenValue = ModifyWithLowHealth.Sum(player, magicEffect);
 
         GiantsBlood.ApplyHealthRegen(player, magicEffect, ref regenValue);
 

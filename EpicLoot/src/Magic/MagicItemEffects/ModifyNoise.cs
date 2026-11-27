@@ -13,13 +13,8 @@ public class ModifyNoise
             if (__instance.m_character.IsPlayer())
             {
                 var player = __instance.m_character as Player;
-                var noiseValue = 0f;
-                ModifyWithLowHealth.Apply(player, MagicEffectType.ModifyNoise, effect =>
-                {
-                    noiseValue += player.GetTotalActiveMagicEffectValue(effect, 0.01f);
-                });
-                // A reduction by that share of the base noise, the same way vanilla's SE_Stats.m_noiseModifier
-                // applies; the value used to be added flat, which made the player slightly louder.
+                var noiseValue = ModifyWithLowHealth.Sum(player, MagicEffectType.ModifyNoise);
+                // A reduction by that share of the base noise, the same way vanilla's SE_Stats.m_noiseModifier applies.
                 noise -= baseNoise * Mathf.Clamp01(noiseValue);
             }
         }

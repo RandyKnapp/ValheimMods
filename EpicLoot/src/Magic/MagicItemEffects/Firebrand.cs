@@ -14,12 +14,6 @@ namespace EpicLoot
 
 namespace EpicLoot.MagicItemEffects
 {
-    // Firebrand (4-piece Surtr's Brand set bonus, NoRoll). With a two-handed axe or sword in hand (battleaxes,
-    // Berserkir axes and greatswords), the third swing of every primary combo erupts in Brenna's fire nova: her
-    // fx_fireskeleton_nova visual and skeleton_firenova_aoe blast, placed where she places it, just ahead of the hips.
-    // Everything hostile within Radius takes the effect value as a percentage of the weapon's damage, all of it fire.
-    // Every secondary attack erupts too, at SecondaryPower of that.
-    //
     // It fires as the third swing comes out, hit or miss, as vanilla advances the combo either way. For battleaxes and
     // greatswords that swing is the finisher; Berserkir axes have a fourth swing, which does not erupt. Swings are told
     // apart by animation (the weapon's primary vs secondary attack) rather than Humanoid.m_currentAttackIsSecondary,
@@ -38,7 +32,6 @@ namespace EpicLoot.MagicItemEffects
     [HarmonyPatch]
     public static class Firebrand
     {
-        // All tunable in this effect's Config block in magiceffects.json, under these key names.
         public const float DefaultRadius = 3f;          // metres; Brenna's own blast radius
         public const float DefaultSecondaryPower = 0.5f; // the secondary attack's share of the full nova's damage
         public const float DefaultPushForce = 40f;      // Brenna's own knockback
@@ -77,13 +70,12 @@ namespace EpicLoot.MagicItemEffects
         private static readonly System.WeakReference<Attack> LastNovaAttack = new System.WeakReference<Attack>(null);
         private static readonly HashSet<string> MissingPrefabLogged = new HashSet<string>();
 
-        // Tooltip: "... within {1}m for {0}% of your weapon's damage. Your secondary attack erupts for {2}%."
         public static void RegisterDisplayValues()
         {
             MagicItem.RegisterDisplayValues(MagicEffectType.Firebrand, value => new object[] { value, GetRadius(), value * SecondaryPower });
         }
 
-        // Rounded to the centimetre so the tooltip shows the radius the blast actually uses.
+        // Rounded to the centimetre for the tooltip only; the blast uses the unrounded Radius.
         private static float GetRadius()
         {
             return Mathf.Round(Radius * 100f) / 100f;

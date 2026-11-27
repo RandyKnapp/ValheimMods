@@ -38,6 +38,7 @@ namespace EpicLoot.LegendarySystem
         public MagicItemEffectRequirements Requirements = new MagicItemEffectRequirements();
         public List<GuaranteedMagicEffect> GuaranteedMagicEffects = new List<GuaranteedMagicEffect>();
         public int GuaranteedEffectCount = -1;
+        public Dictionary<ItemRarity, int> GuaranteedEffectCountPerRarity;
         public float SelectionWeight = 1;
         public string EquipFx;
         public FxAttachMode EquipFxMode = FxAttachMode.Player;

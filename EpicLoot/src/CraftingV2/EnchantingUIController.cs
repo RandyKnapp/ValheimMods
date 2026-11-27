@@ -29,7 +29,6 @@ namespace EpicLoot.CraftingV2
         Enchant = 1 << 2,
         Augment = 1 << 3,
         Disenchant = 1 << 4,
-        //Helheim = 1 << 5,
         Upgrade = 1 << 6,
         Rune = 1 << 7,
         Storage = 1 << 8
@@ -57,13 +56,10 @@ namespace EpicLoot.CraftingV2
         /// <summary>Every UI audio source we manage, so a config change can be applied live.</summary>
         private static readonly List<AudioSource> UIAudioSources = new List<AudioSource>();
 
-        // Read off the mixer, never searched for in the scene. This used to be
-        // GameObject.Find("sfx_gui_button"), which can never match: ButtonSfx instantiates that prefab,
-        // so the scene only ever holds a short-lived "sfx_gui_button(Clone)". Every miss walked every
-        // active object, twice per UI audio source, and that was most of the hitch on opening the
-        // enchanting table or one of its tabs for the first time -- hundreds of milliseconds in a
-        // built-up world. Not taken from Jotunn's name cache either: a bundled copy of the mixer with
-        // vanilla group names can shadow the real one there.
+        // Read off the mixer, never searched for in the scene: ButtonSfx instantiates sfx_gui_button, so
+        // the scene only holds a short-lived "sfx_gui_button(Clone)" and GameObject.Find never matches,
+        // after walking every active object. Not taken from Jotunn's name cache either: a bundled copy of
+        // the mixer with vanilla group names can shadow the real one there.
         private static AudioMixerGroup GetUIMixerGroup()
         {
             if (_uiMixerGroup != null)
@@ -92,8 +88,8 @@ namespace EpicLoot.CraftingV2
 
         internal static float GetAudioLevel() {
             // A source routed through the GUI mixer group already has the player's master and SFX
-            // sliders applied to it by the mixer, so only our own multiplier belongs here --
-            // folding GetSFXVolume() in as well attenuated everything twice. If the group could
+            // sliders applied to it by the mixer, so only our own multiplier belongs here; folding
+            // GetSFXVolume() in as well would attenuate twice. If the group could
             // not be resolved the source plays unmixed, so then the sliders do have to be applied
             // by hand or the sound would ignore them entirely.
             float configLevel = ELConfig.UIAudioVolumeAdjustment.Value;
@@ -129,8 +125,7 @@ namespace EpicLoot.CraftingV2
 
         /// <summary>
         /// <see cref="SetupUIAudioSource"/> for every source under <paramref name="root"/>, including
-        /// the ones on inactive children -- those are the tabs and list elements that have not been
-        /// opened yet, and the plain GetComponentsInChildren overload used to skip them.
+        /// the ones on inactive children: the tabs and list elements that have not been opened yet.
         /// </summary>
         internal static void SetupUIAudioSources(GameObject root)
         {
@@ -217,7 +212,6 @@ namespace EpicLoot.CraftingV2
 
         internal static void MakeFeatureUnlockTooltip(GameObject obj)
         {
-            // EpicLoot.Log($"Setting up tooltip for {obj.name}");
             if (EpicLoot.HasAuga)
             {
                 Auga.API.Tooltip_MakeSimpleTooltip(obj);
@@ -569,13 +563,10 @@ namespace EpicLoot.CraftingV2
                     }
                 }
 
-                // Owning any one ingredient is enough to list a recipe everywhere else, which is what the
-                // generic modes want -- you should see the runestone upgrade you are two shards short of. It
-                // reads as noise in the shard ladder though: every Magic-to-Rare step costs a ShardMagic, so
-                // carrying one surfaced all eighteen colors whether or not you held a single stone. Here the
-                // stone being consumed is the thing you are actually shopping for. A recipe that names no
-                // shard at all (nothing shipped does, but a patch or the API could) falls back rather than
-                // vanishing with no explanation.
+                // Owning any one ingredient lists a recipe in the generic modes, so you see an upgrade you
+                // are a few items short of. In the shard ladder that is noise (every Magic-to-Rare step costs
+                // a ShardMagic, so carrying one would list every color), so there the source stone must be
+                // owned. A recipe that names no shard (a patch or the API could add one) falls back.
                 bool listRecipe = conversion.Type == MaterialConversionType.ShardUpgrade && declaresShardCost
                     ? hasSourceShard
                     : hasSomeItems;
@@ -587,11 +578,6 @@ namespace EpicLoot.CraftingV2
             }
 
             return result;
-        }
-
-        internal static Color GetRarityColor(ItemRarity rarity)
-        {
-            return EpicLoot.GetRarityColorARGB(rarity);
         }
 
         // The items an action may target. One that changes the item in place can only take items whose
@@ -732,7 +718,6 @@ namespace EpicLoot.CraftingV2
 
             EquipmentEffectCache.Reset(player);
 
-            // Maintain durability
             MagicItemEffects.ModifyDurability.SetDurabilityFraction(item, previousDurability);
             InventoryManagement.Instance.CommitItemEdit(item);
 
@@ -740,27 +725,31 @@ namespace EpicLoot.CraftingV2
 
             successDialog.Show(item);
 
-            RectTransform rt = (RectTransform)successDialog.transform;
-            rt.pivot = new Vector2(0.5f, 0.5f);
-            rt.anchorMax = new Vector2(0.5f, 0.5f);
-            rt.anchorMin = new Vector2(0.5f, 0.5f);
-            rt.anchoredPosition = new Vector2(0, 0);
-
-            // A vanilla-built dialog keeps its content in a Frame child; an Auga results panel has none.
-            Transform frame = successDialog.transform.Find("Frame");
-            if (frame != null)
-            {
-                RectTransform frameRT = (RectTransform)frame;
-                frameRT.pivot = new Vector2(0.5f, 0.5f);
-                frameRT.anchorMax = new Vector2(0.5f, 0.5f);
-                frameRT.anchorMin = new Vector2(0.5f, 0.5f);
-                frameRT.anchoredPosition = new Vector2(0, 0);
-            }
+            CenterDialog(successDialog.transform);
 
             Game.instance.GetPlayerProfile().IncrementStat(PlayerStatType.Crafts);
             Gogan.LogEvent("Game", "Enchanted", item.m_shared.m_name, 1);
 
             return successDialog.gameObject;
+        }
+
+        // A vanilla-built dialog keeps its content in a Frame child; an Auga results panel has none.
+        private static void CenterDialog(Transform dialog)
+        {
+            CenterRect((RectTransform)dialog);
+            Transform frame = dialog.Find("Frame");
+            if (frame != null)
+            {
+                CenterRect((RectTransform)frame);
+            }
+        }
+
+        private static void CenterRect(RectTransform rt)
+        {
+            rt.pivot = new Vector2(0.5f, 0.5f);
+            rt.anchorMax = new Vector2(0.5f, 0.5f);
+            rt.anchorMin = new Vector2(0.5f, 0.5f);
+            rt.anchoredPosition = new Vector2(0, 0);
         }
 
         private static IdentifyTypeConfig SelectLootIdentifyDetails(string filter)
@@ -851,18 +840,27 @@ namespace EpicLoot.CraftingV2
                 {
                     return true;
                 }
+
+                if (mode == GatedItemTypeMode.CurrentBiomeGradualUnlock &&
+                    GradualUnlock.GetUnlockChance(GradualUnlock.GetTier(biome)) < 1f)
+                {
+                    return true;
+                }
             }
 
             return false;
         }
 
-        // Identifies the selected stacks and settles up for them. Every stack is rolled first, and unless
-        // each one rolled exactly as many items as it asked for, the whole identify is abandoned before
-        // anything is charged or removed (a short roll used to eat the inputs and keep the cost). Only
-        // then is the cost re-checked, the inputs removed, the cost paid and the results handed over --
-        // all for what was actually removed, should an input come up short. Returns null when nothing
-        // was identified.
-        internal static List<InventoryItemListElement> LootRollSelectedItems(string filter,
+        internal sealed class PreparedIdentify
+        {
+            public InventoryManagement.Payment Payment;
+            public List<ItemDrop.ItemData> Results;
+        }
+
+        // Rolls the selected stacks and works out what identifying them takes: the inputs themselves and the
+        // cost, as one payment. Unless every stack rolled exactly as many items as it asked for, nothing is
+        // prepared (a short roll used to eat the inputs and keep the cost). Null when it cannot go ahead.
+        internal static PreparedIdentify PrepareIdentify(string filter,
             List<Tuple<ItemDrop.ItemData, int>> items, float costModifier, float powerModifier)
         {
             IdentifyTypeConfig category = SelectLootIdentifyDetails(filter);
@@ -887,8 +885,7 @@ namespace EpicLoot.CraftingV2
                 }
             }
 
-            // Roll everything before touching the inventory. Rolled items only exist as ItemData until
-            // they are given, so an abandoned identify just drops them.
+            // Rolled items only exist as ItemData until they are given, so an abandoned identify just drops them.
             List<List<ItemDrop.ItemData>> rolledPerStack = new List<List<ItemDrop.ItemData>>();
             foreach (Tuple<ItemDrop.ItemData, int> itemstack in items)
             {
@@ -916,59 +913,16 @@ namespace EpicLoot.CraftingV2
                 return null;
             }
 
-            // Inputs before the cost: the inputs are the one step that can come up short (an inventory
-            // provider that no longer holds the stack), and a stack that yields nothing costs nothing.
-            List<ItemDrop.ItemData> identifiedItems = new List<ItemDrop.ItemData>();
-            List<Tuple<ItemDrop.ItemData, int>> removedStacks = new List<Tuple<ItemDrop.ItemData, int>>();
-            List<ItemDrop.ItemData> unavailableItems = new List<ItemDrop.ItemData>();
-            bool cameUpShort = false;
+            InventoryManagement.Payment payment = new InventoryManagement.Payment();
+            List<ItemDrop.ItemData> results = new List<ItemDrop.ItemData>();
             for (int index = 0; index < items.Count; index++)
             {
-                Tuple<ItemDrop.ItemData, int> itemstack = items[index];
-                int removed = InventoryManagement.Instance.RemoveExactItem(itemstack.Item1, itemstack.Item2);
-                if (removed < itemstack.Item2)
-                {
-                    cameUpShort = true;
-                    unavailableItems.Add(itemstack.Item1);
-                    EpicLoot.LogWarningForce($"Identify: only {removed} of {itemstack.Item2} " +
-                        $"{itemstack.Item1.m_shared.m_name} could be removed; identifying that many.");
-                }
-
-                if (removed > 0)
-                {
-                    identifiedItems.AddRange(rolledPerStack[index].Take(removed));
-                    removedStacks.Add(new Tuple<ItemDrop.ItemData, int>(itemstack.Item1, removed));
-                }
+                payment.Exact(items[index].Item1, items[index].Item2);
+                results.AddRange(rolledPerStack[index]);
             }
 
-            EnchantingTableUIPanelBase.NotifyItemsUnavailable(unavailableItems.ToArray());
-
-            if (identifiedItems.Count == 0)
-            {
-                return null;
-            }
-
-            if (!player.NoCostCheat())
-            {
-                // Charged for what was actually identified: the cost checked above unless a stack came
-                // up short, in which case it is worked out again for what was removed.
-                List<InventoryItemListElement> charged = cameUpShort
-                    ? GetIdentifyCostForCategory(filter, removedStacks, costModifier)
-                    : cost;
-
-                foreach (InventoryItemListElement costElement in charged)
-                {
-                    InventoryManagement.Instance.RemoveItem(costElement.GetItem());
-                }
-            }
-
-            foreach (ItemDrop.ItemData item in identifiedItems)
-            {
-                InventoryManagement.Instance.GiveItem(item);
-            }
-
-            EquipmentEffectCache.Reset(player);
-            return identifiedItems.Select(item => new InventoryItemListElement() { Item = item }).ToList();
+            payment.Cost(cost);
+            return new PreparedIdentify { Payment = payment, Results = results };
         }
 
         // The items an identify could hand out, for the preview list. An entry progression gating would
@@ -1046,11 +1000,6 @@ namespace EpicLoot.CraftingV2
             return result;
         }
 
-        internal static Dictionary<string, string> GetIdentifyStyles()
-        {
-            return EnchantCostsHelper.GetIdentificationCategories();
-        }
-
         internal static List<InventoryItemListElement> GetIdentifyCostForCategory(
             string filter, List<Tuple<ItemDrop.ItemData, int>> items, float costModifier = 1.0f)
         {
@@ -1059,7 +1008,6 @@ namespace EpicLoot.CraftingV2
                 return new List<InventoryItemListElement>();
             }
 
-            // Find category key from localized filter
             string categoryKey = null;
             foreach (KeyValuePair<string, IdentifyTypeConfig> identifyStyle in EnchantCostsHelper.Config.IdentifyTypes)
             {
@@ -1072,7 +1020,6 @@ namespace EpicLoot.CraftingV2
 
             if (categoryKey == null)
             {
-                // Fall back to first category
                 categoryKey = EnchantCostsHelper.Config.IdentifyTypes.FirstOrDefault().Key;
                 if (categoryKey == null)
                 {
@@ -1081,7 +1028,6 @@ namespace EpicLoot.CraftingV2
                 }
             }
 
-            // Aggregate costs from all items based on their biome and rarity
             Dictionary<string, int> aggregatedCosts = new Dictionary<string, int>();
 
             foreach (Tuple<ItemDrop.ItemData, int> itemTuple in items)
@@ -1107,7 +1053,6 @@ namespace EpicLoot.CraftingV2
                 }
             }
 
-            // Convert to InventoryItemListElement
             List<InventoryItemListElement> results = new List<InventoryItemListElement>();
 
             foreach (KeyValuePair<string, int> costEntry in aggregatedCosts)
@@ -1157,23 +1102,7 @@ namespace EpicLoot.CraftingV2
                 .ToList();
         }
 
-        internal static ItemRarity GetItemRarity(ItemDrop.ItemData item)
-        {
-           ItemRarity rarity = item.GetRarity();
-            return rarity;
-        }
-
-        internal static List<InventoryItemListElement> GetRuneExtractItems()
-        {
-            return GetRuneModifyableItems(false);
-        }
-
-        internal static List<InventoryItemListElement> GetRuneEtchItems()
-        {
-            return GetRuneModifyableItems(true);
-        }
-
-        private static List<InventoryItemListElement> GetRuneModifyableItems(bool allowBound)
+        internal static List<InventoryItemListElement> GetRuneModifyableItems(bool allowBound)
         {
             List<InventoryItemListElement> result = new List<InventoryItemListElement>();
 
@@ -1216,23 +1145,20 @@ namespace EpicLoot.CraftingV2
         internal static List<InventoryItemListElement> GetApplyableRunesforItem(ItemDrop.ItemData item, string selectedEffect)
         {
             MagicItem magicItem = item.GetMagicItem();
-            ItemRarity rarity = magicItem.Rarity;
             List<MagicItemEffect> selectedEnchant = magicItem.GetEffects(selectedEffect);
             int selectedEnchantIndex = magicItem.Effects.FindIndex(x => x.EffectType == selectedEffect);
 
-            // Determine if the effect has values
             EpicLoot.Log($"ME effects: {string.Join(",", magicItem.Effects.Select(e => e.EffectType).ToList())}, " +
                 $"selected effect filter {selectedEffect}");
 
-            // Guard clause against not having any target effects selected
             if (selectedEnchant.Count == 0)
             {
                 return new List<InventoryItemListElement>() { };
             }
 
-            // The replaced effect is left out of the checks even when it has no value (passing -1 for one
-            // kept it, so a rune could replace Throwable with Recall); GetAvailableEffects only offers it
-            // back when it has a value to re-roll.
+            // The replaced effect is left out of the checks even when it has no value, or a rune could
+            // replace Throwable with Recall; GetAvailableEffects only offers it back when it has a value
+            // to re-roll.
             List<MagicItemEffectDefinition> availableEffects = MagicItemEffectDefinitions.GetAvailableEffects(
                 item, item.GetMagicItem(), selectedEnchantIndex, checkruneroll: true);
             List<string> availableEffectNames = availableEffects.Select(x => x.Type).ToList();
@@ -1249,21 +1175,68 @@ namespace EpicLoot.CraftingV2
                 returnList.Add(new InventoryItemListElement()
                 {
                     Item = entry,
-                    Effects = entry.GetMagicItem().Effects.Select(c => new Tuple<string, float>(c.EffectType, c.EffectValue)).ToList(),
                     EnchantName = TooltipRenderer.RenderCompactEffects(entry.GetMagicItem())
                 });
             }
             
             foreach (InventoryItemListElement entry in returnList)
             {
-                EpicLoot.Log($"Rune item {entry.Item.GetDecoratedName()} has effects: {string.Join(",", entry.Effects.Select(e => e.Item1))}");
+                EpicLoot.Log($"Rune item {entry.Item.GetDecoratedName()} has effects: {string.Join(",", entry.Item.GetMagicItem().Effects.Select(e => e.EffectType))}");
             }
 
             return returnList;
         }
 
-        // ---- Set runes (Rune page: Set Extract / Set Etch) ----
-        //
+        // The runes GetApplyableRunesforItem leaves out only because another enchantment on the item, rolled or
+        // socketed, excludes theirs: shown greyed in the rune list, with what blocks them. `applyable` is what
+        // GetApplyableRunesforItem returned for the same item and effect.
+        internal static List<InventoryItemListElement> GetBlockedRunesForItem(ItemDrop.ItemData item, string selectedEffect,
+            List<InventoryItemListElement> applyable)
+        {
+            var blocked = new List<InventoryItemListElement>();
+            MagicItem magicItem = item?.GetMagicItem();
+            int selectedEnchantIndex = magicItem?.Effects.FindIndex(x => x.EffectType == selectedEffect) ?? -1;
+            if (selectedEnchantIndex < 0)
+            {
+                return blocked;
+            }
+
+            var shown = new HashSet<ItemDrop.ItemData>(applyable.Select(x => x.Item));
+            foreach (ItemDrop.ItemData rune in InventoryManagement.Instance.GetAllItems())
+            {
+                if (shown.Contains(rune) || !rune.IsRunestone() || !rune.IsMagic(out MagicItem runeMagic) ||
+                    ItemFavorites.IsProtected(rune))
+                {
+                    continue;
+                }
+
+                var blockers = new List<MagicItemEffect>();
+                foreach (MagicItemEffect effect in runeMagic.Effects)
+                {
+                    if (MagicItemEffectDefinitions.TryGet(effect.EffectType, out MagicItemEffectDefinition definition))
+                    {
+                        blockers.AddRange(MagicItemEffectDefinitions.GetExclusiveBlockers(
+                            item, magicItem, selectedEnchantIndex, definition, checkruneroll: true));
+                    }
+                }
+
+                if (blockers.Count == 0)
+                {
+                    continue;
+                }
+
+                string names = string.Join(", ", blockers.Select(x => MagicItem.GetEffectText(x, magicItem.Rarity, false)).Distinct());
+                blocked.Add(new InventoryItemListElement
+                {
+                    Item = rune,
+                    EnchantName = TooltipRenderer.RenderCompactEffects(runeMagic),
+                    BlockedReason = Localization.instance.Localize("$mod_epicloot_rune_exclusivewith", names)
+                });
+            }
+
+            return blocked;
+        }
+
         // A set rune is an EtchedRunestone{Rarity} whose MagicItem carries the SetID (and the source
         // piece's LegendaryID as a preference) with no effects. Set Etch makes the target whichever piece
         // of that set it fits, at the target's own rarity; the target keeps its effects.
@@ -1553,9 +1526,7 @@ namespace EpicLoot.CraftingV2
                 ItemDrop.ItemData itemData = entry.Key.m_itemData.Clone();
                 itemData.m_dropPrefab = entry.Key.gameObject;
                 int cost = entry.Value;
-                // float.IsNaN, never == float.NaN (that comparison is always false): the NaN
-                // modifier used to multiply through and the <= 0 clamp collapsed every rune
-                // cost to 1 of each item.
+                // float.IsNaN, never == float.NaN, which is always false.
                 if (!float.IsNaN(costModifier))
                 {
                     cost = Mathf.RoundToInt(entry.Value * costModifier);
@@ -1607,33 +1578,7 @@ namespace EpicLoot.CraftingV2
                 return null;
             }
 
-            // We might need to rethink how power modifier is checked and applied here. "Has a value" is the
-            // definition's call, not the number's: a value test (> 1) skipped real rolls of 1 or less.
-            if (!float.IsNaN(powerModifier) && powerModifier < 999f && powerModifier > 0 &&
-                !MagicItemEffectDefinitions.IsValuelessEffect(effect.EffectType))
-            {
-                runeEffect.EffectValue = effect.EffectValue * powerModifier;
-                // TryGet, not the raw dictionary index (which threw KeyNotFound for a removed content
-                // mod or a deleted shard grid slot) and not Get(), whose stand-in would cap the rune to
-                // made-up numbers. The cap stays on the rarity table even for uniques, deliberately.
-                var valueDef = MagicItemEffectDefinitions.TryGet(effect.EffectType, out var effectDef)
-                    ? effectDef.ValuesPerRarity?.GetValueDefForRarity(selectedItem.GetRarity())
-                    : null;
-                if (valueDef != null)
-                {
-                    float maxDefaultValue = valueDef.MaxValue;
-                    // To clamp down on potentially infinite power looping by re-runing items
-                    if (runeEffect.EffectValue > (maxDefaultValue * powerModifier))
-                    {
-                        runeEffect.EffectValue = (maxDefaultValue * powerModifier);
-                    }
-                }
-            }
-            else
-            {
-                // Tried to set the item to infinite power level
-                runeEffect.EffectValue = effect.EffectValue;
-            }
+            runeEffect.EffectValue = GetRuneExtractValue(effect, selectedItem.GetRarity(), powerModifier, out _);
 
             MagicItem enchantmentsToRune = new MagicItem
             {
@@ -1643,6 +1588,53 @@ namespace EpicLoot.CraftingV2
             API.WithChangeReason(API.ChangeReason.Rune, () => newItem.SaveMagicItem(enchantmentsToRune));
 
             return newItem;
+        }
+
+        internal static float GetRuneExtractValue(MagicItemEffect effect, ItemRarity rarity, float powerModifier, out bool capped)
+        {
+            capped = false;
+            // "Has a value" is the definition's call, not the number's: real rolls can be 1 or less.
+            if (float.IsNaN(powerModifier) || powerModifier >= 999f || powerModifier <= 0 ||
+                MagicItemEffectDefinitions.IsValuelessEffect(effect.EffectType))
+            {
+                return effect.EffectValue;
+            }
+
+            float value = effect.EffectValue * powerModifier;
+            // TryGet: the effect may belong to a removed content mod or a deleted shard grid slot, and
+            // Get()'s stand-in would cap the rune to made-up numbers.
+            // The cap stays on the rarity table even for uniques, deliberately: it stops re-runing loops
+            // from compounding power.
+            MagicItemEffectDefinition.ValueDef valueDef = MagicItemEffectDefinitions.TryGet(effect.EffectType, out var effectDef)
+                ? effectDef.ValuesPerRarity?.GetValueDefForRarity(rarity)
+                : null;
+            if (valueDef != null && value > valueDef.MaxValue * powerModifier)
+            {
+                capped = true;
+                value = valueDef.MaxValue * powerModifier;
+            }
+
+            return value;
+        }
+
+        internal static bool TryGetCappedRuneExtractText(ItemDrop.ItemData item, int index, float powerModifier, out string text)
+        {
+            text = null;
+            MagicItem magicItem = item?.GetMagicItem();
+            if (magicItem == null || index < 0 || index >= magicItem.Effects.Count)
+            {
+                return false;
+            }
+
+            MagicItemEffect effect = magicItem.Effects[index];
+            float value = GetRuneExtractValue(effect, magicItem.Rarity, powerModifier, out bool capped);
+            if (!capped || !MagicItemEffectDefinitions.TryGet(effect.EffectType, out MagicItemEffectDefinition effectDef))
+            {
+                return false;
+            }
+
+            text = Localization.instance.Localize(MagicItem.GetEffectText(effectDef, value));
+            return true;
         }
 
         internal static string GetSelectedEnchantmentNameByIndex(ItemDrop.ItemData selectedItem, int targetEnchant)
@@ -1770,20 +1762,14 @@ namespace EpicLoot.CraftingV2
                 MagicItemEffect effect = new MagicItemEffect(runeEffects[runeIndex].EffectType,
                     runeEffects[runeIndex].EffectValue);
 
-                // The first rune effect replaces the target enchantment
                 if (runeIndex == 0)
                 {
                     SetEtchedEffect(result, enchantment, effect);
                     continue;
                 }
 
-                // Skip or replace existing effects with the same effect type
                 if (result.Effects.Any(x => x.EffectType == effect.EffectType))
                 {
-                    // If the item already has this effect, but with a lower value, replace it.
-                    // Same-TYPE comparison: the old test matched any effect on the item with a
-                    // smaller value, so a weaker rune could overwrite a stronger existing
-                    // effect because some unrelated effect happened to roll low.
                     int index = result.Effects.FindIndex(x =>
                         x.EffectType == effect.EffectType && x.EffectValue < effect.EffectValue);
                     if (index >= 0)
@@ -1791,11 +1777,9 @@ namespace EpicLoot.CraftingV2
                         SetEtchedEffect(result, index, effect);
                     }
 
-                    // If the item already has this effect, skip it
                     continue;
                 }
 
-                // Add additional effects
                 result.Effects.Add(effect);
             }
 
@@ -1810,7 +1794,6 @@ namespace EpicLoot.CraftingV2
             magicItem.TemperedEffectIndices.Remove(index);
         }
 
-        // Commits a result from BuildRuneEtchResult to the item.
         internal static void ApplyRuneEtch(ItemDrop.ItemData item, MagicItem etchedMagicItem)
         {
             API.WithChangeReason(API.ChangeReason.Rune, () => item.SaveMagicItem(etchedMagicItem));
@@ -1826,22 +1809,7 @@ namespace EpicLoot.CraftingV2
 
             successDialog.Show(item);
 
-            RectTransform rt = (RectTransform)successDialog.transform;
-            rt.pivot = new Vector2(0.5f, 0.5f);
-            rt.anchorMax = new Vector2(0.5f, 0.5f);
-            rt.anchorMin = new Vector2(0.5f, 0.5f);
-            rt.anchoredPosition = new Vector2(0, 0);
-
-            // A vanilla-built dialog keeps its content in a Frame child; an Auga results panel has none.
-            Transform frame = successDialog.transform.Find("Frame");
-            if (frame != null)
-            {
-                RectTransform frameRT = (RectTransform)frame;
-                frameRT.pivot = new Vector2(0.5f, 0.5f);
-                frameRT.anchorMax = new Vector2(0.5f, 0.5f);
-                frameRT.anchorMin = new Vector2(0.5f, 0.5f);
-                frameRT.anchoredPosition = new Vector2(0, 0);
-            }
+            CenterDialog(successDialog.transform);
 
             return successDialog.gameObject;
         }
@@ -1858,7 +1826,6 @@ namespace EpicLoot.CraftingV2
                 for (int index = 0; index < augmentableEffects.Count; index++)
                 {
                     MagicItemEffect augmentableEffect = augmentableEffects[index];
-                    // Rune check if it is for the Rune UI, Augment if not
                     bool canAugment = runecheck
                         ? CanRunifyEffect(magicItem, index)
                         : MagicItemEffectDefinitions.TryGet(augmentableEffect.EffectType, out MagicItemEffectDefinition effectDef) &&
@@ -1921,7 +1888,6 @@ namespace EpicLoot.CraftingV2
 
         internal static GameObject AugmentItem(ItemDrop.ItemData item, int augmentindex)
         {
-            // Set as augmented
             MagicItem magicItem = item?.GetMagicItem();
             if (magicItem == null)
             {
@@ -1937,25 +1903,9 @@ namespace EpicLoot.CraftingV2
             AugmentChoiceDialog choiceDialog = AugmentHelper.CreateAugmentChoiceDialog(true);
             choiceDialog.transform.SetParent(EnchantingTableUI.instance.transform);
 
-            // Fix audio sources
             SetupUIAudioSources(choiceDialog.gameObject);
 
-            RectTransform rt = (RectTransform)choiceDialog.transform;
-            rt.pivot = new Vector2(0.5f, 0.5f);
-            rt.anchorMax = new Vector2(0.5f, 0.5f);
-            rt.anchorMin = new Vector2(0.5f, 0.5f);
-            rt.anchoredPosition = new Vector2(0, 0);
-
-            // A vanilla-built dialog keeps its content in a Frame child; an Auga results panel has none.
-            Transform frame = choiceDialog.transform.Find("Frame");
-            if (frame != null)
-            {
-                RectTransform frameRT = (RectTransform)frame;
-                frameRT.pivot = new Vector2(0.5f, 0.5f);
-                frameRT.anchorMax = new Vector2(0.5f, 0.5f);
-                frameRT.anchorMin = new Vector2(0.5f, 0.5f);
-                frameRT.anchoredPosition = new Vector2(0, 0);
-            }
+            CenterDialog(choiceDialog.transform);
 
             choiceDialog.Show(item, augmentindex, OnAugmentComplete);
             return choiceDialog.gameObject;
@@ -2049,10 +1999,8 @@ namespace EpicLoot.CraftingV2
                 int reducedAmount = Mathf.Max(0, itemAmountConfig.Amount - reducedCost);
                 if (reducedAmount <= 0)
                 {
-                    // Fully discounted. A negative stack here was catastrophic: the affordability
-                    // check trivially passed and vanilla Inventory.RemoveItem with a negative
-                    // amount ADDS to the stack -- a fully upgraded table MINTED bounty tokens on
-                    // every disenchant.
+                    // Never a negative stack: vanilla Inventory.RemoveItem with a negative amount adds
+                    // to the stack, and the affordability check passes trivially.
                     continue;
                 }
 

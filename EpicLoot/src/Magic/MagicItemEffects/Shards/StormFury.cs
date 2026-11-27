@@ -5,11 +5,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects.Shards {
-
-    // Storm based adrenaline pulse. Grants a flat amount of adrenaline every 10 seconds while in a storm and suppresses adrenaline decay
     public static class StormFury {
-        // Seconds between adrenaline pulses. Tunable as "TickInterval" in this effect's Config block in
-        // config/shardstones.json; StormFuryPulse re-arms its InvokeRepeating when this changes.
+        // StormFuryPulse re-arms its InvokeRepeating when this changes.
         public const float DefaultTickInterval = 10f;
 
         private const string TickIntervalKey = "TickInterval";
@@ -29,8 +26,6 @@ namespace EpicLoot.MagicItemEffects.Shards {
         // shard comes off) at ~1 second.
         private const float DegenPin = 1f;
 
-        // Tooltip: "+{0} Adrenaline every {1}s in Storms, No Adrenaline Decay" -- {1} is the configured
-        // interval, so the shown number follows a retune instead of staying at the baked-in default.
         public static void RegisterDisplayValues() {
             MagicItem.RegisterDisplayValues(MagicEffectType.StormFury,
                 value => new object[] { value, GetTickInterval() });
@@ -74,7 +69,7 @@ namespace EpicLoot.MagicItemEffects.Shards {
     }
 
     // Drives the storm pulse from its own DontDestroyOnLoad object, so it survives scene loads, needs no
-    // player to exist yet, and costs one scheduled call every ten seconds instead of a per-frame patch.
+    // player to exist yet, and costs one scheduled call per pulse instead of a per-frame patch.
     // Created once from the plugin Awake. Holds no cross-tick state, so there is nothing to reset when the
     // local player changes.
     internal class StormFuryPulse : MonoBehaviour {

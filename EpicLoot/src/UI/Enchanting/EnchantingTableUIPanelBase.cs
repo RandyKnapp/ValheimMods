@@ -31,6 +31,7 @@ namespace EpicLoot_UnityLib
         protected TMP_Text _buttonLabel;
         protected string _defaultButtonLabelText;
         protected bool _locked;
+        protected bool _awaitingPayment;
 
         private GameObject _mainButtonGamepadHint;
 
@@ -153,6 +154,11 @@ namespace EpicLoot_UnityLib
 
         protected virtual void OnMainButtonClicked()
         {
+            if (_awaitingPayment)
+            {
+                return;
+            }
+
             if (MainActionSFX != null)
             {
                 Audio.PlayOneShot(MainActionSFX);
@@ -170,6 +176,7 @@ namespace EpicLoot_UnityLib
 
         public virtual void DeselectAll()
         {
+            AvailableItems?.DeselectAll();
         }
 
         public virtual void Update()
@@ -292,6 +299,30 @@ namespace EpicLoot_UnityLib
             EnchantingTableUI.instance.UnlockTabs();
         }
 
+        /// <summary>
+        /// Pays, then runs <paramref name="onPaid"/> with what was taken. While the table's owner is asked for
+        /// stored materials the panel stays locked and its button does nothing. When the payment cannot be made
+        /// nothing is kept and <paramref name="onFailed"/> runs instead.
+        /// </summary>
+        protected void PayThen(InventoryManagement.Payment payment, Action<InventoryManagement.Receipt> onPaid, Action onFailed)
+        {
+            _awaitingPayment = true;
+            Lock();
+            InventoryManagement.Instance.Pay(payment, receipt =>
+            {
+                _awaitingPayment = false;
+                Unlock();
+                if (receipt == null)
+                {
+                    Player.m_localPlayer?.Message(MessageHud.MessageType.Center, "$msg_missingrequirement");
+                    onFailed?.Invoke();
+                    return;
+                }
+
+                onPaid(receipt);
+            });
+        }
+
         // Internal as well as protected: EnchantingUIController re-checks the identify cost with it after
         // rolling, right before charging.
         protected internal static bool LocalPlayerCanAffordCost(List<InventoryItemListElement> cost)
@@ -312,6 +343,29 @@ namespace EpicLoot_UnityLib
             }
 
             return true;
+        }
+
+        // For a cost shown before the action: nothing to pay, or no local player yet, is answered rather
+        // than thrown on.
+        protected static bool LocalPlayerCanAffordCostOrNone(List<InventoryItemListElement> cost)
+        {
+            if (cost == null || cost.Count == 0)
+            {
+                return true;
+            }
+
+            return Player.m_localPlayer != null && LocalPlayerCanAffordCost(cost);
+        }
+
+        // Table feature values are percentages, NaN when the feature has none.
+        protected static float GetCostReduction(float value)
+        {
+            return value == 0f || float.IsNaN(value) ? 1.0f : 1f - (value / 100f);
+        }
+
+        protected static float GetPowerModifier(float value)
+        {
+            return float.IsNaN(value) ? 1.0f : (value / 100f);
         }
 
         protected internal static void NotifyItemsUnavailable(params ItemDrop.ItemData[] items)

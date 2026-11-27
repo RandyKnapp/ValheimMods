@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 
 namespace EpicLoot.src.Magic.MagicItemEffects.Helpers {
-    // Status effect for Adrenaline Surge, which provides a bonus to health regeneration.
     public class SE_AdrenalineSurge : StatusEffect {
         public float RegenBonus;
 

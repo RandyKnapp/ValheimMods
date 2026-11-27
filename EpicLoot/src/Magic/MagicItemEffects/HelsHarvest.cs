@@ -15,18 +15,12 @@ namespace EpicLoot
 
 namespace EpicLoot.MagicItemEffects
 {
-    // HelsHarvest (4-piece Hel's Covenant set bonus, NoRoll). While the set staff is in hand, a creature killed by the
-    // wearer or by one of the wearer's summons rises at its corpse as a thrall: a friendly skeleton that follows and
-    // fights for Lifetime seconds, at the star level of the creature it rose from and stronger with the wearer's Blood
-    // Magic skill (as Dead Raiser's skeletons are). At most the effect value are up at once; a new one makes the oldest
-    // crumble. A thrall's own kills raise more.
-    //
     // Who made the kill is only known where the victim dies: OnDeath runs on the victim's owner, which may be another
     // client or the dedicated server, and m_lastHit is only set there. So a Character.OnDeath prefix on the owner works
     // out the credited player -- the attacker itself, or the player whose summon it was -- and sends that player's own
     // client an RPC with the corpse's place and level, which raises the thrall there, so the thralls are always owned by
-    // the player they follow. A player
-    // whose client has the full set says so in a ZDO flag, so kills by anyone else cost no RPC.
+    // the player they follow. A player whose client has the full set says so in a ZDO flag, so kills by anyone else
+    // cost no RPC.
     //
     // A summon's owner is recorded on its ZDO ("el-sumby") when a staff spawns it (SpawnAbility.SetupAoe, called once
     // per spawned creature), since the Trollstav troll has no other link back to its summoner; Dead Raiser skeletons
@@ -37,7 +31,6 @@ namespace EpicLoot.MagicItemEffects
     // vanish with their owner, carry no drops, and die on a timer.
     public static class HelsHarvest
     {
-        // Both tunable in this effect's Config block in magiceffects.json, under these key names.
         public const float DefaultLifetime = 30f;
         public const float DefaultSkillFactorPerLevel = 0.02f;  // Dead Raiser's m_copySkillToRandomFactor
 
@@ -89,7 +82,6 @@ namespace EpicLoot.MagicItemEffects
         private static readonly List<RaiseRequest> PendingRaises = new List<RaiseRequest>();
         private static float _nextRaiseAt;
 
-        // Tooltip: "... rise as thralls that fight for you for {1} seconds ... Up to {0} at once ..."
         public static void RegisterDisplayValues()
         {
             MagicItem.RegisterDisplayValues(MagicEffectType.HelsHarvest, value => new object[] { value, Lifetime });

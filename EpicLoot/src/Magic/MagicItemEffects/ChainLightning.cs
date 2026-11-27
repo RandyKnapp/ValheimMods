@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects {
     public class ChainLightning {
-        // Postfix handler invoked by CharacterDamageDispatch (on-hit reaction).
+        // On-hit reaction, called from SharedCharacterDamagePatch's postfix.
         public static void OnDamageDealt(Character __instance, HitData hit, Character attacker) {
             if (attacker == null || !attacker.IsPlayer()) {
                 return;
@@ -20,11 +20,8 @@ namespace EpicLoot.MagicItemEffects {
                 return;
             }
 
-            //float procChance = player.GetTotalActiveMagicEffectValue(MagicEffectType.ChainLightning, .01f) / 2f; - based off buff effect is too strong
             float procChance = .15f;
-            //hmmm
 
-            //Check if damage is from weapon
             Skills.SkillType skill = hit.m_skill;
             if (skill != Skills.SkillType.Swords &&
                 skill != Skills.SkillType.Clubs &&
@@ -63,7 +60,7 @@ namespace EpicLoot.MagicItemEffects {
                 aoe.m_chainChance = 0.8f;
                 aoe.m_chainStartChanceFalloff = 0.8f;
                 aoe.m_owner = player;
-                aoe.m_damage.m_lightning *= player.GetTotalActiveMagicEffectValue(MagicEffectType.ChainLightning, .01f); // damage of lightning. This works.
+                aoe.m_damage.m_lightning *= player.GetTotalActiveMagicEffectValue(MagicEffectType.ChainLightning, .01f);
             }
         }
 

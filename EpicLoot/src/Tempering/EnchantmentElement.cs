@@ -18,24 +18,17 @@ public class EnchantmentElement : MonoBehaviour, IPointerEnterHandler, IPointerE
     public TextMeshProUGUI label;
     public UITooltip uiTooltip;
 
-    public MagicItemEffect _effect;
-    public MagicItemEffectDefinition _definition;
-    public MagicItemEffectDefinition.ValueDef _values;
+    // NonSerialized: these types are [Serializable], so Unity would otherwise give every row from the
+    // prefab a default instance instead of null.
+    [NonSerialized] public MagicItemEffect _effect;
+    [NonSerialized] public MagicItemEffectDefinition _definition;
+    [NonSerialized] public MagicItemEffectDefinition.ValueDef _values;
+    [NonSerialized] public int index;
 
     private bool canBeTempered;
-    
-    public int index;
 
     public void Awake()
     {
-        background = GetComponent<Image>();
-        button = GetComponent<Button>();
-        uiTooltip = GetComponent<UITooltip>();
-        selected = transform.Find("Selected").GetComponent<Image>();
-        label = GetComponentInChildren<TextMeshProUGUI>();
-        
-        background.color = new Color(0.35f , 0.35f ,0.35f, 1f);
-
         elements.Add(this);
     }
 

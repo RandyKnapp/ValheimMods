@@ -38,10 +38,8 @@ public class AmmoConservation {
 
                 var currentWeapon = __instance.GetCurrentWeapon();
                 if (currentWeapon != null && currentWeapon.m_shared.m_attack.m_requiresReload) {
-                    // Publicized assembly: call vanilla's (private) setter directly instead of
-                    // reflecting. Marking the weapon loaded and then letting the original run keeps
-                    // vanilla's own loaded-weapon bookkeeping (weapon-switch clearing) intact --
-                    // the old prefix cancelled the whole tick.
+                    // Marked loaded and the original left to run, so vanilla's own loaded-weapon bookkeeping
+                    // (weapon-switch clearing) stays intact.
                     __instance.SetWeaponLoaded(currentWeapon);
                 }
             }

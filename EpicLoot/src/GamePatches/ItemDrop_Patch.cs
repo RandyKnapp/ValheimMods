@@ -20,11 +20,9 @@ namespace EpicLoot
         }
     }
 
-    // Only magic items get a LootBeam so its per-frame Update doesn't run on every non-magic drop.
-    // This is gated in Start rather than Awake because most drop paths (fresh kills, player/container
-    // drops via ItemDrop.DropItem, item stands via LoadFromExternalZDO) assign the magic data to
-    // m_itemData after Awake has already run. By Start (the following frame) every path has finished
-    // assigning magic, so IsMagic() is reliable here for all of them.
+    // In Start rather than Awake because most drop paths (fresh kills, player/container drops via
+    // ItemDrop.DropItem, item stands via LoadFromExternalZDO) assign the magic data to m_itemData after
+    // Awake has already run. By Start every path has finished, so IsMagic() is reliable here.
     [HarmonyPatch(typeof(ItemDrop), nameof(ItemDrop.Start))]
     public static class ItemDrop_Start_Patch
     {
@@ -35,10 +33,12 @@ namespace EpicLoot
                 return;
             }
 
-            if (__instance.gameObject.GetComponent<LootBeam>() == null)
+            // A magic crafting material already has one, for its own glow (Crafting.ItemDrop_Awake_Patch).
+            if (!__instance.TryGetComponent(out LootBeam lootBeam))
             {
-                __instance.gameObject.AddComponent<LootBeam>();
+                lootBeam = __instance.gameObject.AddComponent<LootBeam>();
             }
+            lootBeam.BeamRarity = __instance.m_itemData.GetMagicItem()?.Rarity;
         }
     }
 
@@ -88,10 +88,9 @@ namespace EpicLoot
     {
         // m_lastRevision as of each container's last walk. Container.CheckForChanges calls Load once a
         // second on every loaded container and Load returns straight away unless the ZDO revision moved,
-        // but a postfix runs either way, so this used to walk every item of every chest in range each
-        // second. m_lastRevision moves on a reload and on every owner-side Save, so comparing it still
-        // reaches items put straight into the inventory without a reload (the DropTable clones vanilla
-        // AddDefaultItems adds) as soon as it used to.
+        // but a postfix runs either way. m_lastRevision moves on a reload and on every owner-side Save,
+        // so comparing it still reaches items put straight into the inventory without a reload (the
+        // DropTable clones vanilla AddDefaultItems adds).
         private static readonly ConditionalWeakTable<Container, StrongBox<uint>> WalkedRevision =
             new ConditionalWeakTable<Container, StrongBox<uint>>();
 

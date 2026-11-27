@@ -18,8 +18,7 @@ namespace EpicLoot_UnityLib
         public void OnEnable()
         {
             List<InventoryItemListElement> items = EnchantingUIController.GetDisenchantItems();
-            AvailableItems.SetItems(items.Cast<IListElement>().ToList());
-            AvailableItems.DeselectAll();
+            AvailableItems.SetItemsAndDeselect(items.Cast<IListElement>().ToList());
         }
 
         protected override void DoMainAction()
@@ -57,35 +56,39 @@ namespace EpicLoot_UnityLib
                 return;
             }
 
-            foreach (InventoryItemListElement costElement in cost)
+            PayThen(new InventoryManagement.Payment().Cost(cost), receipt =>
             {
-                InventoryManagement.Instance.RemoveItem(costElement.GetItem());
-            }
+                if (!InventoryManagement.Instance.IsEditable(item))
+                {
+                    receipt.Refund();
+                    NotifyItemsUnavailable(item);
+                    RefreshAvailableItems();
+                    return;
+                }
 
-            // Returned items are the bonus roll plus any shards/runestones freed from the item's sockets;
-            // only the bonus roll gets the bonus fanfare.
-            List<InventoryItemListElement> returnedItems = EnchantingUIController.DisenchantItem(item, out bool bonusRolled);
+                // Returned items are the bonus roll plus any shards/runestones freed from the item's sockets;
+                // only the bonus roll gets the bonus fanfare.
+                List<InventoryItemListElement> returnedItems = EnchantingUIController.DisenchantItem(item, out bool bonusRolled);
 
-            if (bonusRolled)
-            {
-                EnchantingTableUI.instance.PlayEnchantBonusSFX();
-                BonusPanel.Show();
-            }
+                if (bonusRolled)
+                {
+                    EnchantingTableUI.instance.PlayEnchantBonusSFX();
+                    BonusPanel.Show();
+                }
 
-            if (returnedItems.Count > 0)
-            {
-                GiveItemsToPlayer(returnedItems);
-            }
+                if (returnedItems.Count > 0)
+                {
+                    GiveItemsToPlayer(returnedItems);
+                }
 
-            RefreshAvailableItems();
+                RefreshAvailableItems();
+            }, RefreshAvailableItems);
         }
 
         public void RefreshAvailableItems()
         {
             List<InventoryItemListElement> items = EnchantingUIController.GetDisenchantItems();
-            AvailableItems.SetItems(items.Cast<IListElement>().ToList());
-            AvailableItems.DeselectAll();
-            OnSelectedItemsChanged();
+            AvailableItems.SetItemsAndDeselect(items.Cast<IListElement>().ToList());
         }
 
         protected override void OnSelectedItemsChanged()
@@ -116,11 +119,6 @@ namespace EpicLoot_UnityLib
                 CostLabel.enabled = false;
                 MainButton.interactable = false;
             }
-        }
-
-        public override void DeselectAll()
-        {
-            AvailableItems.DeselectAll();
         }
     }
 }

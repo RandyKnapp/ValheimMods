@@ -24,7 +24,8 @@ public static partial class API
     {
         try
         {
-            if (!Enum.TryParse(type, true, out SecretStashType stashType))
+            // TryParse also takes a number, which would register an item under no list at all.
+            if (!Enum.TryParse(type, true, out SecretStashType stashType) || !Enum.IsDefined(typeof(SecretStashType), stashType))
             {
                 return null;
             }

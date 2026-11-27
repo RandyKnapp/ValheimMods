@@ -11,8 +11,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp", "Assembly
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ValheimUnity.Editor", "ValheimUnity.Editor.csproj", "{3B789A46-7BB0-36FF-03FA-455F31A3AF74}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp-Editor", "Assembly-CSharp-Editor.csproj", "{2926F55B-B012-CF5B-2887-4C4CA6D47CBE}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,10 +37,6 @@ Global
 		{3B789A46-7BB0-36FF-03FA-455F31A3AF74}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3B789A46-7BB0-36FF-03FA-455F31A3AF74}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3B789A46-7BB0-36FF-03FA-455F31A3AF74}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2926F55B-B012-CF5B-2887-4C4CA6D47CBE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2926F55B-B012-CF5B-2887-4C4CA6D47CBE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2926F55B-B012-CF5B-2887-4C4CA6D47CBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2926F55B-B012-CF5B-2887-4C4CA6D47CBE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

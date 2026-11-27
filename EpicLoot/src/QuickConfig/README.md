@@ -5,18 +5,17 @@ shipped in the `epicloot` bundle) and **bound by code** in this folder. Maintain
 and add rows in the editor; the code only finds rows by their GameObject name and wires the named
 widget children below. Nothing here positions anything.
 
-The editor-side generator that produced the initial prefabs is
-`ValheimUnity/Assets/Scripts/Editor/QuickConfigPrefabBuilder.cs` (menu `Mod/Quick Configure/...`).
-It only creates pages that do not exist yet, so hand edits survive; row templates and the shell can be
-regenerated on purpose, and "Rebuild Selected Pages" resets just the page prefabs selected in the
-Project window to the script's table.
+The prefabs are the source; nothing generates them. To add a setting, drop an instance of a `Rows/Row_*`
+template into a page prefab, name it after the key and register the key in `QuickConfigBindings.cs`.
+Pages nest the row templates, so an edit to a template reaches every page that uses it. To undo edits to
+a page, restore that prefab from git. After any prefab change run `Mod/Build Asset Bundles`, then rebuild
+EpicLoot, which embeds the bundle.
 
 ## Rows and pages are identified by GameObject name (no baked components)
 
 The prefabs carry **no EpicLoot components**, by design: they stay independent of the mod assembly,
 so a rebuilt or renamed `EpicLoot.dll` can never turn a row into a missing script, and the prefabs
-open cleanly in an editor that has no mod DLLs at all. (Historically the editor could not load
-`EpicLoot.dll` either, until the MagicaCloth 2 asset satisfied `assembly_valheim`'s reference.) Instead:
+open cleanly in an editor that has no mod DLLs at all. Instead:
 
 - A row's **GameObject name is its key** (`GlobalDropRateModifier`, `json:adventuredata:Gamble.GamblesCount`,
   `action:preset:balanced`). Rename the object to rebind it. Decorative rows keep their template name
@@ -39,7 +38,7 @@ open cleanly in an editor that has no mod DLLs at all. (Historically the editor 
 | `<ELConfig static field>` | a BepInEx entry on `EpicLoot.Config.ELConfig` | `GlobalDropRateModifier`, `_adventureModeEnabled`, `ShowQuickConfigButton` |
 | `<field>.<part>` | one part of a composite entry | `AbilityKeyCodes.0`, `AbilityBarPosition.x` |
 | `Common.<Entry>` | a Common-layer entry on `Common.ModContext` | `Common.EnableDebugMode`, `Common.ConfigApplyDelay` |
-| `json:<file>:<path>` | a value in a baseconfig JSON (host or server admin) | `json:adventuredata:Gamble.GamblesCount`, `json:loottables:RarityCounts`, `json:magiceffects:TripleBowShot.Chance`, `json:magiceffects:Riches` |
+| `json:<file>:<path>` | a value in a baseconfig JSON (host or server admin) | `json:adventuredata:Gamble.GamblesCount`, `json:loottables:RarityCounts`, `json:shardstones:Global.Values.MovementPenaltyReference`, `json:magiceffects:EffectConfigs` |
 | `action:<verb>:<arg>` | a button | `action:preset:balanced`, `action:reset:TraderPanelPosition`, `action:url:discord`, `action:advanced:show` |
 | `readout:<name>` | code-fed text | `readout:dropmix`, `readout:template` |
 
@@ -80,6 +79,7 @@ scroll sensitivity 800 (since Call to Arms a wheel notch moves a list far less) 
 | `Row_BiomeDrops` | `Head` → `Label`, `Biome` (`Button` + child `Text`: the shown biome; opens the picker over the biomes that have drop tables, plus "Other"), `Target` (`Button` + child `Text`: the shown loot table, e.g. "Tier1Mob · level 2 (Greydwarf, Skeleton)"; opens the picker over the biome's tables), optional `Prev` / `Next` (`Button`s stepping through them); `Amount` (a WeightList with open keys: how many items drop) and `Rarity` (a WeightList with fixed keys: one chance per rarity). Key `json:loottables:LootTables`; every table is staged, the shown biome and table are row UI state. The tooltip sits on `Head`. |
 | `Row_RarityCounts` | `Head` → `Label`, `Rarity` (`Button` + child `Text`: the shown rarity; opens the picker); `Enchantments` and `Sockets` (WeightLists with open keys). Key `json:loottables:RarityCounts` (MagicEffectsCount and SocketCounts); every rarity is staged, the shown one is row UI state. The tooltip sits on `Head`. |
 | `Row_UpgradeCosts` | `Head` → `Label`, `Feature` (`Button`: the shown enchanting table feature); `Items` (`ScrollRect` whose `content` lays out an inactive `Level` template, cloned per level of the shown feature: `Head` → `Label` ("Unlock" for level 0, then "Level N"), `Add` (`Button`); then an `Item` template cloned per cost item: `Field` (`TMP_InputField`, item prefab name), `Pick` (`Button`, ObjectDB item picker, hidden when no item list is known), `Amount` (`TMP_InputField` int), `Remove` (`Button`)). When `content` carries a `GridLayoutGroup`, the code sets its cell height to fit the level with the most items. Key `json:enchantingupgrades:UpgradeCosts`; the levels shown run from Unlock to the feature's staged `MaximumFeatureLevels` value, and a level added by raising it is written with an `UpgradeValues` entry copied from the top level. The tooltip sits on `Head`. |
+| `Row_ItemCategories` | `Head` → `Label`, `Category` (`Button` + child `Text`: the shown category; opens the picker over every `ItemInfo[].Type`), `Add` (`Button`); `Items` (`ScrollRect`; `content` holds an inactive `Item` template: `Boss` (`Button` + child `Text`: boss key; opens the picker over `none` + the known keys), `Field` (`TMP_InputField` item prefab name), `Pick` (`Button`, ObjectDB item picker, hidden on the main menu), `Remove` (`Button`)). Key `json:iteminfo:ItemInfo`; every category is staged, the shown one is row UI state. The tooltip sits on `Head`. |
 
 A **WeightList** is a named child of a row (`Enchantments`, `Amount`, ...) holding a count:chance table
 whose chances should add up to 100: `Head` → `Label`, `Total` (`TMP_Text`, the warning shown only while
@@ -88,7 +88,6 @@ template: `Count` (`TMP_InputField` int, open keys) or `Name` (`TMP_Text`, fixed
 `Value` (`TMP_InputField` int), `Remove` (`Button`, open keys)). The sliders move freely; on Save each
 changed table is rebalanced to 100, the chances the player changed keeping their values and the others
 filling the rest (`WeightTable.Rebalance`). A table left untouched is not rewritten, even when it is off.
-| `Row_ItemCategories` | `Head` → `Label`, `Category` (`Button` + child `Text`: the shown category; opens the picker over every `ItemInfo[].Type`), `Add` (`Button`); `Items` (`ScrollRect`; `content` holds an inactive `Item` template: `Boss` (`Button` + child `Text`: boss key; opens the picker over `none` + the known keys), `Field` (`TMP_InputField` item prefab name), `Pick` (`Button`, ObjectDB item picker, hidden on the main menu), `Remove` (`Button`)). Key `json:iteminfo:ItemInfo`; every category is staged, the shown one is row UI state. The tooltip sits on `Head`. |
 
 Overlays, instantiated by code under `GUIManager.CustomGUIFront`:
 
@@ -120,7 +119,7 @@ is shown, so a bundle without the button never strands the rest.
 The shell's `Reset` button stages the shipped default of every row on the shown page the player may
 edit (after a confirm); Save writes it like any other edit, and other pages are untouched. A .cfg row
 takes its BepInEx default. A JSON row takes the value from the file the mod ships (the embedded
-baseconfig, `ShippedDefaults`; magiceffects.json is the overhaul of the staged Balance Template): a
+baseconfig, `ShippedDefaults`; magiceffects.json and shardstones.json are the overhaul of the staged Balance Template): a
 simple value by the dotted path in its key, a table through its slot's `Default`, which merges by identity
 so an entry the shipped file lacks (a loot table, a bounty biome, an item category another mod added)
 keeps its current values. A slot without a default is left alone.
@@ -139,7 +138,8 @@ label can be switched to a token later. Page titles, nav buttons, the welcome te
 - JSON writes edit the on-disk baseconfig as a `JObject` (only the changed tokens) and reload it through
   `ELConfig.ReloadBaseConfigsFromDisk`. They **never** call `ConfigVersionManager.RecordWrittenContent`:
   panel edits are the player's work, and stamping them as the mod's would let the next update overwrite
-  them silently. The Balance preset rewrite from the embedded overhaul *does* record itself.
+  them silently. The Balance preset rewrite of `ELConfig.BalanceTemplateFiles` from the embedded overhaul *does*
+  record itself.
 - JSON rows and the preset buttons are editable by the host and by a server admin
   (`QuickConfigBindings.CanEditFiles`: Jotunn's `PlayerIsAdmin` off-host), read-only for anyone else.
   The shared launcher only shows the panel to those two anyway.
@@ -153,10 +153,10 @@ written on the server by `QuickConfigServerSave`, over one CustomRPC (`epicloot_
 2. **Fetch**: the client asks for the server's current text of every file with a staged change.
 3. The client applies the staged changes to that text with the host's own code
    (`JsonConfigEdits.ApplyStaged`, the slots' writers) and sends each edited file back with a hash of
-   the text it edited. With a preset pressed, it asks for the magiceffects.json rewrite instead of
-   sending edits to that file, as the host drops them.
+   the text it edited. With a preset pressed, it asks for the rewrite of the balance template files
+   (magiceffects.json, shardstones.json) instead of sending edits to them, as the host drops them.
 4. **Write**: the server checks the sender against its admin list (vanilla `ZNet.IsAdmin` on the peer's
-   host name) and that each file still hashes the same, then rewrites magiceffects.json if asked (backing
+   host name) and that each file still hashes the same, then rewrites the template files if asked (backing
    up a hand-edited one; there is no one to ask), writes the files in `StagedConfig.JsonFileOrder` and
    reloads them, which pushes them to every connected player. A file that will not load is put back.
 5. The save completes when the server's reply **and** the push of every file it wrote have arrived

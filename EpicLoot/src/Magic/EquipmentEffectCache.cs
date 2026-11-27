@@ -1,6 +1,5 @@
 using HarmonyLib;
 using JetBrains.Annotations;
-using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
@@ -86,17 +85,11 @@ public static class EquipmentEffectCache
         return values;
     }
 
-    /// <summary>
-    /// Memoized read that does not need the <see cref="Func{T}"/> the <see cref="Get"/> overload takes.
-    /// That delegate is built on every call, hit or miss, because the argument is evaluated before the
-    /// lookup happens -- two heap allocations each time. Callers on per-tick paths use this and
-    /// <see cref="Store"/> instead, so only an actual miss pays for building the value.
-    /// </summary>
     public static bool TryGetValue(Player player, string effect, out float? value)
     {
         if (effect == null || player == null)
         {
-            value = 0f; // default fail out if the requested key is null
+            value = 0f;
             return true;
         }
 
@@ -111,17 +104,5 @@ public static class EquipmentEffectCache
         }
 
         ValuesFor(player)[effect] = value;
-    }
-
-    public static float? Get(Player player, string effect, Func<float?> calculate)
-    {
-        if (TryGetValue(player, effect, out float? value))
-        {
-            return value;
-        }
-
-        value = calculate();
-        Store(player, effect, value);
-        return value;
     }
 }

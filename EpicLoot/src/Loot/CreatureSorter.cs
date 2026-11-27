@@ -71,11 +71,6 @@ namespace EpicLoot
             return _names.FirstOrDefault(n => string.Equals(n, name, StringComparison.OrdinalIgnoreCase));
         }
 
-        public bool IsBossKey(string key)
-        {
-            return BiomeOfBossKey(key) != null;
-        }
-
         /// <summary>The first biome (by progression) whose boss sets this key.</summary>
         public string BiomeOfBossKey(string key)
         {
@@ -492,10 +487,6 @@ namespace EpicLoot
             return parts.Length > 1 || string.Equals(text, pattern, StringComparison.OrdinalIgnoreCase);
         }
 
-        // ------------------------------------------------------------------------------------------------
-        //  Merging the decisions into LootTables
-        // ------------------------------------------------------------------------------------------------
-
         public struct MergeResult
         {
             public LootTable[] Tables;
@@ -592,10 +583,6 @@ namespace EpicLoot
                 a.Modifiers?.RarityShift == b.Modifiers?.RarityShift &&
                 (a.LeveledLoot == null || a.LeveledLoot.Count == 0);
         }
-
-        // ------------------------------------------------------------------------------------------------
-        //  Report
-        // ------------------------------------------------------------------------------------------------
 
         public static string FormatReport(IEnumerable<CreatureDecision> decisions, MergeResult? merge, string header)
         {

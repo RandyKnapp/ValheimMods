@@ -96,22 +96,7 @@ namespace EpicLoot.Adventure
     {
         public int RefreshInterval;
         public List<TreasureMapBiomeInfoConfig> BiomeInfo = new List<TreasureMapBiomeInfoConfig>();
-        public float StartRadiusMin = 0;
-        public float StartRadiusMax = 500;
-        [Obsolete] // TODO evaluate if should keep
-        public int IncreaseRadiusCount = 3;
-        [Obsolete] // TODO evaluate if should keep
-        public float RadiusInterval = 500;
         public float MinimapAreaRadius = 100;
-        /// <summary>
-        /// Ignored. The adventure spawn search used to push out past the map circle when a ward covered
-        /// it, which needed the buyer's own client to redraw the circle - any other machine placing the
-        /// spawn (another player who arrived first, or the dedicated server) could not, and left the
-        /// bounty unplaced. Placement now never leaves the circle. Kept so existing config files and
-        /// patches that set it still load.
-        /// </summary>
-        [Obsolete]
-        public int MaxSpawnSearchExpansions = 5;
 
         /// <summary>
         /// Scale every biome's MinRadius/MaxRadius by the real world radius / 10000, so the shipped

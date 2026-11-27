@@ -19,13 +19,6 @@ namespace EpicLoot
 
 namespace EpicLoot.MagicItemEffects
 {
-    // Spirit Animal (4-piece Fylgja's Bond set bonus, NoRoll). The player binds one of their tamed creatures as their
-    // fylgja: the creature leaves the world for good and a snapshot of its ZDO is saved on the character. Whenever the
-    // player is in combat, a spirit copy of it fights beside them for Lifetime seconds, and a fresh one rises when that
-    // runs out if the fight goes on. A spirit that is killed returns ReturnDelay seconds later. The value is the spirit's
-    // strength in percent of the original: its outgoing damage is scaled by value/100 and the damage it takes by
-    // 100/value, so its effective health follows without fighting vanilla or StarLevelSystem over max health.
-    //
     // The snapshot is every key on the creature's ZDO except a blocklist (health, AI and session state, saddle, timers,
     // ZDOID links, other effects' markers), so its level, StarLevelSystem modifiers, size, name and other mods' data all
     // carry over. A spirit is a non-persistent ZDO created by the summoner, filled with the snapshot before Instantiate
@@ -38,7 +31,6 @@ namespace EpicLoot.MagicItemEffects
     // On every client it is drawn with the Spirit Caller's ghost shader using its own texture (SpiritAnimalVisual).
     public static class SpiritAnimal
     {
-        // All tunable in this effect's Config block in magiceffects.json, under these key names.
         public const float DefaultLifetime = 120f;        // seconds a spirit lives
         public const float DefaultReturnDelay = 30f;      // seconds before a killed spirit can rise again
         public const float DefaultCombatTimeout = 10f;    // seconds after the last combat signal that the fight is over
@@ -134,7 +126,6 @@ namespace EpicLoot.MagicItemEffects
         private static int SightMask => _sightMask != 0 ? _sightMask : _sightMask = LayerMask.GetMask("Default",
             "static_solid", "Default_small", "piece", "terrain");
 
-        // Tooltip: "... at {0}% strength for {1} seconds ... returns {2} seconds after it falls."
         public static void RegisterDisplayValues()
         {
             MagicItem.RegisterDisplayValues(MagicEffectType.SpiritAnimal,
@@ -195,8 +186,6 @@ namespace EpicLoot.MagicItemEffects
             _problemMessaged = false;
         }
 
-        // ---- warm-up (SetEffectWarmup) -----------------------------------------------------------------------------
-
         // World load, behind the loading screen.
         internal static void WarmupAtLoad(bool drawn)
         {
@@ -220,8 +209,6 @@ namespace EpicLoot.MagicItemEffects
                 SpiritAnimalVisual.Prewarm(ZNetScene.instance.GetPrefab(record.PrefabHash));
             }
         }
-
-        // ---- the record -------------------------------------------------------------------------------------------
 
         private static SpiritRecord GetRecord(Player player, out bool unreadable)
         {
@@ -253,8 +240,6 @@ namespace EpicLoot.MagicItemEffects
             _recordUnreadable = false;
             _problemMessaged = false;
         }
-
-        // ---- the per-frame tick -----------------------------------------------------------------------------------
 
         // Called before the body of Player.Update, i.e. before vanilla reads this frame's buttons.
         private static void OnLocalPlayerUpdate(Player player)
@@ -365,8 +350,6 @@ namespace EpicLoot.MagicItemEffects
             _problemMessaged = true;
             player.Message(MessageHud.MessageType.Center, text);
         }
-
-        // ---- summoning ----------------------------------------------------------------------------------------------
 
         private static void Summon(Player player, SpiritRecord record, GameObject prefab, float value)
         {
@@ -657,8 +640,6 @@ namespace EpicLoot.MagicItemEffects
             }
         }
 
-        // ---- binding ------------------------------------------------------------------------------------------------
-
         private static KeyCode Bound(ConfigEntry<KeyCode> entry) => entry?.Value ?? KeyCode.None;
 
         private static bool KeyDown(KeyCode key) => key != KeyCode.None && ZInput.GetKeyDown(key, logWarning: false);
@@ -918,8 +899,6 @@ namespace EpicLoot.MagicItemEffects
             EpicLoot.Log($"[SpiritAnimal] bound '{record.PrefabName}' (level {record.Level}).");
         }
 
-        // ---- hit handlers (called from the damage dispatchers) -------------------------------------------------------
-
         // Attacker side, Character.Damage: runs on the spirit's owner, which is this client for our spirit.
         public static void ModifyOutgoingHit(Character target, HitData hit, Character attacker)
         {
@@ -976,8 +955,6 @@ namespace EpicLoot.MagicItemEffects
         {
             return !(character is Player) && !character.IsTamed() && character.m_faction != Character.Faction.TrainingDummy;
         }
-
-        // ---- effects and HUD ----------------------------------------------------------------------------------------
 
         // Networked prefabs, so one spawn here is seen by everyone.
         private static void PlayFx(string[] names, Vector3 position, Quaternion rotation)
@@ -1067,8 +1044,6 @@ namespace EpicLoot.MagicItemEffects
 
         private static bool BindKeysUnbound() =>
             Bound(ELConfig.SpiritAnimalKey) == KeyCode.None && Bound(ELConfig.SpiritAnimalGamepadButton) == KeyCode.None;
-
-        // ---- patches ------------------------------------------------------------------------------------------------
 
         // The bind's save leaves the explored map to the next regular save (see SaveCharacter).
         [HarmonyPatch(typeof(Minimap), nameof(Minimap.SaveMapData))]
@@ -1344,8 +1319,6 @@ namespace EpicLoot.MagicItemEffects
             }
         }
 
-        // ---- the saved creature -------------------------------------------------------------------------------------
-
         internal sealed class SpiritRecord
         {
             private const int Version = 1;
@@ -1487,31 +1460,29 @@ namespace EpicLoot.MagicItemEffects
                 return record;
             }
 
-            // A dry run of every generic path on empty data, so the first bind or summon of a session does not compile
-            // the seven list types' copies, writers and readers.
+            // Runs every generic copy, writer and reader once on empty data, so Mono compiles them for the seven value
+            // types at load rather than on the first bind or summon.
             internal static void Warmup()
             {
                 var record = new SpiritRecord();
                 var skip = Blocked;
-                Copy(new List<KeyValuePair<int, float>>(), record._floats, skip);
-                Copy(new List<KeyValuePair<int, Vector3>>(), record._vec3s, skip);
-                Copy(new List<KeyValuePair<int, Quaternion>>(), record._quats, skip);
-                Copy(new List<KeyValuePair<int, int>>(), record._ints, skip);
-                Copy(new List<KeyValuePair<int, long>>(), record._longs, skip);
-                Copy(new List<KeyValuePair<int, string>>(), record._strings, skip);
-                Copy(new List<KeyValuePair<int, byte[]>>(), record._bytes, skip);
+                Copy(default(FastIterableKeyValues<int, float>), record._floats, skip);
+                Copy(default(FastIterableKeyValues<int, Vector3>), record._vec3s, skip);
+                Copy(default(FastIterableKeyValues<int, Quaternion>), record._quats, skip);
+                Copy(default(FastIterableKeyValues<int, int>), record._ints, skip);
+                Copy(default(FastIterableKeyValues<int, long>), record._longs, skip);
+                Copy(default(FastIterableKeyValues<int, string>), record._strings, skip);
+                Copy(default(FastIterableKeyValues<int, byte[]>), record._bytes, skip);
                 TryParse(record.Serialize(), out _);
             }
 
-            private static void Copy<T>(List<KeyValuePair<int, T>> source, List<KeyValuePair<int, T>> target, HashSet<int> skip)
+            // The source is a view over ZDOExtraData's own arrays with a fixed count, and the next write or removal on
+            // that ZDO shifts or replaces them, so it is copied out before anything else runs.
+            private static void Copy<T>(FastIterableKeyValues<int, T> source, List<KeyValuePair<int, T>> target, HashSet<int> skip)
             {
-                if (source == null)
+                for (int i = 0; i < source.Count; i++)
                 {
-                    return;
-                }
-
-                foreach (var pair in source)
-                {
+                    var pair = source[i];
                     if (!skip.Contains(pair.Key))
                     {
                         target.Add(pair);

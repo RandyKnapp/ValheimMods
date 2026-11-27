@@ -7,7 +7,6 @@ namespace EpicLoot;
 
 public static partial class TerminalManager
 {
-    private const string HEX_Gray = "#B2BEB5";
     private const string HEX_SoftBlue = "#60A5FA";
     private const string HEX_Green = "#34D399";
     private const string HEX_Amber = "#FBBF24";
@@ -67,41 +66,9 @@ public static partial class TerminalManager
     private static string GetString(this string[] args, int index, string defaultValue = "")
     {
         if (args.Length < index + 1) return defaultValue;
-        return args[index];;
-    }
-    
-    private static float GetFloat(this string[] args, int index, float defaultValue = 0f)
-    {
-        if (args.Length < index + 1) return defaultValue;
-        string arg = args[index];
-        return float.TryParse(arg, out float result) ? result : defaultValue;
-    }
-    
-    private static int GetInt(this string[] args, int index, int defaultValue = 0)
-    {
-        if (args.Length < index + 1) return defaultValue;
-        string arg = args[index];
-        return int.TryParse(arg, out int result) ? result : defaultValue;
+        return args[index];
     }
 
-    private static string GetStringFrom(this Terminal.ConsoleEventArgs args, int index, string defaultValue = "") => args.Args.GetStringFrom(index, defaultValue);
-
-    private static string GetStringFrom(this string[] args, int index, string defaultValue = "")
-    {
-        if (args.Length < index + 1) return defaultValue;
-        return string.Join(" ", args.Skip(index));
-    }
-
-    private static T GetEnum<T>(this Terminal.ConsoleEventArgs args, int index, T defaultValue) where T : struct, Enum =>
-        args.Args.GetEnum(index, defaultValue);
-
-    private static T GetEnum<T>(this string[] args, int index, T defaultValue) where T : struct, Enum
-    {
-        if (args.Length < index + 1) return defaultValue;
-        var arg = args.GetString(index);
-        return Enum.TryParse(arg, true, out T result) ? result : defaultValue;
-    }
-    
     // A single-rarity weight table for a rarity name, or an even spread when the name is not one.
     private static float[] GetRarityTable(string rarityName)
     {

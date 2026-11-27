@@ -1,6 +1,4 @@
 ﻿using EpicLoot.src.Magic.MagicItemEffects.Helpers;
-using HarmonyLib;
-using JetBrains.Annotations;
 
 namespace EpicLoot.MagicItemEffects.Shards 
 {
@@ -23,10 +21,8 @@ namespace EpicLoot.MagicItemEffects.Shards
                 return;
             }
 
-            float penaltyBonusBlock = perPenaltyPoint *
-                (PenaltyScaling.MovementPenalty(player) * 100); // Movement Penalty returns .01f positive per -% movement speed.
-                                                                // -25% movement speed is .25f so we * 100 to get a round increment per
-                                                                // AnchoredBlock value are now decimals .25-1.25
+            // MovementPenalty is a fraction (0.25 at -25% speed), so * 100 pays per percentage point.
+            float penaltyBonusBlock = perPenaltyPoint * (PenaltyScaling.MovementPenalty(player) * 100);
             baseBlock += (penaltyBonusBlock);
         }
     }

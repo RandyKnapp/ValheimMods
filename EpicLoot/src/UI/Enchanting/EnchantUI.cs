@@ -21,7 +21,6 @@ namespace EpicLoot_UnityLib
 
         public AudioClip[] EnchantCompleteSFX;
 
-        private ToggleGroup _toggleGroup;
         private ItemRarity _rarity;
         private GameObject _successDialog;
 
@@ -30,12 +29,10 @@ namespace EpicLoot_UnityLib
             base.Awake();
 
             MagicTextShimmer.Ensure(EnchantInfo);
-            EnsureRarityButtons();
 
             if (RarityButtons.Count > 0)
             {
-                _toggleGroup = RarityButtons[0].group;
-                _toggleGroup.EnsureValidState();
+                RarityButtons[0].group.EnsureValidState();
             }
 
             for (int index = 0; index < RarityButtons.Count; index++)
@@ -46,44 +43,6 @@ namespace EpicLoot_UnityLib
                     if (isOn)
                         RefreshRarity();
                 });
-            }
-        }
-
-        // The prefab is authored with one toggle per rarity of its day, and RefreshRarity casts a toggle's
-        // index straight to ItemRarity. When the enum has outgrown the prefab (a bundle that predates a
-        // rarity), the last toggle is cloned for each missing tier so every rarity stays selectable. The
-        // authored prefab is still the real fix; this only keeps an older bundle usable. Idempotent; the Auga
-        // fixup calls it before Awake.
-        internal void EnsureRarityButtons()
-        {
-            if (RarityButtons == null || RarityButtons.Count == 0)
-            {
-                return;
-            }
-
-            while (RarityButtons.Count < Rarities.Count)
-            {
-                Toggle template = RarityButtons[RarityButtons.Count - 1];
-                var rarity = (ItemRarity)RarityButtons.Count;
-                GameObject clone = Instantiate(template.gameObject, template.transform.parent);
-                clone.name = $"EnchantRaritySelector ({(int)rarity})";
-
-                // The panel root was localized before this tab ever woke, so the clone's label is
-                // localized here rather than left as a token.
-                foreach (TMP_Text label in clone.GetComponentsInChildren<TMP_Text>(true))
-                {
-                    label.text = Localization.instance.Localize($"$mod_epicloot_{rarity}");
-                }
-
-                if (clone.TryGetComponent(out SetRarityColor rarityColor))
-                {
-                    rarityColor.SetRarity(rarity);
-                }
-
-                Toggle toggle = clone.GetComponent<Toggle>();
-                toggle.group = template.group;
-                toggle.isOn = false;
-                RarityButtons.Add(toggle);
             }
         }
 
@@ -198,34 +157,30 @@ namespace EpicLoot_UnityLib
             }
 
             List<InventoryItemListElement> cost = EnchantingUIController.GetEnchantCost(item, _rarity);
-
-            Player player = Player.m_localPlayer;
-            if (!player.NoCostCheat())
+            ItemRarity rarity = _rarity;
+            PayThen(new InventoryManagement.Payment().Cost(cost), receipt =>
             {
-                if (!LocalPlayerCanAffordCost(cost))
+                // The item may have moved while the storage's owner answered.
+                if (!InventoryManagement.Instance.IsEditable(item))
                 {
-                    Debug.LogError("[Enchant Item] ERROR: Tried to enchant item but could not afford the cost. This should not happen!");
-                    player.Message(MessageHud.MessageType.Center, "$msg_missingrequirement");
+                    receipt.Refund();
+                    NotifyItemsUnavailable(item);
+                    RefreshAvailableItems();
                     return;
                 }
 
-                foreach (InventoryItemListElement costElement in cost)
+                if (_successDialog != null)
                 {
-                    InventoryManagement.Instance.RemoveItem(costElement.GetItem());
+                    Destroy(_successDialog);
                 }
-            }
 
-            if (_successDialog != null)
-            {
-                Destroy(_successDialog);
-            }
+                DeselectAll();
+                Lock();
 
-            DeselectAll();
-            Lock();
+                _successDialog = EnchantingUIController.EnchantItemAndReturnSuccessDialog(item, rarity);
 
-            _successDialog = EnchantingUIController.EnchantItemAndReturnSuccessDialog(item, _rarity);
-
-            RefreshAvailableItems();
+                RefreshAvailableItems();
+            }, RefreshAvailableItems);
         }
 
         protected override AudioClip GetCompleteAudioClip()
@@ -237,9 +192,7 @@ namespace EpicLoot_UnityLib
         public void RefreshAvailableItems()
         {
             List<InventoryItemListElement> items = EnchantingUIController.GetEnchantableItems();
-            AvailableItems.SetItems(items.Cast<IListElement>().ToList());
-            AvailableItems.DeselectAll();
-            OnSelectedItemsChanged();
+            AvailableItems.SetItemsAndDeselect(items.Cast<IListElement>().ToList());
         }
 
         protected override void OnSelectedItemsChanged()
@@ -283,11 +236,6 @@ namespace EpicLoot_UnityLib
             {
                 modeButton.interactable = true;
             }
-        }
-
-        public override void DeselectAll()
-        {
-            AvailableItems.DeselectAll();
         }
     }
 }

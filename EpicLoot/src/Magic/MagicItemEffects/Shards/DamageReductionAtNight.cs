@@ -1,9 +1,8 @@
 ﻿using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects.Shards {
-    // Reduces incoming damage at night
     public static class DamageReductionAtNight {
-        // Prefix handler invoked by CharacterRpcDamageDispatch (victim-side incoming modifier).
+        // Prefix handler invoked by SharedCharacterRpcDamagePatch (victim-side incoming modifier).
         public static void ModifyIncoming(Character __instance, HitData hit) {
             if (hit == null || __instance != Player.m_localPlayer || !EnvMan.IsNight()) {
                 return;

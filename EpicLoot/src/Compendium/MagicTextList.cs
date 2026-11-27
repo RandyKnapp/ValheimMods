@@ -36,7 +36,7 @@ public class MagicTextList
             GameObject.Destroy(child);
         }
 
-        // Add overlay to have something to raycast to scroll smoothly between gaps
+        // Something to raycast against, so the mouse wheel still scrolls over the gaps between lines.
         GameObject overlay = new GameObject("overlay");
         overlay.AddComponent<LayoutElement>().ignoreLayout = true;
         _overlayRect = overlay.GetComponent<RectTransform>();
@@ -66,18 +66,7 @@ public class MagicTextList
     /// <summary>Room above the page content, for a search bar docked over it.</summary>
     public void SetTopPadding(int pixels) => _layout.padding.top = pixels;
 
-    public void ScrollBy(float pixels)
-    {
-        RectTransform viewport = _scrollRect.viewport ? _scrollRect.viewport : _scrollRect.transform as RectTransform;
-        float scrollable = _scrollRect.content.rect.height - viewport!.rect.height;
-        if (scrollable <= 0f)
-        {
-            return;
-        }
-
-        _scrollRect.verticalNormalizedPosition =
-            Mathf.Clamp01(_scrollRect.verticalNormalizedPosition + (pixels / scrollable));
-    }
+    public void ApplyGamepadScroll() => GamepadScroll.ApplyRightStickY(_scrollRect);
 
     public void Clear()
     {

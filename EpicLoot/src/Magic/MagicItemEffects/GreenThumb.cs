@@ -4,8 +4,6 @@ using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects;
 
-// Green Thumb: seeds and saplings the player plants take less time to grow.
-//
 // The planter's value is stamped on the plant's ZDO the moment it is placed. Piece.SetCreator runs on the
 // planter's client, which owns the freshly instantiated object, so that is the one place the planter's gear
 // is both known and writable. From then on the bonus belongs to the plant: it survives the planter

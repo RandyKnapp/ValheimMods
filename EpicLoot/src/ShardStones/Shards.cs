@@ -1,8 +1,6 @@
 ﻿using EpicLoot.Crafting;
 using EpicLoot.GatedItemType;
 using EpicLoot.General;
-using HarmonyLib;
-using JetBrains.Annotations;
 using Jotunn.Configs;
 using Jotunn.Entities;
 using Jotunn.Managers;
@@ -11,35 +9,28 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace EpicLoot.ShardStones {
-    // A Shard's color determines which set of magical effects it has along with its icon
+    // Serialized by ordinal on socketed gear: never renumber or insert into the existing ranges.
     public enum ShardType {
-        // Core Shards
-        Red = 0,  // Vitality
-        Yellow = 1, // Stamina
-        Cyan = 2,  // Eitr
-        // Standard Shards
-        Black = 3, // Night time effects
-        Green = 4, // Movement
-        Orange = 5, // Fire
-        Pink = 6, // Dodge
-        Purple = 7, // Eitr
-        White = 8, // Daytime
-        Grey = 9, // harvesting
-        // Dark shards
+        Red = 0,
+        Yellow = 1,
+        Cyan = 2,
+        Black = 3,
+        Green = 4,
+        Orange = 5,
+        Pink = 6,
+        Purple = 7,
+        White = 8,
+        Grey = 9,
         DarkGreen = 30,
         DarkPurple = 31,
-        DarkRed = 32, // berserker
-        DarkBlue = 33, // cold resistances
-        Golden = 34, // luck
-        // Light shards
+        DarkRed = 32,
+        DarkBlue = 33,
+        Golden = 34,
         LightBlue = 40,
         LightGreen = 41,
         Peach = 42,
-        //LightRed = 43,
-        // Unique shards -- one signature effect granted on every slot, one worn at a time
         Firewalker = 70,
         Stormcaller = 71,
-        // Boss shards
         Eikthyr = 90,
         Elder = 91,
         Bonemass = 92,
@@ -48,12 +39,10 @@ namespace EpicLoot.ShardStones {
         Queen = 95,
         Fader = 96,
 
-        // This is the error path
-        None
+        // Pinned so new shards can follow Fader. Saves before 0.16.0 hold it as 97 (SocketedEffect.LegacyNone).
+        None = 404
     }
 
-    // Groups shards into classes. A category may be flagged exclusive (see Shards.IsExclusive),
-    // meaning a player may wear at most one socketed shard of that category at a time.
     public enum ShardCategory {
         Core,
         Dark,
@@ -62,20 +51,15 @@ namespace EpicLoot.ShardStones {
         Unique
     }
 
-    // The equipment "slot" a shard resolves to when socketed. This mirrors EpicLoot's ItemInfo types
-    // (config/iteminfo.json) so a shard can grant a different effect to each individual item type, while
-    // still assigning one effect to a whole group (all melee weapons, all shields, all armor) as a
-    // fallback. Shards.ResolveCategory maps a host item to the most specific fine type it can; a fine
-    // effect overrides its group and a group effect covers every member that has no fine effect.
+    // Groups first (fallback keys only, never a resolution result), then the fine types, which mirror
+    // the iteminfo.json types.
     public enum ShardSlotCategory {
-        // -------- Groups (broad fallback keys; not resolution targets in the primary path) --------
         MeleeWeapon,
         RangedWeapon,
         MagicWeapon,
         Shield,
         Armor,
 
-        // -------- Fine weapon types (mirror ItemInfo) --------
         Swords,
         Axes,
         TwoHandAxes,
@@ -91,18 +75,15 @@ namespace EpicLoot.ShardStones {
         Bows,
         Staffs,
 
-        // -------- Fine shield types --------
         Bucklers,
         RoundShields,
         TowerShields,
 
-        // -------- Fine armor types --------
         Head,
         Chest,
         Legs,
         Shoulders,
 
-        // -------- Standalone (no group) --------
         Trinket,
         Utility
     }
@@ -111,65 +92,30 @@ namespace EpicLoot.ShardStones {
         public string EffectType;
         public Dictionary<ItemRarity, float> ValuesPerRarity = new Dictionary<ItemRarity, float>();
 
-        // Per-effect tunables, the same shape and semantics as the "Config" block on a
-        // magiceffects.json entry: a flat string -> float bag read at runtime through EffectConfig
-        // (backed by MagicItemEffectDefinitions.GetEffectConfig) and rendered one key per line in the
-        // Shift-detail tooltip. This is where a shard effect's cooldowns, charge counts, durations,
-        // radii and caps live, so they can be retuned without rebuilding the DLL.
-        //
-        // Left empty on purpose: Newtonsoft APPENDS to a pre-initialized collection, and an absent key
-        // has to fall through to the effect class's code default rather than merge with it.
-        // ShardEffectDefinitions.BuildDefinition owns that merge -- code defaults first, these keys
-        // overlaid on top -- which is what lets a partial block tune one knob without blanking the rest.
-        //
-        // An effect assigned to several slots is authored once per slot, so the same effect type can
-        // carry more than one Config. First occurrence wins, exactly as ValuesPerRarity already does;
-        // a disagreeing later copy is warned about in ShardEffectDefinitions.CollectShardEffects.
+        // Left empty: Newtonsoft appends to a pre-initialized collection, and an absent key has to fall
+        // through to the effect's code default (merged in ShardEffectDefinitions.BuildDefinition).
         public Dictionary<string, float> Config = new Dictionary<string, float>();
     }
 
     public class ShardDefinition {
         public ShardCategory Category = ShardCategory.Core;
 
-        // The rarities this shard can be created/dropped at. Each (color, rarity) is a distinct prefab and
-        // a shard's rarity is stored per instance in its MagicItem metadata; this set constrains drop rolls
-        // and debug spawns (see Shards.ClampToRaritySet). Left empty here on purpose: Newtonsoft APPENDS
-        // to a pre-initialized collection, so a non-empty default would merge with the JSON list;
-        // InitializeShardDefinitions backfills all five when the config omits it.
+        // Left empty for the same Newtonsoft reason; InitializeShardDefinitions backfills every rarity.
         public List<ItemRarity> Rarities = new List<ItemRarity>();
 
-        // When non-null, the shard grants this single effect on ANY host item type it is allowed
-        // into (a "uniform" shard), instead of the per-item-type TypeEffects mapping below.
+        // When set, the shard grants this one effect on any host item type instead of TypeEffects.
         public ShardEffectDefinition UniformEffect = null;
 
-        // Define only the supported gear types. New sockets require a matching effect and a value
-        // for the stone's rarity. Specific types override their broad group; omitted types with no
-        // group mapping are unsupported. Existing stones remain stored if a mapping is removed.
+        // Existing stones stay stored if a mapping is removed; new sockets need a matching effect.
         public Dictionary<ShardSlotCategory, ShardEffectDefinition> TypeEffects = new Dictionary<ShardSlotCategory, ShardEffectDefinition>();
-
-        public float GetValue(ShardSlotCategory category, ItemRarity rarity) {
-            if (UniformEffect != null) {
-                return UniformEffect.ValuesPerRarity.TryGetValue(rarity, out var uniform) ? uniform : 0f;
-            }
-            if (TypeEffects.TryGetValue(category, out var effectDef)) {
-                return effectDef.ValuesPerRarity.TryGetValue(rarity, out var value) ? value : 0f;
-            }
-            return 0f;
-        }
     }
 
-    // Tunables shared by several shard effects rather than owned by one, so they have no single
-    // ShardEffectDefinition to hang off (the movement-penalty reference feeds seven shards, the
-    // blood-block self-damage share feeds two). Read through EffectConfig.Global, but resolved once
-    // per load into static fields on the classes that use them -- several sit on 50Hz vanilla methods
-    // where a per-read dictionary lookup would not be free. Empty by default for the Newtonsoft reason
-    // on ShardEffectDefinition.Config above.
+    // Tunables shared by several shard effects. Resolved once per load into static fields on their
+    // owners (EffectConfig.ApplyGlobalConfig), since several sit on 50Hz vanilla methods.
     public class ShardGlobalConfig {
         public Dictionary<string, float> Values = new Dictionary<string, float>();
     }
 
-    // Root of config/shardstones.json: the full shard effect/rarity grid keyed by color, plus the
-    // cross-effect tunables that belong to no single shard.
     public class ShardStonesConfig {
         public Dictionary<ShardType, ShardDefinition> Shards = new Dictionary<ShardType, ShardDefinition>();
         public ShardGlobalConfig Global = new ShardGlobalConfig();
@@ -178,21 +124,18 @@ namespace EpicLoot.ShardStones {
     public static class Shards {
         public static readonly String ShardIndicator = "ShardStone";
 
-        // Per-(color, rarity) prefab stack cap. Each (color, rarity) is a distinct prefab with a distinct
-        // display name, so only identical-rarity shards of the same color merge -- up to this many.
         private const int ShardStackSize = 100;
 
-        // Shard effect/rarity definitions, loaded from config/shardstones.json (registered in
-        // ELConfig.InitializeConfig). Keyed by color; each carries its own rarity set.
         private static Dictionary<ShardType, ShardDefinition> _definitions =
             new Dictionary<ShardType, ShardDefinition>();
 
-        // Cross-effect tunables from the "Global" block, kept whole so GetCFG can round-trip them to
-        // clients. The live values are pushed into static fields by EffectConfig.ApplyGlobalConfig.
+        // Kept whole so GetCFG can round-trip it to clients.
         private static ShardGlobalConfig _globalConfig = new ShardGlobalConfig();
 
-        // Config setup hook (SychronizeConfig<ShardStonesConfig>). Backfills defaults so downstream
-        // lookups never hit a null Rarities/TypeEffects/Config.
+        // Counts the grid's loads. Socketed stones carry values baked from the grid, so an item worked out
+        // under another count re-derives them on its next read (MagicItemComponent.RefreshSocketValues).
+        public static int GridVersion { get; private set; }
+
         public static void InitializeShardDefinitions(ShardStonesConfig config) {
             _definitions = config?.Shards ?? new Dictionary<ShardType, ShardDefinition>();
             foreach (var def in _definitions.Values) {
@@ -220,26 +163,53 @@ namespace EpicLoot.ShardStones {
             _globalConfig = config?.Global ?? new ShardGlobalConfig();
             global::EpicLoot.src.Magic.MagicItemEffects.Helpers.EffectConfig.ApplyGlobalConfig(_globalConfig);
 
-            // The synthesized MagicItemEffectDefinitions are built from this grid, so they go stale the
-            // moment it changes. OnSetupMagicItemEffectDefinitions only fires when magiceffects.json
-            // reloads -- a different file -- so a live edit here, or a server pushing its copy of
-            // shardstones.json, has to rebuild them from this side. Same dual-trigger reason
-            // ShardStoneConversions.Merge runs from both its own Initialize and the other file's event.
-            // RegisterShardEffectDefinitions replaces its own previous output, so re-running is safe.
+            // The synthesized definitions are built from this grid, and OnSetupMagicItemEffectDefinitions
+            // only fires when magiceffects.json reloads, so a live edit or server push of this file has to
+            // rebuild them from here. Re-running is safe: it replaces its own previous output.
             global::EpicLoot.Magic.MagicItemEffects.Helpers.ShardEffectDefinitions.RegisterShardEffectDefinitions();
+
+            GridVersion++;
+            ShardSocketManager.OnRuneSocketRulesChanged();
+        }
+
+        // Shard Stack Mode and Shard Stack Decay Factor are baked into socket values like the grid is, so a change to
+        // either (an edit or the server's push) re-derives every loaded item's sockets: the player's inventory, items on
+        // the ground and the inventories of loaded containers. Anything else catches up on its next read.
+        public static void ReapplySocketStacking() {
+            GridVersion++;
+
+            Inventory inventory = Player.m_localPlayer != null ? Player.m_localPlayer.GetInventory() : null;
+            if (inventory != null) {
+                RefreshSocketValues(inventory);
+            }
+            foreach (ItemDrop drop in ItemDrop.s_instances) {
+                if (drop != null) {
+                    MagicItemData.RefreshSocketValues(drop.m_itemData);
+                }
+            }
+            foreach (Container container in UnityEngine.Object.FindObjectsByType<Container>(FindObjectsSortMode.None)) {
+                Inventory containerInventory = container.GetInventory();
+                if (containerInventory != null) {
+                    RefreshSocketValues(containerInventory);
+                }
+            }
+
+            ShardSocketManager.OnRuneSocketRulesChanged();
+            ItemTooltip.InvalidateCache();
+        }
+
+        private static void RefreshSocketValues(Inventory inventory) {
+            foreach (ItemDrop.ItemData item in inventory.GetAllItems()) {
+                MagicItemData.RefreshSocketValues(item);
+            }
         }
 
         public static ShardStonesConfig GetCFG() {
             return new ShardStonesConfig { Shards = _definitions, Global = _globalConfig };
         }
 
-        // Brings a shard's MagicItem in line with its identity. Color and rarity both come from
-        // m_shared.m_ammoType, which Unity deep-copies on Instantiate and which is always rebuilt from
-        // the prefab on load, so this takes no rarity argument and cannot be called with a wrong one.
-        // The MagicItem it creates is purely cosmetic -- it is what makes a shard report IsMagic(),
-        // giving it a rarity-colored name, magic background and magic tooltip. Idempotent and cheap:
-        // no-ops for non-shards and for shards already carrying the right rarity, so it is safe on hot
-        // paths. This is what makes every shard prefab directly safe to Instantiate -- no caller stamps.
+        // The MagicItem is cosmetic only (rarity-colored name, magic background and tooltip); identity
+        // comes from m_ammoType. Idempotent and cheap, so safe on hot paths.
         public static bool EnsureShardMetadata(ItemDrop.ItemData item) {
             if (!IsShard(item)) {
                 return false;
@@ -257,8 +227,6 @@ namespace EpicLoot.ShardStones {
             return true;
         }
 
-        // Snaps a rarity to the nearest one in a color's declared set (Rarities in shardstones.json).
-        // Returns the input unchanged when the set is empty/undefined or already contains it.
         public static ItemRarity ClampToRaritySet(ShardType color, ItemRarity rarity) {
             var set = ShardDefinitions.Get(color)?.Rarities;
             if (set == null || set.Count == 0 || set.Contains(rarity)) {
@@ -276,8 +244,6 @@ namespace EpicLoot.ShardStones {
             return best;
         }
 
-        // Picks a uniformly random rarity from a color's declared set (Rarities in shardstones.json).
-        // Falls back to Magic when the set is empty/undefined, mirroring GetShardRarity's default.
         public static ItemRarity RandomRarityFromSet(ShardType color) {
             var set = ShardDefinitions.Get(color)?.Rarities;
             if (set == null || set.Count == 0) {
@@ -286,8 +252,6 @@ namespace EpicLoot.ShardStones {
             return set[UnityEngine.Random.Range(0, set.Count)];
         }
 
-        // Accessors kept under the ShardDefinitions name for existing call sites (MagicTooltipShard,
-        // ShardEffectDefinitions). Backed by the config loaded above.
         public static class ShardDefinitions {
             public static Dictionary<ShardType, ShardDefinition> ShardEffects => _definitions;
 
@@ -296,15 +260,12 @@ namespace EpicLoot.ShardStones {
             }
         }
 
-        // A shard's identity -- color and rarity -- lives entirely in its m_shared.m_ammoType, formatted
-        // as "{Color}|{Rarity}|ShardStone" (e.g. "Yellow|Epic|ShardStone"). m_shared is a serialized
-        // field, so Unity deep-copies it on Instantiate and the game rebuilds it from the prefab on every
-        // load; that is what makes identity impossible to lose on any spawn path. Custom data
-        // (m_customData / MagicItem) is [NonSerialized] and must never be the source of truth here.
+        // A shard's identity is its m_shared.m_ammoType, "{Color}|{Rarity}|ShardStone". m_shared is
+        // serialized, so Unity deep-copies it on Instantiate and the game rebuilds it from the prefab on
+        // every load; m_customData is [NonSerialized] and must never be the source of truth here.
         private const int ShardAmmoTypeParts = 3;
 
-        // Check if this is a shard item. Runs on every ItemDrop.Awake (via InitializeCustomData), so it
-        // stays cheap and must not throw on a modded item with an unset ammoType.
+        // Runs on every ItemDrop.Awake, so it stays cheap and must not throw on an unset ammoType.
         public static bool IsShard(ItemDrop.ItemData item) {
             return item?.m_shared != null && item.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Material &&
                 !string.IsNullOrEmpty(item.m_shared.m_ammoType) &&
@@ -343,7 +304,6 @@ namespace EpicLoot.ShardStones {
                 return null;
             }
 
-            // A uniform shard (e.g. a boss shard) grants the same effect on any host item type.
             if (colorEffects.UniformEffect != null) {
                 return colorEffects.UniformEffect;
             }
@@ -352,16 +312,13 @@ namespace EpicLoot.ShardStones {
                 return null;
             }
 
-            // An item we cannot classify gets no effect -- the shard still occupies the socket, it just
-            // sits inert (the tooltip says so). Substituting a slot here would hand the item an effect
+            // An unclassifiable item leaves the shard inert; substituting a slot would hand it an effect
             // authored for some other kind of gear.
             var slot = ResolveCategory(item);
             if (slot == null) {
                 return null;
             }
 
-            // A fine-type effect (e.g. Swords) overrides its group (MeleeWeapon); a group effect covers
-            // every member with no fine effect of its own.
             if (colorEffects.TypeEffects.TryGetValue(slot.Value, out var fineEffect)) {
                 return fineEffect;
             }
@@ -372,9 +329,6 @@ namespace EpicLoot.ShardStones {
             return null;
         }
 
-        // Maps each EpicLoot ItemInfo type string (config/iteminfo.json "Type") to its fine slot. This is
-        // the primary resolution path -- it distinguishes types that share a skill/ItemType (e.g. Axes vs
-        // TwoHandAxes, the three shield subtypes) that the fallback heuristic below cannot.
         private static readonly Dictionary<string, ShardSlotCategory> ItemInfoTypeToSlot =
             new Dictionary<string, ShardSlotCategory>(StringComparer.OrdinalIgnoreCase)
             {
@@ -403,8 +357,6 @@ namespace EpicLoot.ShardStones {
                 { "Utility", ShardSlotCategory.Utility }
             };
 
-        // The broad group a fine slot falls back to when a shard defines no effect for the exact type.
-        // Returns null for standalone slots (Trinket, Utility) and for group values themselves.
         public static ShardSlotCategory? GroupOf(ShardSlotCategory slot) {
             switch (slot) {
                 case ShardSlotCategory.Swords:
@@ -438,35 +390,24 @@ namespace EpicLoot.ShardStones {
             }
         }
 
-        // Maps a host equipment item to the most specific fine slot a shard uses to pick its effect.
-        // ItemTypeClassifier answers "which ItemInfo type is this?" for the whole mod -- the item's
-        // iteminfo.json entry when it has one, else a raw-field heuristic -- and ItemInfoTypeToSlot
-        // is the shard-specific layer on top of that vocabulary.
-        //
-        // Null means the item could not be classified at all. Callers must treat that as "no slot"
-        // rather than substituting one: guessing here is what put weapon effects on armor.
+        // Null means unclassifiable. Callers must treat that as "no slot" rather than substituting one:
+        // guessing here is what put weapon effects on armor.
         public static ShardSlotCategory? ResolveCategory(ItemDrop.ItemData item) {
             return ItemInfoTypeToSlot.TryGetValue(ItemTypeClassifier.GetItemInfoType(item), out var mapped)
                 ? mapped
                 : (ShardSlotCategory?)null;
         }
 
-        // Human-readable label for a slot category, e.g. "$mod_epicloot_shardslot_meleeweapon" ->
-        // "Melee Weapon". Falls back to the raw enum name when no localization key is defined.
         public static string GetCategoryDisplayName(ShardSlotCategory category) {
             var token = $"mod_epicloot_shardslot_{category.ToString().ToLowerInvariant()}";
             return Extensions.TryLocalize(token, out var localized) ? localized : category.ToString();
         }
 
-        // Human-readable label for a shard category, e.g. "$mod_epicloot_shardcategory_boss" -> "Boss".
-        // Falls back to the raw enum name when no localization key is defined.
         public static string GetCategoryDisplayName(ShardCategory category) {
             var token = $"mod_epicloot_shardcategory_{category.ToString().ToLowerInvariant()}";
             return Extensions.TryLocalize(token, out var localized) ? localized : category.ToString();
         }
 
-        // Display color for each shard color's name text (Compendium/tooltips). One entry per
-        // ShardType; anything unmapped renders white.
         private static readonly Dictionary<ShardType, string> ShardNameColors = new Dictionary<ShardType, string>
         {
             { ShardType.Red, "#e6484c" },
@@ -501,9 +442,6 @@ namespace EpicLoot.ShardStones {
         public static string GetShardNameColor(ShardType color) =>
             ShardNameColors.TryGetValue(color, out var value) ? value : "#ffffff";
 
-        // Prefab name of the lowest-rarity shard of this color -- the stand-in used when a UI needs
-        // "an icon for this color" without a concrete shard in hand (e.g. the Compendium sprite
-        // atlas). Null when the color has no usable definition.
         public static string GetIconPrefabName(ShardType color) {
             var def = ShardDefinitions.Get(color);
             if (def?.Rarities == null || def.Rarities.Count == 0) {
@@ -520,9 +458,6 @@ namespace EpicLoot.ShardStones {
             return $"{color}_{lowest}_ShardStone";
         }
 
-        // Categories whose shards are mutually exclusive: a player may wear at most one socketed
-        // shard of each such category at a time. Exclusivity is a property of the category, so it
-        // applies uniformly to every color in it.
         internal static readonly HashSet<ShardCategory> ExclusiveCategories = new HashSet<ShardCategory>
         {
             ShardCategory.Boss,
@@ -531,10 +466,7 @@ namespace EpicLoot.ShardStones {
 
         public static bool IsExclusive(ShardCategory category) => ExclusiveCategories.Contains(category);
 
-        // Exclusivity is enforced per category, so a Boss shard and a Unique shard may be worn at the
-        // same time -- one of each, not one in total. The player-facing messages therefore have to name
-        // the category that actually blocked instead of always saying "boss". Callers build
-        // $mod_epicloot_shard_{slug}exclusive, $mod_epicloot_socket_{slug}limit and
+        // Callers build $mod_epicloot_shard_{slug}exclusive, $mod_epicloot_socket_{slug}limit and
         // $mod_epicloot_equip_{slug}limit from this.
         public static string ExclusiveCategorySlug(ShardCategory category) =>
             category == ShardCategory.Unique ? "unique" : "boss";
@@ -559,9 +491,8 @@ namespace EpicLoot.ShardStones {
 
                 Enum.TryParse(shardColor, true, out ShardType color);
 
-                // A stale on-disk shardstones.json (missing this colour entirely, or carrying
-                // "Rarities": null) used to NRE here -- inside LoadAssets(), which kills the whole
-                // plugin in Awake. Skip the colour instead; its shards just don't exist this session.
+                // A stale on-disk shardstones.json can lack a colour; this runs inside LoadAssets, where
+                // a throw kills the whole plugin, so skip it instead.
                 ShardDefinition shardDef = ShardDefinitions.Get(color);
                 if (shardDef?.Rarities == null || shardDef.Rarities.Count == 0) {
                     EpicLoot.LogErrorForce($"shardstones.json has no usable definition for shard colour '{shardColor}' " +
@@ -576,10 +507,8 @@ namespace EpicLoot.ShardStones {
                     prefab.name = PrefabName;
                     ItemDrop pid = prefab.GetComponent<ItemDrop>();
                     pid.m_itemData.m_dropPrefab = prefab;
-                    // One sprite per color, by convention. A color added to ShardType before its art
-                    // exists in the bundle still produces a working shard -- Unity renders a null sprite
-                    // as an empty slot rather than throwing -- so say so once instead of leaving a blank
-                    // icon to be diagnosed by eye.
+                    // Unity renders a null sprite as an empty slot rather than throwing, so a missing
+                    // icon would otherwise go unnoticed.
                     var icon = EpicAssets.AssetBundle.LoadAsset<Sprite>($"Assets/EpicLoot/Sprites/Shardstones/{shardColor}.png");
                     if (icon == null) {
                         EpicLoot.LogWarning($"No shardstone sprite found for '{shardColor}' " +
@@ -590,20 +519,14 @@ namespace EpicLoot.ShardStones {
                     // 1, which with one icon makes vanilla's ItemDrop.EnsureValid log an error on every
                     // world spawn of a shard.
                     pid.m_itemData.m_variant = 0;
-                    // The ammoType is this shard's identity: color and rarity both live here, in shared
-                    // data that survives Instantiate. Everything downstream reads it rather than the
-                    // prefab name or any baked custom data.
                     pid.m_itemData.m_shared.m_ammoType = $"{shardColor}|{rarity}|ShardStone";
                     pid.m_itemData.m_shared.m_maxStackSize = ShardStackSize;
 
-                    // Bake the cosmetic MagicItem onto the prefab too, so the paths that Clone() an
-                    // ItemData straight off a prefab (conversions, socket reconstruction) get it without
-                    // waiting for a hook. Instances created by Instantiate are healed on Awake instead.
+                    // On the prefab too, for the paths that Clone() an ItemData straight off a prefab
+                    // (conversions, socket reconstruction) and so never run Awake.
                     EnsureShardMetadata(pid.m_itemData);
 
-                    // Include the rarity in the display name so each (color, rarity) prefab is a
-                    // distinct name -- that is what keeps different rarities in separate inventory
-                    // stacks (vanilla merges by name), e.g. "$mod_epicloot_Rare Red Shardstone".
+                    // Vanilla merges stacks by name, so the rarity in the name keeps rarities apart.
                     ItemConfig ShardItemConfig = new ItemConfig() {
                         Name = $"{EpicLoot.GetRarityDisplayName(rarity)} $mod_epicloot_shard_{shardColor} $mod_epicloot_assets_shardstone",
                         Description = "$mod_epicloot_assets_shardstone_introduce",
@@ -616,9 +539,7 @@ namespace EpicLoot.ShardStones {
                 }
             }
 
-            // Enable items once things are working so that ZNet issues don't happen.
-            // A single idempotent handler activates every registered prefab; a null
-            // lookup logs and continues so one missing prefab can't leave the rest inactive.
+            // Activated only once items are registered, to avoid ZNet issues.
             void EnableShardItems() {
                 foreach (string prefabName in shardPrefabNames) {
                     GameObject prefab = PrefabManager.Instance.GetPrefab(prefabName);

@@ -2,7 +2,6 @@
 using JetBrains.Annotations;
 
 namespace EpicLoot.MagicItemEffects.Shards {
-    // Applies a cleanse effect to the local player when they roll. The duration of the cleanse is determined by the total active value of the RollCleanse magic effect.
     public static class RollCleanse {
         // Rising-edge tracker for the local player's dodge animation, so the cleanse fires once when a
         // roll begins rather than every frame the dodge animation is playing.

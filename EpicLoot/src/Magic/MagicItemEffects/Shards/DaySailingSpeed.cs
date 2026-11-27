@@ -3,7 +3,6 @@ using JetBrains.Annotations;
 using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects.Shards {
-    // Provides a bonus to sailing speed during the day
     public static class DaySailingSpeed {
         [HarmonyPatch(typeof(Ship), nameof(Ship.GetSailForce))]
         private static class Ship_GetSailForce_Patch {

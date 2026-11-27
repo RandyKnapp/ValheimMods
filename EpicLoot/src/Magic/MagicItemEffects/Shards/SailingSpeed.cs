@@ -2,7 +2,6 @@
 using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects.Shards {
-    // Provides a bonus to sailing speed
     public static class SailingSpeed {
         [HarmonyPatch(typeof(Ship), nameof(Ship.GetSailForce))]
         private static class Ship_GetSailForce_Patch {

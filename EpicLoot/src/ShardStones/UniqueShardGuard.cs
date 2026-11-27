@@ -20,8 +20,7 @@ namespace EpicLoot.ShardStones {
         [UsedImplicitly]
         [HarmonyPriority(Priority.Last)]
         private static bool Prefix(Humanoid __instance, ItemDrop.ItemData item, ref bool __result) {
-            // Local player only, mirroring the inventory-scoped socket UI. During early load the item
-            // is equipped before m_localPlayer is assigned, so we simply let those through.
+            // During early load the item is equipped before m_localPlayer is assigned; those pass.
             if (__instance == null || __instance != Player.m_localPlayer ||
                 item == null || !item.IsMagic(out var magicItem)) {
                 return true;

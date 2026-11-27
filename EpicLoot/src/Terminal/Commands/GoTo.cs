@@ -15,6 +15,7 @@ public static partial class TerminalManager
     private static void GoToMerchant(Terminal.ConsoleEventArgs args)
     {
         Player player = Player.m_localPlayer;
+        if (player == null) return;
         string merchant = args.GetString(1, "haldor");
         if (!merchants.TryGetValue(merchant, out string locationName))
         {

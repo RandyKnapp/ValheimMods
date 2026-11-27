@@ -81,8 +81,6 @@ public class MagicCollapseButton
         _background.color = color;
     }
 
-    public void SetPosition(Vector2 worldPosition) => _rect.position = worldPosition;
-
     public void Dock(Vector2 anchor, Vector2 pivot, Vector2 anchoredPosition)
     {
         _rect.anchorMin = _rect.anchorMax = anchor;

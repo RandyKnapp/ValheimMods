@@ -6,9 +6,6 @@ namespace EpicLoot.MagicItemEffects;
 [HarmonyPatch]
 public static class BulkupEffect
 {
-    // Tooltip shows both sides of the trade-off. Both derive from the same rolled value today
-    // (+value% max HP / -value% HP regen); keeping the regen figure here means it can diverge in one
-    // place later and the tooltip follows. See GetHealthRegenWithBulkUp / GetAdditionalHealthWithBulkUp.
     public static void RegisterDisplayValues()
     {
         MagicItem.RegisterDisplayValues(MagicEffectType.BulkUp, value => new object[] { value, value });
@@ -60,9 +57,8 @@ public static class BulkupEffect
         if (Player.m_localPlayer.HasActiveMagicEffect(MagicEffectType.BulkUp, out float bulkupValue, 0.01f))
         {
             bulkupValue = Mathf.Clamp01(bulkupValue);
-            // Reduce regen by bulk up percent, taking at most the regen that is left. The penalty is
-            // subtracted from a multiplier other status effects may already have lowered, so
-            // an uncapped subtraction could push it below zero and turn every regen tick into a drain.
+            // Takes at most the regen that is left: other status effects may already have lowered the
+            // multiplier, and below zero every regen tick would become a drain.
             regen -= Mathf.Min(bulkupValue, Mathf.Max(regen, 0f));
         }
 
@@ -74,7 +70,6 @@ public static class BulkupEffect
         if (Player.m_localPlayer.HasActiveMagicEffect(MagicEffectType.BulkUp, out float bulkupValue, 0.01f))
         {
             bulkupValue = Mathf.Clamp01(bulkupValue);
-            // Increase health by bulk up percent
             return health * bulkupValue;
         }
 

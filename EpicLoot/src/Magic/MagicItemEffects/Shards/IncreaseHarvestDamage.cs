@@ -1,7 +1,6 @@
 ﻿using EpicLoot.src.Magic.MagicItemEffects.Helpers;
 
 namespace EpicLoot.MagicItemEffects.Shards {
-    // Provides a bonus to harvest damage (chop and pickaxe)
     public static class IncreaseHarvestDamage {
         // GetDamage postfix handler invoked by ModifyDamage (per-weapon modifier).
         public static void ModifyWeaponDamage(ItemDrop.ItemData __instance, ref HitData.DamageTypes __result) {

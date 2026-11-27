@@ -53,8 +53,8 @@ public static partial class API
 
     /// <summary>
     /// Contributes additional items to the enchanting table's view of the player's inventory -- nearby
-    /// containers, a backpack, a remote stash. Epic Loot always draws from the player's own inventory
-    /// first and only falls through to providers for the shortfall.
+    /// containers, a backpack, a remote stash. A cost is spent from the enchanting table's own storage
+    /// first, then from the player's own inventory, and only the shortfall falls through to providers.
     /// </summary>
     /// <param name="id">Unique id for this registration, normally your plugin GUID. Used for
     /// unregistration and in error messages.</param>

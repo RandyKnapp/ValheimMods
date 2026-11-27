@@ -22,9 +22,8 @@ namespace EpicLoot.Magic.MagicItemEffects
                         nameof(ItemDrop.ItemData.m_shared.m_consumeStatusEffect))),
                     // resetTime / itemLevel / skillLevel of the SEMan.AddStatusEffect call below.
                     // Player.ConsumeItem loads m_consumeStatusEffect three times; only this one is
-                    // followed by these literals, so they identify the site on their own. Matching
-                    // the callvirt's exact overload as well is what broke when the Sept 2026 update
-                    // appended a `short variant` parameter, so it is deliberately not matched here.
+                    // followed by these literals, so they identify the site on their own. The callvirt's
+                    // overload is deliberately not matched: game updates append parameters to it.
                     new CodeMatch(OpCodes.Ldc_I4_1),
                     new CodeMatch(OpCodes.Ldc_I4_0),
                     new CodeMatch(OpCodes.Ldc_R4));
@@ -87,7 +86,11 @@ namespace EpicLoot.Magic.MagicItemEffects
                 {
                     returnEffect = (SE_Stats)seStats.Clone();
                 }
-                returnEffect.m_ttl = seStats.m_ttl * Mathf.Clamp01(1f - effectValue);
+                // A ttl of 0 is "never expires" to vanilla, so a full reduction keeps a second rather than reaching it.
+                if (seStats.m_ttl > 0f)
+                {
+                    returnEffect.m_ttl = Mathf.Max(1f, seStats.m_ttl * Mathf.Clamp01(1f - effectValue));
+                }
             }
 
             return returnEffect;

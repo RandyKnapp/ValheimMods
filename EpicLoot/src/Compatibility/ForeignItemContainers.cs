@@ -14,7 +14,7 @@ namespace EpicLoot.Compatibility;
 /// Three sources, cheapest first: containers registered through <see cref="API.RegisterItemContainer"/>,
 /// BowsBeforeHoes 2.x quivers (<see cref="BowsBeforeHoesCompat"/>), and anything built on the Backpacks
 /// <c>ItemContainer</c> pattern. Soft in every direction: no assembly reference, and any failure degrades
-/// to "not a container", which restores the pre-existing behaviour rather than taking anything down.
+/// to "not a container" rather than taking anything down.
 /// </summary>
 public static class ForeignItemContainers
 {

@@ -3,7 +3,6 @@ using Jotunn.Managers;
 using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects.Shards {
-    // Absorbs a portion of incoming damage by spending Eitr
     public static class EitrShield {
         static GameObject effect = null;
         // Invoked by SharedPlayerPostArmorDamagePatch (victim-side): after the bubble, block, resistances and

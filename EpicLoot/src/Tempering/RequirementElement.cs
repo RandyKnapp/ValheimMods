@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -8,21 +9,13 @@ namespace EpicLoot;
 public class RequirementElement : MonoBehaviour
 {
     public static readonly List<RequirementElement> elements = [];
-    public TemperRequirement _requirement;
-    public Image background;
-    public Image magicBG;
+    [NonSerialized] public TemperRequirement _requirement;
     public Image icon;
     public TextMeshProUGUI label;
     public TextMeshProUGUI amount;
 
     public void Awake()
     {
-        background = transform.Find("Background").GetComponent<Image>();
-        magicBG = transform.Find("MagicBG").GetComponent<Image>();
-        icon = transform.Find("Icon").GetComponent<Image>();
-        label = transform.Find("Name").GetComponent<TextMeshProUGUI>();
-        amount = transform.Find("Amount").GetComponent<TextMeshProUGUI>();
-
         elements.Add(this);
     }
 

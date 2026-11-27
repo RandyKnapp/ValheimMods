@@ -50,7 +50,7 @@ public class MagicSearchField
         GameObject text = new GameObject("Text");
         _textRect = text.AddComponent<RectTransform>();
         text.transform.SetParent(_obj.transform);
-        Input.textComponent = text.AddComponent<Text>(); ;
+        Input.textComponent = text.AddComponent<Text>();
         Input.textComponent.alignment = TextAnchor.MiddleLeft;
 
         GameObject placeholderObj = new GameObject("Placeholder");
@@ -81,8 +81,6 @@ public class MagicSearchField
         _background.sprite = null;
         _background.color = color;
     }
-
-    public void SetPosition(Vector2 pos) => _rect.position = pos;
 
     public void Dock(Vector2 anchor, Vector2 pivot, Vector2 anchoredPosition)
     {

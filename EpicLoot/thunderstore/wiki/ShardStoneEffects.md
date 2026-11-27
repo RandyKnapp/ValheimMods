@@ -1,6 +1,6 @@
 # ShardStone Effects by Slot
 
-All data is sourced from [`config/shardstones.json`](config/shardstones.json), keyed by shard color → slot → effect.
+All data is sourced from [`config/overhauls/*/shardstones.json`](config/overhauls/), keyed by shard color → slot → effect. Each Balance Template has its own copy.
 Standard shards (Core/Dark/Light) define one effect per broad slot; Boss shards use a single **uniform** effect that
 applies to any socket. Effect power scales by rarity (Magic → Rare → Epic → Legendary → Mythic → Ancient).
 
@@ -23,8 +23,8 @@ applies to any socket. Effect power scales by rarity (Magic → Rare → Epic �
 
 | Shard | Melee Wpn | Ranged Wpn | Magic Wpn | Shield | Head | Chest | Legs | Shoulders | Trinket | Utility |
 |---|---|---|---|---|---|---|---|---|---|---|
-| **DarkRed** (Berserk) |  IncreaseMeleeSkills | IncreaseRangedSkills | AddBluntDamage | BloodBaseBlock | HeadHunter | Bloodrage | BloodDrinker | ReduceArmorIncreaseDamage | AdrenalineCharge | OffSetAttack |
-| **DarkGreen** (Poison) | AddPoisonDamage | AddPoisonDamage | AddPoisonDamage | PhysToPoisonOnBlock | AddPoisonResistancePercentage | PhysToPoison | AddBlockingSkill | PoisonToTrueDamage | GainAdrenalineWhenApplyingPoison | IncreaseAllPoisonDamageDone |
+| **DarkRed** (Berserk) |  IncreaseMeleeSkills | IncreaseRangedSkills | AddSpiritDamage | BloodBaseBlock | HeadHunter | Bloodrage | BloodDrinker | ReduceArmorIncreaseDamage | AdrenalineCharge | OffSetAttack |
+| **DarkGreen** (Poison) | AddPoisonDamage | AddPoisonDamage | AddSpiritDamage | PhysToPoisonOnBlock | AddPoisonResistancePercentage | PhysToPoison | AddBlockingSkill | PoisonToTrueDamage | GainAdrenalineWhenApplyingPoison | IncreaseAllPoisonDamageDone |
 | **DarkBlue** (Frost) | AddFrostDamage | AddFrostDamage | AddFrostDamage | PhysToFrostOnBlock | AddFrostResistancePercentage | PhysToFrost | AddElementalMagicSkill | IcyWeight | AdrenalineFrostWave | Warmth |
 | **DarkPurple** (Blood) | ModifyAttackHealthUse | ModifyAttackHealthUse | ModifyAttackHealthUse | BloodStaggerBlock | KillsReduceNextBloodCost | ReflectDamage | BloodMagicLevelIncreasesHealthRegen | GainEitrWhenSacrificingHealth | GainAdrenalineWhenSacrificingHealth | AddBloodMagicSkill |
 | **Golden** (Luck) | ChanceDoubleDamage | ChanceDoubleDamage | ChanceDoubleDamage | LuckyBlock | Inspiration | LuckyLoot | LuckWhileFishing | LuckyCraft | Luck | Riches |
@@ -112,7 +112,7 @@ into unsupported equipment.
 Every effect the shard grid above actually grants, with its in-game tooltip and description lifted verbatim from
 [`localizations/English.json`](localizations/English.json) (`mod_epicloot_me_<effect>_display` / `_desc`).
 `{0}`, `{1}`, ... and **X** are the rarity-scaled values from
-[`config/shardstones.json`](config/shardstones.json); an effect with more than one placeholder pulls its extra
+[`config/overhauls/*/shardstones.json`](config/overhauls/); an effect with more than one placeholder pulls its extra
 numbers from its `Config` block in
 [`ShardEffectDefinitions`](src/Magic/MagicItemEffects/Helpers/ShardEffectDefinitions.cs). Effect ids are globally
 unique — no effect is shared by two shards.
@@ -201,9 +201,9 @@ unique — no effect is shared by two shards.
 | `RunningOnEmpty` | Purple | Utility | Second Wind: {0}% of Max Health | When stamina runs out, burn up to {0}% of your max health for that much stamina. 30 second cooldown. |
 | `IncreaseHarvestDamage` | Grey | Melee Wpn, Ranged Wpn, Magic Wpn | +{0}% Harvest Damage | +{0}% chopping and mining damage. |
 | `BlockAsWoodCuttingAndPickaxes` | Grey | Shield | Adds +{1} block skill | Adds +{0}% of woodcutting and pickaxes skills after all modifiers as block skill. This bonus is rounded down to whole values |
-| `IncreaseMiningDrop` | Grey | Head | Mining Drop +{0:0} | Increase total amount of drops from ore and stone mining by **X**. |
+| `IncreaseMiningDrop` | Grey | Head | Ore Yield +{0:0.##}% | Mined resources drop **X%** more. Stone only gets the bonus in rocks with nothing better. Values are half of Balanced on Minimal and double on Legendary. |
 | `AddFishingSkill` | Grey | Chest | Fishing Skill +{0} | Increases the player's fishing skill level by +**X**. This may cause the skill level to increase above 100. |
-| `IncreaseTreeDrop` | Grey | Legs | Lumberjacking Drop +{0:0} | Increase total amount of drops from trees and logs by **X**. |
+| `IncreaseTreeDrop` | Grey | Legs | Wood Yield +{0:0.##}% | Trees and logs drop **X%** more. Plain wood only gets the bonus when there is no better wood. Values are half of Balanced on Minimal and double on Legendary. |
 | `ReduceFishingStaminaCost` | Grey | Shoulders | -{0}% Fishing Stamina | Reduces the stamina cost of fishing by {0}%. |
 | `GainAdrenalineFromHarvesting` | Grey | Trinket | Gain {0} Adrenaline on Harvest | Gain {0} adrenaline each time you strike a tree or rock. |
 | `IncreaseHarvestXPGain` | Grey | Utility | +{0}% Gathering Skill XP | +{0}% XP for Woodcutting and Pickaxes. |
@@ -214,7 +214,7 @@ unique — no effect is shared by two shards.
 |---|---|---|---|---|
 | `IncreaseMeleeSkills` | DarkRed | Melee Wpn | +{0} Melee Skills | +{0} to all melee weapon skills. |
 | `IncreaseRangedSkills` | DarkRed | Ranged Wpn | +{0} Ranged Skills | +{0} to all ranged weapon skills. |
-| `AddBluntDamage` | DarkRed | Magic Wpn | Blunt Damage +{0:0.#}% | Add **X**% of the total unenchanted damage of this weapon as blunt damage to attacks made by the magic weapon. |
+| `AddSpiritDamage` | DarkRed | Magic Wpn | Imbue Spirit Damage {0:0.#}% | Add spirit damage equal to **X**% of this weapon's fire, frost, lightning and poison damage, including what other imbues add. |
 | `BloodBaseBlock` | DarkRed | Shield | Raising your guard costs 5% of max HP. Adds {0} to your base block | Damages self for 5% of max HP as true damage each time you raise your guard. This is charged once per block, not per blocked hit. Adds {0} to your base block. |
 | `HeadHunter` | DarkRed | Head | Headhunter +{0} | Increases chance to drop trophies by +**X**%. |
 | `Bloodrage` | DarkRed | Chest | Bloodrage: +{0}% Damage per Stack (max {1}) | Taking damage sends you into a rage: +{0}% damage on every attack per stack, stacking up to {1} times over 10 seconds. Each hit you take refreshes the duration. |
@@ -222,7 +222,8 @@ unique — no effect is shared by two shards.
 | `ReduceArmorIncreaseDamage` | DarkRed | Shoulders | -{0}% Armor, +{0}% Damage | Reduces your armor by {0}% but increases weapon damage by {0}%. |
 | `AdrenalineCharge` | DarkRed | Trinket | -{0}% Forsaken Cooldown at Full Adrenaline | When your adrenaline fills, reduce the remaining cooldown on your Forsaken Power by {0}%. |
 | `OffSetAttack` | DarkRed | Utility | OffSet Attack +{0}% | Your third attack in an attack string provides stagger immunity and damage reduction if timed against an enemy melee attack. |
-| `AddPoisonDamage` | DarkGreen | Melee Wpn, Ranged Wpn, Magic Wpn | Imbue Poison Damage {0:0.#}% | Add **X**% of the total unenchanted damage of this weapon as poison damage to attacks made by the magic weapon |
+| `AddPoisonDamage` | DarkGreen | Melee Wpn, Ranged Wpn | Imbue Poison Damage {0:0.#}% | Add poison damage equal to **X**% of this weapon's unenchanted physical damage, counting pierce three times, slash twice and blunt once. Elemental damage does not count. |
+| `AddSpiritDamage` | DarkGreen | Magic Wpn | Imbue Spirit Damage {0:0.#}% | Add spirit damage equal to **X**% of this weapon's fire, frost, lightning and poison damage, including what other imbues add. |
 | `PhysToPoisonOnBlock` | DarkGreen | Shield | Convert {0}% Incoming Physical to Poison on block | Move {0}% of incoming physical damage to poison before resistances on block. |
 | `AddPoisonResistancePercentage` | DarkGreen | Head | Poison Resistance {0:0.#}% | The player reduces all poison damage taken by +**X**%. This effect stacks additively with other damage reduction effects equipped by the player. |
 | `PhysToPoison` | DarkGreen | Chest | Convert {0}% Incoming Physical to Poison | Move {0}% of incoming physical damage to poison before resistances. |
@@ -259,12 +260,12 @@ unique — no effect is shared by two shards.
 
 | Effect | Shard | Slot(s) | Tooltip | What it does |
 |---|---|---|---|---|
-| `AddLightningDamage` | LightBlue | Melee Wpn, Ranged Wpn, Magic Wpn | Imbue Lightning Damage {0:0.#}% | Add **X**% of the total unenchanted damage of this weapon as lightning damage to attacks made by the magic weapon. |
+| `AddLightningDamage` | LightBlue | Melee Wpn, Ranged Wpn, Magic Wpn | Imbue Lightning Damage {0:0.#}% | Add lightning damage to attacks made by the magic weapon, on average **X**% of the total unenchanted damage of this weapon. Each hit rolls anywhere from none to twice that. |
 | `PhysToLightningOnBlock` | LightBlue | Shield | Convert {0}% Incoming Physical to Lightning on block | Move {0}% of incoming physical damage to lightning before resistances on block. |
 | `AddLightningResistancePercentage` | LightBlue | Head | Lightning Resistance {0:0.#}% | The player reduces all lightning damage taken by +**X**%. This effect stacks additively with other damage reduction effects equipped by the player. |
 | `PhysToLightning` | LightBlue | Chest | Convert {0}% Incoming Physical to Lightning | Move {0}% of incoming physical damage to lightning before resistances. |
 | `StormRider` | LightBlue | Legs | +{0}% Movement Speed in Storms | +{0}% movement speed while a storm rages. |
-| `Conduit` | LightBlue | Shoulders | Conduit: Restore {0} Eitr per {1} Lightning Damage Dealt | Restore {0} eitr for every {1} lightning damage you deal. |
+| `Conduit` | LightBlue | Shoulders | Conduit: Restore {0} Eitr per {1} Lightning Damage Dealt (Pool {2:0}) | Restore {0} eitr for every {1} lightning damage you deal, drawn from a pool that refills at your normal eitr regen rate, even in combat. `PoolPerValue` in its `Config` block sets the pool size: 3 on Minimal, 5 on Balanced, 8 on Legendary. A status icon shows the pool while the effect is worn. |
 | `StormFury` | LightBlue | Trinket | +{0} Adrenaline every {1}s in Storms, No Adrenaline Decay | Every {1} seconds while a storm rages, gain {0} adrenaline. Your adrenaline does not decay for as long as the storm lasts. |
 | `ConvertPhysicalDamageToLightning` | LightBlue | Utility | Convert {0}% Weapon Physical to Lightning | Move {0}% of this weapon's physical damage to lightning. |
 | `HealthGainPerXDamageDone` | LightGreen | Melee Wpn, Ranged Wpn, Magic Wpn | Heal {0} per {1} Damage Dealt | Heal {0} health for every {1} damage you deal with this weapon. |
@@ -272,7 +273,7 @@ unique — no effect is shared by two shards.
 | `PotionEfficacy` | LightGreen | Head | +{0}% Potion Duration | Consumed potions and meads last {0}% longer. |
 | `Comfortable` | LightGreen | Chest | Comfort +{0} | When resting and wearing the magic equipment, the player's comfort level is increased by +**X**. |
 | `AddPickaxesSkill` | LightGreen | Legs | Pickaxes Skill +{0} | Increases the player's pickaxes skill level by +**X**. This may cause the skill level to increase above 100. |
-| `RestingHealthRegen` | LightGreen | Shoulders | +{0}% Health Regen While Resting | Increases health regeneration by {0}% while you are resting by a fire. |
+| `RestingHealthRegen` | LightGreen | Shoulders | +{0}% Health Regen While Resting (the Legendary template: While Resting or Rested) | Increases health regeneration by {0}% while you are resting by a fire. `WhileResting` and `WhileRested` in its `Config` block (0 = off) choose which of the two count; the text follows them. Balanced and Minimal ship resting only, Legendary ships both. |
 | `AdrenalineIncreasesHealthRegen` | LightGreen | Trinket | Adrenaline Surge: +{0}% Health Regen for {1}s | When your adrenaline fills, gain +{0}% health regen for {1} seconds. Refilling refreshes the buff rather than stacking it. |
 | `BountifulHarvest` | LightGreen | Utility | Bountiful Harvest: {0}% Bonus Yield | {0}% chance to gather a bonus item when harvesting. |
 | `DamageBonusFromPlayerWeight` | Peach | Melee Wpn, Ranged Wpn, Magic Wpn | +Up to {0}% Damage by Pack Weight | Weapon damage scaling with how loaded your pack is, up to +{0}%. |
@@ -317,7 +318,6 @@ would take to revive.
 | `ChanceToCritOnHit` | {0}% Chance to Crit for {1}x Damage | {0}% chance for a hit to critically strike for double damage. |
 | `PerfectDodgeGivesHealth` | Perfect Dodge Restores {0}% Health | Restore {0}% of max health on a perfect dodge. |
 | `StaminaReturnFromEitr` | Refund {0}% of Eitr Spent as Stamina | Restore stamina equal to {0}% of the eitr you spend. |
-| `BatteringRam` | Battering Ram: Blunt from Weight | Running into enemies deals blunt damage based on your speed and carried weight (scaled by {0}). |
 
 ## Implemented but unassigned effects
 
@@ -341,7 +341,6 @@ They are **not** equally close to working. Six are one config edit away; one als
 | **ChanceToCritOnHit** | [ChanceToCritOnHit.cs](src/Magic/MagicItemEffects/Shards/ChanceToCritOnHit.cs) | Live | Assign a slot |
 | **PerfectDodgeGivesHealth** | [PerfectDodgeEffects.cs:51](src/Magic/MagicItemEffects/Shards/PerfectDodgeEffects.cs#L51) | Live | Assign a slot |
 | **StaminaReturnFromEitr** | [StaminaReturnFromEitr.cs](src/Magic/MagicItemEffects/Shards/StaminaReturnFromEitr.cs) | Live | Assign a slot |
-| **BatteringRam** | [BatteringRam.cs](src/Magic/MagicItemEffects/Shards/BatteringRam.cs) | **Whole file commented out** | Uncomment, then assign a slot |
 
 ### Ready to assign — config only
 
@@ -372,12 +371,6 @@ assignment brings them back with their tuning intact.
   weapon and Shoulders slots). It is the only member of that family without a home.
 - **StaminaReturnFromEitr** — refunds a % of spent eitr as stamina. Self-contained `Player.UseEitr` postfix,
   no dispatcher involvement. Never assigned to a slot at any point.
-
-### Needs code restored as well
-
-- **BatteringRam** — blunt damage from running into enemies, scaled by carried weight and speed. The file's
-  own comment records why it was disabled: the per-frame `Player.Update` patch it needs was "mildly
-  expensive" for an effect nothing granted.
 
 ## Known quirks, accepted deliberately
 

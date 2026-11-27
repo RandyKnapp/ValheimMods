@@ -15,6 +15,7 @@ public static partial class TerminalManager
     private static void TestTreasureMap(Terminal.ConsoleEventArgs args)
     {
         Player player = Player.m_localPlayer;
+        if (player == null) return;
 
         int count = args.TryParameterInt(1, 1);
         // A vanilla name, a biomedata.json name, or a numeric value; blank picks a random map biome.
@@ -26,7 +27,6 @@ public static partial class TerminalManager
         player.StartCoroutine(TestTreasureMapCoroutine(saveData, biome, player, count));
     }
     
-    // TODO: update these tests
     private static IEnumerator TestTreasureMapCoroutine(AdventureSaveData saveData, Heightmap.Biome biome, Player player, int count)
     {
         // Every biome that sells a treasure map, so a biomedata.json biome is covered too.
@@ -69,6 +69,7 @@ public static partial class TerminalManager
     private static void ResetTreasureMap(Terminal.ConsoleEventArgs args)
     {
         Player player = Player.m_localPlayer;
+        if (player == null) return;
         AdventureSaveData saveData = player.GetAdventureSaveData();
         saveData.TreasureMaps.Clear();
         saveData.NumberOfTreasureMapsOrBountiesStarted = 0;
@@ -94,6 +95,7 @@ public static partial class TerminalManager
     private static void ResetBounties(Terminal.ConsoleEventArgs args)
     {
         Player player = Player.m_localPlayer;
+        if (player == null) return;
         AdventureSaveData saveData = player.GetAdventureSaveData();
         saveData.Bounties.Clear();
         ResetMinimap();
@@ -114,6 +116,7 @@ public static partial class TerminalManager
     private static void ResetAdventure(Terminal.ConsoleEventArgs args)
     {
         Player player = Player.m_localPlayer;
+        if (player == null) return;
         AdventureComponent adventureComponent = player.GetComponent<AdventureComponent>();
         adventureComponent.SaveData = new AdventureSaveDataList();
         ResetMinimap();
@@ -124,8 +127,7 @@ public static partial class TerminalManager
     /// Reports what the adventure spawn picker can actually see. When a player says a bounty or
     /// treasure map "did nothing", this is the first thing to run: it shows the resolved world size,
     /// whether the biome index built, and per biome how many cells fall inside that biome's
-    /// configured radius band. A biome with cells but none in band is the failure that used to be
-    /// silent.
+    /// configured radius band.
     /// </summary>
     private static void AdventureIndexInfo(Terminal.ConsoleEventArgs args)
     {
@@ -214,7 +216,7 @@ public static partial class TerminalManager
             }
 
             // A biome with no Targets entry at all never reaches the filter, so it would otherwise be
-            // invisible above - which is exactly how DeepNorth went unnoticed. Name those explicitly.
+            // invisible above.
             var configuredBiomes = (AdventureDataManager.Config?.Bounties?.Targets ?? new List<BountyTargetConfig>())
                 .Select(x => x.GetBiome())
                 .ToHashSet();
@@ -247,6 +249,7 @@ public static partial class TerminalManager
     private static void PrintPlayerAvailableBounties(Terminal.ConsoleEventArgs args)
     {
         Player player = Player.m_localPlayer;
+        if (player == null) return;
         List<BountyInfo> availableBounties = player.GetAdventureSaveData().Bounties;
         if (availableBounties.Count <= 0)
         {

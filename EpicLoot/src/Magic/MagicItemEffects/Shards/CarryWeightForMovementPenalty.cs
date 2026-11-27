@@ -1,7 +1,6 @@
 using EpicLoot.src.Magic.MagicItemEffects.Helpers;
 
 namespace EpicLoot.MagicItemEffects.Shards {
-    // Provides a bonus to carry weight based on the player's movement penalty.
     public static class CarryWeightForMovementPenalty {
         // ModifyMaxCarryWeight handler invoked by SharedSEManModifyMaxCarryWeightPatch.
         public static void ModifyMaxCarryWeight(Player player, float baseLimit, ref float limit) {

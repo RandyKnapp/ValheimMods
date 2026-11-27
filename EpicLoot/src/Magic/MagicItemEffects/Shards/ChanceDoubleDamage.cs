@@ -5,12 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects.Shards {
-    // Provides a chance to double the damage of an attack.
     public static class ChanceDoubleDamage {
-        // Multiplier applied on a successful proc; 2 = double damage. Kept separate from
-        // ChanceToCritOnHit's multiplier despite the matching default -- they are different shards and are
-        // meant to be tunable apart. Tunable as "DamageMultiplier" in this effect's Config block in
-        // config/shardstones.json.
         public const float DefaultDamageMultiplier = 2f;
 
         private const string DamageMultiplierKey = "DamageMultiplier";
@@ -25,16 +20,15 @@ namespace EpicLoot.MagicItemEffects.Shards {
                 DamageMultiplierKey, DefaultDamageMultiplier));
         }
 
-        // Prefix handler invoked by CharacterDamageDispatch (attacker-side outgoing modifier).
         static GameObject effect = null;
         public static void ModifyOutgoingHit(HitData hit, Character attacker) {
             if (!(attacker is Player player) || player != Player.m_localPlayer) {
                 return;
             }
 
-            // The shard is socketed into the weapon, so only that weapon procs. GetActiveWeapon prefers
-            // the weapon of the attack actually in flight and only falls back to GetCurrentWeapon, which
-            // returns the right hand first -- without it a shard in the off-hand weapon never fires.
+            // The shard is socketed into the weapon, so only that weapon procs. GetActiveWeapon prefers the
+            // weapon of the attack in flight; GetCurrentWeapon alone returns the right hand first, so an
+            // off-hand shard would never fire.
             var magicItem = MagicEffectsHelper.GetActiveWeapon(player)?.GetMagicItem();
             if (magicItem == null ||
                 !magicItem.HasEffect(MagicEffectType.ChanceDoubleDamage, includeSocketed: true)) {

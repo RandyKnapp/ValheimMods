@@ -11,7 +11,7 @@ namespace EpicLoot;
 ///
 /// The panel only moves while the drag key (<see cref="ELConfig.TraderPanelDragKey"/>, Left Alt by
 /// default) is held. The panel itself is not a drag target at all, so a press on its background or one
-/// of its buttons can never nudge it, and moving the mouse a little while clicking a button no longer
+/// of its buttons can never nudge it, and moving the mouse a little while clicking a button never
 /// turns the click into a drag. While the key is down, a transparent surface covers the whole panel,
 /// lists and buttons included, and takes the drag. The four-way arrow handle in the top-right corner
 /// drags the panel at any time, which is all that is left when the key is set to None.

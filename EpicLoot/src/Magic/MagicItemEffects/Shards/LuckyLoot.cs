@@ -5,9 +5,6 @@ using UnityEngine;
 using Random = UnityEngine.Random;
 
 namespace EpicLoot.MagicItemEffects.Shards {
-    // Golden chest: a chance for a creature killed nearby to drop a multiple of its usual loot, and to
-    // roll extra times on its EpicLoot magic-item table.
-    //
     // Two loot systems have to be hit, and they do not run at the same time:
     //
     //   Character.OnDeath  (runs on the CREATURE'S OWNER, which may be a dedicated server)
@@ -34,15 +31,14 @@ namespace EpicLoot.MagicItemEffects.Shards {
         public const float DefaultBonusRollsMin = 1f;
         public const float DefaultBonusRollsMax = 6f;
 
-        // Ceiling on the derived multiplier, so an admin who sets the chance to 50% doesn't get a 26x
-        // drop. The shipped ramp (2/4/6/8/10) tops out at 6x, well inside this.
+        // Ceiling on the derived multiplier, so an admin who sets the chance to 50% doesn't get a 26x drop.
         public const int DefaultMaxMultiplier = 10;
         // Vanilla's own per-entry cap (CharacterDrop.GenerateDropList clamps to this before we run).
         // CharacterDrop.DropItems instantiates one networked GameObject *per unit* -- it does not stack --
         // so multiplying past vanilla's own ceiling is how one kill turns into four figures of ItemDrops.
         // Raising it is the fastest way to make a single kill spawn enough objects to stall the server.
         public const int DefaultMaxUnitsPerEntry = 100;
-        // Belt and braces for creatures (or mods) with many drop entries.
+        // For creatures (or mods) with many drop entries.
         public const int DefaultMaxAddedUnitsPerDeath = 300;
 
         private const string BonusRollsMinKey = "BonusRollsMin";
@@ -90,16 +86,13 @@ namespace EpicLoot.MagicItemEffects.Shards {
         private static int _pendingRolls;
         private static float _pendingStamp;
 
-        // Tooltip: "{0}% Chance of {1}x Drops" plus the bonus-roll range. Pure, as the provider contract
-        // requires (MagicItem.RegisterDisplayValues): it only reads the value and the effect config.
         public static void RegisterDisplayValues() {
             MagicItem.RegisterDisplayValues(MagicEffectType.LuckyLoot,
                 value => new object[] { value, (float)Multiplier(value), GetBonusRollsMin(), GetBonusRollsMax() });
         }
 
-        // The multiplier is derived from the single grid value rather than authored separately: 2% -> 2x,
-        // 4% -> 3x, ... 10% -> 6x. A parallel MultiplierPerRarity block would be a second source of truth
-        // that silently disagrees with the grid the moment an admin edits ValuesPerRarity.
+        // Derived from the single grid value rather than authored separately, so it cannot disagree with
+        // ValuesPerRarity.
         //
         // The lower clamp is 1, not 2, on purpose: MagicItem.GetGenericArgs probes display-value providers
         // with 1f and 2f and treats any slot that doesn't change as a constant, so a floor of 2 would
@@ -114,9 +107,7 @@ namespace EpicLoot.MagicItemEffects.Shards {
         // the most common multiplayer topology.
         //
         // Unlike Riches this takes the max rather than the sum, because the value is simultaneously a
-        // chance and (through Multiplier) a drop multiple -- summing two players' 10% into 20% would imply
-        // an 11x multiplier rather than 6x. Scanned per death, as Riches is: a player scan is cheap when
-        // deaths are rare relative to frames.
+        // chance and (through Multiplier) a drop multiple, so summing two players would inflate the multiple.
         private static float BestNearbyValue(Vector3 position) {
             var players = new List<Player>();
             Player.GetPlayersInRange(position, PlayerScanRange, players);
@@ -215,9 +206,7 @@ namespace EpicLoot.MagicItemEffects.Shards {
         // The name check is not redundant with the m_onePerPlayer guard: that flag is only as reliable as
         // whoever authored the drop, and a drop-table mod can clear it on Wishbone or CryptKey. (EpicLoot's
         // own CharacterDrop_GenerateDropList_Patch suspends it while vanilla builds the list, but restores it
-        // in a postfix that runs ahead of this one.) Excluding all
-        // trophies on top of that keeps Lucky Loot out of Headhunter's lane (DarkRed head) and draws a
-        // legible line: Lucky Loot multiplies materials, not trophies.
+        // in a postfix that runs ahead of this one.) Trophies are left to Headhunter.
         private static bool IsProtected(GameObject prefab) {
             if (prefab.name.Equals("Wishbone") || prefab.name.Equals("CryptKey")) {
                 return true;

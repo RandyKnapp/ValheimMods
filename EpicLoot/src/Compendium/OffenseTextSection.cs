@@ -5,16 +5,12 @@ using EpicLoot.MagicItemEffects;
 using EpicLoot.MagicItemEffects.Shards;
 using EpicLoot.src.Magic.MagicItemEffects.Helpers;
 using UnityEngine;
+using static EpicLoot.Compendium.CompendiumFormat;
 
 namespace EpicLoot.Compendium;
 
 public static class OffenseTextSection
 {
-    private const string BetterColor = "#8aff8aff";
-    private const string WorseColor = "#ff8a8aff";
-    private const string NeutralColor = "#c0c0c0ff";
-    private const string Dash = "<color=#808080ff>-</color>";
-
     private class DamageRow
     {
         public string Key;
@@ -98,11 +94,7 @@ public static class OffenseTextSection
         Func<ItemDrop.ItemData, bool> include = x => x != otherWeapon || !IsWeapon(otherWeapon);
 
         instance.MagicPagesTextArea.Add($"<size={MagicPages.MEDIUM_FONT_SIZE}>{weapon.GetDecoratedName()}</size>");
-        MagicTextTable table = instance.MagicPagesTextArea.AddTable(
-            new MagicTableColumn { Header = "$mod_epicloot_vitals_col_stat", Weight = 0.34f, Outline = true },
-            new MagicTableColumn { Header = "$mod_epicloot_vitals_col_base", Weight = 0.22f, Alignment = TextAnchor.MiddleCenter },
-            new MagicTableColumn { Header = "$mod_epicloot_vitals_col_epicloot", Weight = 0.22f, Alignment = TextAnchor.MiddleCenter },
-            new MagicTableColumn { Header = "$mod_epicloot_vitals_col_total", Weight = 0.22f, Alignment = TextAnchor.MiddleRight });
+        MagicTextTable table = AddStatTable(instance);
 
         AddDamageRows(player, table, weapon, magicItem, include);
         AddAttackSpeed(player, table);
@@ -359,7 +351,7 @@ public static class OffenseTextSection
         }
 
         float total = player.GetTotalActiveMagicEffectValue(MagicEffectType.LifeAfterKill, 1f, ignore);
-        AddRow(table, "$mod_epicloot_offense_lifeafterkill", Decimal(0f), total, Decimal(total), detail, x => Signed(x, "0.#"), true);
+        AddRow(table, "$mod_epicloot_offense_lifeafterkill", OneDecimal(0f), total, OneDecimal(total), detail, x => Signed(x, "0.#"), true);
     }
 
     private static void AddBackstab(Player player, MagicTextTable table, ItemDrop.ItemData weapon,
@@ -389,7 +381,7 @@ public static class OffenseTextSection
         }
         else
         {
-            total = (1f - WeaponEffect(player, weapon, MagicEffectType.ModifyAttackStaminaUse)) * baseValue;
+            total = ModifyAttackCosts.GetEffectPercentage(WeaponEffect(player, weapon, MagicEffectType.ModifyAttackStaminaUse)) * baseValue;
             if (HasSpellsword(player, weapon))
             {
                 total = Spellsword.GetSpellswordAttackStamina(total);
@@ -400,7 +392,7 @@ public static class OffenseTextSection
         detail.AddRange(StatSourceLines.GetMagicSources(player, MagicEffectType.ModifyAttackStaminaUse, include));
         detail.AddRange(StatSourceLines.GetMagicSources(player, MagicEffectType.Bloodlust, include));
         detail.AddRange(StatSourceLines.GetMagicSources(player, MagicEffectType.SpellSword, include));
-        AddRow(table, "$item_staminause", Decimal(baseValue), total - baseValue, Decimal(total), detail, x => Signed(x, "0.#"), false);
+        AddRow(table, "$item_staminause", OneDecimal(baseValue), total - baseValue, OneDecimal(total), detail, x => Signed(x, "0.#"), false);
     }
 
     private static void AddEitr(Player player, MagicTextTable table, ItemDrop.ItemData weapon,
@@ -429,12 +421,12 @@ public static class OffenseTextSection
                 cost += Spellsword.GetAdditionalSpellswordAttackEitr(weapon.m_shared.m_attack.m_attackStamina);
             }
 
-            total = (1f - WeaponEffect(player, weapon, MagicEffectType.ModifyAttackEitrUse)) * cost;
+            total = ModifyAttackCosts.GetEffectPercentage(WeaponEffect(player, weapon, MagicEffectType.ModifyAttackEitrUse)) * cost;
             detail.AddRange(StatSourceLines.GetMagicSources(player, MagicEffectType.ModifyAttackEitrUse, include));
             detail.AddRange(StatSourceLines.GetMagicSources(player, MagicEffectType.SpellSword, include));
         }
 
-        AddRow(table, "$item_eitruse", Decimal(baseValue), total - baseValue, Decimal(total), detail, x => Signed(x, "0.#"), false);
+        AddRow(table, "$item_eitruse", OneDecimal(baseValue), total - baseValue, OneDecimal(total), detail, x => Signed(x, "0.#"), false);
     }
 
     private static void AddHealth(Player player, MagicTextTable table, ItemDrop.ItemData weapon,
@@ -452,7 +444,7 @@ public static class OffenseTextSection
         List<string> detail = new();
         detail.AddRange(StatSourceLines.GetMagicSources(player, MagicEffectType.ModifyAttackHealthUse, include));
         detail.AddRange(StatSourceLines.GetMagicSources(player, MagicEffectType.Bloodlust, include));
-        AddRow(table, "$item_healthuse", Decimal(baseValue), total - baseValue, Decimal(total), detail, x => Signed(x, "0.#"), false);
+        AddRow(table, "$item_healthuse", OneDecimal(baseValue), total - baseValue, OneDecimal(total), detail, x => Signed(x, "0.#"), false);
     }
 
     // Matches ModifyDrawStamina: the bow's own enchantments, plus set bonuses on the bow the player holds.
@@ -467,7 +459,7 @@ public static class OffenseTextSection
 
         float modifier = (magicItem?.GetTotalEffectValue(MagicEffectType.ModifyDrawStaminaUse, 0.01f) ?? 0f) +
             MagicEffectsHelper.GetTotalActiveSetEffectValue(player, MagicEffectType.ModifyDrawStaminaUse, 0.01f);
-        float total = (1f - Mathf.Clamp(modifier, 0f, 1f)) * baseValue;
+        float total = ModifyAttackCosts.GetEffectPercentage(modifier) * baseValue;
         List<string> detail = new();
         detail.AddRange(StatSourceLines.GetMagicSources(player, MagicEffectType.ModifyDrawStaminaUse,
             x => x == weapon));
@@ -487,7 +479,7 @@ public static class OffenseTextSection
         float total = baseValue * (1f - Mathf.Clamp01(WeaponEffect(player, weapon, MagicEffectType.CloseQuarter)));
         List<string> detail = new();
         detail.AddRange(StatSourceLines.GetMagicSources(player, MagicEffectType.CloseQuarter, include));
-        AddRow(table, "$item_knockback", Decimal(baseValue), total - baseValue, Decimal(total), detail, x => Signed(x, "0.#"), true);
+        AddRow(table, "$item_knockback", OneDecimal(baseValue), total - baseValue, OneDecimal(total), detail, x => Signed(x, "0.#"), true);
     }
 
     // What the game charges or grants this weapon: every worn item and active set bonus, less the weapon in the
@@ -498,34 +490,6 @@ public static class OffenseTextSection
     private static bool HasSpellsword(Player player, ItemDrop.ItemData weapon) =>
         Spellsword.IsSpellswordWeapon(weapon) &&
         MagicEffectsHelper.HasActiveMagicEffectOnWeapon(player, weapon, MagicEffectType.SpellSword, out _);
-
-    private static void AddRow(MagicTextTable table, string name, string baseText, float magicDelta, string totalText,
-        List<string> detail, Func<float, string> formatDelta, bool higherIsBetter)
-    {
-        bool neutral = Mathf.Abs(magicDelta) < 0.005f;
-        bool better = higherIsBetter ? magicDelta > 0f : magicDelta < 0f;
-        string color = neutral ? NeutralColor : better ? BetterColor : WorseColor;
-        string[] cells =
-        {
-            name,
-            baseText,
-            neutral ? Dash : formatDelta(magicDelta),
-            $"<color={color}>{totalText}</color>",
-        };
-        table.AddRow(cells, detail, true);
-    }
-
-    private static string Whole(float value) => Mathf.RoundToInt(value).ToString();
-    private static string Decimal(float value) => value.ToString("0.#");
-    private static string Times(float value) => value.ToString("0.#") + "x";
-    private static string Percent(float fraction) => $"{Mathf.RoundToInt(fraction * 100f)}%";
-    private static string SignedPercent(float fraction) => Signed(fraction * 100f) + "%";
-
-    private static string Signed(float value, string format = "0")
-    {
-        string text = Mathf.Abs(value).ToString(format);
-        return value < 0f ? $"-{text}" : $"+{text}";
-    }
 
     private static string PerSecond(float value) =>
         string.Format(Localization.instance.Localize("$mod_epicloot_vitals_persecond"), value.ToString("0.#"));

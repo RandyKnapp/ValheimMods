@@ -3,11 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace EpicLoot.src.Magic.MagicItemEffects.Helpers {
-    // Reads a shard effect's per-effect tunables -- the "Config" block authored on its grid entry in
-    // config/shardstones.json, merged over the code-side defaults registered in
-    // ShardEffectDefinitions.EffectConfigs. This is the shard-side equivalent of the "Config" block a
-    // magiceffects.json entry carries, and it resolves to the same place: the synthesized
-    // MagicItemEffectDefinition.Config, which is also what the Shift-detail tooltip renders.
+    // A shard effect's tunables: the "Config" block on its grid entry in shardstones.json, merged over the
+    // code defaults in ShardEffectDefinitions.EffectConfigs, read from MagicItemEffectDefinition.Config.
     //
     // Every key needs a code default at its call site. A player's existing on-disk shardstones.json
     // keeps winning until they accept the ConfigVersionManager rewrite prompt, so a key added to the
@@ -54,6 +51,7 @@ namespace EpicLoot.src.Magic.MagicItemEffects.Helpers {
             _global = config?.Values ?? new Dictionary<string, float>();
             PenaltyScaling.RefreshGlobalConfig();
             BloodBlockSelfDamage.RefreshGlobalConfig();
+            global::EpicLoot.MagicItemEffects.ModifyAttackCosts.RefreshGlobalConfig();
         }
     }
 }

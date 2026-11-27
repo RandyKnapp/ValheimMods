@@ -14,10 +14,6 @@ namespace EpicLoot.QuickConfig;
 /// panel and enchanting table use.
 /// </summary>
 internal static class QuickConfigStyle {
-    // Off by default so the authored look wins. Flip to restyle plain uGUI sliders and buttons with
-    // Jotunn's Valheim-styled sprites when a prefab shipped without its own.
-    private const bool UseJotunnWidgetStyle = false;
-
     private const string LitPanelMaterial = "litpanel";
     private const string PanelSpritePrefix = "woodpanel";
     private static Material litPanel;
@@ -41,9 +37,6 @@ internal static class QuickConfigStyle {
         }
         ApplyPanelLighting(root);
         ApplyScrollFix(root);
-#pragma warning disable CS0162 // Unreachable code: the constant is the switch.
-        if (UseJotunnWidgetStyle) { ApplyJotunnWidgets(root); }
-#pragma warning restore CS0162
     }
 
     // NorseBoldOutline for the panel title, page titles and Row_Header labels; AveriaSansLibre for
@@ -111,15 +104,5 @@ internal static class QuickConfigStyle {
             EpicLoot.LogWarning($"Quick Configure found no {LitPanelMaterial} material; its panels keep full brightness.");
         }
         return litPanel;
-    }
-
-    private static void ApplyJotunnWidgets(GameObject root) {
-        if (GUIManager.Instance == null) { return; }
-        foreach (Slider slider in root.GetComponentsInChildren<Slider>(true)) {
-            try { GUIManager.Instance.ApplySliderStyle(slider); } catch (Exception) { /* keep the authored look */ }
-        }
-        foreach (Button button in root.GetComponentsInChildren<Button>(true)) {
-            try { GUIManager.Instance.ApplyButtonStyle(button); } catch (Exception) { /* keep the authored look */ }
-        }
     }
 }

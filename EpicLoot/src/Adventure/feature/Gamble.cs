@@ -8,7 +8,6 @@ namespace EpicLoot.Adventure.Feature
 {
     public class GambleAdventureFeature : AdventureFeature
     {
-        public override AdventureFeatureType Type => AdventureFeatureType.Gamble;
         public override int RefreshInterval => AdventureDataManager.Config.Gamble.RefreshInterval;
 
         /// <summary>
@@ -156,6 +155,10 @@ namespace EpicLoot.Adventure.Feature
                     gatingMode = GatedItemTypeMode.PlayerMustKnowRecipe;
                 }
 
+                // The stock only offers tiers at 100%, so a tier still ramping offers the type's base item, as
+                // the stock does before any boss is down.
+                bool baseItemFallback = gatingMode == GatedItemTypeMode.CurrentBiomeGradualUnlock;
+
                 for (int i = 0; i < itemsPerType; i++)
                 {
                     if (string.IsNullOrEmpty(itemConfig))
@@ -166,7 +169,7 @@ namespace EpicLoot.Adventure.Feature
                     List<string> validBosses = GatedItemTypeHelper.DetermineValidBosses(gatingMode, false);
 
                     var itemId = GatedItemTypeHelper.GetGatedItemFromType(
-                        itemConfig, gatingMode, selectedItems, validBosses, false, false, false, random);
+                        itemConfig, gatingMode, selectedItems, validBosses, false, false, baseItemFallback, random);
                     if (string.IsNullOrEmpty(itemId))
                     {
                         continue;

@@ -8,6 +8,7 @@ namespace EpicLoot.LegendarySystem
     public static class SetArmorTint
     {
         private const string ZdoKey = "el-tint";
+        private static readonly int ZdoHash = ZdoKey.GetStableHashCode();
 
         private static readonly int MainTexID = Shader.PropertyToID("_MainTex");
         private static readonly int ChestTexID = Shader.PropertyToID("_ChestTex");
@@ -40,26 +41,7 @@ namespace EpicLoot.LegendarySystem
 
         public static void Publish(Player player)
         {
-            if (player == null || player != Player.m_localPlayer || player.m_nview == null ||
-                !(player.m_nview.GetZDO() is ZDO zdo))
-            {
-                return;
-            }
-
-            string setID = "";
-            foreach (LegendarySetProgress progress in SetBonusEvaluator.GetVisibleSetProgress(player))
-            {
-                if (progress.IsFull && progress.Set.ArmorTint != null)
-                {
-                    setID = progress.Set.ID;
-                    break;
-                }
-            }
-
-            if (zdo.GetString(ZdoKey) != setID)
-            {
-                zdo.Set(ZdoKey, setID);
-            }
+            SetLooks.PublishFullSet(player, ZdoHash, set => set.ArmorTint != null);
         }
 
         private static void Refresh(VisEquipment vis)
@@ -70,7 +52,7 @@ namespace EpicLoot.LegendarySystem
                 return;
             }
 
-            string setID = zdo.GetString(ZdoKey);
+            string setID = zdo.GetString(ZdoHash);
             bool local = Player.m_localPlayer != null && vis.gameObject == Player.m_localPlayer.gameObject;
             int overrideVersion = local ? _overrideVersion : 0;
             TintState state = States.GetOrCreateValue(vis);

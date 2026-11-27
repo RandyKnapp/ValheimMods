@@ -78,6 +78,7 @@ namespace EpicLoot.Adventure.Feature
             if (success && StoreGui.instance != null)
             {
                 InventoryManagement.Instance.RemoveItem(MerchantPanel.GetCoinsName(), price);
+                MerchantPanel.RefreshCurrenciesSoon();
 
                 if (StoreGui.instance.m_trader != null)
                 {
@@ -90,9 +91,9 @@ namespace EpicLoot.Adventure.Feature
                     StoreGui.instance.m_buyEffects?.Create(player.transform.position, Quaternion.identity);
                 }
 
-                // AlreadyPurchased lives in AdventureSaveData, not in the currency counts, so nothing
-                // else would pick it up now that a coin change no longer rebuilds the list. Buying a
-                // map clears the selection, the same as accepting a bounty does.
+                // AlreadyPurchased lives in AdventureSaveData, not in the currency counts, and a coin
+                // change does not rebuild the list. Buying a map clears the selection, as accepting a
+                // bounty does.
                 if (_merchantPanel != null)
                 {
                     RefreshItems(_merchantPanel.GetPlayerCurrencies());

@@ -188,6 +188,10 @@ public class ItemTooltipData
     public string? SetLabel;
     /// <summary>The colour of the set label, the set sections and a set rune's lines.</summary>
     public string SetColor = "";
+    /// <summary>The "unique item" line heading a named unique that is not a set piece, or null.</summary>
+    public string? UniqueLabel;
+    /// <summary>The colour of the unique label.</summary>
+    public string UniqueColor = "";
     /// <summary>Rarity index of a magic crafting material or runestone, or -1.</summary>
     public int MaterialRarity = -1;
     public string Description = "";

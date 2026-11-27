@@ -27,6 +27,8 @@ namespace EpicLoot_UnityLib
         public MultiSelectItemList CostList;
 
         public TMP_Dropdown IdentifyStyle;
+        public GameObject SacrificeCategoryPanel;
+        public TMP_Dropdown SacrificeCategory;
 
         public MultiSelectItemList SacrificeProducts;
         public EnchantBonus BonusPanel;
@@ -36,15 +38,12 @@ namespace EpicLoot_UnityLib
 
         SacrificeMode _sacrificeMode = SacrificeMode.Sacrifice;
 
-        private GameObject _sacrificeCategoryPanel;
-        private TMP_Dropdown _sacrificeCategory;
-
         private EnchantingUIController.SacrificeCategory CurrentSacrificeCategory
         {
             get
             {
                 EnchantingUIController.SacrificeCategory[] options = EnchantingUIController.SacrificeCategoryOptions;
-                int index = _sacrificeCategory == null ? 0 : _sacrificeCategory.value;
+                int index = SacrificeCategory.value;
                 return index >= 0 && index < options.Length ? options[index] : EnchantingUIController.SacrificeCategory.All;
             }
         }
@@ -53,8 +52,21 @@ namespace EpicLoot_UnityLib
         {
             base.Awake();
 
-            CreateCategoryHint();
-            CreateSacrificeCategoryPanel();
+            SacrificeCategory.ClearOptions();
+            foreach (EnchantingUIController.SacrificeCategory category in EnchantingUIController.SacrificeCategoryOptions)
+            {
+                string label = EnchantingUIController.SacrificeCategoryLabels[category];
+                SacrificeCategory.options.Add(new TMP_Dropdown.OptionData(Localization.instance.Localize(label)));
+            }
+            SacrificeCategory.SetValueWithoutNotify(0);
+            SacrificeCategory.RefreshShownValue();
+            SacrificeCategory.onValueChanged.AddListener(_ =>
+            {
+                if (_sacrificeMode == SacrificeMode.Sacrifice && !_locked)
+                {
+                    RefreshAvailableItems();
+                }
+            });
 
             SacrificeToggle.onValueChanged.AddListener((isOn) => {
                 SacrificeModeSelected(isOn);
@@ -64,14 +76,12 @@ namespace EpicLoot_UnityLib
                 IdentifyModeSelected(isOn);
             });
 
-            // Build the identify style dropdown options based on the configured styles
             IdentifyStyle.ClearOptions();
-            foreach (KeyValuePair<string, string> entry in EnchantingUIController.GetIdentifyStyles())
+            foreach (KeyValuePair<string, string> entry in EnchantCostsHelper.GetIdentificationCategories())
             {
                 IdentifyStyle.options.Add(new TMP_Dropdown.OptionData(Localization.instance.Localize(entry.Value)));
             }
 
-            // Trigger cost update when the identify style changes
             IdentifyStyle.onValueChanged.AddListener((value) =>
             {
                 OnSelectedItemsChanged();
@@ -84,87 +94,8 @@ namespace EpicLoot_UnityLib
             // The prefab opens with the Sacrifice toggle already on, so setting isOn would not fire the handler.
             IdentifyToggle.SetIsOnWithoutNotify(false);
             SacrificeToggle.SetIsOnWithoutNotify(true);
-            _sacrificeCategory?.SetValueWithoutNotify(0);
+            SacrificeCategory.SetValueWithoutNotify(0);
             SacrificeModeSelected(true);
-        }
-
-        // A runtime clone of the identify style panel rather than a second dropdown in the prefab.
-        private void CreateSacrificeCategoryPanel()
-        {
-            if (IdentifyStylePanel == null || IdentifyStyle == null)
-            {
-                return;
-            }
-
-            _sacrificeCategoryPanel = Instantiate(IdentifyStylePanel, IdentifyStylePanel.transform.parent, false);
-            _sacrificeCategoryPanel.name = "SacrificeCategoryPanel";
-            _sacrificeCategoryPanel.transform.SetSiblingIndex(IdentifyStylePanel.transform.GetSiblingIndex() + 1);
-            _sacrificeCategory = _sacrificeCategoryPanel.GetComponentInChildren<TMP_Dropdown>(true);
-            if (_sacrificeCategory == null)
-            {
-                Destroy(_sacrificeCategoryPanel);
-                _sacrificeCategoryPanel = null;
-                return;
-            }
-
-            // The prefab's dropdown carries its caption as a child named SortByLabel.
-            Transform caption = _sacrificeCategory.transform.Find("SortByLabel");
-            TMP_Text captionText = caption != null ? caption.GetComponent<TMP_Text>() : null;
-            if (captionText != null)
-            {
-                captionText.text = Localization.instance.Localize("$mod_epicloot_sacrifice_selection");
-            }
-
-            _sacrificeCategory.ClearOptions();
-            foreach (EnchantingUIController.SacrificeCategory category in EnchantingUIController.SacrificeCategoryOptions)
-            {
-                string label = EnchantingUIController.SacrificeCategoryLabels[category];
-                _sacrificeCategory.options.Add(new TMP_Dropdown.OptionData(Localization.instance.Localize(label)));
-            }
-            _sacrificeCategory.SetValueWithoutNotify(0);
-            _sacrificeCategory.RefreshShownValue();
-            _sacrificeCategory.onValueChanged.AddListener(_ =>
-            {
-                if (_sacrificeMode == SacrificeMode.Sacrifice && !_locked)
-                {
-                    RefreshAvailableItems();
-                }
-            });
-        }
-
-        private void CreateCategoryHint()
-        {
-            Transform bottomRow = transform.Find("GamepadHints/BottomRow");
-            if (bottomRow == null)
-            {
-                return;
-            }
-
-            Transform spacing = bottomRow.Find("Spacing");
-            Transform label = bottomRow.Find("Quantity");
-            Transform glyph = bottomRow.Find("QuantityButton");
-            if (spacing == null || label == null || glyph == null)
-            {
-                return;
-            }
-
-            Instantiate(spacing.gameObject, bottomRow, false).name = "Spacing";
-
-            GameObject labelClone = Instantiate(label.gameObject, bottomRow, false);
-            labelClone.name = "Category";
-            TMP_Text labelText = labelClone.GetComponentInChildren<TMP_Text>(true);
-            if (labelText != null)
-            {
-                labelText.text = Localization.instance.Localize("$mod_epicloot_enchanting_identifycategory");
-            }
-
-            GameObject glyphClone = Instantiate(glyph.gameObject, bottomRow, false);
-            glyphClone.name = "CategoryButton";
-            GamepadGlyph glyphKey = glyphClone.GetComponentInChildren<GamepadGlyph>(true);
-            if (glyphKey != null)
-            {
-                glyphKey.ZInputKey = "JoyDPadLeft";
-            }
         }
 
         protected override void OnDPadHorizontal(int direction)
@@ -174,7 +105,7 @@ namespace EpicLoot_UnityLib
                 return;
             }
 
-            TMP_Dropdown dropdown = _sacrificeMode == SacrificeMode.Identify ? IdentifyStyle : _sacrificeCategory;
+            TMP_Dropdown dropdown = _sacrificeMode == SacrificeMode.Identify ? IdentifyStyle : SacrificeCategory;
             int optionCount = dropdown == null ? 0 : dropdown.options.Count;
             if (optionCount == 0)
             {
@@ -223,7 +154,10 @@ namespace EpicLoot_UnityLib
                 SacrificeItems();
             }
 
-            Unlock();
+            if (!_awaitingPayment)
+            {
+                Unlock();
+            }
         }
 
         private void IdentifyItems()
@@ -240,7 +174,7 @@ namespace EpicLoot_UnityLib
             float powerModifier = GetPowerModifier(featureValues.Item2);
             List<InventoryItemListElement> cost = EnchantingUIController.GetIdentifyCostForCategory(filterType, unidentifiedItems, costReduction);
 
-            // Cancel on every way out: returning without it left the button reading "Cancel".
+            // Cancel on every way out, or the button keeps reading "Cancel".
             if (!LocalPlayerCanAffordCost(cost))
             {
                 Player.m_localPlayer.Message(MessageHud.MessageType.Center, "$msg_missingrequirement");
@@ -249,23 +183,34 @@ namespace EpicLoot_UnityLib
                 return;
             }
 
-            // Rolls, re-checks the cost, charges it, removes the inputs and hands the results over --
-            // or, if any stack cannot be identified in full, does none of that.
-            EnchantingUIController.LootRollSelectedItems(filterType, unidentifiedItems, costReduction, powerModifier);
-
+            EnchantingUIController.PreparedIdentify prepared =
+                EnchantingUIController.PrepareIdentify(filterType, unidentifiedItems, costReduction, powerModifier);
             Cancel();
-            RefreshAvailableItems();
-            AvailableItems.GiveFocus(true, 0);
-        }
+            if (prepared == null)
+            {
+                RefreshAvailableItems();
+                return;
+            }
 
-        private float GetCostReduction(float value)
-        {
-            return RuneUI.GetCostReduction(value);
-        }
+            PayThen(prepared.Payment, receipt =>
+            {
+                foreach (ItemDrop.ItemData item in prepared.Results)
+                {
+                    InventoryManagement.Instance.GiveItem(item);
+                }
 
-        private float GetPowerModifier(float value)
-        {
-            return RuneUI.GetPowerModifier(value);
+                if (Player.m_localPlayer != null)
+                {
+                    EquipmentEffectCache.Reset(Player.m_localPlayer);
+                }
+
+                RefreshAvailableItems();
+                AvailableItems.GiveFocus(true, 0);
+            }, () =>
+            {
+                NotifyItemsUnavailable(unidentifiedItems.Select(x => x.Item1).ToArray());
+                RefreshAvailableItems();
+            });
         }
 
         private void SacrificeItems()
@@ -274,12 +219,11 @@ namespace EpicLoot_UnityLib
 
             Cancel();
 
-            // Remove first, pay out after: the products and the returned socket stones follow from what
-            // was actually taken, so an item that is no longer there yields nothing.
+            // Every input is taken in one payment, so the products follow from items that are really gone.
             Player player = Player.m_localPlayer;
             List<Tuple<ItemDrop.ItemData, int>> sacrificedItems = new List<Tuple<ItemDrop.ItemData, int>>();
             List<InventoryItemListElement> reclaimedSockets = new List<InventoryItemListElement>();
-            List<ItemDrop.ItemData> unavailableItems = new List<ItemDrop.ItemData>();
+            InventoryManagement.Payment payment = new InventoryManagement.Payment();
             foreach (Tuple<IListElement, int> selectedItem in selectedItems)
             {
                 ItemDrop.ItemData sacrificed = selectedItem.Item1.GetItem();
@@ -296,10 +240,10 @@ namespace EpicLoot_UnityLib
                 // Socketed stones are the player's property, not part of the sacrifice yield: the
                 // non-Locked ones go back once the item is gone, the same policy disenchanting uses.
                 // Kept apart from the products so the double-yield bonus never doubles them.
-                List<InventoryItemListElement> sockets =
-                    sacrificed.IsMagic(out MagicItem sacrificedMagicItem) && sacrificedMagicItem.Sockets.Count > 0
-                        ? EnchantingUIController.ReclaimSockets(sacrificedMagicItem)
-                        : null;
+                if (sacrificed.IsMagic(out MagicItem sacrificedMagicItem) && sacrificedMagicItem.Sockets.Count > 0)
+                {
+                    reclaimedSockets.AddRange(EnchantingUIController.ReclaimSockets(sacrificedMagicItem));
+                }
 
                 // Listed while equipped when ShowEquippedAndHotbarItemsInSacrificeTab is on, and vanilla
                 // never auto-unequips a removed item (ghost stats and visuals).
@@ -308,48 +252,44 @@ namespace EpicLoot_UnityLib
                     player.UnequipItem(sacrificed, false);
                 }
 
-                int removed = InventoryManagement.Instance.RemoveExactItem(sacrificed, amount);
-                if (removed < amount)
-                {
-                    unavailableItems.Add(sacrificed);
-                }
-
-                if (removed <= 0)
-                {
-                    Debug.LogWarning($"[Sacrifice] {sacrificed.m_shared.m_name} could not be removed; skipped.");
-                    continue;
-                }
-
-                sacrificedItems.Add(new Tuple<ItemDrop.ItemData, int>(sacrificed, removed));
-                if (sockets != null)
-                {
-                    reclaimedSockets.AddRange(sockets);
-                }
+                payment.Exact(sacrificed, amount);
+                sacrificedItems.Add(new Tuple<ItemDrop.ItemData, int>(sacrificed, amount));
             }
 
-            List<InventoryItemListElement> sacrificeProducts = EnchantingUIController.GetSacrificeProducts(sacrificedItems);
+            if (sacrificedItems.Count == 0)
+            {
+                RefreshAvailableItems();
+                return;
+            }
 
+            // Worked out before the items go: a removed item's data is what the products are read from.
+            List<InventoryItemListElement> sacrificeProducts = EnchantingUIController.GetSacrificeProducts(sacrificedItems);
             Tuple<float, float> chanceToDoubleEntry =
                 EnchantingTableUI.instance.SourceTable.GetFeatureCurrentValue(EnchantingFeature.Sacrifice);
             float chanceToDouble = float.IsNaN(chanceToDoubleEntry.Item1) ? 0.0f : chanceToDoubleEntry.Item1 / 100.0f;
 
-            if (sacrificeProducts.Count > 0 && Random.Range(0.0f, 1.0f) < chanceToDouble)
+            PayThen(payment, receipt =>
             {
-                EnchantingTableUI.instance.PlayEnchantBonusSFX();
-                BonusPanel.Show();
-
-                foreach (InventoryItemListElement sacrificeProduct in sacrificeProducts)
+                if (sacrificeProducts.Count > 0 && Random.Range(0.0f, 1.0f) < chanceToDouble)
                 {
-                    sacrificeProduct.Item.m_stack *= 2;
+                    EnchantingTableUI.instance.PlayEnchantBonusSFX();
+                    BonusPanel.Show();
+
+                    foreach (InventoryItemListElement sacrificeProduct in sacrificeProducts)
+                    {
+                        sacrificeProduct.Item.m_stack *= 2;
+                    }
                 }
-            }
 
-            GiveItemsToPlayer(reclaimedSockets);
-            GiveItemsToPlayer(sacrificeProducts);
-            NotifyItemsUnavailable(unavailableItems.ToArray());
-
-            RefreshAvailableItems();
-            AvailableItems.GiveFocus(true, 0);
+                GiveItemsToPlayer(reclaimedSockets);
+                GiveItemsToPlayer(sacrificeProducts);
+                RefreshAvailableItems();
+                AvailableItems.GiveFocus(true, 0);
+            }, () =>
+            {
+                NotifyItemsUnavailable(sacrificedItems.Select(x => x.Item1).ToArray());
+                RefreshAvailableItems();
+            });
         }
 
         private void SacrificeModeSelected(bool isOn)
@@ -364,15 +304,14 @@ namespace EpicLoot_UnityLib
             // The two modes list disjoint item sets, so a filter carried across the toggle would hide
             // nearly everything and read as a bug.
             AvailableItems.ClearFilter();
-            AvailableItems.SetItems(items.Cast<IListElement>().ToList());
-            AvailableItems.DeselectAll();
+            AvailableItems.SetItemsAndDeselect(items.Cast<IListElement>().ToList());
             Warning.text = Localization.instance.Localize("$mod_epicloot_sacrifice_warning");
             Warning.color = Color.red;
             Explainer.text = Localization.instance.Localize("$mod_epicloot_sacrifice_productsexplainer");
             SetMainButtonLabel("$mod_epicloot_sacrifice");
             OnSelectedItemsChanged();
             IdentifyStylePanel.SetActive(false);
-            _sacrificeCategoryPanel?.SetActive(true);
+            SacrificeCategoryPanel.SetActive(true);
             CostList.gameObject.SetActive(false);
         }
 
@@ -386,8 +325,7 @@ namespace EpicLoot_UnityLib
             _sacrificeMode = SacrificeMode.Identify;
             List<InventoryItemListElement> items = EnchantingUIController.GetUnidentifiedItems();
             AvailableItems.ClearFilter();
-            AvailableItems.SetItems(items.Cast<IListElement>().ToList());
-            AvailableItems.DeselectAll();
+            AvailableItems.SetItemsAndDeselect(items.Cast<IListElement>().ToList());
             // Set before the selection refresh, which appends the progress-gated marker when needed.
             Explainer.text = Localization.instance.Localize("$mod_epicloot_identify_productsexplainer");
             OnSelectedItemsChanged();
@@ -395,7 +333,7 @@ namespace EpicLoot_UnityLib
             Warning.color = new Color(1f, 0.631f, 0.235f);
             SetMainButtonLabel("$mod_epicloot_identify");
             IdentifyStylePanel.SetActive(true);
-            _sacrificeCategoryPanel?.SetActive(false);
+            SacrificeCategoryPanel.SetActive(false);
             CostList.gameObject.SetActive(true);
         }
 
@@ -445,8 +383,7 @@ namespace EpicLoot_UnityLib
                     x => new Tuple<ItemDrop.ItemData, int>(x.Item1.GetItem(), x.Item2)).ToList();
                 Tuple<float, float> featureValues =
                     EnchantingTableUI.instance.SourceTable.GetFeatureCurrentValue(EnchantingFeature.Sacrifice);
-                float costReduction = featureValues.Item1 == 0f || float.IsNaN(featureValues.Item1) ?
-                    1.0f : 1f - (featureValues.Item1 / 100f);
+                float costReduction = GetCostReduction(featureValues.Item1);
                 List<InventoryItemListElement> cost = EnchantingUIController.GetIdentifyCostForCategory(identifyFilter, unidentifiedItems, costReduction);
                 CostList.SetItems(cost.Cast<IListElement>().ToList());
                 canAfford = LocalPlayerCanAffordIdentifyCost(cost);
@@ -466,34 +403,9 @@ namespace EpicLoot_UnityLib
             MainButton.interactable = featureUnlocked && selectedItems.Count > 0 && canAfford;
         }
 
-        public bool LocalPlayerCanAffordIdentifyCost(List<InventoryItemListElement> cost)
+        private bool LocalPlayerCanAffordIdentifyCost(List<InventoryItemListElement> cost)
         {
-            if (cost == null || cost.Count == 0)
-            {
-                return true;
-            }
-
-            if (Player.m_localPlayer == null)
-            {
-                return false;
-            }
-
-            if (Player.m_localPlayer.NoCostCheat())
-            {
-                return true;
-            }
-
-            foreach (InventoryItemListElement element in cost)
-            {
-                ItemDrop.ItemData item = element.GetItem();
-                if (!InventoryManagement.Instance.HasItem(item))
-                {
-                    Debug.Log($"Identify Cost failed, user does not have item {item.m_shared.m_name}.");
-                    return false;
-                }
-            }
-
-            return true;
+            return LocalPlayerCanAffordCostOrNone(cost);
         }
 
         public override void Cancel()
@@ -517,11 +429,6 @@ namespace EpicLoot_UnityLib
                 _buttonLabel.text = text;
             }
         }
-        
-        public override void DeselectAll()
-        {
-            AvailableItems.DeselectAll();
-        }
 
         public override void Lock()
         {
@@ -529,9 +436,9 @@ namespace EpicLoot_UnityLib
 
             SacrificeToggle.interactable = false;
             IdentifyToggle.interactable = false;
-            if (_sacrificeCategory != null)
+            if (SacrificeCategory != null)
             {
-                _sacrificeCategory.interactable = false;
+                SacrificeCategory.interactable = false;
             }
         }
 
@@ -541,9 +448,9 @@ namespace EpicLoot_UnityLib
 
             SacrificeToggle.interactable = true;
             IdentifyToggle.interactable = true;
-            if (_sacrificeCategory != null)
+            if (SacrificeCategory != null)
             {
-                _sacrificeCategory.interactable = true;
+                SacrificeCategory.interactable = true;
             }
         }
     }

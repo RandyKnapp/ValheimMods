@@ -3,16 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using EpicLoot.MagicItemEffects;
 using UnityEngine;
+using static EpicLoot.Compendium.CompendiumFormat;
 
 namespace EpicLoot.Compendium;
 
 public static class VitalsTextSection
 {
-    private const string BetterColor = "#8aff8aff";
-    private const string WorseColor = "#ff8a8aff";
-    private const string NeutralColor = "#c0c0c0ff";
-    private const string Dash = "<color=#808080ff>-</color>";
-
     private delegate void StatusRegen(StatusEffect effect, ref float multiplier);
     private delegate void ManagerRegen(SEMan manager, ref float multiplier);
 
@@ -73,11 +69,7 @@ public static class VitalsTextSection
         }
 
         instance.MagicPagesTextArea.Add($"<size={MagicPages.LARGE_FONT_SIZE}>$mod_epicloot_vitals</size>");
-        MagicTextTable table = instance.MagicPagesTextArea.AddTable(
-            new MagicTableColumn { Header = "$mod_epicloot_vitals_col_stat", Weight = 0.34f, Outline = true },
-            new MagicTableColumn { Header = "$mod_epicloot_vitals_col_base", Weight = 0.22f, Alignment = TextAnchor.MiddleCenter },
-            new MagicTableColumn { Header = "$mod_epicloot_vitals_col_epicloot", Weight = 0.22f, Alignment = TextAnchor.MiddleCenter },
-            new MagicTableColumn { Header = "$mod_epicloot_vitals_col_total", Weight = 0.22f, Alignment = TextAnchor.MiddleRight });
+        MagicTextTable table = AddStatTable(instance);
 
         AddPools(player, table);
         AddHealthRegen(player, table);
@@ -288,32 +280,6 @@ public static class VitalsTextSection
         {
             detail.Add(Grey($"$mod_epicloot_vitals_other {formatOther(remainder)}"));
         }
-    }
-
-    private static void AddRow(MagicTextTable table, string name, string baseText, float magicDelta, string totalText,
-        List<string> detail, System.Func<float, string> formatDelta)
-    {
-        bool neutral = Mathf.Abs(magicDelta) < 0.005f;
-        string color = neutral ? NeutralColor : magicDelta > 0f ? BetterColor : WorseColor;
-        string[] cells =
-        {
-            name,
-            baseText,
-            neutral ? Dash : formatDelta(magicDelta),
-            $"<color={color}>{totalText}</color>",
-        };
-        table.AddRow(cells, detail, true);
-    }
-
-    private static string Grey(string text) => StatSourceLines.Grey(text);
-    private static string Whole(float value) => Mathf.RoundToInt(value).ToString();
-    private static string Percent(float fraction) => $"{Mathf.RoundToInt(fraction * 100f)}%";
-    private static string SignedPercent(float fraction) => Signed(fraction * 100f) + "%";
-
-    private static string Signed(float value, string format = "0")
-    {
-        string text = Mathf.Abs(value).ToString(format);
-        return value < 0f ? $"-{text}" : $"+{text}";
     }
 
     private static string PerTick(float value) =>

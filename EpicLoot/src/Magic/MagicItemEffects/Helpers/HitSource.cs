@@ -8,7 +8,7 @@ namespace EpicLoot.src.Magic.MagicItemEffects.Helpers {
     // Bonus hits: damage EpicLoot deals on its own -- Reflect, the Eikthyr charge, FrostAOE, Trailblazer's fire,
     // the Moder and Bonemass novas, the meteor and chain lightning -- carries the local player as attacker, so
     // without a tag every weapon-strike effect (crits, double damage, Wager and Mercenary stakes, lifesteal,
-    // Executioner, Slow, Paralyze, Eikthyr charges) rolled on it as well, once per target it touched.
+    // Executioner, Slow, Paralyze, Eikthyr charges) would roll on it as well, once per target it touched.
     //  * Direct damage goes through DealBonusDamage, which holds the tag for the call: Character.Damage runs the
     //    whole attacker-side dispatch synchronously.
     //  * Damage that lands later, from a spawned vanilla Aoe or Projectile, is tagged with MarkBonusSource. The

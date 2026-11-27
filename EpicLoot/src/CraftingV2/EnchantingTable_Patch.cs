@@ -52,7 +52,6 @@ namespace EpicLoot.CraftingV2
 
             if (!ELConfig.EnchantingTableUpgradesActive.Value)
             {
-                // Do not drop upgrade costs when disabled
                 return;
             }
 
@@ -77,9 +76,8 @@ namespace EpicLoot.CraftingV2
             }
         }
 
-        // Mirrors the per-requirement loop in Piece.DropResources. ItemDrop.SetStack clamps to the
-        // item's max stack size, so dropping each cost as a single ItemDrop silently lost everything
-        // above that limit: 200 Cloudberries came back as one stack of 50, 36 Surtling Cores as 10.
+        // Mirrors the per-requirement loop in Piece.DropResources: ItemDrop.SetStack clamps to the item's
+        // max stack size, so a cost dropped as a single ItemDrop would lose everything above that limit.
         private static void DropCostItem(ItemDrop.ItemData costItem, Vector3 position, HitData hitData, bool cheated)
         {
             GameObject dropPrefab = costItem.m_dropPrefab;

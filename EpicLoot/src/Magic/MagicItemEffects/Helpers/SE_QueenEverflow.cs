@@ -1,34 +1,22 @@
-﻿using EpicLoot.MagicItemEffects.Shards;
-using System.Text;
+﻿using System.Text;
 using UnityEngine;
 
 namespace EpicLoot.src.Magic.MagicItemEffects.Helpers
 {
-    // The stacking regen buff granted by the Queen boss shard (see QueenEverflow). Each stack adds
-    // RegenPerStack (a fraction, e.g. 0.10 at Legendary) to the player's health, stamina AND eitr regen
-    // multipliers; the three Modify*Regen overrides are re-queried every frame (SEMan.Modify*Regen), so the
-    // bonus always tracks the live stack count and rarity. The HUD icon text shows the standard remaining-
-    // duration string plus the current stack count.
-    //
-    // QueenEverflow owns the lifetime: it stamps Stacks/MaxStacks/RegenPerStack on the live instance and
-    // refreshes m_ttl on each kill, and the buff self-expires via m_ttl like any timed status effect.
+    // QueenEverflow stamps Stacks and RegenPerStack on the live instance and refreshes m_ttl on each kill.
     public class SE_QueenEverflow : StatusEffect
     {
         public int Stacks = 1;
-        public int MaxStacks = QueenEverflow.DefaultMaxStacks;
-        public float RegenPerStack; // fraction added to each regen rate per stack (e.g. 0.10 at Legendary)
+        public float RegenPerStack;
 
-        // Vanilla adds (multiplier - 1) to the regen multiplier when the multiplier is > 1 (see
-        // SE_Stats.ModifyHealthRegen); here we add the accumulated per-stack bonus directly to the base
-        // multiplier of 1 that the Player seeds each tick, giving +TotalRegenBonus across all three pools.
+        // Added straight to the base multiplier of 1 the Player seeds each tick, rather than vanilla's
+        // (multiplier - 1) convention in SE_Stats.
         private float TotalRegenBonus => RegenPerStack * Stacks;
 
         public override void ModifyHealthRegen(ref float regenMultiplier) => regenMultiplier += TotalRegenBonus;
         public override void ModifyStaminaRegen(ref float staminaRegen) => staminaRegen += TotalRegenBonus;
         public override void ModifyEitrRegen(ref float eitrRegen) => eitrRegen += TotalRegenBonus;
 
-        // Standard remaining-duration string with the current stack count appended (e.g. "0:27\n×3"). The
-        // HUD re-queries this every render, so the countdown and stack count stay live.
         public override string GetIconText()
         {
             var time = base.GetIconText();

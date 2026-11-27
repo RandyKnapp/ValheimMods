@@ -68,21 +68,24 @@ namespace EpicLoot.MagicItemEffects
             float health = victim.GetHealth();
             float needed = health * venom.DoomThreshold / 100f;
 
-            string name = Utils.GetPrefabName(victim.gameObject);
-            string added = resisted
-                ? "poison fully resisted"
-                : $"+{venom.Added:0.##} venom on {venom.Carried:0.##} carried";
-            string verdict = venom.DoomThreshold > 0f
-                ? $"dooms at {needed:0.#} ({venom.DoomThreshold:0.#}% of health)"
-                : "Nine Steps not active";
-            EpicLoot.Log($"[NineSteps] {name}: {added}, venom {venomDamage:0.##} vs health {health:0.#}/{victim.GetMaxHealth():0.#}, {verdict}");
+            if (EpicLoot.IsLogEnabled(LogLevel.Info))
+            {
+                string added = resisted
+                    ? "poison fully resisted"
+                    : $"+{venom.Added:0.##} venom on {venom.Carried:0.##} carried";
+                string verdict = venom.DoomThreshold > 0f
+                    ? $"dooms at {needed:0.#} ({venom.DoomThreshold:0.#}% of health)"
+                    : "Nine Steps not active";
+                EpicLoot.Log($"[NineSteps] {Utils.GetPrefabName(victim.gameObject)}: {added}, venom {venomDamage:0.##} " +
+                    $"vs health {health:0.#}/{victim.GetMaxHealth():0.#}, {verdict}");
+            }
 
             if (venom.DoomThreshold <= 0f || venomDamage <= 0f || health <= 0f || venomDamage < needed)
             {
                 return;
             }
 
-            EpicLoot.Log($"[NineSteps] {name} doomed: {Steps} steps, {StepInterval:0.##}s apart");
+            EpicLoot.Log($"[NineSteps] {Utils.GetPrefabName(victim.gameObject)} doomed: {Steps} steps, {StepInterval:0.##}s apart");
             venom.Doom = victim.gameObject.AddComponent<NineStepsDoom>();
             venom.Doom.Begin(victim, venom.Attacker);
         }

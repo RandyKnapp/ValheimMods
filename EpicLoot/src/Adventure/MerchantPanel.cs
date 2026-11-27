@@ -56,9 +56,8 @@ namespace EpicLoot.Adventure
 
         private readonly Currencies _currencies = new Currencies(-1);
         public static MerchantPanel Instance => _instance;
-        // The button, not its label: a legacy Text normally, a TMP_Text once Auga has replaced the button.
-        // The button's own label: Auga's TMP one, else the prefab's legacy Text. Resolved before the gamepad
-        // hints are built, since their glyph is a TMP text under the same button.
+        // The Accept button's label: Auga's TMP one, else the prefab's legacy Text. Resolved before the
+        // gamepad hints are built, since their glyph is a TMP text under the same button.
         private static Component _acceptBountyLabel;
         private static MerchantPanel _instance;
         private AudioSource _audioSource;
@@ -170,7 +169,7 @@ namespace EpicLoot.Adventure
             var bountyElementPrefab = transform.Find("Bounties/AvailableBountiesPanel/ItemElement").gameObject.AddComponent<BountyListElement>();
             bountyElementPrefab.gameObject.SetActive(false);
             var activeBountyElementPrefab = transform.Find("Bounties/ClaimableBountiesPanel/ItemElement").gameObject.AddComponent<BountyListElement>();
-            bountyElementPrefab.gameObject.SetActive(false);
+            activeBountyElementPrefab.gameObject.SetActive(false);
 
             if (EpicLoot.HasAuga)
             {
@@ -197,12 +196,8 @@ namespace EpicLoot.Adventure
             IronBountyTokensCount = transform.Find("Currencies/BountyTokensIronCount").GetComponent<Text>();
             GoldBountyTokensCount = transform.Find("Currencies/BountyTokensGoldCount").GetComponent<Text>();
 
-            // Top up the cache of bounty positions. Runs on the cache's own driver rather than this
-            // panel: StoreGui deactivates the panel on close, which would abandon the fill partway.
-            // It is a no-op once every biome is stocked, so reopening the merchant costs nothing.
-            // Warm the world biome index while the player browses, so accepting a bounty resolves
-            // instantly instead of waiting on a first build. Cheap to call repeatedly: it returns at
-            // once when the index is current, and rebuilds only if the world or its size changed.
+            // Warm the world biome index while the player browses, so accepting a bounty does not wait
+            // on a first build. It runs on its own driver, since StoreGui deactivates this panel on close.
             WorldBiomeIndex.EnsureBuilt();
 
             if (EpicLoot.HasAuga)
@@ -281,12 +276,8 @@ namespace EpicLoot.Adventure
 
         /// <summary>
         /// Runs one step against every list panel, isolating failures to the panel that caused them.
-        ///
-        /// These used to be walked in a bare foreach, so the first panel to throw took the whole
-        /// merchant window with it: nothing after it in the list ever refreshed and the player saw an
-        /// empty panel with no indication of why. A panel that throws is reported once and then left
-        /// out for the rest of this opening, which also keeps a failure in Update out of the log on
-        /// every frame.
+        /// A panel that throws is reported once and left out for the rest of this opening, so the
+        /// panels after it still refresh and a failure in Update is not logged every frame.
         /// </summary>
         private void ForEachPanel(string step, Action<IMerchantListPanel> action)
         {
@@ -394,6 +385,8 @@ namespace EpicLoot.Adventure
                 InventoryManagement.Instance.RemoveItem(GetGoldBountyTokenName(), listItem.ItemInfo.Cost.GoldBountyTokens);
             }
 
+            _nextPoll = 0f;
+
             StoreGui.instance.m_trader.OnBought(new Trader.TradeItem { m_price = 0 });
             StoreGui.instance.m_buyEffects.Create(player.transform.position, Quaternion.identity);
             return true;
@@ -407,17 +400,36 @@ namespace EpicLoot.Adventure
             return $"<color=#add8e6ff>{message}</color>";
         }
 
+        // Counting a currency walks the inventory, the open table's storage and every chest a storage mod offers,
+        // so the counts and the refresh-time text are updated a few times a second rather than every frame. A
+        // purchase asks for a count on the next frame (BuyItem), so the buy buttons never act on stale counts.
+        private const float PollSeconds = 0.25f;
+        private float _nextPoll;
+
+        /// <summary>Counts the currencies again on the next frame, after something spent them.</summary>
+        public static void RefreshCurrenciesSoon()
+        {
+            if (_instance != null)
+            {
+                _instance._nextPoll = 0f;
+            }
+        }
+
         public void Update()
         {
-            UpdateRefreshTime();
-            var currenciesChanged = UpdateCurrencies();
+            var currenciesChanged = false;
+            if (Time.unscaledTime >= _nextPoll)
+            {
+                _nextPoll = Time.unscaledTime + PollSeconds;
+                UpdateRefreshTime();
+                currenciesChanged = UpdateCurrencies();
+            }
 
             ForEachPanel("RefreshItems", panel =>
             {
-                // A currency change only changes what the player can afford, never what is on offer:
-                // rebuilding the rows for it wiped the selection, snapped the scroll and (with the
-                // gamble pool drawing from the global RNG) rerolled the stock. `else if` because a
-                // rebuild has already applied the new currencies through SetItem.
+                // A currency change only changes what the player can afford, never what is on offer, so
+                // it does not rebuild the rows (which would wipe the selection and snap the scroll).
+                // `else if` because a rebuild has already applied the new currencies through SetItem.
                 if (panel.NeedsRefresh())
                 {
                     panel.RefreshItems(_currencies);
@@ -492,25 +504,23 @@ namespace EpicLoot.Adventure
             return currenciesChanged;
         }
 
-        public static string GetCoinsName()
+        private static string _coinsName;
+        private static string _forestTokenName;
+        private static string _ironBountyTokenName;
+        private static string _goldBountyTokenName;
+
+        private static string SharedName(string prefabName, ref string cached)
         {
-            return ObjectDB.instance.GetItemPrefab("Coins").GetComponent<ItemDrop>().m_itemData.m_shared.m_name;
+            return cached ??= ObjectDB.instance.GetItemPrefab(prefabName).GetComponent<ItemDrop>().m_itemData.m_shared.m_name;
         }
 
-        public static string GetForestTokenName()
-        {
-            return ObjectDB.instance.GetItemPrefab("ForestToken").GetComponent<ItemDrop>().m_itemData.m_shared.m_name;
-        }
+        public static string GetCoinsName() => SharedName("Coins", ref _coinsName);
 
-        public static string GetIronBountyTokenName()
-        {
-            return ObjectDB.instance.GetItemPrefab("IronBountyToken").GetComponent<ItemDrop>().m_itemData.m_shared.m_name;
-        }
+        public static string GetForestTokenName() => SharedName("ForestToken", ref _forestTokenName);
 
-        public static string GetGoldBountyTokenName()
-        {
-            return ObjectDB.instance.GetItemPrefab("GoldBountyToken").GetComponent<ItemDrop>().m_itemData.m_shared.m_name;
-        }
+        public static string GetIronBountyTokenName() => SharedName("IronBountyToken", ref _ironBountyTokenName);
+
+        public static string GetGoldBountyTokenName() => SharedName("GoldBountyToken", ref _goldBountyTokenName);
 
         public static void ShowInputBlocker(bool show)
         {

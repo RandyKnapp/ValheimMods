@@ -4,7 +4,6 @@ using JetBrains.Annotations;
 using SkillType = Skills.SkillType;
 
 namespace EpicLoot.MagicItemEffects.Shards {
-    // Provides a bonus to harvesting XP gain for woodcutting and pickaxes
     public static class IncreaseHarvestXPGain {
         [HarmonyPatch(typeof(Skills), nameof(Skills.RaiseSkill))]
         private static class RaiseSkill_Patch {

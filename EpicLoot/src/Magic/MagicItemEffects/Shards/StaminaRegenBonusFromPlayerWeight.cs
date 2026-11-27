@@ -1,7 +1,6 @@
 ﻿using EpicLoot.src.Magic.MagicItemEffects.Helpers;
 
 namespace EpicLoot.MagicItemEffects.Shards {
-    // Provides a bonus to stamina regeneration based on the player's weight
     public static class StaminaRegenBonusFromPlayerWeight {
         public static void Apply(SEMan seman, ref float staminaMultiplier) {
             var player = Player.m_localPlayer;

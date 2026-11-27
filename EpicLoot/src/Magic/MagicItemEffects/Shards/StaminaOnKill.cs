@@ -1,11 +1,10 @@
 ﻿using EpicLoot.src.Magic.MagicItemEffects.Helpers;
 
 namespace EpicLoot.MagicItemEffects.Shards {
-    // Restores a percentage of the player's maximum stamina when they kill an enemy
     public static class StaminaOnKill {
         private static readonly KillCredit _credit = new KillCredit();
 
-        // Postfix handler invoked by CharacterDamageDispatch (on-hit reaction).
+        // Postfix handler invoked by SharedCharacterDamagePatch (on-hit reaction).
         public static void OnDamageDealt(Character __instance, HitData hit, Character attacker) {
             var player = Player.m_localPlayer;
             if (hit == null || player == null || __instance == player || attacker != player

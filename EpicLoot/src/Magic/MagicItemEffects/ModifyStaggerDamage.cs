@@ -8,15 +8,12 @@ namespace EpicLoot.MagicItemEffects
     {
         public static float? HandlingProjectileDamage;
 
-        // Prefix handler invoked by CharacterDamageDispatch (attacker-side outgoing modifier).
+        // Called from SharedCharacterDamagePatch's prefix, on the attacker's client.
         public static void ApplyStaggerModifier(Character __instance, HitData hit, Character attacker)
         {
             if (attacker is Player player && __instance.IsStaggering())
             {
-                // Projectile hits carry the value staged on the projectile's ZDO (set by the OnHit
-                // prefix, cleared by its postfix); melee reads live. The old code cached the melee
-                // value INTO the projectile static and never cleared it, so the first melee stagger
-                // multiplier was silently reused for every later hit.
+                // Projectile hits carry the value staged from the projectile's ZDO by the OnHit prefix; melee reads live.
                 float multiplier = HandlingProjectileDamage ?? ReadStaggerDamageValue(player);
                 hit.ApplyModifier(multiplier);
             }
@@ -42,7 +39,7 @@ namespace EpicLoot.MagicItemEffects
         [UsedImplicitly]
         private static void Prefix(Projectile __instance)
         {
-            if (__instance == null || __instance.m_nview == null)
+            if (__instance.m_nview == null)
             {
                 ModifyStaggerDamage_Character_Damage_Patch.HandlingProjectileDamage = null;
                 return;
@@ -52,8 +49,9 @@ namespace EpicLoot.MagicItemEffects
                 __instance.m_nview.GetZDO()?.GetFloat("epic loot modify stagger damage", 1f);
         }
 
+        // A finalizer: a throw inside OnHit must not leave the value set for the next hit.
         [UsedImplicitly]
-        private static void Postfix()
+        private static void Finalizer()
         {
             ModifyStaggerDamage_Character_Damage_Patch.HandlingProjectileDamage = null;
         }
@@ -65,7 +63,7 @@ namespace EpicLoot.MagicItemEffects
         [UsedImplicitly]
         private static void Prefix(Character owner, Projectile __instance)
         {
-            if (owner != null && owner.IsPlayer() && __instance != null && __instance.m_nview != null)
+            if (owner != null && owner.IsPlayer() && __instance.m_nview != null)
             {
                 var zdo = __instance.m_nview.GetZDO();
                 if (zdo == null)

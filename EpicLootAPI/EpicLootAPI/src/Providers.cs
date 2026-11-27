@@ -50,8 +50,8 @@ public static partial class EpicLoot
 
     /// <summary>
     /// Contributes extra items to the enchanting table's view of the player's inventory -- nearby
-    /// containers, a backpack, a remote stash. Epic Loot spends the player's own inventory first and
-    /// only charges the shortfall to providers.
+    /// containers, a backpack, a remote stash. A cost is spent from the enchanting table's own storage
+    /// first, then from the player's own inventory, and only the shortfall is charged to providers.
     /// </summary>
     /// <param name="id">Unique id, normally your plugin GUID</param>
     /// <param name="getItems">The extra items the table may see. Return live instances, not copies:

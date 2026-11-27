@@ -84,7 +84,7 @@ internal partial class TooltipGatherer
                     if (includeDetails)
                     {
                         // A shardstone's value is fixed by the shard grid, not rolled, so it has no range to
-                        // show; the rarity's roll range read as though it did. A runestone keeps its range.
+                        // show. A runestone keeps its range.
                         MagicItemEffectDefinition.ValueDef fixedValue = socket.ShardType != ShardType.None
                             ? new MagicItemEffectDefinition.ValueDef { MinValue = socketEffect.EffectValue, MaxValue = socketEffect.EffectValue }
                             : null;

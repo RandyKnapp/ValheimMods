@@ -115,7 +115,10 @@ that a table names always drop as themselves.
 
 **Check the drop limits.** `Item Drop Limits` keeps players from finding gear ahead of their progress. By
 default a biome's gear drops once that biome's boss has been killed, so the leather helmet drops once
-Eikthyr is dead; until then an item is swapped for an unlocked one of the same type.
+Eikthyr is dead; until then an item is swapped for an unlocked one of the same type. With
+`CurrentBiomeGradualUnlock`, a biome's gear after its boss falls drops with a chance that grows with the
+player's kills in that biome, up to 100% at the biome's `UnlockKills` in `biomedata.json`; a miss drops the
+same type from the biome below. Kills are only counted while this mode is set.
 
 **Roll the rarity.** The `Rarity` list gives tickets to Magic, Rare, Epic, Legendary, Mythic and Ancient,
 in that order; a shorter list leaves the rest at 0. Stars move some weight up a tier first: for our 1-star

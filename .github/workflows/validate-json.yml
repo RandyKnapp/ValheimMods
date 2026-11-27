@@ -4,9 +4,15 @@ on:
   push:
     paths:
       - '**.json'
+      - '**.jsonc'
+      - '.github/workflows/validate-json.yml'
+      - '.github/scripts/validate_json.py'
   pull_request:
     paths:
       - '**.json'
+      - '**.jsonc'
+      - '.github/workflows/validate-json.yml'
+      - '.github/scripts/validate_json.py'
   workflow_dispatch:
 
 jobs:
@@ -17,12 +23,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Verify JSON Syntax
-        run: |
-          # Find all .json files and validate using jq.
-          # Uses bash argument passing ("$1") to safely handle filenames with quotes/spaces.
-          find . -type f -name "*.json" -print0 | xargs -0 -I {} bash -c '
-            if ! jq empty "$1"; then
-              echo "::error file=$1::JSON Syntax Error in $1"
-              exit 1
-            fi
-          ' -- "{}"
+        # Checks every tracked .json and .jsonc file. // and /* */ comments are allowed, because
+        # EpicLoot reads its JSON with Newtonsoft, which skips them; anything else that is not JSON
+        # (trailing commas, NaN, a missing quote) still fails.
+        run: python3 .github/scripts/validate_json.py

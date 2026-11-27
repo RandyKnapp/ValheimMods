@@ -173,9 +173,9 @@ internal partial class TooltipGatherer
             return;
         }
 
-        bool modified = magicItem.HasEffect(MagicEffectType.ModifyAttackStaminaUse) ||
-            magicItem.HasEffect(MagicEffectType.ModifyBlockStaminaUse);
-        float staminaUsePercentage = 1 - magicItem.GetTotalEffectValue(MagicEffectType.ModifyAttackStaminaUse, 0.01f);
+        bool modified = magicItem.HasEffect(MagicEffectType.ModifyAttackStaminaUse);
+        float staminaUsePercentage = ModifyAttackCosts.GetEffectPercentage(
+            magicItem.GetTotalEffectValue(MagicEffectType.ModifyAttackStaminaUse, 0.01f));
         float totalStaminaUse = staminaUsePercentage * item.m_shared.m_attack.m_attackStamina;
 
         if (magicItem.HasEffect(MagicEffectType.SpellSword))
@@ -215,7 +215,8 @@ internal partial class TooltipGatherer
             baseEitrUse += Spellsword.GetAdditionalSpellswordAttackEitr(item.m_shared.m_attack.m_attackStamina);
         }
 
-        float eitrUsePercentage = 1 - magicItem.GetTotalEffectValue(MagicEffectType.ModifyAttackEitrUse, 0.01f);
+        float eitrUsePercentage = ModifyAttackCosts.GetEffectPercentage(
+            magicItem.GetTotalEffectValue(MagicEffectType.ModifyAttackEitrUse, 0.01f));
         AddStat("$item_eitruse", eitrUsePercentage * baseEitrUse, modified);
     }
 
@@ -261,7 +262,8 @@ internal partial class TooltipGatherer
             return;
         }
 
-        float attackDrawStaminaPercentage = 1 - magicItem.GetTotalEffectValue(MagicEffectType.ModifyDrawStaminaUse, 0.01f);
+        float attackDrawStaminaPercentage = ModifyAttackCosts.GetEffectPercentage(
+            magicItem.GetTotalEffectValue(MagicEffectType.ModifyDrawStaminaUse, 0.01f));
         AddStat("$item_staminahold", attackDrawStaminaPercentage * item.m_shared.m_attack.m_drawStaminaDrain,
             magicItem.HasEffect(MagicEffectType.ModifyDrawStaminaUse));
     }
@@ -353,8 +355,8 @@ internal partial class TooltipGatherer
         {
             float playerTotal = player.GetEquipmentAttackStaminaModifier();
             player.m_seman.ModifyAttackStaminaUsage(1f, ref playerTotal, minZero: false);
-            // Subtract the raw effect fraction, not GetModifyAttackValue's (1 - x) MULTIPLIER: subtracting the
-            // multiplier rendered a -13% enchant as "-87%". Mirrors the block stamina line below.
+            // Subtract the raw effect fraction, not GetModifyAttackValue's (1 - x) multiplier. Mirrors the
+            // block stamina line below.
             float value = item.m_shared.m_attackStaminaModifier -
                 magicItem.GetTotalEffectValue(MagicEffectType.ModifyAttackStaminaUse, 0.01f);
             AddModifier("$se_attackstamina", value, hasModifiers, playerTotal);
@@ -423,7 +425,7 @@ internal partial class TooltipGatherer
     /// <summary>
     /// How much stronger a parry is than a normal block with this item. Vanilla multiplies the parry's block
     /// power by m_timedBlockBonus, and ModifyParry raises the base block power a parry starts from
-    /// (ModifyBlock.GetBlockPowerValue), so the two multiply -- adding them understated the bonus.
+    /// (ModifyBlock.GetBlockPowerValue), so the two multiply.
     /// </summary>
     private float GetParryBonusValue(out bool hasModifiers)
     {

@@ -34,7 +34,6 @@ namespace EpicLoot_UnityLib
             AvailableItems.AddEquippedSortMode();
             MagicTextShimmer.Ensure(AvailableEffectsText);
             _enchantListEnsureVisible = EnchantList.GetComponentInParent<ScrollRectEnsureVisible>(true);
-            EffectListRow.FitRowsToList(EnchantList);
         }
 
         [UsedImplicitly]
@@ -81,7 +80,7 @@ namespace EpicLoot_UnityLib
                 if (ZInput.GetButtonDown("JoyButtonY"))
                 {
                     int activeAugmentCount = _AugmentSelectors.Count;
-                    // No selectors (nothing selected on the tab): the modulo below divided by zero.
+                    // No selectors when nothing is selected on the tab, and the modulo would divide by zero.
                     if (activeAugmentCount > 0)
                     {
                         int nextAugmentIndex = (_augmentIndex + 1) % activeAugmentCount;
@@ -214,33 +213,33 @@ namespace EpicLoot_UnityLib
             }
 
             List<InventoryItemListElement> cost = EnchantingUIController.GetAugmentCost(item, _augmentIndex);
-
-            Player player = Player.m_localPlayer;
-            if (!player.NoCostCheat())
+            int augmentIndex = _augmentIndex;
+            PayThen(new InventoryManagement.Payment().Cost(cost), receipt =>
             {
-                if (!LocalPlayerCanAffordCost(cost))
+                if (!InventoryManagement.Instance.IsEditable(item))
                 {
-                    Debug.LogError("[Augment Item] ERROR: Tried to augment item but could not afford the cost. This should not happen!");
-                    player.Message(MessageHud.MessageType.Center, "$msg_missingrequirement");
+                    receipt.Refund();
+                    NotifyItemsUnavailable(item);
+                    AvailableItems.SetItems(EnchantingUIController.GetAugmentableItems().Cast<IListElement>().ToList());
+                    DeselectAll();
                     return;
                 }
 
-                foreach (InventoryItemListElement costElement in cost)
+                if (_choiceDialog != null)
                 {
-                    InventoryManagement.Instance.RemoveItem(costElement.GetItem());
+                    Destroy(_choiceDialog);
                 }
-            }
 
-            if (_choiceDialog != null)
-            {
-                Destroy(_choiceDialog);
-            }
+                _choiceDialog = EnchantingUIController.AugmentItem(item, augmentIndex);
+                if (_choiceDialog == null)
+                {
+                    receipt.Refund();
+                    return;
+                }
 
-            _choiceDialog = EnchantingUIController.AugmentItem(item, _augmentIndex);
-
-            EnchantingUIController.SetupUIAudioSources(_choiceDialog);
-
-            Lock();
+                EnchantingUIController.SetupUIAudioSources(_choiceDialog);
+                Lock();
+            }, () => Cancel());
         }
 
         protected override void OnSelectedItemsChanged()
@@ -255,8 +254,7 @@ namespace EpicLoot_UnityLib
                 AvailableEffectsText.text = string.Empty;
             }
 
-            // First AUGMENTABLE effect (or -1 for none): defaulting blindly to 0 let the Augment
-            // button operate on an effect whose selector was disabled as non-augmentable.
+            // The first augmentable effect, or -1 for none: never a selector disabled as non-augmentable.
             _augmentIndex = _AugmentSelectors.FindIndex(selector => selector.interactable);
             HighlightSelectedAugment();
             OnAugmentIndexChanged();
@@ -282,7 +280,6 @@ namespace EpicLoot_UnityLib
             ItemDrop.ItemData item = entry?.Item1.GetItem();
             List<Tuple<string, bool>> augmentableEffects = EnchantingUIController.GetEnchantmentEffects(item, false);
 
-            int enchantIndex = 0;
             foreach (Tuple<string, bool> effect in augmentableEffects)
             {
                 GameObject enchantmentListElement = Instantiate(EnchantmentListPrefab, EnchantList);
@@ -304,20 +301,16 @@ namespace EpicLoot_UnityLib
                     enchantmentElement.text = effect.Item1;
                     MagicTextShimmer.Ensure(enchantmentElement);
                 }
-                EffectListRow.Fit(enchantmentListElement, enchantmentElement);
 
                 if (effect.Item2 == false)
                 {
                     enchantmentbutton.interactable = false;
                 }
                 enchantmentListElement.SetActive(true);
-
-                enchantIndex++;
             }
 
-            // Rebuilt selectors all come back unchecked (e.g. after an augment completes),
-            // which left nothing highlighted while _augmentIndex kept driving the cost and
-            // the Augment button.
+            // Rebuilt selectors all come back unchecked (e.g. after an augment completes), while
+            // _augmentIndex still drives the cost and the Augment button.
             HighlightSelectedAugment();
         }
 
@@ -358,11 +351,6 @@ namespace EpicLoot_UnityLib
             {
                 selector.interactable = true;
             }
-        }
-
-        public override void DeselectAll()
-        {
-            AvailableItems.DeselectAll();
         }
     }
 }

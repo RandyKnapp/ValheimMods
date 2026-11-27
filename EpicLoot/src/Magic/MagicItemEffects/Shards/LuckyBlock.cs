@@ -2,19 +2,12 @@ using UnityEngine;
 using Random = UnityEngine.Random;
 
 namespace EpicLoot.MagicItemEffects.Shards {
-    // Golden shield: a chance for any successful block to stagger the attacker outright, as though the
-    // player had parried it.
-    //
-    // This is a new on-block trigger family. The three existing ones all act on the blocker or on the
-    // incoming hit; this is the first that reaches back out and touches the *attacker*.
-    //
     // Multiplayer: Humanoid.BlockAttack is called from inside Character.RPC_Damage, after its IsOwner()
     // gate, so this handler already runs on the blocking player's own client -- the local-player guard is
     // correct and fires no matter who owns the attacker. Character.Stagger is then the sanctioned way to
     // act on that attacker: it calls RPC_Stagger directly when we own them and routes an RPC to their
     // owner otherwise, so nothing here ever writes to a ZDO we don't own.
     public static class LuckyBlock {
-        // Postfix handler invoked by SharedHumanoidBlockAttackPatch (block succeeded).
         public static void OnBlock(Humanoid blocker, HitData hit, Character attacker) {
             if (hit == null || attacker == null) {
                 return;

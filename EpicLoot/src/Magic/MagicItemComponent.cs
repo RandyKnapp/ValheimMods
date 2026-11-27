@@ -18,6 +18,9 @@ public sealed class MagicItemComponent
     // entry now under the key, which is how a replaced entry is noticed.
     internal string Raw;
 
+    // The shard grid load MagicItem's socket values were last worked out under (Shards.GridVersion).
+    private int _socketGridVersion;
+
     internal MagicItemComponent(ItemDrop.ItemData item)
     {
         Item = item;
@@ -84,8 +87,9 @@ public sealed class MagicItemComponent
     {
         Raw = raw;
         MagicItem = Parse(raw);
+        _socketGridVersion = 0;
 
-        if (FixupValuelessEffects())
+        if (FixupValuelessEffects() | ConvertLegacyEffects())
         {
             SetMagicItemQuietly(MagicItem);
             return;
@@ -108,6 +112,21 @@ public sealed class MagicItemComponent
         // A component with no magic item still needs the flag reverted if this instance was previously
         // made indestructible.
         Indestructible.Sync(Item);
+    }
+
+    // Brings socketed shards to the current grid, so a template switch or a retune reaches every item on its next
+    // read, wherever it is, without anyone touching its sockets. Like parsing, this never re-serializes: the stored
+    // text catches up at the item's next write, and until then each load works the values out again.
+    internal void RefreshSocketValues()
+    {
+        if (_socketGridVersion == ShardStones.Shards.GridVersion || MagicItem == null || Item.m_shared == null)
+        {
+            return;
+        }
+
+        // Set first: working out an item's shard slot reads the item, which comes back through here.
+        _socketGridVersion = ShardStones.Shards.GridVersion;
+        ShardStones.ShardSocketManager.RecomputeSocketValues(Item, MagicItem);
     }
 
     private MagicItem Parse(string raw)
@@ -189,15 +208,10 @@ public sealed class MagicItemComponent
         }
     }
 
-    // A binary effect (Indestructible, Weightless, Throwable...) must sit at the default value of 1:
-    // older saves and hand-edited data can carry a stale number that would otherwise show up in the
-    // tooltip. "Binary" is deliberately judged across every rarity rather than at this item's own
-    // rarity -- the result is written straight back to m_customData, so a per-rarity test would
-    // permanently flatten a legitimately rolled value whenever the loaded definitions simply lack a
-    // block for that rarity. That happens for real: a dedicated server replaces the client's
-    // definitions wholesale on connect (ELConfig.ApplyClientConfig), so a server config that predates
-    // a newly added rarity would otherwise reset every effect on every item of that rarity to 1 --
-    // once, silently, and irreversibly. Report the gap instead, and leave the value alone.
+    // A binary effect (Indestructible, Weightless, Throwable...) must sit at the default value of 1, or a
+    // stale number shows in the tooltip. "Binary" is judged across every rarity, not this item's: the result
+    // is written back, and a server whose config lacks a block for a rarity (its definitions replace the
+    // client's on connect) would otherwise flatten every rolled value of that rarity to 1 for good.
     // Returns whether anything was corrected.
     private bool FixupValuelessEffects()
     {
@@ -222,6 +236,31 @@ public sealed class MagicItemComponent
             }
 
             WarnOnceAboutMissingRarityValues(effect.EffectType, MagicItem.Rarity);
+        }
+
+        return changed;
+    }
+
+    private bool ConvertLegacyEffects()
+    {
+        if (MagicItem == null)
+        {
+            return false;
+        }
+
+        int seed = (Raw ?? string.Empty).GetStableHashCode();
+        bool changed = false;
+        foreach (MagicItemEffect effect in MagicItem.Effects)
+        {
+            changed |= IncreaseDrop.ConvertLegacyValue(effect);
+            changed |= MultiShot.ConvertLegacyTripleShot(effect, MagicItem.Rarity, seed);
+        }
+
+        for (int i = 0; i < MagicItem.Sockets.Count; i++)
+        {
+            SocketedEffect socket = MagicItem.Sockets[i];
+            changed |= IncreaseDrop.ConvertLegacyValue(socket?.Effect);
+            changed |= socket != null && MultiShot.ConvertLegacyTripleShot(socket.Effect, socket.SourceRarity, seed + i + 1);
         }
 
         return changed;

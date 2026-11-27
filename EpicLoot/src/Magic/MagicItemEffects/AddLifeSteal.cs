@@ -5,8 +5,8 @@ namespace EpicLoot.MagicItemEffects
 {
     public static class AddLifeSteal
     {
-        // Postfix handler invoked by CharacterDamageDispatch (on-hit reaction).
-        public static void CheckAndDoLifeSteal(HitData hit, Character attacker)
+        // On-hit reaction, called from SharedCharacterDamagePatch's postfix.
+        public static void CheckAndDoLifeSteal(HitData hit, Character attacker, float healthBeforeHit)
         {
             if (attacker == null || attacker is not Player player)
             {
@@ -31,9 +31,7 @@ namespace EpicLoot.MagicItemEffects
                 return;
             }
 
-            var healOn = hit.m_damage.EpicLootGetTotalDamage() * lifeStealMultiplier;
-
-            attacker.Heal(healOn);
+            attacker.Heal(MagicEffectsHelper.GetCountedDamage(hit, healthBeforeHit) * lifeStealMultiplier);
         }
     }
 }

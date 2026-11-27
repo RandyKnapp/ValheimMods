@@ -3,11 +3,9 @@ using HarmonyLib;
 
 namespace EpicLoot.MagicItemEffects
 {
-    // Per-invocation __state (not statics): m_shared.m_backstabBonus is the descriptor shared by
-    // every copy of the weapon, and the old static Override/OriginalValue pair leaked the
-    // multiplied value permanently when the original threw or when two of these patched methods
-    // nested (max-block-charge counters re-enter DoMeleeAttack from BlockAttack). The finalizer
-    // restores even on exception.
+    // m_shared.m_backstabBonus is shared by every copy of the weapon, so the original is kept in a per-call
+    // __state (these methods can nest: block counters re-enter DoMeleeAttack from BlockAttack) and put back
+    // by a finalizer, even on exception.
     [HarmonyPatch(typeof(Attack), nameof(Attack.DoAreaAttack))]
     public static class ModifyBackstab_Attack_DoAreaAttack_Patch
     {

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using EpicLoot.Config;
 using EpicLoot.CraftingV2;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -72,7 +71,7 @@ namespace EpicLoot_UnityLib
 
         /// <summary>
         /// Builds the window hidden, so the first time the player uses a table it only has to fill its lists.
-        /// Creating it the first time took several hundred milliseconds: instantiating the prefab, waking every
+        /// Creating it takes several hundred milliseconds: instantiating the prefab, waking every
         /// page, localizing the whole tree and compiling all of that code. This runs on each world's first
         /// spawn (Game.m_playerInitialSpawn), in the same frame the player appears and while the loading screen
         /// still covers it. The window then lives as long as the in-game GUI, until logout.
@@ -157,7 +156,6 @@ namespace EpicLoot_UnityLib
             GameObject enchantingUI = Instantiate(enchantingUIPrefab, inGameGui);
             enchantingUI.transform.SetSiblingIndex(siblingIndex);
 
-            // TODO: Reduce duplicate code, mock this inside unity in the future
             Transform existingBackground = StoreGui.instance.m_rootPanel.transform.Find("border (1)");
             Transform panel = enchantingUI.transform.Find("Panel");
             if (existingBackground != null & panel != null)
@@ -412,25 +410,6 @@ namespace EpicLoot_UnityLib
         {
             return instance != null && ((instance._hiddenFrames <= HiddenGraceFrames) ||
                 (instance.Root != null && instance.Root.activeSelf));
-        }
-
-        public static bool IsInTextInput()
-        {
-            if (!IsVisible())
-            {
-                return false;
-            }
-
-            TMP_InputField[] textFields = instance.Root.GetComponentsInChildren<TMP_InputField>(false);
-            foreach (TMP_InputField inputField in textFields)
-            {
-                if (inputField.isFocused)
-                {
-                    return true;
-                }
-            }
-
-            return false;
         }
 
         public void Update()

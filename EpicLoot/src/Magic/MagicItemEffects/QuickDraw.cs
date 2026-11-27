@@ -28,9 +28,7 @@ namespace EpicLoot.MagicItemEffects
             {
                 if (crossbowReloadSpeed > 0)
                 {
-                    // Scale vanilla's own time, which the crossbow skill already brings down to half at 100.
-                    // Recomputing from the base reload time threw that away, so at high skill the bonus
-                    // reloaded slower than having none.
+                    // Scales vanilla's own time, which already carries the crossbow skill's reduction.
                     if (__instance.m_shared.m_attack.m_requiresReload)
                     {
                         __result *= 1f - crossbowReloadSpeed;

@@ -4,13 +4,9 @@ using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects.Shards {
 
-    // When the player takes damage, immobilizes nearby enemies for a short duration. The radius and cooldown scale with the shard value.
     public static class ElderForestsAid {
-        // Both the radius and the cooldown scale with the shard value: radius is BaseRadius plus
-        // RadiusPerTier per point, cooldown is Cooldown MINUS CooldownPerValue per point, floored at
-        // MinCooldown -- so a stronger shard reaches further AND fires more often. At the shipped ramp
-        // that is 7.5m / 45s at Rare through 10.5m / 15s at Ancient. All tunable in this effect's Config
-        // block in config/shardstones.json, under these key names.
+        // Radius is BaseRadius plus RadiusPerTier per point of value; cooldown is Cooldown MINUS
+        // CooldownPerValue per point, floored at MinCooldown.
         public const float DefaultCooldown = 60f;
         public const float DefaultCooldownPerValue = 1.5f;
         public const float DefaultMinCooldown = 10f;
@@ -36,9 +32,8 @@ namespace EpicLoot.MagicItemEffects.Shards {
                 + value * EffectConfig.Get(MagicEffectType.ForestsAid, RadiusPerTierKey, DefaultRadiusPerTier);
         }
 
-        // Shrinks as the shard value grows, never past MinCooldown. Floored just above zero on top of
-        // that, because a ttl of 0 is "no timeout" to vanilla, which would gate the shard permanently
-        // rather than removing the cooldown.
+        // Floored just above zero on top of MinCooldown, because a ttl of 0 is "no timeout" to vanilla, which
+        // would gate the shard permanently rather than removing the cooldown.
         private static float GetCooldown(float value) {
             var cooldown = EffectConfig.Get(MagicEffectType.ForestsAid, CooldownKey, DefaultCooldown)
                 - value * EffectConfig.Get(MagicEffectType.ForestsAid,
@@ -47,8 +42,6 @@ namespace EpicLoot.MagicItemEffects.Shards {
             return Mathf.Max(0.1f, Mathf.Max(floor, cooldown));
         }
 
-        // Tooltip: "Forest's Aid: {0}m, {1}s Cooldown" -- both read through the same helpers the effect
-        // runs on, so the shown numbers follow a retune and visibly improve with the shard's rarity.
         public static void RegisterDisplayValues() {
             MagicItem.RegisterDisplayValues(MagicEffectType.ForestsAid,
                 value => new object[] { GetRadius(value), GetCooldown(value) });
@@ -58,22 +51,19 @@ namespace EpicLoot.MagicItemEffects.Shards {
         private const string HitFxPrefab = "fx_natureweapon_hit";
         private static readonly int ImmobilizeHash = ImmobilizeSE.GetStableHashCode();
 
-        // Cooldown HUD indicator (The Elder trophy icon with a radial recharge sweep). Built lazily on the
-        // first proc -- see GetOrCreateCooldownIndicator -- so ObjectDB is loaded when the trophy is queried.
-        // Its presence on the player is also the cooldown gate (checked via CooldownHash below).
+        // The cooldown indicator's presence on the player is also the cooldown gate.
         private const string CooldownName = "EL_ForestsAidCooldown";
         private static readonly int CooldownHash = CooldownName.GetStableHashCode();
         private static StatusEffect _cooldownIndicator;
         private static bool _cooldownMissingLogged;
 
-        // Postfix handler invoked by CharacterRpcDamageDispatch (on-damage-taken reaction).
+        // Postfix handler invoked by SharedCharacterRpcDamagePatch (on-damage-taken reaction).
         public static void OnDamageTaken(Character __instance, HitData hit) {
             var player = Player.m_localPlayer;
             if (__instance != player || hit == null) {
                 return;
             }
 
-            // The visible cooldown status effect is the gate: while it's present the shard stays inert.
             if (player.GetSEMan().HaveStatusEffect(CooldownHash)) {
                 return;
             }
@@ -115,10 +105,8 @@ namespace EpicLoot.MagicItemEffects.Shards {
             }
         }
 
-        // Adds the recharge indicator to the player with the value-scaled cooldown as its lifetime. We set
-        // m_ttl on the shared prototype before adding; AddStatusEffect clones it (MemberwiseClone), so the
-        // added instance carries this cooldown. Activation is gated on the effect's absence, so it's never
-        // already present here.
+        // m_ttl is set on the shared prototype before adding; AddStatusEffect clones it (MemberwiseClone), so
+        // the added instance carries this cooldown.
         private static void ShowCooldown(Player player, float cooldown) {
             var indicator = GetOrCreateCooldownIndicator();
             if (indicator != null) {
@@ -127,9 +115,8 @@ namespace EpicLoot.MagicItemEffects.Shards {
             }
         }
 
-        // Lazily builds the cooldown indicator prototype. Runs on a proc, so ObjectDB is loaded and the Elder
-        // trophy icon is available. A null icon would render as an invisible HUD entry, so if the trophy
-        // lookup fails we log once and leave _cooldownIndicator null.
+        // Built on the first proc, when ObjectDB is loaded. A null icon would render as an invisible HUD entry,
+        // so a failed trophy lookup leaves the indicator null.
         private static StatusEffect GetOrCreateCooldownIndicator() {
             if (_cooldownIndicator != null) {
                 return _cooldownIndicator;

@@ -1,18 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using static ItemDrop;
 
 namespace EpicLoot.General
 {
     internal static class Extensions
     {
         /// <summary>
-        /// Take any list of Objects and return it with Fischer-Yates shuffle, drawing from the
-        /// global unseeded RNG. Loot rolls want this; a caller that must be reproducible wants
-        /// the overload below.
+        /// A Fisher-Yates shuffled copy, drawing from the global unseeded RNG. Loot rolls want this; a
+        /// caller that must be reproducible wants the overload below.
         /// </summary>
-        /// <returns></returns>
         public static List<T> shuffleList<T>(this List<T> inputList)
         {
             return inputList.shuffleList(null);
@@ -25,7 +21,6 @@ namespace EpicLoot.General
         /// max-exclusive, and the loop consumes exactly Count draws either way, so the two paths
         /// are interchangeable.
         /// </summary>
-        /// <returns></returns>
         public static List<T> shuffleList<T>(this List<T> inputList, System.Random random)
         {
             T p = default;
