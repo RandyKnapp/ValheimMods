@@ -75,8 +75,8 @@ namespace EpicLoot_UnityLib
         }
 
         // Storage came after enchantingupgrades.json shipped, and an on-disk copy from before it wins until the
-        // player accepts the config update. Without these such a file left Storage free to unlock, one level
-        // deep and unlimited. Keep in sync with the shipped config.
+        // player accepts the config update. Without these such a file would leave Storage free to unlock, one
+        // level deep and unlimited. Keep in sync with the shipped config.
         private static void EnsureStorageDefaults(EnchantingUpgradesConfig config)
         {
             if (config == null)

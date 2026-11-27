@@ -10,8 +10,8 @@ namespace EpicLoot.MagicItemEffects
     [HarmonyPatch(typeof(CharacterDrop), nameof(CharacterDrop.GenerateDropList))]
     public static class Riches_CharacterDrop_GenerateDropList_Patch
     {
-        // Player-ZDO key holding the local player's Riches, mirrored by Multiplayer_Player_Patch.UpdateRichesAndLuck.
-        // A float: diminishing shard stacking gives fractional totals, which the old int key "el-rch" truncated.
+        // Mirrored by Multiplayer_Player_Patch.UpdateRichesAndLuck. A float: diminishing shard stacking gives
+        // fractional totals.
         public const string ZdoValueKey = "el-rich";
         private const float PlayerScanRange = 100f;
 
@@ -27,7 +27,6 @@ namespace EpicLoot.MagicItemEffects
         public static KeyValuePair<GameObject, int> LowestCostEntry = new KeyValuePair<GameObject, int>(null, 0);
 
         public static void UpdateRichesOnEffectSetup() {
-            // Don't do setup if we are not in the game scene yet (main menu doesn't count)
             if (!SceneManager.GetActiveScene().name.Equals("main"))
             {
                 return;
@@ -41,7 +40,6 @@ namespace EpicLoot.MagicItemEffects
                     }
                 }
             }
-            // Safety fallthrough in case no riches config is set
             if (RichesTable.Count == 0) {
                 UpdateRichesTable(DefaultRichesTable);
             }
@@ -65,14 +63,6 @@ namespace EpicLoot.MagicItemEffects
 
             RichesTable.Clear();
             RichesTable = newRichesTable;
-
-            if (RichesTable.Count == 0) {
-                foreach (KeyValuePair<string, float> kv in DefaultRichesTable) {
-                    if (ObjectDB.instance.TryGetItemPrefab(kv.Key, out GameObject itemPrefab)) {
-                        RichesTable.Add(itemPrefab, Mathf.RoundToInt(kv.Value));
-                    }
-                }
-            }
         }
 
         [UsedImplicitly]
@@ -92,13 +82,11 @@ namespace EpicLoot.MagicItemEffects
                 }
             }
 
-            // No riches present in the area, so nothing to do.
             if (richesValue <= 0) {
                 return;
             }
 
-            // Riches is the chance of a payout, certain from 100% up. Comparing two uniform rolls used to make it
-            // about 50% at any strength up to 100%.
+            // Riches is the chance of a payout, certain from 100% up.
             if (richesValue < 1f && Random.value >= richesValue) {
                 return;
             }
@@ -106,18 +94,14 @@ namespace EpicLoot.MagicItemEffects
             // The payout budget, in table cost points; above 100% it grows in proportion.
             float richesValueRoll = Random.Range(0f, 1f) * 100f * Mathf.Max(1f, richesValue);
 
-            // Riches table not setup, so we need to update it
             if (RichesTable.Count == 0) {
                 UpdateRichesOnEffectSetup();
-                // Still empty (nothing configured/resolvable): bail rather than indexing into
-                // an empty table from inside CharacterDrop.GenerateDropList.
                 if (RichesTable.Count == 0) {
                     return;
                 }
             }
 
-            // Randomly select _one_ loot item from the list, scale it based on the riches value, and add it to the drop list.
-            // (int overload of Random.Range is max-exclusive; Count-1 made the last entry unreachable.)
+            // One item from the table, its amount scaled by the budget. The int Random.Range is max-exclusive.
             int selected = Random.Range(0, RichesTable.Count);
             float richesCost = RichesTable[RichesTable.Keys.ElementAt(selected)];
             float richesAmount = richesValueRoll / richesCost;

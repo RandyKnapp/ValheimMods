@@ -3,11 +3,10 @@ using JetBrains.Annotations;
 
 namespace EpicLoot.MagicItemEffects;
 
-// Fire Rate (bows) and Magic Fire Rate (staves). Shortening the pause between an attack's projectile bursts only
-// speeds up a weapon that fires several, like the Staff of Frost's stream; every bow, crossbow and most staves fire
-// one burst, so on them the effect did nothing. A single-burst attack instead plays faster, the way Attack Speed
-// works for melee: a bow's release and next nock, a staff's cast. Each attack gets one of the two, never both. A
-// bow's draw happens before its attack starts and is untouched (Quick Draw's job).
+// Shortening the pause between an attack's projectile bursts only speeds up a weapon that fires several, like the
+// Staff of Frost's stream; every bow, crossbow and most staves fire one burst, so a single-burst attack plays faster
+// instead, the way Attack Speed works for melee. Each attack gets one of the two, never both. A bow's draw happens
+// before its attack starts and is untouched (Quick Draw's job).
 public class ModifyMagicFireRate
 {
     // The fire rate effect that suits the weapon, or null when neither does.

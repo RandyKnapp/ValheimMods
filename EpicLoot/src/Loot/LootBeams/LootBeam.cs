@@ -2,62 +2,27 @@
 
 namespace EpicLoot.LootBeams
 {
-    [RequireComponent(typeof(ItemDrop))]
+    // Marks a drop that glows: a magic item's beam, a magic crafting material's own particles, or both (an
+    // unidentified item). It only registers the drop; LootBeamManager decides which drops show their glow.
     public class LootBeam : MonoBehaviour
     {
-        public static float HeightOffset = 0.01f;
+        // The rarity of the pooled beam this drop shows, or null for none.
+        internal ItemRarity? BeamRarity;
+        // A glow the item prefab carries itself, switched on and off rather than pooled.
+        internal GameObject OwnEffect;
 
-        private ItemDrop _itemDrop;
-        private GameObject _beam;
-        private MagicItem _magicItem;
-        private bool _isMagic;
+        internal GameObject Beam;
+        internal Color BeamColor;
+        internal float DistanceSq;
 
-        private void Awake()
+        private void OnEnable()
         {
-            _itemDrop = GetComponent<ItemDrop>();
+            LootBeamManager.Register(this);
         }
 
-        private void Start()
+        private void OnDisable()
         {
-            if (_itemDrop != null)
-            {
-                _magicItem = _itemDrop.m_itemData.GetMagicItem();
-                _isMagic = _itemDrop.m_itemData.IsMagic();
-            }
-        }
-
-        private void Update()
-        {
-            if (ShouldShowBeam())
-            {
-                if (_magicItem == null)
-                {
-                    return;
-                }
-
-                _beam = Instantiate(EpicAssets.MagicItemLootBeamPrefabs[(int) _magicItem.Rarity], transform);
-                _beam.transform.localPosition = Vector3.up * HeightOffset;
-                var beamColorSetter = _beam.AddComponent<BeamColorSetter>();
-                beamColorSetter.SetColor(_magicItem.GetColor());
-                _beam.GetComponent<Animator>().Play("Show");
-                _beam.AddComponent<AlwaysPointUp>();
-            }
-
-            if (ShouldHideBeam())
-            {
-                Destroy(_beam);
-                _beam = null;
-            }
-        }
-
-        public bool ShouldShowBeam()
-        {
-            return _beam == null && _itemDrop != null && _itemDrop.m_itemData != null && _isMagic;
-        }
-
-        public bool ShouldHideBeam()
-        {
-            return _beam != null && (_itemDrop == null || _itemDrop.m_itemData == null || !_isMagic);
+            LootBeamManager.Unregister(this);
         }
     }
 }

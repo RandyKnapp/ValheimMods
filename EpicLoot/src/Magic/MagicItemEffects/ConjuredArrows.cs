@@ -13,11 +13,6 @@ namespace EpicLoot
 
 namespace EpicLoot.MagicItemEffects
 {
-    // ConjuredArrows (set items only, NoRoll). While it is active the wearer's bows never use real arrows: every
-    // shot is a frost arrow conjured from eitr, adding value% of the bow's own damage as frost. Each shot costs
-    // EitrCost eitr, cut by up to a third with the Elemental Magic skill as a staff's cost is. Reworked from
-    // RustyLoot's MagicArrow, which fired a fixed-damage arrow only once the player ran out of real ones.
-    //
     // The conjured arrow is a real ammo ItemData that never touches an inventory: Attack.UseAmmo hands a copy to
     // the attack, and FireProjectileBurst takes the projectile, its velocity and the ammo damage from it as it
     // would from a frost arrow. So the frost goes through the draw percentage, the skill roll and status effects
@@ -32,7 +27,6 @@ namespace EpicLoot.MagicItemEffects
     // so others see it. Its own name also stops an archery target "returning" real frost arrows for it.
     public static class ConjuredArrows
     {
-        // Tunable in this effect's Config block in magiceffects.json, under this key name.
         public const float DefaultEitrCost = 8f;
         private const string EitrCostKey = "EitrCost";
 
@@ -50,7 +44,6 @@ namespace EpicLoot.MagicItemEffects
 
         private static float EitrCost => Mathf.Max(0f, EffectConfig.Get(MagicEffectType.ConjuredArrows, EitrCostKey, DefaultEitrCost));
 
-        // Tooltip: "... adding {0}% of the bow's damage as frost. Each shot costs {1} Eitr ..."
         public static void RegisterDisplayValues()
         {
             MagicItem.RegisterDisplayValues(MagicEffectType.ConjuredArrows, value => new object[] { value, EitrCost });

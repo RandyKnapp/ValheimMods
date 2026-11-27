@@ -63,6 +63,7 @@ namespace EpicLoot
         /// Prosperity's extra rolls apply to the kill once rather than to every bonus roll too.</param>
         public static void OnCharacterDeath(string characterName, int level, Vector3 dropPoint, bool allowBonusRolls)
         {
+            using GradualUnlock.Scope bossDrop = GradualUnlock.ExemptIfBoss(characterName);
             List<LootTable> lootTables = LootRoller.GetLootTable(characterName);
             if (lootTables != null && lootTables.Count > 0)
             {

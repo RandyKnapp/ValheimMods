@@ -1,0 +1,415 @@
+{
+  // Comments may go anywhere outside a "Value", and inside one between an object's fields. A comment
+  // placed directly inside an array of a "Value" is copied into the patched file, so the comments here
+  // explain an array's entries above the array.
+  //
+  // Older patches: a path that ends at a table's ".Loot" or ".Drops" (the deprecated flat form) is
+  // applied to its level 1 instead, with a warning. Write LeveledLoot[?(@.Level == 1)].Loot.
+  //
+  // Check the result in game with the console command "lootpreview <creature> [maxLevel]".
+  "TargetFile": "loottables.json",
+  "Author": "EpicLoot",
+  "Priority": 500,
+  "RequireAll": true,
+  "Patches": [
+
+    // ---------------------------------------------------------------------------------------------
+    // 1. Defaults for every table
+    // ---------------------------------------------------------------------------------------------
+
+    // DefaultStarScaling fills in any StarScaling field a table leaves out. Most shipped tables set
+    // MaxRarity themselves, so this mainly reaches other mods' tables: star promotion stops at Mythic
+    // unless a table says otherwise.
+    {
+      "Path": "$.DefaultStarScaling",
+      "Action": "Merge",
+      "Value": { "MaxRarity": "Mythic" }
+    },
+
+    // ---------------------------------------------------------------------------------------------
+    // 2. A new item set
+    // ---------------------------------------------------------------------------------------------
+
+    // A set whose entry carries a RarityItems map drops by rarity: the rarity a drop rolls picks the
+    // bow. Magic and Rare drop a Huntsman bow, Epic a Draugr Fang and Legendary a Spinesnap.
+    // The name must be unique. A second set with a name that already exists is ignored, so change an
+    // existing set with the paths in section 6 instead.
+    {
+      "Path": "$.ItemSets",
+      "Action": "Append",
+      "Value": {
+        "Name": "HunterBows",
+        "Loot": [
+          { "Item": "BowHuntsman", "Rarity": [ 60, 30, 10, 0, 0, 0 ],
+            "RarityItems": { "Magic": "BowHuntsman", "Rare": "BowHuntsman", "Epic": "BowDraugrFang", "Legendary": "BowSpineSnap" } }
+        ]
+      }
+    },
+
+    // ---------------------------------------------------------------------------------------------
+    // 3. New templates
+    // ---------------------------------------------------------------------------------------------
+
+    // MountainHunterMob, for the Mountain's normal creatures.
+    {
+      "Path": "$.LootTables",
+      "Action": "Append",
+      "Value": {
+        "Object": "MountainHunterMob",
+        // How the loot grows for each star past an anchor level: 15 more points of drop chance, a 5%
+        // chance of one more item, and 30% of the Magic weight promoted to Rare (RarityFalloff 0.5 halves
+        // that rate for each tier above), never past Legendary. No roll gives more than two items.
+        "StarScaling": { "DropChance": 0.15, "BonusDrops": 0.05, "RarityShift": 0.3, "RarityFalloff": 0.5, "MaxRarity": "Legendary", "MaxDrops": 2 },
+        // A creature's level is its stars plus one. It rolls the highest level here at or below its own,
+        // and StarScaling covers the stars past that level. Drops and Loot are looked up separately.
+        "LeveledLoot": [
+          {
+            "Level": 1,
+            // [count, weight] pairs: no item 80% of the time, one item 20%.
+            "Drops": [ [0, 80], [1, 20] ],
+            // Each item that drops is picked from this list by Weight:
+            //   Tier4Everything, Tier5Everything: WeightPerStar moves weight from Mountain gear to Plains
+            //     gear, none of it Plains at 0 stars, a quarter at 1, half at 2 and all of it from 4.
+            //   HunterBows: the set above. It has no Rarity here, so it uses the set's.
+            //   EnchantingMats: the shipped rarity-keyed set of enchanting materials, at this entry's
+            //     Rarity weights (Magic, Rare, Epic, Legendary, Mythic, Ancient).
+            "Loot": [
+              { "Item": "Tier4Everything", "Weight": 6, "WeightPerStar": -1.5, "Rarity": [ 60, 35, 5, 0, 0, 0 ] },
+              { "Item": "Tier5Everything", "Weight": 0, "WeightPerStar": 1.5, "Rarity": [ 60, 35, 5, 0, 0, 0 ] },
+              { "Item": "HunterBows", "Weight": 1 },
+              { "Item": "EnchantingMats", "Weight": 2, "Rarity": [ 50, 41, 7, 2, 0, 0 ] }
+            ]
+          },
+          {
+            // Starting level 3, the drop chance weights are changed. This will still inherit all of the level 1 look settings otherwise
+            "Level": 3,
+            "Drops": [ [0, 50], [1, 45], [2, 5] ]
+          }
+        ]
+      }
+    },
+
+    // MountainHunterElite, for the Mountain's elites. It is two tables under one name, and both roll
+    // for every creature on it. This first one drops the gear.
+    {
+      "Path": "$.LootTables",
+      "Action": "Append",
+      "Value": {
+        "Object": "MountainHunterElite",
+        // Each star counts one and a half times on this table, so a 2-star elite rolls at level 4.
+        "StarMultiplier": 1.5,
+        // RarityShift 0 keeps stars from promoting this table's own entries; the level 4 list raises the
+        // shardstones' rarity in one step instead. MaxRarity keeps the Modifiers step below from moving
+        // them past the stones the map names. RarityFalloff is left out, so DefaultStarScaling supplies it.
+        "StarScaling": { "DropChance": 0.12, "BonusDrops": 0.05, "RarityShift": 0, "MaxRarity": "Epic" },
+        // One more promotion step at every level, stars or not. It carries into the table references
+        // below, so an elite's wolf gear is a little better than a wolf's.
+        "Modifiers": { "RarityShift": 0.1 },
+        "LeveledLoot": [
+          {
+            "Level": 1,
+            "Drops": [ [0, 70], [1, 28], [2, 2] ],
+            //   "MountainHunterMob.*": that template's loot at this table's own level, under that
+            //     template's StarScaling. A 2-star elite gets what a level 4 normal mob would.
+            //   "Tier5Mob.3": the shipped Tier5Mob list as a 2-star creature rolls it, at any star level.
+            //   White_Magic_ShardStone: its own RarityItems map picks the stone for the rolled rarity.
+            "Loot": [
+              { "Item": "MountainHunterMob.*", "Weight": 10 },
+              { "Item": "Tier5Mob.3", "Weight": 1 },
+              { "Item": "White_Magic_ShardStone", "Weight": 2, "Rarity": [ 70, 25, 5 ],
+                "RarityItems": { "Magic": "White_Magic_ShardStone", "Rare": "White_Rare_ShardStone", "Epic": "White_Epic_ShardStone" } }
+            ]
+          },
+          {
+            // Starting level 4, the loot list is replaced. This will still inherit all of the level 1 look settings otherwise
+            "Level": 4,
+            "Loot": [
+              { "Item": "MountainHunterMob.*", "Weight": 8 },
+              { "Item": "Tier5Mob.3", "Weight": 2 },
+              { "Item": "White_Magic_ShardStone", "Weight": 3, "Rarity": [ 30, 50, 20 ],
+                "RarityItems": { "Magic": "White_Magic_ShardStone", "Rare": "White_Rare_ShardStone", "Epic": "White_Epic_ShardStone" } }
+            ]
+          }
+        ]
+      }
+    },
+
+    // MountainHunterElite's second table: a Rare or Epic blank runestone 10% of the time at every star
+    // level, because its StarScaling is all zeros. It goes after the gear table because a
+    // "MountainHunterElite.N" reference reads only the first table of a name.
+    {
+      "Path": "$.LootTables",
+      "Action": "Append",
+      "Value": {
+        "Object": "MountainHunterElite",
+        "StarScaling": { "DropChance": 0, "BonusDrops": 0, "RarityShift": 0 },
+        "LeveledLoot": [
+          {
+            "Level": 1,
+            "Drops": [ [0, 90], [1, 10] ],
+            "Loot": [
+              { "Item": "EnchantingRunestones", "Rarity": [ 0, 70, 30, 0, 0, 0 ] }
+            ]
+          }
+        ]
+      }
+    },
+
+    // ---------------------------------------------------------------------------------------------
+    // 4. Creatures on the new templates
+    // ---------------------------------------------------------------------------------------------
+
+    // A creature's entry names its template in RefObject. Wolf now uses MountainHunterMob as it is.
+    {
+      "Path": "$.LootTables[?(@.Object == 'Wolf')].RefObject",
+      "Action": "Overwrite",
+      "Value": "MountainHunterMob"
+    },
+
+    // A creature can be tuned without copying its template. Fenring_Cultist moves to MountainHunterMob
+    // and its stars count 1.2 times. Its own StarScaling promotes rarity faster and reaches Mythic
+    // other fields are still from MountainHunterMob
+    {
+      "Path": "$.LootTables[?(@.Object == 'Fenring_Cultist')]",
+      "Action": "Merge",
+      "Value": {
+        "RefObject": "MountainHunterMob",
+        "StarMultiplier": 1.2,
+        "StarScaling": { "RarityShift": 0.45, "MaxRarity": "Mythic" }
+      }
+    },
+
+    // Fenring moves to MountainHunterElite. Modifiers apply at every star level and to both of the
+    // template's tables: DropRate multiplies the odds of any drop, BonusDrops gives a 10% chance of one
+    // more item on each roll that drops something, and RarityShift adds a small promotion on top of the
+    // template's.
+    {
+      "Path": "$.LootTables[?(@.Object == 'Fenring')]",
+      "Action": "Merge",
+      "Value": {
+        "RefObject": "MountainHunterElite",
+        "Modifiers": { "DropRate": 1.25, "BonusDrops": 0.1, "RarityShift": 0.05 }
+      }
+    },
+
+    // ---------------------------------------------------------------------------------------------
+    // 5. A creature that drops no Epic Loot items
+    // ---------------------------------------------------------------------------------------------
+
+    // Remove the creature's entry. The creature sorter gives every creature without an entry one when a
+    // world loads, so the last patch in this file also pins Hatchling with "Skip".
+    {
+      "Path": "$.LootTables[?(@.Object == 'Hatchling')]",
+      "Action": "Remove"
+    },
+
+    // ---------------------------------------------------------------------------------------------
+    // 6. Changing shipped templates and sets
+    // ---------------------------------------------------------------------------------------------
+
+    // Tier4Mob still drops for Bat, BlobElite, Draugr_Elite and the Mountain skeletons. Merge into its
+    // StarScaling: stars may promote up to Mythic, and no roll gives more than two items.
+    {
+      "Path": "$.LootTables[?(@.Object == 'Tier4Mob')].StarScaling",
+      "Action": "Merge",
+      "Value": { "MaxRarity": "Mythic", "MaxDrops": 2 }
+    },
+
+    // Add an entry to every level of Tier4Mob that has a Loot list. LeveledLoot[*] picks all of its
+    // levels (a level without Loot has nothing to append to); [?(@.Level == 1)] would pick level 1 only.
+    {
+      "Path": "$.LootTables[?(@.Object == 'Tier4Mob')].LeveledLoot[*].Loot",
+      "Action": "Append",
+      "Value": { "Item": "EnchantingRunestones", "Weight": 0.1, "Rarity": [ 60, 35, 5, 0, 0, 0 ] }
+    },
+
+    // Replace the Drops of one level. A level the table does not have selects nothing, and the log then
+    // lists the levels it does have.
+    {
+      "Path": "$.LootTables[?(@.Object == 'Tier4Mob')].LeveledLoot[?(@.Level == 4)].Drops",
+      "Action": "Overwrite",
+      "Value": [ [0, 25], [1, 70], [2, 4], [3, 1] ]
+    },
+
+    // Add a level. Tier5EliteMob (StoneGolem and Hildir's cultists) has only level 1; from 2 stars these
+    // elites now pick from a list with more shardstones in it. Levels are found by number, so the order
+    // they are listed in does not matter.
+    {
+      "Path": "$.LootTables[?(@.Object == 'Tier5EliteMob')].LeveledLoot",
+      "Action": "Append",
+      "Value": {
+        "Level": 3,
+        "Loot": [
+          { "Item": "Tier5Mob.*", "Weight": 16 },
+          { "Item": "ShardT3", "Weight": 3 },
+          { "Item": "ShardUnique", "Weight": 0.8 }
+        ]
+      }
+    },
+
+    // Remove one entry from one level's Loot: Tier4EliteMob's elites no longer drop unique shardstones.
+    {
+      "Path": "$.LootTables[?(@.Object == 'Tier4EliteMob')].LeveledLoot[?(@.Level == 1)].Loot[?(@.Item == 'ShardUnique')]",
+      "Action": "Remove"
+    },
+
+    // Change one member of a set. The Draugr Fang becomes three times as common among the Mountain's
+    // weapons. A set member's Weight never scales with stars; WeightPerStar works on table entries only.
+    {
+      "Path": "$.ItemSets[?(@.Name == 'Tier4Weapons')].Loot[?(@.Item == 'BowDraugrFang')].Weight",
+      "Action": "Overwrite",
+      "Value": 3
+    },
+
+    // Add a member to a set.
+    {
+      "Path": "$.ItemSets[?(@.Name == 'Tier4Weapons')].Loot",
+      "Action": "Append",
+      "Value": { "Item": "BowHuntsman", "Weight": 2, "Rarity": [ 5, 35, 50, 17, 3 ] }
+    },
+
+    // ---------------------------------------------------------------------------------------------
+    // 7. Every star level written out by hand, with no scaling
+    // ---------------------------------------------------------------------------------------------
+
+    // To set each star level's loot yourself instead of letting stars scale it:
+    //   - Write a level for each star count: level 1 is 0 stars, 2 is 1 star, 3 is 2 stars. Vanilla
+    //     creatures stop at 2 stars. A creature above the highest level written rolls that level as it is.
+    //   - Give every level its own Drops and Loot. A level that leaves one out reuses the level below's.
+    //   - Set DropChance, BonusDrops and RarityShift to 0, and write the zeros: a field left out falls
+    //     through to DefaultStarScaling, which scales. Zeroing DefaultStarScaling alone is not enough,
+    //     because every shipped table sets its own StarScaling.
+    //   - Leave out WeightPerStar, Modifiers, StarMultiplier and MaxDrops. MaxDrops caps the counts
+    //     written in Drops too.
+    // These still apply on top of what is written:
+    //   - The server's Star Loot Scaling option (1 by default) and a StarMultiplier on a creature's own
+    //     entry decide which level it rolls. A creature that lands between two levels rolls the lower.
+    //   - A creature's own StarScaling and Modifiers (section 4) win over the table's zeros.
+    //   - A "Table.*" or "Table.2" reference rolls that table under its own StarScaling, so zero that
+    //     table's too.
+    //   - Luck and the Global Drop Rate Modifier, as on every table.
+
+    // A new template written level by level, for Ulv.
+    {
+      "Path": "$.LootTables",
+      "Action": "Append",
+      "Value": {
+        "Object": "MountainStalkerMob",
+        "StarScaling": { "DropChance": 0, "BonusDrops": 0, "RarityShift": 0 },
+        "LeveledLoot": [
+          {
+            // 0 stars
+            "Level": 1,
+            "Drops": [ [0, 80], [1, 20] ],
+            "Loot": [
+              { "Item": "Tier4Everything", "Weight": 1, "Rarity": [ 60, 35, 5, 0, 0, 0 ] }
+            ]
+          },
+          {
+            // 1 star
+            "Level": 2,
+            "Drops": [ [0, 65], [1, 35] ],
+            "Loot": [
+              { "Item": "Tier4Everything", "Weight": 1, "Rarity": [ 40, 45, 15, 0, 0, 0 ] }
+            ]
+          },
+          {
+            // 2 stars
+            "Level": 3,
+            "Drops": [ [0, 50], [1, 45], [2, 5] ],
+            "Loot": [
+              { "Item": "Tier4Everything", "Weight": 3, "Rarity": [ 25, 50, 22, 3, 0, 0 ] },
+              { "Item": "Tier5Everything", "Weight": 1, "Rarity": [ 25, 50, 22, 3, 0, 0 ] }
+            ]
+          },
+          {
+            // 3 stars and up, for mods that add stars
+            "Level": 4,
+            "Drops": [ [0, 35], [1, 55], [2, 10] ],
+            "Loot": [
+              { "Item": "Tier4Everything", "Weight": 1, "Rarity": [ 15, 45, 32, 8, 0, 0 ] },
+              { "Item": "Tier5Everything", "Weight": 1, "Rarity": [ 15, 45, 32, 8, 0, 0 ] }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "Path": "$.LootTables[?(@.Object == 'Ulv')].RefObject",
+      "Action": "Overwrite",
+      "Value": "MountainStalkerMob"
+    },
+
+    // A shipped template turned into one written level by level: zero its StarScaling, then replace
+    // its levels. Tier3Mob drops for the Swamp's Draugr, Blobs, Leeches, Wraiths and skeletons.
+    {
+      "Path": "$.LootTables[?(@.Object == 'Tier3Mob')].StarScaling",
+      "Action": "Merge",
+      "Value": { "DropChance": 0, "BonusDrops": 0, "RarityShift": 0 }
+    },
+    {
+      "Path": "$.LootTables[?(@.Object == 'Tier3Mob')].LeveledLoot",
+      "Action": "Overwrite",
+      "Value": [
+        {
+          "Level": 1,
+          "Drops": [ [0, 85], [1, 15] ],
+          "Loot": [
+            { "Item": "Tier2Everything", "Weight": 5, "Rarity": [ 25, 70, 4, 1, 0, 0 ] },
+            { "Item": "Tier3Everything", "Weight": 1, "Rarity": [ 25, 70, 4, 1, 0, 0 ] }
+          ]
+        },
+        {
+          "Level": 2,
+          "Drops": [ [0, 70], [1, 29], [2, 1] ],
+          "Loot": [
+            { "Item": "Tier2Everything", "Weight": 2, "Rarity": [ 15, 70, 12, 3, 0, 0 ] },
+            { "Item": "Tier3Everything", "Weight": 1, "Rarity": [ 15, 70, 12, 3, 0, 0 ] }
+          ]
+        },
+        {
+          "Level": 3,
+          "Drops": [ [0, 55], [1, 42], [2, 3] ],
+          "Loot": [
+            { "Item": "Tier2Everything", "Weight": 1, "Rarity": [ 5, 65, 22, 8, 0, 0 ] },
+            { "Item": "Tier3Everything", "Weight": 1, "Rarity": [ 5, 65, 22, 8, 0, 0 ] }
+          ]
+        }
+      ]
+    },
+
+    // Bosses have two tables under one name, the gear and the boss's shardstones, and a path such as
+    // $.LootTables[?(@.Object == 'Eikthyr')] picks both: an Overwrite there writes the same list into
+    // each, so the boss rolls it twice. Add a test on the first item to pick one. Eikthyr's gear table
+    // starts with Tier1Everything and its shardstone table with Eikthyr_Rare_ShardStone. Here only the
+    // gear table stops scaling. To replace a boss's loot with one list that includes its shardstones,
+    // remove the shardstone table first, with the same kind of test and "Action": "Remove".
+    {
+      "Path": "$.LootTables[?(@.Object == 'Eikthyr' && @.LeveledLoot[0].Loot[0].Item == 'Tier1Everything')].StarScaling",
+      "Action": "Merge",
+      "Value": { "DropChance": 0, "BonusDrops": 0, "RarityShift": 0 }
+    },
+
+    // ---------------------------------------------------------------------------------------------
+    // 8. The creature sorter, in itemsorter.json
+    // ---------------------------------------------------------------------------------------------
+
+    // A patch may name its own TargetFile. Patches run before the creature sorter, so they never see the
+    // "Auto" entries it writes into loottables.json. To decide where it puts a creature, pin the creature
+    // under CreatureSorter.Overrides:
+    //   Skip          leaves it without an entry (Hatchling, whose entry section 5 removed).
+    //   Template      puts it on that template.
+    //   Biome, Class  uses that biome's template for that class (Weak, Normal, Strong, Elite or Boss).
+    // The SomeMod names stand for another mod's creatures; a name the game does not have is ignored.
+    {
+      "TargetFile": "itemsorter.json",
+      "Path": "$.CreatureSorter.Overrides",
+      "Action": "Merge",
+      "Value": {
+        "Hatchling": { "Skip": true },
+        "SomeModWolf": { "Template": "MountainHunterMob" },
+        "SomeModTroll": { "Biome": "Mountain", "Class": "Elite" }
+      }
+    }
+  ]
+}

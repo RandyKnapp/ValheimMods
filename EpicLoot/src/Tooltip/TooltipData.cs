@@ -41,6 +41,10 @@ public class ItemTooltipData
     public string SetLabel;
     /// <summary>The colour of the set label, the set sections and a set rune's lines (the Set Item Color setting).</summary>
     public string SetColor = "";
+    /// <summary>The "unique item" line heading a named unique that is not a set piece, or null.</summary>
+    public string UniqueLabel;
+    /// <summary>The colour of the unique label (the Unique Item Color setting).</summary>
+    public string UniqueColor = "";
     /// <summary>Rarity index of a magic crafting material or runestone (its "crafting material" line), or -1.</summary>
     public int MaterialRarity = -1;
     /// <summary>The description Epic Loot shows: a unique's lore, a set rune's text, else the item's own.</summary>
@@ -106,6 +110,7 @@ public class ItemTooltipData
         RarityName = L(RarityName);
         ItemTypeName = L(ItemTypeName);
         SetLabel = L(SetLabel);
+        UniqueLabel = L(UniqueLabel);
         Description = L(Description);
 
         foreach (TooltipEffect effect in Effects)

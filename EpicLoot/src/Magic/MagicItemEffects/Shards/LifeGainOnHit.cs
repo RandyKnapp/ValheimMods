@@ -2,9 +2,8 @@
 using EpicLoot.src.Magic.MagicItemEffects.Helpers;
 
 namespace EpicLoot.MagicItemEffects.Shards {
-    // Provides a flat heal to the player when they hit an enemy with a weapon
     public static class LifeGainOnHit {
-        // Postfix handler invoked by CharacterDamageDispatch (on-hit reaction, attacker side). Only fires for
+        // Postfix handler invoked by SharedCharacterDamagePatch (on-hit reaction, attacker side). Only fires for
         // hits on Characters -- destructibles (trees, rocks) never route through Character.Damage.
         public static void OnDamageDealt(HitData hit, Character attacker) {
             if (!(attacker is Player player) || player != Player.m_localPlayer) {

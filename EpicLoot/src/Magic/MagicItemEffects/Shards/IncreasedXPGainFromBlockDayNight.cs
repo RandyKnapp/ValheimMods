@@ -2,7 +2,6 @@
 using HarmonyLib;
 
 namespace EpicLoot.src.Magic.MagicItemEffects.Shards {
-    // Provides a bonus to XP gain from blocking based on the time of day (day or night)
     public static class IncreasedXPGainFromBlockDayNight {
         [HarmonyPatch(typeof(Skills), nameof(Skills.RaiseSkill))]
         public class DayNightBlockXP_Patch {
@@ -14,9 +13,7 @@ namespace EpicLoot.src.Magic.MagicItemEffects.Shards {
                     return;
                 }
 
-                // not exactly a fan guarding by SkillType.Blocking as its not on block but just at night all blocking skill increased + X%
-                // will change to on block only if future interactions appear
-
+                // Every Blocking XP gain by day or night counts, not only XP from a block itself.
                 if (skillType == Skills.SkillType.Blocking && EnvMan.IsDay()) {
                     var dayEffectBonus = 1f + Player.m_localPlayer.GetTotalActiveMagicEffectValue(MagicEffectType.DayBlocker, .01f);
                     factor *= dayEffectBonus;

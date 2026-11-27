@@ -5,7 +5,6 @@ using System.Reflection.Emit;
 using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects.Shards {
-    // Harvest yield more items when a pickable is harvested
     public static class BountifulHarvest {
         // The extra item rides on the bonus Pickable.Interact sends with RPC_Pick, as the vanilla farming bonus
         // does, so whichever machine owns the plant drops it with the rest. Checking GetPicked() right after

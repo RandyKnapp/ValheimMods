@@ -3,7 +3,6 @@ using JetBrains.Annotations;
 using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects.Shards {
-    // Provides a chance to not consume a crafting material when crafting
     public static class LuckyCraft {
         // Player.ConsumeResources is also how vanilla charges for placing a build or cultivator piece, and
         // how the temper panel pays; only the call made from DoCrafting is a craft.

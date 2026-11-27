@@ -184,6 +184,7 @@ namespace Common {
                 anchorMin: new Vector2(1f, 0f), anchorMax: new Vector2(1f, 0f),
                 position: new Vector2(-20f, 20f), width: ButtonW, height: ButtonH);
             go.name = ButtonObjectName;
+            ConfigUI.ClickSoundOnly(go);
             RectTransform rt = (RectTransform)go.transform;
             rt.pivot = new Vector2(1f, 0f);
             rt.anchoredPosition = new Vector2(-20f, 20f);

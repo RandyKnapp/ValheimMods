@@ -7,15 +7,12 @@ namespace EpicLoot.MagicItemEffects;
 [HarmonyPatch]
 public class OffSetAttack
 {
-    private const int EFFECT_DURATION = 500; // miliseconds
+    private const int EFFECT_DURATION = 500; // milliseconds
     private static bool _activeOffSet = false;
     private static bool _activeOffSetSFXPlayed = false;
     private static long _offSetTriggerTime = 0;
 
-    /// <summary>
-    /// Records OffSetAttack is triggered. Only plays sfx once per window.
-    /// </summary>
-    /// <param name="__instance"></param>
+    // Opens the window on the third swing of a combo; the sfx plays once per window.
     [HarmonyPatch(typeof(Attack), nameof(Attack.OnAttackTrigger))]
     [HarmonyPrefix]
     public static void Prefix(Attack __instance)
@@ -33,14 +30,11 @@ public class OffSetAttack
         }
     }
 
-    /// <summary>
-    /// Applies any active OffSetAttack buffs when taking damage. Prefix handler invoked (victim-side) by
-    /// CharacterDamageDispatch. Removed offset for environmental or dot dmg with no Attacker
-    /// </summary>
+    // Called from SharedCharacterRpcDamagePatch's prefix, on the victim's owner. Hits with no attacker
+    // (environment, damage over time) are not reduced.
     public static void ReduceIncomingHit(Character __instance, HitData hit)
     {
         if (!_activeOffSet ||
-            __instance == null ||
             __instance != Player.m_localPlayer ||
             !hit.HaveAttacker() ||
             !Player.m_localPlayer.HasActiveMagicEffect(MagicEffectType.OffSetAttack, out float effectValue, 0.01f))
@@ -53,7 +47,7 @@ public class OffSetAttack
         if (DateTime.Now.Ticks <= _offSetTriggerTime + (EFFECT_DURATION * TimeSpan.TicksPerMillisecond))
         {
             hit.m_damage.Modify(1f - effectValue);
-            hit.m_pushForce = 0f; // knock back immunity
+            hit.m_pushForce = 0f;
             hit.m_staggerMultiplier = 0f;
 
             if (!_activeOffSetSFXPlayed) {

@@ -15,7 +15,6 @@ namespace EpicLoot.MagicItemEffects;
 // far less than the first one did.
 public static class CoinHoarder
 {
-    // All tunable in this effect's Config block in magiceffects.json, under these key names.
     public const float DefaultLinearGrowth = 1f;    // non-zero: a straight ramp up to the cutoff; 0: the curve from the first coin
     public const float DefaultLinearCutoff = 1000f; // coins at which the ramp hands over to the curve
     public const float DefaultScalar = 6.258f;      // scales the curve, and with it the whole bonus

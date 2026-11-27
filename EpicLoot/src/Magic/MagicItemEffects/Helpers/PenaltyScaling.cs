@@ -2,17 +2,14 @@
 using UnityEngine;
 
 namespace EpicLoot.src.Magic.MagicItemEffects.Helpers {
-    // Helpers for scaling shard effects by how heavy the player's loadout is, as measured by their net movement penalty.
+    // Scales shard effects by how heavy the player's loadout is, as measured by their net movement penalty.
     public static class PenaltyScaling {
         // Net movement penalty (as a positive fraction of base speed) treated as "fully committed" to a
-        // heavy loadout, i.e. where MovementPenaltyFactor reaches 1. ~20% speed loss is roughly a full set
-        // of the heaviest armor.
+        // heavy loadout, i.e. where MovementPenaltyFactor reaches 1.
         //
-        // Tunable as "MovementPenaltyReference" in the Global block of config/shardstones.json. It is a
-        // plain static field rather than a per-read config lookup because MovementPenaltyFactor sits under
-        // GetArmor / GetMaxCarryWeight / ModifyStaminaRegen, which run at 50Hz; EffectConfig.ApplyGlobalConfig
-        // refreshes it once per config load instead. Seven shards scale off it, so moving it retunes all of
-        // them together -- that is the point of it living in Global rather than on one effect.
+        // A plain static field rather than a per-read config lookup because MovementPenaltyFactor sits under
+        // GetArmor / GetMaxCarryWeight / ModifyStaminaRegen, which run at 50Hz. It lives in the Global block
+        // because seven shards scale off it.
         public const float DefaultMovementPenaltyReference = 0.40f;
         public static float MovementPenaltyReference = DefaultMovementPenaltyReference;
 
@@ -71,9 +68,8 @@ namespace EpicLoot.src.Magic.MagicItemEffects.Helpers {
         // speed pipeline -- every status effect's ModifySpeed, plus the ApplyStatusEffectSpeedMods
         // postfixes our own shards and other mods install -- and the effects that scale by the penalty
         // sit on hot vanilla methods (GetMaxCarryWeight, GetArmor, GetDamage, ModifyStaminaRegen,
-        // RaiseSkill) that are reached several times within one step. Those repeats were re-deriving a
-        // number that could not have changed: every input CurrentSpeed reads (the equipment modifier
-        // array, the status effect list, m_currentVel) is fixed for the duration of a step.
+        // RaiseSkill) that are reached several times within one step, and every input CurrentSpeed reads
+        // (the equipment modifier array, the status effect list, m_currentVel) is fixed within a step.
         //
         // Keyed on the frame *and* the fixed-step time because FixedUpdate runs more than once per
         // rendered frame below 50fps, and each of those physics steps is entitled to its own reading.

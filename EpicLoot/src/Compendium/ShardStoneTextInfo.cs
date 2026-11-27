@@ -5,16 +5,8 @@ using EpicLoot.ShardStones;
 
 namespace EpicLoot.Compendium;
 
-// The shardstone catalogue: every shard colour, the effect it grants in each equipment slot, and the
-// value range across the rarities that colour exists at.
-//
-// This page is the only place shard effects are visible outside a loose stone's tooltip. ExplainTextInfo
-// filters on !NoRoll && CanBeAugmented, and every definition ShardEffectDefinitions synthesizes is
-// NoRoll + not augmentable, so the whole shard grid is excluded from it by construction.
-//
-// Everything is read live from Shards.ShardDefinitions on each Build (the compendium rebuilds a page on
-// every tab click), so a config live-reload or a dedicated server's config push shows up the next time
-// the page is opened.
+// The only place shard effects show outside a loose stone's tooltip: ExplainTextInfo filters on
+// !NoRoll && CanBeAugmented, and every definition ShardEffectDefinitions synthesizes is NoRoll and not augmentable.
 public class ShardStoneTextInfo(string topic) : MagicTextInfo(topic)
 {
     private const string DimColor = "#c0c0c0ff";
@@ -70,7 +62,6 @@ public class ShardStoneTextInfo(string topic) : MagicTextInfo(topic)
 
         if (def.UniformEffect != null)
         {
-            // A uniform shard (boss/unique) grants the same effect in every slot it is allowed into.
             if (TryFormatEffect(def.UniformEffect, rarities, out string uniform, out string uniformDesc))
             {
                 content.Add($" <color={DimColor}>$mod_epicloot_shard_allslots:</color> " +
@@ -104,13 +95,9 @@ public class ShardStoneTextInfo(string topic) : MagicTextInfo(topic)
                         $"$mod_epicloot_shard_{Shards.ExclusiveCategorySlug(def.Category)}exclusive</color>");
         }
 
-        // Trailing spacer between entries, as ExplainTextInfo does.
         content.Add("");
 
-        // The stone's real inventory icon, inline ahead of its name. ShardTooltipSprites builds a TMP
-        // sprite asset per prefab on first use and caches it, so this costs one build per colour for the
-        // whole session; it returns "" when the prefab or its icon is unavailable (e.g. before the item
-        // manager has registered them), which simply omits the icon rather than breaking the line.
+        // Empty when the prefab or its icon is not registered yet, which leaves the icon out.
         string icon = ShardTooltipSprites.GetSpriteTag(Shards.GetIconPrefabName(color));
         if (!string.IsNullOrEmpty(icon))
         {
@@ -151,11 +138,8 @@ public class ShardStoneTextInfo(string topic) : MagicTextInfo(topic)
         content.Add($"    <color={DimColor}>{description}</color>");
     }
 
-    // The effect's short name plus its extended description, the latter with every value slot filled in
-    // as a range across the rarities this shard is actually available at. The name identifies the effect
-    // and the description carries the numbers, so the value range appears once per effect rather than
-    // twice. Returns false when the effect grants nothing at any of those rarities, so the caller can
-    // drop the line entirely. The description is empty when the definition has none; it is never null.
+    // The description fills each value slot with the range across the rarities this shard drops at.
+    // False when the effect grants nothing at any of them.
     private static bool TryFormatEffect(ShardEffectDefinition effect, List<ItemRarity> rarities,
         out string effectName, out string description)
     {
@@ -175,7 +159,7 @@ public class ShardStoneTextInfo(string topic) : MagicTextInfo(topic)
             return false;
         }
 
-        // Intersect with the shard's declared rarity set. Boss and unique shards list all five rarities in
+        // Intersect with the shard's declared rarity set. Boss and unique shards list every rarity in
         // ValuesPerRarity even where Rarities allows fewer, so reading the raw map would show Yagluth as
         // (4-12) instead of the (10-12) it can actually be found at.
         List<float> values = rarities
@@ -188,8 +172,6 @@ public class ShardStoneTextInfo(string topic) : MagicTextInfo(topic)
             return false;
         }
 
-        // GetEffectTextRange renders each placeholder as (min-max), collapsing to a single number when the
-        // value does not change across rarities, and honours any registered multi-value display provider.
         MagicItemEffectDefinition.ValueDef range = new MagicItemEffectDefinition.ValueDef
         {
             MinValue = values.Min(),

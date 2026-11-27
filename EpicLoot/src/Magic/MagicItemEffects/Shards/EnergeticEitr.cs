@@ -1,5 +1,5 @@
 ﻿namespace EpicLoot.MagicItemEffects.Shards {
-    // Add a percentage of the player's max Stamina to their max Eitr. Invoked from IncreasePlayerBaseStats' Priority.Last
+    // Called from IncreasePlayerBaseStats' Priority.Last postfix.
     public static class EnergeticEitr {
         public static void Apply(Player player, float maxStamina, ref float eitr) {
             if (eitr <= 0f) {

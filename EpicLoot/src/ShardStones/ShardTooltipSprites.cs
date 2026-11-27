@@ -6,7 +6,6 @@ using UnityEngine;
 using UnityEngine.TextCore;
 
 namespace EpicLoot.ShardStones {
-    // Dynamically builds a sprite icon for any socketed item prefab
     public static class ShardTooltipSprites {
         private const string AssetNamePrefix = "EpicLoot_Socket_";
 
@@ -17,9 +16,7 @@ namespace EpicLoot.ShardStones {
         // Keep strong references so the runtime-created ScriptableObjects/Materials aren't collected.
         private static readonly List<UnityEngine.Object> _keepAlive = new List<UnityEngine.Object>();
 
-        // Inline sprite tag for the icon of the socketed item identified by sourcePrefab, or "" when
-        // unavailable (empty prefab, prefab/icon not found, no shader, or build failed). The "" result is
-        // cached too so a missing prefab isn't retried every tooltip frame.
+        // "" when unavailable, cached too so a missing prefab isn't retried every tooltip frame.
         public static string GetSpriteTag(string sourcePrefab) {
             if (string.IsNullOrEmpty(sourcePrefab)) {
                 return string.Empty;
@@ -79,10 +76,8 @@ namespace EpicLoot.ShardStones {
             return defaultSprite != null && defaultSprite.material != null ? defaultSprite.material.shader : null;
         }
 
-        // Constructs and registers a single-sprite TMP_SpriteAsset for one source prefab's icon, keyed by
-        // that prefab name. Returns true on success. Referencing the sprite's own texture as the sprite
-        // sheet (with the sprite's textureRect as the glyph rect) keeps the icon on the GPU -- no pixels
-        // are ever read back.
+        // Referencing the sprite's own texture as the sprite sheet keeps the icon on the GPU; no pixels are
+        // ever read back.
         private static bool BuildSpriteAsset(string key, Sprite sprite, Shader shader) {
             var texture = sprite.texture;
             if (texture == null) {
@@ -138,11 +133,11 @@ namespace EpicLoot.ShardStones {
             // populated the tables first, that upgrade would CLEAR them (rebuilding from the empty legacy
             // spriteInfoList) and the <sprite> would render nothing. With the version now set, the second
             // UpdateLookupTables() below skips the upgrade and simply builds the lookups from the
-            // glyph/character we add. This keeps us on public TMP API only -- no reflection.
+            // glyph/character we add.
             spriteAsset.UpdateLookupTables();
 
             // The glyph/character tables have internal setters, but their getters return the (initialized)
-            // backing lists, so we just add to them -- no reflection needed.
+            // backing lists, so we just add to them.
             var glyphTable = spriteAsset.spriteGlyphTable;
             var characterTable = spriteAsset.spriteCharacterTable;
             if (glyphTable == null || characterTable == null) {
@@ -165,12 +160,9 @@ namespace EpicLoot.ShardStones {
                 scale = 1f
             });
 
-            // Second pass: version is already stamped, so this only builds the glyph/character lookups from
-            // the entries we just added (no destructive upgrade).
             spriteAsset.UpdateLookupTables();
 
-            // Register so <sprite="assetName"> resolves on any TMP tooltip surface without touching each
-            // component. Keyed by the asset's name hash, matching TMP's rich-text name lookup.
+            // Registered globally so <sprite="assetName"> resolves on any TMP surface.
             MaterialReferenceManager.AddSpriteAsset(spriteAsset);
 
             _keepAlive.Add(material);

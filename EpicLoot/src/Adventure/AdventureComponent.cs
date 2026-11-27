@@ -8,6 +8,7 @@ namespace EpicLoot.Adventure
     public class AdventureComponent : MonoBehaviour
     {
         public const string SaveDataKey = EpicLoot.PluginId + "+" + nameof(AdventureSaveData);
+        private const string UnreadableSaveDataKey = SaveDataKey + ".unreadable";
 
         private Player _player;
         public AdventureSaveDataList SaveData = new AdventureSaveDataList();
@@ -34,6 +35,14 @@ namespace EpicLoot.Adventure
             if (_player.m_customData.TryGetValue(SaveDataKey, out var data))
             {
                 SaveData = Deserialize(data);
+                if (SaveData == null)
+                {
+                    // Kept under its own key in the character file, since the next Save() overwrites this one.
+                    _player.m_customData[UnreadableSaveDataKey] = data;
+                    EpicLoot.LogErrorForce($"Could not read {_player.GetPlayerName()}'s bounties and treasure maps; " +
+                        $"the unreadable data is kept in the character file under \"{UnreadableSaveDataKey}\".");
+                    SaveData = new AdventureSaveDataList();
+                }
 
                 // Clean up old bounties
                 var removed = 0;
@@ -54,8 +63,8 @@ namespace EpicLoot.Adventure
         }
 
         /// <summary>
-        /// Reads the save blob. New saves are a base64-encoded ZPackage; legacy saves are JSON
-        /// (which starts with '{'). Legacy blobs are upgraded transparently on the next Save().
+        /// Reads the save blob: a base64-encoded ZPackage, or legacy JSON (which starts with '{') that the next
+        /// Save() upgrades. Null when it is neither.
         /// </summary>
         private static AdventureSaveDataList Deserialize(string data)
         {
@@ -78,11 +87,11 @@ namespace EpicLoot.Adventure
 
             try
             {
-                return JsonConvert.DeserializeObject<AdventureSaveDataList>(data) ?? new AdventureSaveDataList();
+                return JsonConvert.DeserializeObject<AdventureSaveDataList>(data);
             }
             catch (Exception)
             {
-                return new AdventureSaveDataList();
+                return null;
             }
         }
 

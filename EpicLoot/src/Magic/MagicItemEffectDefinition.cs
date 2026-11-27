@@ -5,6 +5,7 @@ using EpicLoot.LegendarySystem;
 using EpicLoot.MagicItemEffects;
 using EpicLoot.ShardStones;
 using JetBrains.Annotations;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,7 +32,7 @@ namespace EpicLoot
     [Serializable]
     public class MagicItemEffectRequirements
     {
-        public bool NoRoll = false; // If true, this effect cant be modified with a rune
+        public bool NoRoll = false; // If true, no check made with checklootroll accepts this effect
         public bool ExclusiveSelf = true;
         public List<string> ExclusiveEffectTypes = new List<string>();
         public List<string> MustHaveEffectTypes = new List<string>();
@@ -43,9 +44,15 @@ namespace EpicLoot
         public List<Skills.SkillType> ExcludedSkillTypes = new List<Skills.SkillType>();
         public List<string> AllowedItemNames = new List<string>();
         public List<string> ExcludedItemNames = new List<string>();
+        [JsonConverter(typeof(StaffRoleListConverter))]
+        public List<StaffRole> AllowedStaffRoles = new List<StaffRole>();
         public bool? ItemHasPhysicalDamage;
         public bool? ItemHasElementalDamage;
+        public bool? ItemHasNonSpiritElementalDamage;
         public bool? ItemHasChopDamage;
+        public bool? ItemHasBluntDamage;
+        public bool? ItemHasSlashDamage;
+        public bool? ItemHasPierceDamage;
         public bool? ItemUsesDurability;
         public bool? ItemHasNegativeMovementSpeedModifier;
         public bool? ItemHasBlockPower;
@@ -99,8 +106,6 @@ namespace EpicLoot
             if (ExcludedItemTypes.Count == 0)
                 return false;
 
-            // A configured iteminfo-type match means the item IS excluded (mirror of
-            // AllowedByItemInfoType in AllowByItemType above; this used to be inverted).
             if (ExcludedByItemInfoType(itemData))
                 return true;
 
@@ -163,16 +168,16 @@ namespace EpicLoot
             return CheckRequirements(itemData, magicItem, out _, out _, magicEffectType, checklootroll, checkaugmentroll, checkruneroll, checkItemTypeGating);
         }
 
-        // Same predicate as the overload above, but also reports WHY it failed (see RequirementFailure) so
-        // callers can surface a specific reason. For ConflictingEffect, `conflictEffectType` names the
-        // offending effect already on the item. `failure` defaults to Other so any uncategorized early-out
-        // (e.g. a check added later without a category) surfaces as unknown rather than reading as success.
-        // When checkItemTypeGating is false, the host-item gating (item type/skill/name/rarity/property
-        // predicates) is skipped and only effect-composition rules (exclusivity / must-have) are enforced;
-        // shard socketing passes false because the shard config's per-slot grid is the placement authority.
+        // Also reports why it failed. For ConflictingEffect, `conflictEffectType` names the offending effect
+        // already on the item. checkItemTypeGating false skips the host-item gating (CheckItemTypeRequirements)
+        // and keeps the effect-composition rules: shard socketing passes it, because the shard grid decides
+        // placement there. `socketedEffectTypes` are the effects the item's other sockets grant; they meet
+        // MustHaveEffectTypes (a Recall rune beside a Throwable rune) and nothing else, since exclusivity and
+        // duplicates between sockets are ShardSocketManager's.
         public bool CheckRequirements([NotNull] ItemDrop.ItemData itemData, [NotNull] MagicItem magicItem,
             out RequirementFailure failure, out string conflictEffectType, string magicEffectType = null,
-            bool checklootroll = true, bool checkaugmentroll = false, bool checkruneroll = false, bool checkItemTypeGating = true)
+            bool checklootroll = true, bool checkaugmentroll = false, bool checkruneroll = false, bool checkItemTypeGating = true,
+            ICollection<string> socketedEffectTypes = null)
         {
             failure = RequirementFailure.Other;
             conflictEffectType = null;
@@ -205,18 +210,12 @@ namespace EpicLoot
 
             if (MustHaveEffectTypes?.Count > 0)
             {
-                foreach(var effect in MustHaveEffectTypes)
+                foreach (var effect in MustHaveEffectTypes)
                 {
-                    if (effect.Equals("Throwable", StringComparison.InvariantCultureIgnoreCase) &&
-                        itemData.m_shared.m_skillType == Skills.SkillType.Spears)
-                    {
-                        continue;
-                    }
-                    else if (magicItem.HasEffect(effect))
-                    {
-                        continue;
-                    }
-                    else
+                    // Vanilla spears already throw.
+                    var spearThrows = effect.Equals("Throwable", StringComparison.InvariantCultureIgnoreCase) &&
+                        itemData.m_shared.m_skillType == Skills.SkillType.Spears;
+                    if (!spearThrows && !magicItem.HasEffect(effect) && socketedEffectTypes?.Contains(effect) != true)
                     {
                         failure = RequirementFailure.MissingRequiredEffect;
                         return false;
@@ -224,21 +223,13 @@ namespace EpicLoot
                 }
             }
 
-            // Host-item gating: item type, skill type, item name, rarity, and item-property predicates.
-            // Shards bypass this (checkItemTypeGating == false): a shard's placement is decided
-            // authoritatively by the per-slot effect grid in config/shardstones.json, so re-applying an
-            // effect's rune/loot-roll host requirements here would wrongly reject valid slot mappings
-            // (e.g. AddPickaxesSkill -- a Pickaxes-skill weapon effect -- resolved onto the Legs armor
-            // slot). The effect-composition rules (exclusivity / must-have, above) still apply to shards.
             if (checkItemTypeGating && !CheckItemTypeRequirements(itemData, magicItem, out failure))
             {
                 return false;
             }
 
-            // External requirements are arbitrary predicates registered by other mods against a specific
-            // effect (API.RegisterMagicEffectRequirement). Unlike host-item gating they are NOT skipped when
-            // checkItemTypeGating is false: a mod's hard requirement must hold on every path, shard socketing
-            // included, so it can never be silently bypassed by the shard config's per-slot grid.
+            // Other mods' predicates (API.RegisterMagicEffectRequirement) hold on every path, shard socketing
+            // included.
             if (!API.CheckMagicEffectExternalRequirements(ExternalRequirements, itemData, magicItem,
                 magicEffectType, checklootroll, checkaugmentroll, checkruneroll))
             {
@@ -250,10 +241,8 @@ namespace EpicLoot
             return true;
         }
 
-        // Host-item gating extracted from CheckRequirements: does this effect fit THIS specific host item
-        // and rarity (as opposed to the effect-composition/exclusivity rules)? Returns false with a
-        // categorized `failure` on the first unmet requirement. Skipped for shard socketing, where the
-        // shard config's per-slot grid is the placement authority (see CheckRequirements).
+        // Whether the effect fits this host item and rarity; false with a categorized `failure` on the first
+        // unmet requirement.
         private bool CheckItemTypeRequirements([NotNull] ItemDrop.ItemData itemData, [NotNull] MagicItem magicItem,
             out RequirementFailure failure)
         {
@@ -309,6 +298,13 @@ namespace EpicLoot
                 return false;
             }
 
+            if (AllowedStaffRoles?.Count > 0 && StaffRoles.IsStaff(itemData) &&
+                !StaffRoles.HasAnyRole(itemData, AllowedStaffRoles))
+            {
+                failure = RequirementFailure.ItemTypeNotAllowed;
+                return false;
+            }
+
             if (ItemHasPhysicalDamage != null &&
                 (ItemHasPhysicalDamage == itemData.m_shared.m_damages.GetTotalPhysicalDamage() <= 0))
             {
@@ -323,8 +319,36 @@ namespace EpicLoot
                 return false;
             }
 
+            if (ItemHasNonSpiritElementalDamage != null &&
+                (ItemHasNonSpiritElementalDamage == !HasNonSpiritElementalDamage(itemData)))
+            {
+                failure = RequirementFailure.ItemPropertyMismatch;
+                return false;
+            }
+
             if (ItemHasChopDamage != null &&
                 (ItemHasChopDamage == itemData.m_shared.m_damages.m_chop <= 0))
+            {
+                failure = RequirementFailure.ItemPropertyMismatch;
+                return false;
+            }
+
+            if (ItemHasBluntDamage != null &&
+                (ItemHasBluntDamage == itemData.m_shared.m_damages.m_blunt <= 0))
+            {
+                failure = RequirementFailure.ItemPropertyMismatch;
+                return false;
+            }
+
+            if (ItemHasSlashDamage != null &&
+                (ItemHasSlashDamage == itemData.m_shared.m_damages.m_slash <= 0))
+            {
+                failure = RequirementFailure.ItemPropertyMismatch;
+                return false;
+            }
+
+            if (ItemHasPierceDamage != null &&
+                (ItemHasPierceDamage == itemData.m_shared.m_damages.m_pierce <= 0))
             {
                 failure = RequirementFailure.ItemPropertyMismatch;
                 return false;
@@ -459,6 +483,15 @@ namespace EpicLoot
             return true;
         }
 
+        // The damage Spirit imbue builds on. A staff counts what its spawned orbs and blasts carry as well.
+        private static bool HasNonSpiritElementalDamage(ItemDrop.ItemData itemData)
+        {
+            HitData.DamageTypes damage = StaffRoles.IsStaff(itemData)
+                ? StaffRoles.GetDealtDamage(itemData)
+                : itemData.m_shared.m_damages;
+            return damage.m_fire + damage.m_frost + damage.m_lightning + damage.m_poison > 0f;
+        }
+
         /// <summary>
         /// Returns the item types that apply armor values for the Player.
         /// </summary>
@@ -480,6 +513,14 @@ namespace EpicLoot
             public float MinValue;
             public float MaxValue;
             public float Increment;
+
+            /// <summary>How many increments above MinValue a roll can land; 0 when there is no increment.</summary>
+            public int GetStepCount()
+            {
+                // Float division lands a hair under a whole count when the step divides the range (2.6 / 0.2 is
+                // 12.999999), and truncating that would leave the top value unrollable.
+                return Increment > 0f ? UnityEngine.Mathf.FloorToInt((MaxValue - MinValue) / Increment + 0.001f) : 0;
+            }
         }
 
         [Serializable]
@@ -533,11 +574,7 @@ namespace EpicLoot
         public string Ability;
         public Dictionary<string, float> Config = new Dictionary<string, float>();
 
-        // Human-readable label for a Config key, used in the detailed (Shift) tooltip. Resolved via a
-        // two-tier localization lookup with a raw-key fallback: a per-effect override token first
-        // (mod_epicloot_me_<type>_config_<key>), then a shared generic token (mod_epicloot_config_<key>),
-        // then the raw key name when neither is defined. Most keys resolve at the generic tier; the
-        // per-effect tier exists for keys whose meaning differs between effects (e.g. Riches values).
+        // The per-effect token exists for keys whose meaning differs between effects (Riches values).
         public string GetConfigLabel(string key) {
             var lowerKey = key.ToLowerInvariant();
             if (Extensions.TryLocalize($"mod_epicloot_me_{Type.ToLowerInvariant()}_config_{lowerKey}", out var perEffect)) {
@@ -571,11 +608,6 @@ namespace EpicLoot
             return string.IsNullOrEmpty(Type) ? string.Empty : PascalCaseBoundary.Replace(Type, " ");
         }
 
-        public List<string> GetAllowedItemTypes()
-        {
-            return Requirements?.AllowedItemTypes ?? new List<string>();
-        }
-
         public bool CheckRequirements(ItemDrop.ItemData itemData, MagicItem magicItem, bool lootroll = true, bool augmentroll = false, bool runeroll = false)
         {
             if (Requirements == null)
@@ -584,12 +616,6 @@ namespace EpicLoot
             }
 
             return Requirements.CheckRequirements(itemData, magicItem, Type, lootroll, augmentroll, runeroll);
-        }
-
-        public bool HasRarityValues()
-        {
-            return ValuesPerRarity.Magic != null && ValuesPerRarity.Epic != null &&
-                ValuesPerRarity.Rare != null && ValuesPerRarity.Legendary != null;
         }
 
         public ValueDef GetValuesForRarity(ItemRarity itemRarity)
@@ -692,8 +718,6 @@ namespace EpicLoot
             if (!FallbackDefinitions.TryGetValue(key, out effectDef))
             {
                 EpicLoot.LogWarning($"Enchantment definition missing for: {type}");
-                // The line names the raw type and the stored value: a blank DisplayText left an empty tooltip
-                // line, and the made-up per-rarity ranges this used to carry were shown as the effect's range.
                 // ValueDefs stay null, which every reader treats as "no range". Braces in the type are escaped
                 // for the string.Format the display text goes through.
                 string escapedType = key.Replace("{", "{{").Replace("}", "}}");
@@ -800,6 +824,94 @@ namespace EpicLoot
             }
 
             return results;
+        }
+
+        /// <summary>
+        /// The effects on the item, rolled or socketed, that keep <paramref name="candidate"/> off it when
+        /// exclusivity is the only thing that does: with them gone it would pass every other check
+        /// GetAvailableEffects makes. Empty when it fits already, or when something else (item type, rarity, a
+        /// missing effect) rules it out too. The effect at <paramref name="ignoreEffectIndex"/> is the one being
+        /// replaced and never counts.
+        /// </summary>
+        public static List<MagicItemEffect> GetExclusiveBlockers(ItemDrop.ItemData itemData, MagicItem magicItem,
+            int ignoreEffectIndex, MagicItemEffectDefinition candidate, bool checklootroll = true,
+            bool checkaugment = false, bool checkruneroll = false)
+        {
+            var blockers = new List<MagicItemEffect>();
+            if (candidate == null || magicItem == null || EnchantCostsHelper.EffectIsDeprecated(candidate))
+            {
+                return blockers;
+            }
+
+            var requirements = candidate.Requirements;
+            var exclusiveSelf = requirements != null &&
+                (requirements.ExclusiveSelf || requirements.ExclusiveEffectTypes?.Contains(candidate.Type) == true);
+            bool BlocksRolled(string other) => other == candidate.Type
+                ? exclusiveSelf
+                : MagicItemEffectRequirements.EffectsExclude(candidate.Type, other);
+            bool BlocksSocket(SocketedEffect socket) => socket != null && socket.IsActive() &&
+                (socket.Effect.EffectType == candidate.Type
+                    ? exclusiveSelf && !ShardSocketManager.AllowMatchingItemEffect(socket.ShardType)
+                    : MagicItemEffectRequirements.EffectsExclude(candidate.Type, socket.Effect.EffectType));
+
+            var effects = magicItem.Effects;
+            var sockets = magicItem.Sockets;
+            var keptEffects = new List<MagicItemEffect>();
+            for (var i = 0; i < effects.Count; i++)
+            {
+                if (i == ignoreEffectIndex)
+                {
+                    continue;
+                }
+
+                if (BlocksRolled(effects[i].EffectType))
+                {
+                    blockers.Add(effects[i]);
+                }
+                else
+                {
+                    keptEffects.Add(effects[i]);
+                }
+            }
+
+            var keptSockets = new List<SocketedEffect>();
+            foreach (var socket in sockets ?? new List<SocketedEffect>())
+            {
+                if (BlocksSocket(socket))
+                {
+                    blockers.Add(socket.Effect);
+                }
+                else
+                {
+                    keptSockets.Add(socket);
+                }
+            }
+
+            if (blockers.Count == 0)
+            {
+                return blockers;
+            }
+
+            bool fits;
+            magicItem.Effects = keptEffects;
+            magicItem.Sockets = keptSockets;
+            try
+            {
+                fits = candidate.CheckRequirements(itemData, magicItem, checklootroll, checkaugment, checkruneroll) &&
+                    FitsSocketedEffects(candidate, magicItem);
+            }
+            finally
+            {
+                magicItem.Effects = effects;
+                magicItem.Sockets = sockets;
+            }
+
+            if (!fits)
+            {
+                blockers.Clear();
+            }
+
+            return blockers;
         }
 
         // Whether a rolled effect of this definition may join the item's active socketed effects. Sockets

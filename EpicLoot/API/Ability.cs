@@ -73,7 +73,7 @@ public static partial class API
             return false;
         }
 
-        if (!player.TryGetComponent(out AbilityController controller))
+        if (player == null || !player.TryGetComponent(out AbilityController controller))
         {
             return false;
         }

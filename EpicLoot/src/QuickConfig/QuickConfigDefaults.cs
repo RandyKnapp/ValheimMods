@@ -1,3 +1,4 @@
+using EpicLoot.Config;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -7,8 +8,8 @@ namespace EpicLoot.QuickConfig;
 
 /// <summary>
 /// The config files the mod ships (the embedded baseconfig defaults), read once per page reset.
-/// magiceffects.json is the overhaul of the Balance Template that is staged, since that is the file
-/// Save would write.
+/// A balance template file is the overhaul of the Balance Template that is staged, since that is the
+/// file Save would write.
 /// </summary>
 internal sealed class ShippedDefaults {
     private readonly string template;
@@ -50,7 +51,7 @@ internal sealed class ShippedDefaults {
 
     private string Text(string file) {
         if (texts.TryGetValue(file, out string text)) { return text; }
-        string resource = file == BalancePreset.MagicEffectsFile
+        string resource = ELConfig.IsBalanceTemplateFile(file)
             ? $"EpicLoot.config.overhauls.{template}.{file}"
             : $"EpicLoot.config.{file}";
         try {

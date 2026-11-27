@@ -1,56 +1,63 @@
 using HarmonyLib;
+using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects;
 
-// Summon damage bonus. The summoner's client stamps the bonus on the summon's ZDO at spawn (an
-// owner-side write); the actual scaling happens per outgoing hit in SharedCharacterDamagePatch,
-// which runs on the attacker-owner's client. The old implementation instead added the bonus onto
-// the minion weapon's m_shared.m_attack.m_damageMultiplier -- shared data, so the buff applied to
-// EVERY humanoid using that weapon prefab (any Greydwarf that spawned while the effect was worn,
-// not just summons), stacked again on every zone reload once the ZDO value persisted, and was
-// written to ZDOs this client did not own.
+// Summon damage and health bonuses. The summoner's client stamps both on the summon's ZDO the first time it
+// starts (it owns a summon it just spawned); damage is scaled per outgoing hit in SharedCharacterDamagePatch and
+// health in ModifySummonHealth's SetMaxHealth prefix, both from the stamp, so a summon keeps its summoner's bonus
+// whichever client owns it later. Scaling shared weapon data instead buffed every humanoid using that prefab.
 public static class ModifySummonDamage
 {
     public const string ZdoKey = "el-msd";
+    public const string HealthZdoKey = "el-msh";
+    private const string StampedZdoKey = "el-mss";
+
+    internal static bool IsMagicSummon(Character character)
+    {
+        if (character == null || character.IsPlayer() || !character.IsTamed())
+        {
+            return false;
+        }
+
+        Tameable tameable = character.GetComponent<Tameable>();
+        return tameable != null &&
+            (tameable.m_levelUpOwnerSkill == Skills.SkillType.BloodMagic ||
+             tameable.m_levelUpOwnerSkill == Skills.SkillType.ElementalMagic);
+    }
 
     [HarmonyPatch(typeof(Humanoid), nameof(Humanoid.Start))]
     public static class SetupSummonDamagePatch
     {
         public static void Postfix(Humanoid __instance)
         {
-            if (__instance.IsPlayer() || Player.m_localPlayer == null)
+            if (Player.m_localPlayer == null || __instance.m_nview == null || !__instance.m_nview.IsValid() ||
+                !__instance.m_nview.IsOwner() || !IsMagicSummon(__instance))
             {
                 return;
             }
 
-            if (__instance.m_nview == null || !__instance.m_nview.IsValid() || !__instance.m_nview.IsOwner())
+            ZDO zdo = __instance.m_nview.GetZDO();
+            // A summon stamped before the flag existed carries a damage value instead.
+            if (zdo.GetBool(StampedZdoKey) || zdo.GetFloat(ZdoKey, 0f) > 0f)
             {
                 return;
             }
 
-            // Only actual summons: tamed, and levelled by a magic skill (mirrors ModifySummonHealth).
-            if (!__instance.IsTamed())
+            zdo.Set(StampedZdoKey, true);
+            if (Player.m_localPlayer.HasActiveMagicEffect(MagicEffectType.ModifySummonDamage, out float damage, 0.01f))
             {
-                return;
+                zdo.Set(ZdoKey, damage);
             }
 
-            Tameable tameable = __instance.GetComponent<Tameable>();
-            if (tameable == null ||
-                (tameable.m_levelUpOwnerSkill != Skills.SkillType.BloodMagic &&
-                 tameable.m_levelUpOwnerSkill != Skills.SkillType.ElementalMagic))
+            if (Player.m_localPlayer.HasActiveMagicEffect(MagicEffectType.ModifySummonHealth, out float health, 0.01f))
             {
-                return;
-            }
-
-            // Already stamped (zone reload): keep the bonus from when it was summoned.
-            if (__instance.m_nview.GetZDO().GetFloat(ZdoKey, 0f) > 0f)
-            {
-                return;
-            }
-
-            if (Player.m_localPlayer.HasActiveMagicEffect(MagicEffectType.ModifySummonDamage, out float effectValue, 0.01f))
-            {
-                __instance.m_nview.GetZDO().Set(ZdoKey, effectValue);
+                zdo.Set(HealthZdoKey, health);
+                // Awake set the max health before the stamp existed; an unhurt summon gets it again with the bonus.
+                if (Mathf.Approximately(__instance.GetHealth(), __instance.GetMaxHealth()))
+                {
+                    __instance.SetMaxHealth(__instance.GetMaxHealthBase() * __instance.GetLevel());
+                }
             }
         }
     }

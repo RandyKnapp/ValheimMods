@@ -13,12 +13,6 @@ namespace EpicLoot
 
 namespace EpicLoot.MagicItemEffects
 {
-    // Sniper (set items only, NoRoll). The value is a damage bonus per metre: a bow shot that hits further than
-    // MinDistance from where it was fired deals +value% damage for every metre between the two, with no cap
-    // (0.8/1/1.2 at L/M/A: +12/15/18% just past 15 m, +80/100/120% at 100 m). The arrow also flies 1 + SpeedBonusPerValue
-    // x value times as fast, and the bow takes 1 + DrawTimeBonusPerValue x value times as long to draw (2/2.25/2.5x for
-    // both). The rarity raises all of it.
-    //
     // The draw is slowed by lengthening the weapon's draw duration for the length of GetAttackDrawPercentage, not
     // by dividing its result: vanilla clamps the result to 1, so a divided full draw would never complete. Every
     // reader of the draw (crosshair ring, the "drawpercent" animation, stamina drain, and the arrow's velocity,
@@ -31,7 +25,6 @@ namespace EpicLoot.MagicItemEffects
     // Crossbows, staffs and the grappling hook are left alone.
     public static class Sniper
     {
-        // All tunable in this effect's Config block in magiceffects.json, under these key names.
         public const float DefaultSpeedBonusPerValue = 1.25f;      // extra arrow speed (x) per point of value
         public const float DefaultDrawTimeBonusPerValue = 1.25f;   // extra draw time (x) per point of value
         public const float DefaultMinDistance = 15f;               // metres; a hit at this range or closer gets nothing
@@ -55,8 +48,6 @@ namespace EpicLoot.MagicItemEffects
 
         private static readonly ConditionalWeakTable<Projectile, Shot> Shots = new ConditionalWeakTable<Projectile, Shot>();
 
-        // Tooltip: "... {1}x as fast, and those that hit beyond {3} m deal +{0}% damage per metre flown, but ... {2}x as
-        // long to draw."
         public static void RegisterDisplayValues()
         {
             MagicItem.RegisterDisplayValues(MagicEffectType.Sniper,

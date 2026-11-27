@@ -10,6 +10,12 @@ namespace EpicLoot_UnityLib
     {
         private const float EmptyCellAlpha = 0.25f;
 
+        // Between the title above and the grids below, in line with the Take All buttons.
+        private const float CapacityLabelMargin = 2f;
+        private const float CapacityLabelHeight = 48f;
+        private const float CapacityLabelY = -62f;
+        private const float CapacityLabelMinFontSize = 10f;
+
         public TMP_Text CapacityLabel;
         public MultiSelectItemList MaterialsList;
         public MultiSelectItemList ShardstonesList;
@@ -54,6 +60,32 @@ namespace EpicLoot_UnityLib
                 TakeAllShardstonesButton.onClick.AddListener(() => OnTakeAllClicked(StashCatalog.ShardstoneGrid));
                 _takeAllShardstonesHint = FindGamepadHint(TakeAllShardstonesButton.transform);
             }
+
+            FitCapacityLabelBetweenButtons();
+        }
+
+        // The message shares a row with the Take All buttons, in a rect far wider than the gap between them, so the
+        // locked and warded messages and many translations would run across both. It stays in the gap, wrapping and then
+        // shrinking to fit. Truncate would drop whatever did not fit, so overflow is off.
+        private void FitCapacityLabelBetweenButtons()
+        {
+            if (CapacityLabel == null || TakeAllMaterialsButton == null || TakeAllShardstonesButton == null)
+            {
+                return;
+            }
+
+            RectTransform left = (RectTransform)TakeAllMaterialsButton.transform;
+            RectTransform right = (RectTransform)TakeAllShardstonesButton.transform;
+            float gap = right.anchoredPosition.x - right.rect.width / 2f - (left.anchoredPosition.x + left.rect.width / 2f);
+
+            RectTransform label = CapacityLabel.rectTransform;
+            label.sizeDelta = new Vector2(gap - 2f * CapacityLabelMargin, CapacityLabelHeight);
+            label.anchoredPosition = new Vector2(label.anchoredPosition.x, CapacityLabelY);
+
+            CapacityLabel.fontSizeMax = CapacityLabel.fontSize;
+            CapacityLabel.fontSizeMin = CapacityLabelMinFontSize;
+            CapacityLabel.enableAutoSizing = true;
+            CapacityLabel.overflowMode = TextOverflowModes.Overflow;
         }
 
         public void OnEnable()
@@ -221,9 +253,18 @@ namespace EpicLoot_UnityLib
 
         private List<IListElement> BuildEntries(IReadOnlyList<StashItemKind> kinds)
         {
+            HashSet<string> heldUnidentified = GetHeldUnidentifiedBiomes(kinds);
             List<IListElement> entries = new List<IListElement>(kinds.Count);
             foreach (StashItemKind kind in kinds)
             {
+                // A biome's row of unidentified items shows only while the table holds some of them: a row for
+                // every biome would bury the chisels and tokens under rows of empty cells. The row is whole, so
+                // the rarities stay in their columns.
+                if (kind.Kind == StashKind.Unidentified && !heldUnidentified.Contains(kind.Family))
+                {
+                    continue;
+                }
+
                 if (!_entries.TryGetValue(kind.PrefabName, out StashEntry entry))
                 {
                     entry = new StashEntry { PrefabName = kind.PrefabName, Item = kind.CreateItem(0) };
@@ -235,6 +276,25 @@ namespace EpicLoot_UnityLib
             }
 
             return entries;
+        }
+
+        private HashSet<string> GetHeldUnidentifiedBiomes(IReadOnlyList<StashItemKind> kinds)
+        {
+            HashSet<string> biomes = new HashSet<string>();
+            if (_stash == null)
+            {
+                return biomes;
+            }
+
+            foreach (StashItemKind kind in kinds)
+            {
+                if (kind.Kind == StashKind.Unidentified && _stash.GetCount(kind.PrefabName) > 0)
+                {
+                    biomes.Add(kind.Family);
+                }
+            }
+
+            return biomes;
         }
 
         private void StyleCells()

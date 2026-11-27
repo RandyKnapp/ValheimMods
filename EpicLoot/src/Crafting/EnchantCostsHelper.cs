@@ -1,6 +1,6 @@
-
+﻿
 using System;
-﻿using EpicLoot_UnityLib;
+using EpicLoot_UnityLib;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -13,10 +13,7 @@ namespace EpicLoot.Crafting
 {
     public static class EnchantCostsHelper
     {
-        // Defaults to an empty config rather than null: every helper below dereferences this unguarded,
-        // and other mods read it directly (VNEI's EpicLootCompat.IndexSacrifices does an
-        // EnchantCostsHelper.Config.DisenchantProducts field access). An empty config degrades to
-        // "no costs configured" instead of a NullReferenceException in someone else's code.
+        // Defaults to an empty config rather than null: every helper below dereferences this unguarded.
         public static EnchantingCostsConfig Config = new EnchantingCostsConfig();
         public static HashSet<string> DeprecatedMagicEffects = new HashSet<string>
         {
@@ -96,8 +93,7 @@ namespace EpicLoot.Crafting
         // The shardstone sacrifice yield, as a code-side default. config/enchantcosts.json ships the same five
         // entries; these are what a player who declines the config-update prompt gets, because an on-disk copy
         // of that file wins over the embedded one indefinitely and nothing else in this class supplies a
-        // default. Without them a stale file would keep paying out the generic magic-Material yield while the
-        // shard-to-material conversions that used to be the alternative have already been retired.
+        // default. Without them a stale file would keep paying out the generic magic-Material yield.
         private static void EnsureShardStoneSacrificeProducts()
         {
             foreach (ItemRarity rarity in Enum.GetValues(typeof(ItemRarity)).Cast<ItemRarity>())
@@ -353,7 +349,6 @@ namespace EpicLoot.Crafting
                 EpicLoot.LogWarning($"No identify costs configured for biome {BiomeDataManager.GetName(biome)} and rarity {rarity}.");
             }
 
-            // Add category-specific costs
             if (Config.IdentifyTypes.TryGetValue(category, out IdentifyTypeConfig typeConfig))
             {
                 totalCost.AddRange(typeConfig.Costs);
@@ -379,8 +374,7 @@ namespace EpicLoot.Crafting
 
         public static List<ItemAmountConfig> GetRuneCost(ItemDrop.ItemData item, ItemRarity rarity, RuneActions operation)
         {
-            // Only filter by item type when there is an item to read it from (the flag was never
-            // set before, leaving every RuneCostConfig.ItemTypes list ignored).
+            // Only filter by item type when there is an item to read it from.
             bool typecheck = item != null;
             ItemDrop.ItemData.ItemType itemtype = ItemDrop.ItemData.ItemType.None;
 
@@ -501,21 +495,6 @@ namespace EpicLoot.Crafting
         {
             List<MagicItemEffect> effects = item?.GetMagicItem()?.GetEffects();
             return (effects != null && effectIndex >= 0 && effectIndex < effects.Count && EffectIsDeprecated(effects[effectIndex].EffectType));
-        }
-
-        public static bool ItemHasDeprecatedEffect(ItemDrop.ItemData item)
-        {
-            List<MagicItemEffect> effects = item?.GetMagicItem()?.GetEffects();
-            if (effects != null)
-            {
-                for (int index = 0; index < effects.Count; index++)
-                {
-                    if (EffectIsDeprecated(effects[index].EffectType))
-                        return true;
-                }
-            }
-
-            return false;
         }
 
         public static bool EffectIsDeprecated(string effectType)

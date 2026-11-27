@@ -1,13 +1,11 @@
 ﻿using EpicLoot.General;
 using EpicLoot.src.Magic.MagicItemEffects.Helpers;
 using HarmonyLib;
-using System;
 
 namespace EpicLoot.MagicItemEffects;
 
 public static class ModifyBlock
 {
-    // doesnt do this???
     [HarmonyPatch(typeof(ItemDrop.ItemData), nameof(ItemDrop.ItemData.GetDeflectionForce), typeof(int))]
     private static class ModifyParry_ItemData_GetDeflectionForce_Patch
     {
@@ -23,9 +21,6 @@ public static class ModifyBlock
         }
     }
 
-
-    // base block strongest modifier. Modifies numeric first then stacks multipliers of skill,magic effects, etc.
-    // Only when additive. multiplicative doesnt matter that much
     [HarmonyPatch(typeof(ItemDrop.ItemData), nameof(ItemDrop.ItemData.GetBaseBlockPower), typeof(int))]
     private static class ModifyParry_ItemDrop_ItemData_GetBaseBlockPower_Patch
     {

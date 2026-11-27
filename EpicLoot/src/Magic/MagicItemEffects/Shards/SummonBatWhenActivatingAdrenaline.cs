@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects.Shards {
-    // Summons a number of tamed bats around the player when they activate adrenaline
     public static class SummonBatWhenActivatingAdrenaline {
-        private const string BatSourcePrefab = "Bat";              // vanilla creature we clone
-        private const string TamedBatPrefab = "EL_TamedBat";       // our registered player-faction/tamed clone
+        private const string BatSourcePrefab = "Bat";
+        private const string TamedBatPrefab = "EL_TamedBat";       // player-faction, tamed clone
 
-        // All tunable in this effect's Config block in config/shardstones.json, under these key names.
         // The summon count is the shard value plus SummonCountOffset, and at most ConcurrentPerSummon times
         // that many bats may be alive at once. BatLifetime seeds the cached clone's TimedDestruction, which
         // is baked into the registered prefab, so a change to it lands on the next game session.
@@ -34,7 +32,7 @@ namespace EpicLoot.MagicItemEffects.Shards {
 
         private static float _lastSummonTime = -999f;
 
-        // Cached template and container for our tamed-bat clone. Must be disabled to prevent znet issues when building the clone
+        // The container stays inactive so the clone's ZNetView never wakes while it is built.
         private static GameObject _batContainer;
         private static GameObject _batTemplate;
         private static bool _sourceMissingLogged;
@@ -44,8 +42,7 @@ namespace EpicLoot.MagicItemEffects.Shards {
         // in this list, but TimedDestruction reaps them, so concurrency stays bounded regardless.
         private static readonly List<GameObject> _activeBats = new List<GameObject>();
 
-        // Called by SharedPlayerAddAdrenalinePatch, which owns the Player.AddAdrenaline patch and the
-        // fill/pop detection (including the local-player and no-adrenaline-source guards).
+        // SharedPlayerAddAdrenalinePatch has already checked the local player and the adrenaline source.
         public static void OnAdrenalineActivated(Player player) {
             if (Time.time - _lastSummonTime < EffectConfig.Get(
                     MagicEffectType.SummonBatWhenActivatingAdrenaline, CooldownKey, DefaultCooldown)) {
@@ -117,8 +114,6 @@ namespace EpicLoot.MagicItemEffects.Shards {
             return _batTemplate;
         }
 
-        // Spawns rarity-scaled bats around the player and enforces the max-concurrent cap. Number summoned rises
-        // by one each rarity (effect value 2..6 for Magic..Mythic -> 1..5), and at most 2x that may be alive.
         private static void SummonBats(Player player, float value) {
             if (ZNetScene.instance == null) {
                 return;
@@ -141,7 +136,6 @@ namespace EpicLoot.MagicItemEffects.Shards {
                 MagicEffectType.SummonBatWhenActivatingAdrenaline,
                 ConcurrentPerSummonKey, DefaultConcurrentPerSummon)));
 
-            // Drop bats that have already despawned/been destroyed before counting toward the cap.
             _activeBats.RemoveAll(bat => bat == null);
 
             var basePos = player.transform.position + Vector3.up;
@@ -157,7 +151,6 @@ namespace EpicLoot.MagicItemEffects.Shards {
                 _activeBats.Add(bat);
             }
 
-            // Enforce the cap by despawning the oldest bats first.
             while (_activeBats.Count > maxBats) {
                 var oldest = _activeBats[0];
                 _activeBats.RemoveAt(0);

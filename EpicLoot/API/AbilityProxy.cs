@@ -8,20 +8,14 @@ namespace EpicLoot;
 
 public static partial class API
 {
-    /// <param name="abilityID"></param>
-    /// <param name="proxy"></param>
-    /// <returns>true, if callback functions found using unique ability ID</returns>
-    private static bool TryGetProxyAbility(string abilityID, out Dictionary<string, Delegate> proxy)
-    {
-        return AbilityProxies.TryGetValue(abilityID, out proxy);
-    }
-
     /// <param name="json">JSON serialized <see cref="AbilityDefinition"/></param>
     /// <param name="delegates">callback functions</param>
     /// <returns>unique identifier if registered</returns>
     [PublicAPI]
     public static string RegisterProxyAbility(string json, Dictionary<string, Delegate> delegates)
     {
+        // A missing map would be called on every ability update; an ability with no callbacks gets an empty one.
+        delegates ??= new Dictionary<string, Delegate>();
         try
         {
             AbilityDefinition ability = JsonConvert.DeserializeObject<AbilityDefinition>(json);
@@ -37,11 +31,13 @@ public static partial class API
             }
 
             AbilityFactory.Register(ability.ID, typeof(AbilityProxy));
-            AbilityProxies[ability.ID] = delegates;
-            AbilityProxyDefinition def = new AbilityProxyDefinition(ability, delegates);
-            // Recorded like AddAbility's entries: ExternalAbilities is what ReloadExternalAbilities
-            // re-applies on every abilities.json reload / server push -- without this the proxy's
-            // definition silently vanished on the first config reload.
+            // Our own copy: the shim hands the same dictionary to UpdateProxyAbility, which clears ours before
+            // refilling it from the caller's.
+            var callbacks = new Dictionary<string, Delegate>(delegates);
+            AbilityProxies[ability.ID] = callbacks;
+            AbilityProxyDefinition def = new AbilityProxyDefinition(ability, callbacks);
+            // Recorded like AddAbility's entries, so ReloadExternalAbilities re-applies it on every
+            // abilities.json reload and server push.
             ExternalAbilities[ability.ID] = ability;
             AbilityDefinitions.Config.Abilities.Add(ability);
             AbilityDefinitions.Abilities[ability.ID] = ability;
@@ -57,7 +53,7 @@ public static partial class API
     /// <param name="key">unique identifier</param>
     /// <param name="json">JSON serialized <see cref="AbilityDefinition"/></param>
     /// <param name="proxy">callback functions</param>
-    /// <returns></returns>
+    /// <returns>True if updated</returns>
     [PublicAPI]
     public static bool UpdateProxyAbility(string key, string json, Dictionary<string, Delegate> proxy)
     {
@@ -75,9 +71,8 @@ public static partial class API
             }
 
             kvp.Ability.CopyFieldsFrom(def);
-            // Repopulate entry-by-entry: reflective field-copying a Dictionary aliases its internal
-            // buckets with the caller's, so later mutations of the caller's dictionary silently
-            // mutated ours (and a null proxy threw a TargetException).
+            // Entry by entry: copying the Dictionary field would share its buckets with the caller's, so the
+            // caller's later changes would reach ours.
             kvp.Delegates.Clear();
             foreach (KeyValuePair<string, Delegate> callback in proxy)
             {
@@ -92,9 +87,6 @@ public static partial class API
         }
     }
 
-    /// <summary>
-    /// Custom class to contain proxy definition, to register as a unit
-    /// </summary>
     private class AbilityProxyDefinition
     {
         public readonly AbilityDefinition Ability;
@@ -111,7 +103,7 @@ public static partial class API
     /// <returns>true if dictionary of callbacks injected into new instance of proxy</returns>
     public static bool InjectCallbacks(this AbilityProxy proxy, string abilityID)
     {
-        if (!TryGetProxyAbility(abilityID, out Dictionary<string, Delegate> delegates))
+        if (!AbilityProxies.TryGetValue(abilityID, out Dictionary<string, Delegate> delegates))
         {
             return false;
         }

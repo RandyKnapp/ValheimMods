@@ -10,10 +10,6 @@ namespace EpicLoot
 
 namespace EpicLoot.MagicItemEffects
 {
-    // ElementalArchery (set items only, NoRoll, no value). The wearer's bows use the Elemental Magic skill in place
-    // of Bows: damage, draw speed, draw and attack stamina, and the tooltip's damage range all follow Elemental
-    // Magic, and a bow hit (on a creature or an archery target) trains Elemental Magic instead of Bows.
-    //
     // The bow's m_skillType is shared by every copy of that bow, so it is never changed. Instead the Skills calls
     // those readers end in are remapped, and only while one of them is running for a drawn bow of the local
     // player's: a scope counter opened by a prefix and closed by a finalizer around each reader, and prefixes on

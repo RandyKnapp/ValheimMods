@@ -2,7 +2,6 @@
 using JetBrains.Annotations;
 
 namespace EpicLoot.MagicItemEffects.Shards {
-    // Provides some adrenaline based on the amount of eitr used.
     public static class EitrUseGivesAdrenaline {
         [HarmonyPatch(typeof(Player), nameof(Player.UseEitr))]
         private static class UseEitr_Patch {

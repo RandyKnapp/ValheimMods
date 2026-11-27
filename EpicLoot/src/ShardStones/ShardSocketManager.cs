@@ -6,21 +6,17 @@ using Jotunn.Managers;
 using UnityEngine;
 
 namespace EpicLoot.ShardStones {
-    // How a socketed runestone/shard is allowed to leave its socket.
     public enum SocketRemoval {
-        Free,      // Can be dragged back out and reused elsewhere.
-        BreakOnly, // Can only be destroyed in place to free the socket.
-        Locked     // Cannot leave the socket at all.
+        Free,
+        BreakOnly,
+        Locked
     }
 
-    // Core socketing logic, independent of any UI. Socketed effects are stored on the equipment's
-    // MagicItem (MagicItem.Sockets) and applied through the normal effect pipeline.
     public static class ShardSocketManager {
-        // Allow Rune Socketing. Null-safe because MagicItem reads it on every effect sum, and a MagicItem
-        // can be read before ELConfig has bound anything (or in a harness that never binds it).
+        // Null-safe because MagicItem reads it on every effect sum, and a MagicItem can be read before
+        // ELConfig has bound anything (or in a harness that never binds it).
         public static bool RuneSocketingEnabled => ELConfig.AllowRuneSocketing == null || ELConfig.AllowRuneSocketing.Value;
 
-        // Rune Diminishing Returns, null-safe for the same reason.
         public static bool RuneDiminishingEnabled => ELConfig.RuneDiminishingReturns != null && ELConfig.RuneDiminishingReturns.Value;
 
         // Rune sockets flip between granting and inert (Allow Rune Socketing) or change strength (Rune
@@ -39,10 +35,8 @@ namespace EpicLoot.ShardStones {
             Multiplayer_Player_Patch.WatchMultiplayerMagicEffects_Player_Patch.UpdateRichesAndLuck(player);
         }
 
-        // Resolves the effect a socketable input yields when placed into the given equipment.
-        // Returns true when the input is a valid socketable; on true, `effect` may still be null for an
-        // inert shard (one with no defined effect for the equipment's item type), while `color` and
-        // `rarity` describe the source shard (color is None for runestones).
+        // On true, `effect` may still be null for an inert shard (no effect defined for the equipment's
+        // item type). `color` is None for runestones.
         public static bool ResolveSocketedEffect(ItemDrop.ItemData equipment, ItemDrop.ItemData input,
             out MagicItemEffect effect, out ShardType color, out ItemRarity rarity) {
             effect = null;
@@ -56,7 +50,7 @@ namespace EpicLoot.ShardStones {
             if (Shards.IsShard(input)) {
                 color = Shards.GetShardColor(input);
                 if (color == ShardType.None) {
-                    return false; // malformed shard
+                    return false;
                 }
                 rarity = Shards.GetShardRarity(input);
 
@@ -107,7 +101,6 @@ namespace EpicLoot.ShardStones {
             return true;
         }
 
-        // Whether the given runestone/shard can be socketed into the given equipment.
         public static bool CanSocket(ItemDrop.ItemData equipment, ItemDrop.ItemData input, out string reason) {
             reason = null;
 
@@ -121,38 +114,14 @@ namespace EpicLoot.ShardStones {
                 return false;
             }
 
-            if (!ResolvePlacementEffect(equipment, input, out var effect, out var color, out var rarity, out reason)) {
+            if (!ResolvePlacementEffect(equipment, input, out var effect, out var color, out _, out reason)) {
                 return false;
             }
 
-            // Exclusive-category (e.g. boss) shards: at most one per item, and at most one across
-            // worn gear. The cross-equipped rule is only enforced when the target is currently worn;
-            // an unequipped item may freely receive the shard (the equip-time guard closes the loop).
+            // The cross-equipped half is only enforced when the target is worn; UniqueShardGuard closes
+            // the loop at equip time.
             if (!CheckExclusiveCategory(equipment, color, SocketedColors(equipMagicItem.Sockets), out reason)) {
                 return false;
-            }
-
-            if (!MagicItemEffectDefinitions.TryGet(effect.EffectType, out var def)) {
-                reason = "$mod_epicloot_socket_invalidinput";
-                return false;
-            }
-
-            // Reuse the rune-roll legality rules: the effect must not violate exclusivity with the item's
-            // rolled effects. Host-item gating (item type/skill/etc.) is skipped for shards
-            // (checkItemTypeGating: color == None) because the shard config's per-slot grid already decides
-            // which effect a given slot yields; a runestone (color == None) still obeys full host gating.
-            if (!def.Requirements.CheckRequirements(equipment, equipMagicItem, out var failure, out var conflictType,
-                    effect.EffectType, checklootroll: false, checkaugmentroll: false, checkruneroll: true,
-                    checkItemTypeGating: color == ShardType.None)) {
-                // ExclusiveSelf (and self-listed ExclusiveEffectTypes) reports the SAME effect as the
-                // conflict; that is exactly "the effect is already present on the item". Genuine
-                // cross-effect exclusivity reports a different effect and is still enforced.
-                var sameEffectAlreadyOnItem = failure == RequirementFailure.ConflictingEffect
-                    && conflictType == effect.EffectType;
-                if (!(sameEffectAlreadyOnItem && AllowMatchingItemEffect(color))) {
-                    reason = DescribeRequirementFailure(equipMagicItem, failure, conflictType);
-                    return false;
-                }
             }
 
             // A rune sitting inert (rune socketing off) grants nothing, so it blocks nothing either.
@@ -162,6 +131,11 @@ namespace EpicLoot.ShardStones {
                     occupants.Add(new SocketOccupant(socket.ShardType, socket.IsActive() ? socket.Effect : null));
                 }
             }
+
+            if (!CheckEffectRequirements(equipment, equipMagicItem, effect, color, occupants, out reason)) {
+                return false;
+            }
+
             if (!CheckDuplicateEffect(color, effect, occupants, out reason)) {
                 return false;
             }
@@ -173,12 +147,9 @@ namespace EpicLoot.ShardStones {
             return true;
         }
 
-        // Whether `input` may occupy a socket in `equipment` while sharing it with `coResident` (the other
-        // socketables that will remain). Mirrors CanSocket's legality rules but takes the co-resident set
-        // explicitly and does no free-slot check, so it fits swap validation: dragging a socketed item out
-        // onto an inventory item makes vanilla push that inventory item into the vacated socket, and the
-        // pushed item must obey the same duplicate/requirement rules as a fresh drop -- measured against the
-        // sockets that survive once the dragged item leaves.
+        // CanSocket's rules for a swap, with no free-slot check: dragging a socketed item out onto an
+        // inventory item makes vanilla push that item into the vacated socket, so it is measured against
+        // `coResident`, the sockets that survive once the dragged item leaves.
         public static bool CanCoexist(ItemDrop.ItemData equipment, ItemDrop.ItemData input,
             IEnumerable<ItemDrop.ItemData> coResident, out string reason) {
             reason = null;
@@ -188,35 +159,16 @@ namespace EpicLoot.ShardStones {
                 return false;
             }
 
-            if (!ResolvePlacementEffect(equipment, input, out var effect, out var color, out var rarity, out reason)) {
+            if (!ResolvePlacementEffect(equipment, input, out var effect, out var color, out _, out reason)) {
                 return false;
             }
 
-            // Exclusive-category (e.g. boss) shards obey the same one-per-item / one-across-worn-gear
-            // rule on the swap path, measured against the co-resident shards that survive the swap.
             var coResidentColors = new List<ShardType>();
             foreach (var other in coResident) {
                 coResidentColors.Add(Shards.GetShardColor(other));
             }
             if (!CheckExclusiveCategory(equipment, color, coResidentColors, out reason)) {
                 return false;
-            }
-
-            if (!MagicItemEffectDefinitions.TryGet(effect.EffectType, out var def)) {
-                reason = "$mod_epicloot_socket_invalidinput";
-                return false;
-            }
-
-            if (!def.Requirements.CheckRequirements(equipment, equipMagicItem, out var failure, out var conflictType,
-                    effect.EffectType, checklootroll: false, checkaugmentroll: false, checkruneroll: true,
-                    checkItemTypeGating: color == ShardType.None)) {
-                // Same same-effect bypass as CanSocket, keyed by input type (see AllowMatchingItemEffect).
-                var sameEffectAlreadyOnItem = failure == RequirementFailure.ConflictingEffect
-                    && conflictType == effect.EffectType;
-                if (!(sameEffectAlreadyOnItem && AllowMatchingItemEffect(color))) {
-                    reason = DescribeRequirementFailure(equipMagicItem, failure, conflictType);
-                    return false;
-                }
             }
 
             var occupants = new List<SocketOccupant>();
@@ -227,6 +179,11 @@ namespace EpicLoot.ShardStones {
                     occupants.Add(new SocketOccupant(otherColor, inertRune ? null : otherEffect));
                 }
             }
+
+            if (!CheckEffectRequirements(equipment, equipMagicItem, effect, color, occupants, out reason)) {
+                return false;
+            }
+
             if (!CheckDuplicateEffect(color, effect, occupants, out reason)) {
                 return false;
             }
@@ -238,8 +195,41 @@ namespace EpicLoot.ShardStones {
             return true;
         }
 
-        // A socket already in play, reduced to what the duplicate rules care about: what kind of stone
-        // holds it, and what it grants. Serves both a stored socket and a co-resident item mid-swap.
+        // The rune-roll legality rules against the item's rolled effects, with the occupants' effects meeting
+        // required effects too. Host-item gating is skipped for shards because the shard grid already decides
+        // which effect a slot yields.
+        private static bool CheckEffectRequirements(ItemDrop.ItemData equipment, MagicItem equipMagicItem,
+            MagicItemEffect effect, ShardType color, List<SocketOccupant> occupants, out string reason) {
+            reason = null;
+
+            if (!MagicItemEffectDefinitions.TryGet(effect.EffectType, out var def)) {
+                reason = "$mod_epicloot_socket_invalidinput";
+                return false;
+            }
+
+            var socketedEffectTypes = new List<string>();
+            foreach (var occupant in occupants) {
+                if (occupant.Effect != null) {
+                    socketedEffectTypes.Add(occupant.Effect.EffectType);
+                }
+            }
+
+            if (!def.Requirements.CheckRequirements(equipment, equipMagicItem, out var failure, out var conflictType,
+                    effect.EffectType, checklootroll: false, checkaugmentroll: false, checkruneroll: true,
+                    checkItemTypeGating: color == ShardType.None, socketedEffectTypes: socketedEffectTypes)) {
+                // ExclusiveSelf reports the same effect as the conflict, which means "already on the item";
+                // a different effect is genuine cross-effect exclusivity and is still enforced.
+                var sameEffectAlreadyOnItem = failure == RequirementFailure.ConflictingEffect
+                    && conflictType == effect.EffectType;
+                if (!(sameEffectAlreadyOnItem && AllowMatchingItemEffect(color))) {
+                    reason = DescribeRequirementFailure(equipMagicItem, failure, conflictType);
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         private readonly struct SocketOccupant {
             public readonly ShardType Color;
             public readonly MagicItemEffect Effect;
@@ -250,10 +240,8 @@ namespace EpicLoot.ShardStones {
             }
         }
 
-        // Whether an input granting `effect` may join sockets that already grant the same effect type.
-        // Shard-on-shard of the SAME COLOR is governed by the stacking mode; every other collision --
-        // rune vs rune, rune vs shard, two colors landing on one effect -- stays under
-        // AllowDuplicateSocketedEffects, so nothing about those changes when stacking is off.
+        // Same-color shards obey the stacking mode; every other collision (rune vs rune, rune vs shard,
+        // two colors on one effect) obeys AllowDuplicateSocketedEffects.
         private static bool CheckDuplicateEffect(ShardType inputColor, MagicItemEffect effect,
             List<SocketOccupant> occupants, out string reason) {
             reason = null;
@@ -277,9 +265,8 @@ namespace EpicLoot.ShardStones {
                     return false;
                 }
 
-                // An effect with no rarity-scaled value (Warmth, say) is a yes/no grant: a second one
-                // adds nothing whether it is decayed or not, so stacking it would only cost the player
-                // a socket. Same notion of "valueless" the BreakValueless removal mode uses.
+                // A yes/no grant (Warmth, say): a second one adds nothing, so stacking it would only
+                // cost the player a socket.
                 if (MagicItemEffectDefinitions.IsValuelessEffect(effect.EffectType)) {
                     reason = "$mod_epicloot_socket_nostackbinary";
                     return false;
@@ -289,9 +276,7 @@ namespace EpicLoot.ShardStones {
             return true;
         }
 
-        // Two different socketed effects that either definition marks exclusive may not share an item, the
-        // rule rolled effects already follow: a Fire rune and a Frost rune, say. The same effect twice is
-        // CheckDuplicateEffect's call. Exclusion against the rolled effects is CheckRequirements'.
+        // Exclusion between sockets; against the rolled effects it is CheckRequirements'.
         private static bool CheckSocketExclusivity(MagicItemEffect effect, List<SocketOccupant> occupants,
             ItemRarity rarity, out string reason) {
             reason = null;
@@ -308,32 +293,10 @@ namespace EpicLoot.ShardStones {
             return true;
         }
 
-        // Sockets the input's effect into the equipment. Returns true on success.
-        public static bool AddShard(ItemDrop.ItemData equipment, ItemDrop.ItemData input) {
-            if (!CanSocket(equipment, input, out _)) {
-                return false;
-            }
-
-            var equipMagicItem = equipment.GetMagicItem();
-            ResolveSocketedEffect(equipment, input, out var effect, out var color, out var sourceRarity);
-            var sourcePrefab = GetSourcePrefabName(input);
-
-            equipMagicItem.Sockets.Add(new SocketedEffect(effect, sourcePrefab, sourceRarity) { ShardType = color });
-            RecomputeSocketValues(equipment, equipMagicItem);
-            API.WithChangeReason(API.ChangeReason.Socket, () => equipment.SaveMagicItem(equipMagicItem));
-            ResetCache();
-            return true;
-        }
-
-        // Rebuilds every shard socket's effect from the shard grid and applies same-color stacking
-        // decay. Idempotent: each value is rebuilt from the config base rather than scaled from whatever
-        // is already stored, so running it after any socket change can never compound decay -- which is
-        // what lets removal promote the survivors back up. Runestone sockets are left alone; their
-        // effect is fixed when the rune goes in rather than derived from the host item, and their
+        // Rebuilds from the config base rather than scaling what is stored, so it never compounds decay
+        // and removal promotes the survivors back up. Values are baked into the socket, so this must run
+        // on every path that adds, removes or re-hosts a socket. Rune sockets are left alone; their
         // diminishing returns are applied on read (GetRuneStackMultiplier).
-        //
-        // Values are baked into the socket (the whole effect pipeline and every tooltip read them from
-        // there), so this must run on every path that adds, removes or re-hosts a socket.
         public static void RecomputeSocketValues(ItemDrop.ItemData equipment, MagicItem magicItem) {
             if (equipment == null || magicItem == null || magicItem.Sockets.Count == 0) {
                 return;
@@ -354,9 +317,8 @@ namespace EpicLoot.ShardStones {
                     continue;
                 }
 
-                // Same resolution ResolveSocketedEffect performs, but keyed off the stored shard
-                // identity rather than a loose item: a shard with no mapping for this item type sits
-                // inert, it does not keep a value authored for some other kind of gear.
+                // A shard with no mapping for this item type sits inert rather than keeping a value
+                // authored for some other kind of gear.
                 var shardEffect = Shards.GetShardEffect(equipment, socket.ShardType);
                 if (shardEffect == null ||
                     !shardEffect.ValuesPerRarity.TryGetValue(socket.SourceRarity, out var baseValue)) {
@@ -378,10 +340,8 @@ namespace EpicLoot.ShardStones {
                     continue;
                 }
 
-                // Strongest first, so the player always gets the best arrangement of what they slotted
-                // regardless of the order they slotted it in. Value leads rather than rarity in case a
-                // config's per-rarity ramp is not monotonic; rarity then socket index break ties, which
-                // keeps the result deterministic.
+                // Strongest first, so slotting order does not matter. Value leads rather than rarity in
+                // case a config's per-rarity ramp is not monotonic.
                 group.Sort((a, b) => {
                     var byValue = baseValues[b].CompareTo(baseValues[a]);
                     if (byValue != 0) {
@@ -402,16 +362,10 @@ namespace EpicLoot.ShardStones {
             }
         }
 
-        // The share of its own value the runestone in socket `index` grants under Rune Diminishing Returns.
-        // Everything else on the item granting the same effect ranks ahead of it -- rolled effects and
-        // shard sockets -- and the item's runes of that effect rank among themselves strongest first, the
-        // same ordering shard stacking uses, so the result does not depend on slotting order. The rune at
-        // rank R is worth (factor ^ R). 1 for a shard socket, and for a rune nothing else on the item repeats.
-        //
-        // Worked out on read (MagicItem.GetSocketEffect) rather than baked into the socket the way
-        // RecomputeSocketValues bakes shard decay: a rune's stored effect IS the rune -- it is what
-        // ReconstructShardItem hands back, and what crafting transfers and tempering copy -- and its rank
-        // depends on the rolled effects, which change (augment, temper) without any socket path running.
+        // Rolled effects and shard sockets of the same effect rank ahead of a rune; runes rank among
+        // themselves strongest first. Worked out on read rather than baked like shard decay: a rune's
+        // stored effect is the rune itself (ReconstructShardItem hands it back, crafting transfer and
+        // tempering copy it), and its rank depends on rolled effects that change with no socket path running.
         public static float GetRuneStackMultiplier(MagicItem magicItem, int index) {
             if (!RuneDiminishingEnabled) {
                 return 1f;
@@ -441,8 +395,7 @@ namespace EpicLoot.ShardStones {
                 }
             }
 
-            // A yes/no grant has nothing to decay; reducing it would only put a misleading "(50% strength)"
-            // on a line that works in full. Checked last: it is the one lookup here.
+            // A yes/no grant has nothing to decay. Checked last: it is the one lookup here.
             if (rank == 0 || MagicItemEffectDefinitions.IsValuelessEffect(effectType)) {
                 return 1f;
             }
@@ -461,8 +414,6 @@ namespace EpicLoot.ShardStones {
             return aIndex < bIndex;
         }
 
-        // Socket indices grouped by shard color, covering only the sockets RecomputeSocketValues
-        // resolved to a value (baseValues entry is not NaN).
         private static List<List<int>> GroupSocketsByColor(MagicItem magicItem, float[] baseValues) {
             var groups = new Dictionary<ShardType, List<int>>();
             for (var i = 0; i < magicItem.Sockets.Count; i++) {
@@ -480,13 +431,10 @@ namespace EpicLoot.ShardStones {
             return new List<List<int>>(groups.Values);
         }
 
-        // How the given socketed entry is allowed to leave its socket. Derived live from config and the
-        // socket's own data -- nothing is persisted, so a config change applies to every existing item
-        // immediately.
+        // Derived live, never persisted, so a config change applies to existing items at once.
         public static SocketRemoval GetRemovalPolicy(ShardType color, MagicItemEffect effect) {
             if (color == ShardType.None) {
-                // With rune socketing off a slotted rune grants nothing, so it owes no commitment:
-                // the player can always take it back out, whatever the removal mode says.
+                // With rune socketing off a slotted rune grants nothing, so it owes no commitment.
                 if (!RuneSocketingEnabled) {
                     return SocketRemoval.Free;
                 }
@@ -513,31 +461,24 @@ namespace EpicLoot.ShardStones {
             }
         }
 
-        // Policy for a stored socket (tooltips).
         public static SocketRemoval GetRemovalPolicy(SocketedEffect socket) {
             return socket == null
                 ? SocketRemoval.Free
                 : GetRemovalPolicy(socket.ShardType, socket.Effect);
         }
 
-        // Policy for a socketable item sitting in the socket grid (UI). Anything that isn't a valid
-        // socketable has no policy to enforce.
         public static SocketRemoval GetRemovalPolicy(ItemDrop.ItemData equipment, ItemDrop.ItemData socketed) {
             return ResolveSocketedEffect(equipment, socketed, out var effect, out var color, out var rarity)
                 ? GetRemovalPolicy(color, effect)
                 : SocketRemoval.Free;
         }
 
-        // True only for an effect that is present but has no rarity-scaled value -- e.g. Warmth, whose
-        // magiceffects.json entry has no ValuesPerRarity block even though the shard grid hands it a
-        // per-rarity number (that number is meaningless for a binary effect). A shard that grants
-        // nothing at all in a slot is deliberately NOT valueless in this sense: the player gained
-        // nothing from it, so it owes no commitment and stays freely removable.
+        // A shard that grants nothing at all in a slot is deliberately not valueless: the player gained
+        // nothing from it, so it stays freely removable.
         private static bool IsValuelessGrant(MagicItemEffect effect) {
             return effect != null && MagicItemEffectDefinitions.IsValuelessEffect(effect.EffectType);
         }
 
-        // The player-facing reason a socketed item may not simply be dragged out.
         public static string DescribeRemovalPolicy(SocketRemoval policy) {
             switch (policy) {
                 case SocketRemoval.BreakOnly:
@@ -549,29 +490,6 @@ namespace EpicLoot.ShardStones {
             }
         }
 
-        // Removes the socket at the given index and returns a reconstructed runestone/shard item that
-        // the caller should give back to the player. Returns null if the index is invalid.
-        public static ItemDrop.ItemData RemoveShard(ItemDrop.ItemData equipment, int socketIndex) {
-            if (equipment == null || !equipment.IsMagic(out var equipMagicItem)) {
-                return null;
-            }
-
-            if (socketIndex < 0 || socketIndex >= equipMagicItem.Sockets.Count) {
-                return null;
-            }
-
-            var socketed = equipMagicItem.Sockets[socketIndex];
-            equipMagicItem.Sockets.RemoveAt(socketIndex);
-            // Losing a shard promotes the survivors of its color back up the stacking ranks.
-            RecomputeSocketValues(equipment, equipMagicItem);
-            API.WithChangeReason(API.ChangeReason.Unsocket, () => equipment.SaveMagicItem(equipMagicItem));
-            ResetCache();
-            return ReconstructShardItem(socketed);
-        }
-
-        // Rebuilds the original Runestone/Shard item from a stored socket. Runestones carry their fixed
-        // effect back; shards are rebuilt effect-less (a shard's effect is derived from the host item
-        // type, so a loose shard has no baked effect), which also covers inert shard sockets.
         public static ItemDrop.ItemData ReconstructShardItem(SocketedEffect socketed) {
             if (socketed == null || string.IsNullOrEmpty(socketed.SourcePrefab)) {
                 return null;
@@ -598,14 +516,11 @@ namespace EpicLoot.ShardStones {
             // level the stone went in with, so this is the one level it can come back at.
             item.m_worldLevel = Game.m_worldLevel;
 
+            // A loose shard has no effect of its own; the per-(color, rarity) prefab clone is the whole stone.
             if (socketed.ShardType != ShardType.None) {
-                // Loose shards carry no baked effect (it is derived from the host when socketed), and the
-                // clone above already carries the source prefab's identity and magic data -- the prefab is
-                // per (color, rarity), and Clone copies m_customData. Nothing left to restore.
                 return item;
             }
 
-            // Runestone: rebuild its fixed single effect (its prefab is already rarity-specific).
             var magicItem = new MagicItem { Rarity = socketed.SourceRarity };
             if (socketed.Effect != null) {
                 magicItem.Effects.Add(new MagicItemEffect(socketed.Effect.EffectType, socketed.Effect.EffectValue));
@@ -614,15 +529,12 @@ namespace EpicLoot.ShardStones {
             return item;
         }
 
-        // The socketable input is always an EtchedRunestone or a Shard of the given rarity. Deriving
-        // the prefab name from type + rarity is robust regardless of m_dropPrefab being set.
+        // Built from type and rarity rather than m_dropPrefab, which may not be set.
         public static string GetSourcePrefabName(ItemDrop.ItemData input) {
             if (input.IsRunestone()) {
                 return $"EtchedRunestone{input.GetMagicItem().Rarity}";
             }
 
-            // Shards are one prefab per (color, rarity), and ammoType = "{Color}|{Rarity}|ShardStone"
-            // carries both -- so the prefab name is rebuilt purely from the shard's own shared data.
             var color = Shards.GetShardColor(input);
             return color != ShardType.None ? $"{color}_{Shards.GetShardRarity(input)}_ShardStone" : "";
         }
@@ -633,10 +545,6 @@ namespace EpicLoot.ShardStones {
             }
         }
 
-        // Maps a rune-roll requirement failure (from MagicItemEffectRequirements.CheckRequirements) to a
-        // specific, player-facing socket message. For a conflict, name the offending effect already on the
-        // item so the player knows what stands in the way. Unknown/uncategorized failures fall back to a
-        // generic message rather than claiming a wrong reason.
         private static string DescribeRequirementFailure(MagicItem magicItem, RequirementFailure failure, string conflictEffectType) {
             switch (failure) {
                 case RequirementFailure.ConflictingEffect:
@@ -661,8 +569,6 @@ namespace EpicLoot.ShardStones {
             }
         }
 
-        // Whether the configured input type may socket an effect the item already carries as a rolled
-        // effect. color != None => shardstone; color == None => runestone. Each type has its own toggle.
         // Also read the other way round, for a rolled effect joining a matching socket
         // (MagicItemEffectDefinitions.GetAvailableEffects).
         internal static bool AllowMatchingItemEffect(ShardType color) {
@@ -671,12 +577,6 @@ namespace EpicLoot.ShardStones {
                 : ELConfig.AllowRunestoneDuplicateItemEffect.Value;
         }
 
-        // Enforces exclusive-category rules for socketing `inputColor` into `equipment`:
-        //   1. Item-local: no two shards of an exclusive category may share the same item
-        //      (measured against `itemLocalColors`, the shards already occupying that item).
-        //   2. Cross-equipped: only one shard of an exclusive category across worn gear -- enforced
-        //      only when `equipment` is currently worn (an unequipped item is caught at equip time).
-        // Non-exclusive inputs (regular shards, runestones) always pass.
         private static bool CheckExclusiveCategory(ItemDrop.ItemData equipment, ShardType inputColor,
             IEnumerable<ShardType> itemLocalColors, out string reason) {
             reason = null;
@@ -707,7 +607,6 @@ namespace EpicLoot.ShardStones {
             return true;
         }
 
-        // The shard colors currently occupying an item's sockets (None for runestone sockets).
         private static IEnumerable<ShardType> SocketedColors(IEnumerable<SocketedEffect> sockets) {
             var colors = new List<ShardType>();
             foreach (var socket in sockets) {
@@ -716,10 +615,8 @@ namespace EpicLoot.ShardStones {
             return colors;
         }
 
-        // True when any equipped magic item other than `excluding` already holds a shard of `category`.
         // `displaced` names the worn items an in-flight Humanoid.EquipItem is about to unequip, so the
-        // equip guard can measure against the loadout the equip will produce rather than the one it
-        // starts from. The socketing path passes nothing -- there, no equipment is moving.
+        // equip guard measures the loadout the equip will produce.
         public static bool IsExclusiveCategoryEquipped(Player player, ShardCategory category,
             ItemDrop.ItemData excluding, EquipDisplacement.Displaced displaced = default) {
             foreach (var equipped in player.GetMagicEquipment()) {
@@ -734,7 +631,6 @@ namespace EpicLoot.ShardStones {
             return false;
         }
 
-        // True when any of the item's sockets holds a shard belonging to `category`.
         public static bool ItemHasCategory(MagicItem magicItem, ShardCategory category) {
             foreach (var socket in magicItem.Sockets) {
                 if (socket != null && socket.ShardType != ShardType.None &&

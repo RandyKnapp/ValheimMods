@@ -1,18 +1,13 @@
 ﻿using EpicLoot.src.Magic.MagicItemEffects.Helpers;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects.Shards {
-    // Provides a bonus to block based on the player's carried weight
     public class BurdenedBlock
     {
         // Carried weight the bonus starts paying out at, and how much further weight buys each additional
-        // step of it. Tunable as "WeightThreshold" and "WeightPerBonus" in this effect's Config block in
-        // config/shardstones.json.
+        // step of it.
         public const float DefaultWeightThreshold = 300f;
         public const float DefaultWeightPerBonus = 50f;
 

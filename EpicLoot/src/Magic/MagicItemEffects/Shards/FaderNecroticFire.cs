@@ -1,10 +1,9 @@
 ﻿using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects.Shards {
-    // Provides a conversion of physical damage to fire and poison damage based on the player's Necrotic Fire effect value.
     public static class NecroticFire {
-        // Tooltip: "Necrotic Fire: +{0}% Fire and Poison". The shard value is a fraction of the stripped
-        // physical pool paid out as EACH element, so it reads as a percentage rather than a bare 0.2.
+        // The shard value is a fraction of the stripped physical pool paid out as EACH element, shown as a
+        // percentage rather than a bare 0.2.
         public static void RegisterDisplayValues() {
             MagicItem.RegisterDisplayValues(MagicEffectType.NecroticFire,
                 value => new object[] { value * 100f });
@@ -17,8 +16,6 @@ namespace EpicLoot.MagicItemEffects.Shards {
                 return;
             }
 
-            // Conversion factor scales with shard rarity (config ramp: Mythic == 1.0, lower rarities
-            // less) -- the fraction of the stripped physical pool reborn as EACH of fire and poison.
             float factor = Player.m_localPlayer.GetTotalActiveMagicEffectValue(MagicEffectType.NecroticFire, 1f);
             if (factor <= 0f) {
                 return;

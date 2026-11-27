@@ -1,4 +1,3 @@
-using EpicLoot.Biomes;
 using JetBrains.Annotations;
 using System.Collections.Generic;
 using System.Linq;
@@ -208,7 +207,7 @@ namespace EpicLoot.Adventure
                 watch.Resolved = true;
                 if (reported)
                 {
-                    EpicLoot.LogForce($"{DescribeSpawn(bounty, map)} is now here, " +
+                    EpicLoot.LogForce($"{AdventureSpawnController.DescribeSpawn(bounty, map)} is now here, " +
                         $"{Time.time - watch.ReportedAt:0}s after it was reported missing.");
                 }
 
@@ -218,7 +217,7 @@ namespace EpicLoot.Adventure
             if (!reported)
             {
                 watch.ReportedAt = Time.time;
-                EpicLoot.LogWarningForce($"{DescribeSpawn(bounty, map)} has not appeared {waited:0}s after you reached " +
+                EpicLoot.LogWarningForce($"{AdventureSpawnController.DescribeSpawn(bounty, map)} has not appeared {waited:0}s after you reached " +
                     $"its map circle at ({centre.x:0}, {centre.z:0}). {DescribeSpawner(snapshot)}");
             }
 
@@ -236,7 +235,7 @@ namespace EpicLoot.Adventure
                 if (!watch.DeferralLogged)
                 {
                     watch.DeferralLogged = true;
-                    EpicLoot.LogForce($"{DescribeSpawn(bounty, map)} will be re-created once its whole map circle is " +
+                    EpicLoot.LogForce($"{AdventureSpawnController.DescribeSpawn(bounty, map)} will be re-created once its whole map circle is " +
                         "inside this client's simulation area, so that an original out of sight is not duplicated. " +
                         "Move towards the circle's centre.");
                 }
@@ -268,7 +267,7 @@ namespace EpicLoot.Adventure
                 remaining = "a new chest";
             }
 
-            EpicLoot.LogForce($"{DescribeSpawn(bounty, map)}: re-created its spawner at the map circle " +
+            EpicLoot.LogForce($"{AdventureSpawnController.DescribeSpawn(bounty, map)}: re-created its spawner at the map circle " +
                 $"({centre.x:0}, {centre.z:0}) from your save data. It will place {remaining}.");
         }
 
@@ -361,16 +360,6 @@ namespace EpicLoot.Adventure
 
             return AdventureSpawnController.TryReadTreasure(zdo, out TreasureMapChestInfo spawnerMap) &&
                 spawnerMap.PlayerID == playerID && spawnerMap.Interval == map.Interval && spawnerMap.Biome == map.Biome;
-        }
-
-        private static string DescribeSpawn(BountyInfo bounty, TreasureMapChestInfo map)
-        {
-            if (bounty != null)
-            {
-                return $"Adventure bounty target '{bounty.Target.MonsterID}' ({BiomeDataManager.GetName(bounty.Biome)}, {bounty.ID})";
-            }
-
-            return $"Adventure treasure chest ({BiomeDataManager.GetName(map.Biome)}, interval {map.Interval})";
         }
 
         private static string DescribeSpawner(Snapshot snapshot)

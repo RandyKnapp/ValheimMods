@@ -84,9 +84,6 @@ namespace EpicLoot.CraftingV2
                 {
                     AugaFixupMultiselectPrefab(enchantUI.CostList.ElementPrefab.gameObject);
 
-                    // Any rarity toggle the prefab lacks is cloned first: the forwarding click listener
-                    // added below is not copied by Instantiate, so a toggle cloned later would not click.
-                    enchantUI.EnsureRarityButtons();
                     foreach (var rarityButton in enchantUI.RarityButtons)
                     {
                         AugaFixupRaritySelectButton(rarityButton);

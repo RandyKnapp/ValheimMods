@@ -84,9 +84,7 @@ namespace EpicLoot
         [HarmonyPatch(typeof(Player), nameof(Player.Update))]
         public static class WatchLegendaryEquipment_Player_Update_Patch
         {
-            // Per-player timers: a single static ticked down once per Player.Update, so with N
-            // remote players it expired N times faster and only ever processed one of them per
-            // expiry.
+            // Per player: one shared timer ticks once per Player.Update of every player.
             private static readonly System.Runtime.CompilerServices.ConditionalWeakTable<Player, float[]>
                 _updateEventTimes = new System.Runtime.CompilerServices.ConditionalWeakTable<Player, float[]>();
 
@@ -115,9 +113,7 @@ namespace EpicLoot
                 if (__instance != null && __instance != Player.m_localPlayer &&
                     __instance.m_nview != null && __instance.m_nview.GetZDO() is ZDO zdo)
                 {
-                    // |= (not ||): every slot must be checked each pass. The old short-circuit
-                    // stopped reconciling after the first changed slot, so a remote player swapping
-                    // several pieces at once had the later slots ignored until a later pass.
+                    // |= (not ||): every slot must be reconciled each pass.
                     bool changed = DoCheck(__instance, zdo, "LeftItem", "lf-ell", ref __instance.m_leftItem);
                     changed |= DoCheck(__instance, zdo, "RightItem", "ri-ell", ref __instance.m_rightItem);
                     changed |= DoCheck(__instance, zdo, "ChestItem", "ch-ell", ref __instance.m_chestItem);
@@ -158,13 +154,9 @@ namespace EpicLoot
                 if (itemPrefab?.GetComponent<ItemDrop>()?.m_itemData is ItemDrop.ItemData targetItemData)
                 {
                     itemData = targetItemData.Clone();
-                    // An ObjectDB prefab is never instantiated, so ItemDrop.Awake -- the only thing that
-                    // assigns m_dropPrefab -- has never run on it, and the clone inherits a NULL prefab
-                    // reference. Vanilla does exactly this assignment after the same Clone() in
-                    // Inventory.AddItem(GameObject, int). Without it this stub reaches SetupVisEquipment with
-                    // a null m_dropPrefab, where Humanoid_Patch.AssignEmptyToNull stamps the empty
-                    // EL_DummyPrefab into it: the weapon then renders as nothing, and because the dummy
-                    // carries no ItemDrop component every later InitializeCustomData on that item throws.
+                    // ItemDrop.Awake never ran on an ObjectDB prefab, so the clone has a null m_dropPrefab
+                    // (vanilla assigns it after the same Clone() in Inventory.AddItem). Left null,
+                    // Humanoid_Patch stamps the empty dummy prefab in and the weapon renders as nothing.
                     itemData.m_dropPrefab = itemPrefab;
                     itemData.m_durability = float.PositiveInfinity;
                     MagicItem stubMagicItem = new MagicItem { Rarity = ItemRarity.Legendary, LegendaryID = zdoLegendaryID };
@@ -268,7 +260,7 @@ namespace EpicLoot
                     // Lucky Loot is read by CharacterDrop.GenerateDropList, which runs on the creature's
                     // owner -- a machine that may have no local player at all. Mirroring the value here is
                     // what lets that machine see it. Stored as floats: both effects roll in fractional
-                    // steps (HeadHunter's increment is 0.5), which an int cast silently truncated.
+                    // steps (HeadHunter's increment is 0.5).
                     float currentZdoLuckyLoot = zdo.GetFloat(LuckyLoot.ZdoValueKey);
                     // Head Hunter reads on the same GenerateDropList path, for the same reason.
                     float currentZdoHeadHunter = zdo.GetFloat(Headhunter.ZdoValueKey);
@@ -321,6 +313,9 @@ namespace EpicLoot
                     {
                         zdo.Set(BonemassCorpseRot.ZdoValueKey, currentCorpseRot);
                     }
+
+                    MagicItemEffects.IncreaseMiningDrop.Instance.Publish(player, zdo);
+                    MagicItemEffects.IncreaseTreeDrop.Instance.Publish(player, zdo);
                 }
             }
         }

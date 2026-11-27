@@ -4,9 +4,7 @@ using EpicLoot.src.Magic.MagicItemEffects.Helpers;
 using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects.Shards {
-    // Wagers a number of coins on the hit, and if it kills the target, refunds them.
     public static class Wager {
-        // Config default, registered in ShardEffectDefinitions.EffectConfigs.
         public const float DefaultDamagePerCoin = 0.5f;
 
         private const string DamagePerCoinKey = "DamagePerCoin";
@@ -22,13 +20,12 @@ namespace EpicLoot.MagicItemEffects.Shards {
         private static HitData stakedHit;
         private static int stakedCoins;
 
-        // Tooltip: {0} is the stake (the raw rolled value), {1} the damage it buys.
         public static void RegisterDisplayValues() {
             MagicItem.RegisterDisplayValues(MagicEffectType.Wager,
                 value => new object[] { value, value * GetDamagePerCoin() });
         }
 
-        // Prefix handler invoked by CharacterDamageDispatch (attacker-side outgoing modifier).
+        // Prefix handler invoked by SharedCharacterDamagePatch (attacker-side outgoing modifier).
         public static void ModifyOutgoingHit(Character __instance, HitData hit, Character attacker) {
             stakedHit = null;
             stakedCoins = 0;
@@ -72,8 +69,7 @@ namespace EpicLoot.MagicItemEffects.Shards {
             stakedCoins = stake;
         }
 
-        // Postfix handler invoked by CharacterDamageDispatch (on-hit reaction). Kill detection mirrors
-        // StaminaOnKill -- the hit must have dropped the target to (or below) zero health.
+        // Postfix handler invoked by SharedCharacterDamagePatch (on-hit reaction).
         public static void OnDamageDealt(Character __instance, HitData hit) {
             var owedFor = stakedHit;
             var refund = stakedCoins;

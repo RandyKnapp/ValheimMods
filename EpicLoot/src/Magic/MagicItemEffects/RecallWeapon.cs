@@ -47,9 +47,8 @@ namespace EpicLoot.MagicItemEffects
         {
             var item = __instance.m_spawnItem;
             var player = Player.m_localPlayer;
-            // Owner-only, and measured against the projectile's OWNER: this postfix runs on every
-            // client that has the projectile loaded, and a distant bystander used to trigger the
-            // recall (spawning a networked drop) while the owner kept its own copy -- duplication.
+            // Owner-only: this runs on every client that has the projectile loaded, and a bystander's recall
+            // would spawn a second networked drop.
             if (__instance.m_nview == null || !__instance.m_nview.IsValid() || !__instance.m_nview.IsOwner())
             {
                 return;

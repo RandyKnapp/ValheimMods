@@ -11,3 +11,7 @@ These are patches used to restore the original default mod values from the pre-A
 ## Installation
 
 All patches for Epic Loot currently need to be under the BepInEx/config/EpicLoot/patches directory. When using a thunderstore mod manager these files should be placed in the correct directory for you.
+
+## Ancient and newer content
+
+The magic effect and legendary patches cover every rarity up to Ancient. A rarity the original patches did not list continues the step between the two rarities below it. Enchantments added since the originals use the Legendary balance template's values where that template is stronger than Balanced. Unique items and set bonuses added since then keep their default values scaled by how much stronger these patches make the same enchantment at that rarity. No unique item or set bonus is weaker than its default, so the older values that had fallen below it were raised or left out.

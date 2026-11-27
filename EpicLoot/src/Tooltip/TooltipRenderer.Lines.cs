@@ -25,6 +25,10 @@ internal partial class TooltipRenderer
         {
             text.Append($"<color={data.SetColor}>{data.SetLabel}</color>\n");
         }
+        else if (data.UniqueLabel != null)
+        {
+            text.Append($"<color={data.UniqueColor}>{data.UniqueLabel}</color>\n");
+        }
     }
 
     private void AddDescription()
@@ -51,7 +55,6 @@ internal partial class TooltipRenderer
 
     private void AddSubtitle()
     {
-        // this applies to trophies, but perhaps, other mods utilize this to add extra descriptions.
         if (item.m_shared.m_subtitle.Length > 0)
         {
             text.Append($"\n<color=orange>{item.m_shared.m_subtitle}</color>");
@@ -390,7 +393,6 @@ internal partial class TooltipRenderer
 
     private void AddEquipmentModifiers()
     {
-        // TODO: add health/stamina regen if needed
         AddModifier("$item_eitrregen_modifier");
         AddModifier("$item_movement_modifier");
         AddVanillaModifier("$base_item_modifier", item.m_shared.m_homeItemsStaminaModifier,
@@ -400,7 +402,6 @@ internal partial class TooltipRenderer
         AddModifier("$se_attackstamina");
         AddModifier("$se_blockstamina");
         AddModifier("$se_dodgestamina");
-        // TODO: add a magic effect for these two?
         AddVanillaModifier("$se_swimstamina", item.m_shared.m_swimStaminaModifier, () =>
         {
             float playerTotal = localPlayer.GetEquipmentSwimStaminaModifier();

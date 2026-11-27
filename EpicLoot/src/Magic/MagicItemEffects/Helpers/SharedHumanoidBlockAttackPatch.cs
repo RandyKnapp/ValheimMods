@@ -1,41 +1,44 @@
-﻿using EpicLoot.MagicItemEffects;
+﻿using System;
+using EpicLoot.MagicItemEffects;
 using EpicLoot.MagicItemEffects.Shards;
 using HarmonyLib;
 
 namespace EpicLoot.src.Magic.MagicItemEffects.Helpers {
-    // Single consolidated Harmony patch for Humanoid.BlockAttack. It replaces the ~7 and counting individual [HarmonyPatch]
-    // classes that each effect used to declare on this same method, calling every effect's handler in a
-    // fixed, explicit order.
+    // Every effect's Humanoid.BlockAttack handler, called in a fixed order.
     //
-    //  * Prefix handler can be added when we need to get the raw damage numbers for shenanigans. This will be fun but I'll
-    //    never be able to convince the committee balnce wise so I'm leaving it out for now. Can just use Character.Damage to get
-    //    that number
-    //  * Postfix handler runs after the block happens: blocks, hit data, blocker, attacker, parry flag, and block flag
-    //    Block is routed through RPC_Damage and is done locally 
-    //  * Hit in Postfix handler values are post block mitigated numbers before resistance and armor. This hit is then
-    //    routed into RPC_Damage where those reductions are used. Typically means this is a weaker mitigation than if
-    //    numbers were mitigated post RPC_Damage.
+    //  * BlockAttack runs inside RPC_Damage on the blocker's owner. The postfix's hit holds the damage left after the
+    //    block, before resistances and armor, which RPC_Damage applies next; mitigation here is therefore weaker than
+    //    the same reduction after them.
     //  * Kinetic Quake uses both halves: the prefix reads whether it is armed before the block, and its postfix
     //    handler runs ahead of the __result gate so its per-block state always clears.
     //  * Shield Throw does the same: the prefix starts measuring the local player's block (its HitData.BlockDamage
     //    prefix reads the amount blocked) and the ungated postfix call stops it.
-    //
-
-    // Harmony patch for all other actual block interactions.
     [HarmonyPatch(typeof(Humanoid), nameof(Humanoid.BlockAttack))]
     internal static class SharedHumanoidBlockAttackPatch {
 
         [HarmonyPrefix]
-        private static void PreBlockPatch(Humanoid __instance, Character attacker, HitData hit) {
-            KineticQuake.BeforeBlock(__instance);
-            ShieldThrow.BeforeBlock(__instance);
+        private static void PreBlockPatch(Humanoid __instance) {
+            try {
+                KineticQuake.BeforeBlock(__instance);
+                ShieldThrow.BeforeBlock(__instance);
+            } catch (Exception e) {
+                DispatchGuard.Report("BlockAttack prefix", e);
+            }
         }
 
         [HarmonyPostfix]
         private static void PostBlockPatch(Humanoid __instance, Character attacker, HitData hit, bool __result) {
+            try {
+                PostBlock(__instance, attacker, hit, __result);
+            } catch (Exception e) {
+                DispatchGuard.Report("BlockAttack postfix", e);
+            }
+        }
+
+        private static void PostBlock(Humanoid __instance, Character attacker, HitData hit, bool __result) {
             // Does its own local-player gate, and must see failed blocks too.
             KineticQuake.AfterBlock(__instance, attacker, __result);
-            ShieldThrow.AfterBlock(__instance);
+            ShieldThrow.AfterBlock();
 
             if (!__result) { return; }
 
@@ -46,11 +49,11 @@ namespace EpicLoot.src.Magic.MagicItemEffects.Helpers {
             // pay out of / into the local player's pools, and each NPC block on a server would throw.
             if (Player.m_localPlayer == null || __instance != Player.m_localPlayer) { return; }
 
-            IncomingPhysicalConversion.ModifyIncoming(__instance, hit, IsBlocked: true); // orange, dark blue, light blue, dark green
-            GainOnBlockResource.GainOnBlock(__instance, IsBlocked: true); // red / yellow / cyan
-            Warding.UseMoreStaminaOnBlock(__instance, hit);
-            ElementalWarding.UseEitrOnBlock(__instance, hit);
-            // Golden. Order-independent: unlike the three above it never touches `hit`, so it cannot
+            IncomingPhysicalConversion.ModifyIncoming(__instance, hit, IsBlocked: true);
+            GainOnBlockResource.GainOnBlock(__instance, IsBlocked: true);
+            Warding.UseMoreStaminaOnBlock(hit);
+            ElementalWarding.UseEitrOnBlock(hit);
+            // Order-independent: unlike the three above it never touches `hit`, so it cannot
             // perturb the conversion -> warding sequence.
             LuckyBlock.OnBlock(__instance, hit, attacker);
 
@@ -59,7 +62,7 @@ namespace EpicLoot.src.Magic.MagicItemEffects.Helpers {
 
         
     }
-    // Route flat bonuses here. Reflects in tool tip but is bundled with GetBlockPower displaying total after all bonuses applied
+    // Flat block bonuses. The tooltip shows them inside GetBlockPower's total.
     [HarmonyPatch(typeof(ItemDrop.ItemData), nameof(ItemDrop.ItemData.GetBaseBlockPower), typeof(int))]
     internal static class BlockBASEPowerPatch {
         [HarmonyPostfix]
@@ -68,18 +71,6 @@ namespace EpicLoot.src.Magic.MagicItemEffects.Helpers {
             BurdenedBlock.Apply(__instance, ref __result); 
             AnchoredBlock.Apply(__instance, ref __result);
             BloodBaseBlock.Apply(__instance, ref __result);
-        }
-    }
-
-    // Harmony patch to modify total block power and display on tooltip. This is a more modifier that multiplies the total after
-    // all bonuses like skill factor and magic effect increases
-    // If block is enhanced or modified at time of block use BlockAttack Harmony patch
-    [HarmonyPatch(typeof(ItemDrop.ItemData), nameof(ItemDrop.ItemData.GetBlockPower), typeof(int), typeof(float))]
-
-    internal static class BlockPowerMultiplerPatch{
-        [HarmonyPostfix]
-        private static void BlockPowerPatch(ref float __result) {
-
         }
     }
 }

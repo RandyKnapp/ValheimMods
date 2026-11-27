@@ -9,8 +9,8 @@ namespace EpicLoot;
 /// (crafter, teleport, food, ...) are still read off the item here, since they are not part of the data.
 /// </summary>
 /// <remarks>
-/// Text is built with AppendLine where the old builders used it: under Mono on Windows that is "\r\n", and other
-/// mods parse this text, so the line endings are part of what must not change.
+/// AppendLine is "\r\n" under Mono on Windows, and other mods parse this text, so which lines use it is part of
+/// what must not change.
 /// </remarks>
 internal partial class TooltipRenderer
 {
@@ -94,7 +94,6 @@ internal partial class TooltipRenderer
                 AddBlockForceAndParry();
                 AddParryAdrenaline();
 
-                // weapons typically do not have damage modifiers, but perhaps other mods utilize this
                 AddDamageModifiers();
 
                 AddKnockback();

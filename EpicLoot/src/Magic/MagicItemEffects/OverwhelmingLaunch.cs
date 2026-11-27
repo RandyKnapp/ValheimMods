@@ -16,10 +16,6 @@ namespace EpicLoot
 
 namespace EpicLoot.MagicItemEffects
 {
-    // Overwhelming Launch (4-piece Thor set bonus). A hotkey hurls the held melee weapon at the point the player
-    // is aiming, where it lands with the Sledge Demolisher's slam: its trigger effects and an area hit dealing the
-    // weapon's own damage plus the effect value in percent. The weapon then flies back.
-    //
     // Unlike Throwable + RecallWeapon, the item never leaves the hand slot or the inventory. The flying weapon is
     // a local-only model every client draws from an RPC; the real item is only locked out of attacking until that
     // model is back, which takes longer the further it was thrown.
@@ -34,7 +30,6 @@ namespace EpicLoot.MagicItemEffects
     // speed is synced).
     public static class OverwhelmingLaunch
     {
-        // All tunable in this effect's Config block in magiceffects.json, under these key names.
         public const float DefaultMaxDistance = 30f;       // metres; aiming further lands at this range
         public const float DefaultProjectileSpeed = 25f;   // metres/second, out and back
         public const float DefaultHangTime = 0.2f;         // seconds the weapon rests where it landed
@@ -66,12 +61,12 @@ namespace EpicLoot.MagicItemEffects
         private static float MaxDistance => EffectConfig.GetClamped(MagicEffectType.OverwhelmingLaunch, MaxDistanceKey, DefaultMaxDistance, 1f, 200f);
         private static float ProjectileSpeed => Mathf.Max(1f, EffectConfig.Get(MagicEffectType.OverwhelmingLaunch, ProjectileSpeedKey, DefaultProjectileSpeed));
         private static float HangTime => Mathf.Max(0f, EffectConfig.Get(MagicEffectType.OverwhelmingLaunch, HangTimeKey, DefaultHangTime));
-        private static float Radius => Mathf.Max(0.5f, EffectConfig.Get(MagicEffectType.OverwhelmingLaunch, RadiusKey, DefaultRadius));
+        // Capped too: the slam's overlap buffer holds 128 colliders, and a huge radius fills it with building pieces.
+        private static float Radius => EffectConfig.GetClamped(MagicEffectType.OverwhelmingLaunch, RadiusKey, DefaultRadius, 0.5f, 30f);
         private static float StaggerMultiplier => Mathf.Max(0f, EffectConfig.Get(MagicEffectType.OverwhelmingLaunch, StaggerMultiplierKey, DefaultStaggerMultiplier));
         private static float CostScale => Mathf.Max(0f, EffectConfig.Get(MagicEffectType.OverwhelmingLaunch, CostScaleKey, DefaultCostScale));
         private static float ThrowAnimationSpeed => EffectConfig.GetClamped(MagicEffectType.OverwhelmingLaunch, ThrowAnimationSpeedKey, DefaultThrowAnimationSpeed, 0.25f, 4f);
 
-        // Tooltip: "... weapon damage +{0}% ... Costs {1}x a normal attack" -- {1} follows a retune of CostScale.
         public static void RegisterDisplayValues()
         {
             MagicItem.RegisterDisplayValues(MagicEffectType.OverwhelmingLaunch, value => new object[] { value, CostScale });
@@ -646,7 +641,7 @@ namespace EpicLoot.MagicItemEffects
             weapon.m_shared.m_hitEffect.Create(center, Quaternion.identity, null, 1f, -1, player.GetZDOID());
             if (weapon.m_shared.m_useDurability)
             {
-                weapon.m_durability -= Game.m_durabilityRate;
+                weapon.m_durability -= weapon.m_shared.m_useDurabilityDrain * Game.m_durabilityRate;
             }
             player.AddNoise(primary.m_attackHitNoise);
             if (maxAdrenalineMultiplier > 0f)
@@ -711,7 +706,7 @@ namespace EpicLoot.MagicItemEffects
             [HarmonyPrefix]
             private static bool Prefix(Attack __instance)
             {
-                if (__instance == null || __instance != _launchAttack)
+                if (__instance != _launchAttack)
                 {
                     return true;
                 }
@@ -752,7 +747,7 @@ namespace EpicLoot.MagicItemEffects
             [HarmonyPostfix]
             private static void Postfix(Attack __instance, ref float __result)
             {
-                if (__instance != null && __instance == _launchAttack)
+                if (__instance == _launchAttack)
                 {
                     __result *= CostScale;
                 }

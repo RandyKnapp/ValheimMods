@@ -5,15 +5,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects.Shards {
-    // Provides a lifesteal effect at the cost of a reduced max health pool.
     public static class BloodDrinker {
-        // Max health removed, as a percent of the health pool, per 1 point of shard value. With the
-        // shard's 3/6/9/12/15 values this yields -7.5%/-15%/-22.5%/-30%/-37.5% across Magic..Mythic.
-        // Tunable as "MaxHealthPercentPerValue" in this effect's Config block in config/shardstones.json.
+        // Max health removed, as a percent of the health pool, per point of shard value.
         public const float DefaultMaxHealthPercentPerValue = 2.5f;
 
-        // Floor on the amount removed. A pure percentage is negligible on a low-food character (37.5% of
-        // the vanilla 25 base pool is ~9), so the cost never drops below this.
+        // Floor on the amount removed: a pure percentage is negligible on a low-food character.
         public const float DefaultMinHealthReduction = 10f;
 
         // Absolute backstop so a degenerate pool can't be reduced to a zero/negative max health. Not
@@ -40,8 +36,6 @@ namespace EpicLoot.MagicItemEffects.Shards {
                 MinHealthReductionKey, DefaultMinHealthReduction));
         }
 
-        // Tooltip: "-{1}% Max Health, +{0}% Lifesteal" -- {1} is derived from the rolled value and the
-        // configured rate, so the shown cost follows a retune instead of the baked-in default.
         public static void RegisterDisplayValues() {
             MagicItem.RegisterDisplayValues(MagicEffectType.BloodDrinker,
                 value => new object[] { value, value * GetMaxHealthPercentPerValue() });
@@ -52,8 +46,7 @@ namespace EpicLoot.MagicItemEffects.Shards {
                 return;
             }
 
-            // Read the memoized effect value before touching config: this hangs off the max-health
-            // pipeline, and most players carry no BloodDrinker shard at all.
+            // Memoized effect value before the config lookups: this hangs off the max-health pipeline.
             var value = player.GetTotalActiveMagicEffectValue(MagicEffectType.BloodDrinker);
             if (value <= 0f) {
                 return;
@@ -69,8 +62,8 @@ namespace EpicLoot.MagicItemEffects.Shards {
             hp = Mathf.Max(hp - reduction, MinResultingMaxHealth);
         }
 
-        // Postfix handler invoked by CharacterDamageDispatch (on-hit reaction, attacker side).
-        public static void OnDamageDealt(HitData hit, Character attacker) {
+        // Postfix handler invoked by SharedCharacterDamagePatch (on-hit reaction, attacker side).
+        public static void OnDamageDealt(HitData hit, Character attacker, float healthBeforeHit) {
             if (!(attacker is Player player) || player != Player.m_localPlayer) {
                 return;
             }
@@ -80,7 +73,7 @@ namespace EpicLoot.MagicItemEffects.Shards {
                 return;
             }
 
-            var heal = hit.m_damage.EpicLootGetTotalDamage() * fraction;
+            var heal = MagicEffectsHelper.GetCountedDamage(hit, healthBeforeHit) * fraction;
             if (heal > 0f) {
                 player.Heal(heal);
             }

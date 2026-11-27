@@ -32,6 +32,14 @@ namespace EpicLoot.Biomes
         /// </summary>
         public List<string> BossDefeatedKeys = new List<string>();
 
+        /// <summary>
+        /// Item Drop Limits CurrentBiomeGradualUnlock: kills in this biome after which its gear always drops; a
+        /// share of it gives that share as the chance. Left out, a vanilla biome uses the shipped value and any
+        /// other biome needs no kills. A biome sharing its boss key with an earlier one (Ocean) counts toward
+        /// that earlier biome, and this value is not read for it.
+        /// </summary>
+        public int? UnlockKills;
+
         /// <summary>Rich-text color for the biome name in UI, any value ColorUtility.TryParseHtmlString accepts.</summary>
         public string Color;
 

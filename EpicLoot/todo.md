@@ -75,7 +75,7 @@
 - [X] Build freedom (hammer, don't require crafting station)
 - [ ] No stamina cost
 
-## Legendary Items:
+## Unique Items:
 
 - [X] Sleipnir's Hoof (Club, increase move speed)
 - [X] Gungnir (Ancient Bark Spear)
@@ -117,7 +117,7 @@
 - [ ] Naegling (sword, Beowulf, twigs and serpents design)
 
 
-## Legendary Sets:
+## Unique Sets:
 
 - [X] **Heimdall (tank):** Tower Shield (Guardian of the Gods), Head (Son of Nine Mothers), Chest (Heart of the Bifrost), Legs (Stride of the Aesir)
 

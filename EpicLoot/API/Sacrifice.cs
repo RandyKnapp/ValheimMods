@@ -7,7 +7,7 @@ namespace EpicLoot;
 public static partial class API
 {
     /// <param name="json">JSON serialized <see cref="DisenchantProductsConfig"/></param>
-    /// <returns>True if added to <see cref="EnchantCostsHelper.Config"/></returns>
+    /// <returns>unique identifier if added to <see cref="EnchantCostsHelper.Config"/>, otherwise null</returns>
     [PublicAPI]
     public static string AddSacrifice(string json)
     {

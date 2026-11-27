@@ -5,11 +5,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects.Shards {
-    // On adrenaline activation, applies a frost wave to nearby enemies. The wave slows movement by 60% at application and eases back to normal over the duration, following vanilla's frost curve.
     public static class AdrenalineFrostWave {
-        // Enemy search radius, and the speed floor while chilled -- movement drops to this fraction at
-        // application and eases back to normal over the duration, following vanilla's frost curve. Both
-        // tunable in this effect's Config block in config/shardstones.json, under these key names.
+        // Movement drops to SpeedFloor at application and eases back to normal over the duration, following
+        // vanilla's frost curve.
         public const float DefaultRadius = 10f;
         public const float DefaultSpeedFloor = 0.4f;
 
@@ -38,8 +36,7 @@ namespace EpicLoot.MagicItemEffects.Shards {
         // identical on every client for the add/refresh lookup to line up.
         private const string SeName = "EL_FrostWave";
 
-        // Seed ttl for the prototype only; the per-cast duration comes from the shard value and is stamped
-        // on the instance, so this is not a balance knob and is not exposed in the effect Config.
+        // Seed ttl for the prototype only; the per-cast duration comes from the shard value.
         private const float PrototypeSeedDuration = 2f;
         private const string NovaTemplateName = "EL_FrostWaveNova";
         private const float NovaSpeed = 1.5f;
@@ -47,20 +44,15 @@ namespace EpicLoot.MagicItemEffects.Shards {
         private static SE_Frost _prototype;
         private static bool _prototypeMissingLogged;
 
-        // Tooltip: "Frost Wave: Slow Enemies within {1}m for {0}s" -- {1} is the configured radius, so the
-        // shown number follows a retune instead of the baked-in default.
         public static void RegisterDisplayValues() {
             MagicItem.RegisterDisplayValues(MagicEffectType.AdrenalineFrostWave,
                 value => new object[] { value, GetRadius() });
         }
 
-        // Registers this effect's faster nova variant with ZNetScene, so the networked nova spawned at each
-        // proc shows on other clients. Hooked to PrefabManager.OnPrefabsRegistered in EpicLoot.cs.
         public static void RegisterNovaPrefab() {
             FrostNovaFx.RegisterPrefab(NovaTemplateName, NovaSpeed);
         }
 
-        // Registers the chill RPC on every character so a remote-owned target can receive it. Mirrors
         [HarmonyPatch(typeof(Character), nameof(Character.Awake))]
         private static class AddRpc_Character_Awake_Patch {
             [UsedImplicitly]
@@ -69,15 +61,14 @@ namespace EpicLoot.MagicItemEffects.Shards {
             }
         }
 
-        // Called by SharedPlayerAddAdrenalinePatch, which owns the Player.AddAdrenaline patch and the
-        // fill/pop detection (including the local-player and no-adrenaline-source guards).
+        // SharedPlayerAddAdrenalinePatch has already checked the local player and the adrenaline source.
         public static void OnAdrenalineActivated(Player player) {
             var duration = player.GetTotalActiveMagicEffectValue(MagicEffectType.AdrenalineFrostWave);
             if (duration <= 0f) {
                 return;
             }
 
-            // Spawn the nova visibly above the player's feet, but close to the ground.
+            // Just above the player's feet, so the nova is visible but close to the ground.
             var novaPosition = player.transform.position;
             novaPosition.y += 0.6f;
             FrostNovaFx.Spawn(NovaTemplateName, novaPosition);
@@ -99,15 +90,15 @@ namespace EpicLoot.MagicItemEffects.Shards {
                     continue;
                 }
 
-                // Broadcast so the target's owner (and everyone else, harmlessly) adds/refreshes the chill.
-                character.m_nview.InvokeRPC(ZRoutedRpc.Everybody, RpcKey, duration);
+                character.m_nview.InvokeRPC(RpcKey, duration);
             }
         }
 
-        // Adds or refreshes the chill on the character. Runs on every client; only the owner's copy drives
-        // movement, so this is what actually slows a remote-owned target.
+        // Sent to the target's owner only: vanilla ticks status effects on the owner alone, so a copy on any other
+        // client would never expire and would slow the creature again once ownership moved there.
         private static void RPC_FrostWave(Character character, float duration) {
-            if (character == null || character.m_seman == null || duration <= 0f) {
+            if (character == null || character.m_seman == null || duration <= 0f ||
+                character.m_nview == null || !character.m_nview.IsOwner()) {
                 return;
             }
 
@@ -116,8 +107,7 @@ namespace EpicLoot.MagicItemEffects.Shards {
                 return;
             }
 
-            // The speed floor is stamped per instance rather than left on the cached prototype, so a retune
-            // reaches chills applied from here on without waiting for a new game session.
+            // Stamped per instance because the cached prototype would not follow a retune.
             var speedFloor = GetSpeedFloor();
 
             // Already chilled: extend to the longer of the two and restart the decay curve.
@@ -129,7 +119,7 @@ namespace EpicLoot.MagicItemEffects.Shards {
             }
 
             // AddStatusEffect(prototype) clones via MemberwiseClone (keeps NameHash) and triggers the frost
-            // start effects, then we stamp this cast's duration onto the added instance.
+            // start effects.
             if (character.m_seman.AddStatusEffect(prototype) is SE_Frost added) {
                 added.m_ttl = duration;
                 added.m_minSpeedFactor = speedFloor;
@@ -137,8 +127,7 @@ namespace EpicLoot.MagicItemEffects.Shards {
             }
         }
 
-        // Lazily builds our clone of the vanilla Frost effect. Runs on a proc, so ObjectDB is loaded. Copying
-        // public fields off the vanilla prototype brings its start/stop effects, icon and freeze times across;
+        // Copying public fields off the vanilla prototype brings its start/stop effects, icon and freeze times across;
         // the private cached name hash is NOT copied (CopyFields binds public instance fields only), so this
         // fresh ScriptableObject hashes its own name and stays a distinct effect from vanilla Frost.
         private static SE_Frost GetOrCreatePrototype() {

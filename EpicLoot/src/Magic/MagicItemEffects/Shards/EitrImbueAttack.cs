@@ -3,10 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects.Shards {
-    // Provides a bonus to spirit damage based on the physical damage dealt by the player, at the cost of Eitr
     public static class EitrImbueAttack {
-        // Eitr paid per point of bonus spirit damage -- the conversion ratio. Tunable as "EitrCostPerDamage"
-        // in this effect's Config block in config/shardstones.json.
         public const float DefaultEitrCostPerDamage = 1f;
 
         private const string EitrCostPerDamageKey = "EitrCostPerDamage";
@@ -21,17 +18,15 @@ namespace EpicLoot.MagicItemEffects.Shards {
                 EitrCostPerDamageKey, DefaultEitrCostPerDamage));
         }
 
-        // Prefix handler invoked by CharacterDamageDispatch (attacker-side outgoing modifier).
+        // Prefix handler invoked by SharedCharacterDamagePatch (attacker-side outgoing modifier).
         public static void ModifyOutgoingHit(HitData hit, Character attacker) {
             if (attacker is not Player player || player != Player.m_localPlayer) {
                 return;
             }
 
-            // The shard is socketed into the attacking weapon, so read the effect from that weapon
-            // rather than player-wide -- the imbue only fires for the weapon that carries it.
-            // GetActiveWeapon resolves the weapon of the attack in flight; GetCurrentWeapon returned
-            // the right hand first, so an off-hand weapon's shard never fired.
-            // TODO: make this work for unarmed attacks and not be required on the weapon itself
+            // The shard is socketed into the attacking weapon, so read the effect from that weapon rather
+            // than player-wide. GetActiveWeapon resolves the weapon of the attack in flight; GetCurrentWeapon
+            // alone returns the right hand first, so an off-hand weapon's shard would never fire.
             var magicItem = global::EpicLoot.src.Magic.MagicItemEffects.Helpers.MagicEffectsHelper.GetActiveWeapon(player)?.GetMagicItem();
             float bonus = GetSpiritBonus(magicItem, hit.m_damage);
             if (bonus <= 0f) {

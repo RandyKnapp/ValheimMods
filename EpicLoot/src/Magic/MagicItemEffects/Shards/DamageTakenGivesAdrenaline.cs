@@ -1,9 +1,8 @@
 ﻿using EpicLoot.General;
 
 namespace EpicLoot.MagicItemEffects.Shards {
-    // Provides a bonus to adrenaline gain when the player takes damage.
     public static class DamageTakenGivesAdrenaline {
-        // Postfix handler invoked by CharacterRpcDamageDispatch (on-damage-taken reaction).
+        // Postfix handler invoked by SharedCharacterRpcDamagePatch (on-damage-taken reaction).
         public static void OnDamageTaken(Character __instance, HitData hit) {
             if (hit == null || __instance != Player.m_localPlayer) {
                 return;

@@ -4,9 +4,8 @@ using System;
 namespace EpicLoot.Crafting
 {
     /// <summary>
-    /// Holds the item recipes Epic Loot adds to the ObjectDB. Epic Loot no longer ships any of its own -
-    /// its craftable items are registered through the shared item batch loader instead - so this is now
-    /// purely the backing store for recipes other mods register via <see cref="API.AddRecipe"/>.
+    /// The backing store for recipes other mods register via <see cref="API.AddRecipe"/>. Epic Loot's own
+    /// craftable items are registered through the shared item batch loader instead.
     /// </summary>
     public static class RecipesHelper
     {

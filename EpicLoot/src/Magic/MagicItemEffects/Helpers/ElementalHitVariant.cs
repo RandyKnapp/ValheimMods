@@ -3,7 +3,7 @@ namespace EpicLoot.src.Magic.MagicItemEffects.Helpers {
     // effects are vfx_Burning (0), vfx_Burning_blue (1) and vfx_Burning_green (2); Lightning's are fx_Lightning
     // (0) and fx_Lightning_red (1). EffectList.Create spawns every entry when the variant is -1, and -1 is what
     // an ordinary weapon carries (SharedData.m_hitVariant defaults to it). So fire or lightning added to such a
-    // weapon -- AddFireDamage, NecroticFire, the lightning conversions -- lit the target in every colour at once.
+    // weapon -- AddFireDamage, NecroticFire, the lightning conversions -- would light the target in every colour at once.
     //
     // An unset variant on a player's elemental hit is defaulted to 0, the ordinary colour. A weapon that sets
     // its own variant (the FrostFire / BloodLightning golds, Fader's green fire) keeps it.

@@ -38,7 +38,6 @@ internal partial class TooltipRenderer
             foreach (TooltipSocket socket in sockets.Entries)
             {
                 string socketColor = EpicLoot.GetRarityColor((ItemRarity)socket.Rarity);
-                // Inline the socketed item's own icon, resolved from its source prefab
                 string iconTag = ShardTooltipSprites.GetSpriteTag(socket.SourcePrefab);
                 string removalTag = GetRemovalTag(socket.Removal);
                 switch (socket.State)

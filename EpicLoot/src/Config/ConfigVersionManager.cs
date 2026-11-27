@@ -220,9 +220,9 @@ public static class ConfigVersionManager
     /// content that was on disk BEFORE the rewrite (null when the file did not exist).
     ///
     /// The before-content matters: runtime rewriters (AutoAddEnchantableItems) merge on top of
-    /// whatever is on disk, player edits included. Stamping that merged output as "our own" told
-    /// the next launch's RefreshUnmodifiedConfigs the file was untouched, and a mod update then
-    /// silently replaced it -- destroying the player's edits with no backup and no prompt.
+    /// whatever is on disk, player edits included. Stamped as "our own", that merged output would tell
+    /// the next launch's RefreshUnmodifiedConfigs the file was untouched, and a mod update would then
+    /// silently replace it, destroying the player's edits with no backup and no prompt.
     /// </summary>
     public static void RecordWrittenContent(string configName, string contents, string previousContents)
     {
@@ -269,8 +269,8 @@ public static class ConfigVersionManager
     /// <summary>
     /// Drops files that stopped being outdated after detection ran: something this session rewrote them
     /// to the shipped default, or stamped what it wrote as the mod's own output of it. The prompt calls
-    /// this as it opens, because it now waits its turn behind the Quick Configure welcome wizard, whose
-    /// balance preset can rewrite magiceffects.json in the meantime.
+    /// this as it opens, because it waits its turn behind the Quick Configure welcome wizard, whose
+    /// balance preset can rewrite the balance template files in the meantime.
     /// </summary>
     public static void PruneResolvedOutdated()
     {
@@ -470,7 +470,7 @@ public static class ConfigVersionManager
     /// </summary>
     private static string GetEmbeddedHash(string configName, out string variant, out string embedded)
     {
-        variant = configName == "magiceffects" ? ELConfig.BalanceConfigurationType.Value : "";
+        variant = ELConfig.IsBalanceTemplateFile($"{configName}.json") ? ELConfig.BalanceConfigurationType.Value : "";
         embedded = null;
 
         try

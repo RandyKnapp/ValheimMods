@@ -27,10 +27,8 @@ namespace EpicLoot.ShardStones {
         LTrigger
     }
 
-    // The one answer to "is this press the one that opens shard slots". The inventory opener, the tooltip hint,
-    // the BowsBeforeHoes patch and API.IsShardSlotPress all ask here, so they cannot disagree. Everything is a
-    // read of this frame's input and nothing is consumed, so code that runs ahead of the opener in
-    // InventoryGui.Update (another mod's prefix) gets the same answer the opener will.
+    // Nothing here consumes input, so code that runs ahead of the opener in InventoryGui.Update (another mod's
+    // prefix) gets the same answer the opener will.
     internal static class SocketOverlayInput {
         private const string UseButton = "Use";
 
@@ -74,7 +72,6 @@ namespace EpicLoot.ShardStones {
             return isUse;
         }
 
-        /// <summary>True when the keyboard shortcut went down this frame.</summary>
         internal static bool KeyboardPressed() {
             KeyboardShortcut shortcut = Shortcut;
             KeyCode mainKey = shortcut.MainKey;
@@ -109,7 +106,6 @@ namespace EpicLoot.ShardStones {
             return shortcut.MainKey != KeyCode.None && !shortcut.Modifiers.Any() && MainKeyIsUse();
         }
 
-        /// <summary>The ZInput button the gamepad gesture is pressed on, or null when it is turned off.</summary>
         internal static string GamepadButtonName {
             get {
                 switch (ELConfig.SocketOverlayGamepadButton?.Value ?? SocketGamepadButton.None) {
@@ -134,8 +130,7 @@ namespace EpicLoot.ShardStones {
         }
 
         /// <summary>
-        /// True when the gamepad gesture went down this frame. The button is read by the same name InventoryGrid
-        /// reads it (JoyButtonX, never JoyUse, which is A on the classic layout and X on the others), because
+        /// The button is read by the same name InventoryGrid reads it (JoyButtonX, never JoyUse, which is A on the classic layout and X on the others), because
         /// ZInput.ResetButtonStatus clears only the named ButtonDef: consuming it under that name is what stops the
         /// grid from also using or picking up the item. With no modifier, neither trigger may be held, so vanilla's
         /// trigger gestures on the same button (split, drop, move) keep working.

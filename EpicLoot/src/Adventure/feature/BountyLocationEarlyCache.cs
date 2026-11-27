@@ -6,15 +6,8 @@ using UnityEngine;
 namespace EpicLoot.Adventure.Feature
 {
     /// <summary>
-    /// Picks the world position a bounty target or treasure chest is sent to.
-    ///
-    /// The name is historical: this used to keep a cache of pre-vetted points because finding one was
-    /// slow enough to need hiding. It no longer is. A request now samples <see cref="WorldBiomeIndex"/>
-    /// -- a seed-derived map of where each biome is -- picks an anchor inside the biome's configured
-    /// radius band, and refines to an exact point, all from WorldGenerator with nothing instantiated.
-    /// That takes tens of microseconds, so there is nothing left worth caching, and the cache's own
-    /// failure modes (a biome running dry, a stuck refill latch blocking every later request) are gone
-    /// with it.
+    /// Picks the world position a bounty target or treasure chest is sent to, from
+    /// <see cref="WorldBiomeIndex"/> within the biome's configured radius band. It caches nothing.
     ///
     /// Everything here is seed-only and therefore blind to terrain colliders, wards and player bases.
     /// <see cref="AdventureSpawnController.DeterminespawnPoint"/> checks all of those once someone is
@@ -44,22 +37,12 @@ namespace EpicLoot.Adventure.Feature
 
         /// <summary>
         /// Finds a spawn point in <paramref name="biome"/> and hands it to
-        /// <paramref name="onComplete"/>.
-        ///
-        /// <paramref name="saveData"/> is unused. It is kept because both callers pass it and because
-        /// the radius ramp that once read it (widening the search band by how many bounties a player
-        /// had taken) may come back; see the obsolete StartRadius/RadiusInterval config fields.
-        ///
-        /// <paramref name="onComplete"/> is invoked on every exit path, success or failure. That is
-        /// the contract that matters here: the old implementation could give up silently, and the
-        /// symptom players saw was a merchant button that did nothing at all.
+        /// <paramref name="onComplete"/>, which is invoked on every exit path, success or failure.
         /// </summary>
-        public static IEnumerator TryGetBiomePoint(
-            Heightmap.Biome biome, AdventureSaveData saveData, Action<bool, Vector3> onComplete)
+        public static IEnumerator TryGetBiomePoint(Heightmap.Biome biome, Action<bool, Vector3> onComplete)
         {
             if (biome == Heightmap.Biome.None || biome == Heightmap.Biome.All)
             {
-                // Not a real place. A caller or a config asked for something that cannot exist.
                 EpicLoot.LogErrorForce($"Asked for an adventure spawn point in biome '{BiomeDataManager.GetName(biome)}', " +
                     "which is not a single biome. This is a configuration or caller error.");
                 Fail(biome, "$mod_epicloot_adventure_locatefailed", onComplete);
@@ -110,9 +93,8 @@ namespace EpicLoot.Adventure.Feature
                 yield break;
             }
 
-            // Say why, not just that. "No usable location" with thousands of cells indexed is a
-            // very different problem from a biome this world does not contain, and the two were
-            // previously indistinguishable from the log.
+            // Say why: thousands of cells indexed and none usable is a different problem from a biome
+            // this world does not contain.
             EpicLoot.LogWarningForce($"The world biome index has no usable {BiomeDataManager.GetName(biome)} location at a " +
                 $"{WorldBiomeIndex.CellSize:0.#}m sample spacing " +
                 $"({WorldBiomeIndex.CountCells(biome)} cells indexed, band {minRadius:0}-{maxRadius:0}m). " +

@@ -1,3 +1,4 @@
+using System;
 using EpicLoot.MagicItemEffects.Shards;
 using HarmonyLib;
 
@@ -25,6 +26,14 @@ namespace EpicLoot.src.Magic.MagicItemEffects.Helpers {
 
         [HarmonyPostfix]
         private static void PostAddAdrenaline(Player __instance, AdrenalineChange __state) {
+            try {
+                AfterAddAdrenaline(__instance, __state);
+            } catch (Exception e) {
+                DispatchGuard.Report("AddAdrenaline postfix", e);
+            }
+        }
+
+        private static void AfterAddAdrenaline(Player __instance, AdrenalineChange __state) {
             if (__instance != Player.m_localPlayer) {
                 return;
             }

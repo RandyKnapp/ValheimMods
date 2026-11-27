@@ -1,5 +1,4 @@
 ﻿using HarmonyLib;
-using System;
 using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects;
@@ -11,31 +10,30 @@ public static class ModifyMovementSpeed
     {
         private static void Postfix(Player __instance, ref float __result)
         {
-            if (__instance == null)
-            {
-                return;
-            }
-
             float modify = GetModifyMovementSpeedAmount(__instance);
             __result += modify;
         }
     }
 
+    // Not an effect type: a key of its own in the per-player effect cache, which equipping and any magic data
+    // write reset. Vanilla asks for the movement modifier several times per tick.
+    private const string PenaltyRefundCacheKey = "~RemoveSpeedPenaltyRefund";
+
     private static float GetModifyMovementSpeedAmount(Player __instance)
     {
-        float movementSpeed = 0f;
-        foreach (var itemData in __instance.GetMagicEquipment())
+        if (!EquipmentEffectCache.TryGetValue(__instance, PenaltyRefundCacheKey, out float? refund) || !refund.HasValue)
         {
-            // Negate previous penalties
-            movementSpeed -= GetSpeedPenaltyAmount(itemData);
+            float sum = 0f;
+            foreach (var itemData in __instance.GetMagicEquipment())
+            {
+                sum -= GetSpeedPenaltyAmount(itemData);
+            }
+
+            refund = sum;
+            EquipmentEffectCache.Store(__instance, PenaltyRefundCacheKey, refund);
         }
 
-        ModifyWithLowHealth.Apply(__instance, MagicEffectType.ModifyMovementSpeed, effect =>
-        {
-            movementSpeed += __instance.GetTotalActiveMagicEffectValue(effect, 0.01f);
-        });
-
-        return movementSpeed;
+        return refund.Value + ModifyWithLowHealth.Sum(__instance, MagicEffectType.ModifyMovementSpeed);
     }
 
     private static float GetSpeedPenaltyAmount(ItemDrop.ItemData item)

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -21,16 +22,14 @@ namespace EpicLoot.src.Magic.MagicItemEffects.Helpers {
     //
     // Order among the effects IS load-bearing here, unlike SharedCharacterDamagePatch: each draws from a
     // different pool, so whoever runs first is spent first. Adrenaline before health -- you shouldn't burn a
-    // 30s health charge while you still have adrenaline to spend.
+    // health charge on its cooldown while you still have adrenaline to spend.
     [HarmonyPatch]
     internal static class SharedCharacterUseStaminaPatch {
 
         // How much stamina the virtual sources could stand in for right now. PURE READ -- never spends.
         //
-        // Every source is gated on the player actually carrying the effect before it is consulted, so a
-        // player without the shard falls straight through without touching the adrenaline pool or SEMan.
-        // Use the EquipmentEffectCache-backed HasActiveMagicEffect overload (the parameterless one does a
-        // full LINQ walk and is NOT cached -- it must not be used here): this runs on every failed
+        // Every source is gated on the player carrying the effect (a memoized read) before it is consulted, so a
+        // player without the shard never touches the adrenaline pool or SEMan: this runs on every failed
         // affordability check and three times per PlayerController.FixedUpdate.
         private static float GetCoverable(Player player) {
             float coverable = 0f;
@@ -56,6 +55,14 @@ namespace EpicLoot.src.Magic.MagicItemEffects.Helpers {
         [HarmonyPatch(typeof(Player), nameof(Player.HaveStamina))]
         [UsedImplicitly]
         private static void PostHaveStaminaPatch(Player __instance, float amount, ref bool __result) {
+            try {
+                AfterHaveStamina(__instance, amount, ref __result);
+            } catch (Exception e) {
+                DispatchGuard.Report("HaveStamina postfix", e);
+            }
+        }
+
+        private static void AfterHaveStamina(Player __instance, float amount, ref bool __result) {
             if (__result || __instance != Player.m_localPlayer) {
                 return;
             }
@@ -73,6 +80,14 @@ namespace EpicLoot.src.Magic.MagicItemEffects.Helpers {
         [HarmonyPatch(typeof(Player), nameof(Player.UseStamina))]
         [UsedImplicitly]
         private static void PreUseStaminaPatch(Player __instance, ref float v) {
+            try {
+                BeforeUseStamina(__instance, ref v);
+            } catch (Exception e) {
+                DispatchGuard.Report("UseStamina prefix", e);
+            }
+        }
+
+        private static void BeforeUseStamina(Player __instance, ref float v) {
             if (v <= 0f || float.IsNaN(v) || __instance != Player.m_localPlayer) {
                 return;
             }

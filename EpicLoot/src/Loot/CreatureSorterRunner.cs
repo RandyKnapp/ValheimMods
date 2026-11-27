@@ -141,7 +141,9 @@ namespace EpicLoot
             }
         }
 
-        private static bool OwnsLootConfig()
+        // A dedicated server, a host or single player: not a client on someone else's server, whose live
+        // configs are the server's push, and not the main menu.
+        internal static bool OwnsLootConfig()
         {
             return ZNet.instance != null && ZNet.instance.IsServer();
         }
@@ -222,10 +224,6 @@ namespace EpicLoot
                 ? registry.Canonical(BiomeDataManager.GetName(biome))
                 : null;
         }
-
-        // ------------------------------------------------------------------------------------------------
-        //  Gathering
-        // ------------------------------------------------------------------------------------------------
 
         private static Dictionary<string, CreatureFacts> GatherCreatures()
         {
@@ -651,10 +649,6 @@ namespace EpicLoot
                 biomes.Add(biome);
             }
         }
-
-        // ------------------------------------------------------------------------------------------------
-        //  Report
-        // ------------------------------------------------------------------------------------------------
 
         private static string ReportPath => Path.Combine(Paths.ConfigPath, "EpicLoot", "creaturesorter-report.txt");
 

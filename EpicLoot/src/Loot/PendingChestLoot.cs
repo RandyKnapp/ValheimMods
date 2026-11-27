@@ -5,16 +5,10 @@ using UnityEngine;
 namespace EpicLoot
 {
     /// <summary>
-    /// Defers a loot chest's EpicLoot roll from spawn time to the first time a player reads the
-    /// chest's contents.
-    ///
-    /// A location's dungeon interior is instantiated in the same XZ sector as its surface location
-    /// (Location.Awake places it 5000m straight up), and ZNetScene creates objects by sector with no
-    /// height test — so every chest inside a crypt is created, and used to roll, the moment anyone
-    /// entered the zone above it. Since gating is resolved during the roll and *downgrades* to a
-    /// fallback item rather than re-rolling later, a crypt sailed past early in a playthrough kept
-    /// meadows-tier loot forever. Rolling on first read instead means the roll sees the global boss
-    /// keys, gating mode and nearby-player luck in effect when the chest is actually reached.
+    /// Defers a loot chest's EpicLoot roll to the first time a player reads its contents. A dungeon
+    /// interior sits in its surface location's XZ sector (5000m up), and ZNetScene creates objects by
+    /// sector with no height test, so a spawn-time roll would gate a crypt's chests against whoever
+    /// first entered the zone above it.
     /// </summary>
     public static class PendingChestLoot
     {
@@ -23,13 +17,9 @@ namespace EpicLoot
         // Container.Awake reads the flag for every container that loads, player-built chests included.
         public static readonly int PendingKeyHash = PendingKey.GetStableHashCode();
 
-        // Every trigger patch's fast path is AnyPending, and past that a set lookup: only a loaded,
-        // still-unrolled chest does any more work than that. That is the reason this is a registry
-        // rather than a per-chest component (GetComponent per call) or a timer (distance checks over
-        // every chest in range, which says nothing useful anyway — a dungeon chest sits 5000m from a
-        // player standing above it, but an overworld ruin's chests are at ordinary distances).
-        // AnyPending is true whenever any unopened loot chest is loaded, which is much of the time, so
-        // the per-container lookup is the path that actually has to stay cheap.
+        // A registry rather than a per-chest component, so a trigger patch costs AnyPending plus one set
+        // lookup. AnyPending is true whenever any unopened loot chest is loaded, so the lookup is the
+        // path that has to stay cheap.
         private static readonly HashSet<Container> Pending = new HashSet<Container>();
 
         // A zone unload destroys pending chests behind our back. The driver sweeps them on this period,
@@ -49,13 +39,12 @@ namespace EpicLoot
         // every time anything read it.
         private static readonly HashSet<Container> DirectRollRequests = new HashSet<Container>();
 
-        // Rolling instantiates and destroys objects and touches ZNetView's global init flag. Nothing
-        // in that sequence is safe to re-enter, and a chest's own Awake/Load postfixes can reach back
-        // into any of the trigger patches, so a roll is never allowed to start inside another one.
+        // A chest's own Load postfixes can reach back into any of the trigger patches, and a roll is not
+        // safe to re-enter, so one never starts inside another.
         private static bool _rolling;
 
         // A single container sweep from a crafting-station mod can ask for every chest in range at
-        // once. Spreading them keeps one frame from instantiating hundreds of loot objects.
+        // once. Spreading them keeps one frame from rolling all of them.
         private const int MaxRollsPerFrame = 2;
 
         public static bool AnyPending => Pending.Count > 0;
@@ -199,12 +188,10 @@ namespace EpicLoot
                 return;
             }
 
-            // Clear before anything that can re-enter, not merely before Roll. container.Load() below
-            // runs every mod's Container.Load postfix, and any of those that reads the contents back
-            // through Container.GetInventory lands in this method again — with the container still
-            // pending and the flag still set, that recursed without bound. Clearing first also means a
-            // failed roll loses the loot rather than duplicating it, and no peer can observe another
-            // peer's items without also observing the cleared flag, since both live in this same ZDO.
+            // Clear before anything that can re-enter, not merely before Roll: container.Load() below
+            // runs every mod's Container.Load postfix, and one that reads the contents back through
+            // Container.GetInventory lands here again. Clearing first also means a failed roll loses the
+            // loot rather than duplicating it.
             Pending.Remove(container);
             zdo.Set(PendingKeyHash, false);
 
@@ -216,19 +203,9 @@ namespace EpicLoot
 
         /// <summary>
         /// Splits duplicate ItemData references out of a container's inventory.
-        ///
-        /// CreatureLevelAndLootControl's DropTable.GetDropListItems postfix implements its loot
-        /// multiplier by appending the same ItemDrop.ItemData reference N times instead of cloning it.
-        /// Container.AddDefaultItems then hands each of those to Inventory.AddItem, so one object ends
-        /// up in m_inventory several times: for a stackable item AddItem's own loop bound
-        /// (index &lt; item.m_stack) is the field FindFreeStackItem then increments, and for a
-        /// non-stackable one the entries simply pile up sharing a single m_gridPos. Everything that
-        /// later walks the inventory — our custom-data layer keys an ItemInfo off the instance, so one
-        /// backs every slot — sees items that are not actually separate, and a save/reload turns them
-        /// into real duplicates.
-        ///
-        /// Cloning all but the first occurrence costs one pass over a list that was just built, and
-        /// only ever does anything when another mod produced the aliasing.
+        /// CreatureLevelAndLootControl's DropTable.GetDropListItems postfix multiplies loot by appending
+        /// the same ItemData reference N times, so one object fills several slots and a save/reload turns
+        /// them into real duplicates. All but the first occurrence are cloned.
         /// </summary>
         public static void DeAliasInventory(Container container, string containerName)
         {
@@ -268,15 +245,10 @@ namespace EpicLoot
         /// <summary>
         /// Queues a chest to roll on the next LateUpdate instead of right now. Used by every trigger
         /// that is not a deliberate player action: Container.GetInventory and GetHoverText are plain
-        /// reads that other mods call over every container in range, many times per frame, and rolling
-        /// inline there turned one crafting-station sweep into hundreds of instantiates in a frame.
+        /// reads that other mods call over every container in range, many times per frame.
         /// </summary>
         public static void RequestRoll(Container container)
         {
-            // Everything but a pending chest stops here. These callers run over every container in
-            // range, player-built ones included, so queueing unconditionally filled the queue with
-            // chests that had nothing to roll, and a real one could wait behind a base's worth of them
-            // at MaxRollsPerFrame.
             if (container == null || !Pending.Contains(container))
             {
                 return;

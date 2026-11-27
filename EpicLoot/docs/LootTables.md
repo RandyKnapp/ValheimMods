@@ -1,4 +1,150 @@
-# Loot tables
+# How Loot Rolling Works
+
+One of the most common questions we get on Discord is how the loot rolling and item drops work in Epic Loot, and how to read the configuration JSON's that configure it.  In fact, so much so that we have finally put together a wiki to fully explain, hopefully in a manner that is easily understood.
+
+## Weight
+Before we dive in, let's first talk about WEIGHT.  In many areas of EpicLoot configs, there is a weight value that is assigned.  If all weights, in a given roll add up to 100, you can very easily think of it as a percentage.  However, that's not always the case, and in fact, weight is a little bit different.
+
+But to explain weight, I like to think of it as a Raffle Drawing.  Every person has a number of tickets.  All tickets are put into a barrel, rolled, and 1 is randomly picked.
+
+So, let's say we have 3 people holding tickets:
+
+Bob has 5 tickets.
+Jane has 3 tickets.
+Ronald has 40 tickets.
+
+There are a total of 48 tickets in play.  All tickets are put into a barrel and rolled.  Bob and Jane still have a chance to get picked, but Ronald is definitely the favorite.
+
+EpicLoot is no different. Anytime you see weight specified (either directly or indirectly), think about Bob, Jane, and Ronald.
+
+## The rolling process
+
+Let's follow one kill through the loot roller: we just killed a 1-star Greydwarf Brute.
+
+### 1. Find the table
+
+When a creature dies, or a chest is opened for the first time, the roller looks up its prefab name in
+`loottables.json`. The Greydwarf Brute is `Greydwarf_Elite`, and its entry points at a template that
+several creatures share:
+
+```json
+{ "Object": "Greydwarf_Elite", "RefObject": "Tier2Mob" }
+```
+
+`Tier2Mob` is also the table for the Greydwarf Shaman, the Poison Skeleton and the Ghosts:
+
+```json
+{
+  "Object": "Tier2Mob",
+  "StarScaling": { "DropChance": 0.107, "BonusDrops": 0.003, "RarityShift": 0.21, "RarityFalloff": 0.3, "MaxRarity": "Legendary" },
+  "LeveledLoot": [
+    {
+      "Level": 1,
+      "Drops": [ [0, 90], [1, 10] ],
+      "Loot": [
+        { "Item": "Tier1Everything", "Weight": 1, "WeightPerStar": -0.086, "Rarity": [ 50, 47, 2, 1, 0 ] },
+        { "Item": "Tier2Armor",      "Weight": 0, "WeightPerStar": 0.173,  "Rarity": [ 50, 47, 2, 1, 0 ] }
+      ]
+    },
+    {
+      "Level": 5,
+      "Drops": [ [0, 40], [1, 58], [2, 2] ],
+      "Loot": [ ... ]
+    }
+  ]
+}
+```
+
+### 2. Work out the level
+
+A creature's level is its stars plus one, so our 1-star Brute is level 2. A table does not need an entry
+for every level: the roller uses the highest level at or below the creature's, here level 1, and
+`StarScaling` adjusts it for each star past that level. Level 5 only takes over at 4 stars, which other
+mods can give creatures.
+
+### 3. Roll the number of drops
+
+Level 1's `Drops` is `[0, 90], [1, 10]`: 90 tickets for no item and 10 tickets for one item. The Brute is
+one star past level 1, and `DropChance` adds 10.7 points per star to the chance of a drop, so it drops one
+item 20.7% of the time. `BonusDrops` gives a 0.3% chance of a second item when it drops one. The server's
+`Global Drop Rate Modifier` applies on top.
+
+### 4. Roll each drop
+
+**Pick an entry.** Each entry in `Loot` has `Weight` tickets, plus `WeightPerStar` for each star past the
+level: `Tier1Everything` has 0.914 tickets and `Tier2Armor` 0.173. So 84% of the Brute's drops are
+first-tier gear (flint weapons, leather armor and the like) and 16% Black Forest armor, and every further
+star shifts more of them to the Black Forest. The roller picks `Tier1Everything`.
+
+**Resolve the item set.** `Tier1Everything` is not an item but an item set, defined under `ItemSets`:
+
+```json
+{
+  "Name": "Tier1Everything",
+  "Loot": [
+    { "Item": "Tier1Weapons" },
+    { "Item": "Tier1Shields" },
+    { "Item": "Tier1Armor"   },
+    { "Item": "Tier1Tools"   }
+  ]
+},
+```
+
+No `Weight` is listed, so each member has 1 ticket. The roller picks `Tier1Armor`, another set:
+
+```json
+{
+  "Name": "Tier1Armor",
+  "Loot": [
+    { "Item": "ArmorLeatherLegs",  "Rarity": [ 94, 3, 2, 1, 0 ] },
+    { "Item": "ArmorLeatherChest", "Rarity": [ 94, 3, 2, 1, 0 ] },
+    { "Item": "HelmetLeather",     "Rarity": [ 94, 3, 2, 1, 0 ] },
+    { "Item": "CapeDeerHide",      "Rarity": [ 94, 3, 2, 1, 0 ] }
+  ]
+},
+```
+
+and from it `HelmetLeather`, an actual item. The `Rarity` lists in these sets are not used here, because
+the table entry already had one. A set member's `Rarity` only counts when nothing before it had one.
+
+**Decide what the drop becomes.** Four Balance settings are tickets for what each drop turns into: the item
+itself (`Item Drop Ratio`, 0.7 by default), an unidentified item (`Items Unidentified Drop Ratio`, 0.1,
+equipment only), a shardstone of the biome it dropped in (`Shard Stone Drop Ratio`, 0.2) or the materials
+sacrificing it would give (`Materials Drop Ratio`, 0.1). Shardstones, runestones and enchanting materials
+that a table names always drop as themselves.
+
+**Check the drop limits.** `Item Drop Limits` keeps players from finding gear ahead of their progress. By
+default a biome's gear drops once that biome's boss has been killed, so the leather helmet drops once
+Eikthyr is dead; until then an item is swapped for an unlocked one of the same type. With
+`CurrentBiomeGradualUnlock`, a biome's gear after its boss falls drops with a chance that grows with the
+player's kills in that biome, up to 100% at the biome's `UnlockKills` in `biomedata.json`; a miss drops the
+same type from the biome below. Kills are only counted while this mode is set.
+
+**Roll the rarity.** The `Rarity` list gives tickets to Magic, Rare, Epic, Legendary, Mythic and Ancient,
+in that order; a shorter list leaves the rest at 0. Stars move some weight up a tier first: for our 1-star
+Brute, `RarityShift` 0.21 moves a fifth of the Magic weight up to Rare, and `RarityFalloff` 0.3 moves much
+less from each tier above, so `[50, 47, 2, 1, 0]` becomes about `[39.5, 54.5, 4.9, 1, 0]`. The player's
+luck then makes the higher tiers likelier, and the roll gives Rare.
+
+So this drop is a **Rare Leather Helmet**, enchanted with effects for its rarity. The process repeats for
+each drop rolled in step 3. A creature with more than one table, such as a boss with its gear table and its
+shardstone table, rolls each table this way.
+
+## In Summary, and in Short.... the Rolling Process is:
+
+1. Find the creature's or chest's table, through its `RefObject` for most creatures.
+1. Work out its level (stars plus one) and the table level it rolls from.
+1. Roll the number of drops, adjusted for stars.
+1. For each drop:
+   1. Roll an entry from `Loot`, its weights adjusted for stars.
+   1. Resolve item sets and table references down to one item.
+   1. Roll whether it drops as the item, an unidentified item, a shardstone or materials.
+   1. Apply the drop limits.
+   1. Roll the rarity from the first `Rarity` found, adjusted for stars and luck, and enchant the item.
+
+The rest of this page explains every part of the loot table file in detail.
+
+## Loot tables
 
 `loottables.json` decides which magic items a creature or chest drops, how many, how often and at what
 rarity. The shipped copy is embedded in the mod and written to `<BepInEx>/config/EpicLoot/baseconfig/`;
@@ -114,6 +260,16 @@ default. The boss shardstone tables set all three to 0 so they drop exactly as w
 Promotion happens once per drop, before a `RarityItems` map picks its prefab, by whichever table supplied
 the rarity. Luck is applied afterwards, as before.
 
+### Writing every level by hand
+
+To set each star level's loot yourself instead of letting stars scale it, give the table a level for every
+star count (level 1 for 0★, 2 for 1★ and so on) with its own `Drops` and `Loot`, and set `DropChance`,
+`BonusDrops` and `RarityShift` to 0. Leave out `WeightPerStar`, `Modifiers`, `StarMultiplier` and
+`MaxDrops`, which still caps the counts you write. A creature above the highest level rolls that level as it
+is. Star Loot Scaling and a creature's own `StarMultiplier` still decide which level a creature rolls (one
+that lands between two levels rolls the lower), and a creature's own `StarScaling` and `Modifiers` still
+apply on top. A table reference rolls the other table under that table's own `StarScaling`.
+
 ### Modifiers
 
 `Modifiers` apply at every level, on a table or on a creature's entry:
@@ -139,6 +295,10 @@ It can tune its own loot without copying the template:
 ```
 
 An entry may also carry its own `StarScaling`, which wins field by field over the template's.
+
+A creature has either a `RefObject` entry or tables of its own, not both: when `loottables.json` has both,
+the `RefObject` entry wins and the creature's own tables are never rolled. Remove the `RefObject` entry to
+give a creature its own table.
 
 **Elite runestones.** The server option `Elite Runestone Drops` (Balance section, also on Quick Configure's
 Loot Drops page) adds one more table to each elite template, `Tier3EliteMob` to `Tier9EliteMob`, while the
@@ -312,6 +472,17 @@ To have the creature sorter put another mod's creatures on these templates, name
 The console command `lootpreview <creature or table> [maxLevel]` prints, for each level, the anchors used,
 the chance of any drop, items per drop, the rarity split and the item mix, with the creature's own tuning
 and the Star Loot Scaling option applied.
+
+## Changing tables with a patch
+
+A patch in `<BepInEx>/config/EpicLoot/patches/` changes `loottables.json` without editing it, and is applied
+again to each new version of the mod's defaults. [EL.examples.loottables_FullExample.json](../config-patches/EL.examples.loottables_FullExample.json)
+makes every kind of change on this page, each with a comment: it adds the full example above, moves creatures
+onto the new templates and tunes them, changes shipped templates and sets one level at a time, writes every
+star level by hand with scaling off, and pins a creature for the sorter in `itemsorter.json`.
+
+A path that picks a table by its `Object` picks every table of that name. A boss has two, its gear and its
+shardstones, so `[?(@.Object == 'Eikthyr')]` changes both; the example shows how to pick one.
 
 ## The flat form (deprecated)
 

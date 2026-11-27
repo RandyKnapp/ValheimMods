@@ -7,11 +7,11 @@ namespace EpicLoot.MagicItemEffects.Shards {
     {
         static GameObject sfx = null;
         static GameObject vfx = null;
-        public static void UseMoreStaminaOnBlock(Humanoid __instance, HitData hit) 
+        public static void UseMoreStaminaOnBlock(HitData hit) 
         {
             var player = Player.m_localPlayer;
-            if (!player.HasActiveMagicEffect("Warding")) return;
             float magicEffectValue = player.GetTotalActiveMagicEffectValue(MagicEffectType.Warding, .01f);
+            if (magicEffectValue == 0f) return;
             float stamBlockPool = player.GetMaxStamina() * magicEffectValue;
 
             float blockDamageTaken = hit.GetTotalPhysicalDamage();
@@ -21,7 +21,7 @@ namespace EpicLoot.MagicItemEffects.Shards {
             if (player.GetStamina() < reduction) return;
 
             player.UseStamina(reduction); // use stam up to % of max stamina
-            if (reduction > 5f) { // arbitrary amount to trigger fx. Its too flashy otherwise. Still might proc everytime
+            if (reduction > 5f) { // fx only on larger reductions; on every block it is too flashy
                 if (sfx == null) {
                     sfx = PrefabManager.Instance.GetPrefab("sfx_wood_blocked_overlay");
                 }

@@ -15,14 +15,15 @@ namespace EpicLoot.MagicItemEffects
         [UsedImplicitly]
         private static void Prefix(Projectile __instance)
         {
-            if (__instance != null && __instance.m_nview != null && __instance.m_nview.GetZDO() is ZDO zdo)
+            if (__instance.m_nview != null && __instance.m_nview.GetZDO() is ZDO zdo)
             {
                 ExecutionerCheckDamage_Character_Damage_Patch.ExecutionerMultiplier = zdo.GetFloat("epic loot executioner multiplier", 1f);
             }
         }
 
+        // A finalizer: a throw inside OnHit must not leave the multiplier set for the next hit.
         [UsedImplicitly]
-        private static void Postfix() => ExecutionerCheckDamage_Character_Damage_Patch.ExecutionerMultiplier = null;
+        private static void Finalizer() => ExecutionerCheckDamage_Character_Damage_Patch.ExecutionerMultiplier = null;
     }
 
     public class ExecutionerCheckDamage_Character_Damage_Patch
@@ -35,8 +36,7 @@ namespace EpicLoot.MagicItemEffects
         // spawn, so a respawned enemy gets a fresh id and can be executed again.
         private static readonly HashSet<ZDOID> _executedTargets = new HashSet<ZDOID>();
 
-        // Prefix handler invoked by CharacterDamageDispatch (attacker-side outgoing modifier, runs at
-        // Priority.Last so the execute multiplier lands after other damage modifiers).
+        // Called from SharedCharacterDamagePatch's prefix, after the other damage modifiers.
         public static void ModifyOutgoingHit(Character __instance, HitData hit)
         {
             if (__instance == null || hit == null || hit.GetAttacker() != Player.m_localPlayer)
@@ -51,11 +51,8 @@ namespace EpicLoot.MagicItemEffects
                 return;
             }
 
-            // Projectile hits use the multiplier staged from the projectile's ZDO (set by the
-            // Projectile.OnHit prefix and cleared by its postfix); every target of an AoE
-            // projectile must see the same staged value, so it is never consumed here -- the old
-            // code nulled it after the first target and re-derived the rest from the currently
-            // equipped weapon. Melee hits derive from the live weapon per hit.
+            // Projectile hits use the multiplier staged from the projectile's ZDO by the OnHit prefix. Every
+            // target of an AoE projectile must see the same value, so it is never consumed here.
             float multiplier = ExecutionerMultiplier ?? ReadExecutionerValue(player);
 
             // No Executioner on the attack: nothing to spend, so the target stays executable by a later hit
@@ -92,6 +89,22 @@ namespace EpicLoot.MagicItemEffects
         }
     }
 
+    [HarmonyPatch(typeof(Projectile), nameof(Projectile.Setup))]
+    public class ExecutionerSpawnedProjectile_Projectile_Setup_Patch
+    {
+        [UsedImplicitly]
+        private static void Postfix(Projectile __instance, Character owner, HitData hitData, ItemDrop.ItemData item)
+        {
+            if (!StaffRoles.CarriesOwnDamage(owner, hitData, item) || __instance.m_nview?.GetZDO() is not ZDO zdo)
+            {
+                return;
+            }
+
+            zdo.Set("epic loot executioner multiplier", 1 + MagicEffectsHelper.GetTotalActiveMagicEffectValueForWeapon(
+                Player.m_localPlayer, item, MagicEffectType.Executioner, 0.01f));
+        }
+    }
+
     [HarmonyPatch(typeof(Attack), nameof(Attack.FireProjectileBurst))]
     public class ExecutionerProjectileInstantiation_Attack_FireProjectileBurst_Patch
     {
@@ -120,7 +133,7 @@ namespace EpicLoot.MagicItemEffects
                 yield return instruction;
                 if (instruction.opcode == OpCodes.Call && instruction.OperandIs(Instantiator))
                 {
-                    yield return new CodeInstruction(OpCodes.Ldarg_0); // this
+                    yield return new CodeInstruction(OpCodes.Ldarg_0);
                     yield return new CodeInstruction(OpCodes.Call, AttackProjectileMarker);
                 }
             }

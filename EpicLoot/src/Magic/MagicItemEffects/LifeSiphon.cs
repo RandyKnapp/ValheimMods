@@ -13,12 +13,6 @@ namespace EpicLoot
 
 namespace EpicLoot.MagicItemEffects
 {
-    // LifeSiphon (4-piece Hel's Court set bonus, NoRoll). A hit from the wearer siphons the target for Duration seconds,
-    // and each further hit restarts that. While siphoned, the target cannot be healed by anything -- natural regen,
-    // meads, healing status effects, healers, and in PvP food and lifesteal -- and every player whose hit lands on it,
-    // wearer or not, heals for the effect value as a percentage of the health that hit took. Siphons from wearers of
-    // different rarities keep the higher percentage while they overlap.
-    //
     // Everything that decides happens on the target's owner, which may be another client or the dedicated server. A
     // remote player's magic effects are not replicated, so each player's client mirrors its own value into its ZDO
     // (Multiplayer_Player_Patch.UpdateRichesAndLuck), and the owner reads it off the attacker as the hit lands
@@ -38,7 +32,6 @@ namespace EpicLoot.MagicItemEffects
     // tar drops are kept (KeepOnlyDrops).
     public static class LifeSiphon
     {
-        // Tunable in this effect's Config block in magiceffects.json, under this key name.
         public const float DefaultDuration = 30f;
         private const string DurationKey = "Duration";
 
@@ -64,7 +57,6 @@ namespace EpicLoot.MagicItemEffects
         private static bool _auraMissingLogged;
         private static bool _dropsMissingLogged;
 
-        // Tooltip: "Your hits drain a foe for {1} seconds ... heals for {0}% of the damage dealt."
         public static void RegisterDisplayValues()
         {
             MagicItem.RegisterDisplayValues(MagicEffectType.LifeSiphon, value => new object[] { value, Duration });

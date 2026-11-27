@@ -1,6 +1,5 @@
 ﻿using EpicLoot.src.Magic.MagicItemEffects.Helpers;
 using HarmonyLib;
-using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects
 {
@@ -27,7 +26,7 @@ namespace EpicLoot.MagicItemEffects
 
             if (modifier > 0f)
             {
-                __instance.m_shared.m_attack.m_drawStaminaDrain *= 1.0f - Mathf.Min(1f, modifier);
+                __instance.m_shared.m_attack.m_drawStaminaDrain *= ModifyAttackCosts.GetEffectPercentage(modifier);
             }
         }
 

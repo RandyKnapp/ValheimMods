@@ -33,7 +33,8 @@
     ],
     "RandomItemsCount": 0,
     "OtherItems": [
-      { "Item": "Andvaranaut", "CoinsCost": 1998 }
+      { "Item": "Andvaranaut", "CoinsCost": 1998 },
+      { "Item": "SkuldsThread", "CoinsCost": 1500 }
     ]
   },
   "Gamble": { 
@@ -272,12 +273,7 @@
       { "Biome": "AshLands",    "Cost": 700, "ForestTokens": 35, "MinRadius": 8000, "MaxRadius": 10500 },
       { "Biome": "DeepNorth",   "Cost": 800, "ForestTokens": 40, "MinRadius": 8000, "MaxRadius": 10500 }
     ],
-    "StartRadiusMin": 0,
-    "StartRadiusMax": 500,
-    "IncreaseRadiusCount": 3,
-    "RadiusInterval": 50,
     "MinimapAreaRadius": 45,
-    "MaxSpawnSearchExpansions": 5,
     "SaleItems": [
       { "Item": "RunestoneMagic",     "ForestTokenCost": 5 },
       { "Item": "RunestoneRare",      "ForestTokenCost": 10 },

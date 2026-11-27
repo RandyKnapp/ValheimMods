@@ -70,8 +70,8 @@ namespace EpicLoot
     /// The universal "contents are being read" accessor — InventoryGui, Container.CanBeRemoved and
     /// quick-loot mods all route through it. It is a plain getter, though: container-scanning mods
     /// (AzuCraftyBoxes' EpicLoot inventory provider among them, via our own API) call it over every
-    /// container in range, several times per frame. Rolling inline here meant one crafting-station
-    /// query force-rolled every unopened chest in the dungeon in a single frame. Queue instead; the
+    /// container in range, several times per frame, so rolling inline would force-roll every unopened
+    /// chest in a dungeon in a single frame. Queue instead; the
     /// loot lands on the next LateUpdate, which is still well before a player can act on it, since
     /// hovering a chest fires the trigger below first.
     /// </summary>

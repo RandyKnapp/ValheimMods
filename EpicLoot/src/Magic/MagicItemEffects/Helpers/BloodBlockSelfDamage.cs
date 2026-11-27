@@ -8,10 +8,8 @@ namespace EpicLoot.src.Magic.MagicItemEffects.Helpers {
     // (m_blockTimer is -1 while idle and is set to 0 on the block's first UpdateBlock pass) and charge
     // the local player a share of max health as untyped true damage, with the shared hit/blood fx.
     public static class BloodBlockSelfDamage {
-        // Percent of max health charged per block start. Shared by both blood block shards, so it lives
-        // in the Global block of config/shardstones.json ("BloodBlockSelfDamagePercent") rather than on
-        // either effect. A plain static field because this sits on a per-frame UpdateBlock postfix;
-        // EffectConfig.ApplyGlobalConfig refreshes it once per config load.
+        // Percent of max health charged per block start, from the Global block since both blood block shards
+        // share it. A plain static field because this sits on a per-frame UpdateBlock postfix.
         public const float DefaultSelfDamagePercent = 5f;
         public static float SelfDamagePercent = DefaultSelfDamagePercent;
 
@@ -38,21 +36,17 @@ namespace EpicLoot.src.Magic.MagicItemEffects.Helpers {
                 return;
             }
 
-            // Cached (EquipmentEffectCache-backed) overload: this runs from a per-frame patch, where the
-            // parameterless string overload's full LINQ walk is too expensive.
             if (!player.HasActiveMagicEffect(effectType, out _)) {
                 return;
             }
 
             HitData hit = new HitData();
-            hit.SetAttacker(player); // self dmg as player. I want to trigger on hit effects.
-                                     // Can scrap if its too powerful or jank. I expect this effect to go under utilized.
+            // The player as attacker marks the hit self-inflicted, so the damage dispatchers trigger nothing on it.
+            hit.SetAttacker(player);
 
             // True damage: untyped damage does not run through armor or any known resistance.
             hit.m_damage.m_damage = player.GetMaxHealth() * (SelfDamagePercent / 100f);
             hit.m_staggerMultiplier = 0f;
-
-            // addtions to validate hit
             hit.m_point = player.GetCenterPoint();
             hit.m_dir = Vector3.zero;
             hit.m_hitType = HitData.HitType.Self;

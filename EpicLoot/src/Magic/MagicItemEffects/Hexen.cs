@@ -10,12 +10,10 @@ namespace EpicLoot
 
 namespace EpicLoot.MagicItemEffects
 {
-    // Hexen (4-piece Gullveig's Rebirth set bonus, NoRoll). The wearer takes the JotunWitch body, moveset and flight
-    // for as long as the set is worn; the form itself lives in Transformation.HexenForm, which polls this effect on
-    // the owner. The value is the Eitr drained per second of flight.
+    // The form itself lives in Transformation.HexenForm, which polls this effect on the owner. The value is the Eitr
+    // drained per second of flight.
     public static class Hexen
     {
-        // All tunable in this effect's Config block in magiceffects.json, under these key names.
         public const float DefaultScale = 0.6f;     // multiplier on the witch's native size
         public const float DefaultMinEitr = 10f;    // Eitr needed before the wearer can take off
 
@@ -29,7 +27,6 @@ namespace EpicLoot.MagicItemEffects
         public static float FallbackDrain =>
             MagicItemEffectDefinitions.Get(MagicEffectType.Hexen)?.GetValuesForRarity(ItemRarity.Legendary)?.MinValue ?? 3f;
 
-        // Tooltip: "... drains {0} Eitr per second, needs {1} to take off ..."
         public static void RegisterDisplayValues()
         {
             MagicItem.RegisterDisplayValues(MagicEffectType.Hexen, value => new object[] { value, MinEitr });

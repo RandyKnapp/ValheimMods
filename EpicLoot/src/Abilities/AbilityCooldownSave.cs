@@ -5,10 +5,9 @@ using UnityEngine;
 namespace EpicLoot.Abilities
 {
     // Ability cooldowns live on the player's ZDO, and vanilla spawns a new player (with a new ZDO) on every login and
-    // after every death, so they used to come back ready (issue 684). Each character save stores the seconds left in
-    // the player's custom data, and the load at spawn puts them back on the new ZDO. Like vanilla's forsaken power
-    // cooldown, time spent logged out does not count. Vanilla's respawn saves the dead player before destroying it,
-    // so a death in between keeps the time too.
+    // after every death, so the seconds left are kept in the player's custom data across the swap. Like vanilla's
+    // forsaken power cooldown, time spent logged out does not count. Vanilla's respawn saves the dead player before
+    // destroying it, so a death in between keeps the time too.
     public static class AbilityCooldownSave
     {
         private static string SaveKey(string abilityID) => $"EpicLoot.{abilityID}.CooldownRemaining";

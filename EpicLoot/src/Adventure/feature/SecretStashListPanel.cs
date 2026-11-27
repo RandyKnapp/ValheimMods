@@ -52,9 +52,7 @@ namespace EpicLoot.Adventure.Feature
 
         public override void RefreshItems(Currencies currencies)
         {
-            // Gathered before the old rows are destroyed. The other order left the stash permanently
-            // empty whenever the gather threw: nothing puts rows back until the next refresh, and the
-            // next refresh throws in the same place.
+            // Gathered before the current rows are destroyed, so a gather that throws leaves the list as it was.
             var items = AdventureDataManager.SecretStash.GetSecretStashItems();
             var forestTokenItems = AdventureDataManager.SecretStash.GetForestTokenItems();
             var allItems = items.Concat(forestTokenItems).ToList();

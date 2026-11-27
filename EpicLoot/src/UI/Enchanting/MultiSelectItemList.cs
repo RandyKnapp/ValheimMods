@@ -12,8 +12,6 @@ namespace EpicLoot_UnityLib
     public interface IListElement
     {
         ItemDrop.ItemData GetItem();
-
-        public List<string> GetEffectNames();
         string GetEnchantName();
         int GetMax();
         string GetDisplayNameSuffix();
@@ -22,10 +20,11 @@ namespace EpicLoot_UnityLib
     public class InventoryItemListElement : IListElement
     {
         public ItemDrop.ItemData Item;
-        public List<Tuple<string, float>> Effects;
         public string EnchantName;
+        // Set for a row shown but not selectable, with the reason its tooltip gives (a rune the item's other
+        // enchantments exclude).
+        public string BlockedReason;
 
-        public List<string> GetEffectNames() => Effects?.Select(x => x.Item1).ToList() ?? new List<string>();
         public string GetEnchantName() => EnchantName ?? string.Empty;
         public ItemDrop.ItemData GetItem() => Item;
         public int GetMax() => Item?.m_stack ?? 0;
@@ -48,7 +47,6 @@ namespace EpicLoot_UnityLib
         public Toggle SelectAllToggle;
 
         public event Action OnSelectedItemsChanged;
-        public event Action OnItemsChanged;
 
         private bool _locked;
         private bool _hasGamepadFocus;
@@ -346,21 +344,13 @@ namespace EpicLoot_UnityLib
 
             List<IListElement> items = previousSelectionAmounts.Keys.ToList();
             SortMode sortMode = (SortMode)SortByDropdown.value;
-            List<IListElement> sortedItems = SortItems(sortMode, items);
+            List<IListElement> sortedItems = SortItemsOrKeepOrder(sortMode, items);
 
             for (int i = 0; i < sortedItems.Count; ++i)
             {
                 Transform childToSet = ListContainer.GetChild(i);
-                IListElement itemToSet = sortedItems[i];
                 MultiSelectItemListElement element = childToSet.GetComponent<MultiSelectItemListElement>();
-                element.SuppressEvents = true;
-                element.SetItem(itemToSet);
-                if (previousSelectionAmounts.TryGetValue(itemToSet, out int previousQuantity))
-                {
-                    element.SelectQuantity(previousQuantity, true);
-                }
-
-                element.SuppressEvents = false;
+                FillRow(element, sortedItems[i], previousSelectionAmounts);
             }
 
             // Rows were just reassigned by index, so the old show/hide mask now describes the wrong items.
@@ -423,25 +413,17 @@ namespace EpicLoot_UnityLib
             if (Sortable && SortByDropdown != null)
             {
                 SortMode sortMode = (SortMode)SortByDropdown.value;
-                sortedItems = SortItems(sortMode, items);
+                sortedItems = SortItemsOrKeepOrder(sortMode, items);
             }
 
             bool didFocus = false;
             for (int i = 0; i < itemCount; ++i)
             {
                 Transform childToSet = ListContainer.GetChild(i);
-                IListElement itemToSet = sortedItems[i];
                 MultiSelectItemListElement element = childToSet.GetComponent<MultiSelectItemListElement>();
                 element.UseEnchantAsName = UseEnchantAsName;
-                element.SuppressEvents = true;
-                element.SetItem(itemToSet);
+                FillRow(element, sortedItems[i], previousSelectionAmounts);
 
-                if (previousSelectionAmounts.TryGetValue(itemToSet, out int previousQuantity))
-                {
-                    element.SelectQuantity(previousQuantity, true);
-                }
-
-                element.SuppressEvents = false;
                 bool shouldFocus = HasGamepadFocus() && ((focusedElement == null && i == 0) || element == focusedElement);
                 element.GiveFocus(shouldFocus);
 
@@ -454,7 +436,7 @@ namespace EpicLoot_UnityLib
 
             if (HasGamepadFocus() && !didFocus && ListContainer.childCount > 0)
             {
-                // Force GiveFocus to fire
+                // GiveFocus does nothing when the focus flag already matches.
                 _hasGamepadFocus = false;
                 GiveFocus(true, 0);
                 CenterOnItem(GetElement(0));
@@ -465,9 +447,34 @@ namespace EpicLoot_UnityLib
             // GetSelectedItems, which now depends on that mask being correct.
             RefreshFilter();
 
-            OnItemsChanged?.Invoke();
-            OnSelectedItemsChanged?.Invoke();
+            if (!_holdSelectionEvent)
+            {
+                OnSelectedItemsChanged?.Invoke();
+            }
+
             RefreshSelectAllToggle();
+        }
+
+        private bool _holdSelectionEvent;
+
+        /// <summary>
+        /// SetItems then DeselectAll with one selection event: each fires it, and a panel's handler can rebuild
+        /// costs, previews or loot chances.
+        /// </summary>
+        public void SetItemsAndDeselect(List<IListElement> items)
+        {
+            _holdSelectionEvent = true;
+            try
+            {
+                SetItems(items);
+                DeselectAll();
+            }
+            finally
+            {
+                _holdSelectionEvent = false;
+            }
+
+            OnSelectedItemsChanged?.Invoke();
         }
 
         private void OnElementSelectionChanged(MultiSelectItemListElement element, bool isSelected, int selectedQuantity)
@@ -487,6 +494,55 @@ namespace EpicLoot_UnityLib
 
             OnSelectedItemsChanged?.Invoke();
             RefreshSelectAllToggle();
+        }
+
+        // One row's failure must not stop the rows after it or the refreshes that follow the loop. The element
+        // already falls back to a plain display when the item's name or tooltip throws; this catches the rest
+        // (the favorite star, the set marker, the selection restore) so the list still fills.
+        private static void FillRow(MultiSelectItemListElement element, IListElement item,
+            Dictionary<IListElement, int> previousSelectionAmounts)
+        {
+            element.SuppressEvents = true;
+            try
+            {
+                element.SetItem(item);
+
+                if (previousSelectionAmounts.TryGetValue(item, out int previousQuantity))
+                {
+                    element.SelectQuantity(previousQuantity, true);
+                }
+            }
+            catch (Exception e)
+            {
+                MultiSelectItemListElement.ReportItemFailure(item?.GetItem(), e, shownPlainly: false);
+            }
+            finally
+            {
+                element.SuppressEvents = false;
+            }
+        }
+
+        // Sorting reads each item's decorated name, which other mods patch as well, so a throw there keeps the
+        // order the items came in rather than leaving every row unfilled.
+        private List<IListElement> SortItemsOrKeepOrder(SortMode mode, List<IListElement> items)
+        {
+            try
+            {
+                // OrderBy is stable, so a blocked row only drops below the selectable ones.
+                return SortItems(mode, items).OrderBy(IsBlocked).ToList();
+            }
+            catch (Exception e)
+            {
+                MultiSelectItemListElement.ReportOnce($"sort {mode}", e,
+                    $"Could not sort an enchanting table list by {mode}, so it keeps its original order. " +
+                    "Reading an item's name or rarity (usually another mod's patch on it) threw:");
+                return items;
+            }
+        }
+
+        private static bool IsBlocked(IListElement element)
+        {
+            return element is InventoryItemListElement { BlockedReason: not null };
         }
 
         public List<IListElement> SortItems(SortMode mode, List<IListElement> items)
@@ -520,7 +576,7 @@ namespace EpicLoot_UnityLib
                 Localization.instance.Localize("$mod_epicloot_enchanting_equipped")));
         }
 
-        // The three selection getters below all skip filtered-out rows. Whatever they return is what
+        // The two selection getters below skip filtered-out rows. Whatever they return is what
         // the panel previews and then acts on, so a row the player cannot see must never be in it -
         // otherwise filtering to one item and hitting Select All sacrifices the whole inventory.
         public List<Tuple<T, int>> GetSelectedItems<T>()
@@ -564,26 +620,6 @@ namespace EpicLoot_UnityLib
             }
 
             return null;
-        }
-
-        public int GetFirstSelectedIndex()
-        {
-            int elementCount = ListContainer.childCount;
-            for (int i = 0; i < elementCount; ++i)
-            {
-                MultiSelectItemListElement element = GetElement(i);
-                if (!IsVisible(element))
-                {
-                    continue;
-                }
-
-                if (element.GetSelectedQuantity() > 0)
-                {
-                    return i;
-                }
-            }
-
-            return -1;
         }
 
         public void Lock()
@@ -667,7 +703,11 @@ namespace EpicLoot_UnityLib
             ForeachElement((_, e) => e.Deselect(true));
             SuppressEvents(false);
 
-            OnSelectedItemsChanged?.Invoke();
+            if (!_holdSelectionEvent)
+            {
+                OnSelectedItemsChanged?.Invoke();
+            }
+
             RefreshSelectAllToggle();
         }
 
@@ -761,23 +801,5 @@ namespace EpicLoot_UnityLib
         public bool ShowSortHint => Sortable && SortByDropdown != null && SortByDropdown.isActiveAndEnabled;
         public bool ShowSelectAllHint => Multiselect && SelectAllToggle != null && SelectAllToggle.isActiveAndEnabled;
         public bool ShowSelectHint => !ReadOnly && GetFocusedElement() != null;
-
-        public void InitWithExistingItems()
-        {
-            for (int i = 0; i < ListContainer.childCount; ++i)
-            {
-                Transform childToSet = ListContainer.GetChild(i);
-                MultiSelectItemListElement element = childToSet.GetComponent<MultiSelectItemListElement>();
-                element.OnSelectionChanged += OnElementSelectionChanged;
-            }
-
-            DeselectAll();
-
-            RefreshFilter();
-
-            OnItemsChanged?.Invoke();
-            OnSelectedItemsChanged?.Invoke();
-            RefreshSelectAllToggle();
-        }
     }
 }

@@ -29,10 +29,8 @@ namespace EpicLoot.MagicItemEffects
         /// <summary>
         /// The item's durability as a fraction of its maximum, capped at full. m_durability is an absolute
         /// amount while this effect scales the maximum, so enchanting and disenchanting carry durability
-        /// across as this fraction instead. The cap matters: disenchanting used to keep the boosted amount
-        /// against the lower mundane maximum, the next enchant read that as a fraction above 1 and scaled it
-        /// by the new bonus, and repeating the pair grew durability without bound. The cap also brings an
-        /// item that was already inflated that way back to full on its next enchant or disenchant.
+        /// across as this fraction instead. The cap keeps an enchant/disenchant pair from growing durability
+        /// without bound, and brings an item already inflated that way back to full.
         /// Returns null for an item that does not use durability.
         /// </summary>
         public static float? GetDurabilityFraction(ItemDrop.ItemData item)

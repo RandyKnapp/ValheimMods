@@ -21,6 +21,7 @@ namespace EpicLoot_UnityLib
 
         private int _selectedFeature = -1;
         private bool _featuresFocused = true;
+        private EnchantingTable _subscribedTable;
 
         private class FeatureColumn : IGamepadFocusPane
         {
@@ -108,13 +109,29 @@ namespace EpicLoot_UnityLib
 
         public void OnEnable()
         {
+            UnsubscribeFromTable();
             if (EnchantingTableUI.instance.SourceTable != null)
             {
-                EnchantingTableUI.instance.SourceTable.OnAnyFeatureLevelChanged -= Refresh;
-                EnchantingTableUI.instance.SourceTable.OnAnyFeatureLevelChanged += Refresh;
+                _subscribedTable = EnchantingTableUI.instance.SourceTable;
+                _subscribedTable.OnAnyFeatureLevelChanged += Refresh;
             }
 
             Refresh();
+        }
+
+        public void OnDisable()
+        {
+            UnsubscribeFromTable();
+        }
+
+        // The table subscribed to, not SourceTable: Show assigns the next table before re-enabling the window.
+        private void UnsubscribeFromTable()
+        {
+            if (_subscribedTable is not null)
+            {
+                _subscribedTable.OnAnyFeatureLevelChanged -= Refresh;
+                _subscribedTable = null;
+            }
         }
 
         private void OnButtonSelected(MultiSelectItemListElement selectedButton, bool selected, int _)
@@ -362,60 +379,29 @@ namespace EpicLoot_UnityLib
                 ? EnchantingTableUI.instance.SourceTable.GetFeatureUnlockCost(feature)
                 : EnchantingTableUI.instance.SourceTable.GetFeatureUpgradeCost(feature);
 
-            Player player = Player.m_localPlayer;
-            List<ItemDrop.ItemData> paid = new List<ItemDrop.ItemData>();
-            if (!LocalPlayerCanAffordCost(cost) || (!player.NoCostCheat() && !TryPayCost(cost, paid)))
+            if (!LocalPlayerCanAffordCost(cost))
             {
-                Refund(paid);
-                player.Message(MessageHud.MessageType.Center, "$msg_missingrequirement");
+                Player.m_localPlayer.Message(MessageHud.MessageType.Center, "$msg_missingrequirement");
                 Refresh();
                 return;
             }
 
-            int currentLevel = EnchantingTableUI.instance.SourceTable.GetFeatureLevel(feature);
-            EnchantingTableUI.instance.SourceTable.RequestTableUpgrade(feature, currentLevel +1, (success)=>
+            EnchantingTable table = EnchantingTableUI.instance.SourceTable;
+            int currentLevel = table.GetFeatureLevel(feature);
+            PayThen(new InventoryManagement.Payment().Cost(cost), receipt =>
             {
-                if (!success)
+                table.RequestTableUpgrade(feature, currentLevel + 1, success =>
                 {
-                    Debug.LogError($"[Enchanting Upgrade] ERROR: " +
-                        $"Tried to upgrade ({feature}) to level ({currentLevel + 1}) but it failed!");
-                    Refund(paid);
-                }
+                    if (!success)
+                    {
+                        Debug.LogError($"[Enchanting Upgrade] ERROR: " +
+                            $"Tried to upgrade ({feature}) to level ({currentLevel + 1}) but it failed!");
+                        receipt.Refund();
+                    }
 
-                Refresh();
-            });
-        }
-
-        private static bool TryPayCost(List<InventoryItemListElement> cost, List<ItemDrop.ItemData> paid)
-        {
-            foreach (InventoryItemListElement costElement in cost)
-            {
-                ItemDrop.ItemData costItem = costElement.GetItem();
-                int taken = InventoryManagement.Instance.RemoveItem(costItem);
-                if (taken > 0)
-                {
-                    ItemDrop.ItemData refund = costItem.Clone();
-                    refund.m_stack = taken;
-                    paid.Add(refund);
-                }
-
-                if (taken < costItem.m_stack)
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        private static void Refund(List<ItemDrop.ItemData> paid)
-        {
-            foreach (ItemDrop.ItemData item in paid)
-            {
-                InventoryManagement.Instance.GiveItem(item);
-            }
-
-            paid.Clear();
+                    Refresh();
+                });
+            }, Refresh);
         }
 
         public override void Lock()

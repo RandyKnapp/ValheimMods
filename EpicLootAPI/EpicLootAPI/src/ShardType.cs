@@ -53,5 +53,6 @@ public enum ShardType
     Fader = 96,
 
     /// <summary>Not a shard -- a socketed runestone, or an unresolved value.</summary>
-    None
+    /// <remarks>Pinned at 404; Epic Loot before 0.16.0 wrote it as 97, which <see cref="SocketedEffect"/> reads back as None.</remarks>
+    None = 404
 }

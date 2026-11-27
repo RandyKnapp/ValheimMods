@@ -26,6 +26,15 @@ public enum ItemRarity
     Ancient
 }
 
+// Same order as Epic Loot's own enum: the list travels as numbers.
+[PublicAPI]
+public enum StaffRole
+{
+    Damage,  // the staff, or a projectile it spawns, deals damage
+    Summon,  // its attack summons creatures
+    Support  // neither, e.g. Staff of Protection
+}
+
 [Serializable]
 [PublicAPI]
 public class MagicItemEffect
@@ -201,9 +210,14 @@ public class MagicItemEffectRequirements
     public List<Skills.SkillType> ExcludedSkillTypes = new List<Skills.SkillType>();
     public List<string> AllowedItemNames = new List<string>();
     public List<string> ExcludedItemNames = new List<string>();
+    public List<StaffRole> AllowedStaffRoles = new List<StaffRole>(); // only staffs are checked
     public bool? ItemHasPhysicalDamage;
     public bool? ItemHasElementalDamage;
+    public bool? ItemHasNonSpiritElementalDamage; // fire, frost, lightning or poison; a staff counts what it spawns
     public bool? ItemHasChopDamage;
+    public bool? ItemHasBluntDamage;
+    public bool? ItemHasSlashDamage;
+    public bool? ItemHasPierceDamage;
     public bool? ItemUsesDurability;
     public bool? ItemHasNegativeMovementSpeedModifier;
     public bool? ItemHasBlockPower;

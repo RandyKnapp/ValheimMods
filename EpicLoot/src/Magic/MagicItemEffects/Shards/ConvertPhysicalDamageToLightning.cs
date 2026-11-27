@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects.Shards {
-    // Converts a portion of physical damage to lightning damage.
     public static class ConvertPhysicalDamageToLightning {
         // GetDamage postfix handler invoked by ModifyDamage (per-weapon modifier).
         public static void ModifyWeaponDamage(ItemDrop.ItemData __instance, ref HitData.DamageTypes __result) {

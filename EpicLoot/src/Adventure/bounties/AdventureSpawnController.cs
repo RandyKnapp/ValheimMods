@@ -4,8 +4,6 @@ using Jotunn.Managers;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
 
 namespace EpicLoot.Adventure
@@ -17,7 +15,6 @@ namespace EpicLoot.Adventure
     /// </summary>
     internal enum WaterPlacement
     {
-        /// <summary>Submerged points are rejected outright.</summary>
         Reject,
 
         /// <summary>The point stays on the seabed, under the water. Treasure chests sit there.</summary>
@@ -387,8 +384,7 @@ namespace EpicLoot.Adventure
             // gets swimmers too rather than a pile of drowned creatures on the seabed.
             bool swimmingTargets = WorldBiomeIndex.IsOpenWater(bounty.Biome);
 
-            // Minions go around the target rather than in a chain from one to the next, which drifted
-            // a few metres per minion; the spread is held to the margin the search left inside the circle.
+            // Minions go around the target, held to the margin the search left inside the circle.
             float circleRadius = MinimapController.AreaRadius;
             float minionSpread = Mathf.Clamp(circleRadius * (1f - SearchRadiusFraction), 0f, MaxMinionSpread);
             var placedZdos = new List<ZDO>(prefabs.Count);
@@ -475,10 +471,9 @@ namespace EpicLoot.Adventure
         }
 
         /// <summary>
-        /// One always-visible line per placement. Every other line on this path is gated, which is why
-        /// "my bounty never spawned" reports used to arrive with logs that said nothing at all. When
-        /// the spawn point was chosen by another machine (or before this instance was loaded), there is
-        /// no local search to time and only the fact of placement is reported.
+        /// One always-visible line per placement; every other line on this path is gated. When the spawn
+        /// point was chosen by another machine (or before this instance was loaded), there is no local
+        /// search to time and only the fact of placement is reported.
         /// </summary>
         private void LogPlacement(string what, Heightmap.Biome biome)
         {
@@ -547,20 +542,19 @@ namespace EpicLoot.Adventure
 
             reportedOverdue = true;
             string machine = ZNet.instance.IsDedicated() ? "dedicated server" : ZNet.instance.IsServer() ? "host" : "client";
-            EpicLoot.LogWarningForce($"{DescribeSpawn()} has not been placed after this {machine} owned its spawner " +
-                $"for {ownedSeconds:0}s: {DescribeStage()}.");
+            EpicLoot.LogWarningForce($"{DescribeSpawn(isBounty.Get() ? bounty.Get() : null, treasure.Get())} has not " +
+                $"been placed after this {machine} owned its spawner for {ownedSeconds:0}s: {DescribeStage()}.");
         }
 
-        private string DescribeSpawn()
+        /// <summary>Names a bounty (when not null) or else a treasure map, for log lines.</summary>
+        internal static string DescribeSpawn(BountyInfo bountyInfo, TreasureMapChestInfo treasureInfo)
         {
-            if (isBounty.Get())
+            if (bountyInfo != null)
             {
-                BountyInfo bountyInfo = bounty.Get();
                 return $"Adventure bounty target '{bountyInfo.Target.MonsterID}' " +
                     $"({BiomeDataManager.GetName(bountyInfo.Biome)}, {bountyInfo.ID})";
             }
 
-            TreasureMapChestInfo treasureInfo = treasure.Get();
             return $"Adventure treasure chest ({BiomeDataManager.GetName(treasureInfo.Biome)}, interval {treasureInfo.Interval})";
         }
 
@@ -611,9 +605,6 @@ namespace EpicLoot.Adventure
                 }
             }
 
-            // This used to be a fixed 300 frames plus five seconds, then vanilla's IsAreaReady polled
-            // once a second -- 10-15s of nothing after arriving, before the search had even begun.
-            // IsAreaSettled waits exactly as long as loading actually takes.
             stage = PlacementStage.WaitingForArea;
             while (!IsAreaSettled(circleCentre))
             {
@@ -642,10 +633,9 @@ namespace EpicLoot.Adventure
             float wardBuffer = Mathf.Max(0f, AdventureDataManager.Config.TreasureMap.MinimapAreaRadius);
             float waterSurface = ZoneSystem.instance.m_waterLevel;
 
-            // An open-water biome sits below the water line everywhere -- Ocean's biome cutoff is
-            // roughly 25m under it. Rejecting submerged points there rejected every candidate, which is
-            // why no ocean bounty ever placed. Asking the biome index rather than testing for Ocean by
-            // name extends that fix to any ocean-like biome another mod adds.
+            // An open-water biome sits below the water line everywhere (Ocean's biome cutoff is roughly
+            // 25m under it), so submerged points cannot be rejected there. The biome index, not the Ocean
+            // name, decides this so an ocean-like biome another mod adds is covered too.
             bool spawnInOpenWater = WorldBiomeIndex.IsOpenWater(biome) &&
                 waterPlacement != WaterPlacement.Reject;
 
@@ -659,8 +649,6 @@ namespace EpicLoot.Adventure
             // rule. Nothing here ever looks outside the circle: see the class summary for why.
             for (int attempt = 0; attempt < MaxCandidates; attempt++)
             {
-                // Spread the work over frames. The search used to sleep a whole second after every ten
-                // rejected candidates, so a cluttered or partly flooded area cost many seconds.
                 if (++candidatesThisFrame >= CandidatesPerFrame)
                 {
                     candidatesThisFrame = 0;
@@ -728,8 +716,6 @@ namespace EpicLoot.Adventure
 
             Vector3 determinedSpawn = chosen.Position;
 
-            // Bounty targets that belong in the Ocean are swimming creatures, so put them at the
-            // surface rather than on the seabed tens of metres below it.
             if (spawnInOpenWater && waterPlacement == WaterPlacement.Surface)
             {
                 determinedSpawn.y = waterSurface;
@@ -863,10 +849,9 @@ namespace EpicLoot.Adventure
         }
 
         /// <summary>
-        /// Drops a search this client no longer owns. Without this the coroutine ran to the end
-        /// regardless, and its <c>spawnPoint.ForceSet</c> claimed ownership back from whoever had taken
-        /// over -- two clients searching and both reaching the spawn is how a bounty spawns twice.
-        /// No retry delay: if ownership comes back, searching again right away is correct.
+        /// Drops a search this client no longer owns: finishing it would let <c>spawnPoint.ForceSet</c>
+        /// claim ownership back from whoever took over, and two clients reaching the spawn spawns the
+        /// bounty twice. No retry delay: if ownership comes back, searching again right away is correct.
         /// </summary>
         private void AbandonSearch()
         {
@@ -970,7 +955,7 @@ namespace EpicLoot.Adventure
         private bool IsCandidateZoneReady(Vector2s zone)
         {
             // A dedicated server has no near area of its own (see IsAreaSettled); leave candidates to
-            // the GetGroundData check, as before.
+            // the GetGroundData check.
             if (ZNet.instance.IsDedicated())
             {
                 return true;
@@ -1039,17 +1024,11 @@ namespace EpicLoot.Adventure
         }
 
         /// <summary>
-        /// Handles a bounty creature prefab that ZNetScene does not have -- typically a creature from a
-        /// mod that has since been removed.
-        ///
-        /// Spawning bails without setting <c>placed</c>, and Update re-enters it on the very next frame,
-        /// so before this the spawner retried a lookup that cannot succeed **every frame for as long as
-        /// the player stayed near the bounty**. Back off for <see cref="MissingPrefabRetrySeconds"/>,
-        /// and report it once at Error rather than per-frame at Warning -- Warning is invisible at the
-        /// default Log Level, which is why this failed silently.
-        ///
-        /// The spawner is deliberately not marked placed: the player has already paid for this bounty,
-        /// and re-adding the missing mod should let it spawn normally.
+        /// Handles a bounty creature prefab that ZNetScene does not have, typically from a mod that has
+        /// since been removed. Spawning bails without setting <c>placed</c> and Update would re-enter it
+        /// every frame, so this backs off for <see cref="MissingPrefabRetrySeconds"/> and reports once at
+        /// Error (Warning is hidden at the default Log Level). The spawner is deliberately not marked
+        /// placed: the bounty is paid for, and re-adding the missing mod should let it spawn.
         /// </summary>
         private void ReportMissingPrefab(string role, string bountyId, string monsterId)
         {
@@ -1073,36 +1052,13 @@ namespace EpicLoot.Adventure
         /// </summary>
         internal static bool TryReadBounty(ZDO zdo, out BountyInfo bountyInfo)
         {
-            return TryReadBinary(zdo, BountyKey, out bountyInfo);
+            return ZdoPackedData.TryDecode(zdo.GetByteArray(BountyKey), BountyInfo.FromPackage, out bountyInfo);
         }
 
         /// <summary>Treasure-map counterpart to <see cref="TryReadBounty"/>.</summary>
         internal static bool TryReadTreasure(ZDO zdo, out TreasureMapChestInfo treasureInfo)
         {
-            return TryReadBinary(zdo, TreasureKey, out treasureInfo);
-        }
-
-        /// <summary>The same BinaryFormatter decode the ZNetProperty wrappers in CustomZNet use.</summary>
-        private static bool TryReadBinary<T>(ZDO zdo, string key, out T value) where T : class
-        {
-            value = null;
-            byte[] stored = zdo.GetByteArray(key);
-            if (stored == null)
-            {
-                return false;
-            }
-
-            try
-            {
-                using var stream = new MemoryStream(stored);
-                value = new BinaryFormatter().Deserialize(stream) as T;
-            }
-            catch (Exception)
-            {
-                value = null;
-            }
-
-            return value != null;
+            return ZdoPackedData.TryDecode(zdo.GetByteArray(TreasureKey), TreasureMapChestInfo.FromPackage, out treasureInfo);
         }
     }
 }

@@ -21,11 +21,10 @@ namespace EpicLoot_UnityLib
 
         public event Action<EnchantingFeature, int> OnFeatureLevelChanged;
         public event Action OnAnyFeatureLevelChanged;
-        
 
-        // An upgrade the table's owner has not answered yet, with the materials already paid. Nothing used
-        // to end the wait, so an owner leaving before replying kept the payment for good; after
-        // UpgradeResponseTimeout the request is settled from what the table shows (ExpireUpgradeRequests).
+        // An upgrade the table's owner has not answered yet, with the materials already paid. After
+        // UpgradeResponseTimeout it is settled from what the table shows (ExpireUpgradeRequests), so an owner
+        // leaving before replying does not keep the payment.
         private class PendingUpgrade
         {
             public EnchantingFeatureUpgradeRequest Request;
@@ -55,10 +54,6 @@ namespace EpicLoot_UnityLib
             EnchantingTableUI.Show(this);
             _interactingPlayer = Player.m_localPlayer;
             return false;
-        }
-
-        public void Awake()
-        {
         }
 
         public void Start()
@@ -106,25 +101,11 @@ namespace EpicLoot_UnityLib
                 return;
             }
 
-            GameObject instance = ZNetScene.instance.FindInstance(tableZDO);
-            if (instance == null)
-            {
-                return;
-            }
-
-            EnchantingTable table = instance.GetComponent<EnchantingTable>();
-            if (table == null)
-            {
-                return;
-            }
-
             EnchantingFeature feature = (EnchantingFeature)featureI;
-            if (table.IsFeatureAvailable(feature) && toLevel == table.GetFeatureLevel(feature) + 1)
+            if (IsFeatureAvailable(feature) && toLevel == GetFeatureLevel(feature) + 1)
             {
-                table.SetFeatureLevel(feature, toLevel);
+                SetFeatureLevel(feature, toLevel);
                 _nview.InvokeRPC(sender,"el.TableUpgradeResponse",tableZDO, featureI, toLevel, true);
-                OnFeatureLevelChanged?.Invoke(feature, toLevel);
-                OnAnyFeatureLevelChanged?.Invoke();
             }
             else
             {
@@ -134,9 +115,7 @@ namespace EpicLoot_UnityLib
 
         private void RPC_TableUpgradeResponse(long sender, ZDOID tableZDO, int featureI, int toLevel, bool success)
         {
-            //Only sent to Sender of Request.
-            //Performs checks,
-            //Calls OnTableUpgradeResponse
+            // Only sent to the requester.
             EnchantingFeature feature = (EnchantingFeature)featureI;
             List<PendingUpgrade> listCopy = _upgradeRequests.ToList();
             foreach (PendingUpgrade pending in listCopy)
@@ -302,9 +281,6 @@ namespace EpicLoot_UnityLib
 
         public float GetHoverOffset()
         {
-            // Hoverable gained this member in the Sept 2026 game update. All 52 vanilla
-            // implementers return a serialized m_hoverOffset; zero keeps the enchanting
-            // table's hover text exactly where it has always been.
             return 0f;
         }
 
@@ -315,9 +291,8 @@ namespace EpicLoot_UnityLib
 
         private void InitFeatureLevels()
         {
-            // Owner-only: a non-owner Set is not authoritative and bumps the data revision on a
-            // ZDO someone else owns -- every client streaming the table in used to re-write the
-            // disabled-feature sentinels on each load, letting clients disagree about levels.
+            // Owner-only: a non-owner Set is not authoritative and bumps the data revision on a ZDO
+            // someone else owns, so clients streaming the table in would disagree about levels.
             if (_nview == null || !_nview.IsValid() || !_nview.IsOwner())
             {
                 return;
@@ -330,8 +305,7 @@ namespace EpicLoot_UnityLib
                 int featureValue = _nview.GetZDO().GetInt(FormatFeatureName(featureName), uninitializedSentinel);
                 if (featureValue < 0)
                 {
-                    //For those that travel here from afar, you might be asking yourself why I'm adding and subtracting 1 to the level.
-                    //It's because Iron Gate decided that 0 value ZDO's should be removed when world save occurs........
+                    // Levels are stored plus one: the world save drops ZDO ints whose value is 0.
                     _nview.GetZDO().Set(FormatFeatureName(featureName), GetDefaultFeatureLevel(feature) + 1);
                 }
             }
@@ -358,14 +332,6 @@ namespace EpicLoot_UnityLib
             return feature == EnchantingFeature.Storage ? FeatureLockedSentinel : FeatureUnavailableSentinel;
         }
 
-        public void Reset()
-        {
-            foreach (EnchantingFeature feature in Enum.GetValues(typeof(EnchantingFeature)))
-            {
-                SetFeatureLevel(feature, GetDefaultFeatureLevel(feature));
-            }
-        }
-
         public int GetFeatureLevel(EnchantingFeature feature)
         {
             if (_nview == null || _nview.GetZDO() == null)
@@ -385,8 +351,6 @@ namespace EpicLoot_UnityLib
 
             string featureName = feature.ToString();
             int level = _nview.GetZDO().GetInt(FormatFeatureName(featureName), FeatureUnavailableSentinel);
-            //For those that travel here from afar, you might be asking yourself why I'm adding and subtracting 1 to the level.
-            //It's because Iron Gate decided that 0 value ZDO's should be removed when world save occurs........
             return level == FeatureUnavailableSentinel ? FeatureUnavailableSentinel : level - 1;
         }
 

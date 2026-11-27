@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using EpicLoot.General;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -181,39 +182,6 @@ namespace EpicLoot.src.Magic.MagicItemEffects.Helpers
             return scale * (cached ?? 0);
         }
 
-        // --- Shared guards/lookups for effect dispatchers -------------------------------------------
-        // These fold the boilerplate that nearly every on-hit / on-damage effect repeats. Used by the
-        // Character.Damage / Character.RPC_Damage dispatchers (see Dispatch/) so each effect's handler
-        // can assume the guard already passed and just do its work.
-
-        /// <summary>
-        /// True when <paramref name="hit"/> is an outgoing hit dealt by the local player (attacker side).
-        /// Runs once, on the attacker's client, before Character.Damage forwards to the target.
-        /// </summary>
-        public static bool IsLocalOutgoingHit(HitData hit, out Player player)
-        {
-            player = Player.m_localPlayer;
-            return hit != null && player != null && hit.GetAttacker() == player;
-        }
-
-        /// <summary>
-        /// True when <paramref name="instance"/> is the local player receiving damage / owning regen.
-        /// </summary>
-        public static bool IsLocalVictim(Character instance)
-        {
-            return instance != null && instance == Player.m_localPlayer;
-        }
-
-        /// <summary>
-        /// Null-safe read of a whole-number-percent effect summed across the local player's equipment
-        /// (shard values are authored as percents, hence the default 0.01f scale).
-        /// </summary>
-        public static float GetLocalPercent(string effectType, float scale = 0.01f)
-        {
-            var player = Player.m_localPlayer;
-            return player != null ? player.GetTotalActiveMagicEffectValue(effectType, scale) : 0f;
-        }
-
         /// <summary>
         /// The weapon that produced the current attack: the weapon that fired the projectile or area effect
         /// now dealing damage (<see cref="HitSource.FiringWeapon"/>), else the in-progress melee attack's weapon
@@ -262,6 +230,21 @@ namespace EpicLoot.src.Magic.MagicItemEffects.Helpers
             {
                 GameCamera.instance.m_playerPos = point;
             }
+        }
+
+        /// <summary>
+        /// The share of a hit's damage that a payout proportional to damage dealt may count: overkill does not
+        /// count, so a huge hit on a nearly dead target pays for the health it took. 0 for a hit with no damage.
+        /// </summary>
+        public static float GetCountedDamageFraction(HitData hit, float healthBeforeHit)
+        {
+            float total = hit.m_damage.EpicLootGetTotalDamage();
+            return total > 0f ? Mathf.Clamp01(healthBeforeHit / total) : 0f;
+        }
+
+        public static float GetCountedDamage(HitData hit, float healthBeforeHit)
+        {
+            return Mathf.Min(hit.m_damage.EpicLootGetTotalDamage(), Mathf.Max(0f, healthBeforeHit));
         }
 
         /// <summary>

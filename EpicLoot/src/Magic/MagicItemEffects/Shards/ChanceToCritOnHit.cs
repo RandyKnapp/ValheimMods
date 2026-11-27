@@ -4,12 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects.Shards {
-    // Provides a chance to crit on hit, applying a damage multiplier on crit.
     public static class ChanceToCritOnHit {
-        // Damage multiplier applied on a successful crit; 2 = double damage. This is distinct in intent from
-        // ChanceDoubleDamage (a Fortune-shard proc) even though the default matches, so the two carry
-        // separate Config blocks and can be retuned apart. Tunable as "DamageMultiplier" in this effect's
-        // Config block in config/shardstones.json.
+        // Kept apart from ChanceDoubleDamage's multiplier despite the matching default, so the two can be
+        // retuned separately.
         public const float DefaultDamageMultiplier = 2f;
 
         private const string DamageMultiplierKey = "DamageMultiplier";
@@ -25,14 +22,12 @@ namespace EpicLoot.MagicItemEffects.Shards {
         }
 
         static GameObject effect;
-        // Tooltip: "{0}% Chance to Crit for {1}x Damage" -- {1} is the configured multiplier, so the shown
-        // number follows a retune instead of staying at the baked-in default.
         public static void RegisterDisplayValues() {
             MagicItem.RegisterDisplayValues(MagicEffectType.ChanceToCritOnHit,
                 value => new object[] { value, GetDamageMultiplier() });
         }
 
-        // Prefix handler invoked by CharacterDamageDispatch (attacker-side outgoing modifier).
+        // Prefix handler invoked by SharedCharacterDamagePatch (attacker-side outgoing modifier).
         public static void ModifyOutgoingHit(HitData hit, Character attacker) {
             if (hit == null || attacker != Player.m_localPlayer) {
                 return;

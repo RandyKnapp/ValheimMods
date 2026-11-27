@@ -9,13 +9,13 @@ namespace EpicLoot.MagicItemEffects
         [HarmonyPatch(typeof(Player), nameof(Player.UpdateEnvStatusEffects))]
         public static class Waterproof_Player_UpdateEnvStatusEffects_Patch
         {
-            public static bool Prefix()
+            public static void Prefix()
             {
                 AddingStatusFromEnv++;
-                return true;
             }
 
-            public static void Postfix(Player __instance)
+            // A finalizer, so a throw in the original cannot leave the count up and block Wet for good.
+            public static void Finalizer()
             {
                 AddingStatusFromEnv--;
             }
@@ -26,12 +26,10 @@ namespace EpicLoot.MagicItemEffects
         {
             public static bool Prefix(SEMan __instance, int nameHash)
             {
-                // Vanilla passes SEMan.s_statusEffectWet (GetStableHashCode); string.GetHashCode
-                // never matched, so Waterproof never blocked the Wet effect.
                 if (AddingStatusFromEnv > 0 && __instance.m_character.IsPlayer() && nameHash == SEMan.s_statusEffectWet)
                 {
                     var player = (Player) __instance.m_character;
-                    var hasWaterproofEquipment = player.HasActiveMagicEffect(MagicEffectType.Waterproof, out float effectValue);
+                    var hasWaterproofEquipment = player.HasActiveMagicEffect(MagicEffectType.Waterproof, out float _);
                     if (hasWaterproofEquipment)
                     {
                         return false;

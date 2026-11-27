@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using EpicLoot.MagicItemEffects;
 using UnityEngine;
+using static EpicLoot.Compendium.CompendiumFormat;
 
 namespace EpicLoot.Compendium;
 
@@ -8,8 +9,6 @@ public static class DefenseTextSection
 {
     private const string MoreDamageColor = "#ff8a8aff";
     private const string LessDamageColor = "#8aff8aff";
-    private const string NeutralColor = "#c0c0c0ff";
-    private const string Dash = "<color=#808080ff>-</color>";
 
     private static readonly HitData.DamageType[] DamageTypes =
     {
@@ -95,8 +94,6 @@ public static class DefenseTextSection
 
         table.Finish();
     }
-
-    private static string Grey(string text) => StatSourceLines.Grey(text);
 
     private static IEnumerable<KeyValuePair<HitData.DamageModifier, string>> GetVanillaSources(Player player,
         HitData.DamageType type)

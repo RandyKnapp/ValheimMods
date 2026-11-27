@@ -97,9 +97,7 @@ namespace EpicLoot.Adventure.Feature
 
         public override void RefreshItems(Currencies currencies)
         {
-            // Rows are gathered before the old ones are destroyed. The other order left the list
-            // permanently empty whenever the gather threw, since nothing puts rows back until the next
-            // refresh -- and the next refresh throws in the same place.
+            // Gathered before the current rows are destroyed, so a gather that throws leaves the list as it was.
             var allItems = AdventureDataManager.Bounties.GetAvailableBounties();
 
             _currentInterval = AdventureDataManager.Bounties.GetCurrentInterval();

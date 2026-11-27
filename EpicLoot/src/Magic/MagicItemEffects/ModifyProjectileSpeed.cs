@@ -5,34 +5,31 @@ namespace EpicLoot.MagicItemEffects;
 public class ModifyProjectileSpeed
 {
     [HarmonyPatch(typeof(Attack), nameof(Attack.FireProjectileBurst))]
-    public static class ModifyProjectileSpeed_Attack_FireProjectileBurst_Patch
+    public static class ModifyProjectileSpeed_Patch
     {
-        private static float originalVelocity;
-
-        public static void Prefix(Attack __instance)
+        // __state holds the unscaled value only when this call scaled it; the finalizer puts it back even if the
+        // original throws, so the bonus can never compound.
+        public static void Prefix(Attack __instance, out float? __state)
         {
-            Player player = __instance.m_character as Player;
-
-            if (player == Player.m_localPlayer)
+            __state = null;
+            if (!(__instance.m_character is Player player) || player != Player.m_localPlayer)
             {
-                originalVelocity = __instance.m_projectileVel;
+                return;
+            }
 
-                float effectValue =
-                    player.GetTotalActiveMagicEffectValue(MagicEffectType.ModifyProjectileSpeed, 0.01f);
-                if (effectValue > 0f)
-                {
-                    __instance.m_projectileVel *= 1 + effectValue;
-                }
+            float effectValue = player.GetTotalActiveMagicEffectValue(MagicEffectType.ModifyProjectileSpeed, 0.01f);
+            if (effectValue > 0f)
+            {
+                __state = __instance.m_projectileVel;
+                __instance.m_projectileVel *= 1 + effectValue;
             }
         }
 
-        public static void Postfix(Attack __instance)
+        public static void Finalizer(Attack __instance, float? __state)
         {
-            Player player = __instance.m_character as Player;
-
-            if (player == Player.m_localPlayer)
+            if (__state.HasValue)
             {
-                __instance.m_projectileVel = originalVelocity;
+                __instance.m_projectileVel = __state.Value;
             }
         }
     }

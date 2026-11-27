@@ -1,7 +1,6 @@
 ﻿namespace EpicLoot.MagicItemEffects;
 
-// Postfix handler invoked by CharacterDamageDispatch (on-hit reaction): the local player's hits have a
-// chance to stagger the (PvP-enabled) victim.
+// Called from SharedCharacterDamagePatch's postfix, on the attacker's client.
 public static class StaggerOnDamageTaken_Character_Damage_Patch
 {
     public static void OnDamageDealt(Character __instance, HitData hit, Character attacker)
@@ -17,10 +16,9 @@ public static class StaggerOnDamageTaken_Character_Damage_Patch
         }
 
         if (attacker == Player.m_localPlayer &&
-            __instance != null && attacker != __instance &&
+            attacker != __instance &&
             Player.m_localPlayer.HasActiveMagicEffect(MagicEffectType.StaggerOnDamageTaken, out float effectValue, 0.01f))
         {
-            // Don't stagger friendly players, only PvP enabled ones
             if (__instance is Player && __instance.IsPVPEnabled() == false)
             {
                 return;

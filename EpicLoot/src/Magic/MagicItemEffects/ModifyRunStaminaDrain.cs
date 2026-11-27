@@ -5,15 +5,10 @@ namespace EpicLoot.MagicItemEffects;
 public static class ModifyRunStaminaDrain
 {
     [HarmonyPatch(typeof(Player), nameof(Player.GetEquipmentRunStaminaModifier))]
-    private static class ModifyRunStaminaDrain_Player_GetEquipmentDodgeStaminaModifier_Patch
+    private static class ModifyRunStaminaDrain_Player_GetEquipmentRunStaminaModifier_Patch
     {
         private static void Postfix(Player __instance, ref float __result)
         {
-            if (__instance == null)
-            {
-                return;
-            }
-
             __result -= __instance.GetTotalActiveMagicEffectValue(MagicEffectType.ModifySprintStaminaUse, 0.01f);
         }
     }

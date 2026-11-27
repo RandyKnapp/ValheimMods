@@ -7,7 +7,7 @@ namespace EpicLoot.MagicItemEffects
     // A set effect's gauge on the HUD: a clone of vanilla's adrenaline bar, recoloured, under the stamina bar, one row
     // below the adrenaline bar when that is showing. It keeps the bar's Animator, so it shows, hides and flashes as
     // vanilla's does. Rebuilt whenever the Hud instance changes (a new world, a logout). The owner calls Refresh from a
-    // Hud.Update postfix every frame. Taken from KineticQuakeHud, which predates it.
+    // Hud.Update postfix every frame.
     internal sealed class SetGaugeBar
     {
         private const float RowOffset = 20f;           // pixels below vanilla's adrenaline bar when that is showing

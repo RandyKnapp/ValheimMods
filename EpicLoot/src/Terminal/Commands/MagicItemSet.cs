@@ -7,10 +7,12 @@ namespace EpicLoot;
 
 public static partial class TerminalManager
 {
-    // magicitemset <setID> [rarity|random]: every piece of a set. Omitting the rarity uses the set's highest;
-    // "random" gives each piece its own rarity from the set's list, for testing mixed-rarity tiers.
+    // Omitting the rarity uses the set's highest; "random" gives each piece its own rarity from the set's
+    // list, for testing mixed-rarity tiers.
     private static void SpawnMagicItemSet(Terminal.ConsoleEventArgs args)
     {
+        if (Player.m_localPlayer == null) return;
+
         if (args.Length < 2)
         {
             args.Context.PrintWarning("> Specify Set ID, rarity (optional or random)");

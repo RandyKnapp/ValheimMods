@@ -1,7 +1,4 @@
 ﻿using EpicLoot.Adventure;
-using System.Collections.Generic;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
 using static EpicLoot.Data.CustomZNet;
 
@@ -64,93 +61,22 @@ namespace EpicLoot.Data
         }
     }
 
-    internal class LongZNetProperty : ZNetProperty<long>
-    {
-        public LongZNetProperty(string key, ZNetView zNetView, long defaultValue) : base(key, zNetView, defaultValue)
-        {
-        }
-
-        public override long Get()
-        {
-            return zNetView.GetZDO().GetLong(Key, DefaultValue);
-        }
-
-        protected override void SetValue(long value)
-        {
-            zNetView.GetZDO().Set(Key, value);
-        }
-    }
-
-    internal class IntZNetProperty : ZNetProperty<int>
-    {
-        public IntZNetProperty(string key, ZNetView zNetView, int defaultValue) : base(key, zNetView, defaultValue)
-        {
-        }
-
-        public override int Get()
-        {
-            return zNetView.GetZDO().GetInt(Key, DefaultValue);
-        }
-
-        protected override void SetValue(int value)
-        {
-            zNetView.GetZDO().Set(Key, value);
-        }
-    }
-
-    internal class ListVector3ZNetProperty : ZNetProperty<List<Vector3>>
-    { 
-        BinaryFormatter binFormatter = new BinaryFormatter();
-        public ListVector3ZNetProperty(string key, ZNetView zNetView, List<Vector3> defaultValue) : base(key, zNetView, defaultValue)
-        {
-        }
-
-        public override List<Vector3> Get()
-        {
-            var stored = zNetView.GetZDO().GetByteArray(Key);
-            // we can't deserialize a null buffer
-            if (stored == null) { return new List<Vector3>(); }
-            var mStream = new MemoryStream(stored);
-            var binDeserialized = (List<Vector3>)binFormatter.Deserialize(mStream);
-
-            return binDeserialized;
-        }
-
-        protected override void SetValue(List<Vector3> value)
-        {
-            var mStream = new MemoryStream();
-            binFormatter.Serialize(mStream, value);
-
-            zNetView.GetZDO().Set(Key, mStream.ToArray());
-        }
-    }
-
-    // BountyInfo Znet object stored as binary
-    // Maybe consider compression?
     internal class BountyInfoZNetProperty : ZNetProperty<BountyInfo>
     {
-        BinaryFormatter binFormatter = new BinaryFormatter();
         public BountyInfoZNetProperty(string key, ZNetView zNetView, BountyInfo defaultValue) : base(key, zNetView, defaultValue)
         {
         }
 
         public override BountyInfo Get()
         {
-            var stored = zNetView.GetZDO().GetByteArray(Key);
-            // we can't deserialize a null buffer
-            if (stored == null) { return new BountyInfo(); }
-            var mStream = new MemoryStream(stored);
-            var binDeserialized = (BountyInfo)binFormatter.Deserialize(mStream);
-
-            return binDeserialized;
+            return ZdoPackedData.TryDecode(zNetView.GetZDO().GetByteArray(Key), BountyInfo.FromPackage, out BountyInfo value)
+                ? value
+                : new BountyInfo();
         }
 
         protected override void SetValue(BountyInfo value)
         {
-            var mStream = new MemoryStream();
-            binFormatter.Serialize(mStream, value);
-
-            zNetView.GetZDO().Set(Key, mStream.ToArray());
+            zNetView.GetZDO().Set(Key, ZdoPackedData.Encode(value.ToPackage));
         }
     }
 
@@ -173,28 +99,21 @@ namespace EpicLoot.Data
 
     internal class TreasureMapChestInfoZNetProperty : ZNetProperty<TreasureMapChestInfo>
     {
-        BinaryFormatter binFormatter = new BinaryFormatter();
         public TreasureMapChestInfoZNetProperty(string key, ZNetView zNetView, TreasureMapChestInfo defaultValue) : base(key, zNetView, defaultValue)
         {
         }
 
         public override TreasureMapChestInfo Get()
         {
-            var stored = zNetView.GetZDO().GetByteArray(Key);
-            // we can't deserialize a null buffer
-            if (stored == null) { return new TreasureMapChestInfo(); }
-            var mStream = new MemoryStream(stored);
-            var binDeserialized = (TreasureMapChestInfo)binFormatter.Deserialize(mStream);
-
-            return binDeserialized;
+            return ZdoPackedData.TryDecode(zNetView.GetZDO().GetByteArray(Key), TreasureMapChestInfo.FromPackage,
+                out TreasureMapChestInfo value)
+                ? value
+                : new TreasureMapChestInfo();
         }
 
         protected override void SetValue(TreasureMapChestInfo value)
         {
-            var mStream = new MemoryStream();
-            binFormatter.Serialize(mStream, value);
-
-            zNetView.GetZDO().Set(Key, mStream.ToArray());
+            zNetView.GetZDO().Set(Key, ZdoPackedData.Encode(value.ToPackage));
         }
     }
 }

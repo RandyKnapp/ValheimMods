@@ -6,9 +6,6 @@ using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects.Shards
 {
-    // Perfect dodge specific rewards
-
-    // ---- Shared trigger for the reward effects ------------------------------------------------------
     // Vanilla latches m_beenHitWhileDodging so only the first avoided hit of a roll counts as the perfect
     // dodge (Player.RPC_HitWhileDodging); the latch is cleared when the roll ends (Player.UpdateDodge).
     // A Harmony postfix still runs when the original early-returns on that latch, and the attacker raises
@@ -48,7 +45,6 @@ namespace EpicLoot.MagicItemEffects.Shards
         }
     }
 
-    // ---- Rewards on a perfect dodge: restore a % of the matching max pool -------------------------
     public static class PerfectDodgeGivesHealth
     {
         public static void OnPerfectDodge(Player player)
@@ -85,16 +81,9 @@ namespace EpicLoot.MagicItemEffects.Shards
         }
     }
 
-    // ---- Trinket: a perfect dodge builds a stacking stamina-regen buff -----------------------------
-    // Grants "Dodge Momentum" (SE_DodgeMomentum) for BuffDuration seconds. Each perfect dodge adds a stack up
-    // to MaxStacks and refreshes the countdown, so chaining dodges through a fight ramps the regen and holds
-    // it -- paying back the stamina the dodging itself costs. The shard value is the bonus *per stack*, so a
-    // Mythic (12) tops out at +60% stamina regen. The regen is applied by SE_DodgeMomentum's own
-    // ModifyStaminaRegen override, so vanilla drives it every frame off the live stack count.
+    // The shard value is the stamina-regen bonus per stack; SE_DodgeMomentum's ModifyStaminaRegen applies it.
     public static class PerfectDodge
     {
-        // How many dodges the buff may stack to, and how long a stack survives without a refresh. Tunable as
-        // "MaxStacks" and "BuffDuration" in this effect's Config block in config/shardstones.json.
         public const int DefaultMaxStacks = 5;
         public const float DefaultBuffDuration = 10f;
 
@@ -111,8 +100,6 @@ namespace EpicLoot.MagicItemEffects.Shards
         private static SE_DodgeMomentum _buffPrototype;
         private static bool _iconMissingLogged;
 
-        // Tooltip: "+{0}% Stamina Regen per Stack (max {1})" -- {1} surfaces the configured stack cap. Pure,
-        // as the provider contract requires (MagicItem.RegisterDisplayValues): it only reads the effect config.
         public static void RegisterDisplayValues()
         {
             MagicItem.RegisterDisplayValues(MagicEffectType.PerfectDodge,
@@ -121,7 +108,6 @@ namespace EpicLoot.MagicItemEffects.Shards
 
         public static void OnPerfectDodge(Player player)
         {
-            // Shard value doubles as the per-stack stamina-regen percentage (8 -> +8% per stack at Epic).
             var regenPerStack = player.GetTotalActiveMagicEffectValue(MagicEffectType.PerfectDodge, 0.01f);
             if (regenPerStack <= 0f)
             {
@@ -138,28 +124,24 @@ namespace EpicLoot.MagicItemEffects.Shards
             var duration = GetBuffDuration();
             var seMan = player.GetSEMan();
 
-            // Re-proc while the buff is still up: add a stack (capped), restamp the per-stack bonus (the shard
-            // set may have changed) and refresh the countdown rather than letting the old timer run out.
+            // Restamp the per-stack bonus: the shard set may have changed.
             if (seMan.GetStatusEffect(BuffHash) is SE_DodgeMomentum existing)
             {
                 existing.Stacks = Mathf.Min(existing.Stacks + 1, maxStacks);
-                existing.MaxStacks = maxStacks;
                 existing.RegenPerStack = regenPerStack;
                 existing.m_ttl = duration; // restamped so a retuned duration reaches a buff already running
                 existing.ResetTime();
                 return;
             }
 
-            if (seMan.AddStatusEffect(GetOrCreatePrototype()) is SE_DodgeMomentum added) {
+            if (seMan.AddStatusEffect(prototype) is SE_DodgeMomentum added) {
                 added.Stacks = 1;
-                added.MaxStacks = maxStacks;
                 added.RegenPerStack = regenPerStack;
                 added.m_ttl = duration;
                 added.ResetTime();
             }
         }
 
-        // Clamped to at least 1 so a misconfiguration can't disable the buff outright.
         private static int GetMaxStacks()
         {
             return EffectConfig.GetIntAtLeast(MagicEffectType.PerfectDodge, MaxStacksKey, DefaultMaxStacks, 1);
@@ -172,9 +154,7 @@ namespace EpicLoot.MagicItemEffects.Shards
                 EffectConfig.Get(MagicEffectType.PerfectDodge, BuffDurationKey, DefaultBuffDuration));
         }
 
-        // Lazily builds the buff prototype. Runs on a perfect dodge, so the asset bundle is loaded. A null
-        // icon would render as an invisible HUD entry (SEMan only surfaces effects with an icon), so if the
-        // sprite lookup fails we log once and leave the prototype null.
+        // A null icon would render as an invisible HUD entry, so a failed sprite lookup leaves the prototype null.
         private static SE_DodgeMomentum GetOrCreatePrototype()
         {
             if (_buffPrototype != null)
@@ -182,7 +162,6 @@ namespace EpicLoot.MagicItemEffects.Shards
                 return _buffPrototype;
             }
 
-            // The Pink (Dodge) shardstone's own icon -- same sprite the shard items use (see Shards.cs).
             var icon = EpicAssets.AssetBundle?.LoadAsset<Sprite>("Assets/EpicLoot/Sprites/Shardstones/Pink.png");
             if (icon == null)
             {
@@ -198,13 +177,13 @@ namespace EpicLoot.MagicItemEffects.Shards
             se.name = BuffName;
             se.m_name = "$mod_epicloot_se_dodgemomentum";
             se.m_icon = icon;
-            se.m_ttl = GetBuffDuration(); // restamped on every proc by OnPerfectDodge
+            se.m_ttl = GetBuffDuration(); // restamped on every proc
             _buffPrototype = se;
             return _buffPrototype;
         }
     }
 
-    // ---- Head: reduce dodge-roll stamina cost (mirrors ModifyDodgeStaminaUse) ----------------------
+    // Mirrors ModifyDodgeStaminaUse.
     public static class DecreaseDodgeCost
     {
         [HarmonyPatch(typeof(Player), nameof(Player.GetEquipmentDodgeStaminaModifier))]
@@ -223,16 +202,10 @@ namespace EpicLoot.MagicItemEffects.Shards
         }
     }
 
-    // ---- Shoulder: a perfect dodge grants a brief burst of movement speed ---------------------------
-    // Hangs off the same vanilla perfect-dodge trigger as the reward effects above, granting the "Dodge
-    // Agility" buff (SE_DodgeAgility) for BuffDuration seconds. Going through a real status effect rather
-    // than a bare speed patch means the player gets a HUD icon and tooltip, and the speed itself is applied
-    // through vanilla's own StatusEffect.ModifySpeed path. Shard values are authored as whole-number
-    // percents, hence the 0.01f.
+    // A status effect rather than a bare speed patch, so the player gets a HUD icon and tooltip and the speed
+    // goes through vanilla's own StatusEffect.ModifySpeed path.
     public static class PerfectDodgeGivesSpeed
     {
-        // Seconds the speed buff lasts after a perfect dodge. Tunable as "BuffDuration" in this effect's
-        // Config block in config/shardstones.json.
         public const float DefaultBuffDuration = 1f;
 
         private const string BuffDurationKey = "BuffDuration";
@@ -269,8 +242,7 @@ namespace EpicLoot.MagicItemEffects.Shards
 
             var seMan = player.GetSEMan();
 
-            // Re-proc while the buff is still up: restamp the bonus (the shard set may have changed) and
-            // refresh the countdown rather than letting the old, shorter timer run out.
+            // Restamp the bonus: the shard set may have changed.
             var duration = GetBuffDuration();
             if (seMan.GetStatusEffect(BuffHash) is SE_DodgeAgility existing)
             {
@@ -287,9 +259,7 @@ namespace EpicLoot.MagicItemEffects.Shards
             }
         }
 
-        // Lazily builds the buff prototype. Runs on a perfect dodge, so the asset bundle is loaded. A null
-        // icon would render as an invisible HUD entry (SEMan only surfaces effects with an icon), so if the
-        // sprite lookup fails we log once and leave the prototype null.
+        // A null icon would render as an invisible HUD entry, so a failed sprite lookup leaves the prototype null.
         private static SE_DodgeAgility GetOrCreatePrototype()
         {
             if (_buffPrototype != null)
@@ -297,7 +267,6 @@ namespace EpicLoot.MagicItemEffects.Shards
                 return _buffPrototype;
             }
 
-            // The Pink (Dodge) shardstone's own icon -- same sprite the shard items use (see Shards.cs).
             var icon = EpicAssets.AssetBundle?.LoadAsset<Sprite>("Assets/EpicLoot/Sprites/Shardstones/Pink.png");
             if (icon == null)
             {
@@ -313,7 +282,7 @@ namespace EpicLoot.MagicItemEffects.Shards
             se.name = BuffName;
             se.m_name = "$mod_epicloot_se_dodgeagility";
             se.m_icon = icon;
-            se.m_ttl = GetBuffDuration(); // restamped on every proc by OnPerfectDodge
+            se.m_ttl = GetBuffDuration(); // restamped on every proc
             _buffPrototype = se;
             return _buffPrototype;
         }

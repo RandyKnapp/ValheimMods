@@ -12,10 +12,6 @@ namespace EpicLoot
 
 namespace EpicLoot.MagicItemEffects
 {
-    // QuarryMark (4-piece Ullr's Hunt set bonus, NoRoll). An arrow from a drawn bow marks the creature it hits for
-    // MarkDuration seconds. The marker's next melee hit on it with an axe or a polearm (atgeir) uses the mark up: that
-    // hit deals the effect value as a percent more damage and gives back StaminaRefund stamina.
-    //
     // Everything runs on the marker's client. The arrow is placed on the hit in SharedCharacterDamagePatch's postfix,
     // where HitSource.FiringWeapon is the bow; the mark is used up in its prefix, which changes the outgoing hit, so the
     // bonus travels inside the hit and works on a creature another client owns. A mark keeps the value it was placed
@@ -23,7 +19,6 @@ namespace EpicLoot.MagicItemEffects
     // creature's ZDOID and matter to no one else, so nothing is networked; the marker over the creature is local too.
     public static class QuarryMark
     {
-        // Both tunable in this effect's Config block in magiceffects.json, under these key names.
         public const float DefaultMarkDuration = 10f;
         public const float DefaultStaminaRefund = 25f;
 
@@ -53,7 +48,6 @@ namespace EpicLoot.MagicItemEffects
         private static readonly HashSet<string> MissingFxLogged = new HashSet<string>();
         private static Player _owner;
 
-        // Tooltip: "Your arrows mark creatures for {1}s. ... deals +{0}% damage and restores {2} stamina."
         public static void RegisterDisplayValues()
         {
             MagicItem.RegisterDisplayValues(MagicEffectType.QuarryMark, value => new object[]
@@ -144,6 +138,12 @@ namespace EpicLoot.MagicItemEffects
             }
 
             var player = (Player)attacker;
+            SyncOwner(player);
+            if (Marks.Count == 0)
+            {
+                return;
+            }
+
             var weapon = MagicEffectsHelper.GetActiveWeapon(player);
             if (weapon == null)
             {

@@ -27,9 +27,30 @@ namespace EpicLoot.MagicItemEffects
             }
         }
 
+        private static readonly Dictionary<string, string> LowHealthNames = new Dictionary<string, string>();
+
+        // Asked from per-tick paths, so the joined name is kept rather than built each time.
         public static string EffectNameWithLowHealth(string name)
         {
-            return name + "LowHealth";
+            if (!LowHealthNames.TryGetValue(name, out string lowHealthName))
+            {
+                lowHealthName = name + "LowHealth";
+                LowHealthNames[name] = lowHealthName;
+            }
+
+            return lowHealthName;
+        }
+
+        /// <summary>The effect's total plus its ...LowHealth variant's at critical health, with no delegate.</summary>
+        public static float Sum(Player player, string name, float scale = 0.01f)
+        {
+            float total = player.GetTotalActiveMagicEffectValue(name, scale);
+            if (PlayerHasLowHealth(player))
+            {
+                total += player.GetTotalActiveMagicEffectValue(EffectNameWithLowHealth(name), scale);
+            }
+
+            return total;
         }
 
         /// <summary>
@@ -68,7 +89,9 @@ namespace EpicLoot.MagicItemEffects
             if (player.HasActiveMagicEffect(MagicEffectType.ModifyLowHealth, out float effectValue, 0.01f))
             {
                 lowHealthThreshold += effectValue;
-                Dictionary<string, float> lowhealthcfg = MagicItemEffectDefinitions.AllDefinitions[MagicEffectType.ModifyLowHealth].Config;
+                // Absent when a patch removed the definition or a server push lacks it, while an item still has it.
+                Dictionary<string, float> lowhealthcfg = MagicItemEffectDefinitions.AllDefinitions.TryGetValue(
+                    MagicEffectType.ModifyLowHealth, out MagicItemEffectDefinition definition) ? definition.Config : null;
                 if (lowhealthcfg != null && lowhealthcfg.ContainsKey("Max") && lowhealthcfg["Max"] < lowHealthThreshold)
                 {
                     lowHealthThreshold = lowhealthcfg["Max"];

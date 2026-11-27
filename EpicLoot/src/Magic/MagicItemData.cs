@@ -8,24 +8,11 @@ using UnityEngine;
 
 namespace EpicLoot;
 
-// Where an item's magic lives. Vanilla gives every ItemDrop.ItemData a string dictionary, m_customData, that it
-// saves, loads, clones and sends along with the item. Epic Loot keeps the MagicItem in it as one JSON entry under
-// Key, and this class is the whole layer between that entry and the MagicItem object the rest of the mod reads:
-//
-// - One MagicItemComponent per ItemData instance holds the parsed MagicItem and remembers which string it was
-//   parsed from. Get re-parses only when the entry under the key is no longer that string, so whatever replaces
-//   an item's data (a ZDO load, a chest reload, an upgrade, another mod writing the key) is picked up on the next
-//   read, with no load hooks at all. An item without the entry costs one dictionary lookup and nothing else.
-// - SetMagicItem on the component is the one writer: it serializes, stores, and tells the rest of the mod
-//   (Indestructible, the API's change event, the tooltip cache, the worn-item ZDO mirror).
-// - Stacking. Vanilla merges stacks by name, quality and world level; two stacks with different magic must stay
-//   apart or one's data would be lost. The patches below compare the entry on every merge path vanilla has: the
-//   free-stack search behind AddItem and CanAddItem, a drop onto an occupied cell, and the auto-stacking of
-//   ground drops. Two items with no custom data at all are answered without a lookup.
-// - An upgrade at a workbench removes the item and adds a fresh one from its prefab; the data is carried across.
-//
-// Other mods read and write the magic through ItemDataExtensions (GetMagicItem, SaveMagicItem, RemoveMagicItem)
-// or the API; there is no other surface.
+// An item's magic is one JSON entry under Key in vanilla's m_customData, which vanilla saves, loads, clones and
+// sends with the item. Each ItemData's MagicItemComponent re-parses only when the entry is no longer the string
+// it parsed, so a replaced entry (ZDO load, chest reload, another mod) is picked up with no load hooks.
+// Vanilla merges stacks by name, quality and world level only, so the patches below keep stacks with different
+// magic apart on every merge path, and carry the data across a workbench upgrade.
 public static class MagicItemData
 {
     // Every save since 2023 stores the magic under this key, and other mods read it by this string.
@@ -59,6 +46,16 @@ public static class MagicItemData
     // The item's component, made empty when it has none, for the SetMagicItem that follows.
     public static MagicItemComponent GetOrCreate(ItemDrop.ItemData item) => Resolve(item, create: true);
 
+    // Brings an already parsed item's sockets to the current Shards.GridVersion now. An item not parsed yet is left
+    // alone: its first read works them out anyway.
+    internal static void RefreshSocketValues(ItemDrop.ItemData item)
+    {
+        if (item != null && Components.TryGetValue(item, out MagicItemComponent component))
+        {
+            component.RefreshSocketValues();
+        }
+    }
+
     private static MagicItemComponent Resolve(ItemDrop.ItemData item, bool create)
     {
         if (item == null)
@@ -83,6 +80,7 @@ public static class MagicItemData
                 component.Reload(raw);
             }
 
+            component.RefreshSocketValues();
             return component;
         }
 
@@ -91,6 +89,7 @@ public static class MagicItemData
         // through here and must find this component rather than build a second one.
         Components.Add(item, component);
         component.Reload(raw);
+        component.RefreshSocketValues();
         return component;
     }
 
@@ -134,8 +133,6 @@ public static class MagicItemData
             item.m_customData[Key] = raw;
         }
     }
-
-    // ---- Stacking ----
 
     // Whether `item` may join `existing`'s stack: both carry the same magic text, or neither carries any. Only
     // Epic Loot's own entry is judged, and an empty entry and none are the same thing. Stackables are
@@ -362,14 +359,11 @@ public static class MagicItemData
         }
     }
 
-    // ---- Upgrades ----
-
     // Vanilla upgrades by removing the item and adding a fresh one from the prefab by name, so the upgraded
     // item would come back mundane. The item DoCrafting is upgrading is remembered for the duration, and the
     // item added under its name inherits its data. Only that item does: at the Forge of Potential a failed
-    // attempt refunds ingredients through the same call while the upgrade is in flight (the first refunded Wood
-    // once took the sword's enchantments), and the success and level-down outcomes both re-add the item by
-    // its own name.
+    // attempt refunds ingredients through the same call while the upgrade is in flight, and the success and
+    // level-down outcomes both re-add the item by its own name.
     [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.DoCrafting))]
     private static class InventoryGui_DoCrafting_Patch
     {

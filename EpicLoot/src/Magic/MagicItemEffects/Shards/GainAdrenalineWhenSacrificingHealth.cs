@@ -2,7 +2,6 @@
 using JetBrains.Annotations;
 
 namespace EpicLoot.MagicItemEffects.Shards {
-    // Provides a bonus to adrenaline based on the amount of health sacrificed.
     public static class GainAdrenalineWhenSacrificingHealth {
         [HarmonyPatch(typeof(Character), nameof(Character.UseHealth))]
         private static class UseHealth_Patch {

@@ -1,5 +1,4 @@
 namespace EpicLoot.MagicItemEffects.Shards {
-    // Provides a bonus to max carry weight based on the player's comfort level when rested.
     public static class GainMaxCarryWeightFromRested {
         // The comfort belongs to a particular status-effect instance, not to the process.
         // SEMan.OnDestroy does not call Stop, so a bare static comfort could leak to a
@@ -15,7 +14,6 @@ namespace EpicLoot.MagicItemEffects.Shards {
                 return;
             }
 
-            // GetStatusEffect is only reached when the item has this magic effect.
             // An old character's recorded comfort must never apply to a new Rested instance.
             if (RestedEffect == null || RestedComfort <= 0 ||
                 !ReferenceEquals(seman.GetStatusEffect(SEMan.s_statusEffectRested), RestedEffect)) {

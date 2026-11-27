@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects.Shards {
-    // Provides a way to spend adrenaline to cover stamina costs
     public static class UseAdrenalineAsStamina {
         // Below this we treat the pool as empty. AddAdrenaline(-(covered / efficiency)) is not bit-exact, so
         // a fully drained pool can leave ~1e-7 behind, which would keep HaveStamina(0f) answering true for a

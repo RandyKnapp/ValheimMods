@@ -12,13 +12,11 @@ namespace EpicLoot
 
 namespace EpicLoot.MagicItemEffects
 {
-    // DeepWell (3-piece Mimir's Well set bonus, NoRoll). +value% max eitr for EitrRegenReduction% less eitr regen: the
-    // mirror image of DartingThoughts. The pool half is called from IncreasePlayerBaseStats.PostfixPercentOfPool right
-    // after PercentEitr, so it also grows the eitr ConvertHealthToEitr added. The regen half uses the same additive
-    // convention as ModifyEitrRegen (+15 there means +0.15 on the multiplier), so 30 here means -0.30.
+    // The pool half is called from IncreasePlayerBaseStats.PostfixPercentOfPool right after PercentEitr, so it also
+    // grows the eitr ConvertHealthToEitr added. The regen half uses ModifyEitrRegen's additive convention (+15 there
+    // means +0.15 on the multiplier), so 30 here means -0.30.
     public static class DeepWell
     {
-        // Tunable in this effect's Config block in magiceffects.json, under this key name.
         public const float DefaultEitrRegenReduction = 30f;
         private const string EitrRegenReductionKey = "EitrRegenReduction";
 
@@ -26,7 +24,6 @@ namespace EpicLoot.MagicItemEffects
         private static float EitrRegenReduction => EffectConfig.GetClamped(MagicEffectType.DeepWell,
             EitrRegenReductionKey, DefaultEitrRegenReduction, 0f, 100f);
 
-        // Tooltip: "Deep Well: +{0}% Max Eitr, -{1}% Eitr Regen"
         public static void RegisterDisplayValues()
         {
             MagicItem.RegisterDisplayValues(MagicEffectType.DeepWell, value => new object[] { value, EitrRegenReduction });

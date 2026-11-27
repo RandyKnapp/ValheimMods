@@ -2,14 +2,8 @@
 
 namespace EpicLoot.src.Magic.MagicItemEffects.Helpers
 {
-    // "Dodge Agility" -- the brief movement-speed burst a perfect dodge grants (see PerfectDodgeGivesSpeed).
-    // SpeedBonus is a fraction (e.g. 0.60 at Epic) stamped on the live instance by that effect, so the buff
-    // always reflects the rarity of the shard that granted it, and a re-proc mid-buff can raise or lower it.
-    //
-    // ModifySpeed is the same hook vanilla's own speed effects use (SEMan.ApplyStatusEffectSpeedMods, called
-    // every frame from the character's movement update), and the bonus is applied the way SE_Stats applies
-    // m_speedModifier -- added as a fraction of baseSpeed rather than multiplied into the running total, so
-    // it stacks additively with other speed effects instead of compounding with them.
+    // SpeedBonus is stamped on the live instance by PerfectDodgeGivesSpeed. It is added as a fraction of baseSpeed,
+    // as SE_Stats applies m_speedModifier, so it stacks additively with other speed effects instead of compounding.
     public class SE_DodgeAgility : StatusEffect
     {
         public float SpeedBonus;

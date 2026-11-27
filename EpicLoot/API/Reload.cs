@@ -3,12 +3,52 @@ using EpicLoot.Adventure;
 using EpicLoot.Crafting;
 using EpicLoot.CraftingV2;
 using EpicLoot.LegendarySystem;
+using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace EpicLoot;
 
 public static partial class API
 {
+    // A config the server pushed already holds the server's API entries, and the mod registering them may run on this
+    // client too: an entry is added only when an identical one is not there. Compared by content, since the pushed
+    // copies are new objects.
+    private static void AddMissing<T>(List<T> target, IEnumerable<T> items) where T : class
+    {
+        if (target == null || items == null)
+        {
+            return;
+        }
+
+        HashSet<string> present = new HashSet<string>(target.Where(x => x != null).Select(ContentKey).Where(x => x != null));
+        foreach (T item in items)
+        {
+            if (item == null)
+            {
+                continue;
+            }
+
+            string key = ContentKey(item);
+            if (key != null ? present.Add(key) : !target.Contains(item))
+            {
+                target.Add(item);
+            }
+        }
+    }
+
+    private static string ContentKey(object item)
+    {
+        try
+        {
+            return JsonConvert.SerializeObject(item);
+        }
+        catch (System.Exception)
+        {
+            return null;
+        }
+    }
+
     /// <summary>
     /// Reloads cached external adventure data into <see cref="AdventureDataManager.Config"/>
     /// </summary>
@@ -24,24 +64,29 @@ public static partial class API
     /// </summary>
     private static void ReloadExternalSecretStashItems()
     {
+        if (AdventureDataManager.Config?.SecretStash == null)
+        {
+            return;
+        }
+
         foreach (KeyValuePair<SecretStashType, List<SecretStashItemConfig>> kvp in ExternalSecretStashItems)
         {
             switch (kvp.Key)
             {
                 case SecretStashType.Materials:
-                    AdventureDataManager.Config.SecretStash.Materials.AddRange(kvp.Value);
+                    AddMissing(AdventureDataManager.Config.SecretStash.Materials, kvp.Value);
                     break;
                 case SecretStashType.OtherItems:
-                    AdventureDataManager.Config.SecretStash.OtherItems.AddRange(kvp.Value);
+                    AddMissing(AdventureDataManager.Config.SecretStash.OtherItems, kvp.Value);
                     break;
                 case SecretStashType.RandomItems:
-                    AdventureDataManager.Config.SecretStash.RandomItems.AddRange(kvp.Value);
+                    AddMissing(AdventureDataManager.Config.SecretStash.RandomItems, kvp.Value);
                     break;
                 case SecretStashType.Gamble:
-                    AdventureDataManager.Config.Gamble.GambleCosts.AddRange(kvp.Value);
+                    AddMissing(AdventureDataManager.Config.Gamble?.GambleCosts, kvp.Value);
                     break;
                 case SecretStashType.Sale:
-                    AdventureDataManager.Config.TreasureMap.SaleItems.AddRange(kvp.Value);
+                    AddMissing(AdventureDataManager.Config.TreasureMap?.SaleItems, kvp.Value);
                     break;
             }
         }
@@ -52,11 +97,12 @@ public static partial class API
     /// </summary>
     private static void ReloadExternalTreasures()
     {
-        foreach (TreasureMapBiomeInfoConfig treasure in ExternalTreasureMaps)
+        if (AdventureDataManager.Config?.TreasureMap == null)
         {
-            AdventureDataManager.Config.TreasureMap.BiomeInfo.Add(treasure);
+            return;
         }
 
+        AddMissing(AdventureDataManager.Config.TreasureMap.BiomeInfo, ExternalTreasureMaps);
         AdventureDataManager.Config.TreasureMap.UpdateBiomeList();
         OnReload?.Invoke("Reloaded external treasures");
     }
@@ -66,16 +112,16 @@ public static partial class API
     /// </summary>
     private static void ReloadExternalBounties()
     {
-        AdventureDataManager.Config.Bounties.Targets.AddRange(ExternalBountyTargets);
+        AddMissing(AdventureDataManager.Config?.Bounties?.Targets, ExternalBountyTargets);
         OnReload?.Invoke("Reloaded external bounties");
     }
 
     /// <summary>
-    /// Reloads cached external enchanting costs into <see cref="EnchantCostsHelper.Config"/>
+    /// Reloads cached external sacrifice products into <see cref="EnchantCostsHelper.Config"/>
     /// </summary>
     private static void ReloadExternalSacrifices()
     {
-        EnchantCostsHelper.Config.DisenchantProducts.AddRange(ExternalSacrifices);
+        AddMissing(EnchantCostsHelper.Config?.DisenchantProducts, ExternalSacrifices);
         OnReload?.Invoke("Reloaded external sacrifices");
     }
 
@@ -84,20 +130,22 @@ public static partial class API
     /// </summary>
     private static void ReloadExternalRecipes()
     {
+        if (RecipesHelper.Config?.recipes == null)
+        {
+            return;
+        }
+
         RecipesHelper.Config.recipes.RemoveAll(ExternalRecipes);
-        RecipesHelper.Config.recipes.AddRange(ExternalRecipes);
+        AddMissing(RecipesHelper.Config.recipes, ExternalRecipes);
         OnReload?.Invoke("Reloaded external recipes");
     }
 
     /// <summary>
-    /// Reloads cached external material conversions into <see cref="MaterialConversions.Conversions"/>
+    /// Reloads cached external material conversions into <see cref="MaterialConversions.Config"/>
     /// </summary>
     private static void ReloadExternalMaterialConversions()
     {
-        foreach (MaterialConversion entry in ExternalMaterialConversions)
-        {
-            MaterialConversions.Config.MaterialConversions.Add(entry);
-        }
+        AddMissing(MaterialConversions.Config?.MaterialConversions, ExternalMaterialConversions);
         OnReload?.Invoke("Reloaded external material conversions");
     }
     
@@ -119,9 +167,17 @@ public static partial class API
     /// </summary>
     private static void ReloadExternalAbilities()
     {
+        List<AbilityDefinition> abilities = AbilityDefinitions.Config?.Abilities;
+        if (abilities == null)
+        {
+            return;
+        }
+
+        // By ID: an ability is one entry whatever its fields, so a pushed copy is replaced by this client's.
         foreach (KeyValuePair<string, AbilityDefinition> kvp in ExternalAbilities)
         {
-            AbilityDefinitions.Config.Abilities.Add(kvp.Value);
+            abilities.RemoveAll(x => x != null && x.ID == kvp.Value.ID);
+            abilities.Add(kvp.Value);
         }
 
         OnReload?.Invoke("Reloaded external abilities");
@@ -132,15 +188,15 @@ public static partial class API
     /// </summary>
     private static void ReloadExternalLegendary()
     {
-        // Every rarity lives in the one pool now; each entry's Rarities says where it rolls.
-        UniqueLegendaryHelper.Config.LegendaryItems.AddRange(ExternalLegendaryItems);
-        UniqueLegendaryHelper.Config.LegendarySets.AddRange(ExternalLegendarySets);
+        // Every rarity shares the one pool; each entry's Rarities says where it rolls.
+        AddMissing(UniqueLegendaryHelper.Config?.LegendaryItems, ExternalLegendaryItems);
+        AddMissing(UniqueLegendaryHelper.Config?.LegendarySets, ExternalLegendarySets);
 
-        OnReload?.Invoke("Reloaded external legendary abilities");
+        OnReload?.Invoke("Reloaded external legendary items and sets");
     }
 
     /// <summary>
-    /// Reloads cached assets into <see cref="EpicLoot.AssetCache"/>
+    /// Reloads cached assets into <see cref="EpicAssets.AssetCache"/>
     /// </summary>
     public static void ReloadExternalAssets()
     {

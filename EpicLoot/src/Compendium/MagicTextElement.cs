@@ -4,12 +4,8 @@ using UnityEngine;
 
 namespace EpicLoot.Compendium;
 
-// One line of a compendium page.
-//
-// TextMeshPro rather than legacy UnityEngine.UI.Text: TMP is what the vanilla dialog this panel is
-// cloned from uses, and only TMP resolves the <sprite="..."> tags that ShardTooltipSprites builds --
-// which is what lets the shardstone page show a stone's real inventory icon inline with its name.
-// The outline that legacy Text got from an Outline component comes from the font's "- Outline"
+// TextMeshPro rather than legacy Text: only TMP resolves the <sprite="..."> tags ShardTooltipSprites
+// builds for the shardstone page's inline icons. The outline that legacy Text got from an Outline component comes from the font's "- Outline"
 // material variant here; both materials are shared, and per-line colour is a vertex colour, so no
 // material instances are created.
 public class MagicTextElement : IMagicTextPart
@@ -98,7 +94,6 @@ public class MagicTextElement : IMagicTextPart
         Resize();
     }
 
-    public void SetParent(Transform parent) => _rect.SetParent(parent);
     public void Destroy() => UnityEngine.Object.Destroy(_obj);
     public void Enable(bool enable) => _obj.SetActive(enable);
 

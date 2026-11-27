@@ -9,7 +9,6 @@ namespace EpicLoot_UnityLib
         public string PrefabName;
         public ItemDrop.ItemData Item;
 
-        public List<string> GetEffectNames() => new List<string>();
         public string GetEnchantName() => string.Empty;
         public ItemDrop.ItemData GetItem() => Item;
         public int GetMax() => Item?.m_stack ?? 0;
@@ -47,6 +46,7 @@ namespace EpicLoot_UnityLib
             public int Id;
             public Dictionary<string, int> Deltas;
             public Action<Dictionary<string, int>> OnApplied;
+            public Action OnLost;
             public float SentAt;
             public float LastSentAt;
             public bool Confirmed;
@@ -210,6 +210,7 @@ namespace EpicLoot_UnityLib
                         $"({DescribeDeltas(request.Deltas)}); giving up on it.");
                     _requests.RemoveAt(i);
                     droppedAny = true;
+                    request.OnLost?.Invoke();
                 }
                 else if (now - request.LastSentAt > RetrySeconds)
                 {
@@ -387,22 +388,67 @@ namespace EpicLoot_UnityLib
             });
         }
 
-        /// <summary>Spends up to <paramref name="amount"/> as a crafting cost; returns how many were taken.</summary>
-        public int Take(string prefabName, int amount)
+        /// <summary>
+        /// Asks the owner to take these amounts (prefab name to count) and reports what it actually took, which is
+        /// less than asked when another player spent some first. On the owner the answer arrives before this
+        /// returns. <paramref name="onLost"/> runs instead when the owner never answers.
+        /// </summary>
+        public void Spend(Dictionary<string, int> amounts, Action<Dictionary<string, int>> onTaken, Action onLost)
         {
-            int take = Mathf.Min(amount, GetCount(prefabName));
-            if (take <= 0)
+            Dictionary<string, int> deltas = new Dictionary<string, int>();
+            foreach (KeyValuePair<string, int> pair in amounts)
             {
-                return 0;
+                if (pair.Value > 0)
+                {
+                    deltas[pair.Key] = -pair.Value;
+                }
             }
 
-            Send(new Dictionary<string, int> { { prefabName, -take } }, null);
-            return take;
+            if (deltas.Count == 0 || _nview == null || !_nview.IsValid())
+            {
+                onTaken(new Dictionary<string, int>());
+                return;
+            }
+
+            Send(deltas, applied =>
+            {
+                Dictionary<string, int> taken = new Dictionary<string, int>();
+                foreach (KeyValuePair<string, int> pair in applied)
+                {
+                    if (pair.Value < 0)
+                    {
+                        taken[pair.Key] = -pair.Value;
+                    }
+                }
+
+                onTaken(taken);
+            }, onLost);
         }
 
-        public int TakeBySharedName(string sharedName, int amount)
+        /// <summary>Puts spent amounts back; what the stash will not take goes to the player.</summary>
+        public void Return(Dictionary<string, int> amounts)
         {
-            return StashCatalog.TryGetBySharedName(sharedName, out StashItemKind kind) ? Take(kind.PrefabName, amount) : 0;
+            Dictionary<string, int> deltas = new Dictionary<string, int>();
+            foreach (KeyValuePair<string, int> pair in amounts)
+            {
+                if (pair.Value > 0)
+                {
+                    deltas[pair.Key] = pair.Value;
+                }
+            }
+
+            if (deltas.Count == 0)
+            {
+                return;
+            }
+
+            if (_nview == null || !_nview.IsValid())
+            {
+                RefundUnapplied(deltas, new Dictionary<string, int>());
+                return;
+            }
+
+            Send(deltas, applied => RefundUnapplied(deltas, applied));
         }
 
         public static Dictionary<string, int> ReadCounts(ZDO zdo)
@@ -524,7 +570,7 @@ namespace EpicLoot_UnityLib
             return string.Join(", ", parts);
         }
 
-        private void Send(Dictionary<string, int> deltas, Action<Dictionary<string, int>> onApplied)
+        private void Send(Dictionary<string, int> deltas, Action<Dictionary<string, int>> onApplied, Action onLost = null)
         {
             if (deltas.Count == 0 || _nview == null || !_nview.IsValid())
             {
@@ -536,6 +582,7 @@ namespace EpicLoot_UnityLib
                 Id = ++_lastRequestId,
                 Deltas = new Dictionary<string, int>(deltas),
                 OnApplied = onApplied,
+                OnLost = onLost,
                 SentAt = Time.time
             };
             _requests.Add(request);

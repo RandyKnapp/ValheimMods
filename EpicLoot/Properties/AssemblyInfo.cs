@@ -37,3 +37,9 @@ using System.Runtime.InteropServices;
 // assembly rather than the BepInEx plugin metadata reads these.
 [assembly: AssemblyVersion("0.13.0")]
 [assembly: AssemblyFileVersion("0.13.0")]
+
+// Thunderstore asks AI-assisted mods to name the AI in AssemblyMetadata. This project keeps its
+// assembly attributes here rather than generating them from the csproj, so csproj items would not
+// reach the DLL.
+[assembly: AssemblyMetadata("AI_Assisted_Creation", "This assembly was partially or fully created with the assistance of generative AI (Claude Code, using Anthropic's Claude models).")]
+[assembly: AssemblyMetadata("AI_Model_Vendor", "Anthropic")]

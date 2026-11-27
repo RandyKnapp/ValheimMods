@@ -45,13 +45,22 @@ namespace EpicLoot.MagicItemEffects
                 return;
             }
 
+            // Every strike by anyone lands here. A plain tag (1) only matters when it clears a longer one, so with
+            // nothing longer on the target there is nothing to send.
+            ZDO zdo = target.m_nview.GetZDO();
+            float current = zdo.GetFloat(ZdoKey, 1f);
+            if (Mathf.Approximately(current, staggerValue) || (staggerValue <= 1f && current <= 1f))
+            {
+                return;
+            }
+
             if (target.m_nview.IsOwner())
             {
-                target.m_nview.GetZDO().Set(ZdoKey, staggerValue);
+                zdo.Set(ZdoKey, staggerValue);
             }
             else
             {
-                target.m_nview.InvokeRPC(ZNetView.Everybody, RpcKey, staggerValue);
+                target.m_nview.InvokeRPC(RpcKey, staggerValue);
             }
         }
     }
@@ -101,10 +110,8 @@ namespace EpicLoot.MagicItemEffects
 
     public static class RPC_TagCharacterOnHit_Character_RPC_Damage_Patch
     {
-        // Prefix handler invoked by SharedCharacterDamagePatch -- ATTACKER side. It used to live on
-        // the RPC_Damage (victim-owner) dispatcher, where a remote attacking player's magic data
-        // reads as empty, so the melee bonus never applied in multiplayer. The check runs here on
-        // the attacker's client; the write is routed to the target's owner via TagTarget.
+        // Called from SharedCharacterDamagePatch's prefix: the check runs on the attacker's client, and the
+        // write is routed to the target's owner via TagTarget.
         public static void TagStaggerDuration(Character __instance, HitData hit, Character attacker)
         {
             if (__instance == null || __instance.m_nview == null || !__instance.m_nview.IsValid())
@@ -159,7 +166,7 @@ namespace EpicLoot.MagicItemEffects
             if (target != null)
             {
                 var character = target.GetComponent<Character>();
-                if (character != null && __instance != null && __instance.m_nview != null && __instance.m_nview.GetZDO() is ZDO zdo)
+                if (character != null && __instance.m_nview != null && __instance.m_nview.GetZDO() is ZDO zdo)
                 {
                     // Routed like the melee and block tags: the shooter rarely owns the target's ZDO.
                     var staggerValue = zdo.GetFloat(ModifyStaggerDuration.ZdoKey, 1f);

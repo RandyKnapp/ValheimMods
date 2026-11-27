@@ -36,22 +36,6 @@ public class EditorUtils
         // The bundled shaders compiled for Metal, which macOS needs; see MetalShaderSidecars.
         MetalShaderSidecars.Build(projectRootDir, stagePath);
     }
-
-/*    public class MakeScriptableObject
-    {
-        [MenuItem("Assets/Create/Valheim/StatusEffect")]
-        public static void CreateMyAsset()
-        {
-            StatusEffect asset = ScriptableObject.CreateInstance<StatusEffect>();
-
-            AssetDatabase.CreateAsset(asset, "Assets/NewScripableObject.asset");
-            AssetDatabase.SaveAssets();
-
-            EditorUtility.FocusProjectWindow();
-
-            Selection.activeObject = asset;
-        }
-    }*/
 }
 
 // What `mod-tools check` reads to tell whether a bundle that is not committed (epicloot) was built from

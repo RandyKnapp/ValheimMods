@@ -1,6 +1,7 @@
 using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 namespace EpicLootAPI;
 
@@ -66,5 +67,16 @@ public class SocketedEffect
         Effect = effect;
         SourcePrefab = sourcePrefab;
         SourceRarity = sourceRarity;
+    }
+
+    private const int LegacyNone = 97;
+
+    [OnDeserialized]
+    private void OnDeserialized(StreamingContext context)
+    {
+        if ((int)ShardType == LegacyNone)
+        {
+            ShardType = ShardType.None;
+        }
     }
 }

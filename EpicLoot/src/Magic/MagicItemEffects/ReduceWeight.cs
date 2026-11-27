@@ -14,7 +14,7 @@ namespace EpicLoot.MagicItemEffects
             else if (__instance.HasMagicEffect(MagicEffectType.ReduceWeight))
             {
                 var totalWeightReduction = __instance.GetMagicItem().GetTotalEffectValue(MagicEffectType.ReduceWeight, 0.01f);
-                __result *= 1.0f - totalWeightReduction;
+                __result *= 1.0f - UnityEngine.Mathf.Clamp01(totalWeightReduction);
             }
         }
     }

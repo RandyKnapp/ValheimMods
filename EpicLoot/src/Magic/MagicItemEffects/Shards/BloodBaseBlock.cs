@@ -3,7 +3,6 @@ using HarmonyLib;
 
 namespace EpicLoot.MagicItemEffects.Shards
 {
-    // Adds a flat bonus to base block, at the cost of a self-damage hit each time a block is started.
     public static class BloodBaseBlock
     {
         [HarmonyPatch(typeof(Humanoid), nameof(Humanoid.UpdateBlock))]

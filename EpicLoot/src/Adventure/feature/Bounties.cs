@@ -10,7 +10,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using UnityEngine;
 using Random = System.Random;
 
@@ -20,9 +19,6 @@ namespace EpicLoot.Adventure.Feature
     {
         public BountyLedger BountyLedger => BountyManagmentSystem.Instance.BountyLedger;
 
-        private const string LedgerIdentifier = "randyknapp.mods.epicloot.BountyLedger";
-
-        public override AdventureFeatureType Type => AdventureFeatureType.Bounties;
         public override int RefreshInterval => AdventureDataManager.Config.Bounties.RefreshInterval;
 
         public List<BountyInfo> GetAvailableBounties()
@@ -61,8 +57,6 @@ namespace EpicLoot.Adventure.Feature
             List<BountyFilterNote> diagnostics = null)
         {
             var player = Player.m_localPlayer;
-            var random = GetRandomForInterval(interval, RefreshInterval);
-
             var bountiesPerBiome = new MultiValueDictionary<Heightmap.Biome, BountyTargetConfig>();
 
             bool bossBountiesGated = BossBountiesGated();
@@ -83,7 +77,6 @@ namespace EpicLoot.Adventure.Feature
 
             foreach (var targetConfig in AdventureDataManager.Config.Bounties.Targets)
             {
-                // Only targets that exist in this game count, regardless of what the config says
                 if (PrefabManager.Instance.GetPrefab(targetConfig.TargetID) == null)
                 {
                     EpicLoot.Log($"Could not find bounty prefab {targetConfig.TargetID}");
@@ -91,8 +84,7 @@ namespace EpicLoot.Adventure.Feature
                     continue;
                 }
 
-                // A biome name the registry could not resolve was reported when the config loaded;
-                // the entry simply cannot be offered.
+                // An unresolvable biome name was already reported when the config loaded.
                 Heightmap.Biome biome = targetConfig.GetBiome();
                 if (biome == Heightmap.Biome.None)
                 {
@@ -102,14 +94,12 @@ namespace EpicLoot.Adventure.Feature
 
                 if (bossBountiesGated && !unlockedBiomes.Contains(biome))
                 {
-                    // Remove the results of undefeated biome bosses
                     Note(targetConfig, biome, "biome boss not defeated");
                     continue;
                 }
 
                 if (!BiomeDataManager.IsDiscoveredBy(player, biome))
                 {
-                    // Remove the results that the player doesn't know about yet
                     Note(targetConfig, biome, "biome not discovered");
                     continue;
                 }
@@ -117,37 +107,39 @@ namespace EpicLoot.Adventure.Feature
                 bountiesPerBiome.Add(biome, targetConfig);
             }
 
-            var selectedTargets = new List<BountyTargetConfig>();
+            var saveData = player.GetAdventureSaveData();
+            var results = new List<BountyInfo>();
             foreach (var entry in bountiesPerBiome)
             {
-                var targets = entry.Value;
-                selectedTargets.Add(RollOnList(random, targets));
+                // Each biome rolls from its own stream: with one shared stream, discovering a biome or killing a
+                // boss shifted every later biome's roll, so an accepted bounty came back under a new target.
+                Heightmap.Biome biome = entry.Key;
+                var random = GetRandomForInterval(interval, RefreshInterval, BiomeDataManager.GetName(biome).GetStableHashCode());
+                var targetConfig = RollOnList(random, entry.Value);
+                results.Add(new BountyInfo()
+                {
+                    Biome = biome,
+                    Interval = interval,
+                    PlayerID = player.GetPlayerID(),
+                    Target = new BountyTargetInfo() {
+                        MonsterID = targetConfig.TargetID,
+                        Level = GetTargetLevel(random, targetConfig.RewardGold > 0, false),
+                        Count = 1 },
+                    TargetName = GenerateTargetName(random),
+                    RewardIron = targetConfig.RewardIron,
+                    RewardGold = targetConfig.RewardGold,
+                    RewardCoins = targetConfig.RewardCoins,
+                    Adds = targetConfig.Adds.Select(x => new BountyTargetInfo() {
+                        MonsterID = x.ID,
+                        Count = x.Count,
+                        Level = GetTargetLevel(random, false, true) }).ToList()
+                });
             }
-
-            var saveData = player.GetAdventureSaveData();
-
-            var results = selectedTargets.Select(targetConfig => new BountyInfo()
-            {
-                Biome = targetConfig.GetBiome(),
-                Interval = interval,
-                PlayerID = player.GetPlayerID(),
-                Target = new BountyTargetInfo() {
-                    MonsterID = targetConfig.TargetID,
-                    Level = GetTargetLevel(random, targetConfig.RewardGold > 0, false),
-                    Count = 1 },
-                TargetName = GenerateTargetName(random),
-                RewardIron = targetConfig.RewardIron,
-                RewardGold = targetConfig.RewardGold,
-                RewardCoins = targetConfig.RewardCoins,
-                Adds = targetConfig.Adds.Select(x => new BountyTargetInfo() {
-                    MonsterID = x.ID,
-                    Count = x.Count,
-                    Level = GetTargetLevel(random, false, true) }).ToList()
-            }).ToList();
 
             if (removeAcceptedBounties)
             {
-                results.RemoveAll(x => saveData.HasAcceptedBounty(x.Interval, x.ID));
+                // One bounty per biome per interval, whatever target that biome rolls now.
+                results.RemoveAll(x => saveData.Bounties.Exists(taken => taken.Interval == x.Interval && taken.Biome == x.Biome));
             }
 
             return results;
@@ -157,8 +149,7 @@ namespace EpicLoot.Adventure.Feature
         /// The biomes allowed to offer bounties under a gated mode. A biome is defeated when every one
         /// of its boss keys is set (no keys: always). Under BossKillUnlocksNextBiomeBounties a biome is
         /// also unlocked when the biome group before it is defeated, where consecutive biomes sharing
-        /// one key set form a group: Ocean rides on BlackForest's key, so Eikthyr alone unlocks both,
-        /// exactly as the old Bosses-list walk did.
+        /// one key set form a group: Ocean rides on BlackForest's key, so Eikthyr alone unlocks both.
         /// </summary>
         internal static HashSet<Heightmap.Biome> ComputeUnlockedBiomes(GatedBountyMode mode, Func<string, bool> hasKey)
         {
@@ -193,21 +184,6 @@ namespace EpicLoot.Adventure.Feature
             return a.Count == b.Count && a.All(b.Contains);
         }
 
-        public static string PrintBounties(string label, List<BountyInfo> results)
-        {
-            var sb = new StringBuilder();
-            sb.AppendLine(label);
-            for (var index = 0; index < results.Count; index++)
-            {
-                var bountyInfo = results[index];
-                sb.AppendLine($"{index} - {bountyInfo.Interval}, {bountyInfo.Biome}, " +
-                    $"{bountyInfo.TargetName}, ID={bountyInfo.ID}, state={bountyInfo.State}");
-            }
-
-            EpicLoot.Log(sb.ToString());
-            return sb.ToString();
-        }
-
         public static string GenerateTargetName(Random random)
         {
             var specialNames = AdventureDataManager.Config.Bounties.Names.SpecialNames;
@@ -235,9 +211,6 @@ namespace EpicLoot.Adventure.Feature
         {
             var min = isAdd ? AdventureDataManager.Config.Bounties.AddsMinLevel : (isGold ? AdventureDataManager.Config.Bounties.GoldMinLevel : AdventureDataManager.Config.Bounties.IronMinLevel);
             var max = isAdd ? AdventureDataManager.Config.Bounties.AddsMaxLevel : (isGold ? AdventureDataManager.Config.Bounties.GoldMaxLevel : AdventureDataManager.Config.Bounties.IronMaxLevel);
-
-            // Consider distance, biome, context or otherwise aware level detection here
-
             return random.Next(min, max + 1);
         }
 
@@ -258,17 +231,15 @@ namespace EpicLoot.Adventure.Feature
         {
             player.Message(MessageHud.MessageType.Center, "$mod_epicloot_bounties_locatingmsg");
             var saveData = player.GetAdventureSaveData();
-            yield return BountyLocationEarlyCache.TryGetBiomePoint(bounty.Biome, saveData, (success, spawnPoint) =>
+            yield return BountyLocationEarlyCache.TryGetBiomePoint(bounty.Biome, (success, spawnPoint) =>
             {
                 if (success)
                 {
-                    // AcceptedBounty refuses when the bounty is already accepted or not in the
-                    // Available state; spawning anyway used to create bounty creatures with no save
-                    // record -- impossible to complete and never despawned.
+                    // Spawning a bounty AcceptedBounty refused would make creatures with no save
+                    // record, impossible to complete and never despawned. Forced so a silent
+                    // "Accept did nothing" always shows in the log.
                     if (!saveData.AcceptedBounty(bounty, spawnPoint, Vector3.zero))
                     {
-                        // Reported at Force level: this is one of the ways "I clicked Accept and
-                        // nothing happened" can still occur, and it must never be invisible.
                         EpicLoot.LogWarningForce($"Save data refused bounty {bounty.ID} " +
                             $"({bounty.Biome}, state={bounty.State}); nothing was spawned.");
                         callback?.Invoke(false, spawnPoint);
@@ -277,8 +248,6 @@ namespace EpicLoot.Adventure.Feature
 
                     saveData.NumberOfTreasureMapsOrBountiesStarted++;
                     player.SaveAdventureSaveData();
-
-                    // Spawn monster initializer
                     SpawnBountyInitilizer(bounty, spawnPoint, Vector3.zero);
                 }
 
@@ -288,9 +257,7 @@ namespace EpicLoot.Adventure.Feature
 
         private static void SpawnBountyInitilizer(BountyInfo bounty, Vector3 spawnPoint, Vector3 offset)
         {
-            // store the spawn position in the bounty object
             bounty.Position = spawnPoint;
-            // Pass the bounty data to the spawner, which saves it to its ZNetView
             AdventureSpawnController.CreateForBounty(bounty, spawnPoint);
             Minimap.instance.ShowPointOnMap(spawnPoint + offset);
         }
@@ -299,7 +266,6 @@ namespace EpicLoot.Adventure.Feature
         {
             if (Player.m_localPlayer == null || bounty.PlayerID != Player.m_localPlayer.GetPlayerID())
             {
-                // Not my bounty
                 return;
             }
 
@@ -406,7 +372,87 @@ namespace EpicLoot.Adventure.Feature
                 saveData.AbandonedBounty(bountyInfo.ID);
                 PlayerExtensions_Adventure.PersistLocalPlayerAdventureData();
                 RemoveMinimapPin(bountyInfo);
+
+                // Its spawner and creatures stay in the world otherwise, and keep spawning boosted targets nobody
+                // can complete. Only the server can reach them wherever they are.
+                var pkg = new ZPackage();
+                bountyInfo.ToPackage(pkg);
+                ZRoutedRpc.instance?.InvokeRoutedRPC("AbandonBounty", pkg);
             }
+        }
+
+        private void RPC_Server_AbandonBounty(long sender, ZPackage pkg)
+        {
+            if (!Common.Utils.IsServer())
+            {
+                return;
+            }
+
+            BountyInfo bounty;
+            try
+            {
+                bounty = BountyInfo.FromPackage(pkg);
+            }
+            catch (Exception)
+            {
+                return;
+            }
+
+            if (!SenderIsPlayer(sender, bounty.PlayerID))
+            {
+                EpicLoot.LogWarning($"Ignored a request from peer {sender} to remove someone else's bounty {bounty.ID}.");
+                return;
+            }
+
+            ZNet.instance.StartCoroutine(RemoveBountySpawns(bounty));
+        }
+
+        // Spread over frames: each prefab is a scan of every sector's objects.
+        private static IEnumerator RemoveBountySpawns(BountyInfo bounty)
+        {
+            var prefabs = new List<string> { AdventureSpawnController.PrefabName, bounty.Target?.MonsterID };
+            prefabs.AddRange(bounty.Adds.Select(x => x.MonsterID));
+            int removed = 0;
+            foreach (string prefab in prefabs.Where(x => !string.IsNullOrEmpty(x)).Distinct())
+            {
+                var zdos = new List<ZDO>();
+                int index = 0;
+                while (ZDOMan.instance != null && !ZDOMan.instance.GetAllZDOsWithPrefabIterative(prefab, zdos, ref index))
+                {
+                    yield return null;
+                }
+
+                if (ZDOMan.instance == null)
+                {
+                    yield break;
+                }
+
+                foreach (ZDO zdo in zdos)
+                {
+                    bool matches = prefab == AdventureSpawnController.PrefabName
+                        ? AdventureSpawnController.TryReadBounty(zdo, out BountyInfo carried) && carried.ID == bounty.ID
+                        : zdo.GetString(BountyTargetComponent.BountyIDKey) == bounty.ID;
+                    if (!matches || !zdo.IsValid())
+                    {
+                        continue;
+                    }
+
+                    ZNetView instance = ZNetScene.instance != null ? ZNetScene.instance.FindInstance(zdo) : null;
+                    zdo.SetOwner(ZDOMan.GetSessionID());
+                    if (instance != null)
+                    {
+                        ZNetScene.instance.Destroy(instance.gameObject);
+                    }
+                    else
+                    {
+                        ZDOMan.instance.DestroyZDO(zdo);
+                    }
+
+                    removed++;
+                }
+            }
+
+            EpicLoot.Log($"Removed {removed} spawner and creature object(s) of abandoned bounty {bounty.ID}.");
         }
 
         private static void RemoveMinimapPin(BountyInfo bountyInfo)
@@ -427,48 +473,90 @@ namespace EpicLoot.Adventure.Feature
         {
             if (!ZNet.instance.IsDedicated())
             {
-                // Player RPCs
                 routedRpc.Register<string>("SendKillLogs", RPC_Client_ReceiveKillLogs);
                 routedRpc.Register<ZPackage, string, bool>("SlayBountyTargetFromServer", RPC_Client_SlayBountyTargetFromServer);
             }
 
             if (Common.Utils.IsServer())
             {
-                // Server RPCs
-                routedRpc.Register<ZPackage, string, bool>("SlayBountyTarget", RPC_SlayBountyTarget);
+                routedRpc.Register<ZDOID, string, bool>("SlayBountyTarget", RPC_SlayBountyTarget);
                 routedRpc.Register<long>("RequestKillLogs", RPC_Server_RequestKillLogs);
+                routedRpc.Register<ZPackage>("AbandonBounty", RPC_Server_AbandonBounty);
             }
         }
 
-        /// <summary>
-        /// Received by the client, handles slaying a bounty.
-        /// </summary>
+        private static bool IsFromServer(long sender)
+        {
+            return ZNet.instance.IsServer()
+                ? sender == ZDOMan.GetSessionID()
+                : ZNet.instance.GetServerPeer() is { } server && sender == server.m_uid;
+        }
+
         private void RPC_Client_SlayBountyTargetFromServer(long sender, ZPackage pkg, string monsterID, bool isAdd)
         {
-            EpicLoot.Log($"RPC_Client_SlayBountyTargetFromServer triggered: {monsterID} ({(isAdd ? "minion" : "target")})");
+            if (!IsFromServer(sender))
+            {
+                return;
+            }
 
-            // TODO ensure do not need to check for dedicated here
             var bounty = BountyInfo.FromPackage(pkg);
             OnBountyTargetSlain(bounty, monsterID, isAdd);
         }
 
-        /// <summary>
-        /// Received by server when invoked by onDeath, handles slaying a bounty.
-        /// </summary>
-        public void RPC_SlayBountyTarget(long sender, ZPackage pkg, string monsterID, bool isAdd)
-        {
-            EpicLoot.Log($"RPC_SlayBountyTarget triggered: {monsterID} ({(isAdd ? "minion" : "target")})");
+        private readonly HashSet<ZDOID> _reportedKills = new HashSet<ZDOID>();
 
+        /// <summary>
+        /// A bounty kill reported to the server. It is believed only for a bounty creature that still exists here
+        /// and is owned by the sender, once per creature, and the bounty is the one stored on that creature.
+        /// </summary>
+        public void RPC_SlayBountyTarget(long sender, ZDOID creatureID, string monsterID, bool isAdd)
+        {
             if (!Common.Utils.IsServer())
             {
                 return;
             }
 
-            // Send to all clients that the bounty is slain
-            // TODO: Can this just be sent to the player who owns the bounty?
+            ZDO zdo = ZDOMan.instance.GetZDO(creatureID);
+            if (zdo == null || zdo.GetOwner() != sender ||
+                zdo.GetString(BountyTargetComponent.MonsterIDKey) != monsterID ||
+                zdo.GetBool(BountyTargetComponent.IsAddKey) != isAdd)
+            {
+                EpicLoot.LogWarning($"Ignored a bounty kill report from peer {sender}: the creature is gone, not " +
+                    $"owned by that peer, or not that bounty's {monsterID}.");
+                return;
+            }
+
+            if (_reportedKills.Count >= 4096)
+            {
+                _reportedKills.Clear();
+            }
+
+            if (!_reportedKills.Add(creatureID))
+            {
+                return;
+            }
+
+            BountyInfo bounty;
+            try
+            {
+                bounty = BountyInfo.FromPackage(new ZPackage(zdo.GetString(BountyTargetComponent.BountyDataKey)));
+            }
+            catch (Exception)
+            {
+                EpicLoot.LogWarning($"Bounty creature {monsterID} carries no readable bounty; the kill is not credited.");
+                return;
+            }
+
+            if (bounty.ID != zdo.GetString(BountyTargetComponent.BountyIDKey))
+            {
+                return;
+            }
+
+            EpicLoot.Log($"Bounty kill: {monsterID} ({(isAdd ? "minion" : "target")}) for {bounty.ID}");
+            var pkg = new ZPackage();
+            bounty.ToPackage(pkg);
             ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.Everybody, "SlayBountyTargetFromServer", pkg, monsterID, isAdd);
 
-            var bounty = BountyInfo.FromPackage(pkg);
             AddSlainBountyTargetToLedger(bounty, monsterID, isAdd);
             API.RaiseBountyTargetSlain(bounty, monsterID, isAdd);
         }
@@ -503,17 +591,22 @@ namespace EpicLoot.Adventure.Feature
             BountyLedger.AddKillLog(bounty.PlayerID, bounty.ID, monsterID, isAdd);
         }
 
-        public override void OnZNetStart()
-        {
-        }
-
-        public override void OnZNetDestroyed()
-        {
-        }
-
         public override void OnWorldSave()
         {
             BountyManagmentSystem.Instance.Save();
+        }
+
+        /// <summary>Whether the peer's own character is this player, so one player cannot take another's kill logs.</summary>
+        private static bool SenderIsPlayer(long sender, long playerID)
+        {
+            if (sender == ZDOMan.GetSessionID())
+            {
+                return Player.m_localPlayer != null && Player.m_localPlayer.GetPlayerID() == playerID;
+            }
+
+            ZNetPeer peer = ZNet.instance.GetPeer(sender);
+            ZDO character = peer != null ? ZDOMan.instance.GetZDO(peer.m_characterID) : null;
+            return character != null && character.GetLong(ZDOVars.s_playerID) == playerID;
         }
 
         /// <summary>
@@ -522,7 +615,7 @@ namespace EpicLoot.Adventure.Feature
         /// </summary>
         private void RPC_Server_RequestKillLogs(long sender, long playerID)
         {
-            if (!Common.Utils.IsServer() || BountyLedger == null)
+            if (!Common.Utils.IsServer() || BountyLedger == null || !SenderIsPlayer(sender, playerID))
             {
                 return;
             }
@@ -548,6 +641,11 @@ namespace EpicLoot.Adventure.Feature
         /// </summary>
         private void RPC_Client_ReceiveKillLogs(long sender, string logData)
         {
+            if (!IsFromServer(sender))
+            {
+                return;
+            }
+
             var logs = JsonConvert.DeserializeObject<BountyKillLog[]>(logData);
             if (logs == null || Player.m_localPlayer == null)
                 return;

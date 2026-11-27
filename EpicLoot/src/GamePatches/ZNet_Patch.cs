@@ -13,6 +13,7 @@ namespace EpicLoot
             
             AdventureDataManager.Bounties.RegisterRPC(__instance.m_routedRpc);
             AdventureSpawnSaveMarker.RegisterRPC(__instance.m_routedRpc);
+            GatedItemType.GradualUnlock.RegisterRPC(__instance.m_routedRpc);
         }
     }
 

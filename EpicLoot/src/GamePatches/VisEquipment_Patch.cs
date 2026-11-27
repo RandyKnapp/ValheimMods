@@ -20,8 +20,6 @@ namespace EpicLoot
     [HarmonyPatch]
     public static class VisEquipment_Patch
     {
-        //SetLeftHandEquiped
-        //SetRightHandEquiped
         public enum ItemSettingSlot { None, Helmet, LeftHand, RightHand, Armor }
 
         public static ItemSettingSlot AttachingItemSlot = ItemSettingSlot.None;
@@ -135,15 +133,17 @@ namespace EpicLoot
             }
 
             GameObject newEffect;
+            // m_forceDisableInit is global: put back what the caller had, since a caller instantiating a preview
+            // may have it set already.
+            bool wasForceDisabled = ZNetView.m_forceDisableInit;
             ZNetView.m_forceDisableInit = true;
             try
             {
-                // m_forceDisableInit is global; leaking it true would break every later ZNetView.
                 newEffect = Object.Instantiate(asset, attachObject, false);
             }
             finally
             {
-                ZNetView.m_forceDisableInit = false;
+                ZNetView.m_forceDisableInit = wasForceDisabled;
             }
 
             newEffect.name = equipFx;
@@ -254,8 +254,7 @@ namespace EpicLoot
                 string fx = GetEquipFxName(item, out FxAttachMode mode);
                 if (mode == FxAttachMode.Player && !string.IsNullOrEmpty(fx))
                 {
-                    // Two items granting the same effect share one instance -- the set does what
-                    // the old OtherItemsUseThisEffect check did by hand.
+                    // Two items granting the same effect share one instance.
                     desired.Add(fx);
                 }
             }

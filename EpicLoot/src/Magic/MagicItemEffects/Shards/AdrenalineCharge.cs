@@ -1,5 +1,4 @@
 ﻿namespace EpicLoot.MagicItemEffects.Shards {
-    // On adrenaline activation provides a cooldown reduction to the forsaken power. The reduction is a fraction of the current cooldown, so it is more effective when the cooldown is high.
     public static class AdrenalineCharge {
         // Below this the remaining cooldown is not worth tracking; vanilla's per-frame decrement in
         // Player.UpdateGuardianPower would clear it within a second anyway. Cosmetic.

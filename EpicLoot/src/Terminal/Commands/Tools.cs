@@ -107,9 +107,7 @@ public static partial class TerminalManager
         foreach (var kvp in _commands)
         {
             if (kvp.Value.hideFromHelp) continue;
-            var str = $"<color={HEX_SoftBlue}>{kvp.Key} - {kvp.Value.Description}</color>";
-            if (kvp.Value.OnlyAdmin) str += $" <color={HEX_Amber}>( Only Admin )</color>";
-            args.Context.AddString(str);
+            args.Context.AddString($"<color={HEX_SoftBlue}>{kvp.Key} - {kvp.Value.Description}</color>");
         }
     }
 }

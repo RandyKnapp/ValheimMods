@@ -18,30 +18,30 @@ namespace EpicLoot.MagicItemEffects
             yield return AccessTools.DeclaredMethod(typeof(Hud), nameof(Hud.SetupPieceInfo));
         }
 
+        // piece is the build table's prefab, shared by every placement, so the station is put back in a finalizer
+        // and only when this call took it away.
         [UsedImplicitly]
-        private static void Prefix(ref CraftingStation __state, Piece piece)
+        private static void Prefix(out CraftingStation __state, Piece piece)
         {
+            __state = null;
             if (piece == null || Player.m_localPlayer == null || ZoneSystem.instance == null)
             {
                 return;
             }
 
-            __state = piece.m_craftingStation;
-
             if (piece.m_craftingStation != null && piece.m_craftingStation.name != null &&
-                Player.m_localPlayer.HasActiveMagicEffect(MagicEffectType.FreeBuild,  out float magicEffect))
+                Player.m_localPlayer.HasActiveMagicEffect(MagicEffectType.FreeBuild, out float _) &&
+                CanBeFreeBuilt(piece))
             {
-                if (CanBeFreeBuilt(piece))
-                {
-                    piece.m_craftingStation = null;
-                }
+                __state = piece.m_craftingStation;
+                piece.m_craftingStation = null;
             }
         }
 
         [UsedImplicitly]
-        private static void Postfix(CraftingStation __state, Piece piece)
+        private static void Finalizer(CraftingStation __state, Piece piece)
         {
-            if (piece != null && Player.m_localPlayer != null)
+            if (__state != null && piece != null)
             {
                 piece.m_craftingStation = __state;
             }

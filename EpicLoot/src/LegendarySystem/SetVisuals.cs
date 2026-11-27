@@ -6,17 +6,8 @@ using UnityEngine.Rendering;
 
 namespace EpicLoot.LegendarySystem
 {
-    // The code-built visuals of the full set a player wears, on every client: a glow fitted to the weapon in hand
-    // (WeaponGlow), the same kind of glow on both hands (HandGlow), an arrow on the string while a bow is drawn
-    // (DrawArrow, SetDrawArrow) and an aura around the wearer (BodyAura), all from the set's entry in legendaries.json.
-    // The wearer's client publishes the set's ID to the player ZDO (SetLooks.Publish, on every equip change); each client
-    // reads it a few times a second, so a remote wearer's change shows within a moment rather than at SetAura's 10 s
-    // refresh, which this also calls on a change.
-    //
-    // A weapon stowed on the back (R) is unequipped, so it breaks the set's bonuses, but it still counts toward the set's
-    // looks (SetLooks), and the glow moves with it to the back. Templates are built at world load (SetEffectWarmup), one
-    // per distinct config, so a server's copy of the config pushed on connect reuses them, and a live edit builds new
-    // ones the next time the set is seen.
+    // Each client polls the wearer's published set ID a few times a second, so a remote wearer's change shows within a
+    // moment rather than at SetAura's 10 s refresh, which this also calls on a change.
     //
     // The drawn arrow needs no data of its own on the network: vanilla syncs the "bow_aim" animator bool, which is on
     // exactly while a bow is drawn. How far it is drawn ("drawpercent") is not synced, so on other clients the arrow

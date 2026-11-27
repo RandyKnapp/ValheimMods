@@ -14,12 +14,6 @@ namespace EpicLoot
 
 namespace EpicLoot.MagicItemEffects
 {
-    // EitrBarrier (4-piece Mimir's Well set bonus, NoRoll). While the barrier is up, the effect value in percent of every
-    // hit is taken from eitr instead, at DamagePerEitr damage per point of eitr, and the rest goes on to the block,
-    // resistances, armor and health as usual. When eitr runs dry, from a hit or from casting, the barrier collapses for
-    // Cooldown seconds and comes back once there is MinEitr again. Not the Cyan shard's EitrShield, which spends eitr
-    // on what is left of a hit after armor and has no barrier.
-    //
     // The barrier being up IS the EL_EitrBarrier status effect on the local player, and being broken is the
     // EL_EitrBarrierBroken cooldown, so no static state can go stale on death or a world change. A Player.Update
     // postfix raises, breaks and drops it. The absorb is the status effect's own OnDamaged, as vanilla's Staff of
@@ -36,7 +30,6 @@ namespace EpicLoot.MagicItemEffects
     // ZDO.
     public static class EitrBarrier
     {
-        // All tunable in this effect's Config block in magiceffects.json, under these key names.
         public const float DefaultCooldown = 5f;    // seconds the barrier stays down after collapsing
         public const float DefaultMinEitr = 5f;     // eitr needed to raise it again, so it does not flicker during regen
         public const float DefaultDamagePerEitr = 1f;
@@ -91,7 +84,6 @@ namespace EpicLoot.MagicItemEffects
         // The world's eitr cost modifier applies to the barrier as it does to spells.
         private static float EitrRate => Game.m_eitrRate > 0f ? Game.m_eitrRate : 1f;
 
-        // Tooltip: "... takes {0}% of every hit from your Eitr ..., {2} damage per Eitr. It collapses for {1}s ..."
         public static void RegisterDisplayValues()
         {
             MagicItem.RegisterDisplayValues(MagicEffectType.EitrBarrier, value => new object[] { value, Cooldown, DamagePerEitr });

@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using HarmonyLib;
+using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects;
 
@@ -6,89 +8,82 @@ public class IncreaseTreeDrop : IncreaseDrop
 {
     public static IncreaseTreeDrop Instance { get; private set; }
 
+    private static readonly int FelledBonusKey = "el-tree-felled".GetStableHashCode();
+
+    private static float _fellingBonus;
+
     static IncreaseTreeDrop()
     {
         Instance = new IncreaseTreeDrop()
         {
             MagicEffect = MagicEffectType.IncreaseTreeDrop,
-            ZDOVar = "el-tree"
+            ZDOVar = "el-tree",
+            LegacyValueScale = 10f,
+            FillerItem = "Wood",
+            BetterItems = new HashSet<string>
+            {
+                "Blackwood", "ElderBark", "FineWood", "Frostwood", "RoundLog", "YggdrasilWood"
+            }
         };
     }
 
-    // Reset ZDO variable on equipment change.
-    // TargetMethods because two class-level [HarmonyPatch] attributes MERGE into one target (the
-    // old form only patched UnequipItem, so the ZDO tag was never cleared on equip).
-    [HarmonyPatch]
-    public static class IncreaseTreeDrop_Player_EquipmentChange_Patches
+    [HarmonyPatch(typeof(TreeBase), nameof(TreeBase.RPC_Damage))]
+    public static class IncreaseTreeDrop_TreeBase_RPC_Damage_Patch
     {
-        public static System.Collections.Generic.IEnumerable<System.Reflection.MethodBase> TargetMethods()
+        private static void Prefix(HitData hit)
         {
-            yield return AccessTools.DeclaredMethod(typeof(Humanoid), nameof(Humanoid.EquipItem));
-            yield return AccessTools.DeclaredMethod(typeof(Humanoid), nameof(Humanoid.UnequipItem));
+            _fellingBonus = Instance.BonusOf(hit.GetAttacker());
         }
-        public static void Postfix(Humanoid __instance)
+
+        private static void Postfix(TreeBase __instance, HitData hit)
         {
-            if (Player.m_localPlayer != null && __instance == Player.m_localPlayer && __instance.m_nview.IsValid() && __instance.m_nview.GetZDO().GetInt(Instance.ZDOVar) != 0)
+            // Vanilla's destroy path calls gameObject.SetActive(false) synchronously inside this very RPC, and only
+            // that path does -- ZNetScene.Destroy defers the Unity destroy, so m_nview says nothing here.
+            if (hit != null && !__instance.gameObject.activeSelf)
             {
-                __instance.m_nview.GetZDO().Set(Instance.ZDOVar, 0);
+                Vector3 position = __instance.transform.position + Vector3.up * __instance.m_spawnYOffset;
+                Instance.Grant(hit.GetAttacker(), __instance.m_dropWhenDestroyed, position);
             }
         }
-    }
 
-    [HarmonyPatch(typeof(TreeLog), nameof(TreeLog.Damage))]
-    public static class IncreaseTreeDrop_TreeLog_Damage_Patch
-    {
-        private static void Prefix(TreeLog __instance, HitData hit)
+        private static void Finalizer()
         {
-            Instance.DoPrefix(hit);
+            _fellingBonus = 0f;
         }
     }
 
     [HarmonyPatch(typeof(TreeLog), nameof(TreeLog.Destroy))]
     public static class IncreaseTreeDrop_TreeLog_Destroy_Patch
     {
-        private static void Prefix(TreeLog __instance, HitData hitData)
+        // Logs also break against the ground and each other, through ImpactEffect hits that have no attacker. The
+        // logs of a felled tree carry the feller's bonus on their ZDO so those breaks still pay out.
+        private static void Prefix(TreeLog __instance, HitData hitData, bool cheatedTool)
         {
-            if (hitData != null)
-            {
-                Instance.TryDropExtraItems(hitData.GetAttacker(), __instance.m_dropWhenDestroyed, __instance.transform.position);
-            }
+            Character attacker = hitData?.GetAttacker();
+            ZDO zdo = __instance.m_nview.GetZDO();
+            float bonus = attacker != null ? Instance.BonusOf(attacker) : zdo?.GetFloat(FelledBonusKey) ?? 0f;
+
+            Transform log = __instance.transform;
+            Vector3 position = log.position + log.up * Random.Range(-__instance.m_spawnDistance, __instance.m_spawnDistance) +
+                Vector3.up * 0.3f;
+            Instance.Grant(bonus, cheatedTool, __instance.m_dropWhenDestroyed, position, hitData);
+            _fellingBonus = bonus;
+        }
+
+        private static void Finalizer()
+        {
+            _fellingBonus = 0f;
         }
     }
 
-    [HarmonyPatch(typeof(TreeBase), nameof(TreeBase.Damage))]
-    public static class IncreaseTreeDrop_TreeBase_Damage_Patch
+    [HarmonyPatch(typeof(TreeLog), nameof(TreeLog.Awake))]
+    public static class IncreaseTreeDrop_TreeLog_Awake_Patch
     {
-        private static void Prefix(TreeBase __instance, HitData hit)
+        private static void Postfix(TreeLog __instance)
         {
-            Instance.DoPrefix(hit);
-        }
-    }
-
-    [HarmonyPatch(typeof(TreeBase), nameof(TreeBase.RPC_Damage))]
-    public static class IncreaseTreeDrop_TreeBase_RPC_Damage_Patch
-    {
-        private static void Postfix(TreeBase __instance, HitData hit)
-        {
-            // The old guard also required 'm_nview == null', which is never true (ZNetScene.Destroy
-            // defers the Unity destroy), so the bonus never dropped here. Vanilla's destroy path
-            // calls gameObject.SetActive(false) synchronously inside this very RPC, and only that
-            // path does -- inactive-after-call is the precise "felled by this hit" signal.
-            if (hit != null && !__instance.gameObject.activeSelf)
+            if (_fellingBonus > 0f && __instance.m_nview != null && __instance.m_nview.GetZDO() is ZDO zdo)
             {
-                Instance.TryDropExtraItems(hit.GetAttacker(), __instance.m_dropWhenDestroyed, __instance.transform.position);
-            }
-        }
-    }
-
-    [HarmonyPatch(typeof(Destructible), nameof(Destructible.Damage))]
-    public static class IncreaseTreeDrop_Destructible_Damage_Patch
-    {
-        private static void Prefix(Destructible __instance, HitData hit)
-        {
-            if (__instance.GetDestructibleType() == DestructibleType.Tree)
-            {
-                Instance.DoPrefix(hit);
+                zdo.Set(FelledBonusKey, _fellingBonus);
             }
         }
     }
@@ -98,15 +93,15 @@ public class IncreaseTreeDrop : IncreaseDrop
     {
         private static void Prefix(Destructible __instance, HitData hit)
         {
-            if (hit != null && __instance.GetDestructibleType() == DestructibleType.Tree)
+            if (hit == null || __instance.GetDestructibleType() != DestructibleType.Tree)
             {
-                var dropList = __instance.gameObject.GetComponent<DropOnDestroyed>();
-                if (dropList == null)
-                {
-                    return;
-                }
+                return;
+            }
 
-                Instance.TryDropExtraItems(hit.GetAttacker(), dropList.m_dropWhenDestroyed, __instance.transform.position);
+            var dropper = __instance.gameObject.GetComponent<DropOnDestroyed>();
+            if (dropper != null)
+            {
+                Instance.Grant(hit.GetAttacker(), dropper.m_dropWhenDestroyed, GroundedDropPosition(dropper));
             }
         }
     }

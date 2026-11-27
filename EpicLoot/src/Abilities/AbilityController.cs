@@ -61,9 +61,31 @@ namespace EpicLoot.Abilities
             }
 
             var keyCode = GetBindingKeycode(index);
-            if (keyCode != null && Input.GetKeyDown(keyCode))
+            if (IsKeyDown(keyCode))
             {
                 UseAbility(index);
+            }
+        }
+
+        private static readonly HashSet<string> _invalidKeyNames = new HashSet<string>();
+
+        // Unity throws on a key name it does not know, every frame; an empty one means the slot is unbound.
+        private static bool IsKeyDown(string keyName)
+        {
+            if (string.IsNullOrEmpty(keyName) || _invalidKeyNames.Contains(keyName))
+            {
+                return false;
+            }
+
+            try
+            {
+                return Input.GetKeyDown(keyName);
+            }
+            catch (System.ArgumentException)
+            {
+                _invalidKeyNames.Add(keyName);
+                EpicLoot.LogWarningForce($"Ability hotkey \"{keyName}\" is not a key Unity knows; that slot has no hotkey.");
+                return false;
             }
         }
 
@@ -236,14 +258,13 @@ namespace EpicLoot.Abilities
         public void UpdatePlayerAbilities()
         {
             List<AbilityDefinition> availableAbilities = GetAvailableAbilities();
-            HashSet<string> availableAbilityIds = new HashSet<string>(
-                availableAbilities
-                    .Take(AbilitySlotCount)
-                    .Where(x => x.ActivationMode is AbilityActivationMode.Activated or AbilityActivationMode.Triggerable)
-                    .Select(x => x.ID)
-            );
+            // Only activated and triggered abilities take a slot, so they are picked before the slots are counted.
+            availableAbilities = availableAbilities
+                .Where(x => x.ActivationMode is AbilityActivationMode.Activated or AbilityActivationMode.Triggerable)
+                .Take(AbilitySlotCount)
+                .ToList();
+            HashSet<string> availableAbilityIds = new HashSet<string>(availableAbilities.Select(x => x.ID));
 
-            // Single pass: remove old abilities and track which ones we still have
             HashSet<string> existingAbilityIds = new HashSet<string>();
             for (var i = _currentAbilities.Count - 1; i >= 0; --i)
             {
@@ -259,7 +280,6 @@ namespace EpicLoot.Abilities
                 }
             }
 
-            // Add new abilities
             foreach (AbilityDefinition abilityDef in availableAbilities.Take(AbilitySlotCount))
             {
                 if (abilityDef.ActivationMode is AbilityActivationMode.Activated or AbilityActivationMode.Triggerable && !existingAbilityIds.Contains(abilityDef.ID))

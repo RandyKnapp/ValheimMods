@@ -145,8 +145,8 @@ public static class TooltipBoxPatches
         {
             Transform header = Utils.FindChild(comparisonBox.transform, "Topic");
             header.GetComponent<TMP_Text>().text = Localization.instance.Localize(comparisonTitle);
-            Transform contentt = Utils.FindChild(comparisonBox.transform, "Text");
-            TMP_Text content = contentt.GetComponent<TMP_Text>();
+            Transform textTransform = Utils.FindChild(comparisonBox.transform, "Text");
+            TMP_Text content = textTransform.GetComponent<TMP_Text>();
             content.text = Localization.instance.Localize(comparisonText);
             MagicTextShimmer.Ensure(content);
             shownComparisonTitle = comparisonTitle;
@@ -199,7 +199,6 @@ public static class TooltipBoxPatches
         Transform header = Utils.FindChild(tooltipObject.transform, "Topic");
         if (header == null)
         {
-            // No scrollbar needed for this object
             return;
         }
 
@@ -207,34 +206,31 @@ public static class TooltipBoxPatches
             tooltipObject.transform, false, true, SCROLLBAR_WIDTH, PADDING,
             GUIManager.Instance.ValheimScrollbarHandleColorBlock, Color.grey, MaxWidth, MaxHeight);
 
-        // Hide the scrollbar by default, it will show when needed
         Scrollbar scrollbar = scrollArea.GetComponentInChildren<Scrollbar>();
         scrollbar.gameObject.SetActive(false);
 
-        Transform contentt = Utils.FindChild(scrollArea.transform, "Content");
+        Transform scrollContent = Utils.FindChild(scrollArea.transform, "Content");
         Transform tooltipTextTransform = Utils.FindChild(tooltipObject.transform, "Text");
-        header.SetParent(contentt, false);
-        tooltipTextTransform.SetParent(contentt, false);
+        header.SetParent(scrollContent, false);
+        tooltipTextTransform.SetParent(scrollContent, false);
 
-        Transform scrolltform = Utils.FindChild(scrollArea.transform, "Scroll View");
-        ScrollRect scrollRect = scrolltform.GetComponent<ScrollRect>();
+        Transform scrollView = Utils.FindChild(scrollArea.transform, "Scroll View");
+        ScrollRect scrollRect = scrollView.GetComponent<ScrollRect>();
         // Scroll sensitivity fix for combat update
         scrollRect.scrollSensitivity = 800;
         // TooltipBox decides when the box scrolls and shows the scrollbar itself; left to expand the
         // viewport, the ScrollRect would resize it a frame after the box was fitted.
         scrollRect.verticalScrollbarVisibility = ScrollRect.ScrollbarVisibility.AutoHide;
 
-        // Copy the existing background from the header tooltip section to the content of the scrollview
-        // Set the header section to match the width of the scroll area
-        Transform bkgtform = tooltipObject.transform.Find("Bkg");
-        if (bkgtform != null)
+        Transform background = tooltipObject.transform.Find("Bkg");
+        if (background != null)
         {
-            Image backgroundImage = bkgtform.GetComponent<Image>();
+            Image backgroundImage = background.GetComponent<Image>();
             // AddComponent returns null (after a Unity warning) if the object already carries a
             // Graphic. The guard at the top of this method is what keeps that from happening; don't
             // dereference the result blindly, because this runs inside a Harmony postfix and an NRE
             // here unwinds all the way out of InventoryGui.Update.
-            Image contentbkgImage = contentt.gameObject.AddComponent<Image>();
+            Image contentbkgImage = scrollContent.gameObject.AddComponent<Image>();
             if (contentbkgImage != null)
             {
                 contentbkgImage.color = backgroundImage.color;
@@ -242,17 +238,16 @@ public static class TooltipBoxPatches
                 contentbkgImage.type = backgroundImage.type;
                 contentbkgImage.raycastTarget = false;
             }
-            // Remove the header background as it is no longer needed
-            GameObject.Destroy(bkgtform.gameObject);
+            GameObject.Destroy(background.gameObject);
         }
 
         // The title and text span the box; TooltipBox.Fit narrows the box to the text instead.
-        VerticalLayoutGroup vlg = contentt.GetComponent<VerticalLayoutGroup>();
+        VerticalLayoutGroup vlg = scrollContent.GetComponent<VerticalLayoutGroup>();
         vlg.childControlWidth = true;
         vlg.childForceExpandWidth = true;
 
         // Add the scrollbar handler to allow mouse wheel scrolling while not hovering over the scrollbar
-        scrolltform.gameObject.AddComponent<ScrollWheelHandler>();
+        scrollView.gameObject.AddComponent<ScrollWheelHandler>();
 
         // CreateScrollView gives every piece a fixed size; hang them all off the outer rect instead, so
         // TooltipBox.Fit only has to size that one. Pivot top-left: resizing keeps the corner in place.
@@ -260,10 +255,10 @@ public static class TooltipBoxPatches
         scrollRT.anchorMin = new Vector2(0, 1);
         scrollRT.anchorMax = new Vector2(0, 1);
         scrollRT.pivot = new Vector2(0, 1);
-        Stretch((RectTransform)scrolltform);
+        Stretch((RectTransform)scrollView);
         Stretch(scrollRect.viewport);
 
-        RectTransform contentRT = (RectTransform)contentt;
+        RectTransform contentRT = (RectTransform)scrollContent;
         contentRT.anchorMin = new Vector2(0, 1);
         contentRT.anchorMax = new Vector2(1, 1);
         contentRT.pivot = new Vector2(0, 1);
@@ -289,9 +284,8 @@ public static class TooltipBoxPatches
     /// </summary>
     /// <remarks>
     /// Vanilla clamps the tooltip's first child to the screen, which is the box AddScrollbar builds. That
-    /// used to be MaxWidth x MaxHeight however little of it the text used, so a large maximum pushed the
-    /// visible part away from the cursor. The position is also rebuilt from scratch here every frame,
-    /// because vanilla's clamp moves the box permanently and the tooltip is reused from slot to slot.
+    /// clamp moves the box permanently and the tooltip is reused from slot to slot, so the position is
+    /// rebuilt from scratch here every frame.
     /// </remarks>
     [HarmonyPatch(typeof(UITooltip), nameof(UITooltip.LateUpdate))]
     [HarmonyPostfix]
@@ -544,7 +538,6 @@ public class ScrollWheelHandler : MonoBehaviour
 
     public void Update()
     {
-        // Only process if this object is active.
         if (!gameObject.activeInHierarchy || _scrollRect == null)
         {
             return;
@@ -562,7 +555,6 @@ public class ScrollWheelHandler : MonoBehaviour
             return;
         }
 
-        // Adjust the vertical scroll position.
         float newScrollPosition = _scrollRect.verticalNormalizedPosition + scrollDelta * 0.7f;
         _scrollRect.verticalNormalizedPosition = Mathf.Clamp01(newScrollPosition);
     }

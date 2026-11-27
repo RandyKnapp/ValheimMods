@@ -1,0 +1,2580 @@
+{
+    "Global": {
+        "Values": {
+            "MovementPenaltyReference": 0.4,
+            "BloodBlockSelfDamagePercent": 5,
+            "CostFloorPercent": 10
+        }
+    },
+    "Shards": {
+        "Red": {
+            "Category": "Core",
+            "Rarities": [
+                "Magic",
+                "Rare",
+                "Epic",
+                "Legendary",
+                "Mythic",
+                "Ancient"
+            ],
+            "TypeEffects": {
+                "MeleeWeapon": {
+                    "EffectType": "LifeGainOnHit",
+                    "ValuesPerRarity": {
+                        "Magic": 0.5,
+                        "Rare": 1,
+                        "Epic": 1.25,
+                        "Legendary": 1.5,
+                        "Mythic": 1.75,
+                        "Ancient": 2
+                    }
+                },
+                "RangedWeapon": {
+                    "EffectType": "LifeGainOnHit",
+                    "ValuesPerRarity": {
+                        "Magic": 0.5,
+                        "Rare": 1,
+                        "Epic": 1.25,
+                        "Legendary": 1.5,
+                        "Mythic": 1.75,
+                        "Ancient": 2
+                    }
+                },
+                "MagicWeapon": {
+                    "EffectType": "HealthOnEitrUse",
+                    "ValuesPerRarity": {
+                        "Magic": 2,
+                        "Rare": 4,
+                        "Epic": 5,
+                        "Legendary": 7,
+                        "Mythic": 9,
+                        "Ancient": 11
+                    },
+                    "Config": {
+                        "EitrPerTrigger": 100
+                    }
+                },
+                "Shield": {
+                    "EffectType": "LifeGainOnBlock",
+                    "ValuesPerRarity": {
+                        "Magic": 0.5,
+                        "Rare": 1,
+                        "Epic": 1.25,
+                        "Legendary": 1.5,
+                        "Mythic": 1.75,
+                        "Ancient": 2
+                    }
+                },
+                "Head": {
+                    "EffectType": "ModifyHealthRegen",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 2,
+                        "Epic": 3,
+                        "Legendary": 4,
+                        "Mythic": 4.5,
+                        "Ancient": 5
+                    }
+                },
+                "Chest": {
+                    "EffectType": "PercentHealth",
+                    "ValuesPerRarity": {
+                        "Magic": 1,
+                        "Rare": 2,
+                        "Epic": 3,
+                        "Legendary": 4,
+                        "Mythic": 5,
+                        "Ancient": 6
+                    }
+                },
+                "Legs": {
+                    "EffectType": "IncreaseHealth",
+                    "ValuesPerRarity": {
+                        "Magic": 1,
+                        "Rare": 2,
+                        "Epic": 3,
+                        "Legendary": 4,
+                        "Mythic": 5,
+                        "Ancient": 6
+                    }
+                },
+                "Trinket": {
+                    "EffectType": "DamageTakenGivesAdrenaline",
+                    "ValuesPerRarity": {
+                        "Magic": 0.75,
+                        "Rare": 1,
+                        "Epic": 1.5,
+                        "Legendary": 2,
+                        "Mythic": 2.25,
+                        "Ancient": 2.5
+                    }
+                },
+                "Utility": {
+                    "EffectType": "AddHealthRegen",
+                    "ValuesPerRarity": {
+                        "Magic": 0.75,
+                        "Rare": 1,
+                        "Epic": 1.5,
+                        "Legendary": 2,
+                        "Mythic": 2.25,
+                        "Ancient": 2.5
+                    }
+                },
+                "Shoulders": {
+                    "EffectType": "BulkUp",
+                    "ValuesPerRarity": {
+                        "Magic": 2,
+                        "Rare": 3,
+                        "Epic": 5,
+                        "Legendary": 8,
+                        "Mythic": 10,
+                        "Ancient": 12
+                    }
+                }
+            }
+        },
+        "Yellow": {
+            "Category": "Core",
+            "Rarities": [
+                "Magic",
+                "Rare",
+                "Epic",
+                "Legendary",
+                "Mythic",
+                "Ancient"
+            ],
+            "TypeEffects": {
+                "MeleeWeapon": {
+                    "EffectType": "ModifyAttackStaminaUse",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 2,
+                        "Epic": 3,
+                        "Legendary": 4,
+                        "Mythic": 4.5,
+                        "Ancient": 5
+                    }
+                },
+                "RangedWeapon": {
+                    "EffectType": "ModifyDrawStaminaUse",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 2,
+                        "Epic": 3,
+                        "Legendary": 4,
+                        "Mythic": 4.5,
+                        "Ancient": 5
+                    }
+                },
+                "MagicWeapon": {
+                    "EffectType": "EnergeticEitr",
+                    "ValuesPerRarity": {
+                        "Magic": 3,
+                        "Rare": 4,
+                        "Epic": 5,
+                        "Legendary": 6,
+                        "Mythic": 7,
+                        "Ancient": 8
+                    }
+                },
+                "Shield": {
+                    "EffectType": "StaminaGainOnBlock",
+                    "ValuesPerRarity": {
+                        "Magic": 0.75,
+                        "Rare": 1,
+                        "Epic": 1.5,
+                        "Legendary": 2,
+                        "Mythic": 2.25,
+                        "Ancient": 2.5
+                    }
+                },
+                "Head": {
+                    "EffectType": "ModifyStaminaRegen",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 3,
+                        "Epic": 4.5,
+                        "Legendary": 6,
+                        "Mythic": 7.5,
+                        "Ancient": 9
+                    }
+                },
+                "Chest": {
+                    "EffectType": "PercentStamina",
+                    "ValuesPerRarity": {
+                        "Magic": 1,
+                        "Rare": 1.5,
+                        "Epic": 2,
+                        "Legendary": 2.5,
+                        "Mythic": 3,
+                        "Ancient": 3.5
+                    }
+                },
+                "Legs": {
+                    "EffectType": "IncreaseStamina",
+                    "ValuesPerRarity": {
+                        "Magic": 1,
+                        "Rare": 2,
+                        "Epic": 3,
+                        "Legendary": 4,
+                        "Mythic": 5,
+                        "Ancient": 6
+                    }
+                },
+                "Trinket": {
+                    "EffectType": "UseAdrenalineAsStamina",
+                    "ValuesPerRarity": {
+                        "Magic": 15,
+                        "Rare": 25,
+                        "Epic": 40,
+                        "Legendary": 50,
+                        "Mythic": 60,
+                        "Ancient": 75
+                    }
+                },
+                "Utility": {
+                    "EffectType": "ModifySprintStaminaUse",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 2,
+                        "Epic": 3,
+                        "Legendary": 4,
+                        "Mythic": 4.5,
+                        "Ancient": 5
+                    }
+                },
+                "Shoulders": {
+                    "EffectType": "StaminaOnKill",
+                    "ValuesPerRarity": {
+                        "Magic": 2.25,
+                        "Rare": 2.5,
+                        "Epic": 3,
+                        "Legendary": 3.5,
+                        "Mythic": 3.75,
+                        "Ancient": 4
+                    }
+                }
+            }
+        },
+        "Cyan": {
+            "Category": "Core",
+            "Rarities": [
+                "Magic",
+                "Rare",
+                "Epic",
+                "Legendary",
+                "Mythic",
+                "Ancient"
+            ],
+            "TypeEffects": {
+                "MeleeWeapon": {
+                    "EffectType": "EitrImbueAttack",
+                    "ValuesPerRarity": {
+                        "Magic": 7,
+                        "Rare": 9,
+                        "Epic": 10,
+                        "Legendary": 12,
+                        "Mythic": 14,
+                        "Ancient": 15
+                    },
+                    "Config": {
+                        "EitrCostPerDamage": 1
+                    }
+                },
+                "RangedWeapon": {
+                    "EffectType": "EitrImbueAttack",
+                    "ValuesPerRarity": {
+                        "Magic": 12,
+                        "Rare": 16,
+                        "Epic": 20,
+                        "Legendary": 24,
+                        "Mythic": 28,
+                        "Ancient": 32
+                    },
+                    "Config": {
+                        "EitrCostPerDamage": 1
+                    }
+                },
+                "MagicWeapon": {
+                    "EffectType": "ModifyAttackEitrUse",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 3,
+                        "Epic": 4.5,
+                        "Legendary": 6,
+                        "Mythic": 7.5,
+                        "Ancient": 9
+                    }
+                },
+                "Shield": {
+                    "EffectType": "EitrGainOnBlock",
+                    "ValuesPerRarity": {
+                        "Magic": 0.75,
+                        "Rare": 1,
+                        "Epic": 1.5,
+                        "Legendary": 2,
+                        "Mythic": 2.25,
+                        "Ancient": 2.5
+                    }
+                },
+                "Head": {
+                    "EffectType": "PercentEitr",
+                    "ValuesPerRarity": {
+                        "Magic": 1,
+                        "Rare": 2,
+                        "Epic": 3,
+                        "Legendary": 4,
+                        "Mythic": 5,
+                        "Ancient": 6
+                    }
+                },
+                "Chest": {
+                    "EffectType": "IncreaseEitr",
+                    "ValuesPerRarity": {
+                        "Magic": 1,
+                        "Rare": 2,
+                        "Epic": 3,
+                        "Legendary": 4,
+                        "Mythic": 5,
+                        "Ancient": 6
+                    }
+                },
+                "Legs": {
+                    "EffectType": "ModifyEitrRegen",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 3,
+                        "Epic": 4.5,
+                        "Legendary": 6,
+                        "Mythic": 7.5,
+                        "Ancient": 9
+                    }
+                },
+                "Trinket": {
+                    "EffectType": "EitrUseGivesAdrenaline",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 2,
+                        "Epic": 3,
+                        "Legendary": 4,
+                        "Mythic": 4.5,
+                        "Ancient": 5
+                    }
+                },
+                "Utility": {
+                    "EffectType": "EitrShield",
+                    "ValuesPerRarity": {
+                        "Magic": 9,
+                        "Rare": 14,
+                        "Epic": 18,
+                        "Legendary": 22,
+                        "Mythic": 27,
+                        "Ancient": 32
+                    }
+                },
+                "Shoulders": {
+                    "EffectType": "HeartyEitr",
+                    "ValuesPerRarity": {
+                        "Magic": 1,
+                        "Rare": 1.5,
+                        "Epic": 2,
+                        "Legendary": 2.5,
+                        "Mythic": 3,
+                        "Ancient": 3.5
+                    }
+                }
+            }
+        },
+        "Orange": {
+            "Category": "Core",
+            "Rarities": [
+                "Magic",
+                "Rare",
+                "Epic",
+                "Legendary",
+                "Mythic",
+                "Ancient"
+            ],
+            "TypeEffects": {
+                "MeleeWeapon": {
+                    "EffectType": "AddFireDamage",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 2.5,
+                        "Epic": 3,
+                        "Legendary": 4,
+                        "Mythic": 5,
+                        "Ancient": 5.5
+                    }
+                },
+                "RangedWeapon": {
+                    "EffectType": "AddFireDamage",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 2.5,
+                        "Epic": 3,
+                        "Legendary": 4,
+                        "Mythic": 5,
+                        "Ancient": 5.5
+                    }
+                },
+                "MagicWeapon": {
+                    "EffectType": "AddFireDamage",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 2.5,
+                        "Epic": 3,
+                        "Legendary": 4,
+                        "Mythic": 5,
+                        "Ancient": 5.5
+                    }
+                },
+                "Shield": {
+                    "EffectType": "PhysToFireOnBlock",
+                    "ValuesPerRarity": {
+                        "Magic": 3,
+                        "Rare": 4,
+                        "Epic": 6,
+                        "Legendary": 8,
+                        "Mythic": 9,
+                        "Ancient": 10
+                    }
+                },
+                "Head": {
+                    "EffectType": "AddFireResistancePercentage",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 2,
+                        "Epic": 2.5,
+                        "Legendary": 3,
+                        "Mythic": 4,
+                        "Ancient": 4.5
+                    }
+                },
+                "Chest": {
+                    "EffectType": "PhysToFire",
+                    "ValuesPerRarity": {
+                        "Magic": 8,
+                        "Rare": 11,
+                        "Epic": 15,
+                        "Legendary": 19,
+                        "Mythic": 22,
+                        "Ancient": 26
+                    }
+                },
+                "Legs": {
+                    "EffectType": "Kindling",
+                    "ValuesPerRarity": {
+                        "Magic": 4,
+                        "Rare": 7,
+                        "Epic": 9,
+                        "Legendary": 11,
+                        "Mythic": 14,
+                        "Ancient": 16
+                    },
+                    "Config": {
+                        "DamagePerTrigger": 75
+                    }
+                },
+                "Trinket": {
+                    "EffectType": "BurningAdrenaline",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 2,
+                        "Epic": 3,
+                        "Legendary": 4,
+                        "Mythic": 4.5,
+                        "Ancient": 5
+                    }
+                },
+                "Utility": {
+                    "EffectType": "IncreaseHeatResistance",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 2,
+                        "Epic": 2.5,
+                        "Legendary": 3,
+                        "Mythic": 4,
+                        "Ancient": 4.5
+                    }
+                },
+                "Shoulders": {
+                    "EffectType": "BurningSpeed",
+                    "ValuesPerRarity": {
+                        "Magic": 4,
+                        "Rare": 6,
+                        "Epic": 9,
+                        "Legendary": 12,
+                        "Mythic": 14,
+                        "Ancient": 16
+                    }
+                }
+            }
+        },
+        "Pink": {
+            "Category": "Core",
+            "Rarities": [
+                "Magic",
+                "Rare",
+                "Epic",
+                "Legendary",
+                "Mythic",
+                "Ancient"
+            ],
+            "TypeEffects": {
+                "MeleeWeapon": {
+                    "EffectType": "PerfectDodgeGivesStamina",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 2,
+                        "Epic": 3,
+                        "Legendary": 4,
+                        "Mythic": 4.5,
+                        "Ancient": 5
+                    }
+                },
+                "RangedWeapon": {
+                    "EffectType": "PerfectDodgeGivesStamina",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 2,
+                        "Epic": 3,
+                        "Legendary": 4,
+                        "Mythic": 4.5,
+                        "Ancient": 5
+                    }
+                },
+                "MagicWeapon": {
+                    "EffectType": "PerfectDodgeGivesEitr",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 2,
+                        "Epic": 3,
+                        "Legendary": 4,
+                        "Mythic": 4.5,
+                        "Ancient": 5
+                    }
+                },
+                "Shield": {
+                    "EffectType": "BlockAsDodgeAsBlock",
+                    "ValuesPerRarity": {
+                        "Magic": 2,
+                        "Rare": 5,
+                        "Epic": 8,
+                        "Legendary": 11,
+                        "Mythic": 14,
+                        "Ancient": 16
+                    }
+                },
+                "Head": {
+                    "EffectType": "DecreaseDodgeCost",
+                    "ValuesPerRarity": {
+                        "Magic": 11,
+                        "Rare": 15,
+                        "Epic": 19,
+                        "Legendary": 22,
+                        "Mythic": 26,
+                        "Ancient": 30
+                    }
+                },
+                "Chest": {
+                    "EffectType": "ReduceFallDamage",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 2.5,
+                        "Epic": 4,
+                        "Legendary": 5,
+                        "Mythic": 6.5,
+                        "Ancient": 8
+                    }
+                },
+                "Legs": {
+                    "EffectType": "DodgeBuff",
+                    "ValuesPerRarity": {
+                        "Magic": 2,
+                        "Rare": 3,
+                        "Epic": 4,
+                        "Legendary": 5,
+                        "Mythic": 6,
+                        "Ancient": 7
+                    }
+                },
+                "Trinket": {
+                    "EffectType": "PerfectDodge",
+                    "ValuesPerRarity": {
+                        "Magic": 3,
+                        "Rare": 4,
+                        "Epic": 6,
+                        "Legendary": 8,
+                        "Mythic": 9,
+                        "Ancient": 10
+                    },
+                    "Config": {
+                        "MaxStacks": 5,
+                        "BuffDuration": 10
+                    }
+                },
+                "Utility": {
+                    "EffectType": "RollCleanse",
+                    "ValuesPerRarity": {
+                        "Magic": 0.75,
+                        "Rare": 1,
+                        "Epic": 1.25,
+                        "Legendary": 1.5,
+                        "Mythic": 2,
+                        "Ancient": 2.25
+                    }
+                },
+                "Shoulders": {
+                    "EffectType": "PerfectDodgeGivesSpeed",
+                    "ValuesPerRarity": {
+                        "Magic": 15,
+                        "Rare": 25,
+                        "Epic": 35,
+                        "Legendary": 45,
+                        "Mythic": 55,
+                        "Ancient": 70
+                    },
+                    "Config": {
+                        "BuffDuration": 1
+                    }
+                }
+            }
+        },
+        "Black": {
+            "Category": "Core",
+            "Rarities": [
+                "Magic",
+                "Rare",
+                "Epic",
+                "Legendary",
+                "Mythic",
+                "Ancient"
+            ],
+            "TypeEffects": {
+                "MeleeWeapon": {
+                    "EffectType": "IncreaseDamageDuringNighttime",
+                    "ValuesPerRarity": {
+                        "Magic": 3,
+                        "Rare": 6,
+                        "Epic": 9,
+                        "Legendary": 12,
+                        "Mythic": 14,
+                        "Ancient": 17
+                    }
+                },
+                "RangedWeapon": {
+                    "EffectType": "IncreaseDamageDuringNighttime",
+                    "ValuesPerRarity": {
+                        "Magic": 3,
+                        "Rare": 6,
+                        "Epic": 9,
+                        "Legendary": 12,
+                        "Mythic": 14,
+                        "Ancient": 17
+                    }
+                },
+                "MagicWeapon": {
+                    "EffectType": "IncreaseDamageDuringNighttime",
+                    "ValuesPerRarity": {
+                        "Magic": 3,
+                        "Rare": 6,
+                        "Epic": 9,
+                        "Legendary": 12,
+                        "Mythic": 14,
+                        "Ancient": 17
+                    }
+                },
+                "Shield": {
+                    "EffectType": "NightBlocker",
+                    "ValuesPerRarity": {
+                        "Magic": 8,
+                        "Rare": 12,
+                        "Epic": 16,
+                        "Legendary": 20,
+                        "Mythic": 24,
+                        "Ancient": 28
+                    }
+                },
+                "Head": {
+                    "EffectType": "NightStaminaRegenIncrease",
+                    "ValuesPerRarity": {
+                        "Magic": 9,
+                        "Rare": 12,
+                        "Epic": 15,
+                        "Legendary": 18,
+                        "Mythic": 21,
+                        "Ancient": 24
+                    }
+                },
+                "Chest": {
+                    "EffectType": "DamageReductionAtNight",
+                    "ValuesPerRarity": {
+                        "Magic": 6,
+                        "Rare": 8,
+                        "Epic": 10,
+                        "Legendary": 12,
+                        "Mythic": 14,
+                        "Ancient": 15
+                    }
+                },
+                "Legs": {
+                    "EffectType": "AddKnivesSkill",
+                    "ValuesPerRarity": {
+                        "Magic": 0.75,
+                        "Rare": 1.75,
+                        "Epic": 2.75,
+                        "Legendary": 3.5,
+                        "Mythic": 4.5,
+                        "Ancient": 5.5
+                    }
+                },
+                "Trinket": {
+                    "EffectType": "SummonBatWhenActivatingAdrenaline",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 2,
+                        "Epic": 3,
+                        "Legendary": 3.5,
+                        "Mythic": 4,
+                        "Ancient": 5
+                    },
+                    "Config": {
+                        "Cooldown": 10,
+                        "BatLifetime": 30,
+                        "SpawnRadius": 2,
+                        "SummonCountOffset": -1,
+                        "ConcurrentPerSummon": 2
+                    }
+                },
+                "Utility": {
+                    "EffectType": "ModifyNoise",
+                    "ValuesPerRarity": {
+                        "Magic": 3,
+                        "Rare": 4,
+                        "Epic": 5,
+                        "Legendary": 6,
+                        "Mythic": 8,
+                        "Ancient": 9
+                    }
+                },
+                "Shoulders": {
+                    "EffectType": "NightCarryWeight",
+                    "ValuesPerRarity": {
+                        "Magic": 6,
+                        "Rare": 10,
+                        "Epic": 13,
+                        "Legendary": 16,
+                        "Mythic": 20,
+                        "Ancient": 23
+                    }
+                }
+            }
+        },
+        "White": {
+            "Category": "Core",
+            "Rarities": [
+                "Magic",
+                "Rare",
+                "Epic",
+                "Legendary",
+                "Mythic",
+                "Ancient"
+            ],
+            "TypeEffects": {
+                "MeleeWeapon": {
+                    "EffectType": "IncreaseDamageDuringDaytime",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 3,
+                        "Epic": 5,
+                        "Legendary": 6.5,
+                        "Mythic": 8,
+                        "Ancient": 9.5
+                    }
+                },
+                "RangedWeapon": {
+                    "EffectType": "IncreaseDamageDuringDaytime",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 3,
+                        "Epic": 5,
+                        "Legendary": 6.5,
+                        "Mythic": 8,
+                        "Ancient": 9.5
+                    }
+                },
+                "MagicWeapon": {
+                    "EffectType": "IncreaseDamageDuringDaytime",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 3,
+                        "Epic": 5,
+                        "Legendary": 6.5,
+                        "Mythic": 8,
+                        "Ancient": 9.5
+                    }
+                },
+                "Shield": {
+                    "EffectType": "DayBlocker",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 3,
+                        "Epic": 5,
+                        "Legendary": 6.5,
+                        "Mythic": 8,
+                        "Ancient": 9.5
+                    }
+                },
+                "Head": {
+                    "EffectType": "DayDiscovery",
+                    "ValuesPerRarity": {
+                        "Magic": 6,
+                        "Rare": 10,
+                        "Epic": 13,
+                        "Legendary": 16,
+                        "Mythic": 20,
+                        "Ancient": 23
+                    }
+                },
+                "Chest": {
+                    "EffectType": "DayArmor",
+                    "ValuesPerRarity": {
+                        "Magic": 3,
+                        "Rare": 5,
+                        "Epic": 7,
+                        "Legendary": 9,
+                        "Mythic": 11,
+                        "Ancient": 13
+                    }
+                },
+                "Legs": {
+                    "EffectType": "DayStaminaRegen",
+                    "ValuesPerRarity": {
+                        "Magic": 3,
+                        "Rare": 4,
+                        "Epic": 4.5,
+                        "Legendary": 5,
+                        "Mythic": 6,
+                        "Ancient": 7
+                    }
+                },
+                "Trinket": {
+                    "EffectType": "DayHealthRegen",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 2,
+                        "Epic": 2.25,
+                        "Legendary": 2.5,
+                        "Mythic": 3,
+                        "Ancient": 3.5
+                    }
+                },
+                "Utility": {
+                    "EffectType": "AddCrafterSkills",
+                    "ValuesPerRarity": {
+                        "Magic": 0.75,
+                        "Rare": 1.75,
+                        "Epic": 2.75,
+                        "Legendary": 3.5,
+                        "Mythic": 4.5,
+                        "Ancient": 5.5
+                    }
+                },
+                "Shoulders": {
+                    "EffectType": "DaySailingSpeed",
+                    "ValuesPerRarity": {
+                        "Magic": 3,
+                        "Rare": 5,
+                        "Epic": 7,
+                        "Legendary": 9,
+                        "Mythic": 11,
+                        "Ancient": 13
+                    }
+                }
+            }
+        },
+        "Green": {
+            "Category": "Core",
+            "Rarities": [
+                "Magic",
+                "Rare",
+                "Epic",
+                "Legendary",
+                "Mythic",
+                "Ancient"
+            ],
+            "TypeEffects": {
+                "MeleeWeapon": {
+                    "EffectType": "DamageIncreaseFromMovementPenalty",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 2.5,
+                        "Epic": 3,
+                        "Legendary": 4,
+                        "Mythic": 5,
+                        "Ancient": 5.5
+                    }
+                },
+                "RangedWeapon": {
+                    "EffectType": "DamageIncreaseFromMovementPenalty",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 2.5,
+                        "Epic": 3,
+                        "Legendary": 4,
+                        "Mythic": 5,
+                        "Ancient": 5.5
+                    }
+                },
+                "MagicWeapon": {
+                    "EffectType": "DamageIncreaseFromMovementPenalty",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 2.5,
+                        "Epic": 3,
+                        "Legendary": 4,
+                        "Mythic": 5,
+                        "Ancient": 5.5
+                    }
+                },
+                "Shield": {
+                    "EffectType": "AnchoredBlock",
+                    "ValuesPerRarity": {
+                        "Magic": 0.2,
+                        "Rare": 0.4,
+                        "Epic": 0.7,
+                        "Legendary": 0.9,
+                        "Mythic": 1.1,
+                        "Ancient": 1.4
+                    }
+                },
+                "Head": {
+                    "EffectType": "IncreaseXPGainFromMovementPenalty",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 2.5,
+                        "Epic": 3,
+                        "Legendary": 4,
+                        "Mythic": 5,
+                        "Ancient": 5.5
+                    }
+                },
+                "Chest": {
+                    "EffectType": "CarryWeightForMovementPenalty",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 2,
+                        "Epic": 2.5,
+                        "Legendary": 3,
+                        "Mythic": 4,
+                        "Ancient": 4.5
+                    }
+                },
+                "Legs": {
+                    "EffectType": "StaminaIncreaseForMovementPenalty",
+                    "ValuesPerRarity": {
+                        "Magic": 1,
+                        "Rare": 1.5,
+                        "Epic": 2,
+                        "Legendary": 2.5,
+                        "Mythic": 3,
+                        "Ancient": 3.5
+                    }
+                },
+                "Trinket": {
+                    "EffectType": "AddMovementSkills",
+                    "ValuesPerRarity": {
+                        "Magic": 0.75,
+                        "Rare": 1.75,
+                        "Epic": 2.75,
+                        "Legendary": 3.5,
+                        "Mythic": 4.5,
+                        "Ancient": 5.5
+                    }
+                },
+                "Utility": {
+                    "EffectType": "ModifyJumpStaminaUse",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 2,
+                        "Epic": 3,
+                        "Legendary": 4,
+                        "Mythic": 4.5,
+                        "Ancient": 5
+                    }
+                },
+                "Shoulders": {
+                    "EffectType": "ArmorFromMovementPenalty",
+                    "ValuesPerRarity": {
+                        "Magic": 4,
+                        "Rare": 7,
+                        "Epic": 10,
+                        "Legendary": 13,
+                        "Mythic": 15,
+                        "Ancient": 18
+                    }
+                }
+            }
+        },
+        "Purple": {
+            "Category": "Core",
+            "Rarities": [
+                "Magic",
+                "Rare",
+                "Epic",
+                "Legendary",
+                "Mythic",
+                "Ancient"
+            ],
+            "TypeEffects": {
+                "MeleeWeapon": {
+                    "EffectType": "EitrLeech",
+                    "ValuesPerRarity": {
+                        "Magic": 0.25,
+                        "Rare": 0.5,
+                        "Epic": 1,
+                        "Legendary": 1.25,
+                        "Mythic": 1.5,
+                        "Ancient": 2
+                    }
+                },
+                "RangedWeapon": {
+                    "EffectType": "EitrLeech",
+                    "ValuesPerRarity": {
+                        "Magic": 0.25,
+                        "Rare": 0.5,
+                        "Epic": 1,
+                        "Legendary": 1.25,
+                        "Mythic": 1.5,
+                        "Ancient": 2
+                    }
+                },
+                "MagicWeapon": {
+                    "EffectType": "ModifyMagicFireRate",
+                    "ValuesPerRarity": {
+                        "Magic": 7,
+                        "Rare": 8,
+                        "Epic": 10,
+                        "Legendary": 11,
+                        "Mythic": 13,
+                        "Ancient": 14
+                    }
+                },
+                "Shield": {
+                    "EffectType": "ElementalWarding",
+                    "ValuesPerRarity": {
+                        "Magic": 3,
+                        "Rare": 7,
+                        "Epic": 11,
+                        "Legendary": 14,
+                        "Mythic": 18,
+                        "Ancient": 22
+                    }
+                },
+                "Head": {
+                    "EffectType": "DartingThoughts",
+                    "ValuesPerRarity": {
+                        "Magic": 4,
+                        "Rare": 8,
+                        "Epic": 11,
+                        "Legendary": 15,
+                        "Mythic": 19,
+                        "Ancient": 22
+                    }
+                },
+                "Chest": {
+                    "EffectType": "ConsumeEitrFirstForBloodCosts",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 2,
+                        "Epic": 3,
+                        "Legendary": 4,
+                        "Mythic": 4.5,
+                        "Ancient": 5
+                    }
+                },
+                "Legs": {
+                    "EffectType": "EveryXPointsOfEitrIncreasesStamina",
+                    "ValuesPerRarity": {
+                        "Magic": 1,
+                        "Rare": 1.5,
+                        "Epic": 2,
+                        "Legendary": 2.5,
+                        "Mythic": 3,
+                        "Ancient": 3.5
+                    }
+                },
+                "Trinket": {
+                    "EffectType": "ConvertEitrCostToStaminaCost",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 2,
+                        "Epic": 3,
+                        "Legendary": 4,
+                        "Mythic": 4.5,
+                        "Ancient": 5
+                    }
+                },
+                "Utility": {
+                    "EffectType": "RunningOnEmpty",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 2,
+                        "Epic": 3,
+                        "Legendary": 4,
+                        "Mythic": 4.5,
+                        "Ancient": 5
+                    },
+                    "Config": {
+                        "Cooldown": 30
+                    }
+                },
+                "Shoulders": {
+                    "EffectType": "ReduceEitrCost",
+                    "ValuesPerRarity": {
+                        "Magic": 4,
+                        "Rare": 6,
+                        "Epic": 8,
+                        "Legendary": 9,
+                        "Mythic": 11,
+                        "Ancient": 13
+                    }
+                }
+            }
+        },
+        "Grey": {
+            "Category": "Core",
+            "Rarities": [
+                "Magic",
+                "Rare",
+                "Epic",
+                "Legendary",
+                "Mythic",
+                "Ancient"
+            ],
+            "TypeEffects": {
+                "MeleeWeapon": {
+                    "EffectType": "IncreaseHarvestDamage",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 2.5,
+                        "Epic": 3,
+                        "Legendary": 4,
+                        "Mythic": 5,
+                        "Ancient": 5.5
+                    }
+                },
+                "RangedWeapon": {
+                    "EffectType": "IncreaseHarvestDamage",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 2.5,
+                        "Epic": 3,
+                        "Legendary": 4,
+                        "Mythic": 5,
+                        "Ancient": 5.5
+                    }
+                },
+                "MagicWeapon": {
+                    "EffectType": "IncreaseHarvestDamage",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 2.5,
+                        "Epic": 3,
+                        "Legendary": 4,
+                        "Mythic": 5,
+                        "Ancient": 5.5
+                    }
+                },
+                "Shield": {
+                    "EffectType": "BlockAsWoodCuttingAndPickaxes",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 3.5,
+                        "Epic": 5.5,
+                        "Legendary": 7,
+                        "Mythic": 9,
+                        "Ancient": 11
+                    }
+                },
+                "Head": {
+                    "EffectType": "IncreaseMiningDrop",
+                    "ValuesPerRarity": {
+                        "Magic": 12.5,
+                        "Rare": 18.75,
+                        "Epic": 25,
+                        "Legendary": 31.25,
+                        "Mythic": 37.5,
+                        "Ancient": 43.75
+                    }
+                },
+                "Chest": {
+                    "EffectType": "AddFishingSkill",
+                    "ValuesPerRarity": {
+                        "Magic": 0.75,
+                        "Rare": 1.75,
+                        "Epic": 2.75,
+                        "Legendary": 3.5,
+                        "Mythic": 4.5,
+                        "Ancient": 5.5
+                    }
+                },
+                "Legs": {
+                    "EffectType": "IncreaseTreeDrop",
+                    "ValuesPerRarity": {
+                        "Magic": 5,
+                        "Rare": 7.5,
+                        "Epic": 10,
+                        "Legendary": 12.5,
+                        "Mythic": 15,
+                        "Ancient": 17.5
+                    }
+                },
+                "Trinket": {
+                    "EffectType": "GainAdrenalineFromHarvesting",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 2,
+                        "Epic": 3,
+                        "Legendary": 4,
+                        "Mythic": 4.5,
+                        "Ancient": 5
+                    }
+                },
+                "Utility": {
+                    "EffectType": "IncreaseHarvestXPGain",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 2.5,
+                        "Epic": 3,
+                        "Legendary": 4,
+                        "Mythic": 5,
+                        "Ancient": 5.5
+                    }
+                },
+                "Shoulders": {
+                    "EffectType": "ReduceFishingStaminaCost",
+                    "ValuesPerRarity": {
+                        "Magic": 6,
+                        "Rare": 12,
+                        "Epic": 16,
+                        "Legendary": 21,
+                        "Mythic": 26,
+                        "Ancient": 31
+                    }
+                }
+            }
+        },
+        "DarkRed": {
+            "Category": "Dark",
+            "Rarities": [
+                "Magic",
+                "Rare",
+                "Epic",
+                "Legendary",
+                "Mythic",
+                "Ancient"
+            ],
+            "TypeEffects": {
+                "MeleeWeapon": {
+                    "EffectType": "IncreaseMeleeSkills",
+                    "ValuesPerRarity": {
+                        "Magic": 2.5,
+                        "Rare": 3.5,
+                        "Epic": 4.5,
+                        "Legendary": 5.5,
+                        "Mythic": 6.5,
+                        "Ancient": 7
+                    }
+                },
+                "RangedWeapon": {
+                    "EffectType": "IncreaseRangedSkills",
+                    "ValuesPerRarity": {
+                        "Magic": 0.75,
+                        "Rare": 1.75,
+                        "Epic": 2.75,
+                        "Legendary": 3.5,
+                        "Mythic": 4.5,
+                        "Ancient": 5.5
+                    }
+                },
+                "MagicWeapon": {
+                    "EffectType": "AddSpiritDamage",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 2.5,
+                        "Epic": 3,
+                        "Legendary": 4,
+                        "Mythic": 5,
+                        "Ancient": 5.5
+                    }
+                },
+                "Shield": {
+                    "EffectType": "BloodBaseBlock",
+                    "ValuesPerRarity": {
+                        "Magic": 2,
+                        "Rare": 5,
+                        "Epic": 8,
+                        "Legendary": 11,
+                        "Mythic": 14,
+                        "Ancient": 16
+                    }
+                },
+                "Head": {
+                    "EffectType": "HeadHunter",
+                    "ValuesPerRarity": {
+                        "Magic": 2,
+                        "Rare": 3,
+                        "Epic": 4,
+                        "Legendary": 5,
+                        "Mythic": 6,
+                        "Ancient": 7
+                    }
+                },
+                "Chest": {
+                    "EffectType": "Bloodrage",
+                    "ValuesPerRarity": {
+                        "Magic": 0.75,
+                        "Rare": 1.5,
+                        "Epic": 2.5,
+                        "Legendary": 3.25,
+                        "Mythic": 4,
+                        "Ancient": 4.75
+                    },
+                    "Config": {
+                        "MaxStacks": 5,
+                        "BuffDuration": 10
+                    }
+                },
+                "Legs": {
+                    "EffectType": "BloodDrinker",
+                    "ValuesPerRarity": {
+                        "Magic": 2,
+                        "Rare": 4,
+                        "Epic": 5,
+                        "Legendary": 7,
+                        "Mythic": 9,
+                        "Ancient": 11
+                    },
+                    "Config": {
+                        "MaxHealthPercentPerValue": 2.5,
+                        "MinHealthReduction": 10
+                    }
+                },
+                "Trinket": {
+                    "EffectType": "AdrenalineCharge",
+                    "ValuesPerRarity": {
+                        "Magic": 2,
+                        "Rare": 3,
+                        "Epic": 4,
+                        "Legendary": 4.5,
+                        "Mythic": 5,
+                        "Ancient": 6
+                    }
+                },
+                "Utility": {
+                    "EffectType": "OffSetAttack",
+                    "ValuesPerRarity": {
+                        "Magic": 2,
+                        "Rare": 3,
+                        "Epic": 4,
+                        "Legendary": 5,
+                        "Mythic": 6,
+                        "Ancient": 7
+                    }
+                },
+                "Shoulders": {
+                    "EffectType": "ReduceArmorIncreaseDamage",
+                    "ValuesPerRarity": {
+                        "Magic": 4,
+                        "Rare": 7,
+                        "Epic": 10,
+                        "Legendary": 14,
+                        "Mythic": 16,
+                        "Ancient": 18
+                    }
+                }
+            }
+        },
+        "DarkGreen": {
+            "Category": "Dark",
+            "Rarities": [
+                "Magic",
+                "Rare",
+                "Epic",
+                "Legendary",
+                "Mythic",
+                "Ancient"
+            ],
+            "TypeEffects": {
+                "MeleeWeapon": {
+                    "EffectType": "AddPoisonDamage",
+                    "ValuesPerRarity": {
+                        "Magic": 3,
+                        "Rare": 4,
+                        "Epic": 5,
+                        "Legendary": 5.5,
+                        "Mythic": 6.5,
+                        "Ancient": 7
+                    }
+                },
+                "RangedWeapon": {
+                    "EffectType": "AddPoisonDamage",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 2.5,
+                        "Epic": 3,
+                        "Legendary": 4,
+                        "Mythic": 5,
+                        "Ancient": 5.5
+                    }
+                },
+                "MagicWeapon": {
+                    "EffectType": "AddSpiritDamage",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 2.5,
+                        "Epic": 3,
+                        "Legendary": 4,
+                        "Mythic": 5,
+                        "Ancient": 5.5
+                    }
+                },
+                "Shield": {
+                    "EffectType": "PhysToPoisonOnBlock",
+                    "ValuesPerRarity": {
+                        "Magic": 3,
+                        "Rare": 4,
+                        "Epic": 6,
+                        "Legendary": 8,
+                        "Mythic": 9,
+                        "Ancient": 10
+                    }
+                },
+                "Head": {
+                    "EffectType": "AddPoisonResistancePercentage",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 2,
+                        "Epic": 2.5,
+                        "Legendary": 3,
+                        "Mythic": 4,
+                        "Ancient": 4.5
+                    }
+                },
+                "Chest": {
+                    "EffectType": "PhysToPoison",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 2,
+                        "Epic": 3,
+                        "Legendary": 4,
+                        "Mythic": 4.5,
+                        "Ancient": 5
+                    }
+                },
+                "Legs": {
+                    "EffectType": "AddBlockingSkill",
+                    "ValuesPerRarity": {
+                        "Magic": 0.75,
+                        "Rare": 1.75,
+                        "Epic": 2.75,
+                        "Legendary": 3.5,
+                        "Mythic": 4.5,
+                        "Ancient": 5.5
+                    }
+                },
+                "Trinket": {
+                    "EffectType": "GainAdrenalineWhenApplyingPoison",
+                    "ValuesPerRarity": {
+                        "Magic": 0.75,
+                        "Rare": 1.5,
+                        "Epic": 2.25,
+                        "Legendary": 3,
+                        "Mythic": 3.75,
+                        "Ancient": 4.5
+                    },
+                    "Config": {
+                        "TickInterval": 3,
+                        "Radius": 30
+                    }
+                },
+                "Utility": {
+                    "EffectType": "IncreaseAllPoisonDamageDone",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 2.5,
+                        "Epic": 3,
+                        "Legendary": 4,
+                        "Mythic": 5,
+                        "Ancient": 5.5
+                    }
+                },
+                "Shoulders": {
+                    "EffectType": "PoisonToTrueDamage",
+                    "ValuesPerRarity": {
+                        "Magic": 8,
+                        "Rare": 11,
+                        "Epic": 15,
+                        "Legendary": 19,
+                        "Mythic": 22,
+                        "Ancient": 26
+                    }
+                }
+            }
+        },
+        "DarkBlue": {
+            "Category": "Dark",
+            "Rarities": [
+                "Magic",
+                "Rare",
+                "Epic",
+                "Legendary",
+                "Mythic",
+                "Ancient"
+            ],
+            "TypeEffects": {
+                "MeleeWeapon": {
+                    "EffectType": "AddFrostDamage",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 2.5,
+                        "Epic": 3,
+                        "Legendary": 4,
+                        "Mythic": 5,
+                        "Ancient": 5.5
+                    }
+                },
+                "RangedWeapon": {
+                    "EffectType": "AddFrostDamage",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 2.5,
+                        "Epic": 3,
+                        "Legendary": 4,
+                        "Mythic": 5,
+                        "Ancient": 5.5
+                    }
+                },
+                "MagicWeapon": {
+                    "EffectType": "AddFrostDamage",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 2.5,
+                        "Epic": 3,
+                        "Legendary": 4,
+                        "Mythic": 5,
+                        "Ancient": 5.5
+                    }
+                },
+                "Shield": {
+                    "EffectType": "PhysToFrostOnBlock",
+                    "ValuesPerRarity": {
+                        "Magic": 3,
+                        "Rare": 4,
+                        "Epic": 6,
+                        "Legendary": 8,
+                        "Mythic": 9,
+                        "Ancient": 10
+                    }
+                },
+                "Head": {
+                    "EffectType": "AddFrostResistancePercentage",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 2,
+                        "Epic": 2.5,
+                        "Legendary": 3,
+                        "Mythic": 4,
+                        "Ancient": 4.5
+                    }
+                },
+                "Chest": {
+                    "EffectType": "PhysToFrost",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 2,
+                        "Epic": 3,
+                        "Legendary": 4,
+                        "Mythic": 4.5,
+                        "Ancient": 5
+                    }
+                },
+                "Legs": {
+                    "EffectType": "AddElementalMagicSkill",
+                    "ValuesPerRarity": {
+                        "Magic": 0.75,
+                        "Rare": 1.75,
+                        "Epic": 2.75,
+                        "Legendary": 3.5,
+                        "Mythic": 4.5,
+                        "Ancient": 5.5
+                    }
+                },
+                "Trinket": {
+                    "EffectType": "AdrenalineFrostWave",
+                    "ValuesPerRarity": {
+                        "Magic": 0.75,
+                        "Rare": 1,
+                        "Epic": 1.5,
+                        "Legendary": 1.75,
+                        "Mythic": 2,
+                        "Ancient": 2.5
+                    },
+                    "Config": {
+                        "Radius": 10,
+                        "SpeedFloor": 0.4
+                    }
+                },
+                "Utility": {
+                    "EffectType": "Warmth",
+                    "ValuesPerRarity": {
+                        "Magic": 2,
+                        "Rare": 3,
+                        "Epic": 4,
+                        "Legendary": 5,
+                        "Mythic": 6,
+                        "Ancient": 7
+                    }
+                },
+                "Shoulders": {
+                    "EffectType": "IcyWeight",
+                    "ValuesPerRarity": {
+                        "Magic": 4,
+                        "Rare": 6,
+                        "Epic": 9,
+                        "Legendary": 11,
+                        "Mythic": 14,
+                        "Ancient": 16
+                    }
+                }
+            }
+        },
+        "DarkPurple": {
+            "Category": "Dark",
+            "Rarities": [
+                "Magic",
+                "Rare",
+                "Epic",
+                "Legendary",
+                "Mythic",
+                "Ancient"
+            ],
+            "TypeEffects": {
+                "MeleeWeapon": {
+                    "EffectType": "ModifyAttackHealthUse",
+                    "ValuesPerRarity": {
+                        "Magic": 3,
+                        "Rare": 4,
+                        "Epic": 6,
+                        "Legendary": 8,
+                        "Mythic": 9,
+                        "Ancient": 10
+                    }
+                },
+                "RangedWeapon": {
+                    "EffectType": "ModifyAttackHealthUse",
+                    "ValuesPerRarity": {
+                        "Magic": 3,
+                        "Rare": 4,
+                        "Epic": 6,
+                        "Legendary": 8,
+                        "Mythic": 9,
+                        "Ancient": 10
+                    }
+                },
+                "MagicWeapon": {
+                    "EffectType": "ModifyAttackHealthUse",
+                    "ValuesPerRarity": {
+                        "Magic": 3,
+                        "Rare": 4,
+                        "Epic": 6,
+                        "Legendary": 8,
+                        "Mythic": 9,
+                        "Ancient": 10
+                    }
+                },
+                "Shield": {
+                    "EffectType": "BloodStaggerBlock",
+                    "ValuesPerRarity": {
+                        "Magic": 4,
+                        "Rare": 9,
+                        "Epic": 14,
+                        "Legendary": 18,
+                        "Mythic": 22,
+                        "Ancient": 27
+                    }
+                },
+                "Head": {
+                    "EffectType": "KillsReduceNextBloodCost",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 2,
+                        "Epic": 3,
+                        "Legendary": 4,
+                        "Mythic": 4.5,
+                        "Ancient": 5
+                    },
+                    "Config": {
+                        "MaxReduction": 1,
+                        "BuffDuration": 30
+                    }
+                },
+                "Chest": {
+                    "EffectType": "ReflectDamage",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 2.5,
+                        "Epic": 3.5,
+                        "Legendary": 4.5,
+                        "Mythic": 5.5,
+                        "Ancient": 6.5
+                    }
+                },
+                "Legs": {
+                    "EffectType": "BloodMagicLevelIncreasesHealthRegen",
+                    "ValuesPerRarity": {
+                        "Magic": 3,
+                        "Rare": 4,
+                        "Epic": 4.5,
+                        "Legendary": 5,
+                        "Mythic": 6,
+                        "Ancient": 7
+                    }
+                },
+                "Trinket": {
+                    "EffectType": "GainAdrenalineWhenSacrificingHealth",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 2,
+                        "Epic": 3,
+                        "Legendary": 4,
+                        "Mythic": 4.5,
+                        "Ancient": 5
+                    }
+                },
+                "Utility": {
+                    "EffectType": "AddBloodMagicSkill",
+                    "ValuesPerRarity": {
+                        "Magic": 0.75,
+                        "Rare": 1.75,
+                        "Epic": 2.75,
+                        "Legendary": 3.5,
+                        "Mythic": 4.5,
+                        "Ancient": 5.5
+                    }
+                },
+                "Shoulders": {
+                    "EffectType": "GainEitrWhenSacrificingHealth",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 2,
+                        "Epic": 3,
+                        "Legendary": 4,
+                        "Mythic": 4.5,
+                        "Ancient": 5
+                    }
+                }
+            }
+        },
+        "Golden": {
+            "Category": "Dark",
+            "Rarities": [
+                "Magic",
+                "Rare",
+                "Epic",
+                "Legendary",
+                "Mythic",
+                "Ancient"
+            ],
+            "TypeEffects": {
+                "MeleeWeapon": {
+                    "EffectType": "ChanceDoubleDamage",
+                    "ValuesPerRarity": {
+                        "Magic": 2.5,
+                        "Rare": 4,
+                        "Epic": 5.5,
+                        "Legendary": 7,
+                        "Mythic": 9,
+                        "Ancient": 10.5
+                    },
+                    "Config": {
+                        "DamageMultiplier": 2
+                    }
+                },
+                "RangedWeapon": {
+                    "EffectType": "ChanceDoubleDamage",
+                    "ValuesPerRarity": {
+                        "Magic": 2.5,
+                        "Rare": 4,
+                        "Epic": 5.5,
+                        "Legendary": 7,
+                        "Mythic": 9,
+                        "Ancient": 10.5
+                    },
+                    "Config": {
+                        "DamageMultiplier": 2
+                    }
+                },
+                "MagicWeapon": {
+                    "EffectType": "ChanceDoubleDamage",
+                    "ValuesPerRarity": {
+                        "Magic": 2.5,
+                        "Rare": 4,
+                        "Epic": 5.5,
+                        "Legendary": 7,
+                        "Mythic": 9,
+                        "Ancient": 10.5
+                    },
+                    "Config": {
+                        "DamageMultiplier": 2
+                    }
+                },
+                "Shield": {
+                    "EffectType": "LuckyBlock",
+                    "ValuesPerRarity": {
+                        "Magic": 0.75,
+                        "Rare": 1.5,
+                        "Epic": 2.5,
+                        "Legendary": 3.25,
+                        "Mythic": 4,
+                        "Ancient": 4.75
+                    }
+                },
+                "Head": {
+                    "EffectType": "Inspiration",
+                    "ValuesPerRarity": {
+                        "Magic": 8,
+                        "Rare": 12,
+                        "Epic": 16,
+                        "Legendary": 20,
+                        "Mythic": 24,
+                        "Ancient": 28
+                    },
+                    "Config": {
+                        "ProcChance": 0.25,
+                        "MinSkillLevel": 2,
+                        "LevelWeightExponent": 2,
+                        "MaxLevelUpsPerProc": 20
+                    }
+                },
+                "Chest": {
+                    "EffectType": "LuckyLoot",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 3,
+                        "Epic": 4,
+                        "Legendary": 5.5,
+                        "Mythic": 7,
+                        "Ancient": 8.5
+                    },
+                    "Config": {
+                        "BonusRollsMin": 1,
+                        "BonusRollsMax": 6,
+                        "MaxMultiplier": 10,
+                        "MaxUnitsPerEntry": 100,
+                        "MaxAddedUnitsPerDeath": 300
+                    }
+                },
+                "Legs": {
+                    "EffectType": "LuckWhileFishing",
+                    "ValuesPerRarity": {
+                        "Magic": 4,
+                        "Rare": 7,
+                        "Epic": 10,
+                        "Legendary": 14,
+                        "Mythic": 18,
+                        "Ancient": 21
+                    },
+                    "Config": {
+                        "TripleChance": 20,
+                        "RollBase": 40,
+                        "RollPerValue": 12,
+                        "RollCurve": 2,
+                        "FloorFraction": 0.05,
+                        "Flint": 5,
+                        "Coins": 15,
+                        "Amber": 40,
+                        "Ruby": 80,
+                        "Chitin": 100,
+                        "AmberPearl": 120,
+                        "CopperScrap": 180,
+                        "SilverNecklace": 240,
+                        "IronScrap": 300,
+                        "SerpentScale": 360,
+                        "RunestoneEpic": 500,
+                        "RunestoneLegendary": 640
+                    }
+                },
+                "Trinket": {
+                    "EffectType": "Luck",
+                    "ValuesPerRarity": {
+                        "Magic": 0.75,
+                        "Rare": 1.5,
+                        "Epic": 2.5,
+                        "Legendary": 3.25,
+                        "Mythic": 4,
+                        "Ancient": 4.75
+                    }
+                },
+                "Utility": {
+                    "EffectType": "Riches",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 2.5,
+                        "Epic": 3,
+                        "Legendary": 4,
+                        "Mythic": 5,
+                        "Ancient": 5.5
+                    }
+                },
+                "Shoulders": {
+                    "EffectType": "LuckyCraft",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 3,
+                        "Epic": 5,
+                        "Legendary": 6.5,
+                        "Mythic": 8,
+                        "Ancient": 9.5
+                    }
+                }
+            }
+        },
+        "LightBlue": {
+            "Category": "Light",
+            "Rarities": [
+                "Magic",
+                "Rare",
+                "Epic",
+                "Legendary",
+                "Mythic",
+                "Ancient"
+            ],
+            "TypeEffects": {
+                "MeleeWeapon": {
+                    "EffectType": "AddLightningDamage",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 2.5,
+                        "Epic": 3,
+                        "Legendary": 4,
+                        "Mythic": 5,
+                        "Ancient": 5.5
+                    }
+                },
+                "RangedWeapon": {
+                    "EffectType": "AddLightningDamage",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 2.5,
+                        "Epic": 3,
+                        "Legendary": 4,
+                        "Mythic": 5,
+                        "Ancient": 5.5
+                    }
+                },
+                "MagicWeapon": {
+                    "EffectType": "AddLightningDamage",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 2.5,
+                        "Epic": 3,
+                        "Legendary": 4,
+                        "Mythic": 5,
+                        "Ancient": 5.5
+                    }
+                },
+                "Shield": {
+                    "EffectType": "PhysToLightningOnBlock",
+                    "ValuesPerRarity": {
+                        "Magic": 3,
+                        "Rare": 4,
+                        "Epic": 6,
+                        "Legendary": 8,
+                        "Mythic": 9,
+                        "Ancient": 10
+                    }
+                },
+                "Head": {
+                    "EffectType": "AddLightningResistancePercentage",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 2,
+                        "Epic": 2.5,
+                        "Legendary": 3,
+                        "Mythic": 4,
+                        "Ancient": 4.5
+                    }
+                },
+                "Chest": {
+                    "EffectType": "PhysToLightning",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 2,
+                        "Epic": 3,
+                        "Legendary": 4,
+                        "Mythic": 4.5,
+                        "Ancient": 5
+                    }
+                },
+                "Legs": {
+                    "EffectType": "StormRider",
+                    "ValuesPerRarity": {
+                        "Magic": 7,
+                        "Rare": 10,
+                        "Epic": 13,
+                        "Legendary": 15,
+                        "Mythic": 18,
+                        "Ancient": 21
+                    }
+                },
+                "Trinket": {
+                    "EffectType": "StormFury",
+                    "ValuesPerRarity": {
+                        "Magic": 0.75,
+                        "Rare": 1,
+                        "Epic": 1.5,
+                        "Legendary": 2,
+                        "Mythic": 2.25,
+                        "Ancient": 2.5
+                    },
+                    "Config": {
+                        "TickInterval": 10
+                    }
+                },
+                "Utility": {
+                    "EffectType": "ConvertPhysicalDamageToLightning",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 2,
+                        "Epic": 3,
+                        "Legendary": 4,
+                        "Mythic": 4.5,
+                        "Ancient": 5
+                    }
+                },
+                "Shoulders": {
+                    "EffectType": "Conduit",
+                    "ValuesPerRarity": {
+                        "Magic": 3,
+                        "Rare": 4,
+                        "Epic": 6,
+                        "Legendary": 8,
+                        "Mythic": 9,
+                        "Ancient": 10
+                    },
+                    "Config": {
+                        "DamagePerTrigger": 200,
+                        "PoolPerValue": 3
+                    }
+                }
+            }
+        },
+        "LightGreen": {
+            "Category": "Light",
+            "Rarities": [
+                "Magic",
+                "Rare",
+                "Epic",
+                "Legendary",
+                "Mythic",
+                "Ancient"
+            ],
+            "TypeEffects": {
+                "MeleeWeapon": {
+                    "EffectType": "HealthGainPerXDamageDone",
+                    "ValuesPerRarity": {
+                        "Magic": 2,
+                        "Rare": 4,
+                        "Epic": 5,
+                        "Legendary": 6,
+                        "Mythic": 7,
+                        "Ancient": 8
+                    },
+                    "Config": {
+                        "DamagePerTrigger": 200
+                    }
+                },
+                "RangedWeapon": {
+                    "EffectType": "HealthGainPerXDamageDone",
+                    "ValuesPerRarity": {
+                        "Magic": 2,
+                        "Rare": 2.5,
+                        "Epic": 3,
+                        "Legendary": 3.5,
+                        "Mythic": 4,
+                        "Ancient": 5
+                    },
+                    "Config": {
+                        "DamagePerTrigger": 200
+                    }
+                },
+                "MagicWeapon": {
+                    "EffectType": "HealthGainPerXDamageDone",
+                    "ValuesPerRarity": {
+                        "Magic": 0.5,
+                        "Rare": 1.25,
+                        "Epic": 1.75,
+                        "Legendary": 2.5,
+                        "Mythic": 3,
+                        "Ancient": 3.5
+                    },
+                    "Config": {
+                        "DamagePerTrigger": 200
+                    }
+                },
+                "Shield": {
+                    "EffectType": "Warding",
+                    "ValuesPerRarity": {
+                        "Magic": 3,
+                        "Rare": 7,
+                        "Epic": 11,
+                        "Legendary": 14,
+                        "Mythic": 18,
+                        "Ancient": 22
+                    }
+                },
+                "Head": {
+                    "EffectType": "PotionEfficacy",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 2.5,
+                        "Epic": 4,
+                        "Legendary": 5,
+                        "Mythic": 6.5,
+                        "Ancient": 8
+                    }
+                },
+                "Chest": {
+                    "EffectType": "Comfortable",
+                    "ValuesPerRarity": {
+                        "Magic": 1,
+                        "Rare": 1,
+                        "Epic": 2,
+                        "Legendary": 2,
+                        "Mythic": 3,
+                        "Ancient": 4
+                    }
+                },
+                "Legs": {
+                    "EffectType": "AddPickaxesSkill",
+                    "ValuesPerRarity": {
+                        "Magic": 0.75,
+                        "Rare": 1.75,
+                        "Epic": 2.75,
+                        "Legendary": 3.5,
+                        "Mythic": 4.5,
+                        "Ancient": 5.5
+                    }
+                },
+                "Trinket": {
+                    "EffectType": "AdrenalineIncreasesHealthRegen",
+                    "ValuesPerRarity": {
+                        "Magic": 11,
+                        "Rare": 14,
+                        "Epic": 18,
+                        "Legendary": 22,
+                        "Mythic": 28,
+                        "Ancient": 34
+                    },
+                    "Config": {
+                        "SecondsPerPercent": 0.5
+                    }
+                },
+                "Utility": {
+                    "EffectType": "BountifulHarvest",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 2.5,
+                        "Epic": 3,
+                        "Legendary": 4,
+                        "Mythic": 5,
+                        "Ancient": 5.5
+                    }
+                },
+                "Shoulders": {
+                    "EffectType": "RestingHealthRegen",
+                    "ValuesPerRarity": {
+                        "Magic": 15,
+                        "Rare": 25,
+                        "Epic": 30,
+                        "Legendary": 40,
+                        "Mythic": 50,
+                        "Ancient": 65
+                    },
+                    "Config": {
+                        "WhileResting": 1,
+                        "WhileRested": 0
+                    }
+                }
+            }
+        },
+        "Peach": {
+            "Category": "Light",
+            "Rarities": [
+                "Magic",
+                "Rare",
+                "Epic",
+                "Legendary",
+                "Mythic",
+                "Ancient"
+            ],
+            "TypeEffects": {
+                "MeleeWeapon": {
+                    "EffectType": "DamageBonusFromPlayerWeight",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 2.5,
+                        "Epic": 3,
+                        "Legendary": 4,
+                        "Mythic": 5,
+                        "Ancient": 5.5
+                    }
+                },
+                "RangedWeapon": {
+                    "EffectType": "DamageBonusFromPlayerWeight",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 2.5,
+                        "Epic": 3,
+                        "Legendary": 4,
+                        "Mythic": 5,
+                        "Ancient": 5.5
+                    }
+                },
+                "MagicWeapon": {
+                    "EffectType": "DamageBonusFromPlayerWeight",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 2.5,
+                        "Epic": 3,
+                        "Legendary": 4,
+                        "Mythic": 5,
+                        "Ancient": 5.5
+                    }
+                },
+                "Shield": {
+                    "EffectType": "BurdenedBlock",
+                    "ValuesPerRarity": {
+                        "Magic": 0.2,
+                        "Rare": 0.4,
+                        "Epic": 0.7,
+                        "Legendary": 0.9,
+                        "Mythic": 1.1,
+                        "Ancient": 1.4
+                    },
+                    "Config": {
+                        "WeightThreshold": 300,
+                        "WeightPerBonus": 50
+                    }
+                },
+                "Head": {
+                    "EffectType": "GainMaxStaminaBasedOnPlayerMaxHealth",
+                    "ValuesPerRarity": {
+                        "Magic": 1,
+                        "Rare": 2,
+                        "Epic": 3,
+                        "Legendary": 4,
+                        "Mythic": 5,
+                        "Ancient": 6
+                    }
+                },
+                "Chest": {
+                    "EffectType": "StaminaRegenBonusFromPlayerWeight",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 2,
+                        "Epic": 3,
+                        "Legendary": 4,
+                        "Mythic": 4.5,
+                        "Ancient": 5
+                    }
+                },
+                "Legs": {
+                    "EffectType": "GainMaxCarryWeightFromRested",
+                    "ValuesPerRarity": {
+                        "Magic": 0.75,
+                        "Rare": 1.25,
+                        "Epic": 2,
+                        "Legendary": 2.5,
+                        "Mythic": 3.25,
+                        "Ancient": 4
+                    }
+                },
+                "Trinket": {
+                    "EffectType": "SailingSpeed",
+                    "ValuesPerRarity": {
+                        "Magic": 1.5,
+                        "Rare": 2,
+                        "Epic": 2.5,
+                        "Legendary": 3,
+                        "Mythic": 4,
+                        "Ancient": 4.5
+                    }
+                },
+                "Utility": {
+                    "EffectType": "AddCarryWeight",
+                    "ValuesPerRarity": {
+                        "Magic": 6,
+                        "Rare": 10,
+                        "Epic": 16,
+                        "Legendary": 23,
+                        "Mythic": 29,
+                        "Ancient": 36
+                    }
+                },
+                "Shoulders": {
+                    "EffectType": "TravelLight",
+                    "ValuesPerRarity": {
+                        "Magic": 2,
+                        "Rare": 4,
+                        "Epic": 6,
+                        "Legendary": 8,
+                        "Mythic": 10,
+                        "Ancient": 13
+                    },
+                    "Config": {
+                        "CarryWeightPerValue": 10,
+                        "MinResultingCarryWeight": 50
+                    }
+                }
+            }
+        },
+        "Firewalker": {
+            "Category": "Unique",
+            "Rarities": [
+                "Epic",
+                "Legendary",
+                "Mythic",
+                "Ancient"
+            ],
+            "UniformEffect": {
+                "EffectType": "Trailblazer",
+                "ValuesPerRarity": {
+                    "Epic": 5,
+                    "Legendary": 7,
+                    "Mythic": 10,
+                    "Ancient": 12
+                },
+                "Config": {
+                    "MinMoveSpeed": 1.5,
+                    "SpawnInterval": 0.35,
+                    "PatchRadius": 2.5,
+                    "PatchLifetime": 3,
+                    "PatchTickInterval": 0.5
+                }
+            },
+            "TypeEffects": {}
+        },
+        "Stormcaller": {
+            "Category": "Unique",
+            "Rarities": [
+                "Epic",
+                "Legendary",
+                "Mythic",
+                "Ancient"
+            ],
+            "UniformEffect": {
+                "EffectType": "StrikeCausesLightning",
+                "ValuesPerRarity": {
+                    "Epic": 4,
+                    "Legendary": 6,
+                    "Mythic": 8,
+                    "Ancient": 11
+                },
+                "Config": {
+                    "DamagePerValue": 3.6,
+                    "Radius": 1
+                }
+            },
+            "TypeEffects": {}
+        },
+        "Eikthyr": {
+            "Category": "Boss",
+            "Rarities": [
+                "Rare",
+                "Epic",
+                "Legendary",
+                "Mythic",
+                "Ancient"
+            ],
+            "UniformEffect": {
+                "EffectType": "ShockingCharge",
+                "ValuesPerRarity": {
+                    "Magic": 5,
+                    "Rare": 10,
+                    "Epic": 15,
+                    "Legendary": 20,
+                    "Mythic": 25,
+                    "Ancient": 30
+                },
+                "Config": {
+                    "MaxCharges": 18,
+                    "ChargesPerValue": 0.3,
+                    "MinCharges": 6,
+                    "DamageFraction": 0.2,
+                    "ConeLength": 4,
+                    "ConeMaxWidth": 4,
+                    "DischargeIgnoreWindow": 0.3
+                }
+            },
+            "TypeEffects": {}
+        },
+        "Elder": {
+            "Category": "Boss",
+            "Rarities": [
+                "Rare",
+                "Epic",
+                "Legendary",
+                "Mythic",
+                "Ancient"
+            ],
+            "UniformEffect": {
+                "EffectType": "ForestsAid",
+                "ValuesPerRarity": {
+                    "Magic": 2,
+                    "Rare": 5,
+                    "Epic": 7.5,
+                    "Legendary": 10,
+                    "Mythic": 12.5,
+                    "Ancient": 15
+                },
+                "Config": {
+                    "Cooldown": 60,
+                    "CooldownPerValue": 1.5,
+                    "MinCooldown": 10,
+                    "BaseRadius": 6,
+                    "RadiusPerTier": 0.15
+                }
+            },
+            "TypeEffects": {}
+        },
+        "Bonemass": {
+            "Category": "Boss",
+            "Rarities": [
+                "Epic",
+                "Legendary",
+                "Mythic",
+                "Ancient"
+            ],
+            "UniformEffect": {
+                "EffectType": "CorpseRot",
+                "ValuesPerRarity": {
+                    "Magic": 3,
+                    "Rare": 5,
+                    "Epic": 8,
+                    "Legendary": 10,
+                    "Mythic": 13,
+                    "Ancient": 15
+                },
+                "Config": {
+                    "Cooldown": 5,
+                    "Radius": 2,
+                    "PoisonPerTier": 20
+                }
+            },
+            "TypeEffects": {}
+        },
+        "Moder": {
+            "Category": "Boss",
+            "Rarities": [
+                "Epic",
+                "Legendary",
+                "Mythic",
+                "Ancient"
+            ],
+            "UniformEffect": {
+                "EffectType": "IcyRetribution",
+                "ValuesPerRarity": {
+                    "Magic": 3,
+                    "Rare": 5,
+                    "Epic": 8,
+                    "Legendary": 10,
+                    "Mythic": 13,
+                    "Ancient": 15
+                },
+                "Config": {
+                    "BaseCooldown": 200,
+                    "CooldownPerRarity": 20,
+                    "MinCooldown": 30,
+                    "Radius": 8,
+                    "FrostPerTier": 8
+                }
+            },
+            "TypeEffects": {}
+        },
+        "Yagluth": {
+            "Category": "Boss",
+            "Rarities": [
+                "Legendary",
+                "Mythic",
+                "Ancient"
+            ],
+            "UniformEffect": {
+                "EffectType": "MeteorSummoner",
+                "ValuesPerRarity": {
+                    "Magic": 2,
+                    "Rare": 4,
+                    "Epic": 5,
+                    "Legendary": 6,
+                    "Mythic": 7,
+                    "Ancient": 8
+                },
+                "Config": {
+                    "MaxCharges": 25,
+                    "SpawnHeight": 20,
+                    "MinDistance": 5,
+                    "MaxDistance": 15,
+                    "ProjectileSpeed": 20,
+                    "ExplosionRadius": 4
+                }
+            },
+            "TypeEffects": {}
+        },
+        "Queen": {
+            "Category": "Boss",
+            "Rarities": [
+                "Legendary",
+                "Mythic",
+                "Ancient"
+            ],
+            "UniformEffect": {
+                "EffectType": "Everflow",
+                "ValuesPerRarity": {
+                    "Magic": 3.5,
+                    "Rare": 4,
+                    "Epic": 4.5,
+                    "Legendary": 5,
+                    "Mythic": 6,
+                    "Ancient": 7
+                },
+                "Config": {
+                    "MaxStacks": 10,
+                    "BuffDuration": 10
+                }
+            },
+            "TypeEffects": {}
+        },
+        "Fader": {
+            "Category": "Boss",
+            "Rarities": [
+                "Mythic",
+                "Ancient"
+            ],
+            "UniformEffect": {
+                "EffectType": "NecroticFire",
+                "ValuesPerRarity": {
+                    "Magic": 0.3,
+                    "Rare": 0.35,
+                    "Epic": 0.45,
+                    "Legendary": 0.5,
+                    "Mythic": 0.6,
+                    "Ancient": 0.7
+                }
+            },
+            "TypeEffects": {}
+        }
+    }
+}

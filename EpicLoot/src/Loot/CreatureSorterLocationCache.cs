@@ -107,8 +107,7 @@ namespace EpicLoot
         /// <summary>
         /// What a location prefab is read from, for <see cref="LocationSpawns.Source"/>, and whether it is the
         /// game's own (every bundle it loads from is in the game's StreamingAssets). When the loader's
-        /// internals cannot be read, every prefab stamps as the game build plus the installed mods, which is
-        /// how the whole file used to be keyed.
+        /// internals cannot be read, every prefab stamps as the game build plus the installed mods.
         /// </summary>
         public string SourceOf(AssetID assetID, out bool isVanilla)
         {

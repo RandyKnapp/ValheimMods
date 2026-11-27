@@ -61,7 +61,6 @@ namespace EpicLoot.Adventure
                     global::EpicLoot.TemperPanel.LoadFonts();
                     TemperPanel = Object.Instantiate(EpicAssets.TemperPanel, __instance.transform, false);
                     TemperPanel.name = nameof(TemperPanel);
-                    TemperPanel.AddComponent<TemperPanel>();
                 }
 
                 TemperPanel.GetComponent<TemperPanel>().Show(Player.m_localPlayer);

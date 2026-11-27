@@ -11,13 +11,11 @@ namespace EpicLoot
 
 namespace EpicLoot.MagicItemEffects
 {
-    // Reduce Stagger Taken (3-piece Svalinn's Arc set bonus, NoRoll for now). The stagger damage the local player takes
-    // is cut by the effect value in percent, at most 90 so the bar still fills. AddStaggerDamage is where both kinds
-    // land: unblocked hits from ApplyDamage, and blocked ones from BlockAttack (which asks it whether the guard broke),
-    // so the guard holds longer too. Multiplies with Blood Stagger Block's own cut while blocking.
+    // AddStaggerDamage is where both kinds of stagger land: unblocked hits from ApplyDamage, and blocked ones from
+    // BlockAttack (which asks it whether the guard broke), so the guard holds longer too.
     public static class ReduceStaggerTaken
     {
-        private const float MaxReduction = 0.9f;
+        private const float MaxReduction = 0.9f;   // so the bar still fills
 
         [HarmonyPatch(typeof(Character), nameof(Character.AddStaggerDamage))]
         private static class Character_AddStaggerDamage_Patch
@@ -27,7 +25,7 @@ namespace EpicLoot.MagicItemEffects
             {
                 // AddStaggerDamage runs on every character's owner, enemies included, and on a dedicated server there is
                 // no local player at all: only the local player's own stagger is reduced.
-                if (__instance == null || __instance != Player.m_localPlayer)
+                if (__instance != Player.m_localPlayer)
                 {
                     return;
                 }

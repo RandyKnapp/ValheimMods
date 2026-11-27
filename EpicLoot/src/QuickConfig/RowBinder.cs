@@ -104,10 +104,6 @@ internal sealed class RowBinder {
         }
     }
 
-    // ------------------------------------------------------------------------------------------------
-    //  Finding rows
-    // ------------------------------------------------------------------------------------------------
-
     private static IEnumerable<Transform> RowContainers(Transform pageRoot) {
         List<Transform> containers = new List<Transform>();
         foreach (string name in ContainerNames) {
@@ -239,10 +235,6 @@ internal sealed class RowBinder {
     private void Edited(string message) {
         onEdited?.Invoke(message);
     }
-
-    // ------------------------------------------------------------------------------------------------
-    //  Simple widgets
-    // ------------------------------------------------------------------------------------------------
 
     private bool WireToggle(BoundRow row) {
         Toggle toggle = QuickConfigUi.FindComponent<Toggle>(row.Root.transform, "Toggle");
@@ -386,10 +378,6 @@ internal sealed class RowBinder {
         return true;
     }
 
-    private bool WireTextField(BoundRow row) {
-        return WireFieldAndPick(row, row.Binding) || MissingWidget(row, "Field");
-    }
-
     private bool WireFlags(BoundRow row) {
         Binding binding = row.Binding;
         Transform flags = QuickConfigUi.FindChild(row.Root.transform, "Flags");
@@ -486,10 +474,6 @@ internal sealed class RowBinder {
         };
         return true;
     }
-
-    // ------------------------------------------------------------------------------------------------
-    //  List rows: one Item template under Items (a ScrollRect), cloned per entry
-    // ------------------------------------------------------------------------------------------------
 
     // Clones an inactive template once per entry and rebuilds only when the entries changed: a slider
     // elsewhere on the panel refreshes every row, and rebuilding a list of input fields on every tick
@@ -852,10 +836,6 @@ internal sealed class RowBinder {
         };
         return true;
     }
-
-    // ------------------------------------------------------------------------------------------------
-    //  Weight lists: a count (or fixed key) and a 0-100 slider per entry, meant to add up to 100
-    // ------------------------------------------------------------------------------------------------
 
     // One WeightList inside a row (see README): Head -> Label, Total, Add; Items -> Item (Count or Name,
     // Slider, Value, Remove). The clones are rebuilt only when the entries' structure changes (a count

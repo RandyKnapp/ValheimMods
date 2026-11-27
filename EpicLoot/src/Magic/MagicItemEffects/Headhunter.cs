@@ -9,21 +9,12 @@ namespace EpicLoot.Magic.MagicItemEffects
         // Matches Riches and Lucky Loot. The effect's owner has to be in the area for the kill to count.
         private const float PlayerScanRange = 100f;
 
-        // Player-ZDO key holding the local player's Head Hunter value, mirrored by
-        // Multiplayer_Player_Patch.UpdateRichesAndLuck on equip/unequip.
+        // Mirrored by Multiplayer_Player_Patch.UpdateRichesAndLuck on equip/unequip.
         public const string ZdoValueKey = "el-hh";
 
-        // GenerateDropList runs on the creature's owner, which is whichever machine simulates it -- another
-        // player's client in ordinary multiplayer, or the dedicated server itself under serverside
-        // simulation. Neither is reliably the killer's machine, and the server has no local player at all,
-        // so reading Player.m_localPlayer here silently disabled the effect for most kills. The value is
-        // read off nearby players' ZDOs instead, the same way Riches and Lucky Loot do it.
-        //
-        // Max rather than Riches' sum: this is purely a proc chance for a single extra trophy (the loop
-        // below breaks after the first trophy in the drop list), so summing two players' 10% into 20% would
-        // hand a group a chance neither of them earned. Taking the best nearby value keeps a player's own
-        // odds exactly what their gear says they are. No cache, for Lucky Loot's reason -- a player scan on
-        // death is cheap when deaths are rare relative to frames.
+        // GenerateDropList runs on the creature's owner, which may be another client or a dedicated server with
+        // no local player, so the value is read off nearby players' ZDOs. Max rather than Riches' sum: it is a
+        // proc chance for one extra trophy, and summing would give a group odds no one's gear grants.
         private static float BestNearbyValue(Vector3 position)
         {
             var players = new List<Player>();
@@ -54,7 +45,7 @@ namespace EpicLoot.Magic.MagicItemEffects
         {
             private static void Postfix(CharacterDrop __instance)
             {
-                if (__instance == null || __instance.m_character == null)
+                if (__instance.m_character == null)
                 {
                     return;
                 }
@@ -69,7 +60,6 @@ namespace EpicLoot.Magic.MagicItemEffects
                 {
                     if (drop.m_prefab != null && drop.m_prefab.name.Contains("Trophy"))
                     {
-                        // Roll a chance to add this to the drop list
                         float randomv = Random.Range(0f, 1f);
                         EpicLoot.Log($"Rolling for additional trophy drop: {randomv} < {effectValue} {randomv < effectValue}");
 
@@ -83,10 +73,7 @@ namespace EpicLoot.Magic.MagicItemEffects
                 }
             }
 
-            /// <summary>
-            /// Drop a trophy, this happens outside of the drop system because otherwise mods like
-            /// DropThat will filter it out or prevent it.
-            /// </summary>
+            // Outside the drop system, or mods like DropThat filter it out.
             private static void DropTrophy(GameObject trophy, Vector3 position)
             {
                 Vector3 iUS = UnityEngine.Random.insideUnitSphere;

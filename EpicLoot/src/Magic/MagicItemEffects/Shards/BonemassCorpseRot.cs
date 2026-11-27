@@ -5,11 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects.Shards {
-    // Detonates a poison cloud on enemies the local player kills
     public static class BonemassCorpseRot {
-        // Seconds between detonations, the burst radius, and the poison dealt per point of shard value
-        // (20 -> 5..25 becomes 100..500). All tunable in this effect's Config block in
-        // config/shardstones.json, under these key names.
         public const float DefaultCooldown = 5f;
         public const float DefaultRadius = 2f;
         public const float DefaultPoisonPerTier = 20f;
@@ -24,8 +20,6 @@ namespace EpicLoot.MagicItemEffects.Shards {
             { PoisonPerTierKey, DefaultPoisonPerTier },
         };
 
-        // Tooltip: "Corpse Rot: {0} Poison" -- the same value * PoisonPerTier the burst deals, so the
-        // shown number rises with the shard's rarity instead of the effect reading as a flat name.
         public static void RegisterDisplayValues() {
             MagicItem.RegisterDisplayValues(MagicEffectType.CorpseRot,
                 value => new object[] {
@@ -45,7 +39,6 @@ namespace EpicLoot.MagicItemEffects.Shards {
 
         private static bool _fxMissingLogged;
 
-        // Cooldown indicator
         private const string CooldownName = "EL_BonemassPoisonCooldown";
         private static readonly int CooldownHash = CooldownName.GetStableHashCode();
         private static StatusEffect _cooldownIndicator;
@@ -60,8 +53,7 @@ namespace EpicLoot.MagicItemEffects.Shards {
 
         // Who made the kill is only known where the victim dies: OnDeath runs on the victim's owner -- another
         // client or a dedicated server as often as the killer -- and m_lastHit is only set there. So the owner
-        // tells the killer's own client, which bursts with its own shard value and cooldown. Testing for the
-        // local player here, as this used to, only ever worked when the killer owned the victim. A prefix:
+        // tells the killer's own client, which bursts with its own shard value and cooldown. A prefix:
         // OnDeath ends by resetting the victim's ZDO, and it also runs from the death animation on every
         // client, where only the owner's call counts.
         [HarmonyPatch(typeof(Character), nameof(Character.OnDeath))]
@@ -101,7 +93,7 @@ namespace EpicLoot.MagicItemEffects.Shards {
                 return;
             }
 
-            // Rate limit: the cooldown indicator doubles as the gate (mirrors ElderForestsAid).
+            // The cooldown indicator doubles as the gate.
             if (player.GetSEMan().HaveStatusEffect(CooldownHash)) {
                 return;
             }
@@ -129,8 +121,7 @@ namespace EpicLoot.MagicItemEffects.Shards {
             Object.Instantiate(prefab, position, Quaternion.identity);
         }
 
-        // The ttl is stamped here rather than at construction because the prototype is built once and
-        // cached, so a retuned cooldown would otherwise not take hold until the next game session.
+        // The ttl is stamped here because the cached prototype would not follow a retune.
         private static void ShowCooldown(Player player) {
             var indicator = GetOrCreateCooldownIndicator();
             if (indicator != null) {

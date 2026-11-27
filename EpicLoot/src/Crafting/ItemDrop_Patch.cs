@@ -14,15 +14,16 @@ namespace EpicLoot.Crafting
                 return;
             }
 
+            if (ColorUtility.TryParseHtmlString(EpicLoot.GetRarityColor(rarity), out var rgbaColor))
+            {
+                BeamColor.Apply(__instance.gameObject, rgbaColor);
+            }
+
+            // The material's glow counts against the beam limit like a magic item's beam does.
             var particleContainer = __instance.transform.Find("Particles");
             if (particleContainer != null)
             {
-                particleContainer.gameObject.AddComponent<AlwaysPointUp>();
-            }
-
-            if (ColorUtility.TryParseHtmlString(EpicLoot.GetRarityColor(rarity), out var rgbaColor))
-            {
-                __instance.gameObject.AddComponent<BeamColorSetter>().SetColor(rgbaColor);
+                __instance.gameObject.AddComponent<LootBeam>().OwnEffect = particleContainer.gameObject;
             }
         }
 

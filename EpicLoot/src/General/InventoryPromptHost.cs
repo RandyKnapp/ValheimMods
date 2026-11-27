@@ -16,6 +16,7 @@ namespace EpicLoot;
 public static class InventoryPromptHost
 {
     private static ConfirmPrompt _active;
+    private static int _escapeFrame = -1;
 
     public static bool IsOpen
     {
@@ -83,13 +84,15 @@ public static class InventoryPromptHost
         }
 
         var accept = ZInput.GetButtonDown("JoyButtonA");
-        var deny = ZInput.GetButtonDown("JoyButtonB") || ZInput.GetKeyDown(KeyCode.Escape);
+        var escape = ZInput.GetKeyDown(KeyCode.Escape);
+        var deny = ZInput.GetButtonDown("JoyButtonB") || escape;
 
         // Consume everything vanilla InventoryGui.Update would otherwise turn into a Hide().
         ZInput.ResetButtonStatus("Use");
         ZInput.ResetButtonStatus("JoyUse");
         ZInput.ResetButtonStatus("JoyButtonA");
         ZInput.ResetButtonStatus("JoyButtonB");
+        ZInput.ResetButtonStatus("JoyButtonX");
         ZInput.ResetButtonStatus("JoyButtonY");
         ZInput.ResetButtonStatus("Inventory");
 
@@ -100,8 +103,21 @@ public static class InventoryPromptHost
         }
         else if (deny)
         {
+            // Escape is read as a raw key, which cannot be reset, so vanilla would close the inventory too.
+            if (escape)
+            {
+                _escapeFrame = Time.frameCount;
+            }
+
             prompt.OnDenyClick();
         }
+    }
+
+    [HarmonyLib.HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.Hide))]
+    private static class InventoryGui_Hide_Patch
+    {
+        [JetBrains.Annotations.UsedImplicitly]
+        private static bool Prefix() => _escapeFrame != Time.frameCount;
     }
 
     /// <summary>Drops an unanswered prompt without running either callback.</summary>

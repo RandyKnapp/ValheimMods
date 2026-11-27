@@ -10,22 +10,12 @@ namespace EpicLoot
     /// <summary>
     /// Converts the deprecated flat loot table form (a table-level Drops/Loot pair) into LeveledLoot.
     /// Every path a table takes into the game runs through <see cref="Normalize"/> -- the config file,
-    /// patches, a server push and the API -- so nothing downstream reads the flat fields any more.
-    ///
-    /// The flat pair used to answer creature levels 1-3 (winning over any LeveledLoot entry there) and
-    /// nothing above that; the conversion keeps what every level used to roll, and gives level 4+ the
-    /// flat data instead of the null that used to throw.
+    /// patches, a server push and the API -- so nothing downstream reads the flat fields.
+    /// The flat pair answered creature levels 1-3, ahead of any LeveledLoot entry there; the conversion keeps
+    /// what those levels rolled and gives level 4+ the flat data too.
     /// </summary>
     public static class LootTableMigration
     {
-        // The auto-add rewrite writes "Drops": null and "Loot": [] onto every table; those are not legacy.
-        public static bool IsLegacy(LootTable table)
-        {
-#pragma warning disable CS0618 // the obsolete flat fields are exactly what this reads
-            return table != null && (!IsNullOrEmpty(table.Drops) || !IsNullOrEmpty(table.Loot));
-#pragma warning restore CS0618
-        }
-
         /// <summary>
         /// Folds a table's flat Drops/Loot into LeveledLoot, in place. Returns true when the table was in
         /// the flat form. Idempotent; empty flat fields are cleared either way.
@@ -121,10 +111,7 @@ namespace EpicLoot
             }
         }
 
-        // ------------------------------------------------------------------------------------------------
-        //  JSON side: the patch pipeline and the on-disk file work on a JObject.
-        // ------------------------------------------------------------------------------------------------
-
+        // The patch pipeline and the on-disk file work on a JObject.
         private static readonly JsonSerializer Serializer = JsonSerializer.Create(new JsonSerializerSettings
         {
             NullValueHandling = NullValueHandling.Ignore

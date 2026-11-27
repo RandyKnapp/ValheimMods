@@ -11,11 +11,12 @@ namespace EpicLoot.MagicItemEffects
         {
             if (character is Player player && player.InAttack() && player.m_currentAttack != null)
             {
-                ModifyWithLowHealth.Apply(player, MagicEffectType.ModifyAttackSpeed, effect =>
+                speed *= 1.0d + player.GetTotalActiveMagicEffectValue(MagicEffectType.ModifyAttackSpeed, 0.01f);
+                if (ModifyWithLowHealth.PlayerHasLowHealth(player))
                 {
-                    float value = player.GetTotalActiveMagicEffectValue(effect, 0.01f);
-                    speed *= (1.0d + value);
-                });
+                    speed *= 1.0d + player.GetTotalActiveMagicEffectValue(
+                        ModifyWithLowHealth.EffectNameWithLowHealth(MagicEffectType.ModifyAttackSpeed), 0.01f);
+                }
             }
 
             return speed;

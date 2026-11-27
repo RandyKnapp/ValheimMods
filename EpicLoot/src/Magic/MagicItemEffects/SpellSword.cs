@@ -13,18 +13,16 @@ namespace EpicLoot.MagicItemEffects
             {
                 if (__instance.m_character == Player.m_localPlayer && IsSpellswordWeapon(__instance.m_weapon) &&
                     MagicEffectsHelper.HasActiveMagicEffectOnWeapon(
-                        Player.m_localPlayer, __instance.m_weapon, MagicEffectType.SpellSword, out float effectValue))
+                        Player.m_localPlayer, __instance.m_weapon, MagicEffectType.SpellSword, out float _))
                 {
                     __result = GetSpellswordAttackStamina(__result);
                 }
             }
         }
 
-        // The Sept 2026 update split GetAttackEitr() into a thin wrapper over
-        // GetAttackEitr(Character, ItemData), so an unqualified patch is now ambiguous and throws.
-        // Patch the implementation rather than the wrapper: it is what every caller ends up in,
-        // including Player.UpdateControllerTriggerFeedback, which calls it directly. Read the
-        // arguments instead of m_character/m_weapon - that feedback path passes its own.
+        // GetAttackEitr() is a thin wrapper over GetAttackEitr(Character, ItemData), so the name alone is ambiguous.
+        // The implementation is what every caller ends up in, including Player.UpdateControllerTriggerFeedback,
+        // which passes its own arguments, so those are read instead of m_character/m_weapon.
         [HarmonyPriority(Priority.HigherThanNormal)]
         [HarmonyPatch(typeof(Attack), nameof(Attack.GetAttackEitr), typeof(Character), typeof(ItemDrop.ItemData))]
         public class Spellsword_Attack_GetAttackEitr_Patch
@@ -34,7 +32,7 @@ namespace EpicLoot.MagicItemEffects
                 // An Eitr Infusion has already paid the swing's eitr: it waives the extra cost while it lasts.
                 if (character == Player.m_localPlayer && IsSpellswordWeapon(weapon) && !EitrInfusion.IsInfused &&
                     MagicEffectsHelper.HasActiveMagicEffectOnWeapon(
-                        Player.m_localPlayer, weapon, MagicEffectType.SpellSword, out float effectValue))
+                        Player.m_localPlayer, weapon, MagicEffectType.SpellSword, out float _))
                 {
                     __result += GetAdditionalSpellswordAttackEitr(__instance.m_attackStamina);
                 }

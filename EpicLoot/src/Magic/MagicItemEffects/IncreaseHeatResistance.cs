@@ -9,11 +9,6 @@ public static class IncreaseHeatResistance
     {
         private static void Postfix(Player __instance, ref float __result)
         {
-            if (__instance == null)
-            {
-                return;
-            }
-
             __result += __instance.GetTotalActiveMagicEffectValue(MagicEffectType.IncreaseHeatResistance, 0.01f);
         }
     }

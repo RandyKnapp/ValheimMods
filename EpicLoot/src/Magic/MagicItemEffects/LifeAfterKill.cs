@@ -2,12 +2,11 @@ using EpicLoot.src.Magic.MagicItemEffects.Helpers;
 
 namespace EpicLoot.MagicItemEffects
 {
-    // Heals the player a flat amount when a hit of theirs kills a creature.
     public static class LifeAfterKill
     {
         private static readonly KillCredit _credit = new KillCredit();
 
-        // Postfix handler invoked by CharacterDamageDispatch (on-hit reaction, attacker side).
+        // Called from SharedCharacterDamagePatch's postfix, on the attacker's client.
         public static void OnDamageDealt(Character target, HitData hit, Character attacker)
         {
             var player = Player.m_localPlayer;

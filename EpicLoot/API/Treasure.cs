@@ -35,7 +35,7 @@ public static partial class API
 
     /// <param name="key">unique identifier</param>
     /// <param name="json">JSON serialized <see cref="TreasureMapBiomeInfoConfig"/></param>
-    /// <returns></returns>
+    /// <returns>True if updated</returns>
     [PublicAPI]
     public static bool UpdateTreasureMap(string key, string json)
     {

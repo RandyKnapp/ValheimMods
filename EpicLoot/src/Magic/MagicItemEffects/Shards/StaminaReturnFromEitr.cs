@@ -2,7 +2,6 @@
 using JetBrains.Annotations;
 
 namespace EpicLoot.MagicItemEffects.Shards {
-    // Provides a return of stamina based on eitr used
     public static class StaminaReturnFromEitr {
         [HarmonyPatch(typeof(Player), nameof(Player.UseEitr))]
         private static class UseEitr_Patch {

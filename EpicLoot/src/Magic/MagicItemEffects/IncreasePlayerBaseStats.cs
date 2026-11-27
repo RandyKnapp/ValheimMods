@@ -5,11 +5,8 @@ namespace EpicLoot.MagicItemEffects;
 
 public static class IncreasePlayerBaseStats
 {
-    // Consolidated GetTotalFoodValue patch for the flat and percent-of-pool magic/shard effects. Two
-    // postfixes preserve the ordering the effects used to get from their individual [HarmonyPriority]s:
-    //  * Normal priority -- flat pool additions, then the Normal-priority shard stamina effects.
-    //  * Priority.Last   -- the percent-of-pool shard effects, so they layer on the fully-built pools
-    //    (after the flat adds here and the lower-priority BulkUp / EveryXPointsOfEitr patches).
+    // Two postfixes on GetTotalFoodValue: flat pool additions at Normal priority, and the percent-of-pool
+    // effects at Priority.Last, so they scale the fully built pools (after BulkUp and EveryXPointsOfEitr).
     [HarmonyPatch(typeof(Player), nameof(Player.GetTotalFoodValue))]
     public static class Player_GetTotalFoodValue_Patch
     {

@@ -19,16 +19,10 @@ namespace EpicLoot.Adventure
     /// <summary>
     /// A coarse map of where each biome is, sampled straight from the world seed.
     ///
-    /// This exists because picking a bounty or treasure location used to be rejection sampling: throw
-    /// a random dart at the world, force-load the zone it landed in to see what was there, throw it
-    /// away, repeat. That cost a zone instantiate and a terrain build per dart, and for a biome the
-    /// darts could not reach (AshLands sits in a polar cap, not scattered across the disc) it never
-    /// terminated usefully at all.
-    ///
     /// WorldGenerator.GetBiome is a pure function of the world seed and an x/z pair -- no zone, no
     /// Heightmap, no Random, and vanilla already calls it off the main thread from
-    /// HeightmapBuilder.BuildThread. So the whole world can be sampled once, up front, for less than
-    /// the cost of a handful of the old darts, and every later request becomes a lookup.
+    /// HeightmapBuilder.BuildThread. So the whole world is sampled once, up front, without loading a
+    /// zone, and every later request becomes a lookup.
     ///
     /// Buckets are keyed by whatever Heightmap.Biome value GetBiome returned, never by a name or a
     /// hardcoded list. DeepNorth (which has no adventure config entry) and biomes another mod adds
@@ -88,11 +82,6 @@ namespace EpicLoot.Adventure
         /// guaranteed to still be in the biome, and testing one costs a single height sample. Points
         /// jittered away from a centre are worth trying for variety but are the first thing to fail
         /// in a fragmented biome, so they must never crowd out cells that have not been looked at.
-        ///
-        /// This was 4, with 36 jittered candidates each. In AshLands -- fragmented, and largely lava
-        /// and below-water trench -- that meant a search covered 8 guaranteed-in-biome points out of
-        /// thousands available, all of them clustered around one anchor, and reported the biome as
-        /// unusable when that one neighbourhood happened to be bad.
         /// </summary>
         private const int MaxCellsPerAttempt = 64;
 
@@ -147,7 +136,6 @@ namespace EpicLoot.Adventure
 
         internal static BiomeIndexState State => _state;
         internal static float CellSize => _cellSize;
-        internal static int CellCount => _cellCount;
 
         /// <summary>
         /// Builds the index if it is missing or stale. Safe and cheap to call repeatedly -- the
@@ -280,7 +268,7 @@ namespace EpicLoot.Adventure
                         elapsedMs += stopwatch.Elapsed.TotalMilliseconds;
                         frames++;
                         // Deliberately not WaitForEndOfFrame: a minimised or occluded window can stop
-                        // producing end-of-frame, which is how the old picker could hang forever.
+                        // producing end-of-frame and hang the build.
                         yield return null;
                         stopwatch.Reset();
                         stopwatch.Start();
@@ -355,12 +343,9 @@ namespace EpicLoot.Adventure
         /// Decides whether a biome is open water by measuring it, not by naming it.
         ///
         /// The submerged-point rejection in <see cref="TryCandidate"/> has to be skipped for a biome
-        /// that is under water by definition, or it rejects every candidate there and the biome can
-        /// never produce a spawn point at all -- the exact failure that kept vanilla Ocean bounties
-        /// from ever placing. Testing <c>biome == Ocean</c> would re-introduce that for any ocean-like
-        /// biome another mod adds, and the biome registry carries no is-water trait to consult, so
-        /// this samples the world instead. That also means a modded world where, say, Ocean has been
-        /// re-shaped into something walkable gets the right answer rather than the assumed one.
+        /// that is under water by definition, or the biome can never produce a spawn point. The biome
+        /// registry carries no is-water trait and testing <c>biome == Ocean</c> would miss ocean-like
+        /// biomes other mods add, so this samples the world instead.
         ///
         /// Sampling strides the radius-sorted bucket so the whole radial range is covered, and stops
         /// as soon as the biome has proven it has land.
@@ -404,7 +389,7 @@ namespace EpicLoot.Adventure
         /// <summary>
         /// True when <paramref name="biome"/> is under water everywhere, so a spawn point in it must
         /// be allowed to be submerged. Falls back to the vanilla Ocean assumption when the index has
-        /// not been built on this client -- that is the pre-existing behaviour, never worse.
+        /// not been built on this client.
         /// </summary>
         internal static bool IsOpenWater(Heightmap.Biome biome)
         {
@@ -808,9 +793,7 @@ namespace EpicLoot.Adventure
             }
 
             // Y only has to put the spawner's downward ground raycast (which starts 5000m above the
-            // given point) over real terrain. Height plus the long-standing 100m offset does that
-            // everywhere, and unlike the old picker it is an actual terrain height rather than a
-            // constant.
+            // given point) over real terrain; height plus 100m does that everywhere.
             point = new Vector3(candidate.x, height + 100f, candidate.y);
             return true;
         }

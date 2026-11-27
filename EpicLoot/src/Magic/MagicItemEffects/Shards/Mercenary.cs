@@ -4,23 +4,14 @@ using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects.Shards
 {
-    // Mercenary -- Spend coins on each hit to boost that hit's damage.
-    // The cost is a flat fee plus a percentage of the whole purse, so it scales with wealth; the shard value is
-    // the rate at which those spent coins convert into bonus damage. Read from the attacking weapon (the
-    // shard is socketed there), so it only fires for that weapon. If the player can't cover the cost, no
-    // coins are spent and no bonus is given.
-    //
     //   coinsSpent = FlatCoinCost + round(totalCoins * CoinPercent%)
     //   rawBonus%  = BaseDamage + (coinsSpent * conversion * 0.01)
     //   final%     = softCap(rawBonus)   -- exponential decay above SoftCap, asymptotic to SoftCap+SoftCapScale
     //
-    // The gap between the soft cap and the ceiling is deliberate headroom: at the current top conversion
-    // rate (0.5) the decay only bites past ~100k coins, leaving room for future rarities with better
-    // conversion rates to climb further without a formula change.
+    // The gap between the soft cap and the ceiling is deliberate headroom for better conversion rates to
+    // climb further without a formula change.
     public static class Mercenary
     {
-        // Config defaults, registered in ShardEffectDefinitions.EffectConfigs and read back through
-        // MagicItemEffectDefinitions.GetEffectConfig so they are retunable without a rebuild.
         public const float DefaultBaseDamage = 5f;
         public const float DefaultFlatCoinCost = 10f;
         public const float DefaultCoinPercent = 5f;
@@ -42,9 +33,8 @@ namespace EpicLoot.MagicItemEffects.Shards
             { SoftCapScaleKey, DefaultSoftCapScale },
         };
 
-        // Tooltip: the rolled value is a conversion rate, not a damage number, so it is surfaced as the
-        // more readable "damage % per 1000 coins spent" (value 10..50 -> 1%..5%). The remaining args are
-        // the config constants. Providers must be PURE -- this only reads config.
+        // The rolled value is a conversion rate, not a damage number, so it is shown as damage % per 1000
+        // coins spent.
         public static void RegisterDisplayValues()
         {
             MagicItem.RegisterDisplayValues(MagicEffectType.Mercenary, value =>
@@ -64,7 +54,7 @@ namespace EpicLoot.MagicItemEffects.Shards
             });
         }
 
-        // Prefix handler invoked by CharacterDamageDispatch (attacker-side outgoing modifier).
+        // Prefix handler invoked by SharedCharacterDamagePatch (attacker-side outgoing modifier).
         public static void ModifyOutgoingHit(HitData hit, Character attacker)
         {
             if (!(attacker is Player player) || player != Player.m_localPlayer)
@@ -72,9 +62,9 @@ namespace EpicLoot.MagicItemEffects.Shards
                 return;
             }
 
-            // Socketed on the weapon, so the rate is read from the attacking weapon rather than
-            // player-wide. GetActiveWeapon resolves the weapon of the attack in flight;
-            // GetCurrentWeapon returned the right hand first, so an off-hand weapon's shard never fired.
+            // Socketed on the weapon, so the rate is read from the attacking weapon rather than player-wide.
+            // GetActiveWeapon resolves the weapon of the attack in flight; GetCurrentWeapon alone returns the
+            // right hand first, so an off-hand weapon's shard would never fire.
             var magicItem = global::EpicLoot.src.Magic.MagicItemEffects.Helpers.MagicEffectsHelper.GetActiveWeapon(player)?.GetMagicItem();
             if (magicItem == null ||
                 !magicItem.HasEffect(MagicEffectType.Mercenary, includeSocketed: true))

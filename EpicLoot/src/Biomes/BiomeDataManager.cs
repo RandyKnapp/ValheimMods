@@ -18,6 +18,7 @@ namespace EpicLoot.Biomes
         /// <summary>Position in progression order, 0 first. Not the raw Order value from the file.</summary>
         public int Index;
         public IReadOnlyList<string> BossDefeatedKeys = Array.Empty<string>();
+        public int UnlockKills;
         public string Color = "white";
         public string DisplayName;
         public bool IsVanilla;
@@ -53,6 +54,19 @@ namespace EpicLoot.Biomes
         private static List<BountyBossConfig> _legacyBosses = new List<BountyBossConfig>();
         private static readonly HashSet<string> _warnedUnresolved = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         private static bool _legacyNoticeLogged;
+
+        // The shipped UnlockKills, for an on-disk biomedata.json written before the field existed.
+        private static readonly Dictionary<Heightmap.Biome, int> DefaultUnlockKills = new Dictionary<Heightmap.Biome, int>
+        {
+            { Heightmap.Biome.Meadows, 200 },
+            { Heightmap.Biome.BlackForest, 400 },
+            { Heightmap.Biome.Swamp, 600 },
+            { Heightmap.Biome.Mountain, 700 },
+            { Heightmap.Biome.Plains, 800 },
+            { Heightmap.Biome.Mistlands, 900 },
+            { Heightmap.Biome.AshLands, 1000 },
+            { Heightmap.Biome.DeepNorth, 1200 },
+        };
 
         public static void Initialize(BiomeDataConfig config)
         {
@@ -161,26 +175,14 @@ namespace EpicLoot.Biomes
         }
 
         /// <summary>
-        /// Whether the player has discovered this biome. Distinct from <see cref="IsKnown"/>, which
-        /// asks whether the registry knows the biome at all.
-        ///
-        /// Vanilla's <see cref="Player.m_knownBiome"/> became a <c>HashSet&lt;string&gt;</c> in the
-        /// Sept 2026 update, but the strings are *not* the "$biome_x" tokens
-        /// <see cref="BiomeSector.GetBiomeName"/> returns: <see cref="Player.AddKnownBiome"/> stores
-        /// <see cref="BiomeSector.GetName"/>, which runs that token through
-        /// <see cref="Localization.Localize(string)"/>. So the set holds display names ("Meadows"),
-        /// decorated by whatever AltBiome name prefix/suffix/override the sector carries. Three forms
-        /// are therefore accepted, cheapest first:
-        ///
-        /// 1. the raw token, written by <see cref="MarkDiscoveredBy"/> and by the
-        ///    Player.AddKnownBiome postfix in Biome_Patch.cs, and also what a pre-ChunkedNorth save
-        ///    migrates to when Player.Load converts the old enum list;
-        /// 2. the plain localized name, which is what every sector produces while nothing decorates
-        ///    biome names - all 32 vanilla AltBiomes leave those fields empty;
-        /// 3. the name of any single sector of the biome, asked of vanilla's own
-        ///    <see cref="Player.IsBiomeKnown"/>. Only reached when some AltBiome actually renames a
-        ///    biome, because it walks every sector of the biome and the merchant re-resolves every
-        ///    bounty target on each refresh.
+        /// Whether the player has discovered this biome (<see cref="IsKnown"/> asks whether the
+        /// registry knows it). <see cref="Player.m_knownBiome"/> holds localized display names
+        /// (<see cref="BiomeSector.GetName"/>, decorated by any AltBiome prefix/suffix/override), not
+        /// "$biome_x" tokens. Accepted, cheapest first: the raw token (written by
+        /// <see cref="MarkDiscoveredBy"/>, the AddKnownBiome postfix and a migrated old save), the plain
+        /// localized name, and vanilla's <see cref="Player.IsBiomeKnown"/> over every sector of the
+        /// biome, the last only when some AltBiome renames a biome, since the merchant re-resolves
+        /// every bounty target on each refresh.
         /// </summary>
         public static bool IsDiscoveredBy(Player player, Heightmap.Biome biome)
         {
@@ -308,6 +310,11 @@ namespace EpicLoot.Biomes
         public static IReadOnlyList<string> GetBossKeys(Heightmap.Biome biome)
         {
             return _byBiome.TryGetValue(biome, out BiomeDefinition def) ? def.BossDefeatedKeys : Array.Empty<string>();
+        }
+
+        public static int GetUnlockKills(Heightmap.Biome biome)
+        {
+            return _byBiome.TryGetValue(biome, out BiomeDefinition def) ? def.UnlockKills : 0;
         }
 
         /// <summary>True when every boss key of the biome is set. A biome with no keys is never gated.</summary>
@@ -449,6 +456,7 @@ namespace EpicLoot.Biomes
                     Biome = biome,
                     BossDefeatedKeys = string.IsNullOrWhiteSpace(legacy.BossDefeatedKey) ?
                         new List<string>() : new List<string> { legacy.BossDefeatedKey.Trim() },
+                    UnlockKills = ResolveUnlockKills(null, biome),
                     IsVanilla = isVanilla,
                     IsLegacy = true
                 };
@@ -548,12 +556,23 @@ namespace EpicLoot.Biomes
                 Name = name,
                 Biome = biome,
                 BossDefeatedKeys = keys,
+                UnlockKills = ResolveUnlockKills(entry.UnlockKills, biome),
                 Color = ParseColor(entry.Color, name),
                 DisplayName = string.IsNullOrWhiteSpace(entry.DisplayName) ? null : entry.DisplayName.Trim(),
                 IsVanilla = isVanilla
             };
             order = entry.Order ?? int.MaxValue;
             return true;
+        }
+
+        private static int ResolveUnlockKills(int? configured, Heightmap.Biome biome)
+        {
+            if (configured.HasValue)
+            {
+                return Math.Max(0, configured.Value);
+            }
+
+            return DefaultUnlockKills.TryGetValue(biome, out int kills) ? kills : 0;
         }
 
         private static bool TryParseVanillaName(string value, out Heightmap.Biome biome)

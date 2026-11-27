@@ -154,9 +154,6 @@ internal static class QuickConfigConfirm {
 
     internal static bool IsOpen => overlay != null;
 
-    /// <summary>True when the prefab is in the bundle, so a caller can fall back when it is not.</summary>
-    internal static bool Available => EpicLoot.LoadAsset<GameObject>(AssetName) != null;
-
     internal static bool Show(string title, string body, string keepLabel, string discardLabel, string saveCloseLabel,
         Action onKeep, Action onDiscard, Action onSaveClose) {
         Close();

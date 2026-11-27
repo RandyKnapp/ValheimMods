@@ -37,7 +37,6 @@ public static class TooltipPatches
             if (item.IsEquipable() && !item.m_equipped && Player.m_localPlayer != null &&
                 ZInput.GetKey(KeyCode.LeftControl) && Player.m_localPlayer.HasEquipmentOfType(item.m_shared.m_itemType))
             {
-                // Shown side by side with the hovered item's tooltip.
                 ItemDrop.ItemData otherItem = Player.m_localPlayer.GetEquipmentOfType(item.m_shared.m_itemType);
                 TooltipBoxPatches.SetComparison($"<color=#AAA><i>$mod_epicloot_currentlyequipped:</i></color>" +
                     otherItem.GetDecoratedName(), otherItem.GetTooltip());

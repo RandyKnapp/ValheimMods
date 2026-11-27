@@ -98,8 +98,7 @@ namespace EpicLoot
     /// silent no-op and pressing Use on the trader does nothing at all until the player relogs.
     ///
     /// The counter claiming "visible" while the window is not actually in an active hierarchy is that
-    /// desync and nothing else, so push the counter past the threshold and let Show run its body. If
-    /// the window still does not appear, the diagnostic line that follows says so.
+    /// desync and nothing else, so push the counter past the threshold and let Show run its body.
     /// </summary>
     [HarmonyPatch(typeof(StoreGui), nameof(StoreGui.Show))]
     public static class StoreGui_Show_RecoverFromVisibleDesync
@@ -130,53 +129,25 @@ namespace EpicLoot
                 $"gui={__instance.gameObject.activeInHierarchy}). Show would have done nothing; forcing it to reopen.");
 
             __instance.m_hiddenFrames = 2;
-            TraderDiagnostics.NoteRepaired();
         }
     }
 
     /// <summary>
-    /// Vanilla StoreGui.Update closes the window on `ZInput.GetButtonDown("Use")` -- the very press
-    /// that just opened it. Nothing consumes that press: GetButtonDown is a frame-latched flag that
-    /// any number of callers read, and Player.Interact leaves it set. So whether the store survives
-    /// its own opening frame comes down to which of Player.Update and StoreGui.Update Unity happens
-    /// to run first, and neither script declares an execution order:
-    ///
-    ///   StoreGui.Update first -- the panel is still inactive, Update returns at the top. Fine, and
-    ///                            this is the order the game normally ends up in.
-    ///   Player.Update first   -- Show activates the panel, then Update sees it active with the press
-    ///                            still latched and hides it again in the same frame.
-    ///
-    /// The second order draws nothing at all (activated and deactivated between two renders) and
-    /// Hide() logs nothing, so it reaches us as "Use on the trader does nothing, and there is no
-    /// error in the log". Relogging rebuilds both objects and can put the order back; a zone reload
-    /// cannot, which is exactly the shape of the reports.
-    ///
-    /// Vanilla already knows about this hazard: InventoryGui guards the identical branch with
-    /// `(m_shownFrames > 1) &amp; flag2`, refusing to close on the frame it opened. StoreGui has no
-    /// m_shownFrames at all. This gives it that guard the way InventoryGui itself does it, with
-    /// ZInput.ResetButtonStatus. Player.Interact has already consumed the press to open the store by
-    /// the time this runs, so nothing later in the frame is left owing it.
-    ///
-    /// On a client that wins the ordering race this is inert: Show has not run yet when the prefix
-    /// does, so the opening frame is never the current one.
+    /// Vanilla StoreGui.Update closes the window on `ZInput.GetButtonDown("Use")`, a frame-latched flag
+    /// that the press which just opened it leaves set. When Unity runs Player.Update before
+    /// StoreGui.Update (neither declares an execution order), the store opens and closes in the same
+    /// frame with nothing drawn or logged. InventoryGui guards the same branch with m_shownFrames;
+    /// StoreGui has none, so this swallows the Use press on the opening frame with ResetButtonStatus.
     /// </summary>
     [HarmonyPatch(typeof(StoreGui))]
     public static class StoreGui_KeepOpenOnItsOpeningFrame
     {
-        /// <summary>Frame the window last went from closed to open. Never Time.frameCount otherwise.</summary>
         private static int _openedFrame = int.MinValue;
-
-        /// <summary>Was the window already open when the Show now running started?</summary>
         private static bool _wasOpenBeforeShow;
-
-        /// <summary>One line per session: the Update order does not change once it has been seen.</summary>
         private static bool _reported;
 
-        /// <summary>
-        /// Update is private, which is the kind of member a game update quietly renames. Gating the
-        /// whole class on it keeps a miss from throwing out of CreateAndPatchAll, and leaves the Show
-        /// bookkeeping off too -- it is of no use on its own.
-        /// </summary>
+        // Update is private, the kind of member a game update renames; gating the whole class on it
+        // keeps a miss from failing the patch and leaves the Show bookkeeping off with it.
         public static bool Prepare()
         {
             return AccessTools.Method(typeof(StoreGui), nameof(StoreGui.Update)) != null;
@@ -190,17 +161,9 @@ namespace EpicLoot
             _wasOpenBeforeShow = IsOpen(__instance);
         }
 
-        /// <summary>
-        /// A finalizer rather than a postfix, for the same reason the adventure panel uses one:
-        /// FillList can throw after Show has already activated the window, and a half-filled window
-        /// still on screen is the one worth protecting -- letting the same press close it again is
-        /// how that throw went unreported in the first place.
-        ///
-        /// Only the closed-to-open transition counts. Show also runs its body for a press aimed at a
-        /// different trader while the window is up, and pressing Use again on the same trader is the
-        /// player asking to close it; recording either of those would swallow a close the player
-        /// meant.
-        /// </summary>
+        // A finalizer because FillList can throw after Show has activated the window. Only the
+        // closed-to-open transition counts: Show also runs for a press on another trader while open,
+        // and Use again on the same trader is a close the player meant.
         [HarmonyPatch(nameof(StoreGui.Show))]
         [HarmonyFinalizer]
         [HarmonyPriority(Priority.Last)]
@@ -217,20 +180,12 @@ namespace EpicLoot
         [HarmonyPriority(Priority.First)]
         public static void Update_Prefix(StoreGui __instance)
         {
-            // Vanilla's own first act is to return here, and every Hide it can reach is below that
-            // line, so a closed store costs one bool per frame and nothing else.
             if (!IsOpen(__instance))
             {
                 return;
             }
 
             var use = ZInput.GetButtonDown("Use");
-
-            // Read here, before vanilla's ResetButtonStatus("JoyButtonB") on the line above its own
-            // Hide() call makes the gamepad close unreadable from the Hide prefix.
-            TraderDiagnostics.NoteUpdateCloseInputs(use, ZInput.GetKeyDown(KeyCode.Escape),
-                ZInput.GetButtonDown("JoyButtonB"));
-
             if (!use || Time.frameCount != _openedFrame)
             {
                 return;

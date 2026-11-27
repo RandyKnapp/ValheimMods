@@ -14,8 +14,7 @@ namespace EpicLoot
 
         // Added to Weight once per effective star past the level this entry's list was authored at, and
         // floored at 0. It is how one anchor level shifts a template's item mix toward the next tier's
-        // gear as stars rise, which used to take a separate LeveledLoot entry per level. Only read on
-        // loot table lists -- an ItemSet member's weight never scales.
+        // gear as stars rise. Only read on loot table lists -- an ItemSet member's weight never scales.
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public float? WeightPerStar;
 
@@ -123,9 +122,8 @@ namespace EpicLoot
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string RefObject;
 
-        // The old flat form: one Drops/Loot pair that only ever answered creature levels 1-3.
-        // LootTableMigration folds it into LeveledLoot level 1 wherever a table enters the game, so
-        // nothing past that point reads these. Kept so older files, patches and API callers still load.
+        // The deprecated flat form. LootTableMigration folds it into LeveledLoot level 1 wherever a table
+        // enters the game; kept so older files, patches and API callers still load.
         [Obsolete("Flat loot tables are deprecated; use LeveledLoot. LootTableMigration converts these on load.")]
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public float[][] Drops;
@@ -135,7 +133,7 @@ namespace EpicLoot
         public LootDrop[] Loot;
 
         // Anchor levels. A creature rolls the highest level at or below its own and StarScaling
-        // extrapolates the rest, so one entry per level is no longer needed.
+        // extrapolates the rest.
         public List<LeveledLootDef> LeveledLoot = new List<LeveledLootDef>();
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]

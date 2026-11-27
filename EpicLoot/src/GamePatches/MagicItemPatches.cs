@@ -34,6 +34,8 @@ public static class InventoryGrid_UpdateGui_MagicItemComponent_Patch
                 setItem.enabled = false;
             }
         }
+
+        ItemBackgroundHelper.HideUniqueEffects(element.gameObject.transform);
     }
 
     public static void UpdateGuiItems(ItemDrop.ItemData itemData, InventoryElement element)
@@ -60,8 +62,8 @@ public static class InventoryGrid_UpdateGui_MagicItemComponent_Patch
         //     foreach (InventoryElement element in m_elements) { element.m_used = false; ... }
         // The Sept 2026 update added a second store (m_canBeDroppedOn = false) to that loop body,
         // which made the compiler emit a `dup` between `get_Current` and the m_used write. The
-        // element-producing pair is therefore no longer at a fixed offset, so walk back over the
-        // optional `dup` rather than hard-coding i-2/i-3 as before. Ldc_I4_0 is what separates this
+        // element-producing pair is therefore not at a fixed offset, so walk back over the
+        // optional `dup` rather than hard-coding i-2/i-3. Ldc_I4_0 is what separates this
         // clearing store from the `m_used = true` one later in the method.
         bool IsElementClearStore(int i)
         {
@@ -298,28 +300,32 @@ public static class Player_GetActionProgress_Patch
 [HarmonyPatch(typeof(ItemDrop))]
 public static class ItemDrop_Patches
 {
+    // Postfixes that swap in the decorated name: vanilla's body also reloads the stack from the ZDO and words a
+    // placed food as eat or drink, and other mods may patch it too.
     [HarmonyPatch(typeof(ItemDrop), nameof(ItemDrop.GetHoverText))]
-    [HarmonyPrefix]
-    public static bool GetHoverText_Prefix(ItemDrop __instance, ref string __result)
+    [HarmonyPostfix]
+    public static void GetHoverText_Postfix(ItemDrop __instance, ref string __result)
     {
-        string str = __instance.m_itemData.GetDecoratedName();
-        if (__instance.m_itemData.m_quality > 1)
+        if (__result == null || __instance.m_itemData == null)
         {
-            str = $"{str}[{__instance.m_itemData.m_quality}] ";
+            return;
         }
-        else if (__instance.m_itemData.m_stack > 1)
+
+        string plain = Localization.instance.Localize(__instance.m_itemData.m_shared.m_name);
+        string decorated = Localization.instance.Localize(__instance.m_itemData.GetDecoratedName());
+        if (decorated != plain && __result.StartsWith(plain, System.StringComparison.Ordinal))
         {
-            str = $"{str} x{__instance.m_itemData.m_stack}";
+            __result = decorated + __result.Substring(plain.Length);
         }
-        __result = Localization.instance.Localize($"{str}\n[<color=yellow><b>$KEY_Use</b></color>] $inventory_pickup");
-        return false;
     }
 
     [HarmonyPatch(typeof(ItemDrop), nameof(ItemDrop.GetHoverName))]
-    [HarmonyPrefix]
-    public static bool GetHoverName_Prefix(ItemDrop __instance, ref string __result)
+    [HarmonyPostfix]
+    public static void GetHoverName_Postfix(ItemDrop __instance, ref string __result)
     {
-        __result = __instance.m_itemData.GetDecoratedName();
-        return false;
+        if (__instance.m_itemData != null)
+        {
+            __result = __instance.m_itemData.GetDecoratedName();
+        }
     }
 }

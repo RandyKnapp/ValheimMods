@@ -128,7 +128,7 @@ public class HexenForm : MonoBehaviour
     private bool CanTakeOff => _player.m_eitr >= Hexen.MinEitr;
     private bool OutOfEitr => _player.m_eitr <= 0f;
 
-    private bool Apply(float scale)
+    private void Apply(float scale)
     {
         Scale = scale;
         var prefab = ZNetScene.instance != null ? ZNetScene.instance.GetPrefab(PrefabName) : null;
@@ -137,7 +137,7 @@ public class HexenForm : MonoBehaviour
         if (prefabVisual == null || witch == null)
         {
             EpicLoot.LogWarning($"HexenForm: prefab '{PrefabName}' is missing or has no Visual/Humanoid");
-            return false;
+            return;
         }
 
         _blast = WeaponFrom(witch, "JotunWitch_attack_magicblast");
@@ -149,7 +149,7 @@ public class HexenForm : MonoBehaviour
         if (_blast == null || _bolt == null || _dodgeLeft == null || _dodgeRight == null || _dodgeUp == null || _dodgeDown == null)
         {
             EpicLoot.LogWarning($"HexenForm: '{PrefabName}' no longer carries the expected default attack items");
-            return false;
+            return;
         }
 
         if (Active) Revert();
@@ -207,7 +207,6 @@ public class HexenForm : MonoBehaviour
 
         Active = true;
         ActiveForms[_player] = this;
-        return true;
     }
 
     private void Revert()
@@ -253,6 +252,9 @@ public class HexenForm : MonoBehaviour
         ActiveForms.Remove(_player);
     }
 
+    // Her attack items leave m_skillType at its Swords default, which vanilla reads for skill gain, damage
+    // scaling, skill buffs and kill stats. ItemData.Clone shares m_shared with the prefab, so the copy gets
+    // its own before being retagged, and the witch herself is left untouched.
     private static ItemDrop.ItemData WeaponFrom(Humanoid witch, string prefabName)
     {
         foreach (var go in witch.m_defaultItems)
@@ -261,6 +263,8 @@ public class HexenForm : MonoBehaviour
             var drop = go.GetComponent<ItemDrop>();
             if (drop == null) return null;
             var item = drop.m_itemData.Clone();
+            item.m_shared = item.m_shared.Clone();
+            item.m_shared.m_skillType = Skills.SkillType.ElementalMagic;
             item.m_dropPrefab = go;
             return item;
         }

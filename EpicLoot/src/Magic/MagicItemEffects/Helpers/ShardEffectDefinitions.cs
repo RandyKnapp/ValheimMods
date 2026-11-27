@@ -14,12 +14,11 @@ namespace EpicLoot.Magic.MagicItemEffects.Helpers {
     // OnSetupMagicItemEffectDefinitions event (magiceffects.json) and Shards.InitializeShardDefinitions
     // (shardstones.json). It retracts its own previous output first, so re-running is safe -- and that is
     // what makes a live edit or a server push of the shard grid take effect without a restart. ShardStones
-    // types are fully qualified because this namespace ends in ".Shards", which would otherwise shadow the
-    // EpicLoot.ShardStones.Shards class.
+    // types are written with global:: because inside this namespace the name EpicLoot resolves to the
+    // EpicLoot class.
     public static class ShardEffectDefinitions {
-        // Code-side defaults for the per-effect tunables. These are the fallback half of the merge in
-        // BuildConfig; the authored half is the "Config" block on the effect's grid entry in
-        // config/shardstones.json, which overlays these per key.
+        // Code-side defaults for the per-effect tunables, which the grid entry's "Config" block overlays per
+        // key (BuildConfig).
         //
         // Keeping a code default for every key is not optional: a player's existing on-disk
         // shardstones.json keeps winning until they accept the ConfigVersionManager rewrite prompt, so a
@@ -31,92 +30,42 @@ namespace EpicLoot.Magic.MagicItemEffects.Helpers {
         private static readonly Dictionary<string, Dictionary<string, float>> EffectConfigs =
             new Dictionary<string, Dictionary<string, float>>
             {
-                // Queen's Everflow: how many times the regen buff may stack, and how long a stack survives.
                 { MagicEffectType.Everflow, QueenEverflow.DefaultConfig },
-                // Dodge Momentum (PerfectDodge): how many times the damage buff may stack, and its duration.
                 { MagicEffectType.PerfectDodge, PerfectDodge.DefaultConfig },
-                // Dodge Agility: duration of the post-dodge speed buff.
                 { MagicEffectType.PerfectDodgeGivesSpeed, PerfectDodgeGivesSpeed.DefaultConfig },
-                // Lucky Fishing: the bonus-treasure table (prefab -> value threshold, same semantic as the
-                // Riches config), the triple-catch sub-roll chance, and the shape of the treasure roll.
                 { MagicEffectType.LuckWhileFishing, LuckWhileFishing.DefaultConfig },
-                // The three coin-economy effects below are no longer assigned to any shard slot (Golden was
-                // re-themed from coins to luck). BuildDefinition is only reached for effects the grid
-                // actually uses, so these entries are dormant rather than harmful -- and keeping them is
-                // what makes any of the three revivable with a single config edit.
-                //
-                // Mercenary (was Golden weapons): the per-hit coin cost, the flat damage bonus, and the
-                // soft-cap curve applied to the converted coins.
+                // Mercenary, Coinplated, Wager and ChanceToCritOnHit are on no grid slot, so BuildDefinition never
+                // reaches them; their defaults stay so a shardstones.json edit can bring any of them back.
                 { MagicEffectType.Mercenary, Mercenary.DefaultConfig },
-                // Coinplated (was Golden chest): what share of the purse is committed to absorbing each hit.
                 { MagicEffectType.Coinplated, Coinplated.DefaultConfig },
-                // Wager (was Golden head): how much damage each wagered coin buys.
                 { MagicEffectType.Wager, Wager.DefaultConfig },
-                // Inspiration (Golden head): the percent chance that any single skill-XP gain inspires,
-                // which skills are eligible, and how the level-up walk is bounded.
                 { MagicEffectType.Inspiration, Inspiration.DefaultConfig },
-                // Lucky Loot (Golden chest): the range of extra magic-item table rolls a proc earns, and
-                // the caps on how far the ordinary drop list may be multiplied.
                 { MagicEffectType.LuckyLoot, LuckyLoot.DefaultConfig },
-                // Bloodrage (DarkRed chest): how many times the damage buff may stack, and its duration.
                 { MagicEffectType.Bloodrage, Bloodrage.DefaultConfig },
-                // Adrenaline Surge: seconds of buff granted per point of shard value, which is what turns
-                // the single rarity ramp into both a regen % and a duration.
                 { MagicEffectType.AdrenalineIncreasesHealthRegen, AdrenalineIncreasesHealthRegen.DefaultConfig },
-
-                // -------- Boss shard actives --------
-                // Meteor: hits to charge, plus the launch geometry and impact radius.
+                { MagicEffectType.RestingHealthRegen, RestingHealthRegen.DefaultConfig },
                 { MagicEffectType.MeteorSummoner, MeteorSummoner.DefaultConfig },
-                // Eikthyr's Shocking Charge: hits to charge, what share of the banked damage the cone
-                // deals, and the cone's reach and width.
                 { MagicEffectType.ShockingCharge, EikthyrShockingCharge.DefaultConfig },
-                // Moder's Icy Retribution: the rarity-scaled cooldown, nova radius, and frost per value point.
                 { MagicEffectType.IcyRetribution, ModerIcyRetribution.DefaultConfig },
-                // Bonemass' Corpse Rot: cooldown, burst radius, and poison per value point.
                 { MagicEffectType.CorpseRot, BonemassCorpseRot.DefaultConfig },
-                // The Elder's Forest Aid: the value-scaled ensnare cooldown and radius.
                 { MagicEffectType.ForestsAid, ElderForestsAid.DefaultConfig },
-                // Trailblazer: the burning trail's cadence, radius, and lifetime.
                 { MagicEffectType.Trailblazer, Trailblazer.DefaultConfig },
-                // Adrenaline Frost Wave: search radius and how hard the chill bites.
                 { MagicEffectType.AdrenalineFrostWave, AdrenalineFrostWave.DefaultConfig },
-                // Summon Bat: cooldown, lifetime, spawn ring, and how value maps to bat counts.
                 { MagicEffectType.SummonBatWhenActivatingAdrenaline, SummonBatWhenActivatingAdrenaline.DefaultConfig },
-                // Strike Causes Lightning: damage per value point, and the strike's blast radius.
                 { MagicEffectType.StrikeCausesLightning, StrikeCausesLightning.DefaultConfig },
-
-                // -------- Accumulator / threshold effects --------
-                // Conduit: lightning dealt per eitr payout.
                 { MagicEffectType.Conduit, Conduit.DefaultConfig },
-                // Health per X damage done: damage banked per heal payout.
                 { MagicEffectType.HealthGainPerXDamageDone, HealthGainPerXDamageDone.DefaultConfig },
-                // Health on eitr use: eitr spent per heal payout.
                 { MagicEffectType.HealthOnEitrUse, HealthOnEitrUse.DefaultConfig },
-                // Kindling: fire damage taken per stamina payout.
                 { MagicEffectType.Kindling, Kindling.DefaultConfig },
-                // Kills reduce next blood cost: the discount cap, and how long it stays banked.
                 { MagicEffectType.KillsReduceNextBloodCost, KillsReduceNextBloodCost.DefaultConfig },
-                // Poison adrenaline pulse: cadence, and how far a poisoned foe still counts.
                 { MagicEffectType.GainAdrenalineWhenApplyingPoison, GainAdrenalineWhenApplyingPoison.DefaultConfig },
-                // Storm Fury: cadence of the storm adrenaline pulse.
                 { MagicEffectType.StormFury, StormFury.DefaultConfig },
-                // Running on Empty: cooldown between health-to-stamina charges.
                 { MagicEffectType.RunningOnEmpty, RunningOnEmpty.DefaultConfig },
-
-                // -------- Proc / scaling effects --------
-                // Double-damage proc: the multiplier the proc applies.
                 { MagicEffectType.ChanceDoubleDamage, ChanceDoubleDamage.DefaultConfig },
-                // ChanceToCritOnHit is declared and implemented but assigned to no grid slot and absent
-                // from the overhaul config, so like the three coin effects above this entry is dormant --
-                // and keeping it is what makes the effect revivable with a single shardstones.json edit.
                 { MagicEffectType.ChanceToCritOnHit, ChanceToCritOnHit.DefaultConfig },
-                // Blood Drinker: max health traded per value point, and the floor on the trade.
                 { MagicEffectType.BloodDrinker, BloodDrinker.DefaultConfig },
-                // Travel Light: carry weight removed per value point, and the floor it clamps to.
                 { MagicEffectType.TravelLight, TravelLight.DefaultConfig },
-                // Burdened Block: the carry weight the bonus starts at, and weight per bonus step.
                 { MagicEffectType.BurdenedBlock, BurdenedBlock.DefaultConfig },
-                // Eitr Imbue: eitr paid per point of bonus spirit damage.
                 { MagicEffectType.EitrImbueAttack, EitrImbueAttack.DefaultConfig },
             };
 
@@ -161,6 +110,11 @@ namespace EpicLoot.Magic.MagicItemEffects.Helpers {
                 MagicItemEffectDefinitions.Add(definition);
                 Synthesized[pair.Key] = definition;
             }
+
+            // After the merge rather than in BuildDefinition: on a client this definition arrives with the
+            // server's magiceffects.json, so the grid only reaches it as an overlay and its text would stay
+            // as the server last sent it.
+            RestingHealthRegen.RefreshDisplayText();
         }
 
         // Undoes the last run so this one rebuilds from the current grid instead of no-opping on the
@@ -274,9 +228,7 @@ namespace EpicLoot.Magic.MagicItemEffects.Helpers {
             var lower = type.ToLowerInvariant();
             var requirements = new MagicItemEffectRequirements { NoRoll = true };
 
-            // Adrenaline effects only function alongside an adrenaline pool, so keep them legal only on
-            // items that supply one (m_maxAdrenaline > 0, i.e. adrenaline trinkets) -- the shard grid
-            // already assigns them only to the trinket slot.
+            // Adrenaline effects only function alongside an adrenaline pool (m_maxAdrenaline > 0).
             if (type.Contains("Adrenaline") || AdrenalinePoolEffects.Contains(type)) {
                 requirements.ItemHasAdrenaline = true;
             }

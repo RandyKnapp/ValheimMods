@@ -1,9 +1,8 @@
 ﻿using UnityEngine;
 
 namespace EpicLoot.MagicItemEffects.Shards {
-    // Converts a portion of outgoing poison damage into the least resisted other damage type.
     public static class PoisonToTrueDamage {
-        // Prefix handler invoked by CharacterDamageDispatch (attacker-side outgoing modifier).
+        // Prefix handler invoked by SharedCharacterDamagePatch (attacker-side outgoing modifier).
         public static void ModifyOutgoingHit(Character __instance, HitData hit, Character attacker) {
             if (hit == null || __instance == null || attacker != Player.m_localPlayer) {
                 return;

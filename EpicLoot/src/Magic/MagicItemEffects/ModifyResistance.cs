@@ -5,7 +5,7 @@ namespace EpicLoot.MagicItemEffects;
 
 public static class ModifyResistance
 {
-    // Prefix handler invoked by CharacterRpcDamageDispatch (victim-side incoming modifier).
+    // Called from SharedCharacterRpcDamagePatch's prefix, on the victim's owner.
     public static void ModifyIncoming(Character __instance, HitData hit)
     {
         if (__instance != Player.m_localPlayer)
@@ -18,7 +18,6 @@ public static class ModifyResistance
         float physicalResistance = Player.m_localPlayer.GetTotalActiveMagicEffectValue(
             MagicEffectType.AddPhysicalResistancePercentage, 0.01f);
 
-        // elemental resistances
         hit.m_damage.m_fire *= GetCappedResistanceValue(Player.m_localPlayer,
             MagicEffectType.AddFireResistancePercentage, elementalResistance);
         hit.m_damage.m_frost *= GetCappedResistanceValue(Player.m_localPlayer,
@@ -30,7 +29,6 @@ public static class ModifyResistance
         hit.m_damage.m_spirit *= GetCappedResistanceValue(Player.m_localPlayer,
             MagicEffectType.AddSpiritResistancePercentage, elementalResistance);
 
-        // physical resistances
         hit.m_damage.m_blunt *= GetCappedResistanceValue(Player.m_localPlayer,
             MagicEffectType.AddBluntResistancePercentage, physicalResistance);
         hit.m_damage.m_slash *= GetCappedResistanceValue(Player.m_localPlayer,
@@ -86,19 +84,28 @@ public static class ModifyResistance
     public static float GetResistanceCap(string effect)
     {
         Dictionary<string, float> cfg = MagicItemEffectDefinitions.GetEffectConfig(effect);
-        if (cfg == null || !cfg.ContainsKey("MaxResistance"))
+        if (cfg != null && cfg.TryGetValue("MaxResistance", out float maxResistance))
         {
-            return 1f;
+            return Mathf.Clamp01(maxResistance / 100f);
         }
 
-        float resistanceCap = Mathf.Clamp01(cfg["MaxResistance"] / 100f);
-        if (resistanceCap > 1f)
+        // Chop has no enchantment of its own, only the physical group's bonus, so the group's cap is what limits it.
+        string group = GetGroupOf(effect);
+        return group != null ? GetResistanceCap(group) : 1f;
+    }
+
+    private static string GetGroupOf(string effect)
+    {
+        foreach (HitData.DamageType type in System.Enum.GetValues(typeof(HitData.DamageType)))
         {
-            EpicLoot.LogWarning($"Resistance calculated to 100%, player immune. " +
-                $"Suggested to reduce max resistance below 100 in your configuration.");
+            if (GetResistanceEffect(type) == effect)
+            {
+                string group = GetGroupResistanceEffect(type);
+                return group != effect ? group : null;
+            }
         }
 
-        return resistanceCap;
+        return null;
     }
 
     public static float GetUncappedResistanceFraction(Player player, string effect, float additionalResistance = 0f)

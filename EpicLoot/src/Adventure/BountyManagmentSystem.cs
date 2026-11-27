@@ -16,13 +16,11 @@ public class BountyManagmentSystem : MonoBehaviour
     public BountyLedger BountyLedger => _bountyLedger;
     
     private BountyLedger _bountyLedger;
-    private BountyLedger _tempBountyLedger;
     private static BountyManagmentSystem _instance;
     private const string LedgerIdentifier = "randyknapp.mods.epicloot.BountyLedger";
     private static string _ledgerSaveDirectory = Path.Combine(Paths.ConfigPath, "EpicLoot", "BountySaves");
-    // Per-instance, resolved in Awake: a static initializer runs once per process and captured the
-    // FIRST world's uid -- hosting a second world in the same session then read and wrote the
-    // first world's ledger file (offline players' bounty kills crossing worlds or vanishing).
+    // Resolved in Awake, not a static initializer, so a second world hosted in the same session
+    // gets its own ledger file.
     private string _ledgerSaveFile;
 
     public void Awake()
@@ -39,14 +37,11 @@ public class BountyManagmentSystem : MonoBehaviour
 
     private void SaveBounties()
     {
-        SaveTempLedger();
-
         // Guarded: this runs from a ZNet.SaveWorld prefix, and an IO exception (file locked by
-        // AV/backup, disk full) used to propagate out of the prefix and abort the vanilla world
-        // save itself.
+        // AV/backup, disk full) escaping it would abort the vanilla world save.
         try
         {
-            var data = JsonConvert.SerializeObject(_tempBountyLedger);
+            var data = JsonConvert.SerializeObject(_bountyLedger);
             using (var fs = File.Create(_ledgerSaveFile))
             using (var sr = new StreamWriter(fs))
             {
@@ -69,8 +64,7 @@ public class BountyManagmentSystem : MonoBehaviour
         if (ZoneSystem.instance == null)
         {
             // Unity gives no ordering guarantee between this component's Start and ZoneSystem's
-            // Awake. Bailing permanently left the ledger null for the whole session (every offline
-            // player's bounty kill silently dropped) -- retry next frame instead.
+            // Awake, so retry next frame rather than leave the ledger null for the session.
             EpicLoot.LogWarning("ZoneSystem not ready when loading the bounty ledger; retrying.");
             Invoke(nameof(LoadBounties), 0f);
             return;
@@ -144,10 +138,5 @@ public class BountyManagmentSystem : MonoBehaviour
         }
 
         SaveBounties();
-    }
-
-    private void SaveTempLedger()
-    {
-        _tempBountyLedger = _bountyLedger;
     }
 }

@@ -19,6 +19,12 @@ public static partial class TerminalManager
         float luckFactor = args.TryParameterFloat(2);
         
         KeyValuePair<string, List<LootTable>> loot_info = LootRoller.GetLootTableOrDefault(lootTable);
+        if (loot_info.Value == null || loot_info.Value.Count == 0)
+        {
+            args.Context.PrintError($"> no loot table found for '{lootTable}'");
+            return;
+        }
+
         LootDrop[] levelOneLoot = LootRoller.GetLootForLevel(loot_info.Value[0], 1);
         if (levelOneLoot == null || levelOneLoot.Length == 0)
         {

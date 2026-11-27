@@ -17,7 +17,6 @@ namespace EpicLoot.Adventure.Feature
 
     public class TreasureMapsAdventureFeature : AdventureFeature
     {
-        public override AdventureFeatureType Type => AdventureFeatureType.TreasureMaps;
         public override int RefreshInterval => AdventureDataManager.Config.TreasureMap.RefreshInterval;
 
         public List<TreasureMapItemInfo> GetTreasureMaps()
@@ -69,10 +68,9 @@ namespace EpicLoot.Adventure.Feature
         {
             player.Message(MessageHud.MessageType.Center, "$mod_epicloot_treasuremap_locatingmsg");
             AdventureSaveData saveData = player.GetAdventureSaveData();
-            yield return BountyLocationEarlyCache.TryGetBiomePoint(biome, saveData, (success, spawnPoint) =>
+            yield return BountyLocationEarlyCache.TryGetBiomePoint(biome, (success, spawnPoint) =>
             {
-                // Only report success once the spawner actually exists. Reporting it unconditionally
-                // charged the player for a map that CreateTreasureSpawner had refused to create.
+                // Only report success once the spawner exists, or the player is charged for nothing.
                 if (success && CreateTreasureSpawner(biome, spawnPoint, saveData))
                 {
                     callback?.Invoke(price, true, spawnPoint);
@@ -98,8 +96,8 @@ namespace EpicLoot.Adventure.Feature
                 PlayerID = Player.m_localPlayer.GetPlayerID()
             };
 
-            // Record the purchase FIRST and honor its refusal (duplicate interval/biome):
-            // spawning regardless used to leave orphan treasure chests with no save record.
+            // Record the purchase FIRST and honor its refusal (duplicate interval/biome): spawning
+            // regardless would leave an orphan treasure chest with no save record.
             if (!saveData.PurchasedTreasureMap(treasure_details))
             {
                 EpicLoot.LogWarningForce($"Treasure map purchase for {biome} was refused by the save data; no chest spawned.");
